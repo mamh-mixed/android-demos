@@ -2,13 +2,14 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/omigo/g"
 )
 
-// 快捷支付入口
+// Quickpay 快捷支付入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
+	g.Debug("url = %s", r.URL.String())
 
 	// data, err := ioutil.ReadAll(r.Body)
 	// 验签，如果失败，立即返回
