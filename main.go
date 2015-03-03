@@ -4,11 +4,13 @@ import (
 	"log"
 	"net/http"
 	"quickpay/handler"
+
+	"github.com/omigo/g"
 )
 
 func main() {
-	// 为log添加短文件名,方便查看行数
-	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	// 日志输出级别
+	g.SetLevel(g.LevelTrace)
 
 	addr := ":3000"
 	log.Printf("Shoumoney is running at %s", addr)
