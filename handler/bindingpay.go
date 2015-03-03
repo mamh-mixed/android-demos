@@ -2,25 +2,28 @@ package handler
 
 import (
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net/http"
+
+	"github.com/omigo/g"
 )
 
-// 快捷支付入口
+// Quickpay 快捷支付入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
+	g.Debug("url = %s", r.URL.Path)
 
-	// data, err := ioutil.ReadAll(r.Body)
+	data, err := ioutil.ReadAll(r.Body)
+	g.Error("read body error: %s", err)
 	// 验签，如果失败，立即返回
 	// if checkSignature(data, merId)
 
 	// 执行业务逻辑
-	switch r.URL.String() {
+	switch r.URL.Path {
 	case "/quickpay/bindingCreate":
-		// bindingCreateHandle(w, r, data)
+		bindingCreateHandle(w, r, data)
 
 	default:
-		w.WriteHeader(404)
+		w.WriteHeader(204)
 	}
 }
 
