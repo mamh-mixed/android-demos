@@ -1,4 +1,4 @@
-package types
+package model
 
 // Binding 绑定关系
 type Binding struct {
