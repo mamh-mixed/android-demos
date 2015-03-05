@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/omigo/g"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/omigo/g"
+	"quickpay/domain"
+	"quickpay/validity"
 )
 
 // Quickpay 快捷支付入口
@@ -30,15 +32,41 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 
 	// json to obj
-	// err := json.Unmarshal(data, &in)
+	var request domain.BindingCreateRequest
+	var response domain.BindingCreateResponse
+	err := json.Unmarshal(data, &request)
+	if err != nil {
+		g.Error("unmashal data error \n", err)
+		fmt.Fprint(w, "unmashal data error")
+	} else {
+		g.Debug("%+v", request)
+		response.MerBindingId = request.MerBindingId
+	}
+	// todo 验证参数
+	validityCode, validityErr := validity.BindingCreateRequestValidity(request)
+	if validityErr == nil {
+		// 验证参数OK
 
-	// out := core.CreateBinding(in)
+		// 业务处理
+		// out := core.CreateBinding(in)
 
-	// obj to json
-	// body, err := json.Marshell(ret)
+		// 虚拟数据，假设成功
+		response.RespCode = "000000"
+		response.RespMsg = "Success"
+	} else {
+		// 验证参数失败
+		response.RespCode = validityCode
+		response.RespMsg = validityErr.Error()
+	}
 
 	// 签名，并返回
 	// sign = signature(out, in.merId)
 
-	fmt.Fprint(w, "unimplement exception")
+	// obj to json
+	body, err := json.Marshal(response)
+	if err != nil {
+		fmt.Fprint(w, "mashal data error")
+	} else {
+		fmt.Fprintf(w, "%s", body)
+	}
 }
