@@ -2,18 +2,17 @@ package channel
 
 import (
 	"crypto/tls"
-	"encoding/base64"
 	"encoding/xml"
+	"github.com/omigo/g"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"quickpay/model"
 	"quickpay/tools"
-
-	"github.com/omigo/g"
+	"strings"
 )
 
-var requestUrl = "https://test.china-clearing.com/Gateway/InterfaceII"
+var requestURL = "https://test.china-clearing.com/Gateway/InterfaceII"
 
 // Chinapay 中金渠道
 type Chinapay struct {
@@ -48,7 +47,7 @@ func (c *Chinapay) CreateBinding(data *model.BindingCreateIn) *model.BindingCrea
 	return &channelRes
 }
 
-// 查询绑定关系
+// QueryBinding 查询绑定关系
 func (c *Chinapay) QueryBinding() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -63,7 +62,7 @@ func (c *Chinapay) QueryBinding() *model.ChannelRes {
 	return &channelRes
 }
 
-// 快捷支付
+// QuickPay 快捷支付
 func (c *Chinapay) QuickPay() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -78,7 +77,7 @@ func (c *Chinapay) QuickPay() *model.ChannelRes {
 	return &channelRes
 }
 
-// 快捷支付查询
+// QuickPayQuery 快捷支付查询
 func (c *Chinapay) QuickPayQuery() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -93,7 +92,7 @@ func (c *Chinapay) QuickPayQuery() *model.ChannelRes {
 	return &channelRes
 }
 
-// 快捷支付退款
+// QuickPayRefund 快捷支付退款
 func (c *Chinapay) QuickPayRefund() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -108,7 +107,7 @@ func (c *Chinapay) QuickPayRefund() *model.ChannelRes {
 	return &channelRes
 }
 
-// 快捷支付退款查询
+// QuickPayRefundQuery 快捷支付退款查询
 func (c *Chinapay) QuickPayRefundQuery() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -123,7 +122,7 @@ func (c *Chinapay) QuickPayRefundQuery() *model.ChannelRes {
 	return &channelRes
 }
 
-// 交易对账单
+// TradePayments 交易对账单
 func (c *Chinapay) TradePayments() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -151,15 +150,18 @@ func ChinaPaySignature(data Request) (message, signature string) {
 }
 
 // CheckChinaPaySignature 中金支付渠道验签
-func CheckChinaPaySignature(data string, signature string) bool {
+func CheckChinaPaySignature(data string, signature string) (bool, []byte) {
 	// encode base64
 	message := tools.DecodeBase64(data)
+	g.Debug("response message : %s", message)
 	// ecode hex
+
 	sign := tools.DecodeHex(signature)
+	g.Debug("response signature : %s", signature)
 	// verify
 	err := tools.CheckSignatureUseSha1WithRsa(message, sign)
 
-	return err == nil
+	return err == nil, message
 }
 
 // ChinaPayRequestHandler 对中金接口访问的统一处理
@@ -173,32 +175,29 @@ func ChinaPayRequestHandler(request Request) *Response {
 	param.Add("message", message)
 	param.Add("signature", signature)
 
-	// Setup HTTPS client
-	tlsConfig := &tls.Config{
-		InsecureSkipVerify: true, // This should be used only for testing.
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	tlsConfig.BuildNameToCertificate()
-	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	cli := &http.Client{Transport: transport}
+	client := &http.Client{Transport: tr}
+	resp, err := client.PostForm(requestURL, param)
 
-	resp, err := cli.PostForm(requestUrl, param)
 	if err != nil {
 		g.Error("unable to connect ChinaPay gratway  (%s)", err)
 	}
 
-	// handler result
-	// read from response
-	base64Body, err := ioutil.ReadAll(resp.Body)
+	base64bodys, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		g.Error("unable to read from response (%s)", err)
 	}
-	g.Debug("response data : (%s)", base64Body)
+
+	result := strings.Split(string(base64bodys), ",")
+	g.Debug("response data (message :%s \n signature :%s \n)", result[0], result[1])
+	// 暂时不验签
+	_, bodys := CheckChinaPaySignature(result[0], result[1])
 
 	response := Response{}
-	body, _ := base64.StdEncoding.DecodeString(string(base64Body))
-	g.Debug("response xml: %s", body)
 
-	err = xml.Unmarshal(body, &response)
+	err = xml.Unmarshal(bodys, &response)
 	if err != nil {
 		g.Error("unable to unmarshal xml (%s)", err)
 	}
@@ -210,14 +209,14 @@ func ChinaPayRequestHandler(request Request) *Response {
 	return &response
 }
 
-// 中金渠道请求报文
+// Request 中金渠道请求报文
 type Request struct {
 	Version string `xml:"version,attr,omitempty"`
 	Head    requestHead
 	Body    requestBody
 }
 
-// 中金渠道返回报文
+// Response 中金渠道返回报文
 type Response struct {
 	responseHead
 	responseBody
@@ -273,7 +272,7 @@ type responseBody struct {
 	Amount          int64  //退款金额,单位:分
 }
 
-//1810 交易对账单
+//Tx 1810 交易对账单
 type Tx struct {
 	TxType               string //交易类型
 	TxSN                 string //退款交易流水号
