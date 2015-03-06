@@ -2,13 +2,12 @@ package validity
 
 import (
 	"github.com/omigo/g"
-	"quickpay/domain"
 	"quickpay/model"
 	"testing"
 )
 
 func TestBindingCreateRequestValidity(t *testing.T) {
-	request := domain.BindingCreateRequest{}
+	request := model.BindingCreateIn{}
 	code, msg := BindingCreateRequestValidity(request)
 	if code != "200050" {
 		g.Error("\n", "验证 '报文要素缺失' 失败")
@@ -136,5 +135,8 @@ func TestBindingPaymentRequestValidity(t *testing.T) {
 	} else {
 		t.Logf("%s", code)
 	}
+}
+
+func TestRefundRequestValidity(t *testing.T) {
 
 }

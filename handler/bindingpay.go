@@ -6,7 +6,6 @@ import (
 	"github.com/omigo/g"
 	"io/ioutil"
 	"net/http"
-	"quickpay/domain"
 	"quickpay/model"
 	"quickpay/validity"
 )
@@ -39,19 +38,21 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 
 	// json to obj
-	var request domain.BindingCreateRequest
-	var response domain.BindingCreateResponse
-	err := json.Unmarshal(data, &request)
+	var (
+		in  model.BindingCreateIn
+		out model.BindingCreateOut
+	)
+	err := json.Unmarshal(data, &in)
 	if err != nil {
 		g.Error("unmashal data error \n", err)
-		response.RespCode = "200020"
-		response.RespMsg = "解析报文错误"
+		out.RespCode = "200020"
+		out.RespMsg = "解析报文错误"
 	} else {
-		g.Debug("%+v", request)
-		response.BindingId = request.BindingId
+		g.Debug("%+v", in)
+		out.BindingId = in.BindingId
 	}
 	// 验证请求报文是否完整，格式是否正确
-	validityCode, validityErr := validity.BindingCreateRequestValidity(request)
+	validityCode, validityErr := validity.BindingCreateRequestValidity(in)
 	if validityErr == nil {
 		// 验证参数OK
 
@@ -59,19 +60,19 @@ func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 		// out := core.CreateBinding(in)
 
 		// 虚拟数据，假设成功
-		response.RespCode = "000000"
-		response.RespMsg = "Success"
+		out.RespCode = "000000"
+		out.RespMsg = "Success"
 	} else {
 		// 验证参数失败
-		response.RespCode = validityCode
-		response.RespMsg = validityErr.Error()
+		out.RespCode = validityCode
+		out.RespMsg = validityErr.Error()
 	}
 
 	// 签名，并返回
 	// sign = signature(out, in.merId)
 
 	// obj to json
-	body, err := json.Marshal(response)
+	body, err := json.Marshal(out)
 	if err != nil {
 		fmt.Fprint(w, "mashal data error")
 	} else {

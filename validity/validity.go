@@ -2,13 +2,12 @@ package validity
 
 import (
 	"errors"
-	"quickpay/domain"
 	"quickpay/model"
 	"regexp"
 )
 
 //建立绑定关系的时候验证请求报文
-func BindingCreateRequestValidity(request domain.BindingCreateRequest) (string, error) {
+func BindingCreateRequestValidity(request model.BindingCreateIn) (string, error) {
 	cardNum := request.AcctNum
 	if request.BindingId == "" || request.AcctName == "" || request.AcctNum == "" || request.AcctType == "" {
 		return "200050", errors.New("报文要素缺失")
@@ -74,6 +73,19 @@ func BindingPaymentRequestValidity(in model.BindingPaymentIn) (string, error) {
 	// 短信验证码
 	if in.SendSmsId != "" && in.SmsCode == "" {
 		return "200050", errors.New("报文要素缺失")
+	}
+
+	return "00", nil
+}
+
+// 退款请求报文验证
+func RefundRequestValidity(in model.RefundIn) (string, error) {
+	if in.MerOrderNum == "" || in.OrigOrderNum == "" || in.TransAmt == 0 {
+		return "200050", errors.New("报文要素缺失")
+	}
+
+	if in.TransAmt < 0 {
+		return "200190", errors.New("退款金额有误")
 	}
 
 	return "00", nil

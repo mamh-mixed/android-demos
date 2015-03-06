@@ -6,12 +6,11 @@ import (
 	"github.com/omigo/g"
 	"net/http"
 	"net/http/httptest"
-	"quickpay/domain"
 	"quickpay/model"
 	"testing"
 )
 
-func bindingCreateRequestHandle(method, url, body string, t *testing.T) (response domain.BindingCreateResponse) {
+func bindingCreateRequestHandle(method, url, body string, t *testing.T) (response model.BindingCreateOut) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
 	if err != nil {
 		g.Fatal("", err)
