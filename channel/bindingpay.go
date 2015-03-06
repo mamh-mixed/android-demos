@@ -1,13 +1,14 @@
 package channel
 
 import (
+	"quickpay/domain"
 	"quickpay/model"
 )
 
 type Bindingpay interface {
 
 	//建立绑定关系
-	CreateBinding() *model.ChannelRes
+	CreateBinding(data domain.BindingCreateRequest) *model.ChannelRes
 
 	//查询绑定关系
 	QueryBinding() *model.ChannelRes

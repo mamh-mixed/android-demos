@@ -17,7 +17,7 @@ func EncodeBase64(data []byte) string {
 	return buff.String()
 }
 
-func ToXML(data string) []byte {
+func ToXML(data interface{}) []byte {
 	marshaled, err := xml.Marshal(data)
 	if err != nil {
 		g.Error("unable to marshal xml (%s)", err)

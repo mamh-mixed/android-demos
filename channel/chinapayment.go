@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"quickpay/domain"
 	"quickpay/model"
+	"quickpay/tools"
 )
 
 var requestUrl = "https://test.china-clearing.com/Gateway/InterfaceII"
@@ -16,17 +18,28 @@ type Chinapay struct {
 }
 
 // 绑定关系请求
-func (c *Chinapay) CreateBinding() *model.ChannelRes {
+func (c *Chinapay) CreateBinding(data domain.BindingCreateRequest) *model.ChannelRes {
 
 	// 将参数转化为Request
 	request := Request{}
 
+	//包装
+	reqHead := requestHead{}
+	reqHead.InstitutionID = "001405" //测试ID
+	reqHead.TxCode = "2501"
+	request.Version = "2.0"
+	reqBody := requestBody{}
+	reqBody.AccountName = data.AcctName
+	reqBody.AccountNumber = data.AcctNum
+
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
 }
 
 // 查询绑定关系
@@ -35,11 +48,13 @@ func (c *Chinapay) QueryBinding() *model.ChannelRes {
 	request := Request{}
 
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
 }
 
 // 快捷支付
@@ -48,11 +63,13 @@ func (c *Chinapay) QuickPay() *model.ChannelRes {
 	request := Request{}
 
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
 }
 
 // 快捷支付查询
@@ -61,11 +78,13 @@ func (c *Chinapay) QuickPayQuery() *model.ChannelRes {
 	request := Request{}
 
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
 }
 
 // 快捷支付退款
@@ -74,11 +93,13 @@ func (c *Chinapay) QuickPayRefund() *model.ChannelRes {
 	request := Request{}
 
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
 }
 
 // 快捷支付退款查询
@@ -87,11 +108,13 @@ func (c *Chinapay) QuickPayRefundQuery() *model.ChannelRes {
 	request := Request{}
 
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
 }
 
 // 交易对账单
@@ -100,35 +123,62 @@ func (c *Chinapay) TradePayments() *model.ChannelRes {
 	request := Request{}
 
 	// 提交
-	response := ChinaPayRequestHandler(&request)
+	response := ChinaPayRequestHandler(request)
 
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
+	channelRes := model.ChannelRes{"000000", response}
+	return &channelRes
+}
+
+// ChinaPaySignature 中金支付渠道签名
+// message  采用Base64编码
+// signature 采用Sha1WithRsa签名后用Hex编码
+func ChinaPaySignature(data Request) (message, signature string) {
+	// to xml
+	xmlBytes := tools.ToXML(data)
+
+	g.Debug("transfer data into xml : (%s)", xmlBytes)
+
+	return tools.EncodeBase64(xmlBytes), tools.EncodeHex(tools.SignatureUseSha1WithRsa(xmlBytes))
+}
+
+// CheckChinaPaySignature 中金支付渠道验签
+func CheckChinaPaySignature(data string, signature string) bool {
+	// encode base64
+	message := tools.DecodeBase64(data)
+	// ecode hex
+	sign := tools.DecodeHex(signature)
+	// verify
+	err := tools.CheckSignatureUseSha1WithRsa(message, sign)
+
+	return err == nil
 }
 
 // 对中金接口访问的统一处理
-func ChinaPayRequestHandler(request *Request) *Response {
-	// 数据处理 toxml
-	//TODO
-	// 加密、签名
-	//TODO
-	// 准备参数、提交
-	param := url.Values
-	param.Add("message", value)
-	param.Add("signature", value)
-	resp, err := http.PostForm(requestUrl, param)
+func ChinaPayRequestHandler(request Request) *Response {
 
-	//fail
+	// 数据处理、加密、签名
+	message, signature := ChinaPaySignature(request)
+
+	// 准备参数、提交
+	param := url.Values{}
+	param.Add("message", message)
+	param.Add("signature", signature)
+
+	resp, err := http.PostForm(requestUrl, param)
 	if err != nil {
 		g.Error("unable to connect ChinaPay gratway  (%s)", err)
 	}
+
 	// handler result
 	// read from response
 	bodys, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		g.Error("unable to read from response (%s)", err)
 	}
+	g.Debug("response data : (%s)", bodys)
 	// result map
 	response := Response{}
 	err = xml.Unmarshal(bodys, &response)
@@ -145,7 +195,7 @@ func ChinaPayRequestHandler(request *Request) *Response {
 
 // 中金渠道请求报文
 type Request struct {
-	Version string `xml:"version,attr"`
+	Version string `xml:"version,attr,omitempty"`
 	Head    requestHead
 	Body    requestBody
 }
@@ -159,13 +209,13 @@ type Response struct {
 // common request head
 type requestHead struct {
 	TxCode        string
-	InstitutionID string
+	InstitutionID string `xml:",omitempty"`
 }
 
 // common request body
 type requestBody struct {
-	TxSNBinding          string //绑定流水号
-	BankID               string //银行 ID
+	TxSNBinding          string `xml:",omitempty"` //绑定流水号
+	BankID               string `xml:",omitempty"` //银行 ID
 	AccountName          string `xml:",omitempty"` //账户名称
 	AccountNumber        string `xml:",omitempty"` //账户号码
 	IdentificationType   string `xml:",omitempty"` //开户证件类型

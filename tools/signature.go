@@ -5,7 +5,9 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
+	"crypto/x509"
 	"encoding/hex"
+	"encoding/pem"
 	"github.com/omigo/g"
 	"io"
 	"log"
@@ -14,15 +16,33 @@ import (
 
 var privateKey *rsa.PrivateKey
 
-var opts rsa.PSSOptions
+const (
+	privKeyPEM = `-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQCvJC9MMGRKmxRBI0KMjDtz2KooIc6XOljHPWhTfAamhV3A5v5y
+PiZr4haMDpulU08Y0JxsegwDwfbscQrhG7nvilIqIa+HiI1xkfFxjtNUrMN5hpvO
+8HUUfwqzb5EdllQcv/C0xxBkeCECIb86JJry7ty4mNBkN2idbGxldMi90QIDAQAB
+AoGATvTIIdfbDss06Vyk/smlb8dohmkfQov6Q/AKHUDXmrCbIIDCiuw70/z73y4i
+uviAuxYovrqSugryb4tStUMTogmft4methz1/O/083XHwBNKBPnS2fobYDfBxqkX
+tH26woCjrEr/O/wngo6iFp7b5yJlyXapN0x+iOF3CShIhAECQQD2gZ6LLYdxSP8i
+aRYAPOh10mF5IHt2dl89eOjNiqVGMlkV5aXNT80jAQr/kWGZfIjscb/xkawSKQKs
+ovcn99GRAkEAteL02mBrCLfn2idBwXTdil+yeigReAZmRpqQuAfTRZN4RM+5Dw3q
+X0IiCkR3oyiwx89n1eGmz1JTZRxoY1AIQQJAWVbQ5xAxLlWOYiJD3wI0Hb+JpCSp
+ml18VwMjHJtLGw3US6NXW/m4Fx+hpM5D2STRWyA+uIZbHpnOZlMJ0Gp4gQJBAK38
+66JV5y1Q1r2tHc6UHzQ1tMH7wDIjVQSm6FbSTXxZxAt29Rx8gD0dQvi1ZAg0bV7F
+fRtwnqPlqZaoJQcTUMECQQD1Dh+Mu3OMb5AHnrtbk9l1qjM3U81QBKdyF0RY+djo
+b3cR9I7+hurpqhJmQ7yuvAWe2xWc+YNTQ48FDJTogXlB
+-----END RSA PRIVATE KEY-----`
+)
 
 func init() {
 
-	// pemBlock, _ := pem.Decode([]byte(key))
-	// pk, _ := x509.ParsePKCS1PrivateKey(pemBlock.Bytes)
+	pemBlock, _ := pem.Decode([]byte(privKeyPEM))
+	if pemBlock == nil {
+		g.Error("private key wrong (%s)", pemBlock)
+	}
+	privateKey, _ = x509.ParsePKCS1PrivateKey(pemBlock.Bytes)
 	// loadCer()
-	privateKey, _ = rsa.GenerateKey(rand.Reader, 1024)
-	opts.SaltLength = rsa.PSSSaltLengthAuto
+	// privateKey, _ = rsa.GenerateKey(rand.Reader, 1024)
 }
 
 // ChinaPaySignature 中金支付渠道签名
@@ -54,7 +74,7 @@ func SignatureUseSha1WithRsa(data []byte) []byte {
 	h.Write(data)
 	hashed := h.Sum(nil)
 	// sign
-	sgined, err := rsa.SignPSS(rand.Reader, privateKey, crypto.SHA1, hashed, &opts)
+	sgined, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA1, hashed)
 
 	if err != nil {
 		g.Error("fail to sign with Sha1WithRsa (%s)", err)
@@ -70,7 +90,7 @@ func CheckSignatureUseSha1WithRsa(data []byte, signature []byte) error {
 	h.Write(data)
 	hashed := h.Sum(nil)
 
-	return rsa.VerifyPSS(&privateKey.PublicKey, crypto.SHA1, hashed, signature, &opts)
+	return rsa.VerifyPKCS1v15(&privateKey.PublicKey, crypto.SHA1, hashed, signature)
 
 }
 
