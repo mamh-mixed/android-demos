@@ -8,6 +8,9 @@ import (
 	"github.com/omigo/g"
 )
 
+// test
+
+
 func main() {
 	// 日志输出级别
 	g.SetLevel(g.LevelTrace)
