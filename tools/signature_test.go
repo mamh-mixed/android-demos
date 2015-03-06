@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -11,6 +12,16 @@ func TestSignatureSha1WithRsa(t *testing.T) {
 }
 
 // TODO 每个方法都要有单元测试
+
+func TestCheckChinaPaySignature(t *testing.T) {
+
+	data := "{json:中文}"
+	message, signature := ChinaPaySignature(data)
+
+	pass := CheckChinaPaySignature(message, signature)
+
+	fmt.Println(pass)
+}
 func TestSignatureUseSha1(t *testing.T) {
 	t.Log("TestSignatureUseSha1")
 	data, key := "\"merBindingId\":\"1000000001\"", "C380BEC2BFD727A4B6845133519F3AD6"
