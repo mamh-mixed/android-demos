@@ -1,20 +1,21 @@
 package core
 
 import (
-	"quickpay/types"
+	"quickpay/channel"
+	"quickpay/model"
 )
 
 // CreateBinding 绑卡
-func CreateBinding(in *types.BindingCreateIn) (out *types.BindingCreateOut) {
+func CreateBinding(in *model.BindingCreateIn) (out *model.BindingCreateOut) {
 
 	// 路由
 	// 风控
 	// 这部分可以提出一个公共模块
 
 	// 判断卡bin ，决定走哪个渠道
-	// channel = newChannel()
+	c := channel.GetBindingpayChannel("chinapayment").(*channel.Chinapay)
 
-	// out = chinapay.CreateBinding(in)
+	out = c.CreateBinding(in)
 
-	return
+	return out
 }

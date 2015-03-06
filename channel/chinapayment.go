@@ -1,24 +1,26 @@
 package channel
 
 import (
+	"crypto/tls"
+	"encoding/base64"
 	"encoding/xml"
-	"github.com/omigo/g"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"quickpay/domain"
 	"quickpay/model"
 	"quickpay/tools"
+
+	"github.com/omigo/g"
 )
 
 var requestUrl = "https://test.china-clearing.com/Gateway/InterfaceII"
 
-// 中金渠道
+// Chinapay 中金渠道
 type Chinapay struct {
 }
 
-// 绑定关系请求
-func (c *Chinapay) CreateBinding(data domain.BindingCreateRequest) *model.ChannelRes {
+// CreateBinding 绑定关系请求
+func (c *Chinapay) CreateBinding(data *model.BindingCreateIn) *model.BindingCreateOut {
 
 	// 将参数转化为Request
 	request := Request{}
@@ -38,7 +40,11 @@ func (c *Chinapay) CreateBinding(data domain.BindingCreateRequest) *model.Channe
 	//对返回值处理...
 	// handledResponse(response)
 	//TODO
-	channelRes := model.ChannelRes{"000000", response}
+	channelRes := model.BindingCreateOut{
+		BindingId: `13213`,
+		RespCode:  response.ResponseCode,
+		RespMsg:   response.ResponseMessage,
+	}
 	return &channelRes
 }
 
@@ -156,7 +162,7 @@ func CheckChinaPaySignature(data string, signature string) bool {
 	return err == nil
 }
 
-// 对中金接口访问的统一处理
+// ChinaPayRequestHandler 对中金接口访问的统一处理
 func ChinaPayRequestHandler(request Request) *Response {
 
 	// 数据处理、加密、签名
@@ -167,21 +173,32 @@ func ChinaPayRequestHandler(request Request) *Response {
 	param.Add("message", message)
 	param.Add("signature", signature)
 
-	resp, err := http.PostForm(requestUrl, param)
+	// Setup HTTPS client
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true, // This should be used only for testing.
+	}
+	tlsConfig.BuildNameToCertificate()
+	transport := &http.Transport{TLSClientConfig: tlsConfig}
+	cli := &http.Client{Transport: transport}
+
+	resp, err := cli.PostForm(requestUrl, param)
 	if err != nil {
 		g.Error("unable to connect ChinaPay gratway  (%s)", err)
 	}
 
 	// handler result
 	// read from response
-	bodys, err := ioutil.ReadAll(resp.Body)
+	base64Body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		g.Error("unable to read from response (%s)", err)
 	}
-	g.Debug("response data : (%s)", bodys)
-	// result map
+	g.Debug("response data : (%s)", base64Body)
+
 	response := Response{}
-	err = xml.Unmarshal(bodys, &response)
+	body, _ := base64.StdEncoding.DecodeString(string(base64Body))
+	g.Debug("response xml: %s", body)
+
+	err = xml.Unmarshal(body, &response)
 	if err != nil {
 		g.Error("unable to unmarshal xml (%s)", err)
 	}
@@ -202,8 +219,8 @@ type Request struct {
 
 // 中金渠道返回报文
 type Response struct {
-	Head responseHead
-	Body responseBody
+	responseHead
+	responseBody
 }
 
 // common request head

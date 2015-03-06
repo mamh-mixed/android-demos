@@ -3,11 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/omigo/g"
 	"io/ioutil"
 	"net/http"
+	"quickpay/core"
 	"quickpay/model"
 	"quickpay/validity"
+
+	"github.com/omigo/g"
 )
 
 // Quickpay 快捷支付入口
@@ -40,7 +42,7 @@ func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 	// json to obj
 	var (
 		in  model.BindingCreateIn
-		out model.BindingCreateOut
+		out = &model.BindingCreateOut{}
 	)
 	err := json.Unmarshal(data, &in)
 	if err != nil {
@@ -57,11 +59,9 @@ func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 		// 验证参数OK
 
 		// 业务处理
-		// out := core.CreateBinding(in)
-
-		// 虚拟数据，假设成功
-		out.RespCode = "000000"
-		out.RespMsg = "Success"
+		out2 := core.CreateBinding(&in)
+		out.RespCode = out2.RespCode
+		out.RespMsg = out2.RespMsg
 	} else {
 		// 验证参数失败
 		out.RespCode = validityCode
