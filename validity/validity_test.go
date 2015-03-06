@@ -3,18 +3,19 @@ package validity
 import (
 	"github.com/omigo/g"
 	"quickpay/domain"
+	"quickpay/model"
 	"testing"
 )
 
 func TestBindingCreateRequestValidity(t *testing.T) {
-	var request domain.BindingCreateRequest
+	request := domain.BindingCreateRequest{}
 	code, msg := BindingCreateRequestValidity(request)
 	if code != "200050" {
 		g.Error("\n", "验证 '报文要素缺失' 失败")
 	} else {
 		g.Info("%s---%s", code, msg)
 	}
-	request.MerBindingId = "1000000000001"
+	request.BindingId = "1000000000001"
 	request.AcctName = "张三"
 	request.AcctNum = "6210948000000219"
 	request.IdentType = "0"
@@ -28,7 +29,7 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 
 	code, msg = BindingCreateRequestValidity(request)
 	if code != "00" {
-		g.Error("\n", "验证 '报文正确' 失败")
+		t.Errorf("%s\n", "验证 '报文正确' 失败")
 	} else {
 		g.Info("%s---%s", code, msg)
 	}
@@ -36,7 +37,7 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 	request.IdentType = "XXX"
 	code, msg = BindingCreateRequestValidity(request)
 	if code != "200120" {
-		g.Error("\n", "验证 '证件类型有误' 失败")
+		t.Errorf("%s\n", "验证 '证件类型有误' 失败")
 	} else {
 		g.Info("%s---%s", code, msg)
 	}
@@ -45,7 +46,7 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 	request.PhoneNum = "wonsikin"
 	code, msg = BindingCreateRequestValidity(request)
 	if code != "200130" {
-		g.Error("\n", "验证 '手机号有误' 失败")
+		t.Errorf("%s\n", "验证 '手机号有误' 失败")
 	} else {
 		g.Info("%s---%s", code, msg)
 	}
@@ -55,7 +56,7 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 	request.ValidDate = "2013"
 	code, msg = BindingCreateRequestValidity(request)
 	if code != "200140" {
-		g.Error("\n", "验证 '卡片有效期有误' 失败")
+		t.Errorf("%s\n", "验证 '卡片有效期有误' 失败")
 	} else {
 		g.Info("%s---%s", code, msg)
 	}
@@ -64,8 +65,31 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 	request.Cvv2 = "2345"
 	code, msg = BindingCreateRequestValidity(request)
 	if code != "200150" {
-		g.Error("\n", "验证 'CVV2有误' 失败")
+		t.Errorf("%s\n", "验证 'CVV2有误' 失败")
 	} else {
 		g.Info("%s---%s", code, msg)
+	}
+}
+
+func TestBindingRemoveRequestValidity(t *testing.T) {
+	var (
+		in   model.BindingRemoveIn
+		code string
+		err  error
+	)
+
+	code, err = BindingRemoveRequestValidity(in)
+	if err == nil {
+		t.Error("测试解除绑定关系报文要素缺失失败")
+	} else {
+		t.Logf("%s", code)
+	}
+
+	in.BindingId = "1000000001"
+	code, err = BindingRemoveRequestValidity(in)
+	if err != nil {
+		t.Error("测试解除绑定关系报文要素缺失失败")
+	} else {
+		t.Logf("%s", code)
 	}
 }
