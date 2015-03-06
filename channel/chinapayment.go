@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"crypto/tls"
 	"encoding/xml"
 	"github.com/omigo/g"
 	"io/ioutil"
@@ -9,6 +10,7 @@ import (
 	"quickpay/domain"
 	"quickpay/model"
 	"quickpay/tools"
+	"strings"
 )
 
 var requestUrl = "https://test.china-clearing.com/Gateway/InterfaceII"
@@ -117,7 +119,7 @@ func (c *Chinapay) QuickPayRefundQuery() *model.ChannelRes {
 	return &channelRes
 }
 
-// 交易对账单
+// TradePayments 交易对账单
 func (c *Chinapay) TradePayments() *model.ChannelRes {
 	// 将参数转化为Request
 	request := Request{}
@@ -148,8 +150,11 @@ func ChinaPaySignature(data Request) (message, signature string) {
 func CheckChinaPaySignature(data string, signature string) bool {
 	// encode base64
 	message := tools.DecodeBase64(data)
+	g.Debug("response message : %s", message)
 	// ecode hex
+	g.Debug("response signature : %s", signature)
 	sign := tools.DecodeHex(signature)
+
 	// verify
 	err := tools.CheckSignatureUseSha1WithRsa(message, sign)
 
@@ -167,7 +172,11 @@ func ChinaPayRequestHandler(request Request) *Response {
 	param.Add("message", message)
 	param.Add("signature", signature)
 
-	resp, err := http.PostForm(requestUrl, param)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	resp, err := client.PostForm(requestUrl, param)
 	if err != nil {
 		g.Error("unable to connect ChinaPay gratway  (%s)", err)
 	}
@@ -178,7 +187,10 @@ func ChinaPayRequestHandler(request Request) *Response {
 	if err != nil {
 		g.Error("unable to read from response (%s)", err)
 	}
-	g.Debug("response data : (%s)", bodys)
+
+	result := strings.Split(string(bodys), ",")
+	g.Debug("response data (message :%s \n signature :%s \n)", result[0], result[1])
+	CheckChinaPaySignature(result[0], result[1])
 	// result map
 	response := Response{}
 	err = xml.Unmarshal(bodys, &response)
