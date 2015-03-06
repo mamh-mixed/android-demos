@@ -2,13 +2,12 @@ package validity
 
 import (
 	"github.com/omigo/g"
-	"quickpay/domain"
 	"quickpay/model"
 	"testing"
 )
 
 func TestBindingCreateRequestValidity(t *testing.T) {
-	request := domain.BindingCreateRequest{}
+	request := model.BindingCreateIn{}
 	code, msg := BindingCreateRequestValidity(request)
 	if code != "200050" {
 		g.Error("\n", "验证 '报文要素缺失' 失败")
@@ -92,4 +91,52 @@ func TestBindingRemoveRequestValidity(t *testing.T) {
 	} else {
 		t.Logf("%s", code)
 	}
+}
+
+func TestBindingPaymentRequestValidity(t *testing.T) {
+	var (
+		code string
+		err  error
+	)
+	in := model.BindingPaymentIn{
+		SubMerId:    "",
+		MerOrderNum: "1000000003",
+		TransAmt:    1000,
+		BindingId:   "1000000001",
+		SendSmsId:   "",
+		SmsCode:     "",
+	}
+
+	code, err = BindingPaymentRequestValidity(in)
+
+	if err != nil {
+		t.Error("测试绑定支付 '报文要素缺失' 失败")
+	} else {
+		if code != "00" {
+			t.Errorf("测试失败，应该返回‘00’，但是返回 %s", code)
+		} else {
+			t.Logf("%s", code)
+		}
+	}
+
+	in.TransAmt = 0
+	code, err = BindingPaymentRequestValidity(in)
+	if err == nil {
+		t.Error("测试绑定支付 '报文要素缺失' 失败")
+	} else {
+		t.Logf("%s", code)
+	}
+
+	in.TransAmt = 1000
+	in.SendSmsId = "100100100"
+	code, err = BindingPaymentRequestValidity(in)
+	if err == nil {
+		t.Error("测试绑定支付 '报文要素缺失' 失败")
+	} else {
+		t.Logf("%s", code)
+	}
+}
+
+func TestRefundRequestValidity(t *testing.T) {
+
 }
