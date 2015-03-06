@@ -61,6 +61,25 @@ func BindingEnquiryRequestValidity(in model.BindingEnquiryIn) (string, error) {
 		return "00", nil
 	}
 }
+
+// 绑定支付的请求报文验证
+func BindingPaymentRequestValidity(in model.BindingPaymentIn) (string, error) {
+	if in.MerOrderNum == "" || in.TransAmt == 0 || in.BindingId == "" {
+		return "200050", errors.New("报文要素缺失")
+	}
+
+	if in.TransAmt < 0 {
+		return "200180", errors.New("金额有误")
+	}
+	// 短信验证码
+	if in.SendSmsId != "" && in.SmsCode == "" {
+		return "200050", errors.New("报文要素缺失")
+	}
+
+	return "00", nil
+}
+
+// todo 根据卡BIN验证是否是银联卡
 func isUnionPayCard(cardNum string) bool {
 	return true
 }
