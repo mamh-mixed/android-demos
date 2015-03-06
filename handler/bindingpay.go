@@ -26,6 +26,8 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 		bindingCreateHandle(w, r, data)
 	case "/quickpay/bindingRemove":
 		bindingRemoveHandle(w, r, data)
+	case "/quickpay/bindingEnquiry":
+		bindingEnquiryHandle(w, r, data)
 	default:
 		w.WriteHeader(204)
 	}
@@ -88,6 +90,39 @@ func bindingRemoveHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 	} else {
 		// 验证请求报文格式
 		validityCode, validityErr := validity.BindingRemoveRequestValidity(in)
+		if validityErr != nil {
+			out.RespCode = validityCode
+			out.RespMsg = validityErr.Error()
+		} else {
+			// todo 业务处理，这里先返回OK响应码
+			out.RespCode = "000000"
+			out.RespMsg = "Success"
+		}
+	}
+	//  todo 签名并返回
+	// obj to json
+	body, err := json.Marshal(out)
+	if err != nil {
+		fmt.Fprint(w, "mashal data error")
+	} else {
+		fmt.Fprintf(w, "%s", body)
+	}
+}
+
+func bindingEnquiryHandle(w http.ResponseWriter, r *http.Request, data []byte) {
+	var (
+		in  model.BindingEnquiryIn
+		out model.BindingEnquiryOut
+		err error
+	)
+
+	err = json.Unmarshal(data, &in)
+	if err != nil {
+		out.RespCode = "200020"
+		out.RespMsg = "解析报文错误"
+	} else {
+		// 验证请求报文格式
+		validityCode, validityErr := validity.BindingEnquiryRequestValidity(in)
 		if validityErr != nil {
 			out.RespCode = validityCode
 			out.RespMsg = validityErr.Error()

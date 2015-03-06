@@ -113,3 +113,31 @@ func TestBindingRemoveHandle(t *testing.T) {
 		}
 	}
 }
+
+func TestBindingEnquiryHandle(t *testing.T) {
+	merId := "10000001"
+	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
+	body := `{"bindingId": "1000000001"}`
+	req, err := http.NewRequest("POST", url, bytes.NewBufferString(body))
+	if err != nil {
+		t.Error("创建POST请求失败")
+	} else {
+		w := httptest.NewRecorder()
+		Quickpay(w, req)
+		g.Info("%d - %s", w.Code, w.Body.String())
+		if w.Code != 200 {
+			t.Errorf("response error with status %d", w.Code)
+		}
+		var out model.BindingEnquiryOut
+		err = json.Unmarshal([]byte(w.Body.String()), &out)
+		if err != nil {
+			t.Error("Unmarshal response error")
+		} else {
+			if out.RespCode != "000000" {
+				t.Error("测试失败")
+			} else {
+				t.Log("测试OK")
+			}
+		}
+	}
+}
