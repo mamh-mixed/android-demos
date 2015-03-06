@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,31 +15,47 @@ import (
 
 // Quickpay 快捷支付入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {
+	var (
+		data []byte // 读取request请求的数据
+		out  []byte // 业务处理结束后返回的json字符串
+		err  error  //错误信息
+	)
 	g.Debug("url = %s", r.URL.Path)
 
-	data, err := ioutil.ReadAll(r.Body)
-	g.Error("read body error: ", err)
+	data, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		g.Error("read body error: ", err)
+	}
+
+	g.Debug("请求报文的内容： %s", data)
 	// 验签，如果失败，立即返回
 	// if checkSignature(data, merId)
 
 	// 执行业务逻辑
 	switch r.URL.Path {
 	case "/quickpay/bindingCreate":
-		bindingCreateHandle(w, r, data)
+		out, err = bindingCreateHandle(data)
 	case "/quickpay/bindingRemove":
-		bindingRemoveHandle(w, r, data)
+		out, err = bindingRemoveHandle(data)
 	case "/quickpay/bindingEnquiry":
-		bindingEnquiryHandle(w, r, data)
+		out, err = bindingEnquiryHandle(data)
 	case "/quickpay/bindingPayment":
-		bindingPaymentHandle(w, r, data)
+		out, err = bindingPaymentHandle(data)
 	default:
 		w.WriteHeader(204)
+	}
+	// todo 签名，并返回
+	// sign = signature(out, in.merId)
+	if err != nil {
+		fmt.Fprint(w, "mashal data error")
+	} else {
+		g.Info("响应的报文: %s", out)
+		fmt.Fprintf(w, "%s", out)
 	}
 }
 
 // 建立绑定关系
-func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
-
+func bindingCreateHandle(data []byte) ([]byte, error) {
 	// json to obj
 	var (
 		in  model.BindingCreateIn
@@ -68,20 +85,17 @@ func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 		out.RespMsg = validityErr.Error()
 	}
 
-	// 签名，并返回
-	// sign = signature(out, in.merId)
-
 	// obj to json
 	body, err := json.Marshal(out)
 	if err != nil {
-		fmt.Fprint(w, "mashal data error")
+		return nil, errors.New("mashal data error")
 	} else {
-		fmt.Fprintf(w, "%s", body)
+		return body, nil
 	}
 }
 
 // 解除绑定关系
-func bindingRemoveHandle(w http.ResponseWriter, r *http.Request, data []byte) {
+func bindingRemoveHandle(data []byte) ([]byte, error) {
 	var (
 		in  model.BindingRemoveIn
 		out model.BindingRemoveOut
@@ -104,18 +118,17 @@ func bindingRemoveHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 			out.RespMsg = "Success"
 		}
 	}
-	//  todo 签名并返回
 	// obj to json
 	body, err := json.Marshal(out)
 	if err != nil {
-		fmt.Fprint(w, "mashal data error")
+		return nil, errors.New("mashal data error")
 	} else {
-		fmt.Fprintf(w, "%s", body)
+		return body, nil
 	}
 }
 
 // 查询绑定关系
-func bindingEnquiryHandle(w http.ResponseWriter, r *http.Request, data []byte) {
+func bindingEnquiryHandle(data []byte) ([]byte, error) {
 	var (
 		in  model.BindingEnquiryIn
 		out model.BindingEnquiryOut
@@ -142,14 +155,14 @@ func bindingEnquiryHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 	// obj to json
 	body, err := json.Marshal(out)
 	if err != nil {
-		fmt.Fprint(w, "mashal data error")
+		return nil, errors.New("mashal data error")
 	} else {
-		fmt.Fprintf(w, "%s", body)
+		return body, nil
 	}
 }
 
 // 绑定支付关系
-func bindingPaymentHandle(w http.ResponseWriter, r *http.Request, data []byte) {
+func bindingPaymentHandle(data []byte) ([]byte, error) {
 	var (
 		in  model.BindingPaymentIn
 		out model.BindingPaymentOut
@@ -158,7 +171,7 @@ func bindingPaymentHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 
 	err = json.Unmarshal(data, &in)
 	if err != nil {
-		g.Error("Unmarshal request body error msg: %s", err.Error())
+		g.Error("Unmarshal request body error msg: ", err.Error())
 		out.RespCode = "200020"
 		out.RespMsg = "解析报文错误"
 	} else {
@@ -177,8 +190,8 @@ func bindingPaymentHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 	// obj to json
 	body, err := json.Marshal(out)
 	if err != nil {
-		fmt.Fprint(w, "mashal data error")
+		return nil, errors.New("mashal data error")
 	} else {
-		fmt.Fprintf(w, "%s", body)
+		return body, nil
 	}
 }
