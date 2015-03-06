@@ -31,5 +31,5 @@ type Bindingpay interface {
 
 // GetBindingpayChannel 根据渠道 Id 取渠道对象
 func GetBindingpayChannel(c string) Bindingpay {
-	return &Chinapay{}
+	return &ChinaPayment{}
 }

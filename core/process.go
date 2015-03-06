@@ -13,7 +13,7 @@ func CreateBinding(in *model.BindingCreateIn) (out *model.BindingCreateOut) {
 	// 这部分可以提出一个公共模块
 
 	// 判断卡bin ，决定走哪个渠道
-	c := channel.GetBindingpayChannel("chinapayment").(*channel.Chinapay)
+	c := channel.GetBindingpayChannel("chinapayment").(*channel.ChinaPayment)
 
 	out = c.CreateBinding(in)
 
