@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"quickpay/domain"
+	"quickpay/model"
 	"quickpay/validity"
 )
 
@@ -15,7 +16,7 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	g.Debug("url = %s", r.URL.Path)
 
 	data, err := ioutil.ReadAll(r.Body)
-	g.Error("read body error: %s", err)
+	g.Error("read body error: ", err)
 	// 验签，如果失败，立即返回
 	// if checkSignature(data, merId)
 
@@ -23,7 +24,10 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/quickpay/bindingCreate":
 		bindingCreateHandle(w, r, data)
-
+	case "/quickpay/bindingRemove":
+		bindingRemoveHandle(w, r, data)
+	case "/quickpay/bindingEnquiry":
+		bindingEnquiryHandle(w, r, data)
 	default:
 		w.WriteHeader(204)
 	}
@@ -37,12 +41,13 @@ func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 	err := json.Unmarshal(data, &request)
 	if err != nil {
 		g.Error("unmashal data error \n", err)
-		fmt.Fprint(w, "unmashal data error")
+		response.RespCode = "200020"
+		response.RespMsg = "解析报文错误"
 	} else {
 		g.Debug("%+v", request)
-		response.MerBindingId = request.MerBindingId
+		response.BindingId = request.BindingId
 	}
-	// todo 验证参数
+	// 验证请求报文是否完整，格式是否正确
 	validityCode, validityErr := validity.BindingCreateRequestValidity(request)
 	if validityErr == nil {
 		// 验证参数OK
@@ -64,6 +69,72 @@ func bindingCreateHandle(w http.ResponseWriter, r *http.Request, data []byte) {
 
 	// obj to json
 	body, err := json.Marshal(response)
+	if err != nil {
+		fmt.Fprint(w, "mashal data error")
+	} else {
+		fmt.Fprintf(w, "%s", body)
+	}
+}
+
+func bindingRemoveHandle(w http.ResponseWriter, r *http.Request, data []byte) {
+	var (
+		in  model.BindingRemoveIn
+		out model.BindingRemoveOut
+		err error
+	)
+
+	err = json.Unmarshal(data, &in)
+	if err != nil {
+		out.RespCode = "200020"
+		out.RespMsg = "解析报文错误"
+	} else {
+		// 验证请求报文格式
+		validityCode, validityErr := validity.BindingRemoveRequestValidity(in)
+		if validityErr != nil {
+			out.RespCode = validityCode
+			out.RespMsg = validityErr.Error()
+		} else {
+			// todo 业务处理，这里先返回OK响应码
+			out.RespCode = "000000"
+			out.RespMsg = "Success"
+		}
+	}
+	//  todo 签名并返回
+	// obj to json
+	body, err := json.Marshal(out)
+	if err != nil {
+		fmt.Fprint(w, "mashal data error")
+	} else {
+		fmt.Fprintf(w, "%s", body)
+	}
+}
+
+func bindingEnquiryHandle(w http.ResponseWriter, r *http.Request, data []byte) {
+	var (
+		in  model.BindingEnquiryIn
+		out model.BindingEnquiryOut
+		err error
+	)
+
+	err = json.Unmarshal(data, &in)
+	if err != nil {
+		out.RespCode = "200020"
+		out.RespMsg = "解析报文错误"
+	} else {
+		// 验证请求报文格式
+		validityCode, validityErr := validity.BindingEnquiryRequestValidity(in)
+		if validityErr != nil {
+			out.RespCode = validityCode
+			out.RespMsg = validityErr.Error()
+		} else {
+			// todo 业务处理，这里先返回OK响应码
+			out.RespCode = "000000"
+			out.RespMsg = "Success"
+		}
+	}
+	//  todo 签名并返回
+	// obj to json
+	body, err := json.Marshal(out)
 	if err != nil {
 		fmt.Fprint(w, "mashal data error")
 	} else {
