@@ -3,12 +3,14 @@ package validity
 import (
 	"errors"
 	"quickpay/domain"
+	"quickpay/model"
 	"regexp"
 )
 
+//建立绑定关系的时候验证请求报文
 func BindingCreateRequestValidity(request domain.BindingCreateRequest) (string, error) {
 	cardNum := request.AcctNum
-	if request.MerBindingId == "" || request.AcctName == "" || request.AcctNum == "" || request.AcctType == "" {
+	if request.BindingId == "" || request.AcctName == "" || request.AcctNum == "" || request.AcctType == "" {
 		return "200050", errors.New("报文要素缺失")
 	}
 	if isUnionPayCard(cardNum) {
@@ -42,6 +44,14 @@ func BindingCreateRequestValidity(request domain.BindingCreateRequest) (string, 
 	return "00", nil
 }
 
+// 移除绑定关系的时候验证请求报文
+func BindingRemoveRequestValidity(in model.BindingRemoveIn) (string, error) {
+	if in.BindingId == "" {
+		return "200050", errors.New("报文要素缺失")
+	} else {
+		return "00", nil
+	}
+}
 func isUnionPayCard(cardNum string) bool {
 	return true
 }
