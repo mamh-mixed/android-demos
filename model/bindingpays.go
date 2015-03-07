@@ -1,5 +1,11 @@
 package model
 
+// BindingReturn 绑定支付返回
+type BindingReturn struct {
+	RespCode string `json:"respCode"` //响应代码
+	RespMsg  string `json:"respMsg"`  //响应信息
+}
+
 // 建立绑定支付
 type BindingCreateIn struct {
 	BindingId string `json:"bindingId"` //银行卡绑定ID
@@ -33,15 +39,9 @@ type BindingRemoveOut struct {
 	RespMsg  string `json:"respMsg"`  //响应信息
 }
 
-// 绑定关系查询请求
-type BindingEnquiryIn struct {
+// 绑定关系查询
+type BindingEnquiry struct {
 	BindingId string `json:"bindingId"` //银行卡绑定ID
-}
-
-// 绑定关系查询响应
-type BindingEnquiryOut struct {
-	RespCode string `json:"respCode"` //响应代码
-	RespMsg  string `json:"respMsg"`  //响应信息
 }
 
 // 绑定支付请求

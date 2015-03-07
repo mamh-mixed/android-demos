@@ -3,11 +3,12 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/omigo/g"
 	"net/http"
 	"net/http/httptest"
 	"quickpay/model"
 	"testing"
+
+	"github.com/omigo/g"
 )
 
 func bindingCreateRequestHandle(method, url, body string, t *testing.T) (response model.BindingCreateOut) {
@@ -85,28 +86,27 @@ func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
 	}
 }
 
-func commoneHandle(method, url, body string, t *testing.T) {
+func doPost(method, url, body string, t *testing.T) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
 	if err != nil {
 		t.Error("创建POST请求失败")
-	} else {
-		w := httptest.NewRecorder()
-		Quickpay(w, req)
-		g.Info("%d - %s", w.Code, w.Body.String())
-		if w.Code != 200 {
-			t.Errorf("response error with status %d", w.Code)
-		}
-		var out model.BindingRemoveOut
-		err = json.Unmarshal([]byte(w.Body.String()), &out)
-		if err != nil {
-			t.Error("Unmarshal response error")
-		} else {
-			if out.RespCode != "000000" {
-				t.Error("测试失败")
-			} else {
-				t.Log("测试OK")
-			}
-		}
+	}
+
+	w := httptest.NewRecorder()
+	Quickpay(w, req)
+	g.Info("%d - %s", w.Code, w.Body.String())
+	if w.Code != 200 {
+		t.Errorf("response error with status %d", w.Code)
+	}
+
+	var out model.BindingRemoveOut
+	err = json.Unmarshal([]byte(w.Body.String()), &out)
+	if err != nil {
+		t.Error("Unmarshal response error")
+	}
+
+	if out.RespCode == "" {
+		t.Error("测试失败")
 	}
 }
 
@@ -114,14 +114,14 @@ func TestBindingRemoveHandle(t *testing.T) {
 	merId := "10000001"
 	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + merId
 	body := `{"bindingId": "1000000001"}`
-	commoneHandle("POST", url, body, t)
+	doPost("POST", url, body, t)
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
 	merId := "10000001"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
 	body := `{"bindingId": "1000000001"}`
-	commoneHandle("POST", url, body, t)
+	doPost("POST", url, body, t)
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
@@ -135,5 +135,5 @@ func TestBindingPaymentHandle(t *testing.T) {
 		"sendSmsId": "",
 		"smsCode": ""
 	}`
-	commoneHandle("POST", url, body, t)
+	doPost("POST", url, body, t)
 }

@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"quickpay/core"
@@ -15,43 +14,63 @@ import (
 
 // Quickpay 快捷支付入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {
-	var (
-		data []byte // 读取request请求的数据
-		out  []byte // 业务处理结束后返回的json字符串
-		err  error  //错误信息
-	)
 	g.Debug("url = %s", r.URL.Path)
 
-	data, err = ioutil.ReadAll(r.Body)
-	if err != nil {
-		g.Error("read body error: ", err)
+	if r.Method != "POST" {
+		g.Error("methond(%s) not allowed", r.Method)
+		w.WriteHeader(405)
+		w.Write([]byte("only post method allowed"))
+		return
 	}
 
-	g.Debug("请求报文的内容： %s", data)
+	v := r.URL.Query()
+	merId := v.Get("merId")
+	if merId == "" {
+		w.WriteHeader(412)
+		w.Write([]byte("parameter merId must required"))
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		g.Error("read body error: ", err)
+		w.WriteHeader(406)
+		w.Write([]byte("can not read request body"))
+		return
+	}
+
+	data := body
+	g.Debug("商户报文: %s", data)
+
 	// 验签，如果失败，立即返回
 	// if checkSignature(data, merId)
 
 	// 执行业务逻辑
+	var ret *model.BindingReturn
 	switch r.URL.Path {
-	case "/quickpay/bindingCreate":
-		out, err = bindingCreateHandle(data)
-	case "/quickpay/bindingRemove":
-		out, err = bindingRemoveHandle(data)
+	// case "/quickpay/bindingCreate":
+	// 	ret, err = bindingCreateHandle(data)
+	// case "/quickpay/bindingRemove":
+	// 	ret, err = bindingRemoveHandle(data)
 	case "/quickpay/bindingEnquiry":
-		out, err = bindingEnquiryHandle(data)
-	case "/quickpay/bindingPayment":
-		out, err = bindingPaymentHandle(data)
+		ret = bindingEnquiryHandle(data)
+	// case "/quickpay/bindingPayment":
+	// 	ret, err = bindingPaymentHandle(data)
 	default:
-		w.WriteHeader(204)
+		w.WriteHeader(404)
 	}
-	// todo 签名，并返回
-	// sign = signature(out, in.merId)
+
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		fmt.Fprint(w, "mashal data error")
-	} else {
-		g.Info("响应的报文: %s", out)
-		fmt.Fprintf(w, "%s", out)
+		w.Write([]byte("mashal data error"))
 	}
+
+	// todo 签名，并返回
+	// sign = signature(out, merId)
+	_ = merId
+
+	rbody := rdata
+	w.Write(rbody)
 }
 
 // 建立绑定关系
@@ -128,37 +147,30 @@ func bindingRemoveHandle(data []byte) ([]byte, error) {
 }
 
 // 查询绑定关系
-func bindingEnquiryHandle(data []byte) ([]byte, error) {
-	var (
-		in  model.BindingEnquiryIn
-		out model.BindingEnquiryOut
-		err error
-	)
-
-	err = json.Unmarshal(data, &in)
+func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
+	var be model.BindingEnquiry
+	err := json.Unmarshal(data, &be)
 	if err != nil {
-		out.RespCode = "200020"
-		out.RespMsg = "解析报文错误"
-	} else {
-		// 验证请求报文格式
-		validityCode, validityErr := validity.BindingEnquiryRequestValidity(in)
-		if validityErr != nil {
-			out.RespCode = validityCode
-			out.RespMsg = validityErr.Error()
-		} else {
-			// todo 业务处理，这里先返回OK响应码
-			out.RespCode = "000000"
-			out.RespMsg = "Success"
+		ret = &model.BindingReturn{
+			RespCode: "200020",
+			RespMsg:  "解析报文错误",
 		}
+		return ret
 	}
-	//  todo 签名并返回
-	// obj to json
-	body, err := json.Marshal(out)
-	if err != nil {
-		return nil, errors.New("mashal data error")
-	} else {
-		return body, nil
+
+	// 验证请求报文格式
+	validityCode, validityErr := validity.BindingEnquiryRequestValidity(be)
+	if validityErr != nil {
+		ret = &model.BindingReturn{
+			RespCode: validityCode,
+			RespMsg:  validityErr.Error(),
+		}
+		return ret
 	}
+
+	ret = core.ProcessBindingEnquiry(&be)
+
+	return ret
 }
 
 // 绑定支付关系

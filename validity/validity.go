@@ -53,8 +53,8 @@ func BindingRemoveRequestValidity(in model.BindingRemoveIn) (string, error) {
 }
 
 // 查询绑定关系的时候验证请求报文
-func BindingEnquiryRequestValidity(in model.BindingEnquiryIn) (string, error) {
-	if in.BindingId == "" {
+func BindingEnquiryRequestValidity(be model.BindingEnquiry) (string, error) {
+	if be.BindingId == "" {
 		return "200050", errors.New("报文要素缺失")
 	} else {
 		return "00", nil

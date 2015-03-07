@@ -16,17 +16,17 @@ import (
 
 var requestURL = "https://test.china-clearing.com/Gateway/InterfaceII"
 
-// Request 中金渠道请求报文
-type Request struct {
+// ChinaPaymentRequest 中金渠道请求报文
+type ChinaPaymentRequest struct {
 	Version string `xml:"version,attr,omitempty"`
 	Head    requestHead
 	Body    requestBody
 }
 
-// Response 中金渠道返回报文
-type Response struct {
-	Head responseHead
-	Body responseBody
+// ChinaPaymentResponse 中金渠道返回报文
+type ChinaPaymentResponse struct {
+	Head respHead
+	Body respBody
 }
 
 // common request head
@@ -57,14 +57,14 @@ type requestBody struct {
 	Date                 string `xml:",omitempty"` //对账日期,格式:YYYY-MM-DD
 }
 
-// common response head
-type responseHead struct {
+// common resp head
+type respHead struct {
 	Code    string
 	Message string
 }
 
-// common response body
-type responseBody struct {
+// common resp body
+type respBody struct {
 	InstitutionID   string //机构编号
 	TxSNBinding     string //绑定流水号
 	Status          int8   //交易状态
@@ -98,203 +98,125 @@ type Tx struct {
 type ChinaPayment struct {
 }
 
-// CreateBinding 绑定关系请求
-func (c *ChinaPayment) CreateBinding(in *model.BindingCreateIn) *model.BindingCreateOut {
-
-	// 将参数转化为Request
-	request := Request{
+// ProcessBindingEnquiry 查询绑定关系
+func (c *ChinaPayment) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
+	// 将参数转化为ChinaPaymentRequest
+	req := &ChinaPaymentRequest{
 		Version: "2.0",
 		Head: requestHead{
 			InstitutionID: "001405", //测试ID
-			TxCode:        "2501",
+			TxCode:        "2502",
 		},
 		Body: requestBody{
-			TxSNBinding:          "15030622072014626553",
-			BankID:               "700",
-			AccountName:          "张三",
-			AccountNumber:        "1503063124684673",
-			IdentificationType:   "0",
-			IdentificationNumber: "1503063937742309",
-			PhoneNumber:          "13333333333",
-			CardType:             "10",
+			TxSNBinding: be.BindingId,
 		},
 	}
 
-	// 提交
-	response := c.send(request)
+	// 向中金发起请求
+	resp := c.sendRequest(req)
 
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.BindingCreateOut{
-		BindingId: `13213`,
-		RespCode:  response.Body.ResponseCode,
-		RespMsg:   response.Body.ResponseMessage,
+	// 应答码转换。。。
+
+	ret = &model.BindingReturn{
+		RespCode: resp.Head.Code,
+		RespMsg:  resp.Head.Message,
 	}
-	return &channelRes
+	return ret
 }
 
-// QueryBinding 查询绑定关系
-func (c *ChinaPayment) QueryBinding() *model.ChannelRes {
-	// 将参数转化为Request
-	request := Request{}
-
-	// 提交
-	response := c.send(request)
-
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.ChannelRes{"000000", response}
-	return &channelRes
-}
-
-// QuickPay 快捷支付
-func (c *ChinaPayment) QuickPay() *model.ChannelRes {
-	// 将参数转化为Request
-	request := Request{}
-
-	// 提交
-	response := c.send(request)
-
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.ChannelRes{"000000", response}
-	return &channelRes
-}
-
-// QuickPayQuery 快捷支付查询
-func (c *ChinaPayment) QuickPayQuery() *model.ChannelRes {
-	// 将参数转化为Request
-	request := Request{}
-
-	// 提交
-	response := c.send(request)
-
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.ChannelRes{"000000", response}
-	return &channelRes
-}
-
-// QuickPayRefund 快捷支付退款
-func (c *ChinaPayment) QuickPayRefund() *model.ChannelRes {
-	// 将参数转化为Request
-	request := Request{}
-
-	// 提交
-	response := c.send(request)
-
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.ChannelRes{"000000", response}
-	return &channelRes
-}
-
-// QuickPayRefundQuery 快捷支付退款查询
-func (c *ChinaPayment) QuickPayRefundQuery() *model.ChannelRes {
-	// 将参数转化为Request
-	request := Request{}
-
-	// 提交
-	response := c.send(request)
-
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.ChannelRes{"000000", response}
-	return &channelRes
-}
-
-// TradePayments 交易对账单
-func (c *ChinaPayment) TradePayments() *model.ChannelRes {
-	// 将参数转化为Request
-	request := Request{}
-
-	// 提交
-	response := c.send(request)
-
-	//对返回值处理...
-	// handledResponse(response)
-	//TODO
-	channelRes := model.ChannelRes{"000000", response}
-	return &channelRes
-}
-
-// ChinaPaymentSignature 中金支付渠道签名
-// message  采用Base64编码
-// signature 采用Sha1WithRsa签名后用Hex编码
-func ChinaPaymentSignature(data Request) (message, signature string) {
-	// to xml
-	xmlBytes := tools.ToXML(data)
-
-	g.Debug("transfer data into xml : (%s)", xmlBytes)
-
-	return tools.EncodeBase64(xmlBytes), tools.EncodeHex(tools.SignatureUseSha1WithRsa(xmlBytes))
-}
-
-// CheckChinaPaymentSignature 中金支付渠道验签
-func (c *ChinaPayment) CheckChinaPaymentSignature(b64Data, hexSign string) (bool, []byte) {
-	g.Debug("data: %s", b64Data)
-	g.Debug("sign: %s", hexSign)
-
-	signed, _ := base64.StdEncoding.DecodeString(b64Data)
-
-	err := tools.CheckSignatureUseSha1WithRsa(signed, hexSign)
-	if err != nil {
-		g.Error("signature error ", err)
-	}
-
-	return err == nil, signed
-}
-
-// send 对中金接口访问的统一处理
-func (c *ChinaPayment) send(request Request) *Response {
-
-	// 数据处理、加密、签名
-	message, signature := ChinaPaymentSignature(request)
-	g.Debug("signature: %s", signature)
-
-	// 准备参数、提交
-	param := url.Values{}
-	param.Add("message", message)
-	param.Add("signature", signature)
-
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{Transport: tr}
-	resp, err := client.PostForm(requestURL, param)
-
-	if err != nil {
-		g.Error("unable to connect ChinaPayment gratway  (%s)", err)
-	}
-
-	base64body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		g.Error("unable to read from response (%s)", err)
-	}
-	g.Debug("response: [%s]", base64body)
-
-	result := strings.Split(string(base64body), ",")
-	result[1] = strings.TrimSpace(result[1])
-	g.Debug("response data (message: %s, signature: %s)", result[0], result[1])
-	// 暂时不验签
-	_, bodys := c.CheckChinaPaymentSignature(result[0], result[1])
-
-	response := Response{}
-
-	err = xml.Unmarshal(bodys, &response)
-	if err != nil {
-		g.Error("unable to unmarshal xml (%s)", err)
-	}
-
-	if err != nil {
+// sendRequest 对中金接口访问的统一处理
+func (c *ChinaPayment) sendRequest(req *ChinaPaymentRequest) *ChinaPaymentResponse {
+	values := c.prepareRequestData(req)
+	if values == nil {
 		return nil
 	}
 
-	return &response
+	body := c.send(values)
+	if body == nil {
+		return nil
+	}
+
+	return c.processResponseBody(body)
+}
+
+func (c *ChinaPayment) prepareRequestData(req *ChinaPaymentRequest) (v *url.Values) {
+	// xml 编组
+	xmlBytes, err := xml.Marshal(req)
+	if err != nil {
+		g.Error("unable to marshal xml:", err)
+		return nil
+	}
+	g.Debug("请求报文: %s", xmlBytes)
+
+	// 对 xml 作 base64 编码
+	b64Str := base64.StdEncoding.EncodeToString(xmlBytes)
+	g.Trace("base64: %s", b64Str)
+
+	// 对 xml 签名
+	hexSign := tools.SignatureUseSha1WithRsa(xmlBytes)
+	g.Debug("请求签名: %s", hexSign)
+
+	// 准备参数
+	v = &url.Values{}
+	v.Add("message", b64Str)
+	v.Add("signature", hexSign)
+
+	return v
+}
+
+func (c *ChinaPayment) send(v *url.Values) (body []byte) {
+
+	// 发送请求
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true, // only for testing
+		},
+	}
+	client := &http.Client{Transport: tr}
+	ret, err := client.PostForm(requestURL, *v)
+	if err != nil {
+		g.Error("unable to connect ChinaPayment gratway ", err)
+		return nil
+	}
+
+	// 处理返回报文
+	body, err = ioutil.ReadAll(ret.Body)
+	if err != nil {
+		g.Error("unable to read from resp ", err)
+		return nil
+	}
+	g.Trace("resp: [%s]", body)
+
+	return body
+}
+
+func (c *ChinaPayment) processResponseBody(body []byte) (resp *ChinaPaymentResponse) {
+	// 得到报文和签名
+	result := strings.Split(string(body), ",")
+	rb64Str := strings.TrimSpace(result[0])
+	// 数据 base64 解码
+	rxmlBytes, err := base64.StdEncoding.DecodeString(rb64Str)
+	if err != nil {
+		g.Error("unable to decode base64 content ", err)
+	}
+	g.Debug("返回报文: %s", rxmlBytes)
+
+	// 验签
+	rhexSign := strings.TrimSpace(result[1])
+	g.Debug("返回签名: %s", rhexSign)
+	err = tools.CheckSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
+	if err != nil {
+		g.Error("check sign failed ", err)
+		return nil
+	}
+
+	// 解编 xml
+	resp = new(ChinaPaymentResponse)
+	err = xml.Unmarshal(rxmlBytes, resp)
+	if err != nil {
+		g.Error("unable to unmarshal xml ", err)
+		return nil
+	}
+
+	return resp
 }

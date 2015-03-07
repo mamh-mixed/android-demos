@@ -91,16 +91,16 @@ func init() {
 	}
 }
 
-// SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名
-func SignatureUseSha1WithRsa(origin []byte) []byte {
+// SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名
+func SignatureUseSha1WithRsa(origin []byte) string {
 	hashed := sha1.Sum(origin)
 
-	sgin, err := rsa.SignPKCS1v15(rand.Reader, chinaPaymentPriKey, crypto.SHA1, hashed[:])
+	sign, err := rsa.SignPKCS1v15(rand.Reader, chinaPaymentPriKey, crypto.SHA1, hashed[:])
 	if err != nil {
 		g.Error("fail to sign with Sha1WithRsa ", err)
 	}
 
-	return sgin
+	return hex.EncodeToString(sign)
 }
 
 // CheckSignatureUseSha1WithRsa 通过证书用 SHA1WithRSA 验签，如果验签通过，err 值为 nil
