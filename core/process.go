@@ -1,7 +1,7 @@
 package core
 
 import (
-	"quickpay/channel"
+	"quickpay/channel/cfca"
 	"quickpay/model"
 )
 
@@ -15,9 +15,6 @@ func CreateBinding(in *model.BindingCreateIn) (out *model.BindingCreateOut) {
 	// 这部分可以提出一个公共模块
 
 	// 判断卡bin ，决定走哪个渠道
-	c := channel.GetBindingPaymentChannel("chinapayment").(*channel.ChinaPayment)
-
-	_ = c
 
 	return out
 }
@@ -28,9 +25,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 本地查询绑定关系
 	// merId = ass.merId
 
-	c := GetChannelByBindingId(be.BindingId)
-
-	ret = c.ProcessBindingEnquiry(be)
+	ret = cfca.ProcessBindingEnquiry(be)
 
 	// post process
 

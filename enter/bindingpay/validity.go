@@ -1,4 +1,4 @@
-package validity
+package bindingpay
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 )
 
 //建立绑定关系的时候验证请求报文
-func BindingCreateRequestValidity(request model.BindingCreateIn) (string, error) {
+func bindingCreateRequestValidity(request model.BindingCreateIn) (string, error) {
 	cardNum := request.AcctNum
 	if request.BindingId == "" || request.AcctName == "" || request.AcctNum == "" || request.AcctType == "" {
 		return "200050", errors.New("报文要素缺失")
@@ -44,7 +44,7 @@ func BindingCreateRequestValidity(request model.BindingCreateIn) (string, error)
 }
 
 // 移除绑定关系的时候验证请求报文
-func BindingRemoveRequestValidity(in model.BindingRemoveIn) (string, error) {
+func bindingRemoveRequestValidity(in model.BindingRemoveIn) (string, error) {
 	if in.BindingId == "" {
 		return "200050", errors.New("报文要素缺失")
 	} else {
@@ -53,7 +53,7 @@ func BindingRemoveRequestValidity(in model.BindingRemoveIn) (string, error) {
 }
 
 // 查询绑定关系的时候验证请求报文
-func BindingEnquiryRequestValidity(be model.BindingEnquiry) (string, error) {
+func bindingEnquiryRequestValidity(be model.BindingEnquiry) (string, error) {
 	if be.BindingId == "" {
 		return "200050", errors.New("报文要素缺失")
 	} else {
@@ -62,7 +62,7 @@ func BindingEnquiryRequestValidity(be model.BindingEnquiry) (string, error) {
 }
 
 // 绑定支付的请求报文验证
-func BindingPaymentRequestValidity(in model.BindingPaymentIn) (string, error) {
+func bindingPaymentRequestValidity(in model.BindingPaymentIn) (string, error) {
 	if in.MerOrderNum == "" || in.TransAmt == 0 || in.BindingId == "" {
 		return "200050", errors.New("报文要素缺失")
 	}
@@ -79,7 +79,7 @@ func BindingPaymentRequestValidity(in model.BindingPaymentIn) (string, error) {
 }
 
 // 退款请求报文验证
-func RefundRequestValidity(in model.RefundIn) (string, error) {
+func refundRequestValidity(in model.RefundIn) (string, error) {
 	if in.MerOrderNum == "" || in.OrigOrderNum == "" || in.TransAmt == 0 {
 		return "200050", errors.New("报文要素缺失")
 	}

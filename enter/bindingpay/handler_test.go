@@ -1,4 +1,4 @@
-package handler
+package bindingpay
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ func bindingCreateRequestHandle(method, url, body string, t *testing.T) (respons
 	// req.Header.Set("X-Signature", sign)
 
 	w := httptest.NewRecorder()
-	Quickpay(w, req)
+	BindingPay(w, req)
 
 	g.Info("%d - %s", w.Code, w.Body.String())
 
@@ -93,7 +93,7 @@ func doPost(method, url, body string, t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	Quickpay(w, req)
+	BindingPay(w, req)
 	g.Info("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)

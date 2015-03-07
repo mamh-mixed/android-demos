@@ -1,4 +1,4 @@
-package handler
+package bindingpay
 
 import (
 	"encoding/json"
@@ -7,13 +7,12 @@ import (
 	"net/http"
 	"quickpay/core"
 	"quickpay/model"
-	"quickpay/validity"
 
 	"github.com/omigo/g"
 )
 
-// Quickpay 快捷支付入口
-func Quickpay(w http.ResponseWriter, r *http.Request) {
+// BindingPay 绑定支付入口
+func BindingPay(w http.ResponseWriter, r *http.Request) {
 	g.Debug("url = %s", r.URL.Path)
 
 	if r.Method != "POST" {
@@ -90,7 +89,7 @@ func bindingCreateHandle(data []byte) ([]byte, error) {
 		out.BindingId = in.BindingId
 	}
 	// 验证请求报文是否完整，格式是否正确
-	validityCode, validityErr := validity.BindingCreateRequestValidity(in)
+	validityCode, validityErr := bindingCreateRequestValidity(in)
 	if validityErr == nil {
 		// 验证参数OK
 
@@ -127,7 +126,7 @@ func bindingRemoveHandle(data []byte) ([]byte, error) {
 		out.RespMsg = "解析报文错误"
 	} else {
 		// 验证请求报文格式
-		validityCode, validityErr := validity.BindingRemoveRequestValidity(in)
+		validityCode, validityErr := bindingRemoveRequestValidity(in)
 		if validityErr != nil {
 			out.RespCode = validityCode
 			out.RespMsg = validityErr.Error()
@@ -159,7 +158,7 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 	}
 
 	// 验证请求报文格式
-	validityCode, validityErr := validity.BindingEnquiryRequestValidity(be)
+	validityCode, validityErr := bindingEnquiryRequestValidity(be)
 	if validityErr != nil {
 		ret = &model.BindingReturn{
 			RespCode: validityCode,
@@ -188,7 +187,7 @@ func bindingPaymentHandle(data []byte) ([]byte, error) {
 		out.RespMsg = "解析报文错误"
 	} else {
 		// 验证请求报文格式
-		validityCode, validityErr := validity.BindingPaymentRequestValidity(in)
+		validityCode, validityErr := bindingPaymentRequestValidity(in)
 		if validityErr != nil {
 			out.RespCode = validityCode
 			out.RespMsg = validityErr.Error()
