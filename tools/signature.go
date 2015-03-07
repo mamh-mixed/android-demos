@@ -15,10 +15,8 @@ import (
 	"github.com/omigo/g"
 )
 
-var privateKey *rsa.PrivateKey
-
 const (
-	privKeyPEM = `-----BEGIN RSA PRIVATE KEY-----
+	priKeyPem = `-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCvJC9MMGRKmxRBI0KMjDtz2KooIc6XOljHPWhTfAamhV3A5v5y
 PiZr4haMDpulU08Y0JxsegwDwfbscQrhG7nvilIqIa+HiI1xkfFxjtNUrMN5hpvO
 8HUUfwqzb5EdllQcv/C0xxBkeCECIb86JJry7ty4mNBkN2idbGxldMi90QIDAQAB
@@ -34,7 +32,7 @@ fRtwnqPlqZaoJQcTUMECQQD1Dh+Mu3OMb5AHnrtbk9l1qjM3U81QBKdyF0RY+djo
 b3cR9I7+hurpqhJmQ7yuvAWe2xWc+YNTQ48FDJTogXlB
 -----END RSA PRIVATE KEY-----`
 
-	asn1Data = `-----BEGIN CERTIFICATE-----
+	certPem = `-----BEGIN CERTIFICATE-----
 MIIDrTCCAxagAwIBAgIQKYs1sciDjU/yBDKECiqedDANBgkqhkiG9w0BAQUFADAk
 MQswCQYDVQQGEwJDTjEVMBMGA1UEChMMQ0ZDQSBURVNUIENBMB4XDTEyMDgyODAy
 NTc1N1oXDTE0MDYyODAyNTc1N1owczELMAkGA1UEBhMCQ04xFTATBgNVBAoTDENG
@@ -58,75 +56,76 @@ ikahaQLV1atGk63K701Jtj061/jqkF2/Drv6FY+Uy+Rn
 -----END CERTIFICATE-----`
 )
 
+var chinaPaymentPriKey *rsa.PrivateKey
+var chinaPaymentCert *x509.Certificate
+
+// 读私钥
 func init() {
-
-	pemBlock, _ := pem.Decode([]byte(privKeyPEM))
-	if pemBlock == nil {
-		g.Error("private key wrong (%s)", pemBlock)
-	}
-	privateKey, _ = x509.ParsePKCS1PrivateKey(pemBlock.Bytes)
-	// loadCer()
-	// privateKey, _ = rsa.GenerateKey(rand.Reader, 1024)
-}
-
-// ChinaPaySignature 中金支付渠道签名
-// message  采用Base64编码
-// signature 采用Sha1WithRsa签名后用Hex编码
-func ChinaPaySignature(data string) (message, signature string) {
-	// to xml
-	xmlBytes := ToXML(data)
-
-	return EncodeBase64(xmlBytes), EncodeHex(SignatureUseSha1WithRsa(xmlBytes))
-}
-
-// SignatureUseSha1WithRsa 使用 SHA1WithRSA 私钥签名
-func SignatureUseSha1WithRsa(data []byte) []byte {
-	// hasded
-	h := sha1.New()
-	h.Write(data)
-	hashed := h.Sum(nil)
-	// sign
-	sgined, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA1, hashed)
-
-	if err != nil {
-		g.Error("fail to sign with Sha1WithRsa ", err)
-	}
-	return sgined
-}
-
-// CheckSignatureUseSha1WithRsa 使用 SHA1WithRSA 公钥验签
-func CheckSignatureUseSha1WithRsa(signed, signature []byte) error {
-
-	PEMBlock, _ := pem.Decode([]byte(asn1Data))
+	PEMBlock, _ := pem.Decode([]byte(priKeyPem))
 	if PEMBlock == nil {
-		log.Fatal("Could not parse Public Key PEM")
+		g.Fatal("Could not parse Rsa Private Key PEM")
+	}
+	if PEMBlock.Type != "RSA PRIVATE KEY" {
+		g.Fatal("Found wrong key type" + PEMBlock.Type)
+	}
+	var err error
+	chinaPaymentPriKey, err = x509.ParsePKCS1PrivateKey(PEMBlock.Bytes)
+	if err != nil {
+		g.Fatal("", err)
+	}
+}
+
+// 读证书
+func init() {
+	PEMBlock, _ := pem.Decode([]byte(certPem))
+	if PEMBlock == nil {
+		log.Fatal("Could not parse Certificate PEM")
 	}
 	if PEMBlock.Type != "CERTIFICATE" {
 		log.Fatal("Found wrong key type" + PEMBlock.Type)
 	}
-	cert, err := x509.ParseCertificate(PEMBlock.Bytes)
+	var err error
+	chinaPaymentCert, err = x509.ParseCertificate(PEMBlock.Bytes)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
 
-	err = cert.CheckSignature(x509.SHA1WithRSA, signed, signature)
+// SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名
+func SignatureUseSha1WithRsa(origin []byte) []byte {
+	hashed := sha1.Sum(origin)
+
+	sgin, err := rsa.SignPKCS1v15(rand.Reader, chinaPaymentPriKey, crypto.SHA1, hashed[:])
+	if err != nil {
+		g.Error("fail to sign with Sha1WithRsa ", err)
+	}
+
+	return sgin
+}
+
+// CheckSignatureUseSha1WithRsa 通过证书用 SHA1WithRSA 验签，如果验签通过，err 值为 nil
+func CheckSignatureUseSha1WithRsa(origin []byte, hexSign string) (err error) {
+	sign, herr := hex.DecodeString(hexSign)
+	if err != nil {
+		g.Error("hex decode error ", herr)
+	}
+
+	err = chinaPaymentCert.CheckSignature(x509.SHA1WithRSA, origin, sign)
 	if err != nil {
 		g.Error("signature error ", err)
 	}
 	return err
 }
 
-// SignatureUseSha1 使用 SHA1 算法签名， sha1(data + "//" + key).Hex()
+// SignatureUseSha1 使用 SHA1 算法签名， sha1(data + key).Hex()
 func SignatureUseSha1(data, key string) string {
-	log.Println("SignatureUseSha1")
 	s := sha1.New()
 	io.WriteString(s, data+key)
 	return hex.EncodeToString(s.Sum(nil))
 }
 
-// CheckSignatureUseSha1 使用 SHA1 算法验签， sha1(data + "//" + key).Hex()
+// CheckSignatureUseSha1 使用 SHA1 算法验签， sha1(data + key).Hex()
 func CheckSignatureUseSha1(data, key, signature string) bool {
-	log.Println("CheckSignatureUseSha1")
 	result := SignatureUseSha1(data, key)
 	return strings.EqualFold(result, signature)
 }

@@ -3,7 +3,6 @@ package channel
 import (
 	"crypto/tls"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/xml"
 	"io/ioutil"
 	"net/http"
@@ -243,11 +242,10 @@ func (c *ChinaPayment) CheckChinaPaymentSignature(b64Data, hexSign string) (bool
 	g.Debug("sign: %s", hexSign)
 
 	signed, _ := base64.StdEncoding.DecodeString(b64Data)
-	signature, _ := hex.DecodeString(hexSign)
 
-	err := tools.CheckSignatureUseSha1WithRsa(signed, signature)
+	err := tools.CheckSignatureUseSha1WithRsa(signed, hexSign)
 	if err != nil {
-		g.Error("signature error %#v", err)
+		g.Error("signature error ", err)
 	}
 
 	return err == nil, signed
@@ -258,6 +256,7 @@ func (c *ChinaPayment) send(request Request) *Response {
 
 	// 数据处理、加密、签名
 	message, signature := ChinaPaymentSignature(request)
+	g.Debug("signature: %s", signature)
 
 	// 准备参数、提交
 	param := url.Values{}
