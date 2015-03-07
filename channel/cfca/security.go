@@ -1,4 +1,4 @@
-package tools
+package cfca
 
 import (
 	"crypto"
@@ -8,9 +8,7 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/pem"
-	"io"
 	"log"
-	"strings"
 
 	"github.com/omigo/g"
 )
@@ -92,7 +90,7 @@ func init() {
 }
 
 // SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名
-func SignatureUseSha1WithRsa(origin []byte) string {
+func signatureUseSha1WithRsa(origin []byte) string {
 	hashed := sha1.Sum(origin)
 
 	sign, err := rsa.SignPKCS1v15(rand.Reader, chinaPaymentPriKey, crypto.SHA1, hashed[:])
@@ -104,7 +102,7 @@ func SignatureUseSha1WithRsa(origin []byte) string {
 }
 
 // CheckSignatureUseSha1WithRsa 通过证书用 SHA1WithRSA 验签，如果验签通过，err 值为 nil
-func CheckSignatureUseSha1WithRsa(origin []byte, hexSign string) (err error) {
+func checkSignatureUseSha1WithRsa(origin []byte, hexSign string) (err error) {
 	sign, herr := hex.DecodeString(hexSign)
 	if err != nil {
 		g.Error("hex decode error ", herr)
@@ -115,17 +113,4 @@ func CheckSignatureUseSha1WithRsa(origin []byte, hexSign string) (err error) {
 		g.Error("signature error ", err)
 	}
 	return err
-}
-
-// SignatureUseSha1 使用 SHA1 算法签名， sha1(data + key).Hex()
-func SignatureUseSha1(data, key string) string {
-	s := sha1.New()
-	io.WriteString(s, data+key)
-	return hex.EncodeToString(s.Sum(nil))
-}
-
-// CheckSignatureUseSha1 使用 SHA1 算法验签， sha1(data + key).Hex()
-func CheckSignatureUseSha1(data, key, signature string) bool {
-	result := SignatureUseSha1(data, key)
-	return strings.EqualFold(result, signature)
 }

@@ -3,13 +3,12 @@ package main
 import (
 	"log"
 	"net/http"
-	"quickpay/handler"
+	"quickpay/enter/bindingpay"
 
 	"github.com/omigo/g"
 )
 
 // test
-
 
 func main() {
 	// 日志输出级别
@@ -20,7 +19,7 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
 
-	http.HandleFunc("/quickpay/", handler.Quickpay)
+	http.HandleFunc("/quickpay/", bindingpay.BindingPay)
 
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
