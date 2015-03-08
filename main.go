@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"quickpay/enter/bindingpay"
+	"quickpay/entrance/bindingpay"
 
 	"github.com/omigo/g"
 )
