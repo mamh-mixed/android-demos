@@ -13,6 +13,8 @@ import (
 	"github.com/omigo/g"
 )
 
+var requestURL = "https://test.china-clearing.com/Gateway/InterfaceII"
+
 const (
 	cfca_ev_oca_crt = `-----BEGIN CERTIFICATE-----
 MIIFTjCCAzagAwIBAgIGALTPlDJmMA0GCSqGSIb3DQEBCwUAMFYxCzAJBgNVBAYTAkNOMTAwLgYD
@@ -89,7 +91,7 @@ func init() {
 }
 
 // sendRequest 对中金接口访问的统一处理
-func sendRequest(req *CfcaRequest) *CfcaResponse {
+func sendRequest(req *BindingRequest) *BindingResponse {
 	values := prepareRequestData(req)
 	if values == nil {
 		return nil
@@ -103,7 +105,7 @@ func sendRequest(req *CfcaRequest) *CfcaResponse {
 	return processResponseBody(body)
 }
 
-func prepareRequestData(req *CfcaRequest) (v *url.Values) {
+func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	// xml 编组
 	xmlBytes, err := xml.Marshal(req)
 	if err != nil {
@@ -146,7 +148,7 @@ func send(v *url.Values) (body []byte) {
 	return body
 }
 
-func processResponseBody(body []byte) (resp *CfcaResponse) {
+func processResponseBody(body []byte) (resp *BindingResponse) {
 	// 得到报文和签名
 	result := strings.Split(string(body), ",")
 	rb64Str := strings.TrimSpace(result[0])
@@ -167,7 +169,7 @@ func processResponseBody(body []byte) (resp *CfcaResponse) {
 	}
 
 	// 解编 xml
-	resp = new(CfcaResponse)
+	resp = new(BindingResponse)
 	err = xml.Unmarshal(rxmlBytes, resp)
 	if err != nil {
 		g.Error("unable to unmarshal xml ", err)
