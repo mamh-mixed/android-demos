@@ -11,7 +11,7 @@ import (
 	"github.com/omigo/g"
 )
 
-func bindingCreateRequestHandle(method, url, body string, t *testing.T) (response model.BindingCreateOut) {
+func bindingCreateRequestHandle(method, url, body string, t *testing.T) (response model.BindingReturn) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
 	if err != nil {
 		g.Fatal("", err)
@@ -99,7 +99,7 @@ func doPost(method, url, body string, t *testing.T) {
 		t.Errorf("response error with status %d", w.Code)
 	}
 
-	var out model.BindingRemoveOut
+	var out model.BindingReturn
 	err = json.Unmarshal([]byte(w.Body.String()), &out)
 	if err != nil {
 		t.Error("Unmarshal response error")

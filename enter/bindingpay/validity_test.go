@@ -8,7 +8,7 @@ import (
 )
 
 func TestBindingCreateRequestValidity(t *testing.T) {
-	request := model.BindingCreateIn{}
+	request := model.BindingCreate{}
 	code, msg := bindingCreateRequestValidity(request)
 	if code != "200050" {
 		g.Error("\n", "验证 '报文要素缺失' 失败")
@@ -73,7 +73,7 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 
 func TestBindingRemoveRequestValidity(t *testing.T) {
 	var (
-		in   model.BindingRemoveIn
+		in   model.BindingRemove
 		code string
 		err  error
 	)
@@ -99,7 +99,7 @@ func TestBindingPaymentRequestValidity(t *testing.T) {
 		code string
 		err  error
 	)
-	in := model.BindingPaymentIn{
+	in := model.BindingPayment{
 		SubMerId:    "",
 		MerOrderNum: "1000000003",
 		TransAmt:    1000,

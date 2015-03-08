@@ -22,6 +22,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// merId 可以放到 json 里
 	v := r.URL.Query()
 	merId := v.Get("merId")
 	if merId == "" {
@@ -76,8 +77,8 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 func bindingCreateHandle(data []byte) ([]byte, error) {
 	// json to obj
 	var (
-		in  model.BindingCreateIn
-		out = &model.BindingCreateOut{}
+		in  model.BindingCreate
+		out = &model.BindingReturn{}
 	)
 	err := json.Unmarshal(data, &in)
 	if err != nil {
@@ -94,9 +95,9 @@ func bindingCreateHandle(data []byte) ([]byte, error) {
 		// 验证参数OK
 
 		// 业务处理
-		out2 := core.CreateBinding(&in)
-		out.RespCode = out2.RespCode
-		out.RespMsg = out2.RespMsg
+		// out2 := core.CreateBinding(&in)
+		// out.RespCode = out2.RespCode
+		// out.RespMsg = out2.RespMsg
 	} else {
 		// 验证参数失败
 		out.RespCode = validityCode
@@ -115,8 +116,8 @@ func bindingCreateHandle(data []byte) ([]byte, error) {
 // 解除绑定关系
 func bindingRemoveHandle(data []byte) ([]byte, error) {
 	var (
-		in  model.BindingRemoveIn
-		out model.BindingRemoveOut
+		in  model.BindingRemove
+		out model.BindingReturn
 		err error
 	)
 
@@ -175,8 +176,8 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 // 绑定支付关系
 func bindingPaymentHandle(data []byte) ([]byte, error) {
 	var (
-		in  model.BindingPaymentIn
-		out model.BindingPaymentOut
+		in  model.BindingPayment
+		out model.BindingReturn
 		err error
 	)
 
