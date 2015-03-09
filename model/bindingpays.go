@@ -22,6 +22,15 @@ type BindingReturn struct {
 	// 查询订单状态
 	OrigRespCode string `json:"origRespCode,omitempty"` //原交易响应代码
 	// OrigTransDetail object `json:"origTransDetail,omitempty"` //原交易明细信息
+
+}
+
+//bindingReturn的构造函数
+func NewBindingReturn(code, msg string) (ret *BindingReturn) {
+	return &BindingReturn{
+		RespCode: code,
+		RespMsg:  msg,
+	}
 }
 
 // BindingCreate 建立绑定支付
