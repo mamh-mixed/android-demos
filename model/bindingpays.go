@@ -83,3 +83,20 @@ type OrderEnquiry struct {
 	OrderNum     string `json:"orderNum"`     //原网关订单号
 	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
 }
+
+// 无卡直接支付
+type NoTrackPayment struct {
+	SubMerId    string `json:"subMerId"`    // 子商户号
+	MerOrderNum string `json:"merOrderNum"` // 商户订单号
+	TransAmt    int    `json:"transAmt"`    // 支付金额
+	AcctName    string `json:"acctName"`    // 账户名称
+	AcctNum     string `json:"acctNum"`     // 账户号码
+	IdentType   string `json:"identType"`   // 证件类型
+	IdentNum    string `json:"identNum"`    // 证件号码
+	PhoneNum    string `json:"phoneNum"`    // 手机号
+	AcctType    string `json:"acctType"`    // 账户类型
+	ValidDate   string `json:"validDate"`   // 信用卡有限期
+	Cvv2        string `json:"cvv2"`        // CVV2
+	SendSmsId   string `json:"sendSmsId"`   // 发送短信验证码的交易流水
+	SmsCode     string `json:"smsCode"`     // 短信验证码
+}

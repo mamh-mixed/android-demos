@@ -51,7 +51,7 @@ func TestBindingCreateHandleWhenIdentTypeWrong(t *testing.T) {
 
 	response := bindingCreateRequestHandle("POST", url, body, t)
 	g.Debug("%+v", response)
-	if response.RespCode != "200120" {
+	if response.RespCode != "200111" {
 		t.Error("验证 '证件类型有误' 失败")
 	} else {
 		t.Logf("%+v", response)
@@ -65,7 +65,7 @@ func TestBindingCreateHandleWhenPhoneNumWrong(t *testing.T) {
 
 	response := bindingCreateRequestHandle("POST", url, body, t)
 	g.Debug("%+v", response)
-	if response.RespCode != "200130" {
+	if response.RespCode != "200113" {
 		t.Error("验证 '手机号码格式错误' 失败")
 	} else {
 		t.Logf("%+v", response)
@@ -145,6 +145,27 @@ func TestRefundHandle(t *testing.T) {
 		"merOrderNum": "1000000004",
 		"transAmt": -10000,
 		"origOrderNum": "1000000003"
+	}`
+	doPost("POST", url, body, t)
+}
+
+func TestNoTrackPaymentHandle(t *testing.T) {
+	merId := "10000001"
+	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + merId
+	body := `{
+		"subMerId": "",
+		"merOrderNum": "1000000003",
+		"transAmt": 1,
+		"acctName":"张三",
+		"acctNum":"6210948000000219",
+		"identType":"0",
+		"identNum":"36050219880401",
+		"phoneNum":"15600009909",
+		"acctType":"20",
+		"validDate":"1903",
+		"cvv2":"232",
+		"sendSmsId": "",
+		"smsCode": ""
 	}`
 	doPost("POST", url, body, t)
 }
