@@ -10,6 +10,27 @@ type BindingReturn struct {
 	// 绑定支付响应
 	MerOrderNum string `json:"merOrderNum,omitempty"` // 商户订单号
 	OrderNum    string `json:"orderNum,omitempty"`    // 网关订单号
+
+	// 交易对账汇总
+	SettDate string   `json:"settDate,omitempty"` // 对账日期
+	Data     []string `json:"data,omitempty"`     // 对账数据集
+	// 交易对账明细
+	Count        int      `json:"count,omitempty"`        // 拉取的记录条数
+	NextOrderNum string   `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
+	Rec          []string `json:"rec,omitempty"`          // 交易记录
+
+	// 查询订单状态
+	OrigRespCode string `json:"origRespCode,omitempty"` //原交易响应代码
+	// OrigTransDetail object `json:"origTransDetail,omitempty"` //原交易明细信息
+
+}
+
+//bindingReturn的构造函数
+func NewBindingReturn(code, msg string) (ret *BindingReturn) {
+	return &BindingReturn{
+		RespCode: code,
+		RespMsg:  msg,
+	}
 }
 
 // BindingCreate 建立绑定支付
@@ -52,4 +73,39 @@ type BindingRefund struct {
 	MerOrderNum  string `json:"merOrderNum"`  // 商户订单号
 	OrigOrderNum string `json:"origOrderNum"` // 原支付订单号
 	TransAmt     int    `json:"transAmt"`     // 退款金额
+}
+
+// 交易对账汇总请求
+type BillingSummary struct {
+	SettDate string `json:"settDate"` // 对账日期，格式为‘YYYYMMDD’
+}
+
+// 交易对账明细
+type BillingDetails struct {
+	SettDate     string `json:"settDate"`     // 对账日期，格式为‘YYYYMMDD’
+	NextOrderNum string `json:"nextOrderNum"` // 拉取的第一条记录的商户订单号,不填默认从头开始拉取，使用上一次调用返回的nextOrderNum可连续拉取
+}
+
+// 查询订单状态
+type OrderEnquiry struct {
+	OrigOrderNum string `json:"origOrderNum"` //原交易订单号
+	OrderNum     string `json:"orderNum"`     //原网关订单号
+	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
+}
+
+// 无卡直接支付
+type NoTrackPayment struct {
+	SubMerId    string `json:"subMerId"`    // 子商户号
+	MerOrderNum string `json:"merOrderNum"` // 商户订单号
+	TransAmt    int    `json:"transAmt"`    // 支付金额
+	AcctName    string `json:"acctName"`    // 账户名称
+	AcctNum     string `json:"acctNum"`     // 账户号码
+	IdentType   string `json:"identType"`   // 证件类型
+	IdentNum    string `json:"identNum"`    // 证件号码
+	PhoneNum    string `json:"phoneNum"`    // 手机号
+	AcctType    string `json:"acctType"`    // 账户类型
+	ValidDate   string `json:"validDate"`   // 信用卡有限期
+	Cvv2        string `json:"cvv2"`        // CVV2
+	SendSmsId   string `json:"sendSmsId"`   // 发送短信验证码的交易流水
+	SmsCode     string `json:"smsCode"`     // 短信验证码
 }

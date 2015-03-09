@@ -55,6 +55,10 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		ret = bindingEnquiryHandle(data)
 	case "/quickpay/bindingPayment":
 		ret = bindingPaymentHandle(data)
+	case "/quickpay/refund":
+		ret = bindingRefundHandle(data)
+	case "/quickpay/noTrackPayment":
+		ret = noTrackPaymentHandle(data)
 	default:
 		w.WriteHeader(404)
 	}
@@ -88,10 +92,7 @@ func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
 
 	//todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -109,10 +110,7 @@ func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
 	}
 	// todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -150,20 +148,52 @@ func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 	}
 	//  todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
+	ret = model.NewBindingReturn("000000", "虚拟数据")
+	return ret
+}
+
+// 退款处理
+func bindingRefundHandle(data []byte) (ret *model.BindingReturn) {
+	var in model.BindingRefund
+
+	err := json.Unmarshal(data, &in)
+	if ret = checkUnmarshalError(err); ret != nil {
+		return ret
 	}
+
+	// 验证请求报文格式
+	ret = bindingRefundRequestValidity(&in)
+	if ret != nil {
+		return ret
+	}
+	//  todo 业务处理
+	// mock return
+	ret = model.NewBindingReturn("000000", "虚拟数据")
+	return ret
+}
+
+// 无卡直接支付的处理
+func noTrackPaymentHandle(data []byte) (ret *model.BindingReturn) {
+	var in model.NoTrackPayment
+	err := json.Unmarshal(data, &in)
+	if ret = checkUnmarshalError(err); ret != nil {
+		return ret
+	}
+
+	ret = noTrackPaymentRequestValidity(&in)
+	if ret != nil {
+		return ret
+	}
+
+	//  todo 业务处理
+	// mock return
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
 func checkUnmarshalError(err error) (ret *model.BindingReturn) {
 	if err != nil {
-		ret = &model.BindingReturn{
-			RespCode: "200020",
-			RespMsg:  "解析报文错误",
-		}
-		return ret
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	return nil
 }

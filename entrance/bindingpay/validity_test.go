@@ -134,3 +134,25 @@ func TestRefundRequestValidity(t *testing.T) {
 	}
 
 }
+
+func TestNoTrackPaymentRequestValidity(t *testing.T) {
+	var in = &model.NoTrackPayment{
+		SubMerId:    "",
+		MerOrderNum: "1000000008",
+		TransAmt:    10000,
+		AcctName:    "张三",
+		AcctNum:     "6210948000000219",
+		IdentType:   "",
+		IdentNum:    "",
+		PhoneNum:    "",
+		AcctType:    "20",
+		ValidDate:   "",
+		Cvv2:        "",
+		SendSmsId:   "",
+		SmsCode:     "",
+	}
+	ret := noTrackPaymentRequestValidity(in)
+	if ret != nil {
+		t.Error("测试无卡支付失败，返回信息： %+v", ret)
+	}
+}
