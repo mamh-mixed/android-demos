@@ -74,16 +74,12 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 
 // 建立绑定关系
 func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
-	// json to obj
 	var bc model.BindingCreate
 	err := json.Unmarshal(data, &bc)
-	if err != nil {
-		ret = &model.BindingReturn{
-			RespCode: "200020",
-			RespMsg:  "解析报文错误",
-		}
+	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+
 	// 验证请求报文是否完整，格式是否正确
 	ret = bindingCreateRequestValidity(bc)
 	if ret != nil {
@@ -102,15 +98,11 @@ func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
 // 解除绑定关系
 func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
 	var br model.BindingRemove
-
 	err := json.Unmarshal(data, &br)
-	if err != nil {
-		ret = &model.BindingReturn{
-			RespCode: "200020",
-			RespMsg:  "解析报文错误",
-		}
+	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+
 	ret = bindingRemoveRequestValidity(br)
 	if ret != nil {
 		return ret
@@ -128,11 +120,7 @@ func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
 func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 	var be model.BindingEnquiry
 	err := json.Unmarshal(data, &be)
-	if err != nil {
-		ret = &model.BindingReturn{
-			RespCode: "200020",
-			RespMsg:  "解析报文错误",
-		}
+	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
 
@@ -150,13 +138,8 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 // 绑定支付关系
 func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 	var in model.BindingPayment
-
 	err := json.Unmarshal(data, &in)
-	if err != nil {
-		ret = &model.BindingReturn{
-			RespCode: "200020",
-			RespMsg:  "解析报文错误",
-		}
+	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
 
@@ -172,4 +155,15 @@ func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 		RespMsg:  "虚拟数据",
 	}
 	return ret
+}
+
+func checkUnmarshalError(err error) (ret *model.BindingReturn) {
+	if err != nil {
+		ret = &model.BindingReturn{
+			RespCode: "200020",
+			RespMsg:  "解析报文错误",
+		}
+		return ret
+	}
+	return nil
 }
