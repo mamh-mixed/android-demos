@@ -8,98 +8,85 @@ import (
 )
 
 func TestBindingCreateRequestValidity(t *testing.T) {
-	request := model.BindingCreate{}
-	code, msg := bindingCreateRequestValidity(request)
-	if code != "200050" {
+	var (
+		bc  model.BindingCreate
+		ret *model.BindingReturn
+	)
+	ret = bindingCreateRequestValidity(bc)
+	if ret == nil {
 		g.Error("\n", "验证 '报文要素缺失' 失败")
-	} else {
-		g.Info("%s---%s", code, msg)
 	}
-	request.BindingId = "1000000000001"
-	request.AcctName = "张三"
-	request.AcctNum = "6210948000000219"
-	request.IdentType = "0"
-	request.IdentNum = "36050219880401"
-	request.PhoneNum = "15600009909"
-	request.AcctType = "20"
-	request.ValidDate = "1903"
-	request.Cvv2 = "232"
-	request.SendSmsId = "1000000000009"
-	request.SmsCode = "12353"
 
-	code, msg = bindingCreateRequestValidity(request)
-	if code != "00" {
+	bc.BindingId = "1000000000001"
+	bc.AcctName = "张三"
+	bc.AcctNum = "6210948000000219"
+	bc.IdentType = "0"
+	bc.IdentNum = "36050219880401"
+	bc.PhoneNum = "15600009909"
+	bc.AcctType = "20"
+	bc.ValidDate = "1903"
+	bc.Cvv2 = "232"
+	bc.SendSmsId = "1000000000009"
+	bc.SmsCode = "12353"
+
+	ret = bindingCreateRequestValidity(bc)
+	if ret != nil {
 		t.Errorf("%s\n", "验证 '报文正确' 失败")
-	} else {
-		g.Info("%s---%s", code, msg)
 	}
 
-	request.IdentType = "XXX"
-	code, msg = bindingCreateRequestValidity(request)
-	if code != "200120" {
+	bc.IdentType = "XXX"
+	ret = bindingCreateRequestValidity(bc)
+	if ret == nil {
 		t.Errorf("%s\n", "验证 '证件类型有误' 失败")
-	} else {
-		g.Info("%s---%s", code, msg)
 	}
 
-	request.IdentType = "0"
-	request.PhoneNum = "wonsikin"
-	code, msg = bindingCreateRequestValidity(request)
-	if code != "200130" {
+	bc.IdentType = "0"
+	bc.PhoneNum = "wonsikin"
+	ret = bindingCreateRequestValidity(bc)
+	if ret == nil {
 		t.Errorf("%s\n", "验证 '手机号有误' 失败")
-	} else {
-		g.Info("%s---%s", code, msg)
 	}
 
-	request.PhoneNum = "18205960039"
-	request.AcctType = "20"
-	request.ValidDate = "2013"
-	code, msg = bindingCreateRequestValidity(request)
-	if code != "200140" {
+	bc.PhoneNum = "18205960039"
+	bc.AcctType = "20"
+	bc.ValidDate = "2013"
+	ret = bindingCreateRequestValidity(bc)
+	if ret == nil {
 		t.Errorf("%s\n", "验证 '卡片有效期有误' 失败")
-	} else {
-		g.Info("%s---%s", code, msg)
 	}
 
-	request.ValidDate = "2012"
-	request.Cvv2 = "2345"
-	code, msg = bindingCreateRequestValidity(request)
-	if code != "200150" {
+	bc.ValidDate = "2012"
+	bc.Cvv2 = "2345"
+	ret = bindingCreateRequestValidity(bc)
+	if ret == nil {
 		t.Errorf("%s\n", "验证 'CVV2有误' 失败")
-	} else {
-		g.Info("%s---%s", code, msg)
 	}
 }
 
 func TestBindingRemoveRequestValidity(t *testing.T) {
 	var (
-		in   model.BindingRemove
-		code string
-		err  error
+		in  model.BindingRemove
+		ret *model.BindingReturn
 	)
 
-	code, err = bindingRemoveRequestValidity(in)
-	if err == nil {
+	ret = bindingRemoveRequestValidity(in)
+
+	if ret == nil {
 		t.Error("测试解除绑定关系报文要素缺失失败")
-	} else {
-		t.Logf("%s", code)
 	}
+	t.Logf("%+v", ret)
 
 	in.BindingId = "1000000001"
-	code, err = bindingRemoveRequestValidity(in)
-	if err != nil {
+	ret = bindingRemoveRequestValidity(in)
+	if ret != nil {
 		t.Error("测试解除绑定关系报文要素缺失失败")
-	} else {
-		t.Logf("%s", code)
 	}
+	t.Logf("%+v", ret)
 }
 
 func TestBindingPaymentRequestValidity(t *testing.T) {
-	var (
-		code string
-		err  error
-	)
-	in := model.BindingPayment{
+	var ret *model.BindingReturn
+	var in = model.BindingPayment{
 		SubMerId:    "",
 		MerOrderNum: "1000000003",
 		TransAmt:    1000,
@@ -108,36 +95,64 @@ func TestBindingPaymentRequestValidity(t *testing.T) {
 		SmsCode:     "",
 	}
 
-	code, err = bindingPaymentRequestValidity(in)
+	ret = bindingPaymentRequestValidity(in)
 
-	if err != nil {
+	if ret != nil {
 		t.Error("测试绑定支付 '报文要素缺失' 失败")
-	} else {
-		if code != "00" {
-			t.Errorf("测试失败，应该返回‘00’，但是返回 %s", code)
-		} else {
-			t.Logf("%s", code)
-		}
 	}
 
 	in.TransAmt = 0
-	code, err = bindingPaymentRequestValidity(in)
-	if err == nil {
+	ret = bindingPaymentRequestValidity(in)
+	if ret == nil {
 		t.Error("测试绑定支付 '报文要素缺失' 失败")
-	} else {
-		t.Logf("%s", code)
 	}
 
 	in.TransAmt = 1000
 	in.SendSmsId = "100100100"
-	code, err = bindingPaymentRequestValidity(in)
-	if err == nil {
+	ret = bindingPaymentRequestValidity(in)
+	if ret == nil {
 		t.Error("测试绑定支付 '报文要素缺失' 失败")
-	} else {
-		t.Logf("%s", code)
 	}
 }
 
 func TestRefundRequestValidity(t *testing.T) {
+	var bp = &model.BindingRefund{
+		MerOrderNum:  "1000000004", // 商户订单号
+		OrigOrderNum: "1000000003", // 原支付订单号
+		TransAmt:     10000,
+	}
+	var ret *model.BindingReturn
 
+	ret = bindingRefundRequestValidity(bp)
+	if ret != nil {
+		t.Error("测试退款 '报文要素缺失' 失败")
+	}
+
+	bp.TransAmt = -10000
+	if ret != nil {
+		t.Error("测试退款 ‘退款金额有误’ 失败")
+	}
+
+}
+
+func TestNoTrackPaymentRequestValidity(t *testing.T) {
+	var in = &model.NoTrackPayment{
+		SubMerId:    "",
+		MerOrderNum: "1000000008",
+		TransAmt:    10000,
+		AcctName:    "张三",
+		AcctNum:     "6210948000000219",
+		IdentType:   "",
+		IdentNum:    "",
+		PhoneNum:    "",
+		AcctType:    "20",
+		ValidDate:   "",
+		Cvv2:        "",
+		SendSmsId:   "",
+		SmsCode:     "",
+	}
+	ret := noTrackPaymentRequestValidity(in)
+	if ret != nil {
+		t.Error("测试无卡支付失败，返回信息： %+v", ret)
+	}
 }
