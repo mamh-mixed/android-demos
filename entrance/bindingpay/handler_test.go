@@ -137,3 +137,14 @@ func TestBindingPaymentHandle(t *testing.T) {
 	}`
 	doPost("POST", url, body, t)
 }
+
+func TestRefundHandle(t *testing.T) {
+	merId := "10000001"
+	url := "https://api.xxxx.com/quickpay/refund?merId=" + merId
+	body := `{
+		"merOrderNum": "1000000004",
+		"transAmt": -10000,
+		"origOrderNum": "1000000003"
+	}`
+	doPost("POST", url, body, t)
+}

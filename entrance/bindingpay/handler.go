@@ -55,6 +55,8 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		ret = bindingEnquiryHandle(data)
 	case "/quickpay/bindingPayment":
 		ret = bindingPaymentHandle(data)
+	case "/quickpay/refund":
+		ret = refundHandle(data)
 	default:
 		w.WriteHeader(404)
 	}
@@ -145,6 +147,29 @@ func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 
 	// 验证请求报文格式
 	ret = bindingPaymentRequestValidity(in)
+	if ret != nil {
+		return ret
+	}
+	//  todo 业务处理
+	// mock return
+	ret = &model.BindingReturn{
+		RespCode: "000000",
+		RespMsg:  "虚拟数据",
+	}
+	return ret
+}
+
+// 退款处理
+func refundHandle(data []byte) (ret *model.BindingReturn) {
+	var in model.BindingRefund
+
+	err := json.Unmarshal(data, &in)
+	if ret = checkUnmarshalError(err); ret != nil {
+		return ret
+	}
+
+	// 验证请求报文格式
+	ret = bindingRefundRequestValidity(&in)
 	if ret != nil {
 		return ret
 	}
