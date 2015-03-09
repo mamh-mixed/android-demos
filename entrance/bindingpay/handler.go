@@ -56,7 +56,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	case "/quickpay/bindingPayment":
 		ret = bindingPaymentHandle(data)
 	case "/quickpay/refund":
-		ret = refundHandle(data)
+		ret = bindingRefundHandle(data)
 	case "/quickpay/noTrackPayment":
 		ret = noTrackPaymentHandle(data)
 	default:
@@ -92,10 +92,7 @@ func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
 
 	//todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -113,10 +110,7 @@ func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
 	}
 	// todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -154,15 +148,12 @@ func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 	}
 	//  todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
 // 退款处理
-func refundHandle(data []byte) (ret *model.BindingReturn) {
+func bindingRefundHandle(data []byte) (ret *model.BindingReturn) {
 	var in model.BindingRefund
 
 	err := json.Unmarshal(data, &in)
@@ -177,10 +168,7 @@ func refundHandle(data []byte) (ret *model.BindingReturn) {
 	}
 	//  todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -199,20 +187,13 @@ func noTrackPaymentHandle(data []byte) (ret *model.BindingReturn) {
 
 	//  todo 业务处理
 	// mock return
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "虚拟数据",
-	}
+	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
 func checkUnmarshalError(err error) (ret *model.BindingReturn) {
 	if err != nil {
-		ret = &model.BindingReturn{
-			RespCode: "200020",
-			RespMsg:  "解析报文错误",
-		}
-		return ret
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	return nil
 }
