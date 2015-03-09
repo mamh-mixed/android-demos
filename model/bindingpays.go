@@ -41,7 +41,7 @@ type BindingEnquiry struct {
 type BindingPayment struct {
 	SubMerId    string `json:"subMerId"`    // 子商户号
 	MerOrderNum string `json:"merOrderNum"` // 商户订单号
-	TransAmt    int    `json:"transAmt"`    // 支付金额
+	TransAmt    int64  `json:"transAmt"`    // 支付金额
 	BindingId   string `json:"bindingId"`   // 银行卡绑定ID
 	SendSmsId   string `json:"sendSmsId"`   // 申请短信验证码的交易流水
 	SmsCode     string `json:"smsCode"`     // 短信验证码
@@ -51,5 +51,5 @@ type BindingPayment struct {
 type BindingRefund struct {
 	MerOrderNum  string `json:"merOrderNum"`  // 商户订单号
 	OrigOrderNum string `json:"origOrderNum"` // 原支付订单号
-	TransAmt     int    `json:"transAmt"`     // 退款金额
+	TransAmt     int64  `json:"transAmt"`     // 退款金额
 }
