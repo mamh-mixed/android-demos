@@ -12,7 +12,7 @@
     + go-plus Golang 插件
 
         - Autocomplete using gocode (you must have the autocomplete-plus package installed for this to work)
-            `go get -u github.com/nsf/gocode`
+            `go get -u -v github.com/nsf/gocode`
 
         - Formatting and managing imports using `goimports`, `goreturns`, or `gofmt`
             `go get golang.org/x/tools/cmd/goimports`
@@ -27,7 +27,7 @@
         - Syntax checking using `go build` and `go test`
         - Display of test coverage using `go test -coverprofile`
 
-        - oracle `go get code.google.com/p/go.tools/cmd/oracle`
+        - oracle `go get golang.org/x/tools/cmd/oracle`
 
     + go-def 跳转
 
