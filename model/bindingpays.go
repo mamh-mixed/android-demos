@@ -5,11 +5,11 @@ type BindingReturn struct {
 	RespCode string `json:"respCode"` // 响应代码
 	RespMsg  string `json:"respMsg"`  // 响应信息
 
-	BindingId string `json:"bindingId"` // 银行卡绑定ID
+	BindingId string `json:"bindingId,omitempty"` // 银行卡绑定ID
 
 	// 绑定支付响应
-	MerOrderNum string `json:"merOrderNum"` // 商户订单号
-	OrderNum    string `json:"orderNum"`    // 网关订单号
+	MerOrderNum string `json:"merOrderNum,omitempty"` // 商户订单号
+	OrderNum    string `json:"orderNum,omitempty"`    // 网关订单号
 }
 
 // BindingCreate 建立绑定支付

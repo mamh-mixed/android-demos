@@ -66,7 +66,7 @@ func TestBindingCreateHandleWhenPhoneNumWrong(t *testing.T) {
 	response := bindingCreateRequestHandle("POST", url, body, t)
 	g.Debug("%+v", response)
 	if response.RespCode != "200130" {
-		t.Error("验证 '手机好嘛格式错误' 失败")
+		t.Error("验证 '手机号码格式错误' 失败")
 	} else {
 		t.Logf("%+v", response)
 	}
