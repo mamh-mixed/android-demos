@@ -85,12 +85,8 @@ func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
 		return ret
 	}
 	// 验证请求报文是否完整，格式是否正确
-	validityCode, validityErr := bindingCreateRequestValidity(bc)
-	if validityErr != nil {
-		ret = &model.BindingReturn{
-			RespCode: validityCode,
-			RespMsg:  validityErr.Error(),
-		}
+	ret = bindingCreateRequestValidity(bc)
+	if ret != nil {
 		return ret
 	}
 
@@ -115,12 +111,8 @@ func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
 		}
 		return ret
 	}
-	validityCode, validityErr := bindingRemoveRequestValidity(br)
-	if validityErr != nil {
-		ret = &model.BindingReturn{
-			RespCode: validityCode,
-			RespMsg:  validityErr.Error(),
-		}
+	ret = bindingRemoveRequestValidity(br)
+	if ret != nil {
 		return ret
 	}
 	// todo 业务处理
@@ -145,12 +137,8 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 	}
 
 	// 验证请求报文格式
-	validityCode, validityErr := bindingEnquiryRequestValidity(be)
-	if validityErr != nil {
-		ret = &model.BindingReturn{
-			RespCode: validityCode,
-			RespMsg:  validityErr.Error(),
-		}
+	ret = bindingEnquiryRequestValidity(be)
+	if ret != nil {
 		return ret
 	}
 
@@ -173,12 +161,8 @@ func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 	}
 
 	// 验证请求报文格式
-	validityCode, validityErr := bindingPaymentRequestValidity(in)
-	if validityErr != nil {
-		ret = &model.BindingReturn{
-			RespCode: validityCode,
-			RespMsg:  validityErr.Error(),
-		}
+	ret = bindingPaymentRequestValidity(in)
+	if ret != nil {
 		return ret
 	}
 	//  todo 业务处理
