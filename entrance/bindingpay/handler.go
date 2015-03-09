@@ -2,7 +2,6 @@ package bindingpay
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"quickpay/core"
@@ -18,7 +17,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		g.Error("methond(%s) not allowed", r.Method)
 		w.WriteHeader(405)
-		w.Write([]byte("only post method allowed"))
+		w.Write([]byte("only 'POST' method allowed"))
 		return
 	}
 
@@ -48,14 +47,14 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	// 执行业务逻辑
 	var ret *model.BindingReturn
 	switch r.URL.Path {
-	// case "/quickpay/bindingCreate":
-	// 	ret, err = bindingCreateHandle(data)
-	// case "/quickpay/bindingRemove":
-	// 	ret, err = bindingRemoveHandle(data)
+	case "/quickpay/bindingCreate":
+		ret = bindingCreateHandle(data)
+	case "/quickpay/bindingRemove":
+		ret = bindingRemoveHandle(data)
 	case "/quickpay/bindingEnquiry":
 		ret = bindingEnquiryHandle(data)
-	// case "/quickpay/bindingPayment":
-	// 	ret, err = bindingPaymentHandle(data)
+	case "/quickpay/bindingPayment":
+		ret = bindingPaymentHandle(data)
 	default:
 		w.WriteHeader(404)
 	}
@@ -74,76 +73,55 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 }
 
 // 建立绑定关系
-func bindingCreateHandle(data []byte) ([]byte, error) {
+func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
 	// json to obj
-	var (
-		in  model.BindingCreate
-		out = &model.BindingReturn{}
-	)
-	err := json.Unmarshal(data, &in)
+	var bc model.BindingCreate
+	err := json.Unmarshal(data, &bc)
 	if err != nil {
-		g.Error("unmashal data error \n", err)
-		out.RespCode = "200020"
-		out.RespMsg = "解析报文错误"
-	} else {
-		g.Debug("%+v", in)
-		out.BindingId = in.BindingId
+		ret = &model.BindingReturn{
+			RespCode: "200020",
+			RespMsg:  "解析报文错误",
+		}
+		return ret
 	}
 	// 验证请求报文是否完整，格式是否正确
-	validityCode, validityErr := bindingCreateRequestValidity(in)
-	if validityErr == nil {
-		// 验证参数OK
-
-		// 业务处理
-		// out2 := core.CreateBinding(&in)
-		// out.RespCode = out2.RespCode
-		// out.RespMsg = out2.RespMsg
-	} else {
-		// 验证参数失败
-		out.RespCode = validityCode
-		out.RespMsg = validityErr.Error()
+	ret = bindingCreateRequestValidity(bc)
+	if ret != nil {
+		return ret
 	}
 
-	// obj to json
-	body, err := json.Marshal(out)
-	if err != nil {
-		return nil, errors.New("mashal data error")
-	} else {
-		return body, nil
+	//todo 业务处理
+	// mock return
+	ret = &model.BindingReturn{
+		RespCode: "000000",
+		RespMsg:  "虚拟数据",
 	}
+	return ret
 }
 
 // 解除绑定关系
-func bindingRemoveHandle(data []byte) ([]byte, error) {
-	var (
-		in  model.BindingRemove
-		out model.BindingReturn
-		err error
-	)
+func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
+	var br model.BindingRemove
 
-	err = json.Unmarshal(data, &in)
+	err := json.Unmarshal(data, &br)
 	if err != nil {
-		out.RespCode = "200020"
-		out.RespMsg = "解析报文错误"
-	} else {
-		// 验证请求报文格式
-		validityCode, validityErr := bindingRemoveRequestValidity(in)
-		if validityErr != nil {
-			out.RespCode = validityCode
-			out.RespMsg = validityErr.Error()
-		} else {
-			// todo 业务处理，这里先返回OK响应码
-			out.RespCode = "000000"
-			out.RespMsg = "Success"
+		ret = &model.BindingReturn{
+			RespCode: "200020",
+			RespMsg:  "解析报文错误",
 		}
+		return ret
 	}
-	// obj to json
-	body, err := json.Marshal(out)
-	if err != nil {
-		return nil, errors.New("mashal data error")
-	} else {
-		return body, nil
+	ret = bindingRemoveRequestValidity(br)
+	if ret != nil {
+		return ret
 	}
+	// todo 业务处理
+	// mock return
+	ret = &model.BindingReturn{
+		RespCode: "000000",
+		RespMsg:  "虚拟数据",
+	}
+	return ret
 }
 
 // 查询绑定关系
@@ -159,12 +137,8 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 	}
 
 	// 验证请求报文格式
-	validityCode, validityErr := bindingEnquiryRequestValidity(be)
-	if validityErr != nil {
-		ret = &model.BindingReturn{
-			RespCode: validityCode,
-			RespMsg:  validityErr.Error(),
-		}
+	ret = bindingEnquiryRequestValidity(be)
+	if ret != nil {
 		return ret
 	}
 
@@ -174,36 +148,28 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 }
 
 // 绑定支付关系
-func bindingPaymentHandle(data []byte) ([]byte, error) {
-	var (
-		in  model.BindingPayment
-		out model.BindingReturn
-		err error
-	)
+func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
+	var in model.BindingPayment
 
-	err = json.Unmarshal(data, &in)
+	err := json.Unmarshal(data, &in)
 	if err != nil {
-		g.Error("Unmarshal request body error msg: ", err.Error())
-		out.RespCode = "200020"
-		out.RespMsg = "解析报文错误"
-	} else {
-		// 验证请求报文格式
-		validityCode, validityErr := bindingPaymentRequestValidity(in)
-		if validityErr != nil {
-			out.RespCode = validityCode
-			out.RespMsg = validityErr.Error()
-		} else {
-			// todo 业务处理，这里先返回OK响应码
-			out.RespCode = "000000"
-			out.RespMsg = "Success"
+		ret = &model.BindingReturn{
+			RespCode: "200020",
+			RespMsg:  "解析报文错误",
 		}
+		return ret
 	}
-	//  todo 签名并返回
-	// obj to json
-	body, err := json.Marshal(out)
-	if err != nil {
-		return nil, errors.New("mashal data error")
-	} else {
-		return body, nil
+
+	// 验证请求报文格式
+	ret = bindingPaymentRequestValidity(in)
+	if ret != nil {
+		return ret
 	}
+	//  todo 业务处理
+	// mock return
+	ret = &model.BindingReturn{
+		RespCode: "000000",
+		RespMsg:  "虚拟数据",
+	}
+	return ret
 }

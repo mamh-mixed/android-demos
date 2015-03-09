@@ -1,27 +1,42 @@
 package bindingpay
 
 import (
-	"errors"
 	"quickpay/model"
 	"regexp"
 )
 
 //建立绑定关系的时候验证请求报文
-func bindingCreateRequestValidity(request model.BindingCreate) (string, error) {
+func bindingCreateRequestValidity(request model.BindingCreate) (ret *model.BindingReturn) {
 	cardNum := request.AcctNum
 	if request.BindingId == "" || request.AcctName == "" || request.AcctNum == "" || request.AcctType == "" {
-		return "200050", errors.New("报文要素缺失")
+		ret = &model.BindingReturn{
+			RespCode: "200050",
+			RespMsg:  "报文要素缺失",
+		}
+		return ret
 	}
 	if isUnionPayCard(cardNum) {
 		//银联卡
 		if request.IdentType == "" || request.IdentNum == "" || request.PhoneNum == "" || request.SendSmsId == "" || request.SmsCode == "" {
-			return "200050", errors.New("报文要素缺失")
+			ret = &model.BindingReturn{
+				RespCode: "200050",
+				RespMsg:  "报文要素缺失",
+			}
+			return ret
 		}
 		if matched, _ := regexp.MatchString(`^\d{1}$|^X$`, request.IdentType); !matched {
-			return "200120", errors.New("证件类型有误")
+			ret = &model.BindingReturn{
+				RespCode: "200120",
+				RespMsg:  "证件类型有误",
+			}
+			return ret
 		}
 		if matched, _ := regexp.MatchString(`^(13[0-9]|14[57]|15[0-9]|18[0-9])\d{8}$`, request.PhoneNum); !matched {
-			return "200130", errors.New("手机号有误")
+			ret = &model.BindingReturn{
+				RespCode: "200130",
+				RespMsg:  "手机号有误",
+			}
+			return ret
 		}
 	} else {
 		//外卡
@@ -30,65 +45,103 @@ func bindingCreateRequestValidity(request model.BindingCreate) (string, error) {
 	if request.AcctType == "20" {
 		// 贷记卡
 		if request.ValidDate == "" || request.Cvv2 == "" {
-			return "200050", errors.New("报文要素缺失")
+			ret = &model.BindingReturn{
+				RespCode: "200050",
+				RespMsg:  "报文要素缺失",
+			}
+			return ret
 		}
 		if matched, _ := regexp.MatchString(`\d{2}(0[1-9]|1[1-2])`, request.ValidDate); !matched {
-			return "200140", errors.New("卡片有效期有误")
+			ret = &model.BindingReturn{
+				RespCode: "200140",
+				RespMsg:  "卡片有效期有误",
+			}
+			return ret
 		}
 		if matched, _ := regexp.MatchString(`^\d{3}$`, request.Cvv2); !matched {
-			return "200150", errors.New("CVV2有误")
+			ret = &model.BindingReturn{
+				RespCode: "200150",
+				RespMsg:  "CVV2有误",
+			}
+			return ret
 		}
 	}
 
-	return "00", nil
+	return nil
 }
 
 // 移除绑定关系的时候验证请求报文
-func bindingRemoveRequestValidity(in model.BindingRemove) (string, error) {
+func bindingRemoveRequestValidity(in model.BindingRemove) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
-		return "200050", errors.New("报文要素缺失")
-	} else {
-		return "00", nil
+		ret = &model.BindingReturn{
+			RespCode: "200050",
+			RespMsg:  "报文要素缺失",
+		}
+		return ret
 	}
+	return nil
 }
 
 // 查询绑定关系的时候验证请求报文
-func bindingEnquiryRequestValidity(be model.BindingEnquiry) (string, error) {
+func bindingEnquiryRequestValidity(be model.BindingEnquiry) (ret *model.BindingReturn) {
 	if be.BindingId == "" {
-		return "200050", errors.New("报文要素缺失")
-	} else {
-		return "00", nil
+		ret = &model.BindingReturn{
+			RespCode: "200050",
+			RespMsg:  "报文要素缺失",
+		}
+		return ret
 	}
+	return nil
 }
 
 // 绑定支付的请求报文验证
-func bindingPaymentRequestValidity(in model.BindingPayment) (string, error) {
+func bindingPaymentRequestValidity(in model.BindingPayment) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" || in.TransAmt == 0 || in.BindingId == "" {
-		return "200050", errors.New("报文要素缺失")
+		ret = &model.BindingReturn{
+			RespCode: "200050",
+			RespMsg:  "报文要素缺失",
+		}
+		return ret
 	}
 
 	if in.TransAmt < 0 {
-		return "200180", errors.New("金额有误")
+		ret = &model.BindingReturn{
+			RespCode: "200180",
+			RespMsg:  "金额有误",
+		}
+		return ret
 	}
 	// 短信验证码
 	if in.SendSmsId != "" && in.SmsCode == "" {
-		return "200050", errors.New("报文要素缺失")
+		ret = &model.BindingReturn{
+			RespCode: "200050",
+			RespMsg:  "报文要素缺失",
+		}
+		return ret
 	}
 
-	return "00", nil
+	return nil
 }
 
 // 退款请求报文验证
-func refundRequestValidity(in model.BindingRefund) (string, error) {
+func bindingRefundRequestValidity(in *model.BindingRefund) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" || in.OrigOrderNum == "" || in.TransAmt == 0 {
-		return "200050", errors.New("报文要素缺失")
+		ret = &model.BindingReturn{
+			RespCode: "200050",
+			RespMsg:  "报文要素缺失",
+		}
+		return ret
 	}
 
 	if in.TransAmt < 0 {
-		return "200190", errors.New("退款金额有误")
+		ret = &model.BindingReturn{
+			RespCode: "200190",
+			RespMsg:  "退款金额有误",
+		}
+		return ret
 	}
 
-	return "00", nil
+	return nil
 }
 
 // todo 根据卡BIN验证是否是银联卡
