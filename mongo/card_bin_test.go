@@ -1,18 +1,13 @@
 package mongo
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	// "encoding/json"
+	// "io/ioutil"
+	"github.com/omigo/g"
 	"testing"
 )
 
-type CardBin struct {
-	Bin       string `json:"bin" bson:"bin,omitempty"`
-	BinLen    int    `json:"binLen" bson:"binLen,omitempty"`
-	CardLen   int    `json:"cardLen" bson:"cardLen,omitempty"`
-	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"`
-}
-
+/*
 func TestCardBinImport(t *testing.T) {
 	var arrays []CardBin
 	bytes, err := ioutil.ReadFile("/opt/gowork/src/quickpay/card_bin.json")
@@ -45,4 +40,10 @@ func TestCardBinImport(t *testing.T) {
 		t.Errorf("ERROR:insert arrays into mongodb error: %s", err.Error())
 	}
 
+}
+*/
+
+func TestFindByCardNumLen(t *testing.T) {
+	cardBinArrays := FindByCardLen(14)
+	g.Debug("cardBinArrays: %+v", cardBinArrays)
 }
