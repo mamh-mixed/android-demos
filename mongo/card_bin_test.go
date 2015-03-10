@@ -7,10 +7,10 @@ import (
 )
 
 type CardBin struct {
-	Bin       string `json:"bin"`
-	BinLen    int    `json:"binlen"`
-	CardLen   int    `json:"cardlen"`
-	CardBrand string `json:"cardbrand"`
+	Bin       string `json:"bin" bson:"bin,omitempty"`
+	BinLen    int    `json:"binLen" bson:"binLen,omitempty"`
+	CardLen   int    `json:"cardLen" bson:"cardLen,omitempty"`
+	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"`
 }
 
 func TestCardBinImport(t *testing.T) {
@@ -25,7 +25,7 @@ func TestCardBinImport(t *testing.T) {
 	}
 
 	t.Logf("%+v", arrays)
-	c := db.C("card_bin")
+	c := db.C("cardBin")
 
 	// 逐条导入数据，2514条数据用了 0.444秒
 	// for idx, cardBin := range arrays {
