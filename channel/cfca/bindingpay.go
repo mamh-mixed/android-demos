@@ -21,7 +21,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.InstitutionId,
-			TxCode:        BETxCode,
+			TxCode:        BindingEnquiryTxCode,
 		},
 		Body: requestBody{
 			TxSNBinding: be.BindingId,
@@ -44,7 +44,7 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.InstitutionId,
-			TxCode:        BCTxCode,
+			TxCode:        BindingCreateTxCode,
 		},
 		Body: requestBody{
 			TxSNBinding:          be.BindingId,
@@ -73,7 +73,7 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.InstitutionId,
-			TxCode:        BRTxCode,
+			TxCode:        BindingRemoveTxCode,
 		},
 		Body: requestBody{
 			TxSNUnBinding: be.TxSNUnBinding,
@@ -98,7 +98,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.InstitutionId,
-			TxCode:        BPTxCode,
+			TxCode:        BindingPaymentTxCode,
 		},
 		Body: requestBody{
 			PaymentNo:      be.MerOrderNum,
