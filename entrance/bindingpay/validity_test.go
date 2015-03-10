@@ -34,19 +34,6 @@ func TestBindingCreateRequestValidity(t *testing.T) {
 		t.Errorf("%s\n", "验证 '报文正确' 失败")
 	}
 
-	bc.IdentType = "XXX"
-	ret = bindingCreateRequestValidity(bc)
-	if ret == nil {
-		t.Errorf("%s\n", "验证 '证件类型有误' 失败")
-	}
-
-	bc.IdentType = "0"
-	bc.PhoneNum = "wonsikin"
-	ret = bindingCreateRequestValidity(bc)
-	if ret == nil {
-		t.Errorf("%s\n", "验证 '手机号有误' 失败")
-	}
-
 	bc.PhoneNum = "18205960039"
 	bc.AcctType = "20"
 	bc.ValidDate = "2013"
