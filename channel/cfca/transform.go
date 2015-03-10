@@ -16,7 +16,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		switch txCode {
 		//根据交易类型处理结果
 		//建立绑定关系
-		case "2501":
+		case BindingCreateTxCode:
 			ret.BindingId = resp.Body.TxSNBinding
 			switch resp.Body.Status {
 			case 10:
@@ -29,7 +29,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			ret.RespMsg = resp.Body.ResponseMessage
 
 		//绑定关系查询
-		case "2502":
+		case BindingEnquiryTxCode:
 			//10=绑定处理中 20=绑定失败 30=绑定成功 40=解绑成功
 			switch resp.Body.Status {
 			case 10:
@@ -46,7 +46,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			ret.RespMsg = resp.Body.ResponseMessage
 
 		//解除绑定关系
-		case "2503":
+		case BindingRemoveTxCode:
 			//10=解绑处理中 20=解绑成功 30=解绑失败(等于已绑定)
 			switch resp.Body.Status {
 			case 10:
@@ -61,7 +61,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			ret.RespMsg = resp.Body.ResponseMessage
 
 		//快捷支付
-		case "2511":
+		case BindingPaymentTxCode:
 			//10=处理中 20=支付成功 30=支付失败
 			switch resp.Body.Status {
 			case 10:

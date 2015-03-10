@@ -46,21 +46,21 @@ type BindingCreate struct {
 	Cvv2          string `json:"cvv2"`      // CVV2
 	SendSmsId     string `json:"sendSmsId"` // 发送短信验证码的交易流水
 	SmsCode       string `json:"smsCode"`   // 短信验证码
-	InstitutionID string //商户ID
+	InstitutionId string //商户ID
 	BankId        string //银行ID
 }
 
 // BindingRemove 解除绑定关系请求
 type BindingRemove struct {
 	BindingId     string `json:"bindingId"` // 银行卡绑定ID
-	InstitutionID string //商户ID
+	InstitutionId string //商户ID
 	TxSNUnBinding string //解绑流水号
 }
 
 // BindingEnquiry 绑定关系查询
 type BindingEnquiry struct {
 	BindingId     string `json:"bindingId"` // 银行卡绑定ID
-	InstitutionID string //商户ID
+	InstitutionId string //商户ID
 
 }
 
@@ -73,7 +73,7 @@ type BindingPayment struct {
 	SendSmsId      string `json:"sendSmsId"`   // 申请短信验证码的交易流水
 	SmsCode        string `json:"smsCode"`     // 短信验证码
 	SettlementFlag string //清算标识
-	InstitutionID  string //商户ID
+	InstitutionId  string //商户ID
 	Remark         string //备注
 }
 

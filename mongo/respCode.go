@@ -8,7 +8,7 @@ import (
 // 如：code : "270001",codeType : "cfca"
 // 表示将中金应答码转为系统应答码
 // codeType : sys,cfca,....
-func GetRespCode(code string, codeType string) (resp *Resp) {
+func getRespCode(code string, codeType string) (resp *Resp) {
 
 	resp = &Resp{}
 	switch codeType {
@@ -21,4 +21,14 @@ func GetRespCode(code string, codeType string) (resp *Resp) {
 	}
 
 	return
+}
+
+// GetRespCode 根据传入的code类型得到Resp对象
+func GetRespCode(code string) *Resp {
+	return getRespCode(code, "sys")
+}
+
+// GetRespCodeByCfca 根据传入的cfca的code得到Resp对象
+func GetRespCodeByCfca(code string) *Resp {
+	return getRespCode(code, "cfca")
 }

@@ -7,11 +7,11 @@ const (
 )
 
 const (
-	version  = "2.0"
-	BCTxCode = "2501"
-	BETxCode = "2502"
-	BRTxCode = "2503"
-	BPTxCode = "2511"
+	version              = "2.0"
+	BindingCreateTxCode  = "2501"
+	BindingEnquiryTxCode = "2502"
+	BindingRemoveTxCode  = "2503"
+	BindingPaymentTxCode = "2511"
 )
 
 // ProcessBindingEnquiry 查询绑定关系
@@ -20,7 +20,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionID,
+			InstitutionID: be.InstitutionId,
 			TxCode:        BETxCode,
 		},
 		Body: requestBody{
@@ -43,7 +43,7 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionID,
+			InstitutionID: be.InstitutionId,
 			TxCode:        BCTxCode,
 		},
 		Body: requestBody{
@@ -72,7 +72,7 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionID,
+			InstitutionID: be.InstitutionId,
 			TxCode:        BRTxCode,
 		},
 		Body: requestBody{
@@ -97,7 +97,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionID,
+			InstitutionID: be.InstitutionId,
 			TxCode:        BPTxCode,
 		},
 		Body: requestBody{
