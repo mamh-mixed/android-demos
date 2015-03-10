@@ -6,14 +6,22 @@ const (
 	correctCode = "2000"
 )
 
+const (
+	version  = "2.0"
+	BCTxCode = "2501"
+	BETxCode = "2502"
+	BRTxCode = "2503"
+	BPTxCode = "2511"
+)
+
 // ProcessBindingEnquiry 查询绑定关系
 func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
-		Version: "2.0",
+		Version: version,
 		Head: requestHead{
-			InstitutionID: "001405", //测试ID
-			TxCode:        "2502",
+			InstitutionID: be.InstitutionID,
+			TxCode:        BETxCode,
 		},
 		Body: requestBody{
 			TxSNBinding: be.BindingId,
@@ -33,14 +41,14 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	//组装参数
 	req := &BindingRequest{
-		Version: "2.0",
+		Version: version,
 		Head: requestHead{
-			InstitutionID: "001405",
-			TxCode:        "2501",
+			InstitutionID: be.InstitutionID,
+			TxCode:        BCTxCode,
 		},
 		Body: requestBody{
 			TxSNBinding:          be.BindingId,
-			BankID:               "102", //TODO
+			BankID:               be.BankId,
 			AccountName:          be.AcctName,
 			AccountNumber:        be.AcctNum,
 			IdentificationType:   be.IdentType,
@@ -62,13 +70,13 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
-		Version: "2.0",
+		Version: version,
 		Head: requestHead{
-			InstitutionID: "001405", //测试ID
-			TxCode:        "2503",
+			InstitutionID: be.InstitutionID,
+			TxCode:        BRTxCode,
 		},
 		Body: requestBody{
-			TxSNUnBinding: "", //TODO
+			TxSNUnBinding: be.TxSNUnBinding,
 			TxSNBinding:   be.BindingId,
 		},
 	}
@@ -87,17 +95,17 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 
 	//组装参数
 	req := &BindingRequest{
-		Version: "2.0",
+		Version: version,
 		Head: requestHead{
-			InstitutionID: "001405",
-			TxCode:        "2511",
+			InstitutionID: be.InstitutionID,
+			TxCode:        BPTxCode,
 		},
 		Body: requestBody{
 			PaymentNo:      be.MerOrderNum,
 			Amount:         be.TransAmt,
 			TxSNBinding:    be.BindingId,
-			SettlementFlag: "", //TODO
-			Remark:         "",
+			SettlementFlag: be.SettlementFlag,
+			Remark:         be.Remark,
 		},
 	}
 	//请求

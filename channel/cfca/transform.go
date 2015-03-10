@@ -2,17 +2,8 @@ package cfca
 
 import (
 	"quickpay/model"
+	"quickpay/mongo"
 )
-
-type RespCode struct {
-	Code, Message string
-}
-
-var respCodeMap map[string]RespCode
-
-func init() {
-	respCodeMap = make(map[string]RespCode)
-}
 
 // transformResp 转换应答内容
 func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingReturn) {
@@ -89,11 +80,11 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	}
 
 	// 失败的请求
-	// TODO查找对应关系
-	res := respCodeMap[resp.Head.Code]
+	// 查找对应关系
+	rep := mongo.GetRespCode(resp.Head.Code, "cfca")
 	ret = &model.BindingReturn{
-		RespCode: res.Code,
-		RespMsg:  res.Message,
+		RespCode: rep.RespCode,
+		RespMsg:  rep.RespMsg,
 	}
 
 	return
