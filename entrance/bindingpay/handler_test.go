@@ -44,34 +44,6 @@ func TestBindingCreateHandle(t *testing.T) {
 	g.Debug("%+v", response)
 }
 
-func TestBindingCreateHandleWhenIdentTypeWrong(t *testing.T) {
-	merId := "10000001"
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"12","identNum":"36050219880401","phoneNum":"15600009909","acctType":"20","validDate":"1903","cvv2":"232","sendSmsId":"1000000000009","smsCode":"12353"}`
-
-	response := bindingCreateRequestHandle("POST", url, body, t)
-	g.Debug("%+v", response)
-	if response.RespCode != "200111" {
-		t.Error("验证 '证件类型有误' 失败")
-	} else {
-		t.Logf("%+v", response)
-	}
-}
-
-func TestBindingCreateHandleWhenPhoneNumWrong(t *testing.T) {
-	merId := "10000001"
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"0","identNum":"36050219880401","phoneNum":"059586832309","acctType":"20","validDate":"1903","cvv2":"232","sendSmsId":"1000000000009","smsCode":"12353"}`
-
-	response := bindingCreateRequestHandle("POST", url, body, t)
-	g.Debug("%+v", response)
-	if response.RespCode != "200113" {
-		t.Error("验证 '手机号码格式错误' 失败")
-	} else {
-		t.Logf("%+v", response)
-	}
-}
-
 func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
 	merId := "10000001"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
