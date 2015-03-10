@@ -22,5 +22,5 @@ func init() {
 	session.SetMode(mgo.Monotonic, true)
 	db = session.DB(dbname)
 
-	g.Info("connect to mongodb %s database %s", host, dbname)
+	g.Info("connected to mongodb %s database %s", host, dbname)
 }
