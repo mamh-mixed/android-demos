@@ -5,7 +5,7 @@ import (
 )
 
 func TestFindRouterPolicyByMerCodeAndCardBrand(t *testing.T) {
-	rp, err := FindRouterPolicyByMerCodeAndCardBrand("1000000001", "CUP")
+	rp, err := FindRouter("1000000001", "CUP")
 	if err != nil {
 		t.Errorf("Excepted an error,but get nil")
 	} else {

@@ -14,7 +14,7 @@ type RouterPolicy struct {
 }
 
 // 根据源商户号和卡品牌在数据库中查找路由策略
-func FindRouterPolicyByMerCodeAndCardBrand(origMerCode, cardBrand string) (rp *RouterPolicy, err error) {
+func FindRouter(origMerCode, cardBrand string) (rp *RouterPolicy, err error) {
 	rp = new(RouterPolicy)
 	err = db.routerPolicy.Find(bson.M{"origMerCode": origMerCode, "cardBrand": cardBrand}).One(rp)
 	if err != nil {
