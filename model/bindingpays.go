@@ -35,19 +35,19 @@ func NewBindingReturn(code, msg string) (ret *BindingReturn) {
 
 // BindingCreate 建立绑定支付
 type BindingCreate struct {
-	BindingId     string `json:"bindingId"` // 银行卡绑定ID
-	AcctName      string `json:"acctName"`  // 账户名称
-	AcctNum       string `json:"acctNum"`   // 账户号码
-	IdentType     string `json:"identType"` // 证件类型
-	IdentNum      string `json:"identNum"`  // 证件号码
-	PhoneNum      string `json:"phoneNum"`  // 手机号
-	AcctType      string `json:"acctType"`  // 账户类型
-	ValidDate     string `json:"validDate"` // 信用卡有限期
-	Cvv2          string `json:"cvv2"`      // CVV2
-	SendSmsId     string `json:"sendSmsId"` // 发送短信验证码的交易流水
-	SmsCode       string `json:"smsCode"`   // 短信验证码
-	InstitutionId string //商户ID
-	BankId        string //银行ID
+	BindingId     string `json:"bindingId" bson:"bindingId,omitempty"`                   // 银行卡绑定ID
+	AcctName      string `json:"acctName" bson:"acctName,omitempty"`                     // 账户名称
+	AcctNum       string `json:"acctNum" bson:"acctNum,omitempty"`                       // 账户号码
+	IdentType     string `json:"identType" bson:"identType,omitempty"`                   // 证件类型
+	IdentNum      string `json:"identNum" bson:"identNum,omitempty"`                     // 证件号码
+	PhoneNum      string `json:"phoneNum" bson:"phoneNum,omitempty"`                     // 手机号
+	AcctType      string `json:"acctType" bson:"acctType,omitempty"`                     // 账户类型
+	ValidDate     string `json:"validDate" bson:"validDate,omitempty"`                   // 信用卡有限期
+	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`                             // CVV2
+	SendSmsId     string `json:"sendSmsId" bson:"sendSmsId,omitempty"`                   // 发送短信验证码的交易流水
+	SmsCode       string `json:"smsCode" bson:"smsCode,omitempty"`                       // 短信验证码
+	InstitutionId string `json:"institutionId,omitempty" bson:"institutionId,omitempty"` //商户ID
+	BankId        string `json:"bankId,omitempty" bson:"bankId,omitempty"`               //银行ID
 }
 
 // BindingRemove 解除绑定关系请求

@@ -43,7 +43,9 @@ func FindCardBrandByCardNum(cardNum string) (cardBrand string) {
 }
 
 // 根据卡号判断是否是银联卡
-func IsUnionPayCard(cardNum string) bool {
-	cardBrand := FindCardBrandByCardNum(cardNum)
+func IsUnionPayCard(cardNum, cardBrand string) bool {
+	if cardBrand == "" {
+		cardBrand = FindCardBrandByCardNum(cardNum)
+	}
 	return strings.EqualFold("CUP", cardBrand) || strings.EqualFold("UPI", cardBrand)
 }
