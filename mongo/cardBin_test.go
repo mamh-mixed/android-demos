@@ -1,11 +1,9 @@
 package mongo
 
-import (
-	// "encoding/json"
-	// "io/ioutil"
-	"github.com/omigo/g"
-	"testing"
-)
+import
+// "encoding/json"
+// "io/ioutil"
+"testing"
 
 /*
 func TestCardBinImport(t *testing.T) {
@@ -43,7 +41,12 @@ func TestCardBinImport(t *testing.T) {
 }
 */
 
-func TestFindByCardNumLen(t *testing.T) {
-	cardBinArrays := FindByCardLen(14)
-	g.Debug("cardBinArrays: %+v", cardBinArrays)
+func TestFindCardBin(t *testing.T) {
+
+	var cardNum = "6222801932062061908"
+	cardBin := FindCardBin(cardNum)
+
+	if cardBin.Bin != "622280193" {
+		t.Errorf("cardNum %s prefix is not %s", cardNum, cardBin.Bin)
+	}
 }

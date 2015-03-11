@@ -2,30 +2,32 @@ package mongo
 
 import (
 	"encoding/json"
-	"github.com/omigo/g"
-	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/omigo/g"
+	"gopkg.in/mgo.v2/bson"
 )
 
-func TestGetRespCode(t *testing.T) {
-
-	//channel
-	channel := GetRespCode("240021", "cfca")
-
-	if channel == nil {
-		t.Error("codeType does not exist")
-	}
-	//sys
-	sys := GetRespCode(channel.RespCode, "sys")
-	if sys == nil {
-		t.Error("codeType does not exist")
-	}
-
-	g.Debug("sucess,resp obj (%s),(%s)", channel, sys)
-
-}
+//
+// func TestGetRespCode(t *testing.T) {
+//
+// 	//channel
+// 	channel := GetRespCode("240021", "cfca")
+//
+// 	if channel == nil {
+// 		t.Error("codeType does not exist")
+// 	}
+// 	//sys
+// 	sys := GetRespCode(channel.RespCode, "sys")
+// 	if sys == nil {
+// 		t.Error("codeType does not exist")
+// 	}
+//
+// 	g.Debug("sucess,resp obj (%s),(%s)", channel, sys)
+//
+// }
 
 func TestInitRespCode(t *testing.T) {
 
