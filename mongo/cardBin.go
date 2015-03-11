@@ -11,11 +11,9 @@ type CardBin struct {
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
 }
 
-const CardBinTable string = "cardBin"
-
 // 根据卡长度查找卡BIN列表
 func FindByCardLen(cardLen int) *[]CardBin {
 	result := &[]CardBin{}
-	db.C(CardBinTable).Find(bson.M{"cardLen": cardLen}).All(result)
+	db.cardBin.Find(bson.M{"cardLen": cardLen}).All(result)
 	return result
 }

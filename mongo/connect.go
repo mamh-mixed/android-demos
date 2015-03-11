@@ -18,6 +18,8 @@ type mgodb struct {
 	respCode *mgo.Collection
 	//for test
 	people *mgo.Collection
+	//卡bin
+	cardBin *mgo.Collection
 }
 
 var db mgodb
@@ -38,5 +40,6 @@ func init() {
 		database: database,
 		respCode: database.C("respCode"),
 		people:   database.C("people"),
+		cardBin:  database.C("cardBin"),
 	}
 }

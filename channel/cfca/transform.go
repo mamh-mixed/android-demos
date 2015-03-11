@@ -81,7 +81,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 
 	// 失败的请求
 	// 查找对应关系
-	rep := mongo.GetRespCode(resp.Head.Code, "cfca")
+	rep := mongo.GetRespCodeByCfca(resp.Head.Code)
 	ret = &model.BindingReturn{
 		RespCode: rep.RespCode,
 		RespMsg:  rep.RespMsg,

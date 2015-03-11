@@ -29,16 +29,17 @@ func TestProcessBindingEnquiry(t *testing.T) {
 
 	be := &model.BindingEnquiry{
 		BindingId:     "123456789",
-		InstitutionID: "001405",
+		InstitutionId: "001405",
 	}
 	resp := ProcessBindingEnquiry(be)
+
 	g.Debug("response message  %s", resp)
 }
 
 func TestProcessBindingCreate(t *testing.T) {
 
 	be := &model.BindingCreate{
-		InstitutionID: "001405",
+		InstitutionId: "001405",
 		BindingId:     "1234567890",
 		BankId:        "102",
 		AcctName:      "test",
@@ -59,7 +60,7 @@ func TestProcessBindingCreate(t *testing.T) {
 func TestProcessBindingRemove(t *testing.T) {
 
 	be := &model.BindingRemove{
-		InstitutionID: "001405",
+		InstitutionId: "001405",
 		BindingId:     "123456789",
 		TxSNUnBinding: "3333444",
 	}
@@ -70,7 +71,7 @@ func TestProcessBindingRemove(t *testing.T) {
 func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
-		InstitutionID:  "001405",
+		InstitutionId:  "001405",
 		BindingId:      "1234567890",
 		SettlementFlag: "475",
 		//需要变化
