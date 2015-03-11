@@ -3,15 +3,13 @@ package cfca
 import "quickpay/model"
 
 const (
-	correctCode = "2000"
-)
-
-const (
 	version              = "2.0"
+	correctCode          = "2000"
 	BindingCreateTxCode  = "2501"
 	BindingEnquiryTxCode = "2502"
 	BindingRemoveTxCode  = "2503"
 	BindingPaymentTxCode = "2511"
+	BindingRefundTxCode  = "2521"
 )
 
 // ProcessBindingEnquiry 查询绑定关系
@@ -114,4 +112,28 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	ret = transformResp(resp, req.Head.TxCode)
 	return
 
+}
+
+// ProcessBindingRefund 快捷支付退款
+func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
+
+	//组装参数
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			InstitutionID: be.InstitutionId,
+			TxCode:        BindingRefundTxCode,
+		},
+		Body: requestBody{
+			TxSN:      be.MerOrderNum,  //退款交易流水号
+			PaymentNo: be.OrigOrderNum, //原交易流水号
+			Amount:    be.TransAmt,
+			Remark:    be.Remark,
+		},
+	}
+	//请求
+	resp := sendRequest(req)
+	//应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+	return
 }

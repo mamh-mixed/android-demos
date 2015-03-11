@@ -10,9 +10,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 
 	// 成功受理的请求
 	if flag := resp.Head.Code == correctCode; flag {
-
 		ret = &model.BindingReturn{}
-
 		switch txCode {
 		//根据交易类型处理结果
 		//建立绑定关系
@@ -26,8 +24,6 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			default:
 				ret.RespCode = "000001"
 			}
-			ret.RespMsg = resp.Body.ResponseMessage
-
 		//绑定关系查询
 		case BindingEnquiryTxCode:
 			//10=绑定处理中 20=绑定失败 30=绑定成功 40=解绑成功
@@ -43,8 +39,6 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			default:
 				ret.RespCode = "000001"
 			}
-			ret.RespMsg = resp.Body.ResponseMessage
-
 		//解除绑定关系
 		case BindingRemoveTxCode:
 			//10=解绑处理中 20=解绑成功 30=解绑失败(等于已绑定)
@@ -58,8 +52,6 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			default:
 				ret.RespCode = "000001"
 			}
-			ret.RespMsg = resp.Body.ResponseMessage
-
 		//快捷支付
 		case BindingPaymentTxCode:
 			//10=处理中 20=支付成功 30=支付失败
@@ -73,9 +65,9 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			default:
 				ret.RespCode = "000001"
 			}
-			ret.RespMsg = resp.Body.ResponseMessage
 		}
-
+		resp := mongo.GetRespCode(ret.RespCode)
+		ret.RespMsg = resp.RespMsg
 		return
 	}
 
