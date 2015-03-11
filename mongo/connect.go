@@ -14,12 +14,16 @@ const (
 
 type mgodb struct {
 	database *mgo.Database
-	//应答码表
+	// 应答码表
 	respCode *mgo.Collection
-	//for test
+	// for test
 	people *mgo.Collection
-	//卡bin
+	// 卡bin
 	cardBin *mgo.Collection
+	// 绑定关系集合
+	bindingRelation *mgo.Collection
+	// 路由策略集合
+	routerPolicy *mgo.Collection
 }
 
 var db mgodb
@@ -37,9 +41,11 @@ func init() {
 
 	//init
 	db = mgodb{
-		database: database,
-		respCode: database.C("respCode"),
-		people:   database.C("people"),
-		cardBin:  database.C("cardBin"),
+		database:        database,
+		respCode:        database.C("respCode"),
+		people:          database.C("people"),
+		cardBin:         database.C("cardBin"),
+		bindingRelation: database.C("bindingRelation"),
+		routerPolicy:    database.C("routerPolicy"),
 	}
 }

@@ -8,7 +8,7 @@ import (
 func TestInsertOneBindingRelation(t *testing.T) {
 	br := &BindingRelation{
 		CardInfo: model.BindingCreate{
-			BindingId: "1000000000002",
+			BindingId: "1000000000001",
 			AcctName:  "张三",
 			AcctNum:   "6210948000000219",
 			IdentType: "0",
@@ -19,7 +19,7 @@ func TestInsertOneBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerCode:    "M1000000002",
+			OrigMerCode:    "M1000000001",
 			CardBrand:      "CUP",
 			ChannelCode:    "CFCA",
 			ChannelMerCode: "20000000002",

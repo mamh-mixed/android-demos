@@ -13,12 +13,10 @@ type RouterPolicy struct {
 	ChannelMerCode string `json:"channelMerCode" bson:"channelMerCode,omitempty"` // 渠道商户号
 }
 
-const RouterPolicyCollectionName = "routerPolicy"
-
 // 根据源商户号和卡品牌在数据库中查找路由策略
 func FindRouterPolicyByMerCodeAndCardBrand(origMerCode, cardBrand string) (rp *RouterPolicy, err error) {
 	rp = new(RouterPolicy)
-	err = db.C(RouterPolicyCollectionName).Find(bson.M{"origMerCode": origMerCode, "cardBrand": cardBrand}).One(rp)
+	err = db.routerPolicy.Find(bson.M{"origMerCode": origMerCode, "cardBrand": cardBrand}).One(rp)
 	if err != nil {
 		g.Debug("Error message is ", err.Error())
 		return nil, err
@@ -29,8 +27,7 @@ func FindRouterPolicyByMerCodeAndCardBrand(origMerCode, cardBrand string) (rp *R
 
 // 插入一个路由策略到数据库中
 func InsertOneRouterPolicy(rp *RouterPolicy) error {
-	c := db.C(RouterPolicyCollectionName)
-	if err := c.Insert(rp); err != nil {
+	if err := db.routerPolicy.Insert(rp); err != nil {
 		return err
 	}
 	return nil
