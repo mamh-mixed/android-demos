@@ -20,6 +20,8 @@ type mgodb struct {
 	people *mgo.Collection
 	//卡bin
 	cardBin *mgo.Collection
+	//渠道商户
+	chanMer *mgo.Collection
 }
 
 var db mgodb
@@ -41,5 +43,6 @@ func init() {
 		respCode: database.C("respCode"),
 		people:   database.C("people"),
 		cardBin:  database.C("cardBin"),
+		chanMer:  database.C("chanMer"),
 	}
 }

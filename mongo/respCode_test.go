@@ -12,13 +12,13 @@ import (
 func TestGetRespCode(t *testing.T) {
 
 	//channel
-	channel := GetRespCode("240021", "cfca")
+	channel := GetRespCodeByCfca("240021")
 
 	if channel == nil {
 		t.Error("codeType does not exist")
 	}
 	//sys
-	sys := GetRespCode(channel.RespCode, "sys")
+	sys := GetRespCode(channel.RespCode)
 	if sys == nil {
 		t.Error("codeType does not exist")
 	}
