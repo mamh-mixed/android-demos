@@ -1,21 +1,43 @@
 package core
 
 import (
-	"quickpay/channel"
+	"quickpay/channel/cfca"
 	"quickpay/model"
+	"quickpay/mongo"
 )
 
-// CreateBinding 绑卡
-func CreateBinding(in *model.BindingCreateIn) (out *model.BindingCreateOut) {
+// ProcessBindingEnquiry 绑定关系查询
+func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 
-	// 路由
-	// 风控
-	// 这部分可以提出一个公共模块
+	// 本地查询绑定关系
+	// merId = ass.merId
 
-	// 判断卡bin ，决定走哪个渠道
-	c := channel.GetBindingpayChannel("chinapayment").(*channel.Chinapay)
+	ret = cfca.ProcessBindingEnquiry(be)
 
-	out = c.CreateBinding(in)
+	// post process
 
-	return out
+	return ret
+}
+
+func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// 本地查询绑定关系
+	// merId = ass.merId
+	// 根据绑定关系得到渠道商户信息
+	chanMer := mongo.ChanMer{
+		ChanCode:  "",
+		ChanMerId: "",
+	}
+	err := chanMer.Init()
+	if err != nil {
+		//not found
+		//return
+	}
+	// 记录这笔交易
+
+	be.SettlementFlag = chanMer.SettlementFlag
+	ret = cfca.ProcessBindingPayment(be)
+
+	// post process
+
+	return ret
 }
