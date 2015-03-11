@@ -32,6 +32,8 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		//not found
 		//return
 	}
+	// 记录这笔交易
+
 	be.SettlementFlag = chanMer.SettlementFlag
 	ret = cfca.ProcessBindingPayment(be)
 

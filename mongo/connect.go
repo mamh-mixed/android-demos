@@ -20,6 +20,8 @@ type mgodb struct {
 	people *mgo.Collection
 	//卡bin
 	cardBin *mgo.Collection
+	//交易记录
+	another *mgo.Collection
 	//渠道商户
 	chanMer *mgo.Collection
 }
@@ -44,5 +46,6 @@ func init() {
 		people:   database.C("people"),
 		cardBin:  database.C("cardBin"),
 		chanMer:  database.C("chanMer"),
+		another:  database.C("trans"),
 	}
 }

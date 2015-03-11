@@ -22,12 +22,11 @@ func (c *ChanMer) Init() error {
 		"chancode":  c.ChanCode,
 		"chanmerid": c.ChanMerId,
 	}
-	err := db.chanMer.Find(bo).One(c)
-	return err
+	return db.chanMer.Find(bo).One(c)
+
 }
 
 // Add 增加一个渠道商户
 func (c *ChanMer) Add() error {
-	err := db.chanMer.Insert(c)
-	return err
+	return db.chanMer.Insert(c)
 }
