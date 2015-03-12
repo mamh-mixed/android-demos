@@ -36,7 +36,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 根据商户、卡号、绑定Id、渠道、渠道商户生成一个系统绑定Id，并将这些关系入库
 	bc.SendSmsId = ""
 	bc.SmsCode = ""
-	br := &mongo.BindingRelation{
+	br := &model.BindingRelation{
 		CardInfo: *bc,
 		Router:   *routerPolicy,
 	}

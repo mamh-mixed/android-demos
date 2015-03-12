@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
+	"quickpay/model"
 	"testing"
 )
 
@@ -29,7 +30,7 @@ func TestInitRespCode(t *testing.T) {
 	rc, _ := os.Open("../respCode.json")
 	g.Debug("file path ", rc.Name())
 	bytes, _ := ioutil.ReadAll(rc)
-	var resps []Resp
+	var resps []model.Resp
 	err := json.Unmarshal(bytes, &resps)
 	if err != nil {
 		t.Error(err)

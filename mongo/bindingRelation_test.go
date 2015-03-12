@@ -6,7 +6,7 @@ import (
 )
 
 func TestInsertBindingRelation(t *testing.T) {
-	br := &BindingRelation{
+	br := &model.BindingRelation{
 		CardInfo: model.BindingCreate{
 			BindingId: "12345678901",
 			AcctName:  "张三",
@@ -46,7 +46,7 @@ func TestFindBindingRelationByMerCodeAndBindingId(t *testing.T) {
 }
 
 func TestUpdateBindingRelation(t *testing.T) {
-	br := &BindingRelation{
+	br := &model.BindingRelation{
 		CardInfo: model.BindingCreate{
 			BindingId: "12345678901",
 			AcctName:  "张三",
@@ -74,7 +74,7 @@ func TestUpdateBindingRelation(t *testing.T) {
 }
 
 func TestDeleteBindingRelation(t *testing.T) {
-	br := &BindingRelation{
+	br := &model.BindingRelation{
 		CardInfo: model.BindingCreate{
 			BindingId: "1000000000001",
 			AcctName:  "张三",
@@ -86,13 +86,13 @@ func TestDeleteBindingRelation(t *testing.T) {
 			ValidDate: "1903",
 			Cvv2:      "232",
 		},
-		Router: RouterPolicy{
+		Router: model.RouterPolicy{
 			OrigMerId: "001405",
 			CardBrand: "CUP",
 			ChanCode:  "CFCA",
 			ChanMerId: "20000000002",
 		},
-		ChannelBindingId: "",
+		ChanBindingId: "",
 	}
 
 	err := DeleteBindingRelation(br)
