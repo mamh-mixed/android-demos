@@ -36,7 +36,7 @@ func TestInsertOneBindingRelation(t *testing.T) {
 }
 
 func TestFindOneBindingRelationByMerCodeAndBindingId(t *testing.T) {
-	br, err := FindOneBindingRelationByMerCodeAndBindingId("M1000000001", "1000000000001")
+	br, err := FindOneBindingRelation("M1000000001", "1000000000001")
 	if err != nil {
 		t.Errorf("Excepted 'nil',but get one error: '%s'", err.Error())
 	}

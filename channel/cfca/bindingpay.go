@@ -18,7 +18,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionId,
+			InstitutionID: be.MerId,
 			TxCode:        BindingEnquiryTxCode,
 		},
 		Body: requestBody{
@@ -41,7 +41,7 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionId,
+			InstitutionID: be.MerId,
 			TxCode:        BindingCreateTxCode,
 		},
 		Body: requestBody{
@@ -70,7 +70,7 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionId,
+			InstitutionID: be.MerId,
 			TxCode:        BindingRemoveTxCode,
 		},
 		Body: requestBody{
@@ -95,7 +95,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionId,
+			InstitutionID: be.MerId,
 			TxCode:        BindingPaymentTxCode,
 		},
 		Body: requestBody{
@@ -121,7 +121,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.InstitutionId,
+			InstitutionID: be.MerId,
 			TxCode:        BindingRefundTxCode,
 		},
 		Body: requestBody{
