@@ -147,8 +147,9 @@ func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
 		return ret
 	}
 	//  todo 业务处理
+	ret = core.ProcessBindingPayment(&in)
 	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
+	// ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 

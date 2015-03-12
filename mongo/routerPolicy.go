@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// RouterPolicy 路由策略
 type RouterPolicy struct {
 	OrigMerId string `json:"origMerId" bson:"origMerId,omitempty"` // 源商户号
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
@@ -13,7 +14,7 @@ type RouterPolicy struct {
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
 }
 
-// 根据源商户号和卡品牌在数据库中查找路由策略
+// FindRouter 根据源商户号和卡品牌在数据库中查找路由策略
 func FindRouter(origMerId, cardBrand string) (rp *RouterPolicy, err error) {
 	rp = new(RouterPolicy)
 	q := bson.M{"origMerId": origMerId, "cardBrand": cardBrand}
@@ -29,7 +30,7 @@ func FindRouter(origMerId, cardBrand string) (rp *RouterPolicy, err error) {
 	return rp, nil
 }
 
-// 插入一个路由策略到数据库中
+// InsertOneRouterPolicy 插入一个路由策略到数据库中
 func InsertOneRouterPolicy(rp *RouterPolicy) error {
 	if err := db.routerPolicy.Insert(rp); err != nil {
 		return err

@@ -1,6 +1,9 @@
 package cfca
 
-import "quickpay/model"
+import (
+	"github.com/omigo/g"
+	"quickpay/model"
+)
 
 const (
 	version              = "2.0"
@@ -107,6 +110,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		},
 	}
 	//请求
+	g.Debug("request for cfca param (%s)", req)
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)

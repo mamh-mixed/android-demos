@@ -1,11 +1,10 @@
 package core
 
 import (
+	"github.com/omigo/g"
 	"quickpay/channel/cfca"
 	"quickpay/model"
 	"quickpay/mongo"
-
-	"github.com/omigo/g"
 	"strings"
 )
 
@@ -74,25 +73,48 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 }
 
 func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// 默认返回
+	ret = &model.BindingReturn{
+		RespCode: "000001",
+		RespMsg:  "系统错误",
+	}
 	// 本地查询绑定关系
-	// merId = ass.merId
+	bindRelation, err := mongo.FindOneBindingRelation(be.MerId, be.BindingId)
+	if err != nil {
+		g.Debug("not found any bindRelation (%s)", err)
+		return
+	}
 	// 根据绑定关系得到渠道商户信息
 	chanMer := mongo.ChanMer{
-		ChanCode:  "",
-		ChanMerId: "",
+		ChanCode:  bindRelation.Router.ChannelCode,
+		ChanMerId: bindRelation.Router.ChannelMerCode,
 	}
-	err := chanMer.Init()
-	if err != nil {
-		//not found
-		//return
+	if err = chanMer.Init(); err != nil {
+		g.Debug("not found any chanMer (%s)", err)
+		return
 	}
 	// 记录这笔交易
-
+	trans := mongo.Trans{
+		Chan:    chanMer,
+		Payment: *be,
+	}
+	if err = trans.Add(); err != nil {
+		g.Debug("add trans fail  (%s)", err)
+		return
+	}
 	be.SettlementFlag = chanMer.SettlementFlag
+	be.BindingId = bindRelation.ChannelBindingId
+	be.MerId = bindRelation.Router.ChannelMerCode
 	ret = cfca.ProcessBindingPayment(be)
 
-	// post process
-	return ret
+	// 处理结果
+	if ret.RespCode == "000000" {
+		trans.Flag = 1
+		// 不关心是否更新成功
+		trans.Modify()
+	}
+
+	return
 }
 
 // todo 校验短信验证码，短信验证通过就返回nil

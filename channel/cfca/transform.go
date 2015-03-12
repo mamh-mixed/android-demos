@@ -8,6 +8,14 @@ import (
 // transformResp 转换应答内容
 func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingReturn) {
 
+	// default
+	ret = &model.BindingReturn{
+		RespCode: "000001",
+		RespMsg:  "系统错误",
+	}
+	if resp == nil {
+		return
+	}
 	// 成功受理的请求
 	if flag := resp.Head.Code == correctCode; flag {
 		ret = &model.BindingReturn{}
@@ -35,7 +43,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			case 30:
 				ret.RespCode = "000000"
 			case 40:
-				ret.RespCode = "000040"
+				ret.RespCode = "100050"
 			default:
 				ret.RespCode = "000001"
 			}

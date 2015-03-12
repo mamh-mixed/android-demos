@@ -22,8 +22,8 @@ func TestChanMerInit(t *testing.T) {
 
 func TestChanMerAdd(t *testing.T) {
 	chanMer := ChanMer{
-		ChanCode:       "00010000",
-		ChanMerId:      "45672341231",
+		ChanCode:       "CFCA",
+		ChanMerId:      "001405",
 		ChanMerName:    "测试渠道商户",
 		SettlementFlag: "457",
 		SettlementRole: "testRole",
