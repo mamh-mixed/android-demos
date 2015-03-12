@@ -4,6 +4,7 @@ import (
 	"quickpay/channel/cfca"
 	"quickpay/model"
 	"quickpay/mongo"
+	"quickpay/tools"
 	"strings"
 
 	"github.com/omigo/g"
@@ -52,7 +53,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		return ret
 	}
 
-	br.ChanBindingId = ret.BindingId
+	br.ChanBindingId = tools.UUID()
 	err = mongo.UpdateBindingRelation(br)
 	if err != nil {
 		// todo 更新数据库错误码
