@@ -8,7 +8,7 @@ import (
 func TestProcessBindingCreate(t *testing.T) {
 	bc := &model.BindingCreate{
 		MerId:     "001405",
-		BindingId: "1000000000005",
+		BindingId: "1000000000006",
 		AcctName:  "张三",
 		AcctNum:   "6222020302062061908",
 		IdentType: "0",
@@ -25,5 +25,9 @@ func TestProcessBindingCreate(t *testing.T) {
 	ret := ProcessBindingCreate(bc)
 
 	t.Logf("%+v", ret)
+
+	if ret.RespCode != "000000" {
+		t.Errorf("Excpeted success,but get failure: %+v", ret.RespMsg)
+	}
 
 }
