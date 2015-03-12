@@ -5,8 +5,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"testing"
 	"time"
-
-	"github.com/omigo/g"
 )
 
 func TestTransAdd(t *testing.T) {

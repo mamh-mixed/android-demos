@@ -21,7 +21,7 @@ func InsertOneBindingRelation(br *BindingRelation) error {
 }
 
 // 根据源商户号和绑定ID查找一条绑定关系
-func FindOneBindingRelationByMerCodeAndBindingId(merCode, bindingId string) (br *BindingRelation, err error) {
+func FindOneBindingRelation(merCode, bindingId string) (br *BindingRelation, err error) {
 	br = new(BindingRelation)
 	err = db.bindingRelation.Find(bson.M{"cardInfo.bindingId": bindingId, "router.origMerCode": merCode}).One(br)
 	return br, err

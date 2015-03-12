@@ -8,7 +8,7 @@ import (
 func TestInsertOneBindingRelation(t *testing.T) {
 	br := &BindingRelation{
 		CardInfo: model.BindingCreate{
-			BindingId: "1000000000001",
+			BindingId: "12345678901",
 			AcctName:  "张三",
 			AcctNum:   "6210948000000219",
 			IdentType: "0",
@@ -19,10 +19,10 @@ func TestInsertOneBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerCode:    "M1000000001",
+			OrigMerCode:    "20000000002",
 			CardBrand:      "CUP",
 			ChannelCode:    "CFCA",
-			ChannelMerCode: "20000000002",
+			ChannelMerCode: "001405",
 		},
 		ChannelBindingId: "",
 	}
@@ -36,7 +36,7 @@ func TestInsertOneBindingRelation(t *testing.T) {
 }
 
 func TestFindOneBindingRelationByMerCodeAndBindingId(t *testing.T) {
-	br, err := FindOneBindingRelationByMerCodeAndBindingId("M1000000001", "1000000000001")
+	br, err := FindOneBindingRelation("M1000000001", "1000000000001")
 	if err != nil {
 		t.Errorf("Excepted 'nil',but get one error: '%s'", err.Error())
 	}
@@ -51,7 +51,7 @@ func TestFindOneBindingRelationByMerCodeAndBindingId(t *testing.T) {
 func TestUpdateOneBindingRelation(t *testing.T) {
 	br := &BindingRelation{
 		CardInfo: model.BindingCreate{
-			BindingId: "1000000000001",
+			BindingId: "12345678901",
 			AcctName:  "张三",
 			AcctNum:   "6210948000000219",
 			IdentType: "0",
@@ -62,12 +62,12 @@ func TestUpdateOneBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerCode:    "M1000000001",
+			OrigMerCode:    "20000000002",
 			CardBrand:      "CUP",
 			ChannelCode:    "CFCA",
-			ChannelMerCode: "20000000002",
+			ChannelMerCode: "001405",
 		},
-		ChannelBindingId: "CB11110000011",
+		ChannelBindingId: "12345678901",
 	}
 
 	err := UpdateOneBindingRelation(br)

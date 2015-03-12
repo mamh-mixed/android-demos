@@ -16,6 +16,7 @@ type Trans struct {
 
 // Add 添加一笔交易
 func (t *Trans) Add() error {
+	// default
 	t.Id = bson.NewObjectId()
 	t.Time = time.Now().Unix()
 	t.Flag = 0

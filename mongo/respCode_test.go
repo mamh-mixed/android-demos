@@ -2,12 +2,11 @@ package mongo
 
 import (
 	"encoding/json"
+	"github.com/omigo/g"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
 	"testing"
-
-	"github.com/omigo/g"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func TestGetRespCode(t *testing.T) {
@@ -31,7 +30,7 @@ func TestInitRespCode(t *testing.T) {
 	g.Debug("file path ", rc.Name())
 	bytes, _ := ioutil.ReadAll(rc)
 	var resps []Resp
-	err := json.Unmarshal(cbytes, &resps)
+	err := json.Unmarshal(bytes, &resps)
 	if err != nil {
 		t.Error(err)
 	}
