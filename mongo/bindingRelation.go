@@ -12,7 +12,7 @@ import (
 // BindingRelation 绑定关系
 type BindingRelation struct {
 	CardInfo      model.BindingCreate `json:"cardInfo" bson:"cardInfo,omitempty"`                 //卡片信息
-	Router        RouterPolicy        `json:"router" bson:"router,omitempty"`                     //路由信息
+	Router        model.RouterPolicy  `json:"router" bson:"router,omitempty"`                     //路由信息
 	ChanBindingId string              `json:"channelBindingId" bson:"channelBindingId,omitempty"` //渠道绑定ID
 }
 
