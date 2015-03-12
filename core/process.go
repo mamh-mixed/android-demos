@@ -1,14 +1,15 @@
 package core
 
 import (
-	"github.com/omigo/g"
 	"quickpay/channel/cfca"
 	"quickpay/model"
 	"quickpay/mongo"
 	"strings"
+
+	"github.com/omigo/g"
 )
 
-// 绑定建立的业务处理
+// ProcessBindingCreate 绑定建立的业务处理
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// todo 如果需要校验短信，验证短信
 	ret = validateSmsCode(bc.SendSmsId, bc.SmsCode)
@@ -50,7 +51,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		return ret
 	}
 
-	br.ChannelBindingId = ret.BindingId
+	br.ChanBindingId = ret.BindingId
 	err = mongo.UpdateBindingRelation(br)
 	if err != nil {
 		// todo 更新数据库错误码
@@ -72,6 +73,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	return ret
 }
 
+// ProcessBindingPayment 绑定支付
 func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// 默认返回
 	ret = &model.BindingReturn{
@@ -103,7 +105,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return
 	}
 	be.SettlementFlag = chanMer.SettlementFlag
-	be.BindingId = bindRelation.ChannelBindingId
+	be.BindingId = bindRelation.ChanBindingId
 	be.MerId = bindRelation.Router.ChanMerId
 	ret = cfca.ProcessBindingPayment(be)
 
