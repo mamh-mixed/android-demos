@@ -24,7 +24,7 @@ func TestInsertBindingRelation(t *testing.T) {
 			ChanCode:  "CFCA",
 			ChanMerId: "20000000002",
 		},
-		ChannelBindingId: "",
+		ChanBindingId: "",
 	}
 
 	if err := InsertBindingRelation(br); err != nil {
@@ -64,7 +64,7 @@ func TestUpdateBindingRelation(t *testing.T) {
 			ChanCode:  "CFCA",
 			ChanMerId: "20000000002",
 		},
-		ChannelBindingId: "12345678901",
+		ChanBindingId: "12345678901",
 	}
 
 	err := UpdateBindingRelation(br)
