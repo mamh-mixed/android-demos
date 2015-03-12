@@ -1,5 +1,7 @@
 package model
 
+// import "quickpay/mongo"
+
 // BindingReturn 绑定支付返回
 type BindingReturn struct {
 	RespCode string `json:"respCode"` // 响应代码
@@ -27,9 +29,11 @@ type BindingReturn struct {
 
 //bindingReturn的构造函数
 func NewBindingReturn(code, msg string) (ret *BindingReturn) {
+	// resp := mongo.GetRespCode(code)
 	return &BindingReturn{
 		RespCode: code,
-		RespMsg:  msg,
+		// RespMsg:  resp.RespMsg,
+		RespMsg: msg,
 	}
 }
 
@@ -66,15 +70,15 @@ type BindingEnquiry struct {
 
 // BindingPayment 绑定支付请求
 type BindingPayment struct {
-	SubMerId       string `json:"subMerId"`       // 子商户号
-	MerOrderNum    string `json:"merOrderNum"`    // 商户订单号
-	TransAmt       int64  `json:"transAmt"`       // 支付金额
-	BindingId      string `json:"bindingId"`      // 银行卡绑定ID
-	SendSmsId      string `json:"sendSmsId"`      // 申请短信验证码的交易流水
-	SmsCode        string `json:"smsCode"`        // 短信验证码
-	SettlementFlag string `json:"settlementFlag"` //清算标识
-	MerId          string `json:"merId"`          //商户ID
-	Remark         string `json:"remark"`         //备注
+	SubMerId    string `json:"subMerId"`    // 子商户号
+	MerOrderNum string `json:"merOrderNum"` // 商户订单号
+	TransAmt    int64  `json:"transAmt"`    // 支付金额
+	BindingId   string `json:"bindingId"`   // 银行卡绑定ID
+	SendSmsId   string `json:"sendSmsId"`   // 申请短信验证码的交易流水
+	SmsCode     string `json:"smsCode"`     // 短信验证码
+	SettFlag    string `json:"settFlag"`    //清算标识
+	MerId       string `json:"merId"`       //商户ID
+	Remark      string `json:"remark"`      //备注
 }
 
 // BindingRefund 退款请求

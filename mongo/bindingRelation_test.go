@@ -19,12 +19,12 @@ func TestInsertBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerId: "001405",
+			OrigMerId: "20000000002",
 			CardBrand: "CUP",
 			ChanCode:  "CFCA",
-			ChanMerId: "20000000002",
+			ChanMerId: "001405",
 		},
-		ChanBindingId: "",
+		ChanBindingId: "12345678901",
 	}
 
 	if err := InsertBindingRelation(br); err != nil {
@@ -59,10 +59,10 @@ func TestUpdateBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerId: "001405",
+			OrigMerId: "20000000002",
 			CardBrand: "CUP",
 			ChanCode:  "CFCA",
-			ChanMerId: "20000000002",
+			ChanMerId: "001405",
 		},
 		ChanBindingId: "12345678901",
 	}

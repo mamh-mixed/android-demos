@@ -59,13 +59,19 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 // ProcessBindingEnquiry 绑定关系查询
 func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
-
+	// 默认返回
+	ret = model.NewBindingReturn("000001", "系统内部错误")
 	// 本地查询绑定关系
-	// merId = ass.merId
-
+	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
+	if err != nil {
+		//TODO返回什么应答码
+		g.Debug("not found any bindRelation (%s)", err)
+		return
+	}
+	// 转换绑定关系、请求
+	be.MerId = bindRelation.Router.ChanMerId
+	be.BindingId = bindRelation.ChanBindingId
 	ret = cfca.ProcessBindingEnquiry(be)
-
-	// post process
 
 	return ret
 }
@@ -73,10 +79,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 // ProcessBindingPayment 绑定支付
 func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// 默认返回
-	ret = &model.BindingReturn{
-		RespCode: "000001",
-		RespMsg:  "系统错误",
-	}
+	ret = model.NewBindingReturn("000001", "系统内部错误")
 	// 本地查询绑定关系
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
@@ -88,7 +91,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		ChanCode:  bindRelation.Router.ChanCode,
 		ChanMerId: bindRelation.Router.ChanMerId,
 	}
-	if err = chanMer.Init(); err != nil {
+	if err = chanMer.Find(); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return
 	}
@@ -101,9 +104,10 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		g.Debug("add trans fail  (%s)", err)
 		return
 	}
-	be.SettlementFlag = chanMer.SettlementFlag
+	be.SettFlag = chanMer.SettFlag
 	be.BindingId = bindRelation.ChanBindingId
 	be.MerId = bindRelation.Router.ChanMerId
+	// 支付
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果

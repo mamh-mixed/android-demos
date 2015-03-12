@@ -105,7 +105,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 			PaymentNo:      be.MerOrderNum,
 			Amount:         be.TransAmt,
 			TxSNBinding:    be.BindingId,
-			SettlementFlag: be.SettlementFlag,
+			SettlementFlag: be.SettFlag,
 			Remark:         be.Remark,
 		},
 	}
