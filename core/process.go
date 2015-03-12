@@ -39,7 +39,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		CardInfo: *bc,
 		Router:   *routerPolicy,
 	}
-	if err := mongo.InsertOneBindingRelation(br); err != nil {
+	if err := mongo.InsertBindingRelation(br); err != nil {
 		// todo 插入绑定关系失败的错误码
 		return model.NewBindingReturn("-100000", err.Error())
 	}
@@ -51,7 +51,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 
 	br.ChannelBindingId = ret.BindingId
-	err = mongo.UpdateOneBindingRelation(br)
+	err = mongo.UpdateBindingRelation(br)
 	if err != nil {
 		// todo 更新数据库错误码
 		return model.NewBindingReturn("-100000", err.Error())
@@ -79,15 +79,15 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		RespMsg:  "系统错误",
 	}
 	// 本地查询绑定关系
-	bindRelation, err := mongo.FindOneBindingRelation(be.MerId, be.BindingId)
+	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
 		g.Debug("not found any bindRelation (%s)", err)
 		return
 	}
 	// 根据绑定关系得到渠道商户信息
 	chanMer := mongo.ChanMer{
-		ChanCode:  bindRelation.Router.ChannelCode,
-		ChanMerId: bindRelation.Router.ChannelMerCode,
+		ChanCode:  bindRelation.Router.ChanCode,
+		ChanMerId: bindRelation.Router.ChanMerId,
 	}
 	if err = chanMer.Init(); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
@@ -104,7 +104,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 	be.SettlementFlag = chanMer.SettlementFlag
 	be.BindingId = bindRelation.ChannelBindingId
-	be.MerId = bindRelation.Router.ChannelMerCode
+	be.MerId = bindRelation.Router.ChanMerId
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果

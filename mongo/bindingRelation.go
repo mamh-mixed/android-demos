@@ -47,3 +47,19 @@ func UpdateBindingRelation(br *BindingRelation) error {
 	err := db.bindingRelation.Update(q, br)
 	return err
 }
+
+// 删除一条绑定关系
+func DeleteBindingRelation(br *BindingRelation) error {
+	if br.CardInfo.BindingId == "" {
+		return errors.New("BindingId must required")
+	}
+
+	if br.Router.OrigMerId == "" {
+		return errors.New("OrigMerId must required")
+	}
+
+	q := bson.M{"cardInfo.bindingId": br.CardInfo.BindingId, "router.origMerId": br.Router.OrigMerId}
+	g.Debug("'DeleteBindingRelation' condition: %+v", q)
+
+	return db.bindingRelation.Remove(q)
+}
