@@ -25,31 +25,13 @@ func TestGetRespCode(t *testing.T) {
 	}
 }
 
-// func TestGetRespCode(t *testing.T) {
-//
-// 	//channel
-// 	channel := GetRespCode("240021", "cfca")
-//
-// 	if channel == nil {
-// 		t.Error("codeType does not exist")
-// 	}
-// 	//sys
-// 	sys := GetRespCode(channel.RespCode, "sys")
-// 	if sys == nil {
-// 		t.Error("codeType does not exist")
-// 	}
-//
-// 	g.Debug("sucess,resp obj (%s),(%s)", channel, sys)
-//
-// }
-
 func TestInitRespCode(t *testing.T) {
 
 	rc, _ := os.Open("../respCode.json")
 	g.Debug("file path ", rc.Name())
 	bytes, _ := ioutil.ReadAll(rc)
 	var resps []Resp
-	err := json.Unmarshal(bytes, &resps)
+	err := json.Unmarshal(cbytes, &resps)
 	if err != nil {
 		t.Error(err)
 	}
