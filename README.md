@@ -36,7 +36,7 @@ CFCA 中金
             `go get golang.org/x/tools/cmd/goimports`
 
         - Code quality inspection using `go vet`
-            `go get code.google.com/p/go.tools/cmd/vet`
+            `sudo GOPATH=$GOPATH go get golang.org/x/tools/cmd/vet`
 
         - Linting using `golint`
             `go get github.com/golang/lint/golint`

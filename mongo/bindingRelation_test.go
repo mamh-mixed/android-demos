@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestInsertOneBindingRelation(t *testing.T) {
+func TestInsertBindingRelation(t *testing.T) {
 	br := &BindingRelation{
 		CardInfo: model.BindingCreate{
 			BindingId: "12345678901",
@@ -19,36 +19,33 @@ func TestInsertOneBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerCode:    "20000000002",
-			CardBrand:      "CUP",
-			ChannelCode:    "CFCA",
-			ChannelMerCode: "001405",
+			OrigMerId: "001405",
+			CardBrand: "CUP",
+			ChanCode:  "CFCA",
+			ChanMerId: "20000000002",
 		},
 		ChannelBindingId: "",
 	}
 
-	if err := InsertOneBindingRelation(br); err != nil {
-		t.Errorf("InsertOneBindingRelation error,except 'nil',but get '%s'", err.Error())
+	if err := InsertBindingRelation(br); err != nil {
+		t.Errorf("InsertBindingRelation error,except 'nil',but get '%s'", err.Error())
 	}
-
-	// br := new(BindingRelation)
-	// br.BindingId
 }
 
-func TestFindOneBindingRelationByMerCodeAndBindingId(t *testing.T) {
-	br, err := FindOneBindingRelation("M1000000001", "1000000000001")
+func TestFindBindingRelationByMerCodeAndBindingId(t *testing.T) {
+	br, err := FindBindingRelation("001405", "1000000000001")
 	if err != nil {
-		t.Errorf("Excepted 'nil',but get one error: '%s'", err.Error())
+		t.Errorf("Excepted 'nil',but get  error: '%s'", err.Error())
 	}
 
 	if br == nil {
-		t.Errorf("Excepted one BindingRelation,but get nil")
+		t.Errorf("Excepted  BindingRelation,but get nil")
 	}
 
 	t.Logf("BindingRelation:%+v", br)
 }
 
-func TestUpdateOneBindingRelation(t *testing.T) {
+func TestUpdateBindingRelation(t *testing.T) {
 	br := &BindingRelation{
 		CardInfo: model.BindingCreate{
 			BindingId: "12345678901",
@@ -62,16 +59,16 @@ func TestUpdateOneBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		Router: RouterPolicy{
-			OrigMerCode:    "20000000002",
-			CardBrand:      "CUP",
-			ChannelCode:    "CFCA",
-			ChannelMerCode: "001405",
+			OrigMerId: "001405",
+			CardBrand: "CUP",
+			ChanCode:  "CFCA",
+			ChanMerId: "20000000002",
 		},
 		ChannelBindingId: "12345678901",
 	}
 
-	err := UpdateOneBindingRelation(br)
+	err := UpdateBindingRelation(br)
 	if err != nil {
-		t.Errorf("Excepted 'nil',but get one error: '%s'", err.Error())
+		t.Errorf("Excepted 'nil',but get  error: '%s'", err.Error())
 	}
 }
