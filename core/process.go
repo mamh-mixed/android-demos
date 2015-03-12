@@ -18,6 +18,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	// 获取卡属性
 	cardBin := mongo.FindCardBin(bc.AcctNum)
+
+	g.Debug("CardBin: %+v", cardBin)
 	// 如果是银联卡，验证证件信息
 	if strings.EqualFold("CUP", cardBin.CardBrand) || strings.EqualFold("UPI", cardBin.CardBrand) {
 		ret = UnionPayCardValidity(bc)
@@ -40,7 +42,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	if err := mongo.InsertOneBindingRelation(br); err != nil {
 		// todo 插入绑定关系失败的错误码
-		return model.NewBindingReturn("", err.Error())
+		return model.NewBindingReturn("-100000", err.Error())
 	}
 	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口
 	ret = cfca.ProcessBindingCreate(bc)
@@ -52,7 +54,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	br.ChannelBindingId = ret.BindingId
 	err = mongo.UpdateOneBindingRelation(br)
 	if err != nil {
-		return model.NewBindingReturn("", err.Error())
+		// todo 更新数据库错误码
+		return model.NewBindingReturn("-100000", err.Error())
 	}
 	return ret
 }
