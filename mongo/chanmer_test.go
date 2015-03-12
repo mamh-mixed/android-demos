@@ -2,16 +2,17 @@ package mongo
 
 import (
 	"github.com/omigo/g"
+	"quickpay/model"
 	"testing"
 )
 
 func TestChanMerFind(t *testing.T) {
 
-	chanMer := ChanMer{
+	chanMer := &model.ChanMer{
 		ChanCode:  "000100000",
 		ChanMerId: "45672341231",
 	}
-	err := chanMer.Find()
+	err := FindChanMer(chanMer)
 
 	if err != nil {
 		t.Error("find chanMer unsuccessful ", err)
@@ -21,7 +22,7 @@ func TestChanMerFind(t *testing.T) {
 }
 
 func TestChanMerAdd(t *testing.T) {
-	chanMer := ChanMer{
+	chanMer := &model.ChanMer{
 		ChanCode:      "CFCA",
 		ChanMerId:     "001405",
 		ChanMerName:   "测试渠道商户",
@@ -31,7 +32,7 @@ func TestChanMerAdd(t *testing.T) {
 		CheckSignCert: "checkcfcaCert",
 	}
 
-	err := chanMer.Add()
+	err := AddChanMer(chanMer)
 	if err != nil {
 		t.Errorf("add chanMer unsuccessful ", err)
 		t.FailNow()
@@ -40,7 +41,7 @@ func TestChanMerAdd(t *testing.T) {
 }
 
 func TestChanMerModify(t *testing.T) {
-	chanMer := ChanMer{
+	chanMer := &model.ChanMer{
 		ChanCode:      "CFCA",
 		ChanMerId:     "001405",
 		ChanMerName:   "测试渠道商户",
@@ -50,7 +51,7 @@ func TestChanMerModify(t *testing.T) {
 		CheckSignCert: "checkcfcaCert",
 	}
 
-	err := chanMer.Modify()
+	err := ModifyChanMer(chanMer)
 	if err != nil {
 		t.Errorf("update chanMer unsuccessful ", err)
 		t.FailNow()

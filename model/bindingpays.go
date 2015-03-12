@@ -39,19 +39,21 @@ func NewBindingReturn(code, msg string) (ret *BindingReturn) {
 
 // BindingCreate 建立绑定支付
 type BindingCreate struct {
-	BindingId string `json:"bindingId" bson:"bindingId,omitempty"`     // 银行卡绑定ID
-	MerId     string `json:"merId" bson:"merId,omitempty"`             // 商户ID
-	AcctName  string `json:"acctName" bson:"acctName,omitempty"`       // 账户名称
-	AcctNum   string `json:"acctNum" bson:"acctNum,omitempty"`         // 账户号码
-	IdentType string `json:"identType" bson:"identType,omitempty"`     // 证件类型
-	IdentNum  string `json:"identNum" bson:"identNum,omitempty"`       // 证件号码
-	PhoneNum  string `json:"phoneNum" bson:"phoneNum,omitempty"`       // 手机号
-	AcctType  string `json:"acctType" bson:"acctType,omitempty"`       // 账户类型
-	ValidDate string `json:"validDate" bson:"validDate,omitempty"`     // 信用卡有限期
-	Cvv2      string `json:"cvv2" bson:"cvv2,omitempty"`               // CVV2
-	SendSmsId string `json:"sendSmsId" bson:"sendSmsId,omitempty"`     // 发送短信验证码的交易流水
-	SmsCode   string `json:"smsCode" bson:"smsCode,omitempty"`         // 短信验证码
-	BankId    string `json:"bankId,omitempty" bson:"bankId,omitempty"` //银行ID
+	BindingId     string `json:"bindingId" bson:"bindingId,omitempty"`     // 银行卡绑定ID
+	MerId         string `json:"merId" bson:"merId,omitempty"`             // 商户ID
+	AcctName      string `json:"acctName" bson:"acctName,omitempty"`       // 账户名称
+	AcctNum       string `json:"acctNum" bson:"acctNum,omitempty"`         // 账户号码
+	IdentType     string `json:"identType" bson:"identType,omitempty"`     // 证件类型
+	IdentNum      string `json:"identNum" bson:"identNum,omitempty"`       // 证件号码
+	PhoneNum      string `json:"phoneNum" bson:"phoneNum,omitempty"`       // 手机号
+	AcctType      string `json:"acctType" bson:"acctType,omitempty"`       // 账户类型
+	ValidDate     string `json:"validDate" bson:"validDate,omitempty"`     // 信用卡有限期
+	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`               // CVV2
+	SendSmsId     string `json:"sendSmsId" bson:"sendSmsId,omitempty"`     // 发送短信验证码的交易流水
+	SmsCode       string `json:"smsCode" bson:"smsCode,omitempty"`         // 短信验证码
+	BankId        string `json:"bankId,omitempty" bson:"bankId,omitempty"` //银行ID
+	ChanBindingId string //渠道绑定ID
+	ChanMerId     string //渠道商户ID
 }
 
 // BindingRemove 解除绑定关系请求
@@ -59,26 +61,32 @@ type BindingRemove struct {
 	BindingId     string `json:"bindingId"`     // 银行卡绑定ID
 	MerId         string `json:"merId"`         //商户ID
 	TxSNUnBinding string `json:"txSNUnBinding"` //解绑流水号
+	ChanBindingId string //渠道绑定ID
+	ChanMerId     string //渠道商户ID
 }
 
 // BindingEnquiry 绑定关系查询
 type BindingEnquiry struct {
-	BindingId string `json:"bindingId"` // 银行卡绑定ID
-	MerId     string `json:"merId"`     //商户ID
+	BindingId     string `json:"bindingId"` // 银行卡绑定ID
+	MerId         string `json:"merId"`     //商户ID
+	ChanBindingId string //渠道绑定ID
+	ChanMerId     string //渠道商户ID
 
 }
 
 // BindingPayment 绑定支付请求
 type BindingPayment struct {
-	SubMerId    string `json:"subMerId"`    // 子商户号
-	MerOrderNum string `json:"merOrderNum"` // 商户订单号
-	TransAmt    int64  `json:"transAmt"`    // 支付金额
-	BindingId   string `json:"bindingId"`   // 银行卡绑定ID
-	SendSmsId   string `json:"sendSmsId"`   // 申请短信验证码的交易流水
-	SmsCode     string `json:"smsCode"`     // 短信验证码
-	SettFlag    string `json:"settFlag"`    //清算标识
-	MerId       string `json:"merId"`       //商户ID
-	Remark      string `json:"remark"`      //备注
+	SubMerId      string `json:"subMerId"`    // 子商户号
+	MerOrderNum   string `json:"merOrderNum"` // 商户订单号
+	TransAmt      int64  `json:"transAmt"`    // 支付金额
+	BindingId     string `json:"bindingId"`   // 银行卡绑定ID
+	SendSmsId     string `json:"sendSmsId"`   // 申请短信验证码的交易流水
+	SmsCode       string `json:"smsCode"`     // 短信验证码
+	SettFlag      string `json:"settFlag"`    //清算标识
+	MerId         string `json:"merId"`       //商户ID
+	Remark        string `json:"remark"`      //备注
+	ChanBindingId string //渠道绑定ID
+	ChanMerId     string //渠道商户ID
 }
 
 // BindingRefund 退款请求

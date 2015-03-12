@@ -12,7 +12,7 @@ import (
 // BindingRelation 绑定关系
 type BindingRelation struct {
 	CardInfo      model.BindingCreate `json:"cardInfo" bson:"cardInfo,omitempty"`                 //卡片信息
-	Router        RouterPolicy        `json:"router" bson:"router,omitempty"`                     //路由信息
+	Router        model.RouterPolicy  `json:"router" bson:"router,omitempty"`                     //路由信息
 	ChanBindingId string              `json:"channelBindingId" bson:"channelBindingId,omitempty"` //渠道绑定ID
 }
 
@@ -46,4 +46,20 @@ func UpdateBindingRelation(br *BindingRelation) error {
 	q := bson.M{"cardInfo.bindingId": br.CardInfo.BindingId, "router.origMerId": br.Router.OrigMerId}
 	err := db.bindingRelation.Update(q, br)
 	return err
+}
+
+// 删除一条绑定关系
+func DeleteBindingRelation(br *BindingRelation) error {
+	if br.CardInfo.BindingId == "" {
+		return errors.New("BindingId must required")
+	}
+
+	if br.Router.OrigMerId == "" {
+		return errors.New("OrigMerId must required")
+	}
+
+	q := bson.M{"cardInfo.bindingId": br.CardInfo.BindingId, "router.origMerId": br.Router.OrigMerId}
+	g.Debug("'DeleteBindingRelation' condition: %+v", q)
+
+	return db.bindingRelation.Remove(q)
 }

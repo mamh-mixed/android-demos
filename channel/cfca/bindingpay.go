@@ -21,11 +21,11 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.MerId,
+			InstitutionID: be.ChanMerId,
 			TxCode:        BindingEnquiryTxCode,
 		},
 		Body: requestBody{
-			TxSNBinding: be.BindingId,
+			TxSNBinding: be.ChanBindingId,
 		},
 	}
 
@@ -44,11 +44,11 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.MerId,
+			InstitutionID: be.ChanMerId,
 			TxCode:        BindingCreateTxCode,
 		},
 		Body: requestBody{
-			TxSNBinding:          be.BindingId,
+			TxSNBinding:          be.ChanBindingId,
 			BankID:               be.BankId,
 			AccountName:          be.AcctName,
 			AccountNumber:        be.AcctNum,
@@ -73,12 +73,12 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.MerId,
+			InstitutionID: be.ChanMerId,
 			TxCode:        BindingRemoveTxCode,
 		},
 		Body: requestBody{
 			TxSNUnBinding: be.TxSNUnBinding,
-			TxSNBinding:   be.BindingId,
+			TxSNBinding:   be.ChanBindingId,
 		},
 	}
 
@@ -98,13 +98,13 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.MerId,
+			InstitutionID: be.ChanMerId,
 			TxCode:        BindingPaymentTxCode,
 		},
 		Body: requestBody{
 			PaymentNo:      be.MerOrderNum,
 			Amount:         be.TransAmt,
-			TxSNBinding:    be.BindingId,
+			TxSNBinding:    be.ChanBindingId,
 			SettlementFlag: be.SettFlag,
 			Remark:         be.Remark,
 		},
@@ -125,7 +125,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			InstitutionID: be.MerId,
+			InstitutionID: be.ChanMerId,
 			TxCode:        BindingRefundTxCode,
 		},
 		Body: requestBody{

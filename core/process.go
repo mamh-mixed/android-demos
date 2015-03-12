@@ -18,6 +18,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	// 获取卡属性
 	cardBin := mongo.FindCardBin(bc.AcctNum)
+
+	g.Debug("CardBin: %+v", cardBin)
 	// 如果是银联卡，验证证件信息
 	if strings.EqualFold("CUP", cardBin.CardBrand) || strings.EqualFold("UPI", cardBin.CardBrand) {
 		ret = UnionPayCardValidity(bc)
@@ -40,7 +42,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	if err := mongo.InsertBindingRelation(br); err != nil {
 		// todo 插入绑定关系失败的错误码
-		return model.NewBindingReturn("", err.Error())
+		return model.NewBindingReturn("-100000", err.Error())
 	}
 	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口
 	ret = cfca.ProcessBindingCreate(bc)
@@ -52,7 +54,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	br.ChanBindingId = ret.BindingId
 	err = mongo.UpdateBindingRelation(br)
 	if err != nil {
-		return model.NewBindingReturn("", err.Error())
+		// todo 更新数据库错误码
+		return model.NewBindingReturn("-100000", err.Error())
 	}
 	return ret
 }
@@ -69,8 +72,8 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		return
 	}
 	// 转换绑定关系、请求
-	be.MerId = bindRelation.Router.ChanMerId
-	be.BindingId = bindRelation.ChanBindingId
+	be.ChanMerId = bindRelation.Router.ChanMerId
+	be.ChanBindingId = bindRelation.ChanBindingId
 	ret = cfca.ProcessBindingEnquiry(be)
 
 	return ret
@@ -87,26 +90,26 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return
 	}
 	// 根据绑定关系得到渠道商户信息
-	chanMer := mongo.ChanMer{
+	chanMer := &mongo.ChanMer{
 		ChanCode:  bindRelation.Router.ChanCode,
 		ChanMerId: bindRelation.Router.ChanMerId,
 	}
-	if err = chanMer.Find(); err != nil {
+	if err = mongo.FindChanMer(chanMer); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return
 	}
 	// 记录这笔交易
-	trans := mongo.Trans{
+	trans := &model.Trans{
 		Chan:    chanMer,
 		Payment: *be,
 	}
-	if err = trans.Add(); err != nil {
+	if err = mongo.AddTrans(trans); err != nil {
 		g.Debug("add trans fail  (%s)", err)
 		return
 	}
 	be.SettFlag = chanMer.SettFlag
-	be.BindingId = bindRelation.ChanBindingId
-	be.MerId = bindRelation.Router.ChanMerId
+	be.ChanBindingId = bindRelation.ChanBindingId
+	be.ChanMerId = bindRelation.Router.ChanMerId
 	// 支付
 	ret = cfca.ProcessBindingPayment(be)
 
@@ -114,7 +117,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	if ret.RespCode == "000000" {
 		trans.Flag = 1
 		// 不关心是否更新成功
-		trans.Modify()
+		mongo.ModifyTrans(trans)
 	}
 
 	return

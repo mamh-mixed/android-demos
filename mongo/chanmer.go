@@ -2,21 +2,11 @@ package mongo
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"quickpay/model"
 )
 
-type ChanMer struct {
-	ChanCode      string //渠道代码
-	ChanMerId     string //商户号
-	ChanMerName   string //商户名称
-	SettFlag      string //清算标识
-	SettRole      string //清算角色
-	SignCert      string //签名证书
-	CheckSignCert string //验签证书
-	//...
-}
-
 // Init 根据渠道代码、商户号查找
-func (c *ChanMer) Find() error {
+func FindChanMer(c *model.ChanMer) error {
 
 	bo := bson.M{
 		"chancode":  c.ChanCode,
@@ -27,12 +17,12 @@ func (c *ChanMer) Find() error {
 }
 
 // Add 增加一个渠道商户
-func (c *ChanMer) Add() error {
+func AddChanMer(c *model.ChanMer) error {
 	return db.chanMer.Insert(c)
 }
 
 // Modify 更新渠道商户信息
-func (c *ChanMer) Modify() error {
+func ModifyChanMer(c *model.ChanMer) error {
 	bo := bson.M{
 		"chancode":  c.ChanCode,
 		"chanmerid": c.ChanMerId,

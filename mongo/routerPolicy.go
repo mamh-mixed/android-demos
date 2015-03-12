@@ -2,21 +2,15 @@ package mongo
 
 import (
 	// "errors"
+	"quickpay/model"
+
 	"github.com/omigo/g"
 	"gopkg.in/mgo.v2/bson"
 )
 
-// RouterPolicy 路由策略
-type RouterPolicy struct {
-	OrigMerId string `json:"origMerId" bson:"origMerId,omitempty"` // 源商户号
-	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
-	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
-	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
-}
-
-// FindRouter 根据源商户号和卡品牌在数据库中查找路由策略
-func FindRouter(origMerId, cardBrand string) (rp *RouterPolicy, err error) {
-	rp = new(RouterPolicy)
+// FindRouter 根据源商户号和卡品牌在数据库中查找路由策略 [moved]
+func FindRouter(origMerId, cardBrand string) (rp *model.RouterPolicy, err error) {
+	rp = &model.RouterPolicy{}
 	q := bson.M{"origMerId": origMerId, "cardBrand": cardBrand}
 	g.Debug("'FindRouter' condition: %+v", q)
 
@@ -30,10 +24,20 @@ func FindRouter(origMerId, cardBrand string) (rp *RouterPolicy, err error) {
 	return rp, nil
 }
 
-// InsertOneRouterPolicy 插入一个路由策略到数据库中
-func InsertOneRouterPolicy(rp *RouterPolicy) error {
+// InsertRouterPolicy 插入一个路由策略到数据库中
+func InsertRouterPolicy(rp *model.RouterPolicy) error {
 	if err := db.routerPolicy.Insert(rp); err != nil {
 		return err
 	}
 	return nil
+}
+
+// FindRouterPolicy 根据源商户Id 和 卡品牌查找路由
+func FindRouterPolicy(origMerId, cardBrand string) (r *model.RouterPolicy) {
+	r = &model.RouterPolicy{}
+	q := bson.M{"origMerId": origMerId, "cardBrand": cardBrand}
+	db.routerPolicy.Find(q).One(r)
+
+	g.Debug("'FindRouter' condition: %+v, result %#v", q, r)
+	return r
 }
