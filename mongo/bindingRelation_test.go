@@ -18,7 +18,7 @@ func TestInsertBindingRelation(t *testing.T) {
 			ValidDate: "1903",
 			Cvv2:      "232",
 		},
-		Router: RouterPolicy{
+		Router: model.RouterPolicy{
 			OrigMerId: "001405",
 			CardBrand: "CUP",
 			ChanCode:  "CFCA",
@@ -58,7 +58,7 @@ func TestUpdateBindingRelation(t *testing.T) {
 			ValidDate: "1903",
 			Cvv2:      "232",
 		},
-		Router: RouterPolicy{
+		Router: model.RouterPolicy{
 			OrigMerId: "001405",
 			CardBrand: "CUP",
 			ChanCode:  "CFCA",
