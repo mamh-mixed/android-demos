@@ -19,7 +19,7 @@ func InsertBindingRelation(br *model.BindingRelation) error {
 // FindBindingRelation 根据源商户号和绑定ID查找一条绑定关系
 func FindBindingRelation(merCode, bindingId string) (br *model.BindingRelation, err error) {
 	br = new(model.BindingRelation)
-	q := bson.M{"cardInfo.bindingId": bindingId, "router.origMerId": merCode}
+	q := bson.M{"bindingId": bindingId, "origMerId": merCode}
 	g.Debug("'FindBindingRelation' condition: %+v", q)
 	err = db.bindingRelation.Find(q).One(br)
 	return br, err
@@ -27,30 +27,30 @@ func FindBindingRelation(merCode, bindingId string) (br *model.BindingRelation, 
 
 // UpdateBindingRelation 更新一条绑定关系
 func UpdateBindingRelation(br *model.BindingRelation) error {
-	if br.CardInfo.BindingId == "" {
+	if br.BindingId == "" {
 		return errors.New("BindingId must required")
 	}
 
-	if br.Router.OrigMerId == "" {
+	if br.OrigMerId == "" {
 		return errors.New("OrigMerId must required")
 	}
 
-	q := bson.M{"cardInfo.bindingId": br.CardInfo.BindingId, "router.origMerId": br.Router.OrigMerId}
+	q := bson.M{"bindingId": br.BindingId, "origMerId": br.OrigMerId}
 	err := db.bindingRelation.Update(q, br)
 	return err
 }
 
 // 删除一条绑定关系
 func DeleteBindingRelation(br *model.BindingRelation) error {
-	if br.CardInfo.BindingId == "" {
+	if br.BindingId == "" {
 		return errors.New("BindingId must required")
 	}
 
-	if br.Router.OrigMerId == "" {
+	if br.OrigMerId == "" {
 		return errors.New("OrigMerId must required")
 	}
 
-	q := bson.M{"cardInfo.bindingId": br.CardInfo.BindingId, "router.origMerId": br.Router.OrigMerId}
+	q := bson.M{"bindingId": br.BindingId, "origMerId": br.OrigMerId}
 	g.Debug("'DeleteBindingRelation' condition: %+v", q)
 
 	return db.bindingRelation.Remove(q)

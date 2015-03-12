@@ -14,9 +14,9 @@ type RouterPolicy struct {
 
 // BindingRelation 绑定关系
 type BindingRelation struct {
-	CardInfo      BindingCreate `json:"cardInfo" bson:"cardInfo,omitempty"`           //卡片信息
-	Router        RouterPolicy  `json:"router" bson:"router,omitempty"`               //路由信息
-	ChanBindingId string        `json:"chanBindingId" bson:"chanBindingId,omitempty"` //渠道绑定ID
+	BindingCreate `json:"cardInfo" bson:"cardInfo,omitempty,inline"` //卡片信息
+	RouterPolicy  `json:"router" bson:"router,omitempty,inline"`     //路由信息
+	ChanBindingId string                                             `json:"chanBindingId" bson:"chanBindingId,omitempty"` //渠道绑定ID
 }
 
 // 卡BIN
