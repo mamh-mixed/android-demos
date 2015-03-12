@@ -10,7 +10,21 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//
+func TestGetRespCode(t *testing.T) {
+
+	//channel
+	channel := GetRespCodeByCfca("240021")
+
+	if channel == nil {
+		t.Error("codeType does not exist")
+	}
+	//sys
+	sys := GetRespCode(channel.RespCode)
+	if sys == nil {
+		t.Error("codeType does not exist")
+	}
+}
+
 // func TestGetRespCode(t *testing.T) {
 //
 // 	//channel

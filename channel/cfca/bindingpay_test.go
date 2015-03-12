@@ -40,7 +40,7 @@ func TestProcessBindingCreate(t *testing.T) {
 
 	be := &model.BindingCreate{
 		InstitutionId: "001405",
-		BindingId:     "1234567890",
+		BindingId:     "12345678901",
 		BankId:        "102",
 		AcctName:      "test",
 		AcctNum:       "6222022003008481261",
@@ -72,12 +72,26 @@ func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
 		InstitutionId:  "001405",
-		BindingId:      "1234567890",
+		BindingId:      "12345678901",
 		SettlementFlag: "475",
 		//需要变化
-		MerOrderNum: "6222022003008481263",
+		MerOrderNum: "6222022003008481264",
 		TransAmt:    12000,
 	}
 	resp := ProcessBindingPayment(be)
+	g.Debug("response message  %s", resp)
+}
+
+func TestProcessBindingRefund(t *testing.T) {
+
+	be := &model.BindingRefund{
+		InstitutionId: "001405",
+		// BindingId:     "1234567890",
+		//需要变化
+		MerOrderNum:  "6222022003008481265",
+		OrigOrderNum: "6222022003008481264",
+		TransAmt:     12000,
+	}
+	resp := ProcessBindingRefund(be)
 	g.Debug("response message  %s", resp)
 }
