@@ -7,8 +7,8 @@ import (
 
 func TestInsertRouterPolicy(t *testing.T) {
 	rp := &model.RouterPolicy{
-		MerId:     "001405",
-		CardBrand: "UPI",
+		MerId:     "499999999",
+		CardBrand: "CUP",
 		ChanCode:  "CFCA",
 		ChanMerId: "001405",
 	}

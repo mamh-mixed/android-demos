@@ -36,27 +36,27 @@ func bindingCreateRequestHandle(method, url, body string, t *testing.T) (respons
 }
 
 func TestBindingCreateHandle(t *testing.T) {
-	merId := "10000001"
+	merId := "499999999"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"0","identNum":"36050219880401","phoneNum":"15600009909","acctType":"20","validDate":"1903","cvv2":"232","sendSmsId":"1000000000009","smsCode":"12353"}`
+	body := `{"bindingId":"10000000001003","acctName":"张三","acctNum":"6222022003008481261","identType":"0","identNum":"440583199111031012","phoneNum":"15600009909","acctType":"20","validDate":"1903","cvv2":"232","bankId":"700","sendSmsId":"1000000000009","smsCode":"12353"}`
 
 	response := bindingCreateRequestHandle("POST", url, body, t)
 	g.Debug("%+v", response)
 }
 
-func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
-	merId := "10000001"
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"1","identNum":"36050219880401","phoneNum":"15600009909","acctType":"10","validDate":"","cvv2":"","sendSmsId":"1000000000009","smsCode":"12353"}`
+// func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
+// 	merId := "10000001"
+// 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
+// 	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"1","identNum":"36050219880401","phoneNum":"15600009909","acctType":"10","validDate":"","cvv2":"","sendSmsId":"1000000000009","smsCode":"12353"}`
 
-	response := bindingCreateRequestHandle("POST", url, body, t)
-	g.Debug("%+v", response)
-	if response.RespCode != "000000" {
-		t.Error("验证 '借记卡' 失败")
-	} else {
-		t.Logf("%+v", response)
-	}
-}
+// 	response := bindingCreateRequestHandle("POST", url, body, t)
+// 	g.Debug("%+v", response)
+// 	if response.RespCode != "000000" {
+// 		t.Error("验证 '借记卡' 失败")
+// 	} else {
+// 		t.Logf("%+v", response)
+// 	}
+// }
 
 func doPost(method, url, body string, t *testing.T) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
@@ -97,16 +97,16 @@ func TestBindingEnquiryHandle(t *testing.T) {
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	merId := "10000001"
+	merId := "499999999"
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "100000000300002",
+		"merOrderNum": "100000000300091",
 		"transAmt": 900,
-		"bindingId": "12345678901",
+		"bindingId": "10000000001003",
 		"sendSmsId": "",
 		"smsCode": "",
-		"merId":"20000000002"
+		"merId":"499999999"
 	}`
 	doPost("POST", url, body, t)
 }

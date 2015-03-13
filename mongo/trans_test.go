@@ -10,8 +10,8 @@ import (
 
 func TestTransAdd(t *testing.T) {
 	trans := &model.Trans{
-		Time: time.Now().Unix(),
-		Flag: 0,
+		TransTime: time.Now().Unix(),
+		TransFlag: 0,
 	}
 	err := AddTrans(trans)
 	if err != nil {
@@ -24,9 +24,9 @@ func TestTransAdd(t *testing.T) {
 func TestTransModify(t *testing.T) {
 	objectId := bson.ObjectIdHex("55004d5d6a3dd74ef8000001")
 	trans := &model.Trans{
-		Time: time.Now().Unix(),
-		Id:   objectId,
-		Flag: 0,
+		TransTime: time.Now().Unix(),
+		Id:        objectId,
+		TransFlag: 0,
 	}
 	err := ModifyTrans(trans)
 	if err != nil {

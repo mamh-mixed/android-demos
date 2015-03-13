@@ -56,7 +56,7 @@ type respBody struct {
 	ResponseMessage string //响应消息
 	IssInsCode      string //发卡机构代码
 	PayCardType     string //支付卡类型
-	BankTxTime      int64  //银行处理时间
+	BankTxTime      string //银行处理时间
 	TxSNUnBinding   string //解绑流水号
 	PaymentNo       string //支付交易流水号
 	TxSN            string //退款交易流水号

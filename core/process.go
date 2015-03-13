@@ -141,10 +141,8 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	// 记录这笔交易
-	trans := &model.Trans{
-		Chan:    *chanMer,
-		Payment: *be,
-	}
+
+	trans := &model.Trans{Payment: *be}
 	if err = mongo.AddTrans(trans); err != nil {
 		g.Debug("add trans fail  (%s)", err)
 		return ret
@@ -158,7 +156,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 
 	// 处理结果
 	if ret.RespCode == "000000" {
-		trans.Flag = 1
+		trans.TransFlag = 1
 		if err = mongo.ModifyTrans(trans); err != nil {
 			g.Error("update trans status fail ", err)
 		}

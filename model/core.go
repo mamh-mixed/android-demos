@@ -52,9 +52,8 @@ type ChanMer struct {
 	//...
 }
 type Trans struct {
-	Id      bson.ObjectId  `bson:"_id"`
-	Chan    ChanMer        //渠道信息
-	Payment BindingPayment //支付信息
-	Time    int64          //时间
-	Flag    int8           //交易状态
+	Id        bson.ObjectId  `bson:"_id"`
+	Payment   BindingPayment `bson:",inline"` //支付信息
+	TransTime int64          //时间
+	TransFlag int8           //交易状态
 }
