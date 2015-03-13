@@ -32,28 +32,27 @@ func NewBindingReturn(code, msg string) (ret *BindingReturn) {
 	// resp := mongo.GetRespCode(code)
 	return &BindingReturn{
 		RespCode: code,
-		// RespMsg:  resp.RespMsg,
-		RespMsg: msg,
+		RespMsg:  msg,
 	}
 }
 
 // BindingCreate 建立绑定支付
 type BindingCreate struct {
-	BindingId     string `json:"bindingId" bson:"bindingId,omitempty"`     // 银行卡绑定ID
-	MerId         string `json:"merId" bson:"merId,omitempty"`             // 商户ID
-	AcctName      string `json:"acctName" bson:"acctName,omitempty"`       // 账户名称
-	AcctNum       string `json:"acctNum" bson:"acctNum,omitempty"`         // 账户号码
-	IdentType     string `json:"identType" bson:"identType,omitempty"`     // 证件类型
-	IdentNum      string `json:"identNum" bson:"identNum,omitempty"`       // 证件号码
-	PhoneNum      string `json:"phoneNum" bson:"phoneNum,omitempty"`       // 手机号
-	AcctType      string `json:"acctType" bson:"acctType,omitempty"`       // 账户类型
-	ValidDate     string `json:"validDate" bson:"validDate,omitempty"`     // 信用卡有限期
-	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`               // CVV2
-	SendSmsId     string `json:"sendSmsId" bson:"sendSmsId,omitempty"`     // 发送短信验证码的交易流水
-	SmsCode       string `json:"smsCode" bson:"smsCode,omitempty"`         // 短信验证码
-	BankId        string `json:"bankId,omitempty" bson:"bankId,omitempty"` //银行ID
-	ChanBindingId string //渠道绑定ID
-	ChanMerId     string //渠道商户ID
+	BindingId     string `json:"bindingId" bson:"bindingId,omitempty"`         // 银行卡绑定ID
+	MerId         string `json:"merId" bson:"merId,omitempty"`                 // 商户ID
+	AcctName      string `json:"acctName" bson:"acctName,omitempty"`           // 账户名称
+	AcctNum       string `json:"acctNum" bson:"acctNum,omitempty"`             // 账户号码
+	IdentType     string `json:"identType" bson:"identType,omitempty"`         // 证件类型
+	IdentNum      string `json:"identNum" bson:"identNum,omitempty"`           // 证件号码
+	PhoneNum      string `json:"phoneNum" bson:"phoneNum,omitempty"`           // 手机号
+	AcctType      string `json:"acctType" bson:"acctType,omitempty"`           // 账户类型
+	ValidDate     string `json:"validDate" bson:"validDate,omitempty"`         // 信用卡有限期
+	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`                   // CVV2
+	SendSmsId     string `json:"sendSmsId" bson:"sendSmsId,omitempty"`         // 发送短信验证码的交易流水
+	SmsCode       string `json:"smsCode" bson:"smsCode,omitempty"`             // 短信验证码
+	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
+	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
+	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
 }
 
 // BindingRemove 解除绑定关系请求
