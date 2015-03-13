@@ -1,7 +1,7 @@
 package model
 
 import (
-// "gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // RouterPolicy 路由策略
@@ -29,18 +29,19 @@ type CardBin struct {
 
 // 渠道商户
 type ChanMer struct {
-	ChanCode       string //渠道代码
-	ChanMerId      string //商户号
-	ChanMerName    string //商户名称
-	SettlementFlag string //清算标识
-	SettlementRole string //清算角色
-	SignCert       string //签名证书
-	CheckSignCert  string //验签证书
+	ChanCode      string //渠道代码
+	ChanMerId     string //商户号
+	ChanMerName   string //商户名称
+	SettFlag      string //清算标识
+	SettRole      string //清算角色
+	SignCert      string //签名证书
+	CheckSignCert string //验签证书
 	//...
 }
-
-// 响应码
-type Resp struct {
-	RespCode string //响应码
-	RespMsg  string //响应信息
+type Trans struct {
+	Id      bson.ObjectId  `bson:"_id"`
+	Chan    ChanMer        //渠道信息
+	Payment BindingPayment //支付信息
+	Time    int64          //时间
+	Flag    int8           //交易状态
 }

@@ -9,9 +9,9 @@ import (
 // 如：code : "270001",codeType : "cfca"
 // 表示将中金应答码转为系统应答码
 // codeType : sys,cfca,....
-func getRespCode(code string, codeType string) (resp *model.Resp) {
+func getRespCode(code string, codeType string) (resp *model.BindingReturn) {
 
-	resp = &model.Resp{}
+	resp = &model.BindingReturn{}
 	switch codeType {
 	case "sys":
 		db.respCode.Find(bson.M{"respcode": code}).One(resp)
@@ -25,11 +25,11 @@ func getRespCode(code string, codeType string) (resp *model.Resp) {
 }
 
 // GetRespCode 根据传入的code类型得到Resp对象
-func GetRespCode(code string) *model.Resp {
+func GetRespCode(code string) *model.BindingReturn {
 	return getRespCode(code, "sys")
 }
 
 // GetRespCodeByCfca 根据传入的cfca的code得到Resp对象
-func GetRespCodeByCfca(code string) *model.Resp {
+func GetRespCodeByCfca(code string) *model.BindingReturn {
 	return getRespCode(code, "cfca")
 }

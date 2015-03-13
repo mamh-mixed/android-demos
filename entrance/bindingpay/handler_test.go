@@ -101,7 +101,7 @@ func TestBindingPaymentHandle(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "100000000300000",
+		"merOrderNum": "100000000300002",
 		"transAmt": 900,
 		"bindingId": "12345678901",
 		"sendSmsId": "",

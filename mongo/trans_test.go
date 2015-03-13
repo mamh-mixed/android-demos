@@ -3,16 +3,17 @@ package mongo
 import (
 	"github.com/omigo/g"
 	"gopkg.in/mgo.v2/bson"
+	"quickpay/model"
 	"testing"
 	"time"
 )
 
 func TestTransAdd(t *testing.T) {
-	trans := Trans{
+	trans := &model.Trans{
 		Time: time.Now().Unix(),
 		Flag: 0,
 	}
-	err := trans.Add()
+	err := AddTrans(trans)
 	if err != nil {
 		t.Errorf("add trans unsunccessful", err)
 		t.FailNow()
@@ -22,12 +23,12 @@ func TestTransAdd(t *testing.T) {
 
 func TestTransModify(t *testing.T) {
 	objectId := bson.ObjectIdHex("55004d5d6a3dd74ef8000001")
-	trans := Trans{
+	trans := &model.Trans{
 		Time: time.Now().Unix(),
 		Id:   objectId,
 		Flag: 0,
 	}
-	err := trans.Modify()
+	err := ModifyTrans(trans)
 	if err != nil {
 		t.Errorf("modify trans unsunccessful", err)
 		t.FailNow()

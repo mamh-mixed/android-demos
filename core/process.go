@@ -63,13 +63,19 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 // ProcessBindingEnquiry 绑定关系查询
 func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
-
+	// 默认返回
+	ret = model.NewBindingReturn("000001", "系统内部错误")
 	// 本地查询绑定关系
-	// merId = ass.merId
-
+	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
+	if err != nil {
+		//TODO返回什么应答码
+		g.Debug("not found any bindRelation (%s)", err)
+		return
+	}
+	// 转换绑定关系、请求
+	be.ChanMerId = bindRelation.ChanMerId
+	be.ChanBindingId = bindRelation.ChanBindingId
 	ret = cfca.ProcessBindingEnquiry(be)
-
-	// post process
 
 	return ret
 }
@@ -77,10 +83,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 // ProcessBindingPayment 绑定支付
 func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// 默认返回
-	ret = &model.BindingReturn{
-		RespCode: "000001",
-		RespMsg:  "系统错误",
-	}
+	ret = model.NewBindingReturn("000001", "系统内部错误")
 	// 本地查询绑定关系
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
@@ -88,33 +91,35 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return
 	}
 	// 根据绑定关系得到渠道商户信息
-	chanMer := mongo.ChanMer{
+	chanMer := &model.ChanMer{
 		ChanCode:  bindRelation.ChanCode,
 		ChanMerId: bindRelation.ChanMerId,
 	}
-	if err = chanMer.Init(); err != nil {
+	if err = mongo.FindChanMer(chanMer); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return
 	}
 	// 记录这笔交易
-	trans := mongo.Trans{
+	trans := &model.Trans{
 		Chan:    chanMer,
 		Payment: *be,
 	}
-	if err = trans.Add(); err != nil {
+	if err = mongo.AddTrans(trans); err != nil {
 		g.Debug("add trans fail  (%s)", err)
 		return
 	}
-	be.SettlementFlag = chanMer.SettlementFlag
-	be.BindingId = bindRelation.ChanBindingId
-	be.MerId = bindRelation.ChanMerId
+	be.SettFlag = chanMer.SettFlag
+	be.ChanBindingId = bindRelation.ChanBindingId
+	be.ChanMerId = bindRelation.ChanMerId
+	// 支付
+
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果
 	if ret.RespCode == "000000" {
 		trans.Flag = 1
 		// 不关心是否更新成功
-		trans.Modify()
+		mongo.ModifyTrans(trans)
 	}
 
 	return
