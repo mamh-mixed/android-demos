@@ -21,7 +21,7 @@ func TestInsertBindingRelation(t *testing.T) {
 		CardBrand:     "CUP",
 		ChanCode:      "CFCA",
 		ChanMerId:     "001405",
-		ChanBindingId: "12345678901",
+		SysBindingId:  "12345678901",
 		BindingStatus: "",
 	}
 
@@ -59,7 +59,7 @@ func TestUpdateBindingRelation(t *testing.T) {
 		CardBrand:     "CUP",
 		ChanCode:      "CFCA",
 		ChanMerId:     "001405",
-		ChanBindingId: "12345678901",
+		SysBindingId:  "12345678901",
 		BindingStatus: "000000",
 	}
 
@@ -85,7 +85,7 @@ func TestDeleteBindingRelation(t *testing.T) {
 		CardBrand:     "CUP",
 		ChanCode:      "CFCA",
 		ChanMerId:     "001405",
-		ChanBindingId: "12345678901",
+		SysBindingId:  "12345678901",
 		BindingStatus: "000000",
 	}
 
