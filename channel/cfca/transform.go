@@ -1,6 +1,7 @@
 package cfca
 
 import (
+	"github.com/omigo/g"
 	"quickpay/model"
 	"quickpay/mongo"
 )
@@ -9,10 +10,7 @@ import (
 func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingReturn) {
 
 	// default
-	ret = &model.BindingReturn{
-		RespCode: "000001",
-		RespMsg:  "系统错误",
-	}
+	ret = model.NewBindingReturn("000001", "系统内部错误")
 	if resp == nil {
 		return
 	}
@@ -75,17 +73,14 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			}
 		}
 		resp := mongo.GetRespCode(ret.RespCode)
+		g.Debug("resp message %+v", resp)
 		ret.RespMsg = resp.RespMsg
 		return
 	}
 
 	// 失败的请求
 	// 查找对应关系
-	rep := mongo.GetRespCodeByCfca(resp.Head.Code)
-	ret = &model.BindingReturn{
-		RespCode: rep.RespCode,
-		RespMsg:  rep.RespMsg,
-	}
+	ret = mongo.GetRespCodeByCfca(resp.Head.Code)
 
 	return
 }
