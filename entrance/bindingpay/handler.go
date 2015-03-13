@@ -48,17 +48,17 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	var ret *model.BindingReturn
 	switch r.URL.Path {
 	case "/quickpay/bindingCreate":
-		ret = bindingCreateHandle(data)
+		ret = bindingCreateHandle(data, merId)
 	case "/quickpay/bindingRemove":
-		ret = bindingRemoveHandle(data)
+		ret = bindingRemoveHandle(data, merId)
 	case "/quickpay/bindingEnquiry":
-		ret = bindingEnquiryHandle(data)
+		ret = bindingEnquiryHandle(data, merId)
 	case "/quickpay/bindingPayment":
-		ret = bindingPaymentHandle(data)
+		ret = bindingPaymentHandle(data, merId)
 	case "/quickpay/refund":
-		ret = bindingRefundHandle(data)
+		ret = bindingRefundHandle(data, merId)
 	case "/quickpay/noTrackPayment":
-		ret = noTrackPaymentHandle(data)
+		ret = noTrackPaymentHandle(data, merId)
 	default:
 		w.WriteHeader(404)
 	}
@@ -70,19 +70,19 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 
 	// todo 签名，并返回
 	// sign = signature(out, merId)
-	_ = merId
 
 	rbody := rdata
 	w.Write(rbody)
 }
 
 // 建立绑定关系
-func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
+func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var bc model.BindingCreate
 	err := json.Unmarshal(data, &bc)
 	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+	bc.MerId = merId
 
 	// 验证请求报文是否完整，格式是否正确
 	ret = bindingCreateRequestValidity(bc)
@@ -91,18 +91,18 @@ func bindingCreateHandle(data []byte) (ret *model.BindingReturn) {
 	}
 
 	//todo 业务处理
-	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
+	ret = core.ProcessBindingCreate(&bc)
 	return ret
 }
 
 // 解除绑定关系
-func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
+func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var br model.BindingRemove
 	err := json.Unmarshal(data, &br)
 	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+	br.MerId = merId
 
 	ret = bindingRemoveRequestValidity(br)
 	if ret != nil {
@@ -115,12 +115,13 @@ func bindingRemoveHandle(data []byte) (ret *model.BindingReturn) {
 }
 
 // 查询绑定关系
-func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
+func bindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var be model.BindingEnquiry
 	err := json.Unmarshal(data, &be)
 	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+	be.MerId = merId
 
 	// 验证请求报文格式
 	ret = bindingEnquiryRequestValidity(be)
@@ -134,36 +135,35 @@ func bindingEnquiryHandle(data []byte) (ret *model.BindingReturn) {
 }
 
 // 绑定支付关系
-func bindingPaymentHandle(data []byte) (ret *model.BindingReturn) {
-	var in model.BindingPayment
-	err := json.Unmarshal(data, &in)
+func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	var b model.BindingPayment
+	err := json.Unmarshal(data, &b)
 	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+	b.MerId = merId
 
 	// 验证请求报文格式
-	ret = bindingPaymentRequestValidity(in)
+	ret = bindingPaymentRequestValidity(b)
 	if ret != nil {
 		return ret
 	}
 	//  todo 业务处理
-	ret = core.ProcessBindingPayment(&in)
-	// mock return
-	// ret = model.NewBindingReturn("000000", "虚拟数据")
+	ret = core.ProcessBindingPayment(&b)
 	return ret
 }
 
 // 退款处理
-func bindingRefundHandle(data []byte) (ret *model.BindingReturn) {
-	var in model.BindingRefund
-
-	err := json.Unmarshal(data, &in)
+func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	var b model.BindingRefund
+	err := json.Unmarshal(data, &b)
 	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+	b.MerId = merId
 
 	// 验证请求报文格式
-	ret = bindingRefundRequestValidity(&in)
+	ret = bindingRefundRequestValidity(&b)
 	if ret != nil {
 		return ret
 	}
@@ -174,14 +174,15 @@ func bindingRefundHandle(data []byte) (ret *model.BindingReturn) {
 }
 
 // 无卡直接支付的处理
-func noTrackPaymentHandle(data []byte) (ret *model.BindingReturn) {
-	var in model.NoTrackPayment
-	err := json.Unmarshal(data, &in)
+func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	var b model.NoTrackPayment
+	err := json.Unmarshal(data, &b)
 	if ret = checkUnmarshalError(err); ret != nil {
 		return ret
 	}
+	b.MerId = merId
 
-	ret = noTrackPaymentRequestValidity(&in)
+	ret = noTrackPaymentRequestValidity(&b)
 	if ret != nil {
 		return ret
 	}

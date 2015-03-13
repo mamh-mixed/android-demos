@@ -1,9 +1,10 @@
 package cfca
 
 import (
-	"github.com/omigo/g"
 	"quickpay/model"
 	"testing"
+
+	"github.com/omigo/g"
 )
 
 func TestSendRequest(t *testing.T) {
@@ -28,8 +29,8 @@ func TestSendRequest(t *testing.T) {
 func TestProcessBindingEnquiry(t *testing.T) {
 
 	be := &model.BindingEnquiry{
-		BindingId:     "123456789",
-		InstitutionId: "001405",
+		ChanBindingId: "123456789",
+		ChanMerId:     "001405",
 	}
 	resp := ProcessBindingEnquiry(be)
 
@@ -39,8 +40,8 @@ func TestProcessBindingEnquiry(t *testing.T) {
 func TestProcessBindingCreate(t *testing.T) {
 
 	be := &model.BindingCreate{
-		InstitutionId: "001405",
-		BindingId:     "12345678901",
+		ChanMerId:     "001405",
+		ChanBindingId: "12345678901",
 		BankId:        "102",
 		AcctName:      "test",
 		AcctNum:       "6222022003008481261",
@@ -60,8 +61,8 @@ func TestProcessBindingCreate(t *testing.T) {
 func TestProcessBindingRemove(t *testing.T) {
 
 	be := &model.BindingRemove{
-		InstitutionId: "001405",
-		BindingId:     "123456789",
+		ChanMerId:     "001405",
+		ChanBindingId: "123456789",
 		TxSNUnBinding: "3333444",
 	}
 	resp := ProcessBindingRemove(be)
@@ -71,9 +72,9 @@ func TestProcessBindingRemove(t *testing.T) {
 func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
-		InstitutionId:  "001405",
-		BindingId:      "12345678901",
-		SettlementFlag: "475",
+		ChanMerId:     "001405",
+		ChanBindingId: "12345678901",
+		SettFlag:      "475",
 		//需要变化
 		MerOrderNum: "6222022003008481264",
 		TransAmt:    12000,
@@ -85,7 +86,7 @@ func TestProcessBindingPayment(t *testing.T) {
 func TestProcessBindingRefund(t *testing.T) {
 
 	be := &model.BindingRefund{
-		InstitutionId: "001405",
+		ChanMerId: "001405",
 		// BindingId:     "1234567890",
 		//需要变化
 		MerOrderNum:  "6222022003008481265",
