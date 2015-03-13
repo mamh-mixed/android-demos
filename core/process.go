@@ -86,9 +86,9 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 本地查询绑定关系
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
-		//TODO返回什么应答码
+		// TODO 返回什么应答码
 		g.Debug("not found any bindRelation (%s)", err)
-		return
+		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
 	// 非处理中，直接返回结果
