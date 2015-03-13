@@ -10,7 +10,7 @@ func TestInsertRouterPolicy(t *testing.T) {
 		OrigMerId: "001405",
 		CardBrand: "VIS",
 		ChanCode:  "CFCA",
-		ChanMerId: "20000000002",
+		ChanMerId: "10000000007",
 	}
 
 	if err := InsertRouterPolicy(rp); err != nil {
