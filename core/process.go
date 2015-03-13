@@ -36,9 +36,10 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 根据商户、卡号、绑定Id、渠道、渠道商户生成一个系统绑定Id，并将这些关系入库
 	bc.SendSmsId = ""
 	bc.SmsCode = ""
-	br := &mongo.BindingRelation{
-		CardInfo: *bc,
-		Router:   *routerPolicy,
+	br := &model.BindingRelation{
+		*bc,
+		*routerPolicy,
+		"",
 	}
 	if err := mongo.InsertBindingRelation(br); err != nil {
 		// todo 插入绑定关系失败的错误码
@@ -72,7 +73,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		return
 	}
 	// 转换绑定关系、请求
-	be.ChanMerId = bindRelation.Router.ChanMerId
+	be.ChanMerId = bindRelation.ChanMerId
 	be.ChanBindingId = bindRelation.ChanBindingId
 	ret = cfca.ProcessBindingEnquiry(be)
 
@@ -90,9 +91,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return
 	}
 	// 根据绑定关系得到渠道商户信息
-	chanMer := &mongo.ChanMer{
-		ChanCode:  bindRelation.Router.ChanCode,
-		ChanMerId: bindRelation.Router.ChanMerId,
+	chanMer := &model.ChanMer{
+		ChanCode:  bindRelation.ChanCode,
+		ChanMerId: bindRelation.ChanMerId,
 	}
 	if err = mongo.FindChanMer(chanMer); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
@@ -109,8 +110,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 	be.SettFlag = chanMer.SettFlag
 	be.ChanBindingId = bindRelation.ChanBindingId
-	be.ChanMerId = bindRelation.Router.ChanMerId
+	be.ChanMerId = bindRelation.ChanMerId
 	// 支付
+
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果

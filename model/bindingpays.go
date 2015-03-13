@@ -91,11 +91,13 @@ type BindingPayment struct {
 
 // BindingRefund 退款请求
 type BindingRefund struct {
-	MerOrderNum  string `json:"merOrderNum"`  // 商户订单号
-	OrigOrderNum string `json:"origOrderNum"` // 原支付订单号
-	TransAmt     int64  `json:"transAmt"`     // 退款金额
-	MerId        string `json:"merId"`        //商户ID
-	Remark       string `json:"remark"`       //备注
+	MerOrderNum   string `json:"merOrderNum"`  // 商户订单号
+	OrigOrderNum  string `json:"origOrderNum"` // 原支付订单号
+	TransAmt      int64  `json:"transAmt"`     // 退款金额
+	MerId         string `json:"merId"`        //商户ID
+	Remark        string `json:"remark"`       //备注
+	ChanBindingId string //渠道绑定ID
+	ChanMerId     string //渠道商户ID
 }
 
 // 交易对账汇总请求

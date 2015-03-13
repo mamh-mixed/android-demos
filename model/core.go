@@ -12,14 +12,22 @@ type RouterPolicy struct {
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
 }
 
-type Trans struct {
-	Id      bson.ObjectId  `bson:"_id"`
-	Chan    ChanMer        //渠道信息
-	Payment BindingPayment //支付信息
-	Time    int64          //时间
-	Flag    int8           //交易状态
+// BindingRelation 绑定关系
+type BindingRelation struct {
+	BindingCreate `json:"cardInfo" bson:"cardInfo,omitempty,inline"` //卡片信息
+	RouterPolicy  `json:"router" bson:"router,omitempty,inline"`     //路由信息
+	ChanBindingId string                                             `json:"chanBindingId" bson:"chanBindingId,omitempty"` //渠道绑定ID
 }
 
+// 卡BIN
+type CardBin struct {
+	Bin       string `json:"bin" bson:"bin,omitempty"`             // 卡BIN
+	BinLen    int    `json:"binLen" bson:"binLen,omitempty"`       // 卡BIN长度
+	CardLen   int    `json:"cardLen" bson:"cardLen,omitempty"`     // 卡号长度
+	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+}
+
+// 渠道商户
 type ChanMer struct {
 	ChanCode      string //渠道代码
 	ChanMerId     string //商户号
@@ -29,4 +37,11 @@ type ChanMer struct {
 	SignCert      string //签名证书
 	CheckSignCert string //验签证书
 	//...
+}
+type Trans struct {
+	Id      bson.ObjectId  `bson:"_id"`
+	Chan    ChanMer        //渠道信息
+	Payment BindingPayment //支付信息
+	Time    int64          //时间
+	Flag    int8           //交易状态
 }
