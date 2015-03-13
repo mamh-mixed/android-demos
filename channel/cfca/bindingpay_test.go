@@ -1,9 +1,10 @@
 package cfca
 
 import (
-	"github.com/omigo/g"
 	"quickpay/model"
 	"testing"
+
+	"github.com/omigo/g"
 )
 
 func TestSendRequest(t *testing.T) {
@@ -71,9 +72,9 @@ func TestProcessBindingRemove(t *testing.T) {
 func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
-		ChanMerId:      "001405",
-		ChanBindingId:  "12345678901",
-		SettlementFlag: "475",
+		ChanMerId:     "001405",
+		ChanBindingId: "12345678901",
+		SettFlag:      "475",
 		//需要变化
 		MerOrderNum: "6222022003008481264",
 		TransAmt:    12000,
