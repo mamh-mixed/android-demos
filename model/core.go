@@ -8,7 +8,6 @@ import (
 type RouterPolicy struct {
 	MerId     string `json:"merId" bson:"merId,omitempty"`         // 商户号
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
-	BankId    string `json:"bankId" bson:"bankId,omitempty"`       // 银行代号
 	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
 }

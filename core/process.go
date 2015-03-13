@@ -29,32 +29,47 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		}
 	}
 	// 通过路由策略找到渠道和渠道商户
-	routerPolicy, err := mongo.FindRouter(bc.MerId, cardBin.CardBrand)
-	if err != nil {
+	rp := mongo.FindRouterPolicy(bc.MerId, cardBin.CardBrand)
+	if rp == nil {
 		// todo 错误返回校验码
 		return model.NewBindingReturn("", "找不到路由策略")
 	}
-	// 根据商户、卡号、绑定Id、渠道、渠道商户生成一个系统绑定Id，并将这些关系入库
+	// 根据商户、卡号、绑定Id、渠道、渠道商户生成一个系统绑定Id(ChanBindingId)，并将这些关系入库
 	bc.SendSmsId = ""
 	bc.SmsCode = ""
+	// br(BindingRelation)用来入库
 	br := &model.BindingRelation{
-		*bc,
-		*routerPolicy,
-		"",
+		BindingId:     bc.BindingId,
+		MerId:         bc.MerId,
+		AcctName:      bc.AcctName,
+		AcctNum:       bc.AcctNum,
+		IdentType:     bc.IdentType,
+		IdentNum:      bc.IdentNum,
+		PhoneNum:      bc.PhoneNum,
+		AcctType:      bc.AcctType,
+		ValidDate:     bc.ValidDate,
+		Cvv2:          bc.Cvv2,
+		BankId:        bc.BankId,
+		CardBrand:     rp.CardBrand,
+		ChanCode:      rp.ChanCode,
+		ChanMerId:     rp.ChanMerId,
+		SysBindingId:  tools.SerialNumber(),
+		BindingStatus: "",
 	}
+	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
+	bc.ChanMerId = rp.ChanMerId
+	bc.ChanBindingId = br.SysBindingId
+	g.Info("'BindingCreate' is: %+v", bc)
+	g.Info("'BindingRelation' is: %+v", br)
 	if err := mongo.InsertBindingRelation(br); err != nil {
 		// todo 插入绑定关系失败的错误码
 		return model.NewBindingReturn("-100000", err.Error())
 	}
-	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口
+	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口。
 	ret = cfca.ProcessBindingCreate(bc)
-	// 如果返回成功，则更新数据库，将返回的绑定ID存库
-	if ret.RespCode != "000000" {
-		return ret
-	}
-
-	br.ChanBindingId = tools.UUID()
-	err = mongo.UpdateBindingRelation(br)
+	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新数据库，绑定关系生效。
+	br.BindingStatus = ret.RespCode
+	err := mongo.UpdateBindingRelation(br)
 	if err != nil {
 		// todo 更新数据库错误码
 		return model.NewBindingReturn("-100000", err.Error())
@@ -75,7 +90,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	}
 	// 转换绑定关系、请求
 	be.ChanMerId = bindRelation.ChanMerId
-	be.ChanBindingId = bindRelation.ChanBindingId
+	be.ChanBindingId = bindRelation.SysBindingId
 	ret = cfca.ProcessBindingEnquiry(be)
 
 	return ret
@@ -102,7 +117,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 	// 记录这笔交易
 	trans := &model.Trans{
-		Chan:    chanMer,
+		Chan:    *chanMer,
 		Payment: *be,
 	}
 	if err = mongo.AddTrans(trans); err != nil {
@@ -110,7 +125,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return
 	}
 	be.SettFlag = chanMer.SettFlag
-	be.ChanBindingId = bindRelation.ChanBindingId
+	be.ChanBindingId = bindRelation.SysBindingId
 	be.ChanMerId = bindRelation.ChanMerId
 	// 支付
 

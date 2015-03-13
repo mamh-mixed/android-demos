@@ -7,7 +7,7 @@ import (
 )
 
 // serialNumber 生成序列号，也就是UUID
-func serialNumber() string {
+func SerialNumber() string {
 	u4, err := u.NewV4()
 	if err != nil {
 		g.Error("error: ", err)

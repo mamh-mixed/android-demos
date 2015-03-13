@@ -7,7 +7,7 @@ import (
 )
 
 func TestUUID(t *testing.T) {
-	uuid := serialNumber()
+	uuid := SerialNumber()
 
 	g.Debug("uuid=%s", uuid)
 
