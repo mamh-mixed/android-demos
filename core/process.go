@@ -77,10 +77,12 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	return ret
 }
 
-// ProcessBindingEnquiry 绑定关系查询
+// ProcessBindingEnquiry 绑定关系查询。
+// 先到本地库去查找，如果本地库查找的结果是正在处理中，就到渠道查找；查找完更新到数据库中。
 func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	// 默认返回
 	ret = model.NewBindingReturn("000001", "系统内部错误")
+
 	// 本地查询绑定关系
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
@@ -88,10 +90,25 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		g.Debug("not found any bindRelation (%s)", err)
 		return
 	}
+
+	// 非处理中，直接返回结果
+	if bindRelation.BindingStatus != "000009" {
+		return mongo.GetRespCode(bindRelation.BindingStatus)
+	}
+
+	// 正在处理中，到渠道那边查找
 	// 转换绑定关系、请求
 	be.ChanMerId = bindRelation.ChanMerId
 	be.ChanBindingId = bindRelation.SysBindingId
+	// todo 查找该商户配置的渠道，这里为了简单，到中金查找。
 	ret = cfca.ProcessBindingEnquiry(be)
+
+	// 更新绑定关系的状态
+	bindRelation.BindingStatus = ret.RespCode
+	if err = mongo.UpdateBindingRelation(bindRelation); err != nil {
+		// todo 更新数据库错误码
+		return model.NewBindingReturn("-100000", err.Error())
+	}
 
 	return ret
 }

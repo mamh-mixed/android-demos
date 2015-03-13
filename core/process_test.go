@@ -2,6 +2,7 @@ package core
 
 import (
 	"quickpay/model"
+	"quickpay/mongo"
 	"testing"
 )
 
@@ -29,5 +30,26 @@ func TestProcessBindingCreate(t *testing.T) {
 	if ret.RespCode != "000000" {
 		t.Errorf("Excpeted success,but get failure: %+v", ret.RespMsg)
 	}
+}
 
+func TestProcessBindingEnquiry(t *testing.T) {
+	be := &model.BindingEnquiry{
+		MerId:     "001405",
+		BindingId: "1000000000011",
+	}
+
+	br, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
+
+	if err != nil {
+		t.Errorf("'FindBindingRelation' error: %s", err.Error())
+	}
+
+	br.BindingStatus = "000009"
+	if err = mongo.UpdateBindingRelation(br); err != nil {
+		t.Errorf("'UpdateBindingRelation' error: %s", err.Error())
+	}
+
+	ret := ProcessBindingEnquiry(be)
+
+	t.Logf("%+v", ret)
 }

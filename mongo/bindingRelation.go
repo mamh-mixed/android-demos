@@ -20,8 +20,13 @@ func InsertBindingRelation(br *model.BindingRelation) error {
 func FindBindingRelation(merCode, bindingId string) (br *model.BindingRelation, err error) {
 	br = new(model.BindingRelation)
 	q := bson.M{"bindingId": bindingId, "merId": merCode}
-	g.Debug("'FindBindingRelation' condition: %+v", q)
 	err = db.bindingRelation.Find(q).One(br)
+	if err != nil {
+		g.Debug("'FindBindingRelation' condition: %+v", q)
+		g.Debug("Error message is: %s", err.Error())
+		return nil, err
+	}
+
 	return br, err
 }
 
