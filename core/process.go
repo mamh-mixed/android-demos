@@ -93,7 +93,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	if err != nil {
 		//TODO返回什么应答码
 		g.Debug("not found any bindRelation (%s)", err)
-		return
+		return ret
 	}
 
 	// 非处理中，直接返回结果
@@ -122,12 +122,14 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// 默认返回
 	ret = model.NewBindingReturn("000001", "系统内部错误")
+
 	// 本地查询绑定关系
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
 		g.Debug("not found any bindRelation (%s)", err)
-		return
+		return ret
 	}
+
 	// 根据绑定关系得到渠道商户信息
 	chanMer := &model.ChanMer{
 		ChanCode:  bindRelation.ChanCode,
@@ -135,8 +137,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 	if err = mongo.FindChanMer(chanMer); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
-		return
+		return ret
 	}
+
 	// 记录这笔交易
 	trans := &model.Trans{
 		Chan:    *chanMer,
@@ -144,23 +147,24 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 	if err = mongo.AddTrans(trans); err != nil {
 		g.Debug("add trans fail  (%s)", err)
-		return
+		return ret
 	}
+
+	// 支付
 	be.SettFlag = chanMer.SettFlag
 	be.ChanBindingId = bindRelation.SysBindingId
 	be.ChanMerId = bindRelation.ChanMerId
-	// 支付
-
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果
 	if ret.RespCode == "000000" {
 		trans.Flag = 1
-		// 不关心是否更新成功
-		mongo.ModifyTrans(trans)
+		if err = mongo.ModifyTrans(trans); err != nil {
+			g.Error("update trans status fail ", err)
+		}
 	}
 
-	return
+	return ret
 }
 
 // todo 校验短信验证码，短信验证通过就返回nil
