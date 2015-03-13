@@ -6,24 +6,28 @@ import (
 )
 
 func TestInsertBindingRelation(t *testing.T) {
-	ci := model.BindingCreate{
-		BindingId: "12345678901",
-		AcctName:  "张三",
-		AcctNum:   "6210948000000219",
-		IdentType: "0",
-		IdentNum:  "36050219880401",
-		PhoneNum:  "15600009909",
-		AcctType:  "20",
-		ValidDate: "1903",
-		Cvv2:      "232",
+	br := &model.BindingRelation{
+	// model.BindingCreate{
+	// 	BindingId: "12345678901",
+	// 	AcctName:  "张三",
+	// 	AcctNum:   "6210948000000219",
+	// 	IdentType: "0",
+	// 	IdentNum:  "36050219880401",
+	// 	PhoneNum:  "15600009909",
+	// 	AcctType:  "20",
+	// 	ValidDate: "1903",
+	// 	Cvv2:      "232",
+	// },
+	// model.RouterPolicy{
+	// 	OrigMerId: "20000000002",
+
+	// 	CardBrand: "CUP",
+	// 	ChanCode:  "CFCA",
+	// 	ChanMerId: "001405",
+	// },
+	// ChanBindingId: "12345678901",
 	}
-	rp := model.RouterPolicy{
-		OrigMerId: "001405",
-		CardBrand: "CUP",
-		ChanCode:  "CFCA",
-		ChanMerId: "20000000002",
-	}
-	br := &model.BindingRelation{ci, rp, ""}
+	// br := &model.BindingRelation{ci, rp, ""}
 
 	if err := InsertBindingRelation(br); err != nil {
 		t.Errorf("InsertBindingRelation error,except 'nil',but get '%s'", err.Error())
@@ -57,10 +61,10 @@ func TestUpdateBindingRelation(t *testing.T) {
 			Cvv2:      "232",
 		},
 		model.RouterPolicy{
-			OrigMerId: "001405",
+			OrigMerId: "20000000002",
 			CardBrand: "CUP",
 			ChanCode:  "CFCA",
-			ChanMerId: "20000000002",
+			ChanMerId: "001405",
 		},
 		"12345678901",
 	}
@@ -84,6 +88,7 @@ func TestDeleteBindingRelation(t *testing.T) {
 			ValidDate: "1903",
 			Cvv2:      "232",
 		},
+
 		model.RouterPolicy{
 			OrigMerId: "001405",
 			CardBrand: "CUP",
