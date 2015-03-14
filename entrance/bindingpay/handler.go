@@ -154,8 +154,6 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	//  todo 业务处理
 	ret = core.ProcessBindingPayment(&b)
-	// mock return
-	// ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 

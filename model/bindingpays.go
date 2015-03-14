@@ -2,8 +2,8 @@ package model
 
 // BindingReturn 绑定支付返回
 type BindingReturn struct {
-	RespCode string `json:"respCode"` // 响应代码
-	RespMsg  string `json:"respMsg"`  // 响应信息
+	RespCode string `json:"respCode" bson:"respCode"` // 响应代码
+	RespMsg  string `json:"respMsg" bson:"respMsg"`   // 响应信息
 
 	BindingId string `json:"bindingId,omitempty"` // 银行卡绑定ID
 
