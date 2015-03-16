@@ -129,6 +129,10 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		g.Debug("not found any bindRelation (%s)", err)
 		return ret
 	}
+	// 如果绑定关系不是成功的状态，返回
+	if bindRelation.BindingStatus != "000000" {
+		return model.NewBindingReturn(bindRelation.BindingStatus, "绑定中或者绑定失败，请查询绑定关系。")
+	}
 
 	// 根据绑定关系得到渠道商户信息
 	chanMer := &model.ChanMer{
@@ -140,8 +144,12 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return ret
 	}
 
-	// 记录这笔交易
+	// 赋值
+	be.SettFlag = chanMer.SettFlag
+	be.ChanBindingId = bindRelation.SysBindingId
+	be.ChanMerId = bindRelation.ChanMerId
 
+	// 记录这笔交易
 	trans := &model.Trans{Payment: *be}
 	if err = mongo.AddTrans(trans); err != nil {
 		g.Debug("add trans fail  (%s)", err)
@@ -149,9 +157,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	// 支付
-	be.SettFlag = chanMer.SettFlag
-	be.ChanBindingId = bindRelation.SysBindingId
-	be.ChanMerId = bindRelation.ChanMerId
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果
