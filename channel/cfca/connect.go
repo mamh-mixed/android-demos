@@ -120,7 +120,7 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 
 	// 对 xml 签名
 	hexSign := signatureUseSha1WithRsa(xmlBytes)
-	g.Debug("请求签名: %s", hexSign)
+	g.Trace("请求签名: %s", hexSign)
 
 	// 准备参数
 	v = &url.Values{}
@@ -161,7 +161,7 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 
 	// 验签
 	rhexSign := strings.TrimSpace(result[1])
-	g.Debug("返回签名: %s", rhexSign)
+	g.Trace("返回签名: %s", rhexSign)
 	err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
 	if err != nil {
 		g.Error("check sign failed ", err)
