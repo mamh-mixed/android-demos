@@ -11,6 +11,7 @@ import (
 )
 
 // ProcessBindingCreate 绑定建立的业务处理
+// todo 先验证是否已经绑定过
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// todo 如果需要校验短信，验证短信
 	// ret = validateSmsCode(bc.SendSmsId, bc.SmsCode)
@@ -57,11 +58,11 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		SysBindingId:  tools.SerialNumber(),
 		BindingStatus: "",
 	}
-	g.Info("'BindingRelation' is: %+v", br)
 	// 绑定关系入库
 	if err := mongo.InsertBindingRelation(br); err != nil {
-		// todo 插入绑定关系失败的错误码
-		return model.NewBindingReturn("-100000", err.Error())
+		g.Info("'BindingRelation' is: %+v", br)
+		g.Error("'InsertBindingRelation' error: ", err.Error())
+		return model.NewBindingReturn("000001", "系统内部错误")
 	}
 
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
@@ -75,8 +76,9 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	br.BindingStatus = ret.RespCode
 	err := mongo.UpdateBindingRelation(br)
 	if err != nil {
-		// todo 更新数据库错误码
-		return model.NewBindingReturn("-100000", err.Error())
+		g.Info("'BindingRelation' is: %+v", br)
+		g.Error("'UpdateBindingRelation' error: ", err.Error())
+		return model.NewBindingReturn("000001", "系统内部错误")
 	}
 
 	return ret
@@ -91,8 +93,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 本地查询绑定关系
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
-		// TODO 返回什么应答码
-		g.Debug("not found any bindRelation (%s)", err)
+		g.Error("'FindBindingRelation' error: ", err.Error())
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
@@ -111,8 +112,9 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 更新绑定关系的状态
 	bindRelation.BindingStatus = ret.RespCode
 	if err = mongo.UpdateBindingRelation(bindRelation); err != nil {
-		// todo 更新数据库错误码
-		return model.NewBindingReturn("-100000", err.Error())
+		g.Info("'UpdateBindingRelation' is: %+v", bindRelation)
+		g.Error("'UpdateBindingRelation' error: ", err.Error())
+		return model.NewBindingReturn("000001", "系统内部错误")
 	}
 
 	return ret
@@ -123,11 +125,11 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 默认返回
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
-	// 本地查询绑定关系
+	// todo 本地查询绑定关系。查询绑定关系的状态是否成功
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
-		g.Debug("not found any bindRelation (%s)", err)
-		return ret
+		g.Error("not found any bindRelation: ", err)
+		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
 	// 根据绑定关系得到渠道商户信息
@@ -136,8 +138,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		ChanMerId: bindRelation.ChanMerId,
 	}
 	if err = mongo.FindChanMer(chanMer); err != nil {
-		g.Debug("not found any chanMer (%s)", err)
-		return ret
+		g.Error("not found any chanMer: ", err)
+		// todo 找不到渠道商户的错误码
+		return model.NewBindingReturn("-100000", "找不到渠道商户")
 	}
 
 	// 记录这笔交易
@@ -146,8 +149,8 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		Payment: *be,
 	}
 	if err = mongo.AddTrans(trans); err != nil {
-		g.Debug("add trans fail  (%s)", err)
-		return ret
+		g.Error("add trans fail: ", err)
+		return model.NewBindingReturn("000001", "系统内部错误")
 	}
 
 	// 支付
@@ -161,6 +164,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		trans.Flag = 1
 		if err = mongo.ModifyTrans(trans); err != nil {
 			g.Error("update trans status fail ", err)
+			model.NewBindingReturn("000001", "系统内部错误")
 		}
 	}
 

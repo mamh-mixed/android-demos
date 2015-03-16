@@ -15,3 +15,7 @@ func TestUUID(t *testing.T) {
 		t.Error("unable generate uuid")
 	}
 }
+
+func TestMillisecond(t *testing.T) {
+	t.Log("Millisecond: %s", Millisecond())
+}

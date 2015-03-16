@@ -72,7 +72,7 @@ func TestUpdateBindingRelation(t *testing.T) {
 func TestDeleteBindingRelation(t *testing.T) {
 	br := &model.BindingRelation{
 		BindingId:     "2000000000001",
-		MerId:         "001405",
+		MerId:         "111111001405",
 		AcctName:      "张三",
 		AcctNum:       "6222020302062061908",
 		IdentType:     "0",
