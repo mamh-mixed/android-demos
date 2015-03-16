@@ -42,13 +42,17 @@ type CardBin struct {
 
 // 渠道商户
 type ChanMer struct {
-	ChanCode      string //渠道代码
-	ChanMerId     string //商户号
-	ChanMerName   string //商户名称
-	SettFlag      string //清算标识
-	SettRole      string //清算角色
-	SignCert      string //签名证书
-	CheckSignCert string //验签证书
+	ChanCode       string //渠道代码
+	ChanMerId      string //商户号
+	ChanMerName    string //商户名称
+	SettFlag       string //清算标识
+	SettRole       string //清算角色
+	SignCert       string //签名证书
+	CheckSignCert  string //验签证书
+	AlpMd5Key      string //支付宝 MD5 Key
+	WxpAppId       string //微信支付App Id
+	WxpPartnerKey  string //微信支付Partner Key
+	WxpEncryptCert string //微信支付加密证书
 	//...
 }
 type Trans struct {

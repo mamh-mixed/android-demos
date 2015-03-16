@@ -63,10 +63,19 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		// todo 插入绑定关系失败的错误码
 		return model.NewBindingReturn("-100000", err.Error())
 	}
-
+	// 根据绑定关系得到渠道商户信息
+	chanMer := &model.ChanMer{
+		ChanCode:  rp.ChanCode,
+		ChanMerId: rp.ChanMerId,
+	}
+	if err = mongo.FindChanMer(chanMer); err != nil {
+		g.Debug("not found any chanMer (%s)", err)
+		return ret
+	}
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = br.SysBindingId
+	be.SignCert = chanMer.SignCert
 	g.Info("'BindingCreate' is: %+v", bc)
 	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口。
 	ret = cfca.ProcessBindingCreate(bc)
@@ -101,10 +110,20 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		return mongo.GetRespCode(bindRelation.BindingStatus)
 	}
 
+	// 根据绑定关系得到渠道商户信息
+	chanMer := &model.ChanMer{
+		ChanCode:  bindRelation.ChanCode,
+		ChanMerId: bindRelation.ChanMerId,
+	}
+	if err = mongo.FindChanMer(chanMer); err != nil {
+		g.Debug("not found any chanMer (%s)", err)
+		return ret
+	}
 	// 正在处理中，到渠道那边查找
 	// 转换绑定关系、请求
 	be.ChanMerId = bindRelation.ChanMerId
 	be.ChanBindingId = bindRelation.SysBindingId
+	be.SignCert = chanMer.SignCert
 	// todo 查找该商户配置的渠道，这里为了简单，到中金查找。
 	ret = cfca.ProcessBindingEnquiry(be)
 
@@ -148,7 +167,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.SettFlag = chanMer.SettFlag
 	be.ChanBindingId = bindRelation.SysBindingId
 	be.ChanMerId = bindRelation.ChanMerId
-
+	be.SignCert = chanMer.SignCert
 	// 记录这笔交易
 	trans := &model.Trans{Payment: *be}
 	if err = mongo.AddTrans(trans); err != nil {
