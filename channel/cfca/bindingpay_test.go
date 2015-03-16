@@ -18,9 +18,10 @@ func TestSendRequest(t *testing.T) {
 		Body: requestBody{
 			TxSNBinding: "213121231313",
 		},
+		SignCert: priKeyPem,
 	}
 
-	response := sendRequest(req, priKeyPem)
+	response := sendRequest(req)
 	if response == nil {
 		t.Error("test unsucessful")
 	}
@@ -79,7 +80,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		ChanBindingId: "123456789011",
 		SettFlag:      "475",
 		//需要变化
-		MerOrderNum: "6222022003008481260",
+		MerOrderNum: "6222022003008481269",
 		TransAmt:    12000,
 		SignCert:    priKeyPem,
 	}

@@ -2,9 +2,10 @@ package cfca
 
 // BindingRequest 中金渠道请求报文
 type BindingRequest struct {
-	Version string `xml:"version,attr,omitempty"`
-	Head    requestHead
-	Body    requestBody
+	Version  string `xml:"version,attr,omitempty"`
+	Head     requestHead
+	Body     requestBody
+	SignCert string `xml:"-"`
 }
 
 // BindingResponse 中金渠道返回报文
