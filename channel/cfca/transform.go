@@ -19,19 +19,9 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		ret = &model.BindingReturn{}
 		switch txCode {
 		//根据交易类型处理结果
-		//建立绑定关系
-		case BindingCreateTxCode:
-			ret.BindingId = resp.Body.TxSNBinding
-			switch resp.Body.Status {
-			case 10:
-				ret.RespCode = "000009"
-			case 30:
-				ret.RespCode = "000000"
-			default:
-				ret.RespCode = "000001"
-			}
-		//绑定关系查询
-		case BindingEnquiryTxCode:
+		//建立绑定关系、绑定关系查询
+		case BindingCreateTxCode, BindingEnquiryTxCode:
+			// ret.BindingId = resp.Body.TxSNBinding
 			//10=绑定处理中 20=绑定失败 30=绑定成功 40=解绑成功
 			switch resp.Body.Status {
 			case 10:
@@ -43,6 +33,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			case 40:
 				ret.RespCode = "100050"
 			default:
+				g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 				ret.RespCode = "000001"
 			}
 		//解除绑定关系
@@ -56,10 +47,11 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			case 30:
 				ret.RespCode = "100060"
 			default:
+				g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 				ret.RespCode = "000001"
 			}
-		//快捷支付
-		case BindingPaymentTxCode:
+		//快捷支付、快捷支付查询
+		case BindingPaymentTxCode, PaymentEnquiryTxCode:
 			//10=处理中 20=支付成功 30=支付失败
 			switch resp.Body.Status {
 			case 10:
@@ -69,6 +61,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			case 30:
 				ret.RespCode = "100070"
 			default:
+				g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 				ret.RespCode = "000001"
 			}
 		}

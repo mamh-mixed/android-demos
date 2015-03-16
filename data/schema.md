@@ -6,7 +6,7 @@
 |merchant  | mer  | 商户 |
 |channel   | chan | 渠道 |
 |CFCA      | cfca | 中金 |
-|settlement|sett  | 清分 |
+|settlement| sett | 清分 |
 
 
 # 数据模式

@@ -84,16 +84,16 @@ func TestBindingEnquiryHandle(t *testing.T) {
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	merId := "001405"
+	merId := "499999999"
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "100000000300006",
-		"transAmt": 30000,
-		"bindingId": "1000000000002",
+		"merOrderNum": "100000000300091",
+		"transAmt": 900,
+		"bindingId": "10000000001003",
 		"sendSmsId": "",
 		"smsCode": "",
-		"merId":"001405"
+		"merId":"499999999"
 	}`
 	doPost("POST", url, body, t)
 }
