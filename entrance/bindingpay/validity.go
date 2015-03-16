@@ -6,7 +6,7 @@ import (
 )
 
 //建立绑定关系的时候验证请求报文
-func bindingCreateRequestValidity(request model.BindingCreate) (ret *model.BindingReturn) {
+func validateBindingCreate(request model.BindingCreate) (ret *model.BindingReturn) {
 	if request.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
@@ -46,7 +46,7 @@ func bindingCreateRequestValidity(request model.BindingCreate) (ret *model.Bindi
 }
 
 // 移除绑定关系的时候验证请求报文
-func bindingRemoveRequestValidity(in model.BindingRemove) (ret *model.BindingReturn) {
+func validateBindingRemove(in model.BindingRemove) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
@@ -54,7 +54,7 @@ func bindingRemoveRequestValidity(in model.BindingRemove) (ret *model.BindingRet
 }
 
 // 查询绑定关系的时候验证请求报文
-func bindingEnquiryRequestValidity(be model.BindingEnquiry) (ret *model.BindingReturn) {
+func validateBindingEnquiry(be model.BindingEnquiry) (ret *model.BindingReturn) {
 	if be.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
@@ -62,7 +62,7 @@ func bindingEnquiryRequestValidity(be model.BindingEnquiry) (ret *model.BindingR
 }
 
 // 绑定支付的请求报文验证
-func bindingPaymentRequestValidity(in model.BindingPayment) (ret *model.BindingReturn) {
+func validateBindingPayment(in model.BindingPayment) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
@@ -87,7 +87,7 @@ func bindingPaymentRequestValidity(in model.BindingPayment) (ret *model.BindingR
 }
 
 // 退款请求报文验证
-func bindingRefundRequestValidity(in *model.BindingRefund) (ret *model.BindingReturn) {
+func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
 	}
@@ -108,7 +108,7 @@ func bindingRefundRequestValidity(in *model.BindingRefund) (ret *model.BindingRe
 }
 
 // 无卡直接支付请求报文验证
-func noTrackPaymentRequestValidity(in *model.NoTrackPayment) (ret *model.BindingReturn) {
+func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
 	}

@@ -15,7 +15,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	g.Debug("url = %s", r.URL.Path)
 
 	if r.Method != "POST" {
-		g.Error("methond(%s) not allowed", r.Method)
+		g.Error("methond not allowed ", r.Method)
 		w.WriteHeader(405)
 		w.Write([]byte("only 'POST' method allowed"))
 		return
@@ -81,13 +81,13 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var bc model.BindingCreate
 	err := json.Unmarshal(data, &bc)
-	if ret = checkUnmarshalError(err); ret != nil {
-		return ret
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	bc.MerId = merId
 
 	// 验证请求报文是否完整，格式是否正确
-	ret = bindingCreateRequestValidity(bc)
+	ret = validateBindingCreate(bc)
 	if ret != nil {
 		return ret
 	}
@@ -103,12 +103,12 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var br model.BindingRemove
 	err := json.Unmarshal(data, &br)
-	if ret = checkUnmarshalError(err); ret != nil {
-		return ret
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	br.MerId = merId
 
-	ret = bindingRemoveRequestValidity(br)
+	ret = validateBindingRemove(br)
 	if ret != nil {
 		return ret
 	}
@@ -122,13 +122,13 @@ func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 func bindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var be model.BindingEnquiry
 	err := json.Unmarshal(data, &be)
-	if ret = checkUnmarshalError(err); ret != nil {
-		return ret
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	be.MerId = merId
 
 	// 验证请求报文格式
-	ret = bindingEnquiryRequestValidity(be)
+	ret = validateBindingEnquiry(be)
 	if ret != nil {
 		return ret
 	}
@@ -142,13 +142,13 @@ func bindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var b model.BindingPayment
 	err := json.Unmarshal(data, &b)
-	if ret = checkUnmarshalError(err); ret != nil {
-		return ret
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	b.MerId = merId
 
 	// 验证请求报文格式
-	ret = bindingPaymentRequestValidity(b)
+	ret = validateBindingPayment(b)
 	if ret != nil {
 		return ret
 	}
@@ -161,13 +161,73 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var b model.BindingRefund
 	err := json.Unmarshal(data, &b)
-	if ret = checkUnmarshalError(err); ret != nil {
-		return ret
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	b.MerId = merId
 
 	// 验证请求报文格式
-	ret = bindingRefundRequestValidity(&b)
+	ret = validateBindingRefund(&b)
+	if ret != nil {
+		return ret
+	}
+	//  todo 业务处理
+	// mock return
+	ret = model.NewBindingReturn("000000", "虚拟数据")
+	return ret
+}
+
+// 交易对账汇总
+func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	var b model.BillingSummary
+	err := json.Unmarshal(data, &b)
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
+	}
+	b.MerId = merId
+
+	// 验证请求报文格式
+	//	ret = validateBillingSummary(&b)
+	if ret != nil {
+		return ret
+	}
+	//  todo 业务处理
+	// mock return
+	ret = model.NewBindingReturn("000000", "虚拟数据")
+	return ret
+}
+
+// 交易对账明细
+func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	var b model.BillingDetails
+	err := json.Unmarshal(data, &b)
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
+	}
+	b.MerId = merId
+
+	// 验证请求报文格式
+	//	ret = validateBillingDetails(&b)
+	if ret != nil {
+		return ret
+	}
+	//  todo 业务处理
+	// mock return
+	ret = model.NewBindingReturn("000000", "虚拟数据")
+	return ret
+}
+
+// 查询订单状态
+func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	var b model.OrderEnquiry
+	err := json.Unmarshal(data, &b)
+	if err != nil {
+		return model.NewBindingReturn("200002", "解析报文错误")
+	}
+	b.MerId = merId
+
+	// 验证请求报文格式
+	//	ret = validateBillingDetails(&b)
 	if ret != nil {
 		return ret
 	}
@@ -181,12 +241,13 @@ func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	var b model.NoTrackPayment
 	err := json.Unmarshal(data, &b)
-	if ret = checkUnmarshalError(err); ret != nil {
-		return ret
+	if err != nil {
+		g.Error("解析报文错误 :%s", err)
+		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	b.MerId = merId
 
-	ret = noTrackPaymentRequestValidity(&b)
+	ret = validateNoTrackPayment(&b)
 	if ret != nil {
 		return ret
 	}
@@ -195,12 +256,4 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	// mock return
 	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
-}
-
-func checkUnmarshalError(err error) (ret *model.BindingReturn) {
-	if err != nil {
-		g.Error("解析报文错误 :%s", err)
-		return model.NewBindingReturn("200002", "解析报文错误")
-	}
-	return nil
 }
