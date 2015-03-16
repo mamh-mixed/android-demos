@@ -12,13 +12,14 @@ import (
 )
 
 func TestBindingCreateHandle(t *testing.T) {
-	merId := "001405"
+	merId := "111111001405"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6222020302062061908","identType":"0","identNum":"350583199009153732","phoneNum":"18205960039","acctType":"20","validDate":"1903","cvv2":"232","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
+	body := `{"bindingId":"1000000000004","acctName":"张三","acctNum":"6222020302062061908","identType":"0","identNum":"350583199009153732","phoneNum":"18205960039","acctType":"20","validDate":"1903","cvv2":"232","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
 
 	doPost("POST", url, body, t)
 }
 
+/*
 func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
 	merId := "10000001"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
@@ -26,7 +27,7 @@ func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
 
 	doPost("POST", url, body, t)
 }
-
+*/
 func doPost(method, url, body string, t *testing.T) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
 	if err != nil {
@@ -59,9 +60,9 @@ func TestBindingRemoveHandle(t *testing.T) {
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "001405"
+	merId := "111111001405"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1000000000001"}`
+	body := `{"bindingId": "1000000000004"}`
 	doPost("POST", url, body, t)
 }
 
@@ -70,9 +71,9 @@ func TestBindingPaymentHandle(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "100000000300004",
+		"merOrderNum": "100000000300006",
 		"transAmt": 30000,
-		"bindingId": "1000000000001",
+		"bindingId": "1000000000002",
 		"sendSmsId": "",
 		"smsCode": "",
 		"merId":"001405"
