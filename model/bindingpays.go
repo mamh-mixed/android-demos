@@ -14,6 +14,7 @@ type BindingReturn struct {
 	// 交易对账汇总
 	SettDate string   `json:"settDate,omitempty"` // 对账日期
 	Data     []string `json:"data,omitempty"`     // 对账数据集
+
 	// 交易对账明细
 	Count        int      `json:"count,omitempty"`        // 拉取的记录条数
 	NextOrderNum string   `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
