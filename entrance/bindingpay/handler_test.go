@@ -6,31 +6,45 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"quickpay/model"
+	"quickpay/mongo"
+	"quickpay/tools"
 	"testing"
 
 	"github.com/omigo/g"
 )
 
 func TestBindingCreateHandle(t *testing.T) {
-	merId := "499999999"
+	// todo 生成一个随机的商户号
+	rdMerId := tools.Millisecond()
+	// todo 在路由策略里面插入新商户号码的路由策略
+	rp := &model.RouterPolicy{
+		MerId:     rdMerId,
+		CardBrand: "CUP",
+		ChanCode:  "CFCA",
+		ChanMerId: "001405",
+	}
+
+	if err := mongo.InsertRouterPolicy(rp); err != nil {
+		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
+	}
+	// 生成一个随机的绑定ID
+	rdBindingId := tools.Millisecond()
+	merId := rdMerId
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"10000000001003","acctName":"张三","acctNum":"6222022003008481261","identType":"0","identNum":"440583199111031012","phoneNum":"15600009909","acctType":"20","validDate":"1903","cvv2":"232","bankId":"700","sendSmsId":"1000000000009","smsCode":"12353"}`
+	body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222020302062061908","identType":"0","identNum":"350583199009153732","phoneNum":"18205960039","acctType":"20","validDate":"1903","cvv2":"232","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
+
 	doPost("POST", url, body, t)
 }
 
-// func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
-// 	merId := "10000001"
-// 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-// 	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"1","identNum":"36050219880401","phoneNum":"15600009909","acctType":"10","validDate":"","cvv2":"","sendSmsId":"1000000000009","smsCode":"12353"}`
-// 	response := bindingCreateRequestHandle("POST", url, body, t)
-// 	g.Debug("%+v", response)
-// 	if response.RespCode != "000000" {
-// 		t.Error("验证 '借记卡' 失败")
-// 	} else {
-// 		t.Logf("%+v", response)
-// 	}
-// }
+/*
+func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
+	merId := "10000001"
+	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
+	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"1","identNum":"36050219880401","phoneNum":"15600009909","acctType":"10","validDate":"","cvv2":"","sendSmsId":"1000000000009","smsCode":"12353"}`
 
+	doPost("POST", url, body, t)
+}
+*/
 func doPost(method, url, body string, t *testing.T) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
 	if err != nil {
@@ -63,9 +77,9 @@ func TestBindingRemoveHandle(t *testing.T) {
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "001405"
+	merId := "111111001405"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1000000000001"}`
+	body := `{"bindingId": "1000000000004"}`
 	doPost("POST", url, body, t)
 }
 
@@ -74,9 +88,9 @@ func TestBindingPaymentHandle(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "100000000300091",
-		"transAmt": 900,
-		"bindingId": "10000000001003",
+		"merOrderNum": "100000000300006",
+		"transAmt": 30000,
+		"bindingId": "1000000000002",
 		"sendSmsId": "",
 		"smsCode": "",
 		"merId":"499999999"
