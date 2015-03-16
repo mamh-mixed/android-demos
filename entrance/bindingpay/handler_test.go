@@ -6,15 +6,32 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"quickpay/model"
+	"quickpay/mongo"
+	"quickpay/tools"
 	"testing"
 
 	"github.com/omigo/g"
 )
 
 func TestBindingCreateHandle(t *testing.T) {
-	merId := "111111001405"
+	// todo 生成一个随机的商户号
+	rdMerId := tools.Millisecond()
+	// todo 在路由策略里面插入新商户号码的路由策略
+	rp := &model.RouterPolicy{
+		MerId:     rdMerId,
+		CardBrand: "CUP",
+		ChanCode:  "CFCA",
+		ChanMerId: "001405",
+	}
+
+	if err := mongo.InsertRouterPolicy(rp); err != nil {
+		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
+	}
+	// 生成一个随机的绑定ID
+	rdBindingId := tools.Millisecond()
+	merId := rdMerId
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000004","acctName":"张三","acctNum":"6222020302062061908","identType":"0","identNum":"350583199009153732","phoneNum":"18205960039","acctType":"20","validDate":"1903","cvv2":"232","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
+	body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222020302062061908","identType":"0","identNum":"350583199009153732","phoneNum":"18205960039","acctType":"20","validDate":"1903","cvv2":"232","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
 
 	doPost("POST", url, body, t)
 }
