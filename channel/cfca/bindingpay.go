@@ -13,6 +13,7 @@ const (
 	BindingRemoveTxCode  = "2503"
 	BindingPaymentTxCode = "2511"
 	BindingRefundTxCode  = "2521"
+	PaymentEnquiryTxCode = "2512"
 )
 
 // ProcessBindingEnquiry 查询绑定关系
@@ -27,6 +28,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		Body: requestBody{
 			TxSNBinding: be.ChanBindingId,
 		},
+		SignCert: be.SignCert,
 	}
 
 	// 向中金发起请求
@@ -59,6 +61,7 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 			ValidDate:            be.ValidDate,
 			CVN2:                 be.Cvv2,
 		},
+		SignCert: be.SignCert,
 	}
 	//请求
 	resp := sendRequest(req)
@@ -80,6 +83,7 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 			TxSNUnBinding: be.TxSNUnBinding,
 			TxSNBinding:   be.ChanBindingId,
 		},
+		SignCert: be.SignCert,
 	}
 
 	// 向中金发起请求
@@ -108,6 +112,31 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 			SettlementFlag: be.SettFlag,
 			Remark:         be.Remark,
 		},
+		SignCert: be.SignCert,
+	}
+	//请求
+	g.Debug("request for cfca param (%s)", req)
+	resp := sendRequest(req)
+	//应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+	return
+
+}
+
+// ProcessPaymentEnquiry 快捷支付查询
+func ProcessPaymentEnquiry(be *model.BindingPayment) (ret *model.BindingReturn) {
+
+	//组装参数
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			InstitutionID: be.ChanMerId,
+			TxCode:        PaymentEnquiryTxCode,
+		},
+		Body: requestBody{
+			PaymentNo: be.MerOrderNum,
+		},
+		SignCert: be.SignCert,
 	}
 	//请求
 	g.Debug("request for cfca param (%s)", req)
@@ -134,6 +163,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 			Amount:    be.TransAmt,
 			Remark:    be.Remark,
 		},
+		SignCert: be.SignCert,
 	}
 	//请求
 	resp := sendRequest(req)

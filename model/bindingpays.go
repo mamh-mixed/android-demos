@@ -52,6 +52,7 @@ type BindingCreate struct {
 	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
 	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
+	SignCert      string //签名密钥
 }
 
 // BindingRemove 解除绑定关系
@@ -61,6 +62,7 @@ type BindingRemove struct {
 	TxSNUnBinding string `json:"txSNUnBinding"` //解绑流水号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
+	SignCert      string //签名密钥
 }
 
 // BindingEnquiry 绑定关系查询
@@ -69,7 +71,7 @@ type BindingEnquiry struct {
 	BindingId     string `json:"bindingId"` // 银行卡绑定ID
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
-
+	SignCert      string //签名密钥
 }
 
 // BindingPayment 绑定支付请求
@@ -85,6 +87,7 @@ type BindingPayment struct {
 	Remark        string `json:"remark"`      //备注
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
+	SignCert      string //签名密钥
 }
 
 // BindingRefund 退款
@@ -96,6 +99,7 @@ type BindingRefund struct {
 	Remark        string `json:"remark"`       //备注
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
+	SignCert      string //签名密钥
 }
 
 // BillingSummary 交易对账汇总

@@ -10,8 +10,8 @@ import (
 func AddTrans(t *model.Trans) error {
 	// default
 	t.Id = bson.NewObjectId()
-	t.Time = time.Now().Unix()
-	t.Flag = 0
+	t.TransTime = time.Now().Unix()
+	t.TransFlag = 0
 	return db.trans.Insert(t)
 }
 

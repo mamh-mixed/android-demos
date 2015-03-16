@@ -7,8 +7,8 @@ import (
 
 func TestInsertRouterPolicy(t *testing.T) {
 	rp := &model.RouterPolicy{
-		MerId:     "001405",
-		CardBrand: "UPI",
+		MerId:     "111111001405",
+		CardBrand: "CUP",
 		ChanCode:  "CFCA",
 		ChanMerId: "001405",
 	}
@@ -19,7 +19,7 @@ func TestInsertRouterPolicy(t *testing.T) {
 }
 
 func TestFindRouterPolicy(t *testing.T) {
-	rp := FindRouterPolicy("001405", "CUP")
+	rp := FindRouterPolicy("111111001405", "CUP")
 	if rp == nil {
 		t.Error("Excepted one but get 'nil'")
 	}

@@ -18,6 +18,7 @@ func TestSendRequest(t *testing.T) {
 		Body: requestBody{
 			TxSNBinding: "213121231313",
 		},
+		SignCert: priKeyPem,
 	}
 
 	response := sendRequest(req)
@@ -31,6 +32,7 @@ func TestProcessBindingEnquiry(t *testing.T) {
 	be := &model.BindingEnquiry{
 		ChanBindingId: "123456789",
 		ChanMerId:     "001405",
+		SignCert:      priKeyPem,
 	}
 	resp := ProcessBindingEnquiry(be)
 
@@ -41,7 +43,7 @@ func TestProcessBindingCreate(t *testing.T) {
 
 	be := &model.BindingCreate{
 		ChanMerId:     "001405",
-		ChanBindingId: "12345678901",
+		ChanBindingId: "123456789011",
 		BankId:        "102",
 		AcctName:      "test",
 		AcctNum:       "6222022003008481261",
@@ -53,6 +55,7 @@ func TestProcessBindingCreate(t *testing.T) {
 		Cvv2:          "",
 		SendSmsId:     "",
 		SmsCode:       "",
+		SignCert:      priKeyPem,
 	}
 	resp := ProcessBindingCreate(be)
 	g.Debug("response message  %s", resp)
@@ -64,6 +67,7 @@ func TestProcessBindingRemove(t *testing.T) {
 		ChanMerId:     "001405",
 		ChanBindingId: "123456789",
 		TxSNUnBinding: "3333444",
+		SignCert:      priKeyPem,
 	}
 	resp := ProcessBindingRemove(be)
 	g.Debug("response message  %s", resp)
@@ -73,11 +77,12 @@ func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
 		ChanMerId:     "001405",
-		ChanBindingId: "12345678901",
+		ChanBindingId: "123456789011",
 		SettFlag:      "475",
 		//需要变化
-		MerOrderNum: "6222022003008481264",
+		MerOrderNum: "6222022003008481269",
 		TransAmt:    12000,
+		SignCert:    priKeyPem,
 	}
 	resp := ProcessBindingPayment(be)
 	g.Debug("response message  %s", resp)
@@ -92,6 +97,7 @@ func TestProcessBindingRefund(t *testing.T) {
 		MerOrderNum:  "6222022003008481265",
 		OrigOrderNum: "6222022003008481264",
 		TransAmt:     12000,
+		SignCert:     priKeyPem,
 	}
 	resp := ProcessBindingRefund(be)
 	g.Debug("response message  %s", resp)

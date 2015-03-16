@@ -63,6 +63,8 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 	}
 
+	g.Debug("处理后报文: %s", ret)
+
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
@@ -92,6 +94,8 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 
 	//todo 业务处理
 	ret = core.ProcessBindingCreate(&bc)
+	// mock return
+	// ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -238,6 +242,7 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	var b model.NoTrackPayment
 	err := json.Unmarshal(data, &b)
 	if err != nil {
+		g.Error("解析报文错误 :%s", err)
 		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	b.MerId = merId

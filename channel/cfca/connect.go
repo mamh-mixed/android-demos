@@ -119,7 +119,7 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	g.Trace("base64: %s", b64Str)
 
 	// 对 xml 签名
-	hexSign := signatureUseSha1WithRsa(xmlBytes)
+	hexSign := signatureUseSha1WithRsa(xmlBytes, req.SignCert)
 	g.Trace("请求签名: %s", hexSign)
 
 	// 准备参数
