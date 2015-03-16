@@ -35,7 +35,7 @@ func NewBindingReturn(code, msg string) (ret *BindingReturn) {
 	}
 }
 
-// BindingCreate 建立绑定支付
+// BindingCreate 建立绑定关系
 type BindingCreate struct {
 	MerId         string `json:"merId" bson:"merId,omitempty"`                 // 商户ID
 	BindingId     string `json:"bindingId" bson:"bindingId,omitempty"`         // 银行卡绑定ID
@@ -54,7 +54,7 @@ type BindingCreate struct {
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
 }
 
-// BindingRemove 解除绑定关系请求
+// BindingRemove 解除绑定关系
 type BindingRemove struct {
 	MerId         string `json:"merId"`         //商户ID
 	BindingId     string `json:"bindingId"`     // 银行卡绑定ID
@@ -87,7 +87,7 @@ type BindingPayment struct {
 	ChanMerId     string //渠道商户ID
 }
 
-// BindingRefund 退款请求
+// BindingRefund 退款
 type BindingRefund struct {
 	MerId         string `json:"merId"`        //商户ID
 	MerOrderNum   string `json:"merOrderNum"`  // 商户订单号
@@ -98,19 +98,22 @@ type BindingRefund struct {
 	ChanMerId     string //渠道商户ID
 }
 
-// BillingSummary 交易对账汇总请求
+// BillingSummary 交易对账汇总
 type BillingSummary struct {
+	MerId    string `json:"merId"`    //商户ID
 	SettDate string `json:"settDate"` // 对账日期，格式为‘YYYYMMDD’
 }
 
 // BillingDetails 交易对账明细
 type BillingDetails struct {
+	MerId        string `json:"merId"`        //商户ID
 	SettDate     string `json:"settDate"`     // 对账日期，格式为‘YYYYMMDD’
 	NextOrderNum string `json:"nextOrderNum"` // 拉取的第一条记录的商户订单号,不填默认从头开始拉取，使用上一次调用返回的nextOrderNum可连续拉取
 }
 
 // OrderEnquiry 查询订单状态
 type OrderEnquiry struct {
+	MerId        string `json:"merId"`        //商户ID
 	OrigOrderNum string `json:"origOrderNum"` //原交易订单号
 	OrderNum     string `json:"orderNum"`     //原网关订单号
 	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
