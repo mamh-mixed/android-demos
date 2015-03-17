@@ -80,7 +80,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		ChanBindingId: "123456789011",
 		SettFlag:      "475",
 		//需要变化
-		MerOrderNum: "6222022003008481269",
+		MerOrderNum: "6222022003008481270",
 		TransAmt:    12000,
 		SignCert:    priKeyPem,
 	}

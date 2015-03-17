@@ -56,8 +56,21 @@ type ChanMer struct {
 	//...
 }
 type Trans struct {
-	Id        bson.ObjectId  `bson:"_id"`
-	Payment   BindingPayment `bson:",inline"` //支付信息
-	TransTime int64          //时间
-	TransFlag int8           //交易状态
+	Id            bson.ObjectId `bson:"_id"`
+	OrderNum      string        `bson:"orderNum"`      //商户订单号
+	ChanOrderNum  string        `bson:"chanOrderNum"`  //网关订单号
+	ChanBindingId string        `bson:"chanBindingId"` //绑定ID
+	AcctNum       string        `bson:"acctNum"`       //交易账户
+	RespCode      string        `bson:"respCode"`      //网关应答码
+	MerId         string        `bson:"merId"`         //商户号
+	TransAmount   string        `bson:"transAmount"`   //交易金额
+	TransCurr     string        `bson:"transCurr"`     //交易币种
+	TransStatus   int8          `bson:"transStatus"`   //交易状态
+	BeforeType    string        `bson:"beforeType"`    //转换前交易类型(支付、退货)
+	AfterType     string        `bson:"afterType"`     //转换后交易类型（支付、退货、预授权）
+	ChanMerId     string        `bson:"chanMerId"`     //渠道商户号
+	ChanCode      string        `bson:"chanCode"`      //渠道代码
+	ChanRespCode  string        `bson:"chanRespCode"`  //渠道应答码
+	CreateTime    int64         `bson:"createTime"`    //交易创建时间
+	UpdateTime    int64         `bson:"updateTime"`    //交易更新时间
 }
