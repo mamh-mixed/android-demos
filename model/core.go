@@ -8,27 +8,39 @@ import (
 type RouterPolicy struct {
 	MerId     string `json:"merId" bson:"merId,omitempty"`         // 商户号
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+	CardType  string `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
+	TransType string `json:"transType" bson:"transType,omitempty"` // 交易类型
+	BinGroup  string `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
+	InputWay  string `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
+	MinAmount string `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
+	MaxAmount string `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
 	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
 }
 
-// BindingRelation 绑定关系
-type BindingRelation struct {
+// BindingInfo 商家绑定信息
+type BindingInfo struct {
+	MerId     string `json:"merId" bson:"merId,omitempty"`         // 商户ID
+	BindingId string `json:"bindingId" bson:"bindingId,omitempty"` // 银行卡绑定ID
+	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+	AcctType  string `json:"acctType" bson:"acctType,omitempty"`   // 账户类型
+	AcctName  string `json:"acctName" bson:"acctName,omitempty"`   // 账户名称
+	AcctNum   string `json:"acctNum" bson:"acctNum,omitempty"`     // 账户号码
+	BankId    string `json:"bankId" bson:"bankId,omitempty"`       // 银行ID
+	IdentType string `json:"identType" bson:"identType,omitempty"` // 证件类型
+	IdentNum  string `json:"identNum" bson:"identNum,omitempty"`   // 证件号码
+	PhoneNum  string `json:"phoneNum" bson:"phoneNum,omitempty"`   // 手机号
+	ValidDate string `json:"validDate" bson:"validDate,omitempty"` // 信用卡有效期
+	Cvv2      string `json:"cvv2" bson:"cvv2,omitempty"`           // CVV2
+}
+
+// BindingMap 绑定关系映射
+type BindingMap struct {
 	BindingId     string `json:"bindingId" bson:"bindingId,omitempty"`         // 银行卡绑定ID
 	MerId         string `json:"merId" bson:"merId,omitempty"`                 // 商户ID
-	AcctName      string `json:"acctName" bson:"acctName,omitempty"`           // 账户名称
-	AcctNum       string `json:"acctNum" bson:"acctNum,omitempty"`             // 账户号码
-	IdentType     string `json:"identType" bson:"identType,omitempty"`         // 证件类型
-	IdentNum      string `json:"identNum" bson:"identNum,omitempty"`           // 证件号码
-	PhoneNum      string `json:"phoneNum" bson:"phoneNum,omitempty"`           // 手机号
-	AcctType      string `json:"acctType" bson:"acctType,omitempty"`           // 账户类型
-	ValidDate     string `json:"validDate" bson:"validDate,omitempty"`         // 信用卡有限期
-	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`                   // CVV2
-	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
-	CardBrand     string `json:"cardBrand" bson:"cardBrand,omitempty"`         // 卡品牌
 	ChanCode      string `json:"chanCode" bson:"chanCode,omitempty"`           // 渠道代码
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户号
-	SysBindingId  string `json:"sysBindingId" bson:"sysBindingId,omitempty"`   // 系统绑定ID，系统生成的
+	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 目标渠道绑定ID，系统生成的
 	BindingStatus string `json:"bindingStatus" bson:"bindingStatus,omitempty"` // 绑定状态，成功，失败，或者处理中
 }
 
@@ -63,7 +75,7 @@ type Trans struct {
 	AcctNum       string        `bson:"acctNum"`       //交易账户
 	RespCode      string        `bson:"respCode"`      //网关应答码
 	MerId         string        `bson:"merId"`         //商户号
-	TransAmount   string        `bson:"transAmount"`   //交易金额
+	TransAmount   int64         `bson:"transAmount"`   //交易金额
 	TransCurr     string        `bson:"transCurr"`     //交易币种
 	TransStatus   int8          `bson:"transStatus"`   //交易状态
 	BeforeType    string        `bson:"beforeType"`    //转换前交易类型(支付、退货)
