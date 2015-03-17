@@ -24,7 +24,7 @@ func TestBindingCreateHandle(t *testing.T) {
 		ChanMerId: "001405",
 	}
 
-	if err := mongo.InsertRouterPolicy(rp); err != nil {
+	if err := mongo.RouterPolicyColl.Insert(rp); err != nil {
 		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
 	}
 	// 生成一个随机的绑定ID
@@ -70,9 +70,9 @@ func doPost(method, url, body string, t *testing.T) {
 }
 
 func TestBindingRemoveHandle(t *testing.T) {
-	merId := "10000001"
+	merId := "1426583281344"
 	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + merId
-	body := `{"bindingId": "1000000001"}`
+	body := `{"bindingId": "1426583281402"}`
 	doPost("POST", url, body, t)
 }
 

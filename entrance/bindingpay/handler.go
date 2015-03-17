@@ -112,9 +112,8 @@ func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	if ret != nil {
 		return ret
 	}
-	// todo 业务处理
-	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
+	// 业务处理
+	ret = core.ProcessBindingReomve(&br)
 	return ret
 }
 

@@ -52,3 +52,14 @@ func TestProcessBindingEnquiry(t *testing.T) {
 
 	t.Logf("%+v", ret)
 }
+
+func TestProcessBindingRemove(t *testing.T) {
+	be := &model.BindingRemove{
+		MerId:     "1426562901844",
+		BindingId: "1426562901897",
+	}
+
+	ret := ProcessBindingReomve(be)
+
+	t.Logf("%+v", ret)
+}

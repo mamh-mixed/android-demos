@@ -34,8 +34,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(bc.MerId, cardBin.CardBrand)
 	if rp == nil {
-		// todo 错误返回校验码
-		return model.NewBindingReturn("", "找不到路由策略")
+		return model.NewBindingReturn("300030", "无此交易权限")
 	}
 
 	// 商家绑定信息和绑定映射入库
@@ -110,7 +109,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 本地查询绑定关系
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
-		g.Error("'FindBindingRelation' error: ", err.Error())
+		g.Error("'FindBindingMap' error: ", err.Error())
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
@@ -180,8 +179,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 	if err = mongo.FindChanMer(chanMer); err != nil {
 		g.Error("not found any chanMer: ", err)
-		// todo 找不到渠道商户的错误码
-		return model.NewBindingReturn("-100000", "找不到渠道商户")
+		return model.NewBindingReturn("300030", "无此交易权限")
 	}
 
 	// 赋值
@@ -224,6 +222,54 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	if err = mongo.ModifyTrans(trans); err != nil {
 		g.Error("update trans status fail ", err)
 	}
+	return ret
+}
+
+// ProcessBindingReomve 绑定解除
+func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
+	ret = model.NewBindingReturn("000001", "系统内部错误")
+
+	// 本地查询绑定关系
+	bm, err := mongo.BindingMapColl.Find(br.MerId, br.BindingId)
+	if err != nil {
+		g.Error("'FindBindingRelation' error: ", err.Error())
+		return model.NewBindingReturn("200101", "绑定ID不正确")
+	}
+
+	// 如果绑定状态非成功状态
+	if bm.BindingStatus != "000000" {
+		return mongo.RespCodeColl.Get(bm.BindingStatus)
+	}
+
+	// 查找渠道商户信息，获取证书
+	chanMer := &model.ChanMer{
+		ChanCode:  bm.ChanCode,
+		ChanMerId: bm.ChanMerId,
+	}
+	if err = mongo.FindChanMer(chanMer); err != nil {
+		g.Debug("not found any chanMer (%s)", err)
+		return model.NewBindingReturn("300030", "无此交易权限")
+	}
+
+	// 转换关系，补充信息
+	br.ChanMerId = bm.ChanMerId
+	br.ChanBindingId = bm.ChanBindingId
+	br.TxSNUnBinding = tools.SerialNumber()
+	br.SignCert = chanMer.SignCert
+
+	// 到渠道解绑
+	ret = cfca.ProcessBindingRemove(br)
+
+	// 如果解绑成功，更新本地数据库
+	if ret.RespCode == "000000" {
+		bm.BindingStatus = "100050"
+		if err := mongo.BindingMapColl.Update(bm); err != nil {
+			g.Error("'Update BindingMap' error: ", err.Error())
+		}
+	}
+
+	// todo 成功后是否要入库
+
 	return ret
 }
 
