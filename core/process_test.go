@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/omigo/g"
 	"quickpay/model"
 	"testing"
 )
@@ -51,4 +52,36 @@ func TestProcessBindingEnquiry(t *testing.T) {
 	ret := ProcessBindingEnquiry(be)
 
 	t.Logf("%+v", ret)
+}
+
+func TestProcessBindingPayment(t *testing.T) {
+
+	be := &model.BindingPayment{
+		MerId:       "001405",
+		BindingId:   "1000000000011",
+		TransAmt:    800,
+		MerOrderNum: "20000000010000000",
+	}
+	ret := ProcessBindingPayment(be)
+
+	if ret.RespCode == "" {
+		t.Errorf("process payment but not get a respCode %+v", ret)
+	}
+	t.Logf("%+v", ret)
+}
+
+func TestProcessBindingRefund(t *testing.T) {
+
+	be := &model.BindingRefund{
+		MerId:        "001405",
+		TransAmt:     800,
+		OrigOrderNum: "20000000010000000",
+		MerOrderNum:  "300000200000300",
+	}
+	ret := ProcessBindingRefund(be)
+
+	if ret.RespCode == "" {
+		t.Errorf("process payment but not get a respCode %+v", ret)
+	}
+	g.Debug("%+v", ret)
 }

@@ -12,8 +12,12 @@ func TestTransAdd(t *testing.T) {
 	trans := &model.Trans{
 		CreateTime:  time.Now().Unix(),
 		TransStatus: 0,
+		MerId:       "11031012",
+		OrderNum:    "20150317",
+		TransType:   1,
 	}
-	err := AddTrans(trans)
+	g.Debug("%+v", TransColl)
+	err := TransColl.Add(trans)
 	if err != nil {
 		t.Errorf("add trans unsunccessful", err)
 		t.FailNow()
@@ -28,7 +32,7 @@ func TestTransModify(t *testing.T) {
 		Id:          objectId,
 		TransStatus: 0,
 	}
-	err := ModifyTrans(trans)
+	err := TransColl.Update(trans)
 	if err != nil {
 		t.Errorf("modify trans unsunccessful", err)
 		t.FailNow()
@@ -39,11 +43,12 @@ func TestTransModify(t *testing.T) {
 
 func TestCountTrans(t *testing.T) {
 
-	trans := &model.Trans{
-		MerId:    "4353332424",
-		OrderNum: "22323232323233",
-	}
-	c, err := CountTrans(trans)
+	// trans := &model.Trans{
+	// 	MerId:     "4353332424",
+	// 	OrderNum:  "22323232323233",
+	// 	TransType: 1,
+	// }
+	c, err := TransColl.Count("4353332424", "22323232323233", 1)
 	if err != nil {
 		t.Errorf("count trans unsunccessful", err)
 		t.FailNow()
@@ -52,11 +57,12 @@ func TestCountTrans(t *testing.T) {
 }
 
 func TestFindTrans(t *testing.T) {
-	trans := &model.Trans{
-		MerId:    "4353332424",
-		OrderNum: "22323232323233",
-	}
-	err := FindTrans(trans)
+	// trans := &model.Trans{
+	// 	MerId:     "4353332424",
+	// 	OrderNum:  "22323232323233",
+	// 	TransType: 1,
+	// }
+	trans, err := TransColl.Find("11031012", "20150317", 1)
 	if err != nil {
 		t.Errorf("find trans unsunccessful", err)
 		t.FailNow()

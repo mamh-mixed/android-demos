@@ -6,26 +6,34 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+type chanMerCollection struct {
+	name string
+}
+
+var ChanMerColl = chanMerCollection{"chanMer"}
+
 // Find 根据渠道代码、商户号查找
-func FindChanMer(c *model.ChanMer) error {
+func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer, err error) {
 
 	bo := bson.M{
-		"chancode":  c.ChanCode,
-		"chanmerid": c.ChanMerId,
+		"chancode":  chanCode,
+		"chanmerid": chanMerId,
 	}
-	return db.chanMer.Find(bo).One(c)
+	c = &model.ChanMer{}
+	err = database.C(col.name).Find(bo).One(c)
+	return
 }
 
 // Add 增加一个渠道商户
-func AddChanMer(c *model.ChanMer) error {
-	return db.chanMer.Insert(c)
+func (col *chanMerCollection) Add(c *model.ChanMer) error {
+	return database.C(col.name).Insert(c)
 }
 
 // Modify 更新渠道商户信息
-func ModifyChanMer(c *model.ChanMer) error {
+func (col *chanMerCollection) Update(c *model.ChanMer) error {
 	bo := bson.M{
 		"chancode":  c.ChanCode,
 		"chanmerid": c.ChanMerId,
 	}
-	return db.chanMer.Update(bo, c)
+	return database.C(col.name).Update(bo, c)
 }
