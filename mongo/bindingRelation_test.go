@@ -22,13 +22,13 @@ func TestBindingInfo(t *testing.T) {
 		ValidDate: "",
 		Cvv2:      "",
 	}
-	if err := InsertBindingInfo(bi); err != nil {
+	if err := BindingInfoColl.Insert(bi); err != nil {
 		t.Errorf("insert bindinginfo error: (%s)", err.Error())
 	}
 
 	bi.AcctName = "WonSikin"
 
-	if err := UpdateBindingInfo(bi); err != nil {
+	if err := BindingInfoColl.Update(bi); err != nil {
 		t.Errorf("update bindinginfo error: (%s)", err.Error())
 	}
 
@@ -44,13 +44,13 @@ func TestBindingMap(t *testing.T) {
 		ChanBindingId: chanBindingId,
 		BindingStatus: "000009",
 	}
-	if err := InsertBindingMap(bm); err != nil {
+	if err := BindingMapColl.Insert(bm); err != nil {
 		t.Errorf("insert bindinginfo error: (%s)", err.Error())
 	}
 
 	bm.BindingStatus = "000000"
 
-	if err := UpdateBindingMap(bm); err != nil {
+	if err := BindingMapColl.Update(bm); err != nil {
 		t.Errorf("update bindinginfo error: (%s)", err.Error())
 	}
 

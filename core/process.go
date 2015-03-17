@@ -53,7 +53,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		ValidDate: bc.ValidDate,
 		Cvv2:      bc.Cvv2,
 	}
-	if err := mongo.InsertBindingInfo(bi); err != nil {
+	if err := mongo.BindingInfoColl.Insert(bi); err != nil {
 		g.Error("'InsertBindingInfo' error: (%s)\n 'BindingInfo': %+v", err, bi)
 		return model.NewBindingReturn("000001", "系统内部错误")
 	}
@@ -67,7 +67,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		ChanBindingId: tools.SerialNumber(),
 		BindingStatus: "",
 	}
-	if err := mongo.InsertBindingMap(bm); err != nil {
+	if err := mongo.BindingMapColl.Insert(bm); err != nil {
 		g.Error("'InsertBindingMap' error: (%s)\n 'BindingMap': %+v", err, bm)
 		return model.NewBindingReturn("000001", "系统内部错误")
 	}
@@ -92,7 +92,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效。
 	bm.BindingStatus = ret.RespCode
-	err := mongo.UpdateBindingMap(bm)
+	err := mongo.BindingMapColl.Update(bm)
 	if err != nil {
 		g.Error("'UpdateBindingMap' error: (%s)\n 'BindingMap': %+v", err.Error(), bm)
 		return model.NewBindingReturn("000001", "系统内部错误")
@@ -108,7 +108,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
 	// 本地查询绑定关系
-	bm, err := mongo.FindBindingMap(be.MerId, be.BindingId)
+	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
 		g.Error("'FindBindingRelation' error: ", err.Error())
 		return model.NewBindingReturn("200101", "绑定ID不正确")
@@ -116,7 +116,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 
 	// 非处理中，直接返回结果
 	if bm.BindingStatus != "000009" {
-		return mongo.GetRespCode(bm.BindingStatus)
+		return mongo.RespCodeColl.Get(bm.BindingStatus)
 	}
 
 	// 根据绑定关系得到渠道商户信息
@@ -139,7 +139,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 
 	// 更新绑定关系的状态
 	bm.BindingStatus = ret.RespCode
-	if err = mongo.UpdateBindingMap(bm); err != nil {
+	if err = mongo.BindingMapColl.Update(bm); err != nil {
 		g.Info("'UpdateBindingMap' is: %+v", bm)
 		g.Error("'UpdateBindingRelation' error: ", err.Error())
 		return model.NewBindingReturn("000001", "系统内部错误")
@@ -154,7 +154,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
 	// todo 本地查询绑定关系。查询绑定关系的状态是否成功
-	bm, err := mongo.FindBindingMap(be.MerId, be.BindingId)
+	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
 		g.Error("not found any bindRelation: ", err)
 		return model.NewBindingReturn("200101", "绑定ID不正确")
