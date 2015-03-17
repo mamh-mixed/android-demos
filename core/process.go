@@ -89,7 +89,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	if err != nil {
 		g.Info("'BindingRelation' is: %+v", br)
 		g.Error("'UpdateBindingRelation' error: ", err.Error())
-		return model.NewBindingReturn("000001", "系统内部错误")
+
 	}
 
 	return ret
@@ -147,6 +147,8 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 默认返回
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
+	// todo 检查同一个商户的订单号是否重复
+
 	// todo 本地查询绑定关系。查询绑定关系的状态是否成功
 	bindRelation, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
 	if err != nil {
@@ -176,7 +178,22 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.SignCert = chanMer.SignCert
 
 	// 记录这笔交易
-	trans := &model.Trans{Payment: *be}
+	trans := &model.Trans{
+		OrderNum:      be.MerOrderNum,
+		ChanOrderNum:  tools.SerialNumber(),
+		ChanBindingId: be.ChanBindingId,
+		AcctNum:       bindRelation.CardInfo.AcctNum,
+		MerId:         be.MerId,
+		TransAmount:   be.TransAmt,
+		ChanMerId:     be.ChanMerId,
+		ChanCode:      bindRelation.Router.ChanCode,
+		// TODO 补充完整字段
+		// ChanRespCode  :"",
+		// UpdateTime    :"",
+		// TransCurr     :"",
+		// BeforeType    :"",
+		// AfterType     :"",
+	}
 	if err = mongo.AddTrans(trans); err != nil {
 		g.Error("add trans fail: ", err)
 		return model.NewBindingReturn("000001", "系统内部错误")
@@ -186,14 +203,14 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	ret = cfca.ProcessBindingPayment(be)
 
 	// 处理结果
+	trans.ChanRespCode = ret.ChanRespCode
+	trans.RespCode = ret.RespCode
 	if ret.RespCode == "000000" {
-		trans.TransFlag = 1
-		if err = mongo.ModifyTrans(trans); err != nil {
-			g.Error("update trans status fail ", err)
-			model.NewBindingReturn("000001", "系统内部错误")
-		}
+		trans.TransStatus = 1
 	}
-
+	if err = mongo.ModifyTrans(trans); err != nil {
+		g.Error("update trans status fail ", err)
+	}
 	return ret
 }
 
