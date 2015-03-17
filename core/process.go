@@ -32,7 +32,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 
 	// 通过路由策略找到渠道和渠道商户
-	rp := mongo.FindRouterPolicy(bc.MerId, cardBin.CardBrand)
+	rp := mongo.RouterPolicyColl.Find(bc.MerId, cardBin.CardBrand)
 	if rp == nil {
 		// todo 错误返回校验码
 		return model.NewBindingReturn("", "找不到路由策略")
