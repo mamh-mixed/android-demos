@@ -104,7 +104,7 @@ CVV2	cvv2
 9. 交易记录	trans
 商户订单号	orderNum
 网关订单号	chanOrderNum
-退款订单号	refoundOrderNum
+退款订单号	refundOrderNum
 绑定ID	chanBindingId
 交易账户	acctNum
 网关应答码	respCode

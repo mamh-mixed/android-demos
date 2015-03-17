@@ -20,7 +20,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// }
 
 	// 获取卡属性
-	cardBin := mongo.FindCardBin(bc.AcctNum)
+	cardBin := mongo.CardBinColl.Find(bc.AcctNum)
 	g.Debug("CardBin: %+v", cardBin)
 
 	// 如果是银联卡，验证证件信息
@@ -149,8 +149,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
 	// 检查同一个商户的订单号是否重复
-	q := &model.Trans{OrderNum: be.MerOrderNum, MerId: be.MerId, TransType: 1}
-	count, err := mongo.TransColl.Count(q)
+	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum, 1)
 	if err != nil {
 		g.Error("find trans fail : (%s)", err)
 		return
@@ -236,14 +235,13 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
 	// 是否有该订单号
-	q := &model.Trans{OrderNum: be.OrigOrderNum, MerId: be.MerId, TransType: 1}
-	err := mongo.TransColl.Find(q)
+	t, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum, 1)
 	if err != nil {
 		return model.NewBindingReturn("100020", "原交易不成功，不能退款")
 	}
 
 	// 获得渠道商户
-	chanMer, err := mongo.ChanMerColl.Find(q.ChanCode, q.ChanMerId)
+	chanMer, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
 		g.Error("not found any chanMer: ", err)
 		// TODO 找不到渠道商户的错误码
@@ -251,22 +249,22 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	// 赋值
-	be.ChanMerId = q.ChanMerId
+	be.ChanMerId = t.ChanMerId
 	be.ChanOrderNum = tools.SerialNumber()
-	be.ChanOrigOrderNum = q.ChanOrderNum
+	be.ChanOrigOrderNum = t.ChanOrderNum
 	be.SignCert = chanMer.SignCert
 
 	// 记录这笔退款
 	trans := &model.Trans{
 		OrderNum:       be.MerOrderNum,
 		ChanOrderNum:   be.ChanOrderNum,
-		ChanBindingId:  q.ChanBindingId,
+		ChanBindingId:  t.ChanBindingId,
 		RefundOrderNum: be.ChanOrigOrderNum,
-		AcctNum:        q.AcctNum,
+		AcctNum:        t.AcctNum,
 		MerId:          be.MerId,
 		TransAmount:    be.TransAmt,
 		ChanMerId:      be.ChanMerId,
-		ChanCode:       q.ChanCode,
+		ChanCode:       t.ChanCode,
 		TransType:      2,
 	}
 	if err = mongo.TransColl.Add(trans); err != nil {
