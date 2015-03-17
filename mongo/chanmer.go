@@ -1,11 +1,12 @@
 package mongo
 
 import (
-	"gopkg.in/mgo.v2/bson"
 	"quickpay/model"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
-// Init 根据渠道代码、商户号查找
+// Find 根据渠道代码、商户号查找
 func FindChanMer(c *model.ChanMer) error {
 
 	bo := bson.M{
@@ -13,7 +14,6 @@ func FindChanMer(c *model.ChanMer) error {
 		"chanmerid": c.ChanMerId,
 	}
 	return db.chanMer.Find(bo).One(c)
-
 }
 
 // Add 增加一个渠道商户

@@ -1,9 +1,10 @@
 package cfca
 
 import (
-	"github.com/omigo/g"
 	"quickpay/model"
 	"quickpay/mongo"
+
+	"github.com/omigo/g"
 )
 
 // transformResp 转换应答内容
@@ -65,7 +66,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 				ret.RespCode = "000001"
 			}
 		}
-		resp := mongo.GetRespCode(ret.RespCode)
+		resp := mongo.RespCodeColl.Get(ret.RespCode)
 		g.Debug("resp message %+v", resp)
 		ret.RespMsg = resp.RespMsg
 		return
@@ -73,7 +74,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 
 	// 失败的请求
 	// 查找对应关系
-	ret = mongo.GetRespCodeByCfca(resp.Head.Code)
+	ret = mongo.RespCodeColl.GetByCfca(resp.Head.Code)
 
 	return
 }
