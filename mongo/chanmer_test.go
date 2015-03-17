@@ -27,11 +27,11 @@ b3cR9I7+hurpqhJmQ7yuvAWe2xWc+YNTQ48FDJTogXlB
 
 func TestChanMerFind(t *testing.T) {
 
-	chanMer := &model.ChanMer{
-		ChanCode:  "000100000",
-		ChanMerId: "45672341231",
-	}
-	err := ChanMerColl.Find(chanMer)
+	// chanMer := &model.ChanMer{
+	// 	ChanCode:  "000100000",
+	// 	ChanMerId: "45672341231",
+	// }
+	chanMer, err := ChanMerColl.Find("000100000", "45672341231")
 	if err != nil {
 		t.Error("find chanMer unsuccessful ", err)
 		t.FailNow()

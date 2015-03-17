@@ -73,11 +73,9 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 
 	// 根据绑定关系得到渠道商户信息
-	chanMer := &model.ChanMer{
-		ChanCode:  rp.ChanCode,
-		ChanMerId: rp.ChanMerId,
-	}
-	if err := mongo.ChanMerColl.Find(chanMer); err != nil {
+	// 获得渠道商户
+	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
+	if err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return ret
 	}
@@ -92,7 +90,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效。
 	bm.BindingStatus = ret.RespCode
-	err := mongo.BindingMapColl.Update(bm)
+	err = mongo.BindingMapColl.Update(bm)
 	if err != nil {
 		g.Info("'BindingMap' is: %+v", bm)
 		g.Error("'BindingMapColl update' error: ", err.Error())
@@ -119,12 +117,9 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get(bm.BindingStatus)
 	}
 
-	// 根据绑定关系得到渠道商户信息
-	chanMer := &model.ChanMer{
-		ChanCode:  bm.ChanCode,
-		ChanMerId: bm.ChanMerId,
-	}
-	if err = mongo.ChanMerColl.Find(chanMer); err != nil {
+	// 获得渠道商户
+	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
+	if err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return ret
 	}
@@ -183,11 +178,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	// 根据绑定关系得到渠道商户信息
-	chanMer := &model.ChanMer{
-		ChanCode:  bm.ChanCode,
-		ChanMerId: bm.ChanMerId,
-	}
-	if err = mongo.ChanMerColl.Find(chanMer); err != nil {
+	// 获得渠道商户
+	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
+	if err != nil {
 		g.Error("not found any chanMer: ", err)
 		// todo 找不到渠道商户的错误码
 		return model.NewBindingReturn("-100000", "找不到渠道商户")
@@ -236,6 +229,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	return ret
 }
 
+// ProcessBindingRefund 退款
 func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// default
@@ -249,11 +243,8 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	// 获得渠道商户
-	chanMer := &model.ChanMer{
-		ChanCode:  q.ChanCode,
-		ChanMerId: q.MerId,
-	}
-	if err = mongo.ChanMerColl.Find(chanMer); err != nil {
+	chanMer, err := mongo.ChanMerColl.Find(q.ChanCode, q.ChanMerId)
+	if err != nil {
 		g.Error("not found any chanMer: ", err)
 		// TODO 找不到渠道商户的错误码
 		return model.NewBindingReturn("-100000", "找不到渠道商户")
@@ -267,16 +258,16 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// 记录这笔退款
 	trans := &model.Trans{
-		OrderNum:        be.MerOrderNum,
-		ChanOrderNum:    be.ChanOrderNum,
-		ChanBindingId:   q.ChanBindingId,
-		RefoundOrderNum: be.ChanOrigOrderNum,
-		AcctNum:         q.AcctNum,
-		MerId:           be.MerId,
-		TransAmount:     be.TransAmt,
-		ChanMerId:       be.ChanMerId,
-		ChanCode:        q.ChanCode,
-		TransType:       2,
+		OrderNum:       be.MerOrderNum,
+		ChanOrderNum:   be.ChanOrderNum,
+		ChanBindingId:  q.ChanBindingId,
+		RefundOrderNum: be.ChanOrigOrderNum,
+		AcctNum:        q.AcctNum,
+		MerId:          be.MerId,
+		TransAmount:    be.TransAmt,
+		ChanMerId:      be.ChanMerId,
+		ChanCode:       q.ChanCode,
+		TransType:      2,
 	}
 	if err = mongo.TransColl.Add(trans); err != nil {
 		g.Error("add trans fail : (%s)", err)
