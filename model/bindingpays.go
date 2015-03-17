@@ -24,6 +24,9 @@ type BindingReturn struct {
 	OrigRespCode string `json:"origRespCode,omitempty"` //原交易响应代码
 	// OrigTransDetail object `json:"origTransDetail,omitempty"` //原交易明细信息
 
+	// 渠道返回信息
+	ChanRespCode string `json:"-"`
+	ChanRespMsg  string `json:"-"`
 }
 
 // NewBindingReturn 构造函数
