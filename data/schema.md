@@ -104,6 +104,7 @@ CVV2	cvv2
 9. 交易记录	trans
 商户订单号	orderNum
 网关订单号	chanOrderNum
+退款订单号	refundOrderNum
 绑定ID	chanBindingId
 交易账户	acctNum
 网关应答码	respCode
@@ -111,8 +112,7 @@ CVV2	cvv2
 交易金额	transAmount
 交易币种	transCurr
 交易状态	transStatus
-转换前交易类型(支付、退货)	beforeType
-转换后交易类型（支付、退货、预授权）	afterType
+交易类型 transType
 渠道商户号	chanMerId
 渠道代码	chanCode
 渠道应答码	chanRespCode
