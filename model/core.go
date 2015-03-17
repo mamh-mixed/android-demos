@@ -75,7 +75,7 @@ type Trans struct {
 	AcctNum       string        `bson:"acctNum"`       //交易账户
 	RespCode      string        `bson:"respCode"`      //网关应答码
 	MerId         string        `bson:"merId"`         //商户号
-	TransAmount   string        `bson:"transAmount"`   //交易金额
+	TransAmount   int64         `bson:"transAmount"`   //交易金额
 	TransCurr     string        `bson:"transCurr"`     //交易币种
 	TransStatus   int8          `bson:"transStatus"`   //交易状态
 	BeforeType    string        `bson:"beforeType"`    //转换前交易类型(支付、退货)

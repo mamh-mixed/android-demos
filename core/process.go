@@ -158,12 +158,19 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// todo 本地查询绑定关系。查询绑定关系的状态是否成功
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
-		g.Error("not found any bindRelation: ", err)
+		g.Error("not found any BindingMap: ", err)
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 	// 如果绑定关系不是成功的状态，返回
 	if bm.BindingStatus != "000000" {
 		return model.NewBindingReturn(bm.BindingStatus, "绑定中或者绑定失败，请查询绑定关系。")
+	}
+
+	// 查找商家的绑定信息
+	bi, err := mongo.BindingInfoColl.Find(be.MerId, be.BindingId)
+	if err != nil {
+		g.Error("not found any BindingInfo: ", err)
+		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
 	// 根据绑定关系得到渠道商户信息
@@ -188,11 +195,11 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		OrderNum:      be.MerOrderNum,
 		ChanOrderNum:  tools.SerialNumber(),
 		ChanBindingId: be.ChanBindingId,
-		AcctNum:       bindRelation.CardInfo.AcctNum,
+		AcctNum:       bi.AcctNum,
 		MerId:         be.MerId,
 		TransAmount:   be.TransAmt,
 		ChanMerId:     be.ChanMerId,
-		ChanCode:      bindRelation.Router.ChanCode,
+		ChanCode:      bm.ChanCode,
 		// TODO 补充完整字段
 		// ChanRespCode  :"",
 		// UpdateTime    :"",
