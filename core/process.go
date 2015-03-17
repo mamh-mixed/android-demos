@@ -243,11 +243,8 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	}
 
 	// 查找渠道商户信息，获取证书
-	chanMer := &model.ChanMer{
-		ChanCode:  bm.ChanCode,
-		ChanMerId: bm.ChanMerId,
-	}
-	if err = mongo.FindChanMer(chanMer); err != nil {
+	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
+	if err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return model.NewBindingReturn("300030", "无此交易权限")
 	}
