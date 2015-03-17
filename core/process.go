@@ -77,7 +77,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		ChanCode:  rp.ChanCode,
 		ChanMerId: rp.ChanMerId,
 	}
-	if err := mongo.FindChanMer(chanMer); err != nil {
+	if err := mongo.ChanMerColl.Find(chanMer); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return ret
 	}
@@ -124,7 +124,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		ChanCode:  bm.ChanCode,
 		ChanMerId: bm.ChanMerId,
 	}
-	if err = mongo.FindChanMer(chanMer); err != nil {
+	if err = mongo.ChanMerColl.Find(chanMer); err != nil {
 		g.Debug("not found any chanMer (%s)", err)
 		return ret
 	}
@@ -153,9 +153,18 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 默认返回
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
-	// todo 检查同一个商户的订单号是否重复
+	// 检查同一个商户的订单号是否重复
+	q := &model.Trans{OrderNum: be.MerOrderNum, MerId: be.MerId, TransType: 1}
+	count, err := mongo.TransColl.Count(q)
+	if err != nil {
+		g.Error("find trans fail : (%s)", err)
+		return
+	}
+	if count > 0 {
+		return model.NewBindingReturn("200081", "订单号重复")
+	}
 
-	// todo 本地查询绑定关系。查询绑定关系的状态是否成功
+	// 本地查询绑定关系。查询绑定关系的状态是否成功
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
 		g.Error("not found any BindingMap: ", err)
@@ -178,7 +187,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		ChanCode:  bm.ChanCode,
 		ChanMerId: bm.ChanMerId,
 	}
-	if err = mongo.FindChanMer(chanMer); err != nil {
+	if err = mongo.ChanMerColl.Find(chanMer); err != nil {
 		g.Error("not found any chanMer: ", err)
 		// todo 找不到渠道商户的错误码
 		return model.NewBindingReturn("-100000", "找不到渠道商户")
@@ -244,7 +253,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		ChanCode:  q.ChanCode,
 		ChanMerId: q.MerId,
 	}
-	if err = mongo.FindChanMer(chanMer); err != nil {
+	if err = mongo.ChanMerColl.Find(chanMer); err != nil {
 		g.Error("not found any chanMer: ", err)
 		// TODO 找不到渠道商户的错误码
 		return model.NewBindingReturn("-100000", "找不到渠道商户")

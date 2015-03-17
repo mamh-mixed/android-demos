@@ -13,7 +13,8 @@ func TestTransAdd(t *testing.T) {
 		CreateTime:  time.Now().Unix(),
 		TransStatus: 0,
 	}
-	err := AddTrans(trans)
+	g.Debug("%+v", TransColl)
+	err := TransColl.Add(trans)
 	if err != nil {
 		t.Errorf("add trans unsunccessful", err)
 		t.FailNow()
@@ -28,7 +29,7 @@ func TestTransModify(t *testing.T) {
 		Id:          objectId,
 		TransStatus: 0,
 	}
-	err := ModifyTrans(trans)
+	err := TransColl.Update(trans)
 	if err != nil {
 		t.Errorf("modify trans unsunccessful", err)
 		t.FailNow()
@@ -40,10 +41,11 @@ func TestTransModify(t *testing.T) {
 func TestCountTrans(t *testing.T) {
 
 	trans := &model.Trans{
-		MerId:    "4353332424",
-		OrderNum: "22323232323233",
+		MerId:     "4353332424",
+		OrderNum:  "22323232323233",
+		TransType: 1,
 	}
-	c, err := CountTrans(trans)
+	c, err := TransColl.Count(trans)
 	if err != nil {
 		t.Errorf("count trans unsunccessful", err)
 		t.FailNow()
@@ -53,10 +55,11 @@ func TestCountTrans(t *testing.T) {
 
 func TestFindTrans(t *testing.T) {
 	trans := &model.Trans{
-		MerId:    "4353332424",
-		OrderNum: "22323232323233",
+		MerId:     "4353332424",
+		OrderNum:  "22323232323233",
+		TransType: 1,
 	}
-	err := FindTrans(trans)
+	err := TransColl.Find(trans)
 	if err != nil {
 		t.Errorf("find trans unsunccessful", err)
 		t.FailNow()
