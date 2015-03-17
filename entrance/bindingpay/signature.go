@@ -10,7 +10,8 @@ import (
 // SignatureUseSha1 使用 SHA1 算法签名， sha1(data + key).Hex()
 func SignatureUseSha1(data, key string) string {
 	s := sha1.New()
-	io.WriteString(s, data+key)
+	io.WriteString(s, data)
+	io.WriteString(s, key)
 	return hex.EncodeToString(s.Sum(nil))
 }
 

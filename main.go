@@ -8,14 +8,12 @@ import (
 	"github.com/omigo/g"
 )
 
-// test
-
 func main() {
 	// 日志输出级别
-	g.SetLevel(g.LevelTrace)
+	g.SetLevel(g.LevelDebug)
 
 	addr := ":3000"
-	log.Printf("Shoumoney is running at %s", addr)
+	log.Printf("QuickPay is running on %s", addr)
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
 

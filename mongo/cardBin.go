@@ -10,7 +10,7 @@ type cardBinCollection struct {
 	name string
 }
 
-// CardBinColl
+// CardBinColl 卡Bin Collection
 var CardBinColl = cardBinCollection{"cardBin"}
 
 // Find 根据卡长度查找卡BIN列表
