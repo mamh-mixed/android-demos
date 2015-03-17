@@ -24,7 +24,7 @@ func TestBindingCreateHandle(t *testing.T) {
 		ChanMerId: "001405",
 	}
 
-	if err := mongo.InsertRouterPolicy(rp); err != nil {
+	if err := mongo.RouterPolicyColl.Insert(rp); err != nil {
 		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
 	}
 	// 生成一个随机的绑定ID

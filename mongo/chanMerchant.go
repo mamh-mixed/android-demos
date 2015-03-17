@@ -10,6 +10,7 @@ type chanMerCollection struct {
 	name string
 }
 
+// ChanMerColl 渠道商户 Collection
 var ChanMerColl = chanMerCollection{"chanMer"}
 
 // Find 根据渠道代码、商户号查找

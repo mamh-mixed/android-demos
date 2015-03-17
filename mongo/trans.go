@@ -2,15 +2,17 @@ package mongo
 
 import (
 	"errors"
-	"gopkg.in/mgo.v2/bson"
 	"quickpay/model"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 type transCollection struct {
 	name string
 }
 
+// TransColl 交易 Collection
 var TransColl = transCollection{"trans"}
 
 // Add 添加一笔交易

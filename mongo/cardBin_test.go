@@ -44,7 +44,7 @@ func TestCardBinImport(t *testing.T) {
 func TestFindCardBin(t *testing.T) {
 
 	var cardNum = "6222801932062061908"
-	cardBin := FindCardBin(cardNum)
+	cardBin := CardBinColl.Find(cardNum)
 
 	if cardBin.Bin != "622280193" {
 		t.Errorf("cardNum %s prefix is not %s", cardNum, cardBin.Bin)
