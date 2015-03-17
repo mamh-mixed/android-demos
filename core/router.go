@@ -10,7 +10,7 @@ import (
 // FindRouter 根据源商户号和卡品牌在数据库中查找路由策略
 func FindRouter(origMerId, cardBrand string) (r *model.RouterPolicy, err error) {
 
-	r = mongo.FindRouterPolicy(origMerId, cardBrand)
+	r = mongo.RouterPolicyColl.Find(origMerId, cardBrand)
 	if err != nil {
 		g.Debug("Error message is ", err.Error())
 		return nil, err

@@ -13,13 +13,13 @@ func TestInsertRouterPolicy(t *testing.T) {
 		ChanMerId: "001405",
 	}
 
-	if err := InsertRouterPolicy(rp); err != nil {
+	if err := RouterPolicyColl.Insert(rp); err != nil {
 		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
 	}
 }
 
 func TestFindRouterPolicy(t *testing.T) {
-	rp := FindRouterPolicy("111111001405", "CUP")
+	rp := RouterPolicyColl.Find("111111001405", "CUP")
 	if rp == nil {
 		t.Error("Excepted one but get 'nil'")
 	}
