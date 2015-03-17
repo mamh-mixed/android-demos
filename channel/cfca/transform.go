@@ -73,6 +73,9 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
+	case BindingRefundTxCode:
+		//TODO 还未确定
+		ret.RespCode = "000000"
 	}
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
 	g.Debug("resp message %+v", ret)

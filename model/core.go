@@ -68,21 +68,21 @@ type ChanMer struct {
 	//...
 }
 type Trans struct {
-	Id            bson.ObjectId `bson:"_id"`
-	OrderNum      string        `bson:"orderNum"`      //商户订单号
-	ChanOrderNum  string        `bson:"chanOrderNum"`  //网关订单号
-	ChanBindingId string        `bson:"chanBindingId"` //绑定ID
-	AcctNum       string        `bson:"acctNum"`       //交易账户
-	RespCode      string        `bson:"respCode"`      //网关应答码
-	MerId         string        `bson:"merId"`         //商户号
-	TransAmount   int64         `bson:"transAmount"`   //交易金额
-	TransCurr     string        `bson:"transCurr"`     //交易币种
-	TransStatus   int8          `bson:"transStatus"`   //交易状态
-	BeforeType    string        `bson:"beforeType"`    //转换前交易类型(支付、退货)
-	AfterType     string        `bson:"afterType"`     //转换后交易类型（支付、退货、预授权）
-	ChanMerId     string        `bson:"chanMerId"`     //渠道商户号
-	ChanCode      string        `bson:"chanCode"`      //渠道代码
-	ChanRespCode  string        `bson:"chanRespCode"`  //渠道应答码
-	CreateTime    int64         `bson:"createTime"`    //交易创建时间
-	UpdateTime    int64         `bson:"updateTime"`    //交易更新时间
+	Id              bson.ObjectId `bson:"_id"`
+	OrderNum        string        `bson:"orderNum"`        //商户订单号
+	ChanOrderNum    string        `bson:"chanOrderNum"`    //网关订单号
+	RefoundOrderNum string        `bson:"refoundOrderNum"` // 退款订单号 当交易类型为退款时
+	ChanBindingId   string        `bson:"chanBindingId"`   //绑定ID
+	AcctNum         string        `bson:"acctNum"`         //交易账户
+	RespCode        string        `bson:"respCode"`        //网关应答码
+	MerId           string        `bson:"merId"`           //商户号
+	TransAmount     int64         `bson:"transAmount"`     //交易金额
+	TransCurr       string        `bson:"transCurr"`       //交易币种
+	TransStatus     int8          `bson:"transStatus"`     //交易状态 1-成功 2-处理中 3-失败
+	TransType       int8          `bson:"transType"`       // 交易类型 1-支付 2-退款
+	ChanMerId       string        `bson:"chanMerId"`       //渠道商户号
+	ChanCode        string        `bson:"chanCode"`        //渠道代码
+	ChanRespCode    string        `bson:"chanRespCode"`    //渠道应答码
+	CreateTime      int64         `bson:"createTime"`      //交易创建时间
+	UpdateTime      int64         `bson:"updateTime"`      //交易更新时间
 }

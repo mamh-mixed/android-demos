@@ -52,3 +52,17 @@ func TestProcessBindingEnquiry(t *testing.T) {
 
 	t.Logf("%+v", ret)
 }
+
+func TestProcessBindingPayment(t *testing.T) {
+
+	be := &model.BindingEnquiry{
+		MerId:     "001405",
+		BindingId: "1000000000011",
+	}
+	ret := ProcessBindingPayment(be)
+
+	if ret.RespCode == "" {
+		t.Errorf("process payment but not get a respCode %+v", ret)
+	}
+	t.Logf("%+v", ret)
+}

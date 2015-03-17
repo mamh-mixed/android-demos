@@ -158,8 +158,8 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 			TxCode:        BindingRefundTxCode,
 		},
 		Body: requestBody{
-			TxSN:      be.MerOrderNum,  //退款交易流水号
-			PaymentNo: be.OrigOrderNum, //原交易流水号
+			TxSN:      be.ChanOrderNum,     //退款交易流水号
+			PaymentNo: be.ChanOrigOrderNum, //原交易流水号
 			Amount:    be.TransAmt,
 			Remark:    be.Remark,
 		},
