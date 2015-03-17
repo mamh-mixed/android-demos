@@ -12,6 +12,38 @@ const (
 	dbname = "quickpay"
 )
 
+var database *mgo.Database
+
+func init() {
+	session, err := mgo.Dial(host)
+	if err != nil {
+		g.Fatal("unable connect to mongodb server ", err)
+	}
+
+	session.SetMode(mgo.Monotonic, true)
+	database = session.DB(dbname)
+
+	g.Info("connected to mongodb %s database %s", host, dbname)
+
+	// --------- deprecated  ----------
+
+	//init
+	db = mgodb{
+		database:        database,
+		respCode:        database.C("respCode"),
+		people:          database.C("people"),
+		cardBin:         database.C("cardBin"),
+		bindingRelation: database.C("bindingRelation"),
+		routerPolicy:    database.C("routerPolicy"),
+		chanMer:         database.C("chanMer"),
+		trans:           database.C("trans"),
+	}
+}
+
+// --------- deprecated  ----------
+
+var db mgodb
+
 type mgodb struct {
 	database *mgo.Database
 	// 应答码表
@@ -28,30 +60,4 @@ type mgodb struct {
 	trans *mgo.Collection
 	//渠道商户
 	chanMer *mgo.Collection
-}
-
-var db mgodb
-
-func init() {
-	session, err := mgo.Dial(host)
-	if err != nil {
-		g.Fatal("unable connect to mongodb server ", err)
-	}
-
-	session.SetMode(mgo.Monotonic, true)
-	database := session.DB(dbname)
-
-	g.Info("connected to mongodb %s database %s", host, dbname)
-
-	//init
-	db = mgodb{
-		database:        database,
-		respCode:        database.C("respCode"),
-		people:          database.C("people"),
-		cardBin:         database.C("cardBin"),
-		bindingRelation: database.C("bindingRelation"),
-		routerPolicy:    database.C("routerPolicy"),
-		chanMer:         database.C("chanMer"),
-		trans:           database.C("trans"),
-	}
 }

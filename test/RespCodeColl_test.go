@@ -1,12 +1,13 @@
 package mongo
 
 import (
+	"quickpay/mongo"
 	"testing"
 )
 
 func TestGetRespCode(t *testing.T) {
 	respCode := "200125"
-	ret := RespCodeColl.Get(respCode)
+	ret := mongo.RespCodeColl.Get(respCode)
 	// t.Logf("%#v", ret)
 
 	if ret == nil {
@@ -21,7 +22,7 @@ func TestGetRespCode(t *testing.T) {
 
 func TestGetRespCodeByCfca(t *testing.T) {
 	code := "270032"
-	ret := RespCodeColl.GetByCfca(code)
+	ret := mongo.RespCodeColl.GetByCfca(code)
 	// t.Logf("%#v", ret)
 
 	if ret == nil {
