@@ -22,6 +22,10 @@ type mgodb struct {
 	cardBin *mgo.Collection
 	// 绑定关系集合
 	bindingRelation *mgo.Collection
+	// 商家绑定信息
+	bindingInfo *mgo.Collection
+	// 绑定关系映射
+	bindingMap *mgo.Collection
 	// 路由策略集合
 	routerPolicy *mgo.Collection
 	//交易记录
@@ -50,6 +54,8 @@ func init() {
 		people:          database.C("people"),
 		cardBin:         database.C("cardBin"),
 		bindingRelation: database.C("bindingRelation"),
+		bindingInfo:     database.C("bindingInfo"),
+		bindingMap:      database.C("bindingMap"),
 		routerPolicy:    database.C("routerPolicy"),
 		chanMer:         database.C("chanMer"),
 		trans:           database.C("trans"),

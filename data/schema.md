@@ -80,17 +80,17 @@ CFCA 应答信息	cfca.msg
 渠道商户号	chanMerId
 
 7. 商家绑定信息（可能要调用加密机）	bindingInfo
-商户号	merId
+商户号 merId
 绑定ID	bindingId
-卡品牌	cardBrand
-卡类型	cardType
+卡品牌 cardBrand
+卡类型 acctType
 账户名称	acctName
-账户号码	acctName
-开户行	depositBank
-证件类型	credType
-证件号	credNum
+账户号码   acctNum
+开户行 bankId
+证件类型       identType
+证件号 identNum
 手机号	phoneNum
-有效期	expired
+有效期	validDate
 CVV2	cvv2
 
 8. 绑定关系映射	bindingMap
@@ -99,6 +99,7 @@ CVV2	cvv2
 目标渠道代码	chanCode
 渠道商户号	chanMerId
 目标渠道绑定ID	chanBindingId
+绑定状态（成功，失败，或者处理中）    bindingStatus
 
 9. 交易记录	trans
 商户订单号	orderNum
