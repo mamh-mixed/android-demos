@@ -1,9 +1,10 @@
 package mongo
 
 import (
-	"github.com/omigo/g"
 	"quickpay/model"
 	"testing"
+
+	"github.com/omigo/g"
 )
 
 const (
