@@ -19,7 +19,5 @@ func SerialNumber() string {
 
 // Millisecond 获取新世纪以来到目前为止的毫秒数
 func Millisecond() string {
-	t0 := time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC)
-	d := time.Since(t0)
-	return fmt.Sprintf("%d", int64(d.Nanoseconds()/1000000))
+	return fmt.Sprintf("%d", int64(time.Now().UnixNano()/1000000))
 }
