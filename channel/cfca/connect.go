@@ -91,8 +91,8 @@ func init() {
 }
 
 // sendRequest 对中金接口访问的统一处理
-func sendRequest(req *BindingRequest, pricKey string) *BindingResponse {
-	values := prepareRequestData(req, pricKey)
+func sendRequest(req *BindingRequest) *BindingResponse {
+	values := prepareRequestData(req)
 	if values == nil {
 		return nil
 	}
@@ -105,7 +105,7 @@ func sendRequest(req *BindingRequest, pricKey string) *BindingResponse {
 	return processResponseBody(body)
 }
 
-func prepareRequestData(req *BindingRequest, privKey string) (v *url.Values) {
+func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	// xml 编组
 	xmlBytes, err := xml.Marshal(req)
 	if err != nil {
@@ -119,7 +119,7 @@ func prepareRequestData(req *BindingRequest, privKey string) (v *url.Values) {
 	g.Trace("base64: %s", b64Str)
 
 	// 对 xml 签名
-	hexSign := signatureUseSha1WithRsa(xmlBytes, privKey)
+	hexSign := signatureUseSha1WithRsa(xmlBytes, req.SignCert)
 	g.Trace("请求签名: %s", hexSign)
 
 	// 准备参数

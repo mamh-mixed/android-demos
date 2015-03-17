@@ -64,6 +64,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		g.Error("'InsertBindingRelation' error: ", err.Error())
 		return model.NewBindingReturn("000001", "系统内部错误")
 	}
+
 	// 根据绑定关系得到渠道商户信息
 	chanMer := &model.ChanMer{
 		ChanCode:  rp.ChanCode,
@@ -73,6 +74,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		g.Debug("not found any chanMer (%s)", err)
 		return ret
 	}
+
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = br.SysBindingId
@@ -120,6 +122,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		g.Debug("not found any chanMer (%s)", err)
 		return ret
 	}
+
 	// 正在处理中，到渠道那边查找
 	// 转换绑定关系、请求
 	be.ChanMerId = bindRelation.ChanMerId
@@ -171,6 +174,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.ChanBindingId = bindRelation.SysBindingId
 	be.ChanMerId = bindRelation.ChanMerId
 	be.SignCert = chanMer.SignCert
+
 	// 记录这笔交易
 	trans := &model.Trans{Payment: *be}
 	if err = mongo.AddTrans(trans); err != nil {
