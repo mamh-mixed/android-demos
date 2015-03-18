@@ -1,8 +1,9 @@
-package mongo
+package test
 
 import (
-	"quickpay/mongo"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 func TestGetRespCode(t *testing.T) {

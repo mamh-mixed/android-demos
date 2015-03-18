@@ -1,8 +1,8 @@
 package cfca
 
 import (
-	"quickpay/model"
-	"quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 
 	"github.com/omigo/g"
 )

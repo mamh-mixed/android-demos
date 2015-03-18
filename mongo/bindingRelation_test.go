@@ -1,8 +1,8 @@
 package mongo
 
 import (
-	"quickpay/model"
-	"quickpay/tools"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
 	"testing"
 )
 

@@ -1,10 +1,10 @@
 package core
 
 import (
-	"quickpay/channel/cfca"
-	"quickpay/model"
-	"quickpay/mongo"
-	"quickpay/tools"
+	"github.com/CardInfoLink/quickpay/channel/cfca"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/tools"
 	"strings"
 
 	"github.com/omigo/g"

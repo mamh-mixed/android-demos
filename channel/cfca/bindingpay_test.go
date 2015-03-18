@@ -1,7 +1,7 @@
 package cfca
 
 import (
-	"quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 
 	"github.com/omigo/g"

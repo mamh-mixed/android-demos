@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/omigo/g"
-	"quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 )
 
