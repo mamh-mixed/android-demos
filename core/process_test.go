@@ -1,9 +1,10 @@
 package core
 
 import (
-	"github.com/omigo/g"
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/g"
 )
 
 func TestProcessBindingCreate(t *testing.T) {
@@ -100,10 +101,9 @@ func TestProcessBindingRefund(t *testing.T) {
 func TestProcessOrderEnquiry(t *testing.T) {
 
 	be := &model.OrderEnquiry{
-		MerId: "001405",
-		// OrigOrderNum: "20000000010000000",
+		MerId:        "001405",
 		OrigOrderNum: "20000000002000000",
-		ShowOrigInfo: 1,
+		ShowOrigInfo: "1",
 	}
 	ret := ProcessOrderEnquiry(be)
 
