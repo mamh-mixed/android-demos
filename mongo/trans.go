@@ -2,8 +2,9 @@ package mongo
 
 import (
 	"errors"
-	"github.com/CardInfoLink/quickpay/model"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/model"
 
 	"gopkg.in/mgo.v2/bson"
 )

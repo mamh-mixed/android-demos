@@ -10,8 +10,8 @@ import (
 )
 
 type Person struct {
-	NameName   string
-	PhonePhone string
+	Name  string
+	Phone string
 }
 
 func TestConnect(t *testing.T) {
@@ -34,7 +34,7 @@ func TestConnect(t *testing.T) {
 		g.Fatal("find error", err)
 	}
 
-	fmt.Println("Phone:", result.PhonePhone)
+	fmt.Println("Phone:", result.Phone)
 
 	err = c.Remove(bson.M{"name": "Ale"})
 }

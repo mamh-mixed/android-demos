@@ -1,8 +1,9 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/g"
 )
@@ -26,12 +27,7 @@ b3cR9I7+hurpqhJmQ7yuvAWe2xWc+YNTQ48FDJTogXlB
 )
 
 func TestChanMerFind(t *testing.T) {
-
-	// chanMer := &model.ChanMer{
-	// 	ChanCode:  "000100000",
-	// 	ChanMerId: "45672341231",
-	// }
-	chanMer, err := ChanMerColl.Find("000100000", "45672341231")
+	chanMer, err := ChanMerColl.Find("00010000", "45672341231")
 	if err != nil {
 		t.Error("find chanMer unsuccessful ", err)
 		t.FailNow()
@@ -61,7 +57,7 @@ func TestChanMerAdd(t *testing.T) {
 func TestChanMerModify(t *testing.T) {
 	chanMer := &model.ChanMer{
 		ChanCode:      "CFCA",
-		ChanMerId:     "001405",
+		ChanMerId:     "20000000002",
 		ChanMerName:   "测试渠道商户",
 		SettFlag:      "457",
 		SettRole:      "testRole",
