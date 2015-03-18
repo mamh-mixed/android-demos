@@ -2,7 +2,7 @@ package cfca
 
 import (
 	"github.com/omigo/g"
-	"quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 const (

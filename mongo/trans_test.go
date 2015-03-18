@@ -3,7 +3,7 @@ package mongo
 import (
 	"github.com/omigo/g"
 	"gopkg.in/mgo.v2/bson"
-	"quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 	"time"
 )

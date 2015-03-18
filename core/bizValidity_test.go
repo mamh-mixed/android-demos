@@ -1,7 +1,7 @@
 package core
 
 import (
-	"quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 )
 

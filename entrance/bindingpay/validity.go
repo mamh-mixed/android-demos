@@ -1,7 +1,7 @@
 package bindingpay
 
 import (
-	"quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
 	"regexp"
 )
 

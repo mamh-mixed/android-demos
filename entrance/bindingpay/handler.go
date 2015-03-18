@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"quickpay/core"
-	"quickpay/model"
+
+	"github.com/CardInfoLink/quickpay/core"
+	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/g"
 )
