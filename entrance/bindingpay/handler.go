@@ -57,6 +57,8 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		ret = bindingPaymentHandle(data, merId)
 	case "/quickpay/refund":
 		ret = bindingRefundHandle(data, merId)
+	case "/quickpay/orderEnquiry":
+		ret = orderEnquiryHandle(data, merId)
 	case "/quickpay/noTrackPayment":
 		ret = noTrackPaymentHandle(data, merId)
 	default:
@@ -158,21 +160,21 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 
 // 退款处理
 func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
-	var b model.BindingRefund
-	err := json.Unmarshal(data, &b)
+	b := new(model.BindingRefund)
+	err := json.Unmarshal(data, b)
 	if err != nil {
 		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	b.MerId = merId
 
 	// 验证请求报文格式
-	ret = validateBindingRefund(&b)
+	ret = validateBindingRefund(b)
 	if ret != nil {
 		return ret
 	}
-	//  todo 业务处理
+	// 业务处理
+	ret = core.ProcessBindingRefund(b)
 	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -218,8 +220,8 @@ func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) 
 
 // 查询订单状态
 func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
-	var b model.OrderEnquiry
-	err := json.Unmarshal(data, &b)
+	b := new(model.OrderEnquiry)
+	err := json.Unmarshal(data, b)
 	if err != nil {
 		return model.NewBindingReturn("200002", "解析报文错误")
 	}
@@ -231,8 +233,9 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 		return ret
 	}
 	//  todo 业务处理
+	ret = core.ProcessOrderEnquiry(b)
 	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
+	// ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 

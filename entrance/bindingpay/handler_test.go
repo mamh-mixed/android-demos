@@ -129,3 +129,14 @@ func TestNoTrackPaymentHandle(t *testing.T) {
 	}`
 	doPost("POST", url, body, t)
 }
+
+func TestOrderEnquiry(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=001405"
+	body := `{
+		"origOrderNum":"20000000010000000",
+		"showOrigInfo":1,
+		"merId":"001405"
+		}`
+
+	doPost("POST", url, body, t)
+}
