@@ -9,7 +9,7 @@ import (
 
 func validateTestBindingCreate(t *testing.T) {
 	var (
-		bc  model.BindingCreate
+		bc  *model.BindingCreate
 		ret *model.BindingReturn
 	)
 	ret = validateBindingCreate(bc)
@@ -52,7 +52,7 @@ func validateTestBindingCreate(t *testing.T) {
 
 func validateTestBindingRemove(t *testing.T) {
 	var (
-		in  model.BindingRemove
+		in  *model.BindingRemove
 		ret *model.BindingReturn
 	)
 
@@ -73,7 +73,7 @@ func validateTestBindingRemove(t *testing.T) {
 
 func validateTestBindingPayment(t *testing.T) {
 	var ret *model.BindingReturn
-	var in = model.BindingPayment{
+	var in = &model.BindingPayment{
 		SubMerId:    "",
 		MerOrderNum: "1000000003",
 		TransAmt:    1000,

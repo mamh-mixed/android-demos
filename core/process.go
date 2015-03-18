@@ -370,7 +370,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if ret.RespCode == "000000" {
 		ret.OrigRespCode = t.RespCode
 		if be.ShowOrigInfo == 1 {
-			ret.OrigTransDetail = *t
+			ret.OrigTransDetail = t
 		}
 	}
 

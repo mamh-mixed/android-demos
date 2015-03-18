@@ -68,7 +68,7 @@ type ChanMer struct {
 	//...
 }
 type Trans struct {
-	Id             bson.ObjectId `bson:"_id"`
+	Id             bson.ObjectId `bson:"_id" json:",omitempty"`
 	OrderNum       string        `bson:"orderNum"`       //商户订单流水号、退款流水号
 	ChanOrderNum   string        `bson:"chanOrderNum"`   //渠道订单流水号、退款流水号
 	RefundOrderNum string        `bson:"refundOrderNum"` //退款订单号 当交易类型为退款时

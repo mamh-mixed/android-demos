@@ -59,9 +59,9 @@ func doPost(method, url, body string, t *testing.T) {
 	}
 
 	var out model.BindingReturn
-	err = json.Unmarshal([]byte(w.Body.String()), &out)
+	err = json.Unmarshal(w.Body.Bytes(), &out)
 	if err != nil {
-		t.Error("Unmarshal response error")
+		t.Errorf("Unmarshal response error (%s)", err)
 	}
 
 	if out.RespCode == "" {
@@ -137,6 +137,6 @@ func TestOrderEnquiry(t *testing.T) {
 		"showOrigInfo":1,
 		"merId":"001405"
 		}`
-
+	//"showOrigInfo":1,
 	doPost("POST", url, body, t)
 }
