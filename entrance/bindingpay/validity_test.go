@@ -9,7 +9,7 @@ import (
 
 func validateTestBindingCreate(t *testing.T) {
 	var (
-		bc  model.BindingCreate
+		bc  *model.BindingCreate
 		ret *model.BindingReturn
 	)
 	ret = validateBindingCreate(bc)
@@ -52,7 +52,7 @@ func validateTestBindingCreate(t *testing.T) {
 
 func validateTestBindingRemove(t *testing.T) {
 	var (
-		in  model.BindingRemove
+		in  *model.BindingRemove
 		ret *model.BindingReturn
 	)
 
@@ -73,7 +73,7 @@ func validateTestBindingRemove(t *testing.T) {
 
 func validateTestBindingPayment(t *testing.T) {
 	var ret *model.BindingReturn
-	var in = model.BindingPayment{
+	var in = &model.BindingPayment{
 		SubMerId:    "",
 		MerOrderNum: "1000000003",
 		TransAmt:    1000,
@@ -120,6 +120,18 @@ func validateTestRefund(t *testing.T) {
 		t.Error("测试退款 ‘退款金额有误’ 失败")
 	}
 
+}
+
+func TestValidateOrderEnquiry(t *testing.T) {
+	oe := &model.OrderEnquiry{
+		OrigOrderNum: "200000000",
+		ShowOrigInfo: "1",
+	}
+
+	ret := validateOrderEnquiry(oe)
+	if ret != nil {
+		t.Errorf("测试订单查询失败 %+v", ret)
+	}
 }
 
 func validateTestNoTrackPayment(t *testing.T) {

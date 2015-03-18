@@ -20,7 +20,7 @@ func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer
 		"chancode":  chanCode,
 		"chanmerid": chanMerId,
 	}
-	c = &model.ChanMer{}
+	c = new(model.ChanMer)
 	err = database.C(col.name).Find(bo).One(c)
 	return
 }

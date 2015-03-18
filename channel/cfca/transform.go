@@ -15,7 +15,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	if resp == nil {
 		return
 	}
-	ret = &model.BindingReturn{}
+	ret = new(model.BindingReturn)
 	ret.ChanRespCode = resp.Head.Code
 	ret.ChanRespMsg = resp.Head.Message
 	// 不成功的受理
@@ -74,8 +74,19 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 			ret.RespCode = "000001"
 		}
 	case BindingRefundTxCode:
-		//TODO 还未确定
+		//都是受理成功
 		ret.RespCode = "000000"
+	case RefundEnquiryTxCode:
+		//10=已受理 20=正在退款 30=退款成功 40=退款失败
+		switch resp.Body.Status {
+		case 10, 20, 30:
+			ret.RespCode = "000000"
+		case 40:
+			ret.RespCode = "100080"
+		default:
+			g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
+			ret.RespCode = "000001"
+		}
 	}
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
 	g.Debug("resp message %+v", ret)

@@ -30,8 +30,8 @@ func (col *transCollection) Update(t *model.Trans) error {
 	return database.C(col.name).Update(bson.M{"_id": t.Id}, t)
 }
 
-// Count 通过订单号、商户号、交易类型查找交易数量
-func (col *transCollection) Count(merId, orderNum string, transType int8) (count int, err error) {
+// Count 通过订单号、商户号查找交易数量
+func (col *transCollection) Count(merId, orderNum string) (count int, err error) {
 
 	if merId == "" {
 		return 0, errors.New("商户Id为空。")
@@ -40,29 +40,29 @@ func (col *transCollection) Count(merId, orderNum string, transType int8) (count
 	if orderNum == "" {
 		return 0, errors.New("订单号为空。")
 	}
-
-	if transType != 1 && transType != 2 {
-		return 0, errors.New("交易类型错误。")
-	}
+	// 不需要交易类型，对同一个商户下的订单号不能重复
+	// if transType != 1 && transType != 2 {
+	// 	return 0, errors.New("交易类型错误。")
+	// }
 
 	q := bson.M{
-		"orderNum":  orderNum,
-		"merId":     merId,
-		"transType": transType,
+		"orderNum": orderNum,
+		"merId":    merId,
+		// "transType": transType,
 	}
 	count, err = database.C(col.name).Find(q).Count()
 	return
 }
 
-// FindPay 通过订单号、商户号、交易类型查找一条交易记录
-func (col *transCollection) Find(merId, orderNum string, transType int8) (t *model.Trans, err error) {
+// FindPay 通过订单号、商户号查找一条交易记录
+func (col *transCollection) Find(merId, orderNum string) (t *model.Trans, err error) {
 
 	q := bson.M{
-		"orderNum":  orderNum,
-		"merId":     merId,
-		"transType": transType,
+		"orderNum": orderNum,
+		"merId":    merId,
+		// "transType": transType,
 	}
-	t = &model.Trans{}
+	t = new(model.Trans)
 	err = database.C(col.name).Find(q).One(t)
 	return
 }

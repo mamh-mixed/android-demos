@@ -80,7 +80,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		ChanBindingId: "123456789011",
 		SettFlag:      "475",
 		//需要变化
-		MerOrderNum: "6222022003008481270",
+		MerOrderNum: "6222022003008481275",
 		TransAmt:    12000,
 		SignCert:    priKeyPem,
 	}
@@ -94,11 +94,33 @@ func TestProcessBindingRefund(t *testing.T) {
 		ChanMerId: "001405",
 		// BindingId:     "1234567890",
 		//需要变化
-		MerOrderNum:  "6222022003008481265",
-		OrigOrderNum: "6222022003008481264",
-		TransAmt:     12000,
-		SignCert:     priKeyPem,
+		ChanOrderNum:     "6222022003008481275",
+		ChanOrigOrderNum: "6222022003008481275",
+		TransAmt:         12000,
+		SignCert:         priKeyPem,
 	}
 	resp := ProcessBindingRefund(be)
+	g.Debug("response message  %s", resp)
+}
+
+func TestProcessPaymentEnquiry(t *testing.T) {
+
+	be := &model.OrderEnquiry{
+		ChanMerId:    "001405",
+		OrigOrderNum: "6222022003008481272",
+		SignCert:     priKeyPem,
+	}
+	resp := ProcessPaymentEnquiry(be)
+	g.Debug("response message  %s", resp)
+}
+
+func TestProcessRefundEnquiry(t *testing.T) {
+
+	be := &model.OrderEnquiry{
+		ChanMerId:    "001405",
+		OrigOrderNum: "6222022003008481272",
+		SignCert:     priKeyPem,
+	}
+	resp := ProcessRefundEnquiry(be)
 	g.Debug("response message  %s", resp)
 }

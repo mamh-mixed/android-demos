@@ -21,8 +21,8 @@ type BindingReturn struct {
 	Rec          []string `json:"rec,omitempty"`          // 交易记录
 
 	// 查询订单状态
-	OrigRespCode string `json:"origRespCode,omitempty"` //原交易响应代码
-	// OrigTransDetail object `json:"origTransDetail,omitempty"` //原交易明细信息
+	OrigRespCode    string `json:"origRespCode,omitempty"`    //原交易响应代码
+	OrigTransDetail *Trans `json:"origTransDetail,omitempty"` //原交易明细信息
 
 	// 渠道返回信息
 	ChanRespCode string `json:"-"`
@@ -123,8 +123,10 @@ type BillingDetails struct {
 type OrderEnquiry struct {
 	MerId        string `json:"merId"`        //商户ID
 	OrigOrderNum string `json:"origOrderNum"` //原交易订单号
-	OrderNum     string `json:"orderNum"`     //原网关订单号
+	ChanOrderNum string `json:"chanOrderNum"` //原网关订单号
 	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
+	ChanMerId    string //渠道商户Id
+	SignCert     string //签名密钥
 }
 
 // NoTrackPayment 无卡直接支付
