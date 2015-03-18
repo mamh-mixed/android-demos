@@ -93,6 +93,7 @@ func doPost(method, url, body string, t *testing.T) {
 	if err != nil {
 		t.Error("创建POST请求失败")
 	}
+	req.Header.Set("X-Sign", SignatureUseSha1([]byte(body), "0123456789")) // TODO
 
 	w := httptest.NewRecorder()
 	BindingPay(w, req)
@@ -120,9 +121,9 @@ func TestBindingRemoveHandle(t *testing.T) {
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "111111001405"
+	merId := "99001405"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1000000000004"}`
+	body := `{"bindingId": "1426689409857"}`
 	doPost("POST", url, body, t)
 }
 

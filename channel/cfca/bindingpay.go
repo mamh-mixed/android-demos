@@ -1,8 +1,8 @@
 package cfca
 
 import (
-	"github.com/omigo/g"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/g"
 )
 
 const (
@@ -66,7 +66,6 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 		SignCert: be.SignCert,
 	}
 	//请求
-	g.Debug("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
@@ -90,7 +89,6 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	}
 
 	// 向中金发起请求
-	g.Debug("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 
 	// 应答码转换。。。
@@ -119,7 +117,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		SignCert: be.SignCert,
 	}
 	//请求
-	g.Debug("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
@@ -143,7 +140,6 @@ func ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 		SignCert: be.SignCert,
 	}
 	//请求
-	g.Debug("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
@@ -170,7 +166,6 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		SignCert: be.SignCert,
 	}
 	//请求
-	g.Debug("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
@@ -193,7 +188,6 @@ func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 		SignCert: be.SignCert,
 	}
 	//请求
-	g.Debug("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)

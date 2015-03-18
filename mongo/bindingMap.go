@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"errors"
+
 	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/g"
@@ -12,6 +13,7 @@ type bindingMapCollection struct {
 	name string
 }
 
+// BindingMapColl 绑定关系 Collection
 var BindingMapColl = bindingMapCollection{"bindingMap"}
 
 // Insert 插入一条绑定映射关系到数据库中
@@ -25,7 +27,7 @@ func (c *bindingMapCollection) Find(merId, bindingId string) (bm *model.BindingM
 	q := bson.M{"bindingId": bindingId, "merId": merId}
 	err = database.C(c.name).Find(q).One(bm)
 	if err != nil {
-		g.Error("Error message is: %s\n;'FindBindingMap' condition: %+v", err.Error(), q)
+		g.Error("Error message is: %s;'FindBindingMap' condition: %+v", err.Error(), q)
 		return nil, err
 	}
 
