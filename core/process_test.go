@@ -96,3 +96,19 @@ func TestProcessBindingRefund(t *testing.T) {
 	}
 	g.Debug("%+v", ret)
 }
+
+func TestProcessOrderEnquiry(t *testing.T) {
+
+	be := &model.OrderEnquiry{
+		MerId: "001405",
+		// OrigOrderNum: "20000000010000000",
+		OrigOrderNum: "20000000002000000",
+		ShowOrigInfo: 1,
+	}
+	ret := ProcessOrderEnquiry(be)
+
+	if ret.RespCode == "" {
+		t.Errorf("process order query but not get a respCode %+v", ret)
+	}
+	g.Debug("%+v", ret)
+}
