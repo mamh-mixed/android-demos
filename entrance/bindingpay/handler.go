@@ -223,6 +223,7 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.OrderEnquiry)
 	err := json.Unmarshal(data, b)
 	if err != nil {
+		g.Error("解析报文错误 :%s", err)
 		return model.NewBindingReturn("200002", "解析报文错误")
 	}
 	b.MerId = merId

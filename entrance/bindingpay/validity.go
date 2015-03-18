@@ -112,7 +112,7 @@ func validateOrderEnquiry(in *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if in.OrigOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 origOrderNum 不能为空")
 	}
-	if in.ShowOrigInfo != 1 && in.ShowOrigInfo != 0 {
+	if matched, _ := regexp.MatchString(`^[1|0]?$`, in.ShowOrigInfo); !matched {
 		return model.NewBindingReturn("200050", "字段 showOrigInfo 取值错误")
 	}
 	return

@@ -122,6 +122,18 @@ func validateTestRefund(t *testing.T) {
 
 }
 
+func TestValidateOrderEnquiry(t *testing.T) {
+	oe := &model.OrderEnquiry{
+		OrigOrderNum: "200000000",
+		ShowOrigInfo: "1",
+	}
+
+	ret := validateOrderEnquiry(oe)
+	if ret != nil {
+		t.Errorf("测试订单查询失败 %+v", ret)
+	}
+}
+
 func validateTestNoTrackPayment(t *testing.T) {
 	var in = &model.NoTrackPayment{
 		SubMerId:    "",
