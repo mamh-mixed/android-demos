@@ -14,6 +14,7 @@ const (
 	BindingPaymentTxCode = "2511"
 	BindingRefundTxCode  = "2521"
 	PaymentEnquiryTxCode = "2512"
+	RefundEnquiryTxCode  = "2522"
 )
 
 // ProcessBindingEnquiry 查询绑定关系
@@ -124,7 +125,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 }
 
 // ProcessPaymentEnquiry 快捷支付查询
-func ProcessPaymentEnquiry(be *model.BindingPayment) (ret *model.BindingReturn) {
+func ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	//组装参数
 	req := &BindingRequest{
@@ -134,7 +135,7 @@ func ProcessPaymentEnquiry(be *model.BindingPayment) (ret *model.BindingReturn) 
 			TxCode:        PaymentEnquiryTxCode,
 		},
 		Body: requestBody{
-			PaymentNo: be.MerOrderNum,
+			PaymentNo: be.OrigOrderNum,
 		},
 		SignCert: be.SignCert,
 	}
@@ -162,6 +163,28 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 			PaymentNo: be.ChanOrigOrderNum, //原交易流水号
 			Amount:    be.TransAmt,
 			Remark:    be.Remark,
+		},
+		SignCert: be.SignCert,
+	}
+	//请求
+	resp := sendRequest(req)
+	//应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+	return
+}
+
+// ProcessRefundEnquiry 快捷支付退款查询
+func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+
+	//组装参数
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			InstitutionID: be.ChanMerId,
+			TxCode:        RefundEnquiryTxCode,
+		},
+		Body: requestBody{
+			TxSN: be.OrigOrderNum, //退款交易流水号
 		},
 		SignCert: be.SignCert,
 	}
