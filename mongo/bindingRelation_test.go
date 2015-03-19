@@ -55,3 +55,12 @@ func TestBindingMap(t *testing.T) {
 	}
 
 }
+
+func TestBindingMapFind(t *testing.T) {
+	merId, bindingId := "MI12345", "BI1426664578581"
+	bm, err := BindingMapColl.Find(merId, bindingId)
+	if err != nil {
+		t.Error("Excepted nil,but get error")
+	}
+	t.Logf("BindingMap is %+v", bm)
+}

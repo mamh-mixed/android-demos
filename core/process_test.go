@@ -9,7 +9,7 @@ import (
 
 func TestProcessBindingCreate(t *testing.T) {
 	bc := &model.BindingCreate{
-		MerId:     "001405",
+		MerId:     "1426727710113",
 		BindingId: "1000000000011",
 		AcctName:  "张三",
 		AcctNum:   "6222020302062061908",
@@ -35,8 +35,8 @@ func TestProcessBindingCreate(t *testing.T) {
 
 func TestProcessBindingEnquiry(t *testing.T) {
 	be := &model.BindingEnquiry{
-		MerId:     "001405",
-		BindingId: "1000000000011",
+		MerId:     "MI12345",
+		BindingId: "BI1426664578581",
 	}
 
 	// br, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
