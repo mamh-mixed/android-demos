@@ -54,35 +54,45 @@ type CardBin struct {
 
 // 渠道商户
 type ChanMer struct {
-	ChanCode       string //渠道代码
-	ChanMerId      string //商户号
-	ChanMerName    string //商户名称
-	SettFlag       string //清算标识
-	SettRole       string //清算角色
-	SignCert       string //签名证书
-	CheckSignCert  string //验签证书
-	AlpMd5Key      string //支付宝 MD5 Key
-	WxpAppId       string //微信支付App Id
-	WxpPartnerKey  string //微信支付Partner Key
-	WxpEncryptCert string //微信支付加密证书
+	ChanCode       string `bson:"chanCode,omitempty"`       //渠道代码
+	ChanMerId      string `bson:"chanMerId,omitempty"`      //商户号
+	ChanMerName    string `bson:"chanMerName,omitempty"`    //商户名称
+	SettFlag       string `bson:"settFlag,omitempty"`       //清算标识
+	SettRole       string `bson:"settRole,omitempty"`       //清算角色
+	SignCert       string `bson:"signCert,omitempty"`       //签名证书
+	CheckSignCert  string `bson:"checkSignCert,omitempty"`  //验签证书
+	AlpMd5Key      string `bson:"alpMd5Key,omitempty"`      //支付宝 MD5 Key
+	WxpAppId       string `bson:"wxpAppId,omitempty"`       //微信支付App Id
+	WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty"`  //微信支付Partner Key
+	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty"` //微信支付加密证书
 	//...
 }
+
+// Trans 支付、退款交易记录
 type Trans struct {
 	Id             bson.ObjectId `bson:"_id" json:",omitempty"`
-	OrderNum       string        `bson:"orderNum"`       //商户订单流水号、退款流水号
-	ChanOrderNum   string        `bson:"chanOrderNum"`   //渠道订单流水号、退款流水号
-	RefundOrderNum string        `bson:"refundOrderNum"` //退款订单号 当交易类型为退款时
-	ChanBindingId  string        `bson:"chanBindingId"`  //绑定ID
-	AcctNum        string        `bson:"acctNum"`        //交易账户
-	RespCode       string        `bson:"respCode"`       //网关应答码
-	MerId          string        `bson:"merId"`          //商户号
-	TransAmount    int64         `bson:"transAmount"`    //交易金额
-	TransCurr      string        `bson:"transCurr"`      //交易币种
-	TransStatus    int8          `bson:"transStatus"`    //交易状态 1-成功 2-处理中 3-失败
-	TransType      int8          `bson:"transType"`      // 交易类型 1-支付 2-退款
-	ChanMerId      string        `bson:"chanMerId"`      //渠道商户号
-	ChanCode       string        `bson:"chanCode"`       //渠道代码
-	ChanRespCode   string        `bson:"chanRespCode"`   //渠道应答码
-	CreateTime     int64         `bson:"createTime"`     //交易创建时间
-	UpdateTime     int64         `bson:"updateTime"`     //交易更新时间
+	OrderNum       string        `bson:"orderNum"`                 //商户订单流水号、退款流水号
+	ChanOrderNum   string        `bson:"chanOrderNum"`             //渠道订单流水号、退款流水号
+	RefundOrderNum string        `bson:"refundOrderNum,omitempty"` //退款订单号 当交易类型为退款时
+	ChanBindingId  string        `bson:"chanBindingId"`            //绑定ID
+	AcctNum        string        `bson:"acctNum"`                  //交易账户
+	RespCode       string        `bson:"respCode"`                 //网关应答码
+	MerId          string        `bson:"merId"`                    //商户号
+	TransAmt       int64         `bson:"transAmt"`                 //交易金额
+	TransCurr      string        `bson:"transCurr"`                //交易币种
+	TransStatus    int8          `bson:"transStatus"`              //交易状态 10-处理中 20-失败 30-成功
+	TransType      int8          `bson:"transType"`                //交易类型 1-支付 2-退款
+	ChanMerId      string        `bson:"chanMerId"`                //渠道商户号
+	ChanCode       string        `bson:"chanCode"`                 //渠道代码
+	ChanRespCode   string        `bson:"chanRespCode"`             //渠道应答码
+	CreateTime     int64         `bson:"createTime"`               //交易创建时间
+	UpdateTime     int64         `bson:"updateTime"`               //交易更新时间
+	Refund         RefundInfo    `bson:"refund"`                   //
+}
+
+// Refund 退款信息
+type RefundInfo struct {
+	RefundStatus int8  `bson:"refundStatus,omitempty"` //是否退款 1-已退款 0-正常
+	RefundAmt    int64 `bson:"refundAmt,omitempty"`    //退款金额
+	RefundTime   int64 `bson:"refundTime"`             //退款时间
 }

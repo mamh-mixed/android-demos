@@ -27,6 +27,9 @@ type BindingReturn struct {
 	// 渠道返回信息
 	ChanRespCode string `json:"-"`
 	ChanRespMsg  string `json:"-"`
+
+	// 交易状态
+	TransStatus string `json:"transStatus"`
 }
 
 // NewBindingReturn 构造函数

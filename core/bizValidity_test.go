@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 func TestUnionPayCardValidity(t *testing.T) {

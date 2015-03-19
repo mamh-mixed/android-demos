@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"regexp"
+
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 // 银联卡必须验证证件和手机号
