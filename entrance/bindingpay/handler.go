@@ -22,16 +22,22 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// merId 可以放到 json 里
 	v := r.URL.Query()
 	merId := v.Get("merId")
 	if merId == "" {
 		w.WriteHeader(412)
-		w.Write([]byte("parameter merId must required"))
+		w.Write([]byte("parameter merId required"))
 		return
 	}
+	sign := r.Header.Get("X-Sign")
+	if sign == "" {
+		w.WriteHeader(412)
+		w.Write([]byte("header X-Sign required"))
+		return
+	}
+	g.Debug("merId=%s, sign=%s", merId, sign)
 
-	body, err := ioutil.ReadAll(r.Body)
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		g.Error("read body error: ", err)
 		w.WriteHeader(406)
@@ -39,11 +45,15 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := body
 	g.Debug("商户报文: %s", data)
 
-	// 验签，如果失败，立即返回
-	// if checkSignature(data, merId)
+	// TODO key must retrive from db 验签，如果失败，立即返回
+	if !CheckSignatureUseSha1(data, "0123456789", sign) {
+		g.Error("check sign error", err)
+		w.WriteHeader(406)
+		w.Write([]byte("check sign error"))
+		return
+	}
 
 	// 执行业务逻辑
 	var ret *model.BindingReturn

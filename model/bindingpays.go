@@ -55,7 +55,7 @@ type BindingCreate struct {
 	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
 	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
-	SignCert      string //签名密钥
+	SignCert      string `json:"－"`                                            //签名密钥
 }
 
 // BindingRemove 解除绑定关系

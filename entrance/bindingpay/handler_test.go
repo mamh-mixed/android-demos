@@ -5,13 +5,65 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-	"testing"
 
 	"github.com/omigo/g"
 )
+
+func post(req *http.Request, t *testing.T) {
+	w := httptest.NewRecorder()
+	BindingPay(w, req)
+	g.Info("%d - %s", w.Code, w.Body.String())
+	if w.Code != 200 {
+		t.Errorf("response error with status %d", w.Code)
+	}
+
+	var out model.BindingReturn
+	err := json.Unmarshal(w.Body.Bytes(), &out)
+	if err != nil {
+		t.Errorf("Unmarshal response error (%s)", err)
+	}
+
+	if out.RespCode == "" {
+		t.Error("测试失败")
+	}
+}
+
+func TestBindingCreateWithSignHandle(t *testing.T) {
+	b := model.BindingCreate{
+		MerId:         "99001405",            // 商户ID
+		BindingId:     tools.Millisecond(),   // 银行卡绑定ID
+		AcctName:      "张三",                  // 账户名称
+		AcctNum:       "6222020302062061908", // 账户号码
+		IdentType:     "0",                   // 证件类型
+		IdentNum:      "350583199009153732",  // 证件号码
+		PhoneNum:      "18205960039",         // 手机号
+		AcctType:      "20",                  // 账户类型
+		ValidDate:     "1903",                // 信用卡有限期
+		Cvv2:          "232",                 // CVV2
+		SendSmsId:     "",                    // 发送短信验证码的交易流水
+		SmsCode:       "",                    // 短信验证码
+		BankId:        "102",                 // 银行ID
+		ChanBindingId: "",                    // 渠道绑定ID
+		ChanMerId:     "",                    // 渠道商户ID
+	}
+	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + b.MerId
+
+	body, _ := json.Marshal(b)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	if err != nil {
+		t.Error("创建POST请求失败")
+	}
+	sign := SignatureUseSha1(body, "0123456789")
+	req.Header.Set("X-Sign", sign)
+
+	post(req, t)
+}
 
 func TestBindingCreateHandle(t *testing.T) {
 	// todo 生成一个随机的商户号
@@ -36,20 +88,12 @@ func TestBindingCreateHandle(t *testing.T) {
 	doPost("POST", url, body, t)
 }
 
-/*
-func TestBindingCreateHandleWhenAcctTypeIs10(t *testing.T) {
-	merId := "10000001"
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"1000000000001","acctName":"张三","acctNum":"6210948000000219","identType":"1","identNum":"36050219880401","phoneNum":"15600009909","acctType":"10","validDate":"","cvv2":"","sendSmsId":"1000000000009","smsCode":"12353"}`
-
-	doPost("POST", url, body, t)
-}
-*/
 func doPost(method, url, body string, t *testing.T) {
 	req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
 	if err != nil {
 		t.Error("创建POST请求失败")
 	}
+	req.Header.Set("X-Sign", SignatureUseSha1([]byte(body), "0123456789")) // TODO
 
 	w := httptest.NewRecorder()
 	BindingPay(w, req)
@@ -77,9 +121,9 @@ func TestBindingRemoveHandle(t *testing.T) {
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "111111001405"
+	merId := "99001405"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1000000000004"}`
+	body := `{"bindingId": "1426689409857"}`
 	doPost("POST", url, body, t)
 }
 

@@ -1,11 +1,12 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-	"strings"
 
 	"github.com/omigo/g"
 )
@@ -83,7 +84,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
 	bc.SignCert = chanMer.SignCert
-	g.Info("'BindingCreate' is: %+v", bc)
+	g.Trace("'BindingCreate' is: %+v", bc)
 	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口。
 	ret = cfca.ProcessBindingCreate(bc)
 
@@ -110,6 +111,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 		g.Error("'FindBindingMap' error: ", err.Error())
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
+	g.Debug("binding result: %#v", bm)
 
 	// 非处理中，直接返回结果
 	if bm.BindingStatus != "000009" {
