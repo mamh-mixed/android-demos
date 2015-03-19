@@ -201,7 +201,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		TransAmt:      be.TransAmt,
 		ChanMerId:     be.ChanMerId,
 		ChanCode:      bm.ChanCode,
-		TransType:     1, //支付
+		TransType:     model.PayTrans, //支付
 	}
 	if err = mongo.TransColl.Add(trans); err != nil {
 		g.Error("add trans fail: (%s)", err)
@@ -216,11 +216,11 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	trans.RespCode = ret.RespCode
 	switch ret.RespCode {
 	case "000000":
-		trans.TransStatus = 30
+		trans.TransStatus = model.TransSuccess
 	case "000009":
-		trans.TransStatus = 10
+		trans.TransStatus = model.TransHandling
 	default:
-		trans.TransStatus = 20
+		trans.TransStatus = model.TransFail
 	}
 	if err = mongo.TransColl.Update(trans); err != nil {
 		g.Error("update trans status fail ", err)
@@ -286,7 +286,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	case err != nil:
 		return model.NewBindingReturn("100020", "原交易不成功，不能退款")
 	// 已退款
-	case orign.IsRefund == 1:
+	case orign.RefundStatus == model.TransRefunded:
 		return model.NewBindingReturn("100010", "该笔订单已经存在退款交易，不能再次退款")
 	// 退款金额过大
 	case be.TransAmt > orign.TransAmt:
@@ -317,7 +317,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		TransAmt:       be.TransAmt,
 		ChanMerId:      be.ChanMerId,
 		ChanCode:       orign.ChanCode,
-		TransType:      2, //退款
+		TransType:      model.RefundTrans, //退款
 	}
 	if err = mongo.TransColl.Add(refund); err != nil {
 		g.Error("add refund trans fail : (%s)", err)
@@ -332,17 +332,17 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	refund.RespCode = ret.RespCode
 	switch ret.RespCode {
 	case "000000":
-		refund.TransStatus = 30
+		refund.TransStatus = model.TransSuccess
 		//更新原交易状态
-		orign.IsRefund = 1
+		orign.RefundStatus = model.TransRefunded
 		if err = mongo.TransColl.Update(orign); err != nil {
-			g.Error("update orign trans isRefund fail : (%s)", err)
+			g.Error("update orign trans RefundStatus fail : (%s)", err)
 		}
 	//只有超时才会出现000009
 	case "000009":
-		refund.TransStatus = 10
+		refund.TransStatus = model.TransHandling
 	default:
-		refund.TransStatus = 20
+		refund.TransStatus = model.TransFail
 	}
 	if err = mongo.TransColl.Update(refund); err != nil {
 		g.Error("update refund trans status fail : (%s)", err)
@@ -353,6 +353,12 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 // ProcessOrderEnquiry 订单查询
 func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
+	// 默认返回成功的应答码
+	ret = &model.BindingReturn{
+		RespCode: "000000",
+		RespMsg:  "success",
+	}
+
 	// 是否有该订单号
 	t, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
 	if err != nil {
@@ -360,10 +366,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	// 如果交易状态不是在处理中
-	if t.TransStatus != 10 {
-		ret = new(model.BindingRefund)
-		ret.RespCode = "000000"
-		ret.RespMsg = "success"
+	if t.TransStatus != model.TransHandling {
 		ret.TransStatus = t.TransStatus
 		if be.ShowOrigInfo == "1" {
 			ret.OrigTransDetail = t
@@ -384,32 +387,31 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	be.ChanOrderNum = t.ChanOrderNum
 
 	// 原订单为处理中，向渠道发起查询
+	result := new(model.BindingReturn)
 	switch t.TransType {
 	//支付
-	case 1:
-		ret = cfca.ProcessPaymentEnquiry(be)
+	case model.PayTrans:
+		result = cfca.ProcessPaymentEnquiry(be)
 	//退款
-	case 2:
-		ret = cfca.ProcessRefundEnquiry(be)
+	case model.RefundTrans:
+		result = cfca.ProcessRefundEnquiry(be)
 	}
-	switch ret.RespCode {
+	switch result.RespCode {
 	case "000000":
-		trans.TransStatus = 30
+		t.TransStatus = model.TransSuccess
 	case "000009":
-		trans.TransStatus = 10
+		t.TransStatus = model.TransHandling
 	default:
-		trans.TransStatus = 20
+		t.TransStatus = model.TransFail
 	}
-	if err = mongo.TransColl.Update(trans); err != nil {
+	if err = mongo.TransColl.Update(t); err != nil {
 		g.Error("Update trans error : %s", err)
 	}
 
-	//TODO处理结果
-	if ret.RespCode == "000000" {
-		ret.OrigRespCode = t.RespCode
-		if be.ShowOrigInfo == "1" {
-			ret.OrigTransDetail = t
-		}
+	//返回结果
+
+	if be.ShowOrigInfo == "1" {
+		ret.OrigTransDetail = t
 	}
 
 	return
