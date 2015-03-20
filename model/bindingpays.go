@@ -21,8 +21,8 @@ type BindingReturn struct {
 	Rec          []string `json:"rec,omitempty"`          // 交易记录
 
 	// 查询订单状态
-	OrigRespCode    string `json:"origRespCode,omitempty"`    //原交易响应代码
-	OrigTransDetail *Trans `json:"origTransDetail,omitempty"` //原交易明细信息
+	OrigRespCode    string     `json:"origRespCode,omitempty"`    //原交易响应代码
+	OrigTransDetail *TransInfo `json:"origTransDetail,omitempty"` //原交易明细信息
 
 	// 渠道返回信息
 	ChanRespCode string `json:"-"`

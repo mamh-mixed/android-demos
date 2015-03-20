@@ -369,7 +369,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if t.TransStatus != model.TransHandling {
 		ret.TransStatus = t.TransStatus
 		if be.ShowOrigInfo == "1" {
-			ret.OrigTransDetail = t
+			ret.OrigTransDetail = model.NerTransInfo(*t)
 		}
 		return
 	}
@@ -409,9 +409,8 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	//返回结果
-
 	if be.ShowOrigInfo == "1" {
-		ret.OrigTransDetail = t
+		ret.OrigTransDetail = model.NerTransInfo(*t)
 	}
 
 	return

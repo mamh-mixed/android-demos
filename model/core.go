@@ -98,3 +98,29 @@ type Trans struct {
 	UpdateTime     int64         `bson:"updateTime"`                                 //交易更新时间
 	RefundStatus   int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款
 }
+
+// TransInfo 交易明细 对商户
+type TransInfo struct {
+	TransType    int8   `json:"transtype,omitempty"`
+	TransAmt     int64  `json:"transAmt,omitempty"`
+	RefundStatus int8   `json:"refundStatus,omitempty"`
+	RefundAmt    int64  `json:"refundAmt,omitempty"`
+	PayOrderNum  string `json:"payOrderNum,omitempty"`
+}
+
+// NerTransInfo TransInfo 构造方法
+func NerTransInfo(t Trans) (info *TransInfo) {
+	info = new(TransInfo)
+	info.TransType = t.TransType
+	switch info.TransType {
+	case PayTrans:
+		info.TransAmt = t.TransAmt
+		info.RefundStatus = t.RefundStatus
+		//退款金额暂默认等于支付金额
+		info.RefundAmt = t.TransAmt
+	case RefundTrans:
+		info.TransAmt = t.TransAmt
+		info.PayOrderNum = t.OrderNum
+	}
+	return
+}
