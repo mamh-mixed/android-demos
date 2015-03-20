@@ -16,7 +16,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	g.Debug("url = %s", r.URL.Path)
 
 	if r.Method != "POST" {
-		g.Error("methond not allowed ", r.Method)
+		g.Error("method not allowed ", r.Method)
 		w.WriteHeader(405)
 		w.Write([]byte("only 'POST' method allowed"))
 		return
@@ -107,8 +107,7 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 
 	//todo 业务处理
 	ret = core.ProcessBindingCreate(bc)
-	// mock return
-	// ret = model.NewBindingReturn("000000", "虚拟数据")
+
 	return ret
 }
 
@@ -166,6 +165,7 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	//  todo 业务处理
 	ret = core.ProcessBindingPayment(b)
+
 	return ret
 }
 
@@ -185,7 +185,7 @@ func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	}
 	// 业务处理
 	ret = core.ProcessBindingRefund(b)
-	// mock return
+
 	return ret
 }
 
@@ -246,8 +246,7 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	}
 	//  todo 业务处理
 	ret = core.ProcessOrderEnquiry(b)
-	// mock return
-	// ret = model.NewBindingReturn("000000", "虚拟数据")
+
 	return ret
 }
 
@@ -266,8 +265,7 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 		return ret
 	}
 
-	//  todo 业务处理
-	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
+	//  todo 无卡支付暂不开放；业务处理
+	ret = model.NewBindingReturn("100030", "不支持此类交易")
 	return ret
 }
