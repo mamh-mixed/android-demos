@@ -121,9 +121,9 @@ func TestBindingRemoveHandle(t *testing.T) {
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "99001405"
+	merId := "1426583281344"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1426689409857"}`
+	body := `{"bindingId": "1426583281402"}`
 	doPost("POST", url, body, t)
 }
 

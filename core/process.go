@@ -77,7 +77,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
 		g.Debug("not found any chanMer (%s)", err)
-		return ret
+		return model.NewBindingReturn("000001", "系统内部错误")
 	}
 
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
@@ -108,7 +108,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 本地查询绑定关系
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
-		g.Error("'FindBindingMap' error: ", err.Error())
+		g.Error("'FindBindingMap' error: %s", err.Error())
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 	g.Debug("binding result: %#v", bm)
