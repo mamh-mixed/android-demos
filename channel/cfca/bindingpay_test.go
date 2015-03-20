@@ -43,7 +43,7 @@ func TestProcessBindingCreate(t *testing.T) {
 
 	be := &model.BindingCreate{
 		ChanMerId:     "001405",
-		ChanBindingId: "123456789011",
+		ChanBindingId: "aaaaaaaaaaaaaaaa4499b12341245212",
 		BankId:        "102",
 		AcctName:      "test",
 		AcctNum:       "6222022003008481261",
@@ -77,10 +77,10 @@ func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
 		ChanMerId:     "001405",
-		ChanBindingId: "123456789011",
+		ChanBindingId: "c1b739d8120a48bb769e723949294fed",
 		SettFlag:      "475",
 		//需要变化
-		MerOrderNum: "6222022003008481275",
+		MerOrderNum: "62220220030084813801",
 		TransAmt:    12000,
 		SignCert:    priKeyPem,
 	}

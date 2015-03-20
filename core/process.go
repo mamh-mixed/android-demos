@@ -189,12 +189,13 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.SettFlag = chanMer.SettFlag
 	be.ChanBindingId = bm.ChanBindingId
 	be.ChanMerId = bm.ChanMerId
+	be.ChanOrderNum = tools.SerialNumber()
 	be.SignCert = chanMer.SignCert
 
 	// 记录这笔交易
 	trans := &model.Trans{
 		OrderNum:      be.MerOrderNum,
-		ChanOrderNum:  tools.SerialNumber(),
+		ChanOrderNum:  be.ChanOrderNum,
 		ChanBindingId: be.ChanBindingId,
 		AcctNum:       bi.AcctNum,
 		MerId:         be.MerId,
@@ -364,7 +365,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if err != nil {
 		return model.NewBindingReturn("200082", "订单号不存在")
 	}
-
+	g.Debug("trans:(%+v)", t)
 	// 如果交易状态不是在处理中
 	if t.TransStatus != model.TransHandling {
 		ret.TransStatus = t.TransStatus
@@ -409,6 +410,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	//返回结果
+	ret.TransStatus = t.TransStatus
 	if be.ShowOrigInfo == "1" {
 		ret.OrigTransDetail = model.NerTransInfo(*t)
 	}

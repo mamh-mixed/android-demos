@@ -108,7 +108,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 			TxCode:        BindingPaymentTxCode,
 		},
 		Body: requestBody{
-			PaymentNo:      be.MerOrderNum,
+			PaymentNo:      be.ChanOrderNum,
 			Amount:         be.TransAmt,
 			TxSNBinding:    be.ChanBindingId,
 			SettlementFlag: be.SettFlag,
@@ -135,7 +135,7 @@ func ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 			TxCode:        PaymentEnquiryTxCode,
 		},
 		Body: requestBody{
-			PaymentNo: be.OrigOrderNum,
+			PaymentNo: be.ChanOrderNum,
 		},
 		SignCert: be.SignCert,
 	}
@@ -183,7 +183,7 @@ func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 			TxCode:        RefundEnquiryTxCode,
 		},
 		Body: requestBody{
-			TxSN: be.OrigOrderNum, //退款交易流水号
+			TxSN: be.ChanOrderNum, //退款交易流水号
 		},
 		SignCert: be.SignCert,
 	}

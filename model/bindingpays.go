@@ -29,7 +29,7 @@ type BindingReturn struct {
 	ChanRespMsg  string `json:"-"`
 
 	// 交易状态
-	TransStatus string `json:"transStatus"`
+	TransStatus int8 `json:"transStatus,omitempty"`
 }
 
 // NewBindingReturn 构造函数
@@ -91,6 +91,7 @@ type BindingPayment struct {
 	SmsCode       string `json:"smsCode"`     // 短信验证码
 	SettFlag      string `json:"settFlag"`    //清算标识
 	Remark        string `json:"remark"`      //备注
+	ChanOrderNum  string //渠道订单号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
 	SignCert      string //签名密钥

@@ -17,8 +17,8 @@ var ChanMerColl = chanMerCollection{"chanMer"}
 func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer, err error) {
 
 	bo := bson.M{
-		"chancode":  chanCode,
-		"chanmerid": chanMerId,
+		"chanCode":  chanCode,
+		"chanMerId": chanMerId,
 	}
 	c = new(model.ChanMer)
 	err = database.C(col.name).Find(bo).One(c)
@@ -33,8 +33,8 @@ func (col *chanMerCollection) Add(c *model.ChanMer) error {
 // Modify 更新渠道商户信息
 func (col *chanMerCollection) Update(c *model.ChanMer) error {
 	bo := bson.M{
-		"chancode":  c.ChanCode,
-		"chanmerid": c.ChanMerId,
+		"chanCode":  c.ChanCode,
+		"chanMerId": c.ChanMerId,
 	}
 	return database.C(col.name).Update(bo, c)
 }

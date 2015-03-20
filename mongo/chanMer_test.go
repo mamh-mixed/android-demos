@@ -27,7 +27,7 @@ b3cR9I7+hurpqhJmQ7yuvAWe2xWc+YNTQ48FDJTogXlB
 )
 
 func TestChanMerFind(t *testing.T) {
-	chanMer, err := ChanMerColl.Find("00010000", "45672341231")
+	chanMer, err := ChanMerColl.Find("CFCA", "001405")
 	if err != nil {
 		t.Error("find chanMer unsuccessful ", err)
 		t.FailNow()
@@ -42,11 +42,13 @@ func TestChanMerAdd(t *testing.T) {
 		ChanMerName:   "测试渠道商户",
 		SettFlag:      "457",
 		SettRole:      "testRole",
-		SignCert:      "cfcaCert",
+		SignCert:      priKeyPem,
 		CheckSignCert: "checkcfcaCert",
 	}
 
-	err := ChanMerColl.Add(chanMer)
+	// err := ChanMerColl.Add(chanMer)
+	// test:update
+	err := ChanMerColl.Update(chanMer)
 	if err != nil {
 		t.Errorf("add chanMer unsuccessful ", err)
 		t.FailNow()
@@ -57,7 +59,7 @@ func TestChanMerAdd(t *testing.T) {
 func TestChanMerModify(t *testing.T) {
 	chanMer := &model.ChanMer{
 		ChanCode:      "CFCA",
-		ChanMerId:     "20000000002",
+		ChanMerId:     "001405",
 		ChanMerName:   "测试渠道商户",
 		SettFlag:      "457",
 		SettRole:      "testRole",

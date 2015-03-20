@@ -117,7 +117,9 @@ func NerTransInfo(t Trans) (info *TransInfo) {
 		info.TransAmt = t.TransAmt
 		info.RefundStatus = t.RefundStatus
 		//退款金额暂默认等于支付金额
-		info.RefundAmt = t.TransAmt
+		if info.RefundStatus == TransRefunded {
+			info.RefundAmt = t.TransAmt
+		}
 	case RefundTrans:
 		info.TransAmt = t.TransAmt
 		info.PayOrderNum = t.OrderNum
