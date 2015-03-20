@@ -21,12 +21,15 @@ type BindingReturn struct {
 	Rec          []string `json:"rec,omitempty"`          // 交易记录
 
 	// 查询订单状态
-	OrigRespCode    string `json:"origRespCode,omitempty"`    //原交易响应代码
-	OrigTransDetail *Trans `json:"origTransDetail,omitempty"` //原交易明细信息
+	OrigRespCode    string     `json:"origRespCode,omitempty"`    //原交易响应代码
+	OrigTransDetail *TransInfo `json:"origTransDetail,omitempty"` //原交易明细信息
 
 	// 渠道返回信息
 	ChanRespCode string `json:"-"`
 	ChanRespMsg  string `json:"-"`
+
+	// 交易状态
+	TransStatus int8 `json:"transStatus,omitempty"`
 }
 
 // NewBindingReturn 构造函数
@@ -88,6 +91,7 @@ type BindingPayment struct {
 	SmsCode       string `json:"smsCode"`     // 短信验证码
 	SettFlag      string `json:"settFlag"`    //清算标识
 	Remark        string `json:"remark"`      //备注
+	ChanOrderNum  string //渠道订单号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
 	SignCert      string //签名密钥

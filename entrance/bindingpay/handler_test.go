@@ -83,7 +83,7 @@ func TestBindingCreateHandle(t *testing.T) {
 	rdBindingId := tools.Millisecond()
 	merId := rdMerId
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222020302062061908","identType":"0","identNum":"350583199009153732","phoneNum":"18205960039","acctType":"20","validDate":"1903","cvv2":"232","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
+	body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222022003008481261","identType":"0","identNum":"440583199111031012","phoneNum":"18205960039","acctType":"10","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
 
 	doPost("POST", url, body, t)
 }
@@ -128,27 +128,29 @@ func TestBindingEnquiryHandle(t *testing.T) {
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	merId := "499999999"
+	merId := "1426818873711"
+	merOrderNum := tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "100000000300006",
-		"transAmt": 30000,
-		"bindingId": "1000000000002",
+		"merOrderNum": "` + merOrderNum + `",
+		"transAmt": 2000,
+		"bindingId": "1426818873771",
 		"sendSmsId": "",
 		"smsCode": "",
-		"merId":"499999999"
+		"merId":"1426818873711"
 	}`
 	doPost("POST", url, body, t)
 }
 
 func TestRefundHandle(t *testing.T) {
-	merId := "10000001"
+	merId := "1426818873711"
+	merOrderNum := tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/refund?merId=" + merId
 	body := `{
-		"merOrderNum": "1000000004",
-		"transAmt": -10000,
-		"origOrderNum": "1000000003"
+		"merOrderNum": "` + merOrderNum + `",
+		"transAmt": 2000,
+		"origOrderNum": "1426830050043"
 	}`
 	doPost("POST", url, body, t)
 }
@@ -175,10 +177,11 @@ func TestNoTrackPaymentHandle(t *testing.T) {
 }
 
 func TestOrderEnquiry(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=001405"
+	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=1426818873711"
 	body := `{
-		"origOrderNum":"20000000010000000",
-		"merId":"001405"
+		"origOrderNum":"1426830241979",
+		"merId":"1426818873711",
+		"showOrigInfo":"1"
 		}`
 	//"showOrigInfo":1,
 	doPost("POST", url, body, t)
