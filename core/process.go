@@ -14,6 +14,12 @@ import (
 // ProcessBindingCreate 绑定建立的业务处理
 // todo 先验证是否已经绑定过
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
+	// 验证该机构下，该绑定号是否已经绑定了
+	b, err := mongo.BindingMapColl.Find(bc.MerId, bc.BindingId)
+	if b != nil {
+		return model.NewBindingReturn("200071", "绑定ID重复")
+	}
+
 	// todo 如果需要校验短信，验证短信
 	// ret = validateSmsCode(bc.SendSmsId, bc.SmsCode)
 	// if ret != nil {
