@@ -78,7 +78,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	g.Error("处理后报文: %+v", ret)
+	g.Debug("处理后报文: %+v", ret)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
