@@ -18,7 +18,7 @@ func (c *merchantCollection) Insert(m *model.Merchant) error {
 	m1 := new(model.Merchant)
 	q := bson.M{"merId": m.MerId}
 	err := database.C(c.name).Find(q).One(m1)
-	if m1 != nil {
+	if err == nil {
 		return errors.New("MerId is existed!")
 	}
 
