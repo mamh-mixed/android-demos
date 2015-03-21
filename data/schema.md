@@ -24,7 +24,7 @@
 商户简称	shortName
 商户城市	city
 商户国家	nation
-商户类型	type
+商户类型	merType
 商户计费方案代码	billingScheme
 商户清算币种	SettCurr
 商户账户名称	acctName
@@ -37,7 +37,7 @@
 商户邮箱	email
 商户地址	addr
 商户邮编	postcode
-商户密码	password
+TestBindingInfo(t *testing.T)	password
 
 3. 渠道商户信息：PK（渠道代码，商户号）	chanMer
 渠道代码	chanCode

@@ -53,7 +53,7 @@ type BindingMap struct {
 	BindingStatus string `json:"bindingStatus" bson:"bindingStatus,omitempty"` // 绑定状态，成功，失败，或者处理中
 }
 
-// 卡BIN
+// CardBin 卡BIN
 type CardBin struct {
 	Bin       string `json:"bin" bson:"bin,omitempty"`             // 卡BIN
 	BinLen    int    `json:"binLen" bson:"binLen,omitempty"`       // 卡BIN长度
@@ -61,7 +61,39 @@ type CardBin struct {
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
 }
 
-// 渠道商户
+// Merchant 商户基本信息
+type Merchant struct {
+	MerId      string `bson:"merId,omitempty"`      //商户号
+	MerStatus  string `bson:"merStatus,omitempty"`  //商户状态（Normal，Deleted）
+	TransCurr  string `bson:"transCurr,omitempty"`  //商户交易币种
+	SignKey    string `bson:"signKey,omitempty"`    //商户签名密钥
+	EncryptKey string `bson:"encryptKey,omitempty"` //商户加密密钥
+}
+
+// MerDetail 商户详细信息
+type MerDetail struct {
+	MerId         string `bson:"merId,omitempty"`         //商户号
+	MerName       string `bson:"merName,omitempty"`       //商户名称
+	ShortName     string `bson:"shortName,omitempty"`     //商户简称
+	City          string `bson:"city,omitempty"`          //商户城市
+	Nation        string `bson:"nation,omitempty"`        //商户国家
+	MerType       string `bson:"merType,omitempty"`       //商户类型
+	BillingScheme string `bson:"billingScheme,omitempty"` //商户计费方案代码
+	SettCurr      string `bson:"SettCurr,omitempty"`      //商户清算币种
+	AcctName      string `bson:"acctName,omitempty"`      //商户账户名称
+	AcctNum       string `bson:"acctNum,omitempty"`       //商户账户
+	Corp          string `bson:"corp,omitempty"`          //法人代表
+	Master        string `bson:"master,omitempty"`        //商户负责人
+	Contact       string `bson:"contact,omitempty"`       //商户联系人
+	ContactTel    string `bson:"contactTel,omitempty"`    //商户联系电话
+	Fax           string `bson:"fax,omitempty"`           //商户传真
+	Email         string `bson:"email,omitempty"`         //商户邮箱
+	Addr          string `bson:"addr,omitempty"`          //商户地址
+	Postcode      string `bson:"postcode,omitempty"`      //商户邮编
+	Password      string `bson:"password,omitempty"`      //商户密码
+}
+
+// ChanMer 渠道商户
 type ChanMer struct {
 	ChanCode       string `bson:"chanCode,omitempty"`       //渠道代码
 	ChanMerId      string `bson:"chanMerId,omitempty"`      //商户号
