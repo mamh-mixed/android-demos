@@ -37,7 +37,7 @@
 商户邮箱	email
 商户地址	addr
 商户邮编	postcode
-TestBindingInfo(t *testing.T)	password
+商户密码	password
 
 3. 渠道商户信息：PK（渠道代码，商户号）	chanMer
 渠道代码	chanCode
