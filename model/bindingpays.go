@@ -12,8 +12,8 @@ type BindingReturn struct {
 	OrderNum    string `json:"orderNum,omitempty"`    // 网关订单号
 
 	// 交易对账汇总
-	SettDate string   `json:"settDate,omitempty"` // 对账日期
-	Data     []string `json:"data,omitempty"`     // 对账数据集
+	SettDate string            `json:"settDate,omitempty"` // 对账日期
+	Data     []SummarySettData `json:"data,omitempty"`     // 对账数据集
 
 	// 交易对账明细
 	Count        int      `json:"count,omitempty"`        // 拉取的记录条数
@@ -112,8 +112,10 @@ type BindingRefund struct {
 
 // BillingSummary 交易对账汇总
 type BillingSummary struct {
-	MerId    string `json:"merId"`    //商户ID
-	SettDate string `json:"settDate"` // 对账日期，格式为‘YYYYMMDD’
+	MerId     string `json:"merId"`    //商户ID
+	SettDate  string `json:"settDate"` // 对账日期，格式为‘YYYYMMDD’
+	ChanMerId string //渠道商户Id
+	SignCert  string //签名密钥
 }
 
 // BillingDetails 交易对账明细
@@ -149,4 +151,13 @@ type NoTrackPayment struct {
 	Cvv2        string `json:"cvv2"`        // CVV2
 	SendSmsId   string `json:"sendSmsId"`   // 发送短信验证码的交易流水
 	SmsCode     string `json:"smsCode"`     // 短信验证码
+}
+
+// SummarySettData 交易汇总
+type SummarySettData struct {
+	TransType     int8  `bson:"transType"`     //交易类型
+	TotalTransNum int8  `bson:"totalTransNum"` //总交易数量
+	TotalTransAmt int64 `bson:"totalTransAmt"` //总交易金额
+	TotalSettAmt  int64 `bson:"totalSettAmt"`  //总清算金额
+	TotalMerFee   int64 `bson:"totalMerFee"`   //总手续费
 }

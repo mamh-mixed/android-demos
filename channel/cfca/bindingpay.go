@@ -15,6 +15,7 @@ const (
 	BindingRefundTxCode  = "2521"
 	PaymentEnquiryTxCode = "2512"
 	RefundEnquiryTxCode  = "2522"
+	TransCheckingTxCode  = "1810"
 )
 
 // ProcessBindingEnquiry 查询绑定关系
@@ -184,6 +185,27 @@ func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 		},
 		Body: requestBody{
 			TxSN: be.ChanOrderNum, //退款交易流水号
+		},
+		SignCert: be.SignCert,
+	}
+	//请求
+	resp := sendRequest(req)
+	//应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+	return
+}
+
+// ProcessTransChecking 交易对账，清算
+func ProcessTransChecking(be *model.BillingSummary) (ret *model.BindingReturn) {
+	// 将参数转化为CfcaRequest
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			TxCode: TransCheckingTxCode,
+		},
+		Body: requestBody{
+			InstitutionID: be.ChanMerId,
+			Date:          be.SettDate,
 		},
 		SignCert: be.SignCert,
 	}

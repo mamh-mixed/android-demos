@@ -370,7 +370,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if t.TransStatus != model.TransHandling {
 		ret.TransStatus = t.TransStatus
 		if be.ShowOrigInfo == "1" {
-			ret.OrigTransDetail = model.NerTransInfo(*t)
+			ret.OrigTransDetail = model.NewTransInfo(*t)
 		}
 		return
 	}
@@ -397,6 +397,8 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	case model.RefundTrans:
 		result = cfca.ProcessRefundEnquiry(be)
 	}
+
+	//更新交易状态
 	switch result.RespCode {
 	case "000000":
 		t.TransStatus = model.TransSuccess
@@ -412,7 +414,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	//返回结果
 	ret.TransStatus = t.TransStatus
 	if be.ShowOrigInfo == "1" {
-		ret.OrigTransDetail = model.NerTransInfo(*t)
+		ret.OrigTransDetail = model.NewTransInfo(*t)
 	}
 
 	return

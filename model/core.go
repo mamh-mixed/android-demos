@@ -108,8 +108,8 @@ type TransInfo struct {
 	PayOrderNum  string `json:"payOrderNum,omitempty"`
 }
 
-// NerTransInfo TransInfo 构造方法
-func NerTransInfo(t Trans) (info *TransInfo) {
+// NewTransInfo TransInfo 构造方法
+func NewTransInfo(t Trans) (info *TransInfo) {
 	info = new(TransInfo)
 	info.TransType = t.TransType
 	switch info.TransType {
@@ -125,4 +125,13 @@ func NerTransInfo(t Trans) (info *TransInfo) {
 		info.PayOrderNum = t.OrderNum
 	}
 	return
+}
+
+// TransSett 清算信息
+type TransSett struct {
+	Trans    `bson:",inline"`
+	SettFlag int8   `bson:"settFlag"` //清算标志
+	SettDate string `bson:"settDate"` //清算时间
+	SettAmt  int64  `bson:"settAmt"`
+	MerFee   int64  `bson:"merFee"`
 }
