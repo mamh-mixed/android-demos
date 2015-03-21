@@ -1,5 +1,9 @@
 package bindingpay
 
+import (
+	"testing"
+)
+
 //
 // func TestSignatureUseSha1(t *testing.T) {
 // 	data, key := `{"merBindingId":"1000000001"}`, "C380BEC2BFD727A4B6845133519F3AD6"
@@ -29,3 +33,10 @@ package bindingpay
 // 		t.Log("Successfully")
 // 	}
 // }
+
+func TestSignature(t *testing.T) {
+	var str = `{"merId":"CIL0001"}`
+	data := []byte(str)
+	result := Signature(data, "CIL0001")
+	t.Log(result)
+}
