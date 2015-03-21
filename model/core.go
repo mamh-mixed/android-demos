@@ -11,6 +11,11 @@ const (
 	TransHandling = 10 //交易处理中
 	TransFail     = 20 //交易失败
 	TransSuccess  = 30 //交易成功
+
+	BindingHandling = "10" //绑定处理中
+	BindingFail     = "20" //绑定失败
+	BindingSuccess  = "30" //绑定成功
+	BindingRemoved  = "40" //已解绑（绑定成功过，后续解绑也成功）
 )
 
 // RouterPolicy 路由策略
