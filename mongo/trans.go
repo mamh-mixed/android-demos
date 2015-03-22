@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-
+	"github.com/CardInfoLink/quickpay/tools"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -66,4 +66,18 @@ func (col *transCollection) Find(merId, orderNum string) (t *model.Trans, err er
 	t = new(model.Trans)
 	err = database.C(col.name).Find(q).One(t)
 	return
+}
+
+// FindByTime 查找某天的交易记录
+func (col *transCollection) FindByTime(time string) ([]model.Trans, error) {
+
+	var ts []model.Trans
+	q := bson.M{
+		"createTime": bson.M{
+			"$gt":  time,
+			"$lte": tools.NextDay(time),
+		},
+	}
+	err := database.C(col.name).Find(q).All(&ts)
+	return ts, err
 }

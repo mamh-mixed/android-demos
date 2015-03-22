@@ -19,3 +19,12 @@ func TestUUID(t *testing.T) {
 func TestMillisecond(t *testing.T) {
 	t.Log("Millisecond: %s", Millisecond())
 }
+
+func TestTimeToGiven(t *testing.T) {
+
+	time, err := TimeToGiven("00:00:00")
+	if err != nil {
+		t.Errorf("fail to get time %s", err)
+	}
+	g.Debug("time to given (%d)", time)
+}

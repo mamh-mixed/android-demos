@@ -207,7 +207,7 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	if ret != nil {
 		return ret
 	}
-	//  todo 业务处理
+	// 业务处理
 	ret = core.ProcessBillingSummary(b)
 	// mock return
 	return ret
@@ -227,7 +227,7 @@ func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	if ret != nil {
 		return ret
 	}
-	//  todo 业务处理
+	// 业务处理
 	ret = core.ProcessBillingDetails(b)
 	// mock return
 	return ret

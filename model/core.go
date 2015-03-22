@@ -129,7 +129,7 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 
 // TransSett 清算信息
 type TransSett struct {
-	Trans    `bson:",inline"`
+	Tran     Trans  `bson:",inline"`
 	SettFlag int8   `bson:"settFlag"` //清算标志
 	SettDate string `bson:"settDate"` //清算时间
 	SettAmt  int64  `bson:"settAmt"`

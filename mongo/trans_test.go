@@ -64,3 +64,12 @@ func TestFindTrans(t *testing.T) {
 	}
 	g.Debug("find trans success %s", trans)
 }
+
+func TestFindByTime(t *testing.T) {
+	trans, err := TransColl.FindByTime("2015-03-21")
+	if err != nil {
+		t.Errorf("find trans unsunccessful: %s", err)
+		t.FailNow()
+	}
+	g.Debug("find trans success %s", trans)
+}

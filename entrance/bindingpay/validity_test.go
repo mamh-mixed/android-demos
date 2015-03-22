@@ -148,7 +148,7 @@ func TestValidateBillingSummary(t *testing.T) {
 func TestValidateBillingDetails(t *testing.T) {
 	oe := &model.BillingDetails{
 		SettDate:     "2015-01-03",
-		NextOrderNum: "22222222222220000000000000000000011111",
+		NextOrderNum: "2222222222222000000",
 	}
 	ret := validateBillingDetails(oe)
 	if ret != nil {

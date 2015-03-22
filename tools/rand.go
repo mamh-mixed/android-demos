@@ -4,6 +4,7 @@ import (
 	"fmt"
 	u "github.com/nu7hatch/gouuid"
 	"github.com/omigo/g"
+	"strings"
 	"time"
 )
 
@@ -33,4 +34,26 @@ func NextDay(today string) string {
 	// add a day
 	next := to.Add(time.Duration(24) * time.Hour)
 	return next.Format(layout)
+}
+
+// TimeToGiven 获得当前时间到point的秒数
+// 格式hh:mm:ss
+func TimeToGiven(point string) (int64, error) {
+	layout := "2006-01-02 15:04:05"
+	//当前时间
+	current := time.Now()
+	//TODO current不能直接跟given比较
+	now, err := time.Parse(layout, current.Format(layout))
+	value := strings.Split(now.Format(layout), " ")[0] + " " + point
+	given, err := time.Parse(layout, value)
+	if err != nil {
+		return 0, err
+	}
+	//在当前时间之后
+	if given.After(now) {
+		return given.Unix() - now.Unix(), nil
+	}
+	//在当前时间之前，应该加一天
+	given = given.Add(time.Duration(24) * time.Hour)
+	return given.Unix() - now.Unix(), nil
 }

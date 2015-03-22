@@ -23,6 +23,7 @@ func (col *transSettCollection) Summary(merId, settDate string) ([]model.Summary
 			"settDate": bson.M{"$gt": settDate,
 				"$lte": tools.NextDay(settDate),
 			},
+			"settFlag": 1,
 		}},
 		{"$group": bson.M{
 			"_id":           "$transType",
@@ -47,15 +48,17 @@ func (col *transSettCollection) Add(t *model.TransSett) error {
 }
 
 // Find 根据商户Id,清分时间查找交易明细
+// 按照清分时间降排序
 // TODO确定返回的struct
 func (col *transSettCollection) Find(merId, settDate string) ([]model.TransInfo, error) {
 
 	var transInfo []model.TransInfo
 	q := bson.M{
 		"merId":    merId,
+		"settFlag": 1,
 		"settDate": bson.M{"$gt": settDate, "$lte": tools.NextDay(settDate)},
 	}
-	err := database.C(col.name).Find(q).Sort("-orderNum").All(&transInfo)
+	err := database.C(col.name).Find(q).Sort("-settDate").All(&transInfo)
 
 	return transInfo, err
 }
