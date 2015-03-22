@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -17,16 +18,24 @@ func (col *transSettCollection) Summary(merId, settDate string) ([]model.Summary
 	var s []model.SummarySettData
 	//使用pipe统计
 	err := database.C(col.name).Pipe([]bson.M{
-		{"$match": bson.M{"merId": merId}},
-		// {"$project": bson.M{"transType": 1, "totalTransAmt": 1}},
+		{"$match": bson.M{
+			"merId": merId,
+			"settDate": bson.M{"$gt": settDate,
+				"$lte": tools.NextDay(settDate),
+			},
+		}},
 		{"$group": bson.M{
 			"_id":           "$transType",
 			"totalTransAmt": bson.M{"$sum": "$transAmt"},
 			"totalSettAmt":  bson.M{"$sum": "$settAmt"},
 			"totalMerFee":   bson.M{"$sum": "$merFee"},
 			"totalTransNum": bson.M{"$sum": 1},
-			"transType":     bson.M{"$avg": "$transType"},
 		}},
+		{"$project": bson.M{"transType": "$_id",
+			"totalTransAmt": 1,
+			"totalSettAmt":  1,
+			"totalMerFee":   1,
+			"totalTransNum": 1}},
 	}).All(&s)
 
 	return s, err

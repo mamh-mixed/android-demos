@@ -21,3 +21,16 @@ func SerialNumber() string {
 func Millisecond() string {
 	return fmt.Sprintf("%d", int64(time.Now().UnixNano()/1000000))
 }
+
+// NextDay 获得第二天时间
+func NextDay(today string) string {
+
+	layout := "2006-01-02"
+	to, err := time.Parse(layout, today)
+	if err != nil {
+		g.Error("fail to parese (%s : %s) ", today, err)
+	}
+	// add a day
+	next := to.Add(time.Duration(24) * time.Hour)
+	return next.Format(layout)
+}

@@ -20,15 +20,15 @@ func TestSummary(t *testing.T) {
 func TestAdd(t *testing.T) {
 	Id := bson.NewObjectId()
 	transSett := &model.TransSett{
-		SettDate: "2015-03-21 15:00:01",
+		SettDate: "2015-03-22 23:59:59",
 		SettFlag: 1,
-		SettAmt:  70,
-		MerFee:   70,
+		SettAmt:  100,
+		MerFee:   100,
 	}
 	transSett.MerId = "001405"
-	transSett.TransAmt = 1000
+	transSett.TransAmt = 10000
 	transSett.Id = Id
-	transSett.TransType = 2
+	transSett.TransType = 1
 	err := TranSettColl.Add(transSett)
 	if err != nil {
 		t.Errorf("add transSett fail : (%s)", err)
