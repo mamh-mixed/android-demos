@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-//建立绑定关系的时候验证请求报文
+// validateBindingCreate 建立绑定关系的时候验证请求报文
 func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingReturn) {
 	if request.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
@@ -45,7 +45,7 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 	return nil
 }
 
-// 移除绑定关系的时候验证请求报文
+// validateBindingRemove 移除绑定关系的时候验证请求报文
 func validateBindingRemove(in *model.BindingRemove) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
@@ -53,7 +53,7 @@ func validateBindingRemove(in *model.BindingRemove) (ret *model.BindingReturn) {
 	return nil
 }
 
-// 查询绑定关系的时候验证请求报文
+// validateBindingEnquiry 查询绑定关系的时候验证请求报文
 func validateBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	if be.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
@@ -61,7 +61,7 @@ func validateBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn)
 	return nil
 }
 
-// 绑定支付的请求报文验证
+// validateBindingPayment 绑定支付的请求报文验证
 func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
@@ -86,7 +86,7 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 	return nil
 }
 
-// 退款请求报文验证
+// validateBindingRefund 退款请求报文验证
 func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
@@ -118,7 +118,7 @@ func validateOrderEnquiry(in *model.OrderEnquiry) (ret *model.BindingReturn) {
 	return
 }
 
-// 无卡直接支付请求报文验证
+// validateNoTrackPayment 无卡直接支付请求报文验证
 func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
