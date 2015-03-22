@@ -10,7 +10,7 @@ type transSettCollection struct {
 	name string
 }
 
-var TranSettColl = transSettCollection{"transSett"}
+var TransSettColl = transSettCollection{"transSett"}
 
 func (col *transSettCollection) Summary(merId, settDate string) ([]model.SummarySettData, error) {
 
@@ -44,4 +44,18 @@ func (col *transSettCollection) Summary(merId, settDate string) ([]model.Summary
 // Add 增加一条清分记录
 func (col *transSettCollection) Add(t *model.TransSett) error {
 	return database.C(col.name).Insert(t)
+}
+
+// Find 根据商户Id,清分时间查找交易明细
+// TODO确定返回的struct
+func (col *transSettCollection) Find(merId, settDate string) ([]model.TransInfo, error) {
+
+	var transInfo []model.TransInfo
+	q := bson.M{
+		"merId":    merId,
+		"settDate": bson.M{"$gt": settDate, "$lte": tools.NextDay(settDate)},
+	}
+	err := database.C(col.name).Find(q).Sort("-orderNum").All(&transInfo)
+
+	return transInfo, err
 }

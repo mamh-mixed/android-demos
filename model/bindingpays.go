@@ -16,9 +16,9 @@ type BindingReturn struct {
 	Data     []SummarySettData `json:"data,omitempty"`     // 对账数据集
 
 	// 交易对账明细
-	Count        int      `json:"count,omitempty"`        // 拉取的记录条数
-	NextOrderNum string   `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
-	Rec          []string `json:"rec,omitempty"`          // 交易记录
+	Count        int         `json:"count,omitempty"`        // 拉取的记录条数
+	NextOrderNum string      `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
+	Rec          []TransInfo `json:"rec,omitempty"`          // 交易记录
 
 	// 查询订单状态
 	OrigRespCode    string     `json:"origRespCode,omitempty"`    //原交易响应代码
@@ -112,10 +112,8 @@ type BindingRefund struct {
 
 // BillingSummary 交易对账汇总
 type BillingSummary struct {
-	MerId     string `json:"merId"`    //商户ID
-	SettDate  string `json:"settDate"` // 对账日期，格式为‘YYYYMMDD’
-	ChanMerId string //渠道商户Id
-	SignCert  string //签名密钥
+	MerId    string `json:"merId"`    //商户ID
+	SettDate string `json:"settDate"` // 对账日期，格式为‘YYYYMMDD’
 }
 
 // BillingDetails 交易对账明细

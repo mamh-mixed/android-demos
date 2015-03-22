@@ -101,8 +101,8 @@ type Trans struct {
 
 // TransInfo 交易明细 对商户
 type TransInfo struct {
-	TransType    int8   `json:"transtype,omitempty"`
-	TransAmt     int64  `json:"transAmt,omitempty"`
+	TransType    int8   `json:"transType,omitempty" bson:"transType,omitempty"`
+	TransAmt     int64  `json:"transAmt,omitempty" bson:"transAmt,omitempty"`
 	RefundStatus int8   `json:"refundStatus,omitempty"`
 	RefundAmt    int64  `json:"refundAmt,omitempty"`
 	PayOrderNum  string `json:"payOrderNum,omitempty"`

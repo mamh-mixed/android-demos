@@ -9,7 +9,7 @@ import (
 
 func TestSummary(t *testing.T) {
 
-	all, err := TranSettColl.Summary("001405", "2015-03-21")
+	all, err := TransSettColl.Summary("001405", "2015-03-21")
 	if err != nil {
 		t.Errorf("get transSett summary fail : (%s)", err)
 	}
@@ -29,7 +29,7 @@ func TestAdd(t *testing.T) {
 	transSett.TransAmt = 10000
 	transSett.Id = Id
 	transSett.TransType = 1
-	err := TranSettColl.Add(transSett)
+	err := TransSettColl.Add(transSett)
 	if err != nil {
 		t.Errorf("add transSett fail : (%s)", err)
 	}

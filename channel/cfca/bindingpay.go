@@ -196,7 +196,7 @@ func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 }
 
 // ProcessTransChecking 交易对账，清算
-func ProcessTransChecking(be *model.BillingSummary) (ret *model.BindingReturn) {
+func ProcessTransChecking(chanMerId, settDate, singCert string) (ret *model.BindingReturn) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
 		Version: version,
@@ -204,10 +204,10 @@ func ProcessTransChecking(be *model.BillingSummary) (ret *model.BindingReturn) {
 			TxCode: TransCheckingTxCode,
 		},
 		Body: requestBody{
-			InstitutionID: be.ChanMerId,
-			Date:          be.SettDate,
+			InstitutionID: chanMerId,
+			Date:          settDate,
 		},
-		SignCert: be.SignCert,
+		SignCert: singCert,
 	}
 	//请求
 	resp := sendRequest(req)

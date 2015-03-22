@@ -420,6 +420,48 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	return
 }
 
+// ProcessBillingDetails 交易对账明细查询
+func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) {
+
+	//default return
+	ret = model.NewBindingReturn("000001", "系统内部错误")
+
+	//TODO查询
+	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate)
+	if err != nil {
+		g.Error("Find transSett records error : %s", err)
+		return
+	}
+
+	//赋值
+	ret.RespCode = "000000"
+	ret.RespMsg = "success"
+	ret.Count = len(rec)
+	ret.Rec = rec
+	return
+}
+
+// ProcessBillingSummary 交易对账汇总查询
+func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) {
+
+	//default return
+	ret = model.NewBindingReturn("000001", "系统内部错误")
+
+	//查询
+	data, err := mongo.TransSettColl.Summary(be.MerId, be.SettDate)
+	if err != nil {
+		g.Error("summary transSett records error : %s", err)
+		return
+	}
+
+	//赋值
+	ret.RespCode = "000000"
+	ret.RespMsg = "success"
+	ret.SettDate = be.SettDate
+	ret.Data = data
+	return
+}
+
 // todo 校验短信验证码，短信验证通过就返回nil
 func validateSmsCode(sendSmsId, smsCode string) (ret *model.BindingReturn) {
 	g.Info("SendSmsId is: %s;SmsCode is: %s", sendSmsId, smsCode)
