@@ -29,7 +29,14 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// }
 
 	// 获取卡属性
-	cardBin := mongo.CardBinColl.Find(bc.AcctNum)
+	cardBin, err := mongo.CardBinColl.Find(bc.AcctNum)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewBindingReturn("200110", "账户号码有误")
+		} else {
+			return
+		}
+	}
 	g.Debug("CardBin: %+v", cardBin)
 
 	// 如果是银联卡，验证证件信息
