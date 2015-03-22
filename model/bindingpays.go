@@ -30,6 +30,9 @@ type BindingReturn struct {
 
 	// 交易状态
 	TransStatus int8 `json:"transStatus,omitempty"`
+
+	// 绑定状态查询响应
+	BindingStatus string `json:"bindingStatus,omitempty"` // 绑定状态 10=绑定处理中；20=绑定失败；30=绑定成功；40=已解绑（绑定成功过，后续解绑也成功）
 }
 
 // NewBindingReturn 构造函数

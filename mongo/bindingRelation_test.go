@@ -64,3 +64,12 @@ func TestBindingMapFind(t *testing.T) {
 	}
 	t.Logf("BindingMap is %+v", bm)
 }
+
+func TestBindingMapCount(t *testing.T) {
+	merId, bindingId := "CIL0001", "121212121212"
+	count, err := BindingMapColl.Count(merId, bindingId)
+	if err != nil {
+		t.Error("Excepted nil,but get error")
+	}
+	t.Logf("count is %d", count)
+}

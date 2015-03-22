@@ -24,7 +24,7 @@
 商户简称	shortName
 商户城市	city
 商户国家	nation
-商户类型	type
+商户类型	merType
 商户计费方案代码	billingScheme
 商户清算币种	SettCurr
 商户账户名称	acctName

@@ -29,6 +29,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("parameter merId required"))
 		return
 	}
+
 	sign := r.Header.Get("X-Sign")
 	if sign == "" {
 		w.WriteHeader(412)
@@ -44,36 +45,37 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("can not read request body"))
 		return
 	}
-
 	g.Debug("商户报文: %s", data)
 
-	// TODO key must retrive from db 验签，如果失败，立即返回
-	if !CheckSignatureUseSha1(data, "0123456789", sign) {
+	var ret *model.BindingReturn
+
+	// key must retrive from db 验签，如果失败，立即返回
+	result, ret := CheckSignature(data, merId, sign)
+	if ret == nil && !result {
 		g.Error("check sign error", err)
-		w.WriteHeader(406)
-		w.Write([]byte("check sign error"))
-		return
+		ret = model.NewBindingReturn("200010", "验证签名失败")
 	}
 
-	// 执行业务逻辑
-	var ret *model.BindingReturn
-	switch r.URL.Path {
-	case "/quickpay/bindingCreate":
-		ret = bindingCreateHandle(data, merId)
-	case "/quickpay/bindingRemove":
-		ret = bindingRemoveHandle(data, merId)
-	case "/quickpay/bindingEnquiry":
-		ret = bindingEnquiryHandle(data, merId)
-	case "/quickpay/bindingPayment":
-		ret = bindingPaymentHandle(data, merId)
-	case "/quickpay/refund":
-		ret = bindingRefundHandle(data, merId)
-	case "/quickpay/orderEnquiry":
-		ret = orderEnquiryHandle(data, merId)
-	case "/quickpay/noTrackPayment":
-		ret = noTrackPaymentHandle(data, merId)
-	default:
-		w.WriteHeader(404)
+	// 验签通过，执行业务逻辑
+	if result {
+		switch r.URL.Path {
+		case "/quickpay/bindingCreate":
+			ret = bindingCreateHandle(data, merId)
+		case "/quickpay/bindingRemove":
+			ret = bindingRemoveHandle(data, merId)
+		case "/quickpay/bindingEnquiry":
+			ret = bindingEnquiryHandle(data, merId)
+		case "/quickpay/bindingPayment":
+			ret = bindingPaymentHandle(data, merId)
+		case "/quickpay/refund":
+			ret = bindingRefundHandle(data, merId)
+		case "/quickpay/orderEnquiry":
+			ret = orderEnquiryHandle(data, merId)
+		case "/quickpay/noTrackPayment":
+			ret = noTrackPaymentHandle(data, merId)
+		default:
+			w.WriteHeader(404)
+		}
 	}
 
 	g.Debug("处理后报文: %+v", ret)
@@ -83,8 +85,9 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("mashal data error"))
 	}
 
-	// todo 签名，并返回
-	// sign = signature(out, merId)
+	// 签名，并返回
+	sign = Signature(rdata, merId)
+	w.Header().Set("X-Sign", sign)
 
 	rbody := rdata
 	w.Write(rbody)
