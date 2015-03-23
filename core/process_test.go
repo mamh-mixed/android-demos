@@ -112,3 +112,31 @@ func TestProcessOrderEnquiry(t *testing.T) {
 	}
 	g.Debug("%+v", ret)
 }
+
+func TestProcessBillingDetails(t *testing.T) {
+
+	be := &model.BillingDetails{
+		MerId:    "001405",
+		SettDate: "2015-03-22",
+	}
+	ret := ProcessBillingDetails(be)
+
+	if ret.RespCode == "" {
+		t.Errorf("process billing details but not get a respCode %+v", ret)
+	}
+	g.Debug("%+v", ret)
+}
+
+func TestProcessBillingSummary(t *testing.T) {
+
+	be := &model.BillingSummary{
+		MerId:    "001405",
+		SettDate: "2015-03-21",
+	}
+	ret := ProcessBillingSummary(be)
+
+	if ret.RespCode == "" {
+		t.Errorf("process billing summary but not get a respCode %+v", ret)
+	}
+	g.Debug("%+v", ret)
+}

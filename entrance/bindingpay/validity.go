@@ -113,7 +113,27 @@ func validateOrderEnquiry(in *model.OrderEnquiry) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200050", "字段 origOrderNum 不能为空")
 	}
 	if matched, _ := regexp.MatchString(`^[1|0]?$`, in.ShowOrigInfo); !matched {
+		//TODO check respCode
 		return model.NewBindingReturn("200050", "字段 showOrigInfo 取值错误")
+	}
+	return
+}
+
+// validateBillingSummary 交易对账汇总验证
+func validateBillingSummary(in *model.BillingSummary) (ret *model.BindingReturn) {
+	if matched, _ := regexp.MatchString(`^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-[0-3]{0,1}[0-9]$`, in.SettDate); !matched {
+		return model.NewBindingReturn("200130", "日期 SettDate 格式错误")
+	}
+	return
+}
+
+// validateBillingSummary 交易对账汇总验证
+func validateBillingDetails(in *model.BillingDetails) (ret *model.BindingReturn) {
+	if matched, _ := regexp.MatchString(`^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-[0-3]{0,1}[0-9]$`, in.SettDate); !matched {
+		return model.NewBindingReturn("200130", "日期 SettDate 格式错误")
+	}
+	if len(in.NextOrderNum) > 32 {
+		return model.NewBindingReturn("200105", "订单号 NextOrderNum 不正确")
 	}
 	return
 }

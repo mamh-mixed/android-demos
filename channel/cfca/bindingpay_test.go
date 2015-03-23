@@ -124,3 +124,14 @@ func TestProcessRefundEnquiry(t *testing.T) {
 	resp := ProcessRefundEnquiry(be)
 	g.Debug("response message  %s", resp)
 }
+
+func TestProcessTransChecking(t *testing.T) {
+
+	// be := &model.BillingSummary{
+	// 	ChanMerId: "001405",
+	// 	SettDate:  "2015-03-19",
+	// 	SignCert:  priKeyPem,
+	// }
+	resp := ProcessTransChecking("001405", "2015-03-20", priKeyPem)
+	g.Debug("response message  %s", resp)
+}

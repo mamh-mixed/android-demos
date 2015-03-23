@@ -12,13 +12,13 @@ type BindingReturn struct {
 	OrderNum    string `json:"orderNum,omitempty"`    // 网关订单号
 
 	// 交易对账汇总
-	SettDate string   `json:"settDate,omitempty"` // 对账日期
-	Data     []string `json:"data,omitempty"`     // 对账数据集
+	SettDate string            `json:"settDate,omitempty"` // 对账日期
+	Data     []SummarySettData `json:"data,omitempty"`     // 对账数据集
 
 	// 交易对账明细
-	Count        int      `json:"count,omitempty"`        // 拉取的记录条数
-	NextOrderNum string   `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
-	Rec          []string `json:"rec,omitempty"`          // 交易记录
+	Count        int             `json:"count,omitempty"`        // 拉取的记录条数
+	NextOrderNum string          `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
+	Rec          []TransSettInfo `json:"rec,omitempty"`          // 交易记录
 
 	// 查询订单状态
 	OrigRespCode    string     `json:"origRespCode,omitempty"`    //原交易响应代码

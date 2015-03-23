@@ -40,6 +40,7 @@ type requestBody struct {
 	TxSN                 string `xml:",omitempty"` //退款交易流水号
 	InstitutionID        string `xml:",omitempty"` //机构编号
 	Date                 string `xml:",omitempty"` //对账日期,格式:YYYY-MM-DD
+	Tx                   []Tx   `xml:",omitempty"` //交易对账单
 }
 
 // common resp head
