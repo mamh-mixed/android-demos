@@ -5,7 +5,7 @@ var (
 	orderNum         = "222222220000000"
 	hexId            = "550ee5e36a3dd74f93000001"
 	transType        = 1
-	transStatus      = 0
+	transStatus      = "00"
 	respCode         = "200125"
 	merId            = "CIL0001"
 	merStatus        = "Normal"

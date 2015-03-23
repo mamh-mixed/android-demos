@@ -10,7 +10,7 @@ import (
 func TestTransAdd(t *testing.T) {
 	if debug {
 		trans := &model.Trans{
-			TransStatus: int8(transStatus),
+			TransStatus: transStatus,
 			MerId:       merId,
 			OrderNum:    orderNum,
 			TransType:   int8(transType),
@@ -34,7 +34,7 @@ func TestTransUpdate(t *testing.T) {
 		MerId:       merId,
 		OrderNum:    orderNum,
 		TransType:   int8(transType),
-		TransStatus: int8(transStatus),
+		TransStatus: transStatus,
 	}
 	err := TransColl.Update(trans)
 	if err != nil {

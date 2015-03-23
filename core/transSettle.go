@@ -1,7 +1,6 @@
 package core
 
 import (
-	// "github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -10,10 +9,10 @@ import (
 )
 
 // init 开启任务routine
-// func init() {
-// 	g.Debug("wait to process transSett method")
-// 	go ProcessTransSettle()
-// }
+func init() {
+	g.Debug("wait to process transSett method")
+	go ProcessTransSettle()
+}
 
 // ProcessTransSettle 清分
 func ProcessTransSettle() {
@@ -61,19 +60,28 @@ func doTransSett() {
 		g.Error("find trans fail : %s", err)
 		return
 	}
+	// g.Debug("yesterday data : %+v", trans)
+	// 计算费率
 	for _, v := range trans {
-		//暂时是假勾兑
-		sett := &model.TransSett{
-			Tran:        v,
-			SettFlag:    1,
-			SettDate:    now.Format("2006-01-02 15:04:05"),
-			MerSettAmt:  v.TransAmt * 9 / 10,
-			MerFee:      v.TransAmt / 10,
-			ChanSettAmt: v.TransAmt * 9 / 10,
-			ChanFee:     v.TransAmt / 10,
-		}
-		if err := mongo.TransSettColl.Add(sett); err != nil {
-			g.Error("add trans sett fail : %s", err)
+		// 根据交易状态处理
+		switch v.TransStatus {
+		// 交易成功
+		case model.TransSuccess:
+			sett := &model.TransSett{
+				Tran:        v,
+				SettFlag:    1,
+				SettDate:    now.Format("2006-01-02 15:04:05"),
+				MerSettAmt:  v.TransAmt * 9 / 10,
+				MerFee:      v.TransAmt / 10,
+				ChanSettAmt: v.TransAmt * 9 / 10,
+				ChanFee:     v.TransAmt / 10,
+			}
+			if err := mongo.TransSettColl.Add(sett); err != nil {
+				g.Error("add trans sett fail : %s", err)
+			}
+		// 处理中
+		case model.TransHandling:
+			// TODO调用交易查询更新状态
 		}
 
 	}
