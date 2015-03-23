@@ -5,7 +5,6 @@ import (
 )
 
 func TestGetRespCode(t *testing.T) {
-	respCode := "200125"
 	ret := RespCodeColl.Get(respCode)
 	// t.Logf("%#v", ret)
 
@@ -20,8 +19,8 @@ func TestGetRespCode(t *testing.T) {
 }
 
 func TestGetRespCodeByCfca(t *testing.T) {
-	code := "270032"
-	ret := RespCodeColl.GetByCfca(code)
+
+	ret := RespCodeColl.GetByCfca(cfcacode)
 	// t.Logf("%#v", ret)
 
 	if ret == nil {
@@ -30,6 +29,6 @@ func TestGetRespCodeByCfca(t *testing.T) {
 
 	expected := "金额过大"
 	if ret.RespMsg != expected {
-		t.Errorf("respCode %s message must be `%s`, but get %s", code, expected, ret.RespMsg)
+		t.Errorf("respCode %s message must be `%s`, but get %s", cfcacode, expected, ret.RespMsg)
 	}
 }

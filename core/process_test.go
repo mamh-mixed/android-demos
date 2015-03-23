@@ -1,27 +1,26 @@
 package core
 
 import (
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/g"
+	"testing"
 )
 
 func TestProcessBindingCreate(t *testing.T) {
 	bc := &model.BindingCreate{
-		MerId:     "1426727710113",
-		BindingId: "1000000000011",
-		AcctName:  "张三",
-		AcctNum:   "6222020302062061908",
-		IdentType: "0",
-		IdentNum:  "350583199009153732",
-		PhoneNum:  "18205960039",
-		AcctType:  "10",
-		ValidDate: "",
-		Cvv2:      "",
-		SendSmsId: "1000000000009",
-		SmsCode:   "12353",
-		BankId:    "102",
+		MerId:     merId,
+		BindingId: bindingId,
+		AcctName:  acctName,
+		AcctNum:   acctNum,
+		IdentType: identType,
+		IdentNum:  identNum,
+		PhoneNum:  phoneNum,
+		AcctType:  acctType,
+		ValidDate: validDate,
+		Cvv2:      cvv2,
+		SendSmsId: sendSmsId,
+		SmsCode:   smsCode,
+		BankId:    bankId,
 	}
 
 	ret := ProcessBindingCreate(bc)
@@ -35,8 +34,8 @@ func TestProcessBindingCreate(t *testing.T) {
 
 func TestProcessBindingEnquiry(t *testing.T) {
 	be := &model.BindingEnquiry{
-		MerId:     "MI12345",
-		BindingId: "BI1426664578581",
+		MerId:     merId,
+		BindingId: bindingId,
 	}
 
 	// br, err := mongo.FindBindingRelation(be.MerId, be.BindingId)
@@ -57,8 +56,8 @@ func TestProcessBindingEnquiry(t *testing.T) {
 
 func TestProcessBindingRemove(t *testing.T) {
 	be := &model.BindingRemove{
-		MerId:     "1426562901844",
-		BindingId: "1426562901897",
+		MerId:     removeMerId,
+		BindingId: removeBindingId,
 	}
 
 	ret := ProcessBindingReomve(be)
@@ -69,10 +68,10 @@ func TestProcessBindingRemove(t *testing.T) {
 func TestProcessBindingPayment(t *testing.T) {
 
 	be := &model.BindingPayment{
-		MerId:       "001405",
-		BindingId:   "1000000000011",
-		TransAmt:    800,
-		MerOrderNum: "20000000010000000",
+		MerId:       merId,
+		BindingId:   bindingId,
+		TransAmt:    int64(transAmt),
+		MerOrderNum: merOrderNum,
 	}
 	ret := ProcessBindingPayment(be)
 
@@ -85,10 +84,10 @@ func TestProcessBindingPayment(t *testing.T) {
 func TestProcessBindingRefund(t *testing.T) {
 
 	be := &model.BindingRefund{
-		MerId:        "001405",
-		TransAmt:     800,
-		OrigOrderNum: "20000000010000000",
-		MerOrderNum:  "300000200000300",
+		MerId:        merId,
+		TransAmt:     int64(transAmt),
+		OrigOrderNum: origOrderNum,
+		MerOrderNum:  merOrderNum,
 	}
 	ret := ProcessBindingRefund(be)
 
@@ -101,23 +100,23 @@ func TestProcessBindingRefund(t *testing.T) {
 func TestProcessOrderEnquiry(t *testing.T) {
 
 	be := &model.OrderEnquiry{
-		MerId:        "001405",
-		OrigOrderNum: "20000000002000000",
-		ShowOrigInfo: "1",
+		MerId:        merId,
+		OrigOrderNum: origOrderNum,
+		ShowOrigInfo: showOrigInfo,
 	}
 	ret := ProcessOrderEnquiry(be)
 
 	if ret.RespCode == "" {
 		t.Errorf("process order query but not get a respCode %+v", ret)
 	}
-	g.Debug("%+v", ret)
+	g.Debug("%+v,%+v", ret, ret.OrigTransDetail)
 }
 
 func TestProcessBillingDetails(t *testing.T) {
 
 	be := &model.BillingDetails{
-		MerId:    "001405",
-		SettDate: "2015-03-22",
+		MerId:    merId,
+		SettDate: settDate,
 	}
 	ret := ProcessBillingDetails(be)
 
@@ -130,8 +129,8 @@ func TestProcessBillingDetails(t *testing.T) {
 func TestProcessBillingSummary(t *testing.T) {
 
 	be := &model.BillingSummary{
-		MerId:    "001405",
-		SettDate: "2015-03-21",
+		MerId:    merId,
+		SettDate: settDate,
 	}
 	ret := ProcessBillingSummary(be)
 

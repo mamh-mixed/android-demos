@@ -12,7 +12,7 @@ type transSettCollection struct {
 
 var TransSettColl = transSettCollection{"transSett"}
 
-func (col *transSettCollection) Summary(merId, settDate string) ([]model.SummarySettData, error) {
+func (col *transSettCollection) Summary(merId, transDate string) ([]model.SummarySettData, error) {
 
 	//根据商户号、清算时间查找成功清算交易的汇总信息
 	var s []model.SummarySettData
@@ -20,8 +20,8 @@ func (col *transSettCollection) Summary(merId, settDate string) ([]model.Summary
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": bson.M{
 			"merId": merId,
-			"settDate": bson.M{"$gte": settDate,
-				"$lt": tools.NextDay(settDate),
+			"createTime": bson.M{"$gte": transDate,
+				"$lt": tools.NextDay(transDate),
 			},
 			"settFlag": 1,
 		}},
@@ -49,14 +49,14 @@ func (col *transSettCollection) Add(t *model.TransSett) error {
 
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
-func (col *transSettCollection) Find(merId, settDate, nextOrderNum string) ([]model.TransSettInfo, error) {
+func (col *transSettCollection) Find(merId, transDate, nextOrderNum string) ([]model.TransSettInfo, error) {
 
 	var transSettInfo []model.TransSettInfo
 
 	p := []bson.M{
 		//查找
 		{"$match": bson.M{"merId": merId, "settFlag": 1,
-			"settDate": bson.M{"$gte": settDate, "$lt": tools.NextDay(settDate)}}},
+			"createTime": bson.M{"$gte": transDate, "$lt": tools.NextDay(transDate)}}},
 		//排序
 		{"$sort": bson.M{"orderNum": -1}},
 	}

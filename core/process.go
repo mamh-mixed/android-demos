@@ -214,8 +214,11 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	// 如果绑定关系不是成功的状态，返回
-	if bm.BindingStatus != model.BindingSuccess {
-		return model.NewBindingReturn(bm.BindingStatus, "绑定中或者绑定失败，请查询绑定关系。")
+	switch bm.BindingStatus {
+	case model.BindingHandling:
+		return mongo.RespCodeColl.Get("200075")
+	case model.BindingFail, model.BindingRemoved:
+		return mongo.RespCodeColl.Get("200074")
 	}
 
 	// 查找商家的绑定信息
@@ -333,7 +336,17 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// default
 	ret = mongo.RespCodeColl.Get("000001")
 
-	// 是否有该订单号
+	// 检查同一个商户的订单号是否重复
+	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
+	if err != nil {
+		g.Error("find trans fail : (%s)", err)
+		return
+	}
+	if count > 0 {
+		return model.NewBindingReturn("200081", "订单号重复")
+	}
+
+	// 是否有该源订单号
 	orign, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
 	switch {
 	// 不存在原交易
@@ -362,10 +375,11 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// 记录这笔退款
 	refund := &model.Trans{
-		OrderNum:       be.MerOrderNum,
-		ChanOrderNum:   be.ChanOrderNum,
-		ChanBindingId:  orign.ChanBindingId,
-		RefundOrderNum: be.ChanOrigOrderNum,
+		OrderNum:      be.MerOrderNum,
+		ChanOrderNum:  be.ChanOrderNum,
+		ChanBindingId: orign.ChanBindingId,
+		//记录商户原订单而不是渠道原订单号
+		RefundOrderNum: be.OrigOrderNum,
 		AcctNum:        orign.AcctNum,
 		MerId:          be.MerId,
 		TransAmt:       be.TransAmt,
