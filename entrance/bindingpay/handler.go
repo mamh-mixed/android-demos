@@ -205,7 +205,6 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 
 	b.MerId = merId
-	g.Debug("summary data : %+v", b)
 	// 验证请求报文格式
 	ret = validateBillingSummary(b)
 	if ret != nil {
@@ -213,7 +212,6 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	// 业务处理
 	ret = core.ProcessBillingSummary(b)
-	g.Debug("%+v", ret)
 	// mock return
 	return ret
 }

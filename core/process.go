@@ -585,7 +585,6 @@ func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) 
 		g.Error("summary transSett records error : %s", err)
 		return
 	}
-	g.Debug("summary data : %+v", data)
 	//赋值
 	ret.SettDate = be.SettDate
 	ret.Data = data
