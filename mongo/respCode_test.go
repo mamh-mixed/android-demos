@@ -29,6 +29,6 @@ func TestGetRespCodeByCfca(t *testing.T) {
 
 	expected := "金额过大"
 	if ret.RespMsg != expected {
-		t.Errorf("respCode %s message must be `%s`, but get %s", code, expected, ret.RespMsg)
+		t.Errorf("respCode %s message must be `%s`, but get %s", cfcacode, expected, ret.RespMsg)
 	}
 }

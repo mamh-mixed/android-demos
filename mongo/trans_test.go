@@ -10,10 +10,10 @@ import (
 func TestTransAdd(t *testing.T) {
 	if debug {
 		trans := &model.Trans{
-			TransStatus: transStatus,
+			TransStatus: int8(transStatus),
 			MerId:       merId,
 			OrderNum:    orderNum,
-			TransType:   transType,
+			TransType:   int8(transType),
 		}
 		g.Debug("%+v", TransColl)
 
@@ -33,8 +33,8 @@ func TestTransUpdate(t *testing.T) {
 		Id:          objectId,
 		MerId:       merId,
 		OrderNum:    orderNum,
-		TransType:   transType,
-		TransStatus: transStatus,
+		TransType:   int8(transType),
+		TransStatus: int8(transStatus),
 	}
 	err := TransColl.Update(trans)
 	if err != nil {

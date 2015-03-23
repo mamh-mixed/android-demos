@@ -130,11 +130,11 @@ func TestBindingPaymentHandle(t *testing.T) {
 	body := `{
 		"subMerId": "",
 		"merOrderNum": "` + merOrderNum + `",
-		"transAmt": ` + transAmt + `,
-		"bindingId": ` + bindingId + `,
-		"sendSmsId": ` + sendSmsId + `,
-		"smsCode": ` + smsCode + `,
-		"merId":` + merId + `
+		"transAmt": 1000,
+		"bindingId": "` + bindingId + `",
+		"sendSmsId": "` + sendSmsId + `",
+		"smsCode": "` + smsCode + `",
+		"merId":"` + merId + `"
 	}`
 	doPost("POST", url, body, t)
 }
@@ -143,8 +143,8 @@ func TestRefundHandle(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/refund?merId=" + merId
 	body := `{
 		"merOrderNum": "` + merOrderNum + `",
-		"transAmt": ` + transAmt + `,
-		"origOrderNum": ` + origOrderNum + `
+		"transAmt": 1000,
+		"origOrderNum": "` + origOrderNum + `"
 	}`
 	doPost("POST", url, body, t)
 }
@@ -154,17 +154,17 @@ func TestNoTrackPaymentHandle(t *testing.T) {
 	body := `{
 		"subMerId": "",
 		"merOrderNum": "` + merOrderNum + `",
-		"transAmt": ` + transAmt + `,
-		"acctName":` + acctName + `,
-		"acctNum":` + acctNum + `,
-		"identType":` + identType + `,
-		"identNum":` + identNum + `,
-		"phoneNum":` + phoneNum + `,
-		"acctType":` + acctType + `,
-		"validDate":` + validDate + `,
-		"cvv2":` + cvv2 + `,
-		"sendSmsId": ` + sendSmsId + `,
-		"smsCode": ` + smsCode + `
+		"transAmt": 1000,
+		"acctName":"` + acctName + `",
+		"acctNum":"` + acctNum + `",
+		"identType":"` + identType + `",
+		"identNum":"` + identNum + `",
+		"phoneNum":"` + phoneNum + `",
+		"acctType":"` + acctType + `",
+		"validDate":"` + validDate + `",
+		"cvv2":"` + cvv2 + `",
+		"sendSmsId": "` + sendSmsId + `",
+		"smsCode": "` + smsCode + `"
 	}`
 	doPost("POST", url, body, t)
 }
@@ -172,9 +172,9 @@ func TestNoTrackPaymentHandle(t *testing.T) {
 func TestOrderEnquiry(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=" + merId
 	body := `{
-		"origOrderNum":` + origOrderNum + `,
-		"merId":` + merId + `,
-		"showOrigInfo":` + showOrigInfo + `
+		"origOrderNum":"` + origOrderNum + `",
+		"merId":"` + merId + `",
+		"showOrigInfo":"` + showOrigInfo + `"
 		}`
 	//"showOrigInfo":1,
 	doPost("POST", url, body, t)

@@ -70,7 +70,7 @@ func TestProcessBindingPayment(t *testing.T) {
 	be := &model.BindingPayment{
 		MerId:       merId,
 		BindingId:   bindingId,
-		TransAmt:    transAmt,
+		TransAmt:    int64(transAmt),
 		MerOrderNum: merOrderNum,
 	}
 	ret := ProcessBindingPayment(be)
@@ -85,7 +85,7 @@ func TestProcessBindingRefund(t *testing.T) {
 
 	be := &model.BindingRefund{
 		MerId:        merId,
-		TransAmt:     transAmt,
+		TransAmt:     int64(transAmt),
 		OrigOrderNum: origOrderNum,
 		MerOrderNum:  merOrderNum,
 	}

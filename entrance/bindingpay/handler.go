@@ -2,6 +2,7 @@ package bindingpay
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
@@ -15,44 +16,20 @@ import (
 func BindingPay(w http.ResponseWriter, r *http.Request) {
 	g.Debug("url = %s", r.URL.Path)
 
-	if r.Method != "POST" {
-		g.Error("method not allowed ", r.Method)
-		w.WriteHeader(405)
-		w.Write([]byte("only 'POST' method allowed"))
-		return
-	}
-
-	v := r.URL.Query()
-	merId := v.Get("merId")
-	if merId == "" {
-		w.WriteHeader(412)
-		w.Write([]byte("parameter merId required"))
-		return
-	}
-
-	sign := r.Header.Get("X-Sign")
-	if sign == "" {
-		w.WriteHeader(412)
-		w.Write([]byte("header X-Sign required"))
-		return
-	}
-	g.Debug("merId=%s, sign=%s", merId, sign)
-
-	data, err := ioutil.ReadAll(r.Body)
+	merId, sign, data, status, err := prepareData(r)
 	if err != nil {
-		g.Error("read body error: ", err)
-		w.WriteHeader(406)
-		w.Write([]byte("can not read request body"))
+		g.Error(err.Error())
+		w.WriteHeader(status)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	g.Debug("商户报文: %s", data)
 
 	var ret *model.BindingReturn
 
-	// key must retrive from db 验签，如果失败，立即返回
 	result, ret := CheckSignature(data, merId, sign)
 	if ret == nil && !result {
-		g.Error("check sign error", err)
+		g.Error("check sign error ", err)
 		ret = model.NewBindingReturn("200010", "验证签名失败")
 	}
 
@@ -81,7 +58,6 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(404)
 		}
 	}
-
 	g.Debug("处理后报文: %+v", ret)
 
 	rdata, err := json.Marshal(ret)
@@ -93,8 +69,31 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	sign = Signature(rdata, merId)
 	w.Header().Set("X-Sign", sign)
 
-	rbody := rdata
-	w.Write(rbody)
+	w.Write(rdata)
+}
+
+func prepareData(r *http.Request) (merId, sign string, data []byte, status int, err error) {
+	if r.Method != "POST" {
+		return "", "", nil, 405, errors.New("only 'POST' method allowed, but actual '" + r.Method + "'")
+	}
+
+	v := r.URL.Query()
+	merId = v.Get("merId")
+	if merId == "" {
+		return "", "", nil, 412, errors.New("parameter `merId` required")
+	}
+
+	sign = r.Header.Get("X-Sign")
+	if sign == "" {
+		return "", "", nil, 412, errors.New("parameter `X-Sign` required")
+	}
+
+	data, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		return "", "", nil, 406, err
+	}
+
+	return merId, sign, data, 200, nil
 }
 
 // 建立绑定关系

@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/g"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -14,16 +15,18 @@ type cardBinCollection struct {
 var CardBinColl = cardBinCollection{"cardBin"}
 
 // Find 根据卡长度查找卡BIN列表
-func (c *cardBinCollection) Find(cardNum string) *model.CardBin {
-	// var card = "6222801932062061908";
-	// db.cardBin.find({"cardLen": card.length, "bin": {"$lte": card}, "overflow": {"$gt": card}}).sort({"bin": -1, "overflow": 1}).limit(1)
-
-	var b model.CardBin
-	database.C(c.name).Find(bson.M{
+func (c *cardBinCollection) Find(cardNum string) (cb *model.CardBin, err error) {
+	cb = new(model.CardBin)
+	q := bson.M{
 		"cardLen":  len(cardNum),
 		"bin":      bson.M{"$lte": cardNum},
 		"overflow": bson.M{"$gt": cardNum},
-	}).Sort("-bin", "overflow").Limit(1).One(&b)
+	}
+	err = database.C(c.name).Find(q).Sort("-bin", "overflow").Limit(1).One(&cb)
+	if err != nil {
+		g.Error("Find CardBin ERROR! error message is: %s; condition is: %+v", err.Error(), q)
+		return nil, err
+	}
 
-	return &b
+	return cb, nil
 }

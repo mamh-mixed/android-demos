@@ -81,7 +81,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		SettFlag:      settFlag,
 		//需要变化
 		ChanOrderNum: chanOrderNum,
-		TransAmt:     transAmt,
+		TransAmt:     int64(transAmt),
 		SignCert:     priKeyPem,
 	}
 	resp := ProcessBindingPayment(be)
@@ -94,7 +94,7 @@ func TestProcessBindingRefund(t *testing.T) {
 		ChanMerId:        chanMerId,
 		ChanOrderNum:     chanOrderNum,
 		ChanOrigOrderNum: chanOrigOrderNum,
-		TransAmt:         transAmt,
+		TransAmt:         int64(transAmt),
 		SignCert:         priKeyPem,
 	}
 	resp := ProcessBindingRefund(be)
