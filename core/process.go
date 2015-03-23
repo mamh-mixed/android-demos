@@ -288,9 +288,16 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
-	// 如果绑定状态非成功状态
-	if bm.BindingStatus != model.BindingSuccess {
-		return mongo.RespCodeColl.Get(bm.BindingStatus)
+	switch bm.BindingStatus {
+	// // todo 绑定状态为处理中的话
+	// case model.BindingHandling:
+	// 	return model.NewBindingReturn("200070", "绑定ID有误")
+	// 绑定状态为已解绑的话
+	case model.BindingRemoved:
+		return model.NewBindingReturn("200072", "该绑定ID的已经解绑过，请勿重复操作")
+	// 绑定状态为失败的话
+	case model.BindingFail:
+		return model.NewBindingReturn("200073", "该绑定ID的状态为失败，无法进行解绑操作")
 	}
 
 	// 查找渠道商户信息，获取证书

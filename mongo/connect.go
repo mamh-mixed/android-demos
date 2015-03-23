@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	// host = "121.41.85.237"
-	host   = "127.0.0.1"
+	host = "121.41.85.237"
+	// host   = "127.0.0.1"
 	dbname = "quickpay"
 )
 
