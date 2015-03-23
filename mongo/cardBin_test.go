@@ -48,7 +48,6 @@ func TestCardBinImport(t *testing.T) {
 
 func TestFindCardBin(t *testing.T) {
 
-	var cardNum = "11116222801932062061908"
 	cardBin, err := CardBinColl.Find(cardNum)
 	if err != nil {
 		t.Errorf("Find CardBIN error (%s)", err.Error())

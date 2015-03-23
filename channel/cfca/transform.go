@@ -23,6 +23,12 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		respObject := mongo.RespCodeColl.GetByCfca(resp.Head.Code)
 		ret.RespCode = respObject.RespCode
 		ret.RespMsg = respObject.RespMsg
+		if ret.RespCode == "" {
+			//系统外部错误
+			g.Error("找不到系统对应的中金应答码:(%s)", resp.Head.Code)
+			ret.RespCode = "000002"
+			ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
+		}
 		return
 	}
 	// 成功受理的请求
@@ -91,6 +97,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		ret.RespCode = "000000"
 
 	}
+
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
 	g.Debug("resp message %+v", ret)
 

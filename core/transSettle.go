@@ -18,7 +18,7 @@ import (
 // ProcessTransSettle 清分
 func ProcessTransSettle() {
 
-	//TODO 暂时先每天凌晨将交易信息拷贝到清分表里
+	// 暂时先每天凌晨将交易信息拷贝到清分表里
 	// 距离0点的时间
 	dis, err := tools.TimeToGiven("00:00:00")
 	if err != nil {

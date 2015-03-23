@@ -8,31 +8,33 @@ import (
 )
 
 func TestTransAdd(t *testing.T) {
-	trans := &model.Trans{
-		TransStatus: 0,
-		MerId:       "testTransMerId",
-		OrderNum:    "testTransOrderNum",
-		TransType:   1,
-	}
-	g.Debug("%+v", TransColl)
+	if debug {
+		trans := &model.Trans{
+			TransStatus: int8(transStatus),
+			MerId:       merId,
+			OrderNum:    orderNum,
+			TransType:   int8(transType),
+		}
+		g.Debug("%+v", TransColl)
 
-	err := TransColl.Add(trans)
-	if err != nil {
-		t.Errorf("add trans unsunccessful: %s", err)
-		t.FailNow()
+		err := TransColl.Add(trans)
+		if err != nil {
+			t.Errorf("add trans unsunccessful: %s", err)
+			t.FailNow()
+		}
+		g.Debug("add trans success %s", trans)
 	}
-	g.Debug("add trans success %s", trans)
 }
 
 func TestTransUpdate(t *testing.T) {
-	objectId := bson.ObjectIdHex("550ee5e36a3dd74f93000001")
+	objectId := bson.ObjectIdHex(hexId)
 	trans := &model.Trans{
 		// CreateTime:  time.Now().Unix(),
 		Id:          objectId,
-		MerId:       "111111110000000",
-		OrderNum:    "222222220000000",
-		TransType:   1,
-		TransStatus: 0,
+		MerId:       merId,
+		OrderNum:    orderNum,
+		TransType:   int8(transType),
+		TransStatus: int8(transStatus),
 	}
 	err := TransColl.Update(trans)
 	if err != nil {
@@ -45,7 +47,7 @@ func TestTransUpdate(t *testing.T) {
 
 func TestCountTrans(t *testing.T) {
 
-	c, err := TransColl.Count("111111110000000", "222222220000000")
+	c, err := TransColl.Count(merId, orderNum)
 	if err != nil {
 		t.Errorf("count trans unsunccessful: %s", err)
 		t.FailNow()
@@ -54,7 +56,7 @@ func TestCountTrans(t *testing.T) {
 }
 
 func TestFindTrans(t *testing.T) {
-	trans, err := TransColl.Find("111111110000000", "222222220000000")
+	trans, err := TransColl.Find(merId, orderNum)
 	if err != nil {
 		t.Errorf("find trans unsunccessful: %s", err)
 		t.FailNow()
@@ -63,7 +65,7 @@ func TestFindTrans(t *testing.T) {
 }
 
 func TestFindByTime(t *testing.T) {
-	trans, err := TransColl.FindByTime("2015-03-21")
+	trans, err := TransColl.FindByTime(createTime)
 	if err != nil {
 		t.Errorf("find trans unsunccessful: %s", err)
 		t.FailNow()
