@@ -343,7 +343,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		return
 	}
 	if count > 0 {
-		return model.NewBindingReturn("200081", "订单号重复")
+		return mongo.RespCodeColl.Get("200081")
 	}
 
 	// 是否有该源订单号

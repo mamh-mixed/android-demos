@@ -162,10 +162,10 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 	}
 
 	if in.TransAmt < 0 {
-		return model.NewBindingReturn("200180", "金额错误")
+		return mongo.RespCodeColl.Get("200180")
 	}
 	if matched, _ := regexp.MatchString(`^10$|^20$`, in.AcctType); !matched {
-		return model.NewBindingReturn("200230", "账户类型不正确")
+		return mongo.RespCodeColl.Get("200230")
 	}
 
 	return nil
