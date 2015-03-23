@@ -64,6 +64,7 @@ type CardBin struct {
 	BinLen    int    `json:"binLen" bson:"binLen,omitempty"`       // 卡BIN长度
 	CardLen   int    `json:"cardLen" bson:"cardLen,omitempty"`     // 卡号长度
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+	InsCode   string `json:"insCode" bson:"insCode,omitempty"`     // 发卡行代码
 }
 
 // Merchant 商户基本信息
@@ -152,6 +153,13 @@ type TransInfo struct {
 	RefundStatus int8   `json:"refundStatus,omitempty"`
 	RefundAmt    int64  `json:"refundAmt,omitempty"`
 	PayOrderNum  string `json:"payOrderNum,omitempty"`
+}
+
+// CfcaBankMap 中金支持银行映射表，为了和卡BIN表的银行匹配
+type CfcaBankMap struct {
+	InsCode  string `bson:"insCode,omitempty"`  // 机构号
+	BankId   string `bson:"bankId,omitempty"`   //银行ID
+	BankName string `bson:"bankName,omitempty"` //银行名称
 }
 
 // NewTransInfo TransInfo 构造方法

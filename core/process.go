@@ -13,6 +13,9 @@ import (
 
 // ProcessBindingCreate 绑定建立的业务处理
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
+	// 默认返回
+	ret = model.NewBindingReturn("000001", "系统内部错误")
+
 	// 验证该机构下，该绑定号是否已经绑定了
 	count, err := mongo.BindingMapColl.Count(bc.MerId, bc.BindingId)
 	if count > 0 {
@@ -26,7 +29,14 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// }
 
 	// 获取卡属性
-	cardBin := mongo.CardBinColl.Find(bc.AcctNum)
+	cardBin, err := mongo.CardBinColl.Find(bc.AcctNum)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewBindingReturn("200110", "账户号码有误")
+		} else {
+			return
+		}
+	}
 	g.Debug("CardBin: %+v", cardBin)
 
 	// 如果是银联卡，验证证件信息
@@ -60,7 +70,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	if err := mongo.BindingInfoColl.Insert(bi); err != nil {
 		g.Error("'InsertBindingInfo' error: (%s)\n 'BindingInfo': %+v", err, bi)
-		return model.NewBindingReturn("000001", "系统内部错误")
+		return
 	}
 
 	// 根据商户、卡号、绑定Id、渠道、渠道商户生成一个系统绑定Id(ChanBindingId)，并将绑定关系映射入库
@@ -74,15 +84,15 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	if err := mongo.BindingMapColl.Insert(bm); err != nil {
 		g.Error("'InsertBindingMap' error: (%s)\n 'BindingMap': %+v", err, bm)
-		return model.NewBindingReturn("000001", "系统内部错误")
+		return
 	}
 
 	// 根据绑定关系得到渠道商户信息
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
-		g.Debug("not found any chanMer (%s)", err)
-		return model.NewBindingReturn("000001", "系统内部错误")
+		g.Error("not found any chanMer (%s)", err)
+		return
 	}
 
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
@@ -90,6 +100,15 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.ChanBindingId = bm.ChanBindingId
 	bc.SignCert = chanMer.SignCert
 	g.Trace("'BindingCreate' is: %+v", bc)
+
+	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
+	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
+	if err != nil {
+		g.Error("find CfcaBankMap ERROR!error message is: %s", err.Error())
+		return
+	}
+	bc.BankId = cm.BankId
+
 	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口。
 	ret = cfca.ProcessBindingCreate(bc)
 
@@ -269,9 +288,16 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
 
-	// 如果绑定状态非成功状态
-	if bm.BindingStatus != model.BindingSuccess {
-		return mongo.RespCodeColl.Get(bm.BindingStatus)
+	switch bm.BindingStatus {
+	// // todo 绑定状态为处理中的话
+	// case model.BindingHandling:
+	// 	return model.NewBindingReturn("200070", "绑定ID有误")
+	// 绑定状态为已解绑的话
+	case model.BindingRemoved:
+		return model.NewBindingReturn("200072", "该绑定ID的已经解绑过，请勿重复操作")
+	// 绑定状态为失败的话
+	case model.BindingFail:
+		return model.NewBindingReturn("200073", "该绑定ID的状态为失败，无法进行解绑操作")
 	}
 
 	// 查找渠道商户信息，获取证书
