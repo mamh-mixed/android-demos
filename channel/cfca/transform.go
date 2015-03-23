@@ -11,7 +11,7 @@ import (
 func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingReturn) {
 
 	// default
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 	if resp == nil {
 		return
 	}

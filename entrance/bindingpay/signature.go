@@ -31,10 +31,10 @@ func CheckSignature(data []byte, merId, signature string) (result bool, ret *mod
 	m, err := mongo.MerchantColl.Find(merId)
 	if err != nil {
 		if err.Error() == "not found" {
-			ret = model.NewBindingReturn("200063", "商户号不存在")
+			ret = mongo.RespCodeColl.Get("200063")
 			return false, ret
 		}
-		return false, model.NewBindingReturn("000001", "系统内部错误")
+		return false, mongo.RespCodeColl.Get("000001")
 	}
 	result = CheckSignatureUseSha1(data, m.SignKey, signature)
 	return result, nil
