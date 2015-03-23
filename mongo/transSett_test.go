@@ -24,11 +24,12 @@ func TestTransSettAdd(t *testing.T) {
 		Id := bson.NewObjectId()
 		orderNum := "1000000003"
 		tran := model.Trans{
-			Id:        Id,
-			MerId:     "001405",
-			TransAmt:  11111,
-			TransType: 1,
-			OrderNum:  orderNum,
+			Id:         Id,
+			MerId:      "001405",
+			TransAmt:   11111,
+			TransType:  1,
+			OrderNum:   orderNum,
+			CreateTime: "2015-03-23 23:59:59",
 		}
 		transSett := &model.TransSett{
 			Tran:       tran,

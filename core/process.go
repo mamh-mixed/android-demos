@@ -307,7 +307,17 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// default
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
-	// 是否有该订单号
+	// 检查同一个商户的订单号是否重复
+	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
+	if err != nil {
+		g.Error("find trans fail : (%s)", err)
+		return
+	}
+	if count > 0 {
+		return model.NewBindingReturn("200081", "订单号重复")
+	}
+
+	// 是否有该源订单号
 	orign, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
 	switch {
 	// 不存在原交易
@@ -336,10 +346,11 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// 记录这笔退款
 	refund := &model.Trans{
-		OrderNum:       be.MerOrderNum,
-		ChanOrderNum:   be.ChanOrderNum,
-		ChanBindingId:  orign.ChanBindingId,
-		RefundOrderNum: be.ChanOrigOrderNum,
+		OrderNum:      be.MerOrderNum,
+		ChanOrderNum:  be.ChanOrderNum,
+		ChanBindingId: orign.ChanBindingId,
+		//记录商户原订单而不是渠道原订单号
+		RefundOrderNum: be.OrigOrderNum,
 		AcctNum:        orign.AcctNum,
 		MerId:          be.MerId,
 		TransAmt:       be.TransAmt,

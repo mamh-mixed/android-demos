@@ -168,7 +168,7 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 		}
 	case RefundTrans:
 		info.TransAmt = t.TransAmt
-		info.PayOrderNum = t.OrderNum
+		info.PayOrderNum = t.RefundOrderNum
 	}
 	return
 }

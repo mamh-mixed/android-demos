@@ -43,7 +43,6 @@ func TestCardBinImport(t *testing.T) {
 
 func TestFindCardBin(t *testing.T) {
 
-	var cardNum = "6222801932062061908"
 	cardBin := CardBinColl.Find(cardNum)
 
 	if cardBin.Bin != "622280193" {

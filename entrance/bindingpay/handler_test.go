@@ -114,74 +114,67 @@ func doPost(method, url, body string, t *testing.T) {
 }
 
 func TestBindingRemoveHandle(t *testing.T) {
-	merId := "1426840770177"
-	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + merId
-	body := `{"bindingId": "1426840770235"}`
+	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + removeMerId
+	body := `{"bindingId": ` + removeBindingId + `}`
 	doPost("POST", url, body, t)
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "1426840770177"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1426840770235"}`
+	body := `{"bindingId": ` + bindingId + `}`
 	doPost("POST", url, body, t)
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	merId := "1426840770177"
-	merOrderNum := tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
 		"merOrderNum": "` + merOrderNum + `",
-		"transAmt": 2000,
-		"bindingId": "1426840770235",
-		"sendSmsId": "",
-		"smsCode": "",
-		"merId":"1426818873711"
+		"transAmt": ` + transAmt + `,
+		"bindingId": ` + bindingId + `,
+		"sendSmsId": ` + sendSmsId + `,
+		"smsCode": ` + smsCode + `,
+		"merId":` + merId + `
 	}`
 	doPost("POST", url, body, t)
 }
 
 func TestRefundHandle(t *testing.T) {
-	merId := "1426840770177"
-	merOrderNum := tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/refund?merId=" + merId
 	body := `{
 		"merOrderNum": "` + merOrderNum + `",
-		"transAmt": 2000,
-		"origOrderNum": "1426841389085"
+		"transAmt": ` + transAmt + `,
+		"origOrderNum": ` + origOrderNum + `
 	}`
 	doPost("POST", url, body, t)
 }
 
 func TestNoTrackPaymentHandle(t *testing.T) {
-	merId := "10000001"
 	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
-		"merOrderNum": "1000000003",
-		"transAmt": 1,
-		"acctName":"张三",
-		"acctNum":"6210948000000219",
-		"identType":"0",
-		"identNum":"36050219880401",
-		"phoneNum":"15600009909",
-		"acctType":"20",
-		"validDate":"1903",
-		"cvv2":"232",
-		"sendSmsId": "",
-		"smsCode": ""
+		"merOrderNum": "` + merOrderNum + `",
+		"transAmt": ` + transAmt + `,
+		"acctName":` + acctName + `,
+		"acctNum":` + acctNum + `,
+		"identType":` + identType + `,
+		"identNum":` + identNum + `,
+		"phoneNum":` + phoneNum + `,
+		"acctType":` + acctType + `,
+		"validDate":` + validDate + `,
+		"cvv2":` + cvv2 + `,
+		"sendSmsId": ` + sendSmsId + `,
+		"smsCode": ` + smsCode + `
 	}`
 	doPost("POST", url, body, t)
 }
 
 func TestOrderEnquiry(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=1426840770177"
+	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=" + merId
 	body := `{
-		"origOrderNum":"1426841458174",
-		"merId":"1426840770177",
-		"showOrigInfo":"1"
+		"origOrderNum":` + origOrderNum + `,
+		"merId":` + merId + `,
+		"showOrigInfo":` + showOrigInfo + `
 		}`
 	//"showOrigInfo":1,
 	doPost("POST", url, body, t)
