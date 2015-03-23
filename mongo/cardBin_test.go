@@ -1,14 +1,17 @@
 package mongo
 
-import
-// "encoding/json"
-// "io/ioutil"
-"testing"
+import (
+	// "encoding/json"
+	// "github.com/CardInfoLink/quickpay/model"
+	// "io/ioutil"
+	// "strconv"
+	"testing"
+)
 
 /*
 func TestCardBinImport(t *testing.T) {
-	var arrays []CardBin
-	bytes, err := ioutil.ReadFile("/opt/gowork/src/quickpay/card_bin.json")
+	var arrays []model.CardBin
+	bytes, err := ioutil.ReadFile("/opt/gowork/src/github.com/CardInfoLink/quickpay/data/cardBin.json")
 	if err != nil {
 		t.Error("ERROR:read json file error")
 	}
@@ -18,7 +21,7 @@ func TestCardBinImport(t *testing.T) {
 	}
 
 	t.Logf("%+v", arrays)
-	c := db.C("cardBin")
+	c := database.C("cardBin")
 
 	// 逐条导入数据，2514条数据用了 0.444秒
 	// for idx, cardBin := range arrays {
@@ -32,6 +35,8 @@ func TestCardBinImport(t *testing.T) {
 	// 批量导入数据，2514条数据用了0.049秒
 	temps := make([]interface{}, len(arrays))
 	for idx, value := range arrays {
+		bl, _ := strconv.Atoi(value.Bin)
+		value.Overflow = strconv.Itoa(bl + 1)
 		temps[idx] = value
 	}
 	if err := c.Insert(temps...); err != nil {
