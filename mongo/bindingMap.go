@@ -48,3 +48,17 @@ func (c *bindingMapCollection) Update(bm *model.BindingMap) error {
 	err := database.C(c.name).Update(q, bm)
 	return err
 }
+
+func (c *bindingMapCollection) Count(merId, bindingId string) (count int, err error) {
+	if merId == "" {
+		return 0, errors.New("商户ID为空")
+	}
+
+	if bindingId == "" {
+		return 0, errors.New("绑定ID为空")
+	}
+
+	q := bson.M{"bindingId": bindingId, "merId": merId}
+	count, err = database.C(c.name).Find(q).Count()
+	return
+}

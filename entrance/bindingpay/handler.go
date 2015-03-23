@@ -16,7 +16,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	g.Debug("url = %s", r.URL.Path)
 
 	if r.Method != "POST" {
-		g.Error("methond not allowed ", r.Method)
+		g.Error("method not allowed ", r.Method)
 		w.WriteHeader(405)
 		w.Write([]byte("only 'POST' method allowed"))
 		return
@@ -29,6 +29,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("parameter merId required"))
 		return
 	}
+
 	sign := r.Header.Get("X-Sign")
 	if sign == "" {
 		w.WriteHeader(412)
@@ -44,40 +45,41 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("can not read request body"))
 		return
 	}
-
 	g.Debug("商户报文: %s", data)
 
-	// TODO key must retrive from db 验签，如果失败，立即返回
-	if !CheckSignatureUseSha1(data, "0123456789", sign) {
+	var ret *model.BindingReturn
+
+	// key must retrive from db 验签，如果失败，立即返回
+	result, ret := CheckSignature(data, merId, sign)
+	if ret == nil && !result {
 		g.Error("check sign error", err)
-		w.WriteHeader(406)
-		w.Write([]byte("check sign error"))
-		return
+		ret = model.NewBindingReturn("200010", "验证签名失败")
 	}
 
-	// 执行业务逻辑
-	var ret *model.BindingReturn
-	switch r.URL.Path {
-	case "/quickpay/bindingCreate":
-		ret = bindingCreateHandle(data, merId)
-	case "/quickpay/bindingRemove":
-		ret = bindingRemoveHandle(data, merId)
-	case "/quickpay/bindingEnquiry":
-		ret = bindingEnquiryHandle(data, merId)
-	case "/quickpay/bindingPayment":
-		ret = bindingPaymentHandle(data, merId)
-	case "/quickpay/refund":
-		ret = bindingRefundHandle(data, merId)
-	case "/quickpay/orderEnquiry":
-		ret = orderEnquiryHandle(data, merId)
-	case "/quickpay/billingDetails":
-		ret = billingDetailsHandle(data, merId)
-	case "/quickpay/billingSummay":
-		ret = billingSummaryHandle(data, merId)
-	case "/quickpay/noTrackPayment":
-		ret = noTrackPaymentHandle(data, merId)
-	default:
-		w.WriteHeader(404)
+	// 验签通过，执行业务逻辑
+	if result {
+		switch r.URL.Path {
+		case "/quickpay/bindingCreate":
+			ret = bindingCreateHandle(data, merId)
+		case "/quickpay/bindingRemove":
+			ret = bindingRemoveHandle(data, merId)
+		case "/quickpay/bindingEnquiry":
+			ret = bindingEnquiryHandle(data, merId)
+		case "/quickpay/bindingPayment":
+			ret = bindingPaymentHandle(data, merId)
+		case "/quickpay/refund":
+			ret = bindingRefundHandle(data, merId)
+		case "/quickpay/orderEnquiry":
+			ret = orderEnquiryHandle(data, merId)
+		case "/quickpay/billingDetails":
+			ret = billingDetailsHandle(data, merId)
+		case "/quickpay/billingSummay":
+			ret = billingSummaryHandle(data, merId)
+		case "/quickpay/noTrackPayment":
+			ret = noTrackPaymentHandle(data, merId)
+		default:
+			w.WriteHeader(404)
+		}
 	}
 
 	g.Debug("处理后报文: %+v", ret)
@@ -87,8 +89,9 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("mashal data error"))
 	}
 
-	// todo 签名，并返回
-	// sign = signature(out, merId)
+	// 签名，并返回
+	sign = Signature(rdata, merId)
+	w.Header().Set("X-Sign", sign)
 
 	rbody := rdata
 	w.Write(rbody)
@@ -111,8 +114,7 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 
 	//todo 业务处理
 	ret = core.ProcessBindingCreate(bc)
-	// mock return
-	// ret = model.NewBindingReturn("000000", "虚拟数据")
+
 	return ret
 }
 
@@ -170,6 +172,7 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	//  todo 业务处理
 	ret = core.ProcessBindingPayment(b)
+
 	return ret
 }
 
@@ -189,7 +192,7 @@ func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	}
 	// 业务处理
 	ret = core.ProcessBindingRefund(b)
-	// mock return
+
 	return ret
 }
 
@@ -250,8 +253,7 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	}
 	//  todo 业务处理
 	ret = core.ProcessOrderEnquiry(b)
-	// mock return
-	// ret = model.NewBindingReturn("000000", "虚拟数据")
+
 	return ret
 }
 
@@ -270,8 +272,7 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 		return ret
 	}
 
-	//  todo 业务处理
-	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
+	//  todo 无卡支付暂不开放；业务处理
+	ret = model.NewBindingReturn("100030", "不支持此类交易")
 	return ret
 }

@@ -20,8 +20,8 @@ func (col *transSettCollection) Summary(merId, settDate string) ([]model.Summary
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": bson.M{
 			"merId": merId,
-			"settDate": bson.M{"$gt": settDate,
-				"$lte": tools.NextDay(settDate),
+			"settDate": bson.M{"$gte": settDate,
+				"$lt": tools.NextDay(settDate),
 			},
 			"settFlag": 1,
 		}},
@@ -48,17 +48,25 @@ func (col *transSettCollection) Add(t *model.TransSett) error {
 }
 
 // Find 根据商户Id,清分时间查找交易明细
-// 按照清分时间降排序
-// TODO确定返回的struct
-func (col *transSettCollection) Find(merId, settDate string) ([]model.TransSettInfo, error) {
+// 按照商户订单号降排序
+func (col *transSettCollection) Find(merId, settDate, nextOrderNum string) ([]model.TransSettInfo, error) {
 
 	var transSettInfo []model.TransSettInfo
-	q := bson.M{
-		"merId":    merId,
-		"settFlag": 1,
-		"settDate": bson.M{"$gt": settDate, "$lte": tools.NextDay(settDate)},
-	}
-	err := database.C(col.name).Find(q).Sort("-settDate").All(&transSettInfo)
 
+	p := []bson.M{
+		//查找
+		{"$match": bson.M{"merId": merId, "settFlag": 1,
+			"settDate": bson.M{"$gte": settDate, "$lt": tools.NextDay(settDate)}}},
+		//排序
+		{"$sort": bson.M{"orderNum": -1}},
+	}
+	//商户实际拉取为10
+	limit := bson.M{"$limit": 11}
+	if nextOrderNum != "" {
+		p = append(p, bson.M{"$match": bson.M{"orderNum": bson.M{"$lte": nextOrderNum}}}, limit)
+	} else {
+		p = append(p, limit)
+	}
+	err := database.C(col.name).Pipe(p).All(&transSettInfo)
 	return transSettInfo, err
 }

@@ -12,8 +12,13 @@ import (
 )
 
 // ProcessBindingCreate 绑定建立的业务处理
-// todo 先验证是否已经绑定过
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
+	// 验证该机构下，该绑定号是否已经绑定了
+	count, err := mongo.BindingMapColl.Count(bc.MerId, bc.BindingId)
+	if count > 0 {
+		return model.NewBindingReturn("200071", "绑定ID重复")
+	}
+
 	// todo 如果需要校验短信，验证短信
 	// ret = validateSmsCode(bc.SendSmsId, bc.SmsCode)
 	// if ret != nil {
@@ -89,7 +94,14 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	ret = cfca.ProcessBindingCreate(bc)
 
 	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效。
-	bm.BindingStatus = ret.RespCode
+	switch ret.RespCode {
+	case "000000":
+		bm.BindingStatus = model.BindingSuccess
+	case "000009":
+		bm.BindingStatus = model.BindingHandling
+	default:
+		bm.BindingStatus = model.BindingFail
+	}
 	err = mongo.BindingMapColl.Update(bm)
 	if err != nil {
 		g.Info("'BindingMap' is: %+v", bm)
@@ -114,8 +126,12 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	g.Debug("binding result: %#v", bm)
 
 	// 非处理中，直接返回结果
-	if bm.BindingStatus != "000009" {
-		return mongo.RespCodeColl.Get(bm.BindingStatus)
+	if bm.BindingStatus != model.BindingHandling {
+		return &model.BindingReturn{
+			RespCode:      "000000",
+			RespMsg:       "请求处理成功",
+			BindingStatus: bm.BindingStatus,
+		}
 	}
 
 	// 获得渠道商户
@@ -133,15 +149,27 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// todo 查找该商户配置的渠道，这里为了简单，到中金查找。
 	ret = cfca.ProcessBindingEnquiry(be)
 
+	// 转换绑定状态
+	switch ret.RespCode {
+	case "000000":
+		bm.BindingStatus = model.BindingSuccess
+	case "000009":
+		bm.BindingStatus = model.BindingHandling
+	default:
+		bm.BindingStatus = model.BindingFail
+	}
+
 	// 更新绑定关系的状态
-	bm.BindingStatus = ret.RespCode
 	if err = mongo.BindingMapColl.Update(bm); err != nil {
 		g.Info("'UpdateBindingMap' is: %+v", bm)
 		g.Error("'UpdateBindingRelation' error: ", err.Error())
-		return model.NewBindingReturn("000001", "系统内部错误")
 	}
 
-	return ret
+	return &model.BindingReturn{
+		RespCode:      "000000",
+		RespMsg:       "请求处理成功",
+		BindingStatus: bm.BindingStatus,
+	}
 }
 
 // ProcessBindingPayment 绑定支付
@@ -165,8 +193,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		g.Error("not found any BindingMap: ", err)
 		return model.NewBindingReturn("200101", "绑定ID不正确")
 	}
+
 	// 如果绑定关系不是成功的状态，返回
-	if bm.BindingStatus != "000000" {
+	if bm.BindingStatus != model.BindingSuccess {
 		return model.NewBindingReturn(bm.BindingStatus, "绑定中或者绑定失败，请查询绑定关系。")
 	}
 
@@ -241,7 +270,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	}
 
 	// 如果绑定状态非成功状态
-	if bm.BindingStatus != "000000" {
+	if bm.BindingStatus != model.BindingSuccess {
 		return mongo.RespCodeColl.Get(bm.BindingStatus)
 	}
 
@@ -263,13 +292,11 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 
 	// 如果解绑成功，更新本地数据库
 	if ret.RespCode == "000000" {
-		bm.BindingStatus = "100050"
+		bm.BindingStatus = model.BindingRemoved
 		if err := mongo.BindingMapColl.Update(bm); err != nil {
 			g.Error("'Update BindingMap' error: ", err.Error())
 		}
 	}
-
-	// todo 成功后是否要入库
 
 	return ret
 }
@@ -426,18 +453,29 @@ func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) 
 	//default return
 	ret = model.NewBindingReturn("000001", "系统内部错误")
 
-	//TODO查询
-	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate)
+	//查询
+	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate, be.NextOrderNum)
 	if err != nil {
 		g.Error("Find transSett records error : %s", err)
 		return
 	}
 
+	//结果处理
+	//暂时默认商户一次可取为10条
+	//实际查询可取为11条、包含下次查询的第一条
+	if len(rec) == 11 {
+		ret.Rec = rec[:len(rec)-1]
+		ret.NextOrderNum = rec[len(rec)-1].OrderNum
+	} else {
+		//如果不够11条、直接赋值
+		//NextOrderNum为空
+		ret.Rec = rec
+	}
+
 	//赋值
 	ret.RespCode = "000000"
 	ret.RespMsg = "success"
-	ret.Count = len(rec)
-	ret.Rec = rec
+	ret.Count = len(ret.Rec)
 	return
 }
 

@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/cfca"
+	// "github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -11,7 +11,8 @@ import (
 
 // init 开启任务routine
 // func init() {
-//  ProcessTransSettle()
+// 	g.Debug("wait to process transSett method")
+// 	go ProcessTransSettle()
 // }
 
 // ProcessTransSettle 清分
@@ -26,18 +27,20 @@ func ProcessTransSettle() {
 	}
 	c := make(chan bool)
 	time.AfterFunc(time.Duration(dis)*time.Second, func() {
+		// time.AfterFunc(10*time.Second, func() {
 		//for test
-		tick := time.Tick(1 * time.Second)
-		boom := time.After(5 * time.Second)
+		tick := time.Tick(24 * time.Hour)
+		// boom := time.After(5 * time.Second)
 		for {
 			select {
 			case <-tick:
+				// g.Debug("tick ... %s", "boom")
 				doTransSett()
-			//for test
-			case <-boom:
-				c <- true
-				g.Debug("boom break %s", "boom")
-				return
+				//for test
+				// case <-boom:
+				// 	c <- true
+				// 	g.Debug("boom break %s", "boom")
+				// 	return
 			}
 		}
 
@@ -61,11 +64,13 @@ func doTransSett() {
 	for _, v := range trans {
 		//暂时是假勾兑
 		sett := &model.TransSett{
-			Tran:       v,
-			SettFlag:   1,
-			SettDate:   now.Format("2006-01-02 15:04:05"),
-			MerSettAmt: v.TransAmt / 10,
-			MerFee:     v.TransAmt / 10,
+			Tran:        v,
+			SettFlag:    1,
+			SettDate:    now.Format("2006-01-02 15:04:05"),
+			MerSettAmt:  v.TransAmt * 9 / 10,
+			MerFee:      v.TransAmt / 10,
+			ChanSettAmt: v.TransAmt * 9 / 10,
+			ChanFee:     v.TransAmt / 10,
 		}
 		if err := mongo.TransSettColl.Add(sett); err != nil {
 			g.Error("add trans sett fail : %s", err)
