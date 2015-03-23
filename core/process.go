@@ -397,7 +397,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if t.TransStatus != model.TransHandling {
 		ret.TransStatus = t.TransStatus
 		if be.ShowOrigInfo == "1" {
-			ret.OrigTransDetail = model.NerTransInfo(*t)
+			ret.OrigTransDetail = model.NewTransInfo(*t)
 		}
 		return
 	}
@@ -424,6 +424,8 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	case model.RefundTrans:
 		result = cfca.ProcessRefundEnquiry(be)
 	}
+
+	//更新交易状态
 	switch result.RespCode {
 	case "000000":
 		t.TransStatus = model.TransSuccess
@@ -439,9 +441,62 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	//返回结果
 	ret.TransStatus = t.TransStatus
 	if be.ShowOrigInfo == "1" {
-		ret.OrigTransDetail = model.NerTransInfo(*t)
+		ret.OrigTransDetail = model.NewTransInfo(*t)
 	}
 
+	return
+}
+
+// ProcessBillingDetails 交易对账明细查询
+func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) {
+
+	//default return
+	ret = model.NewBindingReturn("000001", "系统内部错误")
+
+	//查询
+	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate, be.NextOrderNum)
+	if err != nil {
+		g.Error("Find transSett records error : %s", err)
+		return
+	}
+
+	//结果处理
+	//暂时默认商户一次可取为10条
+	//实际查询可取为11条、包含下次查询的第一条
+	if len(rec) == 11 {
+		ret.Rec = rec[:len(rec)-1]
+		ret.NextOrderNum = rec[len(rec)-1].OrderNum
+	} else {
+		//如果不够11条、直接赋值
+		//NextOrderNum为空
+		ret.Rec = rec
+	}
+
+	//赋值
+	ret.RespCode = "000000"
+	ret.RespMsg = "success"
+	ret.Count = len(ret.Rec)
+	return
+}
+
+// ProcessBillingSummary 交易对账汇总查询
+func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) {
+
+	//default return
+	ret = model.NewBindingReturn("000001", "系统内部错误")
+
+	//查询
+	data, err := mongo.TransSettColl.Summary(be.MerId, be.SettDate)
+	if err != nil {
+		g.Error("summary transSett records error : %s", err)
+		return
+	}
+
+	//赋值
+	ret.RespCode = "000000"
+	ret.RespMsg = "success"
+	ret.SettDate = be.SettDate
+	ret.Data = data
 	return
 }
 

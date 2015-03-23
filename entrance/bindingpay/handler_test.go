@@ -114,28 +114,28 @@ func doPost(method, url, body string, t *testing.T) {
 }
 
 func TestBindingRemoveHandle(t *testing.T) {
-	merId := "1426583281344"
+	merId := "1426840770177"
 	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + merId
-	body := `{"bindingId": "1426583281402"}`
+	body := `{"bindingId": "1426840770235"}`
 	doPost("POST", url, body, t)
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	merId := "1426583281344"
+	merId := "1426840770177"
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + merId
-	body := `{"bindingId": "1426583281402"}`
+	body := `{"bindingId": "1426840770235"}`
 	doPost("POST", url, body, t)
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	merId := "1426818873711"
+	merId := "1426840770177"
 	merOrderNum := tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + merId
 	body := `{
 		"subMerId": "",
 		"merOrderNum": "` + merOrderNum + `",
 		"transAmt": 2000,
-		"bindingId": "1426818873771",
+		"bindingId": "1426840770235",
 		"sendSmsId": "",
 		"smsCode": "",
 		"merId":"1426818873711"
@@ -144,13 +144,13 @@ func TestBindingPaymentHandle(t *testing.T) {
 }
 
 func TestRefundHandle(t *testing.T) {
-	merId := "1426818873711"
+	merId := "1426840770177"
 	merOrderNum := tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/refund?merId=" + merId
 	body := `{
 		"merOrderNum": "` + merOrderNum + `",
 		"transAmt": 2000,
-		"origOrderNum": "1426830050043"
+		"origOrderNum": "1426841389085"
 	}`
 	doPost("POST", url, body, t)
 }
@@ -177,12 +177,16 @@ func TestNoTrackPaymentHandle(t *testing.T) {
 }
 
 func TestOrderEnquiry(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=1426818873711"
+	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=1426840770177"
 	body := `{
-		"origOrderNum":"1426830241979",
-		"merId":"1426818873711",
+		"origOrderNum":"1426841458174",
+		"merId":"1426840770177",
 		"showOrigInfo":"1"
 		}`
 	//"showOrigInfo":1,
 	doPost("POST", url, body, t)
+
+	//1426840770177
+	//1426840770235
+	// orderNum 1426841285631
 }

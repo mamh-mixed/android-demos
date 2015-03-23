@@ -125,12 +125,34 @@ func validateTestRefund(t *testing.T) {
 func TestValidateOrderEnquiry(t *testing.T) {
 	oe := &model.OrderEnquiry{
 		OrigOrderNum: "200000000",
-		ShowOrigInfo: "1",
+		ShowOrigInfo: "3",
 	}
 
 	ret := validateOrderEnquiry(oe)
 	if ret != nil {
 		t.Errorf("测试订单查询失败 %+v", ret)
+	}
+}
+
+func TestValidateBillingSummary(t *testing.T) {
+	oe := &model.BillingSummary{
+		SettDate: "2015-13-03",
+	}
+
+	ret := validateBillingSummary(oe)
+	if ret != nil {
+		t.Errorf("测试对账汇总报文验证失败 %+v", ret)
+	}
+}
+
+func TestValidateBillingDetails(t *testing.T) {
+	oe := &model.BillingDetails{
+		SettDate:     "2015-01-03",
+		NextOrderNum: "2222222222222000000",
+	}
+	ret := validateBillingDetails(oe)
+	if ret != nil {
+		t.Errorf("测试交易明细报文失败 %+v", ret)
 	}
 }
 

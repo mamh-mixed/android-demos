@@ -48,6 +48,10 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 			ret = bindingRefundHandle(data, merId)
 		case "/quickpay/orderEnquiry":
 			ret = orderEnquiryHandle(data, merId)
+		case "/quickpay/billingDetails":
+			ret = billingDetailsHandle(data, merId)
+		case "/quickpay/billingSummay":
+			ret = billingSummaryHandle(data, merId)
 		case "/quickpay/noTrackPayment":
 			ret = noTrackPaymentHandle(data, merId)
 		default:
@@ -201,13 +205,13 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b.MerId = merId
 
 	// 验证请求报文格式
-	//	ret = validateBillingSummary(&b)
+	ret = validateBillingSummary(b)
 	if ret != nil {
 		return ret
 	}
-	//  todo 业务处理
+	// 业务处理
+	ret = core.ProcessBillingSummary(b)
 	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
@@ -221,13 +225,13 @@ func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b.MerId = merId
 
 	// 验证请求报文格式
-	//	ret = validateBillingDetails(&b)
+	ret = validateBillingDetails(b)
 	if ret != nil {
 		return ret
 	}
-	//  todo 业务处理
+	// 业务处理
+	ret = core.ProcessBillingDetails(b)
 	// mock return
-	ret = model.NewBindingReturn("000000", "虚拟数据")
 	return ret
 }
 
