@@ -51,7 +51,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 			ret = orderEnquiryHandle(data, merId)
 		case "/quickpay/billingDetails":
 			ret = billingDetailsHandle(data, merId)
-		case "/quickpay/billingSummay":
+		case "/quickpay/billingSummary":
 			ret = billingSummaryHandle(data, merId)
 		case "/quickpay/noTrackPayment":
 			ret = noTrackPaymentHandle(data, merId)
@@ -203,8 +203,9 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	if err != nil {
 		return mongo.RespCodeColl.Get("200020")
 	}
-	b.MerId = merId
 
+	b.MerId = merId
+	g.Debug("summary data : %+v", b)
 	// 验证请求报文格式
 	ret = validateBillingSummary(b)
 	if ret != nil {
@@ -212,6 +213,7 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	// 业务处理
 	ret = core.ProcessBillingSummary(b)
+	g.Debug("%+v", ret)
 	// mock return
 	return ret
 }

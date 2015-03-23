@@ -206,9 +206,24 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("200081")
 	}
 
+	//只要订单号不重复就记录这笔交易
+	errorTrans := &model.Trans{
+		OrderNum:  be.MerOrderNum,
+		BindingId: be.BindingId,
+		TransAmt:  be.TransAmt,
+		SendSmsId: be.SendSmsId,
+		SmsCode:   be.SmsCode,
+		Remark:    be.Remark,
+		SubMerId:  be.SubMerId,
+	}
+
 	// 本地查询绑定关系。查询绑定关系的状态是否成功
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
+		errorTrans.RespCode = "200070"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		g.Error("not found any BindingMap: ", err)
 		return mongo.RespCodeColl.Get("200070")
 	}
@@ -216,14 +231,26 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 如果绑定关系不是成功的状态，返回
 	switch bm.BindingStatus {
 	case model.BindingHandling:
+		errorTrans.RespCode = "200075"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		return mongo.RespCodeColl.Get("200075")
 	case model.BindingFail, model.BindingRemoved:
+		errorTrans.RespCode = "200074"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		return mongo.RespCodeColl.Get("200074")
 	}
 
 	// 查找商家的绑定信息
 	bi, err := mongo.BindingInfoColl.Find(be.MerId, be.BindingId)
 	if err != nil {
+		errorTrans.RespCode = "200070"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		g.Error("not found any BindingInfo: ", err)
 		return mongo.RespCodeColl.Get("200070")
 	}
@@ -232,6 +259,10 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
 	if err != nil {
+		errorTrans.RespCode = "300030"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		g.Error("not found any chanMer: ", err)
 		return mongo.RespCodeColl.Get("300030")
 	}
@@ -246,6 +277,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 记录这笔交易
 	trans := &model.Trans{
 		OrderNum:      be.MerOrderNum,
+		BindingId:     bi.BindingId,
 		ChanOrderNum:  be.ChanOrderNum,
 		ChanBindingId: be.ChanBindingId,
 		AcctNum:       bi.AcctNum,
@@ -254,6 +286,10 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		ChanMerId:     be.ChanMerId,
 		ChanCode:      bm.ChanCode,
 		TransType:     model.PayTrans, //支付
+		SendSmsId:     be.SendSmsId,
+		SmsCode:       be.SmsCode,
+		Remark:        be.Remark,
+		SubMerId:      be.SubMerId,
 	}
 	if err = mongo.TransColl.Add(trans); err != nil {
 		g.Error("add trans fail: (%s)", err)
@@ -345,24 +381,47 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	if count > 0 {
 		return mongo.RespCodeColl.Get("200081")
 	}
+	//只要订单号不重复就记录这笔交易
+	errorTrans := &model.Trans{
+		OrderNum:       be.MerOrderNum,
+		MerId:          be.MerId,
+		RefundOrderNum: be.OrigOrderNum,
+		TransAmt:       be.TransAmt,
+	}
 
 	// 是否有该源订单号
 	orign, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
 	switch {
 	// 不存在原交易
 	case err != nil:
+		errorTrans.RespCode = "100020"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		return mongo.RespCodeColl.Get("100020")
 	// 已退款
 	case orign.RefundStatus == model.TransRefunded:
+		errorTrans.RespCode = "100010"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		return mongo.RespCodeColl.Get("100010")
 	// 退款金额过大
 	case be.TransAmt > orign.TransAmt:
+		errorTrans.RespCode = "200191"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		return mongo.RespCodeColl.Get("200191")
 	}
 
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(orign.ChanCode, orign.ChanMerId)
 	if err != nil {
+		errorTrans.RespCode = "300030"
+		if err = mongo.TransColl.Add(errorTrans); err != nil {
+			g.Error("add errorTrans fail: (%s)", err)
+		}
 		g.Error("not found any chanMer: ", err)
 		return mongo.RespCodeColl.Get("300030")
 	}
@@ -422,7 +481,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	// 默认返回成功的应答码
-	ret = mongo.RespCodeColl.Get("000001")
+	ret = mongo.RespCodeColl.Get("000000")
 
 	// 是否有该订单号
 	t, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
@@ -488,7 +547,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) {
 
 	//default return
-	ret = mongo.RespCodeColl.Get("000001")
+	ret = mongo.RespCodeColl.Get("000000")
 
 	//查询
 	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate, be.NextOrderNum)
@@ -510,8 +569,6 @@ func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) 
 	}
 
 	//赋值
-	ret.RespCode = "000000"
-	ret.RespMsg = "success"
 	ret.Count = len(ret.Rec)
 	return
 }
@@ -520,7 +577,7 @@ func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) 
 func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) {
 
 	//default return
-	ret = mongo.RespCodeColl.Get("000001")
+	ret = mongo.RespCodeColl.Get("000000")
 
 	//查询
 	data, err := mongo.TransSettColl.Summary(be.MerId, be.SettDate)
@@ -528,10 +585,8 @@ func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) 
 		g.Error("summary transSett records error : %s", err)
 		return
 	}
-
+	g.Debug("summary data : %+v", data)
 	//赋值
-	ret.RespCode = "000000"
-	ret.RespMsg = "success"
 	ret.SettDate = be.SettDate
 	ret.Data = data
 	return
