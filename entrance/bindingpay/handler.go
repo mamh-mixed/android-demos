@@ -8,6 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 
 	"github.com/omigo/g"
 )
@@ -30,7 +31,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	result, ret := CheckSignature(data, merId, sign)
 	if ret == nil && !result {
 		g.Error("check sign error ", err)
-		ret = model.NewBindingReturn("200010", "验证签名失败")
+		ret = mongo.RespCodeColl.Get("200010")
 	}
 
 	// 验签通过，执行业务逻辑
@@ -101,7 +102,7 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	bc := new(model.BindingCreate)
 	err := json.Unmarshal(data, bc)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	bc.MerId = merId
 
@@ -122,7 +123,7 @@ func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	br := new(model.BindingRemove)
 	err := json.Unmarshal(data, br)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	br.MerId = merId
 
@@ -140,7 +141,7 @@ func bindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	be := new(model.BindingEnquiry)
 	err := json.Unmarshal(data, be)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	be.MerId = merId
 
@@ -160,7 +161,7 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.BindingPayment)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
 
@@ -180,7 +181,7 @@ func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BindingRefund)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
 
@@ -200,7 +201,7 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.BillingSummary)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
 
@@ -220,7 +221,7 @@ func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.BillingDetails)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
 
@@ -241,7 +242,7 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	err := json.Unmarshal(data, b)
 	if err != nil {
 		g.Error("解析报文错误 :%s", err)
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
 
@@ -262,7 +263,7 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	err := json.Unmarshal(data, b)
 	if err != nil {
 		g.Error("解析报文错误 :%s", err)
-		return model.NewBindingReturn("200002", "解析报文错误")
+		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
 
@@ -272,6 +273,6 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 
 	//  todo 无卡支付暂不开放；业务处理
-	ret = model.NewBindingReturn("100030", "不支持此类交易")
+	ret = mongo.RespCodeColl.Get("100030")
 	return ret
 }

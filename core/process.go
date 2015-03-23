@@ -14,12 +14,12 @@ import (
 // ProcessBindingCreate 绑定建立的业务处理
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 默认返回
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	// 验证该机构下，该绑定号是否已经绑定了
 	count, err := mongo.BindingMapColl.Count(bc.MerId, bc.BindingId)
 	if count > 0 {
-		return model.NewBindingReturn("200071", "绑定ID重复")
+		return mongo.RespCodeColl.Get("200071")
 	}
 
 	// todo 如果需要校验短信，验证短信
@@ -32,7 +32,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	cardBin, err := mongo.CardBinColl.Find(bc.AcctNum)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.NewBindingReturn("200110", "账户号码有误")
+			return mongo.RespCodeColl.Get("200110")
 		} else {
 			return
 		}
@@ -50,7 +50,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(bc.MerId, cardBin.CardBrand)
 	if rp == nil {
-		return model.NewBindingReturn("300030", "无此交易权限")
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	// 商家绑定信息和绑定映射入库
@@ -134,13 +134,13 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 // 先到本地库去查找，如果本地库查找的结果是正在处理中，就到渠道查找；查找完更新到数据库中。
 func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	// 默认返回
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	// 本地查询绑定关系
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
 		g.Error("'FindBindingMap' error: %s", err.Error())
-		return model.NewBindingReturn("200101", "绑定ID不正确")
+		return mongo.RespCodeColl.Get("200070")
 	}
 	g.Debug("binding result: %#v", bm)
 
@@ -194,7 +194,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 // ProcessBindingPayment 绑定支付
 func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// 默认返回
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
@@ -203,14 +203,14 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return
 	}
 	if count > 0 {
-		return model.NewBindingReturn("200081", "订单号重复")
+		return mongo.RespCodeColl.Get("200081")
 	}
 
 	// 本地查询绑定关系。查询绑定关系的状态是否成功
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
 		g.Error("not found any BindingMap: ", err)
-		return model.NewBindingReturn("200101", "绑定ID不正确")
+		return mongo.RespCodeColl.Get("200070")
 	}
 
 	// 如果绑定关系不是成功的状态，返回
@@ -225,7 +225,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	bi, err := mongo.BindingInfoColl.Find(be.MerId, be.BindingId)
 	if err != nil {
 		g.Error("not found any BindingInfo: ", err)
-		return model.NewBindingReturn("200101", "绑定ID不正确")
+		return mongo.RespCodeColl.Get("200070")
 	}
 
 	// 根据绑定关系得到渠道商户信息
@@ -233,7 +233,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
 	if err != nil {
 		g.Error("not found any chanMer: ", err)
-		return model.NewBindingReturn("300030", "无此交易权限")
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	// 赋值
@@ -282,13 +282,13 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 
 // ProcessBindingReomve 绑定解除
 func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	// 本地查询绑定关系
 	bm, err := mongo.BindingMapColl.Find(br.MerId, br.BindingId)
 	if err != nil {
 		g.Error("'FindBindingRelation' error: ", err.Error())
-		return model.NewBindingReturn("200101", "绑定ID不正确")
+		return mongo.RespCodeColl.Get("200070")
 	}
 
 	switch bm.BindingStatus {
@@ -297,17 +297,17 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	// 	return model.NewBindingReturn("200070", "绑定ID有误")
 	// 绑定状态为已解绑的话
 	case model.BindingRemoved:
-		return model.NewBindingReturn("200072", "该绑定ID的已经解绑过，请勿重复操作")
+		return mongo.RespCodeColl.Get("200072")
 	// 绑定状态为失败的话
 	case model.BindingFail:
-		return model.NewBindingReturn("200073", "该绑定ID的状态为失败，无法进行解绑操作")
+		return mongo.RespCodeColl.Get("200073")
 	}
 
 	// 查找渠道商户信息，获取证书
 	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
 	if err != nil {
 		g.Debug("not found any chanMer (%s)", err)
-		return model.NewBindingReturn("300030", "无此交易权限")
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	// 转换关系，补充信息
@@ -334,7 +334,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// default
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
@@ -343,7 +343,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		return
 	}
 	if count > 0 {
-		return model.NewBindingReturn("200081", "订单号重复")
+		return mongo.RespCodeColl.Get("200081")
 	}
 
 	// 是否有该源订单号
@@ -351,20 +351,20 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	switch {
 	// 不存在原交易
 	case err != nil:
-		return model.NewBindingReturn("100020", "原交易不成功，不能退款")
+		return mongo.RespCodeColl.Get("100020")
 	// 已退款
 	case orign.RefundStatus == model.TransRefunded:
-		return model.NewBindingReturn("100010", "该笔订单已经存在退款交易，不能再次退款")
+		return mongo.RespCodeColl.Get("100010")
 	// 退款金额过大
 	case be.TransAmt > orign.TransAmt:
-		return model.NewBindingReturn("200191", "退款金额（累计）大于可退金额")
+		return mongo.RespCodeColl.Get("200191")
 	}
 
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(orign.ChanCode, orign.ChanMerId)
 	if err != nil {
 		g.Error("not found any chanMer: ", err)
-		return model.NewBindingReturn("300030", "无此交易权限")
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	// 赋值
@@ -422,15 +422,12 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	// 默认返回成功的应答码
-	ret = &model.BindingReturn{
-		RespCode: "000000",
-		RespMsg:  "success",
-	}
+	ret = mongo.RespCodeColl.Get("000001")
 
 	// 是否有该订单号
 	t, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
 	if err != nil {
-		return model.NewBindingReturn("200082", "订单号不存在")
+		return mongo.RespCodeColl.Get("200080")
 	}
 	g.Debug("trans:(%+v)", t)
 	// 如果交易状态不是在处理中
@@ -446,7 +443,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	chanMer, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
 		g.Error("not found any chanMer: ", err)
-		return model.NewBindingReturn("300030", "无此交易权限")
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	//赋值
@@ -491,7 +488,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) {
 
 	//default return
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	//查询
 	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate, be.NextOrderNum)
@@ -523,7 +520,7 @@ func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) 
 func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) {
 
 	//default return
-	ret = model.NewBindingReturn("000001", "系统内部错误")
+	ret = mongo.RespCodeColl.Get("000001")
 
 	//查询
 	data, err := mongo.TransSettColl.Summary(be.MerId, be.SettDate)

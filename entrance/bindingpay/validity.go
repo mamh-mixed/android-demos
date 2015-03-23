@@ -2,6 +2,7 @@ package bindingpay
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
 )
 
@@ -34,11 +35,11 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		}
 
 		if matched, _ := regexp.MatchString(`\d{2}(0[1-9]|1[1-2])`, request.ValidDate); !matched {
-			return model.NewBindingReturn("200116", "信用卡有效期不正确")
+			return mongo.RespCodeColl.Get("200140")
 		}
 
 		if matched, _ := regexp.MatchString(`^\d{3}$`, request.Cvv2); !matched {
-			return model.NewBindingReturn("200118", "CVV2不正确")
+			return mongo.RespCodeColl.Get("200150")
 		}
 	}
 
@@ -76,7 +77,7 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 	}
 
 	if in.TransAmt < 0 {
-		return model.NewBindingReturn("200124", "金额错误")
+		return mongo.RespCodeColl.Get("200180")
 	}
 	// 验证短信验证码是否填写
 	if in.SendSmsId != "" && in.SmsCode == "" {
@@ -101,7 +102,7 @@ func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	if in.TransAmt < 0 {
-		return model.NewBindingReturn("200124", "金额错误")
+		return mongo.RespCodeColl.Get("200180")
 	}
 
 	return nil
@@ -122,7 +123,7 @@ func validateOrderEnquiry(in *model.OrderEnquiry) (ret *model.BindingReturn) {
 // validateBillingSummary 交易对账汇总验证
 func validateBillingSummary(in *model.BillingSummary) (ret *model.BindingReturn) {
 	if matched, _ := regexp.MatchString(`^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-[0-3]{0,1}[0-9]$`, in.SettDate); !matched {
-		return model.NewBindingReturn("200130", "日期 SettDate 格式错误")
+		return model.NewBindingReturn("200200", "日期 SettDate 格式错误")
 	}
 	return
 }
@@ -130,10 +131,10 @@ func validateBillingSummary(in *model.BillingSummary) (ret *model.BindingReturn)
 // validateBillingSummary 交易对账汇总验证
 func validateBillingDetails(in *model.BillingDetails) (ret *model.BindingReturn) {
 	if matched, _ := regexp.MatchString(`^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-[0-3]{0,1}[0-9]$`, in.SettDate); !matched {
-		return model.NewBindingReturn("200130", "日期 SettDate 格式错误")
+		return model.NewBindingReturn("200200", "日期 SettDate 格式错误")
 	}
 	if len(in.NextOrderNum) > 32 {
-		return model.NewBindingReturn("200105", "订单号 NextOrderNum 不正确")
+		return model.NewBindingReturn("200080", "订单号 NextOrderNum 不正确")
 	}
 	return
 }
@@ -161,10 +162,10 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 	}
 
 	if in.TransAmt < 0 {
-		return model.NewBindingReturn("200180", "金额错误")
+		return mongo.RespCodeColl.Get("200180")
 	}
 	if matched, _ := regexp.MatchString(`^10$|^20$`, in.AcctType); !matched {
-		return model.NewBindingReturn("200115", "账户类型不正确")
+		return mongo.RespCodeColl.Get("200230")
 	}
 
 	return nil
