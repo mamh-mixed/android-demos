@@ -94,9 +94,18 @@ type Trans struct {
 	ChanMerId      string        `bson:"chanMerId"`                                  //渠道商户号
 	ChanCode       string        `bson:"chanCode"`                                   //渠道代码
 	ChanRespCode   string        `bson:"chanRespCode"`                               //渠道应答码
-	CreateTime     int64         `bson:"createTime"`                                 //交易创建时间
-	UpdateTime     int64         `bson:"updateTime"`                                 //交易更新时间
+	CreateTime     string        `bson:"createTime"`                                 //交易创建时间 yyyy-mm-dd hh:mm:ss
+	UpdateTime     string        `bson:"updateTime"`                                 //交易更新时间 yyyy-mm-dd hh:mm:ss
 	RefundStatus   int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款
+}
+
+// SummarySettData 交易汇总
+type SummarySettData struct {
+	TransType     int8  `bson:"transType"`     //交易类型
+	TotalTransNum int8  `bson:"totalTransNum"` //总交易数量
+	TotalTransAmt int64 `bson:"totalTransAmt"` //总交易金额
+	TotalSettAmt  int64 `bson:"totalSettAmt"`  //总清算金额
+	TotalMerFee   int64 `bson:"totalMerFee"`   //总手续费
 }
 
 // TransInfo 交易明细 对商户
@@ -129,9 +138,22 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 
 // TransSett 清算信息
 type TransSett struct {
-	Tran     Trans  `bson:",inline"`
-	SettFlag int8   `bson:"settFlag"` //清算标志
-	SettDate string `bson:"settDate"` //清算时间
-	SettAmt  int64  `bson:"settAmt"`
-	MerFee   int64  `bson:"merFee"`
+	Tran        Trans  `bson:",inline"`
+	SettFlag    int8   `bson:"settFlag"`    //清算标志
+	SettDate    string `bson:"settDate"`    //清算时间
+	MerSettAmt  int64  `bson:"merSettAmt"`  //商户清算金额
+	MerFee      int64  `bson:"merFee"`      //商户手续费
+	ChanSettAmt int64  `bson:"chanSettAmt"` //渠道清算金额
+	ChanFee     int64  `bson:"chanFee"`     //渠道手续费
+}
+
+// TransSettInfo 清分信息明细
+type TransSettInfo struct {
+	OrderNum   string `bson:"orderNum"`   //订单号
+	TransType  int8   `bson:"transType"`  //交易类型
+	CreateTime string `bson:"createTime"` //交易时间
+	TransAmt   int64  `bson:"transAmt"`   //交易金额
+	MerFee     int64  `bson:"merFee"`     //商户手续费
+	MerSettAmt int64  `bson:"merSettAmt"` //商户清算金额
+	//TODO check 交易日期
 }

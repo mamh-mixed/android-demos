@@ -16,9 +16,9 @@ type BindingReturn struct {
 	Data     []SummarySettData `json:"data,omitempty"`     // 对账数据集
 
 	// 交易对账明细
-	Count        int         `json:"count,omitempty"`        // 拉取的记录条数
-	NextOrderNum string      `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
-	Rec          []TransInfo `json:"rec,omitempty"`          // 交易记录
+	Count        int             `json:"count,omitempty"`        // 拉取的记录条数
+	NextOrderNum string          `json:"nextOrderNum,omitempty"` // 拉取列表的后一个记录的订单号
+	Rec          []TransSettInfo `json:"rec,omitempty"`          // 交易记录
 
 	// 查询订单状态
 	OrigRespCode    string     `json:"origRespCode,omitempty"`    //原交易响应代码
@@ -149,13 +149,4 @@ type NoTrackPayment struct {
 	Cvv2        string `json:"cvv2"`        // CVV2
 	SendSmsId   string `json:"sendSmsId"`   // 发送短信验证码的交易流水
 	SmsCode     string `json:"smsCode"`     // 短信验证码
-}
-
-// SummarySettData 交易汇总
-type SummarySettData struct {
-	TransType     int8  `bson:"transType"`     //交易类型
-	TotalTransNum int8  `bson:"totalTransNum"` //总交易数量
-	TotalTransAmt int64 `bson:"totalTransAmt"` //总交易金额
-	TotalSettAmt  int64 `bson:"totalSettAmt"`  //总清算金额
-	TotalMerFee   int64 `bson:"totalMerFee"`   //总手续费
 }

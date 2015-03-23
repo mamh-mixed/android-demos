@@ -20,14 +20,14 @@ var TransColl = transCollection{"trans"}
 func (col *transCollection) Add(t *model.Trans) error {
 	// default
 	t.Id = bson.NewObjectId()
-	t.CreateTime = time.Now().Unix()
+	t.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 	t.TransStatus = 0
 	return database.C(col.name).Insert(t)
 }
 
 // Update 通过Add时生成的Id来修改
 func (col *transCollection) Update(t *model.Trans) error {
-	t.UpdateTime = time.Now().Unix()
+	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	return database.C(col.name).Update(bson.M{"_id": t.Id}, t)
 }
 

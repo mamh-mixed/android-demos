@@ -11,7 +11,7 @@ import (
 
 // init 开启任务routine
 // func init() {
-// 	go ProcessTransSettle()
+//  ProcessTransSettle()
 // }
 
 // ProcessTransSettle 清分
@@ -61,11 +61,11 @@ func doTransSett() {
 	for _, v := range trans {
 		//暂时是假勾兑
 		sett := &model.TransSett{
-			Tran:     v,
-			SettFlag: 1,
-			SettDate: now.Format("2006-01-02 15:04:05"),
-			SettAmt:  v.TransAmt / 10,
-			MerFee:   v.TransAmt / 10,
+			Tran:       v,
+			SettFlag:   1,
+			SettDate:   now.Format("2006-01-02 15:04:05"),
+			MerSettAmt: v.TransAmt / 10,
+			MerFee:     v.TransAmt / 10,
 		}
 		if err := mongo.TransSettColl.Add(sett); err != nil {
 			g.Error("add trans sett fail : %s", err)

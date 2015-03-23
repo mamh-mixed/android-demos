@@ -41,9 +41,9 @@ func NextDay(today string) string {
 func TimeToGiven(point string) (int64, error) {
 	layout := "2006-01-02 15:04:05"
 	//当前时间
-	current := time.Now()
+	nowStr := time.Now().Format(layout)
 	//TODO current不能直接跟given比较
-	now, err := time.Parse(layout, current.Format(layout))
+	now, err := time.Parse(layout, nowStr)
 	value := strings.Split(now.Format(layout), " ")[0] + " " + point
 	given, err := time.Parse(layout, value)
 	if err != nil {

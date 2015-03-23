@@ -22,7 +22,7 @@ func TestMillisecond(t *testing.T) {
 
 func TestTimeToGiven(t *testing.T) {
 
-	time, err := TimeToGiven("00:00:00")
+	time, err := TimeToGiven("08:35:00")
 	if err != nil {
 		t.Errorf("fail to get time %s", err)
 	}

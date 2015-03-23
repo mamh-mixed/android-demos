@@ -1,17 +1,14 @@
 package mongo
 
 import (
-	"testing"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/g"
 	"gopkg.in/mgo.v2/bson"
+	"testing"
 )
 
 func TestTransAdd(t *testing.T) {
 	trans := &model.Trans{
-		CreateTime:  time.Now().Unix(),
 		TransStatus: 0,
 		MerId:       "testTransMerId",
 		OrderNum:    "testTransOrderNum",
@@ -28,7 +25,7 @@ func TestTransAdd(t *testing.T) {
 }
 
 func TestTransUpdate(t *testing.T) {
-	objectId := bson.ObjectIdHex("550b79fa6a3dd78948000001")
+	objectId := bson.ObjectIdHex("550ee5e36a3dd74f93000001")
 	trans := &model.Trans{
 		// CreateTime:  time.Now().Unix(),
 		Id:          objectId,
