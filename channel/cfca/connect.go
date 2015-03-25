@@ -131,14 +131,15 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 }
 
 func send(v *url.Values) (body []byte) {
-	ret, err := cli.PostForm(requestURL, *v)
+	resp, err := cli.PostForm(requestURL, *v)
 	if err != nil {
 		g.Error("unable to connect Cfca gratway ", err)
 		return nil
 	}
+	defer resp.Body.Close()
 
 	// 处理返回报文
-	body, err = ioutil.ReadAll(ret.Body)
+	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		g.Error("unable to read from resp ", err)
 		return nil
