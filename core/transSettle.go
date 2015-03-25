@@ -19,7 +19,7 @@ func ProcessTransSettle() {
 
 	// 暂时先每天凌晨将交易信息拷贝到清分表里
 	// 距离0点的时间
-	dis, err := tools.TimeToGiven("00:00:00")
+	dis, err := tools.TimeToGiven("00:30:00")
 	if err != nil {
 		g.Error("fail to get time second by given %s", err)
 		return
@@ -27,9 +27,12 @@ func ProcessTransSettle() {
 	c := make(chan bool)
 	time.AfterFunc(time.Duration(dis)*time.Second, func() {
 		// time.AfterFunc(10*time.Second, func() {
-		//for test
+		//到点时先执行一次
+		doTransSett()
+		//24小时后执行
 		tick := time.Tick(24 * time.Hour)
 		// boom := time.After(5 * time.Second)
+		time.Since(time.Now())
 		for {
 			select {
 			case <-tick:

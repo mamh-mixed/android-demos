@@ -144,11 +144,11 @@ type Trans struct {
 
 // SummarySettData 交易汇总
 type SummarySettData struct {
-	TransType     int8  `bson:"transType"`     //交易类型
-	TotalTransNum int8  `bson:"totalTransNum"` //总交易数量
-	TotalTransAmt int64 `bson:"totalTransAmt"` //总交易金额
-	TotalSettAmt  int64 `bson:"totalSettAmt"`  //总清算金额
-	TotalMerFee   int64 `bson:"totalMerFee"`   //总手续费
+	TransType     int8  `bson:"transType" json:"transType"`         //交易类型
+	TotalTransNum int8  `bson:"totalTransNum" json:"totalTransNum"` //总交易数量
+	TotalTransAmt int64 `bson:"totalTransAmt" json:"totalTransAmt"` //总交易金额
+	TotalSettAmt  int64 `bson:"totalSettAmt" json:"totalSettAmt"`   //总清算金额
+	TotalMerFee   int64 `bson:"totalMerFee" json:"totalMerFee"`     //总手续费
 }
 
 // TransInfo 交易明细 对商户
@@ -199,11 +199,11 @@ type TransSett struct {
 
 // TransSettInfo 清分信息明细
 type TransSettInfo struct {
-	OrderNum   string `bson:"orderNum"`   //订单号
-	TransType  int8   `bson:"transType"`  //交易类型
-	CreateTime string `bson:"createTime"` //交易时间
-	TransAmt   int64  `bson:"transAmt"`   //交易金额
-	MerFee     int64  `bson:"merFee"`     //商户手续费
-	MerSettAmt int64  `bson:"merSettAmt"` //商户清算金额
+	OrderNum   string `bson:"orderNum" json:"orderNum"`     //订单号
+	TransType  int8   `bson:"transType" json:"transType"`   //交易类型
+	CreateTime string `bson:"createTime" json:"transTime"`  //交易时间
+	TransAmt   int64  `bson:"transAmt" json:"transAmt"`     //交易金额
+	MerFee     int64  `bson:"merFee" json:"merFee"`         //商户手续费
+	MerSettAmt int64  `bson:"merSettAmt" json:"merSettAmt"` //商户清算金额
 	//TODO check 交易日期
 }

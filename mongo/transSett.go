@@ -58,12 +58,12 @@ func (col *transSettCollection) Find(merId, transDate, nextOrderNum string) ([]m
 		{"$match": bson.M{"merId": merId, "settFlag": 1,
 			"createTime": bson.M{"$gte": transDate, "$lt": tools.NextDay(transDate)}}},
 		//排序
-		{"$sort": bson.M{"orderNum": -1}},
+		{"$sort": bson.M{"orderNum": 1}},
 	}
 	//商户实际拉取为10
 	limit := bson.M{"$limit": 11}
 	if nextOrderNum != "" {
-		p = append(p, bson.M{"$match": bson.M{"orderNum": bson.M{"$lte": nextOrderNum}}}, limit)
+		p = append(p, bson.M{"$match": bson.M{"orderNum": bson.M{"$gte": nextOrderNum}}}, limit)
 	} else {
 		p = append(p, limit)
 	}

@@ -394,7 +394,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	switch {
 	// 不存在原交易
 	case err != nil:
-		errorTrans.RespCode = "100020"
+		errorTrans.RespCode = "200091"
 		if err = mongo.TransColl.Add(errorTrans); err != nil {
 			g.Error("add errorTrans fail: (%s)", err)
 		}
