@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -23,7 +23,7 @@ func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer
 	c = new(model.ChanMer)
 	err = database.C(col.name).Find(bo).One(c)
 	if err != nil {
-		g.Error("Find ChanMer condition is: %+v;error is %s", bo, err)
+		log.Errorf("Find ChanMer condition is: %+v;error is %s", bo, err)
 	}
 	return
 }

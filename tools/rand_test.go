@@ -3,13 +3,13 @@ package tools
 import (
 	"testing"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
 func TestUUID(t *testing.T) {
 	uuid := SerialNumber()
 
-	g.Debug("uuid=%s", uuid)
+	log.Debugf("uuid=%s", uuid)
 
 	if uuid == "" {
 		t.Error("unable generate uuid")
@@ -26,5 +26,5 @@ func TestTimeToGiven(t *testing.T) {
 	if err != nil {
 		t.Errorf("fail to get time %s", err)
 	}
-	g.Debug("time to given (%d)", time)
+	log.Debugf("time to given (%d)", time)
 }

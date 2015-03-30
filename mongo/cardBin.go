@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -24,7 +24,7 @@ func (c *cardBinCollection) Find(cardNum string) (cb *model.CardBin, err error) 
 	}
 	err = database.C(c.name).Find(q).Sort("-bin", "overflow").Limit(1).One(&cb)
 	if err != nil {
-		g.Error("Find CardBin ERROR! error message is: %s; condition is: %+v", err.Error(), q)
+		log.Errorf("Find CardBin ERROR! error message is: %s; condition is: %+v", err.Error(), q)
 		return nil, err
 	}
 

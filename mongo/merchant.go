@@ -2,9 +2,10 @@ package mongo
 
 import (
 	"errors"
+
 	"github.com/CardInfoLink/quickpay/model"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -24,7 +25,7 @@ func (c *merchantCollection) Insert(m *model.Merchant) error {
 
 	err = database.C(c.name).Insert(m)
 	if err != nil {
-		g.Error("'Insert Merchant ERROR!' Merchant is (%+v);error is (%s)", m, err)
+		log.Errorf("'Insert Merchant ERROR!' Merchant is (%+v);error is (%s)", m, err)
 	}
 	return err
 }
@@ -34,7 +35,7 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 	q := bson.M{"merId": merId}
 	err = database.C(c.name).Find(q).One(m)
 	if err != nil {
-		g.Error("'Find Merchant ERROR!' Condition is (%+v);error is(%s)", q, err)
+		log.Errorf("'Find Merchant ERROR!' Condition is (%+v);error is(%s)", q, err)
 		return nil, err
 	}
 	return m, nil
@@ -47,7 +48,7 @@ func (c *merchantCollection) Update(m *model.Merchant) error {
 	q := bson.M{"merId": m.MerId}
 	err := database.C(c.name).Update(q, m)
 	if err != nil {
-		g.Error("'Update Merchant ERROR!' condition is (%+v);error is (%s)", q, err)
+		log.Errorf("'Update Merchant ERROR!' condition is (%+v);error is (%s)", q, err)
 	}
 	return err
 }

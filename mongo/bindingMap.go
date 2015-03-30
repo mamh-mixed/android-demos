@@ -5,7 +5,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -27,7 +27,7 @@ func (c *bindingMapCollection) Find(merId, bindingId string) (bm *model.BindingM
 	q := bson.M{"bindingId": bindingId, "merId": merId}
 	err = database.C(c.name).Find(q).One(bm)
 	if err != nil {
-		g.Error("Error message is: %s;'FindBindingMap' condition: %+v", err.Error(), q)
+		log.Errorf("Error message is: %s;'FindBindingMap' condition: %+v", err.Error(), q)
 		return nil, err
 	}
 

@@ -1,10 +1,11 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
-	"gopkg.in/mgo.v2/bson"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func TestTransAdd(t *testing.T) {
@@ -15,14 +16,14 @@ func TestTransAdd(t *testing.T) {
 			OrderNum:    orderNum,
 			TransType:   int8(transType),
 		}
-		g.Debug("%+v", TransColl)
+		log.Debugf("%+v", TransColl)
 
 		err := TransColl.Add(trans)
 		if err != nil {
 			t.Errorf("add trans unsunccessful: %s", err)
 			t.FailNow()
 		}
-		g.Debug("add trans success %s", trans)
+		log.Debugf("add trans success %s", trans)
 	}
 }
 
@@ -41,7 +42,7 @@ func TestTransUpdate(t *testing.T) {
 		t.Errorf("modify trans unsunccessful: %s", err)
 		t.FailNow()
 	}
-	g.Debug("modify trans success %s", trans)
+	log.Debugf("modify trans success %s", trans)
 
 }
 
@@ -52,7 +53,7 @@ func TestCountTrans(t *testing.T) {
 		t.Errorf("count trans unsunccessful: %s", err)
 		t.FailNow()
 	}
-	g.Debug("count trans success %d", c)
+	log.Debugf("count trans success %d", c)
 }
 
 func TestFindTrans(t *testing.T) {
@@ -61,7 +62,7 @@ func TestFindTrans(t *testing.T) {
 		t.Errorf("find trans unsunccessful: %s", err)
 		t.FailNow()
 	}
-	g.Debug("find trans success %s", trans)
+	log.Debugf("find trans success %s", trans)
 }
 
 func TestFindByTime(t *testing.T) {
@@ -70,5 +71,5 @@ func TestFindByTime(t *testing.T) {
 		t.Errorf("find trans unsunccessful: %s", err)
 		t.FailNow()
 	}
-	g.Debug("find trans success %s", trans)
+	log.Debugf("find trans success %s", trans)
 }

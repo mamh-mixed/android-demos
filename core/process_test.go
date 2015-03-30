@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"testing"
 )
 
@@ -94,7 +94,7 @@ func TestProcessBindingRefund(t *testing.T) {
 	if ret.RespCode == "" {
 		t.Errorf("process payment but not get a respCode %+v", ret)
 	}
-	g.Debug("%+v", ret)
+	log.Debugf("%+v", ret)
 }
 
 func TestProcessOrderEnquiry(t *testing.T) {
@@ -109,7 +109,7 @@ func TestProcessOrderEnquiry(t *testing.T) {
 	if ret.RespCode == "" {
 		t.Errorf("process order query but not get a respCode %+v", ret)
 	}
-	g.Debug("%+v,%+v", ret, ret.OrigTransDetail)
+	log.Debugf("%+v,%+v", ret, ret.OrigTransDetail)
 }
 
 func TestProcessBillingDetails(t *testing.T) {
@@ -123,7 +123,7 @@ func TestProcessBillingDetails(t *testing.T) {
 	if ret.RespCode == "" {
 		t.Errorf("process billing details but not get a respCode %+v", ret)
 	}
-	g.Debug("%+v", ret)
+	log.Debugf("%+v", ret)
 }
 
 func TestProcessBillingSummary(t *testing.T) {
@@ -137,5 +137,5 @@ func TestProcessBillingSummary(t *testing.T) {
 	if ret.RespCode == "" {
 		t.Errorf("process billing summary but not get a respCode %+v", ret)
 	}
-	g.Debug("%+v", ret)
+	log.Debugf("%+v", ret)
 }

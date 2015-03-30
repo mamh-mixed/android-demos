@@ -10,27 +10,27 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
 // BindingPay 绑定支付入口
 func BindingPay(w http.ResponseWriter, r *http.Request) {
-	g.Debug("url = %s", r.URL.Path)
+	log.Debugf("url = %s", r.URL.Path)
 
 	merId, sign, data, status, err := prepareData(r)
 	if err != nil {
-		g.Error(err.Error())
+		log.Errorf(err.Error())
 		w.WriteHeader(status)
 		w.Write([]byte(err.Error()))
 		return
 	}
-	g.Debug("商户报文: %s", data)
+	log.Debugf("商户报文: %s", data)
 
 	var ret *model.BindingReturn
 
 	result, ret := CheckSignature(data, merId, sign)
 	if ret == nil && !result {
-		g.Error("check sign error ", err)
+		log.Errorf("check sign error %s", err)
 		ret = mongo.RespCodeColl.Get("200010")
 	}
 
@@ -59,7 +59,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(404)
 		}
 	}
-	g.Debug("处理后报文: %+v", ret)
+	log.Debugf("处理后报文: %+v", ret)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -241,7 +241,7 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.OrderEnquiry)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		g.Error("解析报文错误 :%s", err)
+		log.Errorf("解析报文错误 :%s", err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
@@ -262,7 +262,7 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.NoTrackPayment)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		g.Error("解析报文错误 :%s", err)
+		log.Errorf("解析报文错误 :%s", err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId

@@ -2,9 +2,10 @@ package mongo
 
 import (
 	"errors"
+
 	"github.com/CardInfoLink/quickpay/model"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -25,7 +26,7 @@ func (c *bindingInfoCollection) Find(merId, bindingId string) (bi *model.Binding
 	q := bson.M{"bindingId": bindingId, "merId": merId}
 	err = database.C(c.name).Find(q).One(bi)
 	if err != nil {
-		g.Error("Error message is: %s\n;'FindBindingInfo' condition: %+v", err.Error(), q)
+		log.Errorf("Error message is: %s\n;'FindBindingInfo' condition: %+v", err.Error(), q)
 		return nil, err
 	}
 

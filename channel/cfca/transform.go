@@ -3,8 +3,7 @@ package cfca
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
 // transformResp 转换应答内容
@@ -25,7 +24,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		ret.RespMsg = respObject.RespMsg
 		if ret.RespCode == "" {
 			//系统外部错误
-			g.Error("找不到系统对应的中金应答码:(%s)", resp.Head.Code)
+			log.Errorf("找不到系统对应的中金应答码:(%s)", resp.Head.Code)
 			ret.RespCode = "000002"
 			ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
 		}
@@ -48,7 +47,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		case 40:
 			ret.RespCode = "100050"
 		default:
-			g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
+			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
 	//解除绑定关系
@@ -62,7 +61,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		case 30:
 			ret.RespCode = "100060"
 		default:
-			g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
+			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
 	//快捷支付、快捷支付查询
@@ -76,7 +75,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		case 30:
 			ret.RespCode = "100070"
 		default:
-			g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
+			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
 	case BindingRefundTxCode:
@@ -90,7 +89,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		case 40:
 			ret.RespCode = "100080"
 		default:
-			g.Error("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
+			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
 	case TransCheckingTxCode:
@@ -99,7 +98,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	}
 
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
-	g.Debug("resp message %+v", ret)
+	log.Debugf("resp message %+v", ret)
 
 	return
 }

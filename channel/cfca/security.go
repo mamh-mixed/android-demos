@@ -8,9 +8,8 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/pem"
-	"log"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
 const (
@@ -61,14 +60,14 @@ var chinaPaymentCert *x509.Certificate
 func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 	PEMBlock, _ := pem.Decode([]byte(priKeyPem))
 	if PEMBlock == nil {
-		g.Fatal("Could not parse Rsa Private Key PEM")
+		log.Fatalf("Could not parse Rsa Private Key PEM")
 	}
 	if PEMBlock.Type != "RSA PRIVATE KEY" {
-		g.Fatal("Found wrong key type" + PEMBlock.Type)
+		log.Fatalf("Found wrong key type" + PEMBlock.Type)
 	}
 	chinaPaymentPriKey, err := x509.ParsePKCS1PrivateKey(PEMBlock.Bytes)
 	if err != nil {
-		g.Fatal("", err)
+		log.Fatal(err)
 	}
 	return chinaPaymentPriKey
 }
@@ -77,10 +76,10 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 func init() {
 	PEMBlock, _ := pem.Decode([]byte(certPem))
 	if PEMBlock == nil {
-		log.Fatal("Could not parse Certificate PEM")
+		log.Fatalf("Could not parse Certificate PEM")
 	}
 	if PEMBlock.Type != "CERTIFICATE" {
-		log.Fatal("Found wrong key type" + PEMBlock.Type)
+		log.Fatalf("Found wrong key type" + PEMBlock.Type)
 	}
 	var err error
 	chinaPaymentCert, err = x509.ParseCertificate(PEMBlock.Bytes)
@@ -97,7 +96,7 @@ func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
 
 	sign, err := rsa.SignPKCS1v15(rand.Reader, chinaPaymentPriKey, crypto.SHA1, hashed[:])
 	if err != nil {
-		g.Error("fail to sign with Sha1WithRsa ", err)
+		log.Errorf("fail to sign with Sha1WithRsa %s", err)
 	}
 
 	return hex.EncodeToString(sign)
@@ -107,12 +106,12 @@ func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
 func checkSignatureUseSha1WithRsa(origin []byte, hexSign string) (err error) {
 	sign, herr := hex.DecodeString(hexSign)
 	if err != nil {
-		g.Error("hex decode error ", herr)
+		log.Errorf("hex decode error %s", herr)
 	}
 
 	err = chinaPaymentCert.CheckSignature(x509.SHA1WithRSA, origin, sign)
 	if err != nil {
-		g.Error("signature error ", err)
+		log.Errorf("signature error %s", err)
 	}
 	return err
 }

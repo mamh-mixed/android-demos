@@ -4,7 +4,7 @@ import (
 	// "errors"
 	"github.com/CardInfoLink/quickpay/model"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -28,10 +28,10 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 	q := bson.M{"merId": merId, "cardBrand": cardBrand}
 	err := database.C(c.name).Find(q).One(r)
 	if err != nil {
-		g.Debug("'FindRouter' condition: %+v\n", q)
-		g.Debug("Error message is: \n", err.Error())
+		log.Debugf("'FindRouter' condition: %+v\n", q)
+		log.Debugf("Error message is: \n", err.Error())
 		return nil
 	}
-	g.Debug("'FindRouter' condition: %+v, result %#v", q, r)
+	log.Debugf("'FindRouter' condition: %+v, result %#v", q, r)
 	return r
 }

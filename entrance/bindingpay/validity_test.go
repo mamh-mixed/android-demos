@@ -1,10 +1,11 @@
 package bindingpay
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 
-	"github.com/omigo/g"
+	"github.com/CardInfoLink/quickpay/model"
+
+	"github.com/omigo/log"
 )
 
 func validateTestBindingCreate(t *testing.T) {
@@ -14,7 +15,7 @@ func validateTestBindingCreate(t *testing.T) {
 	)
 	ret = validateBindingCreate(bc)
 	if ret == nil {
-		g.Error("\n", "验证 '报文要素缺失' 失败")
+		log.Errorf("\n", "验证 '报文要素缺失' 失败")
 	}
 
 	bc.BindingId = "1000000000001"

@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
 var requestURL = "https://test.china-clearing.com/Gateway/InterfaceII"
@@ -109,18 +109,18 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	// xml 编组
 	xmlBytes, err := xml.Marshal(req)
 	if err != nil {
-		g.Error("unable to marshal xml:", err)
+		log.Errorf("unable to marshal xml:", err)
 		return nil
 	}
-	g.Debug("请求报文: %s", xmlBytes)
+	log.Debugf("请求报文: %s", xmlBytes)
 
 	// 对 xml 作 base64 编码
 	b64Str := base64.StdEncoding.EncodeToString(xmlBytes)
-	g.Trace("base64: %s", b64Str)
+	log.Debugf("base64: %s", b64Str)
 
 	// 对 xml 签名
 	hexSign := signatureUseSha1WithRsa(xmlBytes, req.SignCert)
-	g.Trace("请求签名: %s", hexSign)
+	log.Debugf("请求签名: %s", hexSign)
 
 	// 准备参数
 	v = &url.Values{}
@@ -133,7 +133,7 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 func send(v *url.Values) (body []byte) {
 	resp, err := cli.PostForm(requestURL, *v)
 	if err != nil {
-		g.Error("unable to connect Cfca gratway ", err)
+		log.Errorf("unable to connect Cfca gratway ", err)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -141,10 +141,10 @@ func send(v *url.Values) (body []byte) {
 	// 处理返回报文
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		g.Error("unable to read from resp ", err)
+		log.Errorf("unable to read from resp ", err)
 		return nil
 	}
-	g.Trace("resp: [%s]", body)
+	log.Debugf("resp: [%s]", body)
 
 	return body
 }
@@ -156,16 +156,16 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	// 数据 base64 解码
 	rxmlBytes, err := base64.StdEncoding.DecodeString(rb64Str)
 	if err != nil {
-		g.Error("unable to decode base64 content ", err)
+		log.Errorf("unable to decode base64 content ", err)
 	}
-	g.Debug("返回报文: %s", rxmlBytes)
+	log.Debugf("返回报文: %s", rxmlBytes)
 
 	// 验签
 	rhexSign := strings.TrimSpace(result[1])
-	g.Trace("返回签名: %s", rhexSign)
+	log.Debugf("返回签名: %s", rhexSign)
 	err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
 	if err != nil {
-		g.Error("check sign failed ", err)
+		log.Errorf("check sign failed ", err)
 		return nil
 	}
 
@@ -173,7 +173,7 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	resp = new(BindingResponse)
 	err = xml.Unmarshal(rxmlBytes, resp)
 	if err != nil {
-		g.Error("unable to unmarshal xml ", err)
+		log.Errorf("unable to unmarshal xml ", err)
 		return nil
 	}
 

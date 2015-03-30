@@ -3,11 +3,12 @@ package bindingpay
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/g"
 	"io"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
 )
 
 // SignatureUseSha1 使用 SHA1 算法签名， sha1(data + key).Hex()
@@ -44,7 +45,7 @@ func CheckSignature(data []byte, merId, signature string) (result bool, ret *mod
 func Signature(data []byte, merId string) string {
 	m, err := mongo.MerchantColl.Find(merId)
 	if err != nil {
-		g.Error("Signature find Merchant error")
+		log.Errorf("Signature find Merchant error")
 		return ""
 	}
 	return SignatureUseSha1(data, m.SignKey)

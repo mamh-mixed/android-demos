@@ -1,16 +1,17 @@
 package core
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-	"github.com/omigo/g"
-	"time"
+	"github.com/omigo/log"
 )
 
 // init 开启任务routine
 func init() {
-	g.Debug("wait to process transSett method")
+	log.Debugf("wait to process transSett method")
 	go ProcessTransSettle()
 }
 
@@ -21,7 +22,7 @@ func ProcessTransSettle() {
 	// 距离0点的时间
 	dis, err := tools.TimeToGiven("00:00:00")
 	if err != nil {
-		g.Error("fail to get time second by given %s", err)
+		log.Errorf("fail to get time second by given %s", err)
 		return
 	}
 	c := make(chan bool)
@@ -33,12 +34,12 @@ func ProcessTransSettle() {
 		for {
 			select {
 			case <-tick:
-				// g.Debug("tick ... %s", "boom")
+				// log.Debugf("tick ... %s", "boom")
 				doTransSett()
 				//for test
 				// case <-boom:
 				// 	c <- true
-				// 	g.Debug("boom break %s", "boom")
+				// 	log.Debugf("boom break %s", "boom")
 				// 	return
 			}
 		}
@@ -54,13 +55,13 @@ func doTransSett() {
 	//查找昨天的交易
 	d, _ := time.ParseDuration("-24h")
 	yestday := now.Add(d)
-	g.Debug("yesterday : %s", yestday.Format(layout))
+	log.Debugf("yesterday : %s", yestday.Format(layout))
 	trans, err := mongo.TransColl.FindByTime(yestday.Format(layout))
 	if err != nil {
-		g.Error("find trans fail : %s", err)
+		log.Errorf("find trans fail : %s", err)
 		return
 	}
-	// g.Debug("yesterday data : %+v", trans)
+	// log.Debugf("yesterday data : %+v", trans)
 	// 计算费率
 	for _, v := range trans {
 		// 根据交易状态处理
@@ -77,7 +78,7 @@ func doTransSett() {
 				ChanFee:     v.TransAmt / 10,
 			}
 			if err := mongo.TransSettColl.Add(sett); err != nil {
-				g.Error("add trans sett fail : %s", err)
+				log.Errorf("add trans sett fail : %s", err)
 			}
 		// 处理中
 		case model.TransHandling:

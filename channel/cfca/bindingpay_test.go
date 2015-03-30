@@ -1,10 +1,11 @@
 package cfca
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 
-	"github.com/omigo/g"
+	"github.com/CardInfoLink/quickpay/model"
+
+	"github.com/omigo/log"
 )
 
 func TestSendRequest(t *testing.T) {
@@ -36,7 +37,7 @@ func TestProcessBindingEnquiry(t *testing.T) {
 	}
 	resp := ProcessBindingEnquiry(be)
 
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessBindingCreate(t *testing.T) {
@@ -58,7 +59,7 @@ func TestProcessBindingCreate(t *testing.T) {
 		SignCert:      priKeyPem,
 	}
 	resp := ProcessBindingCreate(be)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessBindingRemove(t *testing.T) {
@@ -70,7 +71,7 @@ func TestProcessBindingRemove(t *testing.T) {
 		SignCert:      priKeyPem,
 	}
 	resp := ProcessBindingRemove(be)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessBindingPayment(t *testing.T) {
@@ -85,7 +86,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		SignCert:     priKeyPem,
 	}
 	resp := ProcessBindingPayment(be)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessBindingRefund(t *testing.T) {
@@ -98,7 +99,7 @@ func TestProcessBindingRefund(t *testing.T) {
 		SignCert:         priKeyPem,
 	}
 	resp := ProcessBindingRefund(be)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessPaymentEnquiry(t *testing.T) {
@@ -109,7 +110,7 @@ func TestProcessPaymentEnquiry(t *testing.T) {
 		SignCert:     priKeyPem,
 	}
 	resp := ProcessPaymentEnquiry(be)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessRefundEnquiry(t *testing.T) {
@@ -120,7 +121,7 @@ func TestProcessRefundEnquiry(t *testing.T) {
 		SignCert:     priKeyPem,
 	}
 	resp := ProcessRefundEnquiry(be)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
 
 func TestProcessTransChecking(t *testing.T) {
@@ -131,5 +132,5 @@ func TestProcessTransChecking(t *testing.T) {
 	// 	SignCert:  priKeyPem,
 	// }
 	resp := ProcessTransChecking(chanMerId, "2015-03-20", priKeyPem)
-	g.Debug("response message  %s", resp)
+	log.Debugf("response message  %s", resp)
 }
