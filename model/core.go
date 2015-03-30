@@ -5,9 +5,12 @@ import (
 )
 
 const (
-	TransRefunded = 1    //已退款
-	PayTrans      = 1    //支付交易
-	RefundTrans   = 2    //退款交易
+	TransRefunded = 1 //已退款
+	PayTrans      = 1 //支付交易
+	RefundTrans   = 2 //退款交易
+
+	SettSuccess = 1 //勾兑成功
+
 	TransHandling = "10" //交易处理中
 	TransFail     = "20" //交易失败
 	TransSuccess  = "30" //交易成功

@@ -70,5 +70,5 @@ func TestFindByTime(t *testing.T) {
 		t.Errorf("find trans unsunccessful: %s", err)
 		t.FailNow()
 	}
-	g.Debug("find trans success %s", trans)
+	g.Debug("find trans success %+v", trans)
 }

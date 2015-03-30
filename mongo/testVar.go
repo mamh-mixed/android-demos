@@ -13,7 +13,7 @@ var (
 	signKey          = ""
 	encryptKey       = ""
 	cardNum          = "11116222801932062061908"
-	createTime       = "2015-03-22"
+	createTime       = "2015-03-26"
 	chanMerId        = "001405"
 	chanCode         = "CFCA"
 	settFlag         = "457"

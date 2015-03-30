@@ -41,3 +41,10 @@ func (col *chanMerCollection) Update(c *model.ChanMer) error {
 	}
 	return database.C(col.name).Update(bo, c)
 }
+
+// FindAll 得到所有渠道商户
+func (col *chanMerCollection) FindAll() ([]*model.ChanMer, error) {
+	var cs []*model.ChanMer
+	err := database.C(col.name).Find(nil).All(&cs)
+	return cs, err
+}

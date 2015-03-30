@@ -1,9 +1,11 @@
 package mongo
 
 import (
+	"errors"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type transSettCollection struct {
@@ -44,6 +46,10 @@ func (col *transSettCollection) Summary(merId, transDate string) ([]model.Summar
 
 // Add 增加一条清分记录
 func (col *transSettCollection) Add(t *model.TransSett) error {
+	if t == nil {
+		return errors.New("transSett is nil")
+	}
+	t.SettDate = time.Now().Format("2006-01-02 15:04:05")
 	return database.C(col.name).Insert(t)
 }
 
@@ -69,4 +75,25 @@ func (col *transSettCollection) Find(merId, transDate, nextOrderNum string) ([]m
 	}
 	err := database.C(col.name).Pipe(p).All(&transSettInfo)
 	return transSettInfo, err
+}
+
+// FindByOrderNum 根据渠道订单号查找
+func (col *transSettCollection) FindByOrderNum(chanOrderNum string) (t *model.TransSett, err error) {
+	// 订单是uuid 全局唯一
+	t = new(model.TransSett)
+	q := bson.M{
+		"chanOrderNum": chanOrderNum,
+	}
+	err = database.C(col.name).Find(q).One(t)
+
+	return
+}
+
+// Update 更新
+func (col *transSettCollection) Update(t *model.TransSett) error {
+	if t == nil {
+		return errors.New("transSett is nil")
+	}
+	t.SettDate = time.Now().Format("2006-01-02 15:04:05")
+	return database.C(col.name).Update(bson.M{"_id": t.Tran.Id}, t)
 }
