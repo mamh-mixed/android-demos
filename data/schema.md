@@ -118,3 +118,17 @@ CVV2	cvv2
 渠道应答码	chanRespCode
 交易创建时间	createTime
 交易更新时间	updateTime
+短信流水号 SendSmsId
+短信验证码 SmsCode
+备注 Remark
+子商户id SubMerId
+
+10. 清算信息 TransSett
+交易记录 tran
+清算标志 SettFlag
+清算时间 SettDate
+商户清算金额 MerSettAmt
+商户手续费 MerFee
+渠道清算金额 ChanSettAmt
+渠道手续费 ChanFee
+

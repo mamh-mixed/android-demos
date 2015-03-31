@@ -48,11 +48,12 @@ func ProcessTransSettle() {
 
 func doTransSett() {
 
-	layout := "2006-01-02"
+	// layout := "2006-01-02"
 	//查找昨天的交易
-	now := time.Now()
-	d, _ := time.ParseDuration("-24h")
-	yesterday := now.Add(d).Format(layout)
+	// now := time.Now()
+	// d, _ := time.ParseDuration("-24h")
+	// yesterday := now.Add(d).Format(layout)
+	yesterday := "2015-03-26"
 	g.Debug("yesterday : %s", yesterday)
 	trans, err := mongo.TransColl.FindByTime(yesterday)
 	if err != nil {
@@ -66,10 +67,9 @@ func doTransSett() {
 		switch v.TransStatus {
 		// 交易成功
 		case model.TransSuccess:
-			addTransSett(v, 2)
+			addTransSett(v, model.SettSysRemain)
 		// 处理中
 		case model.TransHandling:
-			// TODO调用交易查询更新状态
 			// TODO根据渠道代码得到渠道实例，暂时默认cfca
 
 			// 得到渠道商户，获取签名密钥
@@ -100,7 +100,7 @@ func doTransSett() {
 				// 更新交易状态
 				mongo.TransColl.Update(v)
 				// 添加到清分表
-				addTransSett(v, 2)
+				addTransSett(v, model.SettSysRemain)
 			} else if ret.RespCode == "100070" || ret.RespCode == "100080" {
 				// 支付失败、退款失败
 				v.RespCode = ret.RespCode
@@ -153,7 +153,7 @@ func doTransCheck(settDate string) {
 				// 根据订单号查找
 				if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
 					// 找到记录，修改清分状态
-					transSett.SettFlag = 1
+					transSett.SettFlag = model.SettSuccess
 					if err = mongo.TransSettColl.Update(transSett); err != nil {
 						g.Error("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
 					}
@@ -163,11 +163,17 @@ func doTransCheck(settDate string) {
 					// 添加该笔交易
 					newTrans := &model.Trans{
 						Id:           bson.NewObjectId(),
-						TransType:    1,
 						ChanOrderNum: tx.TxSn,
 						TransAmt:     tx.TxAmount,
 					}
-					addTransSett(newTrans, 3)
+					// 判断交易类型
+					switch {
+					case tx.TxType == cfca.BindingPaymentTxCode:
+						newTrans.TransType = model.PayTrans
+					case tx.TxType == cfca.BindingRefundTxCode:
+						newTrans.TransType = model.RefundTrans
+					}
+					addTransSett(newTrans, model.SettChanRemain)
 				}
 			}
 		}
