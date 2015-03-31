@@ -48,12 +48,11 @@ func ProcessTransSettle() {
 
 func doTransSett() {
 
-	// layout := "2006-01-02"
-	//查找昨天的交易
-	// now := time.Now()
-	// d, _ := time.ParseDuration("-24h")
-	// yesterday := now.Add(d).Format(layout)
-	yesterday := "2015-03-26"
+	layout := "2006-01-02"
+	// 查找昨天的交易
+	now := time.Now()
+	d, _ := time.ParseDuration("-24h")
+	yesterday := now.Add(d).Format(layout)
 	g.Debug("yesterday : %s", yesterday)
 	trans, err := mongo.TransColl.FindByTime(yesterday)
 	if err != nil {
