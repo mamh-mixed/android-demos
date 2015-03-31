@@ -131,5 +131,5 @@ func TestProcessTransChecking(t *testing.T) {
 	// 	SignCert:  priKeyPem,
 	// }
 	resp := ProcessTransChecking(chanMerId, "2015-03-20", priKeyPem)
-	g.Debug("response message  %s", resp)
+	g.Debug("response message  %+v", resp)
 }

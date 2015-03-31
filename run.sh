@@ -11,6 +11,7 @@ mkdir -p logs
 
 killall main
 pwd
+
 nohup ./quickpay > logs/quickpay.log 2>&1 &
 
 sleep 3

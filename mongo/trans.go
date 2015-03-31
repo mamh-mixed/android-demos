@@ -69,9 +69,9 @@ func (col *transCollection) Find(merId, orderNum string) (t *model.Trans, err er
 }
 
 // FindByTime 查找某天的交易记录
-func (col *transCollection) FindByTime(time string) ([]model.Trans, error) {
+func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 
-	var ts []model.Trans
+	var ts []*model.Trans
 	q := bson.M{
 		"createTime": bson.M{
 			"$gt":  time,

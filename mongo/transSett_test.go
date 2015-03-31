@@ -1,9 +1,9 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
+	// "github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/g"
-	"gopkg.in/mgo.v2/bson"
+	// "gopkg.in/mgo.v2/bson"
 	"testing"
 )
 
@@ -57,4 +57,13 @@ func TestTransSettFind(t *testing.T) {
 		t.Errorf("find trans fail : %s", err)
 	}
 	g.Debug("%+v", trans)
+}
+
+func TestTransSettFindByOrderNum(t *testing.T) {
+	transSett, err := TransSettColl.FindByOrderNum("86b3a23d495048fa5de2e3643464f116")
+	if err != nil {
+		t.Errorf("find trans fail : %s", err)
+		t.FailNow()
+	}
+	g.Debug("%+v", transSett)
 }

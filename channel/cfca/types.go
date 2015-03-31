@@ -40,7 +40,6 @@ type requestBody struct {
 	TxSN                 string `xml:",omitempty"` //退款交易流水号
 	InstitutionID        string `xml:",omitempty"` //机构编号
 	Date                 string `xml:",omitempty"` //对账日期,格式:YYYY-MM-DD
-	Tx                   []Tx   `xml:",omitempty"` //交易对账单
 }
 
 // common resp head
@@ -63,12 +62,13 @@ type respBody struct {
 	PaymentNo       string //支付交易流水号
 	TxSN            string //退款交易流水号
 	Amount          int64  //退款金额,单位:分
+	Tx              []Tx   `xml:",omitempty"` //交易对账单
 }
 
 //Tx 1810 交易对账单
 type Tx struct {
 	TxType               string //交易类型
-	TxSN                 string //退款交易流水号
+	TxSn                 string //交易编号
 	TxAmount             int64  //交易金额,单位:分
 	InstitutionAmount    int64  //机构应收的金额,单位:分
 	PaymentAmount        int64  //支付平台应收的金额,单位:分

@@ -51,8 +51,18 @@ func TestChanMerModify(t *testing.T) {
 
 	err := ChanMerColl.Update(chanMer)
 	if err != nil {
-		t.Errorf("update chanMer unsuccessful ", err)
+		t.Errorf("update chanMer unsuccessful %s", err)
 		t.FailNow()
 	}
 	g.Debug("update chanMer success %s", chanMer)
+}
+
+func TestChanMerFindAll(t *testing.T) {
+
+	cs, err := ChanMerColl.FindAll()
+	if err != nil {
+		t.Errorf("findAll chanMer unsuccessful %s", err)
+		t.FailNow()
+	}
+	g.Debug("%+v", cs)
 }
