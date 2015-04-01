@@ -1,18 +1,19 @@
 package core
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 // init 开启任务routine
 func init() {
-	g.Debug("wait to process transSett method")
+	log.Debug("wait to process transSett method")
 	go ProcessTransSettle()
 }
 
@@ -23,7 +24,7 @@ func ProcessTransSettle() {
 	// 距离指定的时间
 	dis, err := tools.TimeToGiven("00:30:00")
 	if err != nil {
-		g.Error("fail to get time second by given %s", err)
+		log.Errorf("fail to get time second by given %s", err)
 		return
 	}
 	c := make(chan bool)
@@ -53,10 +54,10 @@ func doTransSett() {
 	now := time.Now()
 	d, _ := time.ParseDuration("-24h")
 	yesterday := now.Add(d).Format(layout)
-	g.Debug("yesterday : %s", yesterday)
+	log.Debugf("yesterday : %s", yesterday)
 	trans, err := mongo.TransColl.FindByTime(yesterday)
 	if err != nil {
-		g.Error("fail to load trans by time : %s", err)
+		log.Errorf("fail to load trans by time : %s", err)
 		return
 	}
 
@@ -131,7 +132,7 @@ func addTransSett(t *model.Trans, settFlag int8) {
 		ChanFee:     t.TransAmt / 10,
 	}
 	if err := mongo.TransSettColl.Add(sett); err != nil {
-		g.Error("add trans sett fail : %s, trans id : %s", err, t.Id)
+		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)
 	}
 }
 
@@ -139,7 +140,7 @@ func addTransSett(t *model.Trans, settFlag int8) {
 func doTransCheck(settDate string) {
 	chanMers, err := mongo.ChanMerColl.FindAll()
 	if err != nil {
-		g.Error("fail to load all chanMer %s", err)
+		log.Errorf("fail to load all chanMer %s", err)
 	}
 	// 遍历渠道商户
 	for _, v := range chanMers {
@@ -154,7 +155,7 @@ func doTransCheck(settDate string) {
 					// 找到记录，修改清分状态
 					transSett.SettFlag = model.SettSuccess
 					if err = mongo.TransSettColl.Update(transSett); err != nil {
-						g.Error("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
+						log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
 					}
 
 				} else {

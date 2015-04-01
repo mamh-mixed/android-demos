@@ -2,17 +2,18 @@ package tools
 
 import (
 	"fmt"
-	u "github.com/nu7hatch/gouuid"
-	"github.com/omigo/g"
 	"strings"
 	"time"
+
+	u "github.com/nu7hatch/gouuid"
+	"github.com/omigo/log"
 )
 
 // SerialNumber 生成序列号，也就是UUID
 func SerialNumber() string {
 	u4, err := u.NewV4()
 	if err != nil {
-		g.Error("error: ", err)
+		log.Errorf("error: ", err)
 		return ""
 	}
 	return fmt.Sprintf("%x", u4[:])
@@ -29,7 +30,7 @@ func NextDay(today string) string {
 	layout := "2006-01-02"
 	to, err := time.Parse(layout, today)
 	if err != nil {
-		g.Error("fail to parese (%s : %s) ", today, err)
+		log.Errorf("fail to parese (%s : %s) ", today, err)
 	}
 	// add a day
 	next := to.Add(time.Duration(24) * time.Hour)

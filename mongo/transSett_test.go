@@ -1,10 +1,12 @@
 package mongo
 
 import (
-	// "github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
-	// "gopkg.in/mgo.v2/bson"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/g"
+	"github.com/omigo/log"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func TestTransSettSummary(t *testing.T) {
@@ -13,7 +15,7 @@ func TestTransSettSummary(t *testing.T) {
 	if err != nil {
 		t.Errorf("get transSett summary fail : (%s)", err)
 	}
-	g.Debug("summary transSett : (%s)", all)
+	log.Debugf("summary transSett : (%s)", all)
 
 }
 
@@ -49,14 +51,14 @@ func TestTransSettFind(t *testing.T) {
 	trans, err := TransSettColl.Find("001405", "2015-03-23", "")
 	if len(trans) == 11 {
 		data := trans[:len(trans)-1]
-		g.Debug("%+v", data)
+		log.Debugf("%+v", data)
 		lastOrderNum := trans[len(trans)-1].OrderNum
-		g.Debug("%s", lastOrderNum)
+		log.Debugf("%s", lastOrderNum)
 	}
 	if err != nil {
 		t.Errorf("find trans fail : %s", err)
 	}
-	g.Debug("%+v", trans)
+	log.Debugf("%+v", trans)
 }
 
 func TestTransSettFindByOrderNum(t *testing.T) {

@@ -2,9 +2,10 @@ package cfca
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
+// 中金交易类型
 const (
 	version              = "2.0"
 	correctCode          = "2000"
@@ -34,7 +35,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	}
 
 	// 向中金发起请求
-	g.Debug("request for cfca param (%+v)", req)
+	log.Debugf("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 
 	// 应答码转换。。。

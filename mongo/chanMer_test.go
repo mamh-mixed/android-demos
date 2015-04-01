@@ -5,7 +5,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
 
 func TestChanMerFind(t *testing.T) {
@@ -14,7 +14,7 @@ func TestChanMerFind(t *testing.T) {
 		t.Error("find chanMer unsuccessful ", err)
 		t.FailNow()
 	}
-	g.Debug("find chanMer success %s", chanMer)
+	log.Debugf("find chanMer success %s", chanMer)
 }
 
 func TestChanMerAdd(t *testing.T) {
@@ -32,10 +32,10 @@ func TestChanMerAdd(t *testing.T) {
 	// test:update
 	err := ChanMerColl.Update(chanMer)
 	if err != nil {
-		t.Errorf("add chanMer unsuccessful ", err)
+		t.Errorf("add chanMer unsuccessful %s", err)
 		t.FailNow()
 	}
-	g.Debug("add chanMer success %s", chanMer)
+	log.Debugf("add chanMer success %s", chanMer)
 }
 
 func TestChanMerModify(t *testing.T) {
@@ -54,7 +54,7 @@ func TestChanMerModify(t *testing.T) {
 		t.Errorf("update chanMer unsuccessful %s", err)
 		t.FailNow()
 	}
-	g.Debug("update chanMer success %s", chanMer)
+	log.Debugf("update chanMer success %s", chanMer)
 }
 
 func TestChanMerFindAll(t *testing.T) {
@@ -64,5 +64,5 @@ func TestChanMerFindAll(t *testing.T) {
 		t.Errorf("findAll chanMer unsuccessful %s", err)
 		t.FailNow()
 	}
-	g.Debug("%+v", cs)
+	log.Debugf("%+v", cs)
 }

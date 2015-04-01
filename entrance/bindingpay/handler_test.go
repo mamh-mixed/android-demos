@@ -10,14 +10,19 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-
-	"github.com/omigo/g"
+	"github.com/omigo/log"
 )
+
+func init() {
+	// 日志输出级别
+	log.SetOutputLevel(log.Ldebug)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
+}
 
 func post(req *http.Request, t *testing.T) {
 	w := httptest.NewRecorder()
 	BindingPay(w, req)
-	g.Info("%d - %s", w.Code, w.Body.String())
+	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
 	}
@@ -97,7 +102,7 @@ func doPost(method, url, body string, t *testing.T) {
 
 	w := httptest.NewRecorder()
 	BindingPay(w, req)
-	g.Info("%d - %s", w.Code, w.Body.String())
+	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
 	}
