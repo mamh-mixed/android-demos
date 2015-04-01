@@ -33,9 +33,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	if err != nil {
 		if err.Error() == "not found" {
 			return mongo.RespCodeColl.Get("200110")
-		} else {
-			return
 		}
+		return
 	}
 	log.Debugf("CardBin: %+v", cardBin)
 
@@ -104,15 +103,15 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
-		log.Errorf("find CfcaBankMap ERROR!error message is: %s", err.Error())
+		log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
 		return
 	}
 	bc.BankId = cm.BankId
 
-	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口。
+	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口
 	ret = cfca.ProcessBindingCreate(bc)
 
-	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效。
+	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效
 	switch ret.RespCode {
 	case "000000":
 		bm.BindingStatus = model.BindingSuccess
@@ -124,13 +123,13 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	err = mongo.BindingMapColl.Update(bm)
 	if err != nil {
 		log.Infof("'BindingMap' is: %+v", bm)
-		log.Errorf("'BindingMapColl update' error: ", err.Error())
+		log.Error("'BindingMapColl update' error: ", err)
 	}
 
 	return ret
 }
 
-// ProcessBindingEnquiry 绑定关系查询。
+// ProcessBindingEnquiry 绑定关系查询
 // 先到本地库去查找，如果本地库查找的结果是正在处理中，就到渠道查找；查找完更新到数据库中。
 func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	// 默认返回
@@ -139,7 +138,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 本地查询绑定关系
 	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
 	if err != nil {
-		log.Errorf("'FindBindingMap' error: %s", err.Error())
+		log.Errorf("'FindBindingMap' error: %s", err)
 		return mongo.RespCodeColl.Get("200070")
 	}
 	log.Debugf("binding result: %#v", bm)
@@ -181,7 +180,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 更新绑定关系的状态
 	if err = mongo.BindingMapColl.Update(bm); err != nil {
 		log.Infof("'UpdateBindingMap' is: %+v", bm)
-		log.Errorf("'UpdateBindingRelation' error: ", err.Error())
+		log.Error("'UpdateBindingRelation' error: ", err)
 	}
 
 	return &model.BindingReturn{
@@ -222,9 +221,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	if err != nil {
 		errorTrans.RespCode = "200070"
 		if err = mongo.TransColl.Add(errorTrans); err != nil {
-			log.Errorf("add errorTrans fail: (%s)", err)
+			log.Error("add errorTrans fail: ", err)
 		}
-		log.Errorf("not found any BindingMap: ", err)
+		log.Error("not found any BindingMap: ", err)
 		return mongo.RespCodeColl.Get("200070")
 	}
 
@@ -239,7 +238,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	case model.BindingFail, model.BindingRemoved:
 		errorTrans.RespCode = "200074"
 		if err = mongo.TransColl.Add(errorTrans); err != nil {
-			log.Errorf("add errorTrans fail: (%s)", err)
+			log.Error("add errorTrans fail: ", err)
 		}
 		return mongo.RespCodeColl.Get("200074")
 	}
@@ -249,9 +248,9 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	if err != nil {
 		errorTrans.RespCode = "200070"
 		if err = mongo.TransColl.Add(errorTrans); err != nil {
-			log.Errorf("add errorTrans fail: (%s)", err)
+			log.Error("add errorTrans fail: ", err)
 		}
-		log.Errorf("not found any BindingInfo: ", err)
+		log.Error("not found any BindingInfo: ", err)
 		return mongo.RespCodeColl.Get("200070")
 	}
 
@@ -263,7 +262,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		if err = mongo.TransColl.Add(errorTrans); err != nil {
 			log.Errorf("add errorTrans fail: (%s)", err)
 		}
-		log.Errorf("not found any chanMer: ", err)
+		log.Error("not found any chanMer: ", err)
 		return mongo.RespCodeColl.Get("300030")
 	}
 
@@ -311,7 +310,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		trans.TransStatus = model.TransFail
 	}
 	if err = mongo.TransColl.Update(trans); err != nil {
-		log.Errorf("update trans status fail ", err)
+		log.Error("update trans status fail ", err)
 	}
 	return ret
 }
@@ -323,7 +322,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	// 本地查询绑定关系
 	bm, err := mongo.BindingMapColl.Find(br.MerId, br.BindingId)
 	if err != nil {
-		log.Errorf("'FindBindingRelation' error: ", err.Error())
+		log.Error("'FindBindingRelation' error: ", err)
 		return mongo.RespCodeColl.Get("200070")
 	}
 
@@ -359,7 +358,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	if ret.RespCode == "000000" {
 		bm.BindingStatus = model.BindingRemoved
 		if err := mongo.BindingMapColl.Update(bm); err != nil {
-			log.Errorf("'Update BindingMap' error: ", err.Error())
+			log.Error("'Update BindingMap' error: ", err)
 		}
 	}
 
@@ -422,7 +421,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		if err = mongo.TransColl.Add(errorTrans); err != nil {
 			log.Errorf("add errorTrans fail: (%s)", err)
 		}
-		log.Errorf("not found any chanMer: ", err)
+		log.Error("not found any chanMer: ", err)
 		return mongo.RespCodeColl.Get("300030")
 	}
 
@@ -501,7 +500,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	// 获得渠道商户信息
 	chanMer, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		log.Errorf("not found any chanMer: ", err)
+		log.Error("not found any chanMer: ", err)
 		return mongo.RespCodeColl.Get("300030")
 	}
 

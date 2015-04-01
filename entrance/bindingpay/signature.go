@@ -23,7 +23,7 @@ func CheckSignatureUseSha1(data []byte, key, signature string) bool {
 	// result := SignatureUseSha1(data, key)
 	// return strings.EqualFold(result, signature)
 
-	return true // only for testing
+	return true // TODO only for testing
 }
 
 // CheckSignature 根据商户ID到数据库查找签名密钥，然后进行验签

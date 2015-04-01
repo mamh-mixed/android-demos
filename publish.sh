@@ -5,9 +5,11 @@ set -e
 host="webapp@121.41.85.237"
 prog="quickpay"
 
+### 这个脚本是通用，下面无需改动 ###
+
 # Golang 跨平台编译
 echo "=== Building $prog..."
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog quickpay.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
 
 # 上传文件
 echo
@@ -22,8 +24,8 @@ ssh $host << EOF
 cd ~/$prog
 
 echo
-ps -ef | grep $prog
 echo "=== Killing $prog process..."
+ps -ef | grep $prog
 killall $prog
 
 echo
