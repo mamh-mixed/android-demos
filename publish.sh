@@ -1,10 +1,44 @@
 #/bin/bash
 
-set -ex
+set -e
 
 host="webapp@121.41.85.237"
+prog="quickpay"
 
-rsync -av --exclude=.git --exclude=.idea --exclude=static/node_modules --exclude=logs --delete \
- . $host:~/gowork/src/github.com/CardInfoLink/quickpay/
+# Golang 跨平台编译
+echo "=== Building $prog..."
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog quickpay.go
 
- ssh $host 'cd  ~/gowork/src/github.com/CardInfoLink/quickpay/ && ./run.sh'
+# 上传文件
+echo
+echo "=== Uploading $prog..."
+rsync -v --progress quickpay $host:~/$prog/
+
+# 远程执行重启命令
+echo
+echo "=== SSH $host"
+ssh $host << EOF
+
+cd ~/$prog
+
+echo
+ps -ef | grep $prog
+echo "=== Killing $prog process..."
+killall $prog
+
+echo
+echo "=== Starting $prog process ..."
+mkdir -p logs
+nohup ./$prog >> logs/$prog.log 2>&1 &
+ps -ef | grep $prog
+
+echo
+echo "=== Sleep 3 seconds..."
+sleep 3
+tail -n 10 logs/$prog.log
+
+echo
+echo "=== Publish done."
+exit
+
+EOF
