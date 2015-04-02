@@ -1,14 +1,12 @@
 package core
 
 import (
-	"strings"
-
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-
 	"github.com/omigo/log"
+	"strings"
 )
 
 // ProcessBindingCreate 绑定建立的业务处理
