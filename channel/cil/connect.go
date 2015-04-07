@@ -6,83 +6,155 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/omigo/log"
 )
 
-var addr = "192.168.1.102:7823"
+var sendQueue = make(chan *CilMsg, 100)
+var recvMap = make(map[string]chan *CilMsg, 400)
+var mapMutex sync.RWMutex
 
-// var addr = "localhost:8080"
+// send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
+// 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
+// 注意：如果上游请求延迟较大，这个方法会阻塞。
+func send(msg *CilMsg) (back *CilMsg) {
+	// 串行写入，以免写入错乱
+	sendQueue <- msg
 
-func init() {
-	connect()
+	// 交易唯一流水号
+	sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
+	log.Debugf("send %s", sn)
 
+	// 结果会异步写入到这个管道中
+	c := make(chan *CilMsg)
+
+	mapMutex.Lock()
+	recvMap[sn] = c
+	mapMutex.Unlock()
+
+	// 等待结果返回
+	back = <-c
+	log.Debugf("recv %s", sn)
+
+	// 返回后，清除这个 key
+	mapMutex.Lock()
+	delete(recvMap, sn)
+	mapMutex.Unlock()
+	log.Debugf("delete %s", sn)
+
+	return back
 }
 
-func connect() {
-	conn, err := net.Dial("tcp", addr)
+// var addr = "localhost:8080"
+var addr = "192.168.1.102:7823"
+var conn net.Conn
+
+func init() {
+	var err error
+	conn, err = net.Dial("tcp", addr)
 	if err != nil {
-		log.Error(err.Error())
+		log.Fatal(err.Error())
 	}
-	defer conn.Close()
+	// defer conn.Close()
 	log.Infof("connect to cil channel %s", addr)
 
 	conn.SetDeadline(time.Now().Add(24 * time.Hour))
 
-	go read(conn)
-	go write(conn)
+	go func() {
+		for {
+			msg, err := read()
+			if err != nil {
+				log.Error(err)
+			}
+			//  如果 msg == nil && err == nil, 表示 keepalive
+			if msg == nil {
+				log.Info("recv keepalive")
+				continue
+			}
 
-	select {}
+			sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
+			log.Debugf("read: %s", sn)
+
+			// 根据交易流水号取到存放结果的管道
+			mapMutex.RLock()
+			c := recvMap[sn]
+			mapMutex.RUnlock()
+
+			c <- msg
+		}
+	}()
+	go func() {
+
+		for {
+			select {
+			case msg := <-sendQueue:
+				write(msg)
+				sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
+				log.Debugf("write: %s", sn)
+			case <-time.After(60 * time.Second):
+				log.Info("send keepalive")
+				keepalive()
+			}
+		}
+	}()
 }
 
-func read(conn net.Conn) {
+func read() (back *CilMsg, err error) {
+	mLenByte := make([]byte, 4)
 
-	for {
-		// 初始为空
-		mLenByte := make([]byte, 4)
-		msg := make([]byte, 9999)
+	_, err = conn.Read(mLenByte)
+	log.Check("read length error: ", err)
 
-		_, err := conn.Read(mLenByte)
-		log.Check("read length error: ", err)
+	mlen, err := strconv.Atoi(string(mLenByte))
+	if err != nil {
+		log.Errorf("can not convert string %s to int: %s", mLenByte, err)
+	}
 
-		mlen, err := strconv.Atoi(string(mLenByte))
+	switch {
+	case mlen > 9999 || mlen < 0:
+		log.Errorf("read error message length %d", mlen)
+	case mlen == 0:
+		log.Errorf("read keepalive length %d", mlen)
+		return nil, nil
+	}
+
+	log.Debugf("message length %d", mlen)
+
+	msg := make([]byte, mlen)
+	var size int
+	for size < mlen {
+		log.Debug(size)
+		rlen, err := conn.Read(msg[size:])
 		if err != nil {
-			log.Errorf("can not convert string %s to int: %s", mLenByte, err)
-		}
-
-		var size int
-		for size < mlen {
-			rlen, err := conn.Read(msg[size:])
-			if err != nil {
-				if err == io.EOF {
-					// read end
-					break
-				}
-				log.Error(err)
+			if err == io.EOF {
+				// read end
 				break
 			}
-			size += rlen
-		}
-
-		log.Debugf("recieve message: %d %s", size, msg)
-
-		// read err or read end
-		if err != nil {
+			log.Error(err)
 			break
 		}
+		size += rlen
 	}
+
+	log.Debugf("recieve message: %d %s", size, msg)
+
+	back = &CilMsg{}
+	err = json.Unmarshal(msg, back)
+	log.Checkf("msg(% x) can not unmarshal to object", msg, err)
+
+	return back, err
 }
 
-func write(conn net.Conn) {
-	msg := NewConsumeCilMsg()
+func write(msg *CilMsg) (err error) {
+	// log.Debugf("%#v", msg)
 
 	jsonBytes, err := json.Marshal(msg)
 	if err != nil {
 		log.Error(err)
-		return
+		return err
 	}
-	jsonBytes = []byte(`{"busicd": "500000", "txndir": "Q", "posentrymode": "022", "txamt": "000000001000", "txdt": "0926115934", "localdt": "0926115934", "cardcd": "9559970030000000215", "trackdata2": "9559970030000000215=00002101815546", "trackdata3": "", "cardpin": "", "syssn": "101213113013", "clisn": "115934", "inscd": "30512900", "chcd": "04012900", "mchntid": "0002220F0002804", "terminalid": "60000005", "mcc": "4816", "txcurrcd": "156", "billingcurr": "156", "regioncd": "0156", "mchntnm": "shanghai test                           ", "nminfo": "PKE", "cardseqnum": "001", "iccdata": "", "termreadability": "5", "icccondcode": "0", "outgoingacct": "9559970030000000215", "incomingacct": "4682030210337444", "custmrtp": "01", "custmracnt": "130412", "paymd": "01", "goodscd": "19100059", "billyymm": "201201", "chname": "", "inchname": "涓婃捣娴嬭瘯", "phonenum": "13611111111", "cvv2": "111", "paymethod": "3", "billinscd": "888880000502900", "barcd": "539100060832536001034816", "psamcd": "1234567890123456", "txnmode": "1", "termserialcd": "1234567890123", "expiredate": "1605", "usagetags": "12"}`)
 
 	mLen := len(jsonBytes)
 	mLenStr := fmt.Sprintf("%04d", mLen)
@@ -90,14 +162,23 @@ func write(conn net.Conn) {
 	_, err = io.WriteString(conn, mLenStr)
 	if err != nil {
 		log.Error("write len error", err)
-		return
+		return err
 	}
 
 	_, err = conn.Write(jsonBytes)
 	if err != nil {
 		log.Error("write len error", err)
-		return
+		return err
 	}
 
 	log.Debugf("write message: %s %s", mLenStr, jsonBytes)
+
+	return nil
+}
+
+func keepalive() {
+	_, err := io.WriteString(conn, "0000")
+	if err != nil {
+		log.Error("write len error", err)
+	}
 }
