@@ -12,10 +12,6 @@ import (
 	"github.com/omigo/log"
 )
 
-var sendQueue = make(chan *CilMsg, 100)
-var recvMap = make(map[string]chan *CilMsg, 400)
-var mapMutex sync.RWMutex
-
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
 // 注意：如果上游请求延迟较大，这个方法会阻塞。
@@ -25,7 +21,7 @@ func send(msg *CilMsg) (back *CilMsg) {
 
 	// 交易唯一流水号
 	sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
-	log.Debugf("send %s", sn)
+	log.Debugf("send: %s", sn)
 
 	// 结果会异步写入到这个管道中
 	c := make(chan *CilMsg)
@@ -36,22 +32,29 @@ func send(msg *CilMsg) (back *CilMsg) {
 
 	// 等待结果返回
 	back = <-c
-	log.Debugf("recv %s", sn)
+	log.Debugf("recv: %s", sn)
 
 	// 返回后，清除这个 key
 	mapMutex.Lock()
 	delete(recvMap, sn)
 	mapMutex.Unlock()
-	log.Debugf("delete %s", sn)
+	log.Debugf("delete: %s", sn)
 
 	return back
 }
 
-// var addr = "localhost:8080"
+var sendQueue = make(chan *CilMsg, 100)
+var recvMap = make(map[string]chan *CilMsg, 400)
+var mapMutex sync.RWMutex
+
 var addr = "192.168.1.102:7823"
 var conn net.Conn
 
 func init() {
+	initConn()
+}
+
+func initConn() {
 	var err error
 	conn, err = net.Dial("tcp", addr)
 	if err != nil {
@@ -60,52 +63,79 @@ func init() {
 	// defer conn.Close()
 	log.Infof("connect to cil channel %s", addr)
 
-	conn.SetDeadline(time.Now().Add(24 * time.Hour))
+	// 循环接收
+	go recv0()
 
-	go func() {
-		for {
-			msg, err := read()
+	// 循环发送
+	go send0()
+}
+
+func restart() {
+	log.Warn("connection error, connecting...")
+	conn.Close()
+	initConn()
+}
+
+func recv0() {
+	defer restart()
+	for {
+		msg, err := read()
+		if err != nil {
+			log.Error(err)
+		}
+		//  如果 msg == nil && err == nil, 表示 keepalive
+		if msg == nil {
+			log.Info("recv keepalive")
+			continue
+		}
+
+		sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
+		log.Debugf("read: %s", sn)
+
+		// 根据交易流水号取到存放结果的管道
+		mapMutex.RLock()
+		c := recvMap[sn]
+		mapMutex.RUnlock()
+
+		c <- msg
+
+		//  如果读取错误或链接断开 EOF 直接返回
+		if err != nil {
+			return
+		}
+	}
+}
+
+func send0() {
+	defer restart()
+	for {
+		select {
+		case msg := <-sendQueue:
+			err := write(msg)
+			//  如果写入错误或链接断开 EOF 直接返回
 			if err != nil {
-				log.Error(err)
+				return
 			}
-			//  如果 msg == nil && err == nil, 表示 keepalive
-			if msg == nil {
-				log.Info("recv keepalive")
-				continue
-			}
-
 			sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
-			log.Debugf("read: %s", sn)
-
-			// 根据交易流水号取到存放结果的管道
-			mapMutex.RLock()
-			c := recvMap[sn]
-			mapMutex.RUnlock()
-
-			c <- msg
-		}
-	}()
-	go func() {
-
-		for {
-			select {
-			case msg := <-sendQueue:
-				write(msg)
-				sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
-				log.Debugf("write: %s", sn)
-			case <-time.After(60 * time.Second):
-				log.Info("send keepalive")
-				keepalive()
+			log.Debugf("write: %s", sn)
+		case <-time.After(5 * time.Second):
+			log.Info("send keepalive")
+			err := keepalive()
+			if err != nil {
+				return
 			}
 		}
-	}()
+	}
 }
 
 func read() (back *CilMsg, err error) {
 	mLenByte := make([]byte, 4)
 
 	_, err = conn.Read(mLenByte)
-	log.Check("read length error: ", err)
+	if err != nil {
+		log.Debug("read length error: ", err)
+		return nil, err
+	}
 
 	mlen, err := strconv.Atoi(string(mLenByte))
 	if err != nil {
@@ -116,7 +146,7 @@ func read() (back *CilMsg, err error) {
 	case mlen > 9999 || mlen < 0:
 		log.Errorf("read error message length %d", mlen)
 	case mlen == 0:
-		log.Errorf("read keepalive length %d", mlen)
+		log.Debugf("read keepalive length %d", mlen)
 		return nil, nil
 	}
 
@@ -176,9 +206,10 @@ func write(msg *CilMsg) (err error) {
 	return nil
 }
 
-func keepalive() {
-	_, err := io.WriteString(conn, "0000")
+func keepalive() (err error) {
+	_, err = io.WriteString(conn, "0000")
 	if err != nil {
 		log.Error("write len error", err)
 	}
+	return err
 }
