@@ -54,49 +54,59 @@ func aesCFBDecrypt(ct string) string {
 	return string(ciphertext)
 }
 
-// aesCBCDecrypt cbc mode
+// aesCBCEncrypt cbc mode
 func aesCBCEncrypt(pt string) string {
 
 	plaintext := PKCS5Padding([]byte(pt), aes.BlockSize)
 
 	if len(plaintext)%aes.BlockSize != 0 {
-		log.Panicln("plaintext is not a multiple of the block size")
+		log.Error("plaintext is not a multiple of the block size")
+		return pt
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		log.Panicln(err)
+		log.Error(err)
+		return pt
 	}
 
 	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
 	iv := ciphertext[:aes.BlockSize]
+	// 随机生成16个字节数组
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		log.Panicln(err)
+		log.Error(err)
+		return pt
 	}
-
 	mode := cipher.NewCBCEncrypter(block, iv)
 	mode.CryptBlocks(ciphertext[aes.BlockSize:], plaintext)
-
+	// mode.CryptBlocks(ciphertext, plaintext)
 	return hex.EncodeToString(ciphertext)
 }
 
 // aesCBCDecrypt cbc mode
 func aesCBCDecrypt(ct string) string {
 
-	ciphertext, _ := hex.DecodeString(ct)
+	ciphertext, err := hex.DecodeString(ct)
+	if err != nil {
+		log.Error(err)
+		return ct
+	}
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		log.Panicln(err)
+		log.Error(err)
+		return ct
 	}
 
 	if len(ciphertext) < aes.BlockSize {
-		log.Panicln("ciphertext too short")
+		log.Error("ciphertext too short")
+		return ct
 	}
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
 
 	if len(ciphertext)%aes.BlockSize != 0 {
-		log.Panicln("ciphertext is not a multiple of the block size")
+		log.Error("ciphertext is not a multiple of the block size")
+		return ct
 	}
 
 	mode := cipher.NewCBCDecrypter(block, iv)

@@ -96,6 +96,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
 	bc.SignCert = chanMer.SignCert
+	// TODO 对加密的字段进行解密再送往渠道方
+
 	log.Debugf("'BindingCreate' is: %+v", bc)
 
 	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
