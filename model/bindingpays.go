@@ -153,3 +153,15 @@ type NoTrackPayment struct {
 	SendSmsId   string `json:"sendSmsId"`   // 发送短信验证码的交易流水
 	SmsCode     string `json:"smsCode"`     // 短信验证码
 }
+
+// Appyle pay
+type ApplePay struct {
+	MerId         string `json:"merId"`         //商户ID
+	TransType     string `json:"transType"`     //子交易类型
+	SubMerId      string `json:"subMerId"`      //子商户号
+	TerminalId    string `json:"terminalId"`    //终端号
+	MerOrderNum   string `json:"merOrderNum"`   //商户订单号
+	TransactionId string `json:"transactionId"` //ApplePay标识
+	ApplePayData  string `json:"applePayData"`  //ApplePay数据
+	SignCert      string //签名密钥
+}
