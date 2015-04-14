@@ -24,4 +24,6 @@ func init() {
 	database = session.DB(dbname)
 
 	log.Infof("connected to mongodb %s database %s", host, dbname)
+
+	buildTree()
 }
