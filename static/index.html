@@ -1,1 +1,89 @@
-Quickpay is running!
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>Tutorial SPA Demo</title>
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <link rel="stylesheet" href="index.css" shim-shadowdom>
+
+    <link rel="import" href="bower_components/core-animated-pages/core-animated-pages.html">
+    <link rel="import" href="bower_components/core-animated-pages/transitions/slide-from-right.html">
+    <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
+    <link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
+    <link rel="import" href="bower_components/core-icon/core-icon.html">
+    <link rel="import" href="bower_components/core-menu/core-menu.html">
+    <link rel="import" href="bower_components/paper-item/paper-item.html">
+    <link rel="import" href="bower_components/flatiron-director/flatiron-director.html">
+    <link rel="import" href="bower_components/font-roboto/roboto.html">
+    <link rel="import" href="bower_components/core-a11y-keys/core-a11y-keys.html">
+    <link rel="import" href="bower_components/core-ajax/core-ajax.html">
+
+    <style>
+        core-animated-pages > *  {
+            font-size: inherit;
+            overflow-y: auto;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body unresolved fullbleed>
+
+<template is="auto-binding" id="t">
+
+    <!-- Route controller. -->
+    <flatiron-director route="{{route}}" autoHash></flatiron-director>
+
+    <!-- Keyboard nav controller. -->
+    <core-a11y-keys id="keys" target="{{parentElement}}"
+                    keys="up down left right space space+shift"
+                    on-keys-pressed="{{keyHandler}}"></core-a11y-keys>
+
+    <!-- Dynamic content controller -->
+    <core-ajax id="ajax" url="{{selectedPage.page.url}}" handleAs="document"
+               on-core-response="{{onResponse}}"></core-ajax>
+
+    <core-scaffold id="scaffold">
+
+        <nav>
+            <core-toolbar>
+                <span>快捷支付</span>
+            </core-toolbar>
+            <core-menu id="menu" valueattr="hash"
+                       selected="{{route}}"
+                       selectedModel="{{selectedPage}}"
+                       on-core-select="{{menuItemSelected}}" on-click="{{ajaxLoad}}">
+                <template repeat="{{page, i in pages}}">
+                    <paper-item hash="{{page.hash}}" noink>
+                        <core-icon icon="label{{route != page.hash ? '-outline' : ''}}"></core-icon>
+                        <a href="{{page.url}}">{{page.name}}</a>
+                    </paper-item>
+                </template>
+            </core-menu>
+        </nav>
+
+        <core-toolbar tool flex>
+            <div flex>{{selectedPage.page.name}}</div>
+            <core-icon-button icon="refresh"></core-icon-button>
+            <core-icon-button icon="add"></core-icon-button>
+        </core-toolbar>
+
+        <div layout horizontal center-center fit>
+            <core-animated-pages id="pages" selected="{{route}}" valueattr="hash"
+                                 transitions="slide-from-right">
+                <template repeat="{{page, i in pages}}">
+                    <section hash="{{page.hash}}" layout vertical>
+                        <div style="max-width:100%;">Loading...</div>
+                    </section>
+                </template>
+            </core-animated-pages>
+        </div>
+
+    </core-scaffold>
+
+</template>
+
+<script src="index.js"></script>
+</body>
+</html>

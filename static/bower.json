@@ -1,0 +1,30 @@
+{
+  "name": "quickpay",
+  "version": "0.0.1",
+  "homepage": "https://github.com/omigo/quickpay",
+  "authors": [
+    "O' Migo <shangxuejin@gmail.com>"
+  ],
+  "description": "test quickpay and test polymer",
+  "main": "index.html",
+  "keywords": [
+    "quickpay",
+    "binding",
+    "payment",
+    "applepay"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer",
+    "core-elements": "Polymer/core-elements",
+    "paper-elements": "Polymer/paper-elements",
+    "flatiron-director": "PolymerLabs/flatiron-director"
+  }
+}
