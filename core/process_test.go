@@ -78,7 +78,8 @@ func TestProcessBindingPayment(t *testing.T) {
 	if ret.RespCode == "" {
 		t.Errorf("process payment but not get a respCode %+v", ret)
 	}
-	t.Logf("%+v", ret)
+	// t.Logf("%+v", ret)
+	log.Debugf("%+v", ret)
 }
 
 func TestProcessBindingRefund(t *testing.T) {

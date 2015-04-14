@@ -2,7 +2,7 @@
 
 set -e
 
-host="webapp@121.41.85.237"
+host="webapp@tdd.ipay.so"
 prog="quickpay"
 
 ### 这个脚本是通用，下面无需改动 ###

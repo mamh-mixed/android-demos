@@ -5,6 +5,10 @@ import (
 	"github.com/omigo/log"
 )
 
+var Obj cfca
+
+type cfca struct{}
+
 // 中金交易类型
 const (
 	version              = "2.0"
@@ -20,7 +24,7 @@ const (
 )
 
 // ProcessBindingEnquiry 查询绑定关系
-func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
+func (c *cfca) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
 		Version: version,
@@ -45,7 +49,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 }
 
 // ProcessBindingCreate 建立绑定关系
-func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
+func (c *cfca) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	//组装参数
 	req := &BindingRequest{
 		Version: version,
@@ -75,7 +79,7 @@ func ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 }
 
 // ProcessBindingRemove 解除绑定关系
-func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
+func (c *cfca) ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
 		Version: version,
@@ -100,7 +104,7 @@ func ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 }
 
 // ProcessBindingPayment 快捷支付
-func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+func (c *cfca) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 
 	//组装参数
 	req := &BindingRequest{
@@ -127,7 +131,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 }
 
 // ProcessPaymentEnquiry 快捷支付查询
-func ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+func (c *cfca) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	//组装参数
 	req := &BindingRequest{
@@ -150,7 +154,7 @@ func ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 }
 
 // ProcessBindingRefund 快捷支付退款
-func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
+func (c *cfca) ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	//组装参数
 	req := &BindingRequest{
@@ -175,7 +179,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 }
 
 // ProcessRefundEnquiry 快捷支付退款查询
-func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+func (c *cfca) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	//组装参数
 	req := &BindingRequest{
@@ -197,7 +201,7 @@ func ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 }
 
 // ProcessTransChecking 交易对账，清算
-func ProcessTransChecking(chanMerId, settDate, singCert string) (resp *BindingResponse) {
+func (c *cfca) ProcessTransChecking(chanMerId, settDate, signCert string) (resp *BindingResponse) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
 		Version: version,
@@ -208,7 +212,7 @@ func ProcessTransChecking(chanMerId, settDate, singCert string) (resp *BindingRe
 			InstitutionID: chanMerId,
 			Date:          settDate,
 		},
-		SignCert: singCert,
+		SignCert: signCert,
 	}
 	//请求
 	resp = sendRequest(req)
