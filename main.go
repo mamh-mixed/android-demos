@@ -16,7 +16,7 @@ func main() {
 
 	http.HandleFunc("/quickpay/", bindingpay.BindingPay)
 
-	addr := ":3000"
+	addr := ":3009"
 	log.Debugf("QuickPay is running on %s", addr)
 	log.Fatal(http.ListenAndServe(addr, nil))
 }

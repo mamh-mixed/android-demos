@@ -5,6 +5,7 @@ import (
 	// "github.com/CardInfoLink/quickpay/model"
 	// "io/ioutil"
 	// "strconv"
+	"github.com/omigo/log"
 	"testing"
 )
 
@@ -46,6 +47,14 @@ func TestCardBinImport(t *testing.T) {
 }
 */
 
+func TestLoadAll(t *testing.T) {
+	cbs, err := CardBinColl.LoadAll()
+	if err != nil {
+		t.Error(err)
+	}
+	log.Debugf("%d", len(cbs))
+}
+
 func TestFindCardBin(t *testing.T) {
 
 	cardBin, err := CardBinColl.Find(cardNum)
@@ -55,4 +64,14 @@ func TestFindCardBin(t *testing.T) {
 	if cardBin != nil && cardBin.Bin != "622280193" {
 		t.Errorf("cardNum %s prefix is not %s", cardNum, cardBin.Bin)
 	}
+}
+
+func TestBuildTree(t *testing.T) {
+
+	s := tree.match(cardNum)
+	if s != "622280193" {
+		t.Errorf("expect cardBin : 622280193,but get : %s", s)
+		t.FailNow()
+	}
+	log.Debugf("%+s , %+v\n", s, tree)
 }
