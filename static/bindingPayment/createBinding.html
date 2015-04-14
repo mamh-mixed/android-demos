@@ -4,8 +4,48 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>创建绑定关系</title>
+
+
 </head>
 <body>
-创建绑定关系
+
+<template is="auto-binding" id="userForm">
+<form>
+    <template repeat="{{e in elems}}">
+        <paper-input-decorator floatingLabel label="{{e.label}}"  class="custom" autoValidate error="{{e.error}}">
+            <core-tooltip label="{{e.tooltip}}" position="top">
+                <input id="{{e.id}}" is="core-input" maxlength="{{e.maxlength}}" required>
+            </core-tooltip>
+            <paper-char-counter class="counter" target="{{e.id}}" ></paper-char-counter>
+        </paper-input-decorator>
+    </template>
+
+    <paper-button class="colored" raised onclick="send()">Send Message</paper-button>
+
+</form>
+</template>
+
+<paper-toast id="toast2" role="alert" text="Connection timed out. Showing limited messages.">
+    <div style="color: #eeff41;" onclick="console.log('RETRY')">Retry</div>
+</paper-toast>
+
+
+<script>
+
+    var form = document.querySelector('#userForm');
+
+    form.elems = [
+        {id: 'bindingId2', label: "银行卡绑定ID", error: "必填，最长 32 个字符", maxlength: "32", "tooltip": '接入商户自行指定，同商户全局唯一，后续支付凭证'},
+        {id: 'bindingId3', label: "银行卡绑定ID", error: "必填，最长 32 个字符", maxlength: "32"},
+        {id: 'bindingId4', label: "银行卡绑定ID", error: "必填，最长 32 个字符", maxlength: "32"},
+        {id: 'bindingId5', label: "银行卡绑定ID", error: "必填，最长 32 个字符", maxlength: "32"},
+        {id: 'bindingId6', label: "银行卡绑定ID", error: "必填，最长 32 个字符", maxlength: "32"}
+    ];
+
+    function discardDraft() {
+        var el = document.querySelector('#toast2')
+        el.show();
+    }
+</script>
 </body>
 </html>

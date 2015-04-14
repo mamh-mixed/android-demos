@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    var DEFAULT_ROUTE = 'one';
+    var DEFAULT_ROUTE = 'three';
 
     var template = document.querySelector('#t');
     var ajax, pages, scaffold;
@@ -10,8 +10,9 @@
     template.pages = [
         {name: '创建绑定关系', hash: 'one', url: 'bindingPayment/createBinding.html'},
         {name: '绑定支付', hash: 'two', url: 'bindingPayment/bindingPayment.html'},
-        {name: 'Shadow DOM 301', hash: 'three', url: '//www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/'},
-        {name: 'Custom Elements', hash: 'four', url: '//www.html5rocks.com/en/tutorials/webcomponents/customelements/'}
+        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: 'Shadow DOM 301', hash: 'four', url: '//www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/'},
+        {name: 'Custom Elements', hash: 'five', url: '//www.html5rocks.com/en/tutorials/webcomponents/customelements/'}
     ];
 
     template.addEventListener('template-bound', function(e) {
@@ -22,12 +23,12 @@
 
         // Allow selecting pages by num keypad. Dynamically add
         // [1, template.pages.length] to key mappings.
-        var keysToAdd = Array.apply(null, template.pages).map(function(x, i) {
-            return i + 1;
-        }).reduce(function(x, y) {
-            return x + ' ' + y;
-        });
-        keys.keys += ' ' + keysToAdd;
+//        var keysToAdd = Array.apply(null, template.pages).map(function(x, i) {
+//            return i + 1;
+//        }).reduce(function(x, y) {
+//            return x + ' ' + y;
+//        });
+//        keys.keys += ' ' + keysToAdd;
 
         this.route = this.route || DEFAULT_ROUTE; // Select initial route.
     });
@@ -75,7 +76,7 @@
     };
 
     template.onResponse = function(e, detail, sender) {
-        var article = detail.response.querySelector('body');
+        var article = detail.response.documentElement;
 //
 //        article.querySelector('.byline').remove();
 //
