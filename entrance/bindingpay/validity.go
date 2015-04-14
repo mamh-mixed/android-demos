@@ -170,3 +170,23 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 
 	return nil
 }
+
+func validateApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
+	if ap.TransType == "" {
+		return model.NewBindingReturn("200050", "字段 transType 不能为空")
+	}
+	if ap.MerOrderNum == "" {
+		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
+	}
+	if ap.TransactionId == "" {
+		return model.NewBindingReturn("200050", "字段 transactionId 不能为空")
+	}
+	if ap.ApplePayData == "" {
+		return model.NewBindingReturn("200050", "字段 applePayData 不能为空")
+	}
+
+	if ap.TransType != "SALE" && ap.TransType != "AUTH" {
+		return model.NewBindingReturn("100030", "不支持此类交易")
+	}
+	return nil
+}

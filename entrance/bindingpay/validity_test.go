@@ -178,3 +178,28 @@ func validateTestNoTrackPayment(t *testing.T) {
 		t.Error("测试无卡支付失败，返回信息： %+v", ret)
 	}
 }
+
+func TestValidateApplyPay(t *testing.T) {
+	var ap = &model.ApplePay{
+		TransType:     "SALE",
+		MerOrderNum:   "100000000018",
+		TransactionId: "49170302b04f74b56b0060f33e11a135134e48e8af80a50cefea6c079353b419",
+		ApplePayData:  "kljljljlljlkjdkljsjdsjlkjslkfjdlksjfkljlskdjfklj",
+	}
+
+	ret := validateApplePay(ap)
+
+	if ret != nil {
+		t.Errorf("验证apple pay 数据失败", ret)
+	}
+
+	ap.TransType = "wsj"
+
+	ret = validateApplePay(ap)
+
+	if ret == nil {
+		t.Error("验证apple pay 数据失败")
+	}
+
+	t.Logf("%+v", ret)
+}
