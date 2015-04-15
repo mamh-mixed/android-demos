@@ -163,7 +163,9 @@ type ApplePay struct {
 	MerOrderNum   string       `json:"merOrderNum"`          //商户订单号
 	TransactionId string       `json:"transactionId"`        //ApplePay标识
 	ApplePayData  ApplePayData `json:"applePayData"`         //ApplePay数据
-	SignCert      string       //签名密钥
+	SignCert      string       `json:"signCert,omitempty"`   //签名密钥
+	Chcd          string       `json:"chcd,omitempty"`       //下游商户配置的渠道机构号
+	Mchntid       string       `json:"mchntid,omitempty"`    //下游商户配置的渠道商户号
 }
 
 // ApplePayData applePay数据
@@ -180,6 +182,6 @@ type ApplePayData struct {
 // PaymentData 支付数据
 type PaymentData struct {
 	OnlinePaymentCryptogram string `json:"merId,omitempty"`        // 3D Secure类型的在线支付密码
-	EciIndicator            string `json:"eciIndicator,omitempty"` // 3D Secure类型的Eci指示符
+	EciIndicator            string `json:"eciIndicator,omitempty"` // 线上 3D Secure 交易发卡行验证结果
 	EmvData                 string `json:"emvData,omitempty"`      // EMV类型的支付数据，到线下网关的时候存到iccdata里面
 }

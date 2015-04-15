@@ -117,6 +117,8 @@ type ChanMer struct {
 	WxpAppId       string `bson:"wxpAppId,omitempty"`       //微信支付App Id
 	WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty"`  //微信支付Partner Key
 	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty"` //微信支付加密证书
+	InsCode        string `bson:"insCode,omitempty"`        //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId     string `bson:"terminalId,omitempty"`     //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
 	//...
 }
 
