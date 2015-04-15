@@ -24,7 +24,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	log.Debugf("商户报文: %s", data)
+	log.Debugf("from mer msg: %s", data)
 
 	var ret *model.BindingReturn
 
@@ -59,7 +59,6 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(404)
 		}
 	}
-	log.Debugf("处理后报文: %+v", ret)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -70,6 +69,7 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 	sign = Signature(rdata, merId)
 	w.Header().Set("X-Sign", sign)
 
+	log.Debugf("to mer msg: %s", rdata)
 	w.Write(rdata)
 }
 

@@ -25,14 +25,11 @@
 
     <paper-button id="submitForm" class="colored" raised on-core-click="{{send()}}">Send Message</paper-button>
 
-
     <paper-toast id="toast2" role="alert" text="{{rcvd}}">
         <div style="color: #eeff41;" onclick="console.log('RETRY')">Retry</div>
     </paper-toast>
 
 </template>
-
-
 
 <script>
     (function() {
@@ -68,10 +65,12 @@
             for (var i = 0; i < userFormTpl.elems.length; i++) {
                 postAjax.body[userFormTpl.elems[i].name] = userFormTpl.elems[i].value;
             }
-            postAjax.headers='{"X-Sign": "xxxxx"}';
+            postAjax.body = JSON.stringify(postAjax.body);
+            var hash = CryptoJS.SHA1(postAjax.body + '8B584AC4157F0A61');
+            postAjax.headers='{"X-Sign": "' + hash +'"}';
 
-            console.log( postAjax.url);
-            console.log( postAjax.body);
+            // console.log( postAjax.url);
+            // console.log( postAjax.body);
             postAjax.go();
 
             var el = document.querySelector('#toast2');
