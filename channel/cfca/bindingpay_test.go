@@ -131,6 +131,6 @@ func TestProcessTransChecking(t *testing.T) {
 	// 	SettDate:  "2015-03-19",
 	// 	SignCert:  priKeyPem,
 	// }
-	resp := Obj.ProcessTransChecking(chanMerId, "2015-03-20", priKeyPem)
+	resp := Obj.ProcessTransChecking(chanMerId, "2015-04-13", priKeyPem)
 	log.Debugf("response message  %s", resp)
 }

@@ -66,10 +66,7 @@ func (c *cardBinCollection) LoadAll() ([]*model.CardBin, error) {
 }
 
 // node 节点信息
-type node struct {
-	Keys     []int8
-	Children *node
-}
+type node [10]*node
 
 // TrieTree 前缀树
 type TrieTree struct {
@@ -77,24 +74,15 @@ type TrieTree struct {
 }
 
 func (t *TrieTree) build(word string) {
-
+	// 根节点开始
 	root := &t.Root
 	for i := 0; i < len(word); i++ {
-
-		c, err := strconv.Atoi(string(word[i]))
-		if err != nil {
-			continue
+		index, _ := strconv.Atoi(string(word[i]))
+		k := root[index]
+		if k == nil {
+			root[index] = new(node)
 		}
-		keys := root.Keys
-		if root.Children == nil {
-			root.Children = new(node)
-		}
-		if keys == nil {
-			keys = make([]int8, 10, 10)
-		}
-		keys[c] = int8(c)
-		root.Keys = keys
-		root = root.Children
+		root = root[index]
 	}
 }
 
@@ -102,17 +90,14 @@ func (t *TrieTree) match(cardNum string) string {
 	s := ""
 	root := &t.Root
 	for i := 0; i < len(cardNum); i++ {
-		c, _ := strconv.Atoi(string(cardNum[i]))
-		if root.Keys == nil {
+		index, _ := strconv.Atoi(string(cardNum[i]))
+		k := root[index]
+		if k == nil {
 			break
 		}
-		key := root.Keys[c]
-		if c != 0 && key == 0 {
-			break
-		}
-		// log.Debugf("%d", c)
-		s += strconv.Itoa(c)
-		root = root.Children
+		s += strconv.Itoa(index)
+		root = root[index]
 	}
+
 	return s
 }
