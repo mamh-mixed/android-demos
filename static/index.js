@@ -8,11 +8,14 @@
     var cache = {};
 
     template.pages = [
-        {name: '创建绑定关系', hash: 'one', url: 'bindingPayment/createBinding.html'},
-        {name: '绑定支付', hash: 'two', url: 'bindingPayment/bindingPayment.html'},
+        {name: '创建绑定关系', hash: 'createBinding', url: 'bindingPayment/createBinding.html'},
+        {name: '绑定支付',     hash: 'bindingPayment', url: 'bindingPayment/bindingPayment.html'},
         {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: 'Shadow DOM 301', hash: 'four', url: '//www.html5rocks.com/en/tutorials/webcomponents/shadowdom-301/'},
-        {name: 'Custom Elements', hash: 'five', url: '//www.html5rocks.com/en/tutorials/webcomponents/customelements/'}
+        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
     ];
 
     template.addEventListener('template-bound', function(e) {

@@ -6,6 +6,24 @@
     <title>绑定支付</title>
 </head>
 <body>
-绑定支付
+
+    <quickpay-test
+        url="/quickpay/bindingEnquiry"
+        elems = '[
+         {
+             "id": "bindingId",
+             "name": "bindingId",
+             "label": "银行卡绑定ID",
+             "tooltip": "建立绑定关系时的银行卡绑定ID",
+             "value": "",
+             "required": true,
+             "maxlength": "32",
+             "autoValidate": true,
+             "error": "必填，最长 32 个字符"
+         }
+        ]'
+        >
+    </quickpay-test>
+
 </body>
 </html>

@@ -1,0 +1,146 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+
+    <link rel="import" href="../bower_components/paper-input/paper-input-decorator.html">
+    <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
+    <link rel="import" href="../bower_components/paper-button/paper-button.html">
+    <link rel="import" href="../bower_components/core-field/core-field.html">
+    <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
+    <script src="../bower_components/cryptojslib/rollups/sha1.js"></script>
+
+
+<polymer-element name="quickpay-test" attributes="url elems" >
+<template>
+    <style>
+
+     .custom /deep/ ::-webkit-input-placeholder {
+                        color: #f4b400;
+                    }
+
+    .custom /deep/ ::-moz-placeholder {
+                       color: #f4b400;
+                   }
+
+    .custom /deep/ :-ms-input-placeholder {
+                       color: #f4b400;
+                   }
+
+    .custom /deep/ .label-text,
+                   .custom /deep/ .error {
+                                      color: #f06292;
+                                  }
+
+    .custom /deep/ .unfocused-underline {
+                       background-color: #0f9d58;
+                   }
+
+    .custom[focused] /deep/ .floated-label .label-text {
+                                color: #0f9d58;
+                            }
+
+    .custom /deep/ .focused-underline {
+                       background-color: #0f9d58;
+                   }
+
+    .custom.invalid /deep/ .floated-label .label-text,
+                           .custom /deep/ .error {
+                                              color: #f06292;
+                                          }
+
+    .custom.invalid /deep/ .focused-underline {
+                               background-color: #f06292;
+                           }
+
+    .custom {
+        color: #1a237e;
+    }
+
+    paper-button[raised].colored {
+        background: #4285f4;
+        color: #fff;
+    }
+
+    core-field {
+        margin-top: 30px;
+    }
+
+    paper-toast {
+      top: 10px;
+      bottom: auto;
+      right: 10px;
+      left: auto;
+    }
+
+    </style>
+        <core-ajax id="postAjax" method="POST"
+                   contentType='application/json' handleAs="json"
+                   on-core-response="{{onResponse2}}"></core-ajax>
+
+        <template repeat="{{e in elems}}">
+            <paper-input-decorator floatingLabel label="{{e.label}}"  class="custom" autoValidate="{{e.autoValidate}}" error="{{e.error}}">
+                <core-tooltip label="{{e.tooltip}}" position="top">
+                    <input id="{{e.id}}" is="core-input" name="{{e.name}}" maxlength="{{e.maxlength}}"
+                           required="{{e.required}}" value="{{e.value}}">
+                </core-tooltip>
+                <paper-char-counter class="counter" target="{{e.id}}" ></paper-char-counter>
+            </paper-input-decorator>
+        </template>
+
+        <paper-button id="submitForm" class="colored" raised>发送请求</paper-button>
+
+        <paper-input-decorator floatingLabel label="响应"  class="custom">
+           <paper-autogrow-textarea>
+             <textarea cols="144" rows="3" value="{{rcvd}}"></textarea>
+           </paper-autogrow-textarea>
+           <paper-char-counter class="counter" target="inputRet" ></paper-char-counter>
+         </paper-input-decorator>
+
+        <paper-toast id="ret" role="alert" text="{{rcvd}}">
+        </paper-toast>
+
+</template>
+
+<script>
+
+(function() {
+    'use strict';
+
+  Polymer({
+      elems: [],
+     ready: function() {
+
+         var postAjax = this.$.postAjax;
+         var toast = this.$.ret;
+
+         var button = this.$.submitForm;
+
+         var _this = this;
+         button.addEventListener('click', function(){
+
+              postAjax.url = _this.url +"?merId=CIL0001";
+
+              postAjax.body = {};
+              for (var i = 0; i < _this.elems.length; i++) {
+                  postAjax.body[_this.elems[i].name] = _this.elems[i].value;
+              }
+              postAjax.body = JSON.stringify(postAjax.body);
+
+              var hash = CryptoJS.SHA1(postAjax.body + '8B584AC4157F0A61');
+              postAjax.headers='{"X-Sign": "' + hash +'"}';
+
+              postAjax.go();
+         });
+
+         postAjax.addEventListener("core-response", function(e, detail, sender) {
+             toast.show();
+             _this.rcvd = JSON.stringify(e.detail.response);
+         });
+     },
+
+
+         });
+})();
+
+</script>
+</polymer-element>
