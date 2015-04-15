@@ -3,3 +3,15 @@
 
 收银宝
 =========
+
+
+INSTALL
+=======
+
+```
+# 通过 bower 按照前端依赖
+cd static
+bower install
+cd ..
+
+```

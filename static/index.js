@@ -8,14 +8,16 @@
     var cache = {};
 
     template.pages = [
-        {name: '创建绑定关系', hash: 'createBinding', url: 'bindingPayment/createBinding.html'},
-        {name: '绑定支付',     hash: 'bindingPayment', url: 'bindingPayment/bindingPayment.html'},
-        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: '查询绑定关系', hash: 'three', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '创建绑定关系', hash: 'bindingCreate', url: 'bindingPayment/bindingCreate.html'},
+        {name: '解除绑定关系', hash: 'bindingRemove', url: 'bindingPayment/bindingRemove.html'},
+        {name: '查询绑定关系', hash: 'bindingEnquiry', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '绑定支付', hash: 'bindingPayment', url: 'bindingPayment/refund.html'},
+        {name: '退款', hash: 'refund', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '交易对账汇总', hash: 'billingSummary', url: 'bindingPayment/billingSummary.html'},
+        {name: '交易对账明细', hash: 'billingDetails', url: 'bindingPayment/billingDetails.html'},
+        {name: '查询订单状态', hash: 'orderEnquiry', url: 'bindingPayment/orderEnquiry.html'},
+        {name: '无卡直接支付', hash: 'noTrackPayment', url: 'bindingPayment/noTrackPayment.html'},
+        {name: 'Apple Pay', hash: 'applePay', url: 'bindingPayment/applePay.html'}
     ];
 
     template.addEventListener('template-bound', function(e) {

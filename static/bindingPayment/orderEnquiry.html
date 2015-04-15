@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>查询订单状态</title>
+</head>
+
+<body>
+
+    <quickpay-test url="/quickpay/orderEnquiry" elems='[
+        {
+            "id": "origOrderNum",
+            "name": "origOrderNum",
+            "label": "原交易订单号",
+            "tooltip": "要查询的原交易订单号",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        },
+        {
+            "id": "showOrigInfo",
+            "name": "showOrigInfo",
+            "label": "是否需要返回原交易详细信息",
+            "tooltip": "0:不需要，1:需要，不送默认为0",
+            "value": "",
+            "required": true,
+            "maxlength": "1",
+            "autoValidate": true,
+            "error": "必填，最长 1 个字符"
+        }
+    ]'></quickpay-test>
+
+</body>
+
+</html>

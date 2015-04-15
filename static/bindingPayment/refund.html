@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>退款</title>
+</head>
+<body>
+
+    <quickpay-test
+        url="/quickpay/bindingEnquiry"
+        elems = '[
+        {
+            "id": "merOrderNum",
+            "name": "merOrderNum",
+            "label": "商户订单号",
+            "tooltip": "该笔交易在商户侧的流水号",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        },
+        {
+            "id": "origOrderNum",
+            "name": "origOrderNum",
+            "label": "原支付交易商户订单号",
+            "tooltip": "要查询的原交易订单号",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        },
+        {
+            "id": "transAmt",
+            "name": "transAmt",
+            "label": "退款金额",
+            "tooltip": "退款金额,单位分",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        }
+        ]'
+        >
+    </quickpay-test>
+
+</body>
+</html>
