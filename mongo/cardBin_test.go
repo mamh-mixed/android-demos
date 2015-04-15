@@ -73,5 +73,5 @@ func TestBuildTree(t *testing.T) {
 		t.Errorf("expect cardBin : 622280193,but get : %s", s)
 		t.FailNow()
 	}
-	log.Debugf("%+s , %+v\n", s, tree)
+	log.Debugf("%+s , %+v\n", s, tree.Root)
 }

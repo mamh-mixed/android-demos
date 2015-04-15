@@ -1,9 +1,11 @@
 package mongo
 
 import (
+	// "bytes"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 )
 
 // CardBinColl 卡Bin Collection
@@ -19,6 +21,7 @@ func buildTree() {
 	if err != nil {
 		log.Panicf("fail to load all CardBin : (%s)", err)
 	}
+
 	for _, v := range cbs {
 		// 建立前缀树
 		tree.build(v.Bin)
@@ -45,7 +48,7 @@ func (c *cardBinCollection) Find(cardNum string) (cb *model.CardBin, err error) 
 
 	// 从树中取出卡bin
 	cardBin := tree.match(cardNum)
-	log.Debugf("cardNum : %s,cardBin : %s", cardNum, cardBin)
+	log.Debugf("cardNum : %s, cardBin : %s", cardNum, cardBin)
 	q := bson.M{
 		"bin":     cardBin,
 		"cardLen": len(cardNum),
@@ -64,8 +67,8 @@ func (c *cardBinCollection) LoadAll() ([]*model.CardBin, error) {
 
 // node 节点信息
 type node struct {
-	Key      byte
-	Children []*node
+	Keys     []int8
+	Children *node
 }
 
 // TrieTree 前缀树
@@ -74,52 +77,42 @@ type TrieTree struct {
 }
 
 func (t *TrieTree) build(word string) {
+
 	root := &t.Root
-	chars := []byte(word)
-	for i := 0; i < len(chars); i++ {
+	for i := 0; i < len(word); i++ {
 
-		c := chars[i]
-
-		nodes := root.Children
-		s, flag := t.isContain(nodes, c)
-		// 没包含，添加到子节点
-		if !flag {
-			s = &node{Key: c}
-			nodes = append(nodes, s)
-			root.Children = nodes
-			root = s
+		c, err := strconv.Atoi(string(word[i]))
+		if err != nil {
 			continue
 		}
-		// 已包含
-		root = s
+		keys := root.Keys
+		if root.Children == nil {
+			root.Children = new(node)
+		}
+		if keys == nil {
+			keys = make([]int8, 10, 10)
+		}
+		keys[c] = int8(c)
+		root.Keys = keys
+		root = root.Children
 	}
 }
 
 func (t *TrieTree) match(cardNum string) string {
-	var result []byte
-	// 根节点不包含信息
-	var root = t.Root.Children
-	chars := []byte(cardNum)
-	for i := 0; i < len(chars); i++ {
-		c := chars[i]
-
-		n, flag := t.isContain(root, c)
-		// 没找到退出循环
-		if !flag {
+	s := ""
+	root := &t.Root
+	for i := 0; i < len(cardNum); i++ {
+		c, _ := strconv.Atoi(string(cardNum[i]))
+		if root.Keys == nil {
 			break
 		}
-		result = append(result, n.Key)
-		// 继续下个节点
-		root = n.Children
-	}
-	return string(result)
-}
-
-func (t *TrieTree) isContain(nodes []*node, key byte) (*node, bool) {
-	for _, v := range nodes {
-		if v.Key == key {
-			return v, true
+		key := root.Keys[c]
+		if c != 0 && key == 0 {
+			break
 		}
+		// log.Debugf("%d", c)
+		s += strconv.Itoa(c)
+		root = root.Children
 	}
-	return nil, false
+	return s
 }
