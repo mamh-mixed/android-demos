@@ -66,7 +66,8 @@ func (c *cardBinCollection) LoadAll() ([]*model.CardBin, error) {
 }
 
 // node 节点信息
-type node [10]*node
+// 第11位存放的是卡bin的结束标识
+type node [11]*node
 
 // TrieTree 前缀树
 type TrieTree struct {
@@ -82,12 +83,17 @@ func (t *TrieTree) build(word string) {
 		if k == nil {
 			root[index] = new(node)
 		}
+		// 结束时加标志位
+		if i == len(word)-1 {
+			root[10] = new(node)
+		}
 		root = root[index]
 	}
 }
 
 func (t *TrieTree) match(cardNum string) string {
 	s := ""
+	temp := ""
 	root := &t.Root
 	for i := 0; i < len(cardNum); i++ {
 		index, _ := strconv.Atoi(string(cardNum[i]))
@@ -96,8 +102,13 @@ func (t *TrieTree) match(cardNum string) string {
 			break
 		}
 		s += strconv.Itoa(index)
+		// 判断是否为bin结束位
+		// 是的话赋值给temp
+		if root[10] != nil {
+			temp = s
+		}
 		root = root[index]
 	}
 
-	return s
+	return temp
 }

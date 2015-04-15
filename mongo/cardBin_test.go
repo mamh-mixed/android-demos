@@ -68,11 +68,9 @@ func TestFindCardBin(t *testing.T) {
 
 func TestBuildTree(t *testing.T) {
 
-	// tree.build("630522")
-	// tree.build("630422")
-	s := tree.match(cardNum)
-	if s != "622280193" {
-		t.Errorf("expect cardBin : 622280193,but get : %s", s)
+	s := tree.match("94000000000")
+	if s != "94" {
+		t.Errorf("expect cardBin : 94,but get : %s", s)
 		t.FailNow()
 	}
 	log.Debugf("%+s , %+v\n", s, tree.Root)
