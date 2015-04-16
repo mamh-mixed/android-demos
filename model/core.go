@@ -214,3 +214,9 @@ type TransSettInfo struct {
 	MerSettAmt int64  `bson:"merSettAmt" json:"merSettAmt"` //商户清算金额
 	//TODO check 交易日期
 }
+
+// SN 序列号
+type SN struct {
+	Key   string `bson:"key"`   // 序列号的key
+	Value int64  `bson:"value"` // 序列号的值
+}
