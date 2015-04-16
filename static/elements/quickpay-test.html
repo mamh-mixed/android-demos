@@ -3,7 +3,7 @@
 
 <link rel="import" href="../bower_components/paper-input/paper-input-decorator.html">
 <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/core-field/core-field.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
@@ -54,8 +54,8 @@
                 color: #1a237e;
             }
 
-            paper-button[raised].colored {
-                background: #4285f4;
+            .colored {
+                background: #03a9f4;
                 color: #fff;
             }
 
@@ -81,7 +81,7 @@
             </paper-input-decorator>
         </template>
 
-        <paper-button id="submitForm" class="colored" raised>发送请求</paper-button>
+        <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward"></paper-fab>
 
         <paper-input-decorator floatingLabel label="响应" class="custom">
             <paper-autogrow-textarea>

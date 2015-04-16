@@ -35,8 +35,7 @@
         <!-- Dynamic content controller -->
         <core-ajax id="ajax" url="{{selectedPage.page.url}}" handleAs="document" on-core-response="{{onResponse}}"></core-ajax>
 
-        <core-scaffold id="scaffold">
-
+        <core-scaffold id="scaffold" mode="scroll">
             <nav>
                 <core-toolbar>
                     <core-icon icon="account-circle"></core-icon>
@@ -45,7 +44,7 @@
                 <core-menu id="menu" valueattr="hash" selected="{{route}}" selectedModel="{{selectedPage}}" on-core-select="{{menuItemSelected}}" on-click="{{ajaxLoad}}">
                     <template repeat="{{page, i in pages}}">
                         <paper-item hash="{{page.hash}}" noink>
-                            <core-icon icon="label{{route != page.hash ? '-outline' : ''}}"></core-icon>
+                            <core-icon icon="{{route != page.hash ? 'credit-card' : 'input'}}"></core-icon>
                             <a href="{{page.url}}">{{page.name}}</a>
                         </paper-item>
                     </template>
@@ -61,11 +60,9 @@
             <div layout horizontal center-center fit>
                 <core-animated-pages id="pages" selected="{{route}}" valueattr="hash" transitions="slide-from-right">
                     <template repeat="{{page, i in pages}}">
-
                         <section hash="{{page.hash}}" layout vertical>
-                            <div style="max-width:100%;">Loading...</div>
+                            <div>Loading...</div>
                         </section>
-
                     </template>
                 </core-animated-pages>
             </div>

@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    var DEFAULT_ROUTE = 'three';
+    var DEFAULT_ROUTE = 'bindingPayment';
 
     var template = document.querySelector('#t');
     var ajax, pages, scaffold;
@@ -11,8 +11,8 @@
         {name: '创建绑定关系', hash: 'bindingCreate', url: 'bindingPayment/bindingCreate.html'},
         {name: '解除绑定关系', hash: 'bindingRemove', url: 'bindingPayment/bindingRemove.html'},
         {name: '查询绑定关系', hash: 'bindingEnquiry', url: 'bindingPayment/bindingEnquiry.html'},
-        {name: '绑定支付', hash: 'bindingPayment', url: 'bindingPayment/refund.html'},
-        {name: '退款', hash: 'refund', url: 'bindingPayment/bindingEnquiry.html'},
+        {name: '绑定支付', hash: 'bindingPayment', url: 'bindingPayment/bindingPayment.html'},
+        {name: '退款', hash: 'refund', url: 'bindingPayment/refund.html'},
         {name: '交易对账汇总', hash: 'billingSummary', url: 'bindingPayment/billingSummary.html'},
         {name: '交易对账明细', hash: 'billingDetails', url: 'bindingPayment/billingDetails.html'},
         {name: '查询订单状态', hash: 'orderEnquiry', url: 'bindingPayment/orderEnquiry.html'},
