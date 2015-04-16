@@ -105,7 +105,7 @@ func read() (back *CilMsg, err error) {
 	mLenByte := make([]byte, 4)
 
 	_, err = conn.Read(mLenByte)
-	log.Check("read length error: ", err)
+	log.Warn("read length error: ", err)
 
 	mlen, err := strconv.Atoi(string(mLenByte))
 	if err != nil {
@@ -142,7 +142,7 @@ func read() (back *CilMsg, err error) {
 
 	back = &CilMsg{}
 	err = json.Unmarshal(msg, back)
-	log.Checkf("msg(% x) can not unmarshal to object", msg, err)
+	log.Warnf("msg(% x) can not unmarshal to object", msg, err)
 
 	return back, err
 }
