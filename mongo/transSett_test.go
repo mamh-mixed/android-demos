@@ -11,7 +11,7 @@ import (
 
 func TestTransSettSummary(t *testing.T) {
 
-	all, err := TransSettColl.Summary("001405", "2015-03-23")
+	all, err := TransSettColl.Summary("1000000000002", "2015-04-13")
 	if err != nil {
 		t.Errorf("get transSett summary fail : (%s)", err)
 	}

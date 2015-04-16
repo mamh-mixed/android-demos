@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>交易对账明细</title>
+</head>
+
+<body>
+
+    <quickpay-test url="/quickpay/billingDetails" elems='[
+        {
+            "id": "settDate",
+            "name": "settDate",
+            "label": "对账日期",
+            "tooltip": "格式：YYYY-MM-DD",
+            "value": "",
+            "required": true,
+            "maxlength": "10",
+            "autoValidate": true,
+            "error": "必填，最长 10 个字符"
+        },
+        {
+            "id": "nextOrderNum",
+            "name": "nextOrderNum",
+            "label": "拉取的第一条记录的商户订单号",
+            "tooltip": "不填默认从头开始拉取， 使用上一次调用返回的nextOrderNum可连续拉取",
+            "value": "",
+            "required": false,
+            "maxlength": "32",
+            "autoValidate": false,
+            "error": "最长 32 个字符"
+        }
+    ]'></quickpay-test>
+
+</body>
+
+</html>

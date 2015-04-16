@@ -1,15 +1,13 @@
 package core
 
 import (
-	"strings"
-
-	"github.com/CardInfoLink/quickpay/channel/cfca"
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
-
 	"github.com/omigo/log"
+	"strings"
 )
 
 // ProcessBindingCreate 绑定建立的业务处理
@@ -30,7 +28,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// }
 
 	// 获取卡属性
-	cardBin, err := mongo.CardBinColl.Find(bc.AcctNum)
+	cardBin, err := mongo.CardBinColl.Find(bc.AcctNumDecrypt)
 	if err != nil {
 		if err.Error() == "not found" {
 			return mongo.RespCodeColl.Get("200110")
@@ -99,6 +97,8 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
 	bc.SignCert = chanMer.SignCert
+	// TODO对加密的字段进行解密再送往渠道方
+
 	log.Debugf("'BindingCreate' is: %+v", bc)
 
 	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
@@ -110,7 +110,9 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.BankId = cm.BankId
 
 	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口
-	ret = cfca.ProcessBindingCreate(bc)
+	c := channel.GetChan(bm.ChanCode)
+	ret = c.ProcessBindingCreate(bc)
+	// ret = cfca.ProcessBindingCreate(bc)
 
 	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效
 	switch ret.RespCode {
@@ -166,7 +168,8 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	be.ChanBindingId = bm.ChanBindingId
 	be.SignCert = chanMer.SignCert
 	// todo 查找该商户配置的渠道，这里为了简单，到中金查找。
-	ret = cfca.ProcessBindingEnquiry(be)
+	c := channel.GetChan(bm.ChanCode)
+	ret = c.ProcessBindingEnquiry(be)
 
 	// 转换绑定状态
 	switch ret.RespCode {
@@ -297,7 +300,8 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	// 支付
-	ret = cfca.ProcessBindingPayment(be)
+	c := channel.GetChan(chanMer.ChanCode)
+	ret = c.ProcessBindingPayment(be)
 
 	// 处理结果
 	trans.ChanRespCode = ret.ChanRespCode
@@ -353,7 +357,8 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	br.SignCert = chanMer.SignCert
 
 	// 到渠道解绑
-	ret = cfca.ProcessBindingRemove(br)
+	c := channel.GetChan(chanMer.ChanCode)
+	ret = c.ProcessBindingRemove(br)
 
 	// 如果解绑成功，更新本地数据库
 	if ret.RespCode == "000000" {
@@ -452,7 +457,8 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	// 退款
-	ret = cfca.ProcessBindingRefund(be)
+	c := channel.GetChan(chanMer.ChanCode)
+	ret = c.ProcessBindingRefund(be)
 
 	// 更新结果
 	refund.ChanRespCode = ret.ChanRespCode
@@ -512,13 +518,14 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	// 原订单为处理中，向渠道发起查询
 	result := new(model.BindingReturn)
+	c := channel.GetChan(chanMer.ChanCode)
 	switch t.TransType {
 	//支付
 	case model.PayTrans:
-		result = cfca.ProcessPaymentEnquiry(be)
+		result = c.ProcessPaymentEnquiry(be)
 	//退款
 	case model.RefundTrans:
-		result = cfca.ProcessRefundEnquiry(be)
+		result = c.ProcessRefundEnquiry(be)
 	}
 
 	//更新交易状态

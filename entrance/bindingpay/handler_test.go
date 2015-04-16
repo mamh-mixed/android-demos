@@ -13,12 +13,6 @@ import (
 	"github.com/omigo/log"
 )
 
-func init() {
-	// 日志输出级别
-	log.SetOutputLevel(log.Ldebug)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
-}
-
 func post(req *http.Request, t *testing.T) {
 	w := httptest.NewRecorder()
 	BindingPay(w, req)
@@ -85,11 +79,11 @@ func TestBindingCreateHandle(t *testing.T) {
 		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
 	}
 	// 生成一个随机的绑定ID
-	rdBindingId := tools.Millisecond()
-	merId := rdMerId
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
-	body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222022003008481261","identType":"0","identNum":"440583199111031012","phoneNum":"18205960039","acctType":"10","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
-
+	// rdBindingId := tools.Millisecond()
+	// merId := rdMerId
+	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=1000000000002"
+	// body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222022003008481261","identType":"0","identNum":"440583199111031012","phoneNum":"18205960039","acctType":"10","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`
+	body := `{"bindingId":"vXfD08q1e9e5jvHmv1iDmXXP","acctName":"60202215176842555995459843018306154894ce1da849aa0af4699d5334fa5b","acctNum":"16996319105944721792491686643034c4eb35a9a1d2b3185caa2749f7081c923434dc9287ea9e036d657586fe6a2736","identType":"0","identNum":"311380834235092862316365984917959acde9dec78028d9791b291f0f1cefdaf4d6688567b377f7f4c0cbdee8d78eb4","phoneNum":"12056249536046666949568428698813a60c39514a4f4c69c576a517809f0002","acctType":"10"}`
 	doPost("POST", url, body, t)
 }
 

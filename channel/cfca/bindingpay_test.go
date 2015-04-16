@@ -35,7 +35,7 @@ func TestProcessBindingEnquiry(t *testing.T) {
 		ChanMerId:     chanMerId,
 		SignCert:      priKeyPem,
 	}
-	resp := ProcessBindingEnquiry(be)
+	resp := Obj.ProcessBindingEnquiry(be)
 
 	log.Debugf("response message  %s", resp)
 }
@@ -58,7 +58,7 @@ func TestProcessBindingCreate(t *testing.T) {
 		SmsCode:       smsCode,
 		SignCert:      priKeyPem,
 	}
-	resp := ProcessBindingCreate(be)
+	resp := Obj.ProcessBindingCreate(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -70,7 +70,7 @@ func TestProcessBindingRemove(t *testing.T) {
 		TxSNUnBinding: txSNUnBinding,
 		SignCert:      priKeyPem,
 	}
-	resp := ProcessBindingRemove(be)
+	resp := Obj.ProcessBindingRemove(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -85,7 +85,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		TransAmt:     int64(transAmt),
 		SignCert:     priKeyPem,
 	}
-	resp := ProcessBindingPayment(be)
+	resp := Obj.ProcessBindingPayment(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -98,7 +98,7 @@ func TestProcessBindingRefund(t *testing.T) {
 		TransAmt:         int64(transAmt),
 		SignCert:         priKeyPem,
 	}
-	resp := ProcessBindingRefund(be)
+	resp := Obj.ProcessBindingRefund(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -109,7 +109,7 @@ func TestProcessPaymentEnquiry(t *testing.T) {
 		ChanOrderNum: chanOrderNum,
 		SignCert:     priKeyPem,
 	}
-	resp := ProcessPaymentEnquiry(be)
+	resp := Obj.ProcessPaymentEnquiry(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -120,7 +120,7 @@ func TestProcessRefundEnquiry(t *testing.T) {
 		ChanOrderNum: chanOrderNum,
 		SignCert:     priKeyPem,
 	}
-	resp := ProcessRefundEnquiry(be)
+	resp := Obj.ProcessRefundEnquiry(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -131,6 +131,6 @@ func TestProcessTransChecking(t *testing.T) {
 	// 	SettDate:  "2015-03-19",
 	// 	SignCert:  priKeyPem,
 	// }
-	resp := ProcessTransChecking(chanMerId, "2015-03-20", priKeyPem)
+	resp := Obj.ProcessTransChecking(chanMerId, "2015-04-13", priKeyPem)
 	log.Debugf("response message  %s", resp)
 }

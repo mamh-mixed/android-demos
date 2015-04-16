@@ -12,7 +12,7 @@ var (
 	transCurr        = "156"
 	signKey          = ""
 	encryptKey       = ""
-	cardNum          = "11116222801932062061908"
+	cardNum          = "6222801932062061908"
 	createTime       = "2015-03-26"
 	chanMerId        = "001405"
 	chanCode         = "CFCA"

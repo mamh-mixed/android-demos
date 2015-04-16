@@ -3,7 +3,7 @@ package core
 // only for test
 var (
 	merId           = "1426727710113"
-	bindingId       = "1000000000011"
+	bindingId       = "2000000000011"
 	acctName        = "张三"
 	acctNum         = "6222020302062061908"
 	identType       = "0"
@@ -15,7 +15,7 @@ var (
 	sendSmsId       = "1000000000009"
 	smsCode         = "12353"
 	bankId          = "102"
-	merOrderNum     = "20000000010000000a"
+	merOrderNum     = "20000000010000000d"
 	transAmt        = 1000
 	origOrderNum    = "20000000010000000c"
 	showOrigInfo    = "1"

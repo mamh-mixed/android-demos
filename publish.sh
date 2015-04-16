@@ -2,7 +2,7 @@
 
 set -e
 
-host="webapp@121.41.85.237"
+host="webapp@121.40.215.216"
 prog="quickpay"
 
 ### 这个脚本是通用，下面无需改动 ###
@@ -14,7 +14,10 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
 # 上传文件
 echo
 echo "=== Uploading $prog..."
-rsync -v --progress quickpay $host:~/$prog/
+rsync -rcv --progress $prog $host:~/$prog/
+rm -f $prog
+rsync -rcv --progress static/ $host:~/$prog/static/
+
 
 # 远程执行重启命令
 echo
@@ -36,7 +39,7 @@ ps -ef | grep $prog
 
 echo
 echo "=== Sleep 3 seconds..."
-sleep 3
+sleep 2
 tail -n 10 logs/$prog.log
 
 echo

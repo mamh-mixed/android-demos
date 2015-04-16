@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	host = "121.41.85.237"
+	host = "tdd.ipay.so"
 	// host   = "127.0.0.1"
 	dbname = "quickpay"
 )
@@ -24,4 +24,6 @@ func init() {
 	database = session.DB(dbname)
 
 	log.Infof("connected to mongodb %s database %s", host, dbname)
+
+	buildTree()
 }

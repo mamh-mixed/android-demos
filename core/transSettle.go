@@ -1,14 +1,14 @@
 package core
 
 import (
-	"time"
-
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 // init 开启任务routine
@@ -83,13 +83,14 @@ func doTransSett() {
 
 			// 根据交易类型处理
 			ret := new(model.BindingReturn)
+			c := channel.GetChan(chanMer.ChanCode)
 			switch v.TransType {
 			// 支付交易
 			case model.PayTrans:
-				ret = cfca.ProcessPaymentEnquiry(be)
+				ret = c.ProcessPaymentEnquiry(be)
 			// 退款交易
 			case model.RefundTrans:
-				ret = cfca.ProcessRefundEnquiry(be)
+				ret = c.ProcessRefundEnquiry(be)
 			}
 
 			// 处理结果
@@ -147,7 +148,9 @@ func doTransCheck(settDate string) {
 
 		// TODO 应该根据chanCode获得渠道实例
 		// 暂时先默认cfca
-		resp := cfca.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
+		// c := channel.GetChan(v.ChanCode)
+		c := cfca.Obj
+		resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
 		if resp != nil && len(resp.Body.Tx) > 0 {
 			for _, tx := range resp.Body.Tx {
 				// 根据订单号查找

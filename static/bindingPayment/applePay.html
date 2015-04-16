@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>Apple Pay</title>
+</head>
+
+<body>
+
+    <quickpay-test url="/quickpay/applePay" elems='[
+        {
+            "id": "transType",
+            "name": "transType",
+            "label": "交易子类",
+            "tooltip": "交易子类型： SALE:消费（直接扣款） AUTH:预授权",
+            "value": "",
+            "required": true,
+            "maxlength": "4",
+            "autoValidate": true,
+            "error": "必填，最长 4 个字符"
+        },
+        {
+            "id": "subMerId",
+            "name": "subMerId",
+            "label": "子商户号",
+            "tooltip": "如有此需求，可选输入",
+            "value": "",
+            "required": false,
+            "maxlength": "15",
+            "autoValidate": false,
+            "error": "最长 15 个字符"
+        },
+        {
+            "id": "terminalId",
+            "name": "terminalId",
+            "label": "终端号",
+            "tooltip": "上送交易的终端号，如有，可选输入",
+            "value": "",
+            "required": false,
+            "maxlength": "16",
+            "autoValidate": false,
+            "error": "最长 16 个字符"
+        },
+        {
+            "id": "merOrderNum",
+            "name": "merOrderNum",
+            "label": "商户订单号",
+            "tooltip": "接入商户自行指定，同商户全局唯一",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        },
+        {
+            "id": "transactionId",
+            "name": "transactionId",
+            "label": "ApplePay标识",
+            "tooltip": "ApplePay标识",
+            "value": "",
+            "required": true,
+            "maxlength": "128",
+            "autoValidate": true,
+            "error": "必填，最长 128 个字符"
+        },
+        {
+            "id": "applePayData",
+            "name": "applePayData",
+            "label": "ApplePay数据",
+            "tooltip": "ApplePay支付数据，有EMV和3D Secure 两种，参数见示例。",
+            "value": "",
+            "required": true,
+            "maxlength": "4096",
+            "autoValidate": true,
+            "error": "必填，最长 4096 个字符"
+        }
+    ]'></quickpay-test>
+
+</body>
+
+</html>
