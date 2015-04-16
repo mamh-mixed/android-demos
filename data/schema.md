@@ -133,3 +133,12 @@ CVV2	cvv2
 商户手续费 MerFee
 渠道清算金额 ChanSettAmt
 渠道手续费 ChanFee
+
+11. 单日序列号信息 DaySN
+商户号 MerId
+终端号 TermId
+序列号 Sn
+
+12. 系统唯一序列号  SN
+序列号的键   Key
+序列号的值   Value
