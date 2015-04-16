@@ -13,12 +13,6 @@ import (
 	"github.com/omigo/log"
 )
 
-func init() {
-	// 日志输出级别
-	log.SetOutputLevel(log.Ldebug)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Lshortfile)
-}
-
 func post(req *http.Request, t *testing.T) {
 	w := httptest.NewRecorder()
 	BindingPay(w, req)

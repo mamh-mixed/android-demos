@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	host = "121.41.85.237"
+	host = "tdd.ipay.so"
 	// host   = "127.0.0.1"
 	dbname = "quickpay"
 )

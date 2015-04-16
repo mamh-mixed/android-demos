@@ -8,6 +8,7 @@
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 <script src="../bower_components/cryptojslib/rollups/sha1.js"></script>
+<script src="../bower_components/cryptojslib/rollups/aes.js"></script>
 
 <polymer-element name="quickpay-test" attributes="url elems">
     <template>
@@ -111,15 +112,20 @@
                     var _this = this;
                     button.addEventListener('click', function() {
 
-                        postAjax.url = _this.url + "?merId=CIL0001";
+                        postAjax.url = _this.url + "?merId=012345678901234";
 
-                        postAjax.body = {};
+                        var body = {};
                         for (var i = 0; i < _this.elems.length; i++) {
-                            postAjax.body[_this.elems[i].name] = _this.elems[i].value;
-                        }
-                        postAjax.body = JSON.stringify(postAjax.body);
+                            var value = _this.elems[i].value;
+                            if (_this.elems[i].encrypt && _this.elems[i].encrypt === true) {
+                                value = "" + CryptoJS.AES.encrypt(value, "0123456789");
+                            }
 
-                        var hash = CryptoJS.SHA1(postAjax.body + '8B584AC4157F0A61');
+                            body[_this.elems[i].name] = value;
+                        }
+                        postAjax.body = JSON.stringify(body);
+
+                        var hash = CryptoJS.SHA1(postAjax.body + '0123456789');
                         postAjax.headers = '{"X-Sign": "' + hash + '"}';
 
                         postAjax.go();

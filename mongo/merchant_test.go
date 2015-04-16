@@ -1,9 +1,17 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 )
+
+func TestMerchantFind(t *testing.T) {
+	_, err := MerchantColl.Find("012345678901234")
+	if err != nil {
+		t.Error(err)
+	}
+}
 
 func TestInsertFindUpdateMerchant(t *testing.T) {
 	m := &model.Merchant{
