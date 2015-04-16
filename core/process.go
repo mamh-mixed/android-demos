@@ -27,7 +27,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// }
 
 	// 获取卡属性
-	cardBin, err := mongo.CardBinColl.Find(bc.AcctNum)
+	cardBin, err := mongo.CardBinColl.Find(bc.AcctNumDecrypt)
 	if err != nil {
 		if err.Error() == "not found" {
 			return mongo.RespCodeColl.Get("200110")
@@ -96,7 +96,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
 	bc.SignCert = chanMer.SignCert
-	// TODO 对加密的字段进行解密再送往渠道方
+	// TODO对加密的字段进行解密再送往渠道方
 
 	log.Debugf("'BindingCreate' is: %+v", bc)
 

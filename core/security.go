@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"github.com/omigo/log"
 	"io"
+	"strings"
 )
 
 // 16位
@@ -55,7 +56,7 @@ func aesCFBDecrypt(ct string) string {
 }
 
 // aesCBCEncrypt cbc mode
-func aesCBCEncrypt(pt string) string {
+func AesCBCEncrypt(pt string) string {
 
 	plaintext := PKCS5Padding([]byte(pt), aes.BlockSize)
 
@@ -84,11 +85,18 @@ func aesCBCEncrypt(pt string) string {
 }
 
 // aesCBCDecrypt cbc mode
-func aesCBCDecrypt(ct string) string {
+func AesCBCDecrypt(ct string) string {
 
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+
+	ct = strings.TrimSpace(ct)
 	ciphertext, err := hex.DecodeString(ct)
 	if err != nil {
-		log.Error(err)
+		log.Errorf("decode hex fail : %s", err)
 		return ct
 	}
 	block, err := aes.NewCipher(key)

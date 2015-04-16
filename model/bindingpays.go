@@ -61,7 +61,14 @@ type BindingCreate struct {
 	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
 	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
-	SignCert      string `json:"－"`                                            //签名密钥
+	SignCert      string `json:"-"`                                            // 签名密钥
+	// 存储解密字段，辅助
+	AcctNumDecrypt   string `json:"-"`
+	AcctNameDecrypt  string `json:"-"`
+	IdentNumDecrypt  string `json:"-"`
+	PhoneNumDecrypt  string `json:"-"`
+	ValidDateDecrypt string `json:"-"`
+	Cvv2Decrypt      string `json:"-"`
 }
 
 // BindingRemove 解除绑定关系

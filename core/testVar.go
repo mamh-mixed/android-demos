@@ -3,7 +3,7 @@ package core
 // only for test
 var (
 	merId           = "1426727710113"
-	bindingId       = "1000000000011"
+	bindingId       = "2000000000011"
 	acctName        = "张三"
 	acctNum         = "6222020302062061908"
 	identType       = "0"

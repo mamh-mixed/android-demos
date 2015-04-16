@@ -34,11 +34,12 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 			return model.NewBindingReturn("200050", "字段 cvv2 不能为空")
 		}
 
-		if matched, _ := regexp.MatchString(`\d{2}(0[1-9]|1[1-2])`, request.ValidDate); !matched {
+		// 判断格式，需要使用解密后的参数
+		if matched, _ := regexp.MatchString(`\d{2}(0[1-9]|1[1-2])`, request.ValidDateDecrypt); !matched {
 			return mongo.RespCodeColl.Get("200140")
 		}
 
-		if matched, _ := regexp.MatchString(`^\d{3}$`, request.Cvv2); !matched {
+		if matched, _ := regexp.MatchString(`^\d{3}$`, request.Cvv2Decrypt); !matched {
 			return mongo.RespCodeColl.Get("200150")
 		}
 	}
