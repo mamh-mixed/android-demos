@@ -45,7 +45,7 @@ func (c *cardBinCollection) Find(cardNum string) (cb *model.CardBin, err error) 
 	// 	log.Errorf("Find CardBin ERROR! error message is: %s; condition is: %+v", err.Error(), q)
 	// 	return nil, err
 	// }
-
+	// return cb, err
 	// 从树中取出卡bin
 	cardBin := tree.match(cardNum)
 	log.Debugf("cardNum : %s, cardBin : %s", cardNum, cardBin)
@@ -66,7 +66,10 @@ func (c *cardBinCollection) LoadAll() ([]*model.CardBin, error) {
 }
 
 // node 节点信息
-type node [10]*node
+type node struct {
+	flag     bool      // 标识该节点是否是结束标识
+	children [10]*node // 孩子节点
+}
 
 // TrieTree 前缀树
 type TrieTree struct {
@@ -78,26 +81,38 @@ func (t *TrieTree) build(word string) {
 	root := &t.Root
 	for i := 0; i < len(word); i++ {
 		index, _ := strconv.Atoi(string(word[i]))
-		k := root[index]
+		k := root.children[index]
 		if k == nil {
-			root[index] = new(node)
+			k = new(node)
 		}
-		root = root[index]
+		// 结束时加标志位
+		if i == len(word)-1 {
+			k.flag = true
+		}
+		root.children[index] = k
+		root = k
 	}
 }
 
 func (t *TrieTree) match(cardNum string) string {
 	s := ""
+	temp := ""
 	root := &t.Root
 	for i := 0; i < len(cardNum); i++ {
 		index, _ := strconv.Atoi(string(cardNum[i]))
-		k := root[index]
+		k := root.children[index]
 		if k == nil {
 			break
 		}
 		s += strconv.Itoa(index)
-		root = root[index]
+		// 判断是否为卡bin结束位
+		// 是的话赋值给temp
+		if k.flag {
+			// log.Debugf("%d", index)
+			temp = s
+		}
+		root = root.children[index]
 	}
 
-	return s
+	return temp
 }

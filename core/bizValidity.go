@@ -24,8 +24,8 @@ func UnionPayCardValidity(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	if matched, _ := regexp.MatchString(`^[0-9]$|^X$`, bc.IdentType); !matched {
 		return mongo.RespCodeColl.Get("200120")
 	}
-
-	if matched, _ := regexp.MatchString(`^1[3|5|7|8|][0-9]{9}$`, bc.PhoneNum); !matched {
+	// 判断格式，需要使用解密后的参数
+	if matched, _ := regexp.MatchString(`^1[3|5|7|8|][0-9]{9}$`, bc.PhoneNumDecrypt); !matched {
 		return mongo.RespCodeColl.Get("200130")
 	}
 

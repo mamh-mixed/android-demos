@@ -106,13 +106,25 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	}
 	bc.MerId = merId
 
+	// 解密特定字段
+	bc.AcctNumDecrypt = core.AesCBCDecrypt(bc.AcctNum)
+	bc.AcctNameDecrypt = core.AesCBCDecrypt(bc.AcctName)
+	bc.IdentNumDecrypt = core.AesCBCDecrypt(bc.IdentNum)
+	bc.PhoneNumDecrypt = core.AesCBCDecrypt(bc.PhoneNum)
+	if bc.AcctType == "20" {
+		bc.ValidDateDecrypt = core.AesCBCDecrypt(bc.ValidDate)
+		bc.Cvv2Decrypt = core.AesCBCDecrypt(bc.Cvv2)
+	}
+	log.Debugf("after decrypt field acctNum : %s,acctName : %s,phoneNum : %s,identNum : %s,validDate : %s,cvv2 : %s",
+		bc.AcctNumDecrypt, bc.AcctNameDecrypt, bc.PhoneNumDecrypt, bc.IdentNumDecrypt, bc.ValidDateDecrypt, bc.Cvv2Decrypt)
+
 	// 验证请求报文是否完整，格式是否正确
 	ret = validateBindingCreate(bc)
 	if ret != nil {
 		return ret
 	}
 
-	//todo 业务处理
+	// 业务处理
 	ret = core.ProcessBindingCreate(bc)
 
 	return ret
