@@ -3,17 +3,20 @@ package cil
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/omigo/log"
 )
 
 func TestConnect(t *testing.T) {
+	time.Sleep(1 * time.Second)
+
 	msg := newTestCilMsg()
 	// t.Logf("msg  = %#v", msg)
 
 	clisn := 115934
-	for i := 0; i < 10; i++ {
-		go func(i int, msg CilMsg) {
+	for i := 0; i < 100; i++ {
+		func(i int, msg CilMsg) {
 			msg.Clisn = strconv.Itoa(clisn + i)
 
 			back := send(&msg) // 线下网关发送报文
@@ -21,9 +24,11 @@ func TestConnect(t *testing.T) {
 			_ = back
 			log.Debug("--------------------------------------------")
 		}(i, *msg)
+
+		time.Sleep(30 * time.Second)
 	}
 
-	select {}
+	// select {}
 }
 
 func newTestCilMsg() (m *CilMsg) {
