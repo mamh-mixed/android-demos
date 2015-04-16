@@ -166,6 +166,9 @@ type ApplePay struct {
 	SignCert      string       `json:"signCert,omitempty"`   //签名密钥
 	Chcd          string       `json:"chcd,omitempty"`       //下游商户配置的渠道机构号
 	Mchntid       string       `json:"mchntid,omitempty"`    //下游商户配置的渠道商户号
+	Terminalid    string       `json:"terminalid,omitempty"` //下游商户配置的渠道商户的终端号
+	CliSN         string       `json:"cliSN,omitempty"`      //商户的终端在当天对应的一个序列号
+	SysSN         string       `json:"sysSN,omitempty"`      //系统序列号
 }
 
 // ApplePayData applePay数据
