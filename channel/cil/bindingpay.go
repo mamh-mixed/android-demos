@@ -4,6 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"strconv"
 )
 
 // 讯联交易类型
@@ -15,7 +16,22 @@ const (
 )
 
 // 消费
-func Consume(m *CilMsg) (ret *model.BindingReturn) {
+func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
+	// m := CilMsg{
+	// 	Busicd:        consumeBusicd,
+	// 	Txndir:        "Q",
+	// 	Posentrymode:  "992", // todo 如果是3dsecure的，992；EMV的规范还没出
+	// 	Chcd:          "",
+	// 	Clisn:         "",
+	// 	Mchntid:       "",
+	// 	Terminalid:    "",
+	// 	Txamt:         "",
+	// 	Txcurrcd:      "",
+	// 	Cardcd:        "",
+	// 	Syssn:         "",
+	// 	Localdt:       tools.LocalDt(),
+	// 	Transactionid: "",
+	// }
 	return nil
 }
 
@@ -29,7 +45,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		Clisn:         ap.CliSN,
 		Mchntid:       ap.MerId,
 		Terminalid:    ap.TerminalId,
-		Txamt:         string(ap.ApplePayData.TransactionAmount),
+		Txamt:         strconv.FormatInt(ap.ApplePayData.TransactionAmount, 10),
 		Txcurrcd:      ap.ApplePayData.CurrencyCode,
 		Cardcd:        ap.ApplePayData.ApplicationPrimaryAccountNumber,
 		Syssn:         ap.SysSN,
