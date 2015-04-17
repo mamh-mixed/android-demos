@@ -630,6 +630,12 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		SubMerId:     ap.SubMerId,
 	}
 
+	// 如果是预授权交易，先返回不支持此类交易
+	if ap.TransType == "AUTH" {
+		errorTrans.RespCode = "100030"
+		return mongo.RespCodeColl.Get("100030")
+	}
+
 	// 根据卡号查找卡属性，然后匹配路由查找
 	// 获取卡属性
 	cardBin, err := mongo.CardBinColl.Find(ap.ApplePayData.ApplicationPrimaryAccountNumber)

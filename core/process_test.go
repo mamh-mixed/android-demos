@@ -146,7 +146,7 @@ func TestProcessBillingSummary(t *testing.T) {
 func TestProcessApplePay(t *testing.T) {
 	ap := &model.ApplePay{
 		MerId:         applePayMerId,
-		TransType:     "SALE",
+		TransType:     "AUTH",
 		MerOrderNum:   fmt.Sprintf("%d", time.Now().UnixNano()),
 		TransactionId: "49170302b04f74b56b0060f33e11a135134e48e8af80a50cefea6c079353b419",
 		ApplePayData: model.ApplePayData{
