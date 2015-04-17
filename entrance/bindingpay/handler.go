@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/tools"
 
 	"github.com/omigo/log"
 )
@@ -107,7 +108,7 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	bc.MerId = merId
 
 	// 解密特定字段
-	aes := new(core.AesCBCMode)
+	aes := new(tools.AesCBCMode)
 	bc.AcctNumDecrypt = aes.Decrypt(bc.AcctNum)
 	bc.AcctNameDecrypt = aes.Decrypt(bc.AcctName)
 	bc.IdentNumDecrypt = aes.Decrypt(bc.IdentNum)
@@ -116,11 +117,11 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 		bc.ValidDateDecrypt = aes.Decrypt(bc.ValidDate)
 		bc.Cvv2Decrypt = aes.Decrypt(bc.Cvv2)
 	}
-	// TODO 报文解密错误，添加到mongo里
+	// 报文解密错误，添加到mongo里
 	if aes.Err != nil {
 		return mongo.RespCodeColl.Get("200021")
 	}
-	log.Debugf("after decrypt field acctNum : %s,acctName : %s,phoneNum : %s,identNum : %s,validDate : %s,cvv2 : %s",
+	log.Debugf("after decrypt field : acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",
 		bc.AcctNumDecrypt, bc.AcctNameDecrypt, bc.PhoneNumDecrypt, bc.IdentNumDecrypt, bc.ValidDateDecrypt, bc.Cvv2Decrypt)
 
 	// 验证请求报文是否完整，格式是否正确

@@ -25,5 +25,4 @@ func init() {
 
 	log.Infof("connected to mongodb %s database %s", host, dbname)
 
-	buildTree()
 }

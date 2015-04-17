@@ -26,8 +26,11 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 	return ret
 	// }
 
-	// 获取卡属性
-	cardBin, err := mongo.CardBinColl.Find(bc.AcctNumDecrypt)
+	// 获取卡bin
+	bin := tree.match(bc.AcctNumDecrypt)
+	log.Debugf("cardNum=%s, cardBin=%s", bc.AcctNumDecrypt, bin)
+	// 获取卡bin详情
+	cardBin, err := mongo.CardBinColl.Find(bin, len(bc.AcctNumDecrypt))
 	if err != nil {
 		if err.Error() == "not found" {
 			return mongo.RespCodeColl.Get("200110")

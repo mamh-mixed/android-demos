@@ -13,6 +13,7 @@
 { "respCode" : "100080", "respMsg" : "退款失败" }
 { "respCode" : "200010", "respMsg" : "验证签名失败" }
 { "respCode" : "200020", "respMsg" : "解析报文错误" }
+{ "respCode" : "200021", "respMsg" : "报文解密错误" }
 { "respCode" : "200030", "respMsg" : "报文格式错误" }
 { "respCode" : "200040", "respMsg" : "重复交易" }
 { "respCode" : "200050", "respMsg" : "报文要素缺失", "cfca" : [ { "code" : "2008", "msg" : "重复交易请求。" }, { "code" : "2016", "msg" : "参数不正确。" } ] }

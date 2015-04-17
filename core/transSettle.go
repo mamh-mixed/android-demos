@@ -149,34 +149,37 @@ func doTransCheck(settDate string) {
 		// TODO 应该根据chanCode获得渠道实例
 		// 暂时先默认cfca
 		// c := channel.GetChan(v.ChanCode)
-		c := cfca.Obj
-		resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
-		if resp != nil && len(resp.Body.Tx) > 0 {
-			for _, tx := range resp.Body.Tx {
-				// 根据订单号查找
-				if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
-					// 找到记录，修改清分状态
-					transSett.SettFlag = model.SettSuccess
-					if err = mongo.TransSettColl.Update(transSett); err != nil {
-						log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
-					}
+		if v.ChanCode == "CFCA" {
+			c := cfca.Obj
+			resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
+			if resp != nil && len(resp.Body.Tx) > 0 {
+				for _, tx := range resp.Body.Tx {
+					// 根据订单号查找
+					if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
+						// 找到记录，修改清分状态
+						log.Infof("check success %+v", transSett)
+						transSett.SettFlag = model.SettSuccess
+						if err = mongo.TransSettColl.Update(transSett); err != nil {
+							log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
+						}
 
-				} else {
-					// 找不到，则是渠道多出的交易
-					// 添加该笔交易
-					newTrans := &model.Trans{
-						Id:           bson.NewObjectId(),
-						ChanOrderNum: tx.TxSn,
-						TransAmt:     tx.TxAmount,
+					} else {
+						// 找不到，则是渠道多出的交易
+						// 添加该笔交易
+						newTrans := &model.Trans{
+							Id:           bson.NewObjectId(),
+							ChanOrderNum: tx.TxSn,
+							TransAmt:     tx.TxAmount,
+						}
+						// 判断交易类型
+						switch {
+						case tx.TxType == cfca.BindingPaymentTxCode:
+							newTrans.TransType = model.PayTrans
+						case tx.TxType == cfca.BindingRefundTxCode:
+							newTrans.TransType = model.RefundTrans
+						}
+						addTransSett(newTrans, model.SettChanRemain)
 					}
-					// 判断交易类型
-					switch {
-					case tx.TxType == cfca.BindingPaymentTxCode:
-						newTrans.TransType = model.PayTrans
-					case tx.TxType == cfca.BindingRefundTxCode:
-						newTrans.TransType = model.RefundTrans
-					}
-					addTransSett(newTrans, model.SettChanRemain)
 				}
 			}
 		}

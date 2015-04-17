@@ -1,4 +1,4 @@
-package core
+package tools
 
 import (
 	"github.com/omigo/log"
@@ -49,7 +49,7 @@ func TestDecrypt(t *testing.T) {
 	s := "44906806872556215819411164477969f321fdb9d00279ac6755565d0348274ea456823ee5210e7bb0eedb3bbd8035a3"
 	decrypted := aesCBC.Decrypt(s)
 	if aesCBC.Err != nil {
-		t.Error(aesCBC.err)
+		t.Error(aesCBC.Err)
 		t.FailNow()
 	}
 	log.Debugf("%s", decrypted)

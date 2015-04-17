@@ -57,21 +57,11 @@ func TestLoadAll(t *testing.T) {
 
 func TestFindCardBin(t *testing.T) {
 
-	cardBin, err := CardBinColl.Find(cardNum)
+	cardBin, err := CardBinColl.Find("622280193", len(cardNum))
 	if err != nil {
 		t.Errorf("Find CardBIN error (%s)", err.Error())
 	}
 	if cardBin != nil && cardBin.Bin != "622280193" {
 		t.Errorf("cardNum %s prefix is not %s", cardNum, cardBin.Bin)
 	}
-}
-
-func TestBuildTree(t *testing.T) {
-
-	s := tree.match(cardNum)
-	if s != "622280193" {
-		t.Errorf("expect cardBin : 622280193,but get : %s", s)
-		t.FailNow()
-	}
-	log.Debugf("%+s , %+v\n", s, tree.Root)
 }
