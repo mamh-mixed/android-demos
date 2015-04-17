@@ -7,7 +7,7 @@ import (
 
 func TestGetChan(t *testing.T) {
 
-	c := GetChan("cfca")
+	c := GetChan("CFCA")
 	if c == nil {
 		t.Error("fail...")
 		t.FailNow()

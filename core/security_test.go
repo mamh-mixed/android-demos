@@ -5,13 +5,16 @@ import (
 	"testing"
 )
 
+var aesCBF, aesCBC = AesCFBMode{}, AesCBCMode{}
+
 func TestAesCFBEncryptAndDecrypt(t *testing.T) {
 
 	// key := []byte("1234567890123456")
+	aesCBF := new(AesCFBMode)
 	pt := "中国最好，中国最棒，ye"
-	encrypted := aesCFBEncrypt(pt)
+	encrypted := aesCBF.Encrypt(pt)
 	log.Debugf("%s", encrypted)
-	decrypted := aesCFBDecrypt(encrypted)
+	decrypted := aesCBF.Decrypt(encrypted)
 	if string(decrypted) != pt {
 		t.Error("decrypt fail")
 		t.FailNow()
@@ -23,9 +26,9 @@ func TestCBCAesEncryptAndDecrypt(t *testing.T) {
 
 	// key := []byte("1234567890123456")
 	pt := "中国最好，中国最棒，ye"
-	encrypted := AesCBCEncrypt(pt)
+	encrypted := aesCBC.Encrypt(pt)
 	log.Debugf("%s", encrypted)
-	decrypted := AesCBCDecrypt(encrypted)
+	decrypted := aesCBC.Decrypt(encrypted)
 	if string(decrypted) != pt {
 		t.Error("decrypt fail")
 		t.FailNow()
@@ -33,20 +36,20 @@ func TestCBCAesEncryptAndDecrypt(t *testing.T) {
 	log.Debugf("%s", decrypted)
 }
 func TestEncrypt(t *testing.T) {
-	accnum := AesCBCEncrypt("6222020302062061901")
-	accname := AesCBCEncrypt("陈芝锐")
+	accnum := aesCBC.Encrypt("6222020302062061901")
+	accname := aesCBC.Encrypt("陈芝锐")
 	// cvv2 := aesCBCEncrypt("")
-	identnum := AesCBCEncrypt("440583199111031012")
-	validdate := AesCBCEncrypt("09/18")
+	identnum := aesCBC.Encrypt("440583199111031012")
+	validdate := aesCBC.Encrypt("09/18")
 	log.Debugf("%s,%s,%s,%s", accnum, accname, identnum, validdate)
 }
 
 func TestDecrypt(t *testing.T) {
 
-	s := "60202215176842555995459843018306154894ce1da849aa0af4699d5334fa5b"
-	decrypted := AesCBCDecrypt(s)
-	if decrypted != "张三" {
-		t.Errorf("expect 张三 , but get %s", decrypted)
+	s := "44906806872556215819411164477969f321fdb9d00279ac6755565d0348274ea456823ee5210e7bb0eedb3bbd8035a3"
+	decrypted := aesCBC.Decrypt(s)
+	if aesCBC.Err != nil {
+		t.Error(aesCBC.err)
 		t.FailNow()
 	}
 	log.Debugf("%s", decrypted)
