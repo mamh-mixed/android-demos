@@ -1,9 +1,11 @@
 package core
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"testing"
+	"time"
 )
 
 func TestProcessBindingCreate(t *testing.T) {
@@ -139,4 +141,33 @@ func TestProcessBillingSummary(t *testing.T) {
 		t.Errorf("process billing summary but not get a respCode %+v", ret)
 	}
 	log.Debugf("%+v", ret)
+}
+
+func TestProcessApplePay(t *testing.T) {
+	ap := &model.ApplePay{
+		MerId:         applePayMerId,
+		TransType:     "SALE",
+		MerOrderNum:   fmt.Sprintf("%d", time.Now().UnixNano()),
+		TransactionId: "49170302b04f74b56b0060f33e11a135134e48e8af80a50cefea6c079353b419",
+		ApplePayData: model.ApplePayData{
+			ApplicationPrimaryAccountNumber: "4097900050058723",
+			ApplicationExpirationDate:       "200228",
+			CurrencyCode:                    "840",
+			TransactionAmount:               120,
+			DeviceManufacturerIdentifier:    "040010030273",
+			PaymentDataType:                 "3DSecure",
+			PaymentData: model.PaymentData{
+				OnlinePaymentCryptogram: "AcqhpcYAIdfgEP3QIUGgMAACAAA",
+				EciIndicator:            "5",
+			},
+		},
+	}
+
+	ret := ProcessApplePay(ap)
+
+	if ret == nil {
+		t.Error("Apple pay process error")
+	}
+
+	t.Logf("%+v", ret)
 }

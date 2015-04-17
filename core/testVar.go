@@ -22,4 +22,23 @@ var (
 	settDate        = "2015-03-22"
 	removeMerId     = "1426562901844"
 	removeBindingId = "1426562901897"
+
+	applePayMerId = "123456" // apple pay 测试用商户号
 )
+
+// apple pay测试增加了如下路由
+// {
+//     "merId": "123456",
+//     "cardBrand": "VIS",
+//     "chanCode": "APT",
+//     "chanMerId": "APT123456"
+// }
+
+// apple pay测试增加了渠道商户
+// {
+// 	"chanCode" : "APT",
+//     "chanMerId" : "APT123456",
+//     "chanMerName" : "Apple Pay测试渠道商户",
+// 	"terminalId": "TID123456789",
+// 	"insCode" : "99667788"
+// }

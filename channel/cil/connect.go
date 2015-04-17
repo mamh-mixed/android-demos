@@ -172,7 +172,7 @@ func read() (back *CilMsg, err error) {
 
 	back = &CilMsg{}
 	err = json.Unmarshal(msg, back)
-	log.Checkf("msg(% x) can not unmarshal to object", msg, err)
+	log.Warnf("msg(% x) can not unmarshal to object", msg, err)
 
 	return back, err
 }
