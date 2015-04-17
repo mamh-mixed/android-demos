@@ -1,6 +1,7 @@
 package channel
 
 import (
+	// "github.com/CardInfoLink/quickpay/channel/alp"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 )
@@ -39,6 +40,10 @@ func GetChan(chanCode string) Chan {
 	case "CFCA":
 		return &cfca.Obj
 	case "CIL":
+		return nil
+	case "ALP":
+		return nil
+	case "WXP":
 		return nil
 	}
 	return nil
