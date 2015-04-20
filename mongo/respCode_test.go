@@ -5,8 +5,9 @@ import (
 )
 
 func TestGetRespCode(t *testing.T) {
+	respCode = "200021"
+
 	ret := RespCodeColl.Get(respCode)
-	// t.Logf("%#v", ret)
 
 	if ret == nil {
 		t.Error("respCode not exist")
@@ -21,7 +22,6 @@ func TestGetRespCode(t *testing.T) {
 func TestGetRespCodeByCfca(t *testing.T) {
 
 	ret := RespCodeColl.GetByCfca(cfcacode)
-	// t.Logf("%#v", ret)
 
 	if ret == nil {
 		t.Error("cfca code not exist")
