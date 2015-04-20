@@ -35,7 +35,7 @@ func TestProcessBindingEnquiry(t *testing.T) {
 		ChanMerId:     chanMerId,
 		SignCert:      priKeyPem,
 	}
-	resp := Obj.ProcessBindingEnquiry(be)
+	resp := DefaultClient.ProcessBindingEnquiry(be)
 
 	log.Debugf("response message  %s", resp)
 }
@@ -58,7 +58,7 @@ func TestProcessBindingCreate(t *testing.T) {
 		SmsCode:       smsCode,
 		SignCert:      priKeyPem,
 	}
-	resp := Obj.ProcessBindingCreate(be)
+	resp := DefaultClient.ProcessBindingCreate(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -70,7 +70,7 @@ func TestProcessBindingRemove(t *testing.T) {
 		TxSNUnBinding: txSNUnBinding,
 		SignCert:      priKeyPem,
 	}
-	resp := Obj.ProcessBindingRemove(be)
+	resp := DefaultClient.ProcessBindingRemove(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -85,7 +85,7 @@ func TestProcessBindingPayment(t *testing.T) {
 		TransAmt:     int64(transAmt),
 		SignCert:     priKeyPem,
 	}
-	resp := Obj.ProcessBindingPayment(be)
+	resp := DefaultClient.ProcessBindingPayment(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -98,7 +98,7 @@ func TestProcessBindingRefund(t *testing.T) {
 		TransAmt:         int64(transAmt),
 		SignCert:         priKeyPem,
 	}
-	resp := Obj.ProcessBindingRefund(be)
+	resp := DefaultClient.ProcessBindingRefund(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -109,7 +109,7 @@ func TestProcessPaymentEnquiry(t *testing.T) {
 		ChanOrderNum: chanOrderNum,
 		SignCert:     priKeyPem,
 	}
-	resp := Obj.ProcessPaymentEnquiry(be)
+	resp := DefaultClient.ProcessPaymentEnquiry(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -120,7 +120,7 @@ func TestProcessRefundEnquiry(t *testing.T) {
 		ChanOrderNum: chanOrderNum,
 		SignCert:     priKeyPem,
 	}
-	resp := Obj.ProcessRefundEnquiry(be)
+	resp := DefaultClient.ProcessRefundEnquiry(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -131,6 +131,6 @@ func TestProcessTransChecking(t *testing.T) {
 	// 	SettDate:  "2015-03-19",
 	// 	SignCert:  priKeyPem,
 	// }
-	resp := Obj.ProcessTransChecking(chanMerId, "2015-04-13", priKeyPem)
+	resp := DefaultClient.ProcessTransChecking(chanMerId, "2015-04-13", priKeyPem)
 	log.Debugf("response message  %s", resp)
 }
