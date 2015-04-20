@@ -6,8 +6,8 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 )
 
-// Chan 渠道对象统一接口
-type Chan interface {
+// BindingPayChan 渠道对象统一接口
+type BindingPayChan interface {
 	// ProcessBindingEnquiry 查询绑定关系
 	ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn)
 
@@ -34,7 +34,7 @@ type Chan interface {
 }
 
 // GetChan 根据chanCode获得渠道对象
-func GetChan(chanCode string) Chan {
+func GetChan(chanCode string) BindingPayChan {
 
 	switch chanCode {
 	case "CFCA":
