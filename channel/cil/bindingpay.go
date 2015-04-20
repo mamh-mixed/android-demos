@@ -55,7 +55,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		Txamt:         fmt.Sprintf("%012d", ap.ApplePayData.TransactionAmount),
 		Txcurrcd:      ap.ApplePayData.CurrencyCode,
 		Cardcd:        ap.ApplePayData.ApplicationPrimaryAccountNumber,
-		Expiredate:    "",
+		Expiredate:    ap.ApplePayData.ApplicationExpirationDate[0:4],
 		Syssn:         ap.SysSN,
 		Localdt:       tools.LocalDt(),
 		Transactionid: ap.TransactionId,
@@ -68,11 +68,11 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	} else {
 		// 3DSecure 支付数据类型
 		// 3D交易发卡行验证结果转换:'5,6,7' ==> '05,06,07'
-		m.Eclindicator = "0" + ap.ApplePayData.PaymentData.EciIndicator
+		m.EciIndicator = "0" + ap.ApplePayData.PaymentData.EciIndicator
 		m.Onlinesecuredata = ap.ApplePayData.PaymentData.OnlinePaymentCryptogram
 	}
 
-	log.Info(m)
+	log.Infof("～～～～～～Apple Pay请求信息：\n", m)
 
 	resp := send(&m)
 
