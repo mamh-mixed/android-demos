@@ -46,7 +46,7 @@ func handleResponseBody(body []byte) *AlpResponse {
 		log.Errorf("unmarsal body(%s) fail : %s", body, err)
 	}
 
-	// 验证签名
+	// TODO 验证签名
 
 	return alpResp
 }

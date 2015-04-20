@@ -20,9 +20,9 @@ func init() {
 // ProcessTransSettle 清分
 func ProcessTransSettle() {
 
-	// 暂时先每天凌晨将交易信息拷贝到清分表里
+	// 暂时先每天早上8点将交易信息拷贝到清分表里
 	// 距离指定的时间
-	dis, err := tools.TimeToGiven("00:30:00")
+	dis, err := tools.TimeToGiven("08:00:00")
 	if err != nil {
 		log.Errorf("fail to get time second by given %s", err)
 		return
@@ -43,6 +43,7 @@ func ProcessTransSettle() {
 		}
 
 	})
+
 	<-c
 
 }
@@ -73,7 +74,11 @@ func doTransSett() {
 			// TODO根据渠道代码得到渠道实例，暂时默认cfca
 
 			// 得到渠道商户，获取签名密钥
-			chanMer, _ := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
+			chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
+			if err != nil {
+				log.Errorf("fail to find chanMer(%s,%s) : %s", v.ChanCode, v.ChanMerId, err)
+				continue
+			}
 			// 封装参数
 			be := &model.OrderEnquiry{
 				ChanMerId:    v.ChanMerId,

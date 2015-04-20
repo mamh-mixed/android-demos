@@ -9,42 +9,61 @@ var Obj alp
 // alp 当面付，扫码支付
 type alp struct{}
 
-// ProcessBindingEnquiry 无需实现
-func (a *alp) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
-	return
+// ProcessBarcodePay 条码支付
+func (a *alp) ProcessBarcodePay(req *AlpRequest) *AlpResponse {
+
+	// req to map
+	dict := toMap(req)
+
+	return sendRequest(dict, req.Key)
 }
 
-// ProcessBindingCreate 无需实现
-func (a *alp) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
-	return
+// ProcessQrCodeOfflinePay 扫码支付
+func (a *alp) ProcessQrCodeOfflinePay(req *AlpRequest) *AlpResponse {
+
+	// req to map
+	dict := toMap(req)
+
+	return sendRequest(dict, req.Key)
 }
 
-// ProcessBindingRemove 无需实现
-func (a *alp) ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
-	return
+// ProcessRefund 退款
+func (a *alp) ProcessRefund(req *AlpRequest) *AlpResponse {
+	// req to map
+	dict := toMap(req)
+
+	return sendRequest(dict, req.Key)
 }
 
-// ProcessBindingPayment 下单
-func (a *alp) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
-	return
+// ProcessEnquiry 查询，包含支付、退款
+func (a *alp) ProcessEnquiry(req *AlpRequest) *AlpResponse {
+	// req to map
+	dict := toMap(req)
+
+	return sendRequest(dict, req.Key)
 }
 
-// ProcessPaymentEnquiry 支付查询
-func (a *alp) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
-	return a.processEnquiry(be)
-}
+func toMap(req *AlpRequest) map[string]string {
 
-// ProcessBindingRefund 退款
-func (a *alp) ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
-	return
-}
+	dict := make(map[string]string)
+	// 参数转换
+	dict["server"] = req.Service
+	dict["_input_charset"] = req.Charset
+	dict["currency"] = req.Currency
+	dict["notify_url"] = req.NotifyUrl
+	dict["partner"] = req.Partner
+	dict["product_code"] = req.ProductCode
+	dict["out_trade_no"] = req.OutTradeNo
+	dict["subject"] = req.Subject
+	dict["product_code"] = req.ProductCode
+	dict["total_fee"] = req.TotalFee
+	dict["seller_id"] = req.SellerId
+	dict["extend_params"] = req.ExtendParams
+	dict["it_b_pay"] = req.ItBPay
+	dict["dynamic_id_type"] = req.DynamicIdType
+	dict["dynamic_id"] = req.DynamicId
 
-// ProcessRefundEnquiry 退款查询
-func (a *alp) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
-	return a.processEnquiry(be)
-}
+	// ...
 
-// processEnquiry 查询，包含支付、退款
-func (a *alp) processEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
-	return
+	return dict
 }

@@ -117,8 +117,9 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 		bc.ValidDateDecrypt = aes.Decrypt(bc.ValidDate)
 		bc.Cvv2Decrypt = aes.Decrypt(bc.Cvv2)
 	}
-	// 报文解密错误，添加到mongo里
+	// 报文解密错误
 	if aes.Err != nil {
+		log.Errorf("decrypt fail : merId=%s, request=%+v, err=%s", merId, bc, aes.Err)
 		return mongo.RespCodeColl.Get("200021")
 	}
 	log.Debugf("after decrypt field : acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",

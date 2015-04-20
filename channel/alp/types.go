@@ -5,6 +5,26 @@ import (
 	"encoding/xml"
 )
 
+// AlpRequest 请求参数
+type AlpRequest struct {
+	Service       string
+	Partner       string
+	Charset       string
+	NotifyUrl     string
+	OutTradeNo    string
+	Subject       string
+	GoodsDetail   string
+	ProductCode   string
+	TotalFee      string
+	SellerId      string
+	Currency      string
+	ExtendParams  string
+	ItBPay        string
+	DynamicIdType string
+	DynamicId     string
+	Key           string
+}
+
 // AlpResponse 支付宝接口返回信息
 type AlpResponse struct {
 	XMLName   xml.Name `xml:"alipay"`
