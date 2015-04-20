@@ -1,10 +1,17 @@
 package bindingpay
 
 import (
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
@@ -114,15 +121,20 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	bc.AcctNameDecrypt = aes.Decrypt(bc.AcctName)
 	bc.IdentNumDecrypt = aes.Decrypt(bc.IdentNum)
 	bc.PhoneNumDecrypt = aes.Decrypt(bc.PhoneNum)
-	if bc.AcctType == "20" {
-		bc.ValidDateDecrypt = aes.Decrypt(bc.ValidDate)
-		bc.Cvv2Decrypt = aes.Decrypt(bc.Cvv2)
-	}
+	bc.ValidDateDecrypt = aes.Decrypt(bc.ValidDate)
+	bc.Cvv2Decrypt = aes.Decrypt(bc.Cvv2)
+	// bc.AcctNumDecrypt = Decrypt(bc.AcctNum)
+	// bc.AcctNameDecrypt = Decrypt(bc.AcctName)
+	// bc.IdentNumDecrypt = Decrypt(bc.IdentNum)
+	// bc.PhoneNumDecrypt = Decrypt(bc.PhoneNum)
+	// bc.ValidDateDecrypt = Decrypt(bc.ValidDate)
+	// bc.Cvv2Decrypt = Decrypt(bc.Cvv2)
 	// TODO 报文解密错误，添加到mongo里
 	if aes.Err != nil {
 		return mongo.RespCodeColl.Get("200021")
 	}
-	log.Debugf("after decrypt field acctNum : %s,acctName : %s,phoneNum : %s,identNum : %s,validDate : %s,cvv2 : %s",
+
+	log.Debugf("after decrypt field: acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",
 		bc.AcctNumDecrypt, bc.AcctNameDecrypt, bc.PhoneNumDecrypt, bc.IdentNumDecrypt, bc.ValidDateDecrypt, bc.Cvv2Decrypt)
 
 	// 验证请求报文是否完整，格式是否正确
@@ -136,6 +148,55 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 
 	return ret
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+func Decrypt(ct string) string {
+	hexStr := "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f"
+	key, _ := hex.DecodeString(hexStr)
+
+	ct = strings.TrimSpace(ct)
+	ciphertext, err := base64.StdEncoding.DecodeString(ct)
+	if err != nil {
+		panic(err)
+	}
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(ciphertext) < aes.BlockSize {
+		panic(fmt.Sprintf("%s : ciphertext too short", ct))
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	if len(ciphertext)%aes.BlockSize != 0 {
+		panic(fmt.Sprintf("%s : ciphertext is not a multiple of the block size", ct))
+	}
+
+	mode := cipher.NewCBCDecrypter(block, iv)
+
+	mode.CryptBlocks(ciphertext, ciphertext)
+	ciphertext = PKCS7UnPadding(ciphertext)
+
+	fmt.Println(string(ciphertext))
+
+	return string(ciphertext)
+}
+
+func PKCS7Padding(ciphertext []byte, blockSize int) []byte {
+	padding := blockSize - len(ciphertext)%blockSize
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(ciphertext, padtext...)
+}
+
+func PKCS7UnPadding(origData []byte) []byte {
+	length := len(origData)
+	unpadding := int(origData[length-1])
+	return origData[:(length - unpadding)]
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // 解除绑定关系
 func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {

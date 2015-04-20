@@ -19,7 +19,7 @@ func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {
 	resp = &model.BindingReturn{}
 	err := database.C(c.name).Find(bson.M{"respCode": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)
 	if err != nil {
-		log.Errorf("can not find respCode for %s: ", code, err)
+		log.Errorf("can not find respCode for %s: %s", code, err)
 	}
 
 	return resp

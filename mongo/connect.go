@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	host = "tdd.ipay.so"
-	// host   = "127.0.0.1"
+	host   = "121.41.85.237"
 	dbname = "quickpay"
 )
 
@@ -17,7 +16,7 @@ var database *mgo.Database
 func init() {
 	session, err := mgo.Dial(host)
 	if err != nil {
-		log.Fatalf("unable connect to mongodb server ", err)
+		log.Fatalf("unable connect to mongodb server %s", err)
 	}
 
 	session.SetMode(mgo.Monotonic, true)

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance/bindingpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -29,13 +30,22 @@ func TestBindingPay(t *testing.T) {
 		IdentType: "0",
 		IdentNum:  "440583199111031012",
 		PhoneNum:  "18205960039",
-		AcctType:  "10",
+		AcctType:  "20",
 		ValidDate: "0612",
 		Cvv2:      "793",
 		SendSmsId: "",
 		SmsCode:   "",
 		BankId:    "102",
 	}
+
+	var aes = core.AesCBCMode{}
+
+	b.AcctName = aes.Encrypt(b.AcctName)
+	b.AcctNum = aes.Encrypt(b.AcctNum)
+	b.IdentNum = aes.Encrypt(b.IdentNum)
+	b.PhoneNum = aes.Encrypt(b.PhoneNum)
+	b.ValidDate = aes.Encrypt(b.ValidDate)
+	b.Cvv2 = aes.Encrypt(b.Cvv2)
 
 	doPost("POST", url, b, t)
 }

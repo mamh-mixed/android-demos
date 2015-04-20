@@ -1,13 +1,14 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"strings"
 )
 
 // ProcessBindingCreate 绑定建立的业务处理
@@ -99,7 +100,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.SignCert = chanMer.SignCert
 	// TODO对加密的字段进行解密再送往渠道方
 
-	log.Debugf("'BindingCreate' is: %+v", bc)
+	log.Tracef("'BindingCreate' is: %+v", bc)
 
 	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
