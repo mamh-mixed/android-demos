@@ -1,37 +1,44 @@
 package cil
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"strconv"
 )
 
 // 讯联交易类型
 const (
 	version               = "15.1"
+	reversalTime          = 50       // 超时时间
 	consumeBusicd         = "000000" // 消费
+	orderConsumeBusicd    = "020000" // 订购消费
 	consumeUndoBusicd     = "201000" // 消费撤销
 	consumeReversalBusicd = "040000" // 消费冲正
 )
 
-// 消费
+// 无卡直接消费（订购消费）
 func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
-	// m := CilMsg{
-	// 	Busicd:        consumeBusicd,
-	// 	Txndir:        "Q",
-	// 	Posentrymode:  "992", // todo 如果是3dsecure的，992；EMV的规范还没出
-	// 	Chcd:          "",
-	// 	Clisn:         "",
-	// 	Mchntid:       "",
-	// 	Terminalid:    "",
-	// 	Txamt:         "",
-	// 	Txcurrcd:      "",
-	// 	Cardcd:        "",
-	// 	Syssn:         "",
-	// 	Localdt:       tools.LocalDt(),
-	// 	Transactionid: "",
-	// }
+	log.Info("无卡直接支付开始向线下网关发送报文")
+	m := CilMsg{
+		Busicd:       orderConsumeBusicd,
+		Txndir:       "Q",
+		Posentrymode: "012",
+		Chcd:         p.Chcd,
+		Clisn:        p.CliSN,
+		Mchntid:      p.Mchntid,
+		Terminalid:   p.Terminalid,
+		Txamt:        fmt.Sprintf("%012d", p.TransAmt),
+		Txcurrcd:     p.CurrCode,
+		Cardcd:       p.AcctNum,
+		Syssn:        p.SysSN,
+		Localdt:      tools.LocalDt(),
+		Expiredate:   p.ValidDate,
+		Cvv2:         p.Cvv2,
+	}
+
+	resp := send(&m)
+	log.Debugf("无卡直接支付返回结果:%+v", resp)
 	return nil
 }
 
@@ -43,11 +50,12 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		Posentrymode:  "992", // todo 如果是3dsecure的，992；EMV的规范还没出
 		Chcd:          ap.Chcd,
 		Clisn:         ap.CliSN,
-		Mchntid:       ap.MerId,
+		Mchntid:       ap.Mchntid,
 		Terminalid:    ap.TerminalId,
-		Txamt:         strconv.FormatInt(ap.ApplePayData.TransactionAmount, 10),
+		Txamt:         fmt.Sprintf("%012d", ap.ApplePayData.TransactionAmount),
 		Txcurrcd:      ap.ApplePayData.CurrencyCode,
 		Cardcd:        ap.ApplePayData.ApplicationPrimaryAccountNumber,
+		Expiredate:    "",
 		Syssn:         ap.SysSN,
 		Localdt:       tools.LocalDt(),
 		Transactionid: ap.TransactionId,
