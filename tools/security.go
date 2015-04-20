@@ -1,4 +1,4 @@
-package core
+package tools
 
 import (
 	"bytes"
@@ -14,10 +14,12 @@ import (
 )
 
 type AesCBCMode struct {
+	Key string
 	Err error
 }
 
 type AesCFBMode struct {
+	Key string
 	Err error
 }
 

@@ -28,8 +28,11 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 	return ret
 	// }
 
-	// 获取卡属性
-	cardBin, err := mongo.CardBinColl.Find(bc.AcctNumDecrypt)
+	// 获取卡bin
+	bin := tree.match(bc.AcctNumDecrypt)
+	log.Debugf("cardNum=%s, cardBin=%s", bc.AcctNumDecrypt, bin)
+	// 获取卡bin详情
+	cardBin, err := mongo.CardBinColl.Find(bin, len(bc.AcctNumDecrypt))
 	if err != nil {
 		if err.Error() == "not found" {
 			return mongo.RespCodeColl.Get("200110")
@@ -639,7 +642,12 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 
 	// 根据卡号查找卡属性，然后匹配路由查找
 	// 获取卡属性
-	cardBin, err := mongo.CardBinColl.Find(ap.ApplePayData.ApplicationPrimaryAccountNumber)
+	appleAcctNum := ap.ApplePayData.ApplicationPrimaryAccountNumber
+	bin := tree.match(appleAcctNum)
+	log.Debugf("cardNum=%s, cardBin=%s", appleAcctNum, bin)
+	// 获取卡bin详情
+	cardBin, err := mongo.CardBinColl.Find(bin, len(appleAcctNum))
+
 	if err != nil {
 		if err.Error() == "not found" {
 			errorTrans.RespCode = "200070"
