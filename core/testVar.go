@@ -24,6 +24,10 @@ var (
 	removeBindingId = "1426562901897"
 
 	applePayMerId = "123456" // apple pay 测试用商户号
+
+	// Apple Pay测试数据
+	testAPPCard       = "5180841200282463"
+	testAPPExpireDate = "180531"
 )
 
 // apple pay测试增加了如下路由
