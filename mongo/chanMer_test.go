@@ -59,7 +59,7 @@ func TestChanMerModify(t *testing.T) {
 
 func TestChanMerFindAll(t *testing.T) {
 
-	cs, err := ChanMerColl.FindAll()
+	cs, err := ChanMerColl.FindByCode(chanCode)
 	if err != nil {
 		t.Errorf("findAll chanMer unsuccessful %s", err)
 		t.FailNow()

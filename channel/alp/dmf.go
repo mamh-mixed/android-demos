@@ -1,7 +1,7 @@
 package alp
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
+	_ "github.com/CardInfoLink/quickpay/model"
 )
 
 var Obj alp

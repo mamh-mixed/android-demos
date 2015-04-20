@@ -1,8 +1,6 @@
 package core
 
 import (
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
@@ -10,43 +8,54 @@ import (
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
+
+// yesterday 每天不一样
+var yesterday string
 
 // init 开启任务routine
 func init() {
-	log.Debug("wait to process transSett method")
 	go ProcessTransSettle()
 }
 
 // ProcessTransSettle 清分
 func ProcessTransSettle() {
 
-	// 暂时先每天早上8点将交易信息拷贝到清分表里
+	// 凌晨10分时将交易数据copy到清分表
 	// 距离指定的时间
-	dis, err := tools.TimeToGiven("08:00:00")
+	dis, err := tools.TimeToGiven("00:10:00")
 	if err != nil {
 		log.Errorf("fail to get time second by given %s", err)
 		return
 	}
-	c := make(chan bool)
-	time.AfterFunc(time.Duration(dis)*time.Second, func() {
-		// time.AfterFunc(10*time.Second, func() {
+	log.Debugf("prepare to process transSett method after %d minute", dis/60)
+	afterFunc(time.Duration(dis)*time.Second, doTransSett)
+
+	// 中金渠道
+	disCfca, _ := tools.TimeToGiven("08:00:00")
+	log.Debugf("prepare to process doCFCATransCheck method after %d minute", disCfca/60)
+	afterFunc(time.Duration(disCfca)*time.Second, doCFCATransCheck)
+
+	// 其他渠道...
+
+	// 主线程阻塞
+	select {}
+}
+
+func afterFunc(d time.Duration, df func()) {
+	time.AfterFunc(d, func() {
 		// 到点时先执行一次
-		doTransSett()
+		df()
 		// 24小时后执行
 		tick := time.Tick(24 * time.Hour)
 		for {
 			select {
 			case <-tick:
-				// g.Debug("tick ... %s", "boom")
-				doTransSett()
+				df()
 			}
 		}
-
 	})
-
-	<-c
-
 }
 
 func doTransSett() {
@@ -55,7 +64,7 @@ func doTransSett() {
 	// 查找昨天的交易
 	now := time.Now()
 	d, _ := time.ParseDuration("-24h")
-	yesterday := now.Add(d).Format(layout)
+	yesterday = now.Add(d).Format(layout)
 	log.Debugf("yesterday : %s", yesterday)
 	trans, err := mongo.TransColl.FindByTime(yesterday)
 	if err != nil {
@@ -120,10 +129,6 @@ func doTransSett() {
 		}
 
 	}
-
-	// 勾兑:只需确认系统的交易记录在渠道方是否存在
-	// 不用勾兑金额
-	doTransCheck(yesterday)
 }
 
 // addTransSett 保存一条清分数据
@@ -143,49 +148,50 @@ func addTransSett(t *model.Trans, settFlag int8) {
 	}
 }
 
-// doTransCheck 勾兑
-func doTransCheck(settDate string) {
-	chanMers, err := mongo.ChanMerColl.FindAll()
+// doCFCATransCheck 中金渠道勾兑
+// 勾兑:只需确认系统的交易记录在渠道方是否存在
+// 不用勾兑金额
+func doCFCATransCheck() {
+	chanMers, err := mongo.ChanMerColl.FindByCode("CFCA")
 	if err != nil {
-		log.Errorf("fail to load all chanMer %s", err)
+		log.Errorf("fail to load all cfca chanMer %s", err)
 	}
+	// 中金渠道对象
+	c := cfca.DefaultClient
+
 	// 遍历渠道商户
 	for _, v := range chanMers {
-
 		// TODO 应该根据chanCode获得渠道实例
 		// 暂时先默认cfca
 		// c := channel.GetChan(v.ChanCode)
-		if v.ChanCode == "CFCA" {
-			c := cfca.DefaultClient
-			resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
-			if resp != nil && len(resp.Body.Tx) > 0 {
-				for _, tx := range resp.Body.Tx {
-					// 根据订单号查找
-					if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
-						// 找到记录，修改清分状态
-						log.Infof("check success %+v", transSett)
-						transSett.SettFlag = model.SettSuccess
-						if err = mongo.TransSettColl.Update(transSett); err != nil {
-							log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
-						}
-
-					} else {
-						// 找不到，则是渠道多出的交易
-						// 添加该笔交易
-						newTrans := &model.Trans{
-							Id:           bson.NewObjectId(),
-							ChanOrderNum: tx.TxSn,
-							TransAmt:     tx.TxAmount,
-						}
-						// 判断交易类型
-						switch {
-						case tx.TxType == cfca.BindingPaymentTxCode:
-							newTrans.TransType = model.PayTrans
-						case tx.TxType == cfca.BindingRefundTxCode:
-							newTrans.TransType = model.RefundTrans
-						}
-						addTransSett(newTrans, model.SettChanRemain)
+		resp := c.ProcessTransChecking(v.ChanMerId, yesterday, v.SignCert)
+		if resp != nil && len(resp.Body.Tx) > 0 {
+			for _, tx := range resp.Body.Tx {
+				// 根据订单号查找
+				if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
+					// 找到记录，修改清分状态
+					log.Infof("check success %+v", transSett)
+					transSett.SettFlag = model.SettSuccess
+					if err = mongo.TransSettColl.Update(transSett); err != nil {
+						log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
 					}
+
+				} else {
+					// 找不到，则是渠道多出的交易
+					// 添加该笔交易
+					newTrans := &model.Trans{
+						Id:           bson.NewObjectId(),
+						ChanOrderNum: tx.TxSn,
+						TransAmt:     tx.TxAmount,
+					}
+					// 判断交易类型
+					switch {
+					case tx.TxType == cfca.BindingPaymentTxCode:
+						newTrans.TransType = model.PayTrans
+					case tx.TxType == cfca.BindingRefundTxCode:
+						newTrans.TransType = model.RefundTrans
+					}
+					addTransSett(newTrans, model.SettChanRemain)
 				}
 			}
 		}
