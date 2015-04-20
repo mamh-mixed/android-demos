@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/xml"
 	"github.com/omigo/log"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
@@ -32,9 +33,13 @@ func sendRequest(params map[string]string, key string) *AlpResponse {
 	if err != nil {
 		log.Errorf("connect %s fail : %s", requestURL, err)
 	}
-	log.Debugf("response body : %s", res)
+	bodys, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Errorf("unable to read res.Body: %s", err)
+	}
+	log.Debugf("response body : %s", bodys)
 
-	return handleResponseBody(res)
+	return handleResponseBody(bodys)
 }
 
 // handleResponseBody 处理结果集
