@@ -117,6 +117,8 @@ type ChanMer struct {
 	WxpAppId       string `bson:"wxpAppId,omitempty"`       //微信支付App Id
 	WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty"`  //微信支付Partner Key
 	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty"` //微信支付加密证书
+	InsCode        string `bson:"insCode,omitempty"`        //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId     string `bson:"terminalId,omitempty"`     //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
 	//...
 }
 
@@ -211,4 +213,17 @@ type TransSettInfo struct {
 	MerFee     int64  `bson:"merFee" json:"merFee"`         //商户手续费
 	MerSettAmt int64  `bson:"merSettAmt" json:"merSettAmt"` //商户清算金额
 	//TODO check 交易日期
+}
+
+// SN 序列号
+type SN struct {
+	Key   string `bson:"key"`   // 序列号的key
+	Value int64  `bson:"value"` // 序列号的值
+}
+
+// 每个终端对应的当日唯一的6位序列号
+type DaySN struct {
+	MerId  string `bson:"merId"`  // 商户号
+	TermId string `bson:"termId"` // 终端号
+	Sn     int64  `bson:"sn"`     // 序列号
 }

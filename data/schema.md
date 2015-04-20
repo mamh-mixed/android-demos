@@ -51,6 +51,8 @@
 微信支付App Id	wxpAppId
 微信支付Partner Key	wxpPartnerKey
 微信支付加密证书	wxpEncryptCert
+机构号     insCode (Apple Pay用到，对应到线下网关的chcd)
+终端号     terminalId (Apple Pay用到，对应到线下网关的terminalid)
 
 4. 应答码	respCode
 应答码	respCode
@@ -132,3 +134,11 @@ CVV2	cvv2
 渠道清算金额 ChanSettAmt
 渠道手续费 ChanFee
 
+11. 单日序列号信息 DaySN
+商户号 MerId
+终端号 TermId
+序列号 Sn
+
+12. 系统唯一序列号  SN
+序列号的键   Key
+序列号的值   Value

@@ -49,6 +49,9 @@
 { "respCode" : "200220", "respMsg" : "电子邮箱有误", "cfca" : [ { "code" : "260015", "msg" : "电子邮箱长度不正确,请查看参数Email" }, { "code" : "260015", "msg" : "电子邮箱长度不正确,请查看参数Email" } ] }
 { "respCode" : "200230", "respMsg" : "账户类型有误", "cfca" : [ { "code" : "240013", "msg" : "账户类型错误，请查看参数AccountType" }, { "code" : "260002", "msg" : "账户类型为空或值错误,请查看参数AccountType" }, { "code" : "270049", "msg" : "账户类型错误，请查看参数AccountType" } ] }
 { "respCode" : "200240", "respMsg" : "证件号码有误", "cfca" : [ { "code" : "260011", "msg" : "证件号码长度不正确,请查看参数IdentificationNumber" }, { "code" : "30250113", "msg" : "证件号码为空，请检查！" }, { "code" : "30250114", "msg" : "证件号码长度超长，请检查！" } ] }
+{ "respCode" : "200250", "respMsg" : "ApplePay有效期有误" }
+{ "respCode" : "200251", "respMsg" : "ApplePay交易币种有误" }
+{ "respCode" : "200252", "respMsg" : "ApplePay支付数据类型有误" }
 { "respCode" : "300010", "respMsg" : "交易未通过" }
 { "respCode" : "300020", "respMsg" : "商户状态不正确" }
 { "respCode" : "300030", "respMsg" : "无此交易权限" }

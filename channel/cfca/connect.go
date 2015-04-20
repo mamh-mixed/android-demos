@@ -109,18 +109,18 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	// xml 编组
 	xmlBytes, err := xml.Marshal(req)
 	if err != nil {
-		log.Errorf("unable to marshal xml:", err)
+		log.Errorf("unable to marshal xml: %s", err)
 		return nil
 	}
-	log.Debugf("请求报文: %s", xmlBytes)
+	log.Debugf("to send: %s", xmlBytes)
 
 	// 对 xml 作 base64 编码
 	b64Str := base64.StdEncoding.EncodeToString(xmlBytes)
-	log.Debugf("base64: %s", b64Str)
+	log.Tracef("base64: %s", b64Str)
 
 	// 对 xml 签名
 	hexSign := signatureUseSha1WithRsa(xmlBytes, req.SignCert)
-	log.Debugf("请求签名: %s", hexSign)
+	log.Tracef("signed: %s", hexSign)
 
 	// 准备参数
 	v = &url.Values{}
@@ -133,7 +133,7 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 func send(v *url.Values) (body []byte) {
 	resp, err := cli.PostForm(requestURL, *v)
 	if err != nil {
-		log.Errorf("unable to connect Cfca gratway ", err)
+		log.Errorf("unable to connect Cfca gratway %s", err)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -141,7 +141,7 @@ func send(v *url.Values) (body []byte) {
 	// 处理返回报文
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Errorf("unable to read from resp ", err)
+		log.Errorf("unable to read from resp %s", err)
 		return nil
 	}
 	log.Debugf("resp: [%s]", body)
@@ -156,16 +156,16 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	// 数据 base64 解码
 	rxmlBytes, err := base64.StdEncoding.DecodeString(rb64Str)
 	if err != nil {
-		log.Errorf("unable to decode base64 content ", err)
+		log.Errorf("unable to decode base64 content %s", err)
 	}
-	log.Debugf("返回报文: %s", rxmlBytes)
+	log.Debugf("received: %s", rxmlBytes)
 
 	// 验签
 	rhexSign := strings.TrimSpace(result[1])
-	log.Debugf("返回签名: %s", rhexSign)
+	log.Tracef("signed: %s", rhexSign)
 	err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
 	if err != nil {
-		log.Errorf("check sign failed ", err)
+		log.Errorf("check sign failed %s", err)
 		return nil
 	}
 
@@ -173,7 +173,7 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	resp = new(BindingResponse)
 	err = xml.Unmarshal(rxmlBytes, resp)
 	if err != nil {
-		log.Errorf("unable to unmarshal xml ", err)
+		log.Errorf("unable to unmarshal xml %s", err)
 		return nil
 	}
 

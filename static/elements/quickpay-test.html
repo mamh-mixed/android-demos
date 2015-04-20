@@ -8,6 +8,7 @@
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 <script src="../bower_components/cryptojslib/rollups/sha1.js"></script>
+<script src="../bower_components/cryptojslib/rollups/aes.js"></script>
 
 <polymer-element name="quickpay-test" attributes="url elems">
     <template>
@@ -101,6 +102,26 @@
 
             Polymer({
                 elems: [],
+                encrypt: function(plaintext) {
+// var plaintext = '000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f'
+//
+var key = CryptoJS.enc.Base64.parse('AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=');
+var iv  = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
+var encrypted = CryptoJS.AES.encrypt(plaintext, key, {iv: iv});
+//
+// // var encrypted = CryptoJS.AES.encrypt("Message", "Secret Passphrase");
+//
+// console.log(encrypted.key+"");        // 000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f
+// console.log(encrypted.iv+"");         // 000102030405060708090a0b0c0d0e0f
+// console.log(encrypted.salt+"");       // undefined
+// console.log(encrypted.ciphertext+""); // 8bbfb86054acf430e44245c4bf74b2549e85387d6887a257bcaf1fb29f7969b20dd40628c7cf734f35b4fdbadd24ee2843e198a202e0850b79038b4562909a7cf40c9ee3ec08e9047b3a7859a6502220
+
+var b64encrypted = encrypted.iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64)
+// console.log(b64encrypted)
+
+return b64encrypted;
+
+                },
                 ready: function() {
 
                     var postAjax = this.$.postAjax;
@@ -111,15 +132,20 @@
                     var _this = this;
                     button.addEventListener('click', function() {
 
-                        postAjax.url = _this.url + "?merId=CIL0001";
+                        postAjax.url = _this.url + "?merId=012345678901234";
 
-                        postAjax.body = {};
+                        var body = {};
                         for (var i = 0; i < _this.elems.length; i++) {
-                            postAjax.body[_this.elems[i].name] = _this.elems[i].value;
-                        }
-                        postAjax.body = JSON.stringify(postAjax.body);
+                            var value = _this.elems[i].value;
+                            if (_this.elems[i].encrypt && _this.elems[i].encrypt === true) {
+                                value = _this.encrypt(value)
+                            }
 
-                        var hash = CryptoJS.SHA1(postAjax.body + '8B584AC4157F0A61');
+                            body[_this.elems[i].name] = value;
+                        }
+                        postAjax.body = JSON.stringify(body);
+
+                        var hash = CryptoJS.SHA1(postAjax.body + '0123456789');
                         postAjax.headers = '{"X-Sign": "' + hash + '"}';
 
                         postAjax.go();

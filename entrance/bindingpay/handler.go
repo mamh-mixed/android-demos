@@ -56,6 +56,8 @@ func BindingPay(w http.ResponseWriter, r *http.Request) {
 			ret = billingSummaryHandle(data, merId)
 		case "/quickpay/noTrackPayment":
 			ret = noTrackPaymentHandle(data, merId)
+		case "/quickpay/applePay":
+			ret = applePayHandle(data, merId)
 		default:
 			w.WriteHeader(404)
 		}
@@ -122,7 +124,7 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 		log.Errorf("decrypt fail : merId=%s, request=%+v, err=%s", merId, bc, aes.Err)
 		return mongo.RespCodeColl.Get("200021")
 	}
-	log.Debugf("after decrypt field : acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",
+	log.Debugf("after decrypt field: acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",
 		bc.AcctNumDecrypt, bc.AcctNameDecrypt, bc.PhoneNumDecrypt, bc.IdentNumDecrypt, bc.ValidDateDecrypt, bc.Cvv2Decrypt)
 
 	// 验证请求报文是否完整，格式是否正确
@@ -293,5 +295,25 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 
 	//  todo 无卡支付暂不开放；业务处理
 	ret = mongo.RespCodeColl.Get("100030")
+	return ret
+}
+
+// Apply pay 的处理
+func applePayHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	ap := new(model.ApplePay)
+
+	err := json.Unmarshal(data, ap)
+	if err != nil {
+		log.Errorf("接卸报文错误: %s", err)
+		return mongo.RespCodeColl.Get("200020")
+	}
+
+	ap.MerId = merId
+
+	if ret = validateApplePay(ap); ret != nil {
+		return ret
+	}
+
+	ret = core.ProcessApplePay(ap)
 	return ret
 }

@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -22,8 +23,11 @@ type AesCFBMode struct {
 	Err error
 }
 
-// 16位
-var key = []byte("1234567890123456")
+var key []byte
+
+func init() {
+	key, _ = base64.StdEncoding.DecodeString("AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=")
+}
 
 // aesCFBEncrypt aes 加密
 // 对商户敏感信息加密
@@ -95,7 +99,9 @@ func (a *AesCBCMode) Encrypt(pt string) string {
 	mode := cipher.NewCBCEncrypter(block, iv)
 	mode.CryptBlocks(ciphertext[aes.BlockSize:], plaintext)
 	// mode.CryptBlocks(ciphertext, plaintext)
-	return hex.EncodeToString(ciphertext)
+	// return hex.EncodeToString(ciphertext)
+
+	return base64.StdEncoding.EncodeToString(ciphertext)
 }
 
 // aesCBCDecrypt cbc mode
@@ -111,7 +117,7 @@ func (a *AesCBCMode) Decrypt(ct string) string {
 	}()
 
 	ct = strings.TrimSpace(ct)
-	ciphertext, err := hex.DecodeString(ct)
+	ciphertext, err := base64.StdEncoding.DecodeString(ct)
 	if err != nil {
 		a.Err = err
 		return ct
@@ -151,4 +157,34 @@ func PKCS5UnPadding(origData []byte) []byte {
 	length := len(origData)
 	unpadding := int(origData[length-1])
 	return origData[:(length - unpadding)]
+}
+
+func Xxx(ct string) string {
+
+	ct = strings.TrimSpace(ct)
+	ciphertext, err := base64.StdEncoding.DecodeString(ct)
+	if err != nil {
+		panic(err)
+	}
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	if len(ciphertext) < aes.BlockSize {
+		panic("ciphertext too short")
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	if len(ciphertext)%aes.BlockSize != 0 {
+		panic(fmt.Sprintf("%s : ciphertext is not a multiple of the block size", ct))
+	}
+
+	mode := cipher.NewCBCDecrypter(block, iv)
+
+	mode.CryptBlocks(ciphertext, ciphertext)
+	ciphertext = PKCS5UnPadding(ciphertext)
+
+	return string(ciphertext)
 }

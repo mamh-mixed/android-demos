@@ -82,6 +82,7 @@ func recv0() {
 		msg, err := read()
 		if err != nil {
 			log.Error(err)
+			return
 		}
 		//  如果 msg == nil && err == nil, 表示 keepalive
 		if msg == nil {
@@ -118,7 +119,7 @@ func send0() {
 			}
 			sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
 			log.Debugf("write: %s", sn)
-		case <-time.After(5 * time.Second):
+		case <-time.After(60 * time.Second):
 			log.Info("send keepalive")
 			err := keepalive()
 			if err != nil {
@@ -172,7 +173,7 @@ func read() (back *CilMsg, err error) {
 
 	back = &CilMsg{}
 	err = json.Unmarshal(msg, back)
-	log.Checkf("msg(% x) can not unmarshal to object", msg, err)
+	log.Warnf("msg(% x) can not unmarshal to object", msg, err)
 
 	return back, err
 }

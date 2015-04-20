@@ -15,7 +15,7 @@
              "name": "bindingId",
              "label": "银行卡绑定ID",
              "tooltip": "接入商户自行指定，同商户全局唯一，后续支付凭证",
-             "value": "",
+             "value": "012345678901234",
              "required": true,
              "maxlength": "32",
              "autoValidate": true,
@@ -26,29 +26,31 @@
              "name": "acctName",
              "label": "账户名称",
              "tooltip": "*加密字段，待绑定的银行卡在银行登记的用户名称",
-             "value": "",
+             "value": "张三",
              "required": true,
              "maxlength": "64",
              "autoValidate": true,
-             "error": "必填，最长 64 个字符"
+             "error": "必填，最长 64 个字符",
+             "encrypt": true
          },
          {
              "id": "acctNum",
              "name": "acctNum",
-             "label": "账户号码",
+             "label": "6222022003008481261",
              "tooltip": "*加密字段，一般为银行卡卡号",
-             "value": "",
+             "value": "6222022003008481261",
              "required": true,
              "maxlength": "32",
              "autoValidate": true,
-             "error": "必填，最长 32 个字符"
+             "error": "必填，最长 32 个字符",
+             "encrypt": true
          },
          {
              "id": "identType",
              "name": "identType",
              "label": "证件类型",
-             "tooltip": "可通过获取卡片信息接口获得卡片的借贷记类型，卡品牌，发卡行信息等,卡品牌为银联卡时，此项必填：0=身份证，  1=户口簿，  2=护照，  3=军官证，  4=士兵证， 5=港澳居民来往内地通行证， 6=台湾同胞来往内地通行证， 7=临时身份证， 8=外国人居留证，  9=警官证， X=其他证件",
-             "value": "",
+             "tooltip": "可通过获取卡片信息接口获得卡片的借贷记类型，卡品牌，发卡行信息等,卡品牌为银联卡时，此项必填：0=身份证，1=户口簿，  2=护照，  3=军官证，  4=士兵证， 5=港澳居民来往内地通行证， 6=台湾同胞来往内地通行证， 7=临时身份证， 8=外国人居留证，  9=警官证， X=其他证件",
+             "value": "0",
              "required": false,
              "maxlength": "1",
              "autoValidate": false,
@@ -59,29 +61,31 @@
              "name": "identNum",
              "label": "证件号码",
              "tooltip": "*加密字段，卡品牌为银联卡必填",
-             "value": "",
+             "value": "440583199111031012",
              "required": false,
              "maxlength": "32",
              "autoValidate": false,
-             "error": "必填，最长 32 个字符"
+             "error": "必填，最长 32 个字符",
+             "encrypt": true
          },
          {
              "id": "phoneNum",
              "name": "phoneNum",
              "label": "手机号",
              "tooltip": "*加密字段，需要验证短信时必填，卡品牌为银联卡必填",
-             "value": "",
+             "value": "18205960039",
              "required": false,
              "maxlength": "18",
              "autoValidate": true,
-             "error": "最长 18 个字符"
+             "error": "最长 18 个字符",
+             "encrypt": true
          },
          {
              "id": "acctType",
              "name": "acctType",
              "label": "账户类型",
              "tooltip": "10=个人借记，20=个人贷记",
-             "value": "",
+             "value": "20",
              "required": true,
              "maxlength": "2",
              "autoValidate": true,
@@ -92,22 +96,24 @@
              "name": "validDate",
              "label": "信用卡有限期",
              "tooltip": "*加密字段，账户类型为贷记卡必填，格式YYMM",
-             "value": "",
+             "value": "0612",
              "required": false,
              "maxlength": "4",
              "autoValidate": false,
-             "error": "最长 4 个字符"
+             "error": "最长 4 个字符",
+             "encrypt": true
          },
          {
              "id": "cvv2",
              "name": "cvv2",
              "label": "CVV2",
              "tooltip": "*加密字段，账户类型为贷记卡必填",
-             "value": "",
+             "value": "387",
              "required": false,
              "maxlength": "3",
              "autoValidate": false,
-             "error": "最长 3 个字符"
+             "error": "最长 3 个字符",
+             "encrypt": true
          },
          {
              "id": "sendSmsId",

@@ -9,6 +9,8 @@ import (
 	"github.com/omigo/log"
 )
 
+const localDateTimeLayout = "0102150405" // MMDDHHMMSS
+
 // SerialNumber 生成序列号，也就是UUID
 func SerialNumber() string {
 	u4, err := u.NewV4()
@@ -57,4 +59,10 @@ func TimeToGiven(point string) (int64, error) {
 	//在当前时间之前，应该加一天
 	given = given.Add(time.Duration(24) * time.Hour)
 	return given.Unix() - now.Unix(), nil
+}
+
+// LocalDt 获取MMDDHHMMSS格式的当前时间
+func LocalDt() string {
+	t := time.Now()
+	return t.Format(localDateTimeLayout)
 }

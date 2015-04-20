@@ -1,8 +1,9 @@
 package tools
 
 import (
-	"github.com/omigo/log"
 	"testing"
+
+	"github.com/omigo/log"
 )
 
 var aesCBF, aesCBC = AesCFBMode{}, AesCBCMode{}
@@ -42,6 +43,17 @@ func TestEncrypt(t *testing.T) {
 	identnum := aesCBC.Encrypt("440583199111031012")
 	validdate := aesCBC.Encrypt("09/18")
 	log.Debugf("%s,%s,%s,%s", accnum, accname, identnum, validdate)
+}
+
+func TestDecrypt2(t *testing.T) {
+
+	s := "8XSOZyOvovSrpsmPyz/8CAUS6lXdQqG9gyRTBubsRZg="
+	decrypted := aesCBC.Decrypt(s)
+	if aesCBC.Err != nil {
+		t.Error(aesCBC.Err)
+		t.FailNow()
+	}
+	log.Debugf("%s", decrypted)
 }
 
 func TestDecrypt(t *testing.T) {
