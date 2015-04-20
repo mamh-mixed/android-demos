@@ -37,8 +37,10 @@ type BindingPayChan interface {
 func GetChan(chanCode string) BindingPayChan {
 
 	switch chanCode {
+	case "Mock":
+		return &mockClient
 	case "CFCA":
-		return &cfca.Obj
+		return &cfca.DefaultClient
 	case "CIL":
 		return nil
 	case "ALP":

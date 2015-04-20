@@ -103,24 +103,26 @@
             Polymer({
                 elems: [],
                 encrypt: function(plaintext) {
-// var plaintext = '000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f'
-//
-var key = CryptoJS.enc.Base64.parse('AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=');
-var iv  = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
-var encrypted = CryptoJS.AES.encrypt(plaintext, key, {iv: iv});
-//
-// // var encrypted = CryptoJS.AES.encrypt("Message", "Secret Passphrase");
-//
-// console.log(encrypted.key+"");        // 000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f
-// console.log(encrypted.iv+"");         // 000102030405060708090a0b0c0d0e0f
-// console.log(encrypted.salt+"");       // undefined
-// console.log(encrypted.ciphertext+""); // 8bbfb86054acf430e44245c4bf74b2549e85387d6887a257bcaf1fb29f7969b20dd40628c7cf734f35b4fdbadd24ee2843e198a202e0850b79038b4562909a7cf40c9ee3ec08e9047b3a7859a6502220
+                    // var plaintext = '000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f'
+                    //
+                    var key = CryptoJS.enc.Base64.parse('AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=');
+                    // var iv  = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
+                    var iv = CryptoJS.lib.WordArray.random(16);
+                    var encrypted = CryptoJS.AES.encrypt(plaintext, key, {
+                        iv: iv
+                    });
+                    //
+                    // // var encrypted = CryptoJS.AES.encrypt("Message", "Secret Passphrase");
+                    //
+                    // console.log(encrypted.key+"");        // 000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f
+                    // console.log(encrypted.iv+"");         // 000102030405060708090a0b0c0d0e0f
+                    // console.log(encrypted.salt+"");       // undefined
+                    // console.log(encrypted.ciphertext+""); // 8bbfb86054acf430e44245c4bf74b2549e85387d6887a257bcaf1fb29f7969b20dd40628c7cf734f35b4fdbadd24ee2843e198a202e0850b79038b4562909a7cf40c9ee3ec08e9047b3a7859a6502220
 
-var b64encrypted = encrypted.iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64)
-// console.log(b64encrypted)
+                    var b64encrypted = encrypted.iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64)
+                        // console.log(b64encrypted)
 
-return b64encrypted;
-
+                    return b64encrypted;
                 },
                 ready: function() {
 

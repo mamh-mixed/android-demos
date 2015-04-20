@@ -50,11 +50,7 @@ var mapMutex sync.RWMutex
 var addr = "192.168.1.102:7823"
 var conn net.Conn
 
-func init() {
-	initConn()
-}
-
-func initConn() {
+func Connect() {
 	var err error
 	conn, err = net.Dial("tcp", addr)
 	if err != nil {
@@ -73,7 +69,7 @@ func initConn() {
 func restart() {
 	log.Warn("connection error, connecting...")
 	conn.Close()
-	initConn()
+	Connect()
 }
 
 func recv0() {

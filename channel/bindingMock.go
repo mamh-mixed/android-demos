@@ -1,49 +1,68 @@
 package channel
 
-// import "github.com/CardInfoLink/quickpay/model"
+import (
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
+)
 
-// // BindingMock 用于测试核心逻辑
-// type BindingMock struct {
-// }
+var mockClient MockBindingPay
 
-// // ProcessBindingEnquiry 查询绑定关系
-// func (m *BindingMock) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
+// MockBindingPay 用于测试核心逻辑
+type MockBindingPay struct {
+}
 
-// 	return
-// }
+// ProcessBindingCreate 建立绑定关系
+func (m *MockBindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
 
-// // ProcessBindingCreate 建立绑定关系
-// func (m *BindingMock) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
 
-// 	return
-// }
+// ProcessBindingRemove 解除绑定关系
+func (m *MockBindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
 
-// // ProcessBindingRemove 解除绑定关系
-// func (m *BindingMock) ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
 
-// 	return
-// }
+// ProcessBindingEnquiry 查询绑定关系
+func (m *MockBindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
 
-// // ProcessBindingPayment 快捷支付
-// func (m *BindingMock) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
 
-// 	return
-// }
+// ProcessBindingPayment 快捷支付
+func (m *MockBindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
 
-// // ProcessPaymentEnquiry 快捷支付查询
-// func (m *BindingMock) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
 
-// 	return
-// }
+// ProcessPaymentEnquiry 快捷支付查询
+func (m *MockBindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
 
-// // ProcessBindingRefund 快捷支付退款
-// func (m *BindingMock) ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
 
-// 	return
-// }
+// ProcessBindingRefund 快捷支付退款
+func (m *MockBindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
 
-// // ProcessRefundEnquiry 快捷支付退款查询
-// func (m *BindingMock) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
 
-// 	return
-// }
+// ProcessRefundEnquiry 快捷支付退款查询
+func (m *MockBindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
+
+	return model.NewBindingReturn("000000", "请求处理成功")
+}

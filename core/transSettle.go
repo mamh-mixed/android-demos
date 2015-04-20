@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
@@ -8,7 +10,6 @@ import (
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 // init 开启任务routine
@@ -155,7 +156,7 @@ func doTransCheck(settDate string) {
 		// 暂时先默认cfca
 		// c := channel.GetChan(v.ChanCode)
 		if v.ChanCode == "CFCA" {
-			c := cfca.Obj
+			c := cfca.DefaultClient
 			resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
 			if resp != nil && len(resp.Body.Tx) > 0 {
 				for _, tx := range resp.Body.Tx {

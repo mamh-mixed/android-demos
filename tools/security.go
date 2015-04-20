@@ -23,6 +23,8 @@ type AesCFBMode struct {
 	Err error
 }
 
+// TODO 测试时统一使用 key＝000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f 共 32 字节
+// 生产上，每个商户都有自己的 key， 需要把这些 key 放入数据库，类似签名
 var key []byte
 
 func init() {

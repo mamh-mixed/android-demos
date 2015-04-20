@@ -294,8 +294,7 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 
 	//  todo 无卡支付暂不开放；业务处理
-	ret = mongo.RespCodeColl.Get("100030")
-	return ret
+	return model.NewBindingReturn("000000", "unimplement，暂不支持此类业务")
 }
 
 // Apply pay 的处理
