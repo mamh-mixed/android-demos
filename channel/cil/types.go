@@ -86,7 +86,7 @@ type CilMsg struct {
 	Termreadability  string `json:"termreadability"`  // 15
 	Icccondcode      string `json:"icccondcode"`      // 11
 	Usagetags        string `json:"usagetags"`        //  9
-	Eclindicator     string `json:"eclindicator"`     //  2  线上3D交易发卡行验证结果，applePay必填
+	EciIndicator     string `json:"eciindicator"`     //  2  线上3D交易发卡行验证结果，applePay必填
 	Transactionid    string `json:"transactionid"`    //  M20  交易订单号，applePay必填
 	Onlinesecuredata string `json:"onlinesecuredata"` //  M50  3DSecure数据，applePay必填
 }

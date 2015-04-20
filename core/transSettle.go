@@ -16,7 +16,6 @@ var yesterday string
 
 // init 开启任务routine
 func init() {
-	log.Debug("wait to process transSett method")
 	go ProcessTransSettle()
 }
 
@@ -30,15 +29,21 @@ func ProcessTransSettle() {
 		log.Errorf("fail to get time second by given %s", err)
 		return
 	}
+	log.Debugf("prepare to process transSett method after %d minute", dis/60)
+	afterFunc(time.Duration(dis)*time.Second, doTransSett)
 
-	//
+	// 中金渠道
+	disCfca, _ := tools.TimeToGiven("08:00:00")
+	log.Debugf("prepare to process doCFCATransCheck method after %d minute", disCfca/60)
+	afterFunc(time.Duration(disCfca)*time.Second, doCFCATransCheck)
+
+	// 其他渠道...
 
 	// 主线程阻塞
 	select {}
 }
 
 func afterFunc(d time.Duration, df func()) {
-
 	time.AfterFunc(d, func() {
 		// 到点时先执行一次
 		df()
@@ -152,7 +157,7 @@ func doCFCATransCheck() {
 		log.Errorf("fail to load all cfca chanMer %s", err)
 	}
 	// 中金渠道对象
-	c := cfca.Obj
+	c := cfca.DefaultClient
 
 	// 遍历渠道商户
 	for _, v := range chanMers {

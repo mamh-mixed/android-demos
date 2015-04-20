@@ -16,7 +16,7 @@ const (
 	sysMaxSN = 1000000000000
 )
 
-var SnColl = snCollecion{"sn"}
+var SnColl = snCollecion{"counter"}
 
 // GetSysSn 返回一个系统唯一的只包含数字和字母的12位字符串
 func (c *snCollecion) GetSysSN() string {

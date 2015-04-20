@@ -1,9 +1,10 @@
 package core
 
 import (
+	"strconv"
+
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"strconv"
 )
 
 var tree trieTree
@@ -19,8 +20,8 @@ type trieTree struct {
 	root node
 }
 
-// buildTree 初始化前缀树
-func init() {
+// BuildTree 初始化前缀树
+func BuildTree() {
 
 	// 加载所有卡bin
 	cbs, err := mongo.CardBinColl.LoadAll()

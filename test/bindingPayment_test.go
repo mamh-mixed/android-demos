@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/CardInfoLink/quickpay/core"
+	"github.com/CardInfoLink/quickpay/conf"
 	. "github.com/CardInfoLink/quickpay/entrance/bindingpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -19,44 +19,22 @@ const (
 	testSign  = "0123456789"
 )
 
-func TestBindingPay(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
+var (
+	bindingId string
+	orderNum  string
+)
 
-	b := model.BindingCreate{
-		MerId:     testMerId,
-		BindingId: tools.Millisecond(),
-		AcctName:  "张三",
-		AcctNum:   "6222022003008481261",
-		IdentType: "0",
-		IdentNum:  "440583199111031012",
-		PhoneNum:  "18205960039",
-		AcctType:  "20",
-		ValidDate: "0612",
-		Cvv2:      "793",
-		SendSmsId: "",
-		SmsCode:   "",
-		BankId:    "102",
-	}
-
-	var aes = core.AesCBCMode{}
-
-	b.AcctName = aes.Encrypt(b.AcctName)
-	b.AcctNum = aes.Encrypt(b.AcctNum)
-	b.IdentNum = aes.Encrypt(b.IdentNum)
-	b.PhoneNum = aes.Encrypt(b.PhoneNum)
-	b.ValidDate = aes.Encrypt(b.ValidDate)
-	b.Cvv2 = aes.Encrypt(b.Cvv2)
-
-	doPost("POST", url, b, t)
+func init() {
+	conf.Initialize()
 }
 
-func doPost(method, url string, m interface{}, t *testing.T) {
+func doPost(url string, m interface{}, t *testing.T) {
 	j, err := json.Marshal(m)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(j))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(j))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,7 +53,116 @@ func doPost(method, url string, m interface{}, t *testing.T) {
 		t.Errorf("Unmarshal response error (%s)", err)
 	}
 
-	if out.RespCode == "" {
+	if out.RespCode != "000000" {
 		t.Error(out)
 	}
+}
+
+func TestBindingCreate(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
+
+	bindingId = tools.Millisecond()
+
+	b := model.BindingCreate{
+		MerId:     testMerId,
+		BindingId: bindingId,
+		AcctName:  "测试账号",
+		AcctNum:   "6222022003008481261",
+		IdentType: "0",
+		IdentNum:  "440583199111031012",
+		PhoneNum:  "18205960039",
+		AcctType:  "20",
+		ValidDate: "0612",
+		Cvv2:      "793",
+		SendSmsId: "",
+		SmsCode:   "",
+		BankId:    "102",
+	}
+
+	var aes = tools.AesCBCMode{}
+
+	b.AcctName = aes.Encrypt(b.AcctName)
+	b.AcctNum = aes.Encrypt(b.AcctNum)
+	b.IdentNum = aes.Encrypt(b.IdentNum)
+	b.PhoneNum = aes.Encrypt(b.PhoneNum)
+	b.ValidDate = aes.Encrypt(b.ValidDate)
+	b.Cvv2 = aes.Encrypt(b.Cvv2)
+	if aes.Err != nil {
+		panic(aes.Err)
+	}
+
+	doPost(url, b, t)
+}
+
+func TestBindingEnquiryHandle(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + testMerId
+	b := model.BindingEnquiry{BindingId: bindingId}
+	doPost(url, b, t)
+}
+
+func TestBindingPaymentHandle(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + testMerId
+	orderNum = tools.Millisecond()
+	b := model.BindingPayment{
+		MerOrderNum: orderNum,
+		TransAmt:    1000,
+		BindingId:   bindingId,
+		MerId:       testMerId,
+	}
+	doPost(url, b, t)
+}
+
+func TestOrderEnquiry(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=" + testMerId
+	b := model.OrderEnquiry{
+		OrigOrderNum: orderNum,
+	}
+	doPost(url, b, t)
+}
+
+func TestBindingRefundHandle(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/refund?merId=" + testMerId
+	b := model.BindingRefund{
+		OrigOrderNum: orderNum,
+		MerOrderNum:  tools.Millisecond(),
+		TransAmt:     1000,
+	}
+	doPost(url, b, t)
+}
+
+func TestNoTrackPaymentHandle(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + testMerId
+
+	b := model.NoTrackPayment{
+		MerId:       testMerId,
+		MerOrderNum: tools.Millisecond(),
+		AcctName:    "测试账号",
+		AcctNum:     "6222022003008481261",
+		IdentType:   "0",
+		IdentNum:    "440583199111031012",
+		PhoneNum:    "18205960039",
+		AcctType:    "20",
+		ValidDate:   "0612",
+		Cvv2:        "793",
+		TransAmt:    1000,
+	}
+
+	var aes = tools.AesCBCMode{}
+
+	b.AcctName = aes.Encrypt(b.AcctName)
+	b.AcctNum = aes.Encrypt(b.AcctNum)
+	b.IdentNum = aes.Encrypt(b.IdentNum)
+	b.PhoneNum = aes.Encrypt(b.PhoneNum)
+	b.ValidDate = aes.Encrypt(b.ValidDate)
+	b.Cvv2 = aes.Encrypt(b.Cvv2)
+	if aes.Err != nil {
+		panic(aes.Err)
+	}
+	doPost(url, b, t)
+}
+
+func TestBindingRemoveHandle(t *testing.T) {
+	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + testMerId
+	b := model.BindingEnquiry{BindingId: bindingId}
+	doPost(url, b, t)
 }
