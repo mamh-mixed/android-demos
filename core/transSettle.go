@@ -20,9 +20,9 @@ func init() {
 // ProcessTransSettle 清分
 func ProcessTransSettle() {
 
-	// 暂时先每天凌晨将交易信息拷贝到清分表里
+	// 暂时先每天早上8点将交易信息拷贝到清分表里
 	// 距离指定的时间
-	dis, err := tools.TimeToGiven("00:30:00")
+	dis, err := tools.TimeToGiven("08:00:00")
 	if err != nil {
 		log.Errorf("fail to get time second by given %s", err)
 		return
@@ -43,6 +43,7 @@ func ProcessTransSettle() {
 		}
 
 	})
+
 	<-c
 
 }
@@ -73,7 +74,11 @@ func doTransSett() {
 			// TODO根据渠道代码得到渠道实例，暂时默认cfca
 
 			// 得到渠道商户，获取签名密钥
-			chanMer, _ := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
+			chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
+			if err != nil {
+				log.Errorf("fail to find chanMer(%s,%s) : %s", v.ChanCode, v.ChanMerId, err)
+				continue
+			}
 			// 封装参数
 			be := &model.OrderEnquiry{
 				ChanMerId:    v.ChanMerId,
@@ -149,34 +154,37 @@ func doTransCheck(settDate string) {
 		// TODO 应该根据chanCode获得渠道实例
 		// 暂时先默认cfca
 		// c := channel.GetChan(v.ChanCode)
-		c := cfca.Obj
-		resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
-		if resp != nil && len(resp.Body.Tx) > 0 {
-			for _, tx := range resp.Body.Tx {
-				// 根据订单号查找
-				if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
-					// 找到记录，修改清分状态
-					transSett.SettFlag = model.SettSuccess
-					if err = mongo.TransSettColl.Update(transSett); err != nil {
-						log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
-					}
+		if v.ChanCode == "CFCA" {
+			c := cfca.Obj
+			resp := c.ProcessTransChecking(v.ChanMerId, settDate, v.SignCert)
+			if resp != nil && len(resp.Body.Tx) > 0 {
+				for _, tx := range resp.Body.Tx {
+					// 根据订单号查找
+					if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
+						// 找到记录，修改清分状态
+						log.Infof("check success %+v", transSett)
+						transSett.SettFlag = model.SettSuccess
+						if err = mongo.TransSettColl.Update(transSett); err != nil {
+							log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Tran.Id)
+						}
 
-				} else {
-					// 找不到，则是渠道多出的交易
-					// 添加该笔交易
-					newTrans := &model.Trans{
-						Id:           bson.NewObjectId(),
-						ChanOrderNum: tx.TxSn,
-						TransAmt:     tx.TxAmount,
+					} else {
+						// 找不到，则是渠道多出的交易
+						// 添加该笔交易
+						newTrans := &model.Trans{
+							Id:           bson.NewObjectId(),
+							ChanOrderNum: tx.TxSn,
+							TransAmt:     tx.TxAmount,
+						}
+						// 判断交易类型
+						switch {
+						case tx.TxType == cfca.BindingPaymentTxCode:
+							newTrans.TransType = model.PayTrans
+						case tx.TxType == cfca.BindingRefundTxCode:
+							newTrans.TransType = model.RefundTrans
+						}
+						addTransSett(newTrans, model.SettChanRemain)
 					}
-					// 判断交易类型
-					switch {
-					case tx.TxType == cfca.BindingPaymentTxCode:
-						newTrans.TransType = model.PayTrans
-					case tx.TxType == cfca.BindingRefundTxCode:
-						newTrans.TransType = model.RefundTrans
-					}
-					addTransSett(newTrans, model.SettChanRemain)
 				}
 			}
 		}
