@@ -7,9 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/CardInfoLink/quickpay/conf"
+	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance/bindingpay"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 )
@@ -25,7 +26,11 @@ var (
 )
 
 func init() {
-	conf.Initialize()
+	// 连接到 MongoDB
+	mongo.Connect()
+
+	// 初始化卡 Bin 树
+	core.BuildTree()
 }
 
 func doPost(url string, m interface{}, t *testing.T) {

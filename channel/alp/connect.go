@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/xml"
-	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
+
+	"github.com/omigo/log"
 )
 
 const (

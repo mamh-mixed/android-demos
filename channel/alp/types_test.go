@@ -2,8 +2,9 @@ package alp
 
 import (
 	"encoding/xml"
-	"github.com/omigo/log"
 	"testing"
+
+	"github.com/omigo/log"
 )
 
 var data = `
