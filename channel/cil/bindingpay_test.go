@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+func init() {
+	mongo.Connect()
+	Connect()
+}
+
 // ConsumeByApplePay ApplePay消费
 // 目前3DSecure数据类型的万事达卡可以跑测试
 func TestConsumeByApplePay(t *testing.T) {
@@ -41,6 +46,7 @@ func TestConsumeByApplePay(t *testing.T) {
 	t.Logf("%+v\n", ret)
 }
 
+// 测试无卡直接支付
 func TestConsumeNoTrack(t *testing.T) {
 	t.Log("=====================")
 	p := &model.NoTrackPayment{
@@ -63,6 +69,35 @@ func TestConsumeNoTrack(t *testing.T) {
 		Mchntid:     testMchntId,
 		Terminalid:  testTerminalId,
 		CliSN:       mongo.DaySNColl.GetDaySN(testMchntId, testTerminalId),
+		SysSN:       mongo.SnColl.GetSysSN(),
+	}
+	Consume(p)
+}
+
+// 测试冲正
+func TestReversalHandle(t *testing.T) {
+	t.Log("运行冲正案例的时候，请调小超时时间")
+	t.Log("以下报文错误，所以会超时")
+	p := &model.NoTrackPayment{
+		MerId:       applePayMerId,
+		SubMerId:    "SM123456",
+		MerOrderNum: strconv.FormatInt(time.Now().UnixNano(), 10),
+		TransAmt:    10,
+		CurrCode:    "156",
+		AcctName:    "Peter",
+		AcctNum:     testCUPCard,
+		IdentType:   "0",
+		IdentNum:    testCUPIdentNum,
+		PhoneNum:    testCUPPhone,
+		AcctType:    "10",
+		ValidDate:   testCUPValidDate,
+		Cvv2:        testCUPCVV2,
+		SendSmsId:   "",
+		SmsCode:     "",
+		Chcd:        testChcd,
+		Mchntid:     testMchntId,
+		Terminalid:  testTerminalId,
+		CliSN:       "1" + mongo.DaySNColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
 	Consume(p)

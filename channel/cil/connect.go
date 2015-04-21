@@ -31,7 +31,17 @@ func send(msg *CilMsg) (back *CilMsg) {
 	mapMutex.Unlock()
 
 	// 等待结果返回
-	back = <-c
+	// back = <-c
+	select {
+	case back = <-c:
+		log.Debug("send request successfully")
+	case <-time.After(reversalTime * time.Second):
+		// 超时处理
+		log.Debug("send request timeout")
+		back = &CilMsg{
+			Respcd: reversalFlag,
+		}
+	}
 	log.Debugf("recv: %s", sn)
 
 	// 返回后，清除这个 key
@@ -169,7 +179,9 @@ func read() (back *CilMsg, err error) {
 
 	back = &CilMsg{}
 	err = json.Unmarshal(msg, back)
-	log.Warnf("msg(% x) can not unmarshal to object", msg, err)
+	if err != nil {
+		log.Warnf("msg(% x) can not unmarshal to object", msg, err)
+	}
 
 	return back, err
 }
