@@ -134,11 +134,9 @@ CVV2	cvv2
 渠道清算金额 ChanSettAmt
 渠道手续费 ChanFee
 
-11. 单日序列号信息 DaySN
-商户号 MerId
-终端号 TermId
-序列号 Sn
-
-12. 系统唯一序列号  SN
-序列号的键   Key
-序列号的值   Value
+11. 计数器 counter
+序列号的键   Key      属于系统唯一序列号，对应结构体SN
+序列号的值   Value    属于系统唯一序列号，对应结构体SN
+商户号 MerId   属于单日序列号信息，对应结构体DaySN
+终端号 TermId  属于单日序列号信息，对应结构体DaySN
+序列号 Sn      属于单日序列号信息，对应结构体DaySN
