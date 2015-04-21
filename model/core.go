@@ -227,3 +227,10 @@ type DaySN struct {
 	TermId string `bson:"termId"` // 终端号
 	Sn     int64  `bson:"sn"`     // 序列号
 }
+
+// Version 版本信息
+type Version struct {
+	Vn     string `bson:"vn"`     // 版本号 yyyymmddhhmmss
+	LastVn string `bson:"lastVn"` // 上一个版本号
+	VnType string `bson:"vnType"` // 版本类型
+}

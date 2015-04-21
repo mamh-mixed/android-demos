@@ -14,8 +14,8 @@ import (
 // yesterday 每天不一样
 var yesterday string
 
-// init 开启任务routine
-func init() {
+// DoSettWork 开启任务routine
+func DoSettWork() {
 	go ProcessTransSettle()
 }
 
@@ -29,12 +29,12 @@ func ProcessTransSettle() {
 		log.Errorf("fail to get time second by given %s", err)
 		return
 	}
-	log.Debugf("prepare to process transSett method after %d minute", dis/60)
+	log.Debugf("prepare to process transSett method after %d minutes", dis/60)
 	afterFunc(time.Duration(dis)*time.Second, doTransSett)
 
 	// 中金渠道
 	disCfca, _ := tools.TimeToGiven("08:00:00")
-	log.Debugf("prepare to process doCFCATransCheck method after %d minute", disCfca/60)
+	log.Debugf("prepare to process doCFCATransCheck method after %d minutes", disCfca/60)
 	afterFunc(time.Duration(disCfca)*time.Second, doCFCATransCheck)
 
 	// 其他渠道...
