@@ -1,10 +1,11 @@
 package core
 
 import (
-	"strconv"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"strconv"
+	"sync"
 )
 
 var tree trieTree
@@ -17,7 +18,38 @@ type node struct {
 
 // TrieTree 前缀树
 type trieTree struct {
-	root node
+	root  node
+	mutex sync.RWMutex
+}
+
+// ReBuildTree 重新初始化树
+// 遇到错误，直接返回
+func ReBuildTree() error {
+
+	temp := trieTree{}
+	cbs, err := mongo.CardBinColl.LoadAll()
+	if err != nil {
+		return fmt.Errorf("fail to load all CardBin when rebuilding the tree: (%s)", err)
+	}
+	for _, v := range cbs {
+		// 建立前缀树
+		err := temp.build(v.Bin)
+		if err != nil {
+			return fmt.Errorf("fail to build cardBin tree with the given Bin(%s): %s", v.Bin, err)
+		}
+	}
+
+	// 加上写锁，改变根节点
+	tree.mutex.Lock()
+	tree.root = temp.root
+
+	//for test death lock
+	//tree.match("6222022003008481261")
+
+	tree.mutex.Unlock()
+	log.Infof("rebuild cardBin tree success %+v", tree)
+
+	return nil
 }
 
 // BuildTree 初始化前缀树
@@ -31,17 +63,23 @@ func BuildTree() {
 
 	for _, v := range cbs {
 		// 建立前缀树
-		tree.build(v.Bin)
+		err := tree.build(v.Bin)
+		if err != nil {
+			log.Panicf("fail to build cardBin tree with the given Bin(%s): %s", v.Bin, err)
+		}
 	}
 	log.Infof("cardBin trieTree init success %+v", tree)
 }
 
 // build 建立树
-func (t *trieTree) build(word string) {
+func (t *trieTree) build(word string) error {
 	// 根节点开始
 	root := &t.root
 	for i := 0; i < len(word); i++ {
-		index, _ := strconv.Atoi(string(word[i]))
+		index, err := strconv.Atoi(string(word[i]))
+		if err != nil {
+			return err
+		}
 		k := root.children[index]
 		if k == nil {
 			k = new(node)
@@ -53,14 +91,22 @@ func (t *trieTree) build(word string) {
 		root.children[index] = k
 		root = k
 	}
+	return nil
 }
 
 func (t *trieTree) match(cardNum string) string {
-	s := ""
-	temp := ""
+
+	// 加上读锁，防止写操作
+	t.mutex.RLock()
+	defer t.mutex.RUnlock()
+
+	s, temp := "", ""
 	root := &t.root
 	for i := 0; i < len(cardNum); i++ {
-		index, _ := strconv.Atoi(string(cardNum[i]))
+		index, err := strconv.Atoi(string(cardNum[i]))
+		if err != nil {
+			return ""
+		}
 		k := root.children[index]
 		if k == nil {
 			break
