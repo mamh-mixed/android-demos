@@ -12,7 +12,7 @@ var defaultVn string
 
 func CheckConf() {
 	// cardBin
-	version, err := mongo.VersionColl.Find("cardBin")
+	version, err := mongo.VersionColl.FindOne("cardBin")
 	if err != nil {
 		log.Panicf("fail to load cardBin version : %s ", err)
 	}
@@ -27,7 +27,7 @@ func doCheckConf() {
 	for {
 		select {
 		case <-tick:
-			o, _ := mongo.VersionColl.Find("cardBin")
+			o, _ := mongo.VersionColl.FindOne("cardBin")
 			if o.Vn != defaultVn {
 				log.Infof("cardBin had been updated (%s -> %s), begin to rebuild the cardBin tree ", defaultVn, o.Vn)
 				// ... rebuild the tree

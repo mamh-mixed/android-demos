@@ -12,7 +12,7 @@ type versionCollection struct {
 }
 
 // Find 查找某个类型的版本号
-func (v *versionCollection) Find(t string) (version *model.Version, err error) {
+func (v *versionCollection) FindOne(t string) (version *model.Version, err error) {
 	version = new(model.Version)
 	err = database.C(v.name).Find(bson.M{"vnType": t}).One(version)
 	return
