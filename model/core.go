@@ -215,14 +215,9 @@ type TransSettInfo struct {
 	//TODO check 交易日期
 }
 
-// SN 序列号
-type SN struct {
-	Key   string `bson:"key"`   // 序列号的key
-	Value int64  `bson:"value"` // 序列号的值
-}
-
 // 每个终端对应的当日唯一的6位序列号
-type DaySN struct {
+type SN struct {
+	Type   string `bson:"type"`   // 类型
 	MerId  string `bson:"merId"`  // 商户号
 	TermId string `bson:"termId"` // 终端号
 	Sn     int64  `bson:"sn"`     // 序列号

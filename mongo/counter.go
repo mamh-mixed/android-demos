@@ -8,17 +8,43 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type daySeqNumCollecion struct {
+type snCollecion struct {
 	name string
 }
 
 const (
+	sysMaxSN = 1000000000000
 	dayMaxSN = 1000000
 )
 
-var DaySNColl = snCollecion{"counter"}
+var SnColl = snCollecion{"counter"}
 
-// GetDaySN 返回一个当天唯一的六位数字
+// GetSysSn 返回一个系统唯一的只包含数字和字母的12位字符串
+func (c *snCollecion) GetSysSN() string {
+	q := bson.M{
+		"type":      "sys",
+		"$isolated": 1,
+	}
+	change := mgo.Change{
+		Update: bson.M{
+			"$inc": bson.M{
+				"sn": 1,
+			},
+		},
+		ReturnNew: true,
+	}
+
+	var sn = new(model.SN)
+	_, err := database.C(c.name).Find(q).Apply(change, &sn)
+	if err != nil {
+		log.Errorf("Find and modify error: %s\n", err)
+		return ""
+	}
+
+	return fmt.Sprintf("%012d", sn.Sn%sysMaxSN)
+}
+
+// GetDaySN 返回一个指定商户和终端当天唯一的六位数字
 func (c *snCollecion) GetDaySN(merId, termId string) string {
 	q := bson.M{
 		"merId":     merId,
@@ -35,7 +61,7 @@ func (c *snCollecion) GetDaySN(merId, termId string) string {
 		ReturnNew: true,
 	}
 
-	var sn = new(model.DaySN)
+	var sn = new(model.SN)
 	_, err := database.C(c.name).Find(q).Apply(change, &sn)
 
 	if err == nil {
@@ -44,7 +70,8 @@ func (c *snCollecion) GetDaySN(merId, termId string) string {
 
 	// 如果没找到，添加文档，并返回初始值
 	if err.Error() == "not found" {
-		ds := model.DaySN{
+		ds := model.SN{
+			Type:   "day",
 			MerId:  merId,
 			TermId: termId,
 			Sn:     0,
