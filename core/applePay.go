@@ -7,8 +7,8 @@ import (
 	"github.com/omigo/log"
 )
 
-// ProcessApplePay 执行apple Pay相关的支付
-// TODO 默认为消费，预授权尚未处理
+// ProcessApplyPay 执行apple Pay相关的支付
+// TODO 目前只处理消费类请求，预授权类请求暂时返回无权限
 func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	log.Tracef("before process: %+v", ap)
 
@@ -44,6 +44,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	// 暂时不支持预授权交易
 	if ap.TransType == "AUTH" {
 		errorTrans.RespCode = "100030"
+		saveErrorTran(errorTrans)
 		return mongo.RespCodeColl.Get("100030")
 	}
 
@@ -52,9 +53,9 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	appleAcctNum := ap.ApplePayData.ApplicationPrimaryAccountNumber
 	bin := tree.match(appleAcctNum)
 	log.Debugf("cardNum=%s, cardBin=%s", appleAcctNum, bin)
+
 	// 获取卡bin详情
 	cardBin, err := mongo.CardBinColl.Find(bin, len(appleAcctNum))
-
 	if err != nil {
 		if err.Error() == "not found" {
 			errorTrans.RespCode = "200070"

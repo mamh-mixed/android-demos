@@ -28,12 +28,3 @@ func TestTimeToGiven(t *testing.T) {
 	}
 	log.Debugf("time to given (%d)", time)
 }
-
-func TestLocalDt(t *testing.T) {
-	r := LocalDt()
-	if r == "" {
-		t.Error("粗错啦")
-	}
-
-	t.Log(r)
-}

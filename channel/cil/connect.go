@@ -16,7 +16,7 @@ import (
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
 // 注意：如果上游请求延迟较大，这个方法会阻塞。
-func send(msg *model.CilMsg) (back *model.CilMsg) {
+func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
 	// 串行写入，以免写入错乱
 	sendQueue <- msg
 
@@ -35,7 +35,7 @@ func send(msg *model.CilMsg) (back *model.CilMsg) {
 	select {
 	case back = <-c:
 		log.Debug("received request normally")
-	case <-time.After(reversalTime * time.Second):
+	case <-time.After(timeout):
 		// 超时处理
 		log.Warn("request timeout")
 		back = &model.CilMsg{

@@ -19,16 +19,18 @@ const (
 	consumeReversalBusicd = "040000" // 消费冲正
 
 	reversalFlag          = "TIME_OUT"          // 冲正标识
-	reversalTime          = 50                  // 超时时间
+	reversalTime          = 50 * time.Second    // 超时时间
 	reversalTimeDuration1 = reversalTime * 1    // 超时间隔1
 	reversalTimeDuration2 = reversalTime * 8    // 超时间隔2
 	reversalTimeDuration3 = reversalTime * 50   // 超时间隔3
-	reversalTimeDuration4 = reversalTime * 1150 // 超时间隔3
+	reversalTimeDuration4 = reversalTime * 1140 // 超时间隔3
 )
 
 // reversalHandle 冲正处理方法
 func reversalHandle(om *model.CilMsg) {
 	log.Info("源交易请求超时，发送冲正报文")
+	//冲正时间节点数组
+	var reversalTimeArr = [...]time.Duration{reversalTime, reversalTimeDuration1, reversalTimeDuration2, reversalTimeDuration3, reversalTimeDuration4}
 	// 创建冲正报文
 	rm := &model.CilMsg{
 		Busicd:       consumeReversalBusicd,
@@ -43,51 +45,26 @@ func reversalHandle(om *model.CilMsg) {
 		Cardcd:       om.Cardcd,
 		Syssn:        om.Syssn,
 		Origclisn:    om.Clisn,
-		Localdt:      tools.LocalDt(),
+		Localdt:      time.Now().Format("0102150405"),
 	}
 
 	// 报文入库
 	rm.UUID = tools.SerialNumber()
 	mongo.CilMsgColl.Upsert(rm)
 
-	// 发送冲正消息的时间点信道
-	dc := make(chan time.Duration)
-	// 结束信道
-	qc := make(chan int)
-
-	// 冲正时间节点和结束标志入信道
-	go func() {
-		dc <- reversalTime
-		dc <- reversalTimeDuration1
-		dc <- reversalTimeDuration2
-		dc <- reversalTimeDuration3
-		dc <- reversalTimeDuration4
-		qc <- 0
-	}()
-
-	for isOK := false; !isOK; {
-		select {
-		case drt := <-dc:
-			// 先休眠，再发送
-			log.Debugf("reversal request time out ,sleep %d second", drt)
-			time.Sleep(drt * time.Second)
-
-			back := send(rm)
-			log.Debugf("冲正请求响应结果: %+v", back)
-
-			// 发送成功，跳出循环
-			if back.Respcd != reversalFlag {
-				isOK = true
-				// 更新已存储的报文
-				rm.Respcd = back.Respcd
-				mongo.CilMsgColl.Upsert(rm)
-			}
-
-		case <-qc:
-			log.Errorf("冲正请求发送失败，报文信息如下: %+v", rm)
-			isOK = true
+	for _, i := range reversalTimeArr {
+		log.Infof("Send reversal request, overtime is %s", i)
+		back := send(rm, i)
+		if back.Respcd != reversalFlag {
+			log.Info("reversal operation success")
+			// 更新已存储的报文
+			rm.Respcd = back.Respcd
+			mongo.CilMsgColl.Upsert(rm)
+			return
 		}
 	}
+
+	log.Warnf("reversal operation fail,request data is %+v", rm)
 }
 
 // 无卡直接消费（订购消费）
@@ -115,23 +92,23 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 	m.UUID = tools.SerialNumber()
 	mongo.CilMsgColl.Upsert(m)
 
-	resp := send(m)
+	resp := send(m, reversalTime)
 	log.Debugf("无卡直接支付返回结果:%+v", resp)
 
-	// 不超时，转换应答码后返回
-	if resp.Respcd != reversalFlag {
-		ret = transformResp(resp.Respcd)
-		// 更新已存储的报文
-		m.Respcd = resp.Respcd
-		mongo.CilMsgColl.Upsert(m)
+	// 如果超时，请冲正
+	if resp.Respcd == reversalFlag {
+		// 超时需要冲正
+		reversalHandle(m)
+		// 返回‘外部系统错误’的应答码
+		ret = mongo.RespCodeColl.Get("000002")
 		return
 	}
 
-	// 超时需要冲正
-	reversalHandle(m)
-
-	// 返回‘外部系统错误’的应答码
-	ret = mongo.RespCodeColl.Get("000002")
+	// 应答码转换
+	ret = transformResp(resp.Respcd)
+	// 更新已存储的报文
+	m.Respcd = resp.Respcd
+	mongo.CilMsgColl.Upsert(m)
 	return
 }
 
@@ -170,21 +147,21 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	m.UUID = tools.SerialNumber()
 	mongo.CilMsgColl.Upsert(m)
 
-	resp := send(m)
+	resp := send(m, reversalTime)
 
-	if resp.Respcd != reversalFlag {
-		// 应答码转换
-		ret = transformResp(resp.Respcd)
-		// 更新已存储的报文
-		m.Respcd = resp.Respcd
-		mongo.CilMsgColl.Upsert(m)
+	if resp.Respcd == reversalFlag {
+		// 冲正处理
+		reversalHandle(m)
+		// 返回‘外部系统错误’的应答码
+		ret = mongo.RespCodeColl.Get("000002")
 		return
 	}
-	// 冲正处理
-	reversalHandle(m)
 
-	// 返回‘外部系统错误’的应答码
-	ret = mongo.RespCodeColl.Get("000002")
+	// 应答码转换
+	ret = transformResp(resp.Respcd)
+	// 更新已存储的报文
+	m.Respcd = resp.Respcd
+	mongo.CilMsgColl.Upsert(m)
 	return
 }
 
