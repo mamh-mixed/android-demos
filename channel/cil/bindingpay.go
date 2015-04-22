@@ -18,7 +18,7 @@ const (
 	consumeReversalBusicd = "040000" // 消费冲正
 
 	reversalFlag          = "TIME_OUT"          // 冲正标识
-	reversalTime          = 10                  // 超时时间
+	reversalTime          = 50                  // 超时时间
 	reversalTimeDuration1 = reversalTime * 1    // 超时间隔1
 	reversalTimeDuration2 = reversalTime * 8    // 超时间隔2
 	reversalTimeDuration3 = reversalTime * 50   // 超时间隔3
@@ -26,10 +26,10 @@ const (
 )
 
 // reversalHandle 冲正处理方法
-func reversalHandle(om *CilMsg) {
+func reversalHandle(om *model.CilMsg) {
 	log.Debug("源交易请求超时，发送冲正报文")
 	// 创建冲正报文
-	rm := &CilMsg{
+	rm := &model.CilMsg{
 		Busicd:       consumeReversalBusicd,
 		Txndir:       "Q",
 		Posentrymode: om.Posentrymode,
@@ -45,7 +45,9 @@ func reversalHandle(om *CilMsg) {
 		Localdt:      tools.LocalDt(),
 	}
 
-	// TODO 报文入库
+	// 报文入库
+	rm.UUID = tools.SerialNumber()
+	mongo.CilMsgColl.Upsert(rm)
 
 	// 发送冲正消息的时间点信道
 	dc := make(chan time.Duration)
@@ -75,7 +77,9 @@ func reversalHandle(om *CilMsg) {
 			// 发送成功，跳出循环
 			if back.Respcd != reversalFlag {
 				isOK = true
-				// TODO 更新已存储的报文
+				// 更新已存储的报文
+				rm.Respcd = back.Respcd
+				mongo.CilMsgColl.Upsert(rm)
 			}
 
 		case <-qc:
@@ -88,7 +92,7 @@ func reversalHandle(om *CilMsg) {
 // 无卡直接消费（订购消费）
 func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 	// 构建消费报文
-	m := CilMsg{
+	m := &model.CilMsg{
 		Busicd:       orderConsumeBusicd,
 		Txndir:       "Q",
 		Posentrymode: "012",
@@ -105,19 +109,25 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Cvv2:         p.Cvv2,
 	}
 	log.Debugf("无卡直接支付开始向线下网关发送报文: %+v", m)
-	// TODO 报文入库
 
-	resp := send(&m)
+	// 报文入库
+	m.UUID = tools.SerialNumber()
+	mongo.CilMsgColl.Upsert(m)
+
+	resp := send(m)
 	log.Debugf("无卡直接支付返回结果:%+v", resp)
 
 	// 不超时，转换应答码后返回
 	if resp.Respcd != reversalFlag {
 		ret = transformResp(resp.Respcd)
+		// 更新已存储的报文
+		m.Respcd = resp.Respcd
+		mongo.CilMsgColl.Upsert(m)
 		return
 	}
 
 	// 超时需要冲正
-	reversalHandle(&m)
+	reversalHandle(m)
 
 	// 返回‘外部系统错误’的应答码
 	ret = mongo.RespCodeColl.Get("000002")
@@ -126,7 +136,7 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 
 // ConsumeByApplePay ApplePay消费
 func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
-	m := CilMsg{
+	m := &model.CilMsg{
 		Busicd:        consumeBusicd,
 		Txndir:        "Q",
 		Posentrymode:  "992", // todo 如果是3dsecure的，992；EMV的规范还没出
@@ -153,18 +163,24 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		m.EciIndicator = "0" + ap.ApplePayData.PaymentData.EciIndicator
 		m.Onlinesecuredata = ap.ApplePayData.PaymentData.OnlinePaymentCryptogram
 	}
+	log.Debugf("Apple Pay请求信息: %+v", m)
 
-	log.Infof("～～～～～～Apple Pay请求信息: %+v", m)
+	// 报文入库
+	m.UUID = tools.SerialNumber()
+	mongo.CilMsgColl.Upsert(m)
 
-	resp := send(&m)
+	resp := send(m)
 
 	if resp.Respcd != reversalFlag {
 		// 应答码转换
 		ret = transformResp(resp.Respcd)
+		// 更新已存储的报文
+		m.Respcd = resp.Respcd
+		mongo.CilMsgColl.Upsert(m)
 		return
 	}
 	// 冲正处理
-	reversalHandle(&m)
+	reversalHandle(m)
 
 	// 返回‘外部系统错误’的应答码
 	ret = mongo.RespCodeColl.Get("000002")
@@ -173,10 +189,5 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 
 // 消费撤销
 func ConsumeUndo() {
-
-}
-
-// 消费冲正
-func ConsumeReversal() {
 
 }
