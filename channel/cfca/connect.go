@@ -16,7 +16,7 @@ import (
 var requestURL = "https://test.china-clearing.com/Gateway/InterfaceII"
 
 const (
-	cfca_ev_oca_crt = `-----BEGIN CERTIFICATE-----
+	cfcaEvCcaCrt = `-----BEGIN CERTIFICATE-----
 MIIFTjCCAzagAwIBAgIGALTPlDJmMA0GCSqGSIb3DQEBCwUAMFYxCzAJBgNVBAYTAkNOMTAwLgYD
 VQQKDCdDaGluYSBGaW5hbmNpYWwgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxFTATBgNVBAMMDENG
 Q0EgRVYgUk9PVDAeFw0xMjA4MDgwNjA2MzFaFw0yOTEyMjkwNjA2MzFaMFUxCzAJBgNVBAYTAkNO
@@ -43,7 +43,7 @@ YsLt8I/RcNmC2TvjZHYVE3tanbGw53TRGFk2Vq68XOkvooOardihwRkgqcOgUvouORuvSqTlkQiz
 TFH6FTUt3xuuED4dnn5N/1ijcDt0N3l5ovoyHOVcYiO4drCN96LHiUoiSfYODmpXG2tl
 -----END CERTIFICATE-----`
 
-	cfca_ev_root_crt = `-----BEGIN CERTIFICATE-----
+	cfcaEvRootCrt = `-----BEGIN CERTIFICATE-----
 MIIFjTCCA3WgAwIBAgIEGErM1jANBgkqhkiG9w0BAQsFADBWMQswCQYDVQQGEwJDTjEwMC4GA1UE
 CgwnQ2hpbmEgRmluYW5jaWFsIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRUwEwYDVQQDDAxDRkNB
 IEVWIFJPT1QwHhcNMTIwODA4MDMwNzAxWhcNMjkxMjMxMDMwNzAxWjBWMQswCQYDVQQGEwJDTjEw
@@ -77,8 +77,8 @@ var cli *http.Client
 // 初始化中金 Https 客户端
 func init() {
 	certs := x509.NewCertPool()
-	certs.AppendCertsFromPEM([]byte(cfca_ev_oca_crt))
-	certs.AppendCertsFromPEM([]byte(cfca_ev_root_crt))
+	certs.AppendCertsFromPEM([]byte(cfcaEvCcaCrt))
+	certs.AppendCertsFromPEM([]byte(cfcaEvRootCrt))
 
 	// 发送请求
 	tr := &http.Transport{
