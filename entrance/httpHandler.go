@@ -14,8 +14,8 @@ import (
 	"github.com/omigo/log"
 )
 
-// BindingPay 绑定支付入口
-func BindingPay(w http.ResponseWriter, r *http.Request) {
+// Quickpay 快捷支付统一入口
+func Quickpay(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("url = %s", r.URL.Path)
 
 	merId, sign, data, status, err := prepareData(r)
