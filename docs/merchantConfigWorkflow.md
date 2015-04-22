@@ -3,8 +3,21 @@
 
 假定有一个商户，商户号为`APPTEST`
 
-###配置路由
+###配置密钥信息
+在`merchant`集合中配置商户的密钥信息：
 
+```json
+{
+    "merId" : "APPTEST",
+    "merStatus" : "Normal",
+    "transCurr" : "156",
+    "signKey" : "0123456789",
+    "encryptKey" : "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
+}
+```
+
+###配置路由
+在`routerPolicy`集合中配置路由信息
 ```json
 {
     "merId" : "APPTEST",

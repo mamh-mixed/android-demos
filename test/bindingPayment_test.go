@@ -47,7 +47,7 @@ func doPost(url string, m interface{}, t *testing.T) {
 	req.Header.Set("X-Sign", SignatureUseSha1(j, testSign))
 
 	w := httptest.NewRecorder()
-	BindingPay(w, req)
+	Quickpay(w, req)
 	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
