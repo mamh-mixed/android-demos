@@ -9,13 +9,14 @@ import (
 	"sync"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
 // 注意：如果上游请求延迟较大，这个方法会阻塞。
-func send(msg *CilMsg) (back *CilMsg) {
+func send(msg *model.CilMsg) (back *model.CilMsg) {
 	// 串行写入，以免写入错乱
 	sendQueue <- msg
 
@@ -24,7 +25,7 @@ func send(msg *CilMsg) (back *CilMsg) {
 	log.Debugf("send: %s", sn)
 
 	// 结果会异步写入到这个管道中
-	c := make(chan *CilMsg)
+	c := make(chan *model.CilMsg)
 
 	mapMutex.Lock()
 	recvMap[sn] = c
@@ -38,7 +39,7 @@ func send(msg *CilMsg) (back *CilMsg) {
 	case <-time.After(reversalTime * time.Second):
 		// 超时处理
 		log.Debug("send request timeout")
-		back = &CilMsg{
+		back = &model.CilMsg{
 			Respcd: reversalFlag,
 		}
 	}
@@ -53,8 +54,8 @@ func send(msg *CilMsg) (back *CilMsg) {
 	return back
 }
 
-var sendQueue = make(chan *CilMsg, 100)
-var recvMap = make(map[string]chan *CilMsg, 400)
+var sendQueue = make(chan *model.CilMsg, 100)
+var recvMap = make(map[string]chan *model.CilMsg, 400)
 var mapMutex sync.RWMutex
 
 var addr = "192.168.1.102:7823"
@@ -135,7 +136,7 @@ func send0() {
 	}
 }
 
-func read() (back *CilMsg, err error) {
+func read() (back *model.CilMsg, err error) {
 	mLenByte := make([]byte, 4)
 
 	_, err = conn.Read(mLenByte)
@@ -177,7 +178,7 @@ func read() (back *CilMsg, err error) {
 
 	log.Debugf("recieve message: %d %s", size, msg)
 
-	back = &CilMsg{}
+	back = &model.CilMsg{}
 	err = json.Unmarshal(msg, back)
 	if err != nil {
 		log.Warnf("msg(% x) can not unmarshal to object", msg, err)
@@ -186,7 +187,7 @@ func read() (back *CilMsg, err error) {
 	return back, err
 }
 
-func write(msg *CilMsg) (err error) {
+func write(msg *model.CilMsg) (err error) {
 	// log.Debugf("%#v", msg)
 
 	jsonBytes, err := json.Marshal(msg)

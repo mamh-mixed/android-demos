@@ -1,39 +1,19 @@
-package cil
+package mongo
 
 import (
-	"strconv"
-	"testing"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/quickpay/tools"
+	"testing"
 )
 
-func TestConnect(t *testing.T) {
-	time.Sleep(1 * time.Second)
-
-	msg := newTestCilMsg()
-	// t.Logf("msg  = %#v", msg)
-
-	clisn := 115934
-	for i := 0; i < 100; i++ {
-		func(i int, msg model.CilMsg) {
-			msg.Clisn = strconv.Itoa(clisn + i)
-
-			back := send(&msg) // 线下网关发送报文
-
-			_ = back
-			log.Debug("--------------------------------------------")
-		}(i, *msg)
-
-		time.Sleep(30 * time.Second)
-	}
-
-	// select {}
+func init() {
+	Connect()
 }
 
-func newTestCilMsg() (m *model.CilMsg) {
-	m = &model.CilMsg{
+func TestUpsert(t *testing.T) {
+	uuid := tools.SerialNumber()
+	m := &model.CilMsg{
+		UUID:            uuid,
 		Busicd:          "500000",
 		Txndir:          "Q",
 		Posentrymode:    "022",
@@ -80,5 +60,16 @@ func newTestCilMsg() (m *model.CilMsg) {
 		Expiredate:      "1605",
 		Usagetags:       "12",
 	}
-	return m
+
+	err := CilMsgColl.Upsert(m)
+	if err != nil {
+		t.Errorf("新增失败: %s\n", err)
+	}
+
+	m.Respcd = "00"
+
+	err = CilMsgColl.Upsert(m)
+	if err != nil {
+		t.Errorf("更新失败: %s\n", err)
+	}
 }
