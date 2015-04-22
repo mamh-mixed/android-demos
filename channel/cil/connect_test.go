@@ -20,7 +20,7 @@ func TestConnect(t *testing.T) {
 		func(i int, msg model.CilMsg) {
 			msg.Clisn = strconv.Itoa(clisn + i)
 
-			back := send(&msg) // 线下网关发送报文
+			back := send(&msg, reversalTime) // 线下网关发送报文
 
 			_ = back
 			log.Debug("--------------------------------------------")
