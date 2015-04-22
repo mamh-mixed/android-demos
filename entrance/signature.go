@@ -1,13 +1,14 @@
-package bindingpay
+package entrance
 
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"io"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"io"
-	"strings"
 )
 
 // SignatureUseSha1 使用 SHA1 算法签名， sha1(data + key).Hex()

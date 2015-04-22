@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -15,7 +16,7 @@ import (
 
 func post(req *http.Request, t *testing.T) {
 	w := httptest.NewRecorder()
-	BindingPay(w, req)
+	entrance.BindingPay(w, req)
 	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
@@ -58,7 +59,7 @@ func TestBindingCreateWithSignHandle(t *testing.T) {
 	if err != nil {
 		t.Error("创建POST请求失败")
 	}
-	sign := SignatureUseSha1(body, "0123456789")
+	sign := entrance.SignatureUseSha1(body, "0123456789")
 	req.Header.Set("X-Sign", sign)
 
 	post(req, t)
