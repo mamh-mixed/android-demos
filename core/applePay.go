@@ -88,7 +88,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	// 补充信息
 	ap.Chcd = chanMer.InsCode
 	ap.Mchntid = chanMer.ChanMerId
-	ap.CliSN = mongo.DaySNColl.GetDaySN(chanMer.ChanMerId, chanMer.TerminalId)
+	ap.CliSN = mongo.SnColl.GetDaySN(chanMer.ChanMerId, chanMer.TerminalId)
 	ap.SysSN = chanOrderNum
 
 	// 记录这笔交易，入库

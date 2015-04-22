@@ -34,7 +34,7 @@ func reversalHandle(om *model.CilMsg) {
 		Txndir:       "Q",
 		Posentrymode: om.Posentrymode,
 		Chcd:         om.Chcd,
-		Clisn:        mongo.DaySNColl.GetDaySN(om.Mchntid, om.Terminalid),
+		Clisn:        mongo.SnColl.GetDaySN(om.Mchntid, om.Terminalid),
 		Mchntid:      om.Mchntid,
 		Terminalid:   om.Terminalid,
 		Txamt:        om.Txamt,
