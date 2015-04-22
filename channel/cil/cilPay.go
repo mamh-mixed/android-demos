@@ -42,7 +42,7 @@ func reversalHandle(om *model.CilMsg) {
 		Cardcd:       om.Cardcd,
 		Syssn:        om.Syssn,
 		Origclisn:    om.Clisn,
-		Localdt:      tools.LocalDt(),
+		Localdt:      time.Now().Format("0102150405"),
 	}
 
 	// 报文入库
@@ -104,7 +104,7 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Txcurrcd:     p.CurrCode,
 		Cardcd:       p.AcctNum,
 		Syssn:        p.SysSN,
-		Localdt:      tools.LocalDt(),
+		Localdt:      time.Now().Format("0102150405"),
 		Expiredate:   p.ValidDate,
 		Cvv2:         p.Cvv2,
 	}
@@ -149,7 +149,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		Cardcd:        ap.ApplePayData.ApplicationPrimaryAccountNumber,
 		Expiredate:    ap.ApplePayData.ApplicationExpirationDate[0:4],
 		Syssn:         ap.SysSN,
-		Localdt:       tools.LocalDt(),
+		Localdt:       time.Now().Format("0102150405"),
 		Transactionid: ap.TransactionId,
 	}
 
