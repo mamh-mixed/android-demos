@@ -60,9 +60,3 @@ func TimeToGiven(point string) (int64, error) {
 	given = given.Add(time.Duration(24) * time.Hour)
 	return given.Unix() - now.Unix(), nil
 }
-
-// LocalDt 获取MMDDHHMMSS格式的当前时间
-func LocalDt() string {
-	t := time.Now()
-	return t.Format(localDateTimeLayout)
-}
