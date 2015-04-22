@@ -85,7 +85,7 @@ func TestConsumeByApplePay(t *testing.T) {
 		Chcd:       testChcd,
 		Mchntid:    testMchntId,
 		TerminalId: testTerminalId,
-		CliSN:      mongo.DaySNColl.GetDaySN(testMchntId, testTerminalId),
+		CliSN:      mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:      mongo.SnColl.GetSysSN(),
 	}
 
@@ -116,7 +116,7 @@ func TestConsumeNoTrack(t *testing.T) {
 		Chcd:        testChcd,
 		Mchntid:     testMchntId,
 		Terminalid:  testTerminalId,
-		CliSN:       mongo.DaySNColl.GetDaySN(testMchntId, testTerminalId),
+		CliSN:       mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
 	Consume(p)
@@ -145,7 +145,7 @@ func TestReversalHandle(t *testing.T) {
 		Chcd:        testChcd,
 		Mchntid:     testMchntId,
 		Terminalid:  testTerminalId,
-		CliSN:       "1" + mongo.DaySNColl.GetDaySN(testMchntId, testTerminalId),
+		CliSN:       "1" + mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
 	Consume(p)
