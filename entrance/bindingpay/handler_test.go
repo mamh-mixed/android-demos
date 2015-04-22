@@ -16,7 +16,7 @@ import (
 
 func post(req *http.Request, t *testing.T) {
 	w := httptest.NewRecorder()
-	entrance.BindingPay(w, req)
+	entrance.Quickpay(w, req)
 	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
