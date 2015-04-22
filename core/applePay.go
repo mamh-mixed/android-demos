@@ -8,7 +8,7 @@ import (
 )
 
 // ProcessApplyPay 执行apple Pay相关的支付
-// TODO 默认为消费，预授权尚未处理
+// TODO 目前只处理消费类请求，预授权类请求暂时返回无权限
 func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	log.Debugf("Apple Pay请求数据: %+v", ap)
 	// 默认返回
@@ -42,6 +42,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	// 如果是预授权交易，先返回不支持此类交易
 	if ap.TransType == "AUTH" {
 		errorTrans.RespCode = "100030"
+		saveErrorTran(errorTrans)
 		return mongo.RespCodeColl.Get("100030")
 	}
 
@@ -50,9 +51,9 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	appleAcctNum := ap.ApplePayData.ApplicationPrimaryAccountNumber
 	bin := tree.match(appleAcctNum)
 	log.Debugf("cardNum=%s, cardBin=%s", appleAcctNum, bin)
+
 	// 获取卡bin详情
 	cardBin, err := mongo.CardBinColl.Find(bin, len(appleAcctNum))
-
 	if err != nil {
 		if err.Error() == "not found" {
 			errorTrans.RespCode = "200070"

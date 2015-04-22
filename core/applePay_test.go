@@ -9,6 +9,14 @@ import (
 	"time"
 )
 
+var (
+	applePayMerId = "APPTEST" // apple pay 测试用商户号
+
+	// Apple Pay测试数据
+	testAPPCard       = "5180841200282463"
+	testAPPExpireDate = "180531"
+)
+
 func init() {
 	mongo.Connect()
 	BuildTree()
