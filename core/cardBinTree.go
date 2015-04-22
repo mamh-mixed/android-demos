@@ -97,8 +97,8 @@ func (t *trieTree) build(word string) error {
 func (t *trieTree) match(cardNum string) string {
 
 	// 加上读锁，防止写操作
-	t.mutex.RLock()
-	defer t.mutex.RUnlock()
+	// t.mutex.RLock()
+	// defer t.mutex.RUnlock()
 
 	s, temp := "", ""
 	root := &t.root

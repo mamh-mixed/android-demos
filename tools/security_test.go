@@ -8,10 +8,14 @@ import (
 
 var aesCBF, aesCBC = AesCFBMode{}, AesCBCMode{}
 
+func init() {
+	aesCBC.DecodeKey("AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=")
+}
+
 func TestAesCFBEncryptAndDecrypt(t *testing.T) {
 
-	// key := []byte("1234567890123456")
-	aesCBF := new(AesCFBMode)
+	key := []byte("1234567890123456")
+	aesCBF.Key = key
 	pt := "中国最好，中国最棒，ye"
 	encrypted := aesCBF.Encrypt(pt)
 	log.Debugf("%s", encrypted)
@@ -25,13 +29,12 @@ func TestAesCFBEncryptAndDecrypt(t *testing.T) {
 
 func TestCBCAesEncryptAndDecrypt(t *testing.T) {
 
-	// key := []byte("1234567890123456")
 	pt := "中国最好，中国最棒，ye"
 	encrypted := aesCBC.Encrypt(pt)
 	log.Debugf("%s", encrypted)
 	decrypted := aesCBC.Decrypt(encrypted)
-	if string(decrypted) != pt {
-		t.Error("decrypt fail")
+	if aesCBC.Err != nil {
+		t.Error(aesCBC.Err)
 		t.FailNow()
 	}
 	log.Debugf("%s", decrypted)
@@ -45,20 +48,9 @@ func TestEncrypt(t *testing.T) {
 	log.Debugf("%s,%s,%s,%s", accnum, accname, identnum, validdate)
 }
 
-func TestDecrypt2(t *testing.T) {
-
-	s := "8XSOZyOvovSrpsmPyz/8CAUS6lXdQqG9gyRTBubsRZg="
-	decrypted := aesCBC.Decrypt(s)
-	if aesCBC.Err != nil {
-		t.Error(aesCBC.Err)
-		t.FailNow()
-	}
-	log.Debugf("%s", decrypted)
-}
-
 func TestDecrypt(t *testing.T) {
 
-	s := "44906806872556215819411164477969f321fdb9d00279ac6755565d0348274ea456823ee5210e7bb0eedb3bbd8035a3"
+	s := "zAnIKYwZqy+LUREI0thLomWTMxmRaD1NsHd1pNMsGRRuiBuMK+t6shWrJyIHxggm"
 	decrypted := aesCBC.Decrypt(s)
 	if aesCBC.Err != nil {
 		t.Error(aesCBC.Err)

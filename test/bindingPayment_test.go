@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/core"
-	. "github.com/CardInfoLink/quickpay/entrance/bindingpay"
+	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	testMerId = "012345678901234"
-	testSign  = "0123456789"
+	testMerId      = "012345678901234"
+	testSign       = "0123456789"
+	testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
 )
 
 var (
@@ -85,7 +86,7 @@ func TestBindingCreate(t *testing.T) {
 	}
 
 	var aes = tools.AesCBCMode{}
-
+	aes.DecodeKey(testEncryptKey)
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)

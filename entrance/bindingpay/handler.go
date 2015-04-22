@@ -20,8 +20,11 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	}
 	bc.MerId = merId
 
+	m, _ := mongo.MerchantColl.Find(merId)
+
 	// 解密特定字段
 	aes := new(tools.AesCBCMode)
+	aes.DecodeKey(m.EncryptKey)
 	bc.AcctNumDecrypt = aes.Decrypt(bc.AcctNum)
 	bc.AcctNameDecrypt = aes.Decrypt(bc.AcctName)
 	bc.IdentNumDecrypt = aes.Decrypt(bc.IdentNum)
