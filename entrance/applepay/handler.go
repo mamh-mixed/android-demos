@@ -10,13 +10,12 @@ import (
 	"github.com/omigo/log"
 )
 
-// ApplePayHandle Apple Pay
+// ApplePayHandle Apple Pay 支付入口
 func ApplePayHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	ap := new(model.ApplePay)
 
-	err := json.Unmarshal(data, ap)
-	if err != nil {
-		log.Errorf("接卸报文错误: %s", err)
+	if err := json.Unmarshal(data, ap); err != nil {
+		log.Errorf("can't unmarshal `%s` to json: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 

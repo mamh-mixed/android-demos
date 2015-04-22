@@ -7,12 +7,14 @@ import (
 	"github.com/omigo/log"
 )
 
-// ProcessApplyPay 执行apple Pay相关的支付
+// ProcessApplePay 执行apple Pay相关的支付
 // TODO 默认为消费，预授权尚未处理
 func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
-	log.Debugf("Apple Pay请求数据: %+v", ap)
+	log.Tracef("before process: %+v", ap)
+
 	// 默认返回
 	ret = mongo.RespCodeColl.Get("000001")
+
 	// 系统唯一的序列号
 	chanOrderNum := mongo.SnColl.GetSysSN()
 
@@ -26,7 +28,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("200081")
 	}
 
-	//只要订单号不重复就记录这笔交易
+	// 只要订单号不重复就记录这笔交易
 	errorTrans := &model.Trans{
 		MerId:        ap.MerId,
 		OrderNum:     ap.MerOrderNum,
@@ -39,7 +41,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		SubMerId:     ap.SubMerId,
 	}
 
-	// 如果是预授权交易，先返回不支持此类交易
+	// 暂时不支持预授权交易
 	if ap.TransType == "AUTH" {
 		errorTrans.RespCode = "100030"
 		return mongo.RespCodeColl.Get("100030")
@@ -122,7 +124,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		trans.TransStatus = model.TransFail
 	}
 	if err = mongo.TransColl.Update(trans); err != nil {
-		log.Error("update trans status fail ", err)
+		log.Errorf("update trans status fail: %s", err)
 	}
 
 	return ret

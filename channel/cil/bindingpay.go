@@ -2,11 +2,12 @@ package cil
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"time"
 )
 
 // 讯联交易类型
@@ -27,7 +28,7 @@ const (
 
 // reversalHandle 冲正处理方法
 func reversalHandle(om *model.CilMsg) {
-	log.Debug("源交易请求超时，发送冲正报文")
+	log.Info("源交易请求超时，发送冲正报文")
 	// 创建冲正报文
 	rm := &model.CilMsg{
 		Busicd:       consumeReversalBusicd,
@@ -104,7 +105,7 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Txcurrcd:     p.CurrCode,
 		Cardcd:       p.AcctNum,
 		Syssn:        p.SysSN,
-		Localdt:      tools.LocalDt(),
+		Localdt:      time.Now().Format("0102150405"),
 		Expiredate:   p.ValidDate,
 		Cvv2:         p.Cvv2,
 	}
@@ -139,7 +140,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	m := &model.CilMsg{
 		Busicd:        consumeBusicd,
 		Txndir:        "Q",
-		Posentrymode:  "992", // todo 如果是3dsecure的，992；EMV的规范还没出
+		Posentrymode:  "992", // todo 如果是 3DSecure 的，992；EMV的规范还没出
 		Chcd:          ap.Chcd,
 		Clisn:         ap.CliSN,
 		Mchntid:       ap.Mchntid,
@@ -149,7 +150,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		Cardcd:        ap.ApplePayData.ApplicationPrimaryAccountNumber,
 		Expiredate:    ap.ApplePayData.ApplicationExpirationDate[0:4],
 		Syssn:         ap.SysSN,
-		Localdt:       tools.LocalDt(),
+		Localdt:       time.Now().Format("0102150405"),
 		Transactionid: ap.TransactionId,
 	}
 
@@ -163,7 +164,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		m.EciIndicator = "0" + ap.ApplePayData.PaymentData.EciIndicator
 		m.Onlinesecuredata = ap.ApplePayData.PaymentData.OnlinePaymentCryptogram
 	}
-	log.Debugf("Apple Pay请求信息: %+v", m)
+	log.Debugf("bef: %+v", m)
 
 	// 报文入库
 	m.UUID = tools.SerialNumber()

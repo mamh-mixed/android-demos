@@ -22,7 +22,7 @@ func send(msg *model.CilMsg) (back *model.CilMsg) {
 
 	// 交易唯一流水号
 	sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
-	log.Debugf("send: %s", sn)
+	log.Tracef("send: %s", sn)
 
 	// 结果会异步写入到这个管道中
 	c := make(chan *model.CilMsg)
@@ -32,20 +32,19 @@ func send(msg *model.CilMsg) (back *model.CilMsg) {
 	mapMutex.Unlock()
 
 	// 等待结果返回
-	// back = <-c
 	select {
 	case back = <-c:
-		log.Debug("send request successfully")
+		log.Debug("received request normally")
 	case <-time.After(reversalTime * time.Second):
 		// 超时处理
-		log.Debug("send request timeout")
+		log.Warn("request timeout")
 		back = &model.CilMsg{
 			Respcd: reversalFlag,
 		}
 	}
-	log.Debugf("recv: %s", sn)
+	log.Debugf("rcvd: %s", sn)
 
-	// 返回后，清除这个 key
+	// 清除这个 key 和 管道
 	mapMutex.Lock()
 	delete(recvMap, sn)
 	mapMutex.Unlock()
