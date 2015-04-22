@@ -6,6 +6,8 @@ import (
 	"github.com/CardInfoLink/quickpay/conf"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
 	"github.com/omigo/log"
+
+	_ "net/http/pprof"
 )
 
 func main() {
@@ -20,7 +22,13 @@ func main() {
 
 	http.HandleFunc("/quickpay/", bindingpay.BindingPay)
 
+	// pprof
+	go func() {
+		log.Println(http.ListenAndServe(":6060", nil))
+	}()
+
 	addr := ":3009"
 	log.Debugf("QuickPay is running on %s", addr)
 	log.Fatal(http.ListenAndServe(addr, nil))
+
 }

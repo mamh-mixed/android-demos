@@ -39,6 +39,11 @@ func ProcessTransSettle() {
 
 	// 其他渠道...
 
+	// test
+	// afterFunc(10*time.Second, func() {
+	// 	log.Debug("test shutdown ticker")
+	// })
+
 	// 主线程阻塞
 	select {}
 }
@@ -48,7 +53,7 @@ func afterFunc(d time.Duration, df func()) {
 		// 到点时先执行一次
 		df()
 		// 24小时后执行
-		tick := time.Tick(24 * time.Hour)
+		tick := time.Tick(10 * time.Second)
 		for {
 			select {
 			case <-tick:
