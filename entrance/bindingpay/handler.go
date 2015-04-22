@@ -2,9 +2,6 @@ package bindingpay
 
 import (
 	"encoding/json"
-	"errors"
-	"io/ioutil"
-	"net/http"
 
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
@@ -14,94 +11,8 @@ import (
 	"github.com/omigo/log"
 )
 
-// BindingPay 绑定支付入口
-func BindingPay(w http.ResponseWriter, r *http.Request) {
-	log.Debugf("url = %s", r.URL.Path)
-
-	merId, sign, data, status, err := prepareData(r)
-	if err != nil {
-		log.Errorf(err.Error())
-		w.WriteHeader(status)
-		w.Write([]byte(err.Error()))
-		return
-	}
-	log.Debugf("from mer msg: %s", data)
-
-	var ret *model.BindingReturn
-
-	result, ret := CheckSignature(data, merId, sign)
-	if ret == nil && !result {
-		log.Errorf("check sign error %s", err)
-		ret = mongo.RespCodeColl.Get("200010")
-	}
-
-	// 验签通过，执行业务逻辑
-	if result {
-		switch r.URL.Path {
-		case "/quickpay/bindingCreate":
-			ret = bindingCreateHandle(data, merId)
-		case "/quickpay/bindingRemove":
-			ret = bindingRemoveHandle(data, merId)
-		case "/quickpay/bindingEnquiry":
-			ret = bindingEnquiryHandle(data, merId)
-		case "/quickpay/bindingPayment":
-			ret = bindingPaymentHandle(data, merId)
-		case "/quickpay/refund":
-			ret = bindingRefundHandle(data, merId)
-		case "/quickpay/orderEnquiry":
-			ret = orderEnquiryHandle(data, merId)
-		case "/quickpay/billingDetails":
-			ret = billingDetailsHandle(data, merId)
-		case "/quickpay/billingSummary":
-			ret = billingSummaryHandle(data, merId)
-		case "/quickpay/noTrackPayment":
-			ret = noTrackPaymentHandle(data, merId)
-		case "/quickpay/applePay":
-			ret = applePayHandle(data, merId)
-		default:
-			w.WriteHeader(404)
-		}
-	}
-
-	rdata, err := json.Marshal(ret)
-	if err != nil {
-		w.Write([]byte("mashal data error"))
-	}
-
-	// 签名，并返回
-	sign = Signature(rdata, merId)
-	w.Header().Set("X-Sign", sign)
-
-	log.Debugf("to mer msg: %s", rdata)
-	w.Write(rdata)
-}
-
-func prepareData(r *http.Request) (merId, sign string, data []byte, status int, err error) {
-	if r.Method != "POST" {
-		return "", "", nil, 405, errors.New("only 'POST' method allowed, but actual '" + r.Method + "'")
-	}
-
-	v := r.URL.Query()
-	merId = v.Get("merId")
-	if merId == "" {
-		return "", "", nil, 412, errors.New("parameter `merId` required")
-	}
-
-	sign = r.Header.Get("X-Sign")
-	if sign == "" {
-		return "", "", nil, 412, errors.New("parameter `X-Sign` required")
-	}
-
-	data, err = ioutil.ReadAll(r.Body)
-	if err != nil {
-		return "", "", nil, 406, err
-	}
-
-	return merId, sign, data, 200, nil
-}
-
 // 建立绑定关系
-func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
+func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	bc := new(model.BindingCreate)
 	err := json.Unmarshal(data, bc)
 	if err != nil {
@@ -140,7 +51,7 @@ func bindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 }
 
 // 解除绑定关系
-func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
+func BindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	br := new(model.BindingRemove)
 	err := json.Unmarshal(data, br)
 	if err != nil {
@@ -158,7 +69,7 @@ func bindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 }
 
 // 查询绑定关系
-func bindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
+func BindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	be := new(model.BindingEnquiry)
 	err := json.Unmarshal(data, be)
 	if err != nil {
@@ -177,8 +88,8 @@ func bindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	return ret
 }
 
-// 绑定支付关系
-func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
+// BindingPaymentHandle 绑定支付关系
+func BindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BindingPayment)
 	err := json.Unmarshal(data, b)
 	if err != nil {
@@ -198,7 +109,7 @@ func bindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 }
 
 // 退款处理
-func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
+func BindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BindingRefund)
 	err := json.Unmarshal(data, b)
 	if err != nil {
@@ -217,8 +128,8 @@ func bindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	return ret
 }
 
-// 交易对账汇总
-func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) {
+// BillingSummaryHandle 交易对账汇总
+func BillingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BillingSummary)
 	err := json.Unmarshal(data, b)
 	if err != nil {
@@ -237,8 +148,8 @@ func billingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	return ret
 }
 
-// 交易对账明细
-func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) {
+// BillingDetailsHandle 交易对账明细
+func BillingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BillingDetails)
 	err := json.Unmarshal(data, b)
 	if err != nil {
@@ -257,8 +168,8 @@ func billingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	return ret
 }
 
-// 查询订单状态
-func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
+// OrderEnquiryHandle 查询订单状态
+func OrderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.OrderEnquiry)
 	err := json.Unmarshal(data, b)
 	if err != nil {
@@ -278,8 +189,8 @@ func orderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	return ret
 }
 
-// 无卡直接支付的处理
-func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
+// NoTrackPaymentHandle 无卡直接支付的处理
+func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.NoTrackPayment)
 	err := json.Unmarshal(data, b)
 	if err != nil {
@@ -295,24 +206,4 @@ func noTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 
 	//  todo 无卡支付暂不开放；业务处理
 	return model.NewBindingReturn("000000", "unimplement，暂不支持此类业务")
-}
-
-// Apply pay 的处理
-func applePayHandle(data []byte, merId string) (ret *model.BindingReturn) {
-	ap := new(model.ApplePay)
-
-	err := json.Unmarshal(data, ap)
-	if err != nil {
-		log.Errorf("接卸报文错误: %s", err)
-		return mongo.RespCodeColl.Get("200020")
-	}
-
-	ap.MerId = merId
-
-	if ret = validateApplePay(ap); ret != nil {
-		return ret
-	}
-
-	ret = core.ProcessApplePay(ap)
-	return ret
 }

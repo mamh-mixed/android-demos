@@ -1,12 +1,13 @@
 
 # 名字解释
 
-|名词       | 缩写 | 解释 |
-|----------|------|------|
-|merchant  | mer  | 商户 |
-|channel   | chan | 渠道 |
-|CFCA      | cfca | 中金 |
-|settlement| sett | 清分 |
+|名词       | 缩写 | 解释        |
+|----------|------|------------|
+|merchant  | mer  | 商户        |
+|channel   | chan | 渠道        |
+|CFCA      | cfca | 中金        |
+|settlement| sett | 清分        |
+|cil-online| cil  | 线下联机系统 |
 
 
 # 数据模式

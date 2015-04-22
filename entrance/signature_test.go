@@ -1,4 +1,4 @@
-package bindingpay
+package entrance
 
 import (
 	"testing"
