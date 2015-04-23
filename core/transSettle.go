@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
@@ -8,7 +10,6 @@ import (
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 // yesterday 每天不一样
