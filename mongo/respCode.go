@@ -3,12 +3,15 @@ package mongo
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-
 	"gopkg.in/mgo.v2/bson"
 )
 
 type respCodeCollection struct {
 	name string
+}
+
+func init() {
+	Connect()
 }
 
 // RespCodeColl 应答码 Collection
@@ -38,4 +41,22 @@ func (c *respCodeCollection) GetMsg(code string) (msg string) {
 	database.C(c.name).Find(bson.M{"respCode": code}).Select(bson.M{"respMsg": 1}).One(resp)
 	msg = resp.RespMsg
 	return msg
+}
+
+/* only use for import respCode */
+
+func (c *respCodeCollection) Add(r *model.QuickpayCsv) error {
+	err := database.C(c.name).Insert(r)
+	return err
+}
+
+func (c *respCodeCollection) FindOne(code string) (*model.QuickpayCsv, error) {
+	q := new(model.QuickpayCsv)
+	err := database.C(c.name).Find(bson.M{"respCode": code}).One(q)
+	return q, err
+}
+
+func (c *respCodeCollection) Update(r *model.QuickpayCsv) error {
+	err := database.C(c.name).Update(bson.M{"respCode": r.RespCode}, r)
+	return err
 }
