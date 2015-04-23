@@ -10,10 +10,6 @@ type respCodeCollection struct {
 	name string
 }
 
-func init() {
-	Connect()
-}
-
 // RespCodeColl 应答码 Collection
 var RespCodeColl = respCodeCollection{"respCode"}
 

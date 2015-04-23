@@ -14,6 +14,10 @@ import (
 // yesterday 每天不一样
 var yesterday string
 
+const (
+	interval = 24 * time.Hour
+)
+
 // DoSettWork 开启任务routine
 func DoSettWork() {
 	go ProcessTransSettle()
@@ -53,7 +57,7 @@ func afterFunc(d time.Duration, df func()) {
 		// 到点时先执行一次
 		df()
 		// 24小时后执行
-		tick := time.Tick(10 * time.Second)
+		tick := time.Tick(interval)
 		for {
 			select {
 			case <-tick:

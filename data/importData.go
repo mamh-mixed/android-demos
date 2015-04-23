@@ -9,7 +9,33 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"os"
+	"strconv"
 )
+
+// AddCardBinFromCsv 从csv里导入卡bin
+// rebuild: true 删除集合再重建
+// rebuild: false 做更新操作，即存在的更新，不存在的增加
+func AddCardBinFromCsv(path string, rebuild bool) error {
+
+	cardBins, err := ReadCardBinCsv(path)
+	// fmt.Println(len(cardBins), err)
+	// 重建
+	if rebuild {
+		err = mongo.CardBinColl.Drop()
+		if err != nil {
+			return err
+		}
+	}
+	for _, v := range cardBins {
+		err = mongo.CardBinColl.Upsert(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
 
 // AddFromCsv 从csv文件里读取应答码表
 func AddSysCodeFromCsv(path string) error {
@@ -98,6 +124,30 @@ func ReadChanCsv(path string) ([]*model.ChanCsv, error) {
 		qs = append(qs, q)
 	}
 	return qs, nil
+}
+
+// ReadCardBinCsv 从csv读取卡bin转为对象
+func ReadCardBinCsv(path string) ([]*model.CardBin, error) {
+
+	data, err := readCsv(path)
+	if err != nil {
+		return nil, err
+	}
+	cs := make([]*model.CardBin, 0, len(data))
+
+	for i, each := range data {
+		// 跳过第一条
+		if i == 0 {
+			continue
+		}
+		binLen, _ := strconv.Atoi(each[1])
+		cardLen, _ := strconv.Atoi(each[3])
+
+		c := &model.CardBin{Bin: each[0], BinLen: binLen,
+			InsCode: each[2], CardLen: cardLen, CardBrand: each[4]}
+		cs = append(cs, c)
+	}
+	return cs, nil
 }
 
 // readCsv 读取文件返回数据
