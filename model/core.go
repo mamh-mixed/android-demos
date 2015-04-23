@@ -136,7 +136,7 @@ type Trans struct {
 	TransAmt       int64         `bson:"transAmt,omitempty"`                         //交易金额
 	TransCurr      string        `bson:"transCurr,omitempty"`                        //交易币种
 	TransStatus    string        `bson:"transStatus,omitempty"`                      //交易状态 10-处理中 20-失败 30-成功
-	TransType      int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款
+	TransType      int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款 3-预授权
 	ChanMerId      string        `bson:"chanMerId,omitempty"`                        //渠道商户号
 	ChanCode       string        `bson:"chanCode,omitempty"`                         //渠道代码
 	ChanRespCode   string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
@@ -215,14 +215,9 @@ type TransSettInfo struct {
 	//TODO check 交易日期
 }
 
-// SN 序列号
-type SN struct {
-	Key   string `bson:"key"`   // 序列号的key
-	Value int64  `bson:"value"` // 序列号的值
-}
-
 // 每个终端对应的当日唯一的6位序列号
-type DaySN struct {
+type SN struct {
+	Type   string `bson:"type"`   // 类型
 	MerId  string `bson:"merId"`  // 商户号
 	TermId string `bson:"termId"` // 终端号
 	Sn     int64  `bson:"sn"`     // 序列号

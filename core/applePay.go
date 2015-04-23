@@ -8,11 +8,13 @@ import (
 )
 
 // ProcessApplyPay 执行apple Pay相关的支付
-// TODO 默认为消费，预授权尚未处理
+// TODO 目前只处理消费类请求，预授权类请求暂时返回无权限
 func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
-	log.Debugf("Apple Pay请求数据: %+v", ap)
+	log.Tracef("before process: %+v", ap)
+
 	// 默认返回
 	ret = mongo.RespCodeColl.Get("000001")
+
 	// 系统唯一的序列号
 	chanOrderNum := mongo.SnColl.GetSysSN()
 
@@ -26,7 +28,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("200081")
 	}
 
-	//只要订单号不重复就记录这笔交易
+	// 只要订单号不重复就记录这笔交易
 	errorTrans := &model.Trans{
 		MerId:        ap.MerId,
 		OrderNum:     ap.MerOrderNum,
@@ -39,9 +41,10 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		SubMerId:     ap.SubMerId,
 	}
 
-	// 如果是预授权交易，先返回不支持此类交易
+	// 暂时不支持预授权交易
 	if ap.TransType == "AUTH" {
 		errorTrans.RespCode = "100030"
+		saveErrorTran(errorTrans)
 		return mongo.RespCodeColl.Get("100030")
 	}
 
@@ -50,9 +53,9 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	appleAcctNum := ap.ApplePayData.ApplicationPrimaryAccountNumber
 	bin := tree.match(appleAcctNum)
 	log.Debugf("cardNum=%s, cardBin=%s", appleAcctNum, bin)
+
 	// 获取卡bin详情
 	cardBin, err := mongo.CardBinColl.Find(bin, len(appleAcctNum))
-
 	if err != nil {
 		if err.Error() == "not found" {
 			errorTrans.RespCode = "200070"
@@ -88,7 +91,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	// 补充信息
 	ap.Chcd = chanMer.InsCode
 	ap.Mchntid = chanMer.ChanMerId
-	ap.CliSN = mongo.DaySNColl.GetDaySN(chanMer.ChanMerId, chanMer.TerminalId)
+	ap.CliSN = mongo.SnColl.GetDaySN(chanMer.ChanMerId, chanMer.TerminalId)
 	ap.SysSN = chanOrderNum
 
 	// 记录这笔交易，入库
@@ -122,7 +125,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		trans.TransStatus = model.TransFail
 	}
 	if err = mongo.TransColl.Update(trans); err != nil {
-		log.Error("update trans status fail ", err)
+		log.Errorf("update trans status fail: %s", err)
 	}
 
 	return ret

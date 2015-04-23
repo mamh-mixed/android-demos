@@ -29,7 +29,7 @@ type ApplePayData struct {
 
 // PaymentData 支付数据
 type PaymentData struct {
-	OnlinePaymentCryptogram string `json:"merId,omitempty"`        // 3D Secure类型的在线支付密码
-	EciIndicator            string `json:"eciIndicator,omitempty"` // 线上 3D Secure 交易发卡行验证结果
-	EmvData                 string `json:"emvData,omitempty"`      // EMV类型的支付数据，到线下网关的时候存到iccdata里面
+	OnlinePaymentCryptogram string `json:"onlinePaymentCryptogram,omitempty"` // 3D Secure类型的在线支付密码
+	EciIndicator            string `json:"eciIndicator,omitempty"`            // 线上 3D Secure 交易发卡行验证结果
+	EmvData                 string `json:"emvData,omitempty"`                 // EMV类型的支付数据，到线下网关的时候存到iccdata里面
 }

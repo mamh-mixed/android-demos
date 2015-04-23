@@ -9,42 +9,42 @@ import (
 	"sync"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
 // 注意：如果上游请求延迟较大，这个方法会阻塞。
-func send(msg *CilMsg) (back *CilMsg) {
+func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
 	// 串行写入，以免写入错乱
 	sendQueue <- msg
 
 	// 交易唯一流水号
 	sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
-	log.Debugf("send: %s", sn)
+	log.Tracef("send: %s", sn)
 
 	// 结果会异步写入到这个管道中
-	c := make(chan *CilMsg)
+	c := make(chan *model.CilMsg)
 
 	mapMutex.Lock()
 	recvMap[sn] = c
 	mapMutex.Unlock()
 
 	// 等待结果返回
-	// back = <-c
 	select {
 	case back = <-c:
-		log.Debug("send request successfully")
-	case <-time.After(reversalTime * time.Second):
+		log.Debug("received request normally")
+	case <-time.After(timeout):
 		// 超时处理
-		log.Debug("send request timeout")
-		back = &CilMsg{
+		log.Warn("request timeout")
+		back = &model.CilMsg{
 			Respcd: reversalFlag,
 		}
 	}
-	log.Debugf("recv: %s", sn)
+	log.Debugf("rcvd: %s", sn)
 
-	// 返回后，清除这个 key
+	// 清除这个 key 和 管道
 	mapMutex.Lock()
 	delete(recvMap, sn)
 	mapMutex.Unlock()
@@ -53,8 +53,8 @@ func send(msg *CilMsg) (back *CilMsg) {
 	return back
 }
 
-var sendQueue = make(chan *CilMsg, 100)
-var recvMap = make(map[string]chan *CilMsg, 400)
+var sendQueue = make(chan *model.CilMsg, 100)
+var recvMap = make(map[string]chan *model.CilMsg, 400)
 var mapMutex sync.RWMutex
 
 var addr = "192.168.1.102:7823"
@@ -135,7 +135,7 @@ func send0() {
 	}
 }
 
-func read() (back *CilMsg, err error) {
+func read() (back *model.CilMsg, err error) {
 	mLenByte := make([]byte, 4)
 
 	_, err = conn.Read(mLenByte)
@@ -177,7 +177,7 @@ func read() (back *CilMsg, err error) {
 
 	log.Debugf("recieve message: %d %s", size, msg)
 
-	back = &CilMsg{}
+	back = &model.CilMsg{}
 	err = json.Unmarshal(msg, back)
 	if err != nil {
 		log.Warnf("msg(% x) can not unmarshal to object", msg, err)
@@ -186,7 +186,7 @@ func read() (back *CilMsg, err error) {
 	return back, err
 }
 
-func write(msg *CilMsg) (err error) {
+func write(msg *model.CilMsg) (err error) {
 	// log.Debugf("%#v", msg)
 
 	jsonBytes, err := json.Marshal(msg)

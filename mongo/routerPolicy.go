@@ -29,7 +29,7 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 	err := database.C(c.name).Find(q).One(r)
 	if err != nil {
 		log.Debugf("'FindRouter' condition: %+v\n", q)
-		log.Debugf("Error message is: \n", err.Error())
+		log.Debugf("Error message is: %s\n", err.Error())
 		return nil
 	}
 	log.Debugf("'FindRouter' condition: %+v, result %#v", q, r)
