@@ -62,7 +62,7 @@ var data = `
 // TestDecodeXml test if unmarshal response success
 func TestDecodeXml(t *testing.T) {
 
-	v := &AlpResponse{}
+	v := &alpResponse{}
 	err := xml.Unmarshal([]byte(data), v)
 	if err != nil {
 		t.Error(err)

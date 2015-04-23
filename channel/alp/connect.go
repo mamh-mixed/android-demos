@@ -17,7 +17,7 @@ const (
 )
 
 // sendRequest 发送请求
-func sendRequest(params map[string]string, key string) *AlpResponse {
+func sendRequest(params map[string]string, key string) *alpResponse {
 
 	toSign := preContent(params)
 	toSign += key
@@ -44,9 +44,9 @@ func sendRequest(params map[string]string, key string) *AlpResponse {
 }
 
 // handleResponseBody 处理结果集
-func handleResponseBody(body []byte) *AlpResponse {
+func handleResponseBody(body []byte) *alpResponse {
 
-	alpResp := new(AlpResponse)
+	alpResp := new(alpResponse)
 	err := xml.Unmarshal(body, alpResp)
 	if err != nil {
 		log.Errorf("unmarsal body(%s) fail : %s", body, err)

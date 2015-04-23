@@ -41,7 +41,7 @@ func NextDay(today string) string {
 
 // TimeToGiven 获得当前时间到point的秒数
 // 格式hh:mm:ss
-func TimeToGiven(point string) (int64, error) {
+func TimeToGiven(point string) (time.Duration, error) {
 	layout := "2006-01-02 15:04:05"
 	//当前时间
 	nowStr := time.Now().Format(layout)
@@ -54,9 +54,9 @@ func TimeToGiven(point string) (int64, error) {
 	}
 	//在当前时间之后
 	if given.After(now) {
-		return given.Unix() - now.Unix(), nil
+		return time.Duration(given.Unix() - now.Unix()), nil
 	}
 	//在当前时间之前，应该加一天
 	given = given.Add(time.Duration(24) * time.Hour)
-	return given.Unix() - now.Unix(), nil
+	return time.Duration(given.Unix() - now.Unix()), nil
 }

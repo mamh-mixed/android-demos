@@ -6,7 +6,7 @@ import (
 )
 
 // AlpRequest 请求参数
-type AlpRequest struct {
+type alpRequest struct {
 	Service       string
 	Partner       string
 	Charset       string
@@ -26,22 +26,22 @@ type AlpRequest struct {
 }
 
 // AlpResponse 支付宝接口返回信息
-type AlpResponse struct {
+type alpResponse struct {
 	XMLName   xml.Name `xml:"alipay"`
 	IsSuccess string   `xml:"is_success,omitempty"`
 	Sign      string   `xml:"sign,omitempty"`
 	SignType  string   `xml:"sign_type,omitempty"`
 	Error     string   `xml:"error,omitempty"`
 	// Alipay
-	Response AlpBody `xml:"response,omitempty"`
+	Response alpBody `xml:"response,omitempty"`
 }
 
-type AlpBody struct {
-	Alipay AlpDetail `xml:"alipay,omitempty"`
+type alpBody struct {
+	Alipay alpDetail `xml:"alipay,omitempty"`
 }
 
 // AlpDetail response节点字段
-type AlpDetail struct {
+type alpDetail struct {
 	BuyerLogonId    string          `xml:"buyer_logon_id,omitempty"`    //买家支付宝账号
 	BuyerUserId     string          `xml:"buyer_user_id,omitempty"`     //买家支付宝用户号 以 2088 开头的纯 16 位数字
 	OutTradeNo      string          `xml:"out_trade_no,omitempty"`      //商户网站唯一订单号
@@ -52,13 +52,13 @@ type AlpDetail struct {
 	ExtendInfo      string          `xml:"extend_info,omitempty"`
 	TradeStatus     string          `xml:"trade_status,omitempty"`                 //交易状态
 	Partner         string          `xml:"partner,omitempty"`                      //合作者身份ID
-	FundBillList    []TradeFundBill `xml:"fund_bill_list>TradeFundBill,omitempty"` //本次交易支付单据信息集合
+	FundBillList    []tradeFundBill `xml:"fund_bill_list>TradeFundBill,omitempty"` //本次交易支付单据信息集合
 	TotalFee        string          `xml:"total_fee,omitempty"`                    //订单金额
 	SendPayDate     string          `xml:"send_pay_date,omitempty"`                //本次交易打款到卖家账户的时间,格式为 yyyy-MM-dd HH:mm:ss
 }
 
 // TradeFundBill 支付单据信息
-type TradeFundBill struct {
+type tradeFundBill struct {
 	XMLName     xml.Name `xml:"TradeFundBill"`
 	Amount      string   `xml:"amount,omitempty"`       //支付金额
 	FundChannel string   `xml:"fund_channel,omitempty"` //支付渠道

@@ -1,63 +1,142 @@
 package alp
 
 import (
-	_ "github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 )
 
-var Obj alp
+var DefaultClient alp
+
+const (
+	partner  = "2088811767473826"
+	charSet  = "UTF-8"
+	currency = "156"
+)
 
 // alp 当面付，扫码支付
 type alp struct{}
 
-// ProcessBarcodePay 条码支付
-func (a *alp) ProcessBarcodePay(req *AlpRequest) *AlpResponse {
+// ProcessBarcodePay 条码支付/下单
+func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
+
+	alpReq := &alpRequest{
+		Service:       "alipay.acquire.createandpay",
+		NotifyUrl:     "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       "",
+		GoodsDetail:   req.MarshalGoods(),
+		ProductCode:   "BARCODE_PAY_OFFLINE",
+		TotalFee:      req.Txamt,
+		ExtendParams:  "",
+		ItBPay:        "1m", // 超时时间
+		DynamicIdType: "bar_code",
+		DynamicId:     req.ScanCodeId,
+	}
 
 	// req to map
-	dict := toMap(req)
+	dict := toMap(alpReq)
 
-	return sendRequest(dict, req.Key)
+	resp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", resp)
+
+	return nil
 }
 
-// ProcessQrCodeOfflinePay 扫码支付
-func (a *alp) ProcessQrCodeOfflinePay(req *AlpRequest) *AlpResponse {
+// ProcessQrCodeOfflinePay 扫码支付/预下单
+func (a *alp) ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayResponse {
+
+	alpReq := &alpRequest{
+		Service:       "alipay.acquire.createandpay",
+		NotifyUrl:     "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       "",
+		GoodsDetail:   req.MarshalGoods(),
+		ProductCode:   "BARCODE_PAY_OFFLINE",
+		TotalFee:      req.Txamt,
+		ExtendParams:  "",
+		ItBPay:        "1m", // 超时时间
+		DynamicIdType: "bar_code",
+		DynamicId:     req.ScanCodeId,
+	}
 
 	// req to map
-	dict := toMap(req)
+	dict := toMap(alpReq)
 
-	return sendRequest(dict, req.Key)
+	resp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", resp)
+
+	return nil
 }
 
 // ProcessRefund 退款
-func (a *alp) ProcessRefund(req *AlpRequest) *AlpResponse {
-	// req to map
-	dict := toMap(req)
+func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
 
-	return sendRequest(dict, req.Key)
+	alpReq := &alpRequest{
+		Service:       "alipay.acquire.createandpay",
+		NotifyUrl:     "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       "",
+		GoodsDetail:   req.MarshalGoods(),
+		ProductCode:   "BARCODE_PAY_OFFLINE",
+		TotalFee:      req.Txamt,
+		ExtendParams:  "",
+		ItBPay:        "1m", // 超时时间
+		DynamicIdType: "bar_code",
+		DynamicId:     req.ScanCodeId,
+	}
+
+	// req to map
+	dict := toMap(alpReq)
+
+	resp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", resp)
+
+	return nil
 }
 
 // ProcessEnquiry 查询，包含支付、退款
-func (a *alp) ProcessEnquiry(req *AlpRequest) *AlpResponse {
-	// req to map
-	dict := toMap(req)
+func (a *alp) ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse {
 
-	return sendRequest(dict, req.Key)
+	alpReq := &alpRequest{
+		Service:       "alipay.acquire.createandpay",
+		NotifyUrl:     "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       "",
+		GoodsDetail:   req.MarshalGoods(),
+		ProductCode:   "BARCODE_PAY_OFFLINE",
+		TotalFee:      req.Txamt,
+		ExtendParams:  "",
+		ItBPay:        "1m", // 超时时间
+		DynamicIdType: "bar_code",
+		DynamicId:     req.ScanCodeId,
+	}
+
+	// req to map
+	dict := toMap(alpReq)
+
+	resp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", resp)
+
+	return nil
 }
 
-func toMap(req *AlpRequest) map[string]string {
+func toMap(req *alpRequest) map[string]string {
 
 	dict := make(map[string]string)
+
+	// 固定参数
+	dict["_input_charset"] = charSet
+	dict["partner"] = partner
+	dict["currency"] = currency
+	dict["seller_id"] = partner
 	// 参数转换
 	dict["server"] = req.Service
-	dict["_input_charset"] = req.Charset
-	dict["currency"] = req.Currency
 	dict["notify_url"] = req.NotifyUrl
-	dict["partner"] = req.Partner
 	dict["product_code"] = req.ProductCode
 	dict["out_trade_no"] = req.OutTradeNo
 	dict["subject"] = req.Subject
 	dict["product_code"] = req.ProductCode
 	dict["total_fee"] = req.TotalFee
-	dict["seller_id"] = req.SellerId
 	dict["extend_params"] = req.ExtendParams
 	dict["it_b_pay"] = req.ItBPay
 	dict["dynamic_id_type"] = req.DynamicIdType
