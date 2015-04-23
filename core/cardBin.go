@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"strconv"
@@ -20,6 +21,17 @@ type node struct {
 type trieTree struct {
 	root  node
 	mutex sync.RWMutex
+}
+
+// findCardBin 根据卡号找卡bin
+func findCardBin(cardNum string) (*model.CardBin, error) {
+
+	bin := tree.match(cardNum)
+	if bin == "" {
+		return nil, fmt.Errorf("no bin match cardNum(%s)", cardNum)
+	}
+	log.Debugf("cardNum=%s, cardBin=%s", cardNum, bin)
+	return mongo.CardBinColl.Find(bin, len(cardNum))
 }
 
 // ReBuildTree 重新初始化树
@@ -102,12 +114,13 @@ func (t *trieTree) build(word string) error {
 
 func (t *trieTree) match(cardNum string) string {
 
-	// 加上读锁，防止写操作
-	// t.mutex.RLock()
-	// defer t.mutex.RUnlock()
-
 	s, temp := "", ""
+
+	// 加上读锁，防止写操作
+	t.mutex.RLock()
 	root := &t.root
+	t.mutex.RUnlock()
+
 	for i := 0; i < len(cardNum); i++ {
 		index, err := strconv.Atoi(string(cardNum[i]))
 		if err != nil {

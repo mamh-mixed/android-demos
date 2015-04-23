@@ -34,13 +34,13 @@ func ProcessTransSettle() {
 		log.Errorf("fail to get time second by given %s", err)
 		return
 	}
-	log.Debugf("prepare to process transSett method after %d minutes", dis/60)
-	afterFunc(time.Duration(dis)*time.Second, doTransSett)
+	log.Debugf("prepare to process transSett method after %s ", dis*time.Second)
+	afterFunc(dis*time.Second, doTransSett)
 
 	// 中金渠道
 	disCfca, _ := tools.TimeToGiven("08:00:00")
-	log.Debugf("prepare to process doCFCATransCheck method after %d minutes", disCfca/60)
-	afterFunc(time.Duration(disCfca)*time.Second, doCFCATransCheck)
+	log.Debugf("prepare to process doCFCATransCheck method after %s ", disCfca*time.Second)
+	afterFunc(disCfca*time.Second, doCFCATransCheck)
 
 	// 其他渠道...
 

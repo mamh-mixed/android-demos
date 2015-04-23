@@ -1,30 +1,16 @@
 package alp
 
 import (
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"testing"
 )
 
-var barCodePayReq = &AlpRequest{
-	Service:       "alipay.acquire.createandpay",
-	Partner:       "",
-	Charset:       "UTF-8",
-	NotifyUrl:     "",
-	OutTradeNo:    "440583111100000",
-	Subject:       "",
-	GoodsDetail:   "",
-	ProductCode:   "BARCODE_PAY_OFFLINE",
-	TotalFee:      "0.01",
-	SellerId:      "string",
-	Currency:      "156",
-	ExtendParams:  "",
-	ItBPay:        "2m",
-	DynamicIdType: "bar_code",
-	DynamicId:     "",
-	Key:           "",
+var qrCodePay = &model.QrCodePay{
+	GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
-	resp := Obj.ProcessBarcodePay(barCodePayReq)
+	resp := DefaultClient.ProcessBarcodePay(qrCodePay)
 	log.Debugf("%+v", resp)
 }
