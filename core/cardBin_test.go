@@ -14,3 +14,13 @@ func TestCardBinMatch(t *testing.T) {
 	}
 	log.Debugf("%+s , %+v\n", s, tree.root)
 }
+
+func TestFindCardBin(t *testing.T) {
+
+	cardBin, err := findCardBin("6222801932062061908")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	log.Debugf("%+v", cardBin)
+}

@@ -77,6 +77,8 @@ func AddChanCodeFromScv(channel, path string) error {
 			q.Cfca = append(q.Cfca, v)
 		case channel == "cil":
 			q.Cil = append(q.Cil, v)
+		default:
+			// ...更多渠道
 		}
 		mongo.RespCodeColl.Update(q)
 	}
