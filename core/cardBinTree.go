@@ -39,6 +39,12 @@ func ReBuildTree() error {
 		}
 	}
 
+	// 测试新建的树是否能正确匹配
+	s := temp.match("6222022003008481261")
+	if s != "622202" {
+		return fmt.Errorf("%s", "the new cardBin tree does not work correctly")
+	}
+
 	// 加上写锁，改变根节点
 	tree.mutex.Lock()
 	tree.root = temp.root
