@@ -231,9 +231,6 @@ type Version struct {
 }
 
 // chanCsv 渠道文件csv
-// 统一的格式顺序如下
-// code,   msg,   respCode,     respMsg
-// 渠道代码,返回信息,对应系统代码,对应系统返回信息
 type ChanCsv struct {
 	Code     string `bson:"code"`
 	Msg      string `bson:"msg"`
