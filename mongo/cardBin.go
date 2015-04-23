@@ -6,7 +6,7 @@ import (
 )
 
 // CardBinColl 卡Bin Collection
-var CardBinColl = cardBinCollection{"cardBinTest"}
+var CardBinColl = cardBinCollection{"cardBin"}
 
 type cardBinCollection struct {
 	name string
