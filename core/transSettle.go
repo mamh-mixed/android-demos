@@ -1,8 +1,6 @@
 package core
 
 import (
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
@@ -10,13 +8,19 @@ import (
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"net"
+	"os"
+	"time"
 )
 
 // yesterday 每天不一样
 var yesterday string
+var ip = IPv4()
 
 const (
 	interval = 24 * time.Hour
+	ld       = "2006-01-02"
+	lt       = "2006-01-02 15:04:05"
 )
 
 // DoSettWork 开启任务routine
@@ -35,47 +39,92 @@ func ProcessTransSettle() {
 		return
 	}
 	log.Debugf("prepare to process transSett method after %s ", dis*time.Second)
-	afterFunc(dis*time.Second, doTransSett)
+	afterFunc(dis*time.Second, "doTransSett")
 
 	// 中金渠道
 	disCfca, _ := tools.TimeToGiven("08:00:00")
 	log.Debugf("prepare to process doCFCATransCheck method after %s ", disCfca*time.Second)
-	afterFunc(disCfca*time.Second, doCFCATransCheck)
+	afterFunc(disCfca*time.Second, "doCFCATransCheck")
 
 	// 其他渠道...
 
 	// test
-	// afterFunc(10*time.Second, func() {
-	// 	log.Debug("test shutdown ticker")
-	// })
+	// disTest, _ := tools.TimeToGiven("11:35:00")
+	// afterFunc(disTest*time.Second, "doTest")
 
 	// 主线程阻塞
 	select {}
 }
 
-func afterFunc(d time.Duration, df func()) {
+func afterFunc(d time.Duration, method string) {
 	time.AfterFunc(d, func() {
 		// 到点时先执行一次
-		df()
+		do(method)
 		// 24小时后执行
 		tick := time.Tick(interval)
 		for {
 			select {
 			case <-tick:
-				df()
+				do(method)
 			}
 		}
 	})
 }
 
-func doTransSett() {
+func do(method string) {
 
-	layout := "2006-01-02"
 	// 查找昨天的交易
 	now := time.Now()
 	d, _ := time.ParseDuration("-24h")
-	yesterday = now.Add(d).Format(layout)
+	yesterday = now.Add(d).Format(ld)
 	log.Debugf("yesterday : %s", yesterday)
+
+	// 判断是否可执行
+	l := &model.TransSettLog{
+		Date:       yesterday,
+		Method:     method,
+		CreateTime: time.Now().Format(lt),
+	}
+	updated, err := mongo.TransSettLogColl.AtomUpsert(l)
+	if err != nil {
+		log.Errorf("fail to Upsert transSettlog: %s ", err)
+		return
+	}
+	// 假如updated == 1
+	// 说明已经存在该记录
+	// 即该任务已被执行
+	if updated == 1 {
+		return
+	}
+
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+			l.Status = 2
+		} else {
+			l.Status = 1
+		}
+		l.Addr = ip
+		l.ModifyTime = time.Now().Format(lt)
+		mongo.TransSettLogColl.AtomUpsert(l)
+	}()
+
+	switch method {
+	case "doTransSett":
+		doTransSett()
+	case "doCFCATransCheck":
+		doCFCATransCheck()
+	case "doTest":
+		func() {
+			log.Debug("just for test")
+		}()
+	default:
+		//..
+	}
+}
+
+func doTransSett() {
+
 	trans, err := mongo.TransColl.FindByTime(yesterday)
 	if err != nil {
 		log.Errorf("fail to load trans by time : %s", err)
@@ -141,27 +190,11 @@ func doTransSett() {
 	}
 }
 
-// addTransSett 保存一条清分数据
-// 计算手续费
-func addTransSett(t *model.Trans, settFlag int8) {
-	sett := &model.TransSett{
-		Tran:     *t,
-		SettFlag: settFlag,
-		// TODO
-		MerSettAmt:  t.TransAmt * 9 / 10,
-		MerFee:      t.TransAmt / 10,
-		ChanSettAmt: t.TransAmt * 9 / 10,
-		ChanFee:     t.TransAmt / 10,
-	}
-	if err := mongo.TransSettColl.Add(sett); err != nil {
-		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)
-	}
-}
-
 // doCFCATransCheck 中金渠道勾兑
 // 勾兑:只需确认系统的交易记录在渠道方是否存在
 // 不用勾兑金额
 func doCFCATransCheck() {
+
 	chanMers, err := mongo.ChanMerColl.FindByCode("CFCA")
 	if err != nil {
 		log.Errorf("fail to load all cfca chanMer %s", err)
@@ -206,4 +239,32 @@ func doCFCATransCheck() {
 			}
 		}
 	}
+}
+
+// addTransSett 保存一条清分数据
+// 计算手续费
+func addTransSett(t *model.Trans, settFlag int8) {
+	sett := &model.TransSett{
+		Tran:     *t,
+		SettFlag: settFlag,
+		// TODO
+		MerSettAmt:  t.TransAmt * 9 / 10,
+		MerFee:      t.TransAmt / 10,
+		ChanSettAmt: t.TransAmt * 9 / 10,
+		ChanFee:     t.TransAmt / 10,
+	}
+	if err := mongo.TransSettColl.Add(sett); err != nil {
+		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)
+	}
+}
+
+func IPv4() string {
+	host, _ := os.Hostname()
+	addrs, _ := net.LookupIP(host)
+	for _, addr := range addrs {
+		if ipv4 := addr.To4(); ipv4 != nil {
+			return ipv4.String()
+		}
+	}
+	return ""
 }

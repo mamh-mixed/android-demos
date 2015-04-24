@@ -51,8 +51,10 @@ func (q *QrCodePay) MarshalGoods() string {
 			return ""
 		}
 		g := &struct {
-			GoodsId                    int
-			GoodsName, Price, Quantity string
+			GoodsId   int    `json:"goodsId"`
+			GoodsName string `json:"goodsName"`
+			Price     string `json:"price"`
+			Quantity  string `json:"quantity"`
 		}{
 			i, good[0], good[1], good[2],
 		}
