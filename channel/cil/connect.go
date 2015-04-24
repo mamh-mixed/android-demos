@@ -13,6 +13,9 @@ import (
 	"github.com/omigo/log"
 )
 
+// var addr = "140.207.50.238:7835"
+var addr = "192.168.1.102:7823"
+
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
 // 注意：如果上游请求延迟较大，这个方法会阻塞。
@@ -57,14 +60,15 @@ var sendQueue = make(chan *model.CilMsg, 100)
 var recvMap = make(map[string]chan *model.CilMsg, 400)
 var mapMutex sync.RWMutex
 
-var addr = "192.168.1.102:7823"
 var conn net.Conn
 
 func Connect() {
 	var err error
 	conn, err = net.Dial("tcp", addr)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Errorf("can't connect to cil-online tcp://%s: %s", addr, err)
+		Connect()
+		return
 	}
 	// defer conn.Close()
 	log.Infof("connect to cil channel %s", addr)
