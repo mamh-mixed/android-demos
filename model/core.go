@@ -246,3 +246,13 @@ type QuickpayCsv struct {
 	Cil      []*ChanCsv `bson:"cil,omitempty"`
 	//...
 }
+
+// TransSettLog
+type TransSettLog struct {
+	Status     int8   `bson:"status,omitempty"`     // 状态值 1-成功 2-失败
+	Addr       string `bson:"addr,omitempty"`       // 地址
+	Date       string `bson:"date,omitempty"`       // 日期 yyyy-mm-dd
+	CreateTime string `bson:"createTime,omitempty"` // 开始时间 yyyy-mm-dd hh:mm:ss
+	ModifyTime string `bson:"modifyTime,omitempty"` // 更新时间 yyyy-mm-dd hh:mm:ss
+	Method     string `bson:"method,omitempty"`     // 执行方法
+}

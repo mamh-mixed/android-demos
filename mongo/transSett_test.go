@@ -4,10 +4,33 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/g"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
+
+func TestAtomUpsert(t *testing.T) {
+
+	l := &model.TransSettLog{
+		Method: "doSettWork",
+		Date:   "2015-04-27",
+	}
+	c := make(chan bool)
+	for i := 0; i < 10; i++ {
+		go func() {
+			updated, _ := TransSettLogColl.AtomUpsert(l)
+			log.Debugf("%d", updated)
+			c <- true
+		}()
+	}
+	for i := 0; i < 10; i++ {
+		<-c
+	}
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+
+}
 
 func TestTransSettSummary(t *testing.T) {
 
@@ -67,5 +90,5 @@ func TestTransSettFindByOrderNum(t *testing.T) {
 		t.Errorf("find trans fail : %s", err)
 		t.FailNow()
 	}
-	g.Debug("%+v", transSett)
+	log.Debug("%+v", transSett)
 }

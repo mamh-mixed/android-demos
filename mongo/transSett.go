@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -12,8 +13,46 @@ type transSettCollection struct {
 	name string
 }
 
-var TransSettColl = transSettCollection{"transSett"}
+// transSettLogCollection
+// 记录某台机器某个时间点执行的方法
+type transSettLogCollection struct {
+	name string
+}
 
+var TransSettColl = transSettCollection{"transSett"}
+var TransSettLogColl = transSettLogCollection{"transSettLog"}
+
+// AtomUpsert mongodb-findAndModify
+func (col *transSettLogCollection) AtomUpsert(l *model.TransSettLog) (int, error) {
+	q := bson.M{
+		"method":    l.Method,
+		"date":      l.Date,
+		"$isolated": 1,
+	}
+	c := mgo.Change{}
+	// 开始时status==0
+	// 只更新method,date
+	if l.Status == 0 {
+		c.Update = bson.M{
+			"$set": bson.M{
+				"method": l.Method,
+				"date":   l.Date,
+			},
+		}
+	} else {
+		// 结束时
+		c.Update = l
+	}
+	c.Upsert = true
+
+	result := new(model.TransSettLog)
+	change, err := database.C(col.name).Find(q).Apply(c, result)
+
+	return change.Updated, err
+
+}
+
+// Summary 清算信息汇总
 func (col *transSettCollection) Summary(merId, transDate string) ([]model.SummarySettData, error) {
 
 	//根据商户号、清算时间查找成功清算交易的汇总信息
