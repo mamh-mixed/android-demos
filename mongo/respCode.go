@@ -31,6 +31,12 @@ func (c *respCodeCollection) GetByCfca(code string) (resp *model.BindingReturn) 
 	return resp
 }
 
+func (c *respCodeCollection) GetByCIL(code string) (resp *model.BindingReturn) {
+	resp = &model.BindingReturn{}
+	database.C(c.name).Find(bson.M{"cil.code": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)
+	return resp
+}
+
 // GetMsg 根据传入的code类型得到msg
 func (c *respCodeCollection) GetMsg(code string) (msg string) {
 	resp := &model.BindingReturn{}
