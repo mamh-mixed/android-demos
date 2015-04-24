@@ -18,7 +18,7 @@ var yesterday string
 var ip = IPv4()
 
 const (
-	interval = 24 * time.Second
+	interval = 24 * time.Hour
 	ld       = "2006-01-02"
 	lt       = "2006-01-02 15:04:05"
 )
@@ -49,8 +49,8 @@ func ProcessTransSettle() {
 	// 其他渠道...
 
 	// test
-	disTest, _ := tools.TimeToGiven("11:35:00")
-	afterFunc(disTest*time.Second, "doTest")
+	// disTest, _ := tools.TimeToGiven("11:35:00")
+	// afterFunc(disTest*time.Second, "doTest")
 
 	// 主线程阻塞
 	select {}
