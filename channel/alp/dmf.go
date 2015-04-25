@@ -23,7 +23,7 @@ func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
 		Service:       "alipay.acquire.createandpay",
 		NotifyUrl:     "",
 		OutTradeNo:    req.ChanOrderNum,
-		Subject:       "",
+		Subject:       "test",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
@@ -38,6 +38,24 @@ func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
 
 	resp := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", resp)
+
+	// 请求成功
+	ret := new(model.QrCodePayResponse)
+	if resp.IsSuccess == "T" {
+		alipay := resp.Response.Alipay
+		switch alipay.ResultCode {
+		case "ORDER_SUCCESS_PAY_SUCCESS":
+			// 待确认
+			ret.ChannelOrderNum = alipay.OutTradeNo
+			ret.ConsumerAccount = alipay.BuyerLogonId
+			ret.ConsumerId = alipay.BuyerUserId
+
+		case "ORDER_FAIL":
+
+		default:
+			//...
+		}
+	}
 
 	return nil
 }
@@ -72,7 +90,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayR
 func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       "alipay.acquire.refund",
 		NotifyUrl:     "",
 		OutTradeNo:    req.ChanOrderNum,
 		Subject:       "",
@@ -98,7 +116,7 @@ func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
 func (a *alp) ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       "alipay.acquire.query",
 		NotifyUrl:     "",
 		OutTradeNo:    req.ChanOrderNum,
 		Subject:       "",
@@ -130,7 +148,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["currency"] = currency
 	dict["seller_id"] = partner
 	// 参数转换
-	dict["server"] = req.Service
+	dict["service"] = req.Service
 	dict["notify_url"] = req.NotifyUrl
 	dict["product_code"] = req.ProductCode
 	dict["out_trade_no"] = req.OutTradeNo
@@ -141,6 +159,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["it_b_pay"] = req.ItBPay
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
+	dict["goods_detail"] = req.GoodsDetail
 
 	// ...
 
