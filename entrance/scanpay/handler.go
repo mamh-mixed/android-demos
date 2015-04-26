@@ -2,6 +2,7 @@ package scanpay
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -29,9 +30,9 @@ func Router(reqBytes []byte) []byte {
 	case req.Busicd == "refd":
 		resp = Refund(req)
 	case req.Busicd == "void":
-		// 撤销TODO
+		resp = Cancel(req)
 	default:
-		// ..
+		return []byte(fmt.Sprintf("no busicd: %s", req.Busicd))
 	}
 	respBytes, err := json.Marshal(resp)
 	if err != nil {
@@ -72,6 +73,15 @@ func Refund(req *model.QrCodePay) (resp *model.QrCodeRefundResponse) {
 
 // Enquiry 查询
 func Enquiry(req *model.QrCodePay) (resp *model.QrCodeEnquiryResponse) {
+
+	log.Debugf("request body: %+v", req)
+
+	// TODO validite field
+	return core.Enquiry(req)
+}
+
+// Cancel 撤销
+func Cancel(req *model.QrCodePay) (resp *model.QrCodeCancelResponse) {
 
 	log.Debugf("request body: %+v", req)
 

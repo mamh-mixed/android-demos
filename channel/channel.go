@@ -1,7 +1,7 @@
 package channel
 
 import (
-	// "github.com/CardInfoLink/quickpay/channel/alp"
+	"github.com/CardInfoLink/quickpay/channel/alp"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 )
@@ -33,6 +33,21 @@ type BindingPayChan interface {
 	// ProcessTransChecking(chanMerId, settDate, signCert string) (resp *BindingResponse)
 }
 
+// ScanPayChan 扫码支付
+type ScanPayChan interface {
+	// ProcessBarcodePay 扫条码下单
+	ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse
+
+	// ProcessQrCodeOfflinePay 扫二维码预下单
+	ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayResponse
+
+	// ProcessRefund 退款
+	ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse
+
+	// ProcessEnquiry 查询
+	ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse
+}
+
 // GetChan 根据chanCode获得渠道对象
 func GetChan(chanCode string) BindingPayChan {
 
@@ -49,4 +64,15 @@ func GetChan(chanCode string) BindingPayChan {
 		return nil
 	}
 	return nil
+}
+
+// GetScanPayChan 扫码支付渠道
+func GetScanPayChan(chanCode string) ScanPayChan {
+
+	switch chanCode {
+	case "ALP":
+		return &alp.DefaultClient
+	case "WXP":
+		return nil
+	}
 }

@@ -111,3 +111,7 @@ type QrCodeRefundResponse struct {
 // QrCodeEnquiryResponse 查询返回体
 type QrCodeEnquiryResponse struct {
 }
+
+// QrCodeVoidResponse 撤销返回体
+type QrCodeCancelResponse struct {
+}

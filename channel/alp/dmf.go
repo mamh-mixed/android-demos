@@ -138,6 +138,32 @@ func (a *alp) ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse 
 	return nil
 }
 
+// ProcessVoid 撤销
+func (a *alp) ProcessCancel(req *model.QrCodePay) *model.QrCodeCancelResponse {
+
+	alpReq := &alpRequest{
+		Service:       "alipay.acquire.cancel",
+		NotifyUrl:     "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       "",
+		GoodsDetail:   req.MarshalGoods(),
+		ProductCode:   "BARCODE_PAY_OFFLINE",
+		TotalFee:      req.Txamt,
+		ExtendParams:  "",
+		ItBPay:        "1m", // 超时时间
+		DynamicIdType: "bar_code",
+		DynamicId:     req.ScanCodeId,
+	}
+
+	// req to map
+	dict := toMap(alpReq)
+
+	resp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", resp)
+
+	return nil
+}
+
 func toMap(req *alpRequest) map[string]string {
 
 	dict := make(map[string]string)
