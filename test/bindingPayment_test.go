@@ -153,7 +153,7 @@ func TestNoTrackPaymentHandle(t *testing.T) {
 		TransAmt:    1000,
 	}
 
-	var aes = tools.AesCBCMode{}
+	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
 
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
