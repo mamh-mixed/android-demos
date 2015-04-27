@@ -29,7 +29,7 @@ func main() {
 
 	flag.Parse()
 
-	if (argMaster && argPay && argSettle) || port == 0 {
+	if (!argMaster && !argPay && !argSettle) || port == 0 {
 		flag.Usage()
 		return
 	}
