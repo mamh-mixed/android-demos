@@ -47,7 +47,7 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 		ChanCode:  req.Chcd,
 		TransAmt:  txamt,
 	}
-
+	log.Debug(t)
 	// TODO 判断渠道商户
 
 	// TODO 转换参数
@@ -125,13 +125,4 @@ func Cancel(req *model.ScanPay) (resp *model.QrCodeCancelResponse) {
 	// TODO 更新订单状态
 
 	return
-}
-
-// toTrans 将scanPay 转为 trans对象
-func toTrans(req *model.ScanPay) *model.Trans {
-
-	t := new(model.Trans)
-	t.MerId = req.Mchntid
-	t.OrderNum = req.OrderNum
-	// t.TransAmt = req.
 }

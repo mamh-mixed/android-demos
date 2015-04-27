@@ -72,7 +72,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayRes
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -98,7 +98,7 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.refund",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -124,7 +124,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.query",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -150,7 +150,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.cancel",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",

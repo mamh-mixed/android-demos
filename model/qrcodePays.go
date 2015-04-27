@@ -35,7 +35,7 @@ type ScanPay struct {
 
 // Marshal 将商品详情解析成字符json字符串
 // 格式: 商品名称,价格,数量;商品名称,价格,数量;...
-func (q *QrCodePay) MarshalGoods() string {
+func (q *ScanPay) MarshalGoods() string {
 
 	if q.GoodsInfo == "" {
 		return ""
