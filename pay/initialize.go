@@ -1,4 +1,4 @@
-package conf
+package pay
 
 import (
 	// "github.com/CardInfoLink/quickpay/channel/cil"
