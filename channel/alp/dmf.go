@@ -17,17 +17,17 @@ const (
 type alp struct{}
 
 // ProcessBarcodePay 条码支付/下单
-func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
+func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
-		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
-		Subject:       "test",
+		NotifyUrl:     req.NotifyUrl,
+		OutTradeNo:    req.ChannelOrderNum,
+		Subject:       "test", // TODO
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
-		ExtendParams:  "",
+		ExtendParams:  "",   //...
 		ItBPay:        "1m", // 超时时间
 		DynamicIdType: "bar_code",
 		DynamicId:     req.ScanCodeId,
@@ -43,25 +43,31 @@ func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
 	ret := new(model.QrCodePayResponse)
 	if resp.IsSuccess == "T" {
 		alipay := resp.Response.Alipay
+		ret.ChanRespCode = alipay.ResultCode
 		switch alipay.ResultCode {
 		case "ORDER_SUCCESS_PAY_SUCCESS":
-			// 待确认
-			ret.ChannelOrderNum = alipay.OutTradeNo
+
+			ret.ChannelOrderNum = alipay.TradeNo
 			ret.ConsumerAccount = alipay.BuyerLogonId
 			ret.ConsumerId = alipay.BuyerUserId
+			// 计算折扣
+			ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
 
 		case "ORDER_FAIL":
-
+			// do nothing
 		default:
-			//...
+			ret.ChannelOrderNum = alipay.TradeNo
 		}
+	} else {
+		ret.ChanRespCode = resp.Error
+		ret.ErrorDetail = "SYSTEM_ERROR"
 	}
 
-	return nil
+	return ret
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
-func (a *alp) ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayResponse {
+func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
@@ -87,7 +93,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayR
 }
 
 // ProcessRefund 退款
-func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
+func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.refund",
@@ -113,7 +119,7 @@ func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
 }
 
 // ProcessEnquiry 查询，包含支付、退款
-func (a *alp) ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse {
+func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.query",
@@ -139,7 +145,7 @@ func (a *alp) ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse 
 }
 
 // ProcessVoid 撤销
-func (a *alp) ProcessCancel(req *model.QrCodePay) *model.QrCodeCancelResponse {
+func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.cancel",

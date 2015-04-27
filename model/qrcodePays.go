@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// QrCodePay 扫码支付
-type QrCodePay struct {
+// ScanPay 扫码支付
+type ScanPay struct {
 	Txndir          string //交易方向
 	Busicd          string //交易类型
 	Respcd          string //交易结果
@@ -30,8 +30,7 @@ type QrCodePay struct {
 	CardInfo        string //卡券详情
 	NotifyUrl       string //异步通知地址
 	// 辅助字段
-	ChanOrderNum string //渠道订单号
-	Key          string //md5key
+	Key string //md5key
 }
 
 // Marshal 将商品详情解析成字符json字符串
@@ -86,6 +85,9 @@ type QrCodePayResponse struct {
 	Sign            string `json:"sign"`                      //签名 M M
 	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
 	MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
+
+	// 辅助字段
+	ChanRespCode string `json:"-"` // 渠道返回代码
 }
 
 // PrePayResponse 预下单返回体

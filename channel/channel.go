@@ -58,10 +58,6 @@ func GetChan(chanCode string) BindingPayChan {
 		return &cfca.DefaultClient
 	case "CIL":
 		return nil
-	case "ALP":
-		return nil
-	case "WXP":
-		return nil
 	}
 	return nil
 }
@@ -70,9 +66,10 @@ func GetChan(chanCode string) BindingPayChan {
 func GetScanPayChan(chanCode string) ScanPayChan {
 
 	switch chanCode {
-	case "ALP":
+	case "ALP", "alp":
 		return &alp.DefaultClient
-	case "WXP":
+	case "WXP", "wxp":
 		return nil
 	}
+	return nil
 }

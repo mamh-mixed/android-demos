@@ -17,7 +17,7 @@ func Listen() {
 		return
 	}
 
-	go func(l net.Listener) {
+	go func() {
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
@@ -26,7 +26,7 @@ func Listen() {
 			}
 			go handleConnection(conn)
 		}
-	}(ln)
+	}()
 
 }
 
@@ -49,13 +49,12 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 	}
-
 }
 
-func read(conn net.Conn) (back []byte, err error) {
+func read(conn net.Conn) ([]byte, error) {
 	mLenByte := make([]byte, 4)
 
-	_, err = conn.Read(mLenByte)
+	_, err := conn.Read(mLenByte)
 	if err != nil {
 		log.Debug("read length error: ", err)
 		return nil, err
@@ -80,7 +79,6 @@ func read(conn net.Conn) (back []byte, err error) {
 	msg := make([]byte, mlen)
 	var size int
 	for size < mlen {
-		log.Debug(size)
 		rlen, err := conn.Read(msg[size:])
 		if err != nil {
 			if err == io.EOF {
@@ -95,5 +93,5 @@ func read(conn net.Conn) (back []byte, err error) {
 
 	log.Debugf("recieve message: %d %s", size, msg)
 
-	return back, err
+	return msg, err
 }

@@ -10,7 +10,7 @@ import (
 
 func Router(reqBytes []byte) []byte {
 
-	req := new(model.QrCodePay)
+	req := new(model.ScanPay)
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal jsonStr(%s): %s", reqBytes, err)
@@ -44,7 +44,7 @@ func Router(reqBytes []byte) []byte {
 }
 
 // BarcodePay 条码下单
-func BarcodePay(req *model.QrCodePay) (resp *model.QrCodePayResponse) {
+func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 	log.Debugf("request body: %+v", req)
 
 	// TODO validite field
@@ -54,7 +54,7 @@ func BarcodePay(req *model.QrCodePay) (resp *model.QrCodePayResponse) {
 }
 
 // QrCodeOfflinePay 扫二维码预下单
-func QrCodeOfflinePay(req *model.QrCodePay) (resp *model.QrCodePrePayResponse) {
+func QrCodeOfflinePay(req *model.ScanPay) (resp *model.QrCodePrePayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -63,7 +63,7 @@ func QrCodeOfflinePay(req *model.QrCodePay) (resp *model.QrCodePrePayResponse) {
 }
 
 // Refund 退款
-func Refund(req *model.QrCodePay) (resp *model.QrCodeRefundResponse) {
+func Refund(req *model.ScanPay) (resp *model.QrCodeRefundResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -72,7 +72,7 @@ func Refund(req *model.QrCodePay) (resp *model.QrCodeRefundResponse) {
 }
 
 // Enquiry 查询
-func Enquiry(req *model.QrCodePay) (resp *model.QrCodeEnquiryResponse) {
+func Enquiry(req *model.ScanPay) (resp *model.QrCodeEnquiryResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -81,10 +81,10 @@ func Enquiry(req *model.QrCodePay) (resp *model.QrCodeEnquiryResponse) {
 }
 
 // Cancel 撤销
-func Cancel(req *model.QrCodePay) (resp *model.QrCodeCancelResponse) {
+func Cancel(req *model.ScanPay) (resp *model.QrCodeCancelResponse) {
 
 	log.Debugf("request body: %+v", req)
 
 	// TODO validite field
-	return core.Enquiry(req)
+	return core.Cancel(req)
 }
