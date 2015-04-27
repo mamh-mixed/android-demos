@@ -3,6 +3,8 @@ package alp
 // type Request
 import (
 	"encoding/xml"
+	"fmt"
+	"strconv"
 )
 
 // AlpRequest 请求参数
@@ -62,4 +64,22 @@ type tradeFundBill struct {
 	XMLName     xml.Name `xml:"TradeFundBill"`
 	Amount      string   `xml:"amount,omitempty"`       //支付金额
 	FundChannel string   `xml:"fund_channel,omitempty"` //支付渠道
+}
+
+// DisCount 计算商户、渠道折扣
+func (alp *alpDetail) DisCount() (string, string) {
+
+	merf, chcdf := 0.00, 0.00
+	for _, v := range alp.FundBillList {
+		f, _ := strconv.ParseFloat(v.Amount, 64)
+		switch v.FundChannel {
+		// 渠道
+		case "00", "30", "40":
+			merf += f
+		// 商户
+		case "101", "102":
+			chcdf += f
+		}
+	}
+	return fmt.Sprintf("%0.2f", merf), fmt.Sprintf("%0.2f", chcdf)
 }

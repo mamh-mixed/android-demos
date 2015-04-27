@@ -17,17 +17,17 @@ const (
 type alp struct{}
 
 // ProcessBarcodePay 条码支付/下单
-func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
+func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
-		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
-		Subject:       "",
+		NotifyUrl:     req.NotifyUrl,
+		OutTradeNo:    req.ChannelOrderNum,
+		Subject:       "test", // TODO
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
-		ExtendParams:  "",
+		ExtendParams:  "",   //...
 		ItBPay:        "1m", // 超时时间
 		DynamicIdType: "bar_code",
 		DynamicId:     req.ScanCodeId,
@@ -39,16 +39,40 @@ func (a *alp) ProcessBarcodePay(req *model.QrCodePay) *model.QrCodePayResponse {
 	resp := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", resp)
 
-	return nil
+	// 请求成功
+	ret := new(model.QrCodePayResponse)
+	if resp.IsSuccess == "T" {
+		alipay := resp.Response.Alipay
+		ret.ChanRespCode = alipay.ResultCode
+		switch alipay.ResultCode {
+		case "ORDER_SUCCESS_PAY_SUCCESS":
+
+			ret.ChannelOrderNum = alipay.TradeNo
+			ret.ConsumerAccount = alipay.BuyerLogonId
+			ret.ConsumerId = alipay.BuyerUserId
+			// 计算折扣
+			ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
+
+		case "ORDER_FAIL":
+			// do nothing
+		default:
+			ret.ChannelOrderNum = alipay.TradeNo
+		}
+	} else {
+		ret.ChanRespCode = resp.Error
+		ret.ErrorDetail = "SYSTEM_ERROR"
+	}
+
+	return ret
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
-func (a *alp) ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayResponse {
+func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayResponse {
 
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -69,12 +93,12 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.QrCodePay) *model.QrCodePrePayR
 }
 
 // ProcessRefund 退款
-func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
+func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       "alipay.acquire.refund",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -95,12 +119,38 @@ func (a *alp) ProcessRefund(req *model.QrCodePay) *model.QrCodeRefundResponse {
 }
 
 // ProcessEnquiry 查询，包含支付、退款
-func (a *alp) ProcessEnquiry(req *model.QrCodePay) *model.QrCodeEnquiryResponse {
+func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       "alipay.acquire.query",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.ChannelOrderNum,
+		Subject:       "",
+		GoodsDetail:   req.MarshalGoods(),
+		ProductCode:   "BARCODE_PAY_OFFLINE",
+		TotalFee:      req.Txamt,
+		ExtendParams:  "",
+		ItBPay:        "1m", // 超时时间
+		DynamicIdType: "bar_code",
+		DynamicId:     req.ScanCodeId,
+	}
+
+	// req to map
+	dict := toMap(alpReq)
+
+	resp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", resp)
+
+	return nil
+}
+
+// ProcessVoid 撤销
+func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
+
+	alpReq := &alpRequest{
+		Service:       "alipay.acquire.cancel",
+		NotifyUrl:     "",
+		OutTradeNo:    req.ChannelOrderNum,
 		Subject:       "",
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -130,7 +180,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["currency"] = currency
 	dict["seller_id"] = partner
 	// 参数转换
-	dict["server"] = req.Service
+	dict["service"] = req.Service
 	dict["notify_url"] = req.NotifyUrl
 	dict["product_code"] = req.ProductCode
 	dict["out_trade_no"] = req.OutTradeNo
@@ -141,6 +191,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["it_b_pay"] = req.ItBPay
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
+	dict["goods_detail"] = req.GoodsDetail
 
 	// ...
 
