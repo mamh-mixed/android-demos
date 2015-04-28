@@ -80,11 +80,11 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Terminalid:   p.TerminalId,
 		Txamt:        fmt.Sprintf("%012d", p.TransAmt),
 		Txcurrcd:     p.CurrCode,
-		Cardcd:       p.AcctNum,
+		Cardcd:       p.AcctNumDecrypt,
 		Syssn:        p.SysSN,
 		Localdt:      time.Now().Format("0102150405"),
-		Expiredate:   p.ValidDate,
-		Cvv2:         p.Cvv2,
+		Expiredate:   p.ValidDateDecrypt,
+		Cvv2:         p.Cvv2Decrypt,
 	}
 	log.Debugf("无卡直接支付开始向线下网关发送报文: %+v", m)
 

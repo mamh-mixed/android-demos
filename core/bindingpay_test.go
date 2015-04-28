@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"strconv"
 	"testing"
@@ -146,20 +147,32 @@ func TestProcessBillingSummary(t *testing.T) {
 func TestProcessNoTrackPayment(t *testing.T) {
 
 	ntp := &model.NoTrackPayment{
-		MerId:       testMerID,
-		TransType:   "SALE",
-		SubMerId:    "SM123456",
-		MerOrderNum: strconv.FormatInt(time.Now().UnixNano(), 10),
-		TransAmt:    120,
-		CurrCode:    "156",
-		AcctName:    "Peter",
-		AcctNum:     testCUPCard,
-		IdentType:   "0",
-		IdentNum:    testCUPIdentNum,
-		PhoneNum:    testCUPPhone,
-		AcctType:    "10",
-		ValidDate:   testCUPValidDate,
-		Cvv2:        testCUPCVV2,
+		MerId:            testMerID,
+		TransType:        "SALE",
+		SubMerId:         "SM123456",
+		MerOrderNum:      strconv.FormatInt(time.Now().UnixNano(), 10),
+		TransAmt:         120,
+		CurrCode:         "156",
+		AcctNameDecrypt:  "Peter",
+		AcctNumDecrypt:   testCUPCard,
+		IdentType:        "0",
+		IdentNumDecrypt:  testCUPIdentNum,
+		PhoneNumDecrypt:  testCUPPhone,
+		AcctType:         "10",
+		ValidDateDecrypt: testCUPValidDate,
+		Cvv2Decrypt:      testCUPCVV2,
+	}
+
+	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
+
+	ntp.AcctName = aes.Encrypt(ntp.AcctNameDecrypt)
+	ntp.AcctNum = aes.Encrypt(ntp.AcctNumDecrypt)
+	ntp.IdentNum = aes.Encrypt(ntp.IdentNumDecrypt)
+	ntp.PhoneNum = aes.Encrypt(ntp.PhoneNumDecrypt)
+	ntp.ValidDate = aes.Encrypt(ntp.ValidDateDecrypt)
+	ntp.Cvv2 = aes.Encrypt(ntp.Cvv2Decrypt)
+	if aes.Err != nil {
+		panic(aes.Err)
 	}
 
 	ret := ProcessNoTrackPayment(ntp)
@@ -193,4 +206,7 @@ var (
 	testCUPIdentNum  = "130412"
 
 	testMerID = "APPTEST"
+
+	// 测试用的密钥
+	testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
 )

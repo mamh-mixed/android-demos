@@ -638,8 +638,9 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 	}
 
 	// 获取卡bin详情
-	cardBin, err := findCardBin(be.AcctNum)
+	cardBin, err := findCardBin(be.AcctNumDecrypt)
 	if err != nil {
+		log.Errorf("find card bin error: %s", err)
 		if err.Error() == "not found" {
 			errorTrans.RespCode = "200070"
 			saveErrorTran(errorTrans)
@@ -698,6 +699,7 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 		return
 	}
 
+	log.Debugf("进入渠道处理之前:%+v", be)
 	ret = cil.Consume(be)
 
 	trans.ChanRespCode = ret.ChanRespCode

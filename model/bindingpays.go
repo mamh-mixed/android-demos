@@ -166,4 +166,11 @@ type NoTrackPayment struct {
 	TerminalId  string `json:"terminalId,omitempty"` //下游商户配置的渠道商户的终端号
 	CliSN       string `json:"cliSN,omitempty"`      //商户的终端在当天对应的一个序列号
 	SysSN       string `json:"sysSN,omitempty"`      //系统序列号
+	// 存储解密字段，辅助
+	AcctNumDecrypt   string `json:"-"`
+	AcctNameDecrypt  string `json:"-"`
+	IdentNumDecrypt  string `json:"-"`
+	PhoneNumDecrypt  string `json:"-"`
+	ValidDateDecrypt string `json:"-"`
+	Cvv2Decrypt      string `json:"-"`
 }

@@ -170,5 +170,25 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 		return mongo.RespCodeColl.Get("200230")
 	}
 
+	if in.AcctType == "20" {
+		// 贷记卡
+		if in.ValidDate == "" {
+			return model.NewBindingReturn("200050", "字段 validDate 不能为空")
+		}
+
+		if in.Cvv2 == "" {
+			return model.NewBindingReturn("200050", "字段 cvv2 不能为空")
+		}
+
+		// 判断格式，需要使用解密后的参数
+		if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])$`, in.ValidDateDecrypt); !matched {
+			return mongo.RespCodeColl.Get("200140")
+		}
+
+		if matched, _ := regexp.MatchString(`^\d{3}$`, in.Cvv2Decrypt); !matched {
+			return mongo.RespCodeColl.Get("200150")
+		}
+	}
+
 	return nil
 }
