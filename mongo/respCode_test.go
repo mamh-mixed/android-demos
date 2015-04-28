@@ -32,3 +32,18 @@ func TestGetRespCodeByCfca(t *testing.T) {
 		t.Errorf("respCode %s message must be `%s`, but get %s", cfcacode, expected, ret.RespMsg)
 	}
 }
+
+func TestGetRespCodeByCIL(t *testing.T) {
+
+	ret := RespCodeColl.GetByCIL("00")
+
+	if ret == nil {
+		t.Error("cfca code not exist")
+	}
+
+	expected := "000000"
+	if ret.RespCode != expected {
+		t.Errorf("respCode %s message must be `%s`, but get %s", cfcacode, expected, ret.RespMsg)
+	}
+	t.Logf("result is %+v", ret)
+}
