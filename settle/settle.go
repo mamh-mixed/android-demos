@@ -1,4 +1,5 @@
-package core
+// Package settle used to Settlement
+package settle
 
 import (
 	"github.com/CardInfoLink/quickpay/channel"
@@ -24,12 +25,12 @@ const (
 )
 
 // DoSettWork 开启任务routine
-func DoSettWork() {
-	go ProcessTransSettle()
+func doSettWork() {
+	go processTransSettle()
 }
 
 // ProcessTransSettle 清分
-func ProcessTransSettle() {
+func processTransSettle() {
 
 	// 凌晨10分时将交易数据copy到清分表
 	// 距离指定的时间

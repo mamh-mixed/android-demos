@@ -1,8 +1,9 @@
-package conf
+package pay
 
 import (
 	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/core"
+	"github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/mongo"
 )
 
@@ -17,9 +18,9 @@ func Initialize() {
 	// 连接到 线下网关
 	cil.Connect()
 
-	// 执行清分任务
-	core.DoSettWork()
-
 	// 检查数据配置是否有变化
 	CheckConf()
+
+	// tcp listen
+	entrance.Listen()
 }
