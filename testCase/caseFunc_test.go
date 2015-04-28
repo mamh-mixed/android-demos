@@ -58,11 +58,9 @@ func Test2(t *testing.T) {
 	bindingId = "1430128629966"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 	Convey("1.1.2使用该商户下已存在的绑定ID进行建立绑定关系", t, func() {
-		b, err := bindingCreate()
-		So(err, ShouldBeNil)
+		b, _ := bindingCreate()
 		Convey("期望结果：绑定ID重复", func() {
-			ret, err := post(url, b)
-			So(err, ShouldBeNil)
+			ret, _ := post(url, b)
 			So(ret.RespMsg, ShouldEqual, "绑定ID重复")
 		})
 	})
@@ -74,11 +72,9 @@ func Test3(t *testing.T) {
 	bindingId = tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 	Convey("1.1.3使用一张外卡进行绑定", t, func() {
-		b, err := bindingCreate()
-		So(err, ShouldBeNil)
+		b, _ := bindingCreate()
 		Convey("期望结果：无此交易权限", func() {
-			ret, err := post(url, b)
-			So(err, ShouldBeNil)
+			ret, _ := post(url, b)
 			So(ret.RespMsg, ShouldEqual, "无此交易权限")
 		})
 	})
@@ -90,11 +86,9 @@ func Test4(t *testing.T) {
 	bindingId = tools.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 	Convey("1.1.4使用一个不存在的卡号进行绑定", t, func() {
-		b, err := bindingCreate()
-		So(err, ShouldBeNil)
+		b, _ := bindingCreate()
 		Convey("期望结果：账户号码有误", func() {
-			ret, err := post(url, b)
-			So(err, ShouldBeNil)
+			ret, _ := post(url, b)
 			So(ret.RespMsg, ShouldEqual, "账户号码有误")
 		})
 	})
@@ -107,11 +101,9 @@ func Test5(t *testing.T) {
 	merId := "111123333"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
 	Convey("1.1.5使用不存在商户号发起建立绑定关系请求", t, func() {
-		b, err := bindingCreate()
-		So(err, ShouldBeNil)
+		b, _ := bindingCreate()
 		Convey("期望结果：商户号不存在", func() {
-			ret, err := post(url, b)
-			So(err, ShouldBeNil)
+			ret, _ := post(url, b)
 			So(ret.RespMsg, ShouldEqual, "商户号不存在")
 		})
 	})
@@ -142,8 +134,7 @@ func Test7(t *testing.T) {
 		orderNum = tools.Millisecond()
 		b := BindingPayment()
 		Convey("期望结果：请求处理成功", func() {
-			ret, err := post(url, b)
-			So(err, ShouldBeNil)
+			ret, _ := post(url, b)
 			So(ret.RespMsg, ShouldEqual, "请求处理成功")
 		})
 	})

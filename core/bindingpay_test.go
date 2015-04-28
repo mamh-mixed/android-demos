@@ -2,8 +2,11 @@ package core
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"strconv"
 	"testing"
+	"time"
 )
 
 func TestProcessBindingCreate(t *testing.T) {
@@ -140,3 +143,70 @@ func TestProcessBillingSummary(t *testing.T) {
 	}
 	log.Debugf("%+v", ret)
 }
+
+func TestProcessNoTrackPayment(t *testing.T) {
+
+	ntp := &model.NoTrackPayment{
+		MerId:            testMerID,
+		TransType:        "SALE",
+		SubMerId:         "SM123456",
+		MerOrderNum:      strconv.FormatInt(time.Now().UnixNano(), 10),
+		TransAmt:         120,
+		CurrCode:         "156",
+		AcctNameDecrypt:  "Peter",
+		AcctNumDecrypt:   testCUPCard,
+		IdentType:        "0",
+		IdentNumDecrypt:  testCUPIdentNum,
+		PhoneNumDecrypt:  testCUPPhone,
+		AcctType:         "10",
+		ValidDateDecrypt: testCUPValidDate,
+		Cvv2Decrypt:      testCUPCVV2,
+	}
+
+	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
+
+	ntp.AcctName = aes.Encrypt(ntp.AcctNameDecrypt)
+	ntp.AcctNum = aes.Encrypt(ntp.AcctNumDecrypt)
+	ntp.IdentNum = aes.Encrypt(ntp.IdentNumDecrypt)
+	ntp.PhoneNum = aes.Encrypt(ntp.PhoneNumDecrypt)
+	ntp.ValidDate = aes.Encrypt(ntp.ValidDateDecrypt)
+	ntp.Cvv2 = aes.Encrypt(ntp.Cvv2Decrypt)
+	if aes.Err != nil {
+		panic(aes.Err)
+	}
+
+	ret := ProcessNoTrackPayment(ntp)
+
+	if ret == nil {
+		t.Error("NoTrackPayment process error")
+	}
+
+	t.Logf("%+v", ret)
+}
+
+// only for test
+var (
+	// 万事达卡测试数据
+	testMSCCard       = "5457210001000019"
+	testMSCCVV2       = "300"
+	testMSCValidDate  = "1412"
+	testMSCTrackdata2 = "5457210001000019=1412101080080748"
+
+	// VISA卡测试数据
+	testVISCard       = "4761340000000019"
+	testVISCVV2       = "830"
+	testVISValidDate  = "1712"
+	testVISTrackdata2 = "4761340000000019=171210114991787"
+
+	// 银联卡测试数据
+	testCUPCard      = "6225220100740059"
+	testCUPCVV2      = "111"
+	testCUPValidDate = "1605"
+	testCUPPhone     = "13611111111"
+	testCUPIdentNum  = "130412"
+
+	testMerID = "APPTEST"
+
+	// 测试用的密钥
+	testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
+)

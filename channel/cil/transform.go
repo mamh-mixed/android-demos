@@ -15,15 +15,16 @@ func transformResp(respcd string) (ret *model.BindingReturn) {
 		return
 	}
 
-	switch respcd {
-	case "00":
-		ret = mongo.RespCodeColl.Get("000000")
-	default:
-		ret = &model.BindingReturn{
-			RespCode: respcd,
-			RespMsg:  "渠道返回" + respcd,
-		}
-	}
+	// switch respcd {
+	// case "00":
+	// 	ret = mongo.RespCodeColl.Get("000000")
+	// default:
+	// 	ret = &model.BindingReturn{
+	// 		RespCode: respcd,
+	// 		RespMsg:  "渠道返回" + respcd,
+	// 	}
+	// }
+	ret = mongo.RespCodeColl.GetByCIL(respcd)
 
 	ret.ChanRespCode = respcd
 

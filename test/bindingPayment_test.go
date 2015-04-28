@@ -9,13 +9,29 @@ import (
 	"github.com/omigo/log"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
+	"time"
 )
 
 const (
 	testMerId      = "012345678901234"
 	testSign       = "0123456789"
 	testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
+
+	// 银联卡测试数据
+	testCUPCard      = "6225220100740059"
+	testCUPCVV2      = "111"
+	testCUPValidDate = "1605"
+	testCUPPhone     = "13611111111"
+	testCUPIdentNum  = "130412"
+
+	testMSCCard       = "5457210001000019"
+	testMSCCVV2       = "300"
+	testMSCValidDate  = "1412"
+	testMSCTrackdata2 = "5457210001000019=1412101080080748"
+	// 无卡直接支付相关
+	testMerID = "APPTEST"
 )
 
 var (
@@ -126,20 +142,23 @@ func TestBindingRefundHandle(t *testing.T) {
 }
 
 func TestNoTrackPaymentHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + testMerId
+	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + testMerID
 
 	b := model.NoTrackPayment{
-		MerId:       testMerId,
-		MerOrderNum: tools.Millisecond(),
-		AcctName:    "测试账号",
-		AcctNum:     "6222022003008481261",
+		MerId:       testMerID,
+		TransType:   "SALE",
+		SubMerId:    "SM123456",
+		MerOrderNum: strconv.FormatInt(time.Now().UnixNano(), 10),
+		TransAmt:    120,
+		CurrCode:    "156",
+		AcctName:    "Peter",
+		AcctNum:     testMSCCard,
 		IdentType:   "0",
-		IdentNum:    "440583199111031012",
-		PhoneNum:    "18205960039",
-		AcctType:    "20",
-		ValidDate:   "0612",
-		Cvv2:        "793",
-		TransAmt:    1000,
+		IdentNum:    testCUPIdentNum,
+		PhoneNum:    testCUPPhone,
+		AcctType:    "10",
+		ValidDate:   testMSCValidDate,
+		Cvv2:        testMSCCVV2,
 	}
 
 	var aes = tools.NewAESCBCEncrypt(testEncryptKey)

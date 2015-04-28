@@ -203,11 +203,28 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	b.MerId = merId
 
+	m, err := mongo.MerchantColl.Find(merId)
+	if err != nil {
+		return mongo.RespCodeColl.Get("300030")
+	}
+
+	aes := new(tools.AesCBCMode)
+	aes.DecodeKey(m.EncryptKey)
+	b.AcctNumDecrypt = aes.Decrypt(b.AcctNum)
+	b.AcctNameDecrypt = aes.Decrypt(b.AcctName)
+	b.IdentNumDecrypt = aes.Decrypt(b.IdentNum)
+	b.PhoneNumDecrypt = aes.Decrypt(b.PhoneNum)
+
+	// TODO目前，借记卡的validDate没有上送，所以将无法交易
+	b.ValidDateDecrypt = aes.Decrypt(b.ValidDate)
+	b.Cvv2Decrypt = aes.Decrypt(b.Cvv2)
+
 	ret = validateNoTrackPayment(b)
 	if ret != nil {
 		return ret
 	}
+	log.Debugf("请求对象： %+v；校验结果：%+v", b, ret)
+	ret = core.ProcessNoTrackPayment(b)
 
-	//  todo 无卡支付暂不开放；业务处理
-	return model.NewBindingReturn("000000", "unimplement，暂不支持此类业务")
+	return ret
 }

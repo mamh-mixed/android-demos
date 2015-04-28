@@ -77,14 +77,14 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Chcd:         p.Chcd,
 		Clisn:        p.CliSN,
 		Mchntid:      p.Mchntid,
-		Terminalid:   p.Terminalid,
+		Terminalid:   p.TerminalId,
 		Txamt:        fmt.Sprintf("%012d", p.TransAmt),
 		Txcurrcd:     p.CurrCode,
-		Cardcd:       p.AcctNum,
+		Cardcd:       p.AcctNumDecrypt,
 		Syssn:        p.SysSN,
 		Localdt:      time.Now().Format("0102150405"),
-		Expiredate:   p.ValidDate,
-		Cvv2:         p.Cvv2,
+		Expiredate:   p.ValidDateDecrypt,
+		Cvv2:         p.Cvv2Decrypt,
 	}
 	log.Debugf("无卡直接支付开始向线下网关发送报文: %+v", m)
 
@@ -97,8 +97,8 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 
 	// 如果超时，请冲正
 	if resp.Respcd == reversalFlag {
-		// 超时需要冲正
-		reversalHandle(m)
+		// 另起线程，冲正处理
+		go reversalHandle(m)
 		// 返回‘外部系统错误’的应答码
 		ret = mongo.RespCodeColl.Get("000002")
 		return
@@ -150,8 +150,8 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	resp := send(m, reversalTime)
 
 	if resp.Respcd == reversalFlag {
-		// 冲正处理
-		reversalHandle(m)
+		// 另起线程，冲正处理
+		go reversalHandle(m)
 		// 返回‘外部系统错误’的应答码
 		ret = mongo.RespCodeColl.Get("000002")
 		return
