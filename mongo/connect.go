@@ -1,11 +1,9 @@
 package mongo
 
 import (
-	"os"
-	"strings"
-
 	"gopkg.in/mgo.v2"
 
+	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 )
 
@@ -21,8 +19,8 @@ var database *mgo.Database
 
 // Connect 程序启动时，或者，单元测试前，先连接到 MongoDB 数据库
 func Connect() {
-	favHost := firstAvailableValue(host)
-	favPort := firstAvailableValue(port)
+	favHost := tools.FirstExistValue(host)
+	favPort := tools.FirstExistValue(port)
 
 	addr := favHost + ":" + favPort
 	session, err := mgo.Dial(addr)
@@ -34,25 +32,4 @@ func Connect() {
 	database = session.DB(dbname)
 
 	log.Infof("connected to mongodb host `%s` and database `%s`", addr, dbname)
-}
-
-func firstAvailableValue(host string) string {
-	hosts := strings.Split(host, "|")
-	for _, used := range hosts {
-		used := strings.TrimSpace(used)
-		// 如果以 $ 开始，表示系统环境变量
-		if used[0] == '$' {
-			used = os.Getenv(used[1:])
-			if used != "" {
-				return used
-			}
-		}
-
-		if used != "" {
-			return used
-		}
-	}
-
-	log.Fatalf("config value %s not correct", host)
-	return ""
 }

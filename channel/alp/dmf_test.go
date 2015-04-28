@@ -1,9 +1,10 @@
 package alp
 
 import (
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"testing"
 )
 
 var scanPay = &model.ScanPay{
