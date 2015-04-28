@@ -1,10 +1,9 @@
 package alp
 
 import (
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 var scanPay = &model.ScanPay{
@@ -16,6 +15,12 @@ var scanPay = &model.ScanPay{
 }
 
 func TestProcessBarcodePay(t *testing.T) {
-	resp := DefaultClient.ProcessBarcodePay(scanPay)
-	log.Debugf("%+v", resp)
+
+	Convey("test the alp BarcodePay", t, func() {
+		resp := DefaultClient.ProcessBarcodePay(scanPay)
+		Convey("the resp should be fail", func() {
+			So(resp.ChannelOrderNum, ShouldEqual, "")
+		})
+	})
+
 }

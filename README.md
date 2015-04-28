@@ -21,6 +21,7 @@ go get github.com/omigo/log
 go get github.com/nu7hatch/gouuid
 go get gopkg.in/mgo.v2
 go get gopkg.in/mgo.v2/bson
+go get github.com/axgle/mahonia
 ```
 
 安装前端依赖
@@ -61,4 +62,12 @@ $ quickpay -pay -port=3800
 
 # 启动 QuickSettle
 $ quickpay -settle -port=3900
+```
+
+免翻墙安装golang.org/x/tools包
+-------
+```
+git clone https://github.com/golang/tools $GOPATH/src/golang.org/x/tools 
+cd $GOPATH
+go install golang.org/x/tools/cmd/cover
 ```

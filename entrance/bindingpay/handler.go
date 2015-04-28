@@ -46,7 +46,6 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	if ret != nil {
 		return ret
 	}
-
 	// 业务处理
 	ret = core.ProcessBindingCreate(bc)
 

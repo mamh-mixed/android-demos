@@ -44,12 +44,12 @@ func AddSysCodeFromCsv(path string) error {
 	if err != nil {
 		return err
 	}
-
 	// 添加到mongodb，若存在的跳过
 	// 若新增的便添加
 	for _, v := range data {
-		q, _ := mongo.RespCodeColl.FindOne(v.RespCode)
-		if q == nil {
+		_, err := mongo.RespCodeColl.FindOne(v.RespCode)
+		if err != nil {
+			fmt.Println(v)
 			mongo.RespCodeColl.Add(v)
 		}
 	}
@@ -93,7 +93,7 @@ func ReadQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
 	if err != nil {
 		return nil, err
 	}
-	qs := make([]*model.QuickpayCsv, len(data))
+	qs := make([]*model.QuickpayCsv, 0, len(data))
 
 	// 根据数据规则遍历
 	for i, each := range data {
@@ -104,7 +104,7 @@ func ReadQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
 		// fmt.Printf("%+v \n", q)
 		qs = append(qs, q)
 	}
-
+	fmt.Println(len(qs))
 	return qs, nil
 }
 

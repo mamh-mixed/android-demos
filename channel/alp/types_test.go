@@ -68,6 +68,6 @@ func TestDecodeXml(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-
-	log.Debugf("%+v", v)
+	mer, chcd := v.Response.Alipay.DisCount()
+	log.Debugf("%+v,%s,%s", v, mer, chcd)
 }

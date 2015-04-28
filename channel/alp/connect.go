@@ -5,15 +5,13 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
+	"fmt"
+	"github.com/axgle/mahonia"
+	"github.com/omigo/log"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
-
-	"code.google.com/p/mahonia"
-	"github.com/omigo/log"
-	gocharset "golang.org/x/net/html/charset"
 )
 
 const (
@@ -49,26 +47,16 @@ func handleResponseBody(reader io.Reader) *alpResponse {
 
 	alpResp := new(alpResponse)
 
-	ret, err := ioutil.ReadAll(reader)
-	if err != nil {
-		log.Errorf("read all data error: %s", err)
-	}
-
-	dec := mahonia.NewDecoder("gbk")
-	utf8Ret, ok := dec.ConvertStringOK(string(ret))
-	if !ok {
-		log.Errorf("convert gbk(%s) to utf8 error: %s", string(ret), err)
-	}
 	// 重写CharsetReader，使Decoder能解析gbk
-	d := xml.NewDecoder(bytes.NewReader([]byte(utf8Ret)))
+	d := xml.NewDecoder(reader)
 	d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
-		// cd, err := iconv.Open("utf-8", s)
-		// defer cd.Close()
-		// return iconv.NewReader(cd, r, iconv.DefaultBufSize), err
-
-		return gocharset.NewReader(r, s)
+		dec := mahonia.NewDecoder(s)
+		if dec == nil {
+			return nil, fmt.Errorf("not support %s", s)
+		}
+		return dec.NewReader(r), nil
 	}
-	err = d.Decode(alpResp)
+	err := d.Decode(alpResp)
 	if err != nil {
 		log.Errorf("unmarsal body fail : %s", err)
 	}
