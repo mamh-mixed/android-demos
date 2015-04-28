@@ -13,11 +13,11 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
 
-	if request.AcctName == "" {
+	if request.AcctNameDecrypt == "" {
 		return model.NewBindingReturn("200050", "字段 acctName 不能为空")
 	}
 
-	if request.AcctNum == "" {
+	if request.AcctNumDecrypt == "" {
 		return model.NewBindingReturn("200050", "字段 acctNum 不能为空")
 	}
 
@@ -27,11 +27,11 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 
 	if request.AcctType == "20" {
 		// 贷记卡
-		if request.ValidDate == "" {
+		if request.ValidDateDecrypt == "" {
 			return model.NewBindingReturn("200050", "字段 validDate 不能为空")
 		}
 
-		if request.Cvv2 == "" {
+		if request.Cvv2Decrypt == "" {
 			return model.NewBindingReturn("200050", "字段 cvv2 不能为空")
 		}
 

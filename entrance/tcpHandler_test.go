@@ -25,7 +25,7 @@ func TestDailTcp(t *testing.T) {
 		log.Errorf("can't connect to cil-online tcp://%s: %s", addr, err)
 		return
 	}
-	req := new(model.QrCodePay)
+	req := new(model.ScanPay)
 	req.Busicd = "purc"
 	encoded, _ := json.Marshal(req)
 	head := fmt.Sprintf("%04d", len(encoded))

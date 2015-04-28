@@ -43,6 +43,7 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 
 	// 验证请求报文是否完整，格式是否正确
 	ret = validateBindingCreate(bc)
+	log.Debug(bc.AcctNum == "")
 	if ret != nil {
 		return ret
 	}

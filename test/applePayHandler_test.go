@@ -4,21 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/CardInfoLink/quickpay/entrance"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-
-	"github.com/CardInfoLink/quickpay/channel/cil"
-	"github.com/CardInfoLink/quickpay/entrance"
-	"github.com/CardInfoLink/quickpay/model"
-
-	"github.com/omigo/log"
 )
-
-func init() {
-	cil.Connect()
-}
 
 var (
 	applePayMerId  = "APPTEST"  // apple pay 测试用商户号

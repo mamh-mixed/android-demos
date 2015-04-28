@@ -97,7 +97,6 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
 	bc.SignCert = chanMer.SignCert
-	// TODO对加密的字段进行解密再送往渠道方
 
 	log.Tracef("'BindingCreate' is: %+v", bc)
 
@@ -404,6 +403,9 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 			log.Errorf("add errorTrans fail: (%s)", err)
 		}
 		return mongo.RespCodeColl.Get("100020")
+	// TODO 不能对退款的交易号进行退款
+	case orign.TransType == model.RefundTrans:
+
 	// 已退款
 	case orign.RefundStatus == model.TransRefunded:
 		errorTrans.RespCode = "100010"

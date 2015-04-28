@@ -3,16 +3,13 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	. "github.com/CardInfoLink/quickpay/entrance"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/omigo/log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/CardInfoLink/quickpay/core"
-	. "github.com/CardInfoLink/quickpay/entrance"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
-	"github.com/omigo/log"
 )
 
 const (
@@ -25,14 +22,6 @@ var (
 	bindingId string
 	orderNum  string
 )
-
-func init() {
-	// 连接到 MongoDB
-	mongo.Connect()
-
-	// 初始化卡 Bin 树
-	core.BuildTree()
-}
 
 func doPost(url string, m interface{}, t *testing.T) {
 	j, err := json.Marshal(m)
