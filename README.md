@@ -64,7 +64,7 @@ $ quickpay -settle -port=3900
 ```
 
 免翻墙安装golang.org/x/tools包
-=======
+-------
 ```
 git clone https://github.com/golang/tools $GOPATH/golang.org/x/tools 
 cd $GOPATH
