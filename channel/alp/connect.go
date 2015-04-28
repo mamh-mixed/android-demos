@@ -5,8 +5,9 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
+	"fmt"
+	"github.com/axgle/mahonia"
 	"github.com/omigo/log"
-	"github.com/qiniu/iconv"
 	"io"
 	"net/http"
 	"net/url"
@@ -49,9 +50,11 @@ func handleResponseBody(reader io.Reader) *alpResponse {
 	// 重写CharsetReader，使Decoder能解析gbk
 	d := xml.NewDecoder(reader)
 	d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
-		cd, err := iconv.Open("utf-8", s)
-		defer cd.Close()
-		return iconv.NewReader(cd, r, iconv.DefaultBufSize), err
+		dec := mahonia.NewDecoder(s)
+		if dec == nil {
+			return nil, fmt.Errorf("not support %s", s)
+		}
+		return dec.NewReader(r), nil
 	}
 	err := d.Decode(alpResp)
 	if err != nil {

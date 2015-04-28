@@ -10,11 +10,14 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 )
 
-// var addr = "140.207.50.238:7835"
-var addr = "192.168.1.102:7823"
+var (
+	host = "$CIL_HOST | 192.168.1.102"
+	port = "$CIL_PORT | 7823"
+)
 
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
@@ -62,7 +65,12 @@ var mapMutex sync.RWMutex
 
 var conn net.Conn
 
+// Connect 连接到线下
 func Connect() {
+	fevHost := tools.FirstExistValue(host)
+	fevPort := tools.FirstExistValue(port)
+	addr := fevHost + ":" + fevPort
+
 	var err error
 	conn, err = net.Dial("tcp", addr)
 	if err != nil {
