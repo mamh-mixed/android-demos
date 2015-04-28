@@ -115,7 +115,7 @@ func TestConsumeNoTrack(t *testing.T) {
 		SmsCode:     "",
 		Chcd:        testChcd,
 		Mchntid:     testMchntId,
-		Terminalid:  testTerminalId,
+		TerminalId:  testTerminalId,
 		CliSN:       mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
@@ -144,7 +144,7 @@ func TestReversalHandle(t *testing.T) {
 		SmsCode:     "",
 		Chcd:        testChcd,
 		Mchntid:     testMchntId,
-		Terminalid:  testTerminalId,
+		TerminalId:  testTerminalId,
 		CliSN:       "1" + mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
