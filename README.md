@@ -21,6 +21,7 @@ go get github.com/omigo/log
 go get github.com/nu7hatch/gouuid
 go get gopkg.in/mgo.v2
 go get gopkg.in/mgo.v2/bson
+go get github.com/axgle/mahonia
 ```
 
 安装前端依赖
