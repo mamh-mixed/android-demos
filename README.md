@@ -64,6 +64,7 @@ $ quickpay -pay -port=3800
 $ quickpay -settle -port=3900
 ```
 
+
 免翻墙安装 golang.org/x/tools 包
 -------------------------------
 ```
