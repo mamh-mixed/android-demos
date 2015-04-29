@@ -6,7 +6,7 @@
 
 快捷支付平台分为 3 个部分：快捷支付、快捷管理、快捷清算。
 
-* __快捷支付__  核心部分，主要对商户提供统一 API 接口，屏蔽多渠道的接口差异，记录绑定和交易信息
+* __快捷支付__ 核心部分，主要对商户提供统一 API 接口，屏蔽多渠道的接口差异，记录绑定和交易信息
 * __快捷管理__ 管理、服务、支持快捷支付业务流程正常运转
 * __快捷清算__ 对快捷支付的交易定时或准实时清算，并生成报表
 
@@ -21,7 +21,7 @@ go get github.com/omigo/log
 go get github.com/nu7hatch/gouuid
 go get gopkg.in/mgo.v2
 go get gopkg.in/mgo.v2/bson
-go get github.com/axgle/mahonia
+go get github.com/omigo/mahonia
 ```
 
 安装前端依赖
@@ -43,7 +43,7 @@ go install github.com/CardInfoLink/quickpay
 
 
 启动
--------
+----
 
 ```
 # 查看帮助
@@ -64,10 +64,10 @@ $ quickpay -pay -port=3800
 $ quickpay -settle -port=3900
 ```
 
-免翻墙安装golang.org/x/tools包
--------
+免翻墙安装 golang.org/x/tools 包
+-------------------------------
 ```
-git clone https://github.com/golang/tools $GOPATH/src/golang.org/x/tools 
+git clone https://github.com/golang/tools $GOPATH/src/golang.org/x/tools
 cd $GOPATH
 go install golang.org/x/tools/cmd/cover
 ```

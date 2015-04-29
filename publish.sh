@@ -5,8 +5,8 @@ set -e
 host="webapp@121.40.86.222"
 prog="quickpay"
 # args="-master -port 3700"
-# args="-pay -port 3800"
-args="-settle -port 3900"
+args="-pay -port 3800"
+# args="-settle -port 3900"
 
 
 # Golang 跨平台编译

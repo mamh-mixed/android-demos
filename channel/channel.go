@@ -1,7 +1,7 @@
 package channel
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/alp"
+	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 )
@@ -66,9 +66,9 @@ func GetChan(chanCode string) BindingPayChan {
 func GetScanPayChan(chanCode string) ScanPayChan {
 
 	switch chanCode {
-	case "ALP", "alp":
-		return &alp.DefaultClient
-	case "WXP", "wxp":
+	case "Alipay":
+		return &alipay.DefaultClient
+	case "Weixin":
 		return nil
 	}
 	return nil
