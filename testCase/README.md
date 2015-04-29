@@ -1,6 +1,6 @@
 * 下载第三方测试包
 ```
-github.com/smartystreets/goconvey/convey
+go get github.com/smartystreets/goconvey/convey
 ```
 
 * 下载代码覆盖率测试包(golang.org/x/tools/cmd/cover)
