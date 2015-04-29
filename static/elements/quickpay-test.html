@@ -143,6 +143,10 @@
                                 value = _this.encrypt(value)
                             }
 
+                            if (_this.elems[i].numeric && _this.elems[i].numeric === true) {
+                                value = +value;
+                            }
+
                             body[_this.elems[i].name] = value;
                         }
                         postAjax.body = JSON.stringify(body);

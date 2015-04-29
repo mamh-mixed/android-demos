@@ -3,15 +3,19 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	. "github.com/CardInfoLink/quickpay/entrance"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
-	"github.com/omigo/log"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/channel/cil"
+	"github.com/CardInfoLink/quickpay/core"
+	. "github.com/CardInfoLink/quickpay/entrance"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/omigo/log"
 )
 
 const (
@@ -38,6 +42,20 @@ var (
 	bindingId string
 	orderNum  string
 )
+
+func init() {
+	// 日志输出级别
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
+	// 连接到 MongoDB
+	mongo.Connect()
+
+	// 初始化卡 Bin 树
+	core.BuildTree()
+
+	// 连接线下
+	cil.Connect()
+}
 
 func doPost(url string, m interface{}, t *testing.T) {
 	j, err := json.Marshal(m)

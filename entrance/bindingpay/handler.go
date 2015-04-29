@@ -11,11 +11,12 @@ import (
 	"github.com/omigo/log"
 )
 
-// 建立绑定关系
+// BindingCreateHandle 建立绑定关系
 func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	bc := new(model.BindingCreate)
 	err := json.Unmarshal(data, bc)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	bc.MerId = merId
@@ -52,11 +53,12 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	return ret
 }
 
-// 解除绑定关系
+// BindingRemoveHandle 解除绑定关系
 func BindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	br := new(model.BindingRemove)
 	err := json.Unmarshal(data, br)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	br.MerId = merId
@@ -70,11 +72,12 @@ func BindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	return ret
 }
 
-// 查询绑定关系
+// BindingEnquiryHandle 查询绑定关系
 func BindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	be := new(model.BindingEnquiry)
 	err := json.Unmarshal(data, be)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	be.MerId = merId
@@ -95,6 +98,7 @@ func BindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.BindingPayment)
 	err := json.Unmarshal(data, b)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
@@ -110,11 +114,12 @@ func BindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	return ret
 }
 
-// 退款处理
+// BindingRefundHandle 退款处理
 func BindingRefundHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BindingRefund)
 	err := json.Unmarshal(data, b)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
@@ -135,6 +140,7 @@ func BillingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.BillingSummary)
 	err := json.Unmarshal(data, b)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 
@@ -155,6 +161,7 @@ func BillingDetailsHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.BillingDetails)
 	err := json.Unmarshal(data, b)
 	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
@@ -175,7 +182,7 @@ func OrderEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.OrderEnquiry)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		log.Errorf("解析报文错误 :%s", err)
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
@@ -196,7 +203,7 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b := new(model.NoTrackPayment)
 	err := json.Unmarshal(data, b)
 	if err != nil {
-		log.Errorf("解析报文错误 :%s", err)
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return mongo.RespCodeColl.Get("200020")
 	}
 	b.MerId = merId
