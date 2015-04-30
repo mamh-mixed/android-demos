@@ -2,12 +2,12 @@ package mongo
 
 var (
 	debug            = false
-	orderNum         = "222222220000000"
+	orderNum         = "123456"
 	hexId            = "550ee5e36a3dd74f93000001"
 	transType        = 1
 	transStatus      = "00"
 	respCode         = "200125"
-	merId            = "CIL0001"
+	merId            = "012345678901234"
 	merStatus        = "Normal"
 	transCurr        = "156"
 	signKey          = ""

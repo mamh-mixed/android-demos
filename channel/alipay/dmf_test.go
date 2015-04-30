@@ -12,15 +12,17 @@ import (
 
 var scanPay = &model.ScanPay{
 	// GoodsInfo:    "鞋子,1000,2;衣服,1500,3",
-	ChanOrderNum: tools.SerialNumber(),
-	Key:          "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ScanCodeId:   "289434710505996982",
-	Txamt:        "0.01",
-	Subject:      "讯联测试",
+	SysOrderNum: tools.SerialNumber(),
+	Key:         "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+	ScanCodeId:  "289253580324978839",
+	Txamt:       "0.01",
+	Subject:     "讯联测试",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
-	Debug = true
+
+	// 默认开启调试
+	Debug = false
 	Convey("支付宝下单", t, func() {
 		resp := DefaultClient.ProcessBarcodePay(scanPay)
 		Convey("期望", func() {

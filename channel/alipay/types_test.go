@@ -27,10 +27,13 @@ var data = `
         <param name="quantity">10</param>
 		<param name="dynamic_id_type">soundwave</param>
 		<param name="alipay_ca_request">2</param>
-		<param name="sign">a1cb41a4019351965d4418c9cb933f0f</param> <param name="_input_charset">UTF-8</param>
+		<param name="sign">a1cb41a4019351965d4418c9cb933f0f</param> 
+		<param name="_input_charset">UTF-8</param>
 		<param name="price">1</param>
 		<param name="it_b_pay">1d</param>
-		<param name="product_code">SOUNDWAVE_PAY_OFFLINE</param> <param name="service">alipay.acquire.createandpay</param> <param name="seller_id">2088101106499364</param>
+		<param name="product_code">SOUNDWAVE_PAY_OFFLINE</param> 
+		<param name="service">alipay.acquire.createandpay</param> 
+		<param name="seller_id">2088101106499364</param>
    </request>
    <response>
 		<alipay>
@@ -70,4 +73,21 @@ func TestDecodeXml(t *testing.T) {
 	}
 	mer, chcd := v.Response.Alipay.DisCount()
 	log.Debugf("%+v,%s,%s", v, mer, chcd)
+}
+
+func TestEncodeXml(t *testing.T) {
+	v := &alpResponse{
+		Request: []Param{
+			{
+				Name:  "operator_id",
+				Value: "55",
+			},
+			{
+				Name:  "subject",
+				Value: "test",
+			},
+		},
+	}
+	b, _ := xml.Marshal(v)
+	log.Debug(string(b))
 }

@@ -46,6 +46,9 @@ func (c *bindingMapCollection) Update(bm *model.BindingMap) error {
 
 	q := bson.M{"bindingId": bm.BindingId, "merId": bm.MerId}
 	err := database.C(c.name).Update(q, bm)
+	if err != nil {
+		log.Errorf("update bindingMap(%+v) fail: %s", bm, err)
+	}
 	return err
 }
 

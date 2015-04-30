@@ -12,6 +12,36 @@ import (
 	"strconv"
 )
 
+// InitTestMer 初始化测试商户
+// start:从哪个数值开始 end:结束 cardBrand:卡品牌
+// 初始化后格式:test000001
+func InitTestMer(start, end int, cardBrand string) error {
+	if start > end {
+		return fmt.Errorf("%s", "end must large than start")
+	}
+	if end > 999999 {
+		return fmt.Errorf("%s", "end must smaller than 999999")
+	}
+	for i := start; i <= end; i++ {
+		rp := &model.RouterPolicy{
+			MerId:     fmt.Sprintf("test%06d", i),
+			CardBrand: cardBrand,
+			ChanCode:  "CFCA",
+			ChanMerId: "001405",
+		}
+		mongo.RouterPolicyColl.Insert(rp)
+		m := &model.Merchant{
+			MerId:      fmt.Sprintf("test%06d", i),
+			MerStatus:  "Normal",
+			TransCurr:  "156",
+			SignKey:    "0123456789",
+			EncryptKey: "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=",
+		}
+		mongo.MerchantColl.Insert(m)
+	}
+	return nil
+}
+
 // AddCardBinFromCsv 从csv里导入卡bin
 // rebuild: true 删除集合再重建
 // rebuild: false 做更新操作，即存在的更新，不存在的增加

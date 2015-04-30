@@ -50,7 +50,14 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 	// TODO validite field
 
 	// process
-	return core.BarcodePay(req)
+	resp = core.BarcodePay(req)
+
+	// response info
+	resp.Busicd = req.Busicd
+	resp.Chcd = req.Chcd
+	resp.Inscd = req.Inscd
+
+	return
 }
 
 // QrCodeOfflinePay 扫二维码预下单

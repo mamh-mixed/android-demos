@@ -25,7 +25,7 @@ func main() {
 	flag.BoolVar(&argMaster, "master", false, "Startup QuickMaster")
 	flag.BoolVar(&argPay, "pay", false, "Startup Quickpay")
 	flag.BoolVar(&argSettle, "settle", false, "Startup QuickSettle")
-	flag.IntVar(&port, "port", 3800, "server listen port, default QuickMaster 3700, Quickpay 3800, QuickSettle 3900")
+	flag.IntVar(&port, "port", 3801, "server listen port, default QuickMaster 3700, Quickpay 3800, QuickSettle 3900")
 
 	flag.Parse()
 
