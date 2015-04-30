@@ -167,7 +167,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	be.ChanMerId = bm.ChanMerId
 	be.ChanBindingId = bm.ChanBindingId
 	be.SignCert = chanMer.SignCert
-	// todo 查找该商户配置的渠道，这里为了简单，到中金查找。
+	// 查找该商户配置的渠道，这里为了简单，到中金查找。
 	c := channel.GetChan(bm.ChanCode)
 	ret = c.ProcessBindingEnquiry(be)
 
@@ -248,6 +248,8 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		mongo.TransColl.Add(errorTrans)
 		return mongo.RespCodeColl.Get(errorTrans.RespCode)
 	}
+
+	// TODO 金额是否超出最大可支付金额
 
 	// 根据绑定关系得到渠道商户信息
 	// 获得渠道商户
@@ -394,6 +396,10 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 退款金额过大
 	case be.TransAmt > orign.TransAmt:
 		errorTrans.RespCode = "200191"
+		legal = false
+	// 中金渠道全额退款
+	case orign.ChanCode == "CFCA" && be.TransAmt != orign.TransAmt:
+		errorTrans.RespCode = "200190"
 		legal = false
 	}
 	if !legal {

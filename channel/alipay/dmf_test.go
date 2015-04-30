@@ -15,14 +15,14 @@ var scanPay = &model.ScanPay{
 	SysOrderNum: tools.SerialNumber(),
 	Key:         "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ScanCodeId:  "289253580324978839",
-	Txamt:       "0.01",
+	Txamt:       "10",
 	Subject:     "讯联测试",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
 
 	// 默认开启调试
-	Debug = false
+	// Debug = false
 	Convey("支付宝下单", t, func() {
 		resp := DefaultClient.ProcessBarcodePay(scanPay)
 		Convey("期望", func() {

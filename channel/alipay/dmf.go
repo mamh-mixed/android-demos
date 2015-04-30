@@ -50,7 +50,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       "alipay.acquire.precreate",
 		NotifyUrl:     "",
 		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
