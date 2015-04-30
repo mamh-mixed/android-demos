@@ -43,7 +43,6 @@ func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
 type CilOnlinePay struct {
 	Addr string
 	conn net.Conn
-	open bool
 
 	sendQueue chan *model.CilMsg
 
@@ -60,6 +59,12 @@ func NewCilOnlinePay(addr string, queueSize, initRecvMapSize int) (c *CilOnlineP
 	return c
 }
 
+func (c *CilOnlinePay) reconnect() {
+	log.Info("connect error, reconnect")
+	c.conn.Close()
+	c.Connect()
+}
+
 // Connect 建立连接
 func (c *CilOnlinePay) Connect() {
 	var err error
@@ -71,7 +76,6 @@ func (c *CilOnlinePay) Connect() {
 	}
 	// defer conn.Close()
 	log.Infof("connect to cil channel %s", c.Addr)
-	c.open = true
 
 	go c.WaitAndReceive()
 	go c.LoopToSend()
@@ -83,6 +87,7 @@ func (c *CilOnlinePay) WaitAndReceive() {
 		msg, err := c.ReceiveOne()
 		if err != nil {
 			log.Error(err)
+			c.reconnect()
 			return
 		}
 		//  如果 msg == nil && err == nil, 表示 keepalive
@@ -101,9 +106,9 @@ func (c *CilOnlinePay) WaitAndReceive() {
 
 		retChan <- msg
 
-		//  如果读取错误或链接断开 EOF 直接返回
+		// 如果读取错误或链接断开 EOF 直接返回
 		if err != nil {
-			c.open = false
+			c.reconnect()
 			return
 		}
 	}
@@ -117,16 +122,17 @@ func (c *CilOnlinePay) LoopToSend() {
 			err := c.SendOne(msg)
 			//  如果写入错误或链接断开 EOF 直接返回
 			if err != nil {
-				c.open = false
+				c.reconnect()
 				return
 			}
 			sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
 			log.Debugf("write: %s", sn)
+
 		case <-time.After(60 * time.Second):
 			log.Info("send keepalive")
 			err := c.Keepalive()
 			if err != nil {
-				c.open = false
+				c.reconnect()
 				return
 			}
 		}
@@ -140,10 +146,6 @@ func (c *CilOnlinePay) Close() {
 
 // Keepalive 避免长时间连接空闲自动断开，每隔一段时间需调用一次这个方法
 func (c *CilOnlinePay) Keepalive() (err error) {
-	if !c.open {
-		return
-	}
-
 	_, err = io.WriteString(c.conn, "0000")
 	if err != nil {
 		log.Error("write len error", err)
