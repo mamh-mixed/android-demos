@@ -8,7 +8,7 @@
 <body>
 
     <quickpay-test
-        url="/quickpay/bindingEnquiry"
+        url="/quickpay/refund"
         elems = '[
         {
             "id": "merOrderNum",
@@ -27,9 +27,9 @@
             "label": "原支付交易商户订单号",
             "tooltip": "要查询的原交易订单号",
             "value": "",
-            "required": false,
+            "required": true,
             "maxlength": "32",
-            "autoValidate": false,
+            "autoValidate": true,
             "error": "最长 32 个字符"
         },
         {
@@ -37,11 +37,12 @@
             "name": "transAmt",
             "label": "退款金额",
             "tooltip": "退款金额,单位分",
+            "numeric": true,
             "value": "",
             "required": true,
-            "maxlength": "32",
+            "maxlength": "10",
             "autoValidate": true,
-            "error": "必填，最长 32 个字符"
+            "error": "必填，最长 10 个字符"
         }
         ]'
         >

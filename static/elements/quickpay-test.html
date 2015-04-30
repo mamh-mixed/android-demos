@@ -134,13 +134,17 @@
                     var _this = this;
                     button.addEventListener('click', function() {
 
-                        postAjax.url = _this.url + "?merId=012345678901234";
+                        postAjax.url = _this.url + "?merId=001405";
 
                         var body = {};
                         for (var i = 0; i < _this.elems.length; i++) {
                             var value = _this.elems[i].value;
                             if (_this.elems[i].encrypt && _this.elems[i].encrypt === true) {
                                 value = _this.encrypt(value)
+                            }
+
+                            if (_this.elems[i].numeric && _this.elems[i].numeric === true) {
+                                value = +value;
                             }
 
                             body[_this.elems[i].name] = value;
@@ -157,9 +161,7 @@
                         toast.show();
                         _this.rcvd = JSON.stringify(e.detail.response);
                     });
-                },
-
-
+                }
             });
         })();
     </script>

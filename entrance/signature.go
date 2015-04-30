@@ -23,8 +23,6 @@ func SignatureUseSha1(data []byte, key string) string {
 func CheckSignatureUseSha1(data []byte, key, signature string) bool {
 	result := SignatureUseSha1(data, key)
 	return strings.EqualFold(result, signature)
-
-	// return true // TODO only for testing
 }
 
 // CheckSignature 根据商户ID到数据库查找签名密钥，然后进行验签
@@ -38,6 +36,10 @@ func CheckSignature(data []byte, merId, signature string) (result bool, ret *mod
 		return false, mongo.RespCodeColl.Get("000001")
 	}
 	result = CheckSignatureUseSha1(data, m.SignKey, signature)
+
+	// only for test
+	result = true
+
 	return result, nil
 }
 

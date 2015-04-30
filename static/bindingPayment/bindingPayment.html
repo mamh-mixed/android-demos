@@ -8,7 +8,7 @@
 <body>
 
     <quickpay-test
-        url="/quickpay/bindingEnquiry"
+        url="/quickpay/bindingPayment"
         elems = '[
             {
                 "id": "subMerId",
@@ -48,11 +48,12 @@
                 "name": "transAmt",
                 "label": "支付金额",
                 "tooltip": "支付金额,单位分",
+                "numeric": true,
                 "value": "",
                 "required": true,
-                "maxlength": "32",
+                "maxlength": "10",
                 "autoValidate": true,
-                "error": "必填，最长 32 个字符"
+                "error": "必填，最长 10 个字符"
             },
             {
                 "id": "bindingId",

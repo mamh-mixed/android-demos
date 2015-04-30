@@ -4,9 +4,10 @@ set -e
 
 host="webapp@121.40.86.222"
 prog="quickpay"
-# args="-master -port 3700"
-args="-pay -port 3800"
-# args="-settle -port 3900"
+args="-all -port 6800"
+# args="-master -port 6700"
+# args="-pay -port 6800"
+# args="-settle -port 6900"
 
 
 # Golang 跨平台编译
