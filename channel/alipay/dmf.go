@@ -7,6 +7,9 @@ import (
 
 var DefaultClient alp
 
+// 是否开启调试
+var Debug = false
+
 const (
 	partner  = "2088811767473826"
 	charSet  = "UTF-8"
@@ -22,8 +25,8 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
 		NotifyUrl:     req.NotifyUrl,
-		OutTradeNo:    req.ChannelOrderNum,
-		Subject:       "test", // TODO
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
@@ -36,34 +39,11 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	resp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", resp)
+	alpResp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", alpResp)
 
-	// 请求成功
-	ret := new(model.QrCodePayResponse)
-	if resp.IsSuccess == "T" {
-		alipay := resp.Response.Alipay
-		ret.ChanRespCode = alipay.ResultCode
-		switch alipay.ResultCode {
-		case "ORDER_SUCCESS_PAY_SUCCESS":
-
-			ret.ChannelOrderNum = alipay.TradeNo
-			ret.ConsumerAccount = alipay.BuyerLogonId
-			ret.ConsumerId = alipay.BuyerUserId
-			// 计算折扣
-			ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
-
-		case "ORDER_FAIL":
-			// do nothing
-		default:
-			ret.ChannelOrderNum = alipay.TradeNo
-		}
-	} else {
-		ret.ChanRespCode = resp.Error
-		ret.ErrorDetail = "SYSTEM_ERROR"
-	}
-
-	return ret
+	// 处理结果返回
+	return barcodePayTransform(alpResp)
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
@@ -72,8 +52,8 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayRes
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChannelOrderNum,
-		Subject:       "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
@@ -98,8 +78,8 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.refund",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChannelOrderNum,
-		Subject:       "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
@@ -124,8 +104,8 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.query",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChannelOrderNum,
-		Subject:       "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
@@ -150,8 +130,8 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.cancel",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChannelOrderNum,
-		Subject:       "",
+		OutTradeNo:    req.ChanOrderNum,
+		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.Txamt,
@@ -185,7 +165,6 @@ func toMap(req *alpRequest) map[string]string {
 	dict["product_code"] = req.ProductCode
 	dict["out_trade_no"] = req.OutTradeNo
 	dict["subject"] = req.Subject
-	dict["product_code"] = req.ProductCode
 	dict["total_fee"] = req.TotalFee
 	dict["extend_params"] = req.ExtendParams
 	dict["it_b_pay"] = req.ItBPay

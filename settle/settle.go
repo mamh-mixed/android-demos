@@ -205,9 +205,6 @@ func doCFCATransCheck() {
 
 	// 遍历渠道商户
 	for _, v := range chanMers {
-		// TODO 应该根据chanCode获得渠道实例
-		// 暂时先默认cfca
-		// c := channel.GetChan(v.ChanCode)
 		resp := c.ProcessTransChecking(v.ChanMerId, yesterday, v.SignCert)
 		if resp != nil && len(resp.Body.Tx) > 0 {
 			for _, tx := range resp.Body.Tx {

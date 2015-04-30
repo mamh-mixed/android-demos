@@ -315,7 +315,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		trans.TransStatus = model.TransFail
 	}
 	if err = mongo.TransColl.Update(trans); err != nil {
-		log.Error("update trans status fail ", err)
+		log.Errorf("update trans(%+v) status fail: %s ", trans, err)
 	}
 	return ret
 }
