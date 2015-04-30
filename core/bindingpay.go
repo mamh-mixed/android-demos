@@ -202,6 +202,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
 	if err != nil {
+		log.Error("system error")
 		return
 	}
 	if count > 0 {
@@ -234,9 +235,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	case bm.BindingStatus == model.BindingFail,
 		bm.BindingStatus == model.BindingRemoved:
 		errorTrans.RespCode = "200074"
-		legal = false
-	default:
-		errorTrans.RespCode = "000001"
 		legal = false
 	}
 	if !legal {
@@ -397,9 +395,6 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 退款金额过大
 	case be.TransAmt > orign.TransAmt:
 		errorTrans.RespCode = "200191"
-		legal = false
-	default:
-		errorTrans.RespCode = "000001"
 		legal = false
 	}
 	if !legal {

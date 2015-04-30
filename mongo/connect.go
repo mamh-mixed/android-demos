@@ -10,7 +10,7 @@ import (
 const (
 	// 配置多个连接地址，取第一个可用地址
 	// 变量 MONGO_PORT_27017_TCP_ADDR 是为了 Docker 环境下自动取得 MongoDB 地址
-	host   = "$MONGO_PORT_27017_TCP_ADDR | 121.40.86.222 | 121.41.85.237"
+	host   = "$MONGO_PORT_27017_TCP_ADDR | 121.41.85.237 | 121.40.86.222 "
 	port   = "$MONGO_PORT_27017_TCP_PORT | 27017"
 	dbname = "quickpay"
 )
