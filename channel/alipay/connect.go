@@ -6,13 +6,13 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
+	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	"io"
+	// "io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
-
-	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
 )
 
 const (
@@ -35,7 +35,14 @@ func sendRequest(params map[string]string, key string) *alpResponse {
 	}
 	log.Debugf("%s", values.Encode())
 
-	res, err := http.PostForm(requestURL, values)
+	var res *http.Response
+	var err error
+	if Debug {
+		res, err = mockPostForm(requestURL, values)
+	} else {
+		res, err = http.PostForm(requestURL, values)
+	}
+
 	if err != nil {
 		log.Errorf("connect %s fail : %s", requestURL, err)
 	}

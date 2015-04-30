@@ -7,30 +7,22 @@ import (
 
 // ScanPay 扫码支付
 type ScanPay struct {
-	Txndir          string //交易方向
-	Busicd          string //交易类型
-	Respcd          string //交易结果
-	Inscd           string //机构号
-	Chcd            string //渠道机构
-	Mchntid         string //商户号
-	Txamt           string //订单金额
-	GoodsInfo       string //商品名称
-	ChannelOrderNum string //渠道交易号
-	ConsumerAccount string //渠道账号
-	ConsumerId      string //渠道账号ID
-	ErrorDetail     string //错误信息
-	OrderNum        string //订单号
-	OrigOrderNum    string //原订单号
-	Qrcode          string //二维码信息
-	ScanCodeId      string //扫码号
-	Sign            string //签名
-	ChcdDiscount    string //渠道优惠
-	MerDiscount     string //商户优惠
-	CardId          string //卡券类型
-	CardInfo        string //卡券详情
-	NotifyUrl       string //异步通知地址
+	Txndir       string //交易方向
+	Busicd       string //交易类型
+	Inscd        string //机构号
+	Chcd         string //渠道机构
+	Mchntid      string //商户号
+	Txamt        string //订单金额
+	GoodsInfo    string //商品详情
+	OrderNum     string //订单号
+	OrigOrderNum string //原订单号
+	ScanCodeId   string //扫码号
+	Sign         string //签名
+	NotifyUrl    string //异步通知地址
 	// 辅助字段
-	Key string //md5key
+	Key          string // md5key
+	Subject      string // 商品名称
+	ChanOrderNum string //渠道交易号
 }
 
 // Marshal 将商品详情解析成字符json字符串
@@ -88,6 +80,7 @@ type QrCodePayResponse struct {
 
 	// 辅助字段
 	ChanRespCode string `json:"-"` // 渠道返回代码
+	RespCode     string `json:"-"` // 系统应答码
 }
 
 // PrePayResponse 预下单返回体

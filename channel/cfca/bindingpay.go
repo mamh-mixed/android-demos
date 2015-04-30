@@ -115,7 +115,7 @@ func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *m
 			TxCode:        BindingPaymentTxCode,
 		},
 		Body: requestBody{
-			PaymentNo:      be.ChanOrderNum,
+			PaymentNo:      be.SysOrderNum,
 			Amount:         be.TransAmt,
 			TxSNBinding:    be.ChanBindingId,
 			SettlementFlag: be.SettFlag,
@@ -142,7 +142,7 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 			TxCode:        PaymentEnquiryTxCode,
 		},
 		Body: requestBody{
-			PaymentNo: be.ChanOrderNum,
+			PaymentNo: be.SysOrderNum,
 		},
 		SignCert: be.SignCert,
 	}
@@ -165,8 +165,8 @@ func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 			TxCode:        BindingRefundTxCode,
 		},
 		Body: requestBody{
-			TxSN:      be.ChanOrderNum,     //退款交易流水号
-			PaymentNo: be.ChanOrigOrderNum, //原交易流水号
+			TxSN:      be.SysOrderNum,     //退款交易流水号
+			PaymentNo: be.SysOrigOrderNum, //原交易流水号
 			Amount:    be.TransAmt,
 			Remark:    be.Remark,
 		},
@@ -190,7 +190,7 @@ func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 			TxCode:        RefundEnquiryTxCode,
 		},
 		Body: requestBody{
-			TxSN: be.ChanOrderNum, //退款交易流水号
+			TxSN: be.SysOrderNum, //退款交易流水号
 		},
 		SignCert: be.SignCert,
 	}

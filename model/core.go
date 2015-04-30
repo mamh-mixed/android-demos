@@ -126,7 +126,7 @@ type ChanMer struct {
 type Trans struct {
 	Id             bson.ObjectId `bson:"_id" json:",omitempty"`
 	OrderNum       string        `bson:"orderNum,omitempty"`                         //商户订单流水号、退款流水号
-	ChanOrderNum   string        `bson:"chanOrderNum,omitempty"`                     //渠道订单流水号、退款流水号
+	SysOrderNum    string        `bson:"sysOrderNum,omitempty"`                      //系统订单流水号、退款流水号
 	RefundOrderNum string        `bson:"refundOrderNum,omitempty"`                   //退款订单号 当交易类型为退款时
 	BindingId      string        `bson:"bindingId,omitempty"`                        //商户绑定ID
 	ChanBindingId  string        `bson:"chanBindingId,omitempty"`                    //渠道绑定ID
