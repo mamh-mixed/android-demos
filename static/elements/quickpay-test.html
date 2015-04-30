@@ -134,7 +134,7 @@
                     var _this = this;
                     button.addEventListener('click', function() {
 
-                        postAjax.url = _this.url + "?merId=012345678901234";
+                        postAjax.url = _this.url + "?merId=001405";
 
                         var body = {};
                         for (var i = 0; i < _this.elems.length; i++) {
@@ -161,9 +161,7 @@
                         toast.show();
                         _this.rcvd = JSON.stringify(e.detail.response);
                     });
-                },
-
-
+                }
             });
         })();
     </script>
