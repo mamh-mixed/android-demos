@@ -274,14 +274,14 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.SettFlag = chanMer.SettFlag
 	be.ChanBindingId = bm.ChanBindingId
 	be.ChanMerId = bm.ChanMerId
-	be.ChanOrderNum = tools.SerialNumber()
+	be.SysOrderNum = tools.SerialNumber()
 	be.SignCert = chanMer.SignCert
 
 	// 记录这笔交易
 	trans := &model.Trans{
 		OrderNum:      be.MerOrderNum,
 		BindingId:     bi.BindingId,
-		ChanOrderNum:  be.ChanOrderNum,
+		SysOrderNum:   be.SysOrderNum,
 		ChanBindingId: be.ChanBindingId,
 		AcctNum:       bi.AcctNum,
 		MerId:         be.MerId,
@@ -436,14 +436,14 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// 赋值
 	be.ChanMerId = orign.ChanMerId
-	be.ChanOrderNum = tools.SerialNumber()
-	be.ChanOrigOrderNum = orign.ChanOrderNum
+	be.SysOrderNum = tools.SerialNumber()
+	be.SysOrigOrderNum = orign.SysOrderNum
 	be.SignCert = chanMer.SignCert
 
 	// 记录这笔退款
 	refund := &model.Trans{
 		OrderNum:      be.MerOrderNum,
-		ChanOrderNum:  be.ChanOrderNum,
+		SysOrderNum:   be.SysOrderNum,
 		ChanBindingId: orign.ChanBindingId,
 		//记录商户原订单而不是渠道原订单号
 		RefundOrderNum: be.OrigOrderNum,
@@ -517,7 +517,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	//赋值
 	be.SignCert = chanMer.SignCert
 	be.ChanMerId = chanMer.ChanMerId
-	be.ChanOrderNum = t.ChanOrderNum
+	be.SysOrderNum = t.SysOrderNum
 
 	// 原订单为处理中，向渠道发起查询
 	result := new(model.BindingReturn)
@@ -607,7 +607,7 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 	ret = mongo.RespCodeColl.Get("000001")
 
 	// 系统唯一的序列号
-	chanOrderNum := mongo.SnColl.GetSysSN()
+	sysOrderNum := mongo.SnColl.GetSysSN()
 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
@@ -621,15 +621,15 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 
 	//只要订单号不重复就记录这笔交易
 	errorTrans := &model.Trans{
-		OrderNum:     be.MerOrderNum,
-		ChanOrderNum: chanOrderNum,
-		AcctNum:      be.AcctNum,
-		MerId:        be.MerId,
-		TransAmt:     be.TransAmt,
-		TransCurr:    be.CurrCode,
-		SendSmsId:    be.SendSmsId,
-		SmsCode:      be.SmsCode,
-		SubMerId:     be.SubMerId,
+		OrderNum:    be.MerOrderNum,
+		SysOrderNum: sysOrderNum,
+		AcctNum:     be.AcctNum,
+		MerId:       be.MerId,
+		TransAmt:    be.TransAmt,
+		TransCurr:   be.CurrCode,
+		SendSmsId:   be.SendSmsId,
+		SmsCode:     be.SmsCode,
+		SubMerId:    be.SubMerId,
 	}
 
 	// 暂时不支持预授权交易
@@ -678,23 +678,23 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 	be.Chcd = chanMer.InsCode
 	be.Mchntid = chanMer.ChanMerId
 	be.CliSN = mongo.SnColl.GetDaySN(chanMer.ChanMerId, chanMer.TerminalId)
-	be.SysSN = chanOrderNum
+	be.SysSN = sysOrderNum
 
 	// 记录这笔交易，入库
 	trans := &model.Trans{
-		OrderNum:     be.MerOrderNum,
-		ChanOrderNum: chanOrderNum,
-		AcctNum:      be.AcctNum,
-		MerId:        be.MerId,
-		TransAmt:     be.TransAmt,
-		TransCurr:    be.CurrCode,
-		SendSmsId:    be.SendSmsId,
-		SmsCode:      be.SmsCode,
-		SubMerId:     be.SubMerId,
-		ChanMerId:    chanMer.ChanMerId,
-		ChanCode:     chanMer.ChanCode,
-		TransType:    1, //TODO 预授权不属于支付
-		Remark:       "Apple Pay",
+		OrderNum:    be.MerOrderNum,
+		SysOrderNum: sysOrderNum,
+		AcctNum:     be.AcctNum,
+		MerId:       be.MerId,
+		TransAmt:    be.TransAmt,
+		TransCurr:   be.CurrCode,
+		SendSmsId:   be.SendSmsId,
+		SmsCode:     be.SmsCode,
+		SubMerId:    be.SubMerId,
+		ChanMerId:   chanMer.ChanMerId,
+		ChanCode:    chanMer.ChanCode,
+		TransType:   1, //TODO 预授权不属于支付
+		Remark:      "Apple Pay",
 	}
 	if err := mongo.TransColl.Add(trans); err != nil {
 		log.Errorf("add trans fail: (%s)", err)

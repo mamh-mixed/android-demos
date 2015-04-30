@@ -16,7 +16,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	ret = mongo.RespCodeColl.Get("000001")
 
 	// 系统唯一的序列号
-	chanOrderNum := mongo.SnColl.GetSysSN()
+	sysOrderNum := mongo.SnColl.GetSysSN()
 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(ap.MerId, ap.MerOrderNum)
@@ -30,15 +30,15 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 
 	// 只要订单号不重复就记录这笔交易
 	errorTrans := &model.Trans{
-		MerId:        ap.MerId,
-		OrderNum:     ap.MerOrderNum,
-		ChanOrderNum: chanOrderNum,
-		TransAmt:     ap.ApplePayData.TransactionAmount,
-		TransCurr:    ap.ApplePayData.CurrencyCode,
-		TransType:    1, //TODO 预授权不属于支付
-		RespCode:     "000001",
-		Remark:       "Apple Pay",
-		SubMerId:     ap.SubMerId,
+		MerId:       ap.MerId,
+		OrderNum:    ap.MerOrderNum,
+		SysOrderNum: sysOrderNum,
+		TransAmt:    ap.ApplePayData.TransactionAmount,
+		TransCurr:   ap.ApplePayData.CurrencyCode,
+		TransType:   1, //TODO 预授权不属于支付
+		RespCode:    "000001",
+		Remark:      "Apple Pay",
+		SubMerId:    ap.SubMerId,
 	}
 
 	// 暂时不支持预授权交易
@@ -86,20 +86,20 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	ap.Chcd = chanMer.InsCode
 	ap.Mchntid = chanMer.ChanMerId
 	ap.CliSN = mongo.SnColl.GetDaySN(chanMer.ChanMerId, chanMer.TerminalId)
-	ap.SysSN = chanOrderNum
+	ap.SysSN = sysOrderNum
 
 	// 记录这笔交易，入库
 	trans := &model.Trans{
-		MerId:        ap.MerId,
-		OrderNum:     ap.MerOrderNum,
-		ChanOrderNum: ap.SysSN,
-		AcctNum:      ap.ApplePayData.ApplicationPrimaryAccountNumber,
-		TransAmt:     ap.ApplePayData.TransactionAmount,
-		ChanMerId:    chanMer.ChanMerId,
-		ChanCode:     chanMer.ChanCode,
-		TransType:    1, //TODO 预授权不属于支付
-		Remark:       "Apple Pay",
-		SubMerId:     ap.SubMerId,
+		MerId:       ap.MerId,
+		OrderNum:    ap.MerOrderNum,
+		SysOrderNum: ap.SysSN,
+		AcctNum:     ap.ApplePayData.ApplicationPrimaryAccountNumber,
+		TransAmt:    ap.ApplePayData.TransactionAmount,
+		ChanMerId:   chanMer.ChanMerId,
+		ChanCode:    chanMer.ChanCode,
+		TransType:   1, //TODO 预授权不属于支付
+		Remark:      "Apple Pay",
+		SubMerId:    ap.SubMerId,
 	}
 	if err := mongo.TransColl.Add(trans); err != nil {
 		log.Errorf("add trans fail: (%s)", err)
