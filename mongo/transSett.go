@@ -117,11 +117,11 @@ func (col *transSettCollection) Find(merId, transDate, nextOrderNum string) ([]m
 }
 
 // FindByOrderNum 根据渠道订单号查找
-func (col *transSettCollection) FindByOrderNum(chanOrderNum string) (t *model.TransSett, err error) {
+func (col *transSettCollection) FindByOrderNum(sysOrderNum string) (t *model.TransSett, err error) {
 	// 订单是uuid 全局唯一
 	t = new(model.TransSett)
 	q := bson.M{
-		"chanOrderNum": chanOrderNum,
+		"sysOrderNum": sysOrderNum,
 	}
 	err = database.C(col.name).Find(q).One(t)
 

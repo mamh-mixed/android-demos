@@ -4,8 +4,10 @@ import (
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"strconv"
+	"strings"
 )
 
 // BarcodePay 条码下单
@@ -30,12 +32,22 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
 		resp.ErrorDetail = "SYSTEM_ERROR"
-		return
+		return resp
 	}
 
 	// 渠道选择
-	if req.Chcd != "" {
-		// TODO 根据扫码Id判断走哪个渠道
+	// 根据扫码Id判断走哪个渠道
+	cardBrand := ""
+	if strings.HasPrefix(req.ScanCodeId, "1") {
+		req.Chcd = "Weixin"
+		cardBrand = "WXP"
+	} else if strings.HasPrefix(req.ScanCodeId, "2") {
+		req.Chcd = "Alipay"
+		cardBrand = "ALP"
+	} else {
+		// 不送，返回 TODO check error code
+		resp.ErrorDetail = "SYSTEM_ERROR"
+		return resp
 	}
 
 	// 记录该笔交易
@@ -48,15 +60,53 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 		TransAmt:  txamt,
 	}
 	log.Debug(t)
-	// TODO 判断渠道商户
+	err = mongo.TransColl.Add(t)
+	if err != nil {
+		log.Errorf("add trans(%+v) fail: %s", t, err)
+		resp.ErrorDetail = "SYSTEM_ERROR"
+		return resp
+	}
 
-	// TODO 转换参数
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, cardBrand)
+	if rp == nil {
+		// TODO check error code
+		resp.ErrorDetail = "SYSTEM_ERROR"
+		return resp
+	}
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
+	if err != nil {
+		// TODO check error code
+		log.Errorf("not found any chanMer(%s,%s): %s", rp.ChanCode, rp.ChanMerId, err)
+		resp.ErrorDetail = "SYSTEM_ERROR"
+		return resp
+	}
+
+	// 转换参数
+	req.ChanOrderNum = tools.SerialNumber()
+	req.Subject = c.ChanMerName // TODO check
+	req.Key = c.SignCert
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	resp = sp.ProcessBarcodePay(req)
 
 	// 根据请求结果更新
+	t.ChanRespCode = resp.ChanRespCode
+	t.RespCode = resp.RespCode
+	switch resp.RespCode {
+	case "000000":
+		t.TransStatus = model.TransSuccess
+	case "000009":
+		t.TransStatus = model.TransHandling
+	default:
+		t.TransStatus = model.TransFail
+	}
+	if err = mongo.TransColl.Update(t); err != nil {
+		log.Errorf("update trans(%+v) status fail: %s ", t, err)
+	}
 
 	return
 }

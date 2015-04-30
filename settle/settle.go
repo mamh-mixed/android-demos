@@ -151,9 +151,9 @@ func doTransSett() {
 			}
 			// 封装参数
 			be := &model.OrderEnquiry{
-				ChanMerId:    v.ChanMerId,
-				ChanOrderNum: v.ChanOrderNum,
-				SignCert:     chanMer.SignCert,
+				ChanMerId:   v.ChanMerId,
+				SysOrderNum: v.SysOrderNum,
+				SignCert:    chanMer.SignCert,
 			}
 
 			// 根据交易类型处理
@@ -205,9 +205,6 @@ func doCFCATransCheck() {
 
 	// 遍历渠道商户
 	for _, v := range chanMers {
-		// TODO 应该根据chanCode获得渠道实例
-		// 暂时先默认cfca
-		// c := channel.GetChan(v.ChanCode)
 		resp := c.ProcessTransChecking(v.ChanMerId, yesterday, v.SignCert)
 		if resp != nil && len(resp.Body.Tx) > 0 {
 			for _, tx := range resp.Body.Tx {
@@ -224,9 +221,9 @@ func doCFCATransCheck() {
 					// 找不到，则是渠道多出的交易
 					// 添加该笔交易
 					newTrans := &model.Trans{
-						Id:           bson.NewObjectId(),
-						ChanOrderNum: tx.TxSn,
-						TransAmt:     tx.TxAmount,
+						Id:          bson.NewObjectId(),
+						SysOrderNum: tx.TxSn,
+						TransAmt:    tx.TxAmount,
 					}
 					// 判断交易类型
 					switch {

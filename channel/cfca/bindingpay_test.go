@@ -81,9 +81,9 @@ func TestProcessBindingPayment(t *testing.T) {
 		ChanBindingId: chanBingingId,
 		SettFlag:      settFlag,
 		//需要变化
-		ChanOrderNum: chanOrderNum,
-		TransAmt:     int64(transAmt),
-		SignCert:     priKeyPem,
+		SysOrderNum: sysOrderNum,
+		TransAmt:    int64(transAmt),
+		SignCert:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingPayment(be)
 	log.Debugf("response message  %s", resp)
@@ -92,11 +92,11 @@ func TestProcessBindingPayment(t *testing.T) {
 func TestProcessBindingRefund(t *testing.T) {
 
 	be := &model.BindingRefund{
-		ChanMerId:        chanMerId,
-		ChanOrderNum:     chanOrderNum,
-		ChanOrigOrderNum: chanOrigOrderNum,
-		TransAmt:         int64(transAmt),
-		SignCert:         priKeyPem,
+		ChanMerId:       chanMerId,
+		SysOrderNum:     sysOrderNum,
+		SysOrigOrderNum: sysOrigOrderNum,
+		TransAmt:        int64(transAmt),
+		SignCert:        priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingRefund(be)
 	log.Debugf("response message  %s", resp)
@@ -105,9 +105,9 @@ func TestProcessBindingRefund(t *testing.T) {
 func TestProcessPaymentEnquiry(t *testing.T) {
 
 	be := &model.OrderEnquiry{
-		ChanMerId:    chanMerId,
-		ChanOrderNum: chanOrderNum,
-		SignCert:     priKeyPem,
+		ChanMerId:   chanMerId,
+		SysOrderNum: sysOrderNum,
+		SignCert:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessPaymentEnquiry(be)
 	log.Debugf("response message  %s", resp)
@@ -116,9 +116,9 @@ func TestProcessPaymentEnquiry(t *testing.T) {
 func TestProcessRefundEnquiry(t *testing.T) {
 
 	be := &model.OrderEnquiry{
-		ChanMerId:    chanMerId,
-		ChanOrderNum: chanOrderNum,
-		SignCert:     priKeyPem,
+		ChanMerId:   chanMerId,
+		SysOrderNum: sysOrderNum,
+		SignCert:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessRefundEnquiry(be)
 	log.Debugf("response message  %s", resp)

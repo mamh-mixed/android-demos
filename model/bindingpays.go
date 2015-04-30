@@ -101,7 +101,7 @@ type BindingPayment struct {
 	SmsCode       string `json:"smsCode"`     // 短信验证码
 	SettFlag      string `json:"settFlag"`    //清算标识
 	Remark        string `json:"remark"`      //备注
-	ChanOrderNum  string //渠道订单号
+	SysOrderNum   string //系统订单号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
 	SignCert      string //签名密钥
@@ -109,15 +109,15 @@ type BindingPayment struct {
 
 // BindingRefund 退款
 type BindingRefund struct {
-	MerId            string `json:"merId"`        //商户ID
-	MerOrderNum      string `json:"merOrderNum"`  // 商户订单号
-	OrigOrderNum     string `json:"origOrderNum"` // 原支付订单号
-	TransAmt         int64  `json:"transAmt"`     // 退款金额
-	Remark           string `json:"remark"`       //备注
-	ChanOrderNum     string //渠道订单号
-	ChanOrigOrderNum string //渠道原支付订单号
-	ChanMerId        string //渠道商户ID
-	SignCert         string //签名密钥
+	MerId           string `json:"merId"`        //商户ID
+	MerOrderNum     string `json:"merOrderNum"`  // 商户订单号
+	OrigOrderNum    string `json:"origOrderNum"` // 原支付订单号
+	TransAmt        int64  `json:"transAmt"`     // 退款金额
+	Remark          string `json:"remark"`       //备注
+	SysOrderNum     string //系统订单号
+	SysOrigOrderNum string //系统原支付订单号
+	ChanMerId       string //渠道商户ID
+	SignCert        string //签名密钥
 }
 
 // BillingSummary 交易对账汇总
@@ -137,7 +137,7 @@ type BillingDetails struct {
 type OrderEnquiry struct {
 	MerId        string `json:"merId"`        //商户ID
 	OrigOrderNum string `json:"origOrderNum"` //原交易订单号
-	ChanOrderNum string `json:"chanOrderNum"` //原网关订单号
+	SysOrderNum  string `json:"sysOrderNum"`  //原网关订单号
 	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
 	ChanMerId    string //渠道商户Id
 	SignCert     string //签名密钥
