@@ -202,7 +202,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
 	if err != nil {
-		log.Error("system error")
 		return
 	}
 	if count > 0 {
