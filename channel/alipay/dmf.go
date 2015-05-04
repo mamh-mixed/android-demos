@@ -7,9 +7,6 @@ import (
 
 var DefaultClient alp
 
-// 是否开启调试
-var Debug = true
-
 const (
 	partner  = "2088811767473826"
 	charSet  = "utf-8"

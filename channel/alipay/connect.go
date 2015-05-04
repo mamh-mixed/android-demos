@@ -6,9 +6,10 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
+	"io"
+
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
-	"io"
 	// "io/ioutil"
 	"net/http"
 	"net/url"
@@ -37,7 +38,7 @@ func sendRequest(params map[string]string, key string) *alpResponse {
 
 	var res *http.Response
 	var err error
-	if Debug {
+	if log.Llevel <= log.Ldebug {
 		res, err = mockPostForm(requestURL, values)
 	} else {
 		res, err = http.PostForm(requestURL, values)
