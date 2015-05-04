@@ -147,6 +147,10 @@
                                 value = +value;
                             }
 
+                            if (_this.elems[i].object && _this.elems[i].object === true) {
+                                value = JSON.parse(value);
+                            }
+
                             body[_this.elems[i].name] = value;
                         }
                         postAjax.body = JSON.stringify(body);

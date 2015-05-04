@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
-	"time"
 
 	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance"
@@ -154,40 +152,6 @@ func TestBindingRefundHandle(t *testing.T) {
 		OrigOrderNum: orderNum,
 		MerOrderNum:  tools.Millisecond(),
 		TransAmt:     1000,
-	}
-	doPost(url, b, t)
-}
-
-func TestNoTrackPaymentHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + testMerID
-
-	b := model.NoTrackPayment{
-		MerId:       testMerID,
-		TransType:   "SALE",
-		SubMerId:    "SM123456",
-		MerOrderNum: strconv.FormatInt(time.Now().UnixNano(), 10),
-		TransAmt:    120,
-		CurrCode:    "156",
-		AcctName:    "Peter",
-		AcctNum:     testMSCCard,
-		IdentType:   "0",
-		IdentNum:    testCUPIdentNum,
-		PhoneNum:    testCUPPhone,
-		AcctType:    "10",
-		ValidDate:   testMSCValidDate,
-		Cvv2:        testMSCCVV2,
-	}
-
-	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
-
-	b.AcctName = aes.Encrypt(b.AcctName)
-	b.AcctNum = aes.Encrypt(b.AcctNum)
-	b.IdentNum = aes.Encrypt(b.IdentNum)
-	b.PhoneNum = aes.Encrypt(b.PhoneNum)
-	b.ValidDate = aes.Encrypt(b.ValidDate)
-	b.Cvv2 = aes.Encrypt(b.Cvv2)
-	if aes.Err != nil {
-		panic(aes.Err)
 	}
 	doPost(url, b, t)
 }
