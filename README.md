@@ -54,14 +54,17 @@ Usage of quickpay:
   -port=3800: server listen port, default QuickMaster 3700, Quickpay 3800, QuickSettle 3900
   -settle=false: Startup QuickSettle
 
+# 启动 QuickAll
+$ quickpay -all -port=6800
+
 # 启动 QuickMaster
-$ quickpay -master -port=3700
+$ quickpay -master -port=6700
 
 # 启动 Quickpay
-$ quickpay -pay -port=3800
+$ quickpay -pay -port=6800
 
 # 启动 QuickSettle
-$ quickpay -settle -port=3900
+$ quickpay -settle -port=6900
 ```
 
 
@@ -69,6 +72,5 @@ $ quickpay -settle -port=3900
 -------------------------------
 ```
 git clone https://github.com/golang/tools $GOPATH/src/golang.org/x/tools
-cd $GOPATH
 go install golang.org/x/tools/cmd/cover
 ```

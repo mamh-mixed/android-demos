@@ -14,6 +14,9 @@ import (
 	"github.com/omigo/log"
 )
 
+const keepaliveTime = 60 * time.Second
+const reconnectTimeout = 5 * time.Second
+
 var (
 	host = "$CIL_HOST | 192.168.1.102"
 	port = "$CIL_PORT | 7823"
@@ -44,6 +47,8 @@ type CilOnlinePay struct {
 	Addr string
 	conn net.Conn
 
+	closed bool
+
 	sendQueue chan *model.CilMsg
 
 	recvMap  map[string]chan *model.CilMsg
@@ -60,25 +65,31 @@ func NewCilOnlinePay(addr string, queueSize, initRecvMapSize int) (c *CilOnlineP
 }
 
 func (c *CilOnlinePay) reconnect() {
-	log.Info("connect error, reconnect")
+	log.Info("CIL-Online connect error, reconnect...")
+	c.closed = true
 	c.conn.Close()
 	c.Connect()
 }
 
 // Connect 建立连接
 func (c *CilOnlinePay) Connect() {
-	var err error
-	c.conn, err = net.Dial("tcp", c.Addr)
-	if err != nil {
-		log.Errorf("can't connect to cil-online tcp://%s: %s", c.Addr, err)
-		Connect()
-		return
-	}
-	// defer conn.Close()
-	log.Infof("connect to cil channel %s", c.Addr)
+	// 异步建立连接，以免线下连接问题造成快捷支付无法启动
+	go func() {
+		var err error
+		c.conn, err = net.Dial("tcp", c.Addr)
+		if err != nil {
+			log.Errorf("can't connect to CIL-Online tcp://%s: %s", c.Addr, err)
+			log.Infof("sleep %s to reconnect...", reconnectTimeout)
+			time.Sleep(reconnectTimeout)
+			Connect()
+			return
+		}
+		// defer conn.Close()
+		log.Infof("connect to CIL-Online %s", c.Addr)
 
-	go c.WaitAndReceive()
-	go c.LoopToSend()
+		go c.WaitAndReceive()
+		go c.LoopToSend()
+	}()
 }
 
 // WaitAndReceive 等待接收消息
@@ -119,6 +130,12 @@ func (c *CilOnlinePay) LoopToSend() {
 	for {
 		select {
 		case msg := <-c.sendQueue:
+			if c.closed {
+				// 连接关闭后，取出来的消息无法写入，只能再放回去
+				c.sendQueue <- msg
+				return
+			}
+
 			err := c.SendOne(msg)
 			//  如果写入错误或链接断开 EOF 直接返回
 			if err != nil {
@@ -128,13 +145,18 @@ func (c *CilOnlinePay) LoopToSend() {
 			sn := fmt.Sprintf("%s_%s_%s_%s", msg.Chcd, msg.Mchntid, msg.Terminalid, msg.Clisn)
 			log.Debugf("write: %s", sn)
 
-		case <-time.After(60 * time.Second):
+		case <-time.After(keepaliveTime):
+			if c.closed {
+				return
+			}
+
 			log.Info("send keepalive")
 			err := c.Keepalive()
 			if err != nil {
 				c.reconnect()
 				return
 			}
+
 		}
 	}
 }

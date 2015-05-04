@@ -16,7 +16,7 @@ func TestConnect(t *testing.T) {
 	// t.Logf("msg  = %#v", msg)
 
 	clisn := 115934
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1; i++ {
 		func(i int, msg model.CilMsg) {
 			msg.Clisn = strconv.Itoa(clisn + i)
 
@@ -29,7 +29,7 @@ func TestConnect(t *testing.T) {
 		time.Sleep(30 * time.Second)
 	}
 
-	// select {}
+	select {}
 }
 
 func newTestCilMsg() (m *model.CilMsg) {
