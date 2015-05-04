@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
@@ -54,7 +53,7 @@ func init() {
 	core.BuildTree()
 
 	// 连接线下
-	cil.Connect()
+	// cil.Connect()
 }
 
 func doPost(url string, m interface{}, t *testing.T) {

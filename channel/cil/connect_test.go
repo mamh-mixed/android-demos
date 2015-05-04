@@ -29,7 +29,7 @@ func TestConnect(t *testing.T) {
 		time.Sleep(30 * time.Second)
 	}
 
-	select {}
+	// select {}
 }
 
 func newTestCilMsg() (m *model.CilMsg) {

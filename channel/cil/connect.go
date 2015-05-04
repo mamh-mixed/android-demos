@@ -18,7 +18,7 @@ const keepaliveTime = 60 * time.Second
 const reconnectTimeout = 5 * time.Second
 
 var (
-	host = "$CIL_HOST | 192.168.1.102"
+	host = "$CIL_HOST | 192.168.1.102 | 140.207.50.238"
 	port = "$CIL_PORT | 7823"
 )
 
