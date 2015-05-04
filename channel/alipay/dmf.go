@@ -8,11 +8,11 @@ import (
 var DefaultClient alp
 
 // 是否开启调试
-var Debug = false
+var Debug = true
 
 const (
 	partner  = "2088811767473826"
-	charSet  = "UTF-8"
+	charSet  = "utf-8"
 	currency = "156"
 )
 
@@ -25,7 +25,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.createandpay",
 		NotifyUrl:     req.NotifyUrl,
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -50,9 +50,9 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       "alipay.acquire.precreate",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -78,7 +78,7 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.refund",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -104,7 +104,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.query",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -130,7 +130,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
 	alpReq := &alpRequest{
 		Service:       "alipay.acquire.cancel",
 		NotifyUrl:     "",
-		OutTradeNo:    req.ChanOrderNum,
+		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",

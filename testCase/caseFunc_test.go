@@ -2,7 +2,7 @@
 package testCase
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/cil"
+	// "github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -36,7 +36,7 @@ func init() {
 	core.BuildTree()
 
 	// 连接线下
-	cil.Connect()
+	// cil.Connect()
 }
 
 // Test1 1.1.1使用一张有效银联卡发起建立绑定关系请求
@@ -262,18 +262,18 @@ func Test15(t *testing.T) {
 }
 
 // Test16 做一笔退款金额小于原订单订单金额的退款
-func Test16(t *testing.T) {
-	Test7(t)
-	url := "https://api.xxxx.com/quickpay/refund?merId=" + testMerId
-	Convey("1.3.5做一笔退款金额小于原订单订单金额的退款", t, func() {
-		amt = amt / 2
-		b := BindingRefund()
-		Convey("期望结果：退款金额有误", func() {
-			ret, _ := post(url, b)
-			So(ret.RespMsg, ShouldEqual, "退款金额有误")
-		})
-	})
-}
+// func Test16(t *testing.T) {
+// 	Test7(t)
+// 	url := "https://api.xxxx.com/quickpay/refund?merId=" + testMerId
+// 	Convey("1.3.5做一笔退款金额小于原订单订单金额的退款", t, func() {
+// 		amt = amt / 2
+// 		b := BindingRefund()
+// 		Convey("期望结果：退款金额有误", func() {
+// 			ret, _ := post(url, b)
+// 			So(ret.RespMsg, ShouldEqual, "退款金额有误")
+// 		})
+// 	})
+// }
 
 // Test17 查询1.2.1绑定支付结果
 func Test17(t *testing.T) {

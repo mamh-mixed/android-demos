@@ -84,10 +84,12 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 		return resp
 	}
 
-	// 转换参数
-	req.ChanOrderNum = tools.SerialNumber()
+	// 上送参数
+	req.SysOrderNum = tools.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
 	req.Key = c.SignCert
+	// 交易参数
+	t.SysOrderNum = req.SysOrderNum
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)

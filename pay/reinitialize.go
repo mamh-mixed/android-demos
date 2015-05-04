@@ -30,11 +30,15 @@ func doCheckConf() {
 	for {
 		<-tick
 
-		o, _ := mongo.VersionColl.FindOne("cardBin")
+		o, err := mongo.VersionColl.FindOne("cardBin")
+		if err != nil {
+			log.Errorf("fail to find cardBin version: %s", err)
+			continue
+		}
 		if o.Vn != defaultVn {
 			log.Infof("cardBin had been updated (%s -> %s), begin to rebuild the cardBin tree ", defaultVn, o.Vn)
 			// ... rebuild the tree
-			err := core.ReBuildTree()
+			err = core.ReBuildTree()
 			if err != nil {
 				log.Error(err)
 				continue

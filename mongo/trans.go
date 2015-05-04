@@ -6,6 +6,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -22,13 +23,21 @@ func (col *transCollection) Add(t *model.Trans) error {
 	t.Id = bson.NewObjectId()
 	t.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 	t.TransStatus = "00"
-	return database.C(col.name).Insert(t)
+	err := database.C(col.name).Insert(t)
+	if err != nil {
+		log.Error("add trans(%+v) fail: %s", t, err)
+	}
+	return err
 }
 
 // Update 通过Add时生成的Id来修改
 func (col *transCollection) Update(t *model.Trans) error {
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
-	return database.C(col.name).Update(bson.M{"_id": t.Id}, t)
+	err := database.C(col.name).Update(bson.M{"_id": t.Id}, t)
+	if err != nil {
+		log.Error("update trans(%+v) fail: %s", t, err)
+	}
+	return err
 }
 
 // Count 通过订单号、商户号查找交易数量
@@ -52,6 +61,9 @@ func (col *transCollection) Count(merId, orderNum string) (count int, err error)
 		// "transType": transType,
 	}
 	count, err = database.C(col.name).Find(q).Count()
+	if err != nil {
+		log.Errorf("find trans(%s,%s) fail: (%s)", merId, orderNum, err)
+	}
 	return
 }
 

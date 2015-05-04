@@ -20,9 +20,9 @@ type ScanPay struct {
 	Sign         string //签名
 	NotifyUrl    string //异步通知地址
 	// 辅助字段
-	Key          string // md5key
-	Subject      string // 商品名称
-	ChanOrderNum string //渠道交易号
+	Key         string // md5key
+	Subject     string // 商品名称
+	SysOrderNum string //渠道交易号
 }
 
 // Marshal 将商品详情解析成字符json字符串

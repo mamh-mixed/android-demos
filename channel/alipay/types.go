@@ -34,8 +34,14 @@ type alpResponse struct {
 	Sign      string   `xml:"sign,omitempty"`
 	SignType  string   `xml:"sign_type,omitempty"`
 	Error     string   `xml:"error,omitempty"`
+	Request   []Param  `xml:"request>param"`
 	// Alipay
 	Response alpBody `xml:"response,omitempty"`
+}
+
+type Param struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:",innerxml"`
 }
 
 type alpBody struct {
