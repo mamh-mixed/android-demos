@@ -2,11 +2,12 @@ package cil
 
 import (
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 // only for test
@@ -58,7 +59,7 @@ var (
 // }
 
 func init() {
-	mongo.Connect()
+	// mongo.Connect()
 	Connect()
 }
 
@@ -90,13 +91,13 @@ func TestConsumeByApplePay(t *testing.T) {
 	}
 
 	ret := ConsumeByApplePay(ap)
-
-	t.Logf("%+v\n", ret)
+	if ret.RespCode != "000000" {
+		t.Errorf("ApplePay error %#v", ret)
+	}
 }
 
 // 测试无卡直接支付
 func TestConsumeNoTrack(t *testing.T) {
-	t.Log("=====================")
 	p := &model.NoTrackPayment{
 		MerId:       applePayMerId,
 		SubMerId:    "SM123456",
@@ -119,12 +120,19 @@ func TestConsumeNoTrack(t *testing.T) {
 		CliSN:       mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
-	Consume(p)
+
+	ret := Consume(p)
+	if ret.RespCode != "000000" {
+		t.Errorf("ApplePay error %#v", ret)
+	}
 }
 
 // 测试冲正
 func TestReversalHandle(t *testing.T) {
-	t.Log("运行冲正案例的时候，请调小超时时间")
+	// 运行冲正案例的时候，请调小超时时间
+	transTimeout = 3 * time.Second // 超时时间
+	reversalTimeouts = [...]time.Duration{transTimeout, transTimeout * 1, transTimeout * 8, transTimeout * 50, transTimeout * 1140}
+
 	t.Log("以下报文错误，所以会超时")
 	p := &model.NoTrackPayment{
 		MerId:       applePayMerId,

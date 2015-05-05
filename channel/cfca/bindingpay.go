@@ -24,31 +24,6 @@ const (
 	TransCheckingTxCode  = "1810"
 )
 
-// ProcessBindingEnquiry 查询绑定关系
-func (c *CFCABindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
-	// 将参数转化为CfcaRequest
-	req := &BindingRequest{
-		Version: version,
-		Head: requestHead{
-			InstitutionID: be.ChanMerId,
-			TxCode:        BindingEnquiryTxCode,
-		},
-		Body: requestBody{
-			TxSNBinding: be.ChanBindingId,
-		},
-		SignCert: be.SignCert,
-	}
-
-	// 向中金发起请求
-	log.Debugf("request for cfca param (%+v)", req)
-	resp := sendRequest(req)
-
-	// 应答码转换。。。
-	ret = transformResp(resp, req.Head.TxCode)
-
-	return
-}
-
 // ProcessBindingCreate 建立绑定关系
 func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	//组装参数
@@ -76,6 +51,31 @@ func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 	resp := sendRequest(req)
 	//应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
+	return
+}
+
+// ProcessBindingEnquiry 查询绑定关系
+func (c *CFCABindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
+	// 将参数转化为CfcaRequest
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			InstitutionID: be.ChanMerId,
+			TxCode:        BindingEnquiryTxCode,
+		},
+		Body: requestBody{
+			TxSNBinding: be.ChanBindingId,
+		},
+		SignCert: be.SignCert,
+	}
+
+	// 向中金发起请求
+	log.Tracef("request for cfca param (%+v)", req)
+	resp := sendRequest(req)
+
+	// 应答码转换。。。
+	ret = transformResp(resp, req.Head.TxCode)
+
 	return
 }
 

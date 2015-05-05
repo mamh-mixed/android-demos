@@ -18,56 +18,13 @@ const (
 	consumeUndoBusicd     = "201000" // 消费撤销
 	consumeReversalBusicd = "040000" // 消费冲正
 
-	reversalFlag          = "TIME_OUT"          // 冲正标识
-	reversalTime          = 50 * time.Second    // 超时时间
-	reversalTimeDuration1 = reversalTime * 1    // 超时间隔1
-	reversalTimeDuration2 = reversalTime * 8    // 超时间隔2
-	reversalTimeDuration3 = reversalTime * 50   // 超时间隔3
-	reversalTimeDuration4 = reversalTime * 1140 // 超时间隔3
+	reversalFlag = "TIME_OUT" // 冲正标识
 )
 
-// reversalHandle 冲正处理方法
-func reversalHandle(om *model.CilMsg) {
-	log.Info("源交易请求超时，发送冲正报文")
-	//冲正时间节点数组
-	var reversalTimeArr = [...]time.Duration{reversalTime, reversalTimeDuration1, reversalTimeDuration2, reversalTimeDuration3, reversalTimeDuration4}
-	// 创建冲正报文
-	rm := &model.CilMsg{
-		Busicd:       consumeReversalBusicd,
-		Txndir:       "Q",
-		Posentrymode: om.Posentrymode,
-		Chcd:         om.Chcd,
-		Clisn:        mongo.SnColl.GetDaySN(om.Mchntid, om.Terminalid),
-		Mchntid:      om.Mchntid,
-		Terminalid:   om.Terminalid,
-		Txamt:        om.Txamt,
-		Txcurrcd:     om.Txcurrcd,
-		Cardcd:       om.Cardcd,
-		Syssn:        om.Syssn,
-		Origclisn:    om.Clisn,
-		Localdt:      time.Now().Format("0102150405"),
-	}
+var transTimeout = 50 * time.Second // 超时时间
+var reversalTimeouts = [...]time.Duration{transTimeout, transTimeout * 1, transTimeout * 8, transTimeout * 50, transTimeout * 1140}
 
-	// 报文入库
-	rm.UUID = tools.SerialNumber()
-	mongo.CilMsgColl.Upsert(rm)
-
-	for _, i := range reversalTimeArr {
-		log.Infof("Send reversal request, overtime is %s", i)
-		back := send(rm, i)
-		if back.Respcd != reversalFlag {
-			log.Info("reversal operation success")
-			// 更新已存储的报文
-			rm.Respcd = back.Respcd
-			mongo.CilMsgColl.Upsert(rm)
-			return
-		}
-	}
-
-	log.Warnf("reversal operation fail,request data is %+v", rm)
-}
-
-// 无卡直接消费（订购消费）
+// Consume 直接消费（订购消费）
 func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 	// 构建消费报文
 	m := &model.CilMsg{
@@ -86,14 +43,14 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Expiredate:   p.ValidDateDecrypt,
 		Cvv2:         p.Cvv2Decrypt,
 	}
-	log.Debugf("无卡直接支付开始向线下网关发送报文: %+v", m)
+	log.Debugf("直接支付开始向线下网关发送报文: %+v", m)
 
 	// 报文入库
 	m.UUID = tools.SerialNumber()
 	mongo.CilMsgColl.Upsert(m)
 
-	resp := send(m, reversalTime)
-	log.Debugf("无卡直接支付返回结果:%+v", resp)
+	resp := send(m, transTimeout)
+	log.Debugf("直接支付返回结果:%+v", resp)
 
 	// 如果超时，请冲正
 	if resp.Respcd == reversalFlag {
@@ -112,7 +69,7 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 	return
 }
 
-// ConsumeByApplePay ApplePay消费
+// ConsumeByApplePay ApplePay 消费
 func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	m := &model.CilMsg{
 		Busicd:        consumeBusicd,
@@ -147,7 +104,7 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	m.UUID = tools.SerialNumber()
 	mongo.CilMsgColl.Upsert(m)
 
-	resp := send(m, reversalTime)
+	resp := send(m, transTimeout)
 
 	if resp.Respcd == reversalFlag {
 		// 另起线程，冲正处理
@@ -165,7 +122,46 @@ func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	return
 }
 
-// 消费撤销
+// ConsumeUndo 消费撤销
 func ConsumeUndo() {
 
+}
+
+// reversalHandle 冲正处理方法
+func reversalHandle(om *model.CilMsg) {
+	log.Info("源交易请求超时，发送冲正报文")
+	// 创建冲正报文
+	rm := &model.CilMsg{
+		Busicd:       consumeReversalBusicd,
+		Txndir:       "Q",
+		Posentrymode: om.Posentrymode,
+		Chcd:         om.Chcd,
+		Clisn:        mongo.SnColl.GetDaySN(om.Mchntid, om.Terminalid),
+		Mchntid:      om.Mchntid,
+		Terminalid:   om.Terminalid,
+		Txamt:        om.Txamt,
+		Txcurrcd:     om.Txcurrcd,
+		Cardcd:       om.Cardcd,
+		Syssn:        om.Syssn,
+		Origclisn:    om.Clisn,
+		Localdt:      time.Now().Format("0102150405"),
+	}
+
+	// 报文入库
+	rm.UUID = tools.SerialNumber()
+	mongo.CilMsgColl.Upsert(rm)
+
+	for _, i := range reversalTimeouts {
+		log.Infof("Send reversal request, overtime is %s", i)
+		back := send(rm, i)
+		if back.Respcd != reversalFlag {
+			log.Info("reversal operation success")
+			// 更新已存储的报文
+			rm.Respcd = back.Respcd
+			mongo.CilMsgColl.Upsert(rm)
+			return
+		}
+	}
+
+	log.Warnf("reversal operation fail,request data is %+v", rm)
 }

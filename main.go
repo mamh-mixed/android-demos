@@ -15,7 +15,7 @@ import (
 func main() {
 	// 日志输出级别
 	log.SetOutputLevel(log.Ldebug)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Ltime)
 
 	var (
 		argAll, argMaster, argPay, argSettle bool

@@ -10,7 +10,6 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 )
@@ -45,7 +44,7 @@ func init() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	// 连接到 MongoDB
-	mongo.Connect()
+	// mongo.Connect()
 
 	// 初始化卡 Bin 树
 	core.BuildTree()

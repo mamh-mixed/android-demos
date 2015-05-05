@@ -18,7 +18,7 @@ const (
 var database *mgo.Database
 
 // Connect 程序启动时，或者，单元测试前，先连接到 MongoDB 数据库
-func Connect() {
+func init() {
 	favHost := tools.FirstExistValue(host)
 	favPort := tools.FirstExistValue(port)
 

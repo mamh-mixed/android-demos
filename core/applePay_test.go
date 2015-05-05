@@ -2,11 +2,11 @@ package core
 
 import (
 	"fmt"
-	"github.com/CardInfoLink/quickpay/channel/cil"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"testing"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/channel/cil"
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	mongo.Connect()
+	// mongo.Connect()
 	BuildTree()
 	cil.Connect()
 }

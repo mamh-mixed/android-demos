@@ -9,7 +9,7 @@ import (
 	"github.com/omigo/log"
 )
 
-func TestConnect(t *testing.T) {
+func xTestConnect(t *testing.T) {
 	time.Sleep(1 * time.Second)
 
 	msg := newTestCilMsg()
@@ -20,7 +20,7 @@ func TestConnect(t *testing.T) {
 		func(i int, msg model.CilMsg) {
 			msg.Clisn = strconv.Itoa(clisn + i)
 
-			back := send(&msg, reversalTime) // 线下网关发送报文
+			back := send(&msg, transTimeout) // 线下网关发送报文
 
 			_ = back
 			log.Debug("--------------------------------------------")

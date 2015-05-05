@@ -6,6 +6,7 @@ quickpay*
 *.o
 *.a
 *.so
+*.out
 
 # Folders
 _obj

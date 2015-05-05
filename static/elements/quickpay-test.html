@@ -148,7 +148,11 @@
                             }
 
                             if (_this.elems[i].object && _this.elems[i].object === true) {
-                                value = JSON.parse(value);
+                                try {
+                                    value = JSON.parse(value);
+                                } catch (e) {
+                                    alert("JSON 格式有误: " + e);
+                                }
                             }
 
                             body[_this.elems[i].name] = value;

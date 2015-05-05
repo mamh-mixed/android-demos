@@ -1,12 +1,36 @@
 package core
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
-	"github.com/omigo/log"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/omigo/log"
+)
+
+var (
+	merId           = "012345678901234"
+	bindingId       = "2000000000011"
+	acctName        = "张三"
+	acctNum         = "6222020302062061908"
+	identType       = "0"
+	identNum        = "350583199009153732"
+	phoneNum        = "18205960039"
+	acctType        = "10"
+	validDate       = ""
+	cvv2            = ""
+	sendSmsId       = "1000000000009"
+	smsCode         = "12353"
+	bankId          = "102"
+	merOrderNum     = "20000000010000000d"
+	transAmt        = 1000
+	origOrderNum    = "20000000010000000c"
+	showOrigInfo    = "1"
+	settDate        = "2015-03-22"
+	removeMerId     = "1426562901844"
+	removeBindingId = "1426562901897"
 )
 
 func TestProcessBindingCreate(t *testing.T) {
@@ -28,10 +52,8 @@ func TestProcessBindingCreate(t *testing.T) {
 
 	ret := ProcessBindingCreate(bc)
 
-	t.Logf("%+v", ret)
-
 	if ret.RespCode != "000000" {
-		t.Errorf("Excpeted success,but get failure: %+v", ret.RespMsg)
+		t.Errorf("binding error: %#v", ret)
 	}
 }
 
@@ -53,8 +75,9 @@ func TestProcessBindingEnquiry(t *testing.T) {
 	// }
 
 	ret := ProcessBindingEnquiry(be)
-
-	t.Logf("%+v", ret)
+	if ret.RespCode != "000000" {
+		t.Errorf("Excpeted success,but get failure: %+v", ret)
+	}
 }
 
 func TestProcessBindingRemove(t *testing.T) {

@@ -4,13 +4,12 @@ import (
 	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance"
-	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 // Initialize 执行系统初始化工作
 func Initialize() {
 	// 连接到 MongoDB
-	mongo.Connect()
+	// mongo.Connect()
 
 	// 初始化卡 Bin 树
 	core.BuildTree()

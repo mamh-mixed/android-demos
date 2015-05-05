@@ -3,10 +3,10 @@ package scanpay
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/tools"
 )
 
 var scanPay = &model.ScanPay{
@@ -19,7 +19,7 @@ var scanPay = &model.ScanPay{
 }
 
 func TestScanPay(t *testing.T) {
-	mongo.Connect()
+	// mongo.Connect()
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := Router(reqBytes)
 	fmt.Println(string(respBytes))

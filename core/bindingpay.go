@@ -68,7 +68,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		Cvv2:      bc.Cvv2,
 	}
 	if err := mongo.BindingInfoColl.Insert(bi); err != nil {
-		log.Errorf("'InsertBindingInfo' error: (%s)\n 'BindingInfo': %+v", err, bi)
+		log.Errorf("'InsertBindingInfo' error: (%s) 'BindingInfo': %+v", err, bi)
 		return
 	}
 

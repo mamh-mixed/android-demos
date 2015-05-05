@@ -3,12 +3,12 @@ package testCase
 
 import (
 	// "github.com/CardInfoLink/quickpay/channel/cil"
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/core"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 const (
@@ -30,7 +30,7 @@ func init() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	// 连接到 MongoDB
-	mongo.Connect()
+	// mongo.Connect()
 
 	// 初始化卡 Bin 树
 	core.BuildTree()
