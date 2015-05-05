@@ -19,6 +19,7 @@ echo
 echo "=== Uploading $prog..."
 rsync -rcv --progress $prog $host:~/$prog/
 rm -f $prog
+rsync -rcv --progress config/*.ini $host:~/$prog/config/
 rsync -rcv --progress static/ $host:~/$prog/static/
 
 

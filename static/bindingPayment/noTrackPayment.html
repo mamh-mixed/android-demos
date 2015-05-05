@@ -54,6 +54,16 @@
             "error": "必填，最长 32 个字符"
         },
         {
+            "id": "currCode",
+            "name": "currCode",
+            "label": "交易币种",
+            "tooltip": "交易币种，默认 156",
+            "value": "156",
+            "maxlength": "10",
+            "autoValidate": false,
+            "error": "选填，不填默认 156 处理"
+        },
+        {
             "id": "transAmt",
             "name": "transAmt",
             "label": "支付金额",
@@ -176,10 +186,10 @@
             "label": "短信验证码",
             "tooltip": "在需要网关验证此字段时必填",
             "value": "",
-            "required": true,
+            "required": false,
             "maxlength": "8",
             "autoValidate": true,
-            "error": "必填，最长 8 个字符"
+            "error": "最长 8 个字符"
         }
     ]'></quickpay-test>
 

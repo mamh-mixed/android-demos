@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	_ "github.com/CardInfoLink/quickpay/config"
 	"github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/pay"
