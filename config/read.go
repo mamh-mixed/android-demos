@@ -1,3 +1,5 @@
+// Package config 用户集中配置管理。使用前，需要在系统中配置 QUICKPAY_ENV 环境变量，
+// 变量值为 develop/testing/product，如果不配置，默认 develop
 package config
 
 import (
@@ -9,8 +11,15 @@ import (
 	"github.com/omigo/log"
 )
 
-func init() {
-	env := "develop"
+var configFile *goconfig.ConfigFile
+
+func loadConfigFile() {
+	sysEnv := "QUICKPAY_ENV"
+	env := os.Getenv(sysEnv)
+	if env == "" {
+		log.Warnf("system env `%s` not set, use `develop` instead", sysEnv)
+		env = "develop"
+	}
 
 	wd, err := os.Getwd()
 	if err != nil {
@@ -24,15 +33,38 @@ func init() {
 	log.Debugf("work directory: %s", wd)
 	fileName := fmt.Sprintf("%s/config/config_%s.ini", wd, env)
 
-	c, err := goconfig.LoadConfigFile(fileName)
+	configFile, err = goconfig.LoadConfigFile(fileName)
 	if err != nil {
 		log.Fatalf("can not load config file(%s): %s", fileName, err)
 	}
+}
 
-	mongoHost, err := c.GetValue("mongo", "host")
-	if err != nil {
-		log.Errorf("can not get value from selection `%s` on key `%s`", "mongo", "host")
+// GetValue 从配置文件中取值
+func GetValue(section, key string) (v string) {
+	if configFile == nil {
+		loadConfigFile()
 	}
-	log.Debugf("%s.%s = %s", "mongo", "host", mongoHost)
 
+	v, err := configFile.GetValue(section, key)
+	if err != nil {
+		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
+	}
+	log.Debugf("%s.%s = %s", section, key, v)
+
+	return v
+}
+
+// Int 从配置文件中整数值
+func Int(section, key string) (v int) {
+	if configFile == nil {
+		loadConfigFile()
+	}
+
+	v, err := configFile.Int(section, key)
+	if err != nil {
+		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
+	}
+	log.Debugf("%s.%s = %d", section, key, v)
+
+	return v
 }

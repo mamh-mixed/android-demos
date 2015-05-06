@@ -9,28 +9,32 @@ import (
 	"sync"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/config"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 )
 
-const keepaliveTime = 60 * time.Second
-const reconnectTimeout = 5 * time.Second
-
 var (
-	host = "$CIL_HOST | 192.168.1.102 | 140.207.50.238"
-	port = "$CIL_PORT | 7823"
+	keepaliveTime    time.Duration
+	reconnectTimeout time.Duration
 )
+
+func init() {
+	keepaliveTime = time.Duration(config.Int("cilonline", "keepaliveTime")) * time.Second
+	reconnectTimeout = time.Duration(config.Int("cilonline", "reconnectTimeout")) * time.Second
+}
 
 var defualtClient *CilOnlinePay
 
 // Connect 连接到线下
 func Connect() {
-	fevHost := tools.FirstExistValue(host)
-	fevPort := tools.FirstExistValue(port)
-	addr := fevHost + ":" + fevPort
+	host := config.GetValue("cilonline", "host")
+	port := config.GetValue("cilonline", "port")
+	queueSize := config.Int("cilonline", "queueSize")
+	initWindowSize := config.Int("cilonline", "initWindowSize")
 
-	defualtClient = NewCilOnlinePay(addr, 10000, 100)
+	addr := host + ":" + port
+	defualtClient = NewCilOnlinePay(addr, queueSize, initWindowSize)
 
 	defualtClient.Connect()
 }

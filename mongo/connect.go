@@ -3,26 +3,19 @@ package mongo
 import (
 	"gopkg.in/mgo.v2"
 
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/config"
 	"github.com/omigo/log"
-)
-
-const (
-	// 配置多个连接地址，取第一个可用地址
-	// 变量 MONGO_PORT_27017_TCP_ADDR 是为了 Docker 环境下自动取得 MongoDB 地址
-	host   = "$MONGO_PORT_27017_TCP_ADDR | 121.41.85.237 | 121.40.86.222 "
-	port   = "$MONGO_PORT_27017_TCP_PORT | 27017"
-	dbname = "quickpay"
 )
 
 var database *mgo.Database
 
 // Connect 程序启动时，或者，单元测试前，先连接到 MongoDB 数据库
 func init() {
-	favHost := tools.FirstExistValue(host)
-	favPort := tools.FirstExistValue(port)
+	host := config.GetValue("mongo", "host")
+	port := config.GetValue("mongo", "port")
+	dbname := config.GetValue("mongo", "dbname")
 
-	addr := favHost + ":" + favPort
+	addr := host + ":" + port
 	session, err := mgo.Dial(addr)
 	if err != nil {
 		log.Fatalf("unable connect to mongodb server %s", err)
