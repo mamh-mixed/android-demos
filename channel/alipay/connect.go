@@ -38,7 +38,7 @@ func sendRequest(params map[string]string, key string) *alpResponse {
 
 	var res *http.Response
 	var err error
-	if log.Llevel <= log.Ldebug {
+	if log.Std.Level <= log.Ldebug {
 		res, err = mockPostForm(requestURL, values)
 	} else {
 		res, err = http.PostForm(requestURL, values)

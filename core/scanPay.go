@@ -11,7 +11,6 @@ import (
 )
 
 // BarcodePay 条码下单
-// TODO 根据errorDetail找到respcd
 func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 
 	resp = new(model.QrCodePayResponse)
@@ -95,8 +94,11 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 	sp := channel.GetScanPayChan(req.Chcd)
 	resp = sp.ProcessBarcodePay(req)
 
+	// 渠道
+	resp.Chcd = req.Chcd
+
 	// 根据请求结果更新
-	t.ChanRespCode = resp.ChanRespCode
+	t.ChanRespCode = resp.ErrorDetail
 	t.RespCode = resp.RespCode
 	switch resp.RespCode {
 	case "000000":

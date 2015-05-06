@@ -11,7 +11,7 @@ func barcodePayTransform(alpResp *alpResponse) *model.QrCodePayResponse {
 	ret := new(model.QrCodePayResponse)
 	if alpResp.IsSuccess == "T" {
 		alipay := alpResp.Response.Alipay
-		ret.ChanRespCode = alipay.ResultCode
+		ret.ErrorDetail = alipay.ResultCode
 		switch alipay.ResultCode {
 
 		case "ORDER_SUCCESS_PAY_SUCCESS":
@@ -36,7 +36,6 @@ func barcodePayTransform(alpResp *alpResponse) *model.QrCodePayResponse {
 		// TODO get ret.Respcd by ResultCode
 
 	} else {
-		ret.ChanRespCode = alpResp.Error
 		ret.ErrorDetail = alpResp.Error
 
 		// TODO get ret.Respcd by alpResp.Error

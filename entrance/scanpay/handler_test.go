@@ -13,6 +13,7 @@ var scanPay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   tools.Millisecond(),
 	ScanCodeId: "289434710505996982",
+	Inscd:      "CIL00002",
 	Txamt:      "0.01",
 	Busicd:     "purc",
 	Mchntid:    "CIL0001",

@@ -77,10 +77,8 @@ type QrCodePayResponse struct {
 	Sign            string `json:"sign"`                      //签名 M M
 	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
 	MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
-
 	// 辅助字段
-	ChanRespCode string `json:"-"` // 渠道返回代码
-	RespCode     string `json:"-"` // 系统应答码
+	RespCode string `json:"-"` // 系统应答码
 }
 
 // PrePayResponse 预下单返回体
