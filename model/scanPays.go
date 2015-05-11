@@ -58,10 +58,10 @@ func (q *ScanPay) MarshalGoods() string {
 	return string(formated)
 }
 
-// PayResponse 下单支付返回体
+// ScanPayResponse 下单支付返回体
 // M:返回时必须带上
 // C:可选
-type QrCodePayResponse struct {
+type ScanPayResponse struct {
 	Txndir          string `json:"txndir"`                    // 交易方向 M M
 	Busicd          string `json:"busicd"`                    // 交易类型 M M
 	Respcd          string `json:"respcd"`                    // 交易结果  M
@@ -74,37 +74,10 @@ type QrCodePayResponse struct {
 	ConsumerId      string `json:"consumerId,omitempty"`      // 渠道账号ID   C
 	ErrorDetail     string `json:"errorDetail,omitempty"`     // 错误信息   C
 	OrderNum        string `json:"orderNum,omitempty"`        //订单号 M C
+	OrigOrderNum    string `json:"origOrderNum,omitempty"`    //源订单号 M C
 	Sign            string `json:"sign"`                      //签名 M M
 	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
 	MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
 	// 辅助字段
 	RespCode string `json:"-"` // 系统应答码
-}
-
-// PrePayResponse 预下单返回体
-type QrCodePrePayResponse struct {
-	Txndir          string `json:"txndir"`                    // 交易方向 M M
-	Busicd          string `json:"busicd"`                    // 交易类型 M M
-	Respcd          string `json:"respcd"`                    // 交易结果  M
-	Inscd           string `json:"inscd"`                     // 机构号 M M
-	Chcd            string `json:"chcd"`                      // 渠道 M M
-	Mchntid         string `json:"mchntid"`                   // 商户号 M M
-	Txamt           string `json:"txamt"`                     // 订单金额 M M
-	ChannelOrderNum string `json:"channelOrderNum,omitempty"` // 渠道交易号 C
-	ErrorDetail     string `json:"errorDetail,omitempty"`     // 错误信息   C
-	OrderNum        string `json:"orderNum"`                  //订单号 M M
-	Qrcode          string `json:"qrcode"`                    //二维码信息   C
-	Sign            string `json:"sign"`                      //签名 M M
-}
-
-// QrCodeRefundResponse 退款返回体
-type QrCodeRefundResponse struct {
-}
-
-// QrCodeEnquiryResponse 查询返回体
-type QrCodeEnquiryResponse struct {
-}
-
-// QrCodeVoidResponse 撤销返回体
-type QrCodeCancelResponse struct {
 }

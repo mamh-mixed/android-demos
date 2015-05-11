@@ -11,9 +11,9 @@ import (
 )
 
 // BarcodePay 条码下单
-func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
+func BarcodePay(req *model.ScanPay) (resp *model.ScanPayResponse) {
 
-	resp = new(model.QrCodePayResponse)
+	resp = new(model.ScanPayResponse)
 	// 判断订单是否存在
 	count, err := mongo.TransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
@@ -57,8 +57,10 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 		TransType: model.PayTrans,
 		ChanCode:  req.Chcd,
 		TransAmt:  txamt,
+		Busicd:    resp.Busicd,
+		Inscd:     resp.Inscd,
 	}
-	log.Debug(t)
+	// log.Debug(t)
 	err = mongo.TransColl.Add(t)
 	if err != nil {
 		log.Errorf("add trans(%+v) fail: %s", t, err)
@@ -100,6 +102,12 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 	// 根据请求结果更新
 	t.ChanRespCode = resp.ErrorDetail
 	t.RespCode = resp.RespCode
+	t.ChanOrderNum = resp.ChannelOrderNum
+	t.ChanDiscount = resp.ChcdDiscount
+	t.MerDiscount = resp.MerDiscount
+	t.ConsumerAccount = resp.ConsumerAccount
+	t.ConsumerId = resp.ConsumerId
+
 	switch resp.RespCode {
 	case "000000":
 		t.TransStatus = model.TransSuccess
@@ -112,11 +120,11 @@ func BarcodePay(req *model.ScanPay) (resp *model.QrCodePayResponse) {
 		log.Errorf("update trans(%+v) status fail: %s ", t, err)
 	}
 
-	return
+	return resp
 }
 
 // QrCodeOfflinePay 扫二维码预下单
-func QrCodeOfflinePay(req *model.ScanPay) (resp *model.QrCodePrePayResponse) {
+func QrCodeOfflinePay(req *model.ScanPay) (resp *model.ScanPayResponse) {
 
 	// TODO 判断订单是否存在
 
@@ -134,7 +142,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (resp *model.QrCodePrePayResponse) {
 }
 
 // Refund 退款
-func Refund(req *model.ScanPay) (resp *model.QrCodeRefundResponse) {
+func Refund(req *model.ScanPay) (resp *model.ScanPayResponse) {
 
 	// TODO 判断是否存在该订单
 
@@ -150,23 +158,76 @@ func Refund(req *model.ScanPay) (resp *model.QrCodeRefundResponse) {
 }
 
 // Enquiry 查询
-func Enquiry(req *model.ScanPay) (resp *model.QrCodeEnquiryResponse) {
+func Enquiry(req *model.ScanPay) (resp *model.ScanPayResponse) {
 
-	// TODO 判断是否存在该订单
+	resp = new(model.ScanPayResponse)
 
-	// TODO 判断订单的状态
+	// 判断是否存在该订单
+	t, err := mongo.TransColl.Find(req.Mchntid, req.OrigOrderNum)
+	if err != nil {
+		resp.ErrorDetail = "TRADE_NOT_EXIST"
+		return resp
+	}
+	log.Debugf("trans:(%+v)", t)
 
-	// TODO 获得渠道商户
+	// 判断订单的状态
 
-	// TODO 如果订单状态位处理中，则向渠道查询
+	switch t.TransStatus {
+	// 如果是处理中或者得不到响应的向渠道发起查询
+	case model.TransHandling, "":
+		// 获取渠道商户
+		_, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+		if err != nil {
+			// TODO check error code
+			log.Errorf("not found any chanMer(%s,%s): %s", t.ChanCode, t.ChanMerId, err)
+			resp.ErrorDetail = "SYSTEM_ERROR"
+			return resp
+		}
+		// 源订单号
+		req.SysOrderNum = t.SysOrderNum
 
-	// TODO 更新订单状态
+		// 向渠道查询
+		sp := channel.GetScanPayChan(t.ChanCode)
+		resp = sp.ProcessEnquiry(req)
 
-	return
+		// 更新交易结果
+		t.ChanRespCode = resp.ErrorDetail
+		t.RespCode = resp.RespCode
+		t.ChanOrderNum = resp.ChannelOrderNum
+		t.ChanDiscount = resp.ChcdDiscount
+		t.MerDiscount = resp.MerDiscount
+		t.ConsumerAccount = resp.ConsumerAccount
+		t.ConsumerId = resp.ConsumerId
+
+		switch resp.RespCode {
+		case "000000":
+			t.TransStatus = model.TransSuccess
+		case "000009":
+			t.TransStatus = model.TransHandling
+		default:
+			t.TransStatus = model.TransFail
+		}
+		if err = mongo.TransColl.Update(t); err != nil {
+			log.Errorf("update trans(%+v) status fail: %s ", t, err)
+		}
+
+		fallthrough
+
+	// 直接返回
+	default:
+		resp.Busicd = t.Busicd
+		resp.ChannelOrderNum = t.ChanOrderNum
+		resp.ConsumerAccount = t.ConsumerAccount
+		resp.ConsumerId = t.ConsumerId
+		resp.ChcdDiscount = t.ChanDiscount
+		resp.MerDiscount = t.MerDiscount
+	}
+
+	return resp
 }
 
 // Cancel 撤销
-func Cancel(req *model.ScanPay) (resp *model.QrCodeCancelResponse) {
+func Cancel(req *model.ScanPay) (resp *model.ScanPayResponse) {
 
 	// TODO 判断是否存在该订单
 

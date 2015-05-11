@@ -7,20 +7,30 @@ import (
 
 var DefaultClient alp
 
+// alp 当面付，扫码支付
+type alp struct{}
+
+// service
+const (
+	createAndPay = "alipay.acquire.createandpay"
+	preCreate    = "precreate"
+	refund       = "alipay.acquire.refund"
+	query        = "alipay.acquire.query"
+	cancel       = "alipay.acquire.cancel"
+)
+
+// params
 const (
 	partner  = "2088811767473826"
 	charSet  = "utf-8"
 	currency = "156"
 )
 
-// alp 当面付，扫码支付
-type alp struct{}
-
 // ProcessBarcodePay 条码支付/下单
-func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
+func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.createandpay",
+		Service:       createAndPay,
 		NotifyUrl:     req.NotifyUrl,
 		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
@@ -40,14 +50,14 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse {
 	log.Debugf("alp response: %+v", alpResp)
 
 	// 处理结果返回
-	return barcodePayTransform(alpResp)
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
-func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayResponse {
+func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.precreate",
+		Service:       preCreate,
 		NotifyUrl:     "",
 		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
@@ -63,17 +73,17 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayRes
 	// req to map
 	dict := toMap(alpReq)
 
-	resp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", resp)
+	alpResp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", alpResp)
 
-	return nil
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessRefund 退款
-func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
+func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.refund",
+		Service:       refund,
 		NotifyUrl:     "",
 		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
@@ -89,43 +99,33 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	resp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", resp)
+	alpResp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", alpResp)
 
-	return nil
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessEnquiry 查询，包含支付、退款
-func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse {
+func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.query",
-		NotifyUrl:     "",
-		OutTradeNo:    req.SysOrderNum,
-		Subject:       req.Subject,
-		GoodsDetail:   req.MarshalGoods(),
-		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.Txamt,
-		ExtendParams:  "",
-		ItBPay:        "1m", // 超时时间
-		DynamicIdType: "bar_code",
-		DynamicId:     req.ScanCodeId,
+		Service:    query,
+		OutTradeNo: req.SysOrderNum,
 	}
-
 	// req to map
 	dict := toMap(alpReq)
 
-	resp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", resp)
+	alpResp := sendRequest(dict, req.Key)
+	log.Infof("alp response: %+v", alpResp)
 
-	return nil
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessVoid 撤销
-func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
+func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       "alipay.acquire.cancel",
+		Service:       cancel,
 		NotifyUrl:     "",
 		OutTradeNo:    req.SysOrderNum,
 		Subject:       req.Subject,
@@ -141,10 +141,10 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.QrCodeCancelResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	resp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", resp)
+	alpResp := sendRequest(dict, req.Key)
+	log.Debugf("alp response: %+v", alpResp)
 
-	return nil
+	return transform(alpReq.Service, alpResp)
 }
 
 func toMap(req *alpRequest) map[string]string {

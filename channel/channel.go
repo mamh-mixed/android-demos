@@ -36,16 +36,16 @@ type BindingPayChan interface {
 // ScanPayChan 扫码支付
 type ScanPayChan interface {
 	// ProcessBarcodePay 扫条码下单
-	ProcessBarcodePay(req *model.ScanPay) *model.QrCodePayResponse
+	ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse
 
 	// ProcessQrCodeOfflinePay 扫二维码预下单
-	ProcessQrCodeOfflinePay(req *model.ScanPay) *model.QrCodePrePayResponse
+	ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 
 	// ProcessRefund 退款
-	ProcessRefund(req *model.ScanPay) *model.QrCodeRefundResponse
+	ProcessRefund(req *model.ScanPay) *model.ScanPayResponse
 
 	// ProcessEnquiry 查询
-	ProcessEnquiry(req *model.ScanPay) *model.QrCodeEnquiryResponse
+	ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse
 }
 
 // GetChan 根据chanCode获得渠道对象

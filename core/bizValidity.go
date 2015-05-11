@@ -13,11 +13,11 @@ func UnionPayCardValidity(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200050", "银联卡 identType 不能为空")
 	}
 
-	if bc.IdentNum == "" {
+	if bc.IdentNumDecrypt == "" {
 		return model.NewBindingReturn("200050", "银联卡 identNum 不能为空")
 	}
 
-	if bc.PhoneNum == "" {
+	if bc.PhoneNumDecrypt == "" {
 		return model.NewBindingReturn("200050", "银联卡 phoneNum 不能为空")
 	}
 
@@ -29,5 +29,8 @@ func UnionPayCardValidity(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("200130")
 	}
 
+	if matched, _ := regexp.MatchString(`^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}(x|X|[0-9])$`, bc.IdentNumDecrypt); !matched {
+		return mongo.RespCodeColl.Get("200240")
+	}
 	return nil
 }

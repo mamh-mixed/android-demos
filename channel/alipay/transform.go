@@ -5,36 +5,63 @@ import (
 	"github.com/omigo/log"
 )
 
-// barcodePayTransform 下单接口返回报文处理
-func barcodePayTransform(alpResp *alpResponse) *model.QrCodePayResponse {
+// transform 支付宝返回报文处理
+func transform(service string, alpResp *alpResponse) *model.ScanPayResponse {
 
-	ret := new(model.QrCodePayResponse)
+	ret := new(model.ScanPayResponse)
 	if alpResp.IsSuccess == "T" {
+
+		// 成功返回参数
 		alipay := alpResp.Response.Alipay
 		ret.ErrorDetail = alipay.ResultCode
-		switch alipay.ResultCode {
 
-		case "ORDER_SUCCESS_PAY_SUCCESS":
-			ret.ChannelOrderNum = alipay.TradeNo
-			ret.ConsumerAccount = alipay.BuyerLogonId
-			ret.ConsumerId = alipay.BuyerUserId
-			// 计算折扣
-			ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
-			ret.RespCode = "000000"
-		// 下单失败
-		case "ORDER_FAIL":
-			ret.RespCode = "100070"
-		case "ORDER_SUCCESS_PAY_INPROCESS", "UNKNOWN":
-			ret.RespCode = "000009"
-			ret.ChannelOrderNum = alipay.TradeNo
-		case "ORDER_SUCCESS_PAY_FAIL":
-			ret.RespCode = "100070"
-			ret.ChannelOrderNum = alipay.TradeNo
+		switch service {
+		// 下单
+		case createAndPay:
+
+			switch alipay.ResultCode {
+
+			case "ORDER_SUCCESS_PAY_SUCCESS":
+				ret.ChannelOrderNum = alipay.TradeNo
+				ret.ConsumerAccount = alipay.BuyerLogonId
+				ret.ConsumerId = alipay.BuyerUserId
+				// 计算折扣
+				ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
+				ret.RespCode = "000000"
+			// 下单失败
+			case "ORDER_FAIL":
+				ret.RespCode = "100070"
+			case "ORDER_SUCCESS_PAY_INPROCESS", "UNKNOWN":
+				ret.RespCode = "000009"
+				ret.ChannelOrderNum = alipay.TradeNo
+			case "ORDER_SUCCESS_PAY_FAIL":
+				ret.RespCode = "100070"
+				ret.ChannelOrderNum = alipay.TradeNo
+			default:
+				log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", createAndPay, alipay.ResultCode)
+			}
+			// TODO get ret.Respcd by ResultCode
+		case preCreate:
+			// TODO
+		case query:
+			switch alipay.ResultCode {
+			case "SUCCESS":
+				ret.ChannelOrderNum = alipay.TradeNo
+				ret.ConsumerAccount = alipay.BuyerLogonId
+				ret.ConsumerId = alipay.BuyerUserId
+				// 计算折扣
+				ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
+				ret.RespCode = "000000"
+			case "FAIL", "PROCESS_EXCEPTION":
+				ret.ErrorDetail = alipay.DetailErrorCode
+			default:
+				log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
+			}
+		case refund:
+			// TODO
 		default:
-			log.Errorf("渠道返回状态值(%s)错误，无法匹配。", alipay.ResultCode)
+			// TODO
 		}
-		// TODO get ret.Respcd by ResultCode
-
 	} else {
 		ret.ErrorDetail = alpResp.Error
 
