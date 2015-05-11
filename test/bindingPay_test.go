@@ -84,7 +84,7 @@ func doPost(url string, m interface{}, t *testing.T) {
 }
 
 func TestBindingCreate(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
+	url := "http://quick.ipay.so/quickpay/bindingCreate?merId=" + testMerId
 
 	bindingId = tools.Millisecond()
 
@@ -120,13 +120,13 @@ func TestBindingCreate(t *testing.T) {
 }
 
 func TestBindingEnquiryHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + testMerId
+	url := "http://quick.ipay.so/quickpay/bindingEnquiry?merId=" + testMerId
 	b := model.BindingEnquiry{BindingId: bindingId}
 	doPost(url, b, t)
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + testMerId
+	url := "http://quick.ipay.so/quickpay/bindingPayment?merId=" + testMerId
 	orderNum = tools.Millisecond()
 	b := model.BindingPayment{
 		MerOrderNum: orderNum,
@@ -138,7 +138,7 @@ func TestBindingPaymentHandle(t *testing.T) {
 }
 
 func TestOrderEnquiry(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=" + testMerId
+	url := "http://quick.ipay.so/quickpay/orderEnquiry?merId=" + testMerId
 	b := model.OrderEnquiry{
 		OrigOrderNum: orderNum,
 	}
@@ -146,7 +146,7 @@ func TestOrderEnquiry(t *testing.T) {
 }
 
 func TestBindingRefundHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/refund?merId=" + testMerId
+	url := "http://quick.ipay.so/quickpay/refund?merId=" + testMerId
 	b := model.BindingRefund{
 		OrigOrderNum: orderNum,
 		MerOrderNum:  tools.Millisecond(),
@@ -156,7 +156,7 @@ func TestBindingRefundHandle(t *testing.T) {
 }
 
 func TestBindingRemoveHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + testMerId
+	url := "http://quick.ipay.so/quickpay/bindingRemove?merId=" + testMerId
 	b := model.BindingEnquiry{BindingId: bindingId}
 	doPost(url, b, t)
 }

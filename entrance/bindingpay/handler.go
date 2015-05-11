@@ -39,6 +39,7 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 		log.Errorf("decrypt fail : merId=%s, request=%+v, err=%s", merId, bc, aes.Err)
 		return mongo.RespCodeColl.Get("200021")
 	}
+
 	log.Debugf("after decrypt field: acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",
 		bc.AcctNumDecrypt, bc.AcctNameDecrypt, bc.PhoneNumDecrypt, bc.IdentNumDecrypt, bc.ValidDateDecrypt, bc.Cvv2Decrypt)
 

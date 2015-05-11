@@ -53,7 +53,7 @@ func xTestApplePayHandle(t *testing.T) {
 	subMerId := fmt.Sprintf("%05d", time.Now().UnixNano())
 	merOrderNum := fmt.Sprintf("%012d", time.Now().UnixNano())
 	transactionId := fmt.Sprintf("%020d", time.Now().UnixNano())
-	url := "https://api.xxxx.com/quickpay/applePay?merId=" + applePayMerId
+	url := "http://quick.ipay.so/quickpay/applePay?merId=" + applePayMerId
 	b := `{
 		"transType":"SALE",
 		"subMerId":"` + subMerId + `",

@@ -16,7 +16,7 @@ import (
 
 // Quickpay 快捷支付统一入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.Path)
+	log.Infof("url = %s", r.URL.String())
 
 	merId, sign, data, status, err := prepareData(r)
 	if err != nil {
@@ -25,7 +25,7 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	log.Debugf("from mer msg: %s", data)
+	log.Infof("from merchant message: %s", data)
 
 	var ret *model.BindingReturn
 
@@ -72,7 +72,7 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	sign = Signature(rdata, merId)
 	w.Header().Set("X-Sign", sign)
 
-	log.Debugf("to mer msg: %s", rdata)
+	log.Infof("to merchant message: %s", rdata)
 	w.Write(rdata)
 }
 

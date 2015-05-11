@@ -11,12 +11,14 @@ import (
 	"github.com/CardInfoLink/quickpay/pay"
 	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/omigo/log"
+
+	_ "net/http/pprof"
 )
 
 func main() {
 	// 日志输出级别
-	log.SetOutputLevel(log.Ldebug)
-	log.SetFlags(log.Ldate | log.Ltime)
+	log.SetOutputLevel(log.Linfo)
+	// log.SetFlags(log.Ldate | log.Ltime)
 
 	var (
 		argAll, argMaster, argPay, argSettle bool

@@ -27,10 +27,7 @@ rsync -rcv --progress static/ $host:~/$prog/static/
 echo
 echo "=== SSH $host"
 ssh $host << EOF
-export CIL_HOST=140.207.50.238
-export CIL_PORT=7826
-export MONGO_PORT_27017_TCP_ADDR=121.40.86.222
-export MONGO_PORT_27017_TCP_PORT=27017
+export QUICKPAY_ENV=testing
 
 cd ~/$prog
 

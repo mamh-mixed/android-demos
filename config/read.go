@@ -20,6 +20,7 @@ func loadConfigFile() {
 		log.Warnf("system env `%s` not set, use `develop` instead", sysEnv)
 		env = "develop"
 	}
+	log.Infof("quickpay environment: %s", env)
 
 	wd, err := os.Getwd()
 	if err != nil {

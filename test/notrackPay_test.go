@@ -10,7 +10,7 @@ import (
 )
 
 func xTestNoTrackPaymentHandle(t *testing.T) {
-	url := "https://api.xxxx.com/quickpay/noTrackPayment?merId=" + testMerID
+	url := "http://quick.ipay.so/quickpay/noTrackPayment?merId=" + testMerID
 
 	b := model.NoTrackPayment{
 		MerId:       testMerID,
