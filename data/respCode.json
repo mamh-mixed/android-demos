@@ -52,6 +52,7 @@
 { "respCode" : "200250", "respMsg" : "ApplePay有效期有误" }
 { "respCode" : "200251", "respMsg" : "交易币种有误" }
 { "respCode" : "200252", "respMsg" : "ApplePay支付数据类型有误" }
+{ "respCode" : "200253", "respMsg" : "ApplePay标识格式不对" }
 { "respCode" : "300010", "respMsg" : "交易未通过" }
 { "respCode" : "300020", "respMsg" : "商户状态不正确" }
 { "respCode" : "300030", "respMsg" : "无此交易权限" }

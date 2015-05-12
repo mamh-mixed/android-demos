@@ -10,7 +10,7 @@ func TestValidateApplyPay(t *testing.T) {
 	var ap = &model.ApplePay{
 		TransType:     "SALE",
 		MerOrderNum:   "100000000018",
-		TransactionId: "49170302b04f74b56b0060f33e11a135134e48e8af80a50cefea6c079353b419",
+		TransactionId: "49170302047456006041",
 		ApplePayData: model.ApplePayData{
 			ApplicationPrimaryAccountNumber: "4097900050058723",
 			ApplicationExpirationDate:       "200228",
