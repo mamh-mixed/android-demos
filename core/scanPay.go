@@ -20,13 +20,13 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
 		ret.ErrorDetail = "SYSTEM_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		return ret
 	}
 	if count > 0 {
 		// 没有订单号重复代码
 		ret.ErrorDetail = "AUTH_NO_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		return ret
 	}
 
@@ -43,7 +43,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
 		ret.ErrorDetail = "SYSTEM_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		t.RespCode = "000001"
 		mongo.TransColl.Add(t)
 		return ret
@@ -62,7 +62,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	} else {
 		// 不送，返回 TODO check error code
 		ret.ErrorDetail = "SYSTEM_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		t.RespCode = "000001"
 		mongo.TransColl.Add(t)
 		return ret
@@ -74,7 +74,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if rp == nil {
 		// TODO check error code
 		ret.ErrorDetail = "SYSTEM_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		t.RespCode = "000001"
 		mongo.TransColl.Update(t)
 		return ret
@@ -86,7 +86,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if err != nil {
 		// TODO check error code
 		ret.ErrorDetail = "SYSTEM_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		t.RespCode = "000001"
 		mongo.TransColl.Add(t)
 		return ret
@@ -103,7 +103,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	err = mongo.TransColl.Add(t)
 	if err != nil {
 		ret.ErrorDetail = "SYSTEM_ERROR"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		return ret
 	}
 
@@ -182,7 +182,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	t, err := mongo.TransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		ret.ErrorDetail = "TRADE_NOT_EXIST"
-		ret.Respcd = offLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 		return ret
 	}
 	log.Debugf("trans:(%+v)", t)
@@ -197,7 +197,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		if err != nil {
 			// TODO check error code
 			ret.ErrorDetail = "SYSTEM_ERROR"
-			ret.Respcd = offLineRespCd(ret.ErrorDetail)
+			ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 			return ret
 		}
 		// 原订单号

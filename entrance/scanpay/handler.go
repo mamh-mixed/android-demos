@@ -59,9 +59,6 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 	log.Debugf("handled body: %+v", ret)
 
-	// get ret.Respcd
-	// ret.Respcd = responseCode(ret.ErrorDetail, ret.Chcd)
-
 	return ret
 }
 
@@ -94,9 +91,6 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// process
 	ret = core.Enquiry(req)
-
-	// get ret.Respcd
-	// ret.Respcd = responseCode(ret.ErrorDetail, ret.Chcd)
 
 	return ret
 }

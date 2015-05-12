@@ -1,6 +1,6 @@
-package core
+package mongo
 
-func offLineRespCd(code string) string {
+func OffLineRespCd(code string) string {
 	responseCode := ""
 	switch code {
 	case "ORDER_FAIL":
