@@ -50,6 +50,8 @@ func Router(reqBytes []byte) []byte {
 func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	log.Debugf("request body: %+v", req)
 
+	initDefaultResponseInfo(req)
+
 	// validite field
 	if ret = validateBarcodePay(req); ret == nil {
 		// process
@@ -58,17 +60,9 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	log.Debugf("handled body: %+v", ret)
 
 	// get ret.Respcd
-	ret.Respcd = responseCode(ret.ErrorDetail, ret.Chcd)
+	// ret.Respcd = responseCode(ret.ErrorDetail, ret.Chcd)
 
-	// retonse info
-	ret.Busicd = req.Busicd
-	ret.Inscd = req.Inscd
-	ret.Mchntid = req.Mchntid
-	ret.Sign = req.Sign
-	ret.Txamt = req.Txamt
-	ret.Txndir = "A"
-
-	return
+	return ret
 }
 
 // QrCodeOfflinePay 扫二维码预下单
@@ -94,8 +88,17 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
+	initDefaultResponseInfo(req)
+
 	// TODO validite field
-	return core.Enquiry(req)
+
+	// process
+	ret = core.Enquiry(req)
+
+	// get ret.Respcd
+	// ret.Respcd = responseCode(ret.ErrorDetail, ret.Chcd)
+
+	return ret
 }
 
 // Cancel 撤销
@@ -105,4 +108,21 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// TODO validite field
 	return core.Cancel(req)
+}
+
+func initDefaultResponseInfo(req *model.ScanPay) {
+
+	ret := new(model.ScanPayResponse)
+
+	// 默认将原信息返回
+	ret.Busicd = req.Busicd
+	ret.Chcd = req.Chcd
+	ret.Inscd = req.Inscd
+	ret.Mchntid = req.Mchntid
+	ret.Sign = req.Sign
+	ret.Txamt = req.Txamt
+	ret.OrigOrderNum = req.OrigOrderNum
+	ret.Txndir = "A"
+	//
+	req.Response = ret
 }

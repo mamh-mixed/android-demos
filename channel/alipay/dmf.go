@@ -50,7 +50,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 	log.Debugf("alp response: %+v", alpResp)
 
 	// 处理结果返回
-	return transform(alpReq.Service, alpResp)
+	return transform(alpReq.Service, alpResp, req.Response)
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
@@ -76,7 +76,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	alpResp := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp)
+	return transform(alpReq.Service, alpResp, req.Response)
 }
 
 // ProcessRefund 退款
@@ -102,7 +102,7 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 	alpResp := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp)
+	return transform(alpReq.Service, alpResp, req.Response)
 }
 
 // ProcessEnquiry 查询，包含支付、退款
@@ -118,7 +118,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 	alpResp := sendRequest(dict, req.Key)
 	log.Infof("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp)
+	return transform(alpReq.Service, alpResp, req.Response)
 }
 
 // ProcessVoid 撤销
@@ -144,7 +144,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	alpResp := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp)
+	return transform(alpReq.Service, alpResp, req.Response)
 }
 
 func toMap(req *alpRequest) map[string]string {

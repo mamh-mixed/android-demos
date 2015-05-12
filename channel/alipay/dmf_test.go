@@ -20,8 +20,8 @@ var pay = &model.ScanPay{
 }
 
 var enquiry = &model.ScanPay{
-	SysOrderNum: "fc718816621f4bc47fc09ccba1c66304",
-	Key:         "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+	// SysOrderNum: "fc718816621f4bc47fc09ccba1c66304",
+	Key: "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
