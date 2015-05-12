@@ -51,7 +51,7 @@ func validateApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	}
 
 	if ap.TransType != "SALE" && ap.TransType != "AUTH" {
-		return model.NewBindingReturn("100030", "不支持此类交易")
+		return mongo.RespCodeColl.Get("100030")
 	}
 	return nil
 }

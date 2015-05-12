@@ -159,6 +159,7 @@ func TestValidateBillingDetails(t *testing.T) {
 
 func TestValidateNoTrackPayment(t *testing.T) {
 	var in = &model.NoTrackPayment{
+		TransType:        "SALE",
 		SubMerId:         "",
 		MerOrderNum:      "1000000008",
 		TransAmt:         10000,
@@ -172,7 +173,7 @@ func TestValidateNoTrackPayment(t *testing.T) {
 		ValidDateDecrypt: "1712",
 		Cvv2Decrypt:      "123",
 		Cvv2:             "123",
-		CurrCode:         "dasdf",
+		CurrCode:         "156",
 		SendSmsId:        "",
 		SmsCode:          "",
 	}
