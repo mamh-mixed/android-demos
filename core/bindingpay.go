@@ -645,6 +645,11 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("300030")
 	}
 
+	// 交易币种如果为空的话默认为156
+	if be.CurrCode == "" {
+		be.CurrCode = "156"
+	}
+
 	// 下游送来的终端号，如果没有的话，填上渠道商户里面的配置的终端号
 	if be.TerminalId == "" {
 		be.TerminalId = chanMer.TerminalId

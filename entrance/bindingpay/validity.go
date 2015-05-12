@@ -190,5 +190,12 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 		}
 	}
 
+	if in.CurrCode != "" {
+		// 判断交易币种格式
+		if matched, _ := regexp.MatchString(`^\d{3}$`, in.CurrCode); !matched {
+			return mongo.RespCodeColl.Get("200251")
+		}
+	}
+
 	return nil
 }
