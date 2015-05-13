@@ -92,7 +92,7 @@ func transform(service string, alpResp *alpResponse, ret *model.ScanPayResponse)
 		}
 	} else {
 		ret.ErrorDetail = alpResp.Error
-		ret.Respcf = mongo.OffLineRespCd(ret.ErrorDetail)
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 	}
 
 	return ret

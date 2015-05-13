@@ -67,6 +67,7 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 
 	// 存在 返回
 	if mk != nil {
+		// log.Debug("get key from cache")
 		return mk
 	}
 	// 没有则创建一个
