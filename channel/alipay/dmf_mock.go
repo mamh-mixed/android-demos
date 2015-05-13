@@ -41,6 +41,7 @@ func mockPostForm(url string, data url.Values) (*http.Response, error) {
 			alipay.ResultCode = "ORDER_FAIL"
 			alipay.DetailErrorCode = "INVALID_PARAMETER"
 			alipay.DetailErrorDes = "参数无效"
+			break
 		}
 		// 一定规则随机返回
 		txamt, _ := strconv.ParseFloat(totalFee, 64)
@@ -66,6 +67,18 @@ func mockPostForm(url string, data url.Values) (*http.Response, error) {
 	case "alipay.acquire.refund":
 
 	case "alipay.acquire.query":
+		if charSet == "" || partner == "" || sign == "" || signType == "" || orderNum == "" {
+
+			alipay.ResultCode = "FAIL"
+			alipay.DetailErrorCode = "INVALID_PARAMETER"
+			alipay.DetailErrorDes = "参数无效"
+			break
+		}
+		alipay.ResultCode = "SUCCESS"
+		alipay.TradeStatus = "TRADE_SUCCESS"
+		alipay.TradeNo = tools.Millisecond()
+		alipay.BuyerLogonId = "156****3236"
+		alipay.BuyerUserId = "2088212959731883"
 
 	case "alipay.acquire.cancel":
 

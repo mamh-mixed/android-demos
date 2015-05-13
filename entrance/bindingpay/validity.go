@@ -21,8 +21,8 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		return model.NewBindingReturn("200050", "字段 acctNum 不能为空")
 	}
 
-	if request.AcctType == "" {
-		return model.NewBindingReturn("200050", "字段 acctType 不能为空")
+	if request.AcctType != "10" || request.AcctType != "20" {
+		return mongo.RespCodeColl.Get("200230")
 	}
 
 	if request.AcctType == "20" {
