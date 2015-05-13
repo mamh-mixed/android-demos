@@ -18,8 +18,8 @@ func validateApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200050", "字段 transactionId 不能为空")
 	}
 
-	// TODO 判断transactonID，目前接口需求不确定，先以线下网关的规定为准，只能纯数字
-	if matched, _ := regexp.MatchString(`^\d{20}$`, ap.TransactionId); !matched {
+	// TODO 判断transactonID，目前接口需求不确定，先以线下网关的规定为准，只能纯数字，最多20位
+	if matched, _ := regexp.MatchString(`^\d{3,20}$`, ap.TransactionId); !matched {
 		return mongo.RespCodeColl.Get("200253")
 	}
 
