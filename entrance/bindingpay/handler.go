@@ -221,7 +221,7 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	b.IdentNumDecrypt = aes.Decrypt(b.IdentNum)
 	b.PhoneNumDecrypt = aes.Decrypt(b.PhoneNum)
 
-	// TODO目前，借记卡的validDate没有上送，所以将无法交易
+	// TODO 目前，借记卡的validDate没有上送，所以将无法交易
 	b.ValidDateDecrypt = aes.Decrypt(b.ValidDate)
 	b.Cvv2Decrypt = aes.Decrypt(b.Cvv2)
 

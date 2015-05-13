@@ -143,6 +143,10 @@ func validateBillingDetails(in *model.BillingDetails) (ret *model.BindingReturn)
 
 // validateNoTrackPayment 无卡直接支付请求报文验证
 func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn) {
+	if in.TransType == "" {
+		return model.NewBindingReturn("200050", "字段 transType 不能为空")
+	}
+
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
 	}
@@ -188,6 +192,17 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 		if matched, _ := regexp.MatchString(`^\d{3}$`, in.Cvv2Decrypt); !matched {
 			return mongo.RespCodeColl.Get("200150")
 		}
+	}
+
+	if in.CurrCode != "" {
+		// 判断交易币种格式
+		if matched, _ := regexp.MatchString(`^\d{3}$`, in.CurrCode); !matched {
+			return mongo.RespCodeColl.Get("200251")
+		}
+	}
+
+	if matched, _ := regexp.MatchString(`^SALE|AUTH$`, in.TransType); !matched {
+		return mongo.RespCodeColl.Get("100030")
 	}
 
 	return nil
