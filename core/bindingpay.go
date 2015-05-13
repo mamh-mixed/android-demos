@@ -285,6 +285,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		SubMerId:      be.SubMerId,
 	}
 	if err = mongo.TransColl.Add(trans); err != nil {
+		log.Errorf("add trans error: %s", err)
 		return
 	}
 

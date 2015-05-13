@@ -141,7 +141,7 @@
 | 名称              | 字段             | 备注                               |
 | --------------- | -------------  | -------------                    |
 | 商户订单号           | orderNum       |                                  |
-| 网关订单号           | chanOrderNum   |                                  |
+| 网关订单号           | sysOrderNum   |                                  |
 | 退款订单号           | refundOrderNum |                                  |
 | 绑定ID            | chanBindingId  |                                  |
 | 交易账户            | acctNum        |                                  |

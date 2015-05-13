@@ -3,7 +3,6 @@ package pay
 import (
 	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/core"
-	"github.com/CardInfoLink/quickpay/entrance"
 )
 
 // Initialize 执行系统初始化工作
@@ -21,5 +20,5 @@ func Initialize() {
 	CheckConf()
 
 	// tcp listen
-	entrance.Listen()
+	// entrance.ListenScanPay()
 }

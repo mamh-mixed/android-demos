@@ -91,6 +91,7 @@ func init() {
 // SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名
 func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
 	// gen privatekey
+	// TODO 优化，只需要初始化一次
 	chinaPaymentPriKey := initPrivKey(priKeyPem)
 	hashed := sha1.Sum(origin)
 
@@ -104,9 +105,10 @@ func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
 
 // CheckSignatureUseSha1WithRsa 通过证书用 SHA1WithRSA 验签，如果验签通过，err 值为 nil
 func checkSignatureUseSha1WithRsa(origin []byte, hexSign string) (err error) {
-	sign, herr := hex.DecodeString(hexSign)
+	sign, err := hex.DecodeString(hexSign)
 	if err != nil {
-		log.Errorf("hex decode error %s", herr)
+		log.Errorf("hex decode error %s", err)
+		return err
 	}
 
 	err = chinaPaymentCert.CheckSignature(x509.SHA1WithRSA, origin, sign)

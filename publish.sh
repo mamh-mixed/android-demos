@@ -9,6 +9,8 @@ args="-all -port 6800"
 # args="-pay -port 6800"
 # args="-settle -port 6900"
 
+workdir=/opt/$prog
+
 
 # Golang 跨平台编译
 echo "=== Building $prog..."
@@ -17,10 +19,10 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
 # 上传文件
 echo
 echo "=== Uploading $prog..."
-rsync -rcv --progress $prog $host:~/$prog/
+rsync -rcv --progress $prog $host:$workdir/
 rm -f $prog
-rsync -rcv --progress config/*.ini $host:~/$prog/config/
-rsync -rcv --progress static/ $host:~/$prog/static/
+rsync -rcv --progress config/*.ini $host:$workdir/config/
+rsync -rcv --progress static/ $host:$workdir/static/
 
 
 # 远程执行重启命令
@@ -29,7 +31,7 @@ echo "=== SSH $host"
 ssh $host << EOF
 export QUICKPAY_ENV=testing
 
-cd ~/$prog
+cd $workdir
 
 echo
 echo "=== Killing $prog process..."
@@ -45,7 +47,7 @@ ps -ef | grep $prog
 echo
 echo "=== Sleep 3 seconds..."
 sleep 2
-tail -n 10 logs/$prog.log
+tail -n 30 logs/$prog.log
 
 echo
 echo "=== Publish done."
