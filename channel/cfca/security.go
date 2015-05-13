@@ -56,8 +56,20 @@ ikahaQLV1atGk63K701Jtj061/jqkF2/Drv6FY+Uy+Rn
 // var chinaPaymentPriKey *rsa.PrivateKey
 var chinaPaymentCert *x509.Certificate
 
+// 缓存商户密钥
+var keyCache map[string]*rsa.PrivateKey
+
 // 读私钥
 func initPrivKey(priKeyPem string) *rsa.PrivateKey {
+
+	// 从缓存中查询
+	mk := keyCache[priKeyPem]
+
+	// 存在 返回
+	if mk != nil {
+		return mk
+	}
+	// 没有则创建一个
 	PEMBlock, _ := pem.Decode([]byte(priKeyPem))
 	if PEMBlock == nil {
 		log.Fatalf("Could not parse Rsa Private Key PEM")
@@ -69,6 +81,8 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 	if err != nil {
 		log.Fatal(err)
 	}
+	keyCache[priKeyPem] = chinaPaymentPriKey
+
 	return chinaPaymentPriKey
 }
 
@@ -86,6 +100,9 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// init cache
+	keyCache = make(map[string]*rsa.PrivateKey)
 }
 
 // SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名

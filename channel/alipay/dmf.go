@@ -57,17 +57,15 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       preCreate,
-		NotifyUrl:     "",
-		OutTradeNo:    req.SysOrderNum,
-		Subject:       req.Subject,
-		GoodsDetail:   req.MarshalGoods(),
-		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.Txamt,
-		ExtendParams:  "",
-		ItBPay:        "1m", // 超时时间
-		DynamicIdType: "bar_code",
-		DynamicId:     req.ScanCodeId,
+		Service:      preCreate,
+		NotifyUrl:    "",
+		OutTradeNo:   req.SysOrderNum,
+		Subject:      req.Subject,
+		GoodsDetail:  req.MarshalGoods(),
+		ProductCode:  "QR_CODE_OFFLINE",
+		TotalFee:     req.Txamt,
+		ExtendParams: "",
+		ItBPay:       "1m", // 超时时间
 	}
 
 	// req to map

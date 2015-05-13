@@ -1,7 +1,17 @@
 package alipay
 
 func preCreateCd(code string) string {
-	return ""
+
+	switch code {
+	case "SUCCESS":
+		return "09"
+	case "TRADE_SETTLE_ERROR", "CONTEXT_INCONSISTENT", "TRADE_BUYER_NOT_MATCH":
+		return "05"
+	case "TRADE_HAS_SUCCESS", "TRADE_HAS_CLOSE":
+		return "12"
+	default:
+		return "58"
+	}
 }
 func createAndPayCd(code string) string {
 	switch code {
