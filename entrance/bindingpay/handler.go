@@ -24,15 +24,14 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	m, _ := mongo.MerchantColl.Find(merId)
 
 	// 解密特定字段
-	aes := new(tools.AesCBCMode)
-	aes.DecodeKey(m.EncryptKey)
-	bc.AcctNumDecrypt = aes.Decrypt(bc.AcctNum)
-	bc.AcctNameDecrypt = aes.Decrypt(bc.AcctName)
-	bc.IdentNumDecrypt = aes.Decrypt(bc.IdentNum)
-	bc.PhoneNumDecrypt = aes.Decrypt(bc.PhoneNum)
+	aes := tools.NewAESCBCEncrypt(m.EncryptKey)
+	bc.AcctNumDecrypt, bc.AcctNum = aes.DcyAndUseSysKeyEcy(bc.AcctNum)
+	bc.AcctNameDecrypt, bc.AcctName = aes.DcyAndUseSysKeyEcy(bc.AcctName)
+	bc.IdentNumDecrypt, bc.IdentNum = aes.DcyAndUseSysKeyEcy(bc.IdentNum)
+	bc.PhoneNumDecrypt, bc.PhoneNum = aes.DcyAndUseSysKeyEcy(bc.PhoneNum)
 	if bc.AcctType == "20" {
-		bc.ValidDateDecrypt = aes.Decrypt(bc.ValidDate)
-		bc.Cvv2Decrypt = aes.Decrypt(bc.Cvv2)
+		bc.ValidDateDecrypt, bc.ValidDate = aes.DcyAndUseSysKeyEcy(bc.ValidDate)
+		bc.Cvv2Decrypt, bc.Cvv2 = aes.DcyAndUseSysKeyEcy(bc.Cvv2)
 	}
 	// 报文解密错误
 	if aes.Err != nil {
@@ -214,16 +213,25 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("300030")
 	}
 
-	aes := new(tools.AesCBCMode)
-	aes.DecodeKey(m.EncryptKey)
-	b.AcctNumDecrypt = aes.Decrypt(b.AcctNum)
-	b.AcctNameDecrypt = aes.Decrypt(b.AcctName)
-	b.IdentNumDecrypt = aes.Decrypt(b.IdentNum)
-	b.PhoneNumDecrypt = aes.Decrypt(b.PhoneNum)
+	aes := tools.NewAESCBCEncrypt(m.EncryptKey)
+	b.AcctNumDecrypt, b.AcctNum = aes.DcyAndUseSysKeyEcy(b.AcctNum)
+	b.AcctNameDecrypt, b.AcctName = aes.DcyAndUseSysKeyEcy(b.AcctName)
+	b.IdentNumDecrypt, b.IdentNum = aes.DcyAndUseSysKeyEcy(b.IdentNum)
+	b.PhoneNumDecrypt, b.PhoneNum = aes.DcyAndUseSysKeyEcy(b.PhoneNum)
 
-	// TODO 目前，借记卡的validDate没有上送，所以将无法交易
-	b.ValidDateDecrypt = aes.Decrypt(b.ValidDate)
-	b.Cvv2Decrypt = aes.Decrypt(b.Cvv2)
+	if b.AcctType == "20" {
+		b.ValidDateDecrypt, b.ValidDate = aes.DcyAndUseSysKeyEcy(b.ValidDate)
+		b.Cvv2Decrypt, b.Cvv2 = aes.DcyAndUseSysKeyEcy(b.Cvv2)
+	}
+
+	// 报文解密错误
+	if aes.Err != nil {
+		log.Errorf("decrypt fail : merId=%s, request=%+v, err=%s", merId, b, aes.Err)
+		return mongo.RespCodeColl.Get("200021")
+	}
+
+	log.Debugf("after decrypt field: acctNum=%s, acctName=%s, phoneNum=%s, identNum=%s, validDate=%s, cvv2=%s",
+		b.AcctNumDecrypt, b.AcctNameDecrypt, b.PhoneNumDecrypt, b.IdentNumDecrypt, b.ValidDateDecrypt, b.Cvv2Decrypt)
 
 	ret = validateNoTrackPayment(b)
 	if ret != nil {

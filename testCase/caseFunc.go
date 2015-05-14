@@ -31,8 +31,7 @@ func bindingCreate() (b *model.BindingCreate, err error) {
 		BankId:    "102",
 	}
 
-	var aes = tools.AesCBCMode{}
-	aes.DecodeKey(testEncryptKey)
+	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)

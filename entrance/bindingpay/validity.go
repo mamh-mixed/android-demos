@@ -176,11 +176,11 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 
 	if in.AcctType == "20" {
 		// 贷记卡
-		if in.ValidDate == "" {
+		if in.ValidDateDecrypt == "" {
 			return model.NewBindingReturn("200050", "字段 validDate 不能为空")
 		}
 
-		if in.Cvv2 == "" {
+		if in.Cvv2Decrypt == "" {
 			return model.NewBindingReturn("200050", "字段 cvv2 不能为空")
 		}
 
