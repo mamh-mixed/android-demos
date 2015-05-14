@@ -30,7 +30,6 @@ func xTestNoTrackPaymentHandle(t *testing.T) {
 	}
 
 	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
-
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)
