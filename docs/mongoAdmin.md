@@ -1,18 +1,66 @@
 
 ```
+mongod --port=27017 --fork --dbpath=/opt/mongo/rs11 --logpath=/opt/mongo/rs11/mongod.log
+mongod --port=27018 --fork --dbpath=/opt/mongo/rs12 --logpath=/opt/mongo/rs12/mongod.log
+mongod --port=27019 --fork --dbpath=/opt/mongo/rs13 --logpath=/opt/mongo/rs13/mongod.log
+mongod --port=30000 --fork --dbpath=/opt/mongo/arb1 --logpath=/opt/mongo/arb1/mongod.log
+
+mongo --port=27017
+mongo --port=27018
+mongo --port=27019
+mongo --port=30000
 
 use admin
-
 db.createUser( {
     user: "admin",
     pwd: "admin",
     roles: [ { role: "root", db: "admin" } ]
 });
 
+use quickpay
 db.createUser( {
     user: "quickpay",
     pwd: "quickpay",
     roles: [ { role: "readWrite", db: "quickpay" } ]
 });
+
+exit
+
+
+mongod --shutdown --dbpath=/opt/mongo/rs11
+mongod --shutdown --dbpath=/opt/mongo/rs12
+mongod --shutdown --dbpath=/opt/mongo/rs13
+mongod --shutdown --dbpath=/opt/mongo/arb1
+
+
+openssl rand -base64 741 > rs1.key
+chmod 600 rs1.key
+
+
+mongod --port=27017 --auth --fork --dbpath=/opt/mongo/rs11 --logpath=/opt/mongo/rs11/mongod.log \
+ --replSet=rs1  --keyFile=/opt/mongo/rs1.key
+mongod --port=27018 --auth --fork --dbpath=/opt/mongo/rs12 --logpath=/opt/mongo/rs12/mongod.log \
+ --replSet=rs1  --keyFile=/opt/mongo/rs1.key
+mongod --port=27019 --auth --fork --dbpath=/opt/mongo/rs13 --logpath=/opt/mongo/rs13/mongod.log \
+ --replSet=rs1  --keyFile=/opt/mongo/rs1.key
+mongod --port=30000 --auth --fork --dbpath=/opt/mongo/arb1 --logpath=/opt/mongo/arb1/mongod.log \
+ --replSet=rs1  --keyFile=/opt/mongo/rs1.key
+
+
+mongo --port=27017
+use admin
+db.auth('admin','admin')
+rs.initiate()
+rs.add('quick.ipay.so:27018')
+rs.add('quick.ipay.so:27019')
+rs.add('quick.ipay.so:30000', true)
+
+rs.status()
+
+db.bindingInfo.createIndex({ bindingId : 1, merId : 1 },{ unique: true })
+db.bindingMap.createIndex({ bindingId : 1, merId : 1 },{ unique: true })
+db.trans.createIndex({ orderNum : 1, merId : 1 },{ unique: true })
+db.transSett.createIndex({ orderNum : 1, merId : 1 },{ unique: true })
+
 
 ```
