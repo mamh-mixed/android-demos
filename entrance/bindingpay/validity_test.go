@@ -161,14 +161,18 @@ func TestValidateNoTrackPayment(t *testing.T) {
 	var in = &model.NoTrackPayment{
 		TransType:        "SALE",
 		SubMerId:         "",
-		MerOrderNum:      "1000000008",
+		MerOrderNum:      "Wa1000000008",
 		TransAmt:         10000,
 		AcctName:         "张三",
+		AcctNameDecrypt:  "张三",
 		AcctNum:          "6210948000000219",
-		IdentType:        "",
-		IdentNum:         "",
-		PhoneNum:         "",
-		AcctType:         "20",
+		AcctNumDecrypt:   "6210948000000219",
+		IdentType:        "0",
+		IdentNum:         "350583199009153732",
+		IdentNumDecrypt:  "350583199009153732",
+		PhoneNum:         "18205960039",
+		PhoneNumDecrypt:  "18205960039",
+		AcctType:         "10",
 		ValidDate:        "1712",
 		ValidDateDecrypt: "1712",
 		Cvv2Decrypt:      "123",
@@ -182,4 +186,24 @@ func TestValidateNoTrackPayment(t *testing.T) {
 		t.Error("测试无卡支付失败，返回信息： %+v", ret)
 	}
 
+}
+
+func TestIsChineseOrJapaneseOrAlphanumeric(t *testing.T) {
+	result := isChineseOrJapaneseOrAlphanumeric("你好啊，小伙子")
+
+	if result {
+		t.Error("出错啦")
+	}
+
+	result = isChineseOrJapaneseOrAlphanumeric("姚明")
+
+	if !result {
+		t.Error("出错啦")
+	}
+
+	result = isChineseOrJapaneseOrAlphanumeric("姚明isBest強い")
+
+	if !result {
+		t.Error("出错啦")
+	}
 }

@@ -46,3 +46,17 @@ func TestValidateApplyPay(t *testing.T) {
 
 	t.Logf("%+v\n", ret)
 }
+
+func TestIsAlphabeticOrNumeric(t *testing.T) {
+	result := isAlphanumeric("abc123")
+
+	if !result {
+		t.Error("出错啦")
+	}
+
+	result = isAlphanumeric("<script>alert()</script>")
+	if result {
+		t.Error("出错啦")
+	}
+
+}

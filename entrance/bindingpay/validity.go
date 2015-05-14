@@ -1,6 +1,7 @@
 package bindingpay
 
 import (
+	// "github.com/omigo/log"
 	"regexp"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -143,57 +144,41 @@ func validateBillingDetails(in *model.BillingDetails) (ret *model.BindingReturn)
 
 // validateNoTrackPayment 无卡直接支付请求报文验证
 func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn) {
+	// TransType
 	if in.TransType == "" {
 		return model.NewBindingReturn("200050", "字段 transType 不能为空")
 	}
+	if matched, _ := regexp.MatchString(`^SALE$|^AUTH$`, in.TransType); !matched {
+		return mongo.RespCodeColl.Get("100030")
+	}
 
+	// SubMerId
+	if in.SubMerId != "" && !isAlphanumeric(in.SubMerId) {
+		return model.NewBindingReturn("200051", "字段 subMerId 不符合要求")
+	}
+
+	// TerminalId
+	if in.TerminalId != "" && !isAlphanumeric(in.TerminalId) {
+		return model.NewBindingReturn("200051", "字段 terminalId 不符合要求")
+	}
+
+	// MerOrderNum
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
 	}
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200051", "字段 merOrderNum 不符合要求")
+	}
 
+	// TransAmt
 	if in.TransAmt == 0 {
 		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
 	}
-
-	if in.AcctName == "" {
-		return model.NewBindingReturn("200050", "字段 acctName 不能为空")
-	}
-
-	if in.AcctNum == "" {
-		return model.NewBindingReturn("200050", "字段 acctNum 不能为空")
-	}
-
-	if in.AcctType == "" {
-		return model.NewBindingReturn("200050", "字段 acctType 不能为空")
-	}
-
 	if in.TransAmt < 0 {
 		return mongo.RespCodeColl.Get("200180")
 	}
-	if matched, _ := regexp.MatchString(`^10$|^20$`, in.AcctType); !matched {
-		return mongo.RespCodeColl.Get("200230")
-	}
 
-	if in.AcctType == "20" {
-		// 贷记卡
-		if in.ValidDateDecrypt == "" {
-			return model.NewBindingReturn("200050", "字段 validDate 不能为空")
-		}
-
-		if in.Cvv2Decrypt == "" {
-			return model.NewBindingReturn("200050", "字段 cvv2 不能为空")
-		}
-
-		// 判断格式，需要使用解密后的参数
-		if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])$`, in.ValidDateDecrypt); !matched {
-			return mongo.RespCodeColl.Get("200140")
-		}
-
-		if matched, _ := regexp.MatchString(`^\d{3}$`, in.Cvv2Decrypt); !matched {
-			return mongo.RespCodeColl.Get("200150")
-		}
-	}
-
+	// CurrCode
 	if in.CurrCode != "" {
 		// 判断交易币种格式
 		if matched, _ := regexp.MatchString(`^\d{3}$`, in.CurrCode); !matched {
@@ -201,9 +186,85 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 		}
 	}
 
-	if matched, _ := regexp.MatchString(`^SALE|AUTH$`, in.TransType); !matched {
-		return mongo.RespCodeColl.Get("100030")
+	// AcctName
+	if in.AcctName == "" || in.AcctNameDecrypt == "" {
+		return model.NewBindingReturn("200050", "字段 acctName 不能为空")
+	}
+	if !isChineseOrJapaneseOrAlphanumeric(in.AcctNameDecrypt) {
+		return mongo.RespCodeColl.Get("200100")
+	}
+
+	// AcctNum
+	if in.AcctNum == "" || in.AcctNumDecrypt == "" {
+		return model.NewBindingReturn("200050", "字段 acctNum 不能为空")
+	}
+	if matched, _ := regexp.MatchString(`^\d+$`, in.AcctNumDecrypt); !matched {
+		return mongo.RespCodeColl.Get("200110")
+	}
+
+	// IdentType
+	if in.IdentType != "" {
+		if matched, _ := regexp.MatchString(`^([0-9]|X)$`, in.IdentType); !matched {
+			return model.NewBindingReturn("200051", "字段 identType 不符合要求")
+		}
+	}
+
+	// IdentNum
+	if in.IdentNum != "" && in.IdentNumDecrypt != "" {
+		if !isAlphanumeric(in.IdentNumDecrypt) {
+			return model.NewBindingReturn("200051", "字段 identNum 不符合要求")
+		}
+	}
+
+	// PhoneNum
+	if in.PhoneNum != "" && in.PhoneNumDecrypt != "" {
+		if matched, _ := regexp.MatchString(`^\d+$`, in.PhoneNumDecrypt); !matched {
+			return model.NewBindingReturn("200051", "字段 phoneNum 不符合要求")
+		}
+	}
+
+	// AcctType
+	if in.AcctType == "" {
+		return model.NewBindingReturn("200050", "字段 acctType 不能为空")
+	}
+	if matched, _ := regexp.MatchString(`^10$|^20$`, in.AcctType); !matched {
+		return mongo.RespCodeColl.Get("200230")
+	}
+	if in.AcctType == "20" {
+		// ValidDate
+		if in.ValidDate == "" || in.ValidDateDecrypt == "" {
+			return model.NewBindingReturn("200050", "字段 validDate 不能为空")
+		}
+		if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])$`, in.ValidDateDecrypt); !matched {
+			return mongo.RespCodeColl.Get("200140")
+		}
+
+		// Cvv2
+		if in.Cvv2 == "" || in.Cvv2Decrypt == "" {
+			return model.NewBindingReturn("200050", "字段 cvv2 不能为空")
+		}
+		if matched, _ := regexp.MatchString(`^\d{3}$`, in.Cvv2Decrypt); !matched {
+			return mongo.RespCodeColl.Get("200150")
+		}
 	}
 
 	return nil
+}
+
+// isAlphanumeric 用来判断一个字符串是否是字母或者数字
+func isAlphanumeric(str string) (result bool) {
+	matched, _ := regexp.MatchString(`^(?i)[a-z0-9]+$`, str)
+	if matched {
+		return true
+	}
+	return false
+}
+
+// isChineseOrJapaneseOrAlphanumeric 用来判断一个字符串是否只包含汉字，日本字或者字母数字
+func isChineseOrJapaneseOrAlphanumeric(str string) (result bool) {
+	matched, _ := regexp.MatchString(`^(?i)(\p{Han}|\p{Hiragana}|[a-z0-9])+$`, str)
+	if matched {
+		return true
+	}
+	return false
 }
