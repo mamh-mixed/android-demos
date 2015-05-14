@@ -45,6 +45,10 @@ func NewAESCBCEncrypt(b64Key string) *AesCBCMode {
 // decrypted 解密后的明文 encrypted 使用新key后的密文
 func (a *AesCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string) {
 
+	if a.sysAes == nil {
+		a.sysAes = &AesCBCMode{Key: sysKey}
+	}
+
 	// decrypt
 	decrypted = a.Decrypt(ct)
 
@@ -63,6 +67,10 @@ func (a *AesCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string)
 
 // UseSysKeyDcyAndMerEcy 使用系统的key解密再用商户的key加密
 func (a *AesCBCMode) UseSysKeyDcyAndMerEcy(ct string) string {
+
+	if a.sysAes == nil {
+		a.sysAes = &AesCBCMode{Key: sysKey}
+	}
 
 	decrypted := a.sysAes.Decrypt(ct)
 
