@@ -22,6 +22,18 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		return model.NewBindingReturn("200050", "字段 acctNum 不能为空")
 	}
 
+	if !isAlphanumeric(request.BindingId) {
+		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
+	}
+
+	if !isChineseOrJapaneseOrAlphanumeric(request.AcctNameDecrypt) {
+		return mongo.RespCodeColl.Get("200100")
+	}
+
+	if !isChineseOrJapaneseOrAlphanumeric(request.AcctNumDecrypt) {
+		return mongo.RespCodeColl.Get("200110")
+	}
+
 	if request.AcctType != "10" && request.AcctType != "20" {
 		return mongo.RespCodeColl.Get("200230")
 	}
@@ -54,6 +66,11 @@ func validateBindingRemove(in *model.BindingRemove) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
+
+	if !isAlphanumeric(in.BindingId) {
+		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
+	}
+
 	return nil
 }
 
@@ -62,6 +79,11 @@ func validateBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn)
 	if be.BindingId == "" {
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
+
+	if !isAlphanumeric(be.BindingId) {
+		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
+	}
+
 	return nil
 }
 
@@ -82,6 +104,19 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 	if in.TransAmt < 0 {
 		return mongo.RespCodeColl.Get("200180")
 	}
+
+	if !isAlphanumeric(in.BindingId) {
+		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
+	}
+
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+
+	if !isAlphanumeric(in.TerminalId) {
+		return model.NewBindingReturn("200051", "字段 terminalId 格式错误")
+	}
+
 	// 验证短信验证码是否填写
 	if in.SendSmsId != "" && in.SmsCode == "" {
 		return model.NewBindingReturn("200050", "字段 smsCode 不能为空")
@@ -100,6 +135,14 @@ func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200050", "字段 origOrderNum 不能为空")
 	}
 
+	if !isAlphanumeric(in.OrigOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 origOrderNum 格式错误")
+	}
+
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+
 	if in.TransAmt == 0 {
 		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
 	}
@@ -116,8 +159,12 @@ func validateOrderEnquiry(in *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if in.OrigOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 origOrderNum 不能为空")
 	}
+
+	if !isAlphanumeric(in.OrigOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 origOrderNum 格式错误")
+	}
+
 	if matched, _ := regexp.MatchString(`^[1|0]?$`, in.ShowOrigInfo); !matched {
-		//TODO check respCode
 		return model.NewBindingReturn("200050", "字段 showOrigInfo 取值错误")
 	}
 	return
@@ -126,7 +173,7 @@ func validateOrderEnquiry(in *model.OrderEnquiry) (ret *model.BindingReturn) {
 // validateBillingSummary 交易对账汇总验证
 func validateBillingSummary(in *model.BillingSummary) (ret *model.BindingReturn) {
 	if matched, _ := regexp.MatchString(`^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-[0-3]{0,1}[0-9]$`, in.SettDate); !matched {
-		return model.NewBindingReturn("200200", "日期 SettDate 格式错误")
+		return model.NewBindingReturn("200200", "日期 settDate 格式错误")
 	}
 	return
 }
@@ -134,10 +181,11 @@ func validateBillingSummary(in *model.BillingSummary) (ret *model.BindingReturn)
 // validateBillingSummary 交易对账汇总验证
 func validateBillingDetails(in *model.BillingDetails) (ret *model.BindingReturn) {
 	if matched, _ := regexp.MatchString(`^[1-2][0-9][0-9][0-9]-(0[1-9]|1[0-2])-[0-3]{0,1}[0-9]$`, in.SettDate); !matched {
-		return model.NewBindingReturn("200200", "日期 SettDate 格式错误")
+		return model.NewBindingReturn("200200", "日期 settDate 格式错误")
 	}
-	if len(in.NextOrderNum) > 32 {
-		return model.NewBindingReturn("200080", "订单号 NextOrderNum 不正确")
+
+	if !isAlphanumeric(in.NextOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 nextOrderNum 格式错误")
 	}
 	return
 }
