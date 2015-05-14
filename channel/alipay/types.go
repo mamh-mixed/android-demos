@@ -50,11 +50,15 @@ type alpBody struct {
 
 // AlpDetail response节点字段
 type alpDetail struct {
-	BuyerLogonId    string          `xml:"buyer_logon_id,omitempty"`    //买家支付宝账号
-	BuyerUserId     string          `xml:"buyer_user_id,omitempty"`     //买家支付宝用户号 以 2088 开头的纯 16 位数字
-	OutTradeNo      string          `xml:"out_trade_no,omitempty"`      //商户网站唯一订单号
-	ResultCode      string          `xml:"result_code,omitempty"`       //查询处理结果响应码。SUCCESS:查询成功 FAIL:查询失败 PROCESS_EXCEPTION:处理异常
-	TradeNo         string          `xml:"trade_no,omitempty"`          //支付宝交易号 最短16位,最长64位
+	BuyerLogonId    string          `xml:"buyer_logon_id,omitempty"` //买家支付宝账号
+	BuyerUserId     string          `xml:"buyer_user_id,omitempty"`  //买家支付宝用户号 以 2088 开头的纯 16 位数字
+	OutTradeNo      string          `xml:"out_trade_no,omitempty"`   //商户网站唯一订单号
+	ResultCode      string          `xml:"result_code,omitempty"`    //查询处理结果响应码。SUCCESS:查询成功 FAIL:查询失败 PROCESS_EXCEPTION:处理异常
+	TradeNo         string          `xml:"trade_no,omitempty"`       //支付宝交易号 最短16位,最长64位
+	QrCode          string          `xml:"qr_code,omitempty"`        //二维码
+	PicUrl          string          `xml:"pic_url,omitempty"`        //二维码图片地址
+	SmallPicUrl     string          `xml:"small_pic_url,omitempty"`
+	VoucherType     string          `xml:"voucher_type,omitempty"`
 	DetailErrorCode string          `xml:"detail_error_code,omitempty"` //详细错误码
 	DetailErrorDes  string          `xml:"detail_error_des,omitempty"`
 	ExtendInfo      string          `xml:"extend_info,omitempty"`

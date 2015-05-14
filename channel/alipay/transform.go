@@ -2,6 +2,7 @@ package alipay
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 )
 
@@ -50,7 +51,18 @@ func transform(service string, alpResp *alpResponse, ret *model.ScanPayResponse)
 			ret.Respcd = createAndPayCd(alipay.ResultCode)
 
 		case preCreate:
-			// TODO
+
+			switch alipay.ResultCode {
+			case "SUCCESS":
+				ret.QrCode = alipay.QrCode
+			case "FAIL", "UNKNOWN":
+				ret.ChanRespCode = alipay.DetailErrorCode
+				ret.ErrorDetail = alipay.DetailErrorCode
+			default:
+				log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", createAndPay, alipay.ResultCode)
+			}
+			ret.Respcd = preCreateCd(ret.ErrorDetail)
+
 		case query:
 
 			switch alipay.ResultCode {
@@ -73,13 +85,14 @@ func transform(service string, alpResp *alpResponse, ret *model.ScanPayResponse)
 
 		case refund:
 			// TODO
+		case cancel:
+			// TODO
 		default:
 			// TODO
 		}
 	} else {
 		ret.ErrorDetail = alpResp.Error
-
-		// TODO get ret.Respcd by alpResp.Error
+		ret.Respcd = mongo.OffLineRespCd(ret.ErrorDetail)
 	}
 
 	return ret

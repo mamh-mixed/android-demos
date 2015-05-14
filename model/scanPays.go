@@ -79,6 +79,7 @@ type ScanPayResponse struct {
 	Sign            string `json:"sign"`                      //签名 M M
 	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
 	MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
+	QrCode          string `json:"qrcode,omitempty"`          // 二维码 C
 	// 辅助字段
 	RespCode     string `json:"-"` // 系统应答码
 	ChanRespCode string `json:"-"` // 渠道详细应答码
