@@ -2,39 +2,48 @@ package mongo
 
 import (
 	"fmt"
+	"mgo/bson"
 	"testing"
 	"time"
 
 	"github.com/omigo/log"
-	"gopkg.in/mgo.v2/bson"
 )
 
-type Person struct {
-	Name  string
-	Phone string
+type TestModel struct {
+	Timestamp time.Time
+	Value     string
 }
 
 func TestConnect(t *testing.T) {
-	c := database.C("people")
-	err := c.Insert(&Person{"Ale", "+55 53 8116 9639"}, &Person{"Cla", "+55 53 8402 8510"})
-	if err != nil {
-		log.Fatalf("insert error", err)
+	for {
+
+		c := database.C("testConnect")
+
+		m := &TestModel{time.Now(), "test..."}
+		m2 := &TestModel{time.Now().Add(time.Millisecond), "test2..."}
+
+		err := c.Insert(m, m2)
+		if err != nil {
+			log.Fatalf("insert error %s", err)
+		}
+
+		cond := bson.M{"timestamp": m.Timestamp}
+		change := bson.M{"$set": bson.M{"updateTime": time.Now()}}
+		err = c.Update(cond, change)
+		if err != nil {
+			log.Fatalf("update error %s", err)
+		}
+
+		result := TestModel{}
+		err = c.Find(cond).One(&result)
+		if err != nil {
+			log.Fatalf("find error %s", err)
+		}
+
+		fmt.Println("timestamp:", result.Timestamp)
+
+		err = c.Remove(cond)
+
+		time.Sleep(time.Second)
 	}
-
-	cond := bson.M{"name": "Cla"}
-	change := bson.M{"$set": bson.M{"phone": "+86 99 8888 7777", "timestamp": time.Now()}}
-	err = c.Update(cond, change)
-	if err != nil {
-		log.Fatalf("update error", err)
-	}
-
-	result := Person{}
-	err = c.Find(bson.M{"name": "Ale"}).One(&result)
-	if err != nil {
-		log.Fatalf("find error", err)
-	}
-
-	fmt.Println("Phone:", result.Phone)
-
-	err = c.Remove(bson.M{"name": "Ale"})
 }

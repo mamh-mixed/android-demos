@@ -1,14 +1,11 @@
 package mongo
 
 import (
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
-	"testing"
 )
-
-func init() {
-	Connect()
-}
 
 func TestUpsert(t *testing.T) {
 	uuid := tools.SerialNumber()

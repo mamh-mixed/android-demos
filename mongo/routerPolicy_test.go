@@ -1,8 +1,9 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 func TestInsertRouterPolicy(t *testing.T) {
