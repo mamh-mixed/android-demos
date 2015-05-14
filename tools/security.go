@@ -15,11 +15,13 @@ import (
 	"github.com/omigo/log"
 )
 
+var sysKey = []byte("quickpay20150514")
+
 // AesCBCMode 如果key位base64编码过的字符串
-// 必须先调用DecodeKey方法，再进行加解密
 type AesCBCMode struct {
-	Key []byte
-	Err error
+	Key    []byte
+	Err    error
+	sysAes *AesCBCMode
 }
 
 // NewAESCBCEncrypt 创建一个 AES 加密对象，使用 CBC 模式
@@ -33,7 +35,53 @@ func NewAESCBCEncrypt(b64Key string) *AesCBCMode {
 	return &AesCBCMode{
 		Key: bytesKey,
 		Err: err,
+		sysAes: &AesCBCMode{
+			Key: sysKey,
+		},
 	}
+}
+
+// DcyAndUseSysKeyEcy 解密商户字段后用系统的key进行加密
+// decrypted 解密后的明文 encrypted 使用新key后的密文
+func (a *AesCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string) {
+
+	if a.sysAes == nil {
+		a.sysAes = &AesCBCMode{Key: sysKey}
+	}
+
+	// decrypt
+	decrypted = a.Decrypt(ct)
+
+	if a.Err != nil {
+		return decrypted, decrypted
+	}
+	// encrypt
+	encrypted = a.sysAes.Encrypt(decrypted)
+
+	if a.sysAes.Err != nil {
+		// 将错误传递到a
+		a.Err = a.sysAes.Err
+	}
+	return
+}
+
+// UseSysKeyDcyAndMerEcy 使用系统的key解密再用商户的key加密
+func (a *AesCBCMode) UseSysKeyDcyAndMerEcy(ct string) string {
+
+	if a.sysAes == nil {
+		a.sysAes = &AesCBCMode{Key: sysKey}
+	}
+
+	decrypted := a.sysAes.Decrypt(ct)
+
+	// log.Debugf("orig: %s, decrypted: %s", ct, decrypted)
+
+	if a.sysAes.Err != nil {
+		// 将错误传递到a
+		a.Err = a.sysAes.Err
+	}
+	encrypted := a.Encrypt(decrypted)
+	return encrypted
 }
 
 // Encrypt cbc mode
@@ -111,12 +159,6 @@ func (a *AesCBCMode) Decrypt(ct string) string {
 	mode.CryptBlocks(ciphertext, ciphertext)
 	ciphertext = PKCS7UnPadding(ciphertext)
 	return string(ciphertext)
-}
-
-// DecodeKey 将base64编码过的44位key
-// 转成32位字节数组
-func (a *AesCBCMode) DecodeKey(key string) {
-	a.Key, a.Err = base64.StdEncoding.DecodeString(key)
 }
 
 func PKCS7Padding(ciphertext []byte, blockSize int) []byte {

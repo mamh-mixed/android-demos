@@ -6,10 +6,10 @@ import (
 	"github.com/omigo/log"
 )
 
-var aesCBF, aesCBC = AesCFBMode{}, AesCBCMode{}
+var aesCBF, aesCBC = &AesCFBMode{}, &AesCBCMode{}
 
 func init() {
-	aesCBC.DecodeKey("AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=")
+	aesCBC = NewAESCBCEncrypt("AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=")
 }
 
 func TestAesCFBEncryptAndDecrypt(t *testing.T) {
@@ -32,12 +32,24 @@ func TestCBCAesEncryptAndDecrypt(t *testing.T) {
 	pt := "中国最好，中国最棒，ye"
 	encrypted := aesCBC.Encrypt(pt)
 	log.Debugf("%s", encrypted)
-	decrypted := aesCBC.Decrypt(encrypted)
+
+	decrypted, encrypted1 := aesCBC.DcyAndUseSysKeyEcy(encrypted)
+	log.Debugf("%s %s", decrypted, encrypted1)
+
+	encrypted2 := aesCBC.UseSysKeyDcyAndMerEcy(encrypted1)
+
 	if aesCBC.Err != nil {
 		t.Error(aesCBC.Err)
 		t.FailNow()
 	}
-	log.Debugf("%s", decrypted)
+
+	decrypted1 := aesCBC.Decrypt(encrypted2)
+
+	if decrypted1 != decrypted {
+		t.Errorf("%s not equal %s", decrypted1, decrypted)
+		t.FailNow()
+	}
+
 }
 func TestEncrypt(t *testing.T) {
 	accnum := aesCBC.Encrypt("6222020302062061901")

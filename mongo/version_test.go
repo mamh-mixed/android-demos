@@ -1,14 +1,13 @@
 package mongo
 
 import (
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"testing"
 )
 
 func TestVersionAdd(t *testing.T) {
-	// connect to mongodb
-	Connect()
 	if false {
 		v := &model.Version{
 			Vn:     "20150421120000",
@@ -25,7 +24,6 @@ func TestVersionAdd(t *testing.T) {
 }
 
 func TestVersionFind(t *testing.T) {
-	Connect()
 	v, err := VersionColl.FindOne("cardBin")
 	if err != nil {
 		t.Errorf("fail to find cardBin version : %s", err)

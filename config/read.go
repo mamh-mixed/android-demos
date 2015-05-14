@@ -17,8 +17,8 @@ func loadConfigFile() {
 	sysEnv := "QUICKPAY_ENV"
 	env := os.Getenv(sysEnv)
 	if env == "" {
-		log.Warnf("system env `%s` not set, use `develop` instead", sysEnv)
-		env = "develop"
+		fmt.Printf("system environment variable `%s` not set, must set to `develop/testing/product`\n", sysEnv)
+		os.Exit(1)
 	}
 	log.Infof("quickpay environment: %s", env)
 
