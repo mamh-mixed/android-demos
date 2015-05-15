@@ -38,7 +38,7 @@
         <core-scaffold id="scaffold" mode="scroll">
             <nav>
                 <core-toolbar>
-                    <core-icon icon="account-circle"></core-icon>
+                    <core-icon icon="account-circle" on-tap="{{chooseMerchantHandler}}" class="acconut-circle"></core-icon>
                     <span>快捷支付</span>
                 </core-toolbar>
                 <core-menu id="menu" valueattr="hash" selected="{{route}}" selectedModel="{{selectedPage}}" on-core-select="{{menuItemSelected}}" on-click="{{ajaxLoad}}">
@@ -53,7 +53,7 @@
 
             <core-toolbar tool flex>
                 <div flex>{{selectedPage.page.name}}</div>
-            <!--
+                <!--
                 <core-icon-button icon="refresh"></core-icon-button>
                 <core-icon-button icon="add"></core-icon-button>
             -->
@@ -71,7 +71,11 @@
 
         </core-scaffold>
 
+
+
     </template>
+
+    <merchant-chosen id="merchantChangeOverlay" backdrop="true"></merchant-chosen>
 
     <script src="index.js"></script>
     <link rel="import" href="bower_components/core-animated-pages/core-animated-pages.html">
@@ -79,6 +83,7 @@
     <link rel="import" href="bower_components/core-ajax/core-ajax.html">
 
     <link rel="import" href="elements/quickpay-test.html">
+    <link rel="import" href="elements/merchant-chosen.html">
 
 </body>
 

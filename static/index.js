@@ -97,4 +97,9 @@
         this.injectBoundHTML(html, pages.selectedItem.firstElementChild);
     };
 
+    // 切换商户事件
+    template.chooseMerchantHandler = function(e,detail,sender){
+        document.querySelector("#merchantChangeOverlay").toggle();
+    };
+
 })();

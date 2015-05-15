@@ -105,7 +105,8 @@
                 encrypt: function(plaintext) {
                     // var plaintext = '000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f'
                     //
-                    var key = CryptoJS.enc.Base64.parse('AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=');
+                    // var key = CryptoJS.enc.Base64.parse('');
+                    var key = CryptoJS.enc.Base64.parse(this.getMerchant().encryptKey);
                     // var iv  = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
                     var iv = CryptoJS.lib.WordArray.random(16);
                     var encrypted = CryptoJS.AES.encrypt(plaintext, key, {
@@ -124,7 +125,17 @@
 
                     return b64encrypted;
                 },
+                getMerchant: function() {
+                    // 当前商户
+                    var merchantStorage = window.localStorage.getItem('QUICKPAY-MERCHANT');
+                    if (!merchantStorage) {
+                        document.querySelector('#merchantChangeOverlay').open();
+                    }
+                    var merchant = JSON.parse(merchantStorage);
+                    return merchant;
+                },
                 ready: function() {
+
 
                     var postAjax = this.$.postAjax;
                     var toast = this.$.ret;
@@ -133,7 +144,8 @@
                     var _this = this;
                     button.addEventListener('click', function() {
 
-                        postAjax.url = _this.url + "?merId=012345678901234";
+                        // postAjax.url = _this.url + "?merId=012345678901234";
+                        postAjax.url = _this.url + "?merId=" + _this.getMerchant().merId;
 
                         var body = {};
                         for (var i = 0; i < _this.elems.length; i++) {
@@ -158,7 +170,7 @@
                         }
                         postAjax.body = JSON.stringify(body);
 
-                        var hash = CryptoJS.SHA1(postAjax.body + '0123456789');
+                        var hash = CryptoJS.SHA1(postAjax.body + _this.getMerchant().signKey);
                         postAjax.headers = '{"X-Sign": "' + hash + '"}';
 
                         postAjax.go();

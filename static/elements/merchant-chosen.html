@@ -1,0 +1,86 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/core-overlay/core-overlay.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="post-card.html">
+
+<polymer-element name="merchant-chosen" attributes="">
+    <template>
+        <style>
+            :host {
+                display: block;
+                width: 100%;
+            }
+        </style>
+        <core-ajax id="ajax" url="/quickMaster/merchant/all" auto handleAs="json" on-core-response="{{onResponse}}"></core-ajax>
+        <paper-dialog id="overlay" heading="选择商户" class="scrolling" layered backdrop transition="core-transition-center">
+            <div layout vertical center>
+                <template repeat="{{merchant in merchants}}">
+                    <post-card on-chosen-tap="{{handleChosen}}" on-read-more-tap="{{handleReadMore}}">
+                        <div class="">
+                            MerId: {{merchant.merId}}
+                        </div>
+                        <div class="">
+                            MerStatus: {{merchant.merStatus}}
+                        </div>
+                        <div class="">
+                            TransCurr: {{merchant.transCurr}}
+                        </div>
+                        <div class="">
+                            SignKey: {{merchant.signKey}}
+                        </div>
+                        <div class="">
+                            EncryptKey: {{merchant.encryptKey}}
+                        </div>
+                    </post-card>
+                </template>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+        (function() {
+            'use strict';
+
+            Polymer('merchant-chosen', {
+                created: function() {
+                    this.merchants = [];
+                },
+                ready: function() {
+                    // 检查本地是否缓存商户的信息
+                    var merchant = window.localStorage.getItem('QUICKPAY-MERCHANT');
+                    if (!!merchant) {
+                        return;
+                    }
+
+                    this.open();
+                },
+                toggle: function() {
+                    this.$.overlay.toggle();
+                },
+
+                open: function() {
+                    this.$.overlay.open();
+                },
+
+                close: function() {
+                    this.$.overlay.close();
+                },
+                onResponse: function() {
+                    var response = this.$.ajax.response;
+                    if (response.status === 0) {
+                        this.merchants = response.data.slice(0)
+                    }
+                },
+                handleChosen: function(event, detail, sender) {
+                    var merchant = sender.templateInstance.model.merchant;
+                    // 存储到本地存储中
+                    window.localStorage.setItem('QUICKPAY-MERCHANT',JSON.stringify(merchant));
+                    this.close();
+                },
+                handleReadMore: function(e,d,s){
+                    var merchant = sender.templateInstance.model.merchant;
+                }
+            });
+        })();
+    </script>
+</polymer-element>

@@ -8,6 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
+	"github.com/CardInfoLink/quickpay/entrance/master"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
@@ -73,6 +74,31 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Sign", sign)
 
 	log.Infof("to merchant message: %s", rdata)
+	w.Write(rdata)
+}
+
+// QuickMaster 后台管理的请求统一入口
+func QuickMaster(w http.ResponseWriter, r *http.Request) {
+	log.Infof("url = %s", r.URL.String())
+
+	var ret *model.ResultBody
+
+	switch r.URL.Path {
+	case "/quickMaster/merchant/all":
+		ret = master.AllMerchant()
+	case "/quickMaster/router/find":
+		merId := r.FormValue("merId")
+		ret = master.AllRouterOfOneMerchant(merId)
+	default:
+		w.WriteHeader(404)
+	}
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Infof("response message: %s", rdata)
 	w.Write(rdata)
 }
 
