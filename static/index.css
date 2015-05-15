@@ -54,3 +54,8 @@ core-animated-pages > *  {
     overflow-y: auto;
     padding: 30px;
 }
+
+html /deep/ #overlay::shadow #scroller {
+    height: 400px;
+    width: 600px;
+}
