@@ -357,7 +357,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// default
-	ret = mongo.RespCodeColl.Get("000001")
+	// ret = mongo.RespCodeColl.Get("000001")
 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
@@ -369,70 +369,86 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("200081")
 	}
 	//只要订单号不重复就记录这笔交易
-	errorTrans := &model.Trans{
+	refund := &model.Trans{
 		OrderNum:       be.MerOrderNum,
 		MerId:          be.MerId,
 		RefundOrderNum: be.OrigOrderNum,
 		TransAmt:       be.TransAmt,
+		TransType:      model.RefundTrans,
 	}
 
 	// 是否有该源订单号
 	orign, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
+	log.Debugf("%+v", orign)
+	if err != nil {
+		refund.RespCode = "100020"
+		mongo.TransColl.Add(refund)
+		return mongo.RespCodeColl.Get(refund.RespCode)
+	}
+	refund.ChanBindingId = orign.ChanBindingId
+	refund.AcctNum = orign.AcctNum
+	refund.ChanCode = orign.ChanCode
+	refund.ChanMerId = orign.ChanMerId
+
+	// 退款逻辑
+	var refundStatus int8
 	legal := true
 	switch {
-	// 不存在原交易
-	case err != nil && err.Error() == "not found":
-		errorTrans.RespCode = "100020"
-		legal = false
 	// 不能对退款的交易号进行退款
 	case orign.TransType == model.RefundTrans:
-		errorTrans.RespCode = "100020"
+		refund.RespCode = "100020"
 		legal = false
 	// 已退款
 	case orign.RefundStatus == model.TransRefunded:
-		errorTrans.RespCode = "100010"
+		refund.RespCode = "100010"
 		legal = false
 	// 退款金额过大
 	case be.TransAmt > orign.TransAmt:
-		errorTrans.RespCode = "200191"
+		refund.RespCode = "200191"
 		legal = false
 	// 中金渠道全额退款
 	case orign.ChanCode == "CFCA" && be.TransAmt != orign.TransAmt:
-		errorTrans.RespCode = "200190"
+		refund.RespCode = "200190"
 		legal = false
+	// 部分退款
+	case be.TransAmt < orign.TransAmt:
+		// 判断总退款金额
+		refunded, err := mongo.TransColl.FindTransRefundAmt(be.MerId, be.OrigOrderNum)
+		log.Debugf("refunded total : %d", refunded)
+		if err != nil {
+			refund.RespCode = "000001"
+			legal = false
+		} else if refunded+be.TransAmt > orign.TransAmt {
+			refund.RespCode = "200191"
+			legal = false
+		} else if refunded+be.TransAmt == orign.TransAmt {
+			refundStatus = model.TransRefunded
+		} else {
+			refundStatus = model.TransPartRefunded
+		}
 	}
 	if !legal {
-		mongo.TransColl.Add(errorTrans)
-		return mongo.RespCodeColl.Get(errorTrans.RespCode)
+		mongo.TransColl.Add(refund)
+		return mongo.RespCodeColl.Get(refund.RespCode)
 	}
 
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(orign.ChanCode, orign.ChanMerId)
 	if err != nil {
-		errorTrans.RespCode = "300030"
-		mongo.TransColl.Add(errorTrans)
+		refund.RespCode = "300030"
+		mongo.TransColl.Add(refund)
 		return mongo.RespCodeColl.Get("300030")
 	}
 
-	// 赋值
+	// 请求信息
 	be.ChanMerId = orign.ChanMerId
 	be.SysOrderNum = tools.SerialNumber()
 	be.SysOrigOrderNum = orign.SysOrderNum
 	be.SignCert = chanMer.SignCert
+	// 交易信息
+	refund.SysOrderNum = be.SysOrderNum
 
 	// 记录这笔退款
-	refund := &model.Trans{
-		OrderNum:       be.MerOrderNum,
-		SysOrderNum:    be.SysOrderNum,
-		ChanBindingId:  orign.ChanBindingId,
-		RefundOrderNum: be.OrigOrderNum, //记录商户原订单而不是渠道原订单号
-		AcctNum:        orign.AcctNum,
-		MerId:          be.MerId,
-		TransAmt:       be.TransAmt,
-		ChanMerId:      be.ChanMerId,
-		ChanCode:       orign.ChanCode,
-		TransType:      model.RefundTrans, //退款
-	}
 	if err = mongo.TransColl.Add(refund); err != nil {
 		return
 	}
@@ -448,7 +464,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	case "000000":
 		refund.TransStatus = model.TransSuccess
 		//更新原交易状态
-		orign.RefundStatus = model.TransRefunded
+		orign.RefundStatus = refundStatus
 		mongo.TransColl.Update(orign)
 	//只有超时才会出现000009
 	case "000009":

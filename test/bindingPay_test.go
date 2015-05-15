@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	bindingId string
+	bindingId string = "1431654779479"
 	orderNum  string
 )
 
@@ -148,7 +148,7 @@ func TestBindingRefundHandle(t *testing.T) {
 	b := model.BindingRefund{
 		OrigOrderNum: orderNum,
 		MerOrderNum:  tools.Millisecond(),
-		TransAmt:     1000,
+		TransAmt:     100,
 	}
 	doPost(url, b, t)
 }

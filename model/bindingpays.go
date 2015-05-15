@@ -99,8 +99,9 @@ type BindingPayment struct {
 	BindingId     string `json:"bindingId"`   // 银行卡绑定ID
 	SendSmsId     string `json:"sendSmsId"`   // 申请短信验证码的交易流水
 	SmsCode       string `json:"smsCode"`     // 短信验证码
-	SettFlag      string `json:"settFlag"`    //清算标识
-	Remark        string `json:"remark"`      //备注
+	SettFlag      string `json:"settFlag"`    // 清算标识
+	Remark        string `json:"remark"`      // 备注
+	TerminalId    string `json:"terminalId"`  // 终端Id
 	SysOrderNum   string //系统订单号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID

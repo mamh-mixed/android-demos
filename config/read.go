@@ -1,5 +1,6 @@
 // Package config 用户集中配置管理。使用前，需要在系统中配置 QUICKPAY_ENV 环境变量，
-// 变量值为 develop/testing/product，如果不配置，默认 develop
+// 变量值为 develop/testing/product，如果不配置，系统会报错
+// export QUICKPAY_ENV=develop
 package config
 
 import (
@@ -11,16 +12,16 @@ import (
 	"github.com/omigo/log"
 )
 
-var configFile *goconfig.ConfigFile
+var conf *goconfig.ConfigFile
 
-func loadConfigFile() {
+func init() {
 	sysEnv := "QUICKPAY_ENV"
 	env := os.Getenv(sysEnv)
 	if env == "" {
 		fmt.Printf("system environment variable `%s` not set, must set to `develop/testing/product`\n", sysEnv)
 		os.Exit(1)
 	}
-	log.Infof("quickpay environment: %s", env)
+	fmt.Printf("quickpay environment: %s\n", env)
 
 	wd, err := os.Getwd()
 	if err != nil {
@@ -31,22 +32,32 @@ func loadConfigFile() {
 		wd = wd[:(pos + len(pkg))]
 	}
 
-	log.Debugf("work directory: %s", wd)
+	fmt.Printf("work directory: %s\n", wd)
 	fileName := fmt.Sprintf("%s/config/config_%s.ini", wd, env)
 
-	configFile, err = goconfig.LoadConfigFile(fileName)
+	conf, err = goconfig.LoadConfigFile(fileName)
 	if err != nil {
 		log.Fatalf("can not load config file(%s): %s", fileName, err)
 	}
+
+	// print all configurations
+	sects := conf.GetSectionList()
+	for _, sect := range sects {
+		fmt.Printf("\n[%s]\n", sect)
+		for _, key := range conf.GetKeyList(sect) {
+			value, err := conf.GetValue(sect, key)
+			if err != nil {
+				log.Errorf("read config error in section %s and key %s: %s", sect, key, err)
+			}
+			fmt.Printf("%-20s = %s\n", key, value)
+		}
+	}
+	fmt.Println()
 }
 
 // GetValue 从配置文件中取值
 func GetValue(section, key string) (v string) {
-	if configFile == nil {
-		loadConfigFile()
-	}
-
-	v, err := configFile.GetValue(section, key)
+	v, err := conf.GetValue(section, key)
 	if err != nil {
 		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
 	}
@@ -57,11 +68,7 @@ func GetValue(section, key string) (v string) {
 
 // Int 从配置文件中整数值
 func Int(section, key string) (v int) {
-	if configFile == nil {
-		loadConfigFile()
-	}
-
-	v, err := configFile.Int(section, key)
+	v, err := conf.Int(section, key)
 	if err != nil {
 		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
 	}

@@ -5,9 +5,10 @@ import (
 )
 
 const (
-	TransRefunded = 1 //已退款
-	PayTrans      = 1 //支付交易
-	RefundTrans   = 2 //退款交易
+	TransRefunded     = 1 //已退款
+	TransPartRefunded = 2 //部分退款
+	PayTrans          = 1 //支付交易
+	RefundTrans       = 2 //退款交易
 
 	SettSuccess    = 1 //勾兑成功
 	SettSysRemain  = 2 //系统多出的
@@ -143,7 +144,7 @@ type Trans struct {
 	ChanRespCode    string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
 	CreateTime      string        `bson:"createTime,omitempty"`                       //交易创建时间 yyyy-mm-dd hh:mm:ss
 	UpdateTime      string        `bson:"updateTime,omitempty"`                       //交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus    int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款
+	RefundStatus    int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款 2-部分退款
 	SendSmsId       string        `bson:"sendSmsId,omitempty"`                        //短信流水号
 	SmsCode         string        `bson:"smsCode,omitempty"`                          //短信验证码
 	Remark          string        `bson:"remark,omitempty"`                           //备注

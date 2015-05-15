@@ -24,20 +24,20 @@ func TestConnect(t *testing.T) {
 
 		err := c.Insert(m, m2)
 		if err != nil {
-			log.Fatalf("insert error %s", err)
+			log.Errorf("insert error %s", err)
 		}
 
 		cond := bson.M{"timestamp": m.Timestamp}
 		change := bson.M{"$set": bson.M{"updateTime": time.Now()}}
 		err = c.Update(cond, change)
 		if err != nil {
-			log.Fatalf("update error %s", err)
+			log.Errorf("update error %s", err)
 		}
 
 		result := TestModel{}
 		err = c.Find(cond).One(&result)
 		if err != nil {
-			log.Fatalf("find error %s", err)
+			log.Errorf("find error %s", err)
 		}
 
 		fmt.Println("timestamp:", result.Timestamp)
