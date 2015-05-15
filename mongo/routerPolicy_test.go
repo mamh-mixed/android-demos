@@ -29,3 +29,12 @@ func TestFindRouterPolicy(t *testing.T) {
 	}
 	t.Logf("RouterPolicy is: %+v", rp)
 }
+
+func TestFindAllOfOneMerchant(t *testing.T) {
+	r, err := RouterPolicyColl.FindAllOfOneMerchant("001405")
+
+	if err != nil {
+		t.Errorf("Error:%s", err)
+	}
+	t.Logf("Result is %+v", r)
+}

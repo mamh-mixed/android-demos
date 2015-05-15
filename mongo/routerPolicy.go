@@ -28,10 +28,21 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 	q := bson.M{"merId": merId, "cardBrand": cardBrand}
 	err := database.C(c.name).Find(q).One(r)
 	if err != nil {
-		log.Debugf("'FindRouter' condition: %+v\n", q)
-		log.Debugf("Error message is: %s\n", err.Error())
+		log.Errorf("FindRouter Error message is: %s", err)
 		return nil
 	}
-	log.Debugf("'FindRouter' condition: %+v, result %#v", q, r)
 	return r
+}
+
+// FindAllOfOneMerchant 根据源商户Id查找该商户下的所有路由信息
+func (c *routerPolicyCollection) FindAllOfOneMerchant(merId string) (r []model.RouterPolicy, err error) {
+	r = make([]model.RouterPolicy, 0)
+	q := bson.M{"merId": merId}
+
+	err = database.C(c.name).Find(q).All(&r)
+	if err != nil {
+		log.Errorf("FindAllOfOneMerchant Error message is: %s\n", err)
+		return nil, err
+	}
+	return r, nil
 }

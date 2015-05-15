@@ -15,6 +15,7 @@ type merchantCollection struct {
 
 var MerchantColl = merchantCollection{"merchant"}
 
+// Insert 插入一个商户信息
 func (c *merchantCollection) Insert(m *model.Merchant) error {
 	m1 := new(model.Merchant)
 	q := bson.M{"merId": m.MerId}
@@ -30,6 +31,7 @@ func (c *merchantCollection) Insert(m *model.Merchant) error {
 	return err
 }
 
+// Find 根据给定的merId查找一个商户信息
 func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 	m = new(model.Merchant)
 	q := bson.M{"merId": merId}
@@ -41,6 +43,7 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 	return m, nil
 }
 
+// Update 更新一个商户信息。
 func (c *merchantCollection) Update(m *model.Merchant) error {
 	if m.MerId == "" {
 		return errors.New("MerId is required!")
@@ -51,4 +54,16 @@ func (c *merchantCollection) Update(m *model.Merchant) error {
 		log.Errorf("'Update Merchant ERROR!' condition is (%+v);error is (%s)", q, err)
 	}
 	return err
+}
+
+// FindAllMerchant 查找所有的商户信息。
+func (c *merchantCollection) FindAllMerchant() (results []model.Merchant, err error) {
+	results = make([]model.Merchant, 1)
+	err = database.C(c.name).Find(nil).All(&results)
+	if err != nil {
+		log.Errorf("Find all merchant error: %s", err)
+		return nil, err
+	}
+
+	return
 }
