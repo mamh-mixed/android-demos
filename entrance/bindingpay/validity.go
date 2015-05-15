@@ -113,7 +113,7 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
 	}
 
-	if !isAlphanumeric(in.TerminalId) {
+	if in.TerminalId != "" && !isAlphanumeric(in.TerminalId) {
 		return model.NewBindingReturn("200051", "字段 terminalId 格式错误")
 	}
 
@@ -308,9 +308,9 @@ func isAlphanumeric(str string) (result bool) {
 	return false
 }
 
-// isChineseOrJapaneseOrAlphanumeric 用来判断一个字符串是否只包含汉字，日本字或者字母数字
+// isChineseOrJapaneseOrAlphanumeric 用来判断一个字符串是否只包含汉字，日本字或者字母数字或者特殊字符
 func isChineseOrJapaneseOrAlphanumeric(str string) (result bool) {
-	matched, _ := regexp.MatchString(`^(?i)(\p{Han}|\p{Hiragana}|[a-z0-9])+$`, str)
+	matched, _ := regexp.MatchString(`^(?i)(\p{Han}|\p{Hiragana}|[a-z0-9]|[_+-·])+$`, str)
 	if matched {
 		return true
 	}
