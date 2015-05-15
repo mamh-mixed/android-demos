@@ -8,6 +8,7 @@ import (
 
 func TestMerchantFind(t *testing.T) {
 	_, err := MerchantColl.Find("012345678901234")
+	_, err = MerchantColl.Find("012345678901234")
 	if err != nil {
 		t.Error(err)
 	}

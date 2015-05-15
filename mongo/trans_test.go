@@ -75,8 +75,8 @@ func TestFindByTime(t *testing.T) {
 }
 
 func TestFindTransRefundAmt(t *testing.T) {
-	total := TransColl.FindTransRefundAmt("1000000000002", "DqfTuPvvvTWDfD0Ke9DGOqbT")
-	if total == 0 {
+	total, err := TransColl.FindTransRefundAmt("1000000000002", "DqfTuPvvvTWDfD0Ke9DGOqbT")
+	if err != nil {
 		t.FailNow()
 	}
 	log.Debug(total)
