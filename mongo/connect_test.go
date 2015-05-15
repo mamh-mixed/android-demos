@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"fmt"
-	"mgo/bson"
+	"gopkg.in/mgo.v2/bson"
 	"testing"
 	"time"
 

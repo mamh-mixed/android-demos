@@ -93,3 +93,35 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 	err := database.C(col.name).Find(q).All(&ts)
 	return ts, err
 }
+
+// FindRefundTrans 查找某个订单成功的退款
+func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int64, error) {
+
+	var s = &struct {
+		Amt int64 `bson:"refundedAmt"`
+	}{}
+	q := bson.M{
+		"transType":      model.RefundTrans,
+		"merId":          merId,
+		"refundOrderNum": origOrderNum,
+		"transStatus":    model.TransSuccess,
+	}
+
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": q},
+		{"$group": bson.M{
+			"_id":         "$merId",
+			"refundedAmt": bson.M{"$sum": "$transAmt"},
+		}},
+		{"$project": bson.M{"refundedAmt": 1}},
+	}).One(s)
+
+	if err != nil {
+		if err.Error() == "not found" {
+			err = nil
+		} else {
+			log.Errorf("find refund trans error : %s", err)
+		}
+	}
+	return s.Amt, err
+}

@@ -206,4 +206,10 @@ func TestIsChineseOrJapaneseOrAlphanumeric(t *testing.T) {
 	if !result {
 		t.Error("出错啦")
 	}
+
+	result = isChineseOrJapaneseOrAlphanumeric("alp·json1233+-_")
+
+	if !result {
+		t.Error("出错啦")
+	}
 }
