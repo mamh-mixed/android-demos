@@ -44,3 +44,15 @@ func TestInsertFindUpdateMerchant(t *testing.T) {
 	}
 
 }
+
+func TestFindAllMerchant(t *testing.T) {
+	result, err := MerchantColl.FindAllMerchant()
+
+	if err != nil {
+		t.Errorf("失败了%s", err)
+	} else {
+		t.Logf("查找结果是： %+v", result)
+		t.Logf("长度： %d", len(result))
+	}
+
+}
