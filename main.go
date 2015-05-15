@@ -94,7 +94,7 @@ func quickMaster(port int) {
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
 
-	// http.HandleFunc("/quickMaster/", master.Quickpay)
+	http.HandleFunc("/quickMaster/", entrance.QuickMaster)
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("QuickMaster is running on %s", addr)
