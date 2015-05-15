@@ -11,7 +11,10 @@ func TestFindCfcaBankMap(t *testing.T) {
 	insCode := "0801009999"
 
 	cm, err := CfcaBankMapColl.Find(insCode)
-	cm, err = CfcaBankMapColl.Find(insCode)
+	for i := 0; i < 100; i++ {
+		CfcaBankMapColl.Find(insCode)
+	}
+	// cm, err = CfcaBankMapColl.Find(insCode)
 	if err != nil {
 		t.Errorf("Find cfcaBankMap error: (%s)", err.Error())
 	}

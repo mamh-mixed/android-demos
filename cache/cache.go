@@ -29,21 +29,25 @@ func (c *Cache) Set(k string, o interface{}, d time.Duration) {
 		t := time.Now().Add(d)
 		e = &t
 	}
-
+	c.mutex.Lock()
 	c.items[k] = &Item{
 		Object:     o,
 		Expiration: e,
 	}
+	c.mutex.Unlock()
 }
 
 func (c *Cache) Get(k string) (interface{}, bool) {
 
+	c.mutex.RLock()
 	v, found := c.items[k]
+	c.mutex.RUnlock()
 	// TODO
 	if !found || v.Expired() {
 		// delete(c.items, k)
 		return nil, false
 	}
+
 	return v.Object, true
 }
 
