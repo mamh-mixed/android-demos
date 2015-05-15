@@ -57,10 +57,12 @@ rs.add('quick.ipay.so:30000', true)
 
 rs.status()
 
-db.bindingInfo.createIndex({ bindingId : 1, merId : 1 },{ unique: true })
-db.bindingMap.createIndex({ bindingId : 1, merId : 1 },{ unique: true })
-db.trans.createIndex({ orderNum : 1, merId : 1 },{ unique: true })
-db.transSett.createIndex({ orderNum : 1, merId : 1 },{ unique: true })
+db.bindingInfo.createIndex({ bindingId : 1, merId : 1 },{ unique: true });
+db.bindingMap.createIndex({ bindingId : 1, merId : 1 },{ unique: true });
+db.trans.createIndex({ orderNum : 1, merId : 1 },{ unique: true });
+db.transSett.createIndex({ orderNum : 1, merId : 1 },{ unique: true });
+db.merchant.createIndex({merId : 1 },{ unique: true });
+db.cardBin.createIndex({bin : 1 },{ unique: true });
 
 
 ```
