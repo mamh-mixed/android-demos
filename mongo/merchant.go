@@ -3,8 +3,8 @@ package mongo
 import (
 	"errors"
 
+	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
-
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -14,6 +14,8 @@ type merchantCollection struct {
 }
 
 var MerchantColl = merchantCollection{"merchant"}
+
+var merCache = cache.New()
 
 // Insert 插入一个商户信息
 func (c *merchantCollection) Insert(m *model.Merchant) error {
@@ -31,8 +33,16 @@ func (c *merchantCollection) Insert(m *model.Merchant) error {
 	return err
 }
 
-// Find 根据给定的merId查找一个商户信息
+// Find 查找商户信息
+// 先从缓存里取，没有再访问数据库
 func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
+
+	// get from cache
+	o, found := merCache.Get(merId)
+	if found {
+		m = o.(*model.Merchant)
+		return m, nil
+	}
 	m = new(model.Merchant)
 	q := bson.M{"merId": merId}
 	err = database.C(c.name).Find(q).One(m)
@@ -40,6 +50,9 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 		log.Errorf("'Find Merchant ERROR!' Condition is (%+v);error is(%s)", q, err)
 		return nil, err
 	}
+	// save
+	merCache.Set(merId, m, cache.NoExpiration)
+
 	return m, nil
 }
 
