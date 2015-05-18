@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"encoding/pem"
 
+	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/omigo/log"
 )
 
@@ -57,18 +58,20 @@ ikahaQLV1atGk63K701Jtj061/jqkF2/Drv6FY+Uy+Rn
 var chinaPaymentCert *x509.Certificate
 
 // 缓存商户密钥
-var keyCache map[string]*rsa.PrivateKey
+// var keyCache map[string]*rsa.PrivateKey
+var keyCache = cache.New("chanMerRSAPrivKey")
 
 // 读私钥
 func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 
 	// 从缓存中查询
-	mk := keyCache[priKeyPem]
+	mk, found := keyCache.Get(priKeyPem)
 
 	// 存在 返回
-	if mk != nil {
+	if found {
 		// log.Debug("get key from cache")
-		return mk
+		pk := mk.(*rsa.PrivateKey)
+		return pk
 	}
 	// 没有则创建一个
 	PEMBlock, _ := pem.Decode([]byte(priKeyPem))
@@ -82,7 +85,8 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 	if err != nil {
 		log.Fatal(err)
 	}
-	keyCache[priKeyPem] = chinaPaymentPriKey
+	keyCache.Set(priKeyPem, chinaPaymentPriKey, cache.NoExpiration)
+	// keyCache[priKeyPem] = chinaPaymentPriKey
 
 	return chinaPaymentPriKey
 }
@@ -101,9 +105,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// init cache
-	keyCache = make(map[string]*rsa.PrivateKey)
 }
 
 // SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名

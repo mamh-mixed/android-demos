@@ -264,3 +264,12 @@ type TransSettLog struct {
 	ModifyTime string `bson:"modifyTime,omitempty"` // 更新时间 yyyy-mm-dd hh:mm:ss
 	Method     string `bson:"method,omitempty"`     // 执行方法
 }
+
+// CheckAndNotify 检查并通知
+type CheckAndNotify struct {
+	BizType string `bson:"bizType"`
+	CurTag  string `bson:"curTag"`
+	PrevTag string `bson:"prevTag"`
+	App1Tag string `bson:"app1Tag"`
+	App2Tag string `bson:"app2Tag"`
+}

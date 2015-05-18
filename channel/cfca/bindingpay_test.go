@@ -75,6 +75,7 @@ func TestProcessBindingEnquiry(t *testing.T) {
 		SignCert:      priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingEnquiry(be)
+	DefaultClient.ProcessBindingEnquiry(be)
 
 	log.Debugf("response message  %s", resp)
 }
