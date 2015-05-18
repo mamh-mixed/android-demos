@@ -15,12 +15,12 @@
                 width: 100%;
             }
 
-            .key-content dt {
-                font-weight: bold;
-            }
         </style>
-        <core-ajax id="ajax" url="/quickMaster/merchant/all" auto handleAs="json" on-core-response="{{onResponse}}"></core-ajax>
-        <paper-action-dialog id="overlay" heading="选择商户" class="scrolling" layered autoCloseDisabled backdrop transition="core-transition-center">
+        <core-ajax id="ajax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json"
+            body='{"merStatus":"Test"}'
+            on-core-response="{{onResponse}}">
+        </core-ajax>
+        <paper-action-dialog id="overlay" heading="选择商户" class="scrolling" layered backdrop transition="core-transition-center">
             <style media="screen">
                 paper-fab {
                     position: absolute;
@@ -33,28 +33,20 @@
             <div layout vertical center>
                 <template repeat="{{merchant in merchants}}">
                     <post-card identity="{{merchant.merId}}" on-chosen-tap="{{handleChosen}}">
-                        <div class="">
-                            <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
-                        </div>
-                        <div style="position: absolute;top: 24px;right: 32px;">
-                            交易币种： {{merchant.transCurr}}
-                            商户状态： {{merchant.merStatus}}
-                        </div>
                         <div class="key-content">
                             <dl>
                                 <dt>
-                                    <core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥:</dt>
+                                    <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
+                                </dt>
+                                <dd>{{merchant.remark}}</dd>
+                                <dt>
+                                    <core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥
+                                </dt>
                                 <dd>{{merchant.signKey}}</dd>
                                 <dt>
-                                    <core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥:</dt>
+                                    <core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥
+                                </dt>
                                 <dd>{{merchant.encryptKey}}</dd>
-                            </dl>
-                        </div>
-                        <div class="remark-content">
-                            <dl>
-                                <dt>
-                                    <core-icon icon="editor:mode-comment" alt="备注"></core-icon>备注:</dt>
-                                <dd>{{merchant.remark}}</dd>
                             </dl>
                         </div>
                     </post-card>

@@ -47,7 +47,10 @@ func TestInsertFindUpdateMerchant(t *testing.T) {
 }
 
 func TestFindAllMerchant(t *testing.T) {
-	result, err := MerchantColl.FindAllMerchant()
+	cond := &model.Merchant{
+		MerStatus: "Test",
+	}
+	result, err := MerchantColl.FindAllMerchant(cond)
 
 	if err != nil {
 		t.Errorf("失败了%s", err)

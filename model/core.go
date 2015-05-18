@@ -76,10 +76,11 @@ type CardBin struct {
 // Merchant 商户基本信息
 type Merchant struct {
 	MerId      string `bson:"merId,omitempty" json:"merId,omitempty"`           //商户号
-	MerStatus  string `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   //商户状态（Normal，Deleted）
+	MerStatus  string `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   //商户状态（Normal，Deleted，Test）
 	TransCurr  string `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   //商户交易币种
 	SignKey    string `bson:"signKey,omitempty" json:"signKey,omitempty"`       //商户签名密钥
 	EncryptKey string `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` //商户加密密钥
+	Remark     string `bson:"remark,omitempty" json:"remark,omitempty"`         //备注信息
 }
 
 // MerDetail 商户详细信息

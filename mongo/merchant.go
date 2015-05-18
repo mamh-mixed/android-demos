@@ -70,9 +70,9 @@ func (c *merchantCollection) Update(m *model.Merchant) error {
 }
 
 // FindAllMerchant 查找所有的商户信息。
-func (c *merchantCollection) FindAllMerchant() (results []model.Merchant, err error) {
+func (c *merchantCollection) FindAllMerchant(cond *model.Merchant) (results []model.Merchant, err error) {
 	results = make([]model.Merchant, 1)
-	err = database.C(c.name).Find(nil).All(&results)
+	err = database.C(c.name).Find(cond).All(&results)
 	if err != nil {
 		log.Errorf("Find all merchant error: %s", err)
 		return nil, err
