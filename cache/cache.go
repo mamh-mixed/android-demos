@@ -9,6 +9,14 @@ const (
 	NoExpiration = -1
 )
 
+// 维护应用中的缓存对象
+var Client cachePool
+
+func init() {
+	caches := make(map[string]*Cache)
+	Client.caches = caches
+}
+
 type Item struct {
 	Object     interface{}
 	Expiration *time.Time
@@ -18,6 +26,10 @@ type Cache struct {
 	mutex sync.RWMutex
 	items map[string]*Item
 	// ...
+}
+
+type cachePool struct {
+	caches map[string]*Cache
 }
 
 func (c *Cache) Set(k string, o interface{}, d time.Duration) {
@@ -51,6 +63,24 @@ func (c *Cache) Get(k string) (interface{}, bool) {
 	return v.Object, true
 }
 
+// Items 读取缓存对象
+func (c *Cache) Items() map[string]*Item {
+
+	c.mutex.RLock()
+	defer c.mutex.Unlock()
+	return c.items
+}
+
+// Clear 清空
+func (c *Cache) Clear() {
+
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	for k, _ := range c.items {
+		delete(c.items, k)
+	}
+}
+
 // Expired 检查是否过期
 func (i *Item) Expired() bool {
 
@@ -62,9 +92,26 @@ func (i *Item) Expired() bool {
 }
 
 // New 创建一个新的cache
-func New() *Cache {
+// name app中缓存唯一
+func New(name string) *Cache {
 	items := make(map[string]*Item)
-	return &Cache{
+
+	cache := &Cache{
 		items: items,
 	}
+
+	// 注册到全局缓存池中
+	Client.Add(name, cache)
+	return cache
+}
+
+// Add 往缓存池里增加一个
+func (c *cachePool) Add(name string, cache *Cache) {
+	c.caches[name] = cache
+}
+
+// Get 取一个
+func (c *cachePool) Get(name string) *Cache {
+	cache := c.caches[name]
+	return cache
 }

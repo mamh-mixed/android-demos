@@ -2,6 +2,7 @@ package pay
 
 import (
 	"github.com/CardInfoLink/quickpay/channel/cil"
+	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 )
 
@@ -17,7 +18,7 @@ func Initialize() {
 	cil.Connect()
 
 	// 检查数据配置是否有变化
-	CheckConf()
+	check.DoCheck()
 
 	// tcp listen
 	// entrance.ListenScanPay()

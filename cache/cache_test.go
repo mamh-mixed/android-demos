@@ -7,9 +7,9 @@ import (
 
 func TestCache(t *testing.T) {
 
-	c := New()
+	c := New("test")
 
-	c.Set("foo", "good", 0)
+	c.Set("foo", "good", -1)
 
 	v, f := c.Get("foo")
 
@@ -24,4 +24,15 @@ func TestCache(t *testing.T) {
 	v1, f1 := c.Get("boy")
 
 	t.Logf("%s,%b", v1, f1)
+
+	_ = New("test1")
+
+	t.Logf("%d", len(Client.caches))
+
+	c2 := Client.Get("test")
+
+	c2.Set("foo", "not bad", -1)
+	// t.Logf("%p,%p", c, c2)
+	v, f = c.Get("foo")
+	t.Logf("%s", v)
 }

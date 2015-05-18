@@ -31,6 +31,7 @@ func (c *respCodeCollection) GetByCfca(code string) (resp *model.BindingReturn) 
 	return resp
 }
 
+// GetByCIL 由线下应答码获得系统应答码
 func (c *respCodeCollection) GetByCIL(code string) (resp *model.BindingReturn) {
 	resp = &model.BindingReturn{}
 	database.C(c.name).Find(bson.M{"cil.code": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)

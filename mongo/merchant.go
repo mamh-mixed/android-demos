@@ -15,7 +15,7 @@ type merchantCollection struct {
 
 var MerchantColl = merchantCollection{"merchant"}
 
-var merCache = cache.New()
+var merCache = cache.New(MerchantColl.name)
 
 // Insert 插入一个商户信息
 func (c *merchantCollection) Insert(m *model.Merchant) error {
