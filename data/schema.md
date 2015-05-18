@@ -24,6 +24,7 @@
 | 商户交易币种          | transCurr      |                                  |
 | 商户签名密钥          | signKey        |                                  |
 | 商户加密密钥          | encryptKey     |                                  |
+| 备注信息          | remark     |                                  |
 
 
 * 商户详细信息 merDetail	merDetail

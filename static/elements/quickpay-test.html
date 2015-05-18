@@ -135,8 +135,11 @@
                     return merchant;
                 },
                 ready: function() {
-                    var merchant = JSON.parse(window.localStorage.getItem('QUICKPAY-MERCHANT') || {});
-                    document.querySelector('#merchantName').innerText = merchant.merId;
+                    var merStr = window.localStorage.getItem('QUICKPAY-MERCHANT');
+                    if (!!merStr) {
+                        var merchant = JSON.parse(merStr);
+                        document.querySelector('#merchantName').innerText = merchant.merId;
+                    }
 
                     var postAjax = this.$.postAjax;
                     var toast = this.$.ret;

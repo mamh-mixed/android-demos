@@ -1,14 +1,22 @@
 package master
 
 import (
+	"encoding/json"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 )
 
 // AllMerchant 处理查找所有商户的请求
-func AllMerchant() (result *model.ResultBody) {
-	merchants, err := mongo.MerchantColl.FindAllMerchant()
+func AllMerchant(data []byte) (result *model.ResultBody) {
+	cond := new(model.Merchant)
+	err := json.Unmarshal(data, cond)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	merchants, err := mongo.MerchantColl.FindAllMerchant(cond)
 
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
