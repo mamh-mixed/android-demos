@@ -1,4 +1,3 @@
-// 启动一个 Goruntine，检测数据库数据变化，重新初始化
 package pay
 
 import (
@@ -23,6 +22,7 @@ func CheckConf() {
 	go doCheckConf()
 }
 
+// 启动一个 Goruntine，检测数据库数据变化，重新初始化
 func doCheckConf() {
 
 	tick := time.Tick(30 * time.Second)

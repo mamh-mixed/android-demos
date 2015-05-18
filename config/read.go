@@ -61,7 +61,7 @@ func GetValue(section, key string) (v string) {
 	if err != nil {
 		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
 	}
-	log.Debugf("%s.%s = %s", section, key, v)
+	// log.Debugf("%s.%s = %s", section, key, v)
 
 	return v
 }
@@ -72,7 +72,7 @@ func Int(section, key string) (v int) {
 	if err != nil {
 		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
 	}
-	log.Debugf("%s.%s = %d", section, key, v)
+	// log.Debugf("%s.%s = %d", section, key, v)
 
 	return v
 }

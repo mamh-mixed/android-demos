@@ -160,14 +160,15 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	}
 	log.Debugf("received: %s", rxmlBytes)
 
-	// 验签
-	rhexSign := strings.TrimSpace(result[1])
-	log.Tracef("signed: %s", rhexSign)
-	err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
-	if err != nil {
-		log.Errorf("check sign failed %s", err)
-		return nil
-	}
+	// 返回消息验签失败得可能性极小，所以异步验签，提高效率
+	go func() {
+		rhexSign := strings.TrimSpace(result[1])
+		log.Tracef("signed: %s", rhexSign)
+		err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
+		if err != nil {
+			log.Errorf("check sign failed，xml=%s, sign=%s: %s", string(rxmlBytes), rhexSign, err)
+		}
+	}()
 
 	// 解编 xml
 	resp = new(BindingResponse)
