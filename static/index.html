@@ -37,9 +37,9 @@
 
         <core-scaffold id="scaffold" mode="scroll">
             <nav>
-                <core-toolbar>
-                    <core-icon icon="account-circle" on-tap="{{chooseMerchantHandler}}" class="acconut-circle"></core-icon>
-                    <span>快捷支付</span>
+                <core-toolbar on-tap="{{chooseMerchantHandler}}">
+                    <core-icon icon="account-circle" class="acconut-circle"></core-icon>
+                    <span id="merchantName">快捷支付</span>
                 </core-toolbar>
                 <core-menu id="menu" valueattr="hash" selected="{{route}}" selectedModel="{{selectedPage}}" on-core-select="{{menuItemSelected}}" on-click="{{ajaxLoad}}">
                     <template repeat="{{page, i in pages}}">
