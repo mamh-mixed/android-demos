@@ -57,5 +57,5 @@ core-animated-pages > *  {
 
 html /deep/ #overlay::shadow #scroller {
     height: 400px;
-    width: 600px;
+    width: 800px;
 }
