@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -696,8 +695,9 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 		return
 	}
 
-	log.Debugf("进入渠道处理之前:%+v", be)
-	ret = cil.Consume(be)
+	// 查找配置的渠道入口
+	c := channel.GetDirectPayChan(chanMer.ChanCode)
+	ret = c.Consume(be)
 
 	trans.ChanRespCode = ret.ChanRespCode
 	trans.RespCode = ret.RespCode
