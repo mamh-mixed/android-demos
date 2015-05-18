@@ -19,7 +19,10 @@
                 font-weight: bold;
             }
         </style>
-        <core-ajax id="ajax" url="/quickMaster/merchant/all" auto handleAs="json" on-core-response="{{onResponse}}"></core-ajax>
+        <core-ajax id="ajax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json"
+            body='{"merStatus":"Test"}'
+            on-core-response="{{onResponse}}">
+        </core-ajax>
         <paper-action-dialog id="overlay" heading="选择商户" class="scrolling" layered backdrop transition="core-transition-center">
             <style media="screen">
                 paper-fab {

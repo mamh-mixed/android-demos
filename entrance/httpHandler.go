@@ -85,7 +85,13 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 
 	switch r.URL.Path {
 	case "/quickMaster/merchant/all":
-		ret = master.AllMerchant()
+		data, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Errorf("Read all body error: %s", err)
+			w.WriteHeader(501)
+			return
+		}
+		ret = master.AllMerchant(data)
 	case "/quickMaster/router/find":
 		merId := r.FormValue("merId")
 		ret = master.AllRouterOfOneMerchant(merId)
