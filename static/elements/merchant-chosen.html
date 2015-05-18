@@ -16,21 +16,22 @@
         <paper-dialog id="overlay" heading="选择商户" class="scrolling" layered backdrop transition="core-transition-center">
             <div layout vertical center>
                 <template repeat="{{merchant in merchants}}">
-                    <post-card on-chosen-tap="{{handleChosen}}" on-read-more-tap="{{handleReadMore}}">
+                    <post-card identity="{{merchant.merId}}" on-chosen-tap="{{handleChosen}}">
                         <div class="">
-                            MerId: {{merchant.merId}}
+                            <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
+                            <br/>
+                            <core-icon icon="payment" alt="交易币种"></core-icon> {{merchant.transCurr}}
                         </div>
-                        <div class="">
-                            MerStatus: {{merchant.merStatus}}
+                        <div style="position: absolute;top: 24px;right: 32px;">
+                            <core-icon icon="label" alt="商户状态"></core-icon> {{merchant.merStatus}}
                         </div>
-                        <div class="">
-                            TransCurr: {{merchant.transCurr}}
-                        </div>
-                        <div class="">
-                            SignKey: {{merchant.signKey}}
-                        </div>
-                        <div class="">
-                            EncryptKey: {{merchant.encryptKey}}
+                        <div class="key-content">
+                            <dl>
+                                <dt><core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥:</dt>
+                                <dd>{{merchant.signKey}}</dd>
+                                <dt><core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥:</dt>
+                                <dd>{{merchant.encryptKey}}</dd>
+                            </dl>
                         </div>
                     </post-card>
                 </template>
@@ -74,11 +75,8 @@
                 handleChosen: function(event, detail, sender) {
                     var merchant = sender.templateInstance.model.merchant;
                     // 存储到本地存储中
-                    window.localStorage.setItem('QUICKPAY-MERCHANT',JSON.stringify(merchant));
+                    window.localStorage.setItem('QUICKPAY-MERCHANT', JSON.stringify(merchant));
                     this.close();
-                },
-                handleReadMore: function(e,d,s){
-                    var merchant = sender.templateInstance.model.merchant;
                 }
             });
         })();
