@@ -15,9 +15,6 @@
                 width: 100%;
             }
 
-            .key-content dt {
-                font-weight: bold;
-            }
         </style>
         <core-ajax id="ajax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json"
             body='{"merStatus":"Test"}'
@@ -36,19 +33,19 @@
             <div layout vertical center>
                 <template repeat="{{merchant in merchants}}">
                     <post-card identity="{{merchant.merId}}" on-chosen-tap="{{handleChosen}}">
-                        <div>
-                            {{merchant.remark}}
-                        </div>
-                        <div class="">
-                            <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
-                        </div>
                         <div class="key-content">
                             <dl>
                                 <dt>
-                                    <core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥:</dt>
+                                    <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
+                                </dt>
+                                <dd>{{merchant.remark}}</dd>
+                                <dt>
+                                    <core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥
+                                </dt>
                                 <dd>{{merchant.signKey}}</dd>
                                 <dt>
-                                    <core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥:</dt>
+                                    <core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥
+                                </dt>
                                 <dd>{{merchant.encryptKey}}</dd>
                             </dl>
                         </div>
