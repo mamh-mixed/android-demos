@@ -1,34 +1,49 @@
 #/bin/bash
 
-set -e
+set -ex
 
-host="webapp@121.40.86.222"
 prog="quickpay"
-args="-all -port 6800"
-# args="-master -port 6700"
-# args="-pay -port 6800"
-# args="-settle -port 6900"
 
-workdir=/opt/$prog
+function main() {
+    # Golang 跨平台编译
+    echo "=== Building $prog..."
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
 
+    host="webapp@121.40.86.222"
+    args="-all -port 6800"
+    # args="-master -port 6700"
+    # args="-pay -port 6800"
+    # args="-settle -port 6900"
 
-# Golang 跨平台编译
-echo "=== Building $prog..."
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
+    workdir="/opt/$prog"
 
-# 上传文件
-echo
-echo "=== Uploading $prog..."
-rsync -rcv --progress $prog $host:$workdir/
-rm -f $prog
-rsync -rcv --progress config/*.ini $host:$workdir/config/
-rsync -rcv --progress static/ $host:$workdir/static/
+    deploy $host "$args" $workdir
 
+    # host="webapp@121.40.86.222"
+    # args="-all -port 68001"
+    # workdir="/opt/${prog}2"
+    #
+    # deploy $host "$args" $workdir
 
-# 远程执行重启命令
-echo
-echo "=== SSH $host"
-ssh $host << EOF
+    rm -f $prog
+}
+
+function deploy() {
+    host=$1
+    args=$2
+    workdir=$3
+
+    # 上传文件
+    echo
+    echo "=== Uploading $prog..."
+    rsync -rcv --progress $prog $host:$workdir/
+    rsync -rcv --progress config/*.ini $host:$workdir/config/
+    rsync -rcv --progress static/ $host:$workdir/static/
+
+    # 远程执行重启命令
+    echo
+    echo "=== SSH $host"
+    ssh $host << EOF
 export QUICKPAY_ENV=testing
 
 cd $workdir
@@ -51,6 +66,12 @@ tail -n 30 logs/$prog.log
 
 echo
 echo "=== Publish done."
+echo
 exit
 
 EOF
+}
+
+main
+
+exit 0
