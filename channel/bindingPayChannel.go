@@ -1,7 +1,6 @@
 package channel
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 )
@@ -33,21 +32,6 @@ type BindingPayChan interface {
 	// ProcessTransChecking(chanMerId, settDate, signCert string) (resp *BindingResponse)
 }
 
-// ScanPayChan 扫码支付
-type ScanPayChan interface {
-	// ProcessBarcodePay 扫条码下单
-	ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse
-
-	// ProcessQrCodeOfflinePay 扫二维码预下单
-	ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
-
-	// ProcessRefund 退款
-	ProcessRefund(req *model.ScanPay) *model.ScanPayResponse
-
-	// ProcessEnquiry 查询
-	ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse
-}
-
 // GetChan 根据chanCode获得渠道对象
 func GetChan(chanCode string) BindingPayChan {
 
@@ -56,20 +40,6 @@ func GetChan(chanCode string) BindingPayChan {
 		return &mockClient
 	case "CFCA":
 		return &cfca.DefaultClient
-	case "CIL":
-		return nil
-	}
-	return nil
-}
-
-// GetScanPayChan 扫码支付渠道
-func GetScanPayChan(chanCode string) ScanPayChan {
-
-	switch chanCode {
-	case "Alipay":
-		return &alipay.DefaultClient
-	case "Weixin":
-		return nil
 	}
 	return nil
 }

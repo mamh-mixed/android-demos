@@ -21,11 +21,17 @@ const (
 	reversalFlag = "TIME_OUT" // 冲正标识
 )
 
-var transTimeout = 50 * time.Second // 超时时间
-var reversalTimeouts = [...]time.Duration{transTimeout, transTimeout * 1, transTimeout * 8, transTimeout * 50, transTimeout * 1140}
+var (
+	DefaultCILPayClient CILPay             // 线下网关交易的入口
+	transTimeout        = 50 * time.Second // 超时时间
+	reversalTimeouts    = [...]time.Duration{transTimeout, transTimeout * 1, transTimeout * 8, transTimeout * 50, transTimeout * 1140}
+)
+
+// CILPay 表示线下网关的支付对象
+type CILPay struct{}
 
 // Consume 直接消费（订购消费）
-func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
+func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 	// 构建消费报文
 	m := &model.CilMsg{
 		Busicd:       orderConsumeBusicd,
@@ -70,7 +76,7 @@ func Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 }
 
 // ConsumeByApplePay ApplePay 消费
-func ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
+func (c *CILPay) ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	m := &model.CilMsg{
 		Busicd:        consumeBusicd,
 		Txndir:        "Q",

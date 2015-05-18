@@ -90,7 +90,7 @@ func TestConsumeByApplePay(t *testing.T) {
 		SysSN:      mongo.SnColl.GetSysSN(),
 	}
 
-	ret := ConsumeByApplePay(ap)
+	ret := DefaultCILPayClient.ConsumeByApplePay(ap)
 	if ret.RespCode != "000000" {
 		t.Errorf("ApplePay error %#v", ret)
 	}
@@ -127,7 +127,7 @@ func TestConsumeNoTrack(t *testing.T) {
 		SysSN:            mongo.SnColl.GetSysSN(),
 	}
 
-	ret := Consume(p)
+	ret := DefaultCILPayClient.Consume(p)
 	if ret.RespCode != "000000" {
 		t.Errorf("ApplePay error %#v", ret)
 	}
@@ -162,5 +162,5 @@ func TestReversalHandle(t *testing.T) {
 		CliSN:       "1" + mongo.SnColl.GetDaySN(testMchntId, testTerminalId),
 		SysSN:       mongo.SnColl.GetSysSN(),
 	}
-	Consume(p)
+	DefaultCILPayClient.Consume(p)
 }

@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/cil"
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -106,7 +106,9 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return
 	}
 
-	ret = cil.ConsumeByApplePay(ap)
+	// 查找配置的渠道入口
+	c := channel.GetDirectPayChan(chanMer.ChanCode)
+	ret = c.ConsumeByApplePay(ap)
 
 	trans.ChanRespCode = ret.ChanRespCode
 	trans.RespCode = ret.RespCode

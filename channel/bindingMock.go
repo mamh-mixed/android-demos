@@ -66,3 +66,19 @@ func (m *MockBindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
+
+// Consume 模拟一个消费(无卡直接支付)的处理。
+func (m *MockBindingPay) Consume(be *model.NoTrackPayment) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
+
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
+
+// ConsumeByApplePay 模拟一个Apple pay消费的处理。
+func (m *MockBindingPay) ConsumeByApplePay(be *model.ApplePay) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
+
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
