@@ -4,6 +4,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -13,6 +14,7 @@ import (
 )
 
 var conf *goconfig.ConfigFile
+var workDir string
 
 func init() {
 	sysEnv := "QUICKPAY_ENV"
@@ -23,17 +25,18 @@ func init() {
 	}
 	fmt.Printf("quickpay environment: %s\n", env)
 
-	wd, err := os.Getwd()
+	var err error
+	workDir, err = os.Getwd()
 	if err != nil {
 		log.Fatalf("can not get work directory: %s", err)
 	}
 	pkg := "github.com/CardInfoLink/quickpay"
-	if pos := strings.Index(wd, pkg); pos >= 0 {
-		wd = wd[:(pos + len(pkg))]
+	if pos := strings.Index(workDir, pkg); pos >= 0 {
+		workDir = workDir[:(pos + len(pkg))]
 	}
 
-	fmt.Printf("work directory: %s\n", wd)
-	fileName := fmt.Sprintf("%s/config/config_%s.ini", wd, env)
+	fmt.Printf("work directory: %s\n", workDir)
+	fileName := fmt.Sprintf("%s/config/config_%s.ini", workDir, env)
 
 	conf, err = goconfig.LoadConfigFile(fileName)
 	if err != nil {
@@ -53,6 +56,27 @@ func init() {
 		}
 	}
 	fmt.Println()
+}
+
+// GetWorkDir 获取程序启动目录
+func GetWorkDir() string {
+	return workDir
+}
+
+// GetFile 从配置文件中读取文件全名，包含绝对路径
+func GetFile(section, key string) (filename string, err error) {
+	v := GetValue(section, key)
+	if v == "" {
+		return "", errors.New("selection %s key %s not configurated")
+	}
+
+	// 如果配置的是绝对路径，直接返回
+	if v[0] == '/' {
+		return v, nil
+	}
+
+	// 如果配置的是相对路径，那么就是以启动程序的目录为相对路径
+	return GetWorkDir() + "/" + v, nil
 }
 
 // GetValue 从配置文件中取值
