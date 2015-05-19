@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"os"
+	"regexp"
 	"strconv"
 )
 
@@ -48,7 +49,9 @@ func InitTestMer(start, end int, cardBrand string) error {
 func AddCardBinFromCsv(path string, rebuild bool) error {
 
 	cardBins, err := ReadCardBinCsv(path)
-	// fmt.Println(len(cardBins), err)
+	if err != nil {
+		return err
+	}
 	// 重建
 	if rebuild {
 		err = mongo.CardBinColl.Drop()
@@ -172,8 +175,32 @@ func ReadCardBinCsv(path string) ([]*model.CardBin, error) {
 		if i == 0 {
 			continue
 		}
-		binLen, _ := strconv.Atoi(each[1])
-		cardLen, _ := strconv.Atoi(each[3])
+		// 判断该记录的长度是否为5
+		if len(each) != 5 {
+			return nil, fmt.Errorf("%d行格式错误，检测到有%d个字段", i+1, len(each))
+		}
+
+		if matched, _ := regexp.MatchString(`^\d+$`, each[0]); !matched {
+			return nil, fmt.Errorf("%d行，bin应为数字，实际为：%s", i+1, each[0])
+		}
+
+		binLen, err := strconv.Atoi(each[1])
+		if err != nil {
+			return nil, fmt.Errorf("%d行，binLen应为数字，实际为：%s", i+1, each[1])
+		}
+
+		if matched, _ := regexp.MatchString(`^\d+$`, each[2]); !matched {
+			return nil, fmt.Errorf("%d行，insCode应为数字，实际为：%s", i+1, each[2])
+		}
+
+		cardLen, err := strconv.Atoi(each[3])
+		if err != nil {
+			return nil, fmt.Errorf("%d行，cardLen应为数字，实际为：%s", i+1, each[3])
+		}
+
+		if matched, _ := regexp.MatchString(`^[A-Z]+$`, each[4]); !matched {
+			return nil, fmt.Errorf("%d行，cardBrand应为大写字母，实际为：%s", i+1, each[4])
+		}
 
 		c := &model.CardBin{Bin: each[0], BinLen: binLen,
 			InsCode: each[2], CardLen: cardLen, CardBrand: each[4]}
