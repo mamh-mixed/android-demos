@@ -6,28 +6,42 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/config"
-	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/config"
+	"github.com/omigo/log"
 )
 
 var requestURL = config.GetValue("cfca", "url")
 
 var cli *http.Client
 
-// 初始化中金 Https 客户端
+// 初始化中金 HTTPS 客户端
 func init() {
-
-	cfcaEvCcaCrt, err := ioutil.ReadFile(fmt.Sprintf("../../%s", config.GetValue("cfca", "ccaCert")))
+	ccaCertFile, err := config.GetFile("cfca", "ccaCert")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("cfca ev_cca_cert config error: %s", err)
+		os.Exit(2)
 	}
-	cfcaEvRootCrt, err := ioutil.ReadFile(fmt.Sprintf("../../%s", config.GetValue("cfca", "rootCert")))
+	cfcaEvCcaCrt, err := ioutil.ReadFile(ccaCertFile)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("read cfca ev_cca_cert error: %s", err)
+		os.Exit(3)
+	}
+
+	rootCert, err := config.GetFile("cfca", "rootCert")
+	if err != nil {
+		fmt.Printf("cfca root_cert config error: %s", err)
+		os.Exit(2)
+	}
+	cfcaEvRootCrt, err := ioutil.ReadFile(rootCert)
+	if err != nil {
+		fmt.Printf("read cfca ev_root_cert error: %s", err)
+		os.Exit(3)
 	}
 
 	certs := x509.NewCertPool()

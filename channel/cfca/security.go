@@ -9,11 +9,13 @@ import (
 	"encoding/hex"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/config"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"io/ioutil"
 )
 
 // var chinaPaymentPriKey *rsa.PrivateKey
@@ -54,11 +56,15 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 
 // 读证书
 func init() {
-
-	// read from file
-	certPem, err := ioutil.ReadFile(fmt.Sprintf("../../%s", config.GetValue("cfca", "cert")))
+	certPemFile, err := config.GetFile("cfca", "cert")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("cfca cert config error: %s", err)
+		os.Exit(2)
+	}
+	certPem, err := ioutil.ReadFile(certPemFile)
+	if err != nil {
+		fmt.Printf("read cfca cert error: %s", err)
+		os.Exit(3)
 	}
 
 	PEMBlock, _ := pem.Decode(certPem)
