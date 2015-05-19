@@ -30,7 +30,7 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		return mongo.RespCodeColl.Get("200100")
 	}
 
-	if !isChineseOrJapaneseOrAlphanumeric(request.AcctNumDecrypt) {
+	if !isAlphanumericOrSpecial(request.AcctNumDecrypt) {
 		return mongo.RespCodeColl.Get("200110")
 	}
 
@@ -246,7 +246,7 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 	if in.AcctNum == "" || in.AcctNumDecrypt == "" {
 		return model.NewBindingReturn("200050", "字段 acctNum 不能为空")
 	}
-	if matched, _ := regexp.MatchString(`^\d+$`, in.AcctNumDecrypt); !matched {
+	if !isAlphanumericOrSpecial(in.AcctNumDecrypt) {
 		return mongo.RespCodeColl.Get("200110")
 	}
 
@@ -259,7 +259,7 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 
 	// IdentNum
 	if in.IdentNum != "" && in.IdentNumDecrypt != "" {
-		if !isAlphanumeric(in.IdentNumDecrypt) {
+		if !isAlphanumericOrSpecial(in.IdentNumDecrypt) {
 			return model.NewBindingReturn("200051", "字段 identNum 不符合要求")
 		}
 	}
@@ -302,6 +302,15 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 // isAlphanumeric 用来判断一个字符串是否是字母或者数字
 func isAlphanumeric(str string) (result bool) {
 	matched, _ := regexp.MatchString(`^(?i)[a-z0-9]+$`, str)
+	if matched {
+		return true
+	}
+	return false
+}
+
+// isAlphanumeric 用来判断一个字符串是否是字母或者数字或者特殊字符
+func isAlphanumericOrSpecial(str string) (result bool) {
+	matched, _ := regexp.MatchString(`^(?i)[a-z0-9_+-·]+$`, str)
 	if matched {
 		return true
 	}
