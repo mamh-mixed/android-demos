@@ -62,6 +62,9 @@ func GetValue(section, key string) (v string) {
 		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
 	}
 	// log.Debugf("%s.%s = %s", section, key, v)
+	if v == "" {
+		log.Warnf("selection `%s` key `%s` value is blank", section, key)
+	}
 
 	return v
 }
