@@ -37,7 +37,7 @@ function deploy() {
     echo
     echo "=== Uploading $prog..."
     rsync -rcv --progress $prog $host:$workdir/
-    rsync -rcv --progress config/*.ini $host:$workdir/config/
+    rsync -rcv --progress config/ --exclude=*.go $host:$workdir/config/
     rsync -rcv --progress static/ $host:$workdir/static/
 
     # 远程执行重启命令
