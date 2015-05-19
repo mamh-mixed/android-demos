@@ -4,6 +4,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// status
 const (
 	TransRefunded     = 1 //已退款
 	TransPartRefunded = 2 //部分退款
@@ -22,6 +23,15 @@ const (
 	BindingFail     = "20" //绑定失败
 	BindingSuccess  = "30" //绑定成功
 	BindingRemoved  = "40" //已解绑（绑定成功过，后续解绑也成功）
+)
+
+// cache name
+const (
+	Cache_CardBin           = "cardBin"
+	Cache_Merchant          = "merchant"
+	Cache_ChanMer           = "chanMer"
+	Cache_CfcaBankMap       = "cfcaBankMap"
+	Cache_ChanMerRSAPrivKey = "chanMerRSAPrivKey"
 )
 
 // RouterPolicy 路由策略
