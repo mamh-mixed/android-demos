@@ -27,7 +27,7 @@
 | 备注信息          | remark     |                                  |
 
 
-* 商户详细信息 merDetail	merDetail
+* 商户详细信息 merDetail
 
 | 名称              | 字段             | 备注                           |
 | --------------- | -------------  | -------------                    |
@@ -188,7 +188,7 @@
 | 名称              | 字段             | 备注                        |
 | --------------- | -------------  | -------------                 |
 | 清算状态            | status         | 1-成功 2-失败                |
-| 清算机器IP          | addr           | 1-成功 2-失败                 |
+| 清算机器IP          | addr           |                 				|
 | 清算日期            | date           | 格式 yyyy-mm-dd              |
 | 清算开始时间         | createTime     | yyyy-mm-dd hh:mm:ss         |
 | 清算结束时间         | modifyTime     | yyyy-mm-dd hh:mm:ss         |
