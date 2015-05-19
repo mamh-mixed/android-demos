@@ -21,12 +21,11 @@ var cli *http.Client
 // 初始化中金 Https 客户端
 func init() {
 
-	env := config.GetValue("cfca", "env")
-	cfcaEvCcaCrt, err := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/evCcaCrt_%s.pem", env))
+	cfcaEvCcaCrt, err := ioutil.ReadFile(fmt.Sprintf("../../%s", config.GetValue("cfca", "ccaCert")))
 	if err != nil {
 		log.Fatal(err)
 	}
-	cfcaEvRootCrt, err := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/evRootCrt_%s.pem", env))
+	cfcaEvRootCrt, err := ioutil.ReadFile(fmt.Sprintf("../../%s", config.GetValue("cfca", "rootCert")))
 	if err != nil {
 		log.Fatal(err)
 	}

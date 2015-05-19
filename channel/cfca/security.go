@@ -56,7 +56,7 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 func init() {
 
 	// read from file
-	certPem, err := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/cert_%s.pem", config.GetValue("cfca", "env")))
+	certPem, err := ioutil.ReadFile(fmt.Sprintf("../../%s", config.GetValue("cfca", "cert")))
 	if err != nil {
 		log.Fatal(err)
 	}
