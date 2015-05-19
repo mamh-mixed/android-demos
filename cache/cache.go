@@ -67,7 +67,7 @@ func (c *Cache) Get(k string) (interface{}, bool) {
 func (c *Cache) Items() map[string]*Item {
 
 	c.mutex.RLock()
-	defer c.mutex.Unlock()
+	defer c.mutex.RUnlock()
 	return c.items
 }
 

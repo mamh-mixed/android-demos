@@ -27,7 +27,7 @@
 | 备注信息          | remark     |                                  |
 
 
-* 商户详细信息 merDetail	merDetail
+* 商户详细信息 merDetail
 
 | 名称              | 字段             | 备注                           |
 | --------------- | -------------  | -------------                    |
@@ -145,6 +145,7 @@
 | --------------- | -------------  | -------------                    |
 | 商户订单号           | orderNum       |                                  |
 | 网关订单号           | sysOrderNum   |                                  |
+| 渠道订单号           | chanOrderNum   |                                  |
 | 退款订单号           | refundOrderNum |                                  |
 | 绑定ID            | chanBindingId  |                                  |
 | 交易账户            | acctNum        |                                  |
@@ -161,9 +162,14 @@
 | 交易更新时间          | updateTime     |                                  |
 | 短信流水号           | sendSmsId      |                                  |
 | 短信验证码           | smsCode        |                                  |
-| 备注              | remark         |                                  |
-| 子商户id           | subMerId       |                                  |
-
+| 备注              | remark           |                                  |
+| 子商户id           | subMerId         |                                  |
+| 渠道折扣			| chanDiscount     |	支付宝、微信						|
+| 商户折扣			| merDiscount      |	支付宝、微信						|
+| 消费帐号			| consumerAccount  |	支付宝、微信						|
+| 消费类型			| consumerId       |	支付宝、微信						|
+| 业务类型			| busicd           |	支付宝、微信						|
+| 机构号			    | inscd            |	支付宝、微信						|
 
 * 清算信息 TransSett
 
@@ -176,6 +182,17 @@
 | 商户手续费           | merFee         |                                  |
 | 渠道清算金额          | chanSettAmt    |                                  |
 | 渠道手续费           | chanFee        |                                  |
+
+* 清算日志 TransSettLog
+
+| 名称              | 字段             | 备注                        |
+| --------------- | -------------  | -------------                 |
+| 清算状态            | status         | 1-成功 2-失败                |
+| 清算机器IP          | addr           |                 				|
+| 清算日期            | date           | 格式 yyyy-mm-dd              |
+| 清算开始时间         | createTime     | yyyy-mm-dd hh:mm:ss         |
+| 清算结束时间         | modifyTime     | yyyy-mm-dd hh:mm:ss         |
+| 清算任务名称         | method         |                             |
 
 
 * 计数器 counter

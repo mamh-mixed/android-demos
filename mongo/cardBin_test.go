@@ -52,7 +52,9 @@ func TestLoadAll(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	cb, err := CardBinColl.Find("622280193", len(cardNum))
 	log.Debugf("%d", len(cbs))
+	log.Debugf("%v", cb)
 }
 
 func TestFindCardBin(t *testing.T) {

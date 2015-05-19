@@ -212,4 +212,10 @@ func TestIsChineseOrJapaneseOrAlphanumeric(t *testing.T) {
 	if !result {
 		t.Error("出错啦")
 	}
+
+	result = isAlphanumericOrSpecial("44581312312323+-_aa")
+
+	if !result {
+		t.Error("出错啦")
+	}
 }
