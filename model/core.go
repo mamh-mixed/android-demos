@@ -224,7 +224,7 @@ type TransSettInfo struct {
 	//TODO check 交易日期
 }
 
-// 每个终端对应的当日唯一的6位序列号
+// SN 每个终端对应的当日唯一的6位序列号
 type SN struct {
 	Type   string `bson:"type"`   // 类型
 	MerId  string `bson:"merId"`  // 商户号
@@ -239,7 +239,7 @@ type Version struct {
 	VnType string `bson:"vnType"` // 版本类型
 }
 
-// chanCsv 渠道文件csv
+// ChanCsv 渠道文件csv
 type ChanCsv struct {
 	Code     string `bson:"code"`
 	Msg      string `bson:"msg"`
@@ -247,7 +247,7 @@ type ChanCsv struct {
 	RespMsg  string `bson:",omitempty"`
 }
 
-// quickpayCsv 系统应答码
+// QuickpayCsv 系统应答码
 type QuickpayCsv struct {
 	RespCode string     `bson:"respCode"`
 	RespMsg  string     `bson:"respMsg"`
@@ -256,7 +256,7 @@ type QuickpayCsv struct {
 	//...
 }
 
-// TransSettLog
+// TransSettLog 清算日志
 type TransSettLog struct {
 	Status     int8   `bson:"status,omitempty"`     // 状态值 1-成功 2-失败
 	Addr       string `bson:"addr,omitempty"`       // 地址
@@ -273,4 +273,6 @@ type CheckAndNotify struct {
 	PrevTag string `bson:"prevTag"`
 	App1Tag string `bson:"app1Tag"`
 	App2Tag string `bson:"app2Tag"`
+	App3Tag string `bson:"app3Tag"`
+	App4Tag string `bson:"app4Tag"`
 }

@@ -3,63 +3,73 @@
 package check
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/cache"
+	"github.com/CardInfoLink/quickpay/config"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
-func DoCheck() {
-	// do something
+var appId string
 
-	go checking()
+// DoCheck 定时检查配置
+func DoCheck() {
+	appId = config.GetValue("app", "appId")
+
+	go check()
 }
 
-func checking() {
-	// tick ...
+func check() {
 	log.Debug("wait to check conf...")
 	tick := time.Tick(30 * time.Second)
 
 	for {
 		<-tick
+
 		// 取 checkAndNotify 文档所有记录
-		cans, err := mongo.NotifyColl.GetAll()
+		notifies, err := mongo.NotifyColl.GetAll()
 		if err != nil {
 			log.Errorf("fail to load all CheckAndNotify info : %s", err)
 			continue
 		}
 
-		changes := make([]*model.CheckAndNotify, 0, len(cans))
+		changes := make([]*model.CheckAndNotify, 0, len(notifies))
 		// 遍历
-		for _, v := range cans {
-			// TODO read from config
-			if v.App1Tag != v.CurTag {
-				// 放到slice里
-				changes = append(changes, v)
+		for _, v := range notifies {
+			// TODO 利用反射，得到对应字段
+			switch appId {
+			case "app1":
+				if v.App1Tag != v.CurTag {
+					changes = append(changes, v)
+				}
+			case "app2":
+				if v.App2Tag != v.CurTag {
+					changes = append(changes, v)
+				}
+			case "app3":
+				if v.App1Tag != v.CurTag {
+					changes = append(changes, v)
+				}
+			case "app4":
+				if v.App1Tag != v.CurTag {
+					changes = append(changes, v)
+				}
 			}
 		}
 
 		// 处理
-		go notifying(changes)
+		go notify(changes)
 	}
 }
 
-func notifying(changes []*model.CheckAndNotify) {
+func notify(changes []*model.CheckAndNotify) {
 
 	for _, v := range changes {
-		// 获得缓存
-		c := cache.Client.Get(v.BizType)
-
-		// 清空
-		if c != nil {
-			log.Debugf("clear %s cache...", v.BizType)
-			c.Clear()
-		}
-
-		// cardBin需要重建树
-		if v.BizType == "cardBin" {
+		switch v.BizType {
+		case "cardBin":
 			// TODO
 			log.Infof("cardBin had been updated (%s -> %s), begin to rebuild the cardBin tree ", v.CurTag, v.App1Tag)
 			err := core.ReBuildTree()
@@ -67,12 +77,32 @@ func notifying(changes []*model.CheckAndNotify) {
 				log.Error(err)
 				continue
 			}
+		case "merchant", "chanMer", "cfcaBankMap", "chanMerRSAPrivKey":
+			// 获得缓存
+			c := cache.Client.Get(v.BizType)
+
+			// 清空
+			if c != nil {
+				log.Debugf("clear %s cache...", v.BizType)
+				c.Clear()
+			}
+		default:
+			log.Errorf("unimplement business type")
 		}
 
-		// 成功，更新当前版本
-		// TODO
-		v.PrevTag = v.CurTag
-		v.CurTag = v.App1Tag
+		// 成功，更新当前应用的版本，不要更新其他值
+		// TODO 利用反射，得到对应字段
+		switch appId {
+		case "app1":
+			v.App1Tag = v.CurTag
+		case "app2":
+			v.App2Tag = v.CurTag
+		case "app3":
+			v.App3Tag = v.CurTag
+		case "app4":
+			v.App4Tag = v.CurTag
+		}
+
 		err := mongo.NotifyColl.Update(v)
 		if err != nil {
 			log.Errorf("fail to update NotifyColl(%+v) : %s", v, err)
