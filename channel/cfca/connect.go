@@ -22,11 +22,14 @@ var cli *http.Client
 func init() {
 
 	env := config.GetValue("cfca", "env")
-	if env == "" {
-		log.Fatal("no env param of cfca ")
+	cfcaEvCcaCrt, err := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/evCcaCrt_%s.pem", env))
+	if err != nil {
+		log.Fatal(err)
 	}
-	cfcaEvCcaCrt, _ := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/evCcaCrt_%s.pem", env))
-	cfcaEvRootCrt, _ := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/evRootCrt_%s.pem", env))
+	cfcaEvRootCrt, err := ioutil.ReadFile(fmt.Sprintf("../../config/pem/cfca/evRootCrt_%s.pem", env))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	certs := x509.NewCertPool()
 	certs.AppendCertsFromPEM(cfcaEvCcaCrt)
