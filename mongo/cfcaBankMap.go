@@ -13,7 +13,7 @@ type cfcaBankMapCollection struct {
 
 var CfcaBankMapColl = cfcaBankMapCollection{"cfcaBankMap"}
 
-var cfcaCache = cache.New(CfcaBankMapColl.name)
+var cfcaCache = cache.New(model.Cache_CfcaBankMap)
 
 // Find 根据卡BIN中的发卡行号查找中金支持的银行映射
 func (c *cfcaBankMapCollection) Find(insCode string) (cb *model.CfcaBankMap, err error) {

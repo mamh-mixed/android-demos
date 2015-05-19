@@ -69,7 +69,7 @@ func notify(changes []*model.CheckAndNotify) {
 
 	for _, v := range changes {
 		switch v.BizType {
-		case "cardBin":
+		case model.Cache_CardBin:
 			// TODO
 			log.Infof("cardBin had been updated (%s -> %s), begin to rebuild the cardBin tree ", v.CurTag, v.App1Tag)
 			err := core.ReBuildTree()
@@ -77,7 +77,7 @@ func notify(changes []*model.CheckAndNotify) {
 				log.Error(err)
 				continue
 			}
-		case "merchant", "chanMer", "cfcaBankMap", "chanMerRSAPrivKey":
+		case model.Cache_Merchant, model.Cache_ChanMer, model.Cache_CfcaBankMap, model.Cache_ChanMerRSAPrivKey:
 			// 获得缓存
 			c := cache.Client.Get(v.BizType)
 
@@ -87,7 +87,7 @@ func notify(changes []*model.CheckAndNotify) {
 				c.Clear()
 			}
 		default:
-			log.Errorf("unimplement business type")
+			log.Errorf("unimplement business type %s", v.BizType)
 		}
 
 		// 成功，更新当前应用的版本，不要更新其他值
