@@ -184,7 +184,7 @@ func validateBillingDetails(in *model.BillingDetails) (ret *model.BindingReturn)
 		return model.NewBindingReturn("200200", "日期 settDate 格式错误")
 	}
 
-	if !isAlphanumeric(in.NextOrderNum) {
+	if in.NextOrderNum != "" && !isAlphanumeric(in.NextOrderNum) {
 		return model.NewBindingReturn("200080", "订单号 nextOrderNum 格式错误")
 	}
 	return
