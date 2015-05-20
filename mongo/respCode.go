@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -13,13 +14,26 @@ type respCodeCollection struct {
 // RespCodeColl 应答码 Collection
 var RespCodeColl = respCodeCollection{"respCode"}
 
+var respCodeCache = cache.New(model.Cache_RespCode)
+
 // Get 根据传入的code类型得到Resp对象
 func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {
+
+	o, found := respCodeCache.Get(code)
+	if found {
+		resp = o.(*model.BindingReturn)
+		return resp
+	}
+
 	resp = &model.BindingReturn{}
 	err := database.C(c.name).Find(bson.M{"respCode": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)
 	if err != nil {
 		log.Errorf("can not find respCode for %s: %s", code, err)
+		return resp
 	}
+
+	// save cache
+	respCodeCache.Set(code, resp, cache.NoExpiration)
 
 	return resp
 }

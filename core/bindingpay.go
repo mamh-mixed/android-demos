@@ -88,7 +88,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
 		log.Errorf("not found any chanMer (%s)", err)
-		return
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
@@ -102,7 +102,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
 		log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
-		return
+		return mongo.RespCodeColl.Get("300030")
 	}
 	bc.BankId = cm.BankId
 
@@ -425,6 +425,8 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		} else {
 			refundStatus = model.TransPartRefunded
 		}
+	case be.TransAmt == orign.TransAmt:
+		refundStatus = model.TransRefunded
 	}
 	if !legal {
 		mongo.TransColl.Add(refund)
