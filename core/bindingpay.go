@@ -88,7 +88,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
 		log.Errorf("not found any chanMer (%s)", err)
-		return
+		return mongo.RespCodeColl.Get("300030")
 	}
 
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
@@ -102,7 +102,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
 		log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
-		return
+		return mongo.RespCodeColl.Get("300030")
 	}
 	bc.BankId = cm.BankId
 
@@ -206,9 +206,10 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	//只要订单号不重复就记录这笔交易
-	errorTrans := &model.Trans{
+	trans := &model.Trans{
 		MerId:     be.MerId,
 		OrderNum:  be.MerOrderNum,
+		TransType: model.PayTrans,
 		BindingId: be.BindingId,
 		TransAmt:  be.TransAmt,
 		SendSmsId: be.SendSmsId,
@@ -222,69 +223,65 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	legal := true
 	// 如果绑定关系不是成功的状态，返回
 	switch {
-	case err != nil && err.Error() == "not found":
-		errorTrans.RespCode = "200070"
+	case err != nil:
+		if err.Error() == "not found" {
+			trans.RespCode = "200070"
+		} else {
+			trans.RespCode = "000001"
+		}
 		legal = false
 	case bm.BindingStatus == model.BindingHandling:
-		errorTrans.RespCode = "200075"
+		trans.RespCode = "200075"
 		legal = false
 	case bm.BindingStatus == model.BindingFail,
 		bm.BindingStatus == model.BindingRemoved:
-		errorTrans.RespCode = "200074"
+		trans.RespCode = "200074"
 		legal = false
 	}
 	if !legal {
-		mongo.TransColl.Add(errorTrans)
-		return mongo.RespCodeColl.Get(errorTrans.RespCode)
+		mongo.TransColl.Add(trans)
+		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
+	// channel info
+	trans.ChanCode = bm.ChanCode
+	trans.ChanMerId = bm.ChanMerId
+	trans.ChanBindingId = bm.ChanBindingId
 
 	// 查找商家的绑定信息
 	bi, err := mongo.BindingInfoColl.Find(be.MerId, be.BindingId)
 	if err != nil {
-		errorTrans.RespCode = "200070"
-		mongo.TransColl.Add(errorTrans)
-		return mongo.RespCodeColl.Get(errorTrans.RespCode)
+		trans.RespCode = "200070"
+		mongo.TransColl.Add(trans)
+		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
+	// acctNum
+	trans.AcctNum = bi.AcctNum
 
 	// TODO 金额是否超出最大可支付金额
 
 	// 根据绑定关系得到渠道商户信息
-	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
 	if err != nil {
-		errorTrans.RespCode = "300030"
-		mongo.TransColl.Add(errorTrans)
-		return mongo.RespCodeColl.Get(errorTrans.RespCode)
+		trans.RespCode = "300030"
+		mongo.TransColl.Add(trans)
+		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
 
-	// 赋值
-	be.SettFlag = chanMer.SettFlag
-	be.ChanBindingId = bm.ChanBindingId
-	be.ChanMerId = bm.ChanMerId
-	be.SysOrderNum = tools.SerialNumber()
-	be.SignCert = chanMer.SignCert
+	// 交易参数
+	trans.SysOrderNum = tools.SerialNumber()
 
 	// 记录这笔交易
-	trans := &model.Trans{
-		OrderNum:      be.MerOrderNum,
-		BindingId:     bi.BindingId,
-		SysOrderNum:   be.SysOrderNum,
-		ChanBindingId: be.ChanBindingId,
-		AcctNum:       bi.AcctNum,
-		MerId:         be.MerId,
-		TransAmt:      be.TransAmt,
-		ChanMerId:     be.ChanMerId,
-		ChanCode:      bm.ChanCode,
-		TransType:     model.PayTrans, //支付
-		SendSmsId:     be.SendSmsId,
-		SmsCode:       be.SmsCode,
-		Remark:        be.Remark,
-		SubMerId:      be.SubMerId,
-	}
 	if err = mongo.TransColl.Add(trans); err != nil {
 		log.Errorf("add trans error: %s", err)
 		return
 	}
+
+	// 渠道请求参数
+	be.SettFlag = chanMer.SettFlag
+	be.ChanBindingId = trans.ChanBindingId
+	be.ChanMerId = trans.ChanMerId
+	be.SysOrderNum = trans.SysOrderNum
+	be.SignCert = chanMer.SignCert
 
 	// 支付
 	c := channel.GetChan(chanMer.ChanCode)
@@ -425,6 +422,8 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		} else {
 			refundStatus = model.TransPartRefunded
 		}
+	case be.TransAmt == orign.TransAmt:
+		refundStatus = model.TransRefunded
 	}
 	if !legal {
 		mongo.TransColl.Add(refund)

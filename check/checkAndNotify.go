@@ -71,16 +71,17 @@ func notify(changes []*model.CheckAndNotify) {
 		switch v.BizType {
 		case model.Cache_CardBin:
 			// TODO
-			log.Infof("cardBin had been updated (%s -> %s), begin to rebuild the cardBin tree ", v.CurTag, v.App1Tag)
+			log.Infof("cardBin had been updated (%s -> %s), begin to rebuild the cardBin tree ", v.App1Tag, v.CurTag)
 			err := core.ReBuildTree()
 			if err != nil {
 				log.Error(err)
 				continue
 			}
-		case model.Cache_Merchant, model.Cache_ChanMer, model.Cache_CfcaBankMap, model.Cache_ChanMerRSAPrivKey:
+		case model.Cache_Merchant, model.Cache_ChanMer, model.Cache_CfcaBankMap, model.Cache_ChanMerRSAPrivKey,
+			model.Cache_RespCode:
 			// 获得缓存
 			c := cache.Client.Get(v.BizType)
-
+			log.Debugf("get %s cache...%+v", v.BizType, c)
 			// 清空
 			if c != nil {
 				log.Debugf("clear %s cache...", v.BizType)
