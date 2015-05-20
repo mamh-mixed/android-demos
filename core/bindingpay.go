@@ -377,7 +377,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	orign, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
 	log.Debugf("%+v", orign)
 	if err != nil {
-		refund.RespCode = "100020"
+		refund.RespCode = "200082"
 		mongo.TransColl.Add(refund)
 		return mongo.RespCodeColl.Get(refund.RespCode)
 	}
@@ -392,6 +392,10 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	switch {
 	// 不能对退款的交易号进行退款
 	case orign.TransType == model.RefundTrans:
+		refund.RespCode = "100020"
+		legal = false
+	// 原交易不成功
+	case orign.TransStatus != model.TransSuccess:
 		refund.RespCode = "100020"
 		legal = false
 	// 已退款
