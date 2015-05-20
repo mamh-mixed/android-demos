@@ -60,9 +60,12 @@
                     pages = document.querySelector('#pages');
                     scaffold = document.querySelector('#scaffold');
                     // 默认路由
-                    var testPages = this.route[0].submenus;
-                    for (var i = 0, l = testPages.length; i < l; i++) {
-                        var page = testPages[i];
+                    var routePages = [];
+                    for (var i = 0, l = this.route.length; i < l; i++){
+                        routePages = routePages.concat(this.route[i].submenus);
+                    }
+                    for (var i = 0, l = routePages.length; i < l; i++) {
+                        var page = routePages[i];
                         if (this.currentRoute === page.hash){
                             this.selectedItem = page;
                             break;

@@ -25,7 +25,7 @@
         name: "配置",
         icon: "settings",
         submenus: [
-            {name: '商户配置', icon:"store", hash: 'config/merchant', url: ''},
+            {name: '商户配置', icon:"store", hash: 'config/merchant', url: 'config/merchant.html'},
             {name: '渠道商户配置', icon:"account-balance", hash: 'config/channelMerchant', url: ''},
             {name: '路由配置', icon:"settings-input-component", hash: 'config/routerPolicy', url: ''}
         ]
