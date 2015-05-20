@@ -27,6 +27,7 @@ const (
 
 // cache name
 const (
+	Cache_RespCode          = "respCode"
 	Cache_CardBin           = "cardBin"
 	Cache_Merchant          = "merchant"
 	Cache_ChanMer           = "chanMer"
