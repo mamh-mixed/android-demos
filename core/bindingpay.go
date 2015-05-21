@@ -37,7 +37,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 	// 如果是银联卡，验证证件信息
 	if strings.EqualFold("CUP", cardBin.CardBrand) || strings.EqualFold("UPI", cardBin.CardBrand) {
-		ret = UnionPayCardValidity(bc)
+		ret = UnionPayCardCommonValidity(bc.IdentType, bc.IdentNumDecrypt, bc.PhoneNumDecrypt)
 		if ret != nil {
 			return ret
 		}
@@ -632,6 +632,13 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("100030")
 	}
 
+	// 暂不支持借记卡
+	if be.AcctType == "10" {
+		errorTrans.RespCode = "300030"
+		saveErrorTran(errorTrans)
+		return mongo.RespCodeColl.Get("300030")
+	}
+
 	// 获取卡bin详情
 	cardBin, err := findCardBin(be.AcctNumDecrypt)
 	if err != nil {
@@ -645,6 +652,14 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 		return
 	}
 	log.Debugf("CardBin: %+v", cardBin)
+
+	// 银联卡校验
+	if strings.EqualFold("CUP", cardBin.CardBrand) || strings.EqualFold("UPI", cardBin.CardBrand) {
+		result := UnionPayCardCommonValidity(be.IdentType, be.IdentNumDecrypt, be.PhoneNumDecrypt)
+		if result != nil {
+			return result
+		}
+	}
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(be.MerId, cardBin.CardBrand)
