@@ -83,22 +83,22 @@
         </paper-input-decorator>
 
         <paper-input-decorator floatingLabel label="交易币种" class="custom" autoValidate="true" error="最长 3 个字符">
-            <core-tooltip label="商户的交易币种，三位长的数字，必填" position="top">
+            <core-tooltip label="商户的交易币种，3 位数字，必填" position="top">
                 <input id="transCurr" is="core-input" type="number" name="transCurr" maxlength="3" required="true" value="{{body.transCurr}}">
             </core-tooltip>
             <paper-char-counter class="counter" target="transCurr"></paper-char-counter>
         </paper-input-decorator>
 
-        <paper-input-decorator floatingLabel label="签名密钥" class="custom" autoValidate="true" error="必填，最长 128 个字符">
-            <core-tooltip label="商户的签名密钥，必填" position="top">
+        <paper-input-decorator floatingLabel label="签名密钥" class="custom" autoValidate="true" error="必填，最长 32 个字符">
+            <core-tooltip label="必填，32 位，只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
                 <input id="signKey" style="width:500px;" is="core-input" type="text" name="signKey" maxlength="128" required="true" value="{{body.signKey}}">
                 <paper-button class="colored" raised on-tap="{{randomSignKeyHandle}}">随机生成</paper-button>
             </core-tooltip>
             <paper-char-counter class="counter" target="signKey"></paper-char-counter>
         </paper-input-decorator>
 
-        <paper-input-decorator floatingLabel label="加密密钥" class="custom" autoValidate="true" error="必填，最长 128 个字符">
-            <core-tooltip label="商户的加密密钥，必填" position="top">
+        <paper-input-decorator floatingLabel label="加密密钥" class="custom" autoValidate="true" error="必填，最长 44 个字符">
+            <core-tooltip label="必填，44 位，最后一位必须是 “＝”，前 43 位只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
                 <input id="encryptKey" style="width:500px;" is="core-input" type="text" name="encryptKey" maxlength="128" required="true" value="{{body.encryptKey}}">
                 <paper-button class="colored" raised on-tap="{{randomEncryptKeyHandle}}">随机生成</paper-button>
             </core-tooltip>
@@ -168,7 +168,8 @@
                 // 随机生成签名密钥
                 randomSignKeyHandle: function(e, detail, sender) {
                     console.log('randomSignKeyHandle');
-                    this.body.signKey = this.uuid();
+                    var uuid = this.uuid();
+                    this.body.signKey = Base64.encode(uuid).substring(0,32);
                 }
             });
         })();

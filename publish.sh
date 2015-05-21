@@ -9,6 +9,8 @@ function main() {
     echo "=== Building $prog..."
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
 
+    cd static && bower install && cd ..
+
     host="webapp@121.40.86.222"
     args="-all -port=6800"
     # args="-master -port 6700"
