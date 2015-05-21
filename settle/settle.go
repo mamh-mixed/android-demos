@@ -9,8 +9,11 @@ import (
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"math"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -267,20 +270,43 @@ func doCilTransCheck() {
 // 计算手续费
 func addTransSett(t *model.Trans, c *model.ChanMer, settFlag int8) {
 
+	// TODO CIL 渠道暂时默认勾兑成功
+	if c.ChanCode == "CIL" {
+		settFlag = model.SettSuccess
+	}
+
+	var rate float64
 	// 获得商户详情
 	if t.MerId != "" {
+		m, err := mongo.MerchantColl.Find(t.MerId)
+		log.Errorf("fail to find merchant by merId(%s): %s", t.MerId, err)
+
+		if m.Detail.BillingScheme != "" {
+			scheme, err := mongo.SettSchemeCdCol.Find(m.Detail.BillingScheme)
+			if err != nil {
+				log.Errorf("fail to find settScheme by cd(%s): %s", m.Detail.BillingScheme, err)
+			}
+			// 固定百分比
+			if strings.HasPrefix(scheme.SchemeCd, "00") {
+				f, err := strconv.ParseFloat(scheme.SchemeCd, 64)
+				if err != nil {
+					log.Errorf("fail to conver %s to float64: %s", scheme.SchemeCd, err)
+				}
+				rate = f / 100000
+			}
+			// 非固定百分比
+			// TODO...
+		}
 
 	}
 
-	sett := &model.TransSett{
-		Tran:     *t,
-		SettFlag: settFlag,
-		// TODO 四舍五入
-		MerSettAmt:  t.TransAmt * 9 / 10,
-		MerFee:      t.TransAmt / 10,
-		ChanSettAmt: t.TransAmt * 9 / 10,
-		ChanFee:     t.TransAmt / 10,
-	}
+	// 计算费率
+	sett := &model.TransSett{}
+	sett.Tran = *t
+	sett.SettFlag = settFlag
+	sett.MerFee = int64(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
+	sett.MerSettAmt = t.TransAmt - sett.MerFee
+
 	if err := mongo.TransSettColl.Add(sett); err != nil {
 		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)
 	}
