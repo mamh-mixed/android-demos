@@ -12,7 +12,7 @@ import (
 
 var (
 	merId           = "001405"
-	bindingId       = "2000000000011"
+	bindingId       = "2000000000012"
 	acctName        = "张三"
 	acctNum         = "6222020302062061908"
 	identType       = "0"
@@ -35,19 +35,19 @@ var (
 
 func TestProcessBindingCreate(t *testing.T) {
 	bc := &model.BindingCreate{
-		MerId:     merId,
-		BindingId: bindingId,
-		AcctName:  acctName,
-		AcctNum:   acctNum,
-		IdentType: identType,
-		IdentNum:  identNum,
-		PhoneNum:  phoneNum,
-		AcctType:  acctType,
-		ValidDate: validDate,
-		Cvv2:      cvv2,
-		SendSmsId: sendSmsId,
-		SmsCode:   smsCode,
-		BankId:    bankId,
+		MerId:            merId,
+		BindingId:        bindingId,
+		AcctNameDecrypt:  acctName,
+		AcctNumDecrypt:   acctNum,
+		IdentType:        identType,
+		IdentNumDecrypt:  identNum,
+		PhoneNumDecrypt:  phoneNum,
+		AcctType:         acctType,
+		ValidDateDecrypt: validDate,
+		Cvv2Decrypt:      cvv2,
+		SendSmsId:        sendSmsId,
+		SmsCode:          smsCode,
+		BankId:           bankId,
 	}
 
 	ret := ProcessBindingCreate(bc)
@@ -179,8 +179,8 @@ func TestProcessNoTrackPayment(t *testing.T) {
 		AcctNameDecrypt:  "Peter",
 		AcctNumDecrypt:   testCUPCard,
 		IdentType:        "0",
-		IdentNumDecrypt:  testCUPIdentNum,
-		PhoneNumDecrypt:  testCUPPhone,
+		IdentNumDecrypt:  "350583199009153732",
+		PhoneNumDecrypt:  "18205960039",
 		AcctType:         "10",
 		ValidDateDecrypt: testCUPValidDate,
 		Cvv2Decrypt:      testCUPCVV2,
