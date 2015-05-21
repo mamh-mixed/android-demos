@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	merId           = "012345678901234"
+	merId           = "001405"
 	bindingId       = "2000000000011"
 	acctName        = "张三"
 	acctNum         = "6222020302062061908"
@@ -28,7 +28,7 @@ var (
 	transAmt        = 1000
 	origOrderNum    = "20000000010000000c"
 	showOrigInfo    = "1"
-	settDate        = "2015-03-22"
+	settDate        = "2015-05-20"
 	removeMerId     = "1426562901844"
 	removeBindingId = "1426562901897"
 )
