@@ -7,6 +7,10 @@ import (
 	"github.com/omigo/log"
 )
 
+const (
+	NormalMerStatus = "Normal"
+)
+
 // AllMerchant 处理查找所有商户的请求
 func AllMerchant(data []byte) (result *model.ResultBody) {
 	cond := new(model.Merchant)
@@ -44,6 +48,10 @@ func AddMerchant(data []byte) (result *model.ResultBody) {
 	if m.MerId == "" {
 		log.Error("没有MerId")
 		return model.NewResultBody(3, "缺失必要元素merId")
+	}
+
+	if m.MerStatus == "" {
+		m.MerStatus = NormalMerStatus
 	}
 
 	err = mongo.MerchantColl.Insert(m)
