@@ -135,6 +135,19 @@ type ChanMer struct {
 	//...
 }
 
+// SettSchemeCd 计费方案代码
+type SettSchemeCd struct {
+	SchemeCd  string `bson:"schemeCd"`
+	FitBitMap string `bson:"fitBitMap"`
+	Nm        string `bson:"nm"`
+	Descs     string `bson:"descs"`
+	OperIn    int    `bson:"operIn"`
+	EventId   int    `bson:"eventId"`
+	RecId     int    `bson:"recId"`
+	RecUpdTs  string `bson:"recUpdTs"`
+	RecCrtTs  string `bson:"recCrtTs"`
+}
+
 // Trans 支付、退款交易记录
 type Trans struct {
 	Id              bson.ObjectId `bson:"_id" json:",omitempty"`

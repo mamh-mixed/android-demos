@@ -5,17 +5,45 @@ import (
 	"testing"
 )
 
-func TestReadCsv(t *testing.T) {
-	// AddSysCodeFromCsv("quickpay.csv")
-	// AddChanCodeFromScv("cfca", "cfca.csv")
-	// AddChanCodeFromScv("cil", "cil.csv")
-	// InitTestMer(1, 100, "CUP")
-	// err := AddCardBinFromCsv("cardBin.csv", true)
-	// fmt.Println(err)
-	cbs, err := ReadCardBinCsv("cardBin.csv")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Logf("%d", len(cbs))
+func TestAddRespCodeFromCsv(t *testing.T) {
+	// step 1
+	// err := AddSysCodeFromCsv("quickpay.csv")
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+
+	// step 2
+	// err := AddChanCodeFromScv("cfca", "cfca.csv")
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+
+	// step 3
+	// err := AddChanCodeFromScv("cil", "cil.csv")
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+}
+
+func TestAddSettSchemeCd(t *testing.T) {
+
+	// import settSchemeCd
+	// err := AddSettSchemeCdFromCsv("settSchemeCd.csv")
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+}
+
+func TestAddCardBinFromCsv(t *testing.T) {
+
+	// import cardBin !!!
+	// err := AddCardBinFromCsv("cardBin.csv", false)
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
 }

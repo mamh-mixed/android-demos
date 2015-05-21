@@ -47,6 +47,11 @@ func processTransSettle() {
 	log.Debugf("prepare to process doCFCATransCheck method after %s ", disCfca*time.Second)
 	afterFunc(disCfca*time.Second, "doCFCATransCheck")
 
+	// 讯联线下渠道
+	// disCil, _ := tools.TimeToGiven("01:00:00")
+	// log.Debugf("prepare to process doCFCATransCheck method after %s ", disCil*time.Second)
+	// afterFunc(disCfca*time.Second, "doCILTransCheck")
+
 	// 其他渠道...
 
 	// test
@@ -119,6 +124,8 @@ func do(method string) {
 		func() {
 			log.Debug("just for test")
 		}()
+	case "doCILTransCheck":
+		doCilTransCheck()
 	default:
 		//..
 	}
@@ -134,21 +141,22 @@ func doTransSett() {
 
 	// 交易数据
 	for _, v := range trans {
+
+		// 得到渠道商户，获取签名密钥
+		chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
+		if err != nil {
+			log.Errorf("fail to find chanMer(%s,%s) : %s", v.ChanCode, v.ChanMerId, err)
+			continue
+		}
+
 		// 根据交易状态处理
 		switch v.TransStatus {
 		// 交易成功
 		case model.TransSuccess:
-			addTransSett(v, model.SettSysRemain)
+			addTransSett(v, chanMer, model.SettSysRemain)
 		// 处理中
 		case model.TransHandling:
 			// TODO根据渠道代码得到渠道实例，暂时默认cfca
-
-			// 得到渠道商户，获取签名密钥
-			chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
-			if err != nil {
-				log.Errorf("fail to find chanMer(%s,%s) : %s", v.ChanCode, v.ChanMerId, err)
-				continue
-			}
 			// 封装参数
 			be := &model.OrderEnquiry{
 				ChanMerId:   v.ChanMerId,
@@ -176,7 +184,7 @@ func doTransSett() {
 				// 更新交易状态
 				mongo.TransColl.Update(v)
 				// 添加到清分表
-				addTransSett(v, model.SettSysRemain)
+				addTransSett(v, chanMer, model.SettSysRemain)
 			} else if ret.RespCode == "100070" || ret.RespCode == "100080" {
 				// 支付失败、退款失败
 				v.RespCode = ret.RespCode
@@ -232,20 +240,42 @@ func doCFCATransCheck() {
 					case tx.TxType == cfca.BindingRefundTxCode:
 						newTrans.TransType = model.RefundTrans
 					}
-					addTransSett(newTrans, model.SettChanRemain)
+					addTransSett(newTrans, v, model.SettChanRemain)
 				}
 			}
 		}
 	}
 }
 
+// doCilTransCheck 讯联线下渠道勾兑
+// 勾兑:默认成功的交易都是勾兑成功
+// TODO 从对账文件里分析
+func doCilTransCheck() {
+
+	chanMers, err := mongo.ChanMerColl.FindByCode("CIL")
+	if err != nil {
+		log.Errorf("fail to load all cfca chanMer %s", err)
+	}
+
+	for _, v := range chanMers {
+		// mongo.TransSettColl
+		log.Debugf("%v", v)
+	}
+}
+
 // addTransSett 保存一条清分数据
 // 计算手续费
-func addTransSett(t *model.Trans, settFlag int8) {
+func addTransSett(t *model.Trans, c *model.ChanMer, settFlag int8) {
+
+	// 获得商户详情
+	if t.MerId != "" {
+
+	}
+
 	sett := &model.TransSett{
 		Tran:     *t,
 		SettFlag: settFlag,
-		// TODO
+		// TODO 四舍五入
 		MerSettAmt:  t.TransAmt * 9 / 10,
 		MerFee:      t.TransAmt / 10,
 		ChanSettAmt: t.TransAmt * 9 / 10,

@@ -1,6 +1,5 @@
-// 渠道csv文件字段统一的格式顺序如下
-// code,   msg,   respCode,     respMsg
-// 渠道代码,返回信息,对应系统代码,对应系统返回信息
+// 读取csv文件持久化到数据库
+// 具体的字段顺序在csv文件里的第一行
 package data
 
 import (
@@ -43,12 +42,30 @@ func InitTestMer(start, end int, cardBrand string) error {
 	return nil
 }
 
+// AddSettSchemeCdFromCsv 导入计费方案代码
+func AddSettSchemeCdFromCsv(path string) error {
+
+	schemes, err := readSettSchemeCdCsv(path)
+	// fmt.Println(len(schemes), err)
+	if err != nil {
+		return nil
+	}
+
+	for _, v := range schemes {
+		err := mongo.SettSchemeCdCol.Upsert(v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // AddCardBinFromCsv 从csv里导入卡bin
 // rebuild: true 删除集合再重建
 // rebuild: false 做更新操作，即存在的更新，不存在的增加
 func AddCardBinFromCsv(path string, rebuild bool) error {
 
-	cardBins, err := ReadCardBinCsv(path)
+	cardBins, err := readCardBinCsv(path)
 	if err != nil {
 		return err
 	}
@@ -73,7 +90,7 @@ func AddCardBinFromCsv(path string, rebuild bool) error {
 // AddFromCsv 从csv文件里读取应答码表
 func AddSysCodeFromCsv(path string) error {
 
-	data, err := ReadQuickpayCsv(path)
+	data, err := readQuickpayCsv(path)
 	if err != nil {
 		return err
 	}
@@ -82,16 +99,17 @@ func AddSysCodeFromCsv(path string) error {
 	for _, v := range data {
 		_, err := mongo.RespCodeColl.FindOne(v.RespCode)
 		if err != nil {
-			fmt.Println(v)
+			fmt.Printf("New Add: %+v \n", v)
 			mongo.RespCodeColl.Add(v)
 		}
 	}
 	return nil
 }
 
+// AddChanCodeFromScv 增加渠道应答码
 func AddChanCodeFromScv(channel, path string) error {
 
-	data, err := ReadChanCsv(path)
+	data, err := readChanCsv(path)
 	if err != nil {
 		return err
 	}
@@ -107,8 +125,21 @@ func AddChanCodeFromScv(channel, path string) error {
 		v.RespMsg = ""
 		switch {
 		case channel == "cfca":
+			for i, cfca := range q.Cil {
+				if cfca.Code == v.Code {
+					// delete
+					q.Cfca = append(q.Cfca[:i], q.Cfca[i+1:]...)
+				}
+			}
 			q.Cfca = append(q.Cfca, v)
 		case channel == "cil":
+			// 过滤重复的
+			for i, cil := range q.Cil {
+				if cil.Code == v.Code {
+					// delete
+					q.Cil = append(q.Cil[:i], q.Cil[i+1:]...)
+				}
+			}
 			q.Cil = append(q.Cil, v)
 		default:
 			// ...更多渠道
@@ -118,9 +149,33 @@ func AddChanCodeFromScv(channel, path string) error {
 	return nil
 }
 
+func readSettSchemeCdCsv(path string) ([]*model.SettSchemeCd, error) {
+
+	data, err := readCsv(path)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(data[2])
+	qs := make([]*model.SettSchemeCd, 0, len(data))
+
+	for i, each := range data {
+		if i == 0 {
+			continue
+		}
+		openIn, _ := strconv.Atoi(each[4])
+		eventId, _ := strconv.Atoi(each[5])
+		recId, _ := strconv.Atoi(each[6])
+
+		q := &model.SettSchemeCd{SchemeCd: each[0], FitBitMap: each[1], Nm: each[2], Descs: each[3],
+			OperIn: openIn, EventId: eventId, RecId: recId, RecUpdTs: each[7], RecCrtTs: each[8]}
+		qs = append(qs, q)
+	}
+	return qs, nil
+}
+
 // ReadQuickpayCsv 读取系统应答码csv文件
 // 并持久化
-func ReadQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
+func readQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
 
 	data, err := readCsv(path)
 	if err != nil {
@@ -137,12 +192,12 @@ func ReadQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
 		// fmt.Printf("%+v \n", q)
 		qs = append(qs, q)
 	}
-	fmt.Println(len(qs))
+	// fmt.Println(len(qs))
 	return qs, nil
 }
 
 // ReadChanCsv 读取渠道应答码文件
-func ReadChanCsv(path string) ([]*model.ChanCsv, error) {
+func readChanCsv(path string) ([]*model.ChanCsv, error) {
 	data, err := readCsv(path)
 	if err != nil {
 		return nil, err
@@ -162,7 +217,7 @@ func ReadChanCsv(path string) ([]*model.ChanCsv, error) {
 }
 
 // ReadCardBinCsv 从csv读取卡bin转为对象
-func ReadCardBinCsv(path string) ([]*model.CardBin, error) {
+func readCardBinCsv(path string) ([]*model.CardBin, error) {
 
 	data, err := readCsv(path)
 	if err != nil {
