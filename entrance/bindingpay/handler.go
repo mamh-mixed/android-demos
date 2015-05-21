@@ -152,6 +152,7 @@ func BillingSummaryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	}
 	// 业务处理
 	ret = core.ProcessBillingSummary(b)
+
 	// mock return
 	return ret
 }

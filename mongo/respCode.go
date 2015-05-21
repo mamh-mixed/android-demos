@@ -19,11 +19,11 @@ var respCodeCache = cache.New(model.Cache_RespCode)
 // Get 根据传入的code类型得到Resp对象
 func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {
 
-	o, found := respCodeCache.Get(code)
-	if found {
-		resp = o.(*model.BindingReturn)
-		return resp
-	}
+	// o, found := respCodeCache.Get(code)
+	// if found {
+	// 	resp = o.(*model.BindingReturn)
+	// 	return resp
+	// }
 
 	resp = &model.BindingReturn{}
 	err := database.C(c.name).Find(bson.M{"respCode": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)
@@ -33,7 +33,7 @@ func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {
 	}
 
 	// save cache
-	respCodeCache.Set(code, resp, cache.NoExpiration)
+	// respCodeCache.Set(code, resp, cache.NoExpiration)
 
 	return resp
 }
