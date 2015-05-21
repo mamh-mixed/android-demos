@@ -1,0 +1,128 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+
+<link rel="import" href="../bower_components/paper-input/paper-input-decorator.html">
+<link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/core-field/core-field.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
+<script src="../bower_components/cryptojslib/rollups/sha1.js"></script>
+<script src="../bower_components/cryptojslib/rollups/aes.js"></script>
+
+<polymer-element name="quick-form" attributes="url elems">
+    <template>
+        <style>
+            .custom /deep/::-webkit-input-placeholder {
+                color: #f4b400;
+            }
+
+            .custom /deep/::-moz-placeholder {
+                color: #f4b400;
+            }
+
+            .custom /deep/:-ms-input-placeholder {
+                color: #f4b400;
+            }
+
+            .custom /deep/ .label-text,
+            .custom /deep/ .error {
+                color: #f06292;
+            }
+
+            .custom /deep/ .unfocused-underline {
+                background-color: #0f9d58;
+            }
+
+            .custom[focused] /deep/ .floated-label .label-text {
+                color: #0f9d58;
+            }
+
+            .custom /deep/ .focused-underline {
+                background-color: #0f9d58;
+            }
+
+            .custom.invalid /deep/ .floated-label .label-text,
+            .custom /deep/ .error {
+                color: #f06292;
+            }
+
+            .custom.invalid /deep/ .focused-underline {
+                background-color: #f06292;
+            }
+
+            .custom {
+                color: #1a237e;
+            }
+
+            .colored {
+                background: #03a9f4;
+                color: #fff;
+            }
+
+            core-field {
+                margin-top: 30px;
+            }
+
+            paper-toast {
+                top: 10px;
+                bottom: auto;
+                right: 10px;
+                left: auto;
+            }
+        </style>
+        <core-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-core-response="{{onAjaxResponse}}"></core-ajax>
+
+        <template repeat="{{e in elems}}">
+            <paper-input-decorator floatingLabel label="{{e.label}}" class="custom" autoValidate="{{e.autoValidate}}" error="{{e.error}}">
+                <core-tooltip label="{{e.tooltip}}" position="top">
+                    <input id="{{e.id}}" is="core-input" type="{{e.type ? e.type : 'text'}}" name="{{e.name}}" maxlength="{{e.maxlength}}" required="{{e.required}}" value="{{e.value}}">
+                </core-tooltip>
+                <paper-char-counter class="counter" target="{{e.id}}"></paper-char-counter>
+            </paper-input-decorator>
+        </template>
+
+        <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="{{ajaxRequestHandle}}"></paper-fab>
+
+        <paper-input-decorator floatingLabel label="响应" class="custom">
+            <paper-autogrow-textarea>
+                <textarea cols="144" rows="3" value="{{ajaxResponse}}"></textarea>
+            </paper-autogrow-textarea>
+            <paper-char-counter class="counter" target="inputRet"></paper-char-counter>
+        </paper-input-decorator>
+
+        <paper-toast id="ret" role="alert" text="{{ajaxResponse}}">
+        </paper-toast>
+
+    </template>
+
+    <script>
+        (function() {
+            'use strict';
+
+            Polymer({
+                elems: [],
+                ready: function() {
+                },
+                // 发送AJAX请求
+                ajaxRequestHandle: function(e, detail, sender) {
+                    var ajax = this.$.postAjax;
+                    ajax.url = this.url;
+
+                    var body = {};
+                    for (var i = 0, l = this.elems.length; i < l; i++){
+                        var element = this.elems[i];
+                        body[element.name] = element.value;
+                    }
+
+                    ajax.body = JSON.stringify(body);
+                    ajax.go();
+                },
+                onAjaxResponse: function(e, detail, sender) {
+                    this.ajaxResponse = JSON.stringify(detail.response);
+                    this.$.ret.show();
+                }
+            });
+        })();
+    </script>
+</polymer-element>

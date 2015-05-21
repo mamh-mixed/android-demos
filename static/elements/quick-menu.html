@@ -1,0 +1,101 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../bower_components/core-menu/core-submenu.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+
+<polymer-element name="quick-menu" attributes="selectedItem route currentRoute">
+    <template>
+        <style>
+            :host {
+                display: block;
+                width: 100%;
+            }
+
+            #allMenu {
+                color: #01579b;
+                margin: 10px 0 0 10px;
+            }
+
+            #allMenu > core-submenu > core-item.core-selected {
+                background: #e1f5fe;
+            }
+        </style>
+        <!-- Dynamic content controller -->
+        <core-ajax id="ajax" url="{{selectedItem.url}}" handleAs="document" on-core-response="{{onResponse}}"></core-ajax>
+
+        <core-menu id="allMenu" selected="0">
+            <template repeat="{{menu, i in route}}">
+                <core-submenu icon="{{menu.icon}}" label="{{menu.name}}">
+                    <template repeat="{{page, i in menu.submenus}}">
+                        <core-item on-tap="{{coreItemTapped}}" hash="{{page.hash}}" link="{{page.url}}" icon="{{currentRoute != page.hash ? page.icon : 'input'}}" label="{{page.name}}">
+                            <a href="#{{page.hash}}" target="_self"></a>
+                        </core-item>
+                    </template>
+                </core-submenu>
+            </template>
+        </core-menu>
+
+    </template>
+    <script>
+        (function() {
+            "use strict";
+
+            // 缓存页面
+            var cache = {};
+            var scaffold,
+                pages; // 页面container
+
+            Polymer('quick-menu', {
+                publish: {
+                    selectedItem: {},
+                    currentRoute: {
+                        value: "",
+                        reflect: true
+                    }
+                },
+                created: function() {
+                    this.route = [];
+                },
+                domReady: function() {
+                    pages = document.querySelector('#pages');
+                    scaffold = document.querySelector('#scaffold');
+                    // 默认路由
+                    var routePages = [];
+                    for (var i = 0, l = this.route.length; i < l; i++){
+                        routePages = routePages.concat(this.route[i].submenus);
+                    }
+                    for (var i = 0, l = routePages.length; i < l; i++) {
+                        var page = routePages[i];
+                        if (this.currentRoute === page.hash){
+                            this.selectedItem = page;
+                            break;
+                        }
+                    }
+                    this.$.ajax.go();
+                },
+                // 点击菜单项事件
+                coreItemTapped: function(e, detail, sender) {
+                    var menu = sender.templateInstance.model.page;
+                    this.selectedItem = menu;
+                    this.async(function() {
+                        if (!cache[this.selectedItem.url]) {
+                            this.$.ajax.go();
+                        }
+
+                        scaffold.closeDrawer();
+                    });
+                },
+                // ajax响应结果处理
+                onResponse: function(e, detail, sender) {
+                    var article = detail.response.documentElement;
+
+                    var html = article.innerHTML;
+
+                    cache[this.$.ajax.url] = html; // Primitive caching by URL.
+
+                    this.injectBoundHTML(html, pages.selectedItem.firstElementChild);
+                }
+            });
+        })();
+    </script>
+</polymer-element>

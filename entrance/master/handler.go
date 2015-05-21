@@ -32,6 +32,30 @@ func AllMerchant(data []byte) (result *model.ResultBody) {
 	return
 }
 
+// AddMerchant 处理新增一个商户的请求
+func AddMerchant(data []byte) (result *model.ResultBody) {
+	m := new(model.Merchant)
+	err := json.Unmarshal(data, m)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	err = mongo.MerchantColl.Insert(m)
+	if err != nil {
+		log.Errorf("新增商户失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    m,
+	}
+
+	return
+}
+
 // AllRouterOfOneMerchant 处理查找商户的所有路由的请求
 func AllRouterOfOneMerchant(merId string) (result *model.ResultBody) {
 	routers, err := mongo.RouterPolicyColl.FindAllOfOneMerchant(merId)

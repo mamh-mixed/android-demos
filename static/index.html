@@ -10,13 +10,17 @@
 
     <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
     <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
-    <link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
     <link rel="import" href="bower_components/core-icon/core-icon.html">
-    <link rel="import" href="bower_components/core-menu/core-menu.html">
-    <link rel="import" href="bower_components/paper-item/paper-item.html">
     <link rel="import" href="bower_components/flatiron-director/flatiron-director.html">
     <link rel="import" href="bower_components/font-roboto/roboto.html">
-    <!-- <link rel="import" href="bower_components/core-a11y-keys/core-a11y-keys.html"> -->
+    <link rel="import" href="bower_components/core-animated-pages/core-animated-pages.html">
+    <link rel="import" href="bower_components/core-animated-pages/transitions/slide-from-right.html">
+    <link rel="import" href="bower_components/core-ajax/core-ajax.html">
+
+    <link rel="import" href="elements/quickpay-test.html">
+    <link rel="import" href="elements/quick-menu.html">
+    <link rel="import" href="elements/merchant-chosen.html">
+    <link rel="import" href="elements/quick-form.html">
 
 </head>
 
@@ -27,44 +31,29 @@
         <!-- Route controller. -->
         <flatiron-director route="{{route}}" autoHash></flatiron-director>
 
-        <!-- Keyboard nav controller. -->
-        <!-- <core-a11y-keys id="keys" target="{{parentElement}}"
-                    keys="up down left right space space+shift"
-                    on-keys-pressed="{{keyHandler}}"></core-a11y-keys> -->
-
-        <!-- Dynamic content controller -->
-        <core-ajax id="ajax" url="{{selectedPage.page.url}}" handleAs="document" on-core-response="{{onResponse}}"></core-ajax>
-
         <core-scaffold id="scaffold" mode="scroll">
             <nav>
                 <core-toolbar on-tap="{{chooseMerchantHandler}}" style="cursor:pointer;">
                     <core-icon icon="account-circle" class="acconut-circle"></core-icon>
                     <span id="merchantName">快捷支付</span>
                 </core-toolbar>
-                <core-menu id="menu" valueattr="hash" selected="{{route}}" selectedModel="{{selectedPage}}" on-core-select="{{menuItemSelected}}" on-click="{{ajaxLoad}}">
-                    <template repeat="{{page, i in pages}}">
-                        <paper-item hash="{{page.hash}}" noink>
-                            <core-icon icon="{{route != page.hash ? 'credit-card' : 'input'}}"></core-icon>
-                            <a href="{{page.url}}">{{page.name}}</a>
-                        </paper-item>
-                    </template>
-                </core-menu>
+
+                <quick-menu selectedItem={{selectedPage}} route={{menus}} currentRoute={{route}}></quick-menu>
             </nav>
 
             <core-toolbar tool flex>
-                <div flex>{{selectedPage.page.name}}</div>
-                <!--
-                <core-icon-button icon="refresh"></core-icon-button>
-                <core-icon-button icon="add"></core-icon-button>
-            -->
+                <div flex>{{selectedPage.name}}</div>
             </core-toolbar>
 
             <div layout horizontal center-center fit>
                 <core-animated-pages id="pages" selected="{{route}}" valueattr="hash" transitions="slide-from-right">
-                    <template repeat="{{page, i in pages}}">
-                        <section hash="{{page.hash}}" layout vertical>
-                            <div>Loading...</div>
-                        </section>
+
+                    <template repeat="{{submenus, i in menus}}">
+                        <template repeat="{{page, j in submenus.submenus}}">
+                            <section hash="{{page.hash}}" layout vertical>
+                                <div>Loading...</div>
+                            </section>
+                        </template>
                     </template>
                 </core-animated-pages>
             </div>
@@ -78,13 +67,6 @@
     <merchant-chosen id="merchantChangeOverlay" backdrop="true"></merchant-chosen>
 
     <script src="index.js"></script>
-    <link rel="import" href="bower_components/core-animated-pages/core-animated-pages.html">
-    <link rel="import" href="bower_components/core-animated-pages/transitions/slide-from-right.html">
-    <link rel="import" href="bower_components/core-ajax/core-ajax.html">
-
-    <link rel="import" href="elements/quickpay-test.html">
-    <link rel="import" href="elements/merchant-chosen.html">
-
 </body>
 
 </html>
