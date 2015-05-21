@@ -392,7 +392,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	switch {
 	// 不能对退款的交易号进行退款
 	case orign.TransType == model.RefundTrans:
-		refund.RespCode = "100020"
+		refund.RespCode = "200090"
 		legal = false
 	// 原交易不成功
 	case orign.TransStatus != model.TransSuccess:
@@ -587,6 +587,7 @@ func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) 
 		log.Errorf("summary transSett records error : %s", err)
 		return
 	}
+
 	//赋值
 	ret.SettDate = be.SettDate
 	ret.Data = data

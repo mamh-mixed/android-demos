@@ -158,3 +158,15 @@ func TestBindingRemoveHandle(t *testing.T) {
 	b := model.BindingEnquiry{BindingId: bindingId}
 	doPost(url, b, t)
 }
+
+func TestBillingSummaryHandle(t *testing.T) {
+	url := "http://quick.ipay.so/quickpay/billingSummary?merId=001405"
+	b := model.BillingSummary{SettDate: "2015-05-20"}
+	doPost(url, b, t)
+}
+
+func TestBillingDetailsHandle(t *testing.T) {
+	url := "http://quick.ipay.so/quickpay/billingDetails?merId=001405"
+	b := model.BillingDetails{SettDate: "2015-05-20"}
+	doPost(url, b, t)
+}
