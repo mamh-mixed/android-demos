@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>商户配置</title>
+</head>
+
+<body>
+    <quick-form url="/quickMaster/channelMerchant/add" elems='[
+        {
+            "id": "chanCode",
+            "name": "chanCode",
+            "label": "渠道代码",
+            "tooltip": "渠道代码，必填",
+            "value": "",
+            "required": true,
+            "maxlength": "50",
+            "autoValidate": true,
+            "error": "必填，最长 50 个字符"
+        },
+        {
+            "id": "chanMerId",
+            "name": "chanMerId",
+            "label": "商户号",
+            "tooltip": "商户号",
+            "value": "",
+            "required": true,
+            "maxlength": "50",
+            "autoValidate": false,
+            "error": "最长 50 个字符"
+        },
+        {
+            "id": "chanMerName",
+            "name": "chanMerName",
+            "label": "商户名称",
+            "tooltip": "商户名称，必填",
+            "value": "",
+            "required": true,
+            "maxlength": "50",
+            "autoValidate": true,
+            "error": "必填，最长 50 个字符"
+        },
+        {
+            "id": "insCode",
+            "name": "insCode",
+            "label": "机构号",
+            "tooltip": "接线下网关的渠道必填",
+            "value": "",
+            "required": false,
+            "maxlength": "50",
+            "autoValidate": true,
+            "error": "最长 50 个字符"
+        },
+        {
+            "id": "terminalId",
+            "name": "terminalId",
+            "label": "终端号",
+            "tooltip": "接线下网关的渠道必填",
+            "value": "",
+            "required": false,
+            "maxlength": "50",
+            "autoValidate": true,
+            "error": "最长 50 个字符"
+        },
+        {
+            "id": "signCert",
+            "name": "signCert",
+            "label": "签名证书",
+            "tooltip": "根据不同渠道要求可选",
+            "value": "",
+            "required": false,
+            "maxlength": "128",
+            "autoValidate": false,
+            "error": "最长 128 个字符"
+        },
+        {
+            "id": "checkSignCert",
+            "name": "checkSignCert",
+            "label": "验签证书",
+            "tooltip": "根据不同渠道要求可选",
+            "value": "",
+            "required": false,
+            "maxlength": "128",
+            "autoValidate": false,
+            "error": "最长 128 个字符"
+        },
+        {
+            "id": "settFlag",
+            "name": "settFlag",
+            "label": "清算标识",
+            "tooltip": "如有需要请选填",
+            "value": "",
+            "required": false,
+            "maxlength": "10",
+            "autoValidate": false,
+            "error": "最长 10 个字符"
+        },
+        {
+            "id": "settRole",
+            "name": "settRole",
+            "label": "清算角色",
+            "tooltip": "如有需要请选填",
+            "value": "",
+            "required": false,
+            "maxlength": "20",
+            "autoValidate": false,
+            "error": "最长 20 个字符"
+        },
+        {
+            "id": "alpMd5Key",
+            "name": "alpMd5Key",
+            "label": "支付宝 MD5 Key",
+            "tooltip": "如有需要请选填",
+            "value": "",
+            "required": false,
+            "maxlength": "128",
+            "autoValidate": false,
+            "error": "最长 128 个字符"
+        },
+        {
+            "id": "wxpAppId",
+            "name": "wxpAppId",
+            "label": "微信支付App Id",
+            "tooltip": "如有需要请选填",
+            "value": "",
+            "required": false,
+            "maxlength": "50",
+            "autoValidate": false,
+            "error": "最长 50 个字符"
+        },
+        {
+            "id": "wxpPartnerKey",
+            "name": "wxpPartnerKey",
+            "label": "微信支付Partner Key",
+            "tooltip": "如有需要请选填",
+            "value": "",
+            "required": false,
+            "maxlength": "128",
+            "autoValidate": false,
+            "error": "最长 128 个字符"
+        },
+        {
+            "id": "wxpEncryptCert",
+            "name": "wxpEncryptCert",
+            "label": "微信支付加密证书",
+            "tooltip": "如有需要请选填",
+            "value": "",
+            "required": false,
+            "maxlength": "128",
+            "autoValidate": false,
+            "error": "最长 128 个字符"
+        }
+    ]'></quick-form>
+
+</body>
+
+</html>

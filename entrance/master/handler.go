@@ -41,9 +41,43 @@ func AddMerchant(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(2, "解析失败")
 	}
 
+	if m.MerId == "" {
+		log.Error("没有MerId")
+		return model.NewResultBody(3, "缺失必要元素merId")
+	}
+
 	err = mongo.MerchantColl.Insert(m)
 	if err != nil {
 		log.Errorf("新增商户失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    m,
+	}
+
+	return
+}
+
+// AddChannelMerchant 处理新增一个渠道商户的请求
+func AddChannelMerchant(data []byte) (result *model.ResultBody) {
+	m := new(model.ChanMer)
+	err := json.Unmarshal(data, m)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if m.ChanCode == "" {
+		log.Error("没有ChanCode")
+		return model.NewResultBody(3, "缺失必要元素chanCode")
+	}
+
+	err = mongo.ChanMerColl.Add(m)
+	if err != nil {
+		log.Errorf("新增渠道商户失败:%s", err)
 		return model.NewResultBody(1, err.Error())
 	}
 

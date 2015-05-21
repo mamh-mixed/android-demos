@@ -100,6 +100,14 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		ret = master.AddMerchant(data)
+	case "/quickMaster/channelMerchant/add":
+		data, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Errorf("Read all body error: %s", err)
+			w.WriteHeader(501)
+			return
+		}
+		ret = master.AddChannelMerchant(data)
 	case "/quickMaster/router/find":
 		merId := r.FormValue("merId")
 		ret = master.AllRouterOfOneMerchant(merId)
