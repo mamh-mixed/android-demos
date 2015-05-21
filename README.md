@@ -67,9 +67,3 @@ $ quickpay -pay -port=6800
 # 启动 QuickSettle
 $ quickpay -settle -port=6900
 ```
-
-TODO
-----
-
-* 签名时取了一次 商户信息，解密（绑定、直接支付）时又取了一次商户信息，须优化
-* 中金渠道 RSA 签名很耗时，是否可以优化

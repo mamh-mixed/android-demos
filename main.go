@@ -86,7 +86,7 @@ func quickAll(port int) {
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("Quickpay is running on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Error(http.ListenAndServe(addr, nil))
 }
 
 func quickMaster(port int) {
@@ -99,7 +99,7 @@ func quickMaster(port int) {
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("QuickMaster is running on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Error(http.ListenAndServe(addr, nil))
 }
 
 func quickpay(port int) {
@@ -114,7 +114,7 @@ func quickpay(port int) {
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("Quickpay is running on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Error(http.ListenAndServe(addr, nil))
 }
 
 func quickSettle(port int) {
@@ -129,5 +129,5 @@ func quickSettle(port int) {
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("QuickSettle is running on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Error(http.ListenAndServe(addr, nil))
 }
