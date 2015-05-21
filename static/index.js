@@ -26,8 +26,8 @@
         icon: "settings",
         submenus: [
             {name: '商户配置', icon:"store", hash: 'config/merchant', url: 'config/merchant.html'},
-            {name: '渠道商户配置', icon:"account-balance", hash: 'config/channelMerchant', url: ''},
-            {name: '路由配置', icon:"settings-input-component", hash: 'config/routerPolicy', url: ''}
+            {name: '渠道商户配置', icon:"account-balance", hash: 'config/channelMerchant', url: 'config/channelMerchant.html'},
+            {name: '路由配置', icon:"settings-input-component", hash: 'config/routerPolicy', url: ''},
         ]
     }];
 
@@ -62,7 +62,7 @@
     };
 
     // 切换商户事件
-    template.chooseMerchantHandler = function(e,detail,sender){
+    template.chooseMerchantHandler = function (e, detail, sender) {
         document.querySelector("#merchantChangeOverlay").toggle();
     };
 

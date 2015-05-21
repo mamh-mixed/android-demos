@@ -1,83 +1,11 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <head>
     <title>商户配置</title>
-</head>
+    <meta name="viewport" content="width=device-width">
 
-<body>
-    <quick-form url="/quickMaster/merchant/add" elems='[
-        {
-            "id": "merId",
-            "name": "merId",
-            "label": "商户编号",
-            "tooltip": "",
-            "value": "TEST001",
-            "required": true,
-            "maxlength": "50",
-            "autoValidate": true,
-            "error": "必填，最长 50 个字符"
-        },
-        {
-            "id": "merStatus",
-            "name": "merStatus",
-            "label": "商户状态",
-            "tooltip": "商户状态，默认Normal",
-            "value": "Normal",
-            "required": false,
-            "maxlength": "20",
-            "autoValidate": false,
-            "error": "最长 20 个字符"
-        },
-        {
-            "id": "transCurr",
-            "name": "transCurr",
-            "label": "交易币种",
-            "tooltip": "商户的交易币种，三位长的数字，必填",
-            "value": "156",
-            "type": "number",
-            "required": true,
-            "maxlength": "3",
-            "autoValidate": true,
-            "error": "最长 3 个字符"
-        },
-        {
-            "id": "signKey",
-            "name": "signKey",
-            "label": "签名密钥",
-            "tooltip": "商户的签名密钥，必填",
-            "value": "TEST001",
-            "required": true,
-            "maxlength": "128",
-            "autoValidate": true,
-            "error": "必填，最长 128 个字符"
-        },
-        {
-            "id": "encryptKey",
-            "name": "encryptKey",
-            "label": "加密密钥",
-            "tooltip": "商户的加密密钥，必填",
-            "value": "TEST001",
-            "required": true,
-            "maxlength": "128",
-            "autoValidate": true,
-            "error": "必填，最长 128 个字符"
-        },
-        {
-            "id": "remark",
-            "name": "remark",
-            "label": "备注信息",
-            "tooltip": "商户的备注信息，可选",
-            "value": "TEST001",
-            "required": false,
-            "maxlength": "500",
-            "autoValidate": false,
-            "error": "最长 500 个字符"
-        }
-    ]'></quick-form>
-
-</body>
-
+  </head>
+  <body unresolved>
+      <merchant-form></merchant-form>
+  </body>
 </html>

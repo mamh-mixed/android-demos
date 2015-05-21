@@ -74,18 +74,18 @@ func TestChanMerFind(t *testing.T) {
 
 func TestChanMerAdd(t *testing.T) {
 	chanMer := &model.ChanMer{
-		ChanCode:      chanCode,
-		ChanMerId:     chanMerId,
-		ChanMerName:   chanMerName,
-		SettFlag:      settFlag,
-		SettRole:      settRole,
-		SignCert:      priKeyPem,
-		CheckSignCert: checkSignCert,
+		ChanCode:      "TEST1",
+		ChanMerId:     "TEST",
+		ChanMerName:   "TEST",
+		SettFlag:      "TEST",
+		SettRole:      "TEST",
+		SignCert:      "TEST",
+		CheckSignCert: "TEST",
 	}
 
-	// err := ChanMerColl.Add(chanMer)
+	err := ChanMerColl.Add(chanMer)
 	// test:update
-	err := ChanMerColl.Update(chanMer)
+	// err := ChanMerColl.Add(chanMer)
 	if err != nil {
 		t.Errorf("add chanMer unsuccessful %s", err)
 		t.FailNow()

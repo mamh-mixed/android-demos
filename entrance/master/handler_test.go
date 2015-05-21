@@ -46,3 +46,28 @@ func TestAddMerchant(t *testing.T) {
 	}
 	t.Logf("结果:%+v", result)
 }
+
+func TestAddChannelMerchant(t *testing.T) {
+	cond := &model.ChanMer{
+		ChanCode:      "TEST2",
+		ChanMerId:     "TEST",
+		ChanMerName:   "TEST",
+		SettFlag:      "TEST",
+		SettRole:      "TEST",
+		SignCert:      "TEST",
+		CheckSignCert: "TEST",
+	}
+
+	t.Log("============")
+	data, err := json.Marshal(cond)
+	if err != nil {
+		t.Errorf("Error %s", err)
+	}
+
+	result := AddChannelMerchant(data)
+
+	if result == nil {
+		t.Error("出错啦")
+	}
+	t.Logf("结果:%+v", result)
+}
