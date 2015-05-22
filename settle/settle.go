@@ -141,7 +141,6 @@ func doTransSett() {
 		log.Errorf("fail to load trans by time : %s", err)
 		return
 	}
-	log.Debugf("%+v", trans)
 	// 交易数据
 	for _, v := range trans {
 

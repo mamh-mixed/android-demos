@@ -21,11 +21,11 @@ func TestAddRespCodeFromCsv(t *testing.T) {
 	// }
 
 	// step 3
-	err := AddChanCodeFromScv("cil", "cil.csv")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	// err := AddChanCodeFromScv("cil", "cil.csv")
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
 }
 
 func TestAddSettSchemeCd(t *testing.T) {
