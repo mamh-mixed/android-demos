@@ -22,7 +22,9 @@ func (col *transCollection) Add(t *model.Trans) error {
 	// default
 	t.Id = bson.NewObjectId()
 	t.CreateTime = time.Now().Format("2006-01-02 15:04:05")
-	t.TransStatus = "00"
+	if t.TransStatus == "" {
+		t.TransStatus = model.TransFail
+	}
 	err := database.C(col.name).Insert(t)
 	if err != nil {
 		log.Error("add trans(%+v) fail: %s", t, err)
