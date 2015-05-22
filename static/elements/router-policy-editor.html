@@ -105,6 +105,14 @@
                 top: 10px;
             }
 
+            .red {
+                background: #d23f31;
+                color: #fff;
+                position: absolute;
+                right: 74px;
+                top: 10px;
+            }
+
             paper-toast {
                 top: 10px;
                 bottom: auto;
@@ -120,7 +128,8 @@
                     <core-header-panel>
                         <div class="core-header">
                             路由编辑
-                            <paper-fab mini id="saveRouter" icon="save" class="green" raised title="arrow-forward" on-tap="{{handleRouterSave}}"></paper-fab>
+                            <paper-fab mini id="saveRouter" icon="save" class="green" raised title="保存" on-tap="{{handleRouterSave}}"></paper-fab>
+                            <paper-fab mini id="cancelEditRouter" icon="cancel" class="red" raised title="取消编辑" on-tap="{{handleCancelRouterEdit}}"></paper-fab>
                         </div>
                         <div class="content">
                             <paper-input-decorator floatingLabel label="商户编号" class="custom" autoValidate="true" error="必填，最长 50 个字符">
@@ -201,7 +210,7 @@
                     <core-header-panel>
                         <div class="core-header">
                             路由列表
-                            <paper-fab hidden?="{{isRouterEdit}}" mini id="addRouterFab" icon="create" class="colored" raised title="新增路由" on-tap="{{handleRouterEdit}}"></paper-fab>
+                            <paper-fab mini id="addRouterFab" icon="create" class="colored" raised title="新增路由" on-tap="{{handleRouterEdit}}"></paper-fab>
                         </div>
                         <div class="content">
                             <div class="table">
@@ -355,6 +364,10 @@
                     // 发送到后台的ajax请求，保存路由
                     this.$.routerSaveAjax.body = JSON.stringify(this.body);
                     this.$.routerSaveAjax.go();
+                },
+                // 取消编辑路由
+                handleCancelRouterEdit: function(event, detail, sender) {
+                    this.isRouterEdit = false;
                 },
                 // 商户选择处理事件
                 handleMerchantChosen: function(event, detail, sender) {
