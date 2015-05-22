@@ -141,25 +141,24 @@ func doTransSett() {
 		log.Errorf("fail to load trans by time : %s", err)
 		return
 	}
-
+	log.Debugf("%+v", trans)
 	// 交易数据
 	for _, v := range trans {
-
-		// 得到渠道商户，获取签名密钥
-		chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
-		if err != nil {
-			log.Errorf("fail to find chanMer(%s,%s) : %s", v.ChanCode, v.ChanMerId, err)
-			continue
-		}
 
 		// 根据交易状态处理
 		switch v.TransStatus {
 		// 交易成功
 		case model.TransSuccess:
-			addTransSett(v, chanMer, model.SettSysRemain)
+			addTransSett(v, model.SettSysRemain)
 		// 处理中
 		case model.TransHandling:
 			// TODO根据渠道代码得到渠道实例，暂时默认cfca
+			// 得到渠道商户，获取签名密钥
+			chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
+			if err != nil {
+				log.Errorf("fail to find chanMer(%s,%s) : %s", v.ChanCode, v.ChanMerId, err)
+				continue
+			}
 			// 封装参数
 			be := &model.OrderEnquiry{
 				ChanMerId:   v.ChanMerId,
@@ -187,7 +186,7 @@ func doTransSett() {
 				// 更新交易状态
 				mongo.TransColl.Update(v)
 				// 添加到清分表
-				addTransSett(v, chanMer, model.SettSysRemain)
+				addTransSett(v, model.SettSysRemain)
 			} else if ret.RespCode == "100070" || ret.RespCode == "100080" {
 				// 支付失败、退款失败
 				v.RespCode = ret.RespCode
@@ -243,7 +242,7 @@ func doCFCATransCheck() {
 					case tx.TxType == cfca.BindingRefundTxCode:
 						newTrans.TransType = model.RefundTrans
 					}
-					addTransSett(newTrans, v, model.SettChanRemain)
+					addTransSett(newTrans, model.SettChanRemain)
 				}
 			}
 		}
@@ -268,10 +267,10 @@ func doCilTransCheck() {
 
 // addTransSett 保存一条清分数据
 // 计算手续费
-func addTransSett(t *model.Trans, c *model.ChanMer, settFlag int8) {
+func addTransSett(t *model.Trans, settFlag int8) {
 
 	// TODO CIL 渠道暂时默认勾兑成功
-	if c.ChanCode == "CIL" {
+	if t.ChanCode == "CIL" {
 		settFlag = model.SettSuccess
 	}
 
@@ -279,8 +278,10 @@ func addTransSett(t *model.Trans, c *model.ChanMer, settFlag int8) {
 	// 获得商户详情
 	if t.MerId != "" {
 		m, err := mongo.MerchantColl.Find(t.MerId)
-		log.Errorf("fail to find merchant by merId(%s): %s", t.MerId, err)
-
+		if err != nil {
+			log.Errorf("fail to find merchant by merId(%s): %s", t.MerId, err)
+		}
+		log.Debugf("schemecd : %s", m.Detail.BillingScheme)
 		if m.Detail.BillingScheme != "" {
 			scheme, err := mongo.SettSchemeCdCol.Find(m.Detail.BillingScheme)
 			if err != nil {
