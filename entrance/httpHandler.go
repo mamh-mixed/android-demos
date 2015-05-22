@@ -99,6 +99,8 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 		ret = master.AllChannelMerchant(data)
 	case "/quickMaster/channelMerchant/add":
 		ret = master.AddChannelMerchant(data)
+	case "/quickMaster/router/save":
+		ret = master.AddRouter(data)
 	case "/quickMaster/router/find":
 		merId := r.FormValue("merId")
 		ret = master.AllRouterOfOneMerchant(merId)

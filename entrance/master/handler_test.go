@@ -89,3 +89,26 @@ func TestAllChannelMerchant(t *testing.T) {
 	t.Logf("结果:%+v", result)
 
 }
+
+func TestAddRouter(t *testing.T) {
+	cond := model.RouterPolicy{
+		MerId:     "Test1",
+		CardBrand: "Test1",
+		ChanCode:  "Test2",
+		ChanMerId: "Test2",
+	}
+
+	t.Log("============")
+	data, err := json.Marshal(cond)
+	if err != nil {
+		t.Errorf("Error %s", err)
+	}
+
+	result := AddRouter(data)
+
+	if result == nil {
+		t.Error("出错啦")
+	}
+	t.Logf("结果:%+v", result)
+
+}

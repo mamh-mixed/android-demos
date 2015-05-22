@@ -123,6 +123,49 @@ func AddChannelMerchant(data []byte) (result *model.ResultBody) {
 	return
 }
 
+// AddRouter 处理新增一个路由的请求
+func AddRouter(data []byte) (result *model.ResultBody) {
+	r := new(model.RouterPolicy)
+	err := json.Unmarshal(data, r)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+	if r.MerId == "" {
+		log.Error("MerId")
+		return model.NewResultBody(3, "缺失必要元素 merId")
+	}
+
+	if r.ChanCode == "" {
+		log.Error("没有 ChanCode")
+		return model.NewResultBody(3, "缺失必要元素 chanCode")
+	}
+
+	if r.ChanMerId == "" {
+		log.Error("没有 ChanMerId")
+		return model.NewResultBody(3, "缺失必要元素 chanMerId")
+	}
+
+	if r.CardBrand == "" {
+		log.Error("没有 CardBrand")
+		return model.NewResultBody(3, "缺失必要元素 cardBrand")
+	}
+
+	err = mongo.RouterPolicyColl.Insert(r)
+	if err != nil {
+		log.Errorf("保存路由信息失败:%s", err)
+		return model.NewResultBody(1, "保存路由信息失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "保存成功",
+		Data:    r,
+	}
+
+	return
+}
+
 // AllRouterOfOneMerchant 处理查找商户的所有路由的请求
 func AllRouterOfOneMerchant(merId string) (result *model.ResultBody) {
 	routers, err := mongo.RouterPolicyColl.FindAllOfOneMerchant(merId)
