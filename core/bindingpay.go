@@ -106,10 +106,14 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	}
 	bc.BankId = cm.BankId
 
-	// todo 根据路由策略里面不同的渠道调用不同的绑定接口，这里为了简单，调用中金的接口
+	// 根据路由策略里面不同的渠道调用不同的绑定接口
 	c := channel.GetChan(bm.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	ret = c.ProcessBindingCreate(bc)
-	// ret = cfca.ProcessBindingCreate(bc)
 
 	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效
 	switch ret.RespCode {
@@ -164,8 +168,14 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	be.ChanMerId = bm.ChanMerId
 	be.ChanBindingId = bm.ChanBindingId
 	be.SignCert = chanMer.SignCert
-	// 查找该商户配置的渠道，这里为了简单，到中金查找。
+
+	// 查找该商户配置的渠道。
 	c := channel.GetChan(bm.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	ret = c.ProcessBindingEnquiry(be)
 
 	// 转换绑定状态
@@ -267,6 +277,15 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
 
+	// 获取渠道接口
+	c := channel.GetChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		trans.RespCode = "510010"
+		mongo.TransColl.Add(trans)
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	// 交易参数
 	trans.SysOrderNum = tools.SerialNumber()
 
@@ -284,7 +303,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.SignCert = chanMer.SignCert
 
 	// 支付
-	c := channel.GetChan(chanMer.ChanCode)
 	ret = c.ProcessBindingPayment(be)
 
 	// 处理结果
@@ -338,6 +356,11 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 
 	// 到渠道解绑
 	c := channel.GetChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	ret = c.ProcessBindingRemove(br)
 
 	// 如果解绑成功，更新本地数据库
@@ -437,9 +460,19 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(orign.ChanCode, orign.ChanMerId)
 	if err != nil {
+		log.Error("Find channel merchant error,error message is '%s'", err)
 		refund.RespCode = "300030"
 		mongo.TransColl.Add(refund)
 		return mongo.RespCodeColl.Get("300030")
+	}
+
+	// 获取渠道接口
+	c := channel.GetChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		refund.RespCode = "510010"
+		mongo.TransColl.Add(refund)
+		return mongo.RespCodeColl.Get("510010")
 	}
 
 	// 请求信息
@@ -456,7 +489,6 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	// 退款
-	c := channel.GetChan(chanMer.ChanCode)
 	ret = c.ProcessBindingRefund(be)
 
 	// 更新结果
@@ -514,6 +546,11 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	// 原订单为处理中，向渠道发起查询
 	result := new(model.BindingReturn)
 	c := channel.GetChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	switch t.TransType {
 	//支付
 	case model.PayTrans:
@@ -627,6 +664,7 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 
 	// 暂时不支持预授权交易
 	if be.TransType == "AUTH" {
+		log.Error("暂时不支持预授权交易")
 		errorTrans.RespCode = "100030"
 		saveErrorTran(errorTrans)
 		return mongo.RespCodeColl.Get("100030")
@@ -634,6 +672,7 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 
 	// 暂不支持借记卡
 	if be.AcctType == "10" {
+		log.Error("暂不支持借记卡")
 		errorTrans.RespCode = "300030"
 		saveErrorTran(errorTrans)
 		return mongo.RespCodeColl.Get("300030")
@@ -716,6 +755,11 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 
 	// 查找配置的渠道入口
 	c := channel.GetDirectPayChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	ret = c.Consume(be)
 
 	trans.ChanRespCode = ret.ChanRespCode

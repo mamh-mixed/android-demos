@@ -23,7 +23,7 @@ func TestUnionPayCardValidity(t *testing.T) {
 		SmsCode:         "12353",
 	}
 
-	ret := UnionPayCardValidity(bc)
+	ret := UnionPayCardCommonValidity(bc.IdentType, bc.IdentNumDecrypt, bc.PhoneNumDecrypt)
 	if ret != nil {
 		t.Errorf("Excepted 'nil',but get code is '%s' and msg is '%s' ", ret.RespCode, ret.RespMsg)
 	}
