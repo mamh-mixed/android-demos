@@ -9,6 +9,9 @@ import (
 // transformResp 转换应答内容
 func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingReturn) {
 
+	// 打印渠道返回日志
+	log.Infof("CFCA %s: %+v", txCode, resp)
+
 	// default
 	ret = mongo.RespCodeColl.Get("000001")
 	if resp == nil {
