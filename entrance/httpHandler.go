@@ -83,30 +83,21 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 
 	var ret *model.ResultBody
 
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
 	switch r.URL.Path {
 	case "/quickMaster/merchant/all":
-		data, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Errorf("Read all body error: %s", err)
-			w.WriteHeader(501)
-			return
-		}
 		ret = master.AllMerchant(data)
 	case "/quickMaster/merchant/add":
-		data, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Errorf("Read all body error: %s", err)
-			w.WriteHeader(501)
-			return
-		}
 		ret = master.AddMerchant(data)
+	case "/quickMaster/channelMerchant/all":
+		ret = master.AllChannelMerchant(data)
 	case "/quickMaster/channelMerchant/add":
-		data, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Errorf("Read all body error: %s", err)
-			w.WriteHeader(501)
-			return
-		}
 		ret = master.AddChannelMerchant(data)
 	case "/quickMaster/router/find":
 		merId := r.FormValue("merId")

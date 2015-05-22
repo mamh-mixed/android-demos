@@ -119,19 +119,19 @@ type MerDetail struct {
 
 // ChanMer 渠道商户
 type ChanMer struct {
-	ChanCode       string `bson:"chanCode,omitempty"`       //渠道代码
-	ChanMerId      string `bson:"chanMerId,omitempty"`      //商户号
-	ChanMerName    string `bson:"chanMerName,omitempty"`    //商户名称
-	SettFlag       string `bson:"settFlag,omitempty"`       //清算标识
-	SettRole       string `bson:"settRole,omitempty"`       //清算角色
-	SignCert       string `bson:"signCert,omitempty"`       //签名证书
-	CheckSignCert  string `bson:"checkSignCert,omitempty"`  //验签证书
-	AlpMd5Key      string `bson:"alpMd5Key,omitempty"`      //支付宝 MD5 Key
-	WxpAppId       string `bson:"wxpAppId,omitempty"`       //微信支付App Id
-	WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty"`  //微信支付Partner Key
-	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty"` //微信支付加密证书
-	InsCode        string `bson:"insCode,omitempty"`        //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
-	TerminalId     string `bson:"terminalId,omitempty"`     //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
+	ChanCode       string `bson:"chanCode,omitempty" json:"chanCode,omitempty"`             //渠道代码
+	ChanMerId      string `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`           //商户号
+	ChanMerName    string `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"`       //商户名称
+	SettFlag       string `bson:"settFlag,omitempty" json:"settFlag,omitempty"`             //清算标识
+	SettRole       string `bson:"settRole,omitempty" json:"settRole,omitempty"`             //清算角色
+	SignCert       string `bson:"signCert,omitempty" json:"signCert,omitempty"`             //签名证书
+	CheckSignCert  string `bson:"checkSignCert,omitempty" json:"checkSignCert,omitempty"`   //验签证书
+	AlpMd5Key      string `bson:"alpMd5Key,omitempty" json:"alpMd5Key,omitempty"`           //支付宝 MD5 Key
+	WxpAppId       string `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`             //微信支付App Id
+	WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty" json:"wxpPartnerKey,omitempty"`   //微信支付Partner Key
+	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty" json:"wxpEncryptCert,omitempty"` //微信支付加密证书
+	InsCode        string `bson:"insCode,omitempty" json:"insCode,omitempty"`               //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId     string `bson:"terminalId,omitempty" json:"terminalId,omitempty"`         //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
 	//...
 }
 
