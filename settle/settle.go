@@ -9,8 +9,11 @@ import (
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"math"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -46,6 +49,11 @@ func processTransSettle() {
 	disCfca, _ := tools.TimeToGiven("08:00:00")
 	log.Debugf("prepare to process doCFCATransCheck method after %s ", disCfca*time.Second)
 	afterFunc(disCfca*time.Second, "doCFCATransCheck")
+
+	// 讯联线下渠道
+	// disCil, _ := tools.TimeToGiven("01:00:00")
+	// log.Debugf("prepare to process doCFCATransCheck method after %s ", disCil*time.Second)
+	// afterFunc(disCfca*time.Second, "doCILTransCheck")
 
 	// 其他渠道...
 
@@ -119,6 +127,8 @@ func do(method string) {
 		func() {
 			log.Debug("just for test")
 		}()
+	case "doCILTransCheck":
+		doCilTransCheck()
 	default:
 		//..
 	}
@@ -131,9 +141,9 @@ func doTransSett() {
 		log.Errorf("fail to load trans by time : %s", err)
 		return
 	}
-
 	// 交易数据
 	for _, v := range trans {
+
 		// 根据交易状态处理
 		switch v.TransStatus {
 		// 交易成功
@@ -142,7 +152,6 @@ func doTransSett() {
 		// 处理中
 		case model.TransHandling:
 			// TODO根据渠道代码得到渠道实例，暂时默认cfca
-
 			// 得到渠道商户，获取签名密钥
 			chanMer, err := mongo.ChanMerColl.Find(v.ChanCode, v.ChanMerId)
 			if err != nil {
@@ -239,18 +248,68 @@ func doCFCATransCheck() {
 	}
 }
 
+// doCilTransCheck 讯联线下渠道勾兑
+// 勾兑:默认成功的交易都是勾兑成功
+// TODO 从对账文件里分析
+func doCilTransCheck() {
+
+	chanMers, err := mongo.ChanMerColl.FindByCode("CIL")
+	if err != nil {
+		log.Errorf("fail to load all cfca chanMer %s", err)
+	}
+
+	for _, v := range chanMers {
+		// mongo.TransSettColl
+		log.Debugf("%v", v)
+	}
+}
+
 // addTransSett 保存一条清分数据
 // 计算手续费
 func addTransSett(t *model.Trans, settFlag int8) {
-	sett := &model.TransSett{
-		Tran:     *t,
-		SettFlag: settFlag,
-		// TODO
-		MerSettAmt:  t.TransAmt * 9 / 10,
-		MerFee:      t.TransAmt / 10,
-		ChanSettAmt: t.TransAmt * 9 / 10,
-		ChanFee:     t.TransAmt / 10,
+
+	// TODO CIL 渠道暂时默认勾兑成功
+	if t.ChanCode == "CIL" {
+		settFlag = model.SettSuccess
 	}
+
+	var rate float64
+	// 获得商户详情
+	if t.MerId != "" {
+		m, err := mongo.MerchantColl.Find(t.MerId)
+		if err != nil {
+			log.Errorf("fail to find merchant by merId(%s): %s", t.MerId, err)
+		}
+		log.Debugf("schemecd : %s", m.Detail.BillingScheme)
+		if m.Detail.BillingScheme != "" {
+			// scheme, err := mongo.SettSchemeCdCol.Find(m.Detail.BillingScheme)
+			// if err != nil {
+			// 	log.Errorf("fail to find settScheme by cd(%s): %s", m.Detail.BillingScheme, err)
+			// }
+			// 固定百分比
+			schemeCd := m.Detail.BillingScheme
+			if strings.HasPrefix(schemeCd, "00") {
+				f, err := strconv.ParseFloat(schemeCd, 64)
+				if err != nil {
+					log.Errorf("fail to conver %s to float64: %s", schemeCd, err)
+				}
+				if f <= 5000 {
+					rate = f / 100000
+				}
+			}
+			// 非固定百分比
+			// TODO...
+		}
+
+	}
+
+	// 计算费率
+	sett := &model.TransSett{}
+	sett.Tran = *t
+	sett.SettFlag = settFlag
+	sett.MerFee = int64(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
+	sett.MerSettAmt = t.TransAmt - sett.MerFee
+
 	if err := mongo.TransSettColl.Add(sett); err != nil {
 		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)
 	}
