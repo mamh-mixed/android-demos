@@ -2,7 +2,7 @@ package settle
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
+	// "github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"gopkg.in/mgo.v2/bson"
 	"testing"

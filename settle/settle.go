@@ -283,17 +283,20 @@ func addTransSett(t *model.Trans, settFlag int8) {
 		}
 		log.Debugf("schemecd : %s", m.Detail.BillingScheme)
 		if m.Detail.BillingScheme != "" {
-			scheme, err := mongo.SettSchemeCdCol.Find(m.Detail.BillingScheme)
-			if err != nil {
-				log.Errorf("fail to find settScheme by cd(%s): %s", m.Detail.BillingScheme, err)
-			}
+			// scheme, err := mongo.SettSchemeCdCol.Find(m.Detail.BillingScheme)
+			// if err != nil {
+			// 	log.Errorf("fail to find settScheme by cd(%s): %s", m.Detail.BillingScheme, err)
+			// }
 			// 固定百分比
-			if strings.HasPrefix(scheme.SchemeCd, "00") {
-				f, err := strconv.ParseFloat(scheme.SchemeCd, 64)
+			schemeCd := m.Detail.BillingScheme
+			if strings.HasPrefix(schemeCd, "00") {
+				f, err := strconv.ParseFloat(schemeCd, 64)
 				if err != nil {
-					log.Errorf("fail to conver %s to float64: %s", scheme.SchemeCd, err)
+					log.Errorf("fail to conver %s to float64: %s", schemeCd, err)
 				}
-				rate = f / 100000
+				if f <= 5000 {
+					rate = f / 100000
+				}
 			}
 			// 非固定百分比
 			// TODO...
