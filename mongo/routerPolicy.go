@@ -43,6 +43,10 @@ func (c *routerPolicyCollection) FindAllOfOneMerchant(merId string) (r []model.R
 	r = make([]model.RouterPolicy, 0)
 	q := bson.M{"merId": merId}
 
+	if merId == "" {
+		q = nil
+	}
+
 	err = database.C(c.name).Find(q).All(&r)
 	if err != nil {
 		log.Errorf("FindAllOfOneMerchant Error message is: %s\n", err)
