@@ -3,7 +3,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/core-icon/core-icon.html">
 <link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
-<polymer-element name="post-card" attributes="identity">
+<polymer-element name="post-card" attributes="identity chosenTapLabel">
     <template>
         <style>
             :host {
@@ -103,7 +103,7 @@
                     <content></content>
                 </div>
                 <div class="action">
-                    <core-icon-button class="choose-btn" on-tap="{{chosenTapped}}" icon="">选择该商户</core-icon-button>
+                    <core-icon-button class="choose-btn" on-tap="{{chosenTapped}}" icon="">{{chosenTapLabel || '选择该商户'}}</core-icon-button>
                     <core-icon-button class="read-more-btn" icon="expand-more" hidden?={{isReadMore}} on-tap="{{expandMore}}"></core-icon-button>
                     <core-icon-button class="close-more-btn" icon="expand-less" hidden?={{!isReadMore}} on-tap="{{expandLess}}"></core-icon-button>
                 </div>
