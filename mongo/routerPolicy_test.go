@@ -10,10 +10,10 @@ func TestInsertRouterPolicy(t *testing.T) {
 
 	if debug {
 		rp := &model.RouterPolicy{
-			MerId:     merId,
-			CardBrand: cardBrand,
-			ChanCode:  chanCode,
-			ChanMerId: chanMerId,
+			MerId:     "testMerId",
+			CardBrand: "CUP",
+			ChanCode:  "testChanCode2",
+			ChanMerId: "testChanMerId2",
 		}
 
 		if err := RouterPolicyColl.Insert(rp); err != nil {

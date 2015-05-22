@@ -69,6 +69,31 @@ func AddMerchant(data []byte) (result *model.ResultBody) {
 	return
 }
 
+// AllChannelMerchant 处理查找所有商户的请求
+func AllChannelMerchant(data []byte) (result *model.ResultBody) {
+	cond := new(model.ChanMer)
+	err := json.Unmarshal(data, cond)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	merchants, err := mongo.ChanMerColl.FindByCondition(cond)
+
+	if err != nil {
+		log.Errorf("查询所有商户出错:%s", err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    merchants,
+	}
+
+	return
+}
+
 // AddChannelMerchant 处理新增一个渠道商户的请求
 func AddChannelMerchant(data []byte) (result *model.ResultBody) {
 	m := new(model.ChanMer)
@@ -93,6 +118,49 @@ func AddChannelMerchant(data []byte) (result *model.ResultBody) {
 		Status:  0,
 		Message: "操作成功",
 		Data:    m,
+	}
+
+	return
+}
+
+// AddRouter 处理新增一个路由的请求
+func AddRouter(data []byte) (result *model.ResultBody) {
+	r := new(model.RouterPolicy)
+	err := json.Unmarshal(data, r)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+	if r.MerId == "" {
+		log.Error("MerId")
+		return model.NewResultBody(3, "缺失必要元素 merId")
+	}
+
+	if r.ChanCode == "" {
+		log.Error("没有 ChanCode")
+		return model.NewResultBody(3, "缺失必要元素 chanCode")
+	}
+
+	if r.ChanMerId == "" {
+		log.Error("没有 ChanMerId")
+		return model.NewResultBody(3, "缺失必要元素 chanMerId")
+	}
+
+	if r.CardBrand == "" {
+		log.Error("没有 CardBrand")
+		return model.NewResultBody(3, "缺失必要元素 cardBrand")
+	}
+
+	err = mongo.RouterPolicyColl.Insert(r)
+	if err != nil {
+		log.Errorf("保存路由信息失败:%s", err)
+		return model.NewResultBody(1, "保存路由信息失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "保存成功",
+		Data:    r,
 	}
 
 	return

@@ -92,6 +92,9 @@
             ::content .key-content dt {
                 font-weight: bold;
             }
+            ::content .key-content dd {
+                word-wrap: break-word;
+            }
         </style>
         <core-ajax id="routerAjax" url="/quickMaster/router/find" handleAs="json" on-core-response="{{onRouterAjaxResponse}}"></core-ajax>
         <paper-shadow z="1">

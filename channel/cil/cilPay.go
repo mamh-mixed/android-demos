@@ -49,17 +49,18 @@ func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Expiredate:   p.ValidDateDecrypt,
 		Cvv2:         p.Cvv2Decrypt,
 	}
-	log.Debugf("直接支付开始向线下网关发送报文: %+v", m)
 
 	// 报文入库
 	m.UUID = tools.SerialNumber()
-	mongo.CilMsgColl.Upsert(m)
+	log.Infof("直接消费（订购消费）向线下网关发送报文内容: %+v", m)
+	// mongo.CilMsgColl.Upsert(m)
 
 	resp := send(m, transTimeout)
-	log.Debugf("直接支付返回结果:%+v", resp)
+	log.Infof("直接消费（订购消费）的线下网关返回结果: %+v", resp)
 
 	// 如果超时，请冲正
 	if resp.Respcd == reversalFlag {
+		log.Warn("请求超时!!!")
 		// 另起线程，冲正处理
 		go reversalHandle(m)
 		// 返回‘外部系统错误’的应答码
@@ -69,9 +70,11 @@ func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 
 	// 应答码转换
 	ret = transformResp(resp.Respcd)
+
 	// 更新已存储的报文
 	m.Respcd = resp.Respcd
-	mongo.CilMsgColl.Upsert(m)
+	// mongo.CilMsgColl.Upsert(m)
+
 	return
 }
 
@@ -104,15 +107,17 @@ func (c *CILPay) ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn
 		m.EciIndicator = "0" + ap.ApplePayData.PaymentData.EciIndicator
 		m.Onlinesecuredata = ap.ApplePayData.PaymentData.OnlinePaymentCryptogram
 	}
-	log.Debugf("bef: %+v", m)
 
 	// 报文入库
 	m.UUID = tools.SerialNumber()
-	mongo.CilMsgColl.Upsert(m)
+	log.Infof("ApplePay 消费向线下网关发送报文内容: %+v", m)
+	// mongo.CilMsgColl.Upsert(m)
 
 	resp := send(m, transTimeout)
+	log.Infof("ApplePay 消费的线下网关返回结果: %+v", resp)
 
 	if resp.Respcd == reversalFlag {
+		log.Warn("请求超时!!!")
 		// 另起线程，冲正处理
 		go reversalHandle(m)
 		// 返回‘外部系统错误’的应答码
@@ -122,9 +127,11 @@ func (c *CILPay) ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn
 
 	// 应答码转换
 	ret = transformResp(resp.Respcd)
+
 	// 更新已存储的报文
 	m.Respcd = resp.Respcd
-	mongo.CilMsgColl.Upsert(m)
+	// mongo.CilMsgColl.Upsert(m)
+
 	return
 }
 
@@ -135,7 +142,7 @@ func ConsumeUndo() {
 
 // reversalHandle 冲正处理方法
 func reversalHandle(om *model.CilMsg) {
-	log.Info("源交易请求超时，发送冲正报文")
+	log.Warn("源交易请求超时，发送冲正报文")
 	// 创建冲正报文
 	rm := &model.CilMsg{
 		Busicd:       consumeReversalBusicd,
@@ -155,19 +162,19 @@ func reversalHandle(om *model.CilMsg) {
 
 	// 报文入库
 	rm.UUID = tools.SerialNumber()
-	mongo.CilMsgColl.Upsert(rm)
+	log.Infof("冲正请求向线下网关发送报文内容: %+v", rm)
+	// mongo.CilMsgColl.Upsert(rm)
 
 	for _, i := range reversalTimeouts {
 		log.Infof("Send reversal request, overtime is %s", i)
+
 		back := send(rm, i)
 		if back.Respcd != reversalFlag {
 			log.Info("reversal operation success")
-			// 更新已存储的报文
-			rm.Respcd = back.Respcd
-			mongo.CilMsgColl.Upsert(rm)
+
 			return
 		}
 	}
 
-	log.Warnf("reversal operation fail,request data is %+v", rm)
+	log.Errorf("冲正失败,报文数据是：%+v", rm)
 }
