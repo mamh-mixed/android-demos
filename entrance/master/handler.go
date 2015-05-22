@@ -69,7 +69,7 @@ func AddMerchant(data []byte) (result *model.ResultBody) {
 	return
 }
 
-// AllMerchant 处理查找所有商户的请求
+// AllChannelMerchant 处理查找所有商户的请求
 func AllChannelMerchant(data []byte) (result *model.ResultBody) {
 	cond := new(model.ChanMer)
 	err := json.Unmarshal(data, cond)
@@ -78,7 +78,7 @@ func AllChannelMerchant(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(2, "解析失败")
 	}
 
-	merchants, err := mongo.MerchantColl.FindAllMerchant(cond)
+	merchants, err := mongo.ChanMerColl.FindByCondition(cond)
 
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)

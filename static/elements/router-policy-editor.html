@@ -1,0 +1,101 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="post-card.html">
+
+<polymer-element name="router-policy-editor">
+    <template>
+        <style>
+            #container {
+                min-height: 400px;
+                margin: 0;
+            }
+
+            core-header-panel {
+                width: 100%;
+                height: 600px;
+                /*padding: 5px;*/
+            }
+
+            .core-header {
+                height: 60px;
+                line-height: 60px;
+                font-size: 18px;
+                padding: 0 10px;
+                background-color: #03a9f4;
+                color: #FFF;
+                transition: height 0.2s;
+            }
+
+            .content {
+                height: 2000px;
+                background: linear-gradient(rgb(214, 227, 231), lightblue);
+            }
+        </style>
+        <div id="container" horizontal layout>
+            <div flex three>
+                <core-ajax id="ajax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json"
+                    body='{}'
+                    on-core-response="{{onAllMerchantAjaxResponse}}">
+                </core-ajax>
+                <core-header-panel>
+                    <div class="core-header">商户列表</div>
+                    <div class="content">
+                        <template repeat="{{merchant in merchants}}">
+                            <post-card identity="{{merchant.merId}}" on-chosen-tap="{{handleMerchantChosen}}">
+                                <div class="key-content">
+                                    <dl>
+                                        <dt>
+                                            <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
+                                        </dt>
+                                        <dd>{{merchant.remark}}</dd>
+                                        <dt>
+                                            <core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥
+                                        </dt>
+                                        <dd>{{merchant.signKey}}</dd>
+                                        <dt>
+                                            <core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥
+                                        </dt>
+                                        <dd>{{merchant.encryptKey}}</dd>
+                                    </dl>
+                                </div>
+                            </post-card>
+                        </template>
+                    </div>
+                </core-header-panel>
+            </div>
+            <div flex>Beta</div>
+            <div flex three>
+                <core-header-panel>
+                    <div class="core-header">渠道商户列表</div>
+                    <div class="content"></div>
+                </core-header-panel>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        (function() {
+            'use strict';
+            Polymer('router-policy-editor', {
+                url: '/quickMaster/merchant/add',
+                ready: function() {
+                    this.merchants = [];
+                },
+                // onAllMerchantAjaxResponse 请求所有的商户的ajax响应事件
+                onAllMerchantAjaxResponse: function() {
+                    var response = this.$.ajax.response;
+                    if (response.status === 0) {
+                        this.merchants = response.data.slice(0)
+                    }
+                },
+                // handleMerchantChosen 商户选择处理事件
+                handleMerchantChosen: function(event, detail, sender) {
+                    var merchant = sender.templateInstance.model.merchant;
+                    
+                }
+            });
+        })();
+    </script>
+</polymer-element>
