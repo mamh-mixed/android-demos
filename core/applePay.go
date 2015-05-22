@@ -82,6 +82,16 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 	if ap.TerminalId == "" {
 		ap.TerminalId = chanMer.TerminalId
 	}
+
+	// 查找配置的渠道入口
+	c := channel.GetDirectPayChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		errorTrans.RespCode = "510010"
+		saveErrorTran(errorTrans)
+		return mongo.RespCodeColl.Get("510010")
+	}
+
 	// 补充信息
 	ap.Chcd = chanMer.InsCode
 	ap.Mchntid = chanMer.ChanMerId
@@ -106,8 +116,7 @@ func ProcessApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return
 	}
 
-	// 查找配置的渠道入口
-	c := channel.GetDirectPayChan(chanMer.ChanCode)
+	// Apple Pay 支付
 	ret = c.ConsumeByApplePay(ap)
 
 	trans.ChanRespCode = ret.ChanRespCode
