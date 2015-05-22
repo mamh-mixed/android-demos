@@ -121,3 +121,15 @@ func TestChanMerFindAll(t *testing.T) {
 	}
 	log.Debugf("%+v", cs)
 }
+
+func TestFindByCondition(t *testing.T) {
+	// cond := &model.ChanMer{
+	// 	MerStatus: "Test",
+	// }
+
+	cms, err := ChanMerColl.FindByCondition(nil)
+	if err != nil {
+		t.Error("出错啦")
+	}
+	t.Logf("result is %+v", cms)
+}

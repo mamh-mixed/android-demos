@@ -58,3 +58,15 @@ func (col *chanMerCollection) FindByCode(chanCode string) ([]*model.ChanMer, err
 	err := database.C(col.name).Find(bson.M{"chanCode": chanCode}).All(&cs)
 	return cs, err
 }
+
+// FindByCondition 根据渠道商户的条件查找渠道商户
+func (col *chanMerCollection) FindByCondition(cond *model.ChanMer) (results []model.ChanMer, err error) {
+	results = make([]model.ChanMer, 1)
+	err = database.C(col.name).Find(nil).All(&results)
+	if err != nil {
+		log.Errorf("Find all merchant error: %s", err)
+		return nil, err
+	}
+
+	return
+}
