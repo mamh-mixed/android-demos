@@ -4,13 +4,16 @@
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/core-field/core-field.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <script src="../bower_components/uuid-v4.js/uuid-v4.min.js"></script>
 <script src="../bower_components/js-base64/base64.min.js"></script>
 <polymer-element name="merchant-form">
     <template>
         <style>
-            #container {}
+            #container {
+                min-height: 800px;
+            }
 
             #container > div[flex] {
                 margin-right: 10px;
@@ -18,7 +21,6 @@
 
             core-header-panel {
                 width: 100%;
-                height: 600px;
             }
 
             .core-header {
@@ -34,6 +36,20 @@
 
             .content {
                 padding: 0 10px;
+            }
+
+            .input-group {
+                padding-bottom: 5px;
+                border-bottom: 1px solid #0f9d58;
+            }
+
+            .input-group .label {
+                color: #f4b400;
+                margin-bottom: 10px;
+            }
+
+            .input-group paper-toggle-button {
+                margin-left: 5px;
             }
 
             .custom /deep/::-webkit-input-placeholder {
@@ -67,6 +83,7 @@
 
             .custom /deep/ input {
                 /*width: 450px;*/
+
                 width: 100%;
             }
 
@@ -100,7 +117,7 @@
             }
         </style>
 
-        <div id="container" horizontal layout>
+        <div id="container" fullbleed horizontal layout>
             <div flex two hidden>
                 <core-ajax id="merAjax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json" body='{}' on-core-response="{{onAllMerchantAjaxResponse}}">
                 </core-ajax>
@@ -130,9 +147,9 @@
                     </div>
                 </core-header-panel>
             </div>
-            <div flex three>
+            <div flex three fullbleed layout vertical>
                 <core-ajax id="postAjax" method="POST" url="/quickMaster/merchant/add" contentType='application/json' handleAs="json" on-core-response="{{onAjaxResponse}}"></core-ajax>
-                <core-header-panel>
+                <core-header-panel flex>
                     <div class="core-header">商户编辑</div>
                     <div class="content">
                         <paper-input-decorator floatingLabel label="商户编号" class="custom" autoValidate="true" error="必填，最长 50 个字符">
@@ -164,6 +181,13 @@
                             </core-tooltip>
                             <paper-char-counter class="counter" target="encryptKey"></paper-char-counter>
                         </paper-input-decorator>
+
+                        <div class="input-group">
+                            <div class="label">
+                                是否开启验签
+                            </div>
+                            <paper-toggle-button on-core-change="{{handleIsNeedSign}}"></paper-toggle-button>
+                        </div>
 
                         <paper-input-decorator floatingLabel label="费率" class="custom" autoValidate="true" error="必填，最长 6 个字符">
                             <core-tooltip label="如果费率为'0.123%'，则该框应该填写为'000123' " position="top">
@@ -208,6 +232,7 @@
                     transCurr: '156',
                     signKey: '',
                     encryptKey: '',
+                    isNeedSign: false,
                     remark: ''
                 },
                 detail: {
@@ -234,15 +259,19 @@
                 // 保存商户信息响应结果
                 onAjaxResponse: function(e, detail, sender) {
                     var response = detail.response;
-                    if (response){
+                    if (response) {
                         this.ajaxResponse = JSON.stringify(response.message);
                     }
                     this.$.ret.show();
                 },
                 // 编辑商户事件
-                handleMerchantChosen: function(e, detail, sender){
+                handleMerchantChosen: function(e, detail, sender) {
                     var merchant = sender.templateInstance.model.merchant;
                     console.log(merchant);
+                },
+                // 切换是否开启签名的监听事件
+                handleIsNeedSign: function(e, detail, sender) {
+                    this.body.isNeedSign = sender.checked;
                 },
                 // 生成一个不带中划线的uuid
                 uuid: function() {
