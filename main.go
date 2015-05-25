@@ -25,7 +25,7 @@ func main() {
 		port                                 int
 	)
 
-	flag.BoolVar(&argAll, "all", false, "Startup QuickAll")
+	flag.BoolVar(&argAll, "all", true, "Startup QuickAll")
 	flag.BoolVar(&argMaster, "master", false, "Startup QuickMaster")
 	flag.BoolVar(&argPay, "pay", false, "Startup Quickpay")
 	flag.BoolVar(&argSettle, "settle", false, "Startup QuickSettle")
