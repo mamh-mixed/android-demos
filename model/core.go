@@ -90,7 +90,7 @@ type Merchant struct {
 	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   //商户状态（Normal，Deleted，Test）
 	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   //商户交易币种
 	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       //商户签名密钥
-	NeedSign   bool      `bson:"needSign,omitempty" json:"needSign,omitempty"`     //是否开启验签
+	IsNeedSign bool      `bson:"isNeedSign,omitempty" json:"isNeedSign,omitempty"` //是否开启验签
 	EncryptKey string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` //商户加密密钥
 	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         //备注信息
 	Detail     MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      //商户详细信息
@@ -99,24 +99,24 @@ type Merchant struct {
 // MerDetail 商户详细信息
 type MerDetail struct {
 	// MerId         string `bson:"merId,omitempty"`         //商户号
-	MerName       string `bson:"merName,omitempty"`       //商户名称
-	ShortName     string `bson:"shortName,omitempty"`     //商户简称
-	City          string `bson:"city,omitempty"`          //商户城市
-	Nation        string `bson:"nation,omitempty"`        //商户国家
-	MerType       string `bson:"merType,omitempty"`       //商户类型
-	BillingScheme string `bson:"billingScheme,omitempty"` //商户计费方案代码
-	SettCurr      string `bson:"SettCurr,omitempty"`      //商户清算币种
-	AcctName      string `bson:"acctName,omitempty"`      //商户账户名称
-	AcctNum       string `bson:"acctNum,omitempty"`       //商户账户
-	Corp          string `bson:"corp,omitempty"`          //法人代表
-	Master        string `bson:"master,omitempty"`        //商户负责人
-	Contact       string `bson:"contact,omitempty"`       //商户联系人
-	ContactTel    string `bson:"contactTel,omitempty"`    //商户联系电话
-	Fax           string `bson:"fax,omitempty"`           //商户传真
-	Email         string `bson:"email,omitempty"`         //商户邮箱
-	Addr          string `bson:"addr,omitempty"`          //商户地址
-	Postcode      string `bson:"postcode,omitempty"`      //商户邮编
-	Password      string `bson:"password,omitempty"`      //商户密码
+	MerName       string `bson:"merName,omitempty" json:"merName,omitempty"`             //商户名称
+	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         //商户简称
+	City          string `bson:"city,omitempty" json:"city,omitempty"`                   //商户城市
+	Nation        string `bson:"nation,omitempty" json:"nation,omitempty"`               //商户国家
+	MerType       string `bson:"merType,omitempty" json:"merType,omitempty"`             //商户类型
+	BillingScheme string `bson:"billingScheme,omitempty" json:"billingScheme,omitempty"` //商户计费方案代码
+	SettCurr      string `bson:"SettCurr,omitempty" json:"SettCurr,omitempty"`           //商户清算币种
+	AcctName      string `bson:"acctName,omitempty" json:"acctName,omitempty"`           //商户账户名称
+	AcctNum       string `bson:"acctNum,omitempty" json:"acctNum,omitempty"`             //商户账户
+	Corp          string `bson:"corp,omitempty" json:"corp,omitempty"`                   //法人代表
+	Master        string `bson:"master,omitempty" json:"master,omitempty"`               //商户负责人
+	Contact       string `bson:"contact,omitempty" json:"contact,omitempty"`             //商户联系人
+	ContactTel    string `bson:"contactTel,omitempty" json:"contactTel,omitempty"`       //商户联系电话
+	Fax           string `bson:"fax,omitempty" json:"fax,omitempty"`                     //商户传真
+	Email         string `bson:"email,omitempty" json:"email,omitempty"`                 //商户邮箱
+	Addr          string `bson:"addr,omitempty" json:"addr,omitempty"`                   //商户地址
+	Postcode      string `bson:"postcode,omitempty" json:"postcode,omitempty"`           //商户邮编
+	Password      string `bson:"password,omitempty" json:"password,omitempty"`           //商户密码
 }
 
 // ChanMer 渠道商户
