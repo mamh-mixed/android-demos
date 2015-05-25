@@ -129,9 +129,9 @@ func prepareData(r *http.Request) (merId, sign string, data []byte, status int, 
 	}
 
 	sign = r.Header.Get("X-Sign")
-	if sign == "" {
-		return "", "", nil, 412, errors.New("parameter `X-Sign` required")
-	}
+	// if sign == "" {
+	// 	return "", "", nil, 412, errors.New("header `X-Sign` required")
+	// }
 
 	data, err = ioutil.ReadAll(r.Body)
 	if err != nil {
