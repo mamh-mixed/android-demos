@@ -122,6 +122,38 @@
         </style>
         <div id="container" vertical layout>
             <div id="listContainer" horizontal layout>
+                <div flex five hidden?="{{isRouterEdit}}">
+                    <core-ajax id="routerAjax" method="POST" url="/quickMaster/router/find" auto handleAs="json" params='{"merId": ""}' on-core-response="{{onAllRouterAjaxResponse}}">
+                    </core-ajax>
+                    <core-header-panel>
+                        <div class="core-header">
+                            路由列表
+                            <paper-fab mini id="addRouterFab" icon="add" class="colored" raised title="新增路由" on-tap="{{handleRouterEdit}}"></paper-fab>
+                        </div>
+                        <div class="content">
+                            <div class="table">
+                                <div class="thead">
+                                    <span>#</span>
+                                    <span>商户号</span>
+                                    <span>卡品牌</span>
+                                    <span>渠道代码</span>
+                                    <span>渠道商户号</span>
+                                </div>
+                                <div class="tbody">
+                                    <template repeat="{{route,index in routers}}">
+                                        <div class="row">
+                                            <span>{{index+1}}</span>
+                                            <span>{{route.merId}}</span>
+                                            <span>{{route.cardBrand}}</span>
+                                            <span>{{route.chanCode}}</span>
+                                            <span>{{route.chanMerId}}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </core-header-panel>
+                </div>
                 <div flex five hidden?="{{!isRouterEdit}}">
                     <core-ajax id="routerSaveAjax" method="POST" url="/quickMaster/router/save" handleAs="json" body='{}' on-core-response="{{onRouterSaveAjaxResponse}}">
                     </core-ajax>
@@ -204,40 +236,8 @@
                         </div>
                     </core-header-panel>
                 </div>
-                <div flex five hidden?="{{isRouterEdit}}">
-                    <core-ajax id="routerAjax" method="POST" url="/quickMaster/router/find" auto handleAs="json" params='{"merId": ""}' on-core-response="{{onAllRouterAjaxResponse}}">
-                    </core-ajax>
-                    <core-header-panel>
-                        <div class="core-header">
-                            路由列表
-                            <paper-fab mini id="addRouterFab" icon="create" class="colored" raised title="新增路由" on-tap="{{handleRouterEdit}}"></paper-fab>
-                        </div>
-                        <div class="content">
-                            <div class="table">
-                                <div class="thead">
-                                    <span>#</span>
-                                    <span>商户号</span>
-                                    <span>卡品牌</span>
-                                    <span>渠道代码</span>
-                                    <span>渠道商户号</span>
-                                </div>
-                                <div class="tbody">
-                                    <template repeat="{{route,index in routers}}">
-                                        <div class="row">
-                                            <span>{{index+1}}</span>
-                                            <span>{{route.merId}}</span>
-                                            <span>{{route.cardBrand}}</span>
-                                            <span>{{route.chanCode}}</span>
-                                            <span>{{route.chanMerId}}</span>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </core-header-panel>
-                </div>
-
-                <div flex three>
+                
+                <div flex three hidden?="{{!isRouterEdit}}">
                     <core-ajax id="merAjax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json" body='{}' on-core-response="{{onAllMerchantAjaxResponse}}">
                     </core-ajax>
                     <core-header-panel>
@@ -266,7 +266,7 @@
                         </div>
                     </core-header-panel>
                 </div>
-                <div flex two>
+                <div flex two hidden?="{{!isRouterEdit}}">
                     <core-ajax id="chanMerAjax" method="POST" url="/quickMaster/channelMerchant/all" auto handleAs="json" body='{}' on-core-response="{{onAllChannelMerchantAjaxResponse}}">
                     </core-ajax>
                     <core-header-panel>
