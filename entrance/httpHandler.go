@@ -8,7 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
-	"github.com/CardInfoLink/quickpay/entrance/master"
+	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
