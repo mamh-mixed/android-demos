@@ -80,10 +80,12 @@ db.trans.createIndex({ orderNum : 1, merId : 1 },{ unique: true });
 db.trans.createIndex({ transType : 1, refundOrderNum : 1, merId : 1, transStatus : 1 });
 db.transSett.createIndex({ orderNum : 1, merId : 1 },{ unique: true });
 db.merchant.createIndex({merId : 1 },{ unique: true });
-db.cardBin.createIndex({bin : 1, cardLen: 1},{ unique: true });
+db.cardBin.createIndex({bin : 1, cardLen : 1},{ unique: true });
 db.cfcaBankMap.createIndex({insCode : 1 },{ unique: true });
 db.chanMer.createIndex({ chanMerId : 1, chanCode : 1 },{ unique: true });
 db.routerPolicy.createIndex({ merId : 1, cardBrand : 1 },{ unique: true });
 db.respCode.createIndex({ respCode : 1},{ unique: true });
+db.respCode.ensureIndex({"cfca.code":1});
+db.respCode.ensureIndex({"cil.code":1});
 
 ```
