@@ -3,29 +3,36 @@ package data
 import (
 	// "fmt"
 	"testing"
+
+	// "github.com/omigo/log"
 )
 
+// xTestAddRespCodeFromCsv 新应答码插入的方法，去掉x，然后执行go test
 func xTestAddRespCodeFromCsv(t *testing.T) {
-	// step 1
+	// 插入quickpay的应答码
 	err := AddSysCodeFromCsv("respCode_quickpay.csv")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Log("quickpay的应答码插入完成")
 
-	// step 2
+	// 插入中金和quickpay的应答码转换数据
 	err = AddChanCodeFromScv("cfca", "respCode_cfca.csv")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Log("中金和quickpay的应答码转换数据插入完成")
 
-	// step 3
+	// 插入线下网关和quickpay的应答码转换数据
 	err = AddChanCodeFromScv("cil", "respCode_cil.csv")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Log("线下网关和quickpay的应答码转换数据插入完成")
+
 }
 
 func TestAddSettSchemeCd(t *testing.T) {
