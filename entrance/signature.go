@@ -35,11 +35,13 @@ func CheckSignature(data []byte, merId, signature string) (result bool, ret *mod
 		}
 		return false, mongo.RespCodeColl.Get("000001")
 	}
-	// 是否开启验签
-	if m.IsNeedSign {
-		return CheckSignatureUseSha1(data, m.SignKey, signature), nil
+
+	// 如果商户无需验签，验签结果直接返回 true
+	if !m.IsNeedSign {
+		return true, nil
 	}
-	return true, nil
+
+	return CheckSignatureUseSha1(data, m.SignKey, signature), nil
 }
 
 // Signature 根据商户ID到数据库查找签名密钥，然后拼接到数据后面，签名
