@@ -62,18 +62,18 @@ func (c *respCodeCollection) GetMsg(code string) (msg string) {
 
 /* only use for import respCode */
 
-func (c *respCodeCollection) Add(r *model.QuickpayCsv) error {
+func (c *respCodeCollection) Add(r *model.QuickpayCSV) error {
 	err := database.C(c.name).Insert(r)
 	return err
 }
 
-func (c *respCodeCollection) FindOne(code string) (*model.QuickpayCsv, error) {
-	q := new(model.QuickpayCsv)
+func (c *respCodeCollection) FindOne(code string) (*model.QuickpayCSV, error) {
+	q := new(model.QuickpayCSV)
 	err := database.C(c.name).Find(bson.M{"respCode": code}).One(q)
 	return q, err
 }
 
-func (c *respCodeCollection) Update(r *model.QuickpayCsv) error {
+func (c *respCodeCollection) Update(r *model.QuickpayCSV) error {
 	err := database.C(c.name).Update(bson.M{"respCode": r.RespCode}, r)
 	return err
 }

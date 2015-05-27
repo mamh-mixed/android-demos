@@ -1,428 +1,428 @@
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0736d" }, "insCode" : "0801000000", "bankId" : "100", "bankName" : "邮储银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0736e" }, "insCode" : "0801004900", "bankId" : "100", "bankName" : "邮储银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0736f" }, "insCode" : "0801009999", "bankId" : "100", "bankName" : "邮储银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07370" }, "insCode" : "0861000000", "bankId" : "100", "bankName" : "邮储银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07371" }, "insCode" : "0801020000", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07372" }, "insCode" : "0801020056", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07373" }, "insCode" : "0801020076", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07374" }, "insCode" : "0801020116", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07375" }, "insCode" : "0801020124", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07376" }, "insCode" : "0801020250", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07377" }, "insCode" : "0801020276", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07378" }, "insCode" : "0801020344", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07379" }, "insCode" : "0801020360", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0737a" }, "insCode" : "0801020380", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0737b" }, "insCode" : "0801020392", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0737c" }, "insCode" : "0801020398", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0737d" }, "insCode" : "0801020410", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0737e" }, "insCode" : "0801020418", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0737f" }, "insCode" : "0801020442", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07380" }, "insCode" : "0801020446", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07381" }, "insCode" : "0801020458", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07382" }, "insCode" : "0801020528", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07383" }, "insCode" : "0801020554", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07384" }, "insCode" : "0801020586", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07385" }, "insCode" : "0801020702", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07386" }, "insCode" : "0801020704", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07387" }, "insCode" : "0801020724", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07388" }, "insCode" : "0801020764", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07389" }, "insCode" : "0826470446", "bankId" : "102", "bankName" : "工商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0738a" }, "insCode" : "0801020826", "bankId" : "103", "bankName" : "农业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0738b" }, "insCode" : "0801030000", "bankId" : "103", "bankName" : "农业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0738c" }, "insCode" : "0801030001", "bankId" : "103", "bankName" : "农业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0738d" }, "insCode" : "0801033320", "bankId" : "103", "bankName" : "农业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0738e" }, "insCode" : "0801040000", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0738f" }, "insCode" : "0801040036", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07390" }, "insCode" : "0801040116", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07391" }, "insCode" : "0801040360", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07392" }, "insCode" : "0801040392", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07393" }, "insCode" : "0801040410", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07394" }, "insCode" : "0801040446", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07395" }, "insCode" : "0801040458", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07396" }, "insCode" : "0801040608", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07397" }, "insCode" : "0801040702", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07398" }, "insCode" : "0801040704", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07399" }, "insCode" : "0801040764", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0739a" }, "insCode" : "0801043320", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0739b" }, "insCode" : "0825190344", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0739c" }, "insCode" : "0830230036", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0739d" }, "insCode" : "0847980344", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0739e" }, "insCode" : "0899900458", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0739f" }, "insCode" : "0899900702", "bankId" : "104", "bankName" : "中国银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a0" }, "insCode" : "0801050000", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a1" }, "insCode" : "0801050001", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a2" }, "insCode" : "0801050643", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a3" }, "insCode" : "0801053930", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a4" }, "insCode" : "0801059999", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a5" }, "insCode" : "0825070344", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a6" }, "insCode" : "0825270446", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a7" }, "insCode" : "0825330344", "bankId" : "105", "bankName" : "建设银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a8" }, "insCode" : "0803010000", "bankId" : "301", "bankName" : "交通银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073a9" }, "insCode" : "0803010344", "bankId" : "301", "bankName" : "交通银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073aa" }, "insCode" : "0803010446", "bankId" : "301", "bankName" : "交通银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ab" }, "insCode" : "0803020000", "bankId" : "302", "bankName" : "中信银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ac" }, "insCode" : "0863020000", "bankId" : "302", "bankName" : "中信银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ad" }, "insCode" : "0803030000", "bankId" : "303", "bankName" : "光大银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ae" }, "insCode" : "0863030000", "bankId" : "303", "bankName" : "光大银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073af" }, "insCode" : "0803040000", "bankId" : "304", "bankName" : "华夏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b0" }, "insCode" : "0863040000", "bankId" : "304", "bankName" : "华夏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b1" }, "insCode" : "0803050000", "bankId" : "305", "bankName" : "民生银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b2" }, "insCode" : "0803050001", "bankId" : "305", "bankName" : "民生银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b3" }, "insCode" : "0803060000", "bankId" : "306", "bankName" : "广发银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b4" }, "insCode" : "0803070000", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b5" }, "insCode" : "0803070010", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b6" }, "insCode" : "0803180000", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b7" }, "insCode" : "0804100000", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b8" }, "insCode" : "0804105840", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073b9" }, "insCode" : "0805105840", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ba" }, "insCode" : "0806105840", "bankId" : "307", "bankName" : "平安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073bb" }, "insCode" : "0803080000", "bankId" : "308", "bankName" : "招商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073bc" }, "insCode" : "0803080010", "bankId" : "308", "bankName" : "招商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073bd" }, "insCode" : "0803080344", "bankId" : "308", "bankName" : "招商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073be" }, "insCode" : "0803090000", "bankId" : "309", "bankName" : "兴业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073bf" }, "insCode" : "0803090010", "bankId" : "309", "bankName" : "兴业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c0" }, "insCode" : "0803330001", "bankId" : "309", "bankName" : "兴业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c1" }, "insCode" : "0803100000", "bankId" : "310", "bankName" : "浦发银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c2" }, "insCode" : "0863100000", "bankId" : "310", "bankName" : "浦发银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c3" }, "insCode" : "0803110000", "bankId" : "311", "bankName" : "恒丰银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c4" }, "insCode" : "0803114560", "bankId" : "311", "bankName" : "恒丰银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c5" }, "insCode" : "0805705500", "bankId" : "313", "bankName" : "华融湘江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c6" }, "insCode" : "0865705500", "bankId" : "313", "bankName" : "华融湘江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c7" }, "insCode" : "0803160000", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c8" }, "insCode" : "0803160001", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073c9" }, "insCode" : "0803161100", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ca" }, "insCode" : "0803162900", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073cb" }, "insCode" : "0803163310", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073cc" }, "insCode" : "0803163320", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073cd" }, "insCode" : "0803163330", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ce" }, "insCode" : "0803163370", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073cf" }, "insCode" : "0803163380", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d0" }, "insCode" : "0803166510", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d1" }, "insCode" : "0803167910", "bankId" : "316", "bankName" : "浙商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d2" }, "insCode" : "0803170000", "bankId" : "317", "bankName" : "渤海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d3" }, "insCode" : "0805426900", "bankId" : "321", "bankName" : "重庆三峡银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d4" }, "insCode" : "0804010000", "bankId" : "401", "bankName" : "上海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d5" }, "insCode" : "0804012900", "bankId" : "401", "bankName" : "上海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d6" }, "insCode" : "0804012902", "bankId" : "401", "bankName" : "上海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d7" }, "insCode" : "0804023930", "bankId" : "402", "bankName" : "厦门银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d8" }, "insCode" : "0804031000", "bankId" : "403", "bankName" : "北京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073d9" }, "insCode" : "0864031000", "bankId" : "403", "bankName" : "北京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073da" }, "insCode" : "0804053910", "bankId" : "405", "bankName" : "福建海峡银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073db" }, "insCode" : "0804053919", "bankId" : "405", "bankName" : "福建海峡银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073dc" }, "insCode" : "0804083320", "bankId" : "408", "bankName" : "宁波银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073dd" }, "insCode" : "0804083329", "bankId" : "408", "bankName" : "宁波银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073de" }, "insCode" : "0864083300", "bankId" : "408", "bankName" : "宁波银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073df" }, "insCode" : "0864083320", "bankId" : "408", "bankName" : "宁波银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e0" }, "insCode" : "0803134500", "bankId" : "409", "bankName" : "齐鲁银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e1" }, "insCode" : "0803134510", "bankId" : "409", "bankName" : "齐鲁银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e2" }, "insCode" : "0864094510", "bankId" : "409", "bankName" : "齐鲁银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e3" }, "insCode" : "0804115010", "bankId" : "411", "bankName" : "焦作市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e4" }, "insCode" : "0804123330", "bankId" : "412", "bankName" : "温州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e5" }, "insCode" : "0805063330", "bankId" : "412", "bankName" : "温州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e6" }, "insCode" : "0804135810", "bankId" : "413", "bankName" : "广州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e7" }, "insCode" : "0864135810", "bankId" : "413", "bankName" : "广州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e8" }, "insCode" : "0804145210", "bankId" : "414", "bankName" : "汉口银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073e9" }, "insCode" : "0805075210", "bankId" : "414", "bankName" : "汉口银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ea" }, "insCode" : "0805818200", "bankId" : "415", "bankName" : "甘肃银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073eb" }, "insCode" : "0805818201", "bankId" : "415", "bankName" : "甘肃银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ec" }, "insCode" : "0805818202", "bankId" : "415", "bankName" : "甘肃银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ed" }, "insCode" : "0804170000", "bankId" : "417", "bankName" : "盛京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ee" }, "insCode" : "0804170001", "bankId" : "417", "bankName" : "盛京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ef" }, "insCode" : "0804172210", "bankId" : "417", "bankName" : "盛京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f0" }, "insCode" : "0804172211", "bankId" : "417", "bankName" : "盛京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f1" }, "insCode" : "0804184930", "bankId" : "418", "bankName" : "洛阳银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f2" }, "insCode" : "0804192310", "bankId" : "419", "bankName" : "辽阳银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f3" }, "insCode" : "0804202220", "bankId" : "420", "bankName" : "大连银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f4" }, "insCode" : "0804202221", "bankId" : "420", "bankName" : "大连银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f5" }, "insCode" : "0814303050", "bankId" : "421", "bankName" : "苏州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f6" }, "insCode" : "0864303050", "bankId" : "421", "bankName" : "苏州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f7" }, "insCode" : "0804221210", "bankId" : "422", "bankName" : "河北银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f8" }, "insCode" : "0804221219", "bankId" : "422", "bankName" : "河北银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073f9" }, "insCode" : "0864221210", "bankId" : "422", "bankName" : "河北银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073fa" }, "insCode" : "0804240001", "bankId" : "424", "bankName" : "南京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073fb" }, "insCode" : "0804243010", "bankId" : "424", "bankName" : "南京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073fc" }, "insCode" : "0864243010", "bankId" : "424", "bankName" : "南京银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073fd" }, "insCode" : "0804263380", "bankId" : "426", "bankName" : "金华银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073fe" }, "insCode" : "0804270001", "bankId" : "427", "bankName" : "乌鲁木齐市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd073ff" }, "insCode" : "0804278810", "bankId" : "427", "bankName" : "乌鲁木齐市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07400" }, "insCode" : "0804283370", "bankId" : "428", "bankName" : "绍兴银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07401" }, "insCode" : "0804283371", "bankId" : "428", "bankName" : "绍兴银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07402" }, "insCode" : "0804283379", "bankId" : "428", "bankName" : "绍兴银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07403" }, "insCode" : "0804302240", "bankId" : "430", "bankName" : "抚顺银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07404" }, "insCode" : "0804302248", "bankId" : "430", "bankName" : "抚顺银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07405" }, "insCode" : "0804302249", "bankId" : "430", "bankName" : "抚顺银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07406" }, "insCode" : "0804314730", "bankId" : "431", "bankName" : "临商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07407" }, "insCode" : "0864314730", "bankId" : "431", "bankName" : "临商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07408" }, "insCode" : "0805755200", "bankId" : "432", "bankName" : "湖北银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07409" }, "insCode" : "0805755201", "bankId" : "432", "bankName" : "湖北银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0740a" }, "insCode" : "0804332369", "bankId" : "433", "bankName" : "葫芦岛银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0740b" }, "insCode" : "0804341101", "bankId" : "434", "bankName" : "天津银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0740c" }, "insCode" : "0804354910", "bankId" : "435", "bankName" : "郑州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0740d" }, "insCode" : "0864354910", "bankId" : "435", "bankName" : "郑州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0740e" }, "insCode" : "0804360010", "bankId" : "436", "bankName" : "宁夏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0740f" }, "insCode" : "0804368710", "bankId" : "436", "bankName" : "宁夏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07410" }, "insCode" : "0804368719", "bankId" : "436", "bankName" : "宁夏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07411" }, "insCode" : "0804375850", "bankId" : "437", "bankName" : "珠海华润银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07412" }, "insCode" : "0864375850", "bankId" : "437", "bankName" : "珠海华润银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07413" }, "insCode" : "0804384530", "bankId" : "438", "bankName" : "齐商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07414" }, "insCode" : "0864384530", "bankId" : "438", "bankName" : "齐商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07415" }, "insCode" : "0804392270", "bankId" : "439", "bankName" : "锦州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07416" }, "insCode" : "0864392270", "bankId" : "439", "bankName" : "锦州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07417" }, "insCode" : "0804403600", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07418" }, "insCode" : "0804403610", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07419" }, "insCode" : "0804403620", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0741a" }, "insCode" : "0804403650", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0741b" }, "insCode" : "0804403660", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0741c" }, "insCode" : "0804403680", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0741d" }, "insCode" : "0864403600", "bankId" : "440", "bankName" : "徽商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0741e" }, "insCode" : "0804416530", "bankId" : "441", "bankName" : "重庆银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0741f" }, "insCode" : "0804416900", "bankId" : "441", "bankName" : "重庆银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07420" }, "insCode" : "0864416910", "bankId" : "441", "bankName" : "重庆银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07421" }, "insCode" : "0804422610", "bankId" : "442", "bankName" : "哈尔滨银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07422" }, "insCode" : "0864422610", "bankId" : "442", "bankName" : "哈尔滨银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07423" }, "insCode" : "0864422611", "bankId" : "442", "bankName" : "哈尔滨银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07424" }, "insCode" : "0804437010", "bankId" : "443", "bankName" : "贵阳银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07425" }, "insCode" : "0864437010", "bankId" : "443", "bankName" : "贵阳银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07426" }, "insCode" : "0804447910", "bankId" : "444", "bankName" : "西安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07427" }, "insCode" : "0864447910", "bankId" : "444", "bankName" : "西安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07428" }, "insCode" : "0804462260", "bankId" : "446", "bankName" : "丹东银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07429" }, "insCode" : "0804462262", "bankId" : "446", "bankName" : "丹东银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0742a" }, "insCode" : "0804462269", "bankId" : "446", "bankName" : "丹东银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0742b" }, "insCode" : "0804478210", "bankId" : "447", "bankName" : "兰州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0742c" }, "insCode" : "0864478210", "bankId" : "447", "bankName" : "兰州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0742d" }, "insCode" : "0804484210", "bankId" : "448", "bankName" : "南昌银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0742e" }, "insCode" : "0864484210", "bankId" : "448", "bankName" : "南昌银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0742f" }, "insCode" : "0804491610", "bankId" : "449", "bankName" : "晋商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07430" }, "insCode" : "0804504520", "bankId" : "450", "bankName" : "青岛银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07431" }, "insCode" : "0864504520", "bankId" : "450", "bankName" : "青岛银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07432" }, "insCode" : "0804062410", "bankId" : "451", "bankName" : "吉林银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07433" }, "insCode" : "0804062418", "bankId" : "451", "bankName" : "吉林银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07434" }, "insCode" : "0804062419", "bankId" : "451", "bankName" : "吉林银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07435" }, "insCode" : "0804512420", "bankId" : "451", "bankName" : "吉林银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07436" }, "insCode" : "0804544240", "bankId" : "454", "bankName" : "九江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07437" }, "insCode" : "0864544240", "bankId" : "454", "bankName" : "九江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07438" }, "insCode" : "0803134732", "bankId" : "455", "bankName" : "日照银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07439" }, "insCode" : "0804554770", "bankId" : "455", "bankName" : "日照银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0743a" }, "insCode" : "0864554770", "bankId" : "455", "bankName" : "日照银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0743b" }, "insCode" : "0804562230", "bankId" : "456", "bankName" : "鞍山银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0743c" }, "insCode" : "0804562239", "bankId" : "456", "bankName" : "鞍山银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0743d" }, "insCode" : "0804588510", "bankId" : "458", "bankName" : "青海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0743e" }, "insCode" : "0864588510", "bankId" : "458", "bankName" : "青海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0743f" }, "insCode" : "0804593450", "bankId" : "459", "bankName" : "台州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07440" }, "insCode" : "0804593451", "bankId" : "459", "bankName" : "台州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07441" }, "insCode" : "0804615510", "bankId" : "461", "bankName" : "长沙银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07442" }, "insCode" : "0804615511", "bankId" : "461", "bankName" : "长沙银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07443" }, "insCode" : "0803134580", "bankId" : "462", "bankName" : "潍坊银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07444" }, "insCode" : "0864624580", "bankId" : "462", "bankName" : "潍坊银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07445" }, "insCode" : "0804634280", "bankId" : "463", "bankName" : "赣州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07446" }, "insCode" : "0864634280", "bankId" : "463", "bankName" : "赣州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07447" }, "insCode" : "0804643970", "bankId" : "464", "bankName" : "泉州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07448" }, "insCode" : "0804652280", "bankId" : "465", "bankName" : "营口银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07449" }, "insCode" : "0864652280", "bankId" : "465", "bankName" : "营口银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0744a" }, "insCode" : "0864667310", "bankId" : "466", "bankName" : "富滇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0744b" }, "insCode" : "0804672290", "bankId" : "467", "bankName" : "阜新银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0744c" }, "insCode" : "0804672299", "bankId" : "467", "bankName" : "阜新银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0744d" }, "insCode" : "0864672290", "bankId" : "467", "bankName" : "阜新银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0744e" }, "insCode" : "0804703350", "bankId" : "470", "bankName" : "嘉兴银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0744f" }, "insCode" : "0864703350", "bankId" : "470", "bankName" : "嘉兴银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07450" }, "insCode" : "0804721460", "bankId" : "472", "bankName" : "廊坊银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07451" }, "insCode" : "0864733450", "bankId" : "473", "bankName" : "浙江泰隆商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07452" }, "insCode" : "0804741910", "bankId" : "474", "bankName" : "内蒙古银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07453" }, "insCode" : "0864741910", "bankId" : "474", "bankName" : "内蒙古银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07454" }, "insCode" : "0864753360", "bankId" : "475", "bankName" : "湖州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07455" }, "insCode" : "0864786110", "bankId" : "478", "bankName" : "广西北部湾银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07456" }, "insCode" : "0804791920", "bankId" : "479", "bankName" : "包商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07457" }, "insCode" : "0804791921", "bankId" : "479", "bankName" : "包商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07458" }, "insCode" : "0804791922", "bankId" : "479", "bankName" : "包商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07459" }, "insCode" : "0804814659", "bankId" : "481", "bankName" : "威海市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0745a" }, "insCode" : "0864814650", "bankId" : "481", "bankName" : "威海市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0745b" }, "insCode" : "0804836560", "bankId" : "483", "bankName" : "攀枝花市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0745c" }, "insCode" : "0804856590", "bankId" : "485", "bankName" : "绵阳市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0745d" }, "insCode" : "0804866570", "bankId" : "486", "bankName" : "泸州市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0745e" }, "insCode" : "0804885050", "bankId" : "488", "bankName" : "三门峡银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0745f" }, "insCode" : "0804895910", "bankId" : "489", "bankName" : "广东南粤银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07460" }, "insCode" : "0864895910", "bankId" : "489", "bankName" : "广东南粤银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07461" }, "insCode" : "0864895919", "bankId" : "489", "bankName" : "广东南粤银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07462" }, "insCode" : "0804901380", "bankId" : "490", "bankName" : "张家口市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07463" }, "insCode" : "0804901381", "bankId" : "490", "bankName" : "张家口市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07464" }, "insCode" : "0864901380", "bankId" : "490", "bankName" : "张家口市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07465" }, "insCode" : "0804916172", "bankId" : "491", "bankName" : "桂林银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07466" }, "insCode" : "0864916170", "bankId" : "491", "bankName" : "桂林银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07467" }, "insCode" : "0804933120", "bankId" : "493", "bankName" : "江苏长江商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07468" }, "insCode" : "0804933160", "bankId" : "493", "bankName" : "江苏长江商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07469" }, "insCode" : "0804956140", "bankId" : "495", "bankName" : "柳州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0746a" }, "insCode" : "0864956140", "bankId" : "495", "bankName" : "柳州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0746b" }, "insCode" : "0804966730", "bankId" : "496", "bankName" : "南充市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0746c" }, "insCode" : "0804974634", "bankId" : "497", "bankName" : "莱商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0746d" }, "insCode" : "0804974790", "bankId" : "497", "bankName" : "莱商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0746e" }, "insCode" : "0804986580", "bankId" : "498", "bankName" : "德阳银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0746f" }, "insCode" : "0805027360", "bankId" : "502", "bankName" : "曲靖市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07470" }, "insCode" : "0805027361", "bankId" : "502", "bankName" : "曲靖市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07471" }, "insCode" : "0805478820", "bankId" : "701", "bankName" : "昆仑银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07472" }, "insCode" : "0865012900", "bankId" : "1401", "bankName" : "上海农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07473" }, "insCode" : "0814033055", "bankId" : "1403", "bankName" : "江苏常熟农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07474" }, "insCode" : "0864033055", "bankId" : "1403", "bankName" : "江苏常熟农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07475" }, "insCode" : "0814045840", "bankId" : "1404", "bankName" : "深圳农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07476" }, "insCode" : "0814055810", "bankId" : "1405", "bankName" : "广州农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07477" }, "insCode" : "0865055810", "bankId" : "1405", "bankName" : "广州农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07478" }, "insCode" : "0814075882", "bankId" : "1407", "bankName" : "广东南海农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07479" }, "insCode" : "0814085883", "bankId" : "1408", "bankName" : "佛山顺德农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0747a" }, "insCode" : "0865085883", "bankId" : "1408", "bankName" : "佛山顺德农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0747b" }, "insCode" : "0814097310", "bankId" : "1409", "bankName" : "昆明市农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0747c" }, "insCode" : "0814105200", "bankId" : "1410", "bankName" : "湖北省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0747d" }, "insCode" : "0814105210", "bankId" : "1410", "bankName" : "湖北省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0747e" }, "insCode" : "0814113030", "bankId" : "1411", "bankName" : "徐州市市郊农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0747f" }, "insCode" : "0814123020", "bankId" : "1412", "bankName" : "江苏江阴农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07480" }, "insCode" : "0814123022", "bankId" : "1412", "bankName" : "江苏江阴农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07481" }, "insCode" : "0814136530", "bankId" : "1413", "bankName" : "重庆农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07482" }, "insCode" : "0814136900", "bankId" : "1413", "bankName" : "重庆农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07483" }, "insCode" : "0815136900", "bankId" : "1413", "bankName" : "重庆农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07484" }, "insCode" : "0814144500", "bankId" : "1414", "bankName" : "山东省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07485" }, "insCode" : "0814144520", "bankId" : "1414", "bankName" : "山东省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07486" }, "insCode" : "0814156020", "bankId" : "1415", "bankName" : "东莞农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07487" }, "insCode" : "0814163056", "bankId" : "1416", "bankName" : "张家港农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07488" }, "insCode" : "0814173900", "bankId" : "1417", "bankName" : "福建省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07489" }, "insCode" : "0865173900", "bankId" : "1417", "bankName" : "福建省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0748a" }, "insCode" : "0814181000", "bankId" : "1418", "bankName" : "北京农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0748b" }, "insCode" : "0814181001", "bankId" : "1418", "bankName" : "北京农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0748c" }, "insCode" : "0814191100", "bankId" : "1419", "bankName" : "天津农村合作银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0748d" }, "insCode" : "0865191100", "bankId" : "1419", "bankName" : "天津农村合作银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0748e" }, "insCode" : "0814203320", "bankId" : "1420", "bankName" : "宁波鄞州农村合作银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0748f" }, "insCode" : "0814203323", "bankId" : "1420", "bankName" : "宁波鄞州农村合作银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07490" }, "insCode" : "0814215881", "bankId" : "1421", "bankName" : "佛山市三水区农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07491" }, "insCode" : "0814226510", "bankId" : "1422", "bankName" : "成都市农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07492" }, "insCode" : "0865226510", "bankId" : "1422", "bankName" : "成都市农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07493" }, "insCode" : "0814243000", "bankId" : "1424", "bankName" : "江苏省农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07494" }, "insCode" : "0814243001", "bankId" : "1424", "bankName" : "江苏省农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07495" }, "insCode" : "0865243000", "bankId" : "1424", "bankName" : "江苏省农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07496" }, "insCode" : "0814255890", "bankId" : "1425", "bankName" : "江门市新会农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07497" }, "insCode" : "0814283054", "bankId" : "1428", "bankName" : "吴江农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07498" }, "insCode" : "0814293300", "bankId" : "1429", "bankName" : "浙江省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07499" }, "insCode" : "0814293301", "bankId" : "1429", "bankName" : "浙江省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0749a" }, "insCode" : "0814404900", "bankId" : "1431", "bankName" : "珠海农商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0749b" }, "insCode" : "0814333051", "bankId" : "1433", "bankName" : "太仓农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0749c" }, "insCode" : "0814341770", "bankId" : "1434", "bankName" : "临汾市尧都市农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0749d" }, "insCode" : "0865341770", "bankId" : "1434", "bankName" : "临汾市尧都市农村信用合作社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0749e" }, "insCode" : "0814367000", "bankId" : "1436", "bankName" : "贵州省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0749f" }, "insCode" : "0814373020", "bankId" : "1437", "bankName" : "无锡农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a0" }, "insCode" : "0865373020", "bankId" : "1437", "bankName" : "无锡农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a1" }, "insCode" : "0814385500", "bankId" : "1438", "bankName" : "湖南省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a2" }, "insCode" : "0865385500", "bankId" : "1438", "bankName" : "湖南省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a3" }, "insCode" : "0814394200", "bankId" : "1439", "bankName" : "江西省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a4" }, "insCode" : "0865394200", "bankId" : "1439", "bankName" : "江西省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a5" }, "insCode" : "0814538200", "bankId" : "1440", "bankName" : "甘肃省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a6" }, "insCode" : "0814538202", "bankId" : "1440", "bankName" : "甘肃省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a7" }, "insCode" : "0814427900", "bankId" : "1442", "bankName" : "陕西省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a8" }, "insCode" : "0814427901", "bankId" : "1442", "bankName" : "陕西省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074a9" }, "insCode" : "0805083000", "bankId" : "1501", "bankName" : "江苏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074aa" }, "insCode" : "0805213000", "bankId" : "1501", "bankName" : "江苏银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ab" }, "insCode" : "0805171270", "bankId" : "1502", "bankName" : "邯郸市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ac" }, "insCode" : "0805541310", "bankId" : "1503", "bankName" : "邢台银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ad" }, "insCode" : "0805541311", "bankId" : "1503", "bankName" : "邢台银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ae" }, "insCode" : "0865541310", "bankId" : "1503", "bankName" : "邢台银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074af" }, "insCode" : "0805131419", "bankId" : "1504", "bankName" : "承德银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b0" }, "insCode" : "0865131410", "bankId" : "1504", "bankName" : "承德银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b1" }, "insCode" : "0804761430", "bankId" : "1505", "bankName" : "沧州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b2" }, "insCode" : "0804761431", "bankId" : "1505", "bankName" : "沧州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b3" }, "insCode" : "0804761432", "bankId" : "1505", "bankName" : "沧州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b4" }, "insCode" : "0805342050", "bankId" : "1507", "bankName" : "鄂尔多斯银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b5" }, "insCode" : "0865264330", "bankId" : "1508", "bankName" : "上饶银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b6" }, "insCode" : "0865264331", "bankId" : "1508", "bankName" : "上饶银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b7" }, "insCode" : "0805374610", "bankId" : "1510", "bankName" : "济宁银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b8" }, "insCode" : "0805284630", "bankId" : "1511", "bankName" : "泰安市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074b9" }, "insCode" : "0865284630", "bankId" : "1511", "bankName" : "泰安市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ba" }, "insCode" : "0805154680", "bankId" : "1512", "bankName" : "德州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074bb" }, "insCode" : "0865154680", "bankId" : "1512", "bankName" : "德州银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074bc" }, "insCode" : "0865675060", "bankId" : "1515", "bankName" : "商丘市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074bd" }, "insCode" : "0865675061", "bankId" : "1515", "bankName" : "商丘市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074be" }, "insCode" : "0805253450", "bankId" : "1517", "bankName" : "浙江民泰商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074bf" }, "insCode" : "0805253454", "bankId" : "1517", "bankName" : "浙江民泰商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c0" }, "insCode" : "0804162640", "bankId" : "1518", "bankName" : "龙江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c1" }, "insCode" : "0804922600", "bankId" : "1518", "bankName" : "龙江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c2" }, "insCode" : "0805332740", "bankId" : "1518", "bankName" : "龙江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c3" }, "insCode" : "0864162640", "bankId" : "1518", "bankName" : "龙江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c4" }, "insCode" : "0864922690", "bankId" : "1518", "bankName" : "龙江银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c5" }, "insCode" : "0805303380", "bankId" : "1519", "bankName" : "浙江稠州商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c6" }, "insCode" : "0805303387", "bankId" : "1519", "bankName" : "浙江稠州商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c7" }, "insCode" : "0814473600", "bankId" : "1520", "bankName" : "安徽省农村信用联社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c8" }, "insCode" : "0814473601", "bankId" : "1520", "bankName" : "安徽省农村信用联社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074c9" }, "insCode" : "0865473600", "bankId" : "1520", "bankName" : "安徽省农村信用联社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ca" }, "insCode" : "0814436100", "bankId" : "1521", "bankName" : "广西壮族自治区农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074cb" }, "insCode" : "0814436101", "bankId" : "1521", "bankName" : "广西壮族自治区农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074cc" }, "insCode" : "0814486400", "bankId" : "1522", "bankName" : "海南省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074cd" }, "insCode" : "0865097300", "bankId" : "1523", "bankName" : "云南省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ce" }, "insCode" : "0814468700", "bankId" : "1524", "bankName" : "宁夏黄河农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074cf" }, "insCode" : "0814468702", "bankId" : "1524", "bankName" : "宁夏黄河农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d0" }, "insCode" : "0805197110", "bankId" : "1525", "bankName" : "安顺市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d1" }, "insCode" : "0805197117", "bankId" : "1525", "bankName" : "安顺市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d2" }, "insCode" : "0814505800", "bankId" : "1529", "bankName" : "广东农村信用社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d3" }, "insCode" : "0814411200", "bankId" : "1530", "bankName" : "河北省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d4" }, "insCode" : "0814411202", "bankId" : "1530", "bankName" : "河北省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d5" }, "insCode" : "0805354970", "bankId" : "1531", "bankName" : "鹤壁银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d6" }, "insCode" : "0805611480", "bankId" : "1532", "bankName" : "衡水市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d7" }, "insCode" : "0805611481", "bankId" : "1532", "bankName" : "衡水市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d8" }, "insCode" : "0805591750", "bankId" : "1534", "bankName" : "晋中市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074d9" }, "insCode" : "0805658880", "bankId" : "1535", "bankName" : "库尔勒市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074da" }, "insCode" : "0805406650", "bankId" : "1536", "bankName" : "乐山市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074db" }, "insCode" : "0805556840", "bankId" : "1537", "bankName" : "凉山州商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074dc" }, "insCode" : "0805556859", "bankId" : "1537", "bankName" : "凉山州商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074dd" }, "insCode" : "0814511900", "bankId" : "1538", "bankName" : "内蒙古农村信用社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074de" }, "insCode" : "0814551600", "bankId" : "1539", "bankName" : "山西省农村信用社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074df" }, "insCode" : "0815205840", "bankId" : "1540", "bankName" : "深圳福田银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e0" }, "insCode" : "0805516620", "bankId" : "1541", "bankName" : "遂宁市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e1" }, "insCode" : "0805516629", "bankId" : "1541", "bankName" : "遂宁市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e2" }, "insCode" : "0814561100", "bankId" : "1543", "bankName" : "天津滨海农村商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e3" }, "insCode" : "0805311930", "bankId" : "1544", "bankName" : "乌海银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e4" }, "insCode" : "0805666770", "bankId" : "1547", "bankName" : "雅安市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e5" }, "insCode" : "0805631650", "bankId" : "1548", "bankName" : "阳泉市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e6" }, "insCode" : "0805646710", "bankId" : "1549", "bankName" : "宜宾市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e7" }, "insCode" : "0805247410", "bankId" : "1550", "bankName" : "玉溪市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e8" }, "insCode" : "0805326550", "bankId" : "1552", "bankName" : "自贡市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074e9" }, "insCode" : "0805326560", "bankId" : "1552", "bankName" : "自贡市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ea" }, "insCode" : "0805167030", "bankId" : "1553", "bankName" : "遵义市商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074eb" }, "insCode" : "0805785800", "bankId" : "1554", "bankName" : "广东华兴银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ec" }, "insCode" : "0805417900", "bankId" : "1555", "bankName" : "长安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ed" }, "insCode" : "0805417901", "bankId" : "1555", "bankName" : "长安银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ee" }, "insCode" : "0815201000", "bankId" : "1556", "bankName" : "北京顺义银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ef" }, "insCode" : "0815203438", "bankId" : "1557", "bankName" : "浙江景宁银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f0" }, "insCode" : "0815203457", "bankId" : "1558", "bankName" : "浙江三门银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f1" }, "insCode" : "0815204280", "bankId" : "1559", "bankName" : "江西赣州银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f2" }, "insCode" : "0815206900", "bankId" : "1560", "bankName" : "重庆渝北银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f3" }, "insCode" : "0815206925", "bankId" : "1561", "bankName" : "重庆黔江银座村镇银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f4" }, "insCode" : "0814452400", "bankId" : "1562", "bankName" : "吉林省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f5" }, "insCode" : "0814452402", "bankId" : "1562", "bankName" : "吉林省农村信用社联合社" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f6" }, "insCode" : "0803210000", "bankId" : "3000", "bankName" : "汇丰银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f7" }, "insCode" : "0825120344", "bankId" : "3000", "bankName" : "汇丰银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f8" }, "insCode" : "0825130344", "bankId" : "3000", "bankName" : "汇丰银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074f9" }, "insCode" : "0803200000", "bankId" : "3001", "bankName" : "东亚银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074fa" }, "insCode" : "0825020344", "bankId" : "3001", "bankName" : "东亚银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074fb" }, "insCode" : "0825020446", "bankId" : "3001", "bankName" : "东亚银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074fc" }, "insCode" : "0863200000", "bankId" : "3001", "bankName" : "东亚银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074fd" }, "insCode" : "0803320000", "bankId" : "3002", "bankName" : "南洋商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074fe" }, "insCode" : "0825200344", "bankId" : "3002", "bankName" : "南洋商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd074ff" }, "insCode" : "0863320000", "bankId" : "3002", "bankName" : "南洋商业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07500" }, "insCode" : "0803260000", "bankId" : "3003", "bankName" : "恒生银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07501" }, "insCode" : "0825140344", "bankId" : "3003", "bankName" : "恒生银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07502" }, "insCode" : "0825150344", "bankId" : "3003", "bankName" : "恒生银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07503" }, "insCode" : "0825210344", "bankId" : "3005", "bankName" : "集友银行有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07504" }, "insCode" : "0825170344", "bankId" : "3006", "bankName" : "创兴银行有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07505" }, "insCode" : "0803240000", "bankId" : "3007", "bankName" : "星展银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07506" }, "insCode" : "0825080344", "bankId" : "3007", "bankName" : "星展银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07507" }, "insCode" : "0803310000", "bankId" : "3008", "bankName" : "永亨银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07508" }, "insCode" : "0825060344", "bankId" : "3008", "bankName" : "永亨银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07509" }, "insCode" : "0825100344", "bankId" : "3009", "bankName" : "永隆银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0750a" }, "insCode" : "0803190001", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0750b" }, "insCode" : "0803190002", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0750c" }, "insCode" : "0803190003", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0750d" }, "insCode" : "0825030344", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0750e" }, "insCode" : "0803270000", "bankId" : "3018", "bankName" : "友利银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd0750f" }, "insCode" : "0803280000", "bankId" : "3022", "bankName" : "新韩银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07510" }, "insCode" : "0803360000", "bankId" : "3023", "bankName" : "韩国中小企业银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07511" }, "insCode" : "0803290000", "bankId" : "3024", "bankName" : "韩亚银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07512" }, "insCode" : "0803300000", "bankId" : "3025", "bankName" : "华侨银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07513" }, "insCode" : "0803340000", "bankId" : "3026", "bankName" : "大华银行(中国)有限公司" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07514" }, "insCode" : "0803220000", "bankId" : "3034", "bankName" : "渣打银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07515" }, "insCode" : "0803220001", "bankId" : "3034", "bankName" : "渣打银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07516" }, "insCode" : "0825280344", "bankId" : "3034", "bankName" : "渣打银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07517" }, "insCode" : "0803370000", "bankId" : "3056", "bankName" : "华商银行" }
-{ "_id" : { "$oid" : "550f6dc19bd712e61dd07518" }, "insCode" : "0803390000", "bankId" : "3057", "bankName" : "华一银行" }
+{ "insCode" : "0801000000", "bankId" : "100", "bankName" : "邮储银行" },
+{ "insCode" : "0801004900", "bankId" : "100", "bankName" : "邮储银行" },
+{ "insCode" : "0801009999", "bankId" : "100", "bankName" : "邮储银行" },
+{ "insCode" : "0861000000", "bankId" : "100", "bankName" : "邮储银行" },
+{ "insCode" : "0801020000", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020056", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020076", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020116", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020124", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020250", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020276", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020344", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020360", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020380", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020392", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020398", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020410", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020418", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020442", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020446", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020458", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020528", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020554", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020586", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020702", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020704", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020724", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020764", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0826470446", "bankId" : "102", "bankName" : "工商银行" },
+{ "insCode" : "0801020826", "bankId" : "103", "bankName" : "农业银行" },
+{ "insCode" : "0801030000", "bankId" : "103", "bankName" : "农业银行" },
+{ "insCode" : "0801030001", "bankId" : "103", "bankName" : "农业银行" },
+{ "insCode" : "0801033320", "bankId" : "103", "bankName" : "农业银行" },
+{ "insCode" : "0801040000", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040036", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040116", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040360", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040392", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040410", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040446", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040458", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040608", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040702", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040704", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801040764", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801043320", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0825190344", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0830230036", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0847980344", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0899900458", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0899900702", "bankId" : "104", "bankName" : "中国银行" },
+{ "insCode" : "0801050000", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0801050001", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0801050643", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0801053930", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0801059999", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0825070344", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0825270446", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0825330344", "bankId" : "105", "bankName" : "建设银行" },
+{ "insCode" : "0803010000", "bankId" : "301", "bankName" : "交通银行" },
+{ "insCode" : "0803010344", "bankId" : "301", "bankName" : "交通银行" },
+{ "insCode" : "0803010446", "bankId" : "301", "bankName" : "交通银行" },
+{ "insCode" : "0803020000", "bankId" : "302", "bankName" : "中信银行" },
+{ "insCode" : "0863020000", "bankId" : "302", "bankName" : "中信银行" },
+{ "insCode" : "0803030000", "bankId" : "303", "bankName" : "光大银行" },
+{ "insCode" : "0863030000", "bankId" : "303", "bankName" : "光大银行" },
+{ "insCode" : "0803040000", "bankId" : "304", "bankName" : "华夏银行" },
+{ "insCode" : "0863040000", "bankId" : "304", "bankName" : "华夏银行" },
+{ "insCode" : "0803050000", "bankId" : "305", "bankName" : "民生银行" },
+{ "insCode" : "0803050001", "bankId" : "305", "bankName" : "民生银行" },
+{ "insCode" : "0803060000", "bankId" : "306", "bankName" : "广发银行" },
+{ "insCode" : "0803070000", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0803070010", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0803180000", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0804100000", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0804105840", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0805105840", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0806105840", "bankId" : "307", "bankName" : "平安银行" },
+{ "insCode" : "0803080000", "bankId" : "308", "bankName" : "招商银行" },
+{ "insCode" : "0803080010", "bankId" : "308", "bankName" : "招商银行" },
+{ "insCode" : "0803080344", "bankId" : "308", "bankName" : "招商银行" },
+{ "insCode" : "0803090000", "bankId" : "309", "bankName" : "兴业银行" },
+{ "insCode" : "0803090010", "bankId" : "309", "bankName" : "兴业银行" },
+{ "insCode" : "0803330001", "bankId" : "309", "bankName" : "兴业银行" },
+{ "insCode" : "0803100000", "bankId" : "310", "bankName" : "浦发银行" },
+{ "insCode" : "0863100000", "bankId" : "310", "bankName" : "浦发银行" },
+{ "insCode" : "0803110000", "bankId" : "311", "bankName" : "恒丰银行" },
+{ "insCode" : "0803114560", "bankId" : "311", "bankName" : "恒丰银行" },
+{ "insCode" : "0805705500", "bankId" : "313", "bankName" : "华融湘江银行" },
+{ "insCode" : "0865705500", "bankId" : "313", "bankName" : "华融湘江银行" },
+{ "insCode" : "0803160000", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803160001", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803161100", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803162900", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803163310", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803163320", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803163330", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803163370", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803163380", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803166510", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803167910", "bankId" : "316", "bankName" : "浙商银行" },
+{ "insCode" : "0803170000", "bankId" : "317", "bankName" : "渤海银行" },
+{ "insCode" : "0805426900", "bankId" : "321", "bankName" : "重庆三峡银行" },
+{ "insCode" : "0804010000", "bankId" : "401", "bankName" : "上海银行" },
+{ "insCode" : "0804012900", "bankId" : "401", "bankName" : "上海银行" },
+{ "insCode" : "0804012902", "bankId" : "401", "bankName" : "上海银行" },
+{ "insCode" : "0804023930", "bankId" : "402", "bankName" : "厦门银行" },
+{ "insCode" : "0804031000", "bankId" : "403", "bankName" : "北京银行" },
+{ "insCode" : "0864031000", "bankId" : "403", "bankName" : "北京银行" },
+{ "insCode" : "0804053910", "bankId" : "405", "bankName" : "福建海峡银行" },
+{ "insCode" : "0804053919", "bankId" : "405", "bankName" : "福建海峡银行" },
+{ "insCode" : "0804083320", "bankId" : "408", "bankName" : "宁波银行" },
+{ "insCode" : "0804083329", "bankId" : "408", "bankName" : "宁波银行" },
+{ "insCode" : "0864083300", "bankId" : "408", "bankName" : "宁波银行" },
+{ "insCode" : "0864083320", "bankId" : "408", "bankName" : "宁波银行" },
+{ "insCode" : "0803134500", "bankId" : "409", "bankName" : "齐鲁银行" },
+{ "insCode" : "0803134510", "bankId" : "409", "bankName" : "齐鲁银行" },
+{ "insCode" : "0864094510", "bankId" : "409", "bankName" : "齐鲁银行" },
+{ "insCode" : "0804115010", "bankId" : "411", "bankName" : "焦作市商业银行" },
+{ "insCode" : "0804123330", "bankId" : "412", "bankName" : "温州银行" },
+{ "insCode" : "0805063330", "bankId" : "412", "bankName" : "温州银行" },
+{ "insCode" : "0804135810", "bankId" : "413", "bankName" : "广州银行" },
+{ "insCode" : "0864135810", "bankId" : "413", "bankName" : "广州银行" },
+{ "insCode" : "0804145210", "bankId" : "414", "bankName" : "汉口银行" },
+{ "insCode" : "0805075210", "bankId" : "414", "bankName" : "汉口银行" },
+{ "insCode" : "0805818200", "bankId" : "415", "bankName" : "甘肃银行" },
+{ "insCode" : "0805818201", "bankId" : "415", "bankName" : "甘肃银行" },
+{ "insCode" : "0805818202", "bankId" : "415", "bankName" : "甘肃银行" },
+{ "insCode" : "0804170000", "bankId" : "417", "bankName" : "盛京银行" },
+{ "insCode" : "0804170001", "bankId" : "417", "bankName" : "盛京银行" },
+{ "insCode" : "0804172210", "bankId" : "417", "bankName" : "盛京银行" },
+{ "insCode" : "0804172211", "bankId" : "417", "bankName" : "盛京银行" },
+{ "insCode" : "0804184930", "bankId" : "418", "bankName" : "洛阳银行" },
+{ "insCode" : "0804192310", "bankId" : "419", "bankName" : "辽阳银行" },
+{ "insCode" : "0804202220", "bankId" : "420", "bankName" : "大连银行" },
+{ "insCode" : "0804202221", "bankId" : "420", "bankName" : "大连银行" },
+{ "insCode" : "0814303050", "bankId" : "421", "bankName" : "苏州银行" },
+{ "insCode" : "0864303050", "bankId" : "421", "bankName" : "苏州银行" },
+{ "insCode" : "0804221210", "bankId" : "422", "bankName" : "河北银行" },
+{ "insCode" : "0804221219", "bankId" : "422", "bankName" : "河北银行" },
+{ "insCode" : "0864221210", "bankId" : "422", "bankName" : "河北银行" },
+{ "insCode" : "0804240001", "bankId" : "424", "bankName" : "南京银行" },
+{ "insCode" : "0804243010", "bankId" : "424", "bankName" : "南京银行" },
+{ "insCode" : "0864243010", "bankId" : "424", "bankName" : "南京银行" },
+{ "insCode" : "0804263380", "bankId" : "426", "bankName" : "金华银行" },
+{ "insCode" : "0804270001", "bankId" : "427", "bankName" : "乌鲁木齐市商业银行" },
+{ "insCode" : "0804278810", "bankId" : "427", "bankName" : "乌鲁木齐市商业银行" },
+{ "insCode" : "0804283370", "bankId" : "428", "bankName" : "绍兴银行" },
+{ "insCode" : "0804283371", "bankId" : "428", "bankName" : "绍兴银行" },
+{ "insCode" : "0804283379", "bankId" : "428", "bankName" : "绍兴银行" },
+{ "insCode" : "0804302240", "bankId" : "430", "bankName" : "抚顺银行" },
+{ "insCode" : "0804302248", "bankId" : "430", "bankName" : "抚顺银行" },
+{ "insCode" : "0804302249", "bankId" : "430", "bankName" : "抚顺银行" },
+{ "insCode" : "0804314730", "bankId" : "431", "bankName" : "临商银行" },
+{ "insCode" : "0864314730", "bankId" : "431", "bankName" : "临商银行" },
+{ "insCode" : "0805755200", "bankId" : "432", "bankName" : "湖北银行" },
+{ "insCode" : "0805755201", "bankId" : "432", "bankName" : "湖北银行" },
+{ "insCode" : "0804332369", "bankId" : "433", "bankName" : "葫芦岛银行" },
+{ "insCode" : "0804341101", "bankId" : "434", "bankName" : "天津银行" },
+{ "insCode" : "0804354910", "bankId" : "435", "bankName" : "郑州银行" },
+{ "insCode" : "0864354910", "bankId" : "435", "bankName" : "郑州银行" },
+{ "insCode" : "0804360010", "bankId" : "436", "bankName" : "宁夏银行" },
+{ "insCode" : "0804368710", "bankId" : "436", "bankName" : "宁夏银行" },
+{ "insCode" : "0804368719", "bankId" : "436", "bankName" : "宁夏银行" },
+{ "insCode" : "0804375850", "bankId" : "437", "bankName" : "珠海华润银行" },
+{ "insCode" : "0864375850", "bankId" : "437", "bankName" : "珠海华润银行" },
+{ "insCode" : "0804384530", "bankId" : "438", "bankName" : "齐商银行" },
+{ "insCode" : "0864384530", "bankId" : "438", "bankName" : "齐商银行" },
+{ "insCode" : "0804392270", "bankId" : "439", "bankName" : "锦州银行" },
+{ "insCode" : "0864392270", "bankId" : "439", "bankName" : "锦州银行" },
+{ "insCode" : "0804403600", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0804403610", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0804403620", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0804403650", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0804403660", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0804403680", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0864403600", "bankId" : "440", "bankName" : "徽商银行" },
+{ "insCode" : "0804416530", "bankId" : "441", "bankName" : "重庆银行" },
+{ "insCode" : "0804416900", "bankId" : "441", "bankName" : "重庆银行" },
+{ "insCode" : "0864416910", "bankId" : "441", "bankName" : "重庆银行" },
+{ "insCode" : "0804422610", "bankId" : "442", "bankName" : "哈尔滨银行" },
+{ "insCode" : "0864422610", "bankId" : "442", "bankName" : "哈尔滨银行" },
+{ "insCode" : "0864422611", "bankId" : "442", "bankName" : "哈尔滨银行" },
+{ "insCode" : "0804437010", "bankId" : "443", "bankName" : "贵阳银行" },
+{ "insCode" : "0864437010", "bankId" : "443", "bankName" : "贵阳银行" },
+{ "insCode" : "0804447910", "bankId" : "444", "bankName" : "西安银行" },
+{ "insCode" : "0864447910", "bankId" : "444", "bankName" : "西安银行" },
+{ "insCode" : "0804462260", "bankId" : "446", "bankName" : "丹东银行" },
+{ "insCode" : "0804462262", "bankId" : "446", "bankName" : "丹东银行" },
+{ "insCode" : "0804462269", "bankId" : "446", "bankName" : "丹东银行" },
+{ "insCode" : "0804478210", "bankId" : "447", "bankName" : "兰州银行" },
+{ "insCode" : "0864478210", "bankId" : "447", "bankName" : "兰州银行" },
+{ "insCode" : "0804484210", "bankId" : "448", "bankName" : "南昌银行" },
+{ "insCode" : "0864484210", "bankId" : "448", "bankName" : "南昌银行" },
+{ "insCode" : "0804491610", "bankId" : "449", "bankName" : "晋商银行" },
+{ "insCode" : "0804504520", "bankId" : "450", "bankName" : "青岛银行" },
+{ "insCode" : "0864504520", "bankId" : "450", "bankName" : "青岛银行" },
+{ "insCode" : "0804062410", "bankId" : "451", "bankName" : "吉林银行" },
+{ "insCode" : "0804062418", "bankId" : "451", "bankName" : "吉林银行" },
+{ "insCode" : "0804062419", "bankId" : "451", "bankName" : "吉林银行" },
+{ "insCode" : "0804512420", "bankId" : "451", "bankName" : "吉林银行" },
+{ "insCode" : "0804544240", "bankId" : "454", "bankName" : "九江银行" },
+{ "insCode" : "0864544240", "bankId" : "454", "bankName" : "九江银行" },
+{ "insCode" : "0803134732", "bankId" : "455", "bankName" : "日照银行" },
+{ "insCode" : "0804554770", "bankId" : "455", "bankName" : "日照银行" },
+{ "insCode" : "0864554770", "bankId" : "455", "bankName" : "日照银行" },
+{ "insCode" : "0804562230", "bankId" : "456", "bankName" : "鞍山银行" },
+{ "insCode" : "0804562239", "bankId" : "456", "bankName" : "鞍山银行" },
+{ "insCode" : "0804588510", "bankId" : "458", "bankName" : "青海银行" },
+{ "insCode" : "0864588510", "bankId" : "458", "bankName" : "青海银行" },
+{ "insCode" : "0804593450", "bankId" : "459", "bankName" : "台州银行" },
+{ "insCode" : "0804593451", "bankId" : "459", "bankName" : "台州银行" },
+{ "insCode" : "0804615510", "bankId" : "461", "bankName" : "长沙银行" },
+{ "insCode" : "0804615511", "bankId" : "461", "bankName" : "长沙银行" },
+{ "insCode" : "0803134580", "bankId" : "462", "bankName" : "潍坊银行" },
+{ "insCode" : "0864624580", "bankId" : "462", "bankName" : "潍坊银行" },
+{ "insCode" : "0804634280", "bankId" : "463", "bankName" : "赣州银行" },
+{ "insCode" : "0864634280", "bankId" : "463", "bankName" : "赣州银行" },
+{ "insCode" : "0804643970", "bankId" : "464", "bankName" : "泉州银行" },
+{ "insCode" : "0804652280", "bankId" : "465", "bankName" : "营口银行" },
+{ "insCode" : "0864652280", "bankId" : "465", "bankName" : "营口银行" },
+{ "insCode" : "0864667310", "bankId" : "466", "bankName" : "富滇银行" },
+{ "insCode" : "0804672290", "bankId" : "467", "bankName" : "阜新银行" },
+{ "insCode" : "0804672299", "bankId" : "467", "bankName" : "阜新银行" },
+{ "insCode" : "0864672290", "bankId" : "467", "bankName" : "阜新银行" },
+{ "insCode" : "0804703350", "bankId" : "470", "bankName" : "嘉兴银行" },
+{ "insCode" : "0864703350", "bankId" : "470", "bankName" : "嘉兴银行" },
+{ "insCode" : "0804721460", "bankId" : "472", "bankName" : "廊坊银行" },
+{ "insCode" : "0864733450", "bankId" : "473", "bankName" : "浙江泰隆商业银行" },
+{ "insCode" : "0804741910", "bankId" : "474", "bankName" : "内蒙古银行" },
+{ "insCode" : "0864741910", "bankId" : "474", "bankName" : "内蒙古银行" },
+{ "insCode" : "0864753360", "bankId" : "475", "bankName" : "湖州银行" },
+{ "insCode" : "0864786110", "bankId" : "478", "bankName" : "广西北部湾银行" },
+{ "insCode" : "0804791920", "bankId" : "479", "bankName" : "包商银行" },
+{ "insCode" : "0804791921", "bankId" : "479", "bankName" : "包商银行" },
+{ "insCode" : "0804791922", "bankId" : "479", "bankName" : "包商银行" },
+{ "insCode" : "0804814659", "bankId" : "481", "bankName" : "威海市商业银行" },
+{ "insCode" : "0864814650", "bankId" : "481", "bankName" : "威海市商业银行" },
+{ "insCode" : "0804836560", "bankId" : "483", "bankName" : "攀枝花市商业银行" },
+{ "insCode" : "0804856590", "bankId" : "485", "bankName" : "绵阳市商业银行" },
+{ "insCode" : "0804866570", "bankId" : "486", "bankName" : "泸州市商业银行" },
+{ "insCode" : "0804885050", "bankId" : "488", "bankName" : "三门峡银行" },
+{ "insCode" : "0804895910", "bankId" : "489", "bankName" : "广东南粤银行" },
+{ "insCode" : "0864895910", "bankId" : "489", "bankName" : "广东南粤银行" },
+{ "insCode" : "0864895919", "bankId" : "489", "bankName" : "广东南粤银行" },
+{ "insCode" : "0804901380", "bankId" : "490", "bankName" : "张家口市商业银行" },
+{ "insCode" : "0804901381", "bankId" : "490", "bankName" : "张家口市商业银行" },
+{ "insCode" : "0864901380", "bankId" : "490", "bankName" : "张家口市商业银行" },
+{ "insCode" : "0804916172", "bankId" : "491", "bankName" : "桂林银行" },
+{ "insCode" : "0864916170", "bankId" : "491", "bankName" : "桂林银行" },
+{ "insCode" : "0804933120", "bankId" : "493", "bankName" : "江苏长江商业银行" },
+{ "insCode" : "0804933160", "bankId" : "493", "bankName" : "江苏长江商业银行" },
+{ "insCode" : "0804956140", "bankId" : "495", "bankName" : "柳州银行" },
+{ "insCode" : "0864956140", "bankId" : "495", "bankName" : "柳州银行" },
+{ "insCode" : "0804966730", "bankId" : "496", "bankName" : "南充市商业银行" },
+{ "insCode" : "0804974634", "bankId" : "497", "bankName" : "莱商银行" },
+{ "insCode" : "0804974790", "bankId" : "497", "bankName" : "莱商银行" },
+{ "insCode" : "0804986580", "bankId" : "498", "bankName" : "德阳银行" },
+{ "insCode" : "0805027360", "bankId" : "502", "bankName" : "曲靖市商业银行" },
+{ "insCode" : "0805027361", "bankId" : "502", "bankName" : "曲靖市商业银行" },
+{ "insCode" : "0805478820", "bankId" : "701", "bankName" : "昆仑银行" },
+{ "insCode" : "0865012900", "bankId" : "1401", "bankName" : "上海农村商业银行" },
+{ "insCode" : "0814033055", "bankId" : "1403", "bankName" : "江苏常熟农村商业银行" },
+{ "insCode" : "0864033055", "bankId" : "1403", "bankName" : "江苏常熟农村商业银行" },
+{ "insCode" : "0814045840", "bankId" : "1404", "bankName" : "深圳农村商业银行" },
+{ "insCode" : "0814055810", "bankId" : "1405", "bankName" : "广州农村商业银行" },
+{ "insCode" : "0865055810", "bankId" : "1405", "bankName" : "广州农村商业银行" },
+{ "insCode" : "0814075882", "bankId" : "1407", "bankName" : "广东南海农村商业银行" },
+{ "insCode" : "0814085883", "bankId" : "1408", "bankName" : "佛山顺德农村商业银行" },
+{ "insCode" : "0865085883", "bankId" : "1408", "bankName" : "佛山顺德农村商业银行" },
+{ "insCode" : "0814097310", "bankId" : "1409", "bankName" : "昆明市农村信用合作社联合社" },
+{ "insCode" : "0814105200", "bankId" : "1410", "bankName" : "湖北省农村信用社联合社" },
+{ "insCode" : "0814105210", "bankId" : "1410", "bankName" : "湖北省农村信用社联合社" },
+{ "insCode" : "0814113030", "bankId" : "1411", "bankName" : "徐州市市郊农村信用合作社联合社" },
+{ "insCode" : "0814123020", "bankId" : "1412", "bankName" : "江苏江阴农村商业银行" },
+{ "insCode" : "0814123022", "bankId" : "1412", "bankName" : "江苏江阴农村商业银行" },
+{ "insCode" : "0814136530", "bankId" : "1413", "bankName" : "重庆农村商业银行" },
+{ "insCode" : "0814136900", "bankId" : "1413", "bankName" : "重庆农村商业银行" },
+{ "insCode" : "0815136900", "bankId" : "1413", "bankName" : "重庆农村商业银行" },
+{ "insCode" : "0814144500", "bankId" : "1414", "bankName" : "山东省农村信用社联合社" },
+{ "insCode" : "0814144520", "bankId" : "1414", "bankName" : "山东省农村信用社联合社" },
+{ "insCode" : "0814156020", "bankId" : "1415", "bankName" : "东莞农村商业银行" },
+{ "insCode" : "0814163056", "bankId" : "1416", "bankName" : "张家港农村商业银行" },
+{ "insCode" : "0814173900", "bankId" : "1417", "bankName" : "福建省农村信用社联合社" },
+{ "insCode" : "0865173900", "bankId" : "1417", "bankName" : "福建省农村信用社联合社" },
+{ "insCode" : "0814181000", "bankId" : "1418", "bankName" : "北京农村商业银行" },
+{ "insCode" : "0814181001", "bankId" : "1418", "bankName" : "北京农村商业银行" },
+{ "insCode" : "0814191100", "bankId" : "1419", "bankName" : "天津农村合作银行" },
+{ "insCode" : "0865191100", "bankId" : "1419", "bankName" : "天津农村合作银行" },
+{ "insCode" : "0814203320", "bankId" : "1420", "bankName" : "宁波鄞州农村合作银行" },
+{ "insCode" : "0814203323", "bankId" : "1420", "bankName" : "宁波鄞州农村合作银行" },
+{ "insCode" : "0814215881", "bankId" : "1421", "bankName" : "佛山市三水区农村信用合作社联合社" },
+{ "insCode" : "0814226510", "bankId" : "1422", "bankName" : "成都市农村信用合作社联合社" },
+{ "insCode" : "0865226510", "bankId" : "1422", "bankName" : "成都市农村信用合作社联合社" },
+{ "insCode" : "0814243000", "bankId" : "1424", "bankName" : "江苏省农村信用合作社联合社" },
+{ "insCode" : "0814243001", "bankId" : "1424", "bankName" : "江苏省农村信用合作社联合社" },
+{ "insCode" : "0865243000", "bankId" : "1424", "bankName" : "江苏省农村信用合作社联合社" },
+{ "insCode" : "0814255890", "bankId" : "1425", "bankName" : "江门市新会农村信用合作社联合社" },
+{ "insCode" : "0814283054", "bankId" : "1428", "bankName" : "吴江农村商业银行" },
+{ "insCode" : "0814293300", "bankId" : "1429", "bankName" : "浙江省农村信用社联合社" },
+{ "insCode" : "0814293301", "bankId" : "1429", "bankName" : "浙江省农村信用社联合社" },
+{ "insCode" : "0814404900", "bankId" : "1431", "bankName" : "珠海农商银行" },
+{ "insCode" : "0814333051", "bankId" : "1433", "bankName" : "太仓农村商业银行" },
+{ "insCode" : "0814341770", "bankId" : "1434", "bankName" : "临汾市尧都市农村信用合作社联合社" },
+{ "insCode" : "0865341770", "bankId" : "1434", "bankName" : "临汾市尧都市农村信用合作社联合社" },
+{ "insCode" : "0814367000", "bankId" : "1436", "bankName" : "贵州省农村信用社联合社" },
+{ "insCode" : "0814373020", "bankId" : "1437", "bankName" : "无锡农村商业银行" },
+{ "insCode" : "0865373020", "bankId" : "1437", "bankName" : "无锡农村商业银行" },
+{ "insCode" : "0814385500", "bankId" : "1438", "bankName" : "湖南省农村信用社联合社" },
+{ "insCode" : "0865385500", "bankId" : "1438", "bankName" : "湖南省农村信用社联合社" },
+{ "insCode" : "0814394200", "bankId" : "1439", "bankName" : "江西省农村信用社联合社" },
+{ "insCode" : "0865394200", "bankId" : "1439", "bankName" : "江西省农村信用社联合社" },
+{ "insCode" : "0814538200", "bankId" : "1440", "bankName" : "甘肃省农村信用社联合社" },
+{ "insCode" : "0814538202", "bankId" : "1440", "bankName" : "甘肃省农村信用社联合社" },
+{ "insCode" : "0814427900", "bankId" : "1442", "bankName" : "陕西省农村信用社联合社" },
+{ "insCode" : "0814427901", "bankId" : "1442", "bankName" : "陕西省农村信用社联合社" },
+{ "insCode" : "0805083000", "bankId" : "1501", "bankName" : "江苏银行" },
+{ "insCode" : "0805213000", "bankId" : "1501", "bankName" : "江苏银行" },
+{ "insCode" : "0805171270", "bankId" : "1502", "bankName" : "邯郸市商业银行" },
+{ "insCode" : "0805541310", "bankId" : "1503", "bankName" : "邢台银行" },
+{ "insCode" : "0805541311", "bankId" : "1503", "bankName" : "邢台银行" },
+{ "insCode" : "0865541310", "bankId" : "1503", "bankName" : "邢台银行" },
+{ "insCode" : "0805131419", "bankId" : "1504", "bankName" : "承德银行" },
+{ "insCode" : "0865131410", "bankId" : "1504", "bankName" : "承德银行" },
+{ "insCode" : "0804761430", "bankId" : "1505", "bankName" : "沧州银行" },
+{ "insCode" : "0804761431", "bankId" : "1505", "bankName" : "沧州银行" },
+{ "insCode" : "0804761432", "bankId" : "1505", "bankName" : "沧州银行" },
+{ "insCode" : "0805342050", "bankId" : "1507", "bankName" : "鄂尔多斯银行" },
+{ "insCode" : "0865264330", "bankId" : "1508", "bankName" : "上饶银行" },
+{ "insCode" : "0865264331", "bankId" : "1508", "bankName" : "上饶银行" },
+{ "insCode" : "0805374610", "bankId" : "1510", "bankName" : "济宁银行" },
+{ "insCode" : "0805284630", "bankId" : "1511", "bankName" : "泰安市商业银行" },
+{ "insCode" : "0865284630", "bankId" : "1511", "bankName" : "泰安市商业银行" },
+{ "insCode" : "0805154680", "bankId" : "1512", "bankName" : "德州银行" },
+{ "insCode" : "0865154680", "bankId" : "1512", "bankName" : "德州银行" },
+{ "insCode" : "0865675060", "bankId" : "1515", "bankName" : "商丘市商业银行" },
+{ "insCode" : "0865675061", "bankId" : "1515", "bankName" : "商丘市商业银行" },
+{ "insCode" : "0805253450", "bankId" : "1517", "bankName" : "浙江民泰商业银行" },
+{ "insCode" : "0805253454", "bankId" : "1517", "bankName" : "浙江民泰商业银行" },
+{ "insCode" : "0804162640", "bankId" : "1518", "bankName" : "龙江银行" },
+{ "insCode" : "0804922600", "bankId" : "1518", "bankName" : "龙江银行" },
+{ "insCode" : "0805332740", "bankId" : "1518", "bankName" : "龙江银行" },
+{ "insCode" : "0864162640", "bankId" : "1518", "bankName" : "龙江银行" },
+{ "insCode" : "0864922690", "bankId" : "1518", "bankName" : "龙江银行" },
+{ "insCode" : "0805303380", "bankId" : "1519", "bankName" : "浙江稠州商业银行" },
+{ "insCode" : "0805303387", "bankId" : "1519", "bankName" : "浙江稠州商业银行" },
+{ "insCode" : "0814473600", "bankId" : "1520", "bankName" : "安徽省农村信用联社" },
+{ "insCode" : "0814473601", "bankId" : "1520", "bankName" : "安徽省农村信用联社" },
+{ "insCode" : "0865473600", "bankId" : "1520", "bankName" : "安徽省农村信用联社" },
+{ "insCode" : "0814436100", "bankId" : "1521", "bankName" : "广西壮族自治区农村信用社联合社" },
+{ "insCode" : "0814436101", "bankId" : "1521", "bankName" : "广西壮族自治区农村信用社联合社" },
+{ "insCode" : "0814486400", "bankId" : "1522", "bankName" : "海南省农村信用社联合社" },
+{ "insCode" : "0865097300", "bankId" : "1523", "bankName" : "云南省农村信用社联合社" },
+{ "insCode" : "0814468700", "bankId" : "1524", "bankName" : "宁夏黄河农村商业银行" },
+{ "insCode" : "0814468702", "bankId" : "1524", "bankName" : "宁夏黄河农村商业银行" },
+{ "insCode" : "0805197110", "bankId" : "1525", "bankName" : "安顺市商业银行" },
+{ "insCode" : "0805197117", "bankId" : "1525", "bankName" : "安顺市商业银行" },
+{ "insCode" : "0814505800", "bankId" : "1529", "bankName" : "广东农村信用社" },
+{ "insCode" : "0814411200", "bankId" : "1530", "bankName" : "河北省农村信用社联合社" },
+{ "insCode" : "0814411202", "bankId" : "1530", "bankName" : "河北省农村信用社联合社" },
+{ "insCode" : "0805354970", "bankId" : "1531", "bankName" : "鹤壁银行" },
+{ "insCode" : "0805611480", "bankId" : "1532", "bankName" : "衡水市商业银行" },
+{ "insCode" : "0805611481", "bankId" : "1532", "bankName" : "衡水市商业银行" },
+{ "insCode" : "0805591750", "bankId" : "1534", "bankName" : "晋中市商业银行" },
+{ "insCode" : "0805658880", "bankId" : "1535", "bankName" : "库尔勒市商业银行" },
+{ "insCode" : "0805406650", "bankId" : "1536", "bankName" : "乐山市商业银行" },
+{ "insCode" : "0805556840", "bankId" : "1537", "bankName" : "凉山州商业银行" },
+{ "insCode" : "0805556859", "bankId" : "1537", "bankName" : "凉山州商业银行" },
+{ "insCode" : "0814511900", "bankId" : "1538", "bankName" : "内蒙古农村信用社" },
+{ "insCode" : "0814551600", "bankId" : "1539", "bankName" : "山西省农村信用社" },
+{ "insCode" : "0815205840", "bankId" : "1540", "bankName" : "深圳福田银座村镇银行" },
+{ "insCode" : "0805516620", "bankId" : "1541", "bankName" : "遂宁市商业银行" },
+{ "insCode" : "0805516629", "bankId" : "1541", "bankName" : "遂宁市商业银行" },
+{ "insCode" : "0814561100", "bankId" : "1543", "bankName" : "天津滨海农村商业银行" },
+{ "insCode" : "0805311930", "bankId" : "1544", "bankName" : "乌海银行" },
+{ "insCode" : "0805666770", "bankId" : "1547", "bankName" : "雅安市商业银行" },
+{ "insCode" : "0805631650", "bankId" : "1548", "bankName" : "阳泉市商业银行" },
+{ "insCode" : "0805646710", "bankId" : "1549", "bankName" : "宜宾市商业银行" },
+{ "insCode" : "0805247410", "bankId" : "1550", "bankName" : "玉溪市商业银行" },
+{ "insCode" : "0805326550", "bankId" : "1552", "bankName" : "自贡市商业银行" },
+{ "insCode" : "0805326560", "bankId" : "1552", "bankName" : "自贡市商业银行" },
+{ "insCode" : "0805167030", "bankId" : "1553", "bankName" : "遵义市商业银行" },
+{ "insCode" : "0805785800", "bankId" : "1554", "bankName" : "广东华兴银行" },
+{ "insCode" : "0805417900", "bankId" : "1555", "bankName" : "长安银行" },
+{ "insCode" : "0805417901", "bankId" : "1555", "bankName" : "长安银行" },
+{ "insCode" : "0815201000", "bankId" : "1556", "bankName" : "北京顺义银座村镇银行" },
+{ "insCode" : "0815203438", "bankId" : "1557", "bankName" : "浙江景宁银座村镇银行" },
+{ "insCode" : "0815203457", "bankId" : "1558", "bankName" : "浙江三门银座村镇银行" },
+{ "insCode" : "0815204280", "bankId" : "1559", "bankName" : "江西赣州银座村镇银行" },
+{ "insCode" : "0815206900", "bankId" : "1560", "bankName" : "重庆渝北银座村镇银行" },
+{ "insCode" : "0815206925", "bankId" : "1561", "bankName" : "重庆黔江银座村镇银行" },
+{ "insCode" : "0814452400", "bankId" : "1562", "bankName" : "吉林省农村信用社联合社" },
+{ "insCode" : "0814452402", "bankId" : "1562", "bankName" : "吉林省农村信用社联合社" },
+{ "insCode" : "0803210000", "bankId" : "3000", "bankName" : "汇丰银行" },
+{ "insCode" : "0825120344", "bankId" : "3000", "bankName" : "汇丰银行" },
+{ "insCode" : "0825130344", "bankId" : "3000", "bankName" : "汇丰银行" },
+{ "insCode" : "0803200000", "bankId" : "3001", "bankName" : "东亚银行" },
+{ "insCode" : "0825020344", "bankId" : "3001", "bankName" : "东亚银行" },
+{ "insCode" : "0825020446", "bankId" : "3001", "bankName" : "东亚银行" },
+{ "insCode" : "0863200000", "bankId" : "3001", "bankName" : "东亚银行" },
+{ "insCode" : "0803320000", "bankId" : "3002", "bankName" : "南洋商业银行" },
+{ "insCode" : "0825200344", "bankId" : "3002", "bankName" : "南洋商业银行" },
+{ "insCode" : "0863320000", "bankId" : "3002", "bankName" : "南洋商业银行" },
+{ "insCode" : "0803260000", "bankId" : "3003", "bankName" : "恒生银行(中国)有限公司" },
+{ "insCode" : "0825140344", "bankId" : "3003", "bankName" : "恒生银行(中国)有限公司" },
+{ "insCode" : "0825150344", "bankId" : "3003", "bankName" : "恒生银行(中国)有限公司" },
+{ "insCode" : "0825210344", "bankId" : "3005", "bankName" : "集友银行有限公司" },
+{ "insCode" : "0825170344", "bankId" : "3006", "bankName" : "创兴银行有限公司" },
+{ "insCode" : "0803240000", "bankId" : "3007", "bankName" : "星展银行(中国)有限公司" },
+{ "insCode" : "0825080344", "bankId" : "3007", "bankName" : "星展银行(中国)有限公司" },
+{ "insCode" : "0803310000", "bankId" : "3008", "bankName" : "永亨银行(中国)有限公司" },
+{ "insCode" : "0825060344", "bankId" : "3008", "bankName" : "永亨银行(中国)有限公司" },
+{ "insCode" : "0825100344", "bankId" : "3009", "bankName" : "永隆银行" },
+{ "insCode" : "0803190001", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" },
+{ "insCode" : "0803190002", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" },
+{ "insCode" : "0803190003", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" },
+{ "insCode" : "0825030344", "bankId" : "3010", "bankName" : "花旗银行(中国)有限公司" },
+{ "insCode" : "0803270000", "bankId" : "3018", "bankName" : "友利银行(中国)有限公司" },
+{ "insCode" : "0803280000", "bankId" : "3022", "bankName" : "新韩银行(中国)有限公司" },
+{ "insCode" : "0803360000", "bankId" : "3023", "bankName" : "韩国中小企业银行" },
+{ "insCode" : "0803290000", "bankId" : "3024", "bankName" : "韩亚银行(中国)有限公司" },
+{ "insCode" : "0803300000", "bankId" : "3025", "bankName" : "华侨银行(中国)有限公司" },
+{ "insCode" : "0803340000", "bankId" : "3026", "bankName" : "大华银行(中国)有限公司" },
+{ "insCode" : "0803220000", "bankId" : "3034", "bankName" : "渣打银行" },
+{ "insCode" : "0803220001", "bankId" : "3034", "bankName" : "渣打银行" },
+{ "insCode" : "0825280344", "bankId" : "3034", "bankName" : "渣打银行" },
+{ "insCode" : "0803370000", "bankId" : "3056", "bankName" : "华商银行" },
+{ "insCode" : "0803390000", "bankId" : "3057", "bankName" : "华一银行" }

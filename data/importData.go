@@ -1,16 +1,17 @@
-// 读取csv文件持久化到数据库
+// Package data 读取csv文件持久化到数据库
 // 具体的字段顺序在csv文件里的第一行
 package data
 
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 // InitTestMer 初始化测试商户
@@ -43,10 +44,10 @@ func InitTestMer(start, end int, cardBrand string) error {
 	return nil
 }
 
-// AddSettSchemeCdFromCsv 导入计费方案代码
-func AddSettSchemeCdFromCsv(path string) error {
+// AddSettSchemeCdFromCSV 导入计费方案代码
+func AddSettSchemeCdFromCSV(path string) error {
 
-	schemes, err := readSettSchemeCdCsv(path)
+	schemes, err := readSettSchemeCdCSV(path)
 	// fmt.Println(len(schemes), err)
 	if err != nil {
 		return nil
@@ -61,18 +62,19 @@ func AddSettSchemeCdFromCsv(path string) error {
 	return nil
 }
 
-// AddCardBinFromCsv 从csv里导入卡bin
+// AddCardBinFromCSV 从 csv 里导入卡 bin
 // rebuild: true 删除集合再重建
 // rebuild: false 做更新操作，即存在的更新，不存在的增加
-func AddCardBinFromCsv(path string, rebuild bool) error {
+func AddCardBinFromCSV(path string, rebuild bool) error {
 
-	cardBins, err := readCardBinCsv(path)
+	cardBins, err := readCardBinCSV(path)
 	if err != nil {
 		return err
 	}
 	// fmt.Println(len(cardBins))
 	// 重建
 	if rebuild {
+		fmt.Println("drop cardBin collection...")
 		err = mongo.CardBinColl.Drop()
 		if err != nil {
 			return err
@@ -83,35 +85,37 @@ func AddCardBinFromCsv(path string, rebuild bool) error {
 		if err != nil {
 			return err
 		}
+		fmt.Print(".")
 	}
+	fmt.Printf("\nImported cardBin %d records\n", len(cardBins))
 
 	return nil
-
 }
 
-// AddFromCsv 从csv文件里读取应答码表
-func AddSysCodeFromCsv(path string) error {
+// AddSysCodeFromCSV 从csv文件里读取应答码表，若存在的跳过，若新增的便添加
+func AddSysCodeFromCSV(path string) error {
 
-	data, err := readQuickpayCsv(path)
+	data, err := readQuickpayCSV(path)
 	if err != nil {
 		return err
 	}
-	// 添加到mongodb，若存在的跳过
-	// 若新增的便添加
+
 	for _, v := range data {
 		_, err := mongo.RespCodeColl.FindOne(v.RespCode)
 		if err != nil {
-			fmt.Printf("New Add: %+v \n", v)
+			// fmt.Printf("New Add: %+v \n", v)
+			fmt.Print(".")
 			mongo.RespCodeColl.Add(v)
 		}
 	}
+	fmt.Printf("\nImported RespCode %d records\n", len(data))
 	return nil
 }
 
 // AddChanCodeFromScv 增加渠道应答码
 func AddChanCodeFromScv(channel, path string) error {
 
-	data, err := readChanCsv(path)
+	data, err := readChanCSV(path)
 	if err != nil {
 		return err
 	}
@@ -151,9 +155,9 @@ func AddChanCodeFromScv(channel, path string) error {
 	return nil
 }
 
-func readSettSchemeCdCsv(path string) ([]*model.SettSchemeCd, error) {
+func readSettSchemeCdCSV(path string) ([]*model.SettSchemeCd, error) {
 
-	data, err := readCsv(path)
+	data, err := readCSV(path)
 	if err != nil {
 		return nil, err
 	}
@@ -175,22 +179,22 @@ func readSettSchemeCdCsv(path string) ([]*model.SettSchemeCd, error) {
 	return qs, nil
 }
 
-// ReadQuickpayCsv 读取系统应答码csv文件
+// ReadQuickpayCSV 读取系统应答码csv文件
 // 并持久化
-func readQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
+func readQuickpayCSV(path string) ([]*model.QuickpayCSV, error) {
 
-	data, err := readCsv(path)
+	data, err := readCSV(path)
 	if err != nil {
 		return nil, err
 	}
-	qs := make([]*model.QuickpayCsv, 0, len(data))
+	qs := make([]*model.QuickpayCSV, 0, len(data))
 
 	// 根据数据规则遍历
 	for i, each := range data {
 		if i == 0 {
 			continue
 		}
-		q := &model.QuickpayCsv{RespCode: each[0], RespMsg: each[1]}
+		q := &model.QuickpayCSV{RespCode: each[0], RespMsg: each[1]}
 		// fmt.Printf("%+v \n", q)
 		qs = append(qs, q)
 	}
@@ -198,30 +202,30 @@ func readQuickpayCsv(path string) ([]*model.QuickpayCsv, error) {
 	return qs, nil
 }
 
-// ReadChanCsv 读取渠道应答码文件
-func readChanCsv(path string) ([]*model.ChanCsv, error) {
-	data, err := readCsv(path)
+// ReadChanCSV 读取渠道应答码文件
+func readChanCSV(path string) ([]*model.ChanCSV, error) {
+	data, err := readCSV(path)
 	if err != nil {
 		return nil, err
 	}
-	qs := make([]*model.ChanCsv, 0, len(data))
+	qs := make([]*model.ChanCSV, 0, len(data))
 
 	// 根据渠道应答码文件规则遍历
 	for i, each := range data {
 		if i == 0 {
 			continue
 		}
-		q := &model.ChanCsv{each[0], each[1], each[2], each[3]}
+		q := &model.ChanCSV{each[0], each[1], each[2], each[3]}
 		// fmt.Printf("%+v \n", q)
 		qs = append(qs, q)
 	}
 	return qs, nil
 }
 
-// ReadCardBinCsv 从csv读取卡bin转为对象
-func readCardBinCsv(path string) ([]*model.CardBin, error) {
+// ReadCardBinCSV 从csv读取卡bin转为对象
+func readCardBinCSV(path string) ([]*model.CardBin, error) {
 
-	data, err := readCsv(path)
+	data, err := readCSV(path)
 	if err != nil {
 		return nil, err
 	}
@@ -234,29 +238,29 @@ func readCardBinCsv(path string) ([]*model.CardBin, error) {
 		}
 		// 判断该记录的长度是否为5
 		if len(each) >= 6 && each[5] != "" {
-			return nil, fmt.Errorf("%d行格式错误，检测到有%d个字段", i+1, len(each))
+			return nil, fmt.Errorf("%d 行格式错误，检测到有%d 个字段", i+1, len(each))
 		}
 
 		if matched, _ := regexp.MatchString(`^\d+$`, each[0]); !matched {
-			return nil, fmt.Errorf("%d行，bin应为数字，实际为：%s", i+1, each[0])
+			return nil, fmt.Errorf("%d 行，bin 应为数字，实际为：%s", i+1, each[0])
 		}
 
 		binLen, err := strconv.Atoi(each[1])
 		if err != nil {
-			return nil, fmt.Errorf("%d行，binLen应为数字，实际为：%s", i+1, each[1])
+			return nil, fmt.Errorf("%d 行，binLen 应为数字，实际为：%s", i+1, each[1])
 		}
 
 		if matched, _ := regexp.MatchString(`^\d+`, each[2]); !matched {
-			return nil, fmt.Errorf("%d行，insCode应为数字，实际为：%s", i+1, each[2])
+			return nil, fmt.Errorf("%d 行，insCode 应为数字，实际为：%s", i+1, each[2])
 		}
 
 		cardLen, err := strconv.Atoi(each[3])
 		if err != nil {
-			return nil, fmt.Errorf("%d行，cardLen应为数字，实际为：%s", i+1, each[3])
+			return nil, fmt.Errorf("%d 行，cardLen 应为数字，实际为：%s", i+1, each[3])
 		}
 
 		if matched, _ := regexp.MatchString(`^[A-Z]+$`, each[4]); !matched {
-			return nil, fmt.Errorf("%d行，cardBrand应为大写字母，实际为：%s", i+1, each[4])
+			return nil, fmt.Errorf("%d  行，cardBrand  应为大写字母，实际为：%s", i+1, each[4])
 		}
 
 		c := &model.CardBin{Bin: each[0], BinLen: binLen,
@@ -266,8 +270,8 @@ func readCardBinCsv(path string) ([]*model.CardBin, error) {
 	return cs, nil
 }
 
-// readCsv 读取文件返回数据
-func readCsv(path string) ([][]string, error) {
+// readCSV 读取文件返回数据
+func readCSV(path string) ([][]string, error) {
 
 	file, err := os.Open(path)
 	if err != nil {
