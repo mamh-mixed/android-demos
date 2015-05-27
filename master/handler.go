@@ -2,6 +2,9 @@ package master
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -10,6 +13,46 @@ import (
 const (
 	NormalMerStatus = "Normal"
 )
+
+// QuickMaster 后台管理的请求统一入口
+func QuickMaster(w http.ResponseWriter, r *http.Request) {
+	log.Infof("url = %s", r.URL.String())
+
+	var ret *model.ResultBody
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	switch r.URL.Path {
+	case "/quickMaster/merchant/all":
+		ret = AllMerchant(data)
+	case "/quickMaster/merchant/add":
+		ret = AddMerchant(data)
+	case "/quickMaster/channelMerchant/all":
+		ret = AllChannelMerchant(data)
+	case "/quickMaster/channelMerchant/add":
+		ret = AddChannelMerchant(data)
+	case "/quickMaster/router/save":
+		ret = AddRouter(data)
+	case "/quickMaster/router/find":
+		merId := r.FormValue("merId")
+		ret = AllRouterOfOneMerchant(merId)
+	default:
+		w.WriteHeader(404)
+	}
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Debugf("response message: %s", rdata)
+	w.Write(rdata)
+}
 
 // AllMerchant 处理查找所有商户的请求
 func AllMerchant(data []byte) (result *model.ResultBody) {
