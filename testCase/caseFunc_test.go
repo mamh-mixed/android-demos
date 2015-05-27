@@ -227,9 +227,9 @@ func Test13(t *testing.T) {
 	Convey("1.3.2退一笔原交易不存在的订单", t, func() {
 		orderNum = tools.Millisecond()
 		b := BindingRefund()
-		Convey("期望结果：原交易不成功，不能退款", func() {
+		Convey("期望结果：订单号不存在", func() {
 			ret, _ := post(url, b)
-			So(ret.RespMsg, ShouldEqual, "原交易不成功，不能退款")
+			So(ret.RespMsg, ShouldEqual, "订单号不存在")
 		})
 	})
 }
