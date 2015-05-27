@@ -82,7 +82,7 @@ func quickAll(port int) {
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
-	http.HandleFunc("/quickMaster/", entrance.QuickMaster)
+	http.HandleFunc("/quickMaster/", master.QuickMaster)
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("Quickpay is running on %s", addr)
@@ -95,7 +95,7 @@ func quickMaster(port int) {
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
 
-	http.HandleFunc("/quickMaster/", entrance.QuickMaster)
+	http.HandleFunc("/quickMaster/", master.QuickMaster)
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("QuickMaster is running on %s", addr)
