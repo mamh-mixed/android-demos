@@ -8,7 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
-	"github.com/CardInfoLink/quickpay/entrance/master"
+	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
@@ -129,9 +129,9 @@ func prepareData(r *http.Request) (merId, sign string, data []byte, status int, 
 	}
 
 	sign = r.Header.Get("X-Sign")
-	if sign == "" {
-		return "", "", nil, 412, errors.New("parameter `X-Sign` required")
-	}
+	// if sign == "" {
+	// 	return "", "", nil, 412, errors.New("header `X-Sign` required")
+	// }
 
 	data, err = ioutil.ReadAll(r.Body)
 	if err != nil {

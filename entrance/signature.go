@@ -36,7 +36,7 @@ func CheckSignature(data []byte, merId, signature string) (result bool, ret *mod
 		return false, mongo.RespCodeColl.Get("000001")
 	}
 	// 是否开启验签
-	if m.NeedSign {
+	if m.IsNeedSign {
 		return CheckSignatureUseSha1(data, m.SignKey, signature), nil
 	}
 	return true, nil

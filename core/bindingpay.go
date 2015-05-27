@@ -102,7 +102,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
 		log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
-		return mongo.RespCodeColl.Get("300030")
+		return mongo.RespCodeColl.Get("400020")
 	}
 	bc.BankId = cm.BankId
 

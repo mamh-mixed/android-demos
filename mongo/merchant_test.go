@@ -16,11 +16,12 @@ func TestMerchantFind(t *testing.T) {
 
 func TestInsertFindUpdateMerchant(t *testing.T) {
 	m := &model.Merchant{
-		MerId:      merId,
+		MerId:      "WonsikinTest012",
 		MerStatus:  merStatus,
 		TransCurr:  transCurr,
-		SignKey:    signKey,
-		EncryptKey: encryptKey,
+		IsNeedSign: false,
+		SignKey:    "signKey",
+		EncryptKey: "encryptKey",
 	}
 	t.Log("Insert------")
 	err := MerchantColl.Insert(m)

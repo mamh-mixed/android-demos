@@ -4,12 +4,54 @@
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/core-field/core-field.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <script src="../bower_components/uuid-v4.js/uuid-v4.min.js"></script>
 <script src="../bower_components/js-base64/base64.min.js"></script>
 <polymer-element name="merchant-form">
     <template>
         <style>
+            #container {
+                min-height: 800px;
+            }
+
+            #container > div[flex] {
+                margin-right: 10px;
+            }
+
+            core-header-panel {
+                width: 100%;
+            }
+
+            .core-header {
+                height: 60px;
+                line-height: 60px;
+                font-size: 18px;
+                padding: 0 10px;
+                background-color: #03a9f4;
+                color: #FFF;
+                transition: height 0.2s;
+                position: relative;
+            }
+
+            .content {
+                padding: 0 10px;
+            }
+
+            .input-group {
+                padding-bottom: 5px;
+                border-bottom: 1px solid #0f9d58;
+            }
+
+            .input-group .label {
+                color: #f4b400;
+                margin-bottom: 10px;
+            }
+
+            .input-group paper-toggle-button {
+                margin-left: 5px;
+            }
+
             .custom /deep/::-webkit-input-placeholder {
                 color: #f4b400;
             }
@@ -40,8 +82,9 @@
             }
 
             .custom /deep/ input {
-                width: 450px;
-                /*width: 100%;*/
+                /*width: 450px;*/
+
+                width: 100%;
             }
 
             .custom.invalid /deep/ .floated-label .label-text,
@@ -73,53 +116,183 @@
                 left: auto;
             }
         </style>
-        <core-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-core-response="{{onAjaxResponse}}"></core-ajax>
 
-        <paper-input-decorator floatingLabel label="商户编号" class="custom" autoValidate="true" error="必填，最长 50 个字符">
-            <core-tooltip label="" position="top">
-                <input id="merId" is="core-input" type="text" name="merId" maxlength="50" required="true" value="{{body.merId}}">
-            </core-tooltip>
-            <paper-char-counter class="counter" target="merId"></paper-char-counter>
-        </paper-input-decorator>
+        <div id="container" fullbleed horizontal layout>
+            <div flex>
+                <paper-input-decorator floatingLabel label="商户编号" class="custom" autoValidate="true" error="必填，最长 50 个字符">
+                    <core-tooltip label="" position="top">
+                        <input id="merId" is="core-input" type="text" name="merId" maxlength="50" required="true" value="{{body.merId}}">
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="merId"></paper-char-counter>
+                </paper-input-decorator>
 
-        <paper-input-decorator floatingLabel label="交易币种" class="custom" autoValidate="true" error="最长 3 个字符">
-            <core-tooltip label="商户的交易币种，3 位数字，必填" position="top">
-                <input id="transCurr" is="core-input" type="number" name="transCurr" maxlength="3" required="true" value="{{body.transCurr}}">
-            </core-tooltip>
-            <paper-char-counter class="counter" target="transCurr"></paper-char-counter>
-        </paper-input-decorator>
+                <paper-input-decorator floatingLabel label="商户状态" class="custom" autoValidate="true" error="必填，最长 10 个字符">
+                    <core-tooltip label="商户状态只能'Normal'和'Test',其他的都是不合法的。商户状态为'Test'的将能够在切换商户页面上看到。" position="top">
+                        <input id="merStatus" is="core-input" type="text" name="merStatus" maxlength="10" required="true" value="{{body.merStatus}}">
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="merStatus"></paper-char-counter>
+                </paper-input-decorator>
 
-        <paper-input-decorator floatingLabel label="签名密钥" class="custom" autoValidate="true" error="必填，最长 32 个字符">
-            <core-tooltip label="必填，32 位，只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
-                <input id="signKey" style="width:500px;" is="core-input" type="text" name="signKey" maxlength="128" required="true" value="{{body.signKey}}">
-                <paper-button class="colored" raised on-tap="{{randomSignKeyHandle}}">随机生成</paper-button>
-            </core-tooltip>
-            <paper-char-counter class="counter" target="signKey"></paper-char-counter>
-        </paper-input-decorator>
+                <paper-input-decorator floatingLabel label="交易币种" class="custom" autoValidate="true" error="最长 3 个字符">
+                    <core-tooltip label="商户的交易币种，3 位数字，必填" position="top">
+                        <input id="transCurr" is="core-input" type="number" name="transCurr" maxlength="3" required="true" value="{{body.transCurr}}">
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="transCurr"></paper-char-counter>
+                </paper-input-decorator>
 
-        <paper-input-decorator floatingLabel label="加密密钥" class="custom" autoValidate="true" error="必填，最长 44 个字符">
-            <core-tooltip label="必填，44 位，最后一位必须是 “＝”，前 43 位只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
-                <input id="encryptKey" style="width:500px;" is="core-input" type="text" name="encryptKey" maxlength="128" required="true" value="{{body.encryptKey}}">
-                <paper-button class="colored" raised on-tap="{{randomEncryptKeyHandle}}">随机生成</paper-button>
-            </core-tooltip>
-            <paper-char-counter class="counter" target="encryptKey"></paper-char-counter>
-        </paper-input-decorator>
+                <paper-input-decorator floatingLabel label="签名密钥" class="custom" autoValidate="true" error="必填，最长 32 个字符">
+                    <core-tooltip label="必填，32 位，只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
+                        <input id="signKey" style="width:500px;" is="core-input" type="text" name="signKey" maxlength="128" required="true" value="{{body.signKey}}">
+                        <paper-button class="colored" raised on-tap="{{randomSignKeyHandle}}">随机生成</paper-button>
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="signKey"></paper-char-counter>
+                </paper-input-decorator>
 
-        <paper-input-decorator floatingLabel label="备注信息" class="custom" autoValidate="false" error="最长 500 个字符">
-            <core-tooltip label="商户的备注信息，可选" position="top">
-                <input id="remark" is="core-input" type="text" name="remark" maxlength="500" required="false" value="{{body.remark}}">
-            </core-tooltip>
-            <paper-char-counter class="counter" target="remark"></paper-char-counter>
-        </paper-input-decorator>
+                <paper-input-decorator floatingLabel label="加密密钥" class="custom" autoValidate="true" error="必填，最长 44 个字符">
+                    <core-tooltip label="必填，44 位，最后一位必须是 “＝”，前 43 位只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
+                        <input id="encryptKey" style="width:500px;" is="core-input" type="text" name="encryptKey" maxlength="128" required="true" value="{{body.encryptKey}}">
+                        <paper-button class="colored" raised on-tap="{{randomEncryptKeyHandle}}">随机生成</paper-button>
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="encryptKey"></paper-char-counter>
+                </paper-input-decorator>
 
-        <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="{{ajaxRequestHandle}}"></paper-fab>
+                <div class="input-group">
+                    <div class="label">
+                        是否开启验签
+                    </div>
+                    <paper-toggle-button on-core-change="{{handleIsNeedSign}}" checked></paper-toggle-button>
+                    开启验签情况下，HTTP请求中的header必须传一个‘x-sign’的字段
+                </div>
 
-        <paper-input-decorator floatingLabel label="响应" class="custom">
-            <paper-autogrow-textarea>
-                <textarea cols="144" rows="3" value="{{ajaxResponse}}"></textarea>
-            </paper-autogrow-textarea>
-            <paper-char-counter class="counter" target="inputRet"></paper-char-counter>
-        </paper-input-decorator>
+                <paper-input-decorator floatingLabel label="费率" class="custom" autoValidate="true" error="必填，最长 6 个字符">
+                    <core-tooltip label="如果费率为'0.123%'，则该框应该填写为'000123' " position="top">
+                        <input id="billingScheme" is="core-input" type="text" name="billingScheme" maxlength="6" required="true" value="{{detail.billingScheme}}">
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="billingScheme"></paper-char-counter>
+                </paper-input-decorator>
+
+                <paper-input-decorator floatingLabel label="备注信息" class="custom" autoValidate="false" error="最长 500 个字符">
+                    <core-tooltip label="商户的备注信息，可选" position="top">
+                        <input id="remark" is="core-input" type="text" name="remark" maxlength="500" required="false" value="{{body.remark}}">
+                    </core-tooltip>
+                    <paper-char-counter class="counter" target="remark"></paper-char-counter>
+                </paper-input-decorator>
+
+                <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="{{ajaxRequestHandle}}"></paper-fab>
+
+                <paper-input-decorator floatingLabel label="响应" class="custom">
+                    <paper-autogrow-textarea>
+                        <textarea cols="144" rows="3" value="{{ajaxResponse}}"></textarea>
+                    </paper-autogrow-textarea>
+                    <paper-char-counter class="counter" target="inputRet"></paper-char-counter>
+                </paper-input-decorator>
+            </div>
+            <div flex two hidden>
+                <core-ajax id="merAjax" method="POST" url="/quickMaster/merchant/all" auto handleAs="json" body='{}' on-core-response="{{onAllMerchantAjaxResponse}}">
+                </core-ajax>
+                <core-header-panel>
+                    <div class="core-header">商户列表</div>
+                    <div class="content">
+                        <template repeat="{{merchant in merchants}}">
+                            <post-card identity="{{merchant.merId}}" chosenTapLabel="编辑该商户" on-chosen-tap="{{handleMerchantChosen}}">
+                                <div class="key-content">
+                                    <dl>
+                                        <dt>
+                                            <core-icon icon="perm-identity" alt="商户代码"></core-icon> {{merchant.merId}}
+                                        </dt>
+                                        <dd>{{merchant.remark}}</dd>
+                                        <dt>
+                                            <core-icon icon="verified-user" alt="签名密钥"></core-icon>签名密钥
+                                        </dt>
+                                        <dd>{{merchant.signKey}}</dd>
+                                        <dt>
+                                            <core-icon icon="lock" alt="加密密钥"></core-icon>加密密钥
+                                        </dt>
+                                        <dd>{{merchant.encryptKey}}</dd>
+                                    </dl>
+                                </div>
+                            </post-card>
+                        </template>
+                    </div>
+                </core-header-panel>
+            </div>
+
+            <div flex three fullbleed layout vertical hidden>
+                <core-ajax id="postAjax" method="POST" url="/quickMaster/merchant/add" contentType='application/json' handleAs="json" on-core-response="{{onAjaxResponse}}"></core-ajax>
+                <core-header-panel flex>
+                    <div class="core-header">商户编辑</div>
+                    <div class="content">
+                        <paper-input-decorator floatingLabel label="商户编号" class="custom" autoValidate="true" error="必填，最长 50 个字符">
+                            <core-tooltip label="" position="top">
+                                <input id="merId" is="core-input" type="text" name="merId" maxlength="50" required="true" value="{{body.merId}}">
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="merId"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <paper-input-decorator floatingLabel label="商户状态" class="custom" autoValidate="true" error="必填，最长 10 个字符">
+                            <core-tooltip label="商户状态只能'Normal'和'Test',其他的都是不合法的。商户状态为'Test'的将能够在切换商户页面上看到。" position="top">
+                                <input id="merStatus" is="core-input" type="text" name="merStatus" maxlength="10" required="true" value="{{body.merStatus}}">
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="merStatus"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <paper-input-decorator floatingLabel label="交易币种" class="custom" autoValidate="true" error="最长 3 个字符">
+                            <core-tooltip label="商户的交易币种，3 位数字，必填" position="top">
+                                <input id="transCurr" is="core-input" type="number" name="transCurr" maxlength="3" required="true" value="{{body.transCurr}}">
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="transCurr"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <paper-input-decorator floatingLabel label="签名密钥" class="custom" autoValidate="true" error="必填，最长 32 个字符">
+                            <core-tooltip label="必填，32 位，只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
+                                <input id="signKey" style="width:500px;" is="core-input" type="text" name="signKey" maxlength="128" required="true" value="{{body.signKey}}">
+                                <paper-button class="colored" raised on-tap="{{randomSignKeyHandle}}">随机生成</paper-button>
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="signKey"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <paper-input-decorator floatingLabel label="加密密钥" class="custom" autoValidate="true" error="必填，最长 44 个字符">
+                            <core-tooltip label="必填，44 位，最后一位必须是 “＝”，前 43 位只能是字符或数字，即 A-Z、a-z 或 0-9" position="top">
+                                <input id="encryptKey" style="width:500px;" is="core-input" type="text" name="encryptKey" maxlength="128" required="true" value="{{body.encryptKey}}">
+                                <paper-button class="colored" raised on-tap="{{randomEncryptKeyHandle}}">随机生成</paper-button>
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="encryptKey"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <div class="input-group">
+                            <div class="label">
+                                是否开启验签
+                            </div>
+                            <paper-toggle-button on-core-change="{{handleIsNeedSign}}" checked></paper-toggle-button>
+                            开启验签情况下，HTTP请求中的header必须传一个‘x-sign’的字段
+                        </div>
+
+                        <paper-input-decorator floatingLabel label="费率" class="custom" autoValidate="true" error="必填，最长 6 个字符">
+                            <core-tooltip label="如果费率为'0.123%'，则该框应该填写为'000123' " position="top">
+                                <input id="billingScheme" is="core-input" type="text" name="billingScheme" maxlength="6" required="true" value="{{detail.billingScheme}}">
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="billingScheme"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <paper-input-decorator floatingLabel label="备注信息" class="custom" autoValidate="false" error="最长 500 个字符">
+                            <core-tooltip label="商户的备注信息，可选" position="top">
+                                <input id="remark" is="core-input" type="text" name="remark" maxlength="500" required="false" value="{{body.remark}}">
+                            </core-tooltip>
+                            <paper-char-counter class="counter" target="remark"></paper-char-counter>
+                        </paper-input-decorator>
+
+                        <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="{{ajaxRequestHandle}}"></paper-fab>
+
+                        <paper-input-decorator floatingLabel label="响应" class="custom">
+                            <paper-autogrow-textarea>
+                                <textarea cols="144" rows="3" value="{{ajaxResponse}}"></textarea>
+                            </paper-autogrow-textarea>
+                            <paper-char-counter class="counter" target="inputRet"></paper-char-counter>
+                        </paper-input-decorator>
+                    </div>
+                </core-header-panel>
+            </div>
+        </div>
 
         <paper-toast id="ret" role="alert" text="{{ajaxResponse}}">
         </paper-toast>
@@ -131,28 +304,53 @@
             'use strict';
 
             Polymer('merchant-form', {
-                url : '/quickMaster/merchant/add',
+                url: '/quickMaster/merchant/add',
                 body: {
                     merId: '',
+                    merStatus: 'Normal',
                     transCurr: '156',
                     signKey: '',
                     encryptKey: '',
+                    isNeedSign: true,
                     remark: ''
                 },
+                detail: {
+                    billingScheme: ''
+                },
                 ready: function() {
-
+                    this.merchants = [];
                 },
                 // 发送AJAX请求
                 ajaxRequestHandle: function(e, detail, sender) {
                     var ajax = this.$.postAjax;
                     ajax.url = this.url;
-
+                    this.body.detail = this.detail;
                     ajax.body = JSON.stringify(this.body);
                     ajax.go();
                 },
+                // 请求所有的商户的ajax响应事件
+                onAllMerchantAjaxResponse: function(e, detail, sender) {
+                    var response = detail.response;
+                    if (response && response.status === 0) {
+                        this.merchants = response.data.slice(0)
+                    }
+                },
+                // 保存商户信息响应结果
                 onAjaxResponse: function(e, detail, sender) {
-                    this.ajaxResponse = JSON.stringify(detail.response);
+                    var response = detail.response;
+                    if (response) {
+                        this.ajaxResponse = JSON.stringify(response.message);
+                    }
                     this.$.ret.show();
+                },
+                // 编辑商户事件
+                handleMerchantChosen: function(e, detail, sender) {
+                    var merchant = sender.templateInstance.model.merchant;
+                    console.log(merchant);
+                },
+                // 切换是否开启签名的监听事件
+                handleIsNeedSign: function(e, detail, sender) {
+                    this.body.isNeedSign = sender.checked;
                 },
                 // 生成一个不带中划线的uuid
                 uuid: function() {
@@ -169,7 +367,7 @@
                 randomSignKeyHandle: function(e, detail, sender) {
                     console.log('randomSignKeyHandle');
                     var uuid = this.uuid();
-                    this.body.signKey = Base64.encode(uuid).substring(0,32);
+                    this.body.signKey = Base64.encode(uuid).substring(0, 32);
                 }
             });
         })();
