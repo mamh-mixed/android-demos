@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // InitTestMer 初始化测试商户
@@ -69,6 +70,7 @@ func AddCardBinFromCsv(path string, rebuild bool) error {
 	if err != nil {
 		return err
 	}
+	// fmt.Println(len(cardBins))
 	// 重建
 	if rebuild {
 		err = mongo.CardBinColl.Drop()
@@ -231,7 +233,7 @@ func readCardBinCsv(path string) ([]*model.CardBin, error) {
 			continue
 		}
 		// 判断该记录的长度是否为5
-		if len(each) != 5 {
+		if len(each) >= 6 && each[5] != "" {
 			return nil, fmt.Errorf("%d行格式错误，检测到有%d个字段", i+1, len(each))
 		}
 
@@ -244,7 +246,7 @@ func readCardBinCsv(path string) ([]*model.CardBin, error) {
 			return nil, fmt.Errorf("%d行，binLen应为数字，实际为：%s", i+1, each[1])
 		}
 
-		if matched, _ := regexp.MatchString(`^\d+$`, each[2]); !matched {
+		if matched, _ := regexp.MatchString(`^\d+`, each[2]); !matched {
 			return nil, fmt.Errorf("%d行，insCode应为数字，实际为：%s", i+1, each[2])
 		}
 
@@ -258,7 +260,7 @@ func readCardBinCsv(path string) ([]*model.CardBin, error) {
 		}
 
 		c := &model.CardBin{Bin: each[0], BinLen: binLen,
-			InsCode: each[2], CardLen: cardLen, CardBrand: each[4]}
+			InsCode: strings.TrimSpace(each[2]), CardLen: cardLen, CardBrand: each[4]}
 		cs = append(cs, c)
 	}
 	return cs, nil
