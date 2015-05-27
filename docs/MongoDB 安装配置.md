@@ -1,5 +1,17 @@
 
 ```
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" \
+ | sudo tee  /etc/apt/sources.list.d/mongodb-org-3.0.list
+apt-get update
+apt-get install -y mongodb-org
+rm /etc/mongo.conf
+rm /etc/init/mongo
+
+
+mkdir -p /opt/mongo/{rs11,rs12,rs13,arb1}
+
 mongod --port=27017 --fork --dbpath=/opt/mongo/rs11 --logpath=/opt/mongo/rs11/mongod.log
 mongod --port=27018 --fork --dbpath=/opt/mongo/rs12 --logpath=/opt/mongo/rs12/mongod.log
 mongod --port=27019 --fork --dbpath=/opt/mongo/rs13 --logpath=/opt/mongo/rs13/mongod.log
@@ -48,13 +60,11 @@ mongod --port=30000 --auth --fork --dbpath=/opt/mongo/arb1 --logpath=/opt/mongo/
 
 
 mongo --port=27017
-use admin
 db.auth('admin','admin')
 rs.initiate()
 rs.add('quick.ipay.so:27018')
 rs.add('quick.ipay.so:27019')
 rs.add('quick.ipay.so:30000', true)
-
 rs.status()
 
 db.bindingInfo.createIndex({ bindingId : 1, merId : 1 },{ unique: true });
@@ -68,4 +78,5 @@ db.cfcaBankMap.createIndex({insCode : 1 },{ unique: true });
 db.chanMer.createIndex({ chanMerId : 1, chanCode : 1 },{ unique: true });
 db.routerPolicy.createIndex({ merId : 1, cardBrand : 1 },{ unique: true });
 db.respCode.createIndex({ respCode : 1},{ unique: true });
+
 ```
