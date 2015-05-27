@@ -8,9 +8,9 @@ import (
 )
 
 // 导入系统应答码，存在时跳过，不存在插入
-func xTestAddRespCodeFromCsv(t *testing.T) {
+func xTestAddRespCodeFromCSV(t *testing.T) {
 	// 插入quickpay的应答码
-	err := AddSysCodeFromCsv("respCode_quickpay.csv")
+	err := AddSysCodeFromCSV("respCode_quickpay.csv")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -21,8 +21,7 @@ func xTestAddRespCodeFromCsv(t *testing.T) {
 // 导入渠道应答码
 // 导入前先确定系统应答码表是否已存在
 // 存在则更新，但不会删除
-func xTestAddChanCodeFromScv(t *testing.T) {
-
+func xTestAddChanCodeFromCSV(t *testing.T) {
 	// 插入中金和quickpay的应答码转换数据
 	err := AddChanCodeFromScv("cfca", "respCode_cfca.csv")
 	if err != nil {
@@ -41,15 +40,14 @@ func xTestAddChanCodeFromScv(t *testing.T) {
 
 }
 
-// 导入卡bin表，执行单元测试时去掉x
-// false时会更新数据，但不会删除
-// true时会丢掉集合，重新建立
-func xTestAddCardBinFromCsv(t *testing.T) {
-
-	// import cardBin !!!
-	err := AddCardBinFromCsv("cardBin.csv", false)
+// TestAddCardBinFromCSV 导入卡 bin 表，执行单元测试时去掉 x
+func TestAddCardBinFromCSV(t *testing.T) {
+	// false 时会更新数据，但不会删除
+	// true 时会丢掉集合，重新建立
+	err := AddCardBinFromCSV("cardBin.csv", true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Log("卡 BIN 数据插入完成")
 }

@@ -265,20 +265,20 @@ type Version struct {
 	VnType string `bson:"vnType"` // 版本类型
 }
 
-// ChanCsv 渠道文件csv
-type ChanCsv struct {
+// ChanCSV 渠道文件csv
+type ChanCSV struct {
 	Code     string `bson:"code"`
 	Msg      string `bson:"msg"`
 	RespCode string `bson:",omitempty"`
 	RespMsg  string `bson:",omitempty"`
 }
 
-// QuickpayCsv 系统应答码
-type QuickpayCsv struct {
+// QuickpayCSV 系统应答码
+type QuickpayCSV struct {
 	RespCode string     `bson:"respCode"`
 	RespMsg  string     `bson:"respMsg"`
-	Cfca     []*ChanCsv `bson:"cfca,omitempty"`
-	Cil      []*ChanCsv `bson:"cil,omitempty"`
+	Cfca     []*ChanCSV `bson:"cfca,omitempty"`
+	Cil      []*ChanCSV `bson:"cil,omitempty"`
 	//...
 }
 

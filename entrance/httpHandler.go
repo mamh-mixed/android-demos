@@ -8,7 +8,6 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
-	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
@@ -74,46 +73,6 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Sign", sign)
 
 	log.Infof("to merchant message: %s", rdata)
-	w.Write(rdata)
-}
-
-// QuickMaster 后台管理的请求统一入口
-func QuickMaster(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.String())
-
-	var ret *model.ResultBody
-
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Errorf("Read all body error: %s", err)
-		w.WriteHeader(501)
-		return
-	}
-
-	switch r.URL.Path {
-	case "/quickMaster/merchant/all":
-		ret = master.AllMerchant(data)
-	case "/quickMaster/merchant/add":
-		ret = master.AddMerchant(data)
-	case "/quickMaster/channelMerchant/all":
-		ret = master.AllChannelMerchant(data)
-	case "/quickMaster/channelMerchant/add":
-		ret = master.AddChannelMerchant(data)
-	case "/quickMaster/router/save":
-		ret = master.AddRouter(data)
-	case "/quickMaster/router/find":
-		merId := r.FormValue("merId")
-		ret = master.AllRouterOfOneMerchant(merId)
-	default:
-		w.WriteHeader(404)
-	}
-
-	rdata, err := json.Marshal(ret)
-	if err != nil {
-		w.Write([]byte("mashal data error"))
-	}
-
-	log.Infof("response message: %s", rdata)
 	w.Write(rdata)
 }
 
