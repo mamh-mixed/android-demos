@@ -34,6 +34,20 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		return mongo.RespCodeColl.Get("200110")
 	}
 
+	// IdentType
+	if request.IdentType != "" {
+		if matched, _ := regexp.MatchString(`^([0-9]|X)$`, request.IdentType); !matched {
+			return model.NewBindingReturn("200051", "字段 identType 不符合要求")
+		}
+	}
+
+	// IdentNum
+	if request.IdentNum != "" && request.IdentNumDecrypt != "" {
+		if !isAlphanumericOrSpecial(request.IdentNumDecrypt) {
+			return model.NewBindingReturn("200051", "字段 identNum 不符合要求")
+		}
+	}
+
 	if request.AcctType != "10" && request.AcctType != "20" {
 		return mongo.RespCodeColl.Get("200230")
 	}
@@ -310,7 +324,7 @@ func isAlphanumeric(str string) (result bool) {
 
 // isAlphanumeric 用来判断一个字符串是否是字母或者数字或者特殊字符
 func isAlphanumericOrSpecial(str string) (result bool) {
-	matched, _ := regexp.MatchString(`^(?i)[a-z0-9_+-·]+$`, str)
+	matched, _ := regexp.MatchString(`^(?i)[a-z0-9_+-\\·]+$`, str)
 	if matched {
 		return true
 	}
@@ -319,7 +333,7 @@ func isAlphanumericOrSpecial(str string) (result bool) {
 
 // isChineseOrJapaneseOrAlphanumeric 用来判断一个字符串是否只包含汉字，日本字或者字母数字或者特殊字符
 func isChineseOrJapaneseOrAlphanumeric(str string) (result bool) {
-	matched, _ := regexp.MatchString(`^(?i)(\p{Han}|\p{Hiragana}|[a-z0-9]|[_+-·])+$`, str)
+	matched, _ := regexp.MatchString(`^(?i)(\p{Han}|\p{Hiragana}|[a-z0-9]|[_+-\\·])+$`, str)
 	if matched {
 		return true
 	}
