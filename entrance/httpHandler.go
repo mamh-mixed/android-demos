@@ -88,6 +88,7 @@ func prepareData(r *http.Request) (merId, sign string, data []byte, status int, 
 	}
 
 	sign = r.Header.Get("X-Sign")
+	// 商户可以选择不验签，那么可以不传这个字段
 	// if sign == "" {
 	// 	return "", "", nil, 412, errors.New("header `X-Sign` required")
 	// }
