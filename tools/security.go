@@ -9,13 +9,25 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io"
-	"strings"
-
+	"github.com/CardInfoLink/quickpay/config"
 	"github.com/omigo/log"
+	"io"
+	"os"
+	"strings"
 )
 
-var sysKey = []byte("quickpay20150514")
+var sysKey []byte
+
+func init() {
+	firstPart := config.GetValue("app", "encryptKey")
+	whole := firstPart + "TEZMUboYmBLVfjnduURAk4="
+	bytes, err := base64.StdEncoding.DecodeString(whole)
+	if err != nil {
+		log.Error(err)
+		os.Exit(3)
+	}
+	sysKey = bytes
+}
 
 // AesCBCMode 如果key位base64编码过的字符串
 type AesCBCMode struct {
