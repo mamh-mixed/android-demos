@@ -63,6 +63,17 @@ func GetWorkDir() string {
 	return workDir
 }
 
+// Hostname 取主机名，如果没取到，返回 `unknown`
+func Hostname() string {
+	name, err := os.Hostname()
+	if err != nil {
+		log.Errorf("get hostname error: %s", name)
+		return "unknown"
+	}
+
+	return name
+}
+
 // GetFile 从配置文件中读取文件全名，包含绝对路径
 func GetFile(section, key string) (filename string, err error) {
 	v := GetValue(section, key)

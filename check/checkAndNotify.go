@@ -17,7 +17,7 @@ var appId string
 
 // DoCheck 定时检查配置
 func DoCheck() {
-	appId = config.GetValue("app", "appId")
+	appId = config.Hostname()
 
 	go check()
 }
