@@ -4,9 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"runtime"
 
-	_ "github.com/CardInfoLink/quickpay/config"
 	"github.com/CardInfoLink/quickpay/entrance"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/pay"
 	"github.com/CardInfoLink/quickpay/settle"
@@ -16,9 +17,10 @@ import (
 )
 
 func main() {
-	// 日志输出级别
-	log.SetOutputLevel(log.Ldebug)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	log.SetOutputLevel(goconf.LogLevel())
+	log.SetFlags(log.Ldate | log.Ltime | log.Llevel | log.Llongfile)
 
 	var (
 		argAll, argMaster, argPay, argSettle bool

@@ -12,32 +12,20 @@ import (
 	"os"
 	"strings"
 
-	"github.com/CardInfoLink/quickpay/config"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/omigo/log"
 )
 
-var requestURL = config.GetValue("cfca", "url")
+var requestURL = goconf.GetValue("cfca", "url")
 
 var cli *http.Client
 
 // 初始化中金 HTTPS 客户端
 func init() {
-	ccaCertFile, err := config.GetFile("cfca", "ccaCert")
-	if err != nil {
-		fmt.Printf("cfca ev_cca_cert config error: %s", err)
-		os.Exit(2)
-	}
+	ccaCertFile := goconf.GetFile("cfca", "ccaCert")
 	cfcaEvCcaCrt, err := ioutil.ReadFile(ccaCertFile)
-	if err != nil {
-		fmt.Printf("read cfca ev_cca_cert error: %s", err)
-		os.Exit(3)
-	}
 
-	rootCert, err := config.GetFile("cfca", "rootCert")
-	if err != nil {
-		fmt.Printf("cfca root_cert config error: %s", err)
-		os.Exit(2)
-	}
+	rootCert := goconf.GetFile("cfca", "rootCert")
 	cfcaEvRootCrt, err := ioutil.ReadFile(rootCert)
 	if err != nil {
 		fmt.Printf("read cfca ev_root_cert error: %s", err)

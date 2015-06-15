@@ -1,10 +1,9 @@
-// Package config 用户集中配置管理。使用前，需要在系统中配置 QUICKPAY_ENV 环境变量，
+// Package goconf 配置集中管理, 使用前，需要在系统中配置 QUICKPAY_ENV 环境变量，
 // 变量值为 develop/testing/product，如果不配置，系统会报错
-// export QUICKPAY_ENV=develop
-package config
+// export ANGRYCARD_ENV=develop
+package goconf
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -13,24 +12,27 @@ import (
 	"github.com/omigo/log"
 )
 
+const (
+	sysEnv = "QUICKPAY_ENV"
+	pkg    = "github.com/CardInfoLink/quickpay"
+)
+
 var conf *goconfig.ConfigFile
 var workDir string
 
 func init() {
-	sysEnv := "QUICKPAY_ENV"
 	env := os.Getenv(sysEnv)
 	if env == "" {
-		fmt.Printf("system environment variable `%s` not set, must set to `develop/testing/product`\n", sysEnv)
+		fmt.Printf("system environment variable `%s` not set, must set to `develop` or `testing` or `product`\n", sysEnv)
 		os.Exit(1)
 	}
-	fmt.Printf("quickpay environment: %s\n", env)
+	fmt.Printf("environment: %s\n", env)
 
 	var err error
 	workDir, err = os.Getwd()
 	if err != nil {
 		log.Fatalf("can not get work directory: %s", err)
 	}
-	pkg := "github.com/CardInfoLink/quickpay"
 	if pos := strings.Index(workDir, pkg); pos >= 0 {
 		workDir = workDir[:(pos + len(pkg))]
 	}
@@ -75,19 +77,19 @@ func Hostname() string {
 }
 
 // GetFile 从配置文件中读取文件全名，包含绝对路径
-func GetFile(section, key string) (filename string, err error) {
+func GetFile(section, key string) (filename string) {
 	v := GetValue(section, key)
 	if v == "" {
-		return "", errors.New("selection %s key %s not configurated")
+		return ""
 	}
 
 	// 如果配置的是绝对路径，直接返回
 	if v[0] == '/' {
-		return v, nil
+		return v
 	}
 
 	// 如果配置的是相对路径，那么就是以启动程序的目录为相对路径
-	return GetWorkDir() + "/" + v, nil
+	return GetWorkDir() + "/" + v
 }
 
 // GetValue 从配置文件中取值
@@ -97,11 +99,36 @@ func GetValue(section, key string) (v string) {
 		log.Errorf("can not get value from selection `%s` on key `%s`", section, key)
 	}
 	// log.Debugf("%s.%s = %s", section, key, v)
-	if v == "" {
-		log.Warnf("selection `%s` key `%s` value is blank", section, key)
-	}
 
 	return v
+}
+
+// LogLevel 从配置文件中取日志级别
+func LogLevel() (v int) {
+	l, err := conf.GetValue("app", "logLevel")
+	if err != nil {
+		log.Error("can not get value from selection `app` on key `logLevel`")
+	}
+	if l == "" {
+		return log.Linfo
+	}
+
+	switch strings.ToLower(l) {
+	case "trace":
+		return log.Ltrace
+	case "debug":
+		return log.Ldebug
+	case "info":
+		return log.Linfo
+	case "warn":
+		return log.Lwarn
+	case "error":
+		return log.Lerror
+	case "fatal":
+		return log.Lfatal
+	default:
+		return log.Linfo
+	}
 }
 
 // Int 从配置文件中整数值

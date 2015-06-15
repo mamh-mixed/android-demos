@@ -13,7 +13,7 @@ import (
 	"os"
 
 	"github.com/CardInfoLink/quickpay/cache"
-	"github.com/CardInfoLink/quickpay/config"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
@@ -56,11 +56,7 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 
 // 读证书
 func init() {
-	certPemFile, err := config.GetFile("cfca", "cert")
-	if err != nil {
-		fmt.Printf("cfca cert config error: %s", err)
-		os.Exit(2)
-	}
+	certPemFile := goconf.GetFile("cfca", "cert")
 	certPem, err := ioutil.ReadFile(certPemFile)
 	if err != nil {
 		fmt.Printf("read cfca cert error: %s", err)
