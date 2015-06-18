@@ -1,6 +1,10 @@
 package mongo
 
-func OffLineRespCd(code string) string {
+import (
+	"github.com/CardInfoLink/quickpay/model"
+)
+
+func OffLineRespCd(code string) *model.ScanPayResponse {
 	responseCode := ""
 	switch code {
 	case "ORDER_FAIL":
@@ -168,6 +172,5 @@ func OffLineRespCd(code string) string {
 	default:
 		responseCode = "58"
 	}
-
-	return responseCode
+	return &model.ScanPayResponse{ErrorDetail: code, Respcd: responseCode}
 }

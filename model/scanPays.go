@@ -20,43 +20,9 @@ type ScanPay struct {
 	Sign         string //签名
 	NotifyUrl    string //异步通知地址
 	// 辅助字段
-	Key         string           // md5key
-	Subject     string           // 商品名称
-	SysOrderNum string           //渠道交易号
-	Response    *ScanPayResponse //返回应答
-}
-
-// Marshal 将商品详情解析成字符json字符串
-// 格式: 商品名称,价格,数量;商品名称,价格,数量;...
-func (q *ScanPay) MarshalGoods() string {
-
-	if q.GoodsInfo == "" {
-		return ""
-	}
-
-	goods := strings.Split(q.GoodsInfo, ";")
-	gs := make([]interface{}, 0, len(goods))
-
-	for i, v := range goods {
-		good := strings.Split(v, ",")
-		if len(good) != 3 {
-			return ""
-		}
-		g := &struct {
-			GoodsId   int    `json:"goodsId"`
-			GoodsName string `json:"goodsName"`
-			Price     string `json:"price"`
-			Quantity  string `json:"quantity"`
-		}{
-			i, good[0], good[1], good[2],
-		}
-		gs = append(gs, g)
-	}
-	formated, err := json.Marshal(gs)
-	if err != nil {
-		return ""
-	}
-	return string(formated)
+	Key         string // md5key
+	Subject     string // 商品名称
+	SysOrderNum string //渠道交易号
 }
 
 // ScanPayResponse 下单支付返回体
@@ -83,4 +49,37 @@ type ScanPayResponse struct {
 	// 辅助字段
 	RespCode     string `json:"-"` // 系统应答码
 	ChanRespCode string `json:"-"` // 渠道详细应答码
+}
+
+// MarshalGoods 将商品详情解析成字符json字符串
+// 格式: 商品名称,价格,数量;商品名称,价格,数量;...
+func (s *ScanPay) MarshalGoods() string {
+
+	if s.GoodsInfo == "" {
+		return ""
+	}
+
+	goods := strings.Split(s.GoodsInfo, ";")
+	gs := make([]interface{}, 0, len(goods))
+
+	for i, v := range goods {
+		good := strings.Split(v, ",")
+		if len(good) != 3 {
+			return ""
+		}
+		g := &struct {
+			GoodsId   int    `json:"goodsId"`
+			GoodsName string `json:"goodsName"`
+			Price     string `json:"price"`
+			Quantity  string `json:"quantity"`
+		}{
+			i, good[0], good[1], good[2],
+		}
+		gs = append(gs, g)
+	}
+	formated, err := json.Marshal(gs)
+	if err != nil {
+		return ""
+	}
+	return string(formated)
 }

@@ -46,11 +46,13 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	alpResp, err := sendRequest(dict, req.Key)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, createAndPay)
+	}
 
 	// 处理结果返回
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
@@ -71,10 +73,10 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessRefund 退款
@@ -97,10 +99,10 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessEnquiry 查询，包含支付、退款
@@ -113,10 +115,10 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.Key)
 	log.Infof("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessVoid 撤销
@@ -139,10 +141,10 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.Key)
 	log.Debugf("alp response: %+v", alpResp)
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 func toMap(req *alpRequest) map[string]string {
