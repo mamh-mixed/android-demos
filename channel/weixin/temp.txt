@@ -1,0 +1,18 @@
+```javascript
+"commodityName" : "上海讯联测试商户",
+"WXP" : {
+    "md5" : "12sdffjjguddddd2widousldadi9o0i1",
+    "mch_id" : "1236593202",
+    "appid" : "wx25ac886b6dac7dd2",
+    "acqfee" : "0.02",
+    "merfee" : "0.03",
+    "fee" : "0.01",
+    "sub_mch_id" : "1247075201"
+},
+"ALP" : {
+    "partnerId" : "2088811767473826",
+    "md5" : "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+    "acqfee" : "0.02",
+    "merfee" : "0.03",
+    "fee" : "0.03"
+}
