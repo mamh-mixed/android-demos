@@ -59,7 +59,7 @@ func read(conn net.Conn) ([]byte, error) {
 
 	_, err := conn.Read(mLenByte)
 	if err != nil {
-		log.Debug("read length error: ", err)
+		log.Errorf("read length error: %s", err)
 		return nil, err
 	}
 

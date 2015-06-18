@@ -128,7 +128,7 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	}
 	log.Debugf("received: %s", rxmlBytes)
 
-	// 返回消息验签失败得可能性极小，所以异步验签，提高效率
+	// 返回消息验签失败的可能性极小，所以异步验签，提高效率
 	go func() {
 		rhexSign := strings.TrimSpace(result[1])
 		log.Tracef("signed: %s", rhexSign)
