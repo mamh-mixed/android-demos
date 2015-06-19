@@ -1,96 +1,53 @@
 #/bin/bash
 
-# set -ex
+set -ex
 
 prog="quickpay"
 
 function main() {
     # Golang 跨平台编译
     echo "=== Building $prog..."
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $prog main.go
-
-    cd static && bower install && cd ..
-
-    host="webapp@121.40.86.222"
-    args="-all -port=6800"
-    # args="-master -port 6700"
-    # args="-pay -port 6800"
-    # args="-settle -port 6900"
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o distrib/"$prog" main.go
 
     workdir="/opt/$prog"
 
-    deploy $host "$args" $workdir
+    cp -r config distrib/
+    cd static && bower install && cd ..
+    cp -r static distrib/
 
-    host="webapp@121.40.86.222"
-    args="-all -port=6801"
-    workdir="/opt/${prog}2"
+    # host="quick@app1.set.shou.money"
+    # deploy $host $workdir
 
-    # deploy $host "$args" $workdir
-    deploy2 $host "$args" $workdir
+    # sed -i '' 's/port=4160/port=4161/' distrib/config/config_product.ini
+    # host="quick@app2.set.shou.money"
+    # deploy $host $workdir
 
-    rm -f $prog
+    host="webapp@test.ipay.so"
+    deploy $host $workdir
 }
 
 function deploy() {
     host=$1
-    args=$2
-    workdir=$3
+    workdir=$2
 
     # 上传文件
     echo "=== Uploading $prog..."
-    rsync -rcv --progress $prog $host:$workdir/
-    rsync -rcv --progress config/ --exclude=*.go $host:$workdir/config/
-    rsync -rcv --progress static/ $host:$workdir/static/
+    rsync -rcv --progress distrib/ --exclude=.DS_Store $host:$workdir/
 
     # 远程执行重启命令
     echo "=== SSH $host"
     ssh $host << EOF
-export QUICKPAY_ENV=testing
 
 cd $workdir
 
-echo "=== Killing $prog process..."
-ps -ef | grep "$prog $args"
-ps -ef | grep "$prog $args" | awk '{print \$2}' | xargs kill -9
-
+echo "=== Killing $workdir/$prog process..."
+ps -ef | grep "$workdir/$prog"
+ps -ef | grep "$workdir/$prog" | awk '{print \$2}' | xargs kill -9
+pwd
 echo "=== Starting $prog process ..."
 mkdir -p logs
-nohup ./$prog $args >> logs/$prog.log 2>&1 &
-ps -ef | grep $prog
-
-echo "=== Sleep 3 seconds..."
-sleep 2
-tail -n 30 logs/$prog.log
-
-echo "=== Publish done."
-exit
-
-EOF
-}
-
-function deploy2() {
-    host=$1
-    args=$2
-    workdir=$3
-
-    # 远程执行重启命令
-    echo "=== SSH $host"
-    ssh $host << EOF
-export QUICKPAY_ENV=testing
-
-cd $workdir
-
-echo "=== Killing $prog process..."
-ps -ef | grep "$prog $args"
-ps -ef | grep "$prog $args" | awk '{print \$2}' | xargs kill -9
-
-echo "=== Copying file from another directory..."
-cp -rf ../$prog/$prog ../$prog/static ./
-
-echo "=== Starting $prog process ..."
-mkdir -p logs
-nohup ./$prog $args >> logs/$prog.log 2>&1 &
-ps -ef | grep $prog
+nohup $workdir/$prog >> $workdir/logs/$prog.log 2>&1 &
+ps -ef | grep $workdir/$prog
 
 echo "=== Sleep 3 seconds..."
 sleep 2

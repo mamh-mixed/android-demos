@@ -7,19 +7,19 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
-	"errors"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/config"
-	"github.com/omigo/log"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/omigo/log"
 )
 
 var sysKey []byte
 
 func init() {
-	firstPart := config.GetValue("app", "encryptKey")
+	firstPart := goconf.GetValue("app", "encryptKey")
 	whole := firstPart + "TEZMUboYmBLVfjnduURAk4="
 	bytes, err := base64.StdEncoding.DecodeString(whole)
 	if err != nil {
@@ -29,25 +29,25 @@ func init() {
 	sysKey = bytes
 }
 
-// AesCBCMode 如果key位base64编码过的字符串
-type AesCBCMode struct {
+// AESCBCMode 如果key位base64编码过的字符串
+type AESCBCMode struct {
 	Key    []byte
 	Err    error
-	sysAes *AesCBCMode
+	sysAES *AESCBCMode
 }
 
 // NewAESCBCEncrypt 创建一个 AES 加密对象，使用 CBC 模式
-func NewAESCBCEncrypt(b64Key string) *AesCBCMode {
+func NewAESCBCEncrypt(b64Key string) *AESCBCMode {
 	bytesKey, err := base64.StdEncoding.DecodeString(b64Key)
 
 	if err != nil {
 		log.Errorf("AES key(%s) base64 decode error: %s", b64Key, err)
 	}
 
-	return &AesCBCMode{
+	return &AESCBCMode{
 		Key: bytesKey,
 		Err: err,
-		sysAes: &AesCBCMode{
+		sysAES: &AESCBCMode{
 			Key: sysKey,
 		},
 	}
@@ -55,10 +55,10 @@ func NewAESCBCEncrypt(b64Key string) *AesCBCMode {
 
 // DcyAndUseSysKeyEcy 解密商户字段后用系统的key进行加密
 // decrypted 解密后的明文 encrypted 使用新key后的密文
-func (a *AesCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string) {
+func (a *AESCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string) {
 
-	if a.sysAes == nil {
-		a.sysAes = &AesCBCMode{Key: sysKey}
+	if a.sysAES == nil {
+		a.sysAES = &AESCBCMode{Key: sysKey}
 	}
 
 	// decrypt
@@ -68,41 +68,41 @@ func (a *AesCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string)
 		return decrypted, decrypted
 	}
 	// encrypt
-	encrypted = a.sysAes.Encrypt(decrypted)
+	encrypted = a.sysAES.Encrypt(decrypted)
 
-	if a.sysAes.Err != nil {
+	if a.sysAES.Err != nil {
 		// 将错误传递到a
-		a.Err = a.sysAes.Err
+		a.Err = a.sysAES.Err
 	}
 	return
 }
 
 // UseSysKeyDcyAndMerEcy 使用系统的key解密再用商户的key加密
-func (a *AesCBCMode) UseSysKeyDcyAndMerEcy(ct string) string {
+func (a *AESCBCMode) UseSysKeyDcyAndMerEcy(ct string) string {
 
-	if a.sysAes == nil {
-		a.sysAes = &AesCBCMode{Key: sysKey}
+	if a.sysAES == nil {
+		a.sysAES = &AESCBCMode{Key: sysKey}
 	}
 
-	decrypted := a.sysAes.Decrypt(ct)
+	decrypted := a.sysAES.Decrypt(ct)
 
 	// log.Debugf("orig: %s, decrypted: %s", ct, decrypted)
 
-	if a.sysAes.Err != nil {
+	if a.sysAES.Err != nil {
 		// 将错误传递到a
-		a.Err = a.sysAes.Err
+		a.Err = a.sysAES.Err
 	}
 	encrypted := a.Encrypt(decrypted)
 	return encrypted
 }
 
 // Encrypt cbc mode
-func (a *AesCBCMode) Encrypt(pt string) string {
+func (a *AESCBCMode) Encrypt(pt string) string {
 
 	if a.Err != nil {
 		return pt
 	}
-	plaintext := PKCS7Padding([]byte(pt), aes.BlockSize)
+	plaintext := pkcs7Padding([]byte(pt), aes.BlockSize)
 
 	if len(plaintext)%aes.BlockSize != 0 {
 		a.Err = fmt.Errorf("%s : plaintext is not a multiple of the block size", pt)
@@ -131,7 +131,7 @@ func (a *AesCBCMode) Encrypt(pt string) string {
 }
 
 // Decrypt cbc mode
-func (a *AesCBCMode) Decrypt(ct string) string {
+func (a *AESCBCMode) Decrypt(ct string) string {
 
 	if a.Err != nil {
 		return ct
@@ -155,44 +155,44 @@ func (a *AesCBCMode) Decrypt(ct string) string {
 	}
 
 	if len(ciphertext) < aes.BlockSize {
-		a.Err = errors.New(fmt.Sprintf("%s : ciphertext too short", ct))
+		a.Err = fmt.Errorf("%s : ciphertext too short", ct)
 		return ct
 	}
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
 
 	if len(ciphertext)%aes.BlockSize != 0 {
-		a.Err = errors.New(fmt.Sprintf("%s : ciphertext is not a multiple of the block size", ct))
+		a.Err = fmt.Errorf("%s : ciphertext is not a multiple of the block size", ct)
 		return ct
 	}
 
 	mode := cipher.NewCBCDecrypter(block, iv)
 
 	mode.CryptBlocks(ciphertext, ciphertext)
-	ciphertext = PKCS7UnPadding(ciphertext)
+	ciphertext = pkcs7UnPadding(ciphertext)
 	return string(ciphertext)
 }
 
-func PKCS7Padding(ciphertext []byte, blockSize int) []byte {
+func pkcs7Padding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(ciphertext, padtext...)
 }
 
-func PKCS7UnPadding(origData []byte) []byte {
+func pkcs7UnPadding(origData []byte) []byte {
 	length := len(origData)
 	unpadding := int(origData[length-1])
 	return origData[:(length - unpadding)]
 }
 
-type AesCFBMode struct {
+// AESCFBMode CFB 模式的 AES 加密
+type AESCFBMode struct {
 	Key []byte
 	Err error
 }
 
-// aesCFBEncrypt aes 加密
-// 对商户敏感信息加密
-func (a *AesCFBMode) Encrypt(pt string) string {
+// Encrypt aesCFBEncrypt aes 加密  对商户敏感信息加密
+func (a *AESCFBMode) Encrypt(pt string) string {
 
 	block, err := aes.NewCipher(a.Key)
 	if err != nil {
@@ -211,8 +211,8 @@ func (a *AesCFBMode) Encrypt(pt string) string {
 	return hex.EncodeToString(ciphertext)
 }
 
-// aesCFBDecrypt aes 解密
-func (a *AesCFBMode) Decrypt(ct string) string {
+// Decrypt aes 解密
+func (a *AESCFBMode) Decrypt(ct string) string {
 
 	block, err := aes.NewCipher(a.Key)
 	if err != nil {

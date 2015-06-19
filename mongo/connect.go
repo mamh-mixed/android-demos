@@ -3,7 +3,7 @@ package mongo
 import (
 	"gopkg.in/mgo.v2"
 
-	"github.com/CardInfoLink/quickpay/config"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/omigo/log"
 )
 
@@ -11,8 +11,8 @@ var database *mgo.Database
 
 // Connect 程序启动时，或者，单元测试前，先连接到 MongoDB 数据库
 func init() {
-	url := config.GetValue("mongo", "url")
-	dbname := config.GetValue("mongo", "db")
+	url := goconf.GetValue("mongo", "url")
+	dbname := goconf.GetValue("mongo", "db")
 
 	session, err := mgo.Dial(url)
 	if err != nil {

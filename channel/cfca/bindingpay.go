@@ -1,13 +1,11 @@
 package cfca
 
-import (
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
-)
+import "github.com/CardInfoLink/quickpay/model"
 
+// DefaultClient 默认 CFCA 绑定支付客户端
 var DefaultClient CFCABindingPay
 
-// CFCA 绑定支付接口
+// CFCABindingPay CFCA 绑定支付
 type CFCABindingPay struct{}
 
 // 中金交易类型
@@ -26,7 +24,7 @@ const (
 
 // ProcessBindingCreate 建立绑定关系
 func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
-	//组装参数
+	// 组装参数
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
@@ -47,11 +45,14 @@ func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 		},
 		SignCert: be.SignCert,
 	}
-	//请求
+
+	// 请求
 	resp := sendRequest(req)
-	//应答码转换
+
+	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
-	return
+
+	return ret
 }
 
 // ProcessBindingEnquiry 查询绑定关系
@@ -70,13 +71,12 @@ func (c *CFCABindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *m
 	}
 
 	// 向中金发起请求
-	log.Tracef("request for cfca param (%+v)", req)
 	resp := sendRequest(req)
 
-	// 应答码转换。。。
+	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
 
-	return
+	return ret
 }
 
 // ProcessBindingRemove 解除绑定关系
@@ -101,13 +101,12 @@ func (c *CFCABindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 	// 应答码转换。。。
 	ret = transformResp(resp, req.Head.TxCode)
 
-	return
+	return ret
 }
 
 // ProcessBindingPayment 快捷支付
 func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
-
-	//组装参数
+	// 组装参数
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
@@ -123,18 +122,19 @@ func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *m
 		},
 		SignCert: be.SignCert,
 	}
-	//请求
-	resp := sendRequest(req)
-	//应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-	return
 
+	// 请求
+	resp := sendRequest(req)
+
+	// 应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+
+	return ret
 }
 
 // ProcessPaymentEnquiry 快捷支付查询
 func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
-
-	//组装参数
+	// 组装参数
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
@@ -146,18 +146,19 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 		},
 		SignCert: be.SignCert,
 	}
-	//请求
-	resp := sendRequest(req)
-	//应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-	return
 
+	// 请求
+	resp := sendRequest(req)
+
+	// 应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+
+	return ret
 }
 
 // ProcessBindingRefund 快捷支付退款
 func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
-
-	//组装参数
+	// 组装参数
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
@@ -172,16 +173,18 @@ func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 		},
 		SignCert: be.SignCert,
 	}
-	//请求
+
+	// 请求
 	resp := sendRequest(req)
-	//应答码转换
+
+	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
-	return
+
+	return ret
 }
 
 // ProcessRefundEnquiry 快捷支付退款查询
 func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
-
 	//组装参数
 	req := &BindingRequest{
 		Version: version,
@@ -194,11 +197,14 @@ func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 		},
 		SignCert: be.SignCert,
 	}
-	//请求
+
+	// 请求
 	resp := sendRequest(req)
-	//应答码转换
+
+	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
-	return
+
+	return ret
 }
 
 // ProcessTransChecking 交易对账，清算
@@ -215,7 +221,9 @@ func (c *CFCABindingPay) ProcessTransChecking(chanMerId, settDate, signCert stri
 		},
 		SignCert: signCert,
 	}
-	//请求
+
+	// 请求
 	resp = sendRequest(req)
-	return
+
+	return resp
 }

@@ -15,7 +15,7 @@ const localDateTimeLayout = "0102150405" // MMDDHHMMSS
 func SerialNumber() string {
 	u4, err := u.NewV4()
 	if err != nil {
-		log.Errorf("error: ", err)
+		log.Errorf("error: %s", err)
 		return ""
 	}
 	return fmt.Sprintf("%x", u4[:])

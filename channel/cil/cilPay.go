@@ -52,11 +52,11 @@ func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 
 	// 报文入库
 	m.UUID = tools.SerialNumber()
-	log.Infof("直接消费（订购消费）向线下网关发送报文内容: %+v", m)
+	log.Debugf("直接消费（订购消费）向线下网关发送报文内容: %+v", m)
 	// mongo.CilMsgColl.Upsert(m)
 
 	resp := send(m, transTimeout)
-	log.Infof("直接消费（订购消费）的线下网关返回结果: %+v", resp)
+	log.Debugf("直接消费（订购消费）的线下网关返回结果: %+v", resp)
 
 	// 如果超时，请冲正
 	if resp.Respcd == reversalFlag {
@@ -110,11 +110,11 @@ func (c *CILPay) ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn
 
 	// 报文入库
 	m.UUID = tools.SerialNumber()
-	log.Infof("ApplePay 消费向线下网关发送报文内容: %+v", m)
+	log.Debugf("ApplePay 消费向线下网关发送报文内容: %+v", m)
 	// mongo.CilMsgColl.Upsert(m)
 
 	resp := send(m, transTimeout)
-	log.Infof("ApplePay 消费的线下网关返回结果: %+v", resp)
+	log.Debugf("ApplePay 消费的线下网关返回结果: %+v", resp)
 
 	if resp.Respcd == reversalFlag {
 		log.Warn("请求超时!!!")
@@ -162,11 +162,11 @@ func reversalHandle(om *model.CilMsg) {
 
 	// 报文入库
 	rm.UUID = tools.SerialNumber()
-	log.Infof("冲正请求向线下网关发送报文内容: %+v", rm)
+	log.Debugf("冲正请求向线下网关发送报文内容: %+v", rm)
 	// mongo.CilMsgColl.Upsert(rm)
 
 	for _, i := range reversalTimeouts {
-		log.Infof("Send reversal request, overtime is %s", i)
+		log.Debugf("Send reversal request, overtime is %s", i)
 
 		back := send(rm, i)
 		if back.Respcd != reversalFlag {

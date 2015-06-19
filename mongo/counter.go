@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2"
@@ -32,6 +33,7 @@ func (c *snCollecion) GetSysSN() string {
 			},
 		},
 		ReturnNew: true,
+		Upsert:    true,
 	}
 
 	var sn = new(model.SN)

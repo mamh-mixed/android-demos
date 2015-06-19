@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/CardInfoLink/quickpay/config"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
@@ -20,18 +20,18 @@ var (
 )
 
 func init() {
-	keepaliveTime = time.Duration(config.Int("cilonline", "keepaliveTime")) * time.Second
-	reconnectTimeout = time.Duration(config.Int("cilonline", "reconnectTimeout")) * time.Second
+	keepaliveTime = time.Duration(goconf.Int("cilonline", "keepaliveTime")) * time.Second
+	reconnectTimeout = time.Duration(goconf.Int("cilonline", "reconnectTimeout")) * time.Second
 }
 
 var defualtClient *CilOnlinePay
 
 // Connect 连接到线下
 func Connect() {
-	host := config.GetValue("cilonline", "host")
-	port := config.GetValue("cilonline", "port")
-	queueSize := config.Int("cilonline", "queueSize")
-	initWindowSize := config.Int("cilonline", "initWindowSize")
+	host := goconf.GetValue("cilonline", "host")
+	port := goconf.GetValue("cilonline", "port")
+	queueSize := goconf.Int("cilonline", "queueSize")
+	initWindowSize := goconf.Int("cilonline", "initWindowSize")
 
 	addr := host + ":" + port
 	defualtClient = NewCilOnlinePay(addr, queueSize, initWindowSize)
@@ -89,7 +89,7 @@ func (c *CilOnlinePay) Connect() {
 			return
 		}
 		// defer conn.Close()
-		log.Infof("connect to CIL-Online %s", c.Addr)
+		log.Infof("connected to CIL-Online %s", c.Addr)
 
 		go c.WaitAndReceive()
 		go c.LoopToSend()
@@ -204,7 +204,7 @@ func (c *CilOnlinePay) SendOne(msg *model.CilMsg) (err error) {
 		return err
 	}
 
-	log.Debugf("write message: %s %s", mLenStr, jsonBytes)
+	log.Infof("write message: %s%s", mLenStr, string(jsonBytes))
 
 	return nil
 }
@@ -250,7 +250,7 @@ func (c *CilOnlinePay) ReceiveOne() (back *model.CilMsg, err error) {
 		size += rlen
 	}
 
-	log.Debugf("recieve message: %d %s", size, msg)
+	log.Infof("recieve message: %s%s", string(mLenByte), string(msg))
 
 	back = &model.CilMsg{}
 	err = json.Unmarshal(msg, back)
