@@ -13,7 +13,7 @@ type alp struct{}
 // service
 const (
 	createAndPay = "alipay.acquire.createandpay"
-	preCreate    = "precreate"
+	preCreate    = "alipay.acquire.precreate"
 	refund       = "alipay.acquire.refund"
 	query        = "alipay.acquire.query"
 	cancel       = "alipay.acquire.cancel"
@@ -46,11 +46,13 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	alpResp, err := sendRequest(dict, req.Key)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, createAndPay)
+	}
 
 	// 处理结果返回
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
@@ -71,36 +73,34 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	alpResp, err := sendRequest(dict, req.Key)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, preCreate)
+	}
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessRefund 退款
 func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       refund,
-		NotifyUrl:     "",
-		OutTradeNo:    req.SysOrderNum,
-		Subject:       req.Subject,
-		GoodsDetail:   req.MarshalGoods(),
-		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.Txamt,
-		ExtendParams:  "",
-		ItBPay:        "1m", // 超时时间
-		DynamicIdType: "bar_code",
-		DynamicId:     req.ScanCodeId,
+		Service:      refund,
+		NotifyUrl:    "",
+		OutTradeNo:   req.OrigSysOrderNum,
+		RefundAmount: req.Txamt,
+		OutRequestNo: req.SysOrderNum,
 	}
 
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	alpResp, err := sendRequest(dict, req.Key)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, refund)
+	}
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 // ProcessEnquiry 查询，包含支付、退款
@@ -113,13 +113,15 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
-	log.Infof("alp response: %+v", alpResp)
+	alpResp, err := sendRequest(dict, req.Key)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, query)
+	}
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
-// ProcessVoid 撤销
+// ProcessCancel 撤销
 func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
@@ -139,10 +141,12 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	alpResp, err := sendRequest(dict, req.Key)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, cancel)
+	}
 
-	return transform(alpReq.Service, alpResp, req.Response)
+	return transform(alpReq.Service, alpResp, err)
 }
 
 func toMap(req *alpRequest) map[string]string {
@@ -166,6 +170,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
 	dict["goods_detail"] = req.GoodsDetail
+	dict["refund_amount"] = req.RefundAmount
 
 	// ...
 

@@ -2,9 +2,9 @@ package scanpay
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 )
 
@@ -14,16 +14,13 @@ func Router(reqBytes []byte) []byte {
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal jsonStr(%s): %s", reqBytes, err)
-		// TODO check the err retonse message
-		return []byte("params invalid")
+		return errorResponse(req, "INVALID_PARAMETER")
 	}
 
 	// TODO valid sign
 
-	// var ret *ScanPayResponse
 	ret := new(model.ScanPayResponse)
 	switch {
-	// TODO
 	case req.Busicd == "purc":
 		ret = BarcodePay(req)
 	case req.Busicd == "paut":
@@ -35,13 +32,12 @@ func Router(reqBytes []byte) []byte {
 	case req.Busicd == "void":
 		ret = Cancel(req)
 	default:
-		return []byte(fmt.Sprintf("no busicd: %s", req.Busicd))
+		return errorResponse(req, "INVALID_PARAMETER")
 	}
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
-		// TODO retrun system error string
-		return []byte("system error")
+		return errorResponse(req, "SYSTEM_ERROR")
 	}
 	return retBytes
 }
@@ -50,13 +46,15 @@ func Router(reqBytes []byte) []byte {
 func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	log.Debugf("request body: %+v", req)
 
-	initDefaultResponseInfo(req)
-
-	// validite field
+	// validate field
 	if ret = validateBarcodePay(req); ret == nil {
 		// process
 		ret = core.BarcodePay(req)
 	}
+
+	// 补充原信息返回
+	fillResponseInfo(req, ret)
+
 	log.Debugf("handled body: %+v", ret)
 
 	return ret
@@ -67,8 +65,18 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
-	// TODO validite field
-	return core.QrCodeOfflinePay(req)
+	// validate field
+	if ret = validateQrCodeOfflinePay(req); ret == nil {
+		// process
+		ret = core.QrCodeOfflinePay(req)
+	}
+
+	// 补充原信息返回
+	fillResponseInfo(req, ret)
+
+	log.Debugf("handled body: %+v", ret)
+
+	return ret
 }
 
 // Refund 退款
@@ -85,14 +93,18 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
-	initDefaultResponseInfo(req)
+	if ret = validateEnquiry(req); ret == nil {
+		// process
+		ret = core.Enquiry(req)
+		// 直接返回，查询得到的是原交易信息，不需要补充返回信息
+		return ret
+	}
 
-	// TODO validite field
-
-	// process
-	ret = core.Enquiry(req)
+	// 错误信息补充完整
+	fillResponseInfo(req, ret)
 
 	return ret
+
 }
 
 // Cancel 撤销
@@ -104,19 +116,29 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return core.Cancel(req)
 }
 
-func initDefaultResponseInfo(req *model.ScanPay) {
-
-	ret := new(model.ScanPayResponse)
+func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 
 	// 默认将原信息返回
 	ret.Busicd = req.Busicd
-	ret.Chcd = req.Chcd
 	ret.Inscd = req.Inscd
 	ret.Mchntid = req.Mchntid
-	ret.Sign = req.Sign
+	ret.Sign = req.Sign // TODO
 	ret.Txamt = req.Txamt
 	ret.OrigOrderNum = req.OrigOrderNum
+	ret.OrderNum = req.OrderNum
 	ret.Txndir = "A"
-	//
-	req.Response = ret
+}
+
+// errorResponse 返回错误信息
+func errorResponse(req *model.ScanPay, errorCode string) []byte {
+
+	ret := mongo.OffLineRespCd(errorCode)
+	ret.Busicd = req.Busicd
+	ret.Txndir = "A"
+
+	bytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+	}
+	return bytes
 }

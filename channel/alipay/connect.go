@@ -21,7 +21,7 @@ const (
 )
 
 // sendRequest 发送请求
-func sendRequest(params map[string]string, key string) *alpResponse {
+func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 
 	toSign := preContent(params)
 
@@ -34,7 +34,6 @@ func sendRequest(params map[string]string, key string) *alpResponse {
 	for k, v := range params {
 		values.Add(k, v)
 	}
-	log.Debugf("%s", values.Encode())
 
 	var res *http.Response
 	var err error
@@ -46,13 +45,14 @@ func sendRequest(params map[string]string, key string) *alpResponse {
 
 	if err != nil {
 		log.Errorf("connect %s fail : %s", requestURL, err)
+		return nil, err
 	}
 
 	return handleResponseBody(res.Body)
 }
 
 // handleResponseBody 处理结果集
-func handleResponseBody(reader io.Reader) *alpResponse {
+func handleResponseBody(reader io.Reader) (*alpResponse, error) {
 
 	alpResp := new(alpResponse)
 
@@ -68,11 +68,11 @@ func handleResponseBody(reader io.Reader) *alpResponse {
 	err := d.Decode(alpResp)
 	if err != nil {
 		log.Errorf("unmarsal body fail : %s", err)
+		return nil, err
 	}
 
 	// TODO 验证签名
-
-	return alpResp
+	return alpResp, nil
 }
 
 // preContent 待签名字符串

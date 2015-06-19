@@ -63,7 +63,8 @@ func mockPostForm(url string, data url.Values) (*http.Response, error) {
 		alipay.BuyerUserId = "2088212959731883"
 
 	case "alipay.acquire.precreate":
-
+		alipay.ResultCode = "SUCCESS"
+		alipay.QrCode = "999999999"
 	case "alipay.acquire.refund":
 
 	case "alipay.acquire.query":
