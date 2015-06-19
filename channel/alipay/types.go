@@ -14,6 +14,8 @@ type alpRequest struct {
 	Charset       string
 	NotifyUrl     string
 	OutTradeNo    string
+	RefundAmount  string
+	OutRequestNo  string
 	Subject       string
 	GoodsDetail   string
 	ProductCode   string
