@@ -1,9 +1,10 @@
 package scanpay
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	// "regexp"
+	"regexp"
 )
 
 // validateBarcodePay 验证扫码下单的参数
@@ -15,6 +16,9 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// TODO validate format
+	if matched, _ := regexp.MatchString(`^\d+$`, req.Txamt); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
 
 	return
 }
@@ -26,8 +30,16 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if req.OrderNum == "" || req.Chcd == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
-
+	fmt.Println(req.Chcd)
 	// TODO ..
+	if req.Chcd != "WXP" && req.Chcd != "ALP" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+	fmt.Println("debug ...")
+	if matched, _ := regexp.MatchString(`^\d+$`, req.Txamt); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+	fmt.Println("debug ...")
 	return
 }
 

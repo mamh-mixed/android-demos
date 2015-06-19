@@ -24,9 +24,11 @@ type ScanPayChan interface {
 func GetScanPayChan(chanCode string) ScanPayChan {
 
 	switch chanCode {
-	case "Alipay":
+	// 支付宝
+	case "ALP":
 		return &alipay.DefaultClient
-	case "Weixin":
+	// 微信
+	case "WXP":
 		return nil
 	}
 	return nil

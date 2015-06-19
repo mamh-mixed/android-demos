@@ -46,13 +46,10 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 渠道选择
 	// 根据扫码Id判断走哪个渠道
-	cardBrand := ""
 	if strings.HasPrefix(req.ScanCodeId, "1") {
-		req.Chcd = "Weixin"
-		cardBrand = "WXP"
+		req.Chcd = "WXP"
 	} else if strings.HasPrefix(req.ScanCodeId, "2") {
-		req.Chcd = "Alipay"
-		cardBrand = "ALP"
+		req.Chcd = "ALP"
 	} else {
 		// 不送，返回 TODO check error code
 		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
@@ -63,7 +60,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	t.ChanCode = req.Chcd
 
 	// 通过路由策略找到渠道和渠道商户
-	rp := mongo.RouterPolicyColl.Find(req.Mchntid, cardBrand)
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
 		// TODO check error code
 		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
@@ -98,6 +95,9 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
+	if sp == nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
 	ret = sp.ProcessBarcodePay(req)
 
 	// 渠道
@@ -112,19 +112,86 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 // QrCodeOfflinePay 扫二维码预下单
 func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
-	// TODO 判断订单是否存在
+	ret = new(model.ScanPayResponse)
+	// 判断订单是否存在
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+	if count > 0 {
+		// 订单号重复
+		return mongo.OffLineRespCd("AUTH_NO_ERROR")
+	}
 
-	// TODO 记录该笔交易
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:     req.Mchntid,
+		OrderNum:  req.OrderNum,
+		TransType: model.PayTrans,
+		Busicd:    req.Busicd,
+		Inscd:     req.Inscd,
+		ChanCode:  req.Chcd,
+	}
 
-	// TODO 判断渠道商户
+	// 金额单位转换
+	f, err := strconv.ParseFloat(req.Txamt, 64)
+	if err != nil {
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
+	}
+	t.TransAmt = int64(f * 100)
 
-	// TODO 转换参数
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		// TODO check error code
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
+	}
+	t.ChanMerId = rp.ChanMerId
 
-	// TODO 获得渠道实例，请求
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
+	if err != nil {
+		// TODO check error code
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
+	}
 
-	// TODO 根据请求结果更新
+	// 上送参数
+	req.SysOrderNum = tools.SerialNumber()
+	req.Subject = c.ChanMerName // TODO check
+	req.Key = c.SignCert
+	// 交易参数
+	t.SysOrderNum = req.SysOrderNum
 
-	return
+	// 记录交易
+	err = mongo.SpTransColl.Add(t)
+	if err != nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+
+	// 获得渠道实例，请求
+	sp := channel.GetScanPayChan(req.Chcd)
+	if sp == nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+	ret = sp.ProcessQrCodeOfflinePay(req)
+
+	// 渠道
+	ret.Chcd = req.Chcd
+
+	// 更新交易信息
+	updateTrans(t, ret)
+
+	return ret
 }
 
 // Refund 退款
@@ -167,8 +234,6 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		// 原订单号
 		req.SysOrderNum = t.SysOrderNum
 		req.Key = c.SignCert
-		// 原订单的性质
-		ret.Busicd = t.Busicd
 
 		// 向渠道查询
 		sp := channel.GetScanPayChan(t.ChanCode)
@@ -191,7 +256,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 渠道
 	ret.Chcd = t.ChanCode
-	// 原业务类型
+	// 请求业务类型，非原业务类型
 	ret.Busicd = req.Busicd
 	return ret
 }

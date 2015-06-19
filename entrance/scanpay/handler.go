@@ -120,7 +120,6 @@ func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 
 	// 默认将原信息返回
 	ret.Busicd = req.Busicd
-	ret.Chcd = req.Chcd
 	ret.Inscd = req.Inscd
 	ret.Mchntid = req.Mchntid
 	ret.Sign = req.Sign // TODO

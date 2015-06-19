@@ -13,7 +13,7 @@ type alp struct{}
 // service
 const (
 	createAndPay = "alipay.acquire.createandpay"
-	preCreate    = "precreate"
+	preCreate    = "alipay.acquire.precreate"
 	refund       = "alipay.acquire.refund"
 	query        = "alipay.acquire.query"
 	cancel       = "alipay.acquire.cancel"
