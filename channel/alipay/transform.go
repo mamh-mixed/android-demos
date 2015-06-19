@@ -32,7 +32,7 @@ func transform(service string, alpResp *alpResponse, err error) *model.ScanPayRe
 	case query:
 		queryHandle(ret, alipay)
 	case refund:
-		// TODO
+		refundHandle(ret, alipay)
 	case cancel:
 		// TODO
 	default:
@@ -89,6 +89,27 @@ func preCreateHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 
 // queryHandle 查询处理
 func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
+
+	switch alipay.ResultCode {
+	case "SUCCESS":
+		ret.ChannelOrderNum = alipay.TradeNo
+		ret.ConsumerAccount = alipay.BuyerLogonId
+		ret.ConsumerId = alipay.BuyerUserId
+		// 计算折扣
+		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
+		ret.ChanRespCode = alipay.TradeStatus
+	case "FAIL", "PROCESS_EXCEPTION":
+		ret.ChanRespCode = alipay.DetailErrorCode
+	default:
+		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
+		ret.ChanRespCode = alipay.ResultCode
+	}
+	ret.ErrorDetail = ret.ChanRespCode
+	ret.Respcd = queryCd(query, ret.ChanRespCode)
+}
+
+// refundHandle 退款处理
+func refundHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 
 	switch alipay.ResultCode {
 	case "SUCCESS":

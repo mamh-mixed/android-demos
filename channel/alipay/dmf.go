@@ -74,7 +74,9 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	dict := toMap(alpReq)
 
 	alpResp, err := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, preCreate)
+	}
 
 	return transform(alpReq.Service, alpResp, err)
 }
@@ -83,24 +85,20 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       refund,
-		NotifyUrl:     "",
-		OutTradeNo:    req.SysOrderNum,
-		Subject:       req.Subject,
-		GoodsDetail:   req.MarshalGoods(),
-		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.Txamt,
-		ExtendParams:  "",
-		ItBPay:        "1m", // 超时时间
-		DynamicIdType: "bar_code",
-		DynamicId:     req.ScanCodeId,
+		Service:      refund,
+		NotifyUrl:    "",
+		OutTradeNo:   req.OrigSysOrderNum,
+		RefundAmount: req.Txamt,
+		OutRequestNo: req.SysOrderNum,
 	}
 
 	// req to map
 	dict := toMap(alpReq)
 
 	alpResp, err := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, refund)
+	}
 
 	return transform(alpReq.Service, alpResp, err)
 }
@@ -116,12 +114,14 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 	dict := toMap(alpReq)
 
 	alpResp, err := sendRequest(dict, req.Key)
-	log.Infof("alp response: %+v", alpResp)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, query)
+	}
 
 	return transform(alpReq.Service, alpResp, err)
 }
 
-// ProcessVoid 撤销
+// ProcessCancel 撤销
 func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
@@ -142,7 +142,9 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	dict := toMap(alpReq)
 
 	alpResp, err := sendRequest(dict, req.Key)
-	log.Debugf("alp response: %+v", alpResp)
+	if err != nil {
+		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, cancel)
+	}
 
 	return transform(alpReq.Service, alpResp, err)
 }
@@ -168,6 +170,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
 	dict["goods_detail"] = req.GoodsDetail
+	dict["refund_amount"] = req.RefundAmount
 
 	// ...
 
