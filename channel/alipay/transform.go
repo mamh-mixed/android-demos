@@ -52,22 +52,22 @@ func createAndPayHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ConsumerId = alipay.BuyerUserId
 		// 计算折扣
 		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
-		ret.ChanRespCode = alipay.ResultCode
+		// ret.ChanRespCode = alipay.ResultCode
 	// 下单失败
 	case "ORDER_FAIL":
-		ret.ChanRespCode = alipay.DetailErrorCode
-	case "ORDER_SUCCESS_PAY_INPROCESS", "UNKNOWN":
-		ret.ChanRespCode = alipay.DetailErrorCode
-		ret.ChannelOrderNum = alipay.TradeNo
-	case "ORDER_SUCCESS_PAY_FAIL":
-		ret.ChanRespCode = alipay.DetailErrorCode
+		// ret.ChanRespCode = alipay.DetailErrorCode
+	case "ORDER_SUCCESS_PAY_INPROCESS", "UNKNOWN", "ORDER_SUCCESS_PAY_FAIL":
+		// ret.ChanRespCode = alipay.DetailErrorCode
 		ret.ChannelOrderNum = alipay.TradeNo
 	default:
+		ret.ChanRespCode = alipay.ResultCode
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", createAndPay, alipay.ResultCode)
 	}
 	// get ret.Respcd by ResultCode
 	// TODO check by ResultCode or by alipay.DetailErrorCode?
-	ret.Respcd = createAndPayCd(alipay.ResultCode)
+	ret.ChanRespCode = alipay.ResultCode
+	ret.ErrorDetail = ret.ChanRespCode
+	ret.Respcd = createAndPayCd(ret.ChanRespCode)
 }
 
 // preCreateHandle 预下单处理
@@ -76,13 +76,15 @@ func preCreateHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 	switch alipay.ResultCode {
 	case "SUCCESS":
 		ret.QrCode = alipay.QrCode
+		ret.ChanRespCode = alipay.ResultCode
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
-		ret.ErrorDetail = alipay.DetailErrorCode
 	default:
+		ret.ChanRespCode = alipay.ResultCode
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", createAndPay, alipay.ResultCode)
 	}
-	ret.Respcd = preCreateCd(ret.ErrorDetail)
+	ret.ErrorDetail = ret.ChanRespCode
+	ret.Respcd = preCreateCd(ret.ChanRespCode)
 }
 
 // queryHandle 查询处理
@@ -95,12 +97,13 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ConsumerId = alipay.BuyerUserId
 		// 计算折扣
 		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
-		ret.Respcd = queryCd(ret.Busicd, alipay.TradeStatus)
+		ret.ChanRespCode = alipay.TradeStatus
 	case "FAIL", "PROCESS_EXCEPTION":
-		ret.ErrorDetail = alipay.DetailErrorCode
-		ret.Respcd = queryCd(ret.Busicd, ret.ErrorDetail)
+		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
-		ret.Respcd = queryCd(ret.Busicd, alipay.ResultCode)
+		ret.ChanRespCode = alipay.ResultCode
 	}
+	ret.ErrorDetail = ret.ChanRespCode
+	ret.Respcd = queryCd(query, ret.ChanRespCode)
 }

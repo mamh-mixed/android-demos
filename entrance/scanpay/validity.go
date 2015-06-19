@@ -19,7 +19,7 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return
 }
 
-// QrCodeOfflinePay 验证预下单的参数
+// validateQrCodeOfflinePay 验证预下单的参数
 func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 验证非空
@@ -28,5 +28,18 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// TODO ..
+	return
+}
+
+// validateEnquiry 验证查询接口的参数
+func validateEnquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 验证非空
+	if req.OrigOrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	// TODO validate format
+
 	return
 }

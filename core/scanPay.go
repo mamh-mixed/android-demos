@@ -15,13 +15,13 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
-	count, err := mongo.TransColl.Count(req.Mchntid, req.OrderNum)
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 	if count > 0 {
-		// 没有订单号重复代码
+		// 订单号重复
 		return mongo.OffLineRespCd("AUTH_NO_ERROR")
 	}
 
@@ -37,9 +37,10 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 金额单位转换
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
-		t.RespCode = "000001"
-		mongo.TransColl.Add(t)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
 	}
 	t.TransAmt = int64(f * 100)
 
@@ -54,9 +55,10 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		cardBrand = "ALP"
 	} else {
 		// 不送，返回 TODO check error code
-		t.RespCode = "000001"
-		mongo.TransColl.Add(t)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
 	}
 	t.ChanCode = req.Chcd
 
@@ -64,9 +66,10 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, cardBrand)
 	if rp == nil {
 		// TODO check error code
-		t.RespCode = "000001"
-		mongo.TransColl.Update(t)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
 	}
 	t.ChanMerId = rp.ChanMerId
 
@@ -74,9 +77,10 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	c, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
 		// TODO check error code
-		t.RespCode = "000001"
-		mongo.TransColl.Add(t)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+		t.RespCode = ret.Respcd
+		mongo.SpTransColl.Add(t)
+		return ret
 	}
 
 	// 上送参数
@@ -87,7 +91,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	t.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.TransColl.Add(t)
+	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
@@ -144,14 +148,13 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断是否存在该订单
-	t, err := mongo.TransColl.Find(req.Mchntid, req.OrigOrderNum)
+	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return mongo.OffLineRespCd("TRADE_NOT_EXIST")
 	}
 	log.Debugf("trans:(%+v)", t)
 
 	// 判断订单的状态
-
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
 	case model.TransHandling, "":
@@ -174,20 +177,22 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		// 更新交易结果
 		updateTrans(t, ret)
 
-		fallthrough
-
-	// 直接返回
 	default:
-		ret.Busicd = t.Busicd
-		ret.Chcd = t.ChanCode
+
+		// 原交易信息
 		ret.ErrorDetail = t.ChanRespCode
 		ret.ChannelOrderNum = t.ChanOrderNum
 		ret.ConsumerAccount = t.ConsumerAccount
 		ret.ConsumerId = t.ConsumerId
 		ret.ChcdDiscount = t.ChanDiscount
 		ret.MerDiscount = t.MerDiscount
+		ret.Respcd = t.RespCode
 	}
 
+	// 渠道
+	ret.Chcd = t.ChanCode
+	// 原业务类型
+	ret.Busicd = req.Busicd
 	return ret
 }
 
@@ -217,19 +222,17 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 	t.MerDiscount = ret.MerDiscount
 	t.ConsumerAccount = ret.ConsumerAccount
 	t.ConsumerId = ret.ConsumerId
+	t.RespCode = ret.Respcd
 	// ...
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
 	case "00":
 		t.TransStatus = model.TransSuccess
-		t.RespCode = "000000"
 	case "09":
 		t.TransStatus = model.TransHandling
-		t.RespCode = "000009"
 	default:
 		t.TransStatus = model.TransFail
-		t.RespCode = "100070"
 	}
-	mongo.TransColl.Update(t)
+	mongo.SpTransColl.Update(t)
 }

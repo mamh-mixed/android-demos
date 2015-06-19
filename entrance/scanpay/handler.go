@@ -19,7 +19,6 @@ func Router(reqBytes []byte) []byte {
 
 	// TODO valid sign
 
-	// var ret *ScanPayResponse
 	ret := new(model.ScanPayResponse)
 	switch {
 	case req.Busicd == "purc":
@@ -94,13 +93,18 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
-	// TODO validite field
+	if ret = validateEnquiry(req); ret == nil {
+		// process
+		ret = core.Enquiry(req)
+		// 直接返回，查询得到的是原交易信息，不需要补充返回信息
+		return ret
+	}
 
-	// process
-	ret = core.Enquiry(req)
+	// 错误信息补充完整
+	fillResponseInfo(req, ret)
 
-	// 直接返回，查询得到的是原交易信息，不需要补充返回信息
 	return ret
+
 }
 
 // Cancel 撤销
@@ -119,20 +123,21 @@ func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 	ret.Chcd = req.Chcd
 	ret.Inscd = req.Inscd
 	ret.Mchntid = req.Mchntid
-	ret.Sign = req.Sign
+	ret.Sign = req.Sign // TODO
 	ret.Txamt = req.Txamt
 	ret.OrigOrderNum = req.OrigOrderNum
+	ret.OrderNum = req.OrderNum
 	ret.Txndir = "A"
 }
 
 // errorResponse 返回错误信息
 func errorResponse(req *model.ScanPay, errorCode string) []byte {
 
-	resp := mongo.OffLineRespCd(errorCode)
-	resp.Busicd = req.Busicd
-	resp.Txndir = "A"
+	ret := mongo.OffLineRespCd(errorCode)
+	ret.Busicd = req.Busicd
+	ret.Txndir = "A"
 
-	bytes, err := json.Marshal(resp)
+	bytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Error(err)
 	}
