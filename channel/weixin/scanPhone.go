@@ -22,33 +22,35 @@ type WeixinPay struct{}
 var DefaultClient WeixinPay
 
 // ProcessBarcodePay 扫条码下单
-func (c *WeixinPay) ProcessBarcodePay(scanPayReq *model.ScanPay) {
+func (c *WeixinPay) ProcessBarcodePay(scanPayReq *model.ScanPay) *model.ScanPayResponse {
 
 	microPayReq := PerpareRequestToWeiXin(scanPayReq)
 
-	microPayResp := RequestWeixin(microPayReq, scanPayReq.NotifyUrl)
+	microPayResp := RequestWeixin(microPayReq)
 
 	//log.Debugf("micropay response: %+v", buf)
-	transformToScanPayResp(microPayResp, scanPayReq.Response)
+	return transformToScanPayResp(microPayResp)
 }
 func (c *WeixinPay) ProcessEnquiry(scanPayReq *model.ScanPay) *model.ScanPayResponse {
+
 	return nil
 }
 
-func PerpareRequestToWeiXin(req *model.ScanPay) *MicropayRequest {
+func PerpareRequestToWeiXin(scanPayReq *model.ScanPay) *MicropayRequest {
 
 	microPayReq := &MicropayRequest{
 		AppId:    appid,
-		MchId:    req.Mchntid,
+		MchId:    scanPayReq.Mchntid,
 		NonceStr: "random string",
 
-		TotalFee:       toInt(req.Txamt),
-		OutTradeNo:     req.OrderNum,
+		TotalFee:       toInt(scanPayReq.Txamt),
+		OutTradeNo:     scanPayReq.OrderNum,
 		FeeType:        "CNY",
 		SpbillCreateIp: "10.10.10.1",
-		Body:           req.Subject,
-		AuthCode:       req.ScanCodeId,
+		Body:           scanPayReq.Subject,
+		AuthCode:       scanPayReq.ScanCodeId,
 		SubMchId:       sub_mch_id,
+		NotifyUrl:      scanPayReq.NotifyUrl,
 	}
 
 	microPayReq.setSign(md5Key)
@@ -58,6 +60,8 @@ func PerpareRequestToWeiXin(req *model.ScanPay) *MicropayRequest {
 
 func (microPay *MicropayRequest) setSign(md5Key string) {
 	dict := toMapWithValueNotNil(microPay)
+	// delete any xml tag with value "-", such as "url"
+	delete(dict, "-")
 
 	var keys []string
 	for k, _ := range dict {
@@ -72,13 +76,14 @@ func (microPay *MicropayRequest) setSign(md5Key string) {
 	buffer.WriteString("key=" + md5Key)
 
 	seq := buffer.String()
+	fmt.Println("seq:", seq)
 	signSlice := md5.Sum([]byte(seq))
 
 	microPay.Sign = strings.ToUpper(hex.EncodeToString(signSlice[:]))
 	fmt.Println("sign:", microPay.Sign)
 }
 
-func RequestWeixin(m *MicropayRequest, url string) *MicroPayResponse {
+func RequestWeixin(m *MicropayRequest) *MicroPayResponse {
 	buf, err := xml.MarshalIndent(m, "", "\t")
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +92,7 @@ func RequestWeixin(m *MicropayRequest, url string) *MicroPayResponse {
 
 	body := bytes.NewBuffer(buf)
 
-	r, _ := http.Post(url, "text/xml", body)
+	r, _ := http.Post(m.NotifyUrl, "text/xml", body)
 
 	return transformToMicroPayResponse(r)
 }
@@ -116,7 +121,7 @@ func transformToMicroPayResponse(rep *http.Response) *MicroPayResponse {
 	return ret
 }
 
-func transformToScanPayResp(sp *MicroPayResponse, ret *model.ScanPayResponse) {
+func transformToScanPayResp(sp *MicroPayResponse) *model.ScanPayResponse {
 	fmt.Println("microPayResponse:", sp)
 	/*
 	   Txndir          string `json:"txndir"`                    // 交易方向 M M
@@ -140,6 +145,7 @@ func transformToScanPayResp(sp *MicroPayResponse, ret *model.ScanPayResponse) {
 	   RespCode     string `json:"-"` // 系统应答码
 	   ChanRespCode string `json:"-"` // 渠道详细应答码
 	*/
+	ret := new(model.ScanPayResponse)
 
 	if sp.ReturnCode == "SUCCESS" {
 		// normal connection
@@ -159,6 +165,8 @@ func transformToScanPayResp(sp *MicroPayResponse, ret *model.ScanPayResponse) {
 		}
 	} else {
 		// inormal connection
+
 		fmt.Println("connect failure")
 	}
+	return ret
 }

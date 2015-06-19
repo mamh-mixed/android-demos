@@ -32,13 +32,12 @@ func TestProcessBarcodePay(t *testing.T) {
 		GoodsInfo:    "iphone 7s",
 		OrderNum:     "111222333444555",
 		OrigOrderNum: "111111111111111",
-		ScanCodeId:   "130531989059402177", // AuthCode
+		ScanCodeId:   "130549657517409996", // AuthCode
 		NotifyUrl:    url,
 		Key:          md5Key,
 		Subject:      "iphone", // Body
 
-		Response: new(model.ScanPayResponse),
 	}
-	DefaultClient.ProcessBarcodePay(sp)
-	fmt.Println(sp.Response)
+	fmt.Println(DefaultClient.ProcessBarcodePay(sp))
+
 }
