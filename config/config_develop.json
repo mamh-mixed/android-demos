@@ -1,0 +1,35 @@
+{
+	"App": {
+		"_LogLevel": "日志级别",
+		"LogLevel": "debug",
+		"_EncryptKey": "加密密钥 44 位，加密密钥由两部分组成，后 22 位在程序中写死，前 22 位在这里配置",
+		"EncryptKey": "Ky3ETaC0WjgGTQQtFVfl0"
+	},
+	"Mongo": {
+		"_URL": "URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]",
+		"URL": "mongodb://121.41.85.237:27017/quickpay",
+		"DB": "quickpay"
+	},
+	"CILOnline": {
+		"Host": "192.168.1.102",
+		"Port": 7831,
+		"_QueueSize": "所有交易发送到线下前先排队，队列满后将阻塞",
+		"QueueSize": 1000,
+		"_InitWindowSize": "全双工 pipeline 方式，接收数据后，找到对应的请求者",
+		"InitWindowSize": 100,
+		"_KeepaliveTime": "每隔一段时间发送一个 keepalive 消息",
+		"KeepaliveTime": "65s",
+		"_ReconnectTimeout": "连接断开后过一会儿再重新连接",
+		"ReconnectTimeout": "5s"
+	},
+	"CFCA": {
+		"_Cert": "CFCA  验签公钥",
+		"Cert": "config/pem/cfca/cert_testing.pem",
+		"_CCACert": "HTTPS 证书",
+		"CCACert": "config/pem/cfca/evCcaCrt_testing.pem",
+		"_RootCert": "CFCA 根证书",
+		"RootCert": "config/pem/cfca/evRootCrt_testing.pem",
+		"_URL": "API 地址",
+		"URL": "https://test.china-clearing.com/Gateway/InterfaceII"
+	}
+}

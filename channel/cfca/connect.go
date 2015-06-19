@@ -16,16 +16,16 @@ import (
 	"github.com/omigo/log"
 )
 
-var requestURL = goconf.GetValue("cfca", "url")
+var requestURL = goconf.Config.CFCA.URL
 
 var cli *http.Client
 
 // 初始化中金 HTTPS 客户端
 func init() {
-	ccaCertFile := goconf.GetFile("cfca", "ccaCert")
+	ccaCertFile := goconf.Config.CFCA.CCACert
 	cfcaEvCcaCrt, err := ioutil.ReadFile(ccaCertFile)
 
-	rootCert := goconf.GetFile("cfca", "rootCert")
+	rootCert := goconf.Config.CFCA.RootCert
 	cfcaEvRootCrt, err := ioutil.ReadFile(rootCert)
 	if err != nil {
 		fmt.Printf("read cfca ev_root_cert error: %s", err)
