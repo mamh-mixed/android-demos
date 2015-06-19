@@ -6,82 +6,59 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/mahonia"
+	//"github.com/omigo/log"
 )
 
-const (
-	md5Key     = "12sdffjjguddddd2widousldadi9o0i1"
-	mch_id     = "1236593202"
-	appid      = "wx25ac886b6dac7dd2"
-	acqfee     = "0.02"
-	merfee     = "0.03"
-	fee        = "0.01"
-	sub_mch_id = "1247075201"
-	url        = "https://api.mch.weixin.qq.com/pay/micropay"
-)
+type WeixinPay struct{}
+
+var DefaultClient WeixinPay
 
 // ProcessBarcodePay 扫条码下单
-func ProcessBarcodePay(scanPayReq *model.ScanPay) *model.ScanPayResponse {
+func (c *WeixinPay) ProcessBarcodePay(scanPayReq *model.ScanPay) {
 
 	microPayReq := PerpareRequestToWeiXin(scanPayReq)
 
-	buf := RequestWeixin(microPayReq)
+	microPayResp := RequestWeixin(microPayReq, scanPayReq.NotifyUrl)
 
-	log.Debugf("micropay response: %+v", microPayResp)
-
-	scanPayRep := transformToScanPayResp(buf, scanPayReq.Response)
-
-	return scanPayRep
+	//log.Debugf("micropay response: %+v", buf)
+	transformToScanPayResp(microPayResp, scanPayReq.Response)
+}
+func (c *WeixinPay) ProcessEnquiry(scanPayReq *model.ScanPay) *model.ScanPayResponse {
+	return nil
 }
 
 func PerpareRequestToWeiXin(req *model.ScanPay) *MicropayRequest {
 
-	// initial request struct to weixin
-	microPay := &MicropayRequest{
-		/*
-			// data used to test
-				AppId:          "sdfsd",
-				MchId:          "werwer1231",
-				NonceStr:       "xxxxoooo",
-				TotalFee:       12,
-				OutTradeNo:     "fdsfsfdsf",
-				FeeType:        "CNY",
-				SpbillCreateIp: "10.10.10.1",
-				Body:           "sdfdfsdds",
-				AuthCode:       "sfdsfafd",
-		*/
+	microPayReq := &MicropayRequest{
 		AppId:    appid,
-		MchId:    mch_id,
-		NonceStr: getRandomStr(),
-		//TotalFee:       req.Txamt,
-		TotalFee:       67,
+		MchId:    req.Mchntid,
+		NonceStr: "random string",
+
+		TotalFee:       toInt(req.Txamt),
 		OutTradeNo:     req.OrderNum,
 		FeeType:        "CNY",
 		SpbillCreateIp: "10.10.10.1",
-		Body:           "sdfdfsdds",
+		Body:           req.Subject,
 		AuthCode:       req.ScanCodeId,
-		/*
-			// optional data
-				DeviceInfo :req.
-				GoodsTag       :req.
-				Detail     :req.
-				Attach     :req.
-				Sign           :req.
-		*/
+		SubMchId:       sub_mch_id,
 	}
 
-	setSign(microPay, md5Key)
+	microPayReq.setSign(md5Key)
 
-	return microPay
+	return microPayReq
 }
 
-func setSign(microPay *MicropayRequest, md5Key string) {
-	dict := toMapWithKeySortedAndValueNotNil(microPay)
+func (microPay *MicropayRequest) setSign(md5Key string) {
+	dict := toMapWithValueNotNil(microPay)
+
 	var keys []string
 	for k, _ := range dict {
 		keys = append(keys, k)
@@ -90,36 +67,98 @@ func setSign(microPay *MicropayRequest, md5Key string) {
 
 	var buffer bytes.Buffer
 	for _, v := range keys {
-		buffer.WriteString(v)
-		buffer.WriteString("=")
-		buffer.WriteString(dict[v])
-		buffer.WriteString("&")
+		buffer.WriteString(v + "=" + dict[v] + "&")
 	}
-	seq := buffer.String() + md5Key
+	buffer.WriteString("key=" + md5Key)
+
+	seq := buffer.String()
 	signSlice := md5.Sum([]byte(seq))
-	microPay.Sign = hex.EncodeToString(signSlice[:])
+
+	microPay.Sign = strings.ToUpper(hex.EncodeToString(signSlice[:]))
+	fmt.Println("sign:", microPay.Sign)
 }
 
-func RequestWeixin(m *MicropayRequest) []byte {
-	buf, err := xml.MarshalIndent(microPay, "", "\t")
+func RequestWeixin(m *MicropayRequest, url string) *MicroPayResponse {
+	buf, err := xml.MarshalIndent(m, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(string(buf))
 
 	body := bytes.NewBuffer(buf)
+
 	r, _ := http.Post(url, "text/xml", body)
 
-	//
-	//d := xml.NewDecoder(r.Body)
-
-	buf, _ := ioutil.ReadAll(r.Body)
-
-	fmt.Println(string(buf))
-
-	return buf
+	return transformToMicroPayResponse(r)
 }
 
-func transformToScanPayResp(buf []byte, response *ScanPayResponse) {
+func transformToMicroPayResponse(rep *http.Response) *MicroPayResponse {
+	fmt.Println("rep:", rep)
+	ret := new(MicroPayResponse)
+	body := rep.Body
+	fmt.Println("Body:", body)
+	defer rep.Body.Close()
+	d := xml.NewDecoder(body)
 
+	d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
+		dec := mahonia.NewDecoder(s)
+		if dec == nil {
+			return nil, fmt.Errorf("not support %s", s)
+		}
+		return dec.NewReader(r), nil
+	}
+	err := d.Decode(ret)
+
+	if err != nil {
+		// log.Errorf("unmarsal body fail : %s", err)
+		log.Fatalf("unmarsal body fail : %s", err)
+	}
+	return ret
+}
+
+func transformToScanPayResp(sp *MicroPayResponse, ret *model.ScanPayResponse) {
+	fmt.Println("microPayResponse:", sp)
+	/*
+	   Txndir          string `json:"txndir"`                    // 交易方向 M M
+	   Busicd          string `json:"busicd"`                    // 交易类型 M M
+	   Respcd          string `json:"respcd"`                    // 交易结果  M
+	   Inscd           string `json:"inscd,omitempty"`           // 机构号 M M
+	   Chcd            string `json:"chcd,omitempty"`            // 渠道 C C
+	   Mchntid         string `json:"mchntid"`                   // 商户号 M M
+	   Txamt           string `json:"txamt,omitempty"`           // 订单金额 M M
+	   ChannelOrderNum string `json:"channelOrderNum,omitempty"` // 渠道交易号 C
+	   ConsumerAccount string `json:"consumerAccount,omitempty"` // 渠道账号  C
+	   ConsumerId      string `json:"consumerId,omitempty"`      // 渠道账号ID   C
+	   ErrorDetail     string `json:"errorDetail,omitempty"`     // 错误信息   C
+	   OrderNum        string `json:"orderNum,omitempty"`        //订单号 M C
+	   OrigOrderNum    string `json:"origOrderNum,omitempty"`    //源订单号 M C
+	   Sign            string `json:"sign"`                      //签名 M M
+	   ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
+	   MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
+	   QrCode          string `json:"qrcode,omitempty"`          // 二维码 C
+	   // 辅助字段
+	   RespCode     string `json:"-"` // 系统应答码
+	   ChanRespCode string `json:"-"` // 渠道详细应答码
+	*/
+
+	if sp.ReturnCode == "SUCCESS" {
+		// normal connection
+		if sp.ResultCode == "SUCCESS" {
+			fmt.Println("request success")
+
+			ret.Busicd = sp.TradeType
+			ret.Respcd = sp.ResultCode
+			ret.Mchntid = sp.MchId
+
+		} else if sp.ResultCode == "FAIL" {
+			fmt.Println("request fail")
+			ret.Respcd = sp.ResultCode
+			ret.ErrorDetail = sp.ReturnMsg
+			ret.Mchntid = sp.MchId
+			ret.Sign = sp.Sign
+		}
+	} else {
+		// inormal connection
+		fmt.Println("connect failure")
+	}
 }

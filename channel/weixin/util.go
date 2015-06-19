@@ -4,27 +4,34 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
-func getRandomStr() string {
-	return "sdfsfdsdfsfds"
+func toInt(s string) int {
+	fmt.Println("s", s)
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+	return i
 }
 
 // map format: [device_info:123sdsf432dsf]
 // only accept pointer value for now
-func toMapWithKeySortedAndValueNotNil(v interface{}) map[string]string {
+func toMapWithValueNotNil(v interface{}) map[string]string {
 	//req *micropayRequest
 	typ := reflect.TypeOf(v)
 	val := reflect.ValueOf(v)
 
 	dict := make(map[string]string)
 	if typ.Kind() == reflect.Ptr {
-		// just one level deep
-
 		for i := 0; i < typ.Elem().NumField(); i++ {
-			k := typ.Elem().Field(i).Tag.Get("xml")
+			tg := typ.Elem().Field(i).Tag.Get("xml")
+			k := strings.Split(tg, ",")[0]
 			f := val.Elem().Field(i)
 
 			switch f.Kind() {
@@ -36,8 +43,13 @@ func toMapWithKeySortedAndValueNotNil(v interface{}) map[string]string {
 			case reflect.Int:
 				v := int(f.Int())
 				dict[k] = strconv.Itoa(v)
+
+			case reflect.Struct:
+				// do nothing
+				// in case `XMLName xml.Name `xml:"xml"``
+
 			default:
-				panic("unsuported cast")
+				panic("unsuported cast" + f.Kind().String())
 			}
 		}
 		return dict
