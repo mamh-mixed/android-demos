@@ -19,6 +19,7 @@ const (
 )
 
 func TestProcessBarcodePay(t *testing.T) {
+	fmt.Println("start TestProcessBarcodePay")
 	sp := &model.ScanPay{
 		Txndir:      "",
 		Busicd:      "",
@@ -40,4 +41,15 @@ func TestProcessBarcodePay(t *testing.T) {
 	}
 	fmt.Println(DefaultClient.ProcessBarcodePay(sp))
 
+}
+
+func TestProcessEnquiry(t *testing.T) {
+	fmt.Println("start TestProcessEnquiry")
+	sp := &model.ScanPay{
+		Mchntid:   mch_id,
+		NotifyUrl: "https://api.mch.weixin.qq.com/pay/orderquery",
+
+		// OutTradeNo: scanPayReq.OrderNum,
+	}
+	fmt.Println(DefaultClient.ProcessEnquiry(sp))
 }

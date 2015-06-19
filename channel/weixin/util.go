@@ -1,14 +1,44 @@
 package weixin
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
 	"os"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 )
+
+func calculateSign(v WeixinRequest, md5Key string) (sign string) {
+	dict := toMapWithValueNotNil(v)
+
+	// eliminate any xml tag with value "-"
+	delete(dict, "-")
+
+	var keys []string
+	for k, _ := range dict {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var buffer bytes.Buffer
+	for _, v := range keys {
+		buffer.WriteString(v + "=" + dict[v] + "&")
+	}
+	buffer.WriteString("key=" + md5Key)
+
+	seq := buffer.String()
+	fmt.Println("seq:", seq)
+	signSlice := md5.Sum([]byte(seq))
+
+	return strings.ToUpper(hex.EncodeToString(signSlice[:]))
+	// fmt.Println("sign:", microPay.Sign)
+}
 
 func toInt(s string) int {
 	fmt.Println("s", s)

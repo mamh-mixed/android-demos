@@ -2,15 +2,12 @@ package weixin
 
 import (
 	"bytes"
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"sort"
-	"strings"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/mahonia"
@@ -21,85 +18,92 @@ type WeixinPay struct{}
 
 var DefaultClient WeixinPay
 
+const (
+	MicroPay = iota
+	OrderQuery
+	Reverse
+	Refund
+	RefundQuery
+)
+
 // ProcessBarcodePay 扫条码下单
 func (c *WeixinPay) ProcessBarcodePay(scanPayReq *model.ScanPay) *model.ScanPayResponse {
 
-	microPayReq := PerpareRequestToWeiXin(scanPayReq)
+	microPayReq := PerpareRequestData(scanPayReq, MicroPay)
 
-	microPayResp := RequestWeixin(microPayReq)
+	microPayResp := RequestWeixin(microPayReq, scanPayReq.NotifyUrl)
 
 	//log.Debugf("micropay response: %+v", buf)
 	return transformToScanPayResp(microPayResp)
 }
+
+//
 func (c *WeixinPay) ProcessEnquiry(scanPayReq *model.ScanPay) *model.ScanPayResponse {
 
-	return nil
+	orderqueryReq := PerpareRequestData(scanPayReq, OrderQuery)
+
+	orderqueryResp := RequestWeixin(orderqueryReq, scanPayReq.NotifyUrl)
+
+	return transformToScanPayResp(orderqueryResp)
 }
 
-func PerpareRequestToWeiXin(scanPayReq *model.ScanPay) *MicropayRequest {
+func PerpareRequestData(scanPayReq *model.ScanPay, businessType int) WeixinRequest {
 
-	microPayReq := &MicropayRequest{
-		AppId:    appid,
-		MchId:    scanPayReq.Mchntid,
-		NonceStr: "random string",
+	var weixinRequest WeixinRequest
 
-		TotalFee:       toInt(scanPayReq.Txamt),
-		OutTradeNo:     scanPayReq.OrderNum,
-		FeeType:        "CNY",
-		SpbillCreateIp: "10.10.10.1",
-		Body:           scanPayReq.Subject,
-		AuthCode:       scanPayReq.ScanCodeId,
-		SubMchId:       sub_mch_id,
-		NotifyUrl:      scanPayReq.NotifyUrl,
+	switch businessType {
+	case MicroPay:
+		weixinRequest = &MicropayRequest{
+			AppId:    appid,
+			MchId:    scanPayReq.Mchntid,
+			NonceStr: "random string",
+
+			TotalFee:       toInt(scanPayReq.Txamt),
+			OutTradeNo:     scanPayReq.OrderNum,
+			FeeType:        "CNY",
+			SpbillCreateIp: "10.10.10.1",
+			Body:           scanPayReq.Subject,
+			AuthCode:       scanPayReq.ScanCodeId,
+			SubMchId:       sub_mch_id,
+			NotifyUrl:      scanPayReq.NotifyUrl,
+		}
+
+	case OrderQuery:
+		weixinRequest = &OrderqueryRequest{
+			AppId:    appid,
+			MchId:    scanPayReq.Mchntid,
+			NonceStr: "random string",
+
+			OutTradeNo: scanPayReq.OrderNum,
+			NotifyUrl:  scanPayReq.NotifyUrl,
+			SubMchId:   sub_mch_id,
+		}
+	default:
+		log.Fatal(errors.New("should not be here"))
 	}
+	sign := calculateSign(weixinRequest, md5Key)
 
-	microPayReq.setSign(md5Key)
+	weixinRequest.setSign(sign)
 
-	return microPayReq
+	return weixinRequest
 }
 
-func (microPay *MicropayRequest) setSign(md5Key string) {
-	dict := toMapWithValueNotNil(microPay)
-	// delete any xml tag with value "-", such as "url"
-	delete(dict, "-")
+func RequestWeixin(m WeixinRequest, url string) WeixinResponse {
+	var weixinResp WeixinResponse
 
-	var keys []string
-	for k, _ := range dict {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	var buffer bytes.Buffer
-	for _, v := range keys {
-		buffer.WriteString(v + "=" + dict[v] + "&")
-	}
-	buffer.WriteString("key=" + md5Key)
-
-	seq := buffer.String()
-	fmt.Println("seq:", seq)
-	signSlice := md5.Sum([]byte(seq))
-
-	microPay.Sign = strings.ToUpper(hex.EncodeToString(signSlice[:]))
-	fmt.Println("sign:", microPay.Sign)
-}
-
-func RequestWeixin(m *MicropayRequest) *MicroPayResponse {
 	buf, err := xml.MarshalIndent(m, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(string(buf))
 
-	body := bytes.NewBuffer(buf)
+	bytebuf := bytes.NewBuffer(buf)
 
-	r, _ := http.Post(m.NotifyUrl, "text/xml", body)
+	// the http response from weixin
+	rep, _ := http.Post(url, "text/xml", bytebuf)
 
-	return transformToMicroPayResponse(r)
-}
+	fmt.Println("rep", rep)
 
-func transformToMicroPayResponse(rep *http.Response) *MicroPayResponse {
-	fmt.Println("rep:", rep)
-	ret := new(MicroPayResponse)
 	body := rep.Body
 	fmt.Println("Body:", body)
 	defer rep.Body.Close()
@@ -112,17 +116,35 @@ func transformToMicroPayResponse(rep *http.Response) *MicroPayResponse {
 		}
 		return dec.NewReader(r), nil
 	}
-	err := d.Decode(ret)
+
+	switch m.(type) {
+
+	case *MicropayRequest:
+		weixinResp = new(MicroPayResponse)
+	case *OrderqueryRequest:
+		weixinResp = new(OrderqueryResponse)
+	default:
+		log.Fatal("should not be here")
+	}
+	err = d.Decode(weixinResp)
 
 	if err != nil {
 		// log.Errorf("unmarsal body fail : %s", err)
 		log.Fatalf("unmarsal body fail : %s", err)
 	}
-	return ret
+	return weixinResp
 }
 
-func transformToScanPayResp(sp *MicroPayResponse) *model.ScanPayResponse {
-	fmt.Println("microPayResponse:", sp)
+func transformToScanPayResp(sp WeixinResponse) *model.ScanPayResponse {
+	fmt.Println("weixinResponse:", sp)
+	switch sp.(type) {
+	case *MicroPayResponse:
+		fmt.Println("it is MicroPayResponse")
+	case *OrderqueryResponse:
+		fmt.Println("it is OrderqueryResponse")
+	default:
+	}
+
 	/*
 	   Txndir          string `json:"txndir"`                    // 交易方向 M M
 	   Busicd          string `json:"busicd"`                    // 交易类型 M M
@@ -146,27 +168,26 @@ func transformToScanPayResp(sp *MicroPayResponse) *model.ScanPayResponse {
 	   ChanRespCode string `json:"-"` // 渠道详细应答码
 	*/
 	ret := new(model.ScanPayResponse)
-
-	if sp.ReturnCode == "SUCCESS" {
-		// normal connection
-		if sp.ResultCode == "SUCCESS" {
-			fmt.Println("request success")
-
-			ret.Busicd = sp.TradeType
-			ret.Respcd = sp.ResultCode
-			ret.Mchntid = sp.MchId
-
-		} else if sp.ResultCode == "FAIL" {
-			fmt.Println("request fail")
-			ret.Respcd = sp.ResultCode
-			ret.ErrorDetail = sp.ReturnMsg
-			ret.Mchntid = sp.MchId
-			ret.Sign = sp.Sign
-		}
-	} else {
-		// inormal connection
-
-		fmt.Println("connect failure")
-	}
+	//
+	// if sp.ReturnCode == "SUCCESS" {
+	// 	// normal connection
+	// 	if sp.ResultCode == "SUCCESS" {
+	// 		fmt.Println("request success")
+	//
+	// 		ret.Busicd = sp.TradeType
+	// 		ret.Respcd = sp.ResultCode
+	// 		ret.Mchntid = sp.MchId
+	//
+	// 	} else if sp.ResultCode == "FAIL" {
+	// 		fmt.Println("request fail")
+	// 		ret.Respcd = sp.ResultCode
+	// 		ret.ErrorDetail = sp.ReturnMsg
+	// 		ret.Mchntid = sp.MchId
+	// 		ret.Sign = sp.Sign
+	// 	}
+	// } else {
+	// 	// inormal connection
+	// 	fmt.Println("connect failure")
+	// }
 	return ret
 }

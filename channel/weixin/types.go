@@ -1,10 +1,31 @@
 package weixin
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"fmt"
+)
 
-// type WeixinRequest interface {
-// 	setSign(md5Key string)
+type WeixinRequest interface {
+	setSign(sign string)
+	//	display()
+}
+type WeixinResponse interface {
+	show()
+}
+
+// func (w *MicropayRequest) display() {
+// 	fmt.Println("MicropayRequest")
 // }
+// func (w *OrderqueryRequest) display() {
+// 	fmt.Println("OrderqueryRequest")
+// }
+
+func (w *MicropayRequest) setSign(sign string) {
+	w.Sign = sign
+}
+func (w *OrderqueryRequest) setSign(sign string) {
+	w.Sign = sign
+}
 
 // micropayRequest 请求参数
 type MicropayRequest struct {
@@ -30,6 +51,13 @@ type MicropayRequest struct {
 
 	//
 	NotifyUrl string `xml:"-"`
+}
+
+func (m *MicroPayResponse) show() {
+	fmt.Println("MicroPayResponse")
+}
+func (m *OrderqueryResponse) show() {
+	fmt.Println("OrderqueryResponse")
 }
 
 type MicroPayResponse struct {
@@ -62,6 +90,7 @@ type MicroPayResponse struct {
 }
 
 type OrderqueryRequest struct {
+	XMLName xml.Name `xml:"xml"`
 	// optional
 	TransactionId string `xml:"transaction_id,omitempty"` //微信支付订单号
 	OutTradeNo    string `xml:"out_trade_no,omitempty"`   //商户订单号
@@ -70,8 +99,10 @@ type OrderqueryRequest struct {
 	AppId string `xml:"appid"`            //公众账号ID
 	MchId string `xml:"mch_id,omitempty"` //商户号
 
-	Sign     string `xml:"sign"`                //签名
-	NonceStr string `xml:"nonce_str,omitempty"` //随机字符串
+	Sign      string `xml:"sign"`                //签名
+	NonceStr  string `xml:"nonce_str,omitempty"` //随机字符串
+	NotifyUrl string `xml:"-"`
+	SubMchId  string `xml:"sub_mch_id,omitempty"`
 }
 type OrderqueryResponse struct {
 	//
