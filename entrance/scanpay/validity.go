@@ -1,7 +1,6 @@
 package scanpay
 
 import (
-	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
@@ -30,16 +29,13 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if req.OrderNum == "" || req.Chcd == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
-	fmt.Println(req.Chcd)
 	// TODO ..
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
-	fmt.Println("debug ...")
 	if matched, _ := regexp.MatchString(`^\d+$`, req.Txamt); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
-	fmt.Println("debug ...")
 	return
 }
 
@@ -53,5 +49,17 @@ func validateEnquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// TODO validate format
 
+	return
+}
+
+// validateRefund 验证退款接口的参数
+func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 验证非空
+	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	// TODO validate format
 	return
 }

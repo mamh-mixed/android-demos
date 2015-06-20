@@ -34,6 +34,9 @@ func Router(reqBytes []byte) []byte {
 	default:
 		return errorResponse(req, "INVALID_PARAMETER")
 	}
+
+	// TODO sign
+
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
@@ -84,8 +87,18 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
-	// TODO validite field
-	return core.Refund(req)
+	// validate field
+	if ret = validateRefund(req); ret == nil {
+		// process
+		ret = core.Refund(req)
+	}
+
+	// 补充原信息返回
+	fillResponseInfo(req, ret)
+
+	log.Debugf("handled body: %+v", ret)
+
+	return ret
 }
 
 // Enquiry 查询
