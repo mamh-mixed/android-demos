@@ -77,5 +77,11 @@ func queryCd(service, code string) string {
 
 }
 func cancelCd(code string) string {
+	switch code {
+	case "SUCCESS":
+		return "00"
+
+	}
+
 	return ""
 }

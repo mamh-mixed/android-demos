@@ -10,7 +10,6 @@ import (
 
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
-	// "io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"

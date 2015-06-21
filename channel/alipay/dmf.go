@@ -3,6 +3,7 @@ package alipay
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 )
 
 var DefaultClient alp
@@ -125,17 +126,9 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
-		Service:       cancel,
-		NotifyUrl:     "",
-		OutTradeNo:    req.SysOrderNum,
-		Subject:       req.Subject,
-		GoodsDetail:   req.MarshalGoods(),
-		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.Txamt,
-		ExtendParams:  "",
-		ItBPay:        "1m", // 超时时间
-		DynamicIdType: "bar_code",
-		DynamicId:     req.ScanCodeId,
+		Service:    cancel,
+		NotifyUrl:  "",
+		OutTradeNo: req.OrigSysOrderNum,
 	}
 
 	// req to map
@@ -163,16 +156,21 @@ func toMap(req *alpRequest) map[string]string {
 	dict["notify_url"] = req.NotifyUrl
 	dict["product_code"] = req.ProductCode
 	dict["out_trade_no"] = req.OutTradeNo
-	dict["subject"] = req.Subject
 	dict["total_fee"] = req.TotalFee
 	dict["extend_params"] = req.ExtendParams
 	dict["it_b_pay"] = req.ItBPay
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
-	dict["goods_detail"] = req.GoodsDetail
 	dict["refund_amount"] = req.RefundAmount
 
-	// ...
+	// utf-8 -> gbk
+	e := mahonia.NewEncoder("gbk")
+	if req.Subject != "" {
+		dict["subject"] = e.ConvertString(req.Subject)
+	}
+	if req.GoodsDetail != "" {
+		dict["goods_detail"] = e.ConvertString(req.GoodsDetail)
+	}
 
 	return dict
 }

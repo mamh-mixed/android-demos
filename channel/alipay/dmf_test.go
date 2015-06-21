@@ -49,7 +49,7 @@ func TestProcessBarcodePay(t *testing.T) {
 func TestProcessQrCodeOfflinePay(t *testing.T) {
 
 	// 默认开启调试
-	// log.SetOutputLevel(log.Linfo)
+	log.SetOutputLevel(log.Linfo)
 	log.Infof("%+v", prePay)
 	Convey("支付宝预下单", t, func() {
 		resp := DefaultClient.ProcessQrCodeOfflinePay(prePay)
