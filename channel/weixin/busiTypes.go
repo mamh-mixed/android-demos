@@ -3,31 +3,15 @@ package weixin
 import (
 	"encoding/xml"
 	"fmt"
+
+	"github.com/CardInfoLink/quickpay/model"
 )
 
-type WeixinRequest interface {
-	setSign(sign string)
-	//	display()
-}
-type WeixinResponse interface {
-	show()
-}
+/*
+ 提交被扫支付API
+*/
 
-// func (w *MicropayRequest) display() {
-// 	fmt.Println("MicropayRequest")
-// }
-// func (w *OrderqueryRequest) display() {
-// 	fmt.Println("OrderqueryRequest")
-// }
-
-func (w *MicropayRequest) setSign(sign string) {
-	w.Sign = sign
-}
-func (w *OrderqueryRequest) setSign(sign string) {
-	w.Sign = sign
-}
-
-// micropayRequest 请求参数
+// 请求参数
 type MicropayRequest struct {
 	XMLName xml.Name `xml:"xml"`
 	// 可选
@@ -53,15 +37,9 @@ type MicropayRequest struct {
 	NotifyUrl string `xml:"-"`
 }
 
-func (m *MicroPayResponse) show() {
-	fmt.Println("MicroPayResponse")
-}
-func (m *OrderqueryResponse) show() {
-	fmt.Println("OrderqueryResponse")
-}
-
+//
 type MicroPayResponse struct {
-	//
+	//当return_code为SUCCESS的时候
 	ReturnCode string `xml:"return_code,omitempty"`           //返回状态码
 	ReturnMsg  string `xml:"return_msg,omitempty"`            //返回信息
 	AppId      string `xml:"appid,omitempty"`                 //公众账号ID
@@ -73,7 +51,7 @@ type MicroPayResponse struct {
 	ErrCode    string `xml:"err_code,omitempty"`              //错误代码
 	ErrCodeDes string `xml:"err_code_des,omitempty"`          //错误代码描述
 
-	//
+	//当return_code 和result_code都为SUCCESS的时
 	OpenId        string `xml:"openid,omitempty"`         //用户标识
 	IsSubscribe   string `xml:"is_subscribe,omitempty"`   //是否关注公众账号
 	TradeType     string `xml:"trade_type,omitempty"`     //交易类型
@@ -88,6 +66,52 @@ type MicroPayResponse struct {
 	Attach        string `xml:"attach,omitempty"`         //商家数据包
 	TimeEnd       string `xml:"time_end,omitempty"`       //支付完成时间
 }
+
+func (w *MicropayRequest) copyData(scanPayReq *model.ScanPay) {
+	*w = MicropayRequest{
+		AppId:    appid,
+		MchId:    scanPayReq.Mchntid,
+		NonceStr: "random string",
+
+		TotalFee:       toInt(scanPayReq.Txamt),
+		OutTradeNo:     scanPayReq.OrderNum,
+		FeeType:        "CNY",
+		SpbillCreateIp: "10.10.10.1",
+		Body:           scanPayReq.Subject,
+		AuthCode:       scanPayReq.ScanCodeId,
+		SubMchId:       sub_mch_id,
+		NotifyUrl:      scanPayReq.NotifyUrl,
+	}
+}
+
+func (sp *MicroPayResponse) convertToScanPayResp() *model.ScanPayResponse {
+	ret := new(model.ScanPayResponse)
+
+	if sp.ReturnCode == "SUCCESS" {
+		// normal connection
+		if sp.ResultCode == "SUCCESS" {
+
+			ret.Busicd = sp.TradeType
+			ret.Respcd = sp.ResultCode
+			ret.Mchntid = sp.MchId
+
+		} else if sp.ResultCode == "FAIL" {
+			ret.Respcd = sp.ResultCode
+			ret.ErrorDetail = sp.ReturnMsg
+			ret.Mchntid = sp.MchId
+			ret.Sign = sp.Sign
+		}
+	} else {
+		// inormal connection
+		fmt.Println("connect failure")
+	}
+
+	return ret
+}
+
+/*
+ 查询订单
+*/
 
 type OrderqueryRequest struct {
 	XMLName xml.Name `xml:"xml"`
@@ -104,6 +128,7 @@ type OrderqueryRequest struct {
 	NotifyUrl string `xml:"-"`
 	SubMchId  string `xml:"sub_mch_id,omitempty"`
 }
+
 type OrderqueryResponse struct {
 	//
 	ReturnCode string `xml:"return_code,omitempty"`           //返回状态码
@@ -132,3 +157,63 @@ type OrderqueryResponse struct {
 	Attach        string `xml:"attach,omitempty"`         //商家数据包
 	TimeEnd       string `xml:"time_end,omitempty"`       //支付完成时间
 }
+
+func (w *OrderqueryRequest) copyData(scanPayReq *model.ScanPay) {
+	*w = OrderqueryRequest{
+		AppId:    appid,
+		MchId:    scanPayReq.Mchntid,
+		NonceStr: "random string",
+
+		OutTradeNo: scanPayReq.OrderNum,
+		NotifyUrl:  scanPayReq.NotifyUrl,
+		SubMchId:   sub_mch_id,
+	}
+}
+
+func (sp *OrderqueryResponse) convertToScanPayResp() *model.ScanPayResponse {
+	ret := new(model.ScanPayResponse)
+
+	if sp.ReturnCode == "SUCCESS" {
+		// normal connection
+		if sp.ResultCode == "SUCCESS" {
+
+			ret.Busicd = sp.TradeType
+			ret.Respcd = sp.ResultCode
+			ret.Mchntid = sp.MchId
+
+		} else if sp.ResultCode == "FAIL" {
+			ret.Respcd = sp.ResultCode
+			ret.ErrorDetail = sp.ReturnMsg
+			ret.Mchntid = sp.MchId
+			ret.Sign = sp.Sign
+		}
+	} else {
+		// inormal connection
+		fmt.Println("connect failure")
+	}
+
+	return ret
+}
+
+/*
+   Txndir          string `json:"txndir"`                    // 交易方向 M M
+   Busicd          string `json:"busicd"`                    // 交易类型 M M
+   Respcd          string `json:"respcd"`                    // 交易结果  M
+   Inscd           string `json:"inscd,omitempty"`           // 机构号 M M
+   Chcd            string `json:"chcd,omitempty"`            // 渠道 C C
+   Mchntid         string `json:"mchntid"`                   // 商户号 M M
+   Txamt           string `json:"txamt,omitempty"`           // 订单金额 M M
+   ChannelOrderNum string `json:"channelOrderNum,omitempty"` // 渠道交易号 C
+   ConsumerAccount string `json:"consumerAccount,omitempty"` // 渠道账号  C
+   ConsumerId      string `json:"consumerId,omitempty"`      // 渠道账号ID   C
+   ErrorDetail     string `json:"errorDetail,omitempty"`     // 错误信息   C
+   OrderNum        string `json:"orderNum,omitempty"`        //订单号 M C
+   OrigOrderNum    string `json:"origOrderNum,omitempty"`    //源订单号 M C
+   Sign            string `json:"sign"`                      //签名 M M
+   ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
+   MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
+   QrCode          string `json:"qrcode,omitempty"`          // 二维码 C
+   // 辅助字段
+   RespCode     string `json:"-"` // 系统应答码
+   ChanRespCode string `json:"-"` // 渠道详细应答码
+*/

@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"reflect"
@@ -13,6 +12,18 @@ import (
 	"strconv"
 	"strings"
 )
+
+func setSign(w WeixinRequest, sign string) {
+	if r, ok := w.(*MicropayRequest); ok {
+		r.Sign = sign
+	} else if r, ok := w.(*OrderqueryRequest); ok {
+		r.Sign = sign
+	} else {
+		log.Println("setSign: should not be here")
+		os.Exit(1)
+
+	}
+}
 
 func calculateSign(v WeixinRequest, md5Key string) (sign string) {
 	dict := toMapWithValueNotNil(v)
@@ -33,15 +44,12 @@ func calculateSign(v WeixinRequest, md5Key string) (sign string) {
 	buffer.WriteString("key=" + md5Key)
 
 	seq := buffer.String()
-	fmt.Println("seq:", seq)
 	signSlice := md5.Sum([]byte(seq))
 
 	return strings.ToUpper(hex.EncodeToString(signSlice[:]))
-	// fmt.Println("sign:", microPay.Sign)
 }
 
 func toInt(s string) int {
-	fmt.Println("s", s)
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		log.Println(err)
@@ -84,7 +92,8 @@ func toMapWithValueNotNil(v interface{}) map[string]string {
 		}
 		return dict
 	} else {
-		log.Fatal(errors.New("unsupported type: not pointer"))
+		log.Println(errors.New("unsupported type: not pointer"))
+		os.Exit(1)
 	}
 	return dict
 }
