@@ -80,8 +80,9 @@ func cancelCd(code string) string {
 	switch code {
 	case "SUCCESS":
 		return "00"
-
+	case "TRADE_NOT_EXIST":
+		return "25"
+	default:
+		return "58"
 	}
-
-	return ""
 }

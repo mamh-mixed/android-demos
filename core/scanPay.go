@@ -104,7 +104,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
-	updateTrans(t, ret)
+	updatePayTrans(t, ret)
 
 	return ret
 }
@@ -189,7 +189,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
-	updateTrans(t, ret)
+	updatePayTrans(t, ret)
 
 	return ret
 }
@@ -244,7 +244,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	var refundStatus int8
-	refundStatus, refundAmt := 0, refund.TransAmt
+	refundAmt := refund.TransAmt
 	// 退款状态是否可退
 	switch t.RefundStatus {
 	// 已退款
@@ -332,7 +332,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		ret = sp.ProcessEnquiry(req)
 
 		// 更新交易结果
-		updateTrans(t, ret)
+		updatePayTrans(t, ret)
 
 	default:
 
@@ -377,8 +377,8 @@ func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayRespons
 	return ret
 }
 
-// updateTrans 更新交易信息
-func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
+// updatePayTrans 更新交易信息
+func updatePayTrans(t *model.Trans, ret *model.ScanPayResponse) {
 
 	// 根据请求结果更新
 	t.ChanRespCode = ret.ChanRespCode
