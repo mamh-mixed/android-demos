@@ -1,6 +1,9 @@
 package weixin
 
-import "github.com/CardInfoLink/quickpay/model"
+import (
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
+)
 
 //"github.com/omigo/log"
 
@@ -20,7 +23,7 @@ func (c *WeixinPay) ProcessBarcodePay(scanPayReq *model.ScanPay) *model.ScanPayR
 
 	microPayResp := c.requestWeixin(micropayReq, scanPayReq.NotifyUrl)
 
-	//log.Debugf("micropay response: %+v", buf)
+	log.Debugf("micropay response: %+v", microPayResp)
 	return microPayResp.convertToScanPayResp()
 }
 
@@ -32,6 +35,6 @@ func (c *WeixinPay) ProcessEnquiry(scanPayReq *model.ScanPay) *model.ScanPayResp
 
 	orderqueryResp := c.requestWeixin(orderqueryReq, scanPayReq.NotifyUrl)
 
-	//log.Debugf("micropay response: %+v", buf)
+	log.Debugf("orderquery response: %+v", orderqueryResp)
 	return orderqueryResp.convertToScanPayResp()
 }
