@@ -130,3 +130,15 @@ func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int6
 	}
 	return s.Amt, err
 }
+
+// FindByOrderNum 根据渠道订单号查找
+func (col *transCollection) FindByOrderNum(sysOrderNum string) (t *model.Trans, err error) {
+	// 订单是uuid 全局唯一
+	t = new(model.Trans)
+	q := bson.M{
+		"sysOrderNum": sysOrderNum,
+	}
+	err = database.C(col.name).Find(q).One(t)
+
+	return
+}

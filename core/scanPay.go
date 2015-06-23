@@ -1,11 +1,14 @@
 package core
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -367,6 +370,53 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// TODO 更新订单状态
 
 	return
+}
+
+// AlpAsyncNotify 支付宝异步通知处理
+func AlpAsyncNotify(params url.Values) {
+
+	// 通知动作类型
+	notifyAction := params.Get("notify_action_type")
+	// 系统订单号
+	sysOrderNum := params.Get("out_trade_no")
+
+	switch notifyAction {
+	// 退款
+	case "refundFPAction":
+
+	// 其他
+	// 更新优惠信息
+	default:
+		// TODO 是否需要校验
+		bills := params.Get("paytools_pay_amount")
+		if bills != "" {
+			var merDiscount float64
+			arrayBills := make([]map[string]float64)
+			if err := json.Unmarshal(bills, &arrayBills); err == nil {
+				for i, bill := range arrayBills {
+					for k, v := range bill {
+						if k == "MCOUPON" || k == "MDISCOUNT" {
+							merDiscount += v
+						}
+					}
+				}
+			}
+			// update
+			t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
+			if err != nil {
+				log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+				return
+			}
+			t.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
+			mongo.SpTransColl.Update(t)
+		}
+	}
+
+}
+
+// WxpAsyncNotify 微信异步通知处理
+func WxpAsyncNotify(params url.Values) {
+
 }
 
 // logicErrorHandler 逻辑错误处理

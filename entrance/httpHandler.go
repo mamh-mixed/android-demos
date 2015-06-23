@@ -8,6 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
+	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
@@ -74,6 +75,30 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("to merchant message: %s", rdata)
 	w.Write(rdata)
+}
+
+// QuickPayBack 网关接受支付宝、微信等异步通知
+func QuickPayBack(w http.ResponseWriter, r *http.Request) {
+	log.Infof("url = %s", r.URL.String())
+
+	content, values := "", r.URL.Query()
+	switch r.URL.Path {
+	case "/quickpay/back/alp":
+		// alp..
+		values.Add("chcd", "ALP")
+		content = "success"
+	case "/quickpay/back/wxp":
+		// wxp..
+		values.Add("chcd", "WXP")
+		content = "success"
+	default:
+		http.Error(w, "invalid request!", http.StatusNotFound)
+		return
+	}
+
+	// 处理异步通知
+	go scanpay.AsyncNotifyHandle(values)
+	w.Write([]byte(content))
 }
 
 func prepareData(r *http.Request) (merId, sign string, data []byte, status int, err error) {

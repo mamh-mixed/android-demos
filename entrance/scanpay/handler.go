@@ -6,8 +6,38 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"net/url"
 )
 
+// AsyncNotifyHandle 异步通知处理
+func AsyncNotifyHandle(values url.Values) {
+
+	// 渠道类型
+	chcd := values.Get("chcd")
+	switch chcd {
+
+	case "ALP":
+		// TODO check sign
+		result := true
+		if result {
+			core.AlpAsyncNotify(values)
+		} else {
+			log.Errorf("check sign error, chcd=%s, request data=(%+v)", chcd, values)
+		}
+	case "WXP":
+		// TODO check sign
+		result := true
+		if result {
+			core.WxpAsyncNotify(values)
+		} else {
+			log.Errorf("check sign error, chcd=%s, request data=(%+v)", chcd, values)
+		}
+	default:
+		// do nothing
+	}
+}
+
+// Router tcp请求路由
 func Router(reqBytes []byte) []byte {
 
 	req := new(model.ScanPay)
@@ -22,15 +52,15 @@ func Router(reqBytes []byte) []byte {
 	ret := new(model.ScanPayResponse)
 	switch {
 	case req.Busicd == "purc":
-		ret = BarcodePay(req)
+		ret = barcodePay(req)
 	case req.Busicd == "paut":
-		ret = QrCodeOfflinePay(req)
+		ret = qrCodeOfflinePay(req)
 	case req.Busicd == "inqy":
-		ret = Enquiry(req)
+		ret = enquiry(req)
 	case req.Busicd == "refd":
-		ret = Refund(req)
+		ret = refund(req)
 	case req.Busicd == "void":
-		ret = Cancel(req)
+		ret = cancel(req)
 	default:
 		return errorResponse(req, "INVALID_PARAMETER")
 	}
@@ -45,8 +75,8 @@ func Router(reqBytes []byte) []byte {
 	return retBytes
 }
 
-// BarcodePay 条码下单
-func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// barcodePay 条码下单
+func barcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	log.Debugf("request body: %+v", req)
 
 	// validate field
@@ -63,8 +93,8 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// QrCodeOfflinePay 扫二维码预下单
-func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// qrCodeOfflinePay 扫二维码预下单
+func qrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -82,8 +112,8 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// Refund 退款
-func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// refund 退款
+func refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -101,8 +131,8 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// Enquiry 查询
-func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// enquiry 查询
+func enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -120,8 +150,8 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 }
 
-// Cancel 撤销
-func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// cancel 撤销
+func cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 

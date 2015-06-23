@@ -21,8 +21,6 @@ func transform(service string, alpResp *alpResponse, err error) *model.ScanPayRe
 	ret := new(model.ScanPayResponse)
 	// 成功返回参数
 	alipay := alpResp.Response.Alipay
-	ret.ErrorDetail = alipay.ResultCode
-
 	switch service {
 	// 下单
 	case createAndPay:
