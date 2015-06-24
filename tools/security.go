@@ -16,11 +16,13 @@ import (
 	"github.com/omigo/log"
 )
 
+const hardHalf = "TEZMUboYmBLVfjnduURAk4="
+
 var sysKey []byte
 
 func init() {
-	firstPart := goconf.GetValue("app", "encryptKey")
-	whole := firstPart + "TEZMUboYmBLVfjnduURAk4="
+	firstPart := goconf.Config.App.EncryptKey
+	whole := firstPart + hardHalf
 	bytes, err := base64.StdEncoding.DecodeString(whole)
 	if err != nil {
 		log.Error(err)
