@@ -12,9 +12,9 @@ import (
 var scanPayBarcodePay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   tools.Millisecond(),
-	ScanCodeId: "281244822315177993",
+	ScanCodeId: "28920004904763864",
 	Inscd:      "CIL00002",
-	Txamt:      "0.01",
+	Txamt:      "000000000001",
 	Busicd:     "purc",
 	Mchntid:    "CIL0001",
 }

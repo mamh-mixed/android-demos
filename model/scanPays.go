@@ -19,11 +19,24 @@ type ScanPay struct {
 	ScanCodeId   string //扫码号
 	Sign         string //签名
 	NotifyUrl    string //异步通知地址
+
 	// 辅助字段
-	ChanMerId   string // 渠道商户Id
-	SignCert    string // 可能表示md5key等
+	Key         string // md5key
 	Subject     string // 商品名称
-	SysOrderNum string //渠道交易号
+	SysOrderNum string // 渠道交易号
+	ActTxamt    string // 实际交易金额 不同渠道单位不同
+
+	// 微信需要的字段
+	AppID      string // 公众号ID
+	DeviceInfo string // 设备号
+	GoodsDesc  string // 商品描述
+	Attach     string // 附加数据
+	CurrType   string // 货币类型
+	GoodsGag   string // 商品标记
+	SubMchId   string
+
+	ChanMerId string // 渠道商户Id
+	SignCert  string // 可能表示md5key等
 }
 
 // ScanPayResponse 下单支付返回体
@@ -41,10 +54,10 @@ type ScanPayResponse struct {
 	ConsumerAccount string `json:"consumerAccount,omitempty"` // 渠道账号  C
 	ConsumerId      string `json:"consumerId,omitempty"`      // 渠道账号ID   C
 	ErrorDetail     string `json:"errorDetail,omitempty"`     // 错误信息   C
-	OrderNum        string `json:"orderNum,omitempty"`        //订单号 M C
-	OrigOrderNum    string `json:"origOrderNum,omitempty"`    //源订单号 M C
-	Sign            string `json:"sign"`                      //签名 M M
-	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    //渠道优惠  C
+	OrderNum        string `json:"orderNum,omitempty"`        // 订单号 M C
+	OrigOrderNum    string `json:"origOrderNum,omitempty"`    // 源订单号 M C
+	Sign            string `json:"sign"`                      // 签名 M M
+	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    // 渠道优惠  C
 	MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
 	QrCode          string `json:"qrcode,omitempty"`          // 二维码 C
 	// 辅助字段

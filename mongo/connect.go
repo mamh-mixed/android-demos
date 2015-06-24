@@ -11,8 +11,8 @@ var database *mgo.Database
 
 // Connect 程序启动时，或者，单元测试前，先连接到 MongoDB 数据库
 func init() {
-	url := goconf.GetValue("mongo", "url")
-	dbname := goconf.GetValue("mongo", "db")
+	url := goconf.Config.Mongo.URL
+	dbname := goconf.Config.Mongo.DB
 
 	session, err := mgo.Dial(url)
 	if err != nil {

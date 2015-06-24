@@ -98,7 +98,7 @@ func (c *CFCABindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 	// 向中金发起请求
 	resp := sendRequest(req)
 
-	// 应答码转换。。。
+	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
 
 	return ret

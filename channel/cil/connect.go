@@ -20,20 +20,20 @@ var (
 )
 
 func init() {
-	keepaliveTime = time.Duration(goconf.Int("cilonline", "keepaliveTime")) * time.Second
-	reconnectTimeout = time.Duration(goconf.Int("cilonline", "reconnectTimeout")) * time.Second
+	keepaliveTime = time.Duration(goconf.Config.CILOnline.KeepaliveTime)
+	reconnectTimeout = time.Duration(goconf.Config.CILOnline.ReconnectTimeout)
 }
 
 var defualtClient *CilOnlinePay
 
 // Connect 连接到线下
 func Connect() {
-	host := goconf.GetValue("cilonline", "host")
-	port := goconf.GetValue("cilonline", "port")
-	queueSize := goconf.Int("cilonline", "queueSize")
-	initWindowSize := goconf.Int("cilonline", "initWindowSize")
+	host := goconf.Config.CILOnline.Host
+	port := goconf.Config.CILOnline.Port
+	queueSize := goconf.Config.CILOnline.QueueSize
+	initWindowSize := goconf.Config.CILOnline.InitWindowSize
 
-	addr := host + ":" + port
+	addr := host + ":" + strconv.Itoa(port)
 	defualtClient = NewCilOnlinePay(addr, queueSize, initWindowSize)
 
 	defualtClient.Connect()
