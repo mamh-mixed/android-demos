@@ -107,7 +107,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
-	updatePayTrans(t, ret)
+	updateTrans(t, ret)
 
 	return ret
 }
@@ -192,7 +192,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
-	updatePayTrans(t, ret)
+	updateTrans(t, ret)
 
 	return ret
 }
@@ -226,6 +226,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 金额单位转换
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
+		log.Errorf("转换金额错误,txamt=%d", req.Txamt)
 		return logicErrorHandler(refund, "SYSTEM_ERROR")
 	}
 	refund.TransAmt = int64(f * 100)
@@ -299,7 +300,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if ret.Respcd == "00" {
 		refund.RefundStatus = refundStatus
 	}
-	mongo.SpTransColl.Update(refund)
+	updateTrans(refund, ret)
 
 	return
 }
@@ -334,7 +335,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		ret = sp.ProcessEnquiry(req)
 
 		// 更新交易结果
-		updatePayTrans(t, ret)
+		updateTrans(t, ret)
 
 	default:
 
@@ -437,8 +438,8 @@ func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayRespons
 	return ret
 }
 
-// updatePayTrans 更新交易信息
-func updatePayTrans(t *model.Trans, ret *model.ScanPayResponse) {
+// updateTrans 更新交易信息
+func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 
 	// 根据请求结果更新
 	t.ChanRespCode = ret.ChanRespCode

@@ -15,7 +15,7 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// TODO validate format
-	if matched, _ := regexp.MatchString(`^\d+$`, req.Txamt); !matched {
+	if matched, _ := regexp.MatchString(`^(\d+)(\.\d{0,2})?.*$`, req.Txamt); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 
@@ -33,7 +33,7 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
-	if matched, _ := regexp.MatchString(`^\d+$`, req.Txamt); !matched {
+	if matched, _ := regexp.MatchString(`^(\d+)(\.\d{0,2})?.*$`, req.Txamt); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 	return
@@ -56,10 +56,13 @@ func validateEnquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 验证非空
-	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 
 	// TODO validate format
+	if matched, _ := regexp.MatchString(`^(\d+)(\.\d{0,2})?.*$`, req.Txamt); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
 	return
 }
