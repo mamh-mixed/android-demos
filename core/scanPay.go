@@ -280,7 +280,6 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 渠道参数
 	req.SysOrderNum = tools.SerialNumber()
-	req.OrigSysOrderNum = t.SysOrderNum
 	req.Key = c.SignCert
 
 	// 交易参数
@@ -327,7 +326,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			return mongo.OffLineRespCd("SYSTEM_ERROR")
 		}
 		// 原订单号
-		req.SysOrderNum = t.SysOrderNum
+		req.OrderNum = t.OrderNum
 		req.Key = c.SignCert
 
 		// 向渠道查询
@@ -377,7 +376,8 @@ func AlpAsyncNotify(params url.Values) {
 
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
-	// 系统订单号
+
+	// 交易订单号
 	sysOrderNum := params.Get("out_trade_no")
 
 	// 系统订单号是全局唯一
@@ -393,8 +393,8 @@ func AlpAsyncNotify(params url.Values) {
 		// 将优惠信息更新为0.00，貌似为了打单用
 		mongo.SpTransColl.UpdateFields(&model.Trans{
 			Id:           t.Id,
-			MerDiscount:  0.00,
-			ChanDiscount: 0.00,
+			MerDiscount:  "0.00",
+			ChanDiscount: "0.00",
 		})
 	// 其他
 	default:
@@ -415,7 +415,7 @@ func AlpAsyncNotify(params url.Values) {
 			}
 			// 更新指定字段，注意，这里不能全部更新
 			// 否则可能会覆盖同步返回的结果
-			&mongo.SpTransColl.UpdateFields(model.Trans{
+			mongo.SpTransColl.UpdateFields(&model.Trans{
 				Id:          t.Id,
 				MerDiscount: fmt.Sprintf("%0.2f", merDiscount),
 			})

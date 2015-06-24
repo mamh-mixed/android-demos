@@ -33,7 +33,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 	alpReq := &alpRequest{
 		Service:       createAndPay,
 		NotifyUrl:     req.NotifyUrl,
-		OutTradeNo:    req.SysOrderNum,
+		OutTradeNo:    req.OrderNum, // 送的是原订单号，不转换
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
@@ -49,7 +49,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpResp, err := sendRequest(dict, req.Key)
 	if err != nil {
-		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, createAndPay)
+		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, createAndPay)
 	}
 
 	// 处理结果返回
@@ -62,7 +62,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	alpReq := &alpRequest{
 		Service:      preCreate,
 		NotifyUrl:    "",
-		OutTradeNo:   req.SysOrderNum,
+		OutTradeNo:   req.OrderNum, // 送的是原订单号，不转换,
 		Subject:      req.Subject,
 		GoodsDetail:  req.MarshalGoods(),
 		ProductCode:  "QR_CODE_OFFLINE",
@@ -76,7 +76,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 
 	alpResp, err := sendRequest(dict, req.Key)
 	if err != nil {
-		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, preCreate)
+		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, preCreate)
 	}
 
 	return transform(alpReq.Service, alpResp, err)
@@ -88,9 +88,9 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 	alpReq := &alpRequest{
 		Service:      refund,
 		NotifyUrl:    "",
-		OutTradeNo:   req.OrigSysOrderNum,
+		OutTradeNo:   req.OrigOrderNum,
 		RefundAmount: req.Txamt,
-		OutRequestNo: req.SysOrderNum,
+		OutRequestNo: req.OrderNum, // 送的是原订单号，不转换
 	}
 
 	// req to map
@@ -98,7 +98,7 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpResp, err := sendRequest(dict, req.Key)
 	if err != nil {
-		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, refund)
+		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, refund)
 	}
 
 	return transform(alpReq.Service, alpResp, err)
@@ -109,14 +109,14 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
 		Service:    query,
-		OutTradeNo: req.SysOrderNum,
+		OutTradeNo: req.OrderNum, // 送的是原订单号，不转换
 	}
 	// req to map
 	dict := toMap(alpReq)
 
 	alpResp, err := sendRequest(dict, req.Key)
 	if err != nil {
-		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, query)
+		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, query)
 	}
 
 	return transform(alpReq.Service, alpResp, err)
@@ -128,7 +128,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	alpReq := &alpRequest{
 		Service:    cancel,
 		NotifyUrl:  "",
-		OutTradeNo: req.OrigSysOrderNum,
+		OutTradeNo: req.OrigOrderNum,
 	}
 
 	// req to map
@@ -136,7 +136,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpResp, err := sendRequest(dict, req.Key)
 	if err != nil {
-		log.Errorf("sendRequest fail, sysOrderNum=%s, service=%s, channel=alp", req.SysOrderNum, cancel)
+		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, cancel)
 	}
 
 	return transform(alpReq.Service, alpResp, err)
