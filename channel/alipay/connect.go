@@ -36,12 +36,13 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 
 	var res *http.Response
 	var err error
-	// if log.Std.Level <= log.Ldebug {
-	// 	res, err = mockPostForm(requestURL, values)
-	// } else {
-	res, err = http.PostForm(requestURL, values)
-	// }
+	if log.Std.Level <= log.Ldebug {
+		res, err = mockPostForm(requestURL, values)
+	} else {
+		res, err = http.PostForm(requestURL, values)
+	}
 
+	defer res.Body.Close()
 	if err != nil {
 		log.Errorf("connect %s fail : %s", requestURL, err)
 		return nil, err

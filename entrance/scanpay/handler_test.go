@@ -47,7 +47,7 @@ var scanPayRefund = &model.ScanPay{
 
 func TestScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
-	reqBytes, _ := json.Marshal(scanPayRefund)
+	reqBytes, _ := json.Marshal(scanPayBarcodePay)
 	respBytes := Router(reqBytes)
 	fmt.Println(string(respBytes))
 }
