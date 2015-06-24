@@ -51,8 +51,8 @@ func (p *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPayR
 		Mchntid:         respData.MchID,      // 商户号 M M
 		Txamt:           respData.TotalFee,   // 订单金额 M M
 		ChannelOrderNum: respData.OutTradeNo, // 渠道交易号 C
-		ConsumerAccount: respData.OpenID,     // 渠道账号  C
-		ConsumerId:      m.Mchntid,           // 渠道账号ID   C
+		ConsumerAccount: m.ChanMerId,         // 渠道账号  C
+		ConsumerId:      respData.OpenID,     // 渠道账号ID   C
 		ErrorDetail:     respData.ErrCodeDes, // 错误信息   C
 		OrderNum:        m.OrderNum,          // 订单号 M C
 		OrigOrderNum:    m.OrigOrderNum,      // 源订单号 M C
@@ -95,8 +95,8 @@ func (p *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResp
 		Mchntid:         respData.MchID,      // 商户号 M M
 		Txamt:           respData.TotalFee,   // 订单金额 M M
 		ChannelOrderNum: respData.OutTradeNo, // 渠道交易号 C
-		ConsumerAccount: respData.OpenID,     // 渠道账号  C
-		ConsumerId:      m.Mchntid,           // 渠道账号ID   C
+		ConsumerAccount: m.ChanMerId,         // 渠道账号  C
+		ConsumerId:      respData.OpenID,     // 渠道账号ID   C
 		ErrorDetail:     respData.ErrCodeDes, // 错误信息   C
 		OrderNum:        m.OrderNum,          // 订单号 M C
 		OrigOrderNum:    m.OrigOrderNum,      // 源订单号 M C

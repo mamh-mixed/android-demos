@@ -1,11 +1,14 @@
 package core
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -83,7 +86,9 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 上送参数
 	req.SysOrderNum = tools.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
-	req.Key = c.SignCert
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
 
@@ -168,7 +173,9 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 上送参数
 	req.SysOrderNum = tools.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
-	req.Key = c.SignCert
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
 
@@ -197,15 +204,109 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 // Refund 退款
 func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
-	// TODO 判断是否存在该订单
+	ret = new(model.ScanPayResponse)
+	// 判断订单是否存在
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+	if count > 0 {
+		// 订单号重复 check error code
+		return mongo.OffLineRespCd("AUTH_NO_ERROR")
+	}
 
-	// TODO 判断订单的状态
+	// 记录这笔退款
+	refund := &model.Trans{
+		MerId:          req.Mchntid,
+		OrderNum:       req.OrderNum,
+		RefundOrderNum: req.OrigOrderNum,
+		TransType:      model.RefundTrans,
+		Busicd:         req.Busicd,
+		Inscd:          req.Inscd,
+		ChanCode:       req.Chcd,
+	}
 
-	// TODO 获得渠道商户
+	// 金额单位转换
+	f, err := strconv.ParseFloat(req.Txamt, 64)
+	if err != nil {
+		log.Errorf("转换金额错误,txamt=%d", req.Txamt)
+		return logicErrorHandler(refund, "SYSTEM_ERROR")
+	}
+	refund.TransAmt = int64(f * 100)
 
-	// TODO 请求退款
+	// 判断是否存在该订单
+	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	if err != nil {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
+	}
 
-	// TODO 更新订单状态
+	// 是否是支付交易
+	if t.TransType != model.PayTrans {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+	}
+
+	// 交易状态是否正常
+	if t.TransStatus != model.TransSuccess {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+	}
+
+	var refundStatus int8
+	refundAmt := refund.TransAmt
+	// 退款状态是否可退
+	switch t.RefundStatus {
+	// 已退款
+	case model.TransRefunded:
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+	// 部分退款
+	case model.TransPartRefunded:
+		refunded, err := mongo.SpTransColl.FindTransRefundAmt(req.Mchntid, req.OrigOrderNum)
+		if err != nil {
+			return logicErrorHandler(refund, "SYSTEM_ERROR") // TODO check error code
+		}
+		refundAmt += refunded
+		fallthrough
+	default:
+		// 金额过大
+		if refundAmt > t.TransAmt {
+			return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+		} else if refundAmt == t.TransAmt {
+			refundStatus = model.TransRefunded
+		} else {
+			refundStatus = model.TransPartRefunded
+		}
+	}
+
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return logicErrorHandler(refund, "SYSTEM_ERROR")
+	}
+
+	// 渠道参数
+	req.SysOrderNum = tools.SerialNumber()
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
+	// 交易参数
+	t.SysOrderNum = req.SysOrderNum
+
+	// 记录交易
+	err = mongo.SpTransColl.Add(refund)
+	if err != nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+
+	// 请求退款
+	sp := channel.GetScanPayChan(t.ChanCode)
+	ret = sp.ProcessRefund(req)
+
+	// 更新交易状态
+	if ret.Respcd == "00" {
+		t.RefundStatus = refundStatus
+		mongo.SpTransColl.Update(t)
+	}
+	updateTrans(refund, ret)
 
 	return
 }
@@ -231,9 +332,10 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			// TODO check error code
 			return mongo.OffLineRespCd("SYSTEM_ERROR")
 		}
-		// 原订单号
-		req.SysOrderNum = t.SysOrderNum
-		req.Key = c.SignCert
+		// 上送参数
+		req.OrderNum = t.OrderNum
+		req.SignCert = c.SignCert
+		req.ChanMerId = c.ChanMerId
 
 		// 向渠道查询
 		sp := channel.GetScanPayChan(t.ChanCode)
@@ -275,6 +377,72 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// TODO 更新订单状态
 
 	return
+}
+
+// AlpAsyncNotify 支付宝异步通知处理
+func AlpAsyncNotify(params url.Values) {
+
+	// 通知动作类型
+	notifyAction := params.Get("notify_action_type")
+
+	// 交易订单号
+	sysOrderNum := params.Get("out_trade_no")
+
+	// 系统订单号是全局唯一
+	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
+	if err != nil {
+		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		return
+	}
+
+	switch notifyAction {
+	// 退款
+	case "refundFPAction":
+		// 将优惠信息更新为0.00，貌似为了打单用
+		mongo.SpTransColl.UpdateFields(&model.Trans{
+			Id:           t.Id,
+			MerDiscount:  "0.00",
+			ChanDiscount: "0.00",
+		})
+	// 其他
+	default:
+		// TODO 是否需要校验
+		bills := params.Get("paytools_pay_amount")
+		if bills != "" {
+			var merDiscount float64
+			var arrayBills []map[string]string
+			if err := json.Unmarshal([]byte(bills), &arrayBills); err == nil {
+				for _, bill := range arrayBills {
+					for k, v := range bill {
+						if k == "MCOUPON" || k == "MDISCOUNT" {
+							f, _ := strconv.ParseFloat(v, 64)
+							merDiscount += f
+						}
+					}
+				}
+			}
+			// 更新指定字段，注意，这里不能全部更新
+			// 否则可能会覆盖同步返回的结果
+			mongo.SpTransColl.UpdateFields(&model.Trans{
+				Id:          t.Id,
+				MerDiscount: fmt.Sprintf("%0.2f", merDiscount),
+			})
+		}
+	}
+
+}
+
+// WxpAsyncNotify 微信异步通知处理
+func WxpAsyncNotify(params url.Values) {
+
+}
+
+// logicErrorHandler 逻辑错误处理
+func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayResponse {
+	ret := mongo.OffLineRespCd(errorDetail)
+	t.RespCode = ret.Respcd
+	mongo.SpTransColl.Add(t)
+	return ret
 }
 
 // updateTrans 更新交易信息

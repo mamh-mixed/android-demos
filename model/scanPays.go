@@ -35,6 +35,9 @@ type ScanPay struct {
 	GoodsGag     string // 商品标记
 	WeixinMD5Key string
 	SubMchId     string
+
+	ChanMerId string // 渠道商户Id
+	SignCert  string // 可能表示md5key等
 }
 
 // ScanPayResponse 下单支付返回体

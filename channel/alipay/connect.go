@@ -10,7 +10,6 @@ import (
 
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
-	// "io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
@@ -43,6 +42,7 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 		res, err = http.PostForm(requestURL, values)
 	}
 
+	defer res.Body.Close()
 	if err != nil {
 		log.Errorf("connect %s fail : %s", requestURL, err)
 		return nil, err
@@ -70,7 +70,7 @@ func handleResponseBody(reader io.Reader) (*alpResponse, error) {
 		log.Errorf("unmarsal body fail : %s", err)
 		return nil, err
 	}
-
+	log.Debugf("alp response body: %+v", alpResp)
 	// TODO 验证签名
 	return alpResp, nil
 }

@@ -6,8 +6,26 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"net/url"
 )
 
+// AsyncNotifyRouter 异步通知处理分发
+func AsyncNotifyRouter(values url.Values) {
+
+	// 渠道类型
+	chcd := values.Get("scanpay_chcd")
+	switch chcd {
+
+	case "ALP":
+		core.AlpAsyncNotify(values)
+	case "WXP":
+		core.WxpAsyncNotify(values)
+	default:
+		// do nothing
+	}
+}
+
+// Router tcp请求路由
 func Router(reqBytes []byte) []byte {
 
 	req := new(model.ScanPay)
@@ -22,18 +40,21 @@ func Router(reqBytes []byte) []byte {
 	ret := new(model.ScanPayResponse)
 	switch {
 	case req.Busicd == "purc":
-		ret = BarcodePay(req)
+		ret = barcodePay(req)
 	case req.Busicd == "paut":
-		ret = QrCodeOfflinePay(req)
+		ret = qrCodeOfflinePay(req)
 	case req.Busicd == "inqy":
-		ret = Enquiry(req)
+		ret = enquiry(req)
 	case req.Busicd == "refd":
-		ret = Refund(req)
+		ret = refund(req)
 	case req.Busicd == "void":
-		ret = Cancel(req)
+		ret = cancel(req)
 	default:
 		return errorResponse(req, "INVALID_PARAMETER")
 	}
+
+	// TODO sign
+
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
@@ -42,8 +63,8 @@ func Router(reqBytes []byte) []byte {
 	return retBytes
 }
 
-// BarcodePay 条码下单
-func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// barcodePay 条码下单
+func barcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	log.Debugf("request body: %+v", req)
 
 	// validate field
@@ -60,8 +81,8 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// QrCodeOfflinePay 扫二维码预下单
-func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// qrCodeOfflinePay 扫二维码预下单
+func qrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -79,36 +100,44 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// Refund 退款
-func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// refund 退款
+func refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
-	// TODO validite field
-	return core.Refund(req)
+	// validate field
+	if ret = validateRefund(req); ret == nil {
+		// process
+		ret = core.Refund(req)
+	}
+
+	// 补充原信息返回
+	fillResponseInfo(req, ret)
+
+	log.Debugf("handled body: %+v", ret)
+
+	return ret
 }
 
-// Enquiry 查询
-func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// enquiry 查询
+func enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
 	if ret = validateEnquiry(req); ret == nil {
 		// process
 		ret = core.Enquiry(req)
-		// 直接返回，查询得到的是原交易信息，不需要补充返回信息
-		return ret
 	}
 
-	// 错误信息补充完整
+	// 补充原信息返回
 	fillResponseInfo(req, ret)
 
 	return ret
 
 }
 
-// Cancel 撤销
-func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
+// cancel 撤销
+func cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
@@ -118,14 +147,29 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 
-	// 默认将原信息返回
-	ret.Busicd = req.Busicd
-	ret.Inscd = req.Inscd
-	ret.Mchntid = req.Mchntid
-	ret.Sign = req.Sign // TODO
-	ret.Txamt = req.Txamt
-	ret.OrigOrderNum = req.OrigOrderNum
-	ret.OrderNum = req.OrderNum
+	// 如果空白，默认将原信息返回
+	if ret.Busicd == "" {
+		ret.Busicd = req.Busicd
+	}
+	if ret.Inscd == "" {
+		ret.Inscd = req.Inscd
+	}
+	if ret.Mchntid == "" {
+		ret.Mchntid = req.Mchntid
+	}
+	if ret.Txamt == "" {
+		ret.Txamt = req.Txamt
+	}
+	if ret.OrigOrderNum == "" {
+		ret.OrigOrderNum = req.OrigOrderNum
+	}
+	if ret.OrderNum == "" {
+		ret.OrderNum = req.OrderNum
+	}
+	// TODO
+	if ret.Sign == "" {
+		ret.Sign = req.Sign
+	}
 	ret.Txndir = "A"
 }
 
