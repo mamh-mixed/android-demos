@@ -31,5 +31,9 @@
 		"RootCert": "config/pem/cfca/evRootCrt_testing.pem",
 		"_URL": "API 地址",
 		"URL": "https://test.china-clearing.com/Gateway/InterfaceII"
+	},
+	"WeixinScanPay": {
+		"_URL": "微信刷卡支付接口地址",
+		"_URL": "https://api.mch.weixin.qq.com"
 	}
 }

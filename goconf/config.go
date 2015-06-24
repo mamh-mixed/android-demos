@@ -32,4 +32,8 @@ type ConfigStruct struct {
 		RootCert string
 		URL      string
 	}
+
+	WeixinScanPay struct {
+		URL string
+	}
 }

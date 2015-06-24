@@ -21,6 +21,11 @@ func SerialNumber() string {
 	return fmt.Sprintf("%x", u4[:])
 }
 
+// Nonce 生成指定长度位的随机数
+func Nonce(n int) string {
+	return SerialNumber()
+}
+
 // Millisecond 获取新世纪以来到目前为止的毫秒数
 func Millisecond() string {
 	return fmt.Sprintf("%d", int64(time.Now().UnixNano()/1000000))
