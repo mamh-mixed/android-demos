@@ -127,11 +127,9 @@ func enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if ret = validateEnquiry(req); ret == nil {
 		// process
 		ret = core.Enquiry(req)
-		// 直接返回，查询得到的是原交易信息，不需要补充返回信息
-		return ret
 	}
 
-	// 错误信息补充完整
+	// 补充原信息返回
 	fillResponseInfo(req, ret)
 
 	return ret
@@ -149,14 +147,29 @@ func cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 
-	// 默认将原信息返回
-	ret.Busicd = req.Busicd
-	ret.Inscd = req.Inscd
-	ret.Mchntid = req.Mchntid
-	ret.Sign = req.Sign // TODO
-	ret.Txamt = req.Txamt
-	ret.OrigOrderNum = req.OrigOrderNum
-	ret.OrderNum = req.OrderNum
+	// 如果空白，默认将原信息返回
+	if ret.Busicd == "" {
+		ret.Busicd = req.Busicd
+	}
+	if ret.Inscd == "" {
+		ret.Inscd = req.Inscd
+	}
+	if ret.Mchntid == "" {
+		ret.Mchntid = req.Mchntid
+	}
+	if ret.Txamt == "" {
+		ret.Txamt = req.Txamt
+	}
+	if ret.OrigOrderNum == "" {
+		ret.OrigOrderNum = req.OrigOrderNum
+	}
+	if ret.OrderNum == "" {
+		ret.OrderNum = req.OrderNum
+	}
+	// TODO
+	if ret.Sign == "" {
+		ret.Sign = req.Sign
+	}
 	ret.Txndir = "A"
 }
 

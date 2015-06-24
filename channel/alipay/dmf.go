@@ -22,7 +22,7 @@ const (
 
 // params
 const (
-	partner  = "2088811767473826"
+	// partner  = "2088811767473826" // only for test
 	charSet  = "utf-8"
 	currency = "156"
 )
@@ -31,6 +31,7 @@ const (
 func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
+		Partner:       req.ChanMerId,
 		Service:       createAndPay,
 		NotifyUrl:     req.NotifyUrl,
 		OutTradeNo:    req.OrderNum, // 送的是原订单号，不转换
@@ -47,7 +48,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, createAndPay)
 	}
@@ -60,6 +61,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
+		Partner:      req.ChanMerId,
 		Service:      preCreate,
 		NotifyUrl:    "",
 		OutTradeNo:   req.OrderNum, // 送的是原订单号，不转换,
@@ -74,7 +76,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, preCreate)
 	}
@@ -86,6 +88,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
+		Partner:      req.ChanMerId,
 		Service:      refund,
 		NotifyUrl:    "",
 		OutTradeNo:   req.OrigOrderNum,
@@ -96,7 +99,7 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, refund)
 	}
@@ -108,13 +111,14 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
+		Partner:    req.ChanMerId,
 		Service:    query,
 		OutTradeNo: req.OrderNum, // 送的是原订单号，不转换
 	}
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, query)
 	}
@@ -126,6 +130,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 
 	alpReq := &alpRequest{
+		Partner:    req.ChanMerId,
 		Service:    cancel,
 		NotifyUrl:  "",
 		OutTradeNo: req.OrigOrderNum,
@@ -134,7 +139,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.Key)
+	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, cancel)
 	}
@@ -148,9 +153,9 @@ func toMap(req *alpRequest) map[string]string {
 
 	// 固定参数
 	dict["_input_charset"] = charSet
-	dict["partner"] = partner
+	dict["partner"] = req.Partner
 	dict["currency"] = currency
-	dict["seller_id"] = partner
+	dict["seller_id"] = req.Partner
 	// 参数转换
 	dict["service"] = req.Service
 	dict["notify_url"] = req.NotifyUrl

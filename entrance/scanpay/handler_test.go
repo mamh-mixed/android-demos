@@ -12,7 +12,7 @@ import (
 var scanPayBarcodePay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   tools.Millisecond(),
-	ScanCodeId: "284339495400486450",
+	ScanCodeId: "281244822315177993",
 	Inscd:      "CIL00002",
 	Txamt:      "0.01",
 	Busicd:     "purc",
@@ -32,14 +32,15 @@ var scanPayQrCodeOfflinePay = &model.ScanPay{
 var scanPayEnquiry = &model.ScanPay{
 	Busicd:       "inqy",
 	Mchntid:      "CIL0001",
-	OrigOrderNum: "1431414042270",
+	Inscd:        "CIL00002",
+	OrigOrderNum: "1435126449351",
 }
 
 var scanPayRefund = &model.ScanPay{
 	Busicd:       "refd",
 	Mchntid:      "CIL0001",
 	OrderNum:     tools.Millisecond(),
-	OrigOrderNum: "1435117750095",
+	OrigOrderNum: "1435127952347",
 	Inscd:        "CIL00002",
 	Txamt:        "0.01",
 }

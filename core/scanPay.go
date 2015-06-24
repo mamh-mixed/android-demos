@@ -86,7 +86,9 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 上送参数
 	req.SysOrderNum = tools.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
-	req.Key = c.SignCert
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
 
@@ -171,7 +173,9 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 上送参数
 	req.SysOrderNum = tools.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
-	req.Key = c.SignCert
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
 
@@ -281,7 +285,8 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 渠道参数
 	req.SysOrderNum = tools.SerialNumber()
-	req.Key = c.SignCert
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -298,7 +303,8 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 更新交易状态
 	if ret.Respcd == "00" {
-		refund.RefundStatus = refundStatus
+		t.RefundStatus = refundStatus
+		mongo.SpTransColl.Update(t)
 	}
 	updateTrans(refund, ret)
 
@@ -326,9 +332,10 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			// TODO check error code
 			return mongo.OffLineRespCd("SYSTEM_ERROR")
 		}
-		// 原订单号
+		// 上送参数
 		req.OrderNum = t.OrderNum
-		req.Key = c.SignCert
+		req.SignCert = c.SignCert
+		req.ChanMerId = c.ChanMerId
 
 		// 向渠道查询
 		sp := channel.GetScanPayChan(t.ChanCode)
