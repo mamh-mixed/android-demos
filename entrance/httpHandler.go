@@ -84,12 +84,12 @@ func QuickPayBack(w http.ResponseWriter, r *http.Request) {
 	content, values := "", r.URL.Query()
 	switch r.URL.Path {
 	case "/quickpay/back/alp":
-		// alp..
-		values.Add("chcd", "ALP")
+		// TODO check sign
+		values.Add("scanpay_chcd", "ALP")
 		content = "success"
 	case "/quickpay/back/wxp":
-		// wxp..
-		values.Add("chcd", "WXP")
+		// TODO check sign
+		values.Add("scanpay_chcd", "WXP")
 		content = "success"
 	default:
 		http.Error(w, "invalid request!", http.StatusNotFound)
@@ -97,7 +97,7 @@ func QuickPayBack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 处理异步通知
-	go scanpay.AsyncNotifyHandle(values)
+	scanpay.AsyncNotifyRouter(values)
 	w.Write([]byte(content))
 }
 

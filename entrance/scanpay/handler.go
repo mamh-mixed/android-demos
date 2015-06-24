@@ -9,29 +9,17 @@ import (
 	"net/url"
 )
 
-// AsyncNotifyHandle 异步通知处理
-func AsyncNotifyHandle(values url.Values) {
+// AsyncNotifyRouter 异步通知处理分发
+func AsyncNotifyRouter(values url.Values) {
 
 	// 渠道类型
-	chcd := values.Get("chcd")
+	chcd := values.Get("scanpay_chcd")
 	switch chcd {
 
 	case "ALP":
-		// TODO check sign
-		result := true
-		if result {
-			core.AlpAsyncNotify(values)
-		} else {
-			log.Errorf("check sign error, chcd=%s, request data=(%+v)", chcd, values)
-		}
+		core.AlpAsyncNotify(values)
 	case "WXP":
-		// TODO check sign
-		result := true
-		if result {
-			core.WxpAsyncNotify(values)
-		} else {
-			log.Errorf("check sign error, chcd=%s, request data=(%+v)", chcd, values)
-		}
+		core.WxpAsyncNotify(values)
 	default:
 		// do nothing
 	}

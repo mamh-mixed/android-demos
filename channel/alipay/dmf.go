@@ -4,8 +4,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
-	"net/url"
-	"strings"
 )
 
 var DefaultClient alp

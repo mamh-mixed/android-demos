@@ -2,12 +2,12 @@ package mongo
 
 import (
 	"errors"
-	"time"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type transCollection struct {
@@ -141,4 +141,25 @@ func (col *transCollection) FindByOrderNum(sysOrderNum string) (t *model.Trans, 
 	err = database.C(col.name).Find(q).One(t)
 
 	return
+}
+
+// UpdateFields 更新指定字段
+func (col *transCollection) UpdateFields(t *model.Trans) error {
+
+	if t.Id == "" {
+		return fmt.Errorf("%s", "id is null!")
+	}
+	// update fields
+	fields := bson.M{
+		"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+	}
+	if t.MerDiscount != "" {
+		fields["merDiscount"] = t.MerDiscount
+	}
+	if t.ChanDiscount != "" {
+		fields["chanDiscount"] = t.ChanDiscount
+	}
+	// more fields
+
+	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
 }

@@ -380,35 +380,45 @@ func AlpAsyncNotify(params url.Values) {
 	// 系统订单号
 	sysOrderNum := params.Get("out_trade_no")
 
+	// 系统订单号是全局唯一
+	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
+	if err != nil {
+		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		return
+	}
+
 	switch notifyAction {
 	// 退款
 	case "refundFPAction":
-
+		// 将优惠信息更新为0.00，貌似为了打单用
+		mongo.SpTransColl.UpdateFields(&model.Trans{
+			Id:           t.Id,
+			MerDiscount:  0.00,
+			ChanDiscount: 0.00,
+		})
 	// 其他
-	// 更新优惠信息
 	default:
 		// TODO 是否需要校验
 		bills := params.Get("paytools_pay_amount")
 		if bills != "" {
 			var merDiscount float64
-			arrayBills := make([]map[string]float64)
-			if err := json.Unmarshal(bills, &arrayBills); err == nil {
-				for i, bill := range arrayBills {
+			var arrayBills []map[string]string
+			if err := json.Unmarshal([]byte(bills), &arrayBills); err == nil {
+				for _, bill := range arrayBills {
 					for k, v := range bill {
 						if k == "MCOUPON" || k == "MDISCOUNT" {
-							merDiscount += v
+							f, _ := strconv.ParseFloat(v, 64)
+							merDiscount += f
 						}
 					}
 				}
 			}
-			// update
-			t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
-			if err != nil {
-				log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
-				return
-			}
-			t.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
-			mongo.SpTransColl.Update(t)
+			// 更新指定字段，注意，这里不能全部更新
+			// 否则可能会覆盖同步返回的结果
+			&mongo.SpTransColl.UpdateFields(model.Trans{
+				Id:          t.Id,
+				MerDiscount: fmt.Sprintf("%0.2f", merDiscount),
+			})
 		}
 	}
 
