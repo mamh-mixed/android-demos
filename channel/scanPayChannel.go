@@ -18,6 +18,9 @@ type ScanPayChan interface {
 
 	// ProcessEnquiry 查询
 	ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse
+
+	// ProcessCancel 撤销
+	ProcessCancel(req *model.ScanPay) *model.ScanPayResponse
 }
 
 // GetScanPayChan 扫码支付渠道

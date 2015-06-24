@@ -21,8 +21,6 @@ func transform(service string, alpResp *alpResponse, err error) *model.ScanPayRe
 	ret := new(model.ScanPayResponse)
 	// 成功返回参数
 	alipay := alpResp.Response.Alipay
-	ret.ErrorDetail = alipay.ResultCode
-
 	switch service {
 	// 下单
 	case createAndPay:
@@ -34,7 +32,7 @@ func transform(service string, alpResp *alpResponse, err error) *model.ScanPayRe
 	case refund:
 		refundHandle(ret, alipay)
 	case cancel:
-		// TODO
+		cancelHandle(ret, alipay)
 	default:
 		// TODO
 	}
@@ -81,7 +79,7 @@ func preCreateHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
 		ret.ChanRespCode = alipay.ResultCode
-		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", createAndPay, alipay.ResultCode)
+		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", preCreate, alipay.ResultCode)
 	}
 	ret.ErrorDetail = ret.ChanRespCode
 	ret.Respcd = preCreateCd(ret.ChanRespCode)
@@ -113,18 +111,29 @@ func refundHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 
 	switch alipay.ResultCode {
 	case "SUCCESS":
-		ret.ChannelOrderNum = alipay.TradeNo
-		ret.ConsumerAccount = alipay.BuyerLogonId
-		ret.ConsumerId = alipay.BuyerUserId
-		// 计算折扣
-		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
-		ret.ChanRespCode = alipay.TradeStatus
-	case "FAIL", "PROCESS_EXCEPTION":
+		ret.ChanRespCode = alipay.ResultCode
+	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
-		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
+		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", refund, alipay.ResultCode)
 		ret.ChanRespCode = alipay.ResultCode
 	}
 	ret.ErrorDetail = ret.ChanRespCode
-	ret.Respcd = queryCd(query, ret.ChanRespCode)
+	ret.Respcd = refundCd(ret.ChanRespCode)
+}
+
+// cancelHandle 撤销处理
+func cancelHandle(ret *model.ScanPayResponse, alipay alpDetail) {
+	switch alipay.ResultCode {
+	case "SUCCESS":
+		ret.ChanRespCode = alipay.ResultCode
+		ret.ChannelOrderNum = alipay.TradeNo
+	case "FAIL", "UNKNOWN":
+		ret.ChanRespCode = alipay.DetailErrorCode
+	default:
+		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", refund, alipay.ResultCode)
+		ret.ChanRespCode = alipay.ResultCode
+	}
+	ret.ErrorDetail = ret.ChanRespCode
+	ret.Respcd = cancelCd(ret.ChanRespCode)
 }

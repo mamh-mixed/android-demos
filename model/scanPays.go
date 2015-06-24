@@ -20,10 +20,10 @@ type ScanPay struct {
 	Sign         string //签名
 	NotifyUrl    string //异步通知地址
 	// 辅助字段
-	Key             string // md5key
-	Subject         string // 商品名称
-	SysOrderNum     string //渠道交易号
-	OrigSysOrderNum string // 原系统订单号
+	ChanMerId   string // 渠道商户Id
+	SignCert    string // 可能表示md5key等
+	Subject     string // 商品名称
+	SysOrderNum string //渠道交易号
 }
 
 // ScanPayResponse 下单支付返回体

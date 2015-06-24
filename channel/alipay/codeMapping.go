@@ -26,7 +26,19 @@ func createAndPayCd(code string) string {
 	}
 }
 func refundCd(code string) string {
-	return ""
+
+	switch code {
+	case "SUCCESS":
+		return "00"
+	case "INVALID_PARAMETER":
+		return "58"
+	case "TRADE_HAS_CLOSE":
+		return "12"
+	case "TRADE_NOT_EXIST":
+		return "25"
+	default:
+		return "58"
+	}
 }
 func queryCd(service, code string) string {
 	switch code {
@@ -65,5 +77,12 @@ func queryCd(service, code string) string {
 
 }
 func cancelCd(code string) string {
-	return ""
+	switch code {
+	case "SUCCESS":
+		return "00"
+	case "TRADE_NOT_EXIST":
+		return "25"
+	default:
+		return "58"
+	}
 }

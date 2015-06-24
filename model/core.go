@@ -10,6 +10,7 @@ const (
 	TransPartRefunded = 2 //部分退款
 	PayTrans          = 1 //支付交易
 	RefundTrans       = 2 //退款交易
+	CancelTrans       = 4 //撤销交易
 
 	SettSuccess    = 1 //勾兑成功
 	SettSysRemain  = 2 //系统多出的
@@ -162,7 +163,7 @@ type Trans struct {
 	MerId          string        `bson:"merId,omitempty"`                            //商户号
 	TransAmt       int64         `bson:"transAmt,omitempty"`                         //交易金额
 	TransStatus    string        `bson:"transStatus,omitempty"`                      //交易状态 10-处理中 20-失败 30-成功
-	TransType      int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款 3-预授权
+	TransType      int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款 3-预授权 4-撤销
 	ChanMerId      string        `bson:"chanMerId,omitempty"`                        //渠道商户号
 	ChanCode       string        `bson:"chanCode,omitempty"`                         //渠道代码
 	ChanRespCode   string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
