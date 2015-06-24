@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 )
+
+var notityUrl = goconf.GetValue("app", "notifyUrl")
 
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
@@ -88,6 +91,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
+	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -175,6 +179,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
+	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -287,6 +292,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.SysOrderNum = tools.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
+	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -384,14 +390,21 @@ func AlpAsyncNotify(params url.Values) {
 
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
-
 	// 交易订单号
-	sysOrderNum := params.Get("out_trade_no")
+	orderNum := params.Get("out_trade_no")
+	// 系统订单号
+	sysOrderNum := params.Get("schema")
 
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
 		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		return
+	}
+
+	// 判断是否是原订单
+	if t.OrderNum != orderNum {
+		log.Errorf("orderNum not match, expect %s, but get %s", t.OrderNum, orderNum)
 		return
 	}
 
