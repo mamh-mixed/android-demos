@@ -17,22 +17,26 @@ func (p *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPayR
 	// TODO validate params...
 
 	d := &ScanPayReqData{
+		// 必填
 		Appid:          m.AppID,         // 公众账号ID
-		MchID:          m.Mchntid,       // 商户号
-		SubMchId:       m.SubMchId,      // 子商户号
-		DeviceInfo:     m.DeviceInfo,    // 设备号
+		MchID:          m.ChanMerId,     // 商户号
 		NonceStr:       tools.Nonce(16), // 随机字符串
-		Sign:           "",              // 签名
-		Body:           m.GoodsDesc,     // 商品描述
-		Detail:         m.GoodsInfo,     // 商品详情
-		Attach:         m.Attach,        // 附加数据
+		Body:           m.Subject,       // 商品描述
 		OutTradeNo:     m.OrderNum,      // 商户订单号
-		TotalFee:       m.Txamt,         // 总金额
-		FeeType:        m.CurrType,      // 货币类型
-		SpbillCreateIP: tools.LocalIP,   // 终端IP
-		GoodsGag:       m.GoodsGag,      // 商品标记
+		Sign:           "",              // 签名
 		AuthCode:       m.ScanCodeId,    // 授权码
-		WeixinMD5Key:   m.WeixinMD5Key,
+		TotalFee:       m.ActTxamt,      // 总金额
+		WeixinMD5Key:   m.SignCert,      // md5key
+		SpbillCreateIP: tools.LocalIP,   // 终端IP
+
+		// 非必填
+		SubMchId:   m.SubMchId,       // 子商户号
+		DeviceInfo: m.DeviceInfo,     // 设备号
+		Detail:     m.MarshalGoods(), // 商品详情
+		Attach:     m.Attach,         // 附加数据
+		FeeType:    m.CurrType,       // 货币类型
+		GoodsGag:   m.GoodsGag,       // 商品标记
+
 	}
 
 	var respData ScanPayRespData
@@ -70,13 +74,13 @@ func (p *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResp
 
 	d := &ScanPayQueryReqData{
 		Appid:         m.AppID,         // 公众账号ID
-		MchID:         m.Mchntid,       // 商户号
+		MchID:         m.ChanMerId,     // 商户号
 		SubMchId:      m.SubMchId,      // 子商户号
 		TransactionId: "",              // 微信支付订单号
 		OutTradeNo:    m.OrderNum,      // 商户订单号
 		NonceStr:      tools.Nonce(32), // 商品详情
 		Sign:          "",
-		WeixinMD5Key:  m.WeixinMD5Key,
+		WeixinMD5Key:  m.SignCert,
 	}
 
 	var respData ScanPayQueryRespData
@@ -106,4 +110,19 @@ func (p *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResp
 
 	// TODO 应答码转换
 	return ret, err
+}
+
+// ProcessQrCodeOfflinePay 扫二维码预下单
+func (p *WeixinScanPay) ProcessQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+	return
+}
+
+// ProcessRefund 退款
+func (p *WeixinScanPay) ProcessRefund(req *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+	return
+}
+
+// ProcessCancel 撤销
+func (p *WeixinScanPay) ProcessCancel(req *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+	return
 }

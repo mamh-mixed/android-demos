@@ -2,25 +2,26 @@ package channel
 
 import (
 	"github.com/CardInfoLink/quickpay/channel/alipay"
+	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
 )
 
 // ScanPayChan 扫码支付
 type ScanPayChan interface {
 	// ProcessBarcodePay 扫条码下单
-	ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse
+	ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, error)
 
 	// ProcessQrCodeOfflinePay 扫二维码预下单
-	ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
+	ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayResponse, error)
 
 	// ProcessRefund 退款
-	ProcessRefund(req *model.ScanPay) *model.ScanPayResponse
+	ProcessRefund(req *model.ScanPay) (*model.ScanPayResponse, error)
 
 	// ProcessEnquiry 查询
-	ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse
+	ProcessEnquiry(req *model.ScanPay) (*model.ScanPayResponse, error)
 
 	// ProcessCancel 撤销
-	ProcessCancel(req *model.ScanPay) *model.ScanPayResponse
+	ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error)
 }
 
 // GetScanPayChan 扫码支付渠道
@@ -32,7 +33,7 @@ func GetScanPayChan(chanCode string) ScanPayChan {
 		return &alipay.DefaultClient
 	// 微信
 	case "WXP":
-		return nil
+		return &scanpay.DefaultWeixinScanPay
 	}
 	return nil
 }

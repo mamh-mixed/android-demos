@@ -49,6 +49,10 @@ func init() {
 		fmt.Printf("config file %s parser error: %s\n", fileName, err)
 		os.Exit(5)
 	}
+	// TODO
+	Config.CFCA.CCACert = workDir + "/" + Config.CFCA.CCACert
+	Config.CFCA.Cert = workDir + "/" + Config.CFCA.Cert
+	Config.CFCA.RootCert = workDir + "/" + Config.CFCA.RootCert
 
 }
 

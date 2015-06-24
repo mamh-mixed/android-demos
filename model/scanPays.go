@@ -21,20 +21,19 @@ type ScanPay struct {
 	NotifyUrl    string //异步通知地址
 
 	// 辅助字段
-	Key             string // md5key
-	Subject         string // 商品名称
-	SysOrderNum     string // 渠道交易号
-	OrigSysOrderNum string // 原系统订单号
+	Key         string // md5key
+	Subject     string // 商品名称
+	SysOrderNum string // 渠道交易号
+	ActTxamt    string // 实际交易金额 不同渠道单位不同
 
 	// 微信需要的字段
-	AppID        string // 公众号ID
-	DeviceInfo   string // 设备号
-	GoodsDesc    string // 商品描述
-	Attach       string // 附加数据
-	CurrType     string // 货币类型
-	GoodsGag     string // 商品标记
-	WeixinMD5Key string
-	SubMchId     string
+	AppID      string // 公众号ID
+	DeviceInfo string // 设备号
+	GoodsDesc  string // 商品描述
+	Attach     string // 附加数据
+	CurrType   string // 货币类型
+	GoodsGag   string // 商品标记
+	SubMchId   string
 
 	ChanMerId string // 渠道商户Id
 	SignCert  string // 可能表示md5key等

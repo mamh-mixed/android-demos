@@ -28,7 +28,7 @@ const (
 )
 
 // ProcessBarcodePay 条码支付/下单
-func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
+func (a *alp) ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:       req.ChanMerId,
@@ -38,7 +38,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 		Subject:       req.Subject,
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.Txamt,
+		TotalFee:      req.ActTxamt,
 		ExtendParams:  "",   //...
 		ItBPay:        "1m", // 超时时间
 		DynamicIdType: "bar_code",
@@ -54,11 +54,11 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) *model.ScanPayResponse {
 	}
 
 	// 处理结果返回
-	return transform(alpReq.Service, alpResp, err)
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
-func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse {
+func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:      req.ChanMerId,
@@ -68,7 +68,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 		Subject:      req.Subject,
 		GoodsDetail:  req.MarshalGoods(),
 		ProductCode:  "QR_CODE_OFFLINE",
-		TotalFee:     req.Txamt,
+		TotalFee:     req.ActTxamt,
 		ExtendParams: "",
 		ItBPay:       "1m", // 超时时间
 	}
@@ -79,20 +79,21 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) *model.ScanPayResponse
 	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, preCreate)
+		return nil, err
 	}
 
-	return transform(alpReq.Service, alpResp, err)
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessRefund 退款
-func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
+func (a *alp) ProcessRefund(req *model.ScanPay) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:      req.ChanMerId,
 		Service:      refund,
 		NotifyUrl:    "",
 		OutTradeNo:   req.OrigOrderNum,
-		RefundAmount: req.Txamt,
+		RefundAmount: req.ActTxamt,
 		OutRequestNo: req.OrderNum, // 送的是原订单号，不转换
 	}
 
@@ -102,13 +103,14 @@ func (a *alp) ProcessRefund(req *model.ScanPay) *model.ScanPayResponse {
 	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, refund)
+		return nil, err
 	}
 
-	return transform(alpReq.Service, alpResp, err)
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessEnquiry 查询，包含支付、退款
-func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
+func (a *alp) ProcessEnquiry(req *model.ScanPay) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:    req.ChanMerId,
@@ -121,13 +123,14 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) *model.ScanPayResponse {
 	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, query)
+		return nil, err
 	}
 
-	return transform(alpReq.Service, alpResp, err)
+	return transform(alpReq.Service, alpResp)
 }
 
 // ProcessCancel 撤销
-func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
+func (a *alp) ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:    req.ChanMerId,
@@ -142,9 +145,10 @@ func (a *alp) ProcessCancel(req *model.ScanPay) *model.ScanPayResponse {
 	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, cancel)
+		return nil, err
 	}
 
-	return transform(alpReq.Service, alpResp, err)
+	return transform(alpReq.Service, alpResp)
 }
 
 func toMap(req *alpRequest) map[string]string {
