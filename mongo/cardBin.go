@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"

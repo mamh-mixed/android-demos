@@ -2,11 +2,12 @@ package core
 
 import (
 	"fmt"
+	"strconv"
+	"sync"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"strconv"
-	"sync"
 )
 
 var tree trieTree

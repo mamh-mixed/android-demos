@@ -6,7 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/security"
 
 	"github.com/omigo/log"
 )
@@ -24,7 +24,7 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	m, _ := mongo.MerchantColl.Find(merId)
 
 	// 解密特定字段
-	aes := tools.NewAESCBCEncrypt(m.EncryptKey)
+	aes := security.NewAESCBCEncrypt(m.EncryptKey)
 	bc.AcctNumDecrypt, bc.AcctNum = aes.DcyAndUseSysKeyEcy(bc.AcctNum)
 	bc.AcctNameDecrypt, bc.AcctName = aes.DcyAndUseSysKeyEcy(bc.AcctName)
 	bc.IdentNumDecrypt, bc.IdentNum = aes.DcyAndUseSysKeyEcy(bc.IdentNum)
@@ -214,7 +214,7 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("300030")
 	}
 
-	aes := tools.NewAESCBCEncrypt(m.EncryptKey)
+	aes := security.NewAESCBCEncrypt(m.EncryptKey)
 	b.AcctNumDecrypt, b.AcctNum = aes.DcyAndUseSysKeyEcy(b.AcctNum)
 	b.AcctNameDecrypt, b.AcctName = aes.DcyAndUseSysKeyEcy(b.AcctName)
 	b.IdentNumDecrypt, b.IdentNum = aes.DcyAndUseSysKeyEcy(b.IdentNum)

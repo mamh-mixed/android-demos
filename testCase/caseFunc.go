@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+
 	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"net/http"
-	"net/http/httptest"
 )
 
 // bindingCreate 创建绑定关系

@@ -3,10 +3,11 @@ package scanpay
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"testing"
 )
 
 var scanPayBarcodePay = &model.ScanPay{

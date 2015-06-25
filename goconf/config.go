@@ -1,8 +1,11 @@
 package goconf
 
-import "github.com/omigo/log"
+import (
+	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/omigo/log"
+)
 
-//
+// Config 系统启动时先读取配置文件，绑定到这个 struct 上
 var Config = &ConfigStruct{}
 
 // ConfigStruct 对应于 config.ini 文件
@@ -36,4 +39,11 @@ type ConfigStruct struct {
 	WeixinScanPay struct {
 		URL string
 	}
+}
+
+// postProcess 后续处理
+func (c *ConfigStruct) postProcess() {
+	Config.CFCA.CCACert = tools.WorkDir + "/" + Config.CFCA.CCACert
+	Config.CFCA.Cert = tools.WorkDir + "/" + Config.CFCA.Cert
+	Config.CFCA.RootCert = tools.WorkDir + "/" + Config.CFCA.RootCert
 }

@@ -3,11 +3,12 @@ package mongo
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type transCollection struct {

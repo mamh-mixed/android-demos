@@ -1,8 +1,9 @@
 package core
 
 import (
-	"github.com/omigo/log"
 	"testing"
+
+	"github.com/omigo/log"
 )
 
 func TestCardBinMatch(t *testing.T) {

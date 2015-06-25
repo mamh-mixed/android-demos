@@ -7,18 +7,16 @@ import (
 
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/core"
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 )
 
-var appId string
+var appId = tools.Hostname
 
 // DoCheck 定时检查配置
 func DoCheck() {
-	appId = goconf.Hostname()
-
 	go check()
 }
 

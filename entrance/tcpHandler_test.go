@@ -3,11 +3,12 @@ package entrance
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"io"
 	"net"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 )
 
 func TestListenTcp(t *testing.T) {

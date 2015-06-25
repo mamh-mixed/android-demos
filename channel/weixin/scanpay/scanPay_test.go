@@ -1,9 +1,10 @@
 package scanpay
 
 import (
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
-	"testing"
 )
 
 func TestProcessBarcodePay(t *testing.T) {

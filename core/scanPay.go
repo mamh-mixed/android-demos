@@ -3,15 +3,17 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	// "github.com/CardInfoLink/quickpay/goconf"
+	"net/url"
+	"strconv"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"net/url"
-	"strconv"
-	"strings"
 )
 
 var notityUrl = "http://dev.ipay.so/quickpay/back/alp"

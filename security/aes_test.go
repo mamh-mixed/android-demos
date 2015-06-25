@@ -1,4 +1,4 @@
-package tools
+package security
 
 import (
 	"testing"
@@ -6,13 +6,13 @@ import (
 	"github.com/omigo/log"
 )
 
-var aesCBF, aesCBC = &AesCFBMode{}, &AesCBCMode{}
+var aesCBF, aesCBC = &AESCFBMode{}, &AESCBCMode{}
 
 func init() {
 	aesCBC = NewAESCBCEncrypt("AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8=")
 }
 
-func TestAesCFBEncryptAndDecrypt(t *testing.T) {
+func TestAESCFBEncryptAndDecrypt(t *testing.T) {
 
 	key := []byte("1234567890123456")
 	aesCBF.Key = key
@@ -27,7 +27,7 @@ func TestAesCFBEncryptAndDecrypt(t *testing.T) {
 	log.Debugf("%s", decrypted)
 }
 
-func TestCBCAesEncryptAndDecrypt(t *testing.T) {
+func TestCBCAESEncryptAndDecrypt(t *testing.T) {
 
 	pt := "中国最好，中国最棒，ye"
 	encrypted := aesCBC.Encrypt(pt)

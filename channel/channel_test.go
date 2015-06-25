@@ -1,8 +1,9 @@
 package channel
 
 import (
-	"github.com/omigo/log"
 	"testing"
+
+	"github.com/omigo/log"
 )
 
 func TestGetChan(t *testing.T) {

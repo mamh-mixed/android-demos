@@ -3,11 +3,12 @@ package alipay
 // 真实测试，如果参数对的话，是会扣钱的！！！！！
 // ScanCodeId 从手机获取扫条码
 import (
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 var pay = &model.ScanPay{

@@ -3,11 +3,12 @@ package alipay
 import (
 	"bytes"
 	"encoding/xml"
-	"github.com/CardInfoLink/quickpay/tools"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/CardInfoLink/quickpay/tools"
 )
 
 // mockPostForm 模拟请求

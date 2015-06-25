@@ -1,9 +1,10 @@
 package scanpay
 
 import (
+	"regexp"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"regexp"
 )
 
 // validateBarcodePay 验证扫码下单的参数

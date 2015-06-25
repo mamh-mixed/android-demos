@@ -2,8 +2,9 @@ package master
 
 import (
 	"encoding/json"
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 func TestAllMerchant(t *testing.T) {

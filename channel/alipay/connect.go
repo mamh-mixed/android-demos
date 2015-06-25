@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
 	"net/http"
 	"net/url"
 	"sort"
+
+	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 )
 
 const (

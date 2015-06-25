@@ -5,8 +5,9 @@ import (
 	// "github.com/CardInfoLink/quickpay/model"
 	// "io/ioutil"
 	// "strconv"
-	"github.com/omigo/log"
 	"testing"
+
+	"github.com/omigo/log"
 )
 
 /*

@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"errors"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"

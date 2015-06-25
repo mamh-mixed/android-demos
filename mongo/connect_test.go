@@ -2,9 +2,10 @@ package mongo
 
 import (
 	"fmt"
-	"gopkg.in/mgo.v2/bson"
 	"testing"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/omigo/log"
 )
