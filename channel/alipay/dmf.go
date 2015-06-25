@@ -171,6 +171,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
 	dict["refund_amount"] = req.RefundAmount
+	dict["out_request_no"] = req.OutRequestNo
 
 	// utf-8 -> gbk
 	e := mahonia.NewEncoder("gbk")

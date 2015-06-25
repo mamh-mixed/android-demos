@@ -21,7 +21,6 @@ type ScanPay struct {
 	NotifyUrl    string //异步通知地址
 
 	// 辅助字段
-	Key         string // md5key
 	Subject     string // 商品名称
 	SysOrderNum string // 渠道交易号
 	ActTxamt    string // 实际交易金额 不同渠道单位不同

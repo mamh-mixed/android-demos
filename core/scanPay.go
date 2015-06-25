@@ -53,13 +53,11 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	t.TransAmt = int64(f)
 
 	// 渠道选择
-	// 根据扫码Id判断走哪个渠道，并且转换金额单位
+	// 根据扫码Id判断走哪个渠道
 	if strings.HasPrefix(req.ScanCodeId, "1") {
 		req.Chcd = "WXP"
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 	} else if strings.HasPrefix(req.ScanCodeId, "2") {
 		req.Chcd = "ALP"
-		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
 	} else {
 		// 不送，返回 TODO check error code
 		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
@@ -90,12 +88,23 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return ret
 	}
 
+	// 参数处理
+	switch rp.ChanCode {
+	case "ALP":
+		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
+	case "WXP":
+		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
+	default:
+		req.ActTxamt = req.Txamt
+	}
+
 	// 上送参数
 	req.SysOrderNum = tools.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
-	req.AppID = c.WxpAppId // wxp需要
 	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
@@ -220,8 +229,8 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
-	// 渠道
-	ret.Chcd = req.Chcd
+	// 二维码
+	t.QrCode = ret.QrCode
 
 	// 更新交易信息
 	updateTrans(t, ret)
@@ -510,7 +519,6 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 	t.ConsumerAccount = ret.ConsumerAccount
 	t.ConsumerId = ret.ConsumerId
 	t.RespCode = ret.Respcd
-	// ...
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {

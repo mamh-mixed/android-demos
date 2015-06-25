@@ -135,6 +135,7 @@ type ChanMer struct {
 	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty" json:"wxpEncryptCert,omitempty"` //微信支付加密证书
 	InsCode        string `bson:"insCode,omitempty" json:"insCode,omitempty"`               //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId     string `bson:"terminalId,omitempty" json:"terminalId,omitempty"`         //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
+	SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
 	//...
 }
 
@@ -188,6 +189,7 @@ type Trans struct {
 	ConsumerId      string `bson:"consumerId,omitempty"`      //消费id  支付宝、微信
 	Busicd          string `bson:"busicd,omitempty"`          //业务id
 	Inscd           string `bson:"inscd,omitempty"`           //机构号
+	QrCode          string `bson:"qrCode,omitempty"`          //预下单时的二维码
 }
 
 // SummarySettData 交易汇总
