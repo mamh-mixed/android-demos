@@ -4,6 +4,13 @@ import (
 	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
+)
+
+// 扫码支付渠道
+const (
+	ChanCodeWeixin = "WXP"
+	ChanCodeAlipay = "ALP"
 )
 
 // ScanPayChan 扫码支付
@@ -26,14 +33,15 @@ type ScanPayChan interface {
 
 // GetScanPayChan 扫码支付渠道
 func GetScanPayChan(chanCode string) ScanPayChan {
-
 	switch chanCode {
-	// 支付宝
-	case "ALP":
-		return &alipay.DefaultClient
 	// 微信
-	case "WXP":
+	case ChanCodeWeixin:
 		return &scanpay.DefaultWeixinScanPay
+	// 支付宝
+	case ChanCodeAlipay:
+		return &alipay.DefaultClient
+	default:
+		log.Errorf("unknown scan pay channel `%s`", chanCode)
+		return nil
 	}
-	return nil
 }

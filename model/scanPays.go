@@ -7,23 +7,23 @@ import (
 
 // ScanPay 扫码支付
 type ScanPay struct {
-	Txndir       string //交易方向
-	Busicd       string //交易类型
-	Inscd        string //机构号
-	Chcd         string //渠道机构
-	Mchntid      string //商户号
-	Txamt        string //订单金额
-	GoodsInfo    string //商品详情
-	OrderNum     string //订单号
-	OrigOrderNum string //原订单号
-	ScanCodeId   string //扫码号
-	Sign         string //签名
-	NotifyUrl    string //异步通知地址
+	Txndir       string // 交易方向
+	Busicd       string // 交易类型
+	Inscd        string // 机构号
+	Chcd         string // 渠道机构
+	Mchntid      string // 商户号
+	Txamt        string // 订单金额
+	GoodsInfo    string // 商品详情
+	OrderNum     string // 订单号
+	OrigOrderNum string // 原订单号
+	ScanCodeId   string // 扫码号
+	Sign         string // 签名
+	NotifyUrl    string // 异步通知地址
 
 	// 辅助字段
-	Subject     string // 商品名称
-	SysOrderNum string // 渠道交易号
-	ActTxamt    string // 实际交易金额 不同渠道单位不同
+	Subject     string //  商品名称
+	SysOrderNum string //  渠道交易号
+	ActTxamt    string //  实际交易金额 不同渠道单位不同
 
 	// 微信需要的字段
 	AppID      string // 公众号ID
@@ -32,7 +32,7 @@ type ScanPay struct {
 	Attach     string // 附加数据
 	CurrType   string // 货币类型
 	GoodsGag   string // 商品标记
-	SubMchId   string
+	SubMchId   string // 子商户
 
 	ChanMerId string // 渠道商户Id
 	SignCert  string // 可能表示md5key等

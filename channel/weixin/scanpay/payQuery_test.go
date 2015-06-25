@@ -9,7 +9,7 @@ import (
 )
 
 func TestScanPayQueryGenSign(t *testing.T) {
-	d := &ScanPayQueryReqData{
+	d := &PayQueryReq{
 		Appid:         "wx25ac886b6dac7dd2", // 公众账号ID
 		MchID:         "1236593202",         // 商户号
 		SubMchId:      "1247075201",

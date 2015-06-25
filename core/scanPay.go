@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/CardInfoLink/quickpay/channel"
-	// "github.com/CardInfoLink/quickpay/goconf"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/goconf"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -16,7 +17,7 @@ import (
 	"github.com/omigo/log"
 )
 
-var notityUrl = "http://dev.ipay.so/quickpay/back/alp"
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/quickpay/back/alp"
 
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
@@ -105,7 +106,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
-	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
+	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -207,7 +208,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
-	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
+	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -320,11 +321,14 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(refund, "SYSTEM_ERROR")
 	}
 
+	// TODO 这个转换交给各个渠道自己管，如果再加一个渠道，不用改核心逻辑
 	// 转换金额单位
 	switch t.ChanCode {
-	case "ALP":
+	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
-	case "WXP":
+	case channel.ChanCodeWeixin:
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 	default:
 		req.ActTxamt = req.Txamt
@@ -334,7 +338,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.SysOrderNum = tools.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
-	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
+	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -377,7 +381,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 判断订单的状态
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
-	case model.TransHandling, "":
+	case model.TransHandling, model.TransSuccess:
 		// 获取渠道商户
 		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 		if err != nil {
@@ -385,6 +389,8 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			return mongo.OffLineRespCd("SYSTEM_ERROR")
 		}
 		// 上送参数
+		req.AppID = c.WxpAppId    // 微信需要
+		req.SubMchId = c.SubMchId // 微信需要
 		req.OrderNum = t.OrderNum
 		req.SignCert = c.SignCert
 		req.ChanMerId = c.ChanMerId
@@ -401,7 +407,6 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		updateTrans(t, ret)
 
 	default:
-
 		// 原交易信息
 		ret.ErrorDetail = t.ChanRespCode
 		ret.ChannelOrderNum = t.ChanOrderNum
@@ -493,7 +498,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.SysOrderNum = tools.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
-	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
+	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -599,7 +604,6 @@ func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayRespons
 
 // updateTrans 更新交易信息
 func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
-
 	// 根据请求结果更新
 	t.ChanRespCode = ret.ChanRespCode
 	t.ChanOrderNum = ret.ChannelOrderNum

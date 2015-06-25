@@ -4,6 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"github.com/omigo/validator"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -14,12 +15,11 @@ var DefaultWeixinScanPay WeixinScanPay
 
 // ProcessBarcodePay 扫条码下单
 func (p *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
-	// TODO validate params...
-
-	d := &ScanPayReqData{
+	d := &PayReq{
 		// 必填
 		Appid:          m.AppID,         // 公众账号ID
 		MchID:          m.ChanMerId,     // 商户号
+		SubMchId:       m.SubMchId,      // 子商户号
 		NonceStr:       tools.Nonce(16), // 随机字符串
 		Body:           m.Subject,       // 商品描述
 		OutTradeNo:     m.OrderNum,      // 商户订单号
@@ -30,49 +30,48 @@ func (p *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPayR
 		SpbillCreateIP: tools.LocalIP,   // 终端IP
 
 		// 非必填
-		SubMchId:   m.SubMchId,       // 子商户号
 		DeviceInfo: m.DeviceInfo,     // 设备号
 		Detail:     m.MarshalGoods(), // 商品详情
 		Attach:     m.Attach,         // 附加数据
 		FeeType:    m.CurrType,       // 货币类型
 		GoodsGag:   m.GoodsGag,       // 商品标记
-
+	}
+	if err := validator.Validate(d); err != nil {
+		log.Errorf("validate error, %s", err)
+		return nil, err
 	}
 
-	var respData ScanPayRespData
-	err = sendRequest(ScanPayURI, d, &respData)
+	var respData PayResp
+	err = sendRequest(payURI, d, &respData)
 	if err != nil {
 		log.Errorf("weixin device scan phone request error: %s", err)
 		return nil, err
 	}
 
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",                 // 交易方向 M M
-		Busicd:          m.Busicd,            // 交易类型 M M
-		Respcd:          respData.ReturnCode, // 交易结果  M
-		Inscd:           m.Inscd,             // 机构号 M M
-		Chcd:            m.Chcd,              // 渠道 C C
-		Mchntid:         respData.MchID,      // 商户号 M M
-		Txamt:           respData.TotalFee,   // 订单金额 M M
-		ChannelOrderNum: respData.OutTradeNo, // 渠道交易号 C
-		ConsumerAccount: m.ChanMerId,         // 渠道账号  C
-		ConsumerId:      respData.OpenID,     // 渠道账号ID   C
-		ErrorDetail:     respData.ErrCodeDes, // 错误信息   C
-		OrderNum:        m.OrderNum,          // 订单号 M C
-		OrigOrderNum:    m.OrigOrderNum,      // 源订单号 M C
-		QrCode:          m.ScanCodeId,        // 二维码 C
-		ChanRespCode:    respData.ReturnCode, // 渠道详细应答码
+		Txndir:          "A",                         // 交易方向 M M
+		Busicd:          m.Busicd,                    // 交易类型 M M
+		Respcd:          transform(respData.ErrCode), // 交易结果  M
+		Inscd:           m.Inscd,                     // 机构号 M M
+		Chcd:            m.Chcd,                      // 渠道 C C
+		Mchntid:         respData.MchID,              // 商户号 M M
+		Txamt:           respData.TotalFee,           // 订单金额 M M
+		ChannelOrderNum: respData.TransactionId,      // 渠道交易号 C
+		ConsumerAccount: respData.OpenID,             // 渠道账号  C
+		ConsumerId:      "",                          // 渠道账号ID   C
+		ErrorDetail:     respData.ErrCodeDes,         // 错误信息   C
+		OrderNum:        m.OrderNum,                  // 订单号 M C
+		OrigOrderNum:    "",                          // 源订单号 M C
+		QrCode:          m.ScanCodeId,                // 二维码 C
+		ChanRespCode:    respData.ErrCode,            // 渠道详细应答码
 	}
 
-	// TODO 应答码转换
 	return ret, err
 }
 
 // ProcessEnquiry 查询
 func (p *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
-	// TODO validate params...
-
-	d := &ScanPayQueryReqData{
+	d := &PayQueryReq{
 		Appid:         m.AppID,         // 公众账号ID
 		MchID:         m.ChanMerId,     // 商户号
 		SubMchId:      m.SubMchId,      // 子商户号
@@ -82,47 +81,195 @@ func (p *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResp
 		Sign:          "",
 		WeixinMD5Key:  m.SignCert,
 	}
+	if err := validator.Validate(d); err != nil {
+		log.Errorf("validate error, %s", err)
+		return nil, err
+	}
 
-	var respData ScanPayQueryRespData
-	err = sendRequest(ScanPayQueryURI, d, &respData)
+	var respData PayQueryResp
+	err = sendRequest(payQueryURI, d, &respData)
 	if err != nil {
 		log.Errorf("weixin device scan phone request error: %s", err)
 		return nil, err
 	}
 
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",                 // 交易方向 M M
-		Busicd:          m.Busicd,            // 交易类型 M M
-		Respcd:          respData.ReturnCode, // 交易结果  M
-		Inscd:           m.Inscd,             // 机构号 M M
-		Chcd:            m.Chcd,              // 渠道 C C
-		Mchntid:         respData.MchID,      // 商户号 M M
-		Txamt:           respData.TotalFee,   // 订单金额 M M
-		ChannelOrderNum: respData.OutTradeNo, // 渠道交易号 C
-		ConsumerAccount: m.ChanMerId,         // 渠道账号  C
-		ConsumerId:      respData.OpenID,     // 渠道账号ID   C
-		ErrorDetail:     respData.ErrCodeDes, // 错误信息   C
-		OrderNum:        m.OrderNum,          // 订单号 M C
-		OrigOrderNum:    m.OrigOrderNum,      // 源订单号 M C
-		QrCode:          m.ScanCodeId,        // 二维码 C
-		ChanRespCode:    respData.ReturnCode, // 渠道详细应答码
+		Txndir:          "A",                         // 交易方向 M M
+		Busicd:          m.Busicd,                    // 交易类型 M M
+		Respcd:          transform(respData.ErrCode), // 交易结果  M
+		Inscd:           m.Inscd,                     // 机构号 M M
+		Chcd:            m.Chcd,                      // 渠道 C C
+		Mchntid:         respData.MchID,              // 商户号 M M
+		Txamt:           respData.TotalFee,           // 订单金额 M M
+		ChannelOrderNum: respData.TransactionId,      // 渠道交易号 C
+		ConsumerAccount: respData.OpenID,             // 渠道账号  C
+		ConsumerId:      "",                          // 渠道账号ID   C
+		ErrorDetail:     respData.ErrCodeDes,         // 错误信息   C
+		OrderNum:        m.OrderNum,                  // 订单号 M C
+		OrigOrderNum:    m.OrigOrderNum,              // 源订单号 M C
+		QrCode:          m.ScanCodeId,                // 二维码 C
+		ChanRespCode:    respData.ErrCode,            // 渠道详细应答码
 	}
 
-	// TODO 应答码转换
 	return ret, err
 }
 
 // ProcessQrCodeOfflinePay 扫二维码预下单
 func (p *WeixinScanPay) ProcessQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse, err error) {
-	return
+
+	return ret, err
 }
 
 // ProcessRefund 退款
-func (p *WeixinScanPay) ProcessRefund(req *model.ScanPay) (ret *model.ScanPayResponse, err error) {
-	return
+func (p *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+	log.Debugf("%#c", m)
+	d := &RefundReq{
+		// 公共字段
+		Appid:        m.AppID,         // 公众账号ID
+		MchID:        m.ChanMerId,     // 商户号
+		SubMchId:     m.SubMchId,      // 子商户号
+		NonceStr:     tools.Nonce(16), // 随机字符串
+		Sign:         "",              // 签名
+		WeixinMD5Key: m.SignCert,
+
+		DeviceInfo:    m.DeviceInfo,   // 设备号
+		TransactionId: "",             // 微信订单号
+		OutTradeNo:    m.OrderNum,     // 商户订单号
+		OutRefundNo:   m.OrigOrderNum, // 商户退款单号
+		TotalFee:      m.Txamt,        // 总金额
+		RefundFee:     m.Txamt,        // 退款金额
+		RefundFeeType: m.CurrType,     // 货币种类
+		OpUserId:      m.ChanMerId,    // 操作员
+	}
+
+	if err := validator.Validate(d); err != nil {
+		log.Errorf("validate error, %s", err)
+		return nil, err
+	}
+
+	var respData RefundResp
+	err = sendRequest(payURI, d, &respData)
+	if err != nil {
+		log.Errorf("weixin device scan phone request error: %s", err)
+		return nil, err
+	}
+
+	ret = &model.ScanPayResponse{
+		Txndir:          "A",                         // 交易方向 M M
+		Busicd:          m.Busicd,                    // 交易类型 M M
+		Respcd:          transform(respData.ErrCode), // 交易结果  M
+		Inscd:           m.Inscd,                     // 机构号 M M
+		Chcd:            m.Chcd,                      // 渠道 C C
+		Mchntid:         respData.MchID,              // 商户号 M M
+		Txamt:           respData.RefundFee,          // 订单金额 M M
+		ChannelOrderNum: respData.TransactionId,      // 渠道交易号 C
+		ConsumerAccount: "",                          // 渠道账号  C
+		ConsumerId:      "",                          // 渠道账号ID   C
+		ErrorDetail:     respData.ErrCodeDes,         // 错误信息   C
+		OrderNum:        m.OrderNum,                  // 订单号 M C
+		OrigOrderNum:    "",                          // 源订单号 M C
+		QrCode:          m.ScanCodeId,                // 二维码 C
+		ChanRespCode:    respData.ErrCode,            // 渠道详细应答码
+	}
+
+	return ret, err
+}
+
+// ProcessRefundQuery 退款查询
+func (p *WeixinScanPay) ProcessRefundQuery(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+	d := &RefundQueryReq{
+		// 公共字段
+		Appid:        m.AppID,         // 公众账号ID
+		MchID:        m.ChanMerId,     // 商户号
+		SubMchId:     m.SubMchId,      // 子商户号
+		NonceStr:     tools.Nonce(16), // 随机字符串
+		Sign:         "",              // 签名
+		WeixinMD5Key: m.SignCert,
+
+		DeviceInfo:    m.DeviceInfo,   // 设备号
+		TransactionId: "",             // 微信订单号
+		OutTradeNo:    m.OrderNum,     // 商户订单号
+		OutRefundNo:   m.OrigOrderNum, // 商户退款单号
+		RefundId:      "",             // 操作员
+	}
+
+	if err := validator.Validate(d); err != nil {
+		log.Errorf("validate error, %s", err)
+		return nil, err
+	}
+
+	var respData RefundQueryResp
+	err = sendRequest(payURI, d, &respData)
+	if err != nil {
+		log.Errorf("weixin device scan phone request error: %s", err)
+		return nil, err
+	}
+
+	ret = &model.ScanPayResponse{
+		Txndir:          "A",                         // 交易方向 M M
+		Busicd:          m.Busicd,                    // 交易类型 M M
+		Respcd:          transform(respData.ErrCode), // 交易结果  M
+		Inscd:           m.Inscd,                     // 机构号 M M
+		Chcd:            m.Chcd,                      // 渠道 C C
+		Mchntid:         respData.MchID,              // 商户号 M M
+		Txamt:           m.Txamt,                     // 订单金额 M M
+		ChannelOrderNum: respData.TransactionId,      // 渠道交易号 C
+		ConsumerAccount: "",                          // 渠道账号  C
+		ConsumerId:      "",                          // 渠道账号ID   C
+		ErrorDetail:     respData.ErrCodeDes,         // 错误信息   C
+		OrderNum:        m.OrderNum,                  // 订单号 M C
+		OrigOrderNum:    "",                          // 源订单号 M C
+		QrCode:          m.ScanCodeId,                // 二维码 C
+		ChanRespCode:    respData.ErrCode,            // 渠道详细应答码
+	}
+
+	return ret, err
 }
 
 // ProcessCancel 撤销
-func (p *WeixinScanPay) ProcessCancel(req *model.ScanPay) (ret *model.ScanPayResponse, err error) {
-	return
+func (p *WeixinScanPay) ProcessCancel(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+	d := &ReverseReq{
+		// 公共字段
+		Appid:        m.AppID,         // 公众账号ID
+		MchID:        m.ChanMerId,     // 商户号
+		SubMchId:     m.SubMchId,      // 子商户号
+		NonceStr:     tools.Nonce(16), // 随机字符串
+		Sign:         "",              // 签名
+		WeixinMD5Key: m.SignCert,
+
+		TransactionId: "",         // 微信订单号
+		OutTradeNo:    m.OrderNum, // 商户订单号
+	}
+
+	if err := validator.Validate(d); err != nil {
+		log.Errorf("validate error, %s", err)
+		return nil, err
+	}
+
+	var respData ReverseResp
+	err = sendRequest(payURI, d, &respData)
+	if err != nil {
+		log.Errorf("weixin device scan phone request error: %s", err)
+		return nil, err
+	}
+
+	ret = &model.ScanPayResponse{
+		Txndir:          "A",                         // 交易方向 M M
+		Busicd:          m.Busicd,                    // 交易类型 M M
+		Respcd:          transform(respData.ErrCode), // 交易结果  M
+		Inscd:           m.Inscd,                     // 机构号 M M
+		Chcd:            m.Chcd,                      // 渠道 C C
+		Mchntid:         respData.MchID,              // 商户号 M M
+		Txamt:           m.Txamt,                     // 订单金额 M M
+		ChannelOrderNum: "",                          // 渠道交易号 C
+		ConsumerAccount: "",                          // 渠道账号  C
+		ConsumerId:      "",                          // 渠道账号ID   C
+		ErrorDetail:     respData.ErrCodeDes,         // 错误信息   C
+		OrderNum:        m.OrderNum,                  // 订单号 M C
+		OrigOrderNum:    "",                          // 源订单号 M C
+		QrCode:          m.ScanCodeId,                // 二维码 C
+		ChanRespCode:    respData.ErrCode,            // 渠道详细应答码
+	}
+
+	return ret, err
 }

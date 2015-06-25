@@ -13,12 +13,13 @@ import (
 var url = goconf.Config.WeixinScanPay.URL
 
 const (
-	ScanPayURI      = "/pay/micropay"
-	ScanPayQueryURI = "/pay/orderquery"
+	payURI      = "/pay/micropay"
+	payQueryURI = "/pay/orderquery"
+	reverseUR   = "/secapi/pay/reverse"
 )
 
-func sendRequest(uri string, d BaseData, respData interface{}) error {
-	xmlBytes, err := prepareData(d)
+func sendRequest(uri string, req BaseReq, resp BaseResp) error {
+	xmlBytes, err := prepareData(req)
 	if err != nil {
 		return err
 	}
@@ -28,10 +29,10 @@ func sendRequest(uri string, d BaseData, respData interface{}) error {
 		return err
 	}
 
-	return processResponseBody(ret, respData)
+	return processResponseBody(ret, resp)
 }
 
-func prepareData(d BaseData) (xmlBytes []byte, err error) {
+func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 	d.GenSign()
 
 	xmlBytes, err = xml.Marshal(d)
