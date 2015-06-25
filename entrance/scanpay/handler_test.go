@@ -12,9 +12,9 @@ import (
 var scanPayBarcodePay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   tools.Millisecond(),
-	ScanCodeId: "28920004904763864",
+	ScanCodeId: "283112524283364763",
 	Inscd:      "CIL00002",
-	Txamt:      "000000000001",
+	Txamt:      "000000000002",
 	Busicd:     "purc",
 	Mchntid:    "CIL0001",
 }
@@ -23,7 +23,7 @@ var scanPayQrCodeOfflinePay = &model.ScanPay{
 	GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 	OrderNum:  tools.Millisecond(),
 	Inscd:     "CIL00002",
-	Txamt:     "5",
+	Txamt:     "000000000001",
 	Busicd:    "paut",
 	Mchntid:   "CIL0001",
 	Chcd:      "ALP",
@@ -33,21 +33,21 @@ var scanPayEnquiry = &model.ScanPay{
 	Busicd:       "inqy",
 	Mchntid:      "CIL0001",
 	Inscd:        "CIL00002",
-	OrigOrderNum: "1435126449351",
+	OrigOrderNum: "1435198837472",
 }
 
 var scanPayRefund = &model.ScanPay{
 	Busicd:       "refd",
 	Mchntid:      "CIL0001",
 	OrderNum:     tools.Millisecond(),
-	OrigOrderNum: "1435127952347",
+	OrigOrderNum: "1435199869254",
 	Inscd:        "CIL00002",
-	Txamt:        "0.01",
+	Txamt:        "000000000001",
 }
 
 func TestScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
-	reqBytes, _ := json.Marshal(scanPayBarcodePay)
+	reqBytes, _ := json.Marshal(scanPayRefund)
 	respBytes := Router(reqBytes)
 	fmt.Println(string(respBytes))
 }
