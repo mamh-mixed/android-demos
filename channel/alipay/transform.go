@@ -9,10 +9,6 @@ import (
 // transform 支付宝返回报文处理
 func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, error) {
 
-	// if err != nil {
-	// 	return mongo.OffLineRespCd("Time_out")
-	// }
-
 	if alpResp.IsSuccess != "T" {
 		return mongo.OffLineRespCd(alpResp.Error), nil
 	}

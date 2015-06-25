@@ -422,17 +422,106 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 // Cancel 撤销
 func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
-	// TODO 判断是否存在该订单
+	ret = new(model.ScanPayResponse)
+	// 判断订单是否存在
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+	if count > 0 {
+		// 订单号重复 check error code
+		return mongo.OffLineRespCd("AUTH_NO_ERROR")
+	}
 
-	// TODO 判断订单的状态
+	// 记录这笔撤销
+	cancel := &model.Trans{
+		MerId:          req.Mchntid,
+		OrderNum:       req.OrderNum,
+		RefundOrderNum: req.OrigOrderNum,
+		TransType:      model.CancelTrans,
+		Busicd:         req.Busicd,
+		Inscd:          req.Inscd,
+		ChanCode:       req.Chcd,
+	}
 
-	// TODO 获得渠道商户
+	// 判断是否存在该订单
+	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	if err != nil {
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
+	}
 
-	// TODO 请求退款
+	// 是否是支付交易
+	if t.TransType != model.PayTrans {
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	}
 
-	// TODO 更新订单状态
+	// 交易状态是否正常
+	if t.TransStatus != model.TransSuccess {
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	}
 
-	return
+	var refundStatus int8
+	// 判断原交易是否有退款交易
+	switch t.RefundStatus {
+	// 已被退款
+	case model.TransRefunded:
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	// 存在退款交易
+	case model.TransPartRefunded:
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	default:
+		// 可撤销
+		refundStatus = model.TransRefunded
+	}
+
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return logicErrorHandler(cancel, "SYSTEM_ERROR")
+	}
+
+	// 转换金额单位
+	switch t.ChanCode {
+	case "ALP":
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+	case "WXP":
+		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+	}
+
+	// 渠道参数
+	req.SysOrderNum = tools.SerialNumber()
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+	// req.NotifyUrl = notityUrl + "?schema=" + req.SysOrderNum
+
+	// 交易参数
+	t.SysOrderNum = req.SysOrderNum
+
+	// 记录交易
+	err = mongo.SpTransColl.Add(cancel)
+	if err != nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+
+	// 请求撤销
+	sp := channel.GetScanPayChan(t.ChanCode)
+	ret, err = sp.ProcessCancel(req)
+	if err != nil {
+		log.Errorf("process cancel error:%s", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+
+	// 原交易状态更新
+	if ret.Respcd == "00" {
+		t.RefundStatus = refundStatus
+		mongo.SpTransColl.Update(t)
+	}
+
+	// 更新交易状态
+	updateTrans(cancel, ret)
+
+	return ret
 }
 
 // AlpAsyncNotify 支付宝异步通知处理

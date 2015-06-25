@@ -67,3 +67,13 @@ func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 	return
 }
+
+func validateCancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 验证非空
+	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	return
+}

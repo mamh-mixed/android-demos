@@ -159,7 +159,7 @@ type Trans struct {
 	OrderNum       string        `bson:"orderNum,omitempty"`                         //商户订单流水号、退款流水号
 	SysOrderNum    string        `bson:"sysOrderNum,omitempty"`                      //系统订单流水号、退款流水号
 	ChanOrderNum   string        `bson:"chanOrderNum,omitempty"`                     //渠道返回订单流水号
-	RefundOrderNum string        `bson:"refundOrderNum,omitempty"`                   //退款订单号 当交易类型为退款时
+	RefundOrderNum string        `bson:"refundOrderNum,omitempty"`                   //退款订单号 当交易类型为退款/撤销时
 	RespCode       string        `bson:"respCode,omitempty"`                         //网关应答码
 	MerId          string        `bson:"merId,omitempty"`                            //商户号
 	TransAmt       int64         `bson:"transAmt,omitempty"`                         //交易金额
@@ -170,7 +170,7 @@ type Trans struct {
 	ChanRespCode   string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
 	CreateTime     string        `bson:"createTime,omitempty"`                       //交易创建时间 yyyy-mm-dd hh:mm:ss
 	UpdateTime     string        `bson:"updateTime,omitempty"`                       //交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus   int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款 2-部分退款
+	RefundStatus   int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty"`       //交易账户
