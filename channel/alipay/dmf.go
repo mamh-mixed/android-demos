@@ -63,7 +63,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayRespons
 	alpReq := &alpRequest{
 		Partner:      req.ChanMerId,
 		Service:      preCreate,
-		NotifyUrl:    "",
+		NotifyUrl:    req.NotifyUrl,
 		OutTradeNo:   req.OrderNum, // 送的是原订单号，不转换,
 		Subject:      req.Subject,
 		GoodsDetail:  req.MarshalGoods(),
@@ -91,10 +91,10 @@ func (a *alp) ProcessRefund(req *model.ScanPay) (*model.ScanPayResponse, error) 
 	alpReq := &alpRequest{
 		Partner:      req.ChanMerId,
 		Service:      refund,
-		NotifyUrl:    "",
+		NotifyUrl:    req.NotifyUrl,
 		OutTradeNo:   req.OrigOrderNum,
 		RefundAmount: req.ActTxamt,
-		OutRequestNo: req.OrderNum, // 送的是原订单号，不转换
+		OutRequestNo: req.OrderNum, //该字段上送才能部分退款，如果不送则只能全额退款
 	}
 
 	// req to map
@@ -135,7 +135,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error) 
 	alpReq := &alpRequest{
 		Partner:    req.ChanMerId,
 		Service:    cancel,
-		NotifyUrl:  "",
+		NotifyUrl:  req.NotifyUrl,
 		OutTradeNo: req.OrigOrderNum,
 	}
 
@@ -154,7 +154,6 @@ func (a *alp) ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error) 
 func toMap(req *alpRequest) map[string]string {
 
 	dict := make(map[string]string)
-
 	// 固定参数
 	dict["_input_charset"] = charSet
 	dict["partner"] = req.Partner

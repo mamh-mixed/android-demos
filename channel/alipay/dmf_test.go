@@ -12,35 +12,50 @@ import (
 )
 
 var pay = &model.ScanPay{
-	// GoodsInfo:    "鞋子,1000,2;衣服,1500,3",
+	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   tools.SerialNumber(),
 	SignCert:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ScanCodeId: "289253580324978839",
-	ActTxamt:   "0.01",
+	ScanCodeId: "285055926126558003",
+	ActTxamt:   "0.02",
 	Subject:    "讯联测试",
 	ChanMerId:  "2088811767473826",
 }
 
 var prePay = &model.ScanPay{
-	// GoodsInfo:    "鞋子,1000,2;衣服,1500,3",
-	OrderNum:  tools.SerialNumber(),
+	GoodsInfo: "鞋子,1000,2;衣服,1500,3",
+	OrderNum:  tools.Millisecond(),
 	SignCert:  "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ActTxamt:  "0.01",
 	Subject:   "讯联测试",
 	ChanMerId: "2088811767473826",
 }
 
+var cancelPay = &model.ScanPay{
+	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+	Subject:      "讯联测试",
+	ChanMerId:    "2088811767473826",
+	OrigOrderNum: "4fc04e4728fb433140790a64b575a535",
+}
+
 var enquiry = &model.ScanPay{
-	// SysOrderNum: "fc718816621f4bc47fc09ccba1c66304",
 	OrderNum:  "1435200967398",
 	SignCert:  "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ChanMerId: "2088811767473826",
+}
+
+var refundPay = &model.ScanPay{
+	OrderNum:     tools.Millisecond(),
+	OrigOrderNum: "4fc04e4728fb433140790a64b575a535",
+	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+	ChanMerId:    "2088811767473826",
+	ActTxamt:     "0.01",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
 
 	// 默认开启调试
 	// Debug = false
+	log.SetOutputLevel(log.Ldebug)
 	Convey("支付宝下单", t, func() {
 		resp, _ := DefaultClient.ProcessBarcodePay(pay)
 		Convey("期望", func() {
@@ -76,4 +91,28 @@ func TestProcessEnquiry(t *testing.T) {
 		})
 	})
 
+}
+
+func TestProcessRefund(t *testing.T) {
+
+	// 默认开启调试
+	log.SetOutputLevel(log.Ldebug)
+	Convey("支付宝退款订单", t, func() {
+		resp, _ := DefaultClient.ProcessRefund(refundPay)
+		Convey("期望", func() {
+			So(resp.Respcd, ShouldEqual, "00")
+		})
+	})
+}
+
+func TestProcessCancel(t *testing.T) {
+
+	// 默认开启调试
+	log.SetOutputLevel(log.Ldebug)
+	Convey("支付宝撤销订单", t, func() {
+		resp, _ := DefaultClient.ProcessCancel(cancelPay)
+		Convey("期望", func() {
+			So(resp.Respcd, ShouldEqual, "00")
+		})
+	})
 }

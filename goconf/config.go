@@ -39,6 +39,11 @@ type ConfigStruct struct {
 	WeixinScanPay struct {
 		URL string
 	}
+
+	AlipayScanPay struct {
+		URL       string
+		NotifyUrl string
+	}
 }
 
 // postProcess 后续处理

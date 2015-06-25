@@ -8,17 +8,15 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	"net/http"
 	"net/url"
 	"sort"
-
-	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
 )
 
-const (
-	requestURL = "https://mapi.alipay.com/gateway.do"
-)
+var requestURL = goconf.Config.AlipayScanPay.URL
 
 // sendRequest 发送请求
 func sendRequest(params map[string]string, key string) (*alpResponse, error) {

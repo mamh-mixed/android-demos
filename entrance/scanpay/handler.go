@@ -142,8 +142,15 @@ func cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	log.Debugf("request body: %+v", req)
 
-	// TODO validite field
-	return core.Cancel(req)
+	if ret = validateCancel(req); ret == nil {
+		// process
+		ret = core.Cancel(req)
+	}
+
+	// 补充原信息返回
+	fillResponseInfo(req, ret)
+
+	return ret
 }
 
 func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
