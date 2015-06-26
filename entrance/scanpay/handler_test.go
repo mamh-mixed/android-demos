@@ -36,7 +36,7 @@ var (
 		Busicd:       "inqy",
 		Mchntid:      "CIL0001",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435300750631",
+		OrigOrderNum: "1435306550752",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
@@ -52,7 +52,7 @@ var (
 		Busicd:       "void",
 		Mchntid:      "CIL0001",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435216248710",
+		OrigOrderNum: "1435306550752",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}
@@ -60,7 +60,7 @@ var (
 
 func TestScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
-	scanPay := scanPayBarcodePay
+	scanPay := scanPayCancel
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := ScanPayHandle(reqBytes)
 

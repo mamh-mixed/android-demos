@@ -278,7 +278,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
 
-	// 退款只能隔天推
+	// 退款只能隔天退
 	if strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
 		return logicErrorHandler(refund, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
 	}
@@ -400,6 +400,13 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		if err != nil {
 			log.Errorf("process enquiry error:%s", err)
 			return mongo.OffLineRespCd("SYSTEM_ERROR")
+		}
+
+		// TODO 重构时放在core-channel中间层
+		// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
+		if t.ChanCode == "ALP" && t.Busicd == "paut" && ret.ErrorDetail == "TRADE_NOT_EXIST" {
+			ret.Respcd = "09"
+			ret.ErrorDetail = "WAIT_BUYER_PAY"
 		}
 
 		// 更新交易结果
