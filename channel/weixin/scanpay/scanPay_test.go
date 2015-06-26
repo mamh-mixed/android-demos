@@ -11,7 +11,7 @@ func TestProcessBarcodePay(t *testing.T) {
 	m := &model.ScanPay{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
-		SubMchId:   "1247075201",
+		SubMchId:   "1247075201",         // 子商户
 		DeviceInfo: "1000",               // 设备号
 		Subject:    "被扫支付测试",             // 商品描述
 		GoodsInfo:  "",                   // 商品详情

@@ -32,8 +32,16 @@
 		"_URL": "API 地址",
 		"URL": "https://test.china-clearing.com/Gateway/InterfaceII"
 	},
-	"WeixinScanPay": {
-		"_URL": "微信刷卡支付接口地址",
-		"_URL": "https://api.mch.weixin.qq.com"
-	}
+    "WeixinScanPay": {
+        "_URL": "微信刷卡支付接口地址",
+        "URL": "https://api.mch.weixin.qq.com",
+        "_NotifyURL": "异步消息通知地址，路径是固定的，只需要域名和端口",
+        "NotifyURL": "https://api.shou.money"
+    },
+    "AlipayScanPay": {
+        "_URL": "支付宝扫码支付接口地址",
+        "URL": "https://mapi.alipay.com/gateway.do",
+        "_NotifyUrl": "异步消息通知地址，路径是固定的，只需要域名和端口",
+        "NotifyUrl": "https://api.shou.money"
+    }
 }

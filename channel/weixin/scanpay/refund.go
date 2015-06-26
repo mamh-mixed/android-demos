@@ -25,7 +25,7 @@ type RefundReq struct {
 
 	DeviceInfo    string `xml:"device_info,omiempty"`             // 设备号
 	TransactionId string `xml:"transaction_id,omiempty"`          // 微信订单号
-	OutTradeNo    string `xml:"out_trade_no,omiempty"`            // 商户订单号
+	OutTradeNo    string `xml:"out_trade_no" validate:"nonzero"`  // 商户订单号
 	OutRefundNo   string `xml:"out_refund_no" validate:"nonzero"` // 商户退款单号
 	TotalFee      string `xml:"total_fee" validate:"nonzero"`     // 总金额
 	RefundFee     string `xml:"refund_fee" validate:"nonzero"`    // 退款金额
@@ -52,8 +52,9 @@ func (d *RefundReq) GenSign() {
 	}
 	buf.WriteString("&sub_mch_id=" + d.SubMchId)
 	buf.WriteString("&total_fee=" + d.TotalFee)
-	buf.WriteString("&transaction_id=" + d.TransactionId)
-
+	if d.TransactionId != "" {
+		buf.WriteString("&transaction_id=" + d.TransactionId)
+	}
 	buf.WriteString("&key=" + d.WeixinMD5Key)
 
 	log.Debug(buf.String())

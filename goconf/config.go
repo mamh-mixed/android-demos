@@ -37,7 +37,10 @@ type ConfigStruct struct {
 	}
 
 	WeixinScanPay struct {
-		URL string
+		ClientCert string
+		ClientKey  string
+		URL        string
+		NotifyURL  string
 	}
 
 	AlipayScanPay struct {
@@ -51,4 +54,7 @@ func (c *ConfigStruct) postProcess() {
 	Config.CFCA.CCACert = tools.WorkDir + "/" + Config.CFCA.CCACert
 	Config.CFCA.Cert = tools.WorkDir + "/" + Config.CFCA.Cert
 	Config.CFCA.RootCert = tools.WorkDir + "/" + Config.CFCA.RootCert
+
+	Config.WeixinScanPay.ClientCert = tools.WorkDir + "/" + Config.WeixinScanPay.ClientCert
+	Config.WeixinScanPay.ClientKey = tools.WorkDir + "/" + Config.WeixinScanPay.ClientKey
 }

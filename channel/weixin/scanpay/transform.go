@@ -42,16 +42,21 @@ func init() {
 	weixinRespCodeMap["REFUND"] = &respCodeMap{"REFUND", "转入退款", "没问题", "12", "转入退款"}
 }
 
-func transform(respCode string) string {
-	if respCode == "" {
-		return ""
+func transform(returnCode, returnMsg, resultCode, errCode string) (status, msg string) {
+	// 如果通信失败，返回错误代码 06，并返回错误原因
+	if returnCode != "SUCCESS" {
+		return "06", returnMsg
 	}
 
-	if m, ok := weixinRespCodeMap[respCode]; ok {
-		return m.iso8583Code
+	// 如果结果正确，返回代码 00，消息为交易成功
+	if resultCode == "SUCCESS" {
+		return "00", "交易成功"
 	}
 
-	log.Errorf("unknown weixin error code %s", respCode)
+	if m, ok := weixinRespCodeMap[errCode]; ok {
+		return m.iso8583Code, m.iso8583Name
+	}
 
-	return ""
+	log.Errorf("unknown weixin error code `%s`", errCode)
+	return "06", "未知错误"
 }

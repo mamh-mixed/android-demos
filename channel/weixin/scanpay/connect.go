@@ -2,9 +2,13 @@ package scanpay
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/omigo/log"
@@ -12,20 +16,63 @@ import (
 
 var url = goconf.Config.WeixinScanPay.URL
 
+var cli *http.Client
+
+// 初始化中金 HTTPS 客户端
+func init() {
+	cliCrt, err := tls.LoadX509KeyPair(goconf.Config.WeixinScanPay.ClientCert,
+		goconf.Config.WeixinScanPay.ClientKey)
+	if err != nil {
+		fmt.Println("Loadx509keypair err:", err)
+		os.Exit(4)
+	}
+
+	// 发送请求
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			// InsecureSkipVerify: true, // only for testing
+			Certificates: []tls.Certificate{cliCrt}},
+	}
+	cli = &http.Client{Transport: tr}
+}
+
 const (
-	payURI      = "/pay/micropay"
-	payQueryURI = "/pay/orderquery"
-	reverseUR   = "/secapi/pay/reverse"
+	payURI         = "/pay/micropay"
+	prePayURI      = "/pay/unifiedorder"
+	payQueryURI    = "/pay/orderquery"
+	refundURI      = "/secapi/pay/refund"
+	refundQueryURI = "/pay/refundquery"
+	reverseURI     = "/secapi/pay/reverse"
 )
 
-func sendRequest(uri string, req BaseReq, resp BaseResp) error {
+func getUri(req BaseReq) string {
+	switch v := req.(type) {
+	case *PayReq:
+		return payURI
+	case *PrePayReq:
+		return prePayURI
+	case *PayQueryReq:
+		return payQueryURI
+	case *RefundReq:
+		return refundURI
+	case *RefundQueryReq:
+		return refundQueryURI
+	case *ReverseReq:
+		return reverseURI
+	default:
+		log.Errorf("unknown BaseReq type: %#v", v)
+		return "/404"
+	}
+}
+
+func sendRequest(req BaseReq, resp BaseResp) error {
 	xmlBytes, err := prepareData(req)
 	if err != nil {
 		return err
 	}
 
-	ret, err := send(uri, xmlBytes)
-	if err == nil {
+	ret, err := send(getUri(req), xmlBytes)
+	if err != nil {
 		return err
 	}
 
@@ -41,13 +88,21 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 		return nil, err
 	}
 
+	log.Infof("xml to weixin: %s", string(xmlBytes))
+
 	return xmlBytes, nil
 }
 
 func send(uri string, body []byte) (ret []byte, err error) {
-	resp, err := http.Post(url+uri, "text/xml", bytes.NewBuffer(body))
+	var resp *http.Response
+
+	if strings.HasPrefix(uri, "/secapi") {
+		resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
+	} else {
+		resp, err = http.Post(url+uri, "text/xml", bytes.NewBuffer(body))
+	}
 	if err != nil {
-		log.Errorf("unable to connect WeixinScanPay gratway %s", err)
+		log.Errorf("unable to connect WeixinScanPay gateway: %s", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -58,7 +113,7 @@ func send(uri string, body []byte) (ret []byte, err error) {
 		log.Errorf("unable to read from resp %s", err)
 		return nil, err
 	}
-	log.Debugf("resp: [%s]", ret)
+	log.Debugf("resp: \n%s", string(ret))
 
 	return ret, nil
 }
@@ -69,5 +124,6 @@ func processResponseBody(body []byte, respData interface{}) error {
 		log.Errorf("xml(%s) to struct error: %s", string(body), err)
 		return err
 	}
+
 	return nil
 }

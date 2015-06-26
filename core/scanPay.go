@@ -268,7 +268,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 金额单位转换
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
-		log.Errorf("转换金额错误,txamt=%d", req.Txamt)
+		log.Errorf("转换金额错误，txamt = %s", req.Txamt)
 		return logicErrorHandler(refund, "SYSTEM_ERROR")
 	}
 	refund.TransAmt = int64(f)
@@ -589,9 +589,13 @@ func AlpAsyncNotify(params url.Values) {
 
 }
 
-// WxpAsyncNotify 微信异步通知处理
-func WxpAsyncNotify(params url.Values) {
+// ProcessWeixinNotify 微信异步通知处理
+func ProcessWeixinNotify(req *model.WeixinNotifyReq) (resp *model.WeixinNotifyResp) {
+	log.Errorf("unimplement method: %#v", req)
 
+	// TODO ...
+
+	return resp
 }
 
 // logicErrorHandler 逻辑错误处理

@@ -23,8 +23,8 @@ type PayQueryReq struct {
 
 	WeixinMD5Key string `xml:"-" validate:"nonzero"`
 
-	TransactionId string `xml:"transaction_id,omitempty"` // 微信支付订单号
-	OutTradeNo    string `xml:"out_trade_no,omitempty"`   // 商户订单号
+	TransactionId string `xml:"transaction_id,omitempty"`         // 微信的订单号，优先使用
+	OutTradeNo    string `xml:"out_trade_no"  validate:"nonzero"` // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 }
 
 // GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）

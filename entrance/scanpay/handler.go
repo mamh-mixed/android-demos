@@ -2,29 +2,12 @@ package scanpay
 
 import (
 	"encoding/json"
-	"net/url"
 
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 )
-
-// AsyncNotifyRouter 异步通知处理分发
-func AsyncNotifyRouter(values url.Values) {
-
-	// 渠道类型
-	chcd := values.Get("scanpay_chcd")
-	switch chcd {
-
-	case "ALP":
-		core.AlpAsyncNotify(values)
-	case "WXP":
-		core.WxpAsyncNotify(values)
-	default:
-		// do nothing
-	}
-}
 
 // Router tcp请求路由
 func Router(reqBytes []byte) []byte {
