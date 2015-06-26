@@ -3,8 +3,8 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/CardInfoLink/quickpay/channel"
+	"time"
 	// "github.com/CardInfoLink/quickpay/goconf"
 	"net/url"
 	"strconv"
@@ -278,6 +278,11 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
 
+	// 退款只能隔天推
+	if strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(refund, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
+	}
+
 	// 是否是支付交易
 	if t.TransType != model.PayTrans {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
@@ -449,6 +454,11 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
+	}
+
+	// 撤销只能撤当天交易
+	if !strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(cancel, "NOT_CURRENT_DAY_TRAN") // TODO check error code
 	}
 
 	// 是否是支付交易

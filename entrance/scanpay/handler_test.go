@@ -15,7 +15,7 @@ var (
 	scanPayBarcodePay = &model.ScanPay{
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   tools.Millisecond(),
-		ScanCodeId: "281763822834129893",
+		ScanCodeId: "281941492012147650",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "purc",
@@ -36,7 +36,7 @@ var (
 		Busicd:       "inqy",
 		Mchntid:      "CIL0001",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435216248710",
+		OrigOrderNum: "1435300750631",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
@@ -60,9 +60,9 @@ var (
 
 func TestScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
-	scanPay := scanPayEnquiry
+	scanPay := scanPayBarcodePay
 	reqBytes, _ := json.Marshal(scanPay)
-	respBytes := Router(reqBytes)
+	respBytes := ScanPayHandle(reqBytes)
 
 	resp := new(model.ScanPayResponse)
 	err := json.Unmarshal(respBytes, resp)
