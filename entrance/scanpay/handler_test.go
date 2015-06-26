@@ -13,9 +13,10 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPay{
-		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
-		OrderNum:   tools.Millisecond(),
-		ScanCodeId: "281941492012147650",
+		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
+		OrderNum:  tools.Millisecond(),
+		// ScanCodeId: "281763822834129893", // 支付宝
+		ScanCodeId: "130282934335526597", // 微信
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "purc",
@@ -43,7 +44,7 @@ var (
 		Busicd:       "refd",
 		Mchntid:      "CIL0001",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435199869254",
+		OrigOrderNum: "1435229562510",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}

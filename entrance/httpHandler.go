@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
-	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
@@ -77,30 +77,6 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// QuickPayBack 网关接受支付宝、微信等异步通知
-func QuickPayBack(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.String())
-
-	content, values := "", r.URL.Query()
-	switch r.URL.Path {
-	case "/quickpay/back/alp":
-		// TODO check sign
-		values.Add("scanpay_chcd", "ALP")
-		content = "success"
-	case "/quickpay/back/wxp":
-		// TODO check sign
-		values.Add("scanpay_chcd", "WXP")
-		content = "success"
-	default:
-		http.Error(w, "invalid request!", http.StatusNotFound)
-		return
-	}
-
-	// 处理异步通知
-	scanpay.AsyncNotifyRouter(values)
-	w.Write([]byte(content))
-}
-
 func prepareData(r *http.Request) (merId, sign string, data []byte, status int, err error) {
 	if r.Method != "POST" {
 		return "", "", nil, 405, errors.New("only 'POST' method allowed, but actual '" + r.Method + "'")
@@ -124,4 +100,51 @@ func prepareData(r *http.Request) (merId, sign string, data []byte, status int, 
 	}
 
 	return merId, sign, data, 200, nil
+}
+
+// WeixinNotify 接受微信异步通知 "/quickpay/back/weixin"
+func WeixinNotify(w http.ResponseWriter, r *http.Request) {
+	log.Infof("url = %s", r.URL.String())
+
+	ret := &model.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("read http body error: %s", err)
+		ret.ReturnCode = "FAIL"
+		ret.ReturnMsg = "报文读取错误"
+	} else {
+		var req model.WeixinNotifyReq
+		err := json.Unmarshal(data, &req)
+		if err != nil {
+			log.Errorf("read http body error: %s", err)
+			ret.ReturnCode = "FAIL"
+			ret.ReturnMsg = "报文读取错误"
+		} else {
+			ret = core.ProcessWeixinNotify(req)
+		}
+	}
+
+	rbody, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("read http body error: %s", err)
+		http.Error(w, "system error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(rbody)
+}
+
+// AlipayNotify 接受支付宝异步通知 "/quickpay/back/alp"
+func AlipayNotify(w http.ResponseWriter, r *http.Request) {
+	log.Infof("url = %s", r.URL.String())
+
+	content, values := "", r.URL.Query()
+	// TODO check sign
+	values.Add("scanpay_chcd", "ALP")
+	content = "success"
+
+	core.AlpAsyncNotify(values)
+	// 处理异步通知
+	w.Write([]byte(content))
 }

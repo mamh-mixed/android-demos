@@ -21,9 +21,9 @@ func AsyncNotifyRouter(values url.Values) {
 	switch chcd {
 
 	case "ALP":
-		core.AlpAsyncNotify(values)
+		core.ProcessAlpNotify(values)
 	case "WXP":
-		core.WxpAsyncNotify(values)
+		core.ProcessWeixinNotify(values)
 	default:
 		// do nothing
 	}
