@@ -2,7 +2,6 @@ package scanpay
 
 import (
 	"encoding/json"
-	"net/url"
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/core"
@@ -12,22 +11,6 @@ import (
 )
 
 type HandleFuc func(req *model.ScanPay) (ret *model.ScanPayResponse)
-
-// AsyncNotifyRouter 异步通知处理分发
-func AsyncNotifyRouter(values url.Values) {
-
-	// 渠道类型
-	chcd := values.Get("scanpay_chcd")
-	switch chcd {
-
-	case "ALP":
-		core.ProcessAlpNotify(values)
-	case "WXP":
-		core.ProcessWeixinNotify(values)
-	default:
-		// do nothing
-	}
-}
 
 // ScanPayHandle 执行扫码支付逻辑
 func ScanPayHandle(reqBytes []byte) []byte {

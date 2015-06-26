@@ -121,7 +121,7 @@ func WeixinNotify(w http.ResponseWriter, r *http.Request) {
 			ret.ReturnCode = "FAIL"
 			ret.ReturnMsg = "报文读取错误"
 		} else {
-			ret = core.ProcessWeixinNotify(req)
+			ret = core.ProcessWeixinNotify(&req)
 		}
 	}
 
@@ -144,7 +144,7 @@ func AlipayNotify(w http.ResponseWriter, r *http.Request) {
 	values.Add("scanpay_chcd", "ALP")
 	content = "success"
 
-	core.AlpAsyncNotify(values)
+	core.ProcessAlpNotify(values)
 	// 处理异步通知
 	w.Write([]byte(content))
 }

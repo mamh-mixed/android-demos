@@ -4,19 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
-	"time"
-	// "github.com/CardInfoLink/quickpay/goconf"
-	"net/url"
-	"strconv"
-	"strings"
-
-	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/quickpay/back/alp"
