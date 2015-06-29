@@ -6,6 +6,16 @@ import (
 	"strings"
 )
 
+// busiType
+const (
+	Purc = "purc"
+	Paut = "paut"
+	Inqy = "inqy"
+	Refd = "refd"
+	Void = "void"
+	Canc = "canc"
+)
+
 // ScanPay 扫码支付
 type ScanPay struct {
 	Txndir       string `json:"txndir,omitempty"`       //交易方向

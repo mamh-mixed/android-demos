@@ -41,22 +41,22 @@ func ScanPayHandle(reqBytes []byte) []byte {
 func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	switch req.Busicd {
-	case "purc":
+	case model.Purc:
 		// ret = barcodePay(req)
 		ret = doScanPay(validateBarcodePay, core.BarcodePay, req)
-	case "paut":
+	case model.Paut:
 		// ret = qrCodeOfflinePay(req)
 		ret = doScanPay(validateQrCodeOfflinePay, core.QrCodeOfflinePay, req)
-	case "inqy":
+	case model.Inqy:
 		// ret = enquiry(req)
 		ret = doScanPay(validateEnquiry, core.Enquiry, req)
-	case "refd":
+	case model.Refd:
 		// ret = refund(req)
 		ret = doScanPay(validateRefund, core.Refund, req)
-	case "void":
+	case model.Void:
 		// ret = cancel(req)
 		ret = doScanPay(validateCancel, core.Cancel, req)
-	case "canc":
+	case model.Canc:
 
 		ret = doScanPay(validateClose, core.Close, req)
 	default:

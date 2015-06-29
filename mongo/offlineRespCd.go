@@ -27,6 +27,8 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 		responseCode = "12"
 	case "REASON_ILLEGAL_STATUS":
 		responseCode = "12"
+	case "ORER_NUM_ERROR":
+		responseCode = "19"
 	case "EXIST_FORBIDDEN_WORD":
 		responseCode = "58"
 	case "PARTNER_ERROR":
