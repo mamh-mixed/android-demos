@@ -197,6 +197,8 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
 	case "WXP":
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -276,6 +278,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
+	refund.ChanCode = orig.ChanCode
 
 	ret = processRefund(orig, refund, req)
 
@@ -294,9 +297,9 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 func processRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 退款只能隔天退
-	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-		return logicErrorHandler(current, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
-	}
+	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+	// 	return logicErrorHandler(current, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
+	// }
 
 	// 是否是支付交易
 	if orig.TransType != model.PayTrans {
@@ -349,6 +352,7 @@ func processRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 		req.AppID = c.WxpAppId
 		req.SubMchId = c.SubMchId
 		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
+		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -474,6 +478,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
+	cancel.ChanCode = orig.ChanCode
 
 	ret = processCancel(orig, cancel, req)
 
@@ -545,6 +550,10 @@ func processCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 	switch orig.ChanCode {
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
+		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.ActTxamt = req.TotalTxamt
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)

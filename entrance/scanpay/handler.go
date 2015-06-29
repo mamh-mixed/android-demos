@@ -2,12 +2,12 @@ package scanpay
 
 import (
 	"encoding/json"
-	"strings"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"strings"
 )
 
 type HandleFuc func(req *model.ScanPay) (ret *model.ScanPayResponse)
@@ -29,12 +29,16 @@ func ScanPayHandle(reqBytes []byte) []byte {
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
+
 	log.Debugf("handled body: %s", retBytes)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
 		return errorResponse(req, "SYSTEM_ERROR")
 	}
-	return retBytes
+
+	strLen := fmt.Sprintf("%0.4d", len(string(retBytes)))
+
+	return []byte(strLen + string(retBytes))
 }
 
 // router 分发业务逻辑
@@ -107,6 +111,9 @@ func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 	}
 	if ret.Inscd == "" {
 		ret.Inscd = req.Inscd
+	}
+	if ret.Chcd == "" {
+		ret.Chcd = req.Chcd
 	}
 	if ret.Mchntid == "" {
 		ret.Mchntid = req.Mchntid

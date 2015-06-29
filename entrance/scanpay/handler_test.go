@@ -13,14 +13,14 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPay{
-		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
-		OrderNum:   tools.Millisecond(),
-		ScanCodeId: "285533206604506831", // 支付宝
-		// ScanCodeId: "130282934335526597", // 微信
-		Inscd:   "CIL00002",
-		Txamt:   "000000000001",
-		Busicd:  "purc",
-		Mchntid: "CIL0001",
+		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
+		OrderNum:  tools.Millisecond(),
+		// ScanCodeId: "285533206604506831", // 支付宝
+		ScanCodeId: "130523449261557875", // 微信
+		Inscd:      "CIL00002",
+		Txamt:      "000000000001",
+		Busicd:     "purc",
+		Mchntid:    "CIL0001",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -29,7 +29,7 @@ var (
 		Inscd:     "CIL00002",
 		Txamt:     "000000000001",
 		Busicd:    "paut",
-		Mchntid:   "CIL0001",
+		Mchntid:   "100000000000203",
 		Chcd:      "ALP",
 	}
 	// 查询
@@ -44,7 +44,7 @@ var (
 		Busicd:       "refd",
 		Mchntid:      "CIL0001",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435229562510",
+		OrigOrderNum: "1435568370974",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}
@@ -53,7 +53,7 @@ var (
 		Busicd:       "void",
 		Mchntid:      "CIL0001",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435306550752",
+		OrigOrderNum: "1435568762666",
 		Inscd:        "CIL00002",
 	}
 	// 关单
@@ -61,14 +61,14 @@ var (
 		Busicd:       "canc",
 		Mchntid:      "CIL0001",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435549200797",
+		OrigOrderNum: "1435569257167",
 		Inscd:        "CIL00002",
 	}
 )
 
 func TestScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
-	scanPay := scanPayClose
+	scanPay := scanPayQrCodeOfflinePay
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := ScanPayHandle(reqBytes)
 

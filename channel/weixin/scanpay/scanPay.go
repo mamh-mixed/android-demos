@@ -174,10 +174,10 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResp
 
 		DeviceInfo:    m.DeviceInfo,   // 设备号
 		TransactionId: "",             // 微信订单号
-		OutTradeNo:    m.OrderNum,     // 商户订单号
-		OutRefundNo:   m.OrigOrderNum, // 商户退款单号
-		TotalFee:      m.Txamt,        // 总金额
-		RefundFee:     m.Txamt,        // 退款金额
+		OutTradeNo:    m.OrigOrderNum, // 商户订单号
+		OutRefundNo:   m.OrderNum,     // 商户退款单号
+		TotalFee:      m.TotalTxamt,   // 总金额
+		RefundFee:     m.ActTxamt,     // 退款金额
 		RefundFeeType: m.CurrType,     // 货币种类
 		OpUserId:      m.ChanMerId,    // 操作员
 	}

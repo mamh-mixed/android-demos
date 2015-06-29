@@ -8,12 +8,12 @@ import (
 
 // busiType
 const (
-	Purc = "purc"
-	Paut = "paut"
-	Inqy = "inqy"
-	Refd = "refd"
-	Void = "void"
-	Canc = "canc"
+	Purc = "PURC"
+	Paut = "PAUT"
+	Inqy = "INQY"
+	Refd = "REFD"
+	Void = "VOID"
+	Canc = "CANC"
 )
 
 // ScanPay 扫码支付
@@ -32,11 +32,6 @@ type ScanPay struct {
 	Sign         string `json:"sign,omitempty"`         //签名
 	NotifyUrl    string `json:"notifyUrl,omitempty"`    //异步通知地址
 
-	// 辅助字段
-	Subject     string //  商品名称
-	SysOrderNum string //  渠道交易号
-	ActTxamt    string //  实际交易金额 不同渠道单位不同
-
 	// 微信需要的字段
 	AppID      string // 公众号ID
 	DeviceInfo string // 设备号
@@ -45,9 +40,14 @@ type ScanPay struct {
 	CurrType   string // 货币类型
 	GoodsGag   string // 商品标记
 	SubMchId   string // 子商户
+	TotalTxamt string // 订单总金额
 
-	ChanMerId string // 渠道商户Id
-	SignCert  string // 可能表示md5key等
+	// 辅助字段
+	Subject     string //  商品名称
+	SysOrderNum string //  渠道交易号
+	ActTxamt    string //  实际交易金额 不同渠道单位不同
+	ChanMerId   string // 渠道商户Id
+	SignCert    string // 可能表示md5key等
 }
 
 // ScanPayResponse 下单支付返回体
