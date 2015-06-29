@@ -12,14 +12,14 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPay{
-		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
-		OrderNum:   tools.Millisecond(),
-		ScanCodeId: "288705349876823045", // 支付宝
-		// ScanCodeId: "130523449261557875", // 微信
-		Inscd:   "CIL00002",
-		Txamt:   "000000000001",
-		Busicd:  "PURC",
-		Mchntid: "100000000000203",
+		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
+		OrderNum:  tools.Millisecond(),
+		// ScanCodeId: "282259453320278456", // 支付宝
+		ScanCodeId: "130383514352636794", // 微信
+		Inscd:      "CIL00002",
+		Txamt:      "000000000001",
+		Busicd:     "PURC",
+		Mchntid:    "100000000000203",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -27,48 +27,49 @@ var (
 		OrderNum:  tools.Millisecond(),
 		Inscd:     "CIL00002",
 		Txamt:     "000000000001",
-		Busicd:    "paut",
+		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "ALP",
+		Chcd:      "WXP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
-		Busicd:       "inqy",
+		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435306550752",
+		OrigOrderNum: "1435593142557",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
-		Busicd:       "refd",
+		Busicd:       "REFD",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435568370974",
+		OrigOrderNum: "1435591752362",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPay{
-		Busicd:       "void",
+		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435568762666",
+		OrigOrderNum: "1435592028108",
 		Inscd:        "CIL00002",
 	}
 	// 关单
 	scanPayClose = &model.ScanPay{
-		Busicd:       "canc",
+		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435569257167",
+		OrigOrderNum: "1435593142557",
 		Inscd:        "CIL00002",
 	}
+
+	scanPay = scanPayClose
 )
 
 func TestScanPay(t *testing.T) {
 
 	log.SetOutputLevel(log.Ldebug)
-	scanPay := scanPayBarcodePay
 
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := ScanPayHandle(reqBytes)

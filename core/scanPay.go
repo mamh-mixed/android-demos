@@ -613,6 +613,11 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(closed, "TRADE_HAS_REFUND") // TODO check error code
 	}
 
+	// 交易已关闭
+	if orig.TransStatus == model.TransClosed {
+		return logicErrorHandler(closed, "TRADE_HAS_CLOSED") // TODO check error code
+	}
+
 	// 支付交易（下单、预下单）
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
