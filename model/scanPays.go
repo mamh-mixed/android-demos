@@ -8,18 +8,19 @@ import (
 
 // ScanPay 扫码支付
 type ScanPay struct {
-	Txndir       string // 交易方向
-	Busicd       string // 交易类型
-	Inscd        string // 机构号
-	Chcd         string // 渠道机构
-	Mchntid      string // 商户号
-	Txamt        string // 订单金额
-	GoodsInfo    string // 商品详情
-	OrderNum     string // 订单号
-	OrigOrderNum string // 原订单号
-	ScanCodeId   string // 扫码号
-	Sign         string // 签名
-	NotifyUrl    string // 异步通知地址
+	Txndir       string `json:"txndir,omitempty"`       //交易方向
+	Busicd       string `json:"busicd,omitempty"`       //交易类型
+	Inscd        string `json:"inscd,omitempty"`        //机构号
+	Chcd         string `json:"chcd,omitempty"`         //渠道机构
+	Mchntid      string `json:"mchntid,omitempty"`      //商户号
+	Terminalid   string `json:"terminalid,omitempty"`   //终端号
+	Txamt        string `json:"txamt,omitempty"`        //订单金额
+	GoodsInfo    string `json:"goodsInfo,omitempty"`    //商品详情
+	OrderNum     string `json:"orderNum,omitempty"`     //订单号
+	OrigOrderNum string `json:"origOrderNum,omitempty"` //原订单号
+	ScanCodeId   string `json:"scanCodeId,omitempty"`   //扫码号
+	Sign         string `json:"sign,omitempty"`         //签名
+	NotifyUrl    string `json:"notifyUrl,omitempty"`    //异步通知地址
 
 	// 辅助字段
 	Subject     string //  商品名称

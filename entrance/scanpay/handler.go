@@ -40,22 +40,25 @@ func ScanPayHandle(reqBytes []byte) []byte {
 // router 分发业务逻辑
 func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
-	switch {
-	case req.Busicd == "purc":
+	switch req.Busicd {
+	case "purc":
 		// ret = barcodePay(req)
 		ret = doScanPay(validateBarcodePay, core.BarcodePay, req)
-	case req.Busicd == "paut":
+	case "paut":
 		// ret = qrCodeOfflinePay(req)
 		ret = doScanPay(validateQrCodeOfflinePay, core.QrCodeOfflinePay, req)
-	case req.Busicd == "inqy":
+	case "inqy":
 		// ret = enquiry(req)
 		ret = doScanPay(validateEnquiry, core.Enquiry, req)
-	case req.Busicd == "refd":
+	case "refd":
 		// ret = refund(req)
 		ret = doScanPay(validateRefund, core.Refund, req)
-	case req.Busicd == "void":
+	case "void":
 		// ret = cancel(req)
 		ret = doScanPay(validateCancel, core.Cancel, req)
+	case "canc":
+
+		ret = doScanPay(validateClose, core.Close, req)
 	default:
 		ret = mongo.OffLineRespCd("INVALID_PARAMETER")
 	}

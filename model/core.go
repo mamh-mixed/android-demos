@@ -6,20 +6,29 @@ import (
 
 // status
 const (
+	// refundStatus
 	TransRefunded     = 1 //已退款
 	TransPartRefunded = 2 //部分退款
-	PayTrans          = 1 //支付交易
-	RefundTrans       = 2 //退款交易
-	CancelTrans       = 4 //撤销交易
 
+	// transType
+	PayTrans    = 1 //支付交易
+	RefundTrans = 2 //退款交易
+	// ... 预授权
+	CancelTrans = 4 //撤销交易
+	CloseTrans  = 5 //关单
+
+	// settStatus
 	SettSuccess    = 1 //勾兑成功
 	SettSysRemain  = 2 //系统多出的
 	SettChanRemain = 3 //渠道多出的
 
+	// transStatus
 	TransHandling = "10" //交易处理中
 	TransFail     = "20" //交易失败
 	TransSuccess  = "30" //交易成功
+	TransClosed   = "40" //交易已关闭
 
+	// bindingStatus
 	BindingHandling = "10" //绑定处理中
 	BindingFail     = "20" //绑定失败
 	BindingSuccess  = "30" //绑定成功
@@ -156,22 +165,22 @@ type SettSchemeCd struct {
 // Trans 支付、退款交易记录
 type Trans struct {
 	// 基本字段
-	Id             bson.ObjectId `bson:"_id" json:",omitempty"`
-	OrderNum       string        `bson:"orderNum,omitempty"`                         //商户订单流水号、退款流水号
-	SysOrderNum    string        `bson:"sysOrderNum,omitempty"`                      //系统订单流水号、退款流水号
-	ChanOrderNum   string        `bson:"chanOrderNum,omitempty"`                     //渠道返回订单流水号
-	RefundOrderNum string        `bson:"refundOrderNum,omitempty"`                   //退款订单号 当交易类型为退款/撤销时
-	RespCode       string        `bson:"respCode,omitempty"`                         //网关应答码
-	MerId          string        `bson:"merId,omitempty"`                            //商户号
-	TransAmt       int64         `bson:"transAmt,omitempty"`                         //交易金额
-	TransStatus    string        `bson:"transStatus,omitempty"`                      //交易状态 10-处理中 20-失败 30-成功
-	TransType      int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款 3-预授权 4-撤销
-	ChanMerId      string        `bson:"chanMerId,omitempty"`                        //渠道商户号
-	ChanCode       string        `bson:"chanCode,omitempty"`                         //渠道代码
-	ChanRespCode   string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
-	CreateTime     string        `bson:"createTime,omitempty"`                       //交易创建时间 yyyy-mm-dd hh:mm:ss
-	UpdateTime     string        `bson:"updateTime,omitempty"`                       //交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus   int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	Id           bson.ObjectId `bson:"_id" json:",omitempty"`
+	OrderNum     string        `bson:"orderNum,omitempty"`                         //商户订单流水号、退款流水号
+	SysOrderNum  string        `bson:"sysOrderNum,omitempty"`                      //系统订单流水号、退款流水号
+	ChanOrderNum string        `bson:"chanOrderNum,omitempty"`                     //渠道返回订单流水号
+	OrigOrderNum string        `bson:"origOrderNum,omitempty"`                     //源订单号 当交易类型为退款/撤销/关单时
+	RespCode     string        `bson:"respCode,omitempty"`                         //网关应答码
+	MerId        string        `bson:"merId,omitempty"`                            //商户号
+	TransAmt     int64         `bson:"transAmt,omitempty"`                         //交易金额
+	TransStatus  string        `bson:"transStatus,omitempty"`                      //交易状态 10-处理中 20-失败 30-成功 40-已关闭
+	TransType    int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
+	ChanMerId    string        `bson:"chanMerId,omitempty"`                        //渠道商户号
+	ChanCode     string        `bson:"chanCode,omitempty"`                         //渠道代码
+	ChanRespCode string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
+	CreateTime   string        `bson:"createTime,omitempty"`                       //交易创建时间 yyyy-mm-dd hh:mm:ss
+	UpdateTime   string        `bson:"updateTime,omitempty"`                       //交易更新时间 yyyy-mm-dd hh:mm:ss
+	RefundStatus int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty"`       //交易账户
@@ -232,7 +241,7 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 		}
 	case RefundTrans:
 		info.TransAmt = t.TransAmt
-		info.PayOrderNum = t.RefundOrderNum
+		info.PayOrderNum = t.OrigOrderNum
 	}
 	return
 }

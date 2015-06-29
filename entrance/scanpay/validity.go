@@ -67,7 +67,19 @@ func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return
 }
 
+// validateCancel 验证撤销接口参数
 func validateCancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 验证非空
+	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	return
+}
+
+// validateCancel 验证关闭订单接口参数
+func validateClose(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {

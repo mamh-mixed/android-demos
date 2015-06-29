@@ -254,13 +254,13 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 记录这笔退款
 	refund := &model.Trans{
-		MerId:          req.Mchntid,
-		OrderNum:       req.OrderNum,
-		RefundOrderNum: req.OrigOrderNum,
-		TransType:      model.RefundTrans,
-		Busicd:         req.Busicd,
-		Inscd:          req.Inscd,
-		ChanCode:       req.Chcd,
+		MerId:        req.Mchntid,
+		OrderNum:     req.OrderNum,
+		OrigOrderNum: req.OrigOrderNum,
+		TransType:    model.RefundTrans,
+		Busicd:       req.Busicd,
+		Inscd:        req.Inscd,
+		ChanCode:     req.Chcd,
 	}
 
 	// 金额单位转换
@@ -384,7 +384,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 判断订单的状态
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
-	case model.TransHandling, model.TransSuccess:
+	case model.TransHandling, "":
 		// 获取渠道商户
 		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 		if err != nil {
@@ -451,62 +451,68 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 记录这笔撤销
 	cancel := &model.Trans{
-		MerId:          req.Mchntid,
-		OrderNum:       req.OrderNum,
-		RefundOrderNum: req.OrigOrderNum,
-		TransType:      model.CancelTrans,
-		Busicd:         req.Busicd,
-		Inscd:          req.Inscd,
-		ChanCode:       req.Chcd,
+		MerId:        req.Mchntid,
+		OrderNum:     req.OrderNum,
+		OrigOrderNum: req.OrigOrderNum,
+		TransType:    model.CancelTrans,
+		Busicd:       req.Busicd,
+		Inscd:        req.Inscd,
+		ChanCode:     req.Chcd,
 	}
 
 	// 判断是否存在该订单
-	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
 
+	ret = processCancel(orig, cancel, req)
+
+	// 原交易状态更新
+	if ret.Respcd == "00" {
+		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
+		mongo.SpTransColl.Update(orig)
+	}
+
+	// 更新交易状态
+	updateTrans(cancel, ret)
+
+	return ret
+}
+
+// processCancel
+func processCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 撤销只能撤当天交易
-	if !strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
-		return logicErrorHandler(cancel, "NOT_CURRENT_DAY_TRAN") // TODO check error code
+	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(current, "NOT_CURRENT_DAY_TRAN") // TODO check error code
 	}
 
 	// 是否是支付交易
-	if t.TransType != model.PayTrans {
-		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	if orig.TransType != model.PayTrans {
+		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
 	}
 
 	// 交易状态是否正常
-	if t.TransStatus != model.TransSuccess {
-		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	if orig.TransStatus != model.TransSuccess {
+		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
 	}
 
-	var refundStatus int8
 	// 判断原交易是否有退款交易
-	switch t.RefundStatus {
+	switch orig.RefundStatus {
 	// 已被退款
 	case model.TransRefunded:
-		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
 	// 存在退款交易
 	case model.TransPartRefunded:
-		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
 	default:
 		// 可撤销
-		refundStatus = model.TransRefunded
 	}
 
 	// 获得渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(cancel, "SYSTEM_ERROR")
-	}
-
-	// 转换金额单位
-	switch t.ChanCode {
-	case "ALP":
-		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-	case "WXP":
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		return logicErrorHandler(current, "SYSTEM_ERROR")
 	}
 
 	// 渠道参数
@@ -516,30 +522,90 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
+	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(cancel)
+	err = mongo.SpTransColl.Add(current)
 	if err != nil {
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
 	// 请求撤销
-	sp := channel.GetScanPayChan(t.ChanCode)
+	sp := channel.GetScanPayChan(orig.ChanCode)
 	ret, err = sp.ProcessCancel(req)
 	if err != nil {
 		log.Errorf("process cancel error:%s", err)
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
-	// 原交易状态更新
-	if ret.Respcd == "00" {
-		t.RefundStatus = refundStatus
-		mongo.SpTransColl.Update(t)
+	return ret
+}
+
+// Close 关闭订单
+func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR") // todo check error code
+	}
+	if count > 0 {
+		// 订单号重复
+		return mongo.OffLineRespCd("AUTH_NO_ERROR") // todo check error code
 	}
 
+	// 记录这笔关单
+	current := &model.Trans{
+		MerId:        req.Mchntid,
+		OrderNum:     req.OrderNum,
+		OrigOrderNum: req.OrigOrderNum,
+		TransType:    model.CloseTrans,
+		Busicd:       req.Busicd,
+		Inscd:        req.Inscd,
+		ChanCode:     req.Chcd,
+	}
+
+	// 判断是否存在该订单
+	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	if err != nil {
+		return logicErrorHandler(current, "TRADE_NOT_EXIST")
+	}
+
+	// default
+	ret = mongo.OffLineRespCd("SUCCESS")
+
+	switch orig.TransType {
+	// 支付交易
+	case model.PayTrans:
+		switch orig.TransStatus {
+		// 处理中的交易
+		case model.TransHandling:
+			return logicErrorHandler(current, "TRADE_HANDLING") // check error code
+		// 成功的交易
+		case model.TransSuccess:
+			// 执行撤销流程
+			ret = processCancel(orig, current, req)
+			// 退款成功
+			if ret.Respcd == "00" {
+				orig.TransStatus = model.TransClosed
+				orig.RefundStatus = model.TransRefunded
+			}
+		// 失败的交易
+		case model.TransFail:
+			orig.TransStatus = model.TransClosed
+		}
+
+	// 退款、撤销等其他类型交易
+	default:
+		orig.TransStatus = model.TransClosed
+	}
+
+	// 更新原交易信息
+	mongo.SpTransColl.Update(orig)
+
 	// 更新交易状态
-	updateTrans(cancel, ret)
+	updateTrans(current, ret)
 
 	return ret
 }

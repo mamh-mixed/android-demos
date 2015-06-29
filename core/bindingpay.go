@@ -389,11 +389,11 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 	//只要订单号不重复就记录这笔交易
 	refund := &model.Trans{
-		OrderNum:       be.MerOrderNum,
-		MerId:          be.MerId,
-		RefundOrderNum: be.OrigOrderNum,
-		TransAmt:       be.TransAmt,
-		TransType:      model.RefundTrans,
+		OrderNum:     be.MerOrderNum,
+		MerId:        be.MerId,
+		OrigOrderNum: be.OrigOrderNum,
+		TransAmt:     be.TransAmt,
+		TransType:    model.RefundTrans,
 	}
 
 	// 是否有该源订单号

@@ -107,10 +107,10 @@ func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int6
 		Amt int64 `bson:"refundedAmt"`
 	}{}
 	q := bson.M{
-		"transType":      model.RefundTrans,
-		"merId":          merId,
-		"refundOrderNum": origOrderNum,
-		"transStatus":    model.TransSuccess,
+		"transType":    model.RefundTrans,
+		"merId":        merId,
+		"origOrderNum": origOrderNum,
+		"transStatus":  model.TransSuccess,
 	}
 
 	err := database.C(col.name).Pipe([]bson.M{
