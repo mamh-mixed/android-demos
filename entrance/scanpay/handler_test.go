@@ -2,25 +2,24 @@ package scanpay
 
 import (
 	"encoding/json"
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPay{
-		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
-		OrderNum:  tools.Millisecond(),
-		// ScanCodeId: "285533206604506831", // 支付宝
-		ScanCodeId: "130523449261557875", // 微信
-		Inscd:      "CIL00002",
-		Txamt:      "000000000001",
-		Busicd:     "purc",
-		Mchntid:    "CIL0001",
+		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
+		OrderNum:   tools.Millisecond(),
+		ScanCodeId: "288705349876823045", // 支付宝
+		// ScanCodeId: "130523449261557875", // 微信
+		Inscd:   "CIL00002",
+		Txamt:   "000000000001",
+		Busicd:  "PURC",
+		Mchntid: "100000000000203",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -35,14 +34,14 @@ var (
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
 		Busicd:       "inqy",
-		Mchntid:      "CIL0001",
+		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
 		OrigOrderNum: "1435306550752",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
 		Busicd:       "refd",
-		Mchntid:      "CIL0001",
+		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
 		OrigOrderNum: "1435568370974",
 		Inscd:        "CIL00002",
@@ -51,7 +50,7 @@ var (
 	// 撤销
 	scanPayCancel = &model.ScanPay{
 		Busicd:       "void",
-		Mchntid:      "CIL0001",
+		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
 		OrigOrderNum: "1435568762666",
 		Inscd:        "CIL00002",
@@ -59,7 +58,7 @@ var (
 	// 关单
 	scanPayClose = &model.ScanPay{
 		Busicd:       "canc",
-		Mchntid:      "CIL0001",
+		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
 		OrigOrderNum: "1435569257167",
 		Inscd:        "CIL00002",
@@ -67,13 +66,16 @@ var (
 )
 
 func TestScanPay(t *testing.T) {
+
 	log.SetOutputLevel(log.Ldebug)
-	scanPay := scanPayQrCodeOfflinePay
+	scanPay := scanPayBarcodePay
+
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := ScanPayHandle(reqBytes)
 
+	respStr := string(respBytes)
 	resp := new(model.ScanPayResponse)
-	err := json.Unmarshal(respBytes, resp)
+	err := json.Unmarshal([]byte(respStr[4:]), resp)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

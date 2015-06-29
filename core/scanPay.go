@@ -53,18 +53,20 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 渠道选择
 	// 根据扫码Id判断走哪个渠道
-	if strings.HasPrefix(req.ScanCodeId, "1") {
-		req.Chcd = "WXP"
-	} else if strings.HasPrefix(req.ScanCodeId, "2") {
-		req.Chcd = "ALP"
-	} else {
-		// 不送，返回 TODO check error code
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+	if req.Chcd == "" {
+		if strings.HasPrefix(req.ScanCodeId, "1") {
+			req.Chcd = "WXP"
+		} else if strings.HasPrefix(req.ScanCodeId, "2") {
+			req.Chcd = "ALP"
+		} else {
+			// 不送，返回 TODO check error code
+			ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+			t.RespCode = ret.Respcd
+			mongo.SpTransColl.Add(t)
+			return ret
+		}
+		t.ChanCode = req.Chcd
 	}
-	t.ChanCode = req.Chcd
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -280,6 +282,47 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 	refund.ChanCode = orig.ChanCode
 
+	// 退款只能隔天退
+	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(refund, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
+	}
+
+	// 是否是支付交易
+	if orig.TransType != model.PayTrans {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+	}
+
+	// 交易状态是否正常
+	if orig.TransStatus != model.TransSuccess {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+	}
+
+	refundAmt := refund.TransAmt
+	// 退款状态是否可退
+	switch orig.RefundStatus {
+	// 已退款
+	case model.TransRefunded:
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+	// 部分退款
+	case model.TransPartRefunded:
+		refunded, err := mongo.SpTransColl.FindTransRefundAmt(req.Mchntid, req.OrigOrderNum)
+		if err != nil {
+			return logicErrorHandler(refund, "SYSTEM_ERROR") // TODO check error code
+		}
+		refundAmt += refunded
+		fallthrough
+	default:
+		// 金额过大
+		if refundAmt > orig.TransAmt {
+			return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
+		} else if refundAmt == orig.TransAmt {
+			orig.RefundStatus = model.TransRefunded
+			orig.TransStatus = model.TransClosed
+		} else {
+			orig.RefundStatus = model.TransPartRefunded
+		}
+	}
+
 	ret = processRefund(orig, refund, req)
 
 	// 更新原交易状态
@@ -293,49 +336,8 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return
 }
 
-// processRefund
+// processRefund 请求渠道退款，不做逻辑处理
 func processRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
-
-	// 退款只能隔天退
-	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-	// 	return logicErrorHandler(current, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
-	// }
-
-	// 是否是支付交易
-	if orig.TransType != model.PayTrans {
-		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
-	}
-
-	// 交易状态是否正常
-	if orig.TransStatus != model.TransSuccess {
-		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
-	}
-
-	refundAmt := current.TransAmt
-	// 退款状态是否可退
-	switch orig.RefundStatus {
-	// 已退款
-	case model.TransRefunded:
-		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
-	// 部分退款
-	case model.TransPartRefunded:
-		refunded, err := mongo.SpTransColl.FindTransRefundAmt(req.Mchntid, req.OrigOrderNum)
-		if err != nil {
-			return logicErrorHandler(current, "SYSTEM_ERROR") // TODO check error code
-		}
-		refundAmt += refunded
-		fallthrough
-	default:
-		// 金额过大
-		if refundAmt > orig.TransAmt {
-			return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
-		} else if refundAmt == orig.TransAmt {
-			orig.RefundStatus = model.TransRefunded
-			orig.TransStatus = model.TransClosed
-		} else {
-			orig.RefundStatus = model.TransPartRefunded
-		}
-	}
 
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
@@ -480,6 +482,34 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 	cancel.ChanCode = orig.ChanCode
 
+	// 撤销只能撤当天交易
+	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(cancel, "NOT_CURRENT_DAY_TRAN") // TODO check error code
+	}
+
+	// 是否是支付交易
+	if orig.TransType != model.PayTrans {
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	}
+
+	// 存在部分退款交易
+	if orig.RefundStatus == model.TransPartRefunded {
+		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	}
+
+	// 判断交易状态
+	switch orig.TransStatus {
+	case model.TransFail:
+		return logicErrorHandler(cancel, "TRADE_FAIL") // TODO check error code
+	case model.TransClosed:
+		return logicErrorHandler(cancel, "TRADE_CLOSED") // TODO check error code
+	case model.TransHandling:
+		return logicErrorHandler(cancel, "TRADE_HANDLING") // TODO check error code
+	default:
+		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
+		orig.TransStatus = model.TransClosed
+	}
+
 	ret = processCancel(orig, cancel, req)
 
 	// 原交易状态更新
@@ -493,35 +523,8 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// processCancel
+// processCancel 请求渠道撤销，不做逻辑处理
 func processCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
-	// 撤销只能撤当天交易
-	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-		return logicErrorHandler(current, "NOT_CURRENT_DAY_TRAN") // TODO check error code
-	}
-
-	// 是否是支付交易
-	if orig.TransType != model.PayTrans {
-		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
-	}
-
-	// 存在部分退款交易
-	if orig.RefundStatus == model.TransPartRefunded {
-		return logicErrorHandler(current, "TRADE_NOT_EXIST") // TODO check error code
-	}
-
-	// 判断交易状态
-	switch orig.TransStatus {
-	case model.TransFail:
-		return logicErrorHandler(current, "TRADE_FAIL") // TODO check error code
-	case model.TransClosed:
-		return logicErrorHandler(current, "TRADE_CLOSED") // TODO check error code
-	case model.TransHandling:
-		return logicErrorHandler(current, "TRADE_HANDLING") // TODO check error code
-	default:
-		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
-		orig.TransStatus = model.TransClosed
-	}
 
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
@@ -584,49 +587,56 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 记录这笔关单
-	current := &model.Trans{
+	closed := &model.Trans{
 		MerId:        req.Mchntid,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CloseTrans,
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
-		ChanCode:     req.Chcd,
 	}
 
 	// 判断是否存在该订单
 	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return logicErrorHandler(current, "ORER_NUM_ERROR")
+		return logicErrorHandler(closed, "ORER_NUM_ERROR")
 	}
+	closed.ChanCode = orig.ChanCode
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {
-		return logicErrorHandler(current, "ORER_NUM_ERROR")
+		return logicErrorHandler(closed, "ORER_NUM_ERROR")
+	}
+
+	// 存在部分退款交易
+	if orig.RefundStatus == model.TransPartRefunded {
+		return logicErrorHandler(closed, "TRADE_HAS_REFUND") // TODO check error code
 	}
 
 	// 支付交易（下单、预下单）
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
 		// 执行撤销流程
-		ret = processCancel(orig, current, req)
+		ret = processCancel(orig, closed, req)
 	case channel.ChanCodeWeixin:
 		switch orig.Busicd {
 		// 下单
 		case model.Purc:
-			ret = processCancel(orig, current, req)
+			ret = processCancel(orig, closed, req)
 		// 预下单
 		case model.Paut:
 
 			if orig.TransStatus == model.TransSuccess {
 				// 预下单全额退款
-				current.TransAmt = orig.TransAmt
-				ret = processRefund(orig, current, req)
+				closed.TransAmt = orig.TransAmt
+				orig.RefundStatus = model.TransRefunded
+				orig.TransStatus = model.TransClosed
+				ret = processRefund(orig, closed, req)
 			} else {
 				transTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
 				if err != nil {
 					log.Errorf("parse time error, creatTime=%s, origOrderNum=%s", orig.CreateTime, req.OrigOrderNum)
-					return logicErrorHandler(current, "SYSTERM_ERROR") // TODO check error code
+					return logicErrorHandler(closed, "SYSTERM_ERROR") // TODO check error code
 				}
 				interval := time.Now().Sub(transTime)
 				// 超过5分钟
@@ -644,10 +654,10 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			}
 
 		default:
-			return logicErrorHandler(current, "ORER_NUM_ERROR")
+			return logicErrorHandler(closed, "ORER_NUM_ERROR")
 		}
 	default:
-		return logicErrorHandler(current, "ORER_NUM_ERROR")
+		return logicErrorHandler(closed, "ORER_NUM_ERROR")
 	}
 
 	// 成功应答
@@ -657,7 +667,7 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 更新交易状态
-	updateTrans(current, ret)
+	updateTrans(closed, ret)
 
 	return ret
 }

@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"encoding/xml"
+	"github.com/omigo/mahonia"
 	"strings"
 )
 
@@ -82,8 +83,11 @@ func (s *ScanPay) MarshalGoods() string {
 	if s.GoodsInfo == "" {
 		return ""
 	}
+	// gbk->utf-8
+	e := mahonia.NewEncoder("UTF-8")
+	utf8 := e.ConvertString(s.GoodsInfo)
 
-	goods := strings.Split(s.GoodsInfo, ";")
+	goods := strings.Split(utf8, ";")
 	gs := make([]interface{}, 0, len(goods))
 
 	for i, v := range goods {
