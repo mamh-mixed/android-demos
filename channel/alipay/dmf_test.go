@@ -15,8 +15,8 @@ var pay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   tools.SerialNumber(),
 	SignCert:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ScanCodeId: "285055926126558003",
-	ActTxamt:   "0.02",
+	ScanCodeId: "283213824384374893",
+	ActTxamt:   "0.01",
 	Subject:    "讯联测试",
 	ChanMerId:  "2088811767473826",
 }

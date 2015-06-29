@@ -15,7 +15,6 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 
-	// TODO validate format
 	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}

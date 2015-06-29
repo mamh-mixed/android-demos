@@ -2,17 +2,17 @@
 package entrance
 
 import (
+	"github.com/CardInfoLink/quickpay/entrance/scanpay"
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/omigo/log"
 	"io"
 	"net"
 	"strconv"
-
-	"github.com/CardInfoLink/quickpay/entrance/scanpay"
-	"github.com/omigo/log"
 )
 
 // ListenScanPay 启动扫码支付端口监听
 func ListenScanPay() {
-	port := ":3000"
+	port := ":" + goconf.Config.App.TcpPort
 	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Errorf("fail to listen %s port: %s ", port, err)
@@ -43,7 +43,7 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 		// process scanpay
-		respBytes := scanpay.Router(reqBytes)
+		respBytes := scanpay.ScanPayHandle(reqBytes)
 
 		// return
 		_, err = conn.Write(respBytes)

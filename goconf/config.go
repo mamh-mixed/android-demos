@@ -13,6 +13,7 @@ type ConfigStruct struct {
 	App struct {
 		LogLevel   log.Level
 		EncryptKey string
+		TcpPort    string
 	}
 
 	Mongo struct {

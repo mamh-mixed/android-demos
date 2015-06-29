@@ -3,18 +3,16 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-
-	"net/url"
-	"strconv"
-	"strings"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/quickpay/back/alp"
@@ -279,6 +277,11 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
 
+	// 退款只能隔天退
+	if strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(refund, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
+	}
+
 	// 是否是支付交易
 	if t.TransType != model.PayTrans {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
@@ -403,6 +406,13 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			return mongo.OffLineRespCd("SYSTEM_ERROR")
 		}
 
+		// TODO 重构时放在core-channel中间层
+		// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
+		if t.ChanCode == "ALP" && t.Busicd == "paut" && ret.ErrorDetail == "TRADE_NOT_EXIST" {
+			ret.Respcd = "09"
+			ret.ErrorDetail = "WAIT_BUYER_PAY"
+		}
+
 		// 更新交易结果
 		updateTrans(t, ret)
 
@@ -454,6 +464,11 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
+	}
+
+	// 撤销只能撤当天交易
+	if !strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(cancel, "NOT_CURRENT_DAY_TRAN") // TODO check error code
 	}
 
 	// 是否是支付交易
@@ -529,8 +544,8 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// AlpAsyncNotify 支付宝异步通知处理
-func AlpAsyncNotify(params url.Values) {
+// ProcessAlpNotify 支付宝异步通知处理
+func ProcessAlpNotify(params url.Values) {
 
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
