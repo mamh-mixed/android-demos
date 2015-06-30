@@ -53,18 +53,20 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 渠道选择
 	// 根据扫码Id判断走哪个渠道
-	if strings.HasPrefix(req.ScanCodeId, "1") {
-		req.Chcd = "WXP"
-	} else if strings.HasPrefix(req.ScanCodeId, "2") {
-		req.Chcd = "ALP"
-	} else {
-		// 不送，返回 TODO check error code
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+	if req.Chcd == "" {
+		if strings.HasPrefix(req.ScanCodeId, "1") {
+			req.Chcd = "WXP"
+		} else if strings.HasPrefix(req.ScanCodeId, "2") {
+			req.Chcd = "ALP"
+		} else {
+			// 不送，返回 TODO check error code
+			ret = mongo.OffLineRespCd("SYSTEM_ERROR")
+			t.RespCode = ret.Respcd
+			mongo.SpTransColl.Add(t)
+			return ret
+		}
+		t.ChanCode = req.Chcd
 	}
-	t.ChanCode = req.Chcd
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -197,6 +199,8 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
 	case "WXP":
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -254,13 +258,13 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 记录这笔退款
 	refund := &model.Trans{
-		MerId:          req.Mchntid,
-		OrderNum:       req.OrderNum,
-		RefundOrderNum: req.OrigOrderNum,
-		TransType:      model.RefundTrans,
-		Busicd:         req.Busicd,
-		Inscd:          req.Inscd,
-		ChanCode:       req.Chcd,
+		MerId:        req.Mchntid,
+		OrderNum:     req.OrderNum,
+		OrigOrderNum: req.OrigOrderNum,
+		TransType:    model.RefundTrans,
+		Busicd:       req.Busicd,
+		Inscd:        req.Inscd,
+		ChanCode:     req.Chcd,
 	}
 
 	// 金额单位转换
@@ -272,30 +276,30 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	refund.TransAmt = int64(f)
 
 	// 判断是否存在该订单
-	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
+	refund.ChanCode = orig.ChanCode
 
 	// 退款只能隔天退
-	if strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
+	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
 		return logicErrorHandler(refund, "REFUND_SHOULD_BE_NEXT_DAY") // TODO check error code
 	}
 
 	// 是否是支付交易
-	if t.TransType != model.PayTrans {
+	if orig.TransType != model.PayTrans {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
 	}
 
 	// 交易状态是否正常
-	if t.TransStatus != model.TransSuccess {
+	if orig.TransStatus != model.TransSuccess {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
 	}
 
-	var refundStatus int8
 	refundAmt := refund.TransAmt
 	// 退款状态是否可退
-	switch t.RefundStatus {
+	switch orig.RefundStatus {
 	// 已退款
 	case model.TransRefunded:
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
@@ -309,30 +313,49 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		fallthrough
 	default:
 		// 金额过大
-		if refundAmt > t.TransAmt {
+		if refundAmt > orig.TransAmt {
 			return logicErrorHandler(refund, "TRADE_NOT_EXIST") // TODO check error code
-		} else if refundAmt == t.TransAmt {
-			refundStatus = model.TransRefunded
+		} else if refundAmt == orig.TransAmt {
+			orig.RefundStatus = model.TransRefunded
+			orig.TransStatus = model.TransClosed
+			orig.RespCode = "54" // 订单已关闭或取消
 		} else {
-			refundStatus = model.TransPartRefunded
+			orig.RefundStatus = model.TransPartRefunded
 		}
 	}
 
+	ret = processRefund(orig, refund, req)
+
+	// 更新原交易状态
+	if ret.Respcd == "00" {
+		mongo.SpTransColl.Update(orig)
+	}
+
+	// 更新这笔交易
+	updateTrans(refund, ret)
+
+	return
+}
+
+// processRefund 请求渠道退款，不做逻辑处理
+func processRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+
 	// 获得渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(refund, "SYSTEM_ERROR")
+		return logicErrorHandler(current, "SYSTEM_ERROR")
 	}
 
 	// TODO 这个转换交给各个渠道自己管，如果再加一个渠道，不用改核心逻辑
 	// 转换金额单位
-	switch t.ChanCode {
+	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
-		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
 	case channel.ChanCodeWeixin:
 		req.AppID = c.WxpAppId
 		req.SubMchId = c.SubMchId
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
+		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -344,30 +367,23 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
+	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(refund)
+	err = mongo.SpTransColl.Add(current)
 	if err != nil {
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
 	// 请求退款
-	sp := channel.GetScanPayChan(t.ChanCode)
+	sp := channel.GetScanPayChan(orig.ChanCode)
 	ret, err = sp.ProcessRefund(req)
 	if err != nil {
 		log.Errorf("process refund error:%s", err)
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
-	// 更新交易状态
-	if ret.Respcd == "00" {
-		t.RefundStatus = refundStatus
-		mongo.SpTransColl.Update(t)
-	}
-	updateTrans(refund, ret)
-
-	return
+	return ret
 }
 
 // Enquiry 查询
@@ -384,7 +400,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 判断订单的状态
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
-	case model.TransHandling, model.TransSuccess:
+	case model.TransHandling, "":
 		// 获取渠道商户
 		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 		if err != nil {
@@ -451,62 +467,71 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 记录这笔撤销
 	cancel := &model.Trans{
-		MerId:          req.Mchntid,
-		OrderNum:       req.OrderNum,
-		RefundOrderNum: req.OrigOrderNum,
-		TransType:      model.CancelTrans,
-		Busicd:         req.Busicd,
-		Inscd:          req.Inscd,
-		ChanCode:       req.Chcd,
+		MerId:        req.Mchntid,
+		OrderNum:     req.OrderNum,
+		OrigOrderNum: req.OrigOrderNum,
+		TransType:    model.CancelTrans,
+		Busicd:       req.Busicd,
+		Inscd:        req.Inscd,
+		ChanCode:     req.Chcd,
 	}
 
 	// 判断是否存在该订单
-	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
+	cancel.ChanCode = orig.ChanCode
 
 	// 撤销只能撤当天交易
-	if !strings.HasPrefix(t.CreateTime, time.Now().Format("2006-01-02")) {
+	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
 		return logicErrorHandler(cancel, "NOT_CURRENT_DAY_TRAN") // TODO check error code
 	}
 
 	// 是否是支付交易
-	if t.TransType != model.PayTrans {
+	if orig.TransType != model.PayTrans {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
 	}
 
-	// 交易状态是否正常
-	if t.TransStatus != model.TransSuccess {
+	// 存在部分退款交易
+	if orig.RefundStatus == model.TransPartRefunded {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
 	}
 
-	var refundStatus int8
-	// 判断原交易是否有退款交易
-	switch t.RefundStatus {
-	// 已被退款
-	case model.TransRefunded:
-		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
-	// 存在退款交易
-	case model.TransPartRefunded:
-		return logicErrorHandler(cancel, "TRADE_NOT_EXIST") // TODO check error code
+	// 判断交易状态
+	switch orig.TransStatus {
+	case model.TransFail:
+		return logicErrorHandler(cancel, "TRADE_FAIL") // TODO check error code
+	case model.TransClosed:
+		return logicErrorHandler(cancel, "TRADE_CLOSED") // TODO check error code
+	case model.TransHandling:
+		return logicErrorHandler(cancel, "TRADE_HANDLING") // TODO check error code
 	default:
-		// 可撤销
-		refundStatus = model.TransRefunded
+		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
+		orig.TransStatus = model.TransClosed
+		orig.RespCode = "54" // 订单已关闭或取消
 	}
+
+	ret = processCancel(orig, cancel, req)
+
+	// 原交易状态更新
+	if ret.Respcd == "00" {
+		mongo.SpTransColl.Update(orig)
+	}
+
+	// 更新交易状态
+	updateTrans(cancel, ret)
+
+	return ret
+}
+
+// processCancel 请求渠道撤销，不做逻辑处理
+func processCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 获得渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(cancel, "SYSTEM_ERROR")
-	}
-
-	// 转换金额单位
-	switch t.ChanCode {
-	case "ALP":
-		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-	case "WXP":
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		return logicErrorHandler(current, "SYSTEM_ERROR")
 	}
 
 	// 渠道参数
@@ -516,30 +541,179 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
+	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(cancel)
+	err = mongo.SpTransColl.Add(current)
 	if err != nil {
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
 	// 请求撤销
-	sp := channel.GetScanPayChan(t.ChanCode)
-	ret, err = sp.ProcessCancel(req)
+	sp := channel.GetScanPayChan(orig.ChanCode)
+
+	switch orig.ChanCode {
+	case channel.ChanCodeWeixin:
+		// 微信用退款接口
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
+		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.ActTxamt = req.TotalTxamt
+		ret, err = sp.ProcessRefund(req)
+	case channel.ChanCodeAlipay:
+		ret, err = sp.ProcessCancel(req)
+	default:
+		err = fmt.Errorf("unknown scan pay channel `%s`", orig.ChanCode)
+	}
+
 	if err != nil {
 		log.Errorf("process cancel error:%s", err)
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
-	// 原交易状态更新
+	return ret
+}
+
+// Close 关闭订单
+func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR") // todo check error code
+	}
+	if count > 0 {
+		// 订单号重复
+		return mongo.OffLineRespCd("AUTH_NO_ERROR") // todo check error code
+	}
+
+	// 记录这笔关单
+	closed := &model.Trans{
+		MerId:        req.Mchntid,
+		OrderNum:     req.OrderNum,
+		OrigOrderNum: req.OrigOrderNum,
+		TransType:    model.CloseTrans,
+		Busicd:       req.Busicd,
+		Inscd:        req.Inscd,
+	}
+
+	// 判断是否存在该订单
+	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	if err != nil {
+		return logicErrorHandler(closed, "ORER_NUM_ERROR")
+	}
+	closed.ChanCode = orig.ChanCode
+
+	// 不支持退款、撤销等其他类型交易
+	if orig.TransType != model.PayTrans {
+		return logicErrorHandler(closed, "ORER_NUM_ERROR")
+	}
+
+	// 存在部分退款交易
+	if orig.RefundStatus == model.TransPartRefunded {
+		return logicErrorHandler(closed, "TRADE_HAS_REFUND") // TODO check error code
+	}
+
+	// 交易已关闭
+	if orig.TransStatus == model.TransClosed {
+		return logicErrorHandler(closed, "TRADE_HAS_CLOSED") // TODO check error code
+	}
+
+	// 支付交易（下单、预下单）
+	switch orig.ChanCode {
+	case channel.ChanCodeAlipay:
+		// 成功支付的交易标记已退款
+		if orig.TransStatus == model.TransSuccess {
+			orig.RefundStatus = model.TransRefunded
+		}
+		// 执行撤销流程
+		ret = processCancel(orig, closed, req)
+	case channel.ChanCodeWeixin:
+		switch orig.Busicd {
+		// 下单
+		case model.Purc:
+			ret = processCancel(orig, closed, req)
+		// 预下单
+		case model.Paut:
+
+			if orig.TransStatus == model.TransSuccess {
+				// 预下单全额退款
+				closed.TransAmt = orig.TransAmt
+				orig.RefundStatus = model.TransRefunded
+				ret = processRefund(orig, closed, req)
+			} else {
+				transTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
+				if err != nil {
+					log.Errorf("parse time error, creatTime=%s, origOrderNum=%s", orig.CreateTime, req.OrigOrderNum)
+					return logicErrorHandler(closed, "SYSTERM_ERROR") // TODO check error code
+				}
+				interval := time.Now().Sub(transTime)
+				// 超过5分钟
+				if interval >= 5*time.Minute {
+					ret = processWxpClose(orig, closed, req)
+				} else {
+					// 系统落地,异步执行关单
+					ret = mongo.OffLineRespCd("SUCCESS")
+					time.AfterFunc(5*time.Minute-interval, func() {
+						processWxpClose(orig, closed, req)
+					})
+				}
+			}
+
+		default:
+			return logicErrorHandler(closed, "ORER_NUM_ERROR")
+		}
+	default:
+		return logicErrorHandler(closed, "ORER_NUM_ERROR")
+	}
+
+	// 成功应答
 	if ret.Respcd == "00" {
-		t.RefundStatus = refundStatus
-		mongo.SpTransColl.Update(t)
+		orig.TransStatus = model.TransClosed
+		orig.RespCode = "54" // 订单已关闭或取消
+		// 更新原交易信息
+		mongo.SpTransColl.Update(orig)
 	}
 
 	// 更新交易状态
-	updateTrans(cancel, ret)
+	updateTrans(closed, ret)
+
+	return ret
+}
+
+// processWxpClose 微信关闭接口
+func processWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		return logicErrorHandler(current, "SYSTEM_ERROR")
+	}
+
+	// 渠道参数
+	req.SysOrderNum = tools.SerialNumber()
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+	req.AppID = c.WxpAppId
+	req.SubMchId = c.SubMchId
+	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
+
+	// 系统订单号
+	current.SysOrderNum = req.SysOrderNum
+
+	// 记录交易
+	err = mongo.SpTransColl.Add(current)
+	if err != nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+
+	// 指定微信
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
+	ret, err = sp.ProcessClose(req)
+	if err != nil {
+		log.Errorf("process cancel error:%s", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
 
 	return ret
 }

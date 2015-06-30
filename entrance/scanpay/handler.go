@@ -2,12 +2,12 @@ package scanpay
 
 import (
 	"encoding/json"
-	"strings"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"strings"
 )
 
 type HandleFuc func(req *model.ScanPay) (ret *model.ScanPayResponse)
@@ -29,33 +29,40 @@ func ScanPayHandle(reqBytes []byte) []byte {
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
+
 	log.Debugf("handled body: %s", retBytes)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
 		return errorResponse(req, "SYSTEM_ERROR")
 	}
-	return retBytes
+
+	strLen := fmt.Sprintf("%0.4d", len(string(retBytes)))
+
+	return []byte(strLen + string(retBytes))
 }
 
 // router 分发业务逻辑
 func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
-	switch {
-	case req.Busicd == "purc":
+	switch req.Busicd {
+	case model.Purc:
 		// ret = barcodePay(req)
 		ret = doScanPay(validateBarcodePay, core.BarcodePay, req)
-	case req.Busicd == "paut":
+	case model.Paut:
 		// ret = qrCodeOfflinePay(req)
 		ret = doScanPay(validateQrCodeOfflinePay, core.QrCodeOfflinePay, req)
-	case req.Busicd == "inqy":
+	case model.Inqy:
 		// ret = enquiry(req)
 		ret = doScanPay(validateEnquiry, core.Enquiry, req)
-	case req.Busicd == "refd":
+	case model.Refd:
 		// ret = refund(req)
 		ret = doScanPay(validateRefund, core.Refund, req)
-	case req.Busicd == "void":
+	case model.Void:
 		// ret = cancel(req)
 		ret = doScanPay(validateCancel, core.Cancel, req)
+	case model.Canc:
+
+		ret = doScanPay(validateClose, core.Close, req)
 	default:
 		ret = mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
@@ -104,6 +111,9 @@ func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 	}
 	if ret.Inscd == "" {
 		ret.Inscd = req.Inscd
+	}
+	if ret.Chcd == "" {
+		ret.Chcd = req.Chcd
 	}
 	if ret.Mchntid == "" {
 		ret.Mchntid = req.Mchntid

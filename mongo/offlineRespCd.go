@@ -9,7 +9,7 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 	switch code {
 	case "ORDER_FAIL":
 		responseCode = "01"
-	case "ORDER_SUCCESS_PAY_SUCCESS":
+	case "ORDER_SUCCESS_PAY_SUCCESS", "SUCCESS":
 		responseCode = "00"
 	case "ORDER_SUCCESS_PAY_FAIL":
 		responseCode = "01"
@@ -27,6 +27,8 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 		responseCode = "12"
 	case "REASON_ILLEGAL_STATUS":
 		responseCode = "12"
+	case "ORER_NUM_ERROR":
+		responseCode = "19"
 	case "EXIST_FORBIDDEN_WORD":
 		responseCode = "58"
 	case "PARTNER_ERROR":

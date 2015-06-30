@@ -2,12 +2,11 @@ package scanpay
 
 import (
 	"encoding/json"
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 var (
@@ -15,12 +14,12 @@ var (
 	scanPayBarcodePay = &model.ScanPay{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  tools.Millisecond(),
-		// ScanCodeId: "281763822834129893", // 支付宝
-		ScanCodeId: "130282934335526597", // 微信
+		// ScanCodeId: "282259453320278456", // 支付宝
+		ScanCodeId: "130521672905555297", // 微信
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
-		Busicd:     "purc",
-		Mchntid:    "CIL0001",
+		Busicd:     "PURC",
+		Mchntid:    "100000000000203",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -28,45 +27,56 @@ var (
 		OrderNum:  tools.Millisecond(),
 		Inscd:     "CIL00002",
 		Txamt:     "000000000001",
-		Busicd:    "paut",
-		Mchntid:   "CIL0001",
-		Chcd:      "ALP",
+		Busicd:    "PAUT",
+		Mchntid:   "100000000000203",
+		Chcd:      "WXP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
-		Busicd:       "inqy",
-		Mchntid:      "CIL0001",
+		Busicd:       "INQY",
+		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435306550752",
+		OrigOrderNum: "1435629083581",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
-		Busicd:       "refd",
-		Mchntid:      "CIL0001",
+		Busicd:       "REFD",
+		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435229562510",
+		OrigOrderNum: "1435591752362",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPay{
-		Busicd:       "void",
-		Mchntid:      "CIL0001",
+		Busicd:       "VOID",
+		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435306550752",
+		OrigOrderNum: "1435592028108",
 		Inscd:        "CIL00002",
-		Txamt:        "000000000001",
 	}
+	// 关单
+	scanPayClose = &model.ScanPay{
+		Busicd:       "CANC",
+		Mchntid:      "100000000000203",
+		OrderNum:     tools.Millisecond(),
+		OrigOrderNum: "1435629083581",
+		Inscd:        "CIL00002",
+	}
+
+	scanPay = scanPayEnquiry
 )
 
 func TestScanPay(t *testing.T) {
+
 	log.SetOutputLevel(log.Ldebug)
-	scanPay := scanPayCancel
+
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := ScanPayHandle(reqBytes)
 
+	respStr := string(respBytes)
 	resp := new(model.ScanPayResponse)
-	err := json.Unmarshal(respBytes, resp)
+	err := json.Unmarshal([]byte(respStr[4:]), resp)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -92,6 +102,10 @@ func TestScanPay(t *testing.T) {
 		})
 	case "void":
 		Convey("撤销", t, func() {
+			So(resp.Respcd, ShouldEqual, "00")
+		})
+	case "canc":
+		Convey("关单", t, func() {
 			So(resp.Respcd, ShouldEqual, "00")
 		})
 	}

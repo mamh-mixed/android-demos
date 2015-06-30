@@ -58,3 +58,22 @@ func TestProcessEnquiry(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestProcessClose(t *testing.T) {
+	m := &model.ScanPay{
+		AppID:        "wx25ac886b6dac7dd2", // 公众账号ID
+		ChanMerId:    "1236593202",         // 商户号
+		SubMchId:     "1247075201",
+		OrigOrderNum: "1415757673", // 商户订单号
+		CurrType:     "CNY",        // 货币类型
+		SignCert:     "12sdffjjguddddd2widousldadi9o0i1",
+	}
+
+	ret, err := DefaultWeixinScanPay.ProcessClose(m)
+
+	t.Logf("%#v", ret)
+
+	if err != nil {
+		t.Error(err)
+	}
+}
