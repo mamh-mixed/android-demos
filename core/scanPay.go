@@ -318,6 +318,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		} else if refundAmt == orig.TransAmt {
 			orig.RefundStatus = model.TransRefunded
 			orig.TransStatus = model.TransClosed
+			orig.RespCode = "54" // 订单已关闭或取消
 		} else {
 			orig.RefundStatus = model.TransPartRefunded
 		}
@@ -508,6 +509,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	default:
 		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
 		orig.TransStatus = model.TransClosed
+		orig.RespCode = "54" // 订单已关闭或取消
 	}
 
 	ret = processCancel(orig, cancel, req)
@@ -621,6 +623,10 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	// 支付交易（下单、预下单）
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
+		// 成功支付的交易标记已退款
+		if orig.TransStatus == model.TransSuccess {
+			orig.RefundStatus = model.TransRefunded
+		}
 		// 执行撤销流程
 		ret = processCancel(orig, closed, req)
 	case channel.ChanCodeWeixin:
@@ -635,7 +641,6 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 				// 预下单全额退款
 				closed.TransAmt = orig.TransAmt
 				orig.RefundStatus = model.TransRefunded
-				orig.TransStatus = model.TransClosed
 				ret = processRefund(orig, closed, req)
 			} else {
 				transTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
@@ -646,14 +651,12 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 				interval := time.Now().Sub(transTime)
 				// 超过5分钟
 				if interval >= 5*time.Minute {
-					// TODO WXP close order
-					orig.TransStatus = model.TransClosed
+					ret = processWxpClose(orig, closed, req)
 				} else {
 					// 系统落地,异步执行关单
-					orig.TransStatus = model.TransClosed
 					ret = mongo.OffLineRespCd("SUCCESS")
 					time.AfterFunc(5*time.Minute-interval, func() {
-						// TODO WXP close order
+						processWxpClose(orig, closed, req)
 					})
 				}
 			}
@@ -667,12 +670,50 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 成功应答
 	if ret.Respcd == "00" {
+		orig.TransStatus = model.TransClosed
+		orig.RespCode = "54" // 订单已关闭或取消
 		// 更新原交易信息
 		mongo.SpTransColl.Update(orig)
 	}
 
 	// 更新交易状态
 	updateTrans(closed, ret)
+
+	return ret
+}
+
+// processWxpClose 微信关闭接口
+func processWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		return logicErrorHandler(current, "SYSTEM_ERROR")
+	}
+
+	// 渠道参数
+	req.SysOrderNum = tools.SerialNumber()
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+	req.AppID = c.WxpAppId
+	req.SubMchId = c.SubMchId
+	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
+
+	// 系统订单号
+	current.SysOrderNum = req.SysOrderNum
+
+	// 记录交易
+	err = mongo.SpTransColl.Add(current)
+	if err != nil {
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
+
+	// 指定微信
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
+	ret, err = sp.ProcessClose(req)
+	if err != nil {
+		log.Errorf("process cancel error:%s", err)
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	}
 
 	return ret
 }
