@@ -21,7 +21,7 @@ func ScanPayHandle(reqBytes []byte) []byte {
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal jsonStr(%s): %s", reqBytes, err)
-		return errorResponse(req, "INVALID_PARAMETER")
+		return ErrorResponse(req, "INVALID_PARAMETER")
 	}
 
 	// 具体业务
@@ -33,12 +33,13 @@ func ScanPayHandle(reqBytes []byte) []byte {
 	log.Debugf("handled body: %s", retBytes)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
-		return errorResponse(req, "SYSTEM_ERROR")
+		return ErrorResponse(req, "SYSTEM_ERROR")
 	}
 
-	strLen := fmt.Sprintf("%0.4d", len(string(retBytes)))
+	retStr := string(retBytes)
+	retLen := fmt.Sprintf("%0.4d", len(retStr))
 
-	return []byte(strLen + string(retBytes))
+	return []byte(retLen + retStr)
 }
 
 // router 分发业务逻辑
@@ -134,16 +135,18 @@ func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 	ret.Txndir = "A"
 }
 
-// errorResponse 返回错误信息
-func errorResponse(req *model.ScanPay, errorCode string) []byte {
+// ErrorResponse 返回错误信息
+func ErrorResponse(req *model.ScanPay, errorCode string) []byte {
 
 	ret := mongo.OffLineRespCd(errorCode)
-	ret.Busicd = req.Busicd
-	ret.Txndir = "A"
+	fillResponseInfo(req, ret)
 
-	bytes, err := json.Marshal(ret)
+	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Error(err)
 	}
-	return bytes
+	retStr := string(retBytes)
+	retLen := fmt.Sprintf("%0.4d", len(retStr))
+
+	return []byte(retLen + retStr)
 }

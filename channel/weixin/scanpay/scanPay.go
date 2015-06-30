@@ -1,9 +1,11 @@
 package scanpay
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"strconv"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -43,21 +45,18 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPay
 
 	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode)
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",             // 交易方向 M M
-		Busicd:          m.Busicd,        // 交易类型 M M
 		Respcd:          status,          // 交易结果  M
-		Inscd:           m.Inscd,         // 机构号 M M
-		Chcd:            m.Chcd,          // 渠道 C C
-		Mchntid:         p.MchID,         // 商户号 M M
-		Txamt:           p.TotalFee,      // 订单金额 M M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
 		ConsumerAccount: p.OpenID,        // 渠道账号  C
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
-		OrderNum:        m.OrderNum,      // 订单号 M C
-		OrigOrderNum:    "",              // 源订单号 M C
-		QrCode:          m.ScanCodeId,    // 二维码 C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+	}
+
+	ret.MerDiscount, ret.ChcdDiscount = "0.00", "0.00"
+	if p.CouponFee != "" {
+		f, _ := strconv.ParseFloat(p.CouponFee, 64)
+		ret.MerDiscount = fmt.Sprintf("%0.2f", f/100)
 	}
 
 	return ret, err
@@ -83,20 +82,11 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayRes
 
 	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode)
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",             // 交易方向 M M
-		Busicd:          m.Busicd,        // 交易类型 M M
 		Respcd:          status,          // 交易结果  M
-		Inscd:           m.Inscd,         // 机构号 M M
-		Chcd:            m.Chcd,          // 渠道 C C
-		Mchntid:         p.MchID,         // 商户号 M M
-		Txamt:           p.TotalFee,      // 订单金额 M M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
 		ConsumerAccount: p.OpenID,        // 渠道账号  C
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
-		OrderNum:        m.OrderNum,      // 订单号 M C
-		OrigOrderNum:    m.OrigOrderNum,  // 源订单号 M C
-		QrCode:          m.ScanCodeId,    // 二维码 C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 	}
 
@@ -119,7 +109,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.S
 		DeviceInfo:     m.DeviceInfo,     // 设备号
 		Body:           m.Subject,        // 商品描述
 		Detail:         m.MarshalGoods(), // 商品详情
-		Attach:         m.Attach,         // 附加数据
+		Attach:         m.SysOrderNum,    // 附加数据 这里送系统订单号
 		OutTradeNo:     m.OrderNum,       // 商户订单号
 		TotalFee:       m.ActTxamt,       // 总金额
 		FeeType:        m.CurrType,       // 货币类型
@@ -144,21 +134,13 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.S
 		status = "09"
 	}
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",        // 交易方向 M M
-		Busicd:          m.Busicd,   // 交易类型 M M
-		Respcd:          status,     // 交易结果  M
-		Inscd:           m.Inscd,    // 机构号 M M
-		Chcd:            m.Chcd,     // 渠道 C C
-		Mchntid:         p.MchID,    // 商户号 M M
-		Txamt:           m.ActTxamt, // 订单金额 M M
-		ChannelOrderNum: "",         // 渠道交易号 C
-		ConsumerAccount: "",         // 渠道账号  C
-		ConsumerId:      "",         // 渠道账号ID   C
-		ErrorDetail:     msg,        // 错误信息   C
-		OrderNum:        m.OrderNum, // 订单号 M C
-		OrigOrderNum:    "",         // 源订单号 M C
-		QrCode:          "",         // 二维码 C
-		ChanRespCode:    p.ErrCode,  // 渠道详细应答码
+		Respcd:          status,    // 交易结果  M
+		ChannelOrderNum: "",        // 渠道交易号 C
+		ConsumerAccount: "",        // 渠道账号  C
+		ConsumerId:      "",        // 渠道账号ID   C
+		ErrorDetail:     msg,       // 错误信息   C
+		QrCode:          p.CodeURL, // 二维码 C
+		ChanRespCode:    p.ErrCode, // 渠道详细应答码
 	}
 
 	return ret, err
@@ -193,19 +175,11 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResp
 
 	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode)
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",             // 交易方向 M M
-		Busicd:          m.Busicd,        // 交易类型 M M
 		Respcd:          status,          // 交易结果  M
-		Inscd:           m.Inscd,         // 机构号 M M
-		Chcd:            m.Chcd,          // 渠道 C C
-		Mchntid:         p.MchID,         // 商户号 M M
-		Txamt:           p.RefundFee,     // 订单金额 M M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
 		ConsumerAccount: "",              // 渠道账号  C
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
-		OrderNum:        m.OrderNum,      // 订单号 M C
-		OrigOrderNum:    "",              // 源订单号 M C
 		QrCode:          m.ScanCodeId,    // 二维码 C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 	}
@@ -280,21 +254,13 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPay) (ret *model.ScanPayResp
 
 	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode)
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",            // 交易方向 M M
-		Busicd:          m.Busicd,       // 交易类型 M M
-		Respcd:          status,         // 交易结果  M
-		Inscd:           m.Inscd,        // 机构号 M M
-		Chcd:            m.Chcd,         // 渠道 C C
-		Mchntid:         p.MchID,        // 商户号 M M
-		Txamt:           m.Txamt,        // 订单金额 M M
-		ChannelOrderNum: "",             // 渠道交易号 C
-		ConsumerAccount: "",             // 渠道账号  C
-		ConsumerId:      "",             // 渠道账号ID   C
-		ErrorDetail:     msg,            // 错误信息   C
-		OrderNum:        m.OrderNum,     // 订单号 M C
-		OrigOrderNum:    m.OrigOrderNum, // 源订单号 M C
-		QrCode:          m.ScanCodeId,   // 二维码 C
-		ChanRespCode:    p.ErrCode,      // 渠道详细应答码
+		Respcd:          status,       // 交易结果  M
+		ChannelOrderNum: "",           // 渠道交易号 C
+		ConsumerAccount: "",           // 渠道账号  C
+		ConsumerId:      "",           // 渠道账号ID   C
+		ErrorDetail:     msg,          // 错误信息   C
+		QrCode:          m.ScanCodeId, // 二维码 C
+		ChanRespCode:    p.ErrCode,    // 渠道详细应答码
 	}
 
 	return ret, err
@@ -322,21 +288,9 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPay) (ret *model.ScanPayRespo
 
 	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode)
 	ret = &model.ScanPayResponse{
-		Txndir:          "A",            // 交易方向 M M
-		Busicd:          m.Busicd,       // 交易类型 M M
-		Respcd:          status,         // 交易结果  M
-		Inscd:           m.Inscd,        // 机构号 M M
-		Chcd:            m.Chcd,         // 渠道 C C
-		Mchntid:         p.MchID,        // 商户号 M M
-		Txamt:           m.Txamt,        // 订单金额 M M
-		ChannelOrderNum: "",             // 渠道交易号 C
-		ConsumerAccount: "",             // 渠道账号  C
-		ConsumerId:      "",             // 渠道账号ID   C
-		ErrorDetail:     msg,            // 错误信息   C
-		OrderNum:        m.OrderNum,     // 订单号 M C
-		OrigOrderNum:    m.OrigOrderNum, // 源订单号 M C
-		QrCode:          m.ScanCodeId,   // 二维码 C
-		ChanRespCode:    p.ErrCode,      // 渠道详细应答码
+		Respcd:       status,    // 交易结果  M
+		ErrorDetail:  msg,       // 错误信息   C
+		ChanRespCode: p.ErrCode, // 渠道详细应答码
 	}
 
 	return ret, err

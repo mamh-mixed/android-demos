@@ -85,6 +85,7 @@ func quickAll(port int) {
 	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
 	http.HandleFunc("/quickMaster/", master.QuickMaster)
+	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("Quickpay is running on %s", addr)
@@ -113,6 +114,7 @@ func quickpay(port int) {
 	})
 
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
+	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
 
 	addr := fmt.Sprintf(":%d", port)
 	log.Infof("Quickpay is running on %s", addr)

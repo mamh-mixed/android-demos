@@ -147,6 +147,7 @@ type WeixinNotifyReq struct {
 	OutTradeNo    string `xml:"out_trade_no"`          // 商户订单号
 	Attach        string `xml:"attach"`                // 商家数据包
 	TimeEnd       string `xml:"time_end"`              // 支付完成时间
+
 }
 
 // WeixinNotifyResp 商户需要接收处理，并返回应答
