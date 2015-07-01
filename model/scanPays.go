@@ -81,13 +81,13 @@ type ScanPayResponse struct {
 }
 
 // DictSortMsg 字典排序报文
-func (s *ScanPay) DictSortMsg() string {
-	return genDictSortMsg(s)
+func (s *ScanPay) SignMsg() string {
+	return genSignMsg(s)
 }
 
 // DictSortMsg 字典排序报文
-func (s *ScanPayResponse) DictSortMsg() string {
-	return genDictSortMsg(s)
+func (s *ScanPayResponse) SignMsg() string {
+	return genSignMsg(s)
 }
 
 // MarshalGoods 将商品详情解析成字符json字符串
@@ -169,9 +169,14 @@ type WeixinNotifyResp struct {
 	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
 }
 
-func genDictSortMsg(o interface{}) string {
+// genSignMsg 获取字符串签名字段
+func genSignMsg(o interface{}) string {
+
 	var mFields []string
 	sv := reflect.ValueOf(o)
+	if sv.Kind() != reflect.Ptr || sv.IsNil() {
+		return ""
+	}
 	t := sv.Type().Elem()
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)

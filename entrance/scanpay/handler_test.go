@@ -115,7 +115,7 @@ func TestScanPay(t *testing.T) {
 	t.Logf("%+v", resp)
 }
 
-func TestDictSort(t *testing.T) {
+func TestSignMsg(t *testing.T) {
 
-	t.Log(scanPayBarcodePay.DictSortMsg())
+	t.Log(scanPayBarcodePay.SignMsg())
 }

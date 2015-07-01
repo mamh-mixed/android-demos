@@ -96,7 +96,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 	sign := req.Sign
 	if mer.IsNeedSign {
 		req.Sign = "" // 置空
-		content := req.DictSortMsg() + mer.SignKey
+		content := req.SignMsg() + mer.SignKey
 		log.Debugf("sign content %s", content)
 		s := signWithSHA1(content)
 		if s != sign {
@@ -119,7 +119,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 
 	// 签名
 	if mer.IsNeedSign {
-		content := ret.DictSortMsg() + mer.SignKey
+		content := ret.SignMsg() + mer.SignKey
 		log.Debug(content)
 		ret.Sign = signWithSHA1(content)
 	}
