@@ -23,6 +23,10 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 
+	if matched, _ := regexp.MatchString(`^\d{18}$`, req.ScanCodeId); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
 	return
 }
 

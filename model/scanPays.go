@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"github.com/huandu/xstrings"
-	"github.com/omigo/mahonia"
 	"reflect"
 	"sort"
 	"strings"
@@ -49,7 +48,7 @@ type ScanPay struct {
 	TotalTxamt string // 订单总金额
 
 	// 辅助字段
-	Subject     string //  商品名称
+	Subject     string `json:"-"` //  商品名称
 	SysOrderNum string //  渠道交易号
 	ActTxamt    string //  实际交易金额 不同渠道单位不同
 	ChanMerId   string // 渠道商户Id
@@ -81,37 +80,14 @@ type ScanPayResponse struct {
 	ChanRespCode string `json:"-"` // 渠道详细应答码
 }
 
-// DictSort 字典排序报文
+// DictSortMsg 字典排序报文
 func (s *ScanPay) DictSortMsg() string {
+	return genDictSortMsg(s)
+}
 
-	var mFields []string
-	sv := reflect.ValueOf(s)
-	t := sv.Type().Elem()
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		mFields = append(mFields, f.Name)
-	}
-
-	// 排序
-	sort.Strings(mFields)
-	var buf bytes.Buffer
-	for _, field := range mFields {
-		v := sv.Elem().FieldByName(field)
-		if v.CanSet() {
-			if s, ok := v.Interface().(string); ok {
-				if s != "" {
-					if buf.Len() > 0 {
-						buf.WriteByte('&')
-					}
-					buf.WriteString(xstrings.FirstRuneToLower(field))
-					buf.WriteByte('=')
-					buf.WriteString(s)
-				}
-			}
-		}
-	}
-
-	return buf.String()
+// DictSortMsg 字典排序报文
+func (s *ScanPayResponse) DictSortMsg() string {
+	return genDictSortMsg(s)
 }
 
 // MarshalGoods 将商品详情解析成字符json字符串
@@ -121,11 +97,8 @@ func (s *ScanPay) MarshalGoods() string {
 	if s.GoodsInfo == "" {
 		return ""
 	}
-	// gbk->utf-8
-	e := mahonia.NewEncoder("UTF-8")
-	utf8 := e.ConvertString(s.GoodsInfo)
 
-	goods := strings.Split(utf8, ";")
+	goods := strings.Split(s.GoodsInfo, ";")
 	gs := make([]interface{}, 0, len(goods))
 
 	for i, v := range goods {
@@ -194,4 +167,36 @@ type WeixinNotifyResp struct {
 
 	ReturnCode string `xml:"return_code"`          // 返回状态码
 	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
+}
+
+func genDictSortMsg(o interface{}) string {
+	var mFields []string
+	sv := reflect.ValueOf(o)
+	t := sv.Type().Elem()
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		mFields = append(mFields, f.Name)
+	}
+
+	// 排序
+	sort.Strings(mFields)
+	var buf bytes.Buffer
+	for _, field := range mFields {
+		v := sv.Elem().FieldByName(field)
+		f, _ := t.FieldByName(field)
+		jsonTag := f.Tag.Get("json")
+		if v.CanSet() && jsonTag != "-" {
+			if v.Kind() == reflect.String {
+				if v.String() != "" {
+					if buf.Len() > 0 {
+						buf.WriteByte('&')
+					}
+					buf.WriteString(xstrings.FirstRuneToLower(field))
+					buf.WriteByte('=')
+					buf.WriteString(v.String())
+				}
+			}
+		}
+	}
+	return buf.String()
 }

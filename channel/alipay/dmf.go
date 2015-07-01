@@ -186,7 +186,6 @@ func toMap(req *alpRequest) map[string]string {
 	if req.GoodsDetail != "" {
 		dict["goods_detail"] = e.ConvertString(req.GoodsDetail)
 	}
-	// dict["goods_detail"] = req.GoodsDetail
 
 	return dict
 }

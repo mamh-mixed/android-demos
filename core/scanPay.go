@@ -58,8 +58,8 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			// 不送，返回 TODO check error code
 			return logicErrorHandler(t, "SYSTEM_ERROR")
 		}
-		t.ChanCode = req.Chcd
 	}
+	t.ChanCode = req.Chcd
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)

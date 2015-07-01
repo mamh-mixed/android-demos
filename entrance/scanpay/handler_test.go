@@ -5,6 +5,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -20,6 +21,7 @@ var (
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
+		Subject:    "test",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -60,20 +62,21 @@ var (
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435661322291",
+		OrigOrderNum: "1435726232974",
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayQrCodeOfflinePay
+	scanPay = scanPayClose
 )
 
 func TestScanPay(t *testing.T) {
 
 	log.SetOutputLevel(log.Ldebug)
-
 	reqBytes, _ := json.Marshal(scanPay)
-	respBytes := ScanPayHandle(reqBytes)
+	e := mahonia.NewEncoder("gbk")
+	gbk := e.ConvertString(string(reqBytes))
 
+	respBytes := ScanPayHandle([]byte(gbk))
 	respStr := string(respBytes)
 	resp := new(model.ScanPayResponse)
 	err := json.Unmarshal([]byte(respStr[4:]), resp)
