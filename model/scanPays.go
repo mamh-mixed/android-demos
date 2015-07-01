@@ -1,9 +1,13 @@
 package model
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
+	"github.com/huandu/xstrings"
 	"github.com/omigo/mahonia"
+	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -26,6 +30,7 @@ type ScanPay struct {
 	Mchntid      string `json:"mchntid,omitempty"`      //商户号
 	Terminalid   string `json:"terminalid,omitempty"`   //终端号
 	Txamt        string `json:"txamt,omitempty"`        //订单金额
+	Currency     string `json:"currency,omitempty"`     //币种
 	GoodsInfo    string `json:"goodsInfo,omitempty"`    //商品详情
 	OrderNum     string `json:"orderNum,omitempty"`     //订单号
 	OrigOrderNum string `json:"origOrderNum,omitempty"` //原订单号
@@ -74,6 +79,39 @@ type ScanPayResponse struct {
 	QrCode          string `json:"qrcode,omitempty"`          // 二维码 C
 	// 辅助字段
 	ChanRespCode string `json:"-"` // 渠道详细应答码
+}
+
+// DictSort 字典排序报文
+func (s *ScanPay) DictSortMsg() string {
+
+	var mFields []string
+	sv := reflect.ValueOf(s)
+	t := sv.Type().Elem()
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		mFields = append(mFields, f.Name)
+	}
+
+	// 排序
+	sort.Strings(mFields)
+	var buf bytes.Buffer
+	for _, field := range mFields {
+		v := sv.Elem().FieldByName(field)
+		if v.CanSet() {
+			if s, ok := v.Interface().(string); ok {
+				if s != "" {
+					if buf.Len() > 0 {
+						buf.WriteByte('&')
+					}
+					buf.WriteString(xstrings.FirstRuneToLower(field))
+					buf.WriteByte('=')
+					buf.WriteString(s)
+				}
+			}
+		}
+	}
+
+	return buf.String()
 }
 
 // MarshalGoods 将商品详情解析成字符json字符串

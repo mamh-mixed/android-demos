@@ -29,7 +29,7 @@ var (
 		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "WXP",
+		Chcd:      "ALP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
@@ -60,11 +60,11 @@ var (
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435629083581",
+		OrigOrderNum: "1435661322291",
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayCancel
+	scanPay = scanPayQrCodeOfflinePay
 )
 
 func TestScanPay(t *testing.T) {
@@ -110,4 +110,9 @@ func TestScanPay(t *testing.T) {
 		})
 	}
 	t.Logf("%+v", resp)
+}
+
+func TestDictSort(t *testing.T) {
+
+	t.Log(scanPayBarcodePay.DictSortMsg())
 }

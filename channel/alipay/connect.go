@@ -33,6 +33,8 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 		values.Add(k, v)
 	}
 
+	log.Debugf("alipay post data: %s", values.Encode())
+
 	var res *http.Response
 	var err error
 	res, err = http.PostForm(requestURL, values)
@@ -65,7 +67,7 @@ func handleResponseBody(reader io.Reader) (*alpResponse, error) {
 		log.Errorf("unmarsal body fail : %s", err)
 		return nil, err
 	}
-	log.Debugf("alp response body: %+v", alpResp)
+	log.Debugf("alp response body: \n %+v \n", alpResp)
 	// TODO 验证签名
 	return alpResp, nil
 }

@@ -1,6 +1,7 @@
 package scanpay
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
@@ -87,7 +88,17 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 		return mongo.OffLineRespCd("NO_MERCHANT_MATCH") // todo check error code
 	}
 
-	// TODO valid sign
+	// 验签
+	sign := req.Sign
+	if mer.IsNeedSign {
+		req.Sign = "" // 置空
+		signBytes := sha1.Sum([]byte(req.DictSortMsg() + mer.SignKey))
+		s := fmt.Sprintf("%x", signBytes[:])
+		if s != sign {
+			log.Errorf("sign should be %s, but get %s", s, sign)
+			return mongo.OffLineRespCd("AUTH_NO_ERROR")
+		}
+	}
 
 	// 验证接口权限
 	if !strings.Contains(strings.Join(mer.Permission, ","), req.Busicd) {
@@ -99,6 +110,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 	ret = processFuc(req)
 
 	// TODO sign
+	req.Sign = sign
 
 	return ret
 

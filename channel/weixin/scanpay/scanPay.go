@@ -90,6 +90,12 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayRes
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 	}
 
+	ret.MerDiscount, ret.ChcdDiscount = "0.00", "0.00"
+	if p.CouponFee != "" {
+		f, _ := strconv.ParseFloat(p.CouponFee, 64)
+		ret.MerDiscount = fmt.Sprintf("%0.2f", f/100)
+	}
+
 	return ret, err
 }
 
