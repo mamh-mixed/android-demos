@@ -40,7 +40,9 @@ func handleConnection(conn net.Conn) {
 	for {
 		reqBytes, err := read(conn)
 		if err != nil {
-			return
+			if err == io.EOF {
+				return
+			}
 		}
 		// process scanpay
 		respBytes := scanpay.ScanPayHandle(reqBytes)

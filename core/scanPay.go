@@ -1,7 +1,6 @@
 package core
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -9,7 +8,6 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -34,20 +32,18 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:     req.Mchntid,
-		OrderNum:  req.OrderNum,
-		TransType: model.PayTrans,
-		Busicd:    req.Busicd,
-		Inscd:     req.Inscd,
+		MerId:      req.Mchntid,
+		OrderNum:   req.OrderNum,
+		TransType:  model.PayTrans,
+		Busicd:     req.Busicd,
+		Inscd:      req.Inscd,
+		Terminalid: req.Terminalid,
 	}
 
 	// 金额单位转换 txamt:000000000010分
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 	t.TransAmt = int64(f)
 
@@ -60,22 +56,16 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 			req.Chcd = "ALP"
 		} else {
 			// 不送，返回 TODO check error code
-			ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-			t.RespCode = ret.Respcd
-			mongo.SpTransColl.Add(t)
-			return ret
+			return logicErrorHandler(t, "SYSTEM_ERROR")
 		}
-		t.ChanCode = req.Chcd
 	}
+	t.ChanCode = req.Chcd
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
 		// TODO check error code
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 	t.ChanMerId = rp.ChanMerId
 
@@ -83,10 +73,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	c, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
 		// TODO check error code
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 
 	// 参数处理
@@ -154,21 +141,19 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:     req.Mchntid,
-		OrderNum:  req.OrderNum,
-		TransType: model.PayTrans,
-		Busicd:    req.Busicd,
-		Inscd:     req.Inscd,
-		ChanCode:  req.Chcd,
+		MerId:      req.Mchntid,
+		OrderNum:   req.OrderNum,
+		TransType:  model.PayTrans,
+		Busicd:     req.Busicd,
+		Inscd:      req.Inscd,
+		ChanCode:   req.Chcd,
+		Terminalid: req.Terminalid,
 	}
 
 	// 金额单位转换
 	f, err := strconv.ParseFloat(req.Txamt, 64)
 	if err != nil {
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 	t.TransAmt = int64(f)
 
@@ -176,10 +161,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
 		// TODO check error code
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 	t.ChanMerId = rp.ChanMerId
 
@@ -187,10 +169,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	c, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
 	if err != nil {
 		// TODO check error code
-		ret = mongo.OffLineRespCd("SYSTEM_ERROR")
-		t.RespCode = ret.Respcd
-		mongo.SpTransColl.Add(t)
-		return ret
+		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 
 	// 转换金额单位
@@ -265,6 +244,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
 		ChanCode:     req.Chcd,
+		Terminalid:   req.Terminalid,
 	}
 
 	// 金额单位转换
@@ -474,6 +454,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
 		ChanCode:     req.Chcd,
+		Terminalid:   req.Terminalid,
 	}
 
 	// 判断是否存在该订单
@@ -596,6 +577,7 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		TransType:    model.CloseTrans,
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
+		Terminalid:   req.Terminalid,
 	}
 
 	// 判断是否存在该订单
@@ -716,75 +698,6 @@ func processWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model
 	}
 
 	return ret
-}
-
-// ProcessAlpNotify 支付宝异步通知处理
-func ProcessAlpNotify(params url.Values) {
-
-	// 通知动作类型
-	notifyAction := params.Get("notify_action_type")
-	// 交易订单号
-	orderNum := params.Get("out_trade_no")
-	// 系统订单号
-	sysOrderNum := params.Get("schema")
-
-	// 系统订单号是全局唯一
-	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
-	if err != nil {
-		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
-		return
-	}
-
-	// 判断是否是原订单
-	if t.OrderNum != orderNum {
-		log.Errorf("orderNum not match, expect %s, but get %s", t.OrderNum, orderNum)
-		return
-	}
-
-	switch notifyAction {
-	// 退款
-	case "refundFPAction":
-		// 将优惠信息更新为0.00，貌似为了打单用
-		mongo.SpTransColl.UpdateFields(&model.Trans{
-			Id:           t.Id,
-			MerDiscount:  "0.00",
-			ChanDiscount: "0.00",
-		})
-	// 其他
-	default:
-		// TODO 是否需要校验
-		bills := params.Get("paytools_pay_amount")
-		if bills != "" {
-			var merDiscount float64
-			var arrayBills []map[string]string
-			if err := json.Unmarshal([]byte(bills), &arrayBills); err == nil {
-				for _, bill := range arrayBills {
-					for k, v := range bill {
-						if k == "MCOUPON" || k == "MDISCOUNT" {
-							f, _ := strconv.ParseFloat(v, 64)
-							merDiscount += f
-						}
-					}
-				}
-			}
-			// 更新指定字段，注意，这里不能全部更新
-			// 否则可能会覆盖同步返回的结果
-			mongo.SpTransColl.UpdateFields(&model.Trans{
-				Id:          t.Id,
-				MerDiscount: fmt.Sprintf("%0.2f", merDiscount),
-			})
-		}
-	}
-
-}
-
-// ProcessWeixinNotify 微信异步通知处理
-func ProcessWeixinNotify(req *model.WeixinNotifyReq) (resp *model.WeixinNotifyResp) {
-	log.Errorf("unimplement method: %#v", req)
-
-	// TODO ...
-
-	return resp
 }
 
 // logicErrorHandler 逻辑错误处理

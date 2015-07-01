@@ -3,14 +3,13 @@ package entrance
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/omigo/log"
 )
@@ -102,9 +101,35 @@ func prepareData(r *http.Request) (merId, sign string, data []byte, status int, 
 	return merId, sign, data, 200, nil
 }
 
-// WeixinNotify 接受微信异步通知 "/quickpay/back/weixin"
-func WeixinNotify(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.String())
+// AsyncNotify 处理支付宝、微信异步通知
+func AsyncNotify(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("url = %s", r.URL.Path)
+
+	var (
+		retBytes []byte
+		err      error
+	)
+
+	switch r.URL.Path {
+	case "/qp/back/weixin":
+		retBytes, err = weixinNotify(r)
+	case "/qp/back/alipay":
+		retBytes, err = alipayNotify(r)
+	default:
+		retBytes = []byte("404")
+	}
+
+	if err != nil {
+		log.Errorf("read http body error: %s", err)
+		http.Error(w, "system error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(retBytes)
+}
+
+// WeixinNotify 接受微信异步通知
+func weixinNotify(r *http.Request) ([]byte, error) {
 
 	ret := &model.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}
 
@@ -113,38 +138,28 @@ func WeixinNotify(w http.ResponseWriter, r *http.Request) {
 		log.Errorf("read http body error: %s", err)
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
-	} else {
-		var req model.WeixinNotifyReq
-		err := json.Unmarshal(data, &req)
-		if err != nil {
-			log.Errorf("read http body error: %s", err)
-			ret.ReturnCode = "FAIL"
-			ret.ReturnMsg = "报文读取错误"
-		} else {
-			ret = core.ProcessWeixinNotify(&req)
-		}
+		return json.Marshal(ret)
 	}
 
-	rbody, err := json.Marshal(ret)
+	var req model.WeixinNotifyReq
+	err = json.Unmarshal(data, &req)
 	if err != nil {
 		log.Errorf("read http body error: %s", err)
-		http.Error(w, "system error", http.StatusInternalServerError)
-		return
+		ret.ReturnCode = "FAIL"
+		ret.ReturnMsg = "报文读取错误"
+		return json.Marshal(ret)
 	}
 
-	w.Write(rbody)
+	core.ProcessWeixinNotify(&req)
+
+	return json.Marshal(ret)
 }
 
-// AlipayNotify 接受支付宝异步通知 "/quickpay/back/alp"
-func AlipayNotify(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.String())
+// AlipayNotify 接受支付宝异步通知
+func alipayNotify(r *http.Request) ([]byte, error) {
 
-	content, values := "", r.URL.Query()
-	// TODO check sign
-	values.Add("scanpay_chcd", "ALP")
-	content = "success"
-
-	core.ProcessAlpNotify(values)
 	// 处理异步通知
-	w.Write([]byte(content))
+	core.ProcessAlpNotify(r.URL.Query())
+
+	return []byte("success"), nil
 }

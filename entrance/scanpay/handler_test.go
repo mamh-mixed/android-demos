@@ -5,6 +5,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/tools"
 	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -15,11 +16,12 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  tools.Millisecond(),
 		// ScanCodeId: "282259453320278456", // 支付宝
-		ScanCodeId: "130521672905555297", // 微信
+		ScanCodeId: "130381911129127781", // 微信
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
+		Subject:    "test",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -29,21 +31,21 @@ var (
 		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "WXP",
+		Chcd:      "ALP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435629083581",
+		OrigOrderNum: "1435658612934",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
 		Busicd:       "REFD",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435591752362",
+		OrigOrderNum: "1435658612934",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}
@@ -52,7 +54,7 @@ var (
 		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435592028108",
+		OrigOrderNum: "1435658612934",
 		Inscd:        "CIL00002",
 	}
 	// 关单
@@ -60,20 +62,21 @@ var (
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435629083581",
+		OrigOrderNum: "1435726232974",
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayEnquiry
+	scanPay = scanPayClose
 )
 
 func TestScanPay(t *testing.T) {
 
 	log.SetOutputLevel(log.Ldebug)
-
 	reqBytes, _ := json.Marshal(scanPay)
-	respBytes := ScanPayHandle(reqBytes)
+	e := mahonia.NewEncoder("gbk")
+	gbk := e.ConvertString(string(reqBytes))
 
+	respBytes := ScanPayHandle([]byte(gbk))
 	respStr := string(respBytes)
 	resp := new(model.ScanPayResponse)
 	err := json.Unmarshal([]byte(respStr[4:]), resp)
@@ -110,4 +113,9 @@ func TestScanPay(t *testing.T) {
 		})
 	}
 	t.Logf("%+v", resp)
+}
+
+func TestSignMsg(t *testing.T) {
+
+	t.Log(scanPayBarcodePay.SignMsg())
 }

@@ -1,9 +1,12 @@
 package model
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/omigo/mahonia"
+	"github.com/huandu/xstrings"
+	"reflect"
+	"sort"
 	"strings"
 )
 
@@ -26,6 +29,7 @@ type ScanPay struct {
 	Mchntid      string `json:"mchntid,omitempty"`      //商户号
 	Terminalid   string `json:"terminalid,omitempty"`   //终端号
 	Txamt        string `json:"txamt,omitempty"`        //订单金额
+	Currency     string `json:"currency,omitempty"`     //币种
 	GoodsInfo    string `json:"goodsInfo,omitempty"`    //商品详情
 	OrderNum     string `json:"orderNum,omitempty"`     //订单号
 	OrigOrderNum string `json:"origOrderNum,omitempty"` //原订单号
@@ -44,7 +48,7 @@ type ScanPay struct {
 	TotalTxamt string // 订单总金额
 
 	// 辅助字段
-	Subject     string //  商品名称
+	Subject     string `json:"-"` //  商品名称
 	SysOrderNum string //  渠道交易号
 	ActTxamt    string //  实际交易金额 不同渠道单位不同
 	ChanMerId   string // 渠道商户Id
@@ -76,6 +80,16 @@ type ScanPayResponse struct {
 	ChanRespCode string `json:"-"` // 渠道详细应答码
 }
 
+// DictSortMsg 字典排序报文
+func (s *ScanPay) SignMsg() string {
+	return genSignMsg(s)
+}
+
+// DictSortMsg 字典排序报文
+func (s *ScanPayResponse) SignMsg() string {
+	return genSignMsg(s)
+}
+
 // MarshalGoods 将商品详情解析成字符json字符串
 // 格式: 商品名称,价格,数量;商品名称,价格,数量;...
 func (s *ScanPay) MarshalGoods() string {
@@ -83,11 +97,8 @@ func (s *ScanPay) MarshalGoods() string {
 	if s.GoodsInfo == "" {
 		return ""
 	}
-	// gbk->utf-8
-	e := mahonia.NewEncoder("UTF-8")
-	utf8 := e.ConvertString(s.GoodsInfo)
 
-	goods := strings.Split(utf8, ";")
+	goods := strings.Split(s.GoodsInfo, ";")
 	gs := make([]interface{}, 0, len(goods))
 
 	for i, v := range goods {
@@ -147,6 +158,7 @@ type WeixinNotifyReq struct {
 	OutTradeNo    string `xml:"out_trade_no"`          // 商户订单号
 	Attach        string `xml:"attach"`                // 商家数据包
 	TimeEnd       string `xml:"time_end"`              // 支付完成时间
+
 }
 
 // WeixinNotifyResp 商户需要接收处理，并返回应答
@@ -155,4 +167,42 @@ type WeixinNotifyResp struct {
 
 	ReturnCode string `xml:"return_code"`          // 返回状态码
 	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
+}
+
+// genSignMsg 获取字符串签名字段
+func genSignMsg(o interface{}) string {
+
+	var mFields []string
+	sv := reflect.ValueOf(o)
+	if sv.Kind() != reflect.Ptr || sv.IsNil() {
+		return ""
+	}
+	t := sv.Type().Elem()
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		mFields = append(mFields, f.Name)
+	}
+
+	// 排序
+	sort.Strings(mFields)
+	var buf bytes.Buffer
+	for _, field := range mFields {
+		v := sv.Elem().FieldByName(field)
+		f, _ := t.FieldByName(field)
+		jsonTag := f.Tag.Get("json")
+		if v.CanSet() && jsonTag != "-" {
+			if v.Kind() == reflect.String {
+				fv := v.String()
+				if fv != "" {
+					if buf.Len() > 0 {
+						buf.WriteByte('&')
+					}
+					buf.WriteString(xstrings.FirstRuneToLower(field))
+					buf.WriteByte('=')
+					buf.WriteString(fv)
+				}
+			}
+		}
+	}
+	return buf.String()
 }
