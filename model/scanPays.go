@@ -192,13 +192,14 @@ func genSignMsg(o interface{}) string {
 		jsonTag := f.Tag.Get("json")
 		if v.CanSet() && jsonTag != "-" {
 			if v.Kind() == reflect.String {
-				if v.String() != "" {
+				fv := v.String()
+				if fv != "" {
 					if buf.Len() > 0 {
 						buf.WriteByte('&')
 					}
 					buf.WriteString(xstrings.FirstRuneToLower(field))
 					buf.WriteByte('=')
-					buf.WriteString(v.String())
+					buf.WriteString(fv)
 				}
 			}
 		}
