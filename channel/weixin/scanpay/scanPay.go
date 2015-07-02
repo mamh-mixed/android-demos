@@ -123,7 +123,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.S
 		TimeStart:      "",               // 交易起始时间
 		TimeExpire:     "",               // 交易结束时间
 		GoodsGag:       m.GoodsGag,       // 商品标记
-		NotifyURL:      weixinNotifyURL,  // 通知地址
+		NotifyURL:      m.NotifyUrl,      // 通知地址
 		TradeType:      "NATIVE",         // 交易类型
 		ProductID:      "",               // 商品ID
 		Openid:         "",               // 用户标识

@@ -22,7 +22,7 @@ function main() {
     # host="quick@app2.set.shou.money"
     # deploy $host $workdir
 
-    host="webapp@test.ipay.so"
+    host="webapp@dev.ipay.so"
     deploy $host $workdir
 }
 

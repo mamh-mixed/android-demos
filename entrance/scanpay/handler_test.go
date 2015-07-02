@@ -31,14 +31,14 @@ var (
 		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "ALP",
+		Chcd:      "WXP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435658612934",
+		OrigOrderNum: "1435808688569",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
@@ -66,7 +66,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayClose
+	scanPay = scanPayQrCodeOfflinePay
 )
 
 func TestScanPay(t *testing.T) {

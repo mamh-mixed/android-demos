@@ -62,16 +62,17 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, err
 func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
-		Partner:      req.ChanMerId,
-		Service:      preCreate,
-		NotifyUrl:    req.NotifyUrl,
-		OutTradeNo:   req.OrderNum, // 送的是原订单号，不转换,
-		Subject:      req.Subject,
-		GoodsDetail:  req.MarshalGoods(),
-		ProductCode:  "QR_CODE_OFFLINE",
-		TotalFee:     req.ActTxamt,
-		ExtendParams: "",
-		ItBPay:       "1m", // 超时时间
+		Partner:        req.ChanMerId,
+		Service:        preCreate,
+		NotifyUrl:      req.NotifyUrl,
+		OutTradeNo:     req.OrderNum, // 送的是原订单号，不转换,
+		Subject:        req.Subject,
+		GoodsDetail:    req.MarshalGoods(),
+		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
+		ProductCode:    "QR_CODE_OFFLINE",
+		TotalFee:       req.ActTxamt,
+		ExtendParams:   "",
+		ItBPay:         "1m", // 超时时间
 	}
 
 	// req to map
@@ -177,6 +178,7 @@ func toMap(req *alpRequest) map[string]string {
 	dict["dynamic_id"] = req.DynamicId
 	dict["refund_amount"] = req.RefundAmount
 	dict["out_request_no"] = req.OutRequestNo
+	dict["passback_parameters"] = req.PassbackParams
 
 	// utf-8 -> gbk
 	e := mahonia.NewEncoder("gbk")

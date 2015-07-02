@@ -13,7 +13,8 @@ import (
 	"time"
 )
 
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/quickpay/back/alp"
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
+var weixinNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
 
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
@@ -176,10 +177,12 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	switch rp.ChanCode {
 	case "ALP":
 		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
+		req.NotifyUrl = alipayNotifyUrl
 	case "WXP":
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
 		req.SubMchId = c.SubMchId
+		req.NotifyUrl = weixinNotifyUrl
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -189,7 +192,6 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
-	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum

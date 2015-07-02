@@ -2,16 +2,17 @@ package entrance
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/omigo/log"
+	"net/url"
 )
 
 // Quickpay 快捷支付统一入口
@@ -138,28 +139,36 @@ func weixinNotify(r *http.Request) ([]byte, error) {
 		log.Errorf("read http body error: %s", err)
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
-		return json.Marshal(ret)
+		return xml.Marshal(ret)
 	}
 
 	var req model.WeixinNotifyReq
-	err = json.Unmarshal(data, &req)
+	err = xml.Unmarshal(data, &req)
 	if err != nil {
-		log.Errorf("read http body error: %s", err)
+		log.Errorf("unmarshal body error: %s, body: %s", err, string(data))
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
-		return json.Marshal(ret)
+		return xml.Marshal(ret)
 	}
 
 	core.ProcessWeixinNotify(&req)
 
-	return json.Marshal(ret)
+	return xml.Marshal(ret)
 }
 
 // AlipayNotify 接受支付宝异步通知
 func alipayNotify(r *http.Request) ([]byte, error) {
 
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	vs, err := url.ParseQuery(string(data))
+	if err != nil {
+		return nil, err
+	}
 	// 处理异步通知
-	core.ProcessAlpNotify(r.URL.Query())
+	core.ProcessAlpNotify(vs)
 
 	return []byte("success"), nil
 }

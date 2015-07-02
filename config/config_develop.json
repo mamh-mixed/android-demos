@@ -9,8 +9,7 @@
     },
     "Mongo": {
         "_URL": "URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]",
-        "____": "mongodb://angrycard:angrycard@dev.ipay.so:27017/angrycard",
-        "URL": "mongodb://121.41.85.237:27017/quickpay",
+        "URL": "mongodb://quickpay:quickpay@dev.ipay.so:27017/quickpay",
         "DB": "quickpay"
     },
     "CILOnline": {
@@ -43,12 +42,12 @@
         "_URL": "微信刷卡支付接口地址",
         "URL": "https://api.mch.weixin.qq.com",
         "_NotifyURL": "异步消息通知地址，路径是固定的，只需要域名和端口",
-        "NotifyURL": "http://dev.ipay.so"
+        "NotifyURL": "http://120.26.66.57:6800"
     },
     "AlipayScanPay": {
         "_URL": "支付宝扫码支付接口地址",
         "URL": "https://mapi.alipay.com/gateway.do",
         "_NotifyUrl": "支付宝异步消息通知地址，路径是固定的，只需要域名和端口",
-        "NotifyUrl": "http://dev.ipay.so"
+        "NotifyUrl": "http://120.26.66.57:6800"
     }
 }
