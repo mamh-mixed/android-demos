@@ -13,7 +13,7 @@ import (
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -38,7 +38,7 @@ func processTransSettle() {
 
 	// 凌晨10分时将交易数据copy到清分表
 	// 距离指定的时间
-	dis, err := tools.TimeToGiven("00:10:00")
+	dis, err := util.TimeToGiven("00:10:00")
 	if err != nil {
 		log.Errorf("fail to get time second by given %s", err)
 		return
@@ -47,19 +47,19 @@ func processTransSettle() {
 	afterFunc(dis*time.Second, "doTransSett")
 
 	// 中金渠道
-	disCfca, _ := tools.TimeToGiven("08:00:00")
+	disCfca, _ := util.TimeToGiven("08:00:00")
 	log.Debugf("prepare to process doCFCATransCheck method after %s ", disCfca*time.Second)
 	afterFunc(disCfca*time.Second, "doCFCATransCheck")
 
 	// 讯联线下渠道
-	// disCil, _ := tools.TimeToGiven("01:00:00")
+	// disCil, _ := util.TimeToGiven("01:00:00")
 	// log.Debugf("prepare to process doCFCATransCheck method after %s ", disCil*time.Second)
 	// afterFunc(disCfca*time.Second, "doCILTransCheck")
 
 	// 其他渠道...
 
 	// test
-	// disTest, _ := tools.TimeToGiven("11:35:00")
+	// disTest, _ := util.TimeToGiven("11:35:00")
 	// afterFunc(disTest*time.Second, "doTest")
 
 	// 主线程阻塞

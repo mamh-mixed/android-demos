@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -186,7 +186,7 @@ func TestProcessNoTrackPayment(t *testing.T) {
 		Cvv2Decrypt:      testCUPCVV2,
 	}
 
-	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
+	var aes = util.NewAESCBCEncrypt(testEncryptKey)
 
 	ntp.AcctName = aes.Encrypt(ntp.AcctNameDecrypt)
 	ntp.AcctNum = aes.Encrypt(ntp.AcctNumDecrypt)

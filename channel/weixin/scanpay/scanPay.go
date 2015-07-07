@@ -2,10 +2,11 @@ package scanpay
 
 import (
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
-	"github.com/omigo/log"
 	"strconv"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -18,17 +19,17 @@ var DefaultWeixinScanPay WeixinScanPay
 func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
 	d := &PayReq{
 		// 必填
-		Appid:          m.AppID,         // 公众账号ID
-		MchID:          m.ChanMerId,     // 商户号
-		SubMchId:       m.SubMchId,      // 子商户号
-		NonceStr:       tools.Nonce(16), // 随机字符串
-		Body:           m.Subject,       // 商品描述
-		OutTradeNo:     m.OrderNum,      // 商户订单号
-		Sign:           "",              // 签名
-		AuthCode:       m.ScanCodeId,    // 授权码
-		TotalFee:       m.ActTxamt,      // 总金额
-		WeixinMD5Key:   m.SignCert,      // md5key
-		SpbillCreateIP: tools.LocalIP,   // 终端IP
+		Appid:          m.AppID,        // 公众账号ID
+		MchID:          m.ChanMerId,    // 商户号
+		SubMchId:       m.SubMchId,     // 子商户号
+		NonceStr:       util.Nonce(16), // 随机字符串
+		Body:           m.Subject,      // 商品描述
+		OutTradeNo:     m.OrderNum,     // 商户订单号
+		Sign:           "",             // 签名
+		AuthCode:       m.ScanCodeId,   // 授权码
+		TotalFee:       m.ActTxamt,     // 总金额
+		WeixinMD5Key:   m.SignCert,     // md5key
+		SpbillCreateIP: util.LocalIP,   // 终端IP
 
 		// 非必填
 		DeviceInfo: m.DeviceInfo,     // 设备号
@@ -65,12 +66,12 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPay
 // ProcessEnquiry 查询
 func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
 	d := &PayQueryReq{
-		Appid:         m.AppID,         // 公众账号ID
-		MchID:         m.ChanMerId,     // 商户号
-		SubMchId:      m.SubMchId,      // 子商户号
-		TransactionId: "",              // 微信支付订单号
-		OutTradeNo:    m.OrderNum,      // 商户订单号
-		NonceStr:      tools.Nonce(32), // 商品详情
+		Appid:         m.AppID,        // 公众账号ID
+		MchID:         m.ChanMerId,    // 商户号
+		SubMchId:      m.SubMchId,     // 子商户号
+		TransactionId: "",             // 微信支付订单号
+		OutTradeNo:    m.OrderNum,     // 商户订单号
+		NonceStr:      util.Nonce(32), // 商品详情
 		Sign:          "",
 		WeixinMD5Key:  m.SignCert,
 	}
@@ -104,11 +105,11 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.S
 	d := &PrePayReq{
 
 		// 公共字段
-		Appid:    m.AppID,         // 公众账号ID
-		MchID:    m.ChanMerId,     // 商户号
-		SubMchId: m.SubMchId,      // 子商户号
-		NonceStr: tools.Nonce(32), // 随机字符串
-		Sign:     "",              // 签名
+		Appid:    m.AppID,        // 公众账号ID
+		MchID:    m.ChanMerId,    // 商户号
+		SubMchId: m.SubMchId,     // 子商户号
+		NonceStr: util.Nonce(32), // 随机字符串
+		Sign:     "",             // 签名
 
 		WeixinMD5Key: m.SignCert, // md5key
 
@@ -119,7 +120,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.S
 		OutTradeNo:     m.OrderNum,       // 商户订单号
 		TotalFee:       m.ActTxamt,       // 总金额
 		FeeType:        m.CurrType,       // 货币类型
-		SpbillCreateIP: tools.LocalIP,    // 终端IP
+		SpbillCreateIP: util.LocalIP,     // 终端IP
 		TimeStart:      "",               // 交易起始时间
 		TimeExpire:     "",               // 交易结束时间
 		GoodsGag:       m.GoodsGag,       // 商品标记
@@ -157,11 +158,11 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResp
 	log.Debugf("%#c", m)
 	d := &RefundReq{
 		// 公共字段
-		Appid:        m.AppID,         // 公众账号ID
-		MchID:        m.ChanMerId,     // 商户号
-		SubMchId:     m.SubMchId,      // 子商户号
-		NonceStr:     tools.Nonce(16), // 随机字符串
-		Sign:         "",              // 签名
+		Appid:        m.AppID,        // 公众账号ID
+		MchID:        m.ChanMerId,    // 商户号
+		SubMchId:     m.SubMchId,     // 子商户号
+		NonceStr:     util.Nonce(16), // 随机字符串
+		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignCert,
 
 		DeviceInfo:    m.DeviceInfo,   // 设备号
@@ -197,11 +198,11 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResp
 func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
 	d := &RefundQueryReq{
 		// 公共字段
-		Appid:        m.AppID,         // 公众账号ID
-		MchID:        m.ChanMerId,     // 商户号
-		SubMchId:     m.SubMchId,      // 子商户号
-		NonceStr:     tools.Nonce(16), // 随机字符串
-		Sign:         "",              // 签名
+		Appid:        m.AppID,        // 公众账号ID
+		MchID:        m.ChanMerId,    // 商户号
+		SubMchId:     m.SubMchId,     // 子商户号
+		NonceStr:     util.Nonce(16), // 随机字符串
+		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignCert,
 
 		DeviceInfo:    m.DeviceInfo,   // 设备号
@@ -242,11 +243,11 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPay) (ret *model.ScanPa
 func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
 	d := &ReverseReq{
 		// 公共字段
-		Appid:        m.AppID,         // 公众账号ID
-		MchID:        m.ChanMerId,     // 商户号
-		SubMchId:     m.SubMchId,      // 子商户号
-		NonceStr:     tools.Nonce(16), // 随机字符串
-		Sign:         "",              // 签名
+		Appid:        m.AppID,        // 公众账号ID
+		MchID:        m.ChanMerId,    // 商户号
+		SubMchId:     m.SubMchId,     // 子商户号
+		NonceStr:     util.Nonce(16), // 随机字符串
+		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignCert,
 
 		TransactionId: "",             // 微信订单号
@@ -276,11 +277,11 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPay) (ret *model.ScanPayResp
 func (sp *WeixinScanPay) ProcessClose(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
 	d := &CloseReq{
 		// 公共字段
-		Appid:        m.AppID,         // 公众账号ID
-		MchID:        m.ChanMerId,     // 商户号
-		SubMchId:     m.SubMchId,      // 子商户号
-		NonceStr:     tools.Nonce(16), // 随机字符串
-		Sign:         "",              // 签名
+		Appid:        m.AppID,        // 公众账号ID
+		MchID:        m.ChanMerId,    // 商户号
+		SubMchId:     m.SubMchId,     // 子商户号
+		NonceStr:     util.Nonce(16), // 随机字符串
+		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignCert,
 
 		TransactionId: "",             // 微信订单号

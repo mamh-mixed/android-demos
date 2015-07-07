@@ -5,16 +5,16 @@ import (
 	// "github.com/CardInfoLink/quickpay/mongo"
 	"testing"
 
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func TestAddTrans(t *testing.T) {
 
 	tran := &model.Trans{
-		SysOrderNum: tools.SerialNumber(),
+		SysOrderNum: util.SerialNumber(),
 		Id:          bson.NewObjectId(),
-		OrderNum:    tools.Millisecond(),
+		OrderNum:    util.Millisecond(),
 		ChanCode:    "CFCA",
 		MerId:       "001405",
 		TransAmt:    1700,

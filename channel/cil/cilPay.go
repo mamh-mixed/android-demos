@@ -6,7 +6,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -51,7 +51,7 @@ func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 	}
 
 	// 报文入库
-	m.UUID = tools.SerialNumber()
+	m.UUID = util.SerialNumber()
 	log.Debugf("直接消费（订购消费）向线下网关发送报文内容: %+v", m)
 	// mongo.CilMsgColl.Upsert(m)
 
@@ -109,7 +109,7 @@ func (c *CILPay) ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn
 	}
 
 	// 报文入库
-	m.UUID = tools.SerialNumber()
+	m.UUID = util.SerialNumber()
 	log.Debugf("ApplePay 消费向线下网关发送报文内容: %+v", m)
 	// mongo.CilMsgColl.Upsert(m)
 
@@ -161,7 +161,7 @@ func reversalHandle(om *model.CilMsg) {
 	}
 
 	// 报文入库
-	rm.UUID = tools.SerialNumber()
+	rm.UUID = util.SerialNumber()
 	log.Debugf("冲正请求向线下网关发送报文内容: %+v", rm)
 	// mongo.CilMsgColl.Upsert(rm)
 

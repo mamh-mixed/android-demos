@@ -10,7 +10,7 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -86,7 +86,7 @@ func doPost(url string, m interface{}, t *testing.T) {
 func TestBindingCreate(t *testing.T) {
 	url := "http://quick.ipay.so/quickpay/bindingCreate?merId=" + testMerId
 
-	bindingId = tools.Millisecond()
+	bindingId = util.Millisecond()
 
 	b := model.BindingCreate{
 		MerId:     testMerId,
@@ -104,7 +104,7 @@ func TestBindingCreate(t *testing.T) {
 		BankId:    "102",
 	}
 
-	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
+	var aes = util.NewAESCBCEncrypt(testEncryptKey)
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)
@@ -125,7 +125,7 @@ func TestBindingEnquiryHandle(t *testing.T) {
 
 func TestBindingPaymentHandle(t *testing.T) {
 	url := "http://quick.ipay.so/quickpay/bindingPayment?merId=" + testMerId
-	orderNum = tools.Millisecond()
+	orderNum = util.Millisecond()
 	b := model.BindingPayment{
 		MerOrderNum: orderNum,
 		TransAmt:    1000,
@@ -147,7 +147,7 @@ func TestBindingRefundHandle(t *testing.T) {
 	url := "http://quick.ipay.so/quickpay/refund?merId=" + testMerId
 	b := model.BindingRefund{
 		OrigOrderNum: orderNum,
-		MerOrderNum:  tools.Millisecond(),
+		MerOrderNum:  util.Millisecond(),
 		TransAmt:     100,
 	}
 	doPost(url, b, t)

@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func TestBindingInfo(t *testing.T) {
-	merId, bindingId := "MI"+tools.Millisecond(), tools.SerialNumber()
+	merId, bindingId := "MI"+util.Millisecond(), util.SerialNumber()
 	bi := &model.BindingInfo{
 		MerId:     merId,
 		BindingId: bindingId,
@@ -36,7 +36,7 @@ func TestBindingInfo(t *testing.T) {
 }
 
 func TestBindingMap(t *testing.T) {
-	merId, bindingId, chanBindingId := "MI12345", "BI"+tools.Millisecond(), tools.SerialNumber()
+	merId, bindingId, chanBindingId := "MI12345", "BI"+util.Millisecond(), util.SerialNumber()
 	bm := &model.BindingMap{
 		MerId:         merId,
 		BindingId:     bindingId,

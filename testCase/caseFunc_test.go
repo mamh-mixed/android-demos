@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/core"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -42,7 +42,7 @@ func init() {
 // Test1 1.1.1使用一张有效银联卡发起建立绑定关系请求
 func Test1(t *testing.T) {
 	acctNum = "6222022003008481261"
-	bindingId = tools.Millisecond()
+	bindingId = util.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 	Convey("1.1.1使用一张有效银联卡发起建立绑定关系请求", t, func() {
 		b, _ := bindingCreate()
@@ -69,7 +69,7 @@ func Test2(t *testing.T) {
 // Test3 1.1.3使用一张外卡进行绑定
 func Test3(t *testing.T) {
 	acctNum = "5311622289073236" // 外卡
-	bindingId = tools.Millisecond()
+	bindingId = util.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 	Convey("1.1.3使用一张外卡进行绑定", t, func() {
 		b, _ := bindingCreate()
@@ -83,7 +83,7 @@ func Test3(t *testing.T) {
 // Test4 1.1.4使用一个不存在的卡号进行绑定
 func Test4(t *testing.T) {
 	acctNum = "4931236819413" // 不存在的卡号
-	bindingId = tools.Millisecond()
+	bindingId = util.Millisecond()
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 	Convey("1.1.4使用一个不存在的卡号进行绑定", t, func() {
 		b, _ := bindingCreate()
@@ -97,7 +97,7 @@ func Test4(t *testing.T) {
 // Test5 1.1.5使用不存在商户号发起建立绑定关系请求
 func Test5(t *testing.T) {
 	acctNum = "6222022003008481261"
-	bindingId = tools.Millisecond()
+	bindingId = util.Millisecond()
 	merId := "111123333"
 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + merId
 	Convey("1.1.5使用不存在商户号发起建立绑定关系请求", t, func() {
@@ -112,7 +112,7 @@ func Test5(t *testing.T) {
 // Test6
 // func Test6(t *testing.T) {
 // 	// acctNum = "6222022003008481261"
-// 	bindingId = tools.Millisecond()
+// 	bindingId = util.Millisecond()
 // 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=" + testMerId
 // 	Convey("1.1.7使用错误签名上送建立绑定关系请求", t, func() {
 // 		b, err := bindingCreate()
@@ -131,7 +131,7 @@ func Test7(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + testMerId
 	Convey("1.2.1使用1.1.1中建立的绑定关系进行绑定支付", t, func() {
 		amt = 10000
-		orderNum = tools.Millisecond()
+		orderNum = util.Millisecond()
 		b := BindingPayment()
 		Convey("期望结果：请求处理成功", func() {
 			ret, _ := post(url, b)
@@ -151,7 +151,7 @@ func Test8(t *testing.T) {
 			ret, _ := post(url, b)
 			So(ret.RespMsg, ShouldEqual, "请求处理成功")
 			Convey("期望结果：绑定ID已失效", func() {
-				orderNum = tools.Millisecond()
+				orderNum = util.Millisecond()
 				c := BindingPayment()
 				url = "https://api.xxxx.com/quickpay/bindingPayment?merId=" + testMerId
 				ret, _ := post(url, c)
@@ -181,7 +181,7 @@ func Test9(t *testing.T) {
 // 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + testMerId
 // 	Convey("1.2.8进行一笔大额绑定支付（可输入最大额）", t, func() {
 
-// 		orderNum = tools.Millisecond()
+// 		orderNum = util.Millisecond()
 // 		amt = 100000000000000
 // 		b := BindingPayment()
 // 		Convey("预期结果", func() {
@@ -197,7 +197,7 @@ func Test11(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingPayment?merId=" + testMerId
 	Convey("1.2.10进行一笔0，00元的绑定支付", t, func() {
 
-		orderNum = tools.Millisecond()
+		orderNum = util.Millisecond()
 		amt = 0
 		b := BindingPayment()
 		Convey("期望结果：字段xx不能位空", func() {
@@ -225,7 +225,7 @@ func Test12(t *testing.T) {
 func Test13(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/refund?merId=" + testMerId
 	Convey("1.3.2退一笔原交易不存在的订单", t, func() {
-		orderNum = tools.Millisecond()
+		orderNum = util.Millisecond()
 		b := BindingRefund()
 		Convey("期望结果：订单号不存在", func() {
 			ret, _ := post(url, b)
@@ -305,7 +305,7 @@ func Test18(t *testing.T) {
 func Test20(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/orderEnquiry?merId=" + testMerId
 	Convey("1.4.6查询一笔不存在的退款交易订单", t, func() {
-		orderNum = tools.Millisecond()
+		orderNum = util.Millisecond()
 		b := OrderEnquiry()
 		Convey("期望结果：订单号有误", func() {
 			ret, _ := post(url, b)
@@ -336,7 +336,7 @@ func Test22(t *testing.T) {
 func Test23(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingEnquiry?merId=" + testMerId
 	Convey("1.5.2查询任意一个该商户下不存在的绑定关系", t, func() {
-		bindingId = tools.Millisecond()
+		bindingId = util.Millisecond()
 		b := BindingEnquiry()
 		Convey("期望结果：绑定ID有误", func() {
 			ret, _ := post(url, b)
@@ -394,7 +394,7 @@ func Test26(t *testing.T) {
 func Test27(t *testing.T) {
 	url := "https://api.xxxx.com/quickpay/bindingRemove?merId=" + testMerId
 	Convey("1.6.3对一个不存在的绑定ID进行解绑", t, func() {
-		bindingId = tools.Millisecond()
+		bindingId = util.Millisecond()
 		b := BindingRemove()
 		Convey("期望结果：绑定ID有误", func() {
 			ret, _ := post(url, b)

@@ -1,6 +1,7 @@
-package tools
+package util
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/omigo/log"
@@ -17,7 +18,7 @@ func TestUUID(t *testing.T) {
 }
 
 func TestMillisecond(t *testing.T) {
-	t.Log("Millisecond: %s", Millisecond())
+	t.Logf("Millisecond: %s", Millisecond())
 }
 
 func TestTimeToGiven(t *testing.T) {
@@ -27,4 +28,12 @@ func TestTimeToGiven(t *testing.T) {
 		t.Errorf("fail to get time %s", err)
 	}
 	log.Debugf("time to given (%d)", time)
+}
+
+func TestNonce(t *testing.T) {
+	fmt.Println(Nonce(16))
+	fmt.Println(Nonce(32))
+	fmt.Println(Nonce(64))
+	fmt.Println(Nonce(128))
+	fmt.Println(Nonce(256))
 }

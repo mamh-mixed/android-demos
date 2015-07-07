@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 var pay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
-	OrderNum:   tools.Millisecond(),
+	OrderNum:   util.SerialNumber(),
 	SignCert:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ScanCodeId: "280192311263062742",
 	ActTxamt:   "0.01",
@@ -23,7 +23,7 @@ var pay = &model.ScanPay{
 
 var prePay = &model.ScanPay{
 	GoodsInfo: "鞋子,1000,2;衣服,1500,3",
-	OrderNum:  tools.Millisecond(),
+	OrderNum:  util.Millisecond(),
 	SignCert:  "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ActTxamt:  "0.01",
 	Subject:   "讯联测试",
@@ -44,7 +44,7 @@ var enquiry = &model.ScanPay{
 }
 
 var refundPay = &model.ScanPay{
-	OrderNum:     tools.Millisecond(),
+	OrderNum:     util.Millisecond(),
 	OrigOrderNum: "1435564111647",
 	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ChanMerId:    "2088811767473826",

@@ -1,11 +1,12 @@
-package tools
+package util
 
 import (
+	"crypto/rand"
 	"fmt"
 	"strings"
 	"time"
 
-	u "github.com/nu7hatch/gouuid"
+	gouuid "github.com/nu7hatch/gouuid"
 	"github.com/omigo/log"
 )
 
@@ -13,7 +14,7 @@ const localDateTimeLayout = "0102150405" // MMDDHHMMSS
 
 // SerialNumber 生成序列号，也就是UUID
 func SerialNumber() string {
-	u4, err := u.NewV4()
+	u4, err := gouuid.NewV4()
 	if err != nil {
 		log.Errorf("error: %s", err)
 		return ""
@@ -21,9 +22,16 @@ func SerialNumber() string {
 	return fmt.Sprintf("%x", u4[:])
 }
 
+const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-"
+
 // Nonce 生成指定长度位的随机数
 func Nonce(n int) string {
-	return SerialNumber()
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b&63]
+	}
+	return string(bytes)
 }
 
 // Millisecond 获取新世纪以来到目前为止的毫秒数
@@ -45,7 +53,7 @@ func NextDay(today string) string {
 }
 
 // TimeToGiven 获得当前时间到point的秒数
-// 格式hh:mm:ss
+// 格式 hh:mm:ss
 func TimeToGiven(point string) (time.Duration, error) {
 	layout := "2006-01-02 15:04:05"
 	//当前时间

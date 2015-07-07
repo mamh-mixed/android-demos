@@ -9,7 +9,7 @@ import (
 
 	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -32,7 +32,7 @@ func bindingCreate() (b *model.BindingCreate, err error) {
 		BankId:    "102",
 	}
 
-	var aes = tools.NewAESCBCEncrypt(testEncryptKey)
+	var aes = util.NewAESCBCEncrypt(testEncryptKey)
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)
@@ -58,7 +58,7 @@ func BindingPayment() (b *model.BindingPayment) {
 func BindingRemove() (b *model.BindingRemove) {
 	b = &model.BindingRemove{
 		BindingId:     bindingId,
-		TxSNUnBinding: tools.Millisecond(),
+		TxSNUnBinding: util.Millisecond(),
 	}
 	return
 }
@@ -68,7 +68,7 @@ func BindingRefund() (b *model.BindingRefund) {
 
 	b = &model.BindingRefund{
 		OrigOrderNum: orderNum,
-		MerOrderNum:  tools.Millisecond(),
+		MerOrderNum:  util.Millisecond(),
 		TransAmt:     amt,
 	}
 	return

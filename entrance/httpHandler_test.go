@@ -9,7 +9,7 @@ package entrance
 
 // 	"github.com/CardInfoLink/quickpay/model"
 // 	"github.com/CardInfoLink/quickpay/mongo"
-// 	"github.com/CardInfoLink/quickpay/tools"
+// 	"github.com/CardInfoLink/quickpay/util"
 // 	"github.com/omigo/log"
 // )
 
@@ -35,7 +35,7 @@ package entrance
 // func TestBindingCreateWithSignHandle(t *testing.T) {
 // 	b := model.BindingCreate{
 // 		MerId:         "99001405",            // 商户ID
-// 		BindingId:     tools.Millisecond(),   // 银行卡绑定ID
+// 		BindingId:     util.Millisecond(),   // 银行卡绑定ID
 // 		AcctName:      "张三",                  // 账户名称
 // 		AcctNum:       "6222020302062061908", // 账户号码
 // 		IdentType:     "0",                   // 证件类型
@@ -66,7 +66,7 @@ package entrance
 
 // func TestBindingCreateHandle(t *testing.T) {
 // 	// todo 生成一个随机的商户号
-// 	rdMerId := tools.Millisecond()
+// 	rdMerId := util.Millisecond()
 // 	// todo 在路由策略里面插入新商户号码的路由策略
 // 	rp := &model.RouterPolicy{
 // 		MerId:     rdMerId,
@@ -79,7 +79,7 @@ package entrance
 // 		t.Errorf("Excepted no erro,but get ,error message is %s", err.Error())
 // 	}
 // 	// 生成一个随机的绑定ID
-// 	// rdBindingId := tools.Millisecond()
+// 	// rdBindingId := util.Millisecond()
 // 	// merId := rdMerId
 // 	url := "https://api.xxxx.com/quickpay/bindingCreate?merId=1000000000002"
 // 	// body := `{"bindingId":"` + rdBindingId + `","acctName":"张三","acctNum":"6222022003008481261","identType":"0","identNum":"440583199111031012","phoneNum":"18205960039","acctType":"10","BankId":"102","sendSmsId":"1000000000009","smsCode":"12353"}`

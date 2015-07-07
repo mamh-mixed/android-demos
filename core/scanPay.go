@@ -2,15 +2,17 @@ package core
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
@@ -41,26 +43,26 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		Terminalid: req.Terminalid,
 	}
 
-	// 金额单位转换 txamt:000000000010分
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		return logicErrorHandler(t, "SYSTEM_ERROR")
-	}
-	t.TransAmt = int64(f)
+	// // 金额单位转换 txamt:000000000010分
+	// f, err := strconv.ParseFloat(req.Txamt, 64)
+	// if err != nil {
+	// 	return logicErrorHandler(t, "SYSTEM_ERROR")
+	// }
+	// t.TransAmt = int64(f)
 
 	// 渠道选择
 	// 根据扫码Id判断走哪个渠道
-	if req.Chcd == "" {
-		if strings.HasPrefix(req.ScanCodeId, "1") {
-			req.Chcd = "WXP"
-		} else if strings.HasPrefix(req.ScanCodeId, "2") {
-			req.Chcd = "ALP"
-		} else {
-			// 不送，返回 TODO check error code
-			return logicErrorHandler(t, "SYSTEM_ERROR")
-		}
-	}
-	t.ChanCode = req.Chcd
+	// if req.Chcd == "" {
+	// 	if strings.HasPrefix(req.ScanCodeId, "1") {
+	// 		req.Chcd = "WXP"
+	// 	} else if strings.HasPrefix(req.ScanCodeId, "2") {
+	// 		req.Chcd = "ALP"
+	// 	} else {
+	// 		// 不送，返回 TODO check error code
+	// 		return logicErrorHandler(t, "SYSTEM_ERROR")
+	// 	}
+	// }
+	// t.ChanCode = req.Chcd
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -69,6 +71,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
 	t.ChanMerId = rp.ChanMerId
+	req.ChanCode = rp.ChanCode
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
@@ -76,21 +79,24 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		// TODO check error code
 		return logicErrorHandler(t, "SYSTEM_ERROR")
 	}
+	req.AppID = c.WxpAppId
+	req.SubMchId = c.SubMchId
 
-	// 参数处理
-	switch rp.ChanCode {
-	case "ALP":
-		req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
-	case "WXP":
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
-	default:
-		req.ActTxamt = req.Txamt
-	}
+	//
+	// // 参数处理
+	// switch rp.ChanCode {
+	// case "ALP":
+	// 	req.ActTxamt = fmt.Sprintf("%0.2f", f/100)
+	// case "WXP":
+	// 	req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+	// 	req.AppID = c.WxpAppId
+	// 	req.SubMchId = c.SubMchId
+	// default:
+	// 	req.ActTxamt = req.Txamt
+	// }
 
 	// 上送参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
@@ -104,17 +110,18 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
-
-	// 获得渠道实例，请求
-	sp := channel.GetScanPayChan(req.Chcd)
-	if sp == nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
-	}
-	ret, err = sp.ProcessBarcodePay(req)
-	if err != nil {
-		log.Errorf("process barcodePay error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
-	}
+	//
+	// // 获得渠道实例，请求
+	// sp := channel.GetScanPayChan(req.Chcd)
+	// if sp == nil {
+	// 	return mongo.OffLineRespCd("SYSTEM_ERROR")
+	// }
+	// ret, err = sp.ProcessBarcodePay(req)
+	// if err != nil {
+	// 	log.Errorf("process barcodePay error:%s", err)
+	// 	return mongo.OffLineRespCd("SYSTEM_ERROR")
+	// }
+	adaptor.ProcessBarcodePay(req)
 
 	// 渠道
 	ret.Chcd = req.Chcd
@@ -188,7 +195,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 上送参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
@@ -343,7 +350,7 @@ func processRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 	}
 
 	// 渠道参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
@@ -518,7 +525,7 @@ func processCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 	}
 
 	// 渠道参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
@@ -675,7 +682,7 @@ func processWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model
 	}
 
 	// 渠道参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
