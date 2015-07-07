@@ -6,7 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -75,7 +75,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		BindingId:     bc.BindingId,
 		ChanCode:      rp.ChanCode,
 		ChanMerId:     rp.ChanMerId,
-		ChanBindingId: tools.SerialNumber(),
+		ChanBindingId: util.SerialNumber(),
 		BindingStatus: "",
 	}
 	if err := mongo.BindingMapColl.Insert(bm); err != nil {
@@ -287,7 +287,7 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	}
 
 	// 交易参数
-	trans.SysOrderNum = tools.SerialNumber()
+	trans.SysOrderNum = util.SerialNumber()
 
 	// 记录这笔交易
 	if err = mongo.TransColl.Add(trans); err != nil {
@@ -351,7 +351,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	// 转换关系，补充信息
 	br.ChanMerId = bm.ChanMerId
 	br.ChanBindingId = bm.ChanBindingId
-	br.TxSNUnBinding = tools.SerialNumber()
+	br.TxSNUnBinding = util.SerialNumber()
 	br.SignCert = chanMer.SignCert
 
 	// 到渠道解绑
@@ -477,7 +477,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// 请求信息
 	be.ChanMerId = orign.ChanMerId
-	be.SysOrderNum = tools.SerialNumber()
+	be.SysOrderNum = util.SerialNumber()
 	be.SysOrigOrderNum = orign.SysOrderNum
 	be.SignCert = chanMer.SignCert
 	// 交易信息

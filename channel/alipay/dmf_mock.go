@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 // mockPostForm 模拟请求
@@ -48,13 +48,13 @@ func mockPostForm(url string, data url.Values) (*http.Response, error) {
 		txamt, _ := strconv.ParseFloat(totalFee, 64)
 		if txamt < 1 {
 			alipay.ResultCode = "ORDER_SUCCESS_PAY_SUCCESS"
-			alipay.TradeNo = tools.Millisecond()
+			alipay.TradeNo = util.Millisecond()
 		} else if txamt >= 1 && txamt < 10 {
 			alipay.ResultCode = "ORDER_SUCCESS_PAY_INPROCESS"
-			alipay.TradeNo = tools.Millisecond()
+			alipay.TradeNo = util.Millisecond()
 		} else if txamt >= 10 && txamt < 100 {
 			alipay.ResultCode = "ORDER_SUCCESS_PAY_FAIL"
-			alipay.TradeNo = tools.Millisecond()
+			alipay.TradeNo = util.Millisecond()
 		} else if txamt >= 100 && txamt < 1000 {
 			alipay.ResultCode = "UNKNOWN"
 		} else {
@@ -78,7 +78,7 @@ func mockPostForm(url string, data url.Values) (*http.Response, error) {
 		}
 		alipay.ResultCode = "SUCCESS"
 		alipay.TradeStatus = "TRADE_SUCCESS"
-		alipay.TradeNo = tools.Millisecond()
+		alipay.TradeNo = util.Millisecond()
 		alipay.BuyerLogonId = "156****3236"
 		alipay.BuyerUserId = "2088212959731883"
 

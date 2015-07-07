@@ -1,6 +1,9 @@
 package mongo
 
 import (
+	"fmt"
+	"os"
+
 	"gopkg.in/mgo.v2"
 
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -16,7 +19,8 @@ func init() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		log.Fatalf("unable connect to mongodb server %s", err)
+		fmt.Printf("unable connect to mongodb server %s\n", err)
+		os.Exit(1)
 	}
 
 	session.SetMode(mgo.Eventual, true) //需要指定为Eventual

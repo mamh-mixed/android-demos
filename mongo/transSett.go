@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -63,7 +63,7 @@ func (col *transSettCollection) Summary(merId, transDate string) ([]model.Summar
 		{"$match": bson.M{
 			"merId": merId,
 			"createTime": bson.M{"$gte": transDate,
-				"$lt": tools.NextDay(transDate),
+				"$lt": util.NextDay(transDate),
 			},
 			"settFlag": 1,
 		}},
@@ -102,7 +102,7 @@ func (col *transSettCollection) Find(merId, transDate, nextOrderNum string) ([]m
 	p := []bson.M{
 		//查找
 		{"$match": bson.M{"merId": merId, "settFlag": 1,
-			"createTime": bson.M{"$gte": transDate, "$lt": tools.NextDay(transDate)}}},
+			"createTime": bson.M{"$gte": transDate, "$lt": util.NextDay(transDate)}}},
 		//排序
 		{"$sort": bson.M{"orderNum": 1}},
 	}

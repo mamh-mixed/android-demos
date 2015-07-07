@@ -54,7 +54,7 @@ chmod 600 rs1.key
 rsync -v root@10.171.199.158:/opt/mongo/rs1.key .
 
 mongod --port=27017 --auth --fork --dbpath=/opt/mongo/rs11 --logpath=/opt/mongo/rs11/mongod.log \
- --replSet=rs1  --keyFile=/opt/mongo/rs1.key
+  --replSet=rs1  --keyFile=/opt/mongo/rs1.key
 mongod --port=27018 --auth --fork --dbpath=/opt/mongo/rs12 --logpath=/opt/mongo/rs12/mongod.log \
  --replSet=rs1  --keyFile=/opt/mongo/rs1.key
 mongod --port=27019 --auth --fork --dbpath=/opt/mongo/rs13 --logpath=/opt/mongo/rs13/mongod.log \
@@ -67,11 +67,10 @@ mongo --port=27017
 use admin
 db.auth('admin','admin')
 rs.initiate()
-#rs.add('mgo1.set.shou.money:27017')
-rs.add('mgo1.set.shou.money:27018')
-rs.add('mgo2.set.shou.money:27017')
-rs.add('mgo2.set.shou.money:27018')
-rs.addArb('mgo2.set.shou.money:30000')
+#rs.add('localhost:27017')
+rs.add('dev.ipay.so:27018')
+rs.add('dev.ipay.so:27019')
+rs.addArb('dev.ipay.so:30000')
 rs.status()
 
 db.bindingInfo.createIndex({ bindingId : 1, merId : 1 },{ unique: true });

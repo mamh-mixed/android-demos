@@ -1,4 +1,4 @@
-package tools
+package util
 
 import (
 	"fmt"
@@ -72,11 +72,13 @@ func workDir() {
 
 // hostname 取主机名，如果没取到，返回 `unknown`
 func hostname() {
-	Hostname, err := os.Hostname()
+	h, err := os.Hostname()
 	if err != nil {
-		log.Errorf("get hostname error: %s", Hostname)
+		log.Errorf("get hostname error: %s", h)
 		Hostname = "unknown"
 	}
+
+	Hostname = strings.Replace(h, ".", "_", -1)
 
 	fmt.Printf("hostname:\t %s\n", Hostname)
 }

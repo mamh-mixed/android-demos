@@ -7,7 +7,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"net/url"
 	"strconv"
@@ -100,7 +100,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 上送参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
@@ -202,7 +202,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 上送参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.Subject = c.ChanMerName // TODO check
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
@@ -338,7 +338,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 渠道参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
@@ -510,7 +510,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 渠道参数
-	req.SysOrderNum = tools.SerialNumber()
+	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	// req.NotifyUrl = alipayNotifyUrl + "?schema=" + req.SysOrderNum
@@ -579,7 +579,7 @@ func ProcessAlpNotify(params url.Values) {
 	// 其他
 	default:
 		// TODO 是否需要校验
-		bills := params.Get("paytools_pay_amount")
+		bills := params.Get("payutil_pay_amount")
 		if bills != "" {
 			var merDiscount float64
 			var arrayBills []map[string]string

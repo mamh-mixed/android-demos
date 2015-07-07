@@ -1,19 +1,20 @@
 package goconf
 
 import (
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
 // Config 系统启动时先读取配置文件，绑定到这个 struct 上
 var Config = &ConfigStruct{}
 
-// ConfigStruct 对应于 config.ini 文件
+// ConfigStruct 对应于 config_<env>.js 文件
 type ConfigStruct struct {
 	App struct {
 		LogLevel   log.Level
 		EncryptKey string
-		TcpPort    string
+		HTTPAddr   string
+		TCPPort    string
 	}
 
 	Mongo struct {
@@ -52,10 +53,10 @@ type ConfigStruct struct {
 
 // postProcess 后续处理
 func (c *ConfigStruct) postProcess() {
-	Config.CFCA.CCACert = tools.WorkDir + "/" + Config.CFCA.CCACert
-	Config.CFCA.Cert = tools.WorkDir + "/" + Config.CFCA.Cert
-	Config.CFCA.RootCert = tools.WorkDir + "/" + Config.CFCA.RootCert
+	Config.CFCA.CCACert = util.WorkDir + "/" + Config.CFCA.CCACert
+	Config.CFCA.Cert = util.WorkDir + "/" + Config.CFCA.Cert
+	Config.CFCA.RootCert = util.WorkDir + "/" + Config.CFCA.RootCert
 
-	Config.WeixinScanPay.ClientCert = tools.WorkDir + "/" + Config.WeixinScanPay.ClientCert
-	Config.WeixinScanPay.ClientKey = tools.WorkDir + "/" + Config.WeixinScanPay.ClientKey
+	Config.WeixinScanPay.ClientCert = util.WorkDir + "/" + Config.WeixinScanPay.ClientCert
+	Config.WeixinScanPay.ClientKey = util.WorkDir + "/" + Config.WeixinScanPay.ClientKey
 }

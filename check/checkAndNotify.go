@@ -9,11 +9,11 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
-var appId = tools.Hostname
+var appId = util.Hostname
 
 // DoCheck 定时检查配置
 func DoCheck() {

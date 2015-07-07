@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -93,7 +93,7 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 	q := bson.M{
 		"createTime": bson.M{
 			"$gt":  time,
-			"$lte": tools.NextDay(time),
+			"$lte": util.NextDay(time),
 		},
 	}
 	err := database.C(col.name).Find(q).All(&ts)

@@ -1,18 +1,19 @@
-// Package entrance 主要为了兼容 支付宝 扫码 TCP 接口
+// Package entrance 主要为了兼容 支付宝/微信 扫码 TCP 接口
 package entrance
 
 import (
-	"github.com/CardInfoLink/quickpay/entrance/scanpay"
-	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
 	"io"
 	"net"
 	"strconv"
+
+	"github.com/CardInfoLink/quickpay/entrance/scanpay"
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/omigo/log"
 )
 
 // ListenScanPay 启动扫码支付端口监听
 func ListenScanPay() {
-	port := ":" + goconf.Config.App.TcpPort
+	port := goconf.Config.App.TCPPort
 	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Errorf("fail to listen %s port: %s ", port, err)

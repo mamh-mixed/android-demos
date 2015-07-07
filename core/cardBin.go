@@ -73,11 +73,10 @@ func ReBuildTree() error {
 
 // BuildTree 初始化前缀树
 func BuildTree() {
-
 	// 加载所有卡bin
 	cbs, err := mongo.CardBinColl.LoadAll()
 	if err != nil {
-		log.Panicf("fail to load all CardBin : (%s)", err)
+		log.Panicf("fail to load all CardBin : %s", err)
 	}
 
 	for _, v := range cbs {

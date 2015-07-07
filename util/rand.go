@@ -1,11 +1,11 @@
-package tools
+package util
 
 import (
 	"fmt"
 	"strings"
 	"time"
 
-	u "github.com/nu7hatch/gouuid"
+	gouuid "github.com/nu7hatch/gouuid"
 	"github.com/omigo/log"
 )
 
@@ -13,7 +13,7 @@ const localDateTimeLayout = "0102150405" // MMDDHHMMSS
 
 // SerialNumber 生成序列号，也就是UUID
 func SerialNumber() string {
-	u4, err := u.NewV4()
+	u4, err := gouuid.NewV4()
 	if err != nil {
 		log.Errorf("error: %s", err)
 		return ""
@@ -45,7 +45,7 @@ func NextDay(today string) string {
 }
 
 // TimeToGiven 获得当前时间到point的秒数
-// 格式hh:mm:ss
+// 格式 hh:mm:ss
 func TimeToGiven(point string) (time.Duration, error) {
 	layout := "2006-01-02 15:04:05"
 	//当前时间
