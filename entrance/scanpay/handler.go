@@ -17,10 +17,11 @@ type HandleFuc func(req *model.ScanPay) (ret *model.ScanPayResponse)
 // ScanPayHandle 执行扫码支付逻辑
 func ScanPayHandle(reqBytes []byte) []byte {
 
+	// gbk解编码
 	d := mahonia.NewDecoder("gbk")
 	dgbk := d.ConvertString(string(reqBytes))
-
 	log.Debugf("request body: %s", dgbk)
+
 	// 解析请求内容
 	req := new(model.ScanPay)
 	err := json.Unmarshal([]byte(dgbk), req)
@@ -34,17 +35,18 @@ func ScanPayHandle(reqBytes []byte) []byte {
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
-
 	log.Debugf("handled body: %s", retBytes)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
 		return ErrorResponse(req, "SYSTEM_ERROR")
 	}
 
+	// gbk编码
 	retStr := string(retBytes)
 	e := mahonia.NewEncoder("gbk")
 	egbk := e.ConvertString(retStr)
 
+	// 长度位
 	retLen := fmt.Sprintf("%0.4d", len(egbk))
 
 	return []byte(retLen + egbk)
@@ -120,7 +122,6 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 	// 签名
 	if mer.IsNeedSign {
 		content := ret.SignMsg() + mer.SignKey
-		log.Debug(content)
 		ret.Sign = signWithSHA1(content)
 	}
 
@@ -128,9 +129,9 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 
 }
 
+// fillResponseInfo 如果空白，默认将原信息返回
 func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 
-	// 如果空白，默认将原信息返回
 	if ret.Busicd == "" {
 		ret.Busicd = req.Busicd
 	}

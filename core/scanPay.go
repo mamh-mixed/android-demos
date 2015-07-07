@@ -327,6 +327,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // processRefund 请求渠道退款，不做逻辑处理
+// TODO 重构时放在适配层
 func processRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 获得渠道商户

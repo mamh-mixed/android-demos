@@ -37,7 +37,6 @@ func (col *transCollection) Add(t *model.Trans) error {
 }
 
 // Update 通过Add时生成的Id来修改
-// TODO 原子修改
 func (col *transCollection) Update(t *model.Trans) error {
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	err := database.C(col.name).Update(bson.M{"_id": t.Id}, t)

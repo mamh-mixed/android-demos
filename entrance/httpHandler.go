@@ -10,6 +10,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -163,7 +164,12 @@ func alipayNotify(r *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	vs, err := url.ParseQuery(string(data))
+
+	// gbk-utf8
+	d := mahonia.NewDecoder("gbk")
+	utf8 := d.ConvertString(string(data))
+
+	vs, err := url.ParseQuery(utf8)
 	if err != nil {
 		return nil, err
 	}
