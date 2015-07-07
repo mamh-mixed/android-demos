@@ -37,11 +37,12 @@ func (col *transCollection) Add(t *model.Trans) error {
 }
 
 // Update 通过Add时生成的Id来修改
+// TODO 原子修改
 func (col *transCollection) Update(t *model.Trans) error {
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	err := database.C(col.name).Update(bson.M{"_id": t.Id}, t)
 	if err != nil {
-		log.Error("update trans(%+v) fail: %s", t, err)
+		log.Errorf("update trans(%+v) fail: %s", t, err)
 	}
 	return err
 }
@@ -107,10 +108,10 @@ func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int6
 		Amt int64 `bson:"refundedAmt"`
 	}{}
 	q := bson.M{
-		"transType":      model.RefundTrans,
-		"merId":          merId,
-		"refundOrderNum": origOrderNum,
-		"transStatus":    model.TransSuccess,
+		"transType":    model.RefundTrans,
+		"merId":        merId,
+		"origOrderNum": origOrderNum,
+		"transStatus":  model.TransSuccess,
 	}
 
 	err := database.C(col.name).Pipe([]bson.M{

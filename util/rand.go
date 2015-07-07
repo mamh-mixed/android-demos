@@ -1,6 +1,7 @@
 package util
 
 import (
+	"crypto/rand"
 	"fmt"
 	"strings"
 	"time"
@@ -21,9 +22,16 @@ func SerialNumber() string {
 	return fmt.Sprintf("%x", u4[:])
 }
 
+const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-"
+
 // Nonce 生成指定长度位的随机数
 func Nonce(n int) string {
-	return SerialNumber()
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b&63]
+	}
+	return string(bytes)
 }
 
 // Millisecond 获取新世纪以来到目前为止的毫秒数

@@ -19,6 +19,14 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 
+	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	if matched, _ := regexp.MatchString(`^\d{18}$`, req.ScanCodeId); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
 	return
 }
 
@@ -33,7 +41,12 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
+
 	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 	return
@@ -48,6 +61,9 @@ func validateEnquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// TODO validate format
+	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
 
 	return
 }
@@ -64,13 +80,38 @@ func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
+
+	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
 	return
 }
 
+// validateCancel 验证撤销接口参数
 func validateCancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	return
+}
+
+// validateCancel 验证关闭订单接口参数
+func validateClose(req *model.ScanPay) (ret *model.ScanPayResponse) {
+
+	// 验证非空
+	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
+		return mongo.OffLineRespCd("INVALID_PARAMETER")
+	}
+
+	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
 		return mongo.OffLineRespCd("INVALID_PARAMETER")
 	}
 

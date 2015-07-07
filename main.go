@@ -29,6 +29,7 @@ func main() {
 	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
 	http.HandleFunc("/quickMaster/", master.QuickMaster)
+	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
 
 	log.Infof("Quickpay is running on %s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))

@@ -29,6 +29,9 @@ type ScanPayChan interface {
 
 	// ProcessCancel 撤销
 	ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error)
+
+	// ProcessClose 关闭
+	ProcessClose(req *model.ScanPay) (*model.ScanPayResponse, error)
 }
 
 // GetScanPayChan 扫码支付渠道

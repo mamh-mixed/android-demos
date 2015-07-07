@@ -15,7 +15,7 @@ var pay = &model.ScanPay{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   util.SerialNumber(),
 	SignCert:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ScanCodeId: "283213824384374893",
+	ScanCodeId: "280192311263062742",
 	ActTxamt:   "0.01",
 	Subject:    "讯联测试",
 	ChanMerId:  "2088811767473826",
@@ -34,18 +34,18 @@ var cancelPay = &model.ScanPay{
 	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	Subject:      "讯联测试",
 	ChanMerId:    "2088811767473826",
-	OrigOrderNum: "4fc04e4728fb433140790a64b575a535",
+	OrigOrderNum: "1435564308178",
 }
 
 var enquiry = &model.ScanPay{
-	OrderNum:  "1435200967398",
+	OrderNum:  "1435564308178",
 	SignCert:  "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ChanMerId: "2088811767473826",
 }
 
 var refundPay = &model.ScanPay{
 	OrderNum:     util.Millisecond(),
-	OrigOrderNum: "4fc04e4728fb433140790a64b575a535",
+	OrigOrderNum: "1435564111647",
 	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ChanMerId:    "2088811767473826",
 	ActTxamt:     "0.01",
@@ -68,7 +68,7 @@ func TestProcessBarcodePay(t *testing.T) {
 func TestProcessQrCodeOfflinePay(t *testing.T) {
 
 	// 默认开启调试
-	log.SetOutputLevel(log.Linfo)
+	log.SetOutputLevel(log.Ldebug)
 	log.Infof("%+v", prePay)
 	Convey("支付宝预下单", t, func() {
 		resp, _ := DefaultClient.ProcessQrCodeOfflinePay(prePay)
@@ -87,7 +87,7 @@ func TestProcessEnquiry(t *testing.T) {
 	Convey("支付宝订单查询", t, func() {
 		resp, _ := DefaultClient.ProcessEnquiry(enquiry)
 		Convey("期望", func() {
-			So(resp.Respcd, ShouldEqual, "00")
+			So(resp.Respcd, ShouldNotEqual, "")
 		})
 	})
 

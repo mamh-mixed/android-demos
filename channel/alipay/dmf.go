@@ -51,6 +51,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, err
 	alpResp, err := sendRequest(dict, req.SignCert)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, createAndPay)
+		return nil, err
 	}
 
 	// 处理结果返回
@@ -149,6 +150,11 @@ func (a *alp) ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error) 
 	}
 
 	return transform(alpReq.Service, alpResp)
+}
+
+// ProcessClose 关闭接口即撤销接口
+func (a *alp) ProcessClose(req *model.ScanPay) (*model.ScanPayResponse, error) {
+	return a.ProcessCancel(req)
 }
 
 func toMap(req *alpRequest) map[string]string {
