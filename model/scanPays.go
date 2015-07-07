@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"github.com/huandu/xstrings"
 	"reflect"
 	"sort"
 	"strings"
+
+	"github.com/huandu/xstrings"
 )
 
 // busiType
@@ -22,20 +23,22 @@ const (
 
 // ScanPay 扫码支付
 type ScanPay struct {
-	Txndir       string `json:"txndir,omitempty"`       //交易方向
-	Busicd       string `json:"busicd,omitempty"`       //交易类型
-	Inscd        string `json:"inscd,omitempty"`        //机构号
-	Chcd         string `json:"chcd,omitempty"`         //渠道机构
-	Mchntid      string `json:"mchntid,omitempty"`      //商户号
-	Terminalid   string `json:"terminalid,omitempty"`   //终端号
-	Txamt        string `json:"txamt,omitempty"`        //订单金额
-	Currency     string `json:"currency,omitempty"`     //币种
-	GoodsInfo    string `json:"goodsInfo,omitempty"`    //商品详情
-	OrderNum     string `json:"orderNum,omitempty"`     //订单号
-	OrigOrderNum string `json:"origOrderNum,omitempty"` //原订单号
-	ScanCodeId   string `json:"scanCodeId,omitempty"`   //扫码号
-	Sign         string `json:"sign,omitempty"`         //签名
-	NotifyUrl    string `json:"notifyUrl,omitempty"`    //异步通知地址
+	Txndir       string `json:"txndir,omitempty"`       // 交易方向
+	Busicd       string `json:"busicd,omitempty"`       // 交易类型
+	Inscd        string `json:"inscd,omitempty"`        // 机构号
+	Chcd         string `json:"chcd,omitempty"`         // 渠道机构
+	Mchntid      string `json:"mchntid,omitempty"`      // 商户号
+	Terminalid   string `json:"terminalid,omitempty"`   // 终端号
+	Txamt        string `json:"txamt,omitempty"`        // 订单金额
+	Currency     string `json:"currency,omitempty"`     // 币种
+	GoodsInfo    string `json:"goodsInfo,omitempty"`    // 商品详情
+	OrderNum     string `json:"orderNum,omitempty"`     // 订单号
+	OrigOrderNum string `json:"origOrderNum,omitempty"` // 原订单号
+	ScanCodeId   string `json:"scanCodeId,omitempty"`   // 扫码号
+	Sign         string `json:"sign,omitempty"`         // 签名
+	NotifyUrl    string `json:"notifyUrl,omitempty"`    // 异步通知地址
+
+	ChanCode string // 渠道代码
 
 	// 微信需要的字段
 	AppID      string // 公众号ID
