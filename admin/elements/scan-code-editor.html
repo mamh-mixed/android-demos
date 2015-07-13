@@ -151,7 +151,7 @@
                 return;
             }
             e.currentTarget.className += ' active';
-            this.$.sendPayAjax.body = JSON.stringify(this.scanCode);
+            this.$.sendPayAjax.body = this.requestJsonData;
             this.$.sendPayAjax.generateRequest();
         },
         // 支付请求响应事件
