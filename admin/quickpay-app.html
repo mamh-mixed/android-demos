@@ -1,0 +1,96 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="bower_components/paper-styles/typography.html">
+
+<link rel="import" href="bower_components/more-routing/more-route-selector.html">
+
+<link rel="import" href="layout-header.html">
+<link rel="import" href="layout-left-sidebar.html">
+<link rel="import" href="layout-right-sidebar.html">
+<link rel="import" href="layout-footer.html">
+
+<link rel="import" href="bower_components/iron-pages/iron-pages.html" />
+<link rel="import" href="bower_components/plastik-lazy-route-selector/plastik-lazy-route-selector.html" />
+
+<dom-module id="quickpay-app">
+    <style>
+        :host {
+            display: block;
+            min-height: 100%;
+            position: relative;
+        }
+
+        #main {
+            padding-bottom: 50px;
+        }
+
+        iron-selector > * {
+            display: none;
+        }
+
+        iron-selector > .iron-selected {
+            display: block;
+        }
+    </style>
+    <template>
+
+        <!-- Start Page Loading -->
+        <div id="loader-wrapper">
+            <div id="loader"></div>
+            <div class="loader-section section-left"></div>
+            <div class="loader-section section-right"></div>
+        </div>
+        <!-- End Page Loading -->
+
+        <!-- START HEADER -->
+        <layout-header></layout-header>
+        <!-- END HEADER -->
+
+        <!-- START MAIN -->
+        <div id="main">
+            <!-- START WRAPPER -->
+            <div class="wrapper">
+
+                <!-- START LEFT SIDEBAR NAV-->
+                <layout-left-sidebar></layout-left-sidebar>
+                <!-- END LEFT SIDEBAR NAV-->
+
+                <!-- START CONTENT -->
+                <section id="content">
+
+                    <plastik-lazy-route-selector main selected="{{route}}">
+                        <iron-pages attr-for-selected="route">
+                            <!-- <div route="root" import="angrycard-dashboard.html"></div> -->
+
+                            <div route="core-scan-code" import="core-scan-code.html"></div>
+                        </iron-pages>
+                    </plastik-lazy-route-selector>
+
+                </section>
+                <!-- END CONTENT -->
+
+                <!-- START RIGHT SIDEBAR NAV-->
+                <layout-right-sidebar></layout-right-sidebar>
+                <!-- LEFT RIGHT SIDEBAR NAV-->
+
+            </div>
+            <!-- END WRAPPER -->
+
+        </div>
+        <!-- END MAIN -->
+
+        <!-- START FOOTER -->
+        <layout-footer></layout-footer>
+        <!-- END FOOTER -->
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'quickpay-app',
+        });
+    </script>
+
+</dom-module>

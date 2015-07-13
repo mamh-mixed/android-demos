@@ -1,6 +1,7 @@
 /temp/
 /distrib/
 /quickpay*
+admin/bower_components
 
 
 # Environment configuration
