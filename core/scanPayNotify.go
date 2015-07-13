@@ -11,14 +11,17 @@ import (
 )
 
 // ProcessAlpNotify 支付宝异步通知处理
+// 该接口只接受预下单的异步通知
+// 支付宝的其它接口将不接受异步通知
 func ProcessAlpNotify(params url.Values) {
 
+	log.Debugf("alp async notify: %+v", params)
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
 	// 交易订单号
 	orderNum := params.Get("out_trade_no")
 	// 系统订单号
-	sysOrderNum := params.Get("schema")
+	sysOrderNum := params.Get("extra_common_param")
 
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
@@ -37,17 +40,23 @@ func ProcessAlpNotify(params url.Values) {
 	// 退款
 	case "refundFPAction":
 		// 将优惠信息更新为0.00，貌似为了打单用
-		mongo.SpTransColl.UpdateFields(&model.Trans{
-			Id:           t.Id,
-			MerDiscount:  "0.00",
-			ChanDiscount: "0.00",
-		})
-	// 其他
+		// mongo.SpTransColl.UpdateFields(&model.Trans{
+		// 	Id:           t.Id,
+		// 	MerDiscount:  "0.00",
+		// 	ChanDiscount: "0.00",
+		// })
+
+	// 预下单时支付异步通知
+	// TODO 是否需要校验
 	default:
-		// TODO 是否需要校验
 		bills := params.Get("paytools_pay_amount")
+		tradeStatus := params.Get("trade_status")
+		tradeNo := params.Get("trade_no")
+		account := params.Get("buyer_email")
+
+		// 折扣
+		var merDiscount float64
 		if bills != "" {
-			var merDiscount float64
 			var arrayBills []map[string]string
 			if err := json.Unmarshal([]byte(bills), &arrayBills); err == nil {
 				for _, bill := range arrayBills {
@@ -59,11 +68,23 @@ func ProcessAlpNotify(params url.Values) {
 					}
 				}
 			}
-			// 更新指定字段，注意，这里不能全部更新
-			// 否则可能会覆盖同步返回的结果
-			mongo.SpTransColl.UpdateFields(&model.Trans{
-				Id:          t.Id,
-				MerDiscount: fmt.Sprintf("%0.2f", merDiscount),
+		}
+		// 交易状态更新
+		switch tradeStatus {
+		case "TRADE_SUCCESS":
+			updateTrans(t, &model.ScanPayResponse{
+				ChanRespCode:    tradeStatus,
+				ChannelOrderNum: tradeNo,
+				ConsumerAccount: account,
+				MerDiscount:     fmt.Sprintf("%0.2f", merDiscount),
+				Respcd:          "00",
+			})
+		case "WAIT_BUYER_PAY":
+			// do nothing
+		default:
+			updateTrans(t, &model.ScanPayResponse{
+				ChanRespCode: tradeStatus,
+				Respcd:       "12", // TODO
 			})
 		}
 	}
@@ -91,7 +112,6 @@ func ProcessWeixinNotify(req *model.WeixinNotifyReq) {
 	}
 
 	// 更新交易信息
-	// TODO 这里会有并发问题
 	switch req.ResultCode {
 	case "SUCCESS":
 		updateTrans(t, &model.ScanPayResponse{

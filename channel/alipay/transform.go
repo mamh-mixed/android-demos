@@ -6,6 +6,8 @@ import (
 	"github.com/omigo/log"
 )
 
+var success = mongo.OffLineRespCd("SUCCESS")
+
 // transform 支付宝返回报文处理
 func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, error) {
 
@@ -45,7 +47,7 @@ func createAndPayHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ConsumerId = alipay.BuyerUserId
 		// 计算折扣
 		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
-		// ret.ChanRespCode = alipay.ResultCode
+		alipay.DetailErrorDes = success.ErrorDetail
 	// 下单失败
 	case "ORDER_FAIL":
 		// ret.ChanRespCode = alipay.DetailErrorCode
@@ -56,10 +58,9 @@ func createAndPayHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ChanRespCode = alipay.ResultCode
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", createAndPay, alipay.ResultCode)
 	}
-	// get ret.Respcd by ResultCode
-	// TODO check by ResultCode or by alipay.DetailErrorCode?
+
 	ret.ChanRespCode = alipay.ResultCode
-	ret.ErrorDetail = ret.ChanRespCode
+	ret.ErrorDetail = alipay.DetailErrorDes
 	ret.Respcd = createAndPayCd(ret.ChanRespCode)
 }
 
@@ -70,13 +71,15 @@ func preCreateHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 	case "SUCCESS":
 		ret.QrCode = alipay.QrCode
 		ret.ChanRespCode = alipay.ResultCode
+		alipay.DetailErrorDes = success.ErrorDetail
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
 		ret.ChanRespCode = alipay.ResultCode
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", preCreate, alipay.ResultCode)
 	}
-	ret.ErrorDetail = ret.ChanRespCode
+
+	ret.ErrorDetail = alipay.DetailErrorDes
 	ret.Respcd = preCreateCd(ret.ChanRespCode)
 }
 
@@ -91,13 +94,15 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		// 计算折扣
 		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
 		ret.ChanRespCode = alipay.TradeStatus
+		alipay.DetailErrorDes = success.ErrorDetail
 	case "FAIL", "PROCESS_EXCEPTION":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
 		ret.ChanRespCode = alipay.ResultCode
 	}
-	ret.ErrorDetail = ret.ChanRespCode
+
+	ret.ErrorDetail = alipay.DetailErrorDes
 	ret.Respcd = queryCd(query, ret.ChanRespCode)
 }
 
@@ -107,13 +112,15 @@ func refundHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 	switch alipay.ResultCode {
 	case "SUCCESS":
 		ret.ChanRespCode = alipay.ResultCode
+		alipay.DetailErrorDes = success.ErrorDetail
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", refund, alipay.ResultCode)
 		ret.ChanRespCode = alipay.ResultCode
 	}
-	ret.ErrorDetail = ret.ChanRespCode
+
+	ret.ErrorDetail = alipay.DetailErrorDes
 	ret.Respcd = refundCd(ret.ChanRespCode)
 }
 
@@ -123,12 +130,13 @@ func cancelHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 	case "SUCCESS":
 		ret.ChanRespCode = alipay.ResultCode
 		ret.ChannelOrderNum = alipay.TradeNo
+		alipay.DetailErrorDes = success.ErrorDetail
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", refund, alipay.ResultCode)
 		ret.ChanRespCode = alipay.ResultCode
 	}
-	ret.ErrorDetail = ret.ChanRespCode
+	ret.ErrorDetail = alipay.DetailErrorDes
 	ret.Respcd = cancelCd(ret.ChanRespCode)
 }

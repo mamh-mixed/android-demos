@@ -2,17 +2,44 @@ package entrance
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"errors"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
+	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/omigo/log"
+	"net/url"
 )
+
+// Scanpay 扫码支付入口(测试页面)
+func Scanpay(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("url = %s", r.URL.String())
+
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "读取数据出错", http.StatusNotAcceptable)
+		return
+	}
+
+	// 加上长度位
+	msg := string(bytes)
+	data := fmt.Sprintf("%04d", len(msg)) + msg
+
+	// utf8->gbk
+	e := mahonia.NewEncoder("gbk")
+	gbk := e.ConvertString(data)
+
+	retBytes := scanpay.ScanPayHandle([]byte(gbk))
+
+	w.Write(retBytes)
+}
 
 // Quickpay 快捷支付统一入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {
@@ -138,28 +165,41 @@ func weixinNotify(r *http.Request) ([]byte, error) {
 		log.Errorf("read http body error: %s", err)
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
-		return json.Marshal(ret)
+		return xml.Marshal(ret)
 	}
 
 	var req model.WeixinNotifyReq
-	err = json.Unmarshal(data, &req)
+	err = xml.Unmarshal(data, &req)
 	if err != nil {
-		log.Errorf("read http body error: %s", err)
+		log.Errorf("unmarshal body error: %s, body: %s", err, string(data))
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
-		return json.Marshal(ret)
+		return xml.Marshal(ret)
 	}
 
 	core.ProcessWeixinNotify(&req)
 
-	return json.Marshal(ret)
+	return xml.Marshal(ret)
 }
 
 // AlipayNotify 接受支付宝异步通知
 func alipayNotify(r *http.Request) ([]byte, error) {
 
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// gbk-utf8
+	d := mahonia.NewDecoder("gbk")
+	utf8 := d.ConvertString(string(data))
+
+	vs, err := url.ParseQuery(utf8)
+	if err != nil {
+		return nil, err
+	}
 	// 处理异步通知
-	core.ProcessAlpNotify(r.URL.Query())
+	core.ProcessAlpNotify(vs)
 
 	return []byte("success"), nil
 }

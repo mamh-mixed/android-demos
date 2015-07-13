@@ -9,24 +9,25 @@ import (
 
 // AlpRequest 请求参数
 type alpRequest struct {
-	Service       string
-	Partner       string
-	Charset       string
-	NotifyUrl     string
-	OutTradeNo    string
-	RefundAmount  string
-	OutRequestNo  string
-	Subject       string
-	GoodsDetail   string
-	ProductCode   string
-	TotalFee      string
-	SellerId      string
-	Currency      string
-	ExtendParams  string
-	ItBPay        string
-	DynamicIdType string
-	DynamicId     string
-	Key           string
+	Service        string
+	Partner        string
+	Charset        string
+	NotifyUrl      string
+	OutTradeNo     string
+	RefundAmount   string
+	OutRequestNo   string
+	PassbackParams string
+	Subject        string
+	GoodsDetail    string
+	ProductCode    string
+	TotalFee       string
+	SellerId       string
+	Currency       string
+	ExtendParams   string
+	ItBPay         string
+	DynamicIdType  string
+	DynamicId      string
+	Key            string
 }
 
 // AlpResponse 支付宝接口返回信息
