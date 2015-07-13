@@ -28,6 +28,7 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir("static")))
 	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
+	http.HandleFunc("/scanpay/", entrance.Scanpay)
 	http.HandleFunc("/quickMaster/", master.QuickMaster)
 	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
 

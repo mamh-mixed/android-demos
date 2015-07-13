@@ -4,7 +4,81 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 )
 
+// OffLineRespCd 扫码支付应答码
 func OffLineRespCd(code string) *model.ScanPayResponse {
+
+	errorDetail, respCd := "", ""
+
+	switch code {
+	case "SUCCESS":
+		errorDetail = "成功"
+		respCd = "00"
+	case "INPROCESS":
+		errorDetail = "处理中"
+		respCd = "09"
+	case "FAIL":
+		errorDetail = "交易失败"
+		respCd = "01"
+	case "NO_ROUTERPOLICY", "NO_CHANMER":
+		errorDetail = "权限不足"
+		respCd = "31"
+	case "NOT_PAYTRADE", "NOT_SUCESS_TRADE", "TRADE_REFUNDED", "REFUND_TIME_ERROR":
+		errorDetail = "退款失败"
+		respCd = "13"
+	case "TRADE_AMT_INCONSISTENT":
+		errorDetail = "金额有误"
+		respCd = "13"
+	case "CANCEL_TIME_ERROR", "TRADE_HAS_REFUND":
+		errorDetail = "撤销失败"
+		respCd = "16"
+	case "SYSTEM_ERROR", "CONNECT_ERROR":
+		errorDetail = "系统错误"
+		respCd = "96"
+	case "ORDER_DUPLICATE":
+		errorDetail = "订单号重复"
+		respCd = "19"
+	case "SIGN_AUTH_ERROR":
+		errorDetail = "签名错误"
+		respCd = "12"
+	case "NO_MERCHANT":
+		errorDetail = "商户错误"
+		respCd = "03"
+	case "TRADE_OVERTIME":
+		errorDetail = "交易超时"
+		respCd = "98"
+	case "DATA_ERROR":
+		errorDetail = "报文错误"
+		respCd = "30"
+	case "QRCODE_INVALID":
+		errorDetail = "条码错误或过期"
+		respCd = "14"
+	case "NO_CHANNEL":
+		errorDetail = "无此渠道"
+		respCd = "15"
+	case "TRADE_NOT_EXIST":
+		errorDetail = "订单不存在"
+		respCd = "25"
+	case "ORDER_CLOSED":
+		errorDetail = "订单已关闭或取消"
+		respCd = "54"
+	case "NOT_SUPPORT_TYPE":
+		errorDetail = "关闭失败"
+		respCd = "17"
+	case "INSUFFICIENT_BALANCE":
+		errorDetail = "余额不足"
+		respCd = "51"
+	case "UNKNOWN_ERROR":
+		errorDetail = "外部系统错误"
+		respCd = "91"
+	default:
+		errorDetail = "未知应答码类型"
+		respCd = "58"
+	}
+
+	return &model.ScanPayResponse{ErrorDetail: errorDetail, Respcd: respCd}
+}
+
+func OffLineRespCd1(code string) *model.ScanPayResponse {
 	responseCode := ""
 	switch code {
 	case "ORDER_FAIL":

@@ -47,7 +47,7 @@ func ScanPayHandle(reqBytes []byte) []byte {
 	egbk := e.ConvertString(retStr)
 
 	// 长度位
-	retLen := fmt.Sprintf("%0.4d", len(egbk))
+	retLen := fmt.Sprintf("%04d", len(egbk))
 
 	return []byte(retLen + egbk)
 }
@@ -170,7 +170,7 @@ func ErrorResponse(req *model.ScanPay, errorCode string) []byte {
 		log.Error(err)
 	}
 	retStr := string(retBytes)
-	retLen := fmt.Sprintf("%0.4d", len(retStr))
+	retLen := fmt.Sprintf("%04d", len(retStr))
 
 	return []byte(retLen + retStr)
 }

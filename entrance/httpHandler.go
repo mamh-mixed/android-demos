@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
+	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -15,6 +17,29 @@ import (
 	"net/http"
 	"net/url"
 )
+
+// Scanpay 扫码支付入口(测试页面)
+func Scanpay(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("url = %s", r.URL.String())
+
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "读取数据出错", http.StatusNotAcceptable)
+		return
+	}
+
+	// 加上长度位
+	msg := string(bytes)
+	data := fmt.Sprintf("%04d", len(msg)) + msg
+
+	// utf8->gbk
+	e := mahonia.NewEncoder("gbk")
+	gbk := e.ConvertString(data)
+
+	retBytes := scanpay.ScanPayHandle([]byte(gbk))
+
+	w.Write(retBytes)
+}
 
 // Quickpay 快捷支付统一入口
 func Quickpay(w http.ResponseWriter, r *http.Request) {

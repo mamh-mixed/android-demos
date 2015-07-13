@@ -10,8 +10,10 @@ import (
 	"github.com/omigo/log"
 )
 
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
-var weixinNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
+var (
+	alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
+	weixinNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
+)
 
 // ProcessBarcodePay 扫条码下单
 func ProcessBarcodePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
@@ -19,8 +21,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRe
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		// TODO check error code
-		return logicErrorHandler(t, "SYSTEM_ERROR")
+		return logicErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 上送参数
@@ -35,7 +36,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRe
 	// 记录交易
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR") // TODO check error code
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
 	}
 
 	// 不同渠道参数转换
@@ -53,7 +54,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRe
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	if sp == nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return mongo.OffLineRespCd("NO_CHANNEL")
 	}
 	ret, err = sp.ProcessBarcodePay(req)
 	if err != nil {
@@ -70,7 +71,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPay) (ret *model.Sca
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(t, "SYSTEM_ERROR") // TODO check error code
+		return logicErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 不同渠道参数转换
@@ -105,7 +106,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPay) (ret *model.Sca
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	if sp == nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return mongo.OffLineRespCd("NO_CHANNEL")
 	}
 	ret, err = sp.ProcessQrCodeOfflinePay(req)
 	if err != nil {
@@ -122,7 +123,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRespo
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR") // TODO check error code
+		return mongo.OffLineRespCd("NO_CHANMER")
 	}
 	// 上送参数
 
@@ -143,8 +144,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRespo
 	// 向渠道查询
 	sp := channel.GetScanPayChan(t.ChanCode)
 	if sp == nil {
-		log.Error("get scanPayChan error: sp is nil, chanCode: %s", t.ChanCode)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return mongo.OffLineRespCd("NO_CHANNEL")
 	}
 
 	ret, err = sp.ProcessEnquiry(req)
@@ -156,8 +156,9 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRespo
 	// 特殊处理
 	// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
 	if t.ChanCode == "ALP" && t.Busicd == "paut" && ret.ErrorDetail == "TRADE_NOT_EXIST" {
-		ret.Respcd = "09"
-		ret.ErrorDetail = "WAIT_BUYER_PAY"
+		inporcess := mongo.OffLineRespCd("INPROCESS")
+		ret.Respcd = inporcess.Respcd
+		ret.ErrorDetail = inporcess.ErrorDetail
 	}
 
 	return ret
@@ -169,7 +170,7 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(current, "SYSTEM_ERROR")
+		return logicErrorHandler(current, "NO_CHANMER")
 	}
 
 	// 不同渠道参数转换
@@ -201,6 +202,10 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 
 	// 请求退款
 	sp := channel.GetScanPayChan(orig.ChanCode)
+	if sp == nil {
+		return mongo.OffLineRespCd("NO_CHANNEL")
+	}
+
 	ret, err = sp.ProcessRefund(req)
 	if err != nil {
 		log.Errorf("process refund error:%s", err)
@@ -216,7 +221,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(current, "SYSTEM_ERROR")
+		return logicErrorHandler(current, "NO_CHANMER")
 	}
 
 	// 渠道参数
@@ -263,7 +268,7 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(current, "SYSTEM_ERROR")
+		return logicErrorHandler(current, "NO_CHANMER")
 	}
 
 	// 渠道参数
@@ -297,6 +302,7 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model
 func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayResponse {
 	ret := mongo.OffLineRespCd(errorDetail)
 	t.RespCode = ret.Respcd
+	t.ErrorDetail = errorDetail
 	mongo.SpTransColl.Add(t)
 	return ret
 }
