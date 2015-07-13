@@ -38,8 +38,6 @@ type ScanPay struct {
 	Sign         string `json:"sign,omitempty"`         // 签名
 	NotifyUrl    string `json:"notifyUrl,omitempty"`    // 异步通知地址
 
-	ChanCode string // 渠道代码
-
 	// 微信需要的字段
 	AppID      string // 公众号ID
 	DeviceInfo string // 设备号
@@ -52,10 +50,10 @@ type ScanPay struct {
 
 	// 辅助字段
 	Subject     string `json:"-"` //  商品名称
-	SysOrderNum string //  渠道交易号
-	ActTxamt    string //  实际交易金额 不同渠道单位不同
-	ChanMerId   string // 渠道商户Id
-	SignCert    string // 可能表示md5key等
+	SysOrderNum string `json:"-"` //  渠道交易号
+	ActTxamt    string `json:"-"` //  实际交易金额 不同渠道单位不同
+	ChanMerId   string `json:"-"` // 渠道商户Id
+	SignCert    string `json:"-"` // 可能表示md5key等
 }
 
 // ScanPayResponse 下单支付返回体

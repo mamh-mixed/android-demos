@@ -13,21 +13,13 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPay{
-		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
-<<<<<<< HEAD
-		OrderNum:  util.Millisecond(),
-		// ScanCodeId: "281763822834129893", // 支付宝
-		ScanCodeId: "130282934335526597", // 微信
-=======
-		OrderNum:  tools.Millisecond(),
-		// ScanCodeId: "282259453320278456", // 支付宝
-		ScanCodeId: "130381911129127781", // 微信
->>>>>>> 4f0a439cf78f99df62ea243002079d44e1833176
+		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
+		OrderNum:   util.Millisecond(),
+		ScanCodeId: "289843870914937898",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
-		Subject:    "test",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
@@ -37,56 +29,42 @@ var (
 		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "WXP",
+		Chcd:      "ALP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1435808688569",
+		OrigOrderNum: "1436758537760",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
-<<<<<<< HEAD
-		Busicd:       "refd",
-		Mchntid:      "CIL0001",
-		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1435229562510",
-=======
 		Busicd:       "REFD",
 		Mchntid:      "100000000000203",
-		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435658612934",
->>>>>>> 4f0a439cf78f99df62ea243002079d44e1833176
+		OrderNum:     util.Millisecond(),
+		OrigOrderNum: "1436757857954",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPay{
-<<<<<<< HEAD
-		Busicd:       "void",
-		Mchntid:      "CIL0001",
-		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1435306550752",
-=======
 		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
-		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435658612934",
+		OrderNum:     util.Millisecond(),
+		OrigOrderNum: "1436757857954",
 		Inscd:        "CIL00002",
 	}
 	// 关单
 	scanPayClose = &model.ScanPay{
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
-		OrderNum:     tools.Millisecond(),
-		OrigOrderNum: "1435726232974",
->>>>>>> 4f0a439cf78f99df62ea243002079d44e1833176
+		OrderNum:     util.Millisecond(),
+		OrigOrderNum: "1436758537760",
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayQrCodeOfflinePay
+	scanPay = scanPayClose
 )
 
 func TestScanPay(t *testing.T) {
@@ -133,9 +111,4 @@ func TestScanPay(t *testing.T) {
 		})
 	}
 	t.Logf("%+v", resp)
-}
-
-func TestSignMsg(t *testing.T) {
-
-	t.Log(scanPayBarcodePay.SignMsg())
 }
