@@ -1,0 +1,145 @@
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<dom-module id="scan-code-editor">
+    <style>
+        :host {
+            display: block;
+        }
+
+        .divider {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .action-row {
+            margin-top: 20px;
+        }
+
+        paper-fab {
+            display: block;
+            margin: 182px auto;
+        }
+
+        paper-fab.cyan {
+            background-color: #00bcd4 !important;
+        }
+    </style>
+    <template>
+        <div class="row">
+            <div class="form-container">
+                <div class="row">
+                    <!-- <paper-input class="col m12 l6" id="busicd" name="busicd" label="交易类型(busicd)" value="{{scanCode.busicd::input}}"></paper-input> -->
+                    <div class="col m12 l6">
+                        <label>交易类型(busicd)</label>
+                        <select class="browser-default" value="{{scanCode.busicd::input}}">
+                            <option value="" disabled selected>选择一个交易类型</option>
+                            <option value="PURC">下单支付</option>
+                            <option value="PAUT">预下单</option>
+                            <option value="INQY">查询订单</option>
+                            <option value="VOID">撤销</option>
+                            <option value="REFD">退款</option>
+                            <option value="VERI">卡券核销</option>
+                        </select>
+                    </div>
+                    <paper-input class="col m12 l6" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
+                </div>
+                <div class="row">
+                    <!-- <paper-input class="col m12 l6" id="chcd" name="chcd" label="渠道机构(chcd)" value="{{scanCode.chcd::input}}"></paper-input> -->
+                    <div class="col m12 l6">
+                        <label>渠道机构(chcd)</label>
+                        <select class="browser-default" value="{{scanCode.busicd::input}}">
+                            <option value="" disabled selected>选择一个渠道机构</option>
+                            <option value="ALP">支付宝</option>
+                            <option value="WXP">微信</option>
+                        </select>
+                    </div>
+                    <paper-input class="col m12 l6" id="inscd" name="inscd" label="机构号(inscd)" value="{{scanCode.inscd::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input class="col m12 l6" id="mchntid" name="mchntid" label="商户号(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
+                    <paper-input class="col m12 l6" id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input class="col m12 l6" id="txamt" name="txamt" label="订单金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
+                    <paper-input class="col m12 l6" id="currency" name="currency" label="币种(currency)" value="{{scanCode.currency::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input class="col m12 l6" id="goodsInfo" name="goodsInfo" label="商品详情(goodsInfo)" value="{{scanCode.goodsInfo::input}}"></paper-input>
+                    <paper-input class="col m12 l6" id="scanCodeId" name="scanCodeId" label="扫码号(scanCodeId)" value="{{scanCode.scanCodeId::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input class="col m12 l6" id="orderNum" name="orderNum" label="订单号(orderNum)" value="{{scanCode.orderNum::input}}"></paper-input>
+                    <paper-input class="col m12 l6" id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input class="col m12 l6" id="sign" name="sign" label="签名(sign)" value="{{scanCode.sign::input}}" disabled></paper-input>
+                    <paper-input class="col m12 l6" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
+                </div>
+                <div class="divider"></div>
+
+                <div class="row">
+                    <paper-textarea class="col m12 l7" label="请求数据" value="{{requestJsonData}}"></paper-textarea>
+                    <div class="col m12 l1 action-row">
+                        <paper-fab icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan"></paper-fab>
+                    </div>
+                    <paper-textarea class="col m12 l4" label="响应数据" value="{{responseJsonData}}" row="16"></paper-textarea>
+                </div>
+
+            </div>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'scan-code-editor',
+        properties: {
+            scanCode: {
+                type: Object
+            },
+            requestJsonData: {
+                type: String
+            },
+            responseJsonData: {
+                type: String
+            }
+        },
+        ready: function() {
+            this.scanCode = {
+                txndir: 'Q',
+                busicd: '',
+                inscd: '',
+                chcd: '',
+                mchntid: '',
+                terminalid: '',
+                txamt: '',
+                currency: '156',
+                goodsInfo: '',
+                orderNum: '',
+                origOrderNum: '',
+                scanCodeId: '',
+                sign: '',
+                notifyUrl: ''
+            };
+            this.responseJsonData = '';
+        },
+        observers: [
+            '_convertToJSON(scanCode.busicd, scanCode.inscd, scanCode.chcd, scanCode.mchntid)',
+            '_convertToJSON(scanCode.terminalid,scanCode.txamt, scanCode.currency, scanCode.goodsInfo)',
+            '_convertToJSON(scanCode.orderNum, scanCode.origOrderNum, scanCode.scanCodeId, scanCode.notifyUrl)'
+        ],
+        _convertToJSON: function(busicd, inscd, chcd, mchntid,
+            terminalid, txamt, currency, goodsInfo,
+            orderNum, origOrderNum, scanCodeId, notifyUrl) {
+            // TODO 计算签名
+            this.requestJsonData = JSON.stringify(this.scanCode, function(k, v) {
+                // if (v === '') {
+                //     return undefined;
+                // }
+                return v;
+            }, 5);
+        }
+    });
+</script>

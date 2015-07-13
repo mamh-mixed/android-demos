@@ -1,0 +1,40 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-styles/shadow.html">
+<link rel="import" href="bower_components/paper-styles/typography.html">
+<link rel="import" href="bower_components/more-routing/more-route.html">
+<link rel="import" href="elements/scan-code-editor.html">
+<dom-module id="core-scan-code">
+    <style media="screen">
+
+    </style>
+    <template>
+        <!--breadcrumbs start-->
+        <div id="breadcrumbs-wrapper" class="grey lighten-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 m12 l12">
+                        <h5 class="breadcrumbs-title">扫码支付</h5>
+                        <ol class="breadcrumb">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">测试</a></li>
+                            <li class="active">扫码支付</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--breadcrumbs end-->
+
+        <!--start container-->
+        <div class="container">
+            <scan-code-editor></scan-code-editor>
+        </div>
+        <!--end container-->
+
+    </template>
+    <script>
+        Polymer({
+            is: 'core-scan-code',
+        });
+    </script>
+</dom-module>
