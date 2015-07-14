@@ -14,7 +14,7 @@
     },
     "CILOnline": {
         "Host": "192.168.1.102",
-        "Port": 7831,
+        "Port": 7823,
         "QueueSize": 1000, // 所有交易发送到线下前先排队，队列满后将阻塞
         "InitWindowSize": 100, // 全双工 pipeline 方式，接收数据后，找到对应的请求者
         "KeepaliveTime": "65s", // 每隔一段时间发送一个 keepalive 消息
