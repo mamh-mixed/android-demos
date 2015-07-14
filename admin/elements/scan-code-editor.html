@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <dom-module id="scan-code-editor">
     <style>
         :host {
@@ -49,7 +50,7 @@
                     <!-- <paper-input class="col m12 l6" id="chcd" name="chcd" label="渠道机构(chcd)" value="{{scanCode.chcd::input}}"></paper-input> -->
                     <div class="col m12 l6">
                         <label>渠道机构(chcd)</label>
-                        <select class="browser-default" value="{{scanCode.busicd::input}}">
+                        <select class="browser-default" value="{{scanCode.chcd::input}}">
                             <option value="" disabled selected>选择一个渠道机构</option>
                             <option value="ALP">支付宝</option>
                             <option value="WXP">微信</option>
@@ -80,15 +81,16 @@
                 <div class="divider"></div>
 
                 <div class="row">
-                    <paper-textarea class="col m12 l7" label="请求数据" value="{{requestJsonData}}"></paper-textarea>
+                    <paper-textarea class="col m12 l6" label="请求数据" value="{{requestJsonData}}"></paper-textarea>
                     <div class="col m12 l1 action-row">
-                        <paper-fab icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan"></paper-fab>
+                        <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
                     </div>
-                    <paper-textarea class="col m12 l4" label="响应数据" value="{{responseJsonData}}" row="16"></paper-textarea>
+                    <paper-textarea class="col m12 l5" label="响应数据" value="{{responseJsonData}}" row="16"></paper-textarea>
                 </div>
 
             </div>
         </div>
+        <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/" handle-as="json" on-response="handleSendPayResponse"></iron-ajax>
     </template>
 </dom-module>
 
@@ -134,10 +136,32 @@
             terminalid, txamt, currency, goodsInfo,
             orderNum, origOrderNum, scanCodeId, notifyUrl) {
             // TODO 计算签名
-            this.requestJsonData = JSON.stringify(this.scanCode, function(k, v) {
-                // if (v === '') {
-                //     return undefined;
-                // }
+            this.scanCode.sign = this._sign();
+            this.requestJsonData = JSON.stringify(this.scanCode, null, 5);
+        },
+        // 签名方法
+        _sign: function() {
+            var sign = '';
+            // TODO 签名方法
+            return sign;
+        },
+        // 发送支付请求的点击事件
+        handleSendPayRequestTapped: function(e) {
+            if (jQuery(this.$.sendBtn).hasClass('active')) {
+                return;
+            }
+            e.currentTarget.className += ' active';
+            this.$.sendPayAjax.body = this.requestJsonData;
+            this.$.sendPayAjax.generateRequest();
+        },
+        // 支付请求响应事件
+        handleSendPayResponse: function(e) {
+            var response = event.detail.response;
+            jQuery(this.$.sendBtn).removeClass('active');
+            this.responseJsonData = JSON.stringify(response, function(k, v) {
+                if (v === '') {
+                    return undefined;
+                }
                 return v;
             }, 5);
         }
