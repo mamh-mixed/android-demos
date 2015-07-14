@@ -249,15 +249,14 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		updateTrans(t, ret)
 
 	default:
-		// TODO
 		// 原交易信息
-		ret.ErrorDetail = t.ChanRespCode
 		ret.ChannelOrderNum = t.ChanOrderNum
 		ret.ConsumerAccount = t.ConsumerAccount
 		ret.ConsumerId = t.ConsumerId
 		ret.ChcdDiscount = t.ChanDiscount
 		ret.MerDiscount = t.MerDiscount
 		ret.Respcd = t.RespCode
+		ret.ErrorDetail = mongo.OffLineCdCol[ret.Respcd]
 	}
 
 	// 渠道
@@ -452,10 +451,10 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // logicErrorHandler 逻辑错误处理
-func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayResponse {
-	ret := mongo.OffLineRespCd(errorDetail)
+func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
+	ret := mongo.OffLineRespCd(errorCode)
 	t.RespCode = ret.Respcd
-	t.ErrorDetail = errorDetail
+	t.ErrorCode = errorCode
 	mongo.SpTransColl.Add(t)
 	return ret
 }

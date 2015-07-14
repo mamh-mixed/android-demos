@@ -15,28 +15,29 @@ var (
 	scanPayBarcodePay = &model.ScanPay{
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   util.Millisecond(),
-		ScanCodeId: "289843870914937898",
+		ScanCodeId: "284494395565492940",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
+		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
-		// OrderNum:  util.Millisecond(),
-		Inscd:   "CIL00002",
-		Txamt:   "000000000001",
-		Busicd:  "PAUT",
-		Mchntid: "100000000000203",
-		Chcd:    "ALP",
+		OrderNum:  util.Millisecond(),
+		Inscd:     "CIL00002",
+		Txamt:     "000000000001",
+		Busicd:    "PAUT",
+		Mchntid:   "100000000000203",
+		Chcd:      "ALP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1436758537760",
+		OrigOrderNum: "1436841199887",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
@@ -64,7 +65,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayQrCodeOfflinePay
+	scanPay = scanPayEnquiry
 )
 
 func TestScanPay(t *testing.T) {
