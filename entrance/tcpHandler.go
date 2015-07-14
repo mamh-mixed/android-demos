@@ -46,7 +46,7 @@ func handleConnection(conn net.Conn) {
 			}
 		}
 		// process scanpay
-		respBytes := scanpay.ScanPayHandle(reqBytes)
+		respBytes := scanpay.TcpScanPayHandle(reqBytes)
 
 		// return
 		_, err = conn.Write(respBytes)

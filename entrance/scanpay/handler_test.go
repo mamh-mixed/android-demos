@@ -24,12 +24,12 @@ var (
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPay{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
-		OrderNum:  util.Millisecond(),
-		Inscd:     "CIL00002",
-		Txamt:     "000000000001",
-		Busicd:    "PAUT",
-		Mchntid:   "100000000000203",
-		Chcd:      "ALP",
+		// OrderNum:  util.Millisecond(),
+		Inscd:   "CIL00002",
+		Txamt:   "000000000001",
+		Busicd:  "PAUT",
+		Mchntid: "100000000000203",
+		Chcd:    "ALP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPay{
@@ -64,7 +64,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayClose
+	scanPay = scanPayQrCodeOfflinePay
 )
 
 func TestScanPay(t *testing.T) {
@@ -74,10 +74,14 @@ func TestScanPay(t *testing.T) {
 	e := mahonia.NewEncoder("gbk")
 	gbk := e.ConvertString(string(reqBytes))
 
-	respBytes := ScanPayHandle([]byte(gbk))
+	respBytes := TcpScanPayHandle([]byte(gbk))
 	respStr := string(respBytes)
+
+	d := mahonia.NewDecoder("gbk")
+	utf8 := d.ConvertString(respStr)
+
 	resp := new(model.ScanPayResponse)
-	err := json.Unmarshal([]byte(respStr[4:]), resp)
+	err := json.Unmarshal([]byte(utf8[4:]), resp)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

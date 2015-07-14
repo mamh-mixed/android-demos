@@ -14,20 +14,38 @@ import (
 
 type HandleFuc func(req *model.ScanPay) (ret *model.ScanPayResponse)
 
-// ScanPayHandle 执行扫码支付逻辑
-func ScanPayHandle(reqBytes []byte) []byte {
+// TcpScanpayHandle tcp连接时为gbk编码
+func TcpScanPayHandle(reqBytes []byte) []byte {
 
 	// gbk解编码
 	d := mahonia.NewDecoder("gbk")
 	dgbk := d.ConvertString(string(reqBytes))
 	log.Debugf("request body: %s", dgbk)
 
+	// 处理
+	retBytes := ScanPayHandle([]byte(dgbk))
+
+	// gbk编码
+	retStr := string(retBytes)
+	e := mahonia.NewEncoder("gbk")
+	egbk := e.ConvertString(retStr)
+
+	// 长度位
+	retLen := fmt.Sprintf("%04d", len(egbk))
+
+	return []byte(retLen + egbk)
+}
+
+// ScanPayHandle 执行扫码支付逻辑
+// utf-8 编码
+func ScanPayHandle(reqBytes []byte) []byte {
+
 	// 解析请求内容
 	req := new(model.ScanPay)
-	err := json.Unmarshal([]byte(dgbk), req)
+	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
-		log.Errorf("fail to unmarshal jsonStr(%s): %s", reqBytes, err)
-		return ErrorResponse(req, "INVALID_PARAMETER")
+		log.Errorf("fail to unmarshal jsonStr(%s): %s", string(reqBytes), err)
+		return ErrorResponse(req, "DATA_ERROR")
 	}
 
 	// 具体业务
@@ -41,15 +59,7 @@ func ScanPayHandle(reqBytes []byte) []byte {
 		return ErrorResponse(req, "SYSTEM_ERROR")
 	}
 
-	// gbk编码
-	retStr := string(retBytes)
-	e := mahonia.NewEncoder("gbk")
-	egbk := e.ConvertString(retStr)
-
-	// 长度位
-	retLen := fmt.Sprintf("%04d", len(egbk))
-
-	return []byte(retLen + egbk)
+	return retBytes
 }
 
 // router 分发业务逻辑
@@ -75,7 +85,7 @@ func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 		ret = doScanPay(validateClose, core.Close, req)
 	default:
-		ret = mongo.OffLineRespCd("INVALID_PARAMETER")
+		ret = mongo.OffLineRespCd("DATA_ERROR")
 	}
 
 	return ret
@@ -85,13 +95,16 @@ func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
 func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	// 验证字段
-	if validateFuc(req); ret != nil {
+	if ret = validateFuc(req); ret != nil {
+		fillResponseInfo(req, ret)
 		return ret
 	}
 
 	mer, err := mongo.MerchantColl.Find(req.Mchntid)
 	if err != nil {
-		return mongo.OffLineRespCd("NO_MERCHANT_MATCH") // todo check error code
+		ret = mongo.OffLineRespCd("NO_MERCHANT")
+		fillResponseInfo(req, ret)
+		return
 	}
 
 	// 验签
@@ -103,14 +116,18 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 		s := signWithSHA1(content)
 		if s != sign {
 			log.Errorf("sign should be %s, but get %s", s, sign)
-			return mongo.OffLineRespCd("AUTH_NO_ERROR")
+			ret = mongo.OffLineRespCd("SIGN_AUTH_ERROR")
+			fillResponseInfo(req, ret)
+			return
 		}
 	}
 
 	// 验证接口权限
 	if !strings.Contains(strings.Join(mer.Permission, ","), req.Busicd) {
 		log.Errorf("merchant %s request %s interface without permission!", req.Mchntid, req.Busicd)
-		return mongo.OffLineRespCd("NO_PERMISSION") // todo check error code
+		ret = mongo.OffLineRespCd("NO_PERMISSION")
+		fillResponseInfo(req, ret)
+		return
 	}
 
 	// process
@@ -169,10 +186,7 @@ func ErrorResponse(req *model.ScanPay, errorCode string) []byte {
 	if err != nil {
 		log.Error(err)
 	}
-	retStr := string(retBytes)
-	retLen := fmt.Sprintf("%04d", len(retStr))
-
-	return []byte(retLen + retStr)
+	return retBytes
 }
 
 // sign 签名函数

@@ -19,7 +19,7 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 	case "FAIL":
 		errorDetail = "交易失败"
 		respCd = "01"
-	case "NO_ROUTERPOLICY", "NO_CHANMER":
+	case "NO_ROUTERPOLICY", "NO_CHANMER", "NO_PERMISSION":
 		errorDetail = "权限不足"
 		respCd = "31"
 	case "NOT_PAYTRADE", "NOT_SUCESS_TRADE", "TRADE_REFUNDED", "REFUND_TIME_ERROR":
@@ -32,7 +32,7 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 		errorDetail = "撤销失败"
 		respCd = "16"
 	case "SYSTEM_ERROR", "CONNECT_ERROR":
-		errorDetail = "系统错误"
+		errorDetail = "内部系统错误"
 		respCd = "96"
 	case "ORDER_DUPLICATE":
 		errorDetail = "订单号重复"
