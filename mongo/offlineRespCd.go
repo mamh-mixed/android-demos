@@ -16,8 +16,8 @@ func init() {
 	OffLineCdCol["13"] = "退款失败"
 	OffLineCdCol["14"] = "条码错误或过期"
 	OffLineCdCol["15"] = "无此渠道"
-	OffLineCdCol["16"] = "撤销失败"
-	OffLineCdCol["17"] = "关闭失败"
+	OffLineCdCol["22"] = "撤销失败"
+	OffLineCdCol["05"] = "不支持该交易类型"
 	OffLineCdCol["19"] = "订单号重复"
 	OffLineCdCol["25"] = "订单不存在"
 	OffLineCdCol["30"] = "报文错误"
@@ -25,6 +25,7 @@ func init() {
 	OffLineCdCol["51"] = "余额不足"
 	OffLineCdCol["54"] = "订单已关闭或取消"
 	OffLineCdCol["58"] = "未知应答码类型"
+	OffLineCdCol["64"] = "退款金额超过原订单金额"
 	OffLineCdCol["91"] = "外部系统错误"
 	OffLineCdCol["96"] = "内部系统错误"
 	OffLineCdCol["98"] = "交易超时"
@@ -47,10 +48,10 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 		respCd = "31"
 	case "NOT_PAYTRADE", "NOT_SUCESS_TRADE", "TRADE_REFUNDED", "REFUND_TIME_ERROR":
 		respCd = "13"
-	case "TRADE_AMT_INCONSISTENT":
-		respCd = "13"
-	case "CANCEL_TIME_ERROR", "TRADE_HAS_REFUND":
-		respCd = "16"
+	case "TRADE_AMT_INCONSISTENT", "TRADE_HAS_REFUND":
+		respCd = "64"
+	case "CANCEL_TIME_ERROR":
+		respCd = "22"
 	case "SYSTEM_ERROR", "CONNECT_ERROR":
 		respCd = "96"
 	case "ORDER_DUPLICATE":
@@ -72,7 +73,7 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 	case "ORDER_CLOSED":
 		respCd = "54"
 	case "NOT_SUPPORT_TYPE":
-		respCd = "17"
+		respCd = "05"
 	case "INSUFFICIENT_BALANCE":
 		respCd = "51"
 	case "UNKNOWN_ERROR":
