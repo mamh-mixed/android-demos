@@ -12,7 +12,9 @@ var success = mongo.OffLineRespCd("SUCCESS")
 func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, error) {
 
 	if alpResp.IsSuccess != "T" {
-		return mongo.OffLineRespCd(alpResp.Error), nil
+		ret := requestError(alpResp.Error)
+		ret.ChanRespCode = alpResp.Error
+		return ret, nil
 	}
 
 	ret := new(model.ScanPayResponse)
