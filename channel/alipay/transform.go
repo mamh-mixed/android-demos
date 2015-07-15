@@ -12,16 +12,21 @@ var success = mongo.OffLineRespCd("SUCCESS")
 func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, error) {
 
 	if alpResp.IsSuccess != "T" {
-		return mongo.OffLineRespCd(alpResp.Error), nil
+		ret := requestError(alpResp.Error)
+		ret.ChanRespCode = alpResp.Error
+		return ret, nil
 	}
 
 	ret := new(model.ScanPayResponse)
 	// 成功返回参数
 	alipay := alpResp.Response.Alipay
-	// 长度限制
-	if len(alipay.DetailErrorDes) > 64 {
-		alipay.DetailErrorDes = alipay.DetailErrorDes[:64]
+
+	// 中文长度限制
+	r := []rune(alipay.DetailErrorDes)
+	if len(r) > 64 {
+		alipay.DetailErrorDes = string(r[:64])
 	}
+
 	switch service {
 	// 下单
 	case createAndPay:

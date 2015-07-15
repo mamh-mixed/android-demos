@@ -1,5 +1,42 @@
 package alipay
 
+import (
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+)
+
+// requestError 请求错误
+// 分为接入错误和支付宝系统错误
+func requestError(code string) *model.ScanPayResponse {
+	switch code {
+	// 支付宝系统错误
+	case "ILLEGAL_TARGET_SERVICE",
+		"ILLEGAL_ACCESS_SWITCH_SYSTEM",
+		"SYSTEM_ERROR",
+		"SESSION_TIMEOUT",
+		"EXTERFACE_IS_CLOSED":
+		return mongo.OffLineRespCd("UNKNOWN_ERROR")
+	// 讯联系统错误
+	case "ILLEGAL_SIGN", "ILLEGAL_DYN_MD5_KEY",
+		"ILLEGAL_ENCRYPT",
+		"ILLEGAL_ARGUMENT",
+		"ILLEGAL_SERVICE",
+		"ILLEGAL_USER",
+		"ILLEGAL_PARTNER",
+		"ILLEGAL_EXTERFACE",
+		"ILLEGAL_PARTNER_EXTERFACE",
+		"ILLEGAL_SECURITY_PROFILE",
+		"ILLEGAL_AGENT",
+		"ILLEGAL_SIGN_TYPE",
+		"ILLEGAL_CHARSET",
+		"HAS_NO_PRIVILEGE",
+		"INVALID_CHARACTER_SET":
+		return mongo.OffLineRespCd("SYSTEM_ERROR")
+	default:
+		return mongo.OffLineRespCd("UNKNOWN_ERROR")
+	}
+}
+
 func preCreateCd(code string) string {
 
 	switch code {

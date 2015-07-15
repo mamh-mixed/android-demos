@@ -20,7 +20,6 @@ func TcpScanPayHandle(reqBytes []byte) []byte {
 	// gbk解编码
 	d := mahonia.NewDecoder("gbk")
 	dgbk := d.ConvertString(string(reqBytes))
-	log.Debugf("request body: %s", dgbk)
 
 	// 处理
 	retBytes := ScanPayHandle([]byte(dgbk))
@@ -40,6 +39,7 @@ func TcpScanPayHandle(reqBytes []byte) []byte {
 // utf-8 编码
 func ScanPayHandle(reqBytes []byte) []byte {
 
+	log.Debugf("request body: %s", string(reqBytes))
 	// 解析请求内容
 	req := new(model.ScanPay)
 	err := json.Unmarshal(reqBytes, req)

@@ -1,6 +1,9 @@
 package scanpay
 
-import "github.com/omigo/log"
+import (
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
+)
 
 type respCodeMap struct {
 	respCode       string // 微信应答码
@@ -11,6 +14,13 @@ type respCodeMap struct {
 }
 
 var weixinRespCodeMap map[string]*respCodeMap
+
+// 应答码
+var (
+	success      = mongo.OffLineRespCd("SUCCESS")
+	cilError     = mongo.OffLineRespCd("SYSTEM_ERROR")
+	unknownError = mongo.OffLineRespCd("UNKNOWN_ERROR")
+)
 
 func init() {
 	weixinRespCodeMap = make(map[string]*respCodeMap)
@@ -42,21 +52,36 @@ func init() {
 	weixinRespCodeMap["REFUND"] = &respCodeMap{"REFUND", "转入退款", "没问题", "12", "转入退款"}
 }
 
-func transform(returnCode, returnMsg, resultCode, errCode string) (status, msg string) {
-	// 如果通信失败，返回错误代码 06，并返回错误原因
+func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string) (status, msg string) {
+
+	// 描述长度限制
+	returnMsgRune := []rune(returnMsg)
+	if len(returnMsgRune) > 64 {
+		returnMsg = string(returnMsgRune[:64])
+	}
+	errCodeDesRune := []rune(errCodeDes)
+	if len(errCodeDesRune) > 64 {
+		errCodeDes = string(errCodeDesRune[:64])
+	}
+
+	// 如果通信失败，返回错误代码 96，并返回错误原因
 	if returnCode != "SUCCESS" {
-		return "06", returnMsg
+		return cilError.Respcd, returnMsg
 	}
 
 	// 如果结果正确，返回代码 00，消息为交易成功
 	if resultCode == "SUCCESS" {
-		return "00", "交易成功"
+		return success.Respcd, success.ErrorDetail
 	}
 
 	if m, ok := weixinRespCodeMap[errCode]; ok {
-		return m.iso8583Code, m.iso8583Name
+		// 使用微信业务错误描述
+		if errCodeDes != "" {
+			return m.iso8583Code, errCodeDes
+		}
+		return m.iso8583Code, mongo.OffLineCdCol[m.iso8583Code]
 	}
 
 	log.Errorf("unknown weixin error code `%s`", errCode)
-	return "06", "未知错误"
+	return unknownError.Respcd, unknownError.ErrorDetail
 }

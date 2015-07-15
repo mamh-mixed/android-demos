@@ -23,7 +23,7 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
 
-	if matched, _ := regexp.MatchString(`^\d{18}$`, req.ScanCodeId); !matched {
+	if matched, _ := regexp.MatchString(`^\d{14,24}$`, req.ScanCodeId); !matched {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
 
@@ -36,7 +36,6 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	fmt.Println(req.OrderNum == "")
 	// 验证非空
 	if req.OrderNum == "" || req.Chcd == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
-		fmt.Println("......here")
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
 	// TODO ..
