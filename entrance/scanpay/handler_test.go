@@ -13,9 +13,10 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPay{
-		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
-		OrderNum:   util.Millisecond(),
-		ScanCodeId: "284494395565492940",
+		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
+		OrderNum:  util.Millisecond(),
+		// OrderNum:   "201507151103002",
+		ScanCodeId: "28140009122484130",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
@@ -37,7 +38,7 @@ var (
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1436841199887",
+		OrigOrderNum: "1436926546841",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPay{
@@ -65,7 +66,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayEnquiry
+	scanPay = scanPayBarcodePay
 )
 
 func TestScanPay(t *testing.T) {
