@@ -13,16 +13,17 @@ function main() {
 
     cp -r config distrib/
     cd static && bower install && cd ..
+    cp -r admin distrib/
     cp -r static distrib/
 
+    # host="webapp@dev.ipay.so"
+    host="webapp@test.ipay.so"
+
     # host="quick@app1.set.shou.money"
-    # deploy $host $workdir
 
     # sed -i '' 's/port=4160/port=4161/' distrib/config/config_product.ini
     # host="quick@app2.set.shou.money"
-    # deploy $host $workdir
 
-    host="webapp@dev.ipay.so"
     deploy $host $workdir
 }
 
