@@ -53,6 +53,17 @@ func init() {
 }
 
 func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string) (status, msg string) {
+
+	// 描述长度限制
+	returnMsgRune := []rune(returnMsg)
+	if len(returnMsgRune) > 64 {
+		returnMsg = string(returnMsgRune[:64])
+	}
+	errCodeDesRune := []rune(errCodeDes)
+	if len(errCodeDesRune) > 64 {
+		errCodeDes = string(errCodeDesRune[:64])
+	}
+
 	// 如果通信失败，返回错误代码 96，并返回错误原因
 	if returnCode != "SUCCESS" {
 		return cilError.Respcd, returnMsg
