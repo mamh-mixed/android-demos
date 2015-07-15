@@ -92,13 +92,12 @@
                             <option value="INQY">查询订单</option>
                             <option value="VOID">撤销</option>
                             <option value="REFD">退款</option>
-                            <option value="VERI">卡券核销</option>
+                            <!-- <option value="VERI">卡券核销</option> -->
                         </select>
                     </div>
                     <paper-input class="col m12 l6" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
                 </div>
                 <div class="row">
-                    <!-- <paper-input class="col m12 l6" id="chcd" name="chcd" label="渠道机构(chcd)" value="{{scanCode.chcd::input}}"></paper-input> -->
                     <div class="col m12 l6">
                         <label>渠道机构(chcd)</label>
                         <select class="browser-default" value="{{scanCode.chcd::input}}">
@@ -126,7 +125,6 @@
                     <paper-input class="col m12 l6" id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
                 </div>
                 <div class="row">
-                    <!-- <paper-input class="col m12 l6" id="sign" name="sign" label="签名(sign)" value="{{scanCode.sign::input}}" disabled></paper-input> -->
                     <paper-input class="col m12 l6" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
                 </div>
                 <div class="divider"></div>
