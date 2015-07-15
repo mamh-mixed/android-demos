@@ -299,10 +299,10 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model
 }
 
 // logicErrorHandler 逻辑错误处理
-func logicErrorHandler(t *model.Trans, errorDetail string) *model.ScanPayResponse {
-	ret := mongo.OffLineRespCd(errorDetail)
+func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
+	ret := mongo.OffLineRespCd(errorCode)
 	t.RespCode = ret.Respcd
-	t.ErrorDetail = errorDetail
+	t.ErrorCode = errorCode
 	mongo.SpTransColl.Add(t)
 	return ret
 }

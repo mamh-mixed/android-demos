@@ -27,19 +27,9 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// utf8->gbk
-	e := mahonia.NewEncoder("gbk")
-	gbk := e.ConvertString(string(bytes))
-
 	// 请求扫码支付
-	retBytes := scanpay.ScanPayHandle([]byte(gbk))
-
-	// 应答报文 utf8->gbk
-	d := mahonia.NewDecoder("gbk")
-	utf8 := d.ConvertString(string(retBytes))
-
-	// 返回的数据的前四位带有长度位，去掉
-	w.Write([]byte(utf8[4:]))
+	retBytes := scanpay.ScanPayHandle(bytes)
+	w.Write(retBytes)
 }
 
 // Quickpay 快捷支付统一入口
