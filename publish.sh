@@ -13,8 +13,9 @@ function main() {
 
     cp -r config distrib/
     cd static && bower install && cd ..
-    cp -r admin distrib/
     cp -r static distrib/
+    cd admin && bower install && cd ..
+    cp -r admin distrib/
 
     # host="webapp@dev.ipay.so"
     host="webapp@test.ipay.so"

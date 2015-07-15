@@ -1,24 +1,25 @@
 {
-    "name": "quickpay",
-    "version": "1.2.0",
-    "homepage": "https://github.com/CardInfoLink/quickpay",
-    "authors": [
-        "Omigo <shangxuejin@gmail.com>"
-    ],
-    "license": "MIT",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ],
-    "dependencies": {
-        "iron-elements": "PolymerElements/iron-elements#^1.0.0",
-        "paper-elements": "PolymerElements/paper-elements#^1.0.0",
-        "more-routing": "PolymerLabs/more-routing#^1.0.0",
-        "plastik-lazy-route-selector": "Plastikit/plastik-lazy-route-selector#~0.0.2",
-        "paper-date-picker": "omigo/paper-date-picker#~1.0.3",
-        "paper-time-picker": "bendavis78/paper-time-picker#~1.0.1"
-    }
+  "name": "quickpay",
+  "version": "1.2.0",
+  "homepage": "https://github.com/CardInfoLink/quickpay",
+  "authors": [
+    "Omigo <shangxuejin@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-elements": "PolymerElements/iron-elements#^1.0.0",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.0",
+    "more-routing": "PolymerLabs/more-routing#^1.0.0",
+    "plastik-lazy-route-selector": "Plastikit/plastik-lazy-route-selector#~0.0.2",
+    "paper-date-picker": "omigo/paper-date-picker#~1.0.3",
+    "paper-time-picker": "bendavis78/paper-time-picker#~1.0.1",
+    "qrcode.js": "davidshimjs/qrcodejs"
+  }
 }
