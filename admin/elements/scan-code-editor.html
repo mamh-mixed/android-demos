@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <dom-module id="scan-code-editor">
@@ -26,6 +27,7 @@
         paper-fab.cyan {
             background-color: #00bcd4 !important;
         }
+
         paper-fab.active {
             background-size: 40px 40px;
             background-image: linear-gradient(45deg, rgba(255, 255, 255, .3)25%, rgba(0, 0, 0, 0)25%, rgba(0, 0, 0, 0)50%, rgba(255, 255, 255, .3)50%, rgba(255, 255, 255, .3)75%, rgba(0, 0, 0, 0)75%, rgba(0, 0, 0, 0));
@@ -39,6 +41,41 @@
             to {
                 background-position: 0 0;
             }
+        }
+
+        .qrcode-mask {
+            position: fixed;
+            display: none;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .qrcode-mask > .qrcode-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+        }
+
+        #qrcodeBtn {
+            display: none;
+        }
+
+        paper-button.cycan {
+            margin-left: 11px;
+            background-color: #00bcd4 !important;
+            color: #fff;
         }
     </style>
     <template>
@@ -55,13 +92,12 @@
                             <option value="INQY">查询订单</option>
                             <option value="VOID">撤销</option>
                             <option value="REFD">退款</option>
-                            <option value="VERI">卡券核销</option>
+                            <!-- <option value="VERI">卡券核销</option> -->
                         </select>
                     </div>
                     <paper-input class="col m12 l6" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
                 </div>
                 <div class="row">
-                    <!-- <paper-input class="col m12 l6" id="chcd" name="chcd" label="渠道机构(chcd)" value="{{scanCode.chcd::input}}"></paper-input> -->
                     <div class="col m12 l6">
                         <label>渠道机构(chcd)</label>
                         <select class="browser-default" value="{{scanCode.chcd::input}}">
@@ -89,7 +125,6 @@
                     <paper-input class="col m12 l6" id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
                 </div>
                 <div class="row">
-                    <!-- <paper-input class="col m12 l6" id="sign" name="sign" label="签名(sign)" value="{{scanCode.sign::input}}" disabled></paper-input> -->
                     <paper-input class="col m12 l6" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
                 </div>
                 <div class="divider"></div>
@@ -100,13 +135,21 @@
                         <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
                     </div>
                     <paper-textarea class="col m12 l5" label="响应数据" value="{{responseJsonData}}" row="16"></paper-textarea>
+                    <div id="qrcodeBtn">
+                        <paper-button class="cycan" raised on-tap="handleShowQrcodeMaskTapped">二维码</paper-button>
+                    </div>
                 </div>
-
+            </div>
+        </div>
+        <div class="qrcode-mask" id="qrcodeMask">
+            <div class="qrcode-container" on-tap="handleCloseQrcodeMaskTapped">
+                <div id="qrcode" on-tap="handleQrcodeTapped"></div>
             </div>
         </div>
         <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></iron-ajax>
     </template>
 </dom-module>
+<script src="../bower_components/qrcode.js/qrcode.js"></script>
 <script type="text/javascript">
     /**
      *
@@ -350,8 +393,7 @@
             }.bind(this));
 
             var plainText = tempArr.join('&') + this.key;
-            console.log(plainText);
-            // TODO SHA1运算
+            // SHA1运算
             sign = SHA1(plainText);
             return sign;
         },
@@ -375,6 +417,30 @@
                 return v;
             }, 5);
             Materialize.toast('成功响应请求', 2000);
+
+            // 二维码生成
+            this.$.qrcodeBtn.style.display = 'none';
+            if (this.scanCode.busicd === 'PAUT' && response.qrcode) {
+                if (this.qrcode) {
+                    this.qrcode.clear();
+                    this.qrcode.makeCode(response.qrcode);
+                } else {
+                    this.qrcode = new QRCode(document.getElementById('qrcode'), response.qrcode);
+                }
+                this.$.qrcodeMask.style.display = 'block';
+                this.$.qrcodeBtn.style.display = 'block';
+            }
+        },
+        // 点击mask除了二维码之外的东西，关闭mask
+        handleCloseQrcodeMaskTapped: function(e) {
+            this.$.qrcodeMask.style.display = 'none';
+        },
+        handleShowQrcodeMaskTapped: function(e) {
+            this.$.qrcodeMask.style.display = 'block';
+        },
+        // 点击二维码事件，不冒泡，不处理
+        handleQrcodeTapped: function(e) {
+            e.stopPropagation();
         }
     });
 </script>
