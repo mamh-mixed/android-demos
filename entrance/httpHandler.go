@@ -47,7 +47,6 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write(retBytes)
 	}
-
 }
 
 // Quickpay 快捷支付统一入口

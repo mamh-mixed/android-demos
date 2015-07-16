@@ -8,7 +8,7 @@ import (
 )
 
 // validateBarcodePay 验证扫码下单的参数
-func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" || req.ScanCodeId == "" {
@@ -31,7 +31,7 @@ func validateBarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // validateQrCodeOfflinePay 验证预下单的参数
-func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	fmt.Println(req.OrderNum == "")
 	// 验证非空
@@ -54,7 +54,7 @@ func validateQrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // validateEnquiry 验证查询接口的参数
-func validateEnquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrigOrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
@@ -70,7 +70,7 @@ func validateEnquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // validateRefund 验证退款接口的参数
-func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
@@ -90,7 +90,7 @@ func validateRefund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // validateCancel 验证撤销接口参数
-func validateCancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
@@ -105,7 +105,7 @@ func validateCancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // validateCancel 验证关闭订单接口参数
-func validateClose(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
 	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {

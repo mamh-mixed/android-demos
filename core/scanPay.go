@@ -51,7 +51,7 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
 }
 
 // BarcodePay 条码下单
-func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
@@ -113,7 +113,7 @@ func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // QrCodeOfflinePay 扫二维码预下单
-func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
@@ -166,7 +166,7 @@ func QrCodeOfflinePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // Refund 退款
-func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
@@ -262,7 +262,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // Enquiry 查询
-func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断是否存在该订单
@@ -300,7 +300,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // Cancel 撤销
-func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
@@ -375,7 +375,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // Close 关闭订单
-func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 判断订单是否存在
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)

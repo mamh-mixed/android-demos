@@ -16,7 +16,7 @@ type WeixinScanPay struct{}
 var DefaultWeixinScanPay WeixinScanPay
 
 // ProcessBarcodePay 扫条码下单
-func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &PayReq{
 		// 必填
 		Appid:          m.AppID,        // 公众账号ID
@@ -64,7 +64,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPay) (ret *model.ScanPay
 }
 
 // ProcessEnquiry 查询
-func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &PayQueryReq{
 		Appid:         m.AppID,        // 公众账号ID
 		MchID:         m.ChanMerId,    // 商户号
@@ -101,7 +101,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPay) (ret *model.ScanPayRes
 }
 
 // ProcessQrCodeOfflinePay 扫二维码预下单
-func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &PrePayReq{
 
 		// 公共字段
@@ -154,7 +154,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPay) (ret *model.S
 }
 
 // ProcessRefund 退款
-func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	log.Debugf("%#c", m)
 	d := &RefundReq{
 		// 公共字段
@@ -195,7 +195,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPay) (ret *model.ScanPayResp
 }
 
 // ProcessRefundQuery 退款查询
-func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &RefundQueryReq{
 		// 公共字段
 		Appid:        m.AppID,        // 公众账号ID
@@ -240,7 +240,7 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPay) (ret *model.ScanPa
 }
 
 // ProcessCancel 撤销
-func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &ReverseReq{
 		// 公共字段
 		Appid:        m.AppID,        // 公众账号ID
@@ -274,7 +274,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPay) (ret *model.ScanPayResp
 }
 
 // ProcessClose 关闭接口
-func (sp *WeixinScanPay) ProcessClose(m *model.ScanPay) (ret *model.ScanPayResponse, err error) {
+func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &CloseReq{
 		// 公共字段
 		Appid:        m.AppID,        // 公众账号ID

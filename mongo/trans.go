@@ -179,7 +179,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	if q.Mchntid != "" {
 		match["merId"] = q.Mchntid
 	}
-
+	if q.Busicd != "" {
+		match["busicd"] = q.Busicd
+	}
 	if q.OrigOrderNum != "" {
 		match["origOrderNum"] = q.OrigOrderNum
 	}
