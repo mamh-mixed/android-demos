@@ -21,20 +21,20 @@ const (
 
 // QueryCondition 扫码交易查询
 type QueryCondition struct {
-	Mchntid      string      `json:"mchntid,omitempty"`
-	StartTime    string      `json:"startTime,omitempty"`
-	EndTime      string      `json:"endTime,omitempty"`
-	Busicd       string      `json:"busicd,omitempty"`
-	OrderNum     string      `json:"orderNum,omitempty"`
-	OrigOrderNum string      `json:"origOrderNum,omitempty"`
-	NextOrderNum string      `json:"nextOrderNum,omitempty"`
-	RespCode     string      `json:"respCode,omitempty"`
-	RespMsg      string      `json:"respMsg,omitempty"`
-	Count        int         `json:"count,omitempty"`
-	Page         int         `json:"page,omitempty"`
-	Total        int         `json:"total,omitempty"`
-	Size         int         `json:"size,omitempty"`
-	Rec          []TransInfo `json:"rec,omitempty"`
+	Mchntid      string  `json:"mchntid,omitempty"`
+	StartTime    string  `json:"startTime,omitempty"`
+	EndTime      string  `json:"endTime,omitempty"`
+	Busicd       string  `json:"busicd,omitempty"`
+	OrderNum     string  `json:"orderNum,omitempty"`
+	OrigOrderNum string  `json:"origOrderNum,omitempty"`
+	NextOrderNum string  `json:"nextOrderNum,omitempty"`
+	RespCode     string  `json:"respCode,omitempty"`
+	RespMsg      string  `json:"respMsg,omitempty"`
+	Count        int     `json:"count,omitempty"`
+	Page         int     `json:"page,omitempty"`
+	Total        int     `json:"total,omitempty"`
+	Size         int     `json:"size,omitempty"`
+	Rec          []Trans `json:"rec,omitempty"`
 }
 
 // ScanPay 扫码支付

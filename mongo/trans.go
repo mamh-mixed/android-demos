@@ -167,9 +167,9 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
-func (col *transCollection) Find(q *model.QueryCondition) ([]model.TransInfo, int, error) {
+func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, error) {
 
-	var transInfo []model.TransInfo
+	var trans []model.Trans
 
 	// 根据条件查找
 	match := bson.M{}
@@ -213,6 +213,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.TransInfo, in
 	p = append(p, sortByTime, skip, limit)
 	// }
 
-	err = database.C(col.name).Pipe(p).All(&transInfo)
-	return transInfo, total, err
+	err = database.C(col.name).Pipe(p).All(&trans)
+	return trans, total, err
 }

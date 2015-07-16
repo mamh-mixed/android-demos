@@ -165,43 +165,43 @@ type SettSchemeCd struct {
 // Trans 支付、退款交易记录
 type Trans struct {
 	// 基本字段
-	Id           bson.ObjectId `bson:"_id" json:",omitempty"`
-	OrderNum     string        `bson:"orderNum,omitempty"`                         //商户订单流水号、退款流水号
-	SysOrderNum  string        `bson:"sysOrderNum,omitempty"`                      //系统订单流水号、退款流水号
-	ChanOrderNum string        `bson:"chanOrderNum,omitempty"`                     //渠道返回订单流水号
-	OrigOrderNum string        `bson:"origOrderNum,omitempty"`                     //源订单号 当交易类型为退款/撤销/关单时
-	RespCode     string        `bson:"respCode,omitempty"`                         //网关应答码
-	MerId        string        `bson:"merId,omitempty"`                            //商户号
-	TransAmt     int64         `bson:"transAmt,omitempty"`                         //交易金额
-	TransStatus  string        `bson:"transStatus,omitempty"`                      //交易状态 10-处理中 20-失败 30-成功 40-已关闭
-	TransType    int8          `bson:"transType,omitempty"`                        //交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
-	ChanMerId    string        `bson:"chanMerId,omitempty"`                        //渠道商户号
-	ChanCode     string        `bson:"chanCode,omitempty"`                         //渠道代码
-	ChanRespCode string        `bson:"chanRespCode,omitempty"`                     //渠道应答码
-	CreateTime   string        `bson:"createTime,omitempty"`                       //交易创建时间 yyyy-mm-dd hh:mm:ss
-	UpdateTime   string        `bson:"updateTime,omitempty"`                       //交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus int8          `bson:"refundStatus,omitempty" json:"refundStatus"` //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	Id           bson.ObjectId `bson:"_id" json:"-"`
+	OrderNum     string        `bson:"orderNum,omitempty" json:"orderNum"`                   //商户订单流水号、退款流水号
+	SysOrderNum  string        `bson:"sysOrderNum,omitempty" json:"-"`                       //系统订单流水号、退款流水号
+	ChanOrderNum string        `bson:"chanOrderNum,omitempty" json:"-"`                      //渠道返回订单流水号
+	OrigOrderNum string        `bson:"origOrderNum,omitempty" json:"origOrderNum,omitempty"` //源订单号 当交易类型为退款/撤销/关单时
+	RespCode     string        `bson:"respCode,omitempty" json:"respcd,omitempty"`           //网关应答码
+	MerId        string        `bson:"merId,omitempty" json:"-"`                             //商户号
+	TransAmt     int64         `bson:"transAmt,omitempty" json:"transAmt"`                   //交易金额
+	TransStatus  string        `bson:"transStatus,omitempty" json:"-"`                       //交易状态 10-处理中 20-失败 30-成功 40-已关闭
+	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 //交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
+	ChanMerId    string        `bson:"chanMerId,omitempty" json:"-"`                         //渠道商户号
+	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   //渠道代码
+	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      //渠道应答码
+	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      //交易创建时间 yyyy-mm-dd hh:mm:ss
+	UpdateTime   string        `bson:"updateTime,omitempty" json:"-"`                        //交易更新时间 yyyy-mm-dd hh:mm:ss
+	RefundStatus int8          `bson:"refundStatus,omitempty" json:"-"`                      //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
 
 	// 快捷支付
-	AcctNum       string `bson:"acctNum,omitempty"`       //交易账户
-	SendSmsId     string `bson:"sendSmsId,omitempty"`     //短信流水号
-	SmsCode       string `bson:"smsCode,omitempty"`       //短信验证码
-	Remark        string `bson:"remark,omitempty"`        //备注
-	SubMerId      string `bson:"subMerId,omitempty"`      //子商户id
-	BindingId     string `bson:"bindingId,omitempty"`     //商户绑定ID
-	ChanBindingId string `bson:"chanBindingId,omitempty"` //渠道绑定ID
-	TransCurr     string `bson:"transCurr,omitempty"`     //交易币种
+	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       //交易账户
+	SendSmsId     string `bson:"sendSmsId,omitempty" json:"-"`     //短信流水号
+	SmsCode       string `bson:"smsCode,omitempty" json:"-"`       //短信验证码
+	Remark        string `bson:"remark,omitempty" json:"-"`        //备注
+	SubMerId      string `bson:"subMerId,omitempty" json:"-"`      //子商户id
+	BindingId     string `bson:"bindingId,omitempty" json:"-"`     //商户绑定ID
+	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"` //渠道绑定ID
+	TransCurr     string `bson:"transCurr,omitempty" json:"-"`     //交易币种
 
 	// 扫码交易字段
-	ChanDiscount    string `bson:"chanDiscount,omitempty"`    //渠道折扣 支付宝、微信
-	MerDiscount     string `bson:"merDiscount,omitempty"`     //商户折扣 支付宝、微信
-	ConsumerAccount string `bson:"consumerAccount,omitempty"` //消费帐号 支付宝、微信
-	ConsumerId      string `bson:"consumerId,omitempty"`      //消费id  支付宝、微信
-	Busicd          string `bson:"busicd,omitempty"`          //业务id
-	Inscd           string `bson:"inscd,omitempty"`           //机构号
-	QrCode          string `bson:"qrCode,omitempty"`          //预下单时的二维码
-	Terminalid      string `bson:"terminalid,omitempty"`      //终端号
-	ErrorCode       string `bson:"errorCode,omitempty"`       //错误代码
+	ChanDiscount    string `bson:"chanDiscount,omitempty" json:"-"`    //渠道折扣 支付宝、微信
+	MerDiscount     string `bson:"merDiscount,omitempty" json:"-"`     //商户折扣 支付宝、微信
+	ConsumerAccount string `bson:"consumerAccount,omitempty" json:"-"` //消费帐号 支付宝、微信
+	ConsumerId      string `bson:"consumerId,omitempty" json:"-"`      //消费id  支付宝、微信
+	Busicd          string `bson:"busicd,omitempty" json:"busicd"`     //业务id
+	Inscd           string `bson:"inscd,omitempty" json:"-"`           //机构号
+	QrCode          string `bson:"qrCode,omitempty" json:"-"`          //预下单时的二维码
+	Terminalid      string `bson:"terminalid,omitempty" json:"-"`      //终端号
+	ErrorCode       string `bson:"errorCode,omitempty" json:"-"`       //错误代码
 }
 
 // SummarySettData 交易汇总
@@ -220,14 +220,6 @@ type TransInfo struct {
 	RefundStatus int8   `json:"refundStatus,omitempty"`
 	RefundAmt    int64  `json:"refundAmt,omitempty"`
 	PayOrderNum  string `json:"payOrderNum,omitempty"`
-
-	// TODO
-	OrderNum     string `json:"orderNum,omitempty" bson:"orderNum"`
-	Busicd       string `json:"busicd,omitempty" bson:"busicd"`
-	Respcd       string `json:"respcd,omitempty" bson:"respCode"`
-	TransTime    string `json:"transTime,omitempty" bson:"createTime"`
-	ErrorDetail  string `json:"errorDetail,omitempty" bson:"errorDetail"`
-	OrigOrderNum string `json:"origOrderNum,omitempty" bson:"origOrderNum"`
 }
 
 // CfcaBankMap 中金支持银行映射表，为了和卡BIN表的银行匹配

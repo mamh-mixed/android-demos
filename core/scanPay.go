@@ -31,19 +31,19 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
 	}
 
 	// mongo统计
-	transInfo, total, err := mongo.SpTransColl.Find(q)
+	trans, total, err := mongo.SpTransColl.Find(q)
 	if err != nil {
-		log.Errorf("find transInfo error: %s", err)
+		log.Errorf("find trans error: %s", err)
 	}
 
-	size := len(transInfo)
+	size := len(trans)
 	ret = &model.QueryCondition{
 		Page:     q.Page,
 		Size:     size,
 		Total:    total,
 		RespCode: "000000",
 		RespMsg:  "成功",
-		Rec:      transInfo,
+		Rec:      trans,
 		Count:    size,
 	}
 
