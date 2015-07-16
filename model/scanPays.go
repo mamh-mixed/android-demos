@@ -21,24 +21,24 @@ const (
 
 // QueryCondition 扫码交易查询
 type QueryCondition struct {
-	Mchntid      string      `json:"mchntid,omitempty"`
-	StartTime    string      `json:"startTime,omitempty"`
-	EndTime      string      `json:"endTime,omitempty"`
-	Busicd       string      `json:"busicd,omitempty"`
-	OrderNum     string      `json:"orderNum,omitempty"`
-	OrigOrderNum string      `json:"origOrderNum,omitempty"`
-	NextOrderNum string      `json:"nextOrderNum,omitempty"`
-	RespCode     string      `json:"respCode,omitempty"`
-	RespMsg      string      `json:"respMsg,omitempty"`
-	Count        int         `json:"count,omitempty"`
-	Page         int         `json:"page,omitempty"`
-	Total        int         `json:"total,omitempty"`
-	Size         int         `json:"size,omitempty"`
-	Rec          []TransInfo `json:"rec,omitempty"`
+	Mchntid      string  `json:"mchntid,omitempty"`
+	StartTime    string  `json:"startTime,omitempty"`
+	EndTime      string  `json:"endTime,omitempty"`
+	Busicd       string  `json:"busicd,omitempty"`
+	OrderNum     string  `json:"orderNum,omitempty"`
+	OrigOrderNum string  `json:"origOrderNum,omitempty"`
+	NextOrderNum string  `json:"nextOrderNum,omitempty"`
+	RespCode     string  `json:"respCode,omitempty"`
+	RespMsg      string  `json:"respMsg,omitempty"`
+	Count        int     `json:"count,omitempty"`
+	Page         int     `json:"page,omitempty"`
+	Total        int     `json:"total,omitempty"`
+	Size         int     `json:"size,omitempty"`
+	Rec          []Trans `json:"rec,omitempty"`
 }
 
 // ScanPay 扫码支付
-type ScanPay struct {
+type ScanPayRequest struct {
 	Txndir       string `json:"txndir,omitempty"`       // 交易方向
 	Busicd       string `json:"busicd,omitempty"`       // 交易类型
 	Inscd        string `json:"inscd,omitempty"`        // 机构号
@@ -98,7 +98,7 @@ type ScanPayResponse struct {
 }
 
 // DictSortMsg 字典排序报文
-func (s *ScanPay) SignMsg() string {
+func (s *ScanPayRequest) SignMsg() string {
 	return genSignMsg(s)
 }
 
@@ -109,7 +109,7 @@ func (s *ScanPayResponse) SignMsg() string {
 
 // MarshalGoods 将商品详情解析成字符json字符串
 // 格式: 商品名称,价格,数量;商品名称,价格,数量;...
-func (s *ScanPay) MarshalGoods() string {
+func (s *ScanPayRequest) MarshalGoods() string {
 
 	if s.GoodsInfo == "" {
 		return ""

@@ -16,7 +16,7 @@ var (
 )
 
 // ProcessBarcodePay 扫条码下单
-func ProcessBarcodePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -66,7 +66,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRe
 }
 
 // ProcessQrCodeOfflinePay 二维码预下单
-func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -118,7 +118,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPay) (ret *model.Sca
 }
 
 // ProcessEnquiry 查询
-func ProcessEnquiry(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -165,7 +165,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPay) (ret *model.ScanPayRespo
 }
 
 // ProcessRefund 请求渠道退款，不做逻辑处理
-func ProcessRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
@@ -216,7 +216,7 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 }
 
 // processCancel 请求渠道撤销，不做逻辑处理
-func ProcessCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
@@ -264,7 +264,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPay) (ret *model.S
 }
 
 // processWxpClose 微信关闭接口
-func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {

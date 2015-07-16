@@ -16,22 +16,22 @@ const (
 // ScanPayChan 扫码支付
 type ScanPayChan interface {
 	// ProcessBarcodePay 扫条码下单
-	ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, error)
+	ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 
 	// ProcessQrCodeOfflinePay 扫二维码预下单
-	ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayResponse, error)
+	ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 
 	// ProcessRefund 退款
-	ProcessRefund(req *model.ScanPay) (*model.ScanPayResponse, error)
+	ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 
 	// ProcessEnquiry 查询
-	ProcessEnquiry(req *model.ScanPay) (*model.ScanPayResponse, error)
+	ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 
 	// ProcessCancel 撤销
-	ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error)
+	ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 
 	// ProcessClose 关闭
-	ProcessClose(req *model.ScanPay) (*model.ScanPayResponse, error)
+	ProcessClose(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 }
 
 // GetScanPayChan 扫码支付渠道

@@ -6,11 +6,10 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"io"
-
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
+	"io"
 	"net/http"
 	"net/url"
 	"sort"
@@ -33,7 +32,7 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 		values.Add(k, v)
 	}
 
-	log.Debugf("alipay post data: %s", values.Encode())
+	log.Infof("post alipay data: %s", values.Encode())
 
 	var res *http.Response
 	var err error
@@ -67,8 +66,9 @@ func handleResponseBody(reader io.Reader) (*alpResponse, error) {
 		log.Errorf("unmarsal body fail : %s", err)
 		return nil, err
 	}
-	log.Debugf("alp response body: \n %+v \n", alpResp)
-	// TODO 验证签名
+	log.Infof("alp response body: \n %+v \n", alpResp)
+	// TODO:验证签名
+
 	return alpResp, nil
 }
 
