@@ -397,7 +397,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	// 是否有该源订单号
-	orign, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
+	orign, err := mongo.TransColl.FindOne(be.MerId, be.OrigOrderNum)
 	log.Debugf("%+v", orign)
 	if err != nil {
 		refund.RespCode = "200082"
@@ -517,7 +517,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	ret = mongo.RespCodeColl.Get("000000")
 
 	// 是否有该订单号
-	t, err := mongo.TransColl.Find(be.MerId, be.OrigOrderNum)
+	t, err := mongo.TransColl.FindOne(be.MerId, be.OrigOrderNum)
 	if err != nil {
 		return mongo.RespCodeColl.Get("200080")
 	}

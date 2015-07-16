@@ -118,3 +118,7 @@ func TestScanPay(t *testing.T) {
 	}
 	t.Logf("%+v", resp)
 }
+
+func TestSignMsg(t *testing.T) {
+	t.Log(scanPayBarcodePay.SignMsg())
+}

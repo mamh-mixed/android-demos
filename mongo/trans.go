@@ -74,7 +74,7 @@ func (col *transCollection) Count(merId, orderNum string) (count int, err error)
 }
 
 // FindPay 通过订单号、商户号查找一条交易记录
-func (col *transCollection) Find(merId, orderNum string) (t *model.Trans, err error) {
+func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err error) {
 
 	q := bson.M{
 		"orderNum": orderNum,
@@ -163,4 +163,56 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 	// more fields
 
 	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
+}
+
+// Find 根据商户Id,清分时间查找交易明细
+// 按照商户订单号降排序
+func (col *transCollection) Find(q *model.QueryCondition) ([]model.TransInfo, int, error) {
+
+	var transInfo []model.TransInfo
+
+	// 根据条件查找
+	match := bson.M{}
+	if q.OrderNum != "" {
+		match["orderNum"] = q.OrderNum
+	}
+	if q.Mchntid != "" {
+		match["merId"] = q.Mchntid
+	}
+
+	if q.OrigOrderNum != "" {
+		match["origOrderNum"] = q.OrigOrderNum
+	}
+
+	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
+
+	p := []bson.M{
+		{"$match": match},
+	}
+
+	// total
+	total, err := database.C(col.name).Find(match).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 分页
+	skip := bson.M{"$skip": (q.Page - 1) * q.Size}
+
+	// 不同类型排序
+	sortByTime := bson.M{"$sort": bson.M{"createTime": -1}}
+	// sortByOrderNum := bson.M{"$sort": bson.M{"orderNum": 1}}
+
+	// 商户实际拉取为Size+1
+	limit := bson.M{"$limit": q.Size}
+	// if q.NextOrderNum != "" {
+	// 	// 使用orderNum拉取
+	// 	next := bson.M{"$match": bson.M{"orderNum": bson.M{"$gte": q.NextOrderNum}}}
+	// 	p = append(p, sortByOrderNum, next, skip, limit)
+	// } else {
+	p = append(p, sortByTime, skip, limit)
+	// }
+
+	err = database.C(col.name).Pipe(p).All(&transInfo)
+	return transInfo, total, err
 }

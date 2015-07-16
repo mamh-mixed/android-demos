@@ -7,8 +7,6 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-
-	"github.com/huandu/xstrings"
 )
 
 // busiType
@@ -20,6 +18,24 @@ const (
 	Void = "VOID"
 	Canc = "CANC"
 )
+
+// QueryCondition 扫码交易查询
+type QueryCondition struct {
+	Mchntid      string      `json:"mchntid,omitempty"`
+	StartTime    string      `json:"startTime,omitempty"`
+	EndTime      string      `json:"endTime,omitempty"`
+	Busicd       string      `json:"busicd,omitempty"`
+	OrderNum     string      `json:"orderNum,omitempty"`
+	OrigOrderNum string      `json:"origOrderNum,omitempty"`
+	NextOrderNum string      `json:"nextOrderNum,omitempty"`
+	RespCode     string      `json:"respCode,omitempty"`
+	RespMsg      string      `json:"respMsg,omitempty"`
+	Count        int         `json:"count,omitempty"`
+	Page         int         `json:"page,omitempty"`
+	Total        int         `json:"total,omitempty"`
+	Size         int         `json:"size,omitempty"`
+	Rec          []TransInfo `json:"rec,omitempty"`
+}
 
 // ScanPay 扫码支付
 type ScanPay struct {
@@ -188,19 +204,28 @@ func genSignMsg(o interface{}) string {
 	sort.Strings(mFields)
 	var buf bytes.Buffer
 	for _, field := range mFields {
+
+		// jsonTag
 		v := sv.Elem().FieldByName(field)
 		f, _ := t.FieldByName(field)
 		jsonTag := f.Tag.Get("json")
-		if v.CanSet() && jsonTag != "-" {
+
+		// fieldName
+		jn := ""
+		jn = strings.Split(jsonTag, ",")[0]
+		if jn == "" {
+			jn = field
+		}
+
+		// 组装报文
+		if jsonTag != "-" && v.CanSet() {
 			if v.Kind() == reflect.String {
 				fv := v.String()
 				if fv != "" {
 					if buf.Len() > 0 {
 						buf.WriteByte('&')
 					}
-					buf.WriteString(xstrings.FirstRuneToLower(field))
-					buf.WriteByte('=')
-					buf.WriteString(fv)
+					buf.WriteString(jn + "=" + fv)
 				}
 			}
 		}

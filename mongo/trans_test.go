@@ -8,6 +8,30 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestFindTransQuery(t *testing.T) {
+
+	q := &model.QueryCondition{
+		StartTime: "2015-07-01 00:00:00",
+		EndTime:   "2015-07-30 00:00:00",
+		Mchntid:   "100000000000203",
+		Page:      1,
+		Size:      10,
+	}
+
+	transInfo, total, err := SpTransColl.Find(q)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Logf("total : %d", total)
+	for _, v := range transInfo {
+		t.Logf("%s,%s", v.OrderNum, v.TransTime)
+	}
+
+	// t.Logf("%d", len(transInfo))
+}
+
 func TestTransAdd(t *testing.T) {
 	if debug {
 		trans := &model.Trans{
@@ -57,7 +81,7 @@ func TestCountTrans(t *testing.T) {
 }
 
 func TestFindTrans(t *testing.T) {
-	trans, err := TransColl.Find(merId, orderNum)
+	trans, err := TransColl.FindOne(merId, orderNum)
 	if err != nil {
 		t.Errorf("find trans unsunccessful: %s", err)
 		t.FailNow()

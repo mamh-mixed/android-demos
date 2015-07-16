@@ -27,9 +27,27 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 请求扫码支付
-	retBytes := scanpay.ScanPayHandle(bytes)
-	w.Write(retBytes)
+	switch r.URL.Path {
+	case "/scanpay/":
+		// 请求扫码支付
+		retBytes := scanpay.ScanPayHandle(bytes)
+		w.Write(retBytes)
+	case "/scanpay/query":
+		q := &model.QueryCondition{}
+		err = json.Unmarshal(bytes, q)
+		if err != nil {
+			http.Error(w, "数据格式错误: "+err.Error(), http.StatusNotAcceptable)
+			return
+		}
+		ret := core.TransQuery(q)
+		retBytes, err := json.Marshal(ret)
+		if err != nil {
+			http.Error(w, "数据格式错误: "+err.Error(), http.StatusNotAcceptable)
+			return
+		}
+		w.Write(retBytes)
+	}
+
 }
 
 // Quickpay 快捷支付统一入口

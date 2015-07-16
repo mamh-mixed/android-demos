@@ -220,6 +220,14 @@ type TransInfo struct {
 	RefundStatus int8   `json:"refundStatus,omitempty"`
 	RefundAmt    int64  `json:"refundAmt,omitempty"`
 	PayOrderNum  string `json:"payOrderNum,omitempty"`
+
+	// TODO
+	OrderNum     string `json:"orderNum,omitempty" bson:"orderNum"`
+	Busicd       string `json:"busicd,omitempty" bson:"busicd"`
+	Respcd       string `json:"respcd,omitempty" bson:"respCode"`
+	TransTime    string `json:"transTime,omitempty" bson:"createTime"`
+	ErrorDetail  string `json:"errorDetail,omitempty" bson:"errorDetail"`
+	OrigOrderNum string `json:"origOrderNum,omitempty" bson:"origOrderNum"`
 }
 
 // CfcaBankMap 中金支持银行映射表，为了和卡BIN表的银行匹配
