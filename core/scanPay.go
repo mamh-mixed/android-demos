@@ -17,6 +17,39 @@ var (
 	inprocess   = mongo.OffLineRespCd("INPROCESS")
 )
 
+// TransQuery 交易查询
+func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
+
+	now := time.Now().Format("2006-01-02")
+	// 默认当天开始
+	if q.StartTime == "" {
+		q.StartTime = now + " 00:00:00"
+	}
+	// 默认当天结束
+	if q.EndTime == "" {
+		q.EndTime = now + " 23:59:59"
+	}
+
+	// mongo统计
+	transInfo, total, err := mongo.SpTransColl.Find(q)
+	if err != nil {
+		log.Errorf("find transInfo error: %s", err)
+	}
+
+	size := len(transInfo)
+	ret = &model.QueryCondition{
+		Page:     q.Page,
+		Size:     size,
+		Total:    total,
+		RespCode: "000000",
+		RespMsg:  "成功",
+		Rec:      transInfo,
+		Count:    size,
+	}
+
+	return ret
+}
+
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
@@ -167,7 +200,7 @@ func Refund(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	refund.TransAmt = int64(f)
 
 	// 判断是否存在该订单
-	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
@@ -233,7 +266,7 @@ func Enquiry(req *model.ScanPay) (ret *model.ScanPayResponse) {
 
 	ret = new(model.ScanPayResponse)
 	// 判断是否存在该订单
-	t, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	t, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return mongo.OffLineRespCd("TRADE_NOT_EXIST")
 	}
@@ -293,7 +326,7 @@ func Cancel(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 判断是否存在该订单
-	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
@@ -367,7 +400,7 @@ func Close(req *model.ScanPay) (ret *model.ScanPayResponse) {
 	}
 
 	// 判断是否存在该订单
-	orig, err := mongo.SpTransColl.Find(req.Mchntid, req.OrigOrderNum)
+	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return logicErrorHandler(closed, "TRADE_NOT_EXIST")
 	}
