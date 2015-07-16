@@ -193,15 +193,15 @@ type Trans struct {
 	TransCurr     string `bson:"transCurr,omitempty" json:"-"`     //交易币种
 
 	// 扫码交易字段
-	ChanDiscount    string `bson:"chanDiscount,omitempty" json:"-"`    //渠道折扣 支付宝、微信
-	MerDiscount     string `bson:"merDiscount,omitempty" json:"-"`     //商户折扣 支付宝、微信
-	ConsumerAccount string `bson:"consumerAccount,omitempty" json:"-"` //消费帐号 支付宝、微信
-	ConsumerId      string `bson:"consumerId,omitempty" json:"-"`      //消费id  支付宝、微信
-	Busicd          string `bson:"busicd,omitempty" json:"busicd"`     //业务id
-	Inscd           string `bson:"inscd,omitempty" json:"-"`           //机构号
-	QrCode          string `bson:"qrCode,omitempty" json:"-"`          //预下单时的二维码
-	Terminalid      string `bson:"terminalid,omitempty" json:"-"`      //终端号
-	ErrorCode       string `bson:"errorCode,omitempty" json:"-"`       //错误代码
+	ChanDiscount    string `bson:"chanDiscount,omitempty" json:"chanDiscount,omitempty"`       //渠道折扣 支付宝、微信
+	MerDiscount     string `bson:"merDiscount,omitempty" json:"merDiscount,omitempty"`         //商户折扣 支付宝、微信
+	ConsumerAccount string `bson:"consumerAccount,omitempty" json:"consumerAccount,omitempty"` //消费帐号 支付宝、微信
+	ConsumerId      string `bson:"consumerId,omitempty" json:"consumerId,omitempty"`           //消费id  支付宝、微信
+	Busicd          string `bson:"busicd,omitempty" json:"busicd"`                             //业务id
+	Inscd           string `bson:"inscd,omitempty" json:"inscd,omitempty"`                     //机构号
+	QrCode          string `bson:"qrCode,omitempty" json:"-"`                                  //预下单时的二维码
+	Terminalid      string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`           //终端号
+	ErrorCode       string `bson:"errorCode,omitempty" json:"-"`                               //错误代码
 }
 
 // SummarySettData 交易汇总
