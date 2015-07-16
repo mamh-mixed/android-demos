@@ -32,7 +32,6 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 		// 请求扫码支付
 		retBytes := scanpay.ScanPayHandle(bytes)
 		w.Write(retBytes)
-		return
 	case "/scanpay/query":
 		q := &model.QueryCondition{}
 		err = json.Unmarshal(bytes, q)

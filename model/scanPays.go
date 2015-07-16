@@ -7,8 +7,6 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-
-	"github.com/huandu/xstrings"
 )
 
 // busiType
@@ -206,19 +204,28 @@ func genSignMsg(o interface{}) string {
 	sort.Strings(mFields)
 	var buf bytes.Buffer
 	for _, field := range mFields {
+
+		// jsonTag
 		v := sv.Elem().FieldByName(field)
 		f, _ := t.FieldByName(field)
 		jsonTag := f.Tag.Get("json")
-		if v.CanSet() && jsonTag != "-" {
+
+		// fieldName
+		jn := ""
+		jn = strings.Split(jsonTag, ",")[0]
+		if jn == "" {
+			jn = field
+		}
+
+		// 组装报文
+		if jsonTag != "-" && v.CanSet() {
 			if v.Kind() == reflect.String {
 				fv := v.String()
 				if fv != "" {
 					if buf.Len() > 0 {
 						buf.WriteByte('&')
 					}
-					buf.WriteString(xstrings.FirstRuneToLower(field))
-					buf.WriteByte('=')
-					buf.WriteString(fv)
+					buf.WriteString(jn + "=" + fv)
 				}
 			}
 		}
