@@ -169,6 +169,8 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, error) {
 
+	log.Debugf("condition is %+v", q)
+
 	var trans []model.Trans
 
 	// 根据条件查找
@@ -186,7 +188,25 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 		match["origOrderNum"] = q.OrigOrderNum
 	}
 
+	if q.Busicd != "" {
+		match["busicd"] = q.Busicd
+	}
+
 	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
+
+	// 取消的订单和查询的订单不显示，过滤掉
+	notShowBusicd := []string{"CANC", "INQY"}
+	if q.Busicd != "" {
+		showBusicd := []string{q.Busicd}
+		match["busicd"] = bson.M{
+			"$nin": notShowBusicd,
+			"$in":  showBusicd,
+		}
+	} else {
+		match["busicd"] = bson.M{
+			"$nin": notShowBusicd,
+		}
+	}
 
 	p := []bson.M{
 		{"$match": match},
