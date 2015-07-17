@@ -21,6 +21,10 @@ import (
 func Scanpay(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("url = %s", r.URL.String())
 
+	// 允许跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+
 	bytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "读取数据出错", http.StatusNotAcceptable)
