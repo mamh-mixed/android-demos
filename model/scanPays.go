@@ -232,3 +232,27 @@ func genSignMsg(o interface{}) string {
 	}
 	return buf.String()
 }
+
+/* only use for import respCode */
+
+// SpChanCSV 渠道文件csv
+type SpChanCSV struct {
+	ErrorCode string `bson:"errorCode"`
+	ErrorMsg  string `bson:"errorMsg"`
+	Busicd    string `bson:"busicd"`
+	Code      string `bson:"-"`
+	Msg       string `bson:"-"`
+}
+
+// ScanPayCSV 扫码支付应答码
+type ScanPayCSV struct {
+	RespCode      string `bson:"respCode"`
+	RespMsg       string `bson:"respMsg"`
+	Iso8583Code   string `bson:"iso8583Code"`
+	Iso8583Msg    string `bson:"iso8583Msg"`
+	IsUseChanDesc bool   `bson:"isUseChanDesc"`
+
+	Alp []*SpChanCSV `bson:"alp,omitempty"`
+	Wxp []*SpChanCSV `bson:"wxp,omitempty"`
+	//...
+}

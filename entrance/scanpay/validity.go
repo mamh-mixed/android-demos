@@ -19,6 +19,10 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
 
+	if matched, _ := regexp.MatchString(`^0{12}$`, req.Txamt); matched {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}

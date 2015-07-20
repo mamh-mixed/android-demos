@@ -12,11 +12,11 @@ import (
 
 var (
 	// 下单支付
-	scanPayBarcodePay = &model.ScanPay{
+	scanPayBarcodePay = &model.ScanPayRequest{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "201507151103002",
-		ScanCodeId: "28140009122484130",
+		ScanCodeId: "130492842833571121",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
@@ -24,24 +24,24 @@ var (
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
-	scanPayQrCodeOfflinePay = &model.ScanPay{
+	scanPayQrCodeOfflinePay = &model.ScanPayRequest{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		Inscd:     "CIL00002",
 		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "ALP",
+		Chcd:      "WXP",
 	}
 	// 查询
-	scanPayEnquiry = &model.ScanPay{
+	scanPayEnquiry = &model.ScanPayRequest{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1436926546841",
+		OrigOrderNum: "1437363963705",
 	}
 	// 退款
-	scanPayRefund = &model.ScanPay{
+	scanPayRefund = &model.ScanPayRequest{
 		Busicd:       "REFD",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
@@ -50,7 +50,7 @@ var (
 		Txamt:        "000000000001",
 	}
 	// 撤销
-	scanPayCancel = &model.ScanPay{
+	scanPayCancel = &model.ScanPayRequest{
 		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
@@ -58,7 +58,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 	// 关单
-	scanPayClose = &model.ScanPay{
+	scanPayClose = &model.ScanPayRequest{
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
@@ -66,7 +66,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayBarcodePay
+	scanPay = scanPayEnquiry
 )
 
 func TestScanPay(t *testing.T) {
