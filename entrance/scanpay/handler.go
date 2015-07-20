@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-type HandleFuc func(req *model.ScanPay) (ret *model.ScanPayResponse)
+type HandleFuc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // TcpScanpayHandle tcp连接时为gbk编码
 func TcpScanPayHandle(reqBytes []byte) []byte {
@@ -39,9 +39,9 @@ func TcpScanPayHandle(reqBytes []byte) []byte {
 // utf-8 编码
 func ScanPayHandle(reqBytes []byte) []byte {
 
-	log.Debugf("request body: %s", string(reqBytes))
+	log.Infof("request body: %s", string(reqBytes))
 	// 解析请求内容
-	req := new(model.ScanPay)
+	req := new(model.ScanPayRequest)
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal jsonStr(%s): %s", string(reqBytes), err)
@@ -53,7 +53,7 @@ func ScanPayHandle(reqBytes []byte) []byte {
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
-	log.Debugf("handled body: %s", retBytes)
+	log.Infof("handled body: %s", retBytes)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
 		return ErrorResponse(req, "SYSTEM_ERROR")
@@ -63,7 +63,7 @@ func ScanPayHandle(reqBytes []byte) []byte {
 }
 
 // router 分发业务逻辑
-func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
+func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	switch req.Busicd {
 	case model.Purc:
@@ -92,7 +92,7 @@ func router(req *model.ScanPay) (ret *model.ScanPayResponse) {
 }
 
 // doScanPay 执行业务逻辑
-func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *model.ScanPayResponse) {
+func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证字段
 	if ret = validateFuc(req); ret != nil {
@@ -147,7 +147,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPay) (ret *mode
 }
 
 // fillResponseInfo 如果空白，默认将原信息返回
-func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
+func fillResponseInfo(req *model.ScanPayRequest, ret *model.ScanPayResponse) {
 
 	if ret.Busicd == "" {
 		ret.Busicd = req.Busicd
@@ -177,7 +177,7 @@ func fillResponseInfo(req *model.ScanPay, ret *model.ScanPayResponse) {
 }
 
 // ErrorResponse 返回错误信息
-func ErrorResponse(req *model.ScanPay, errorCode string) []byte {
+func ErrorResponse(req *model.ScanPayRequest, errorCode string) []byte {
 
 	ret := mongo.OffLineRespCd(errorCode)
 	fillResponseInfo(req, ret)

@@ -28,7 +28,7 @@ const (
 )
 
 // ProcessBarcodePay 条码支付/下单
-func (a *alp) ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, error) {
+func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:       req.ChanMerId,
@@ -59,7 +59,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPay) (*model.ScanPayResponse, err
 }
 
 // ProcessQrCodeOfflinePay 扫码支付/预下单
-func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayResponse, error) {
+func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:        req.ChanMerId,
@@ -88,7 +88,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPay) (*model.ScanPayRespons
 }
 
 // ProcessRefund 退款
-func (a *alp) ProcessRefund(req *model.ScanPay) (*model.ScanPayResponse, error) {
+func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:      req.ChanMerId,
@@ -112,7 +112,7 @@ func (a *alp) ProcessRefund(req *model.ScanPay) (*model.ScanPayResponse, error) 
 }
 
 // ProcessEnquiry 查询，包含支付、退款
-func (a *alp) ProcessEnquiry(req *model.ScanPay) (*model.ScanPayResponse, error) {
+func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:    req.ChanMerId,
@@ -132,7 +132,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPay) (*model.ScanPayResponse, error)
 }
 
 // ProcessCancel 撤销
-func (a *alp) ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error) {
+func (a *alp) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
 		Partner:    req.ChanMerId,
@@ -154,7 +154,7 @@ func (a *alp) ProcessCancel(req *model.ScanPay) (*model.ScanPayResponse, error) 
 }
 
 // ProcessClose 关闭接口即撤销接口
-func (a *alp) ProcessClose(req *model.ScanPay) (*model.ScanPayResponse, error) {
+func (a *alp) ProcessClose(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 	return a.ProcessCancel(req)
 }
 
