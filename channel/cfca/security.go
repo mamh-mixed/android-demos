@@ -22,7 +22,7 @@ import (
 var chinaPaymentCert *x509.Certificate
 
 // 缓存商户密钥
-var keyCache = cache.New(model.Cache_ChanMerRSAPrivKey)
+var keyCache = cache.New(model.Cache_CfcaMerRSAPrivKey)
 
 // 读私钥
 func initPrivKey(priKeyPem string) *rsa.PrivateKey {
@@ -59,21 +59,24 @@ func init() {
 	certPemFile := goconf.Config.CFCA.Cert
 	certPem, err := ioutil.ReadFile(certPemFile)
 	if err != nil {
-		fmt.Printf("read cfca cert error: %s", err)
+		fmt.Printf("read cfca cert error: %s\n", err)
 		os.Exit(3)
 	}
 
 	PEMBlock, _ := pem.Decode(certPem)
 	if PEMBlock == nil {
-		log.Fatalf("Could not parse Certificate PEM")
+		fmt.Println("Could not parse Certificate PEM")
+		os.Exit(3)
 	}
 	if PEMBlock.Type != "CERTIFICATE" {
-		log.Fatalf("Found wrong key type" + PEMBlock.Type)
+		fmt.Printf("Found wrong key type: %s\n", PEMBlock.Type)
+		os.Exit(3)
 	}
 	// var err error
 	chinaPaymentCert, err = x509.ParseCertificate(PEMBlock.Bytes)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("parse certificate error: %s", err)
+		os.Exit(3)
 	}
 }
 

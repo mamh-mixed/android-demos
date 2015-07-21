@@ -21,7 +21,7 @@ func base(d BaseReq, r BaseResp) (err error) {
 
 	err = sendRequest(d, r)
 	if err != nil {
-		log.Errorf("weixin device scan phone request error: %s", err)
+		log.Errorf("weixin request error: %s", err)
 		return err
 	}
 	return nil
