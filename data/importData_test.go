@@ -7,6 +7,17 @@ import (
 	// "github.com/omigo/log"
 )
 
+func TestAddScanPayRespFromCSV(t *testing.T) {
+
+	data, err := readQuickpayCSV("respCode_scanpay.csv")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(len(data))
+}
+
 // 导入系统应答码，存在时跳过，不存在插入
 func xTestAddRespCodeFromCSV(t *testing.T) {
 	// 插入quickpay的应答码

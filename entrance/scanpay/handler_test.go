@@ -38,7 +38,7 @@ var (
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1437363963705",
+		OrigOrderNum: "1437450977711",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{

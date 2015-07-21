@@ -90,54 +90,57 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 
 var ScanPayRespCol = &scanPayRespCollection{"respCode.sp"}
 var OffLineCdCol map[string]string
+var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答", false, "UNKNOWN"}
 
 type scanPayRespCollection struct {
 	name string
 }
 
-type scanPayResp struct {
-	RespCode      string `bson:"respCode"`
-	RespMsg       string `bson:"respMsg"`
-	Iso8583Code   string `bson:"iso8583Code"`
-	Iso8583Msg    string `bson:"iso8583Msg"`
-	IsUseChanDesc bool   `bson:"isUseChanDesc"`
-	ErrorCode     string `bson:"errorCode"`
-}
-
 var spRespCache = cache.New(model.Cache_ScanPayResp)
 
-// Get 根据传入的code类型得到Resp对象
-func (c *scanPayRespCollection) Get(code string) (resp *scanPayResp) {
+// Get 根据传入的errorCode类型得到Resp对象
+// 屏蔽8583与6位应答码的差别
+func (c *scanPayRespCollection) Get(errorCode string) (resp *model.ScanPayRespCode) {
 
-	o, found := spRespCache.Get(code)
+	o, found := spRespCache.Get(errorCode)
 	if found {
-		resp = o.(*scanPayResp)
+		resp = o.(*model.ScanPayRespCode)
 		return resp
 	}
 
-	resp = &scanPayResp{}
-	err := database.C(c.name).Find(bson.M{"errorCode": code}).One(resp)
+	resp = &model.ScanPayRespCode{}
+	err := database.C(c.name).Find(bson.M{"errorCode": errorCode}).One(resp)
 	if err != nil {
-		log.Errorf("can not find scanPayResp for %s: %s", code, err)
-		return resp
+		log.Errorf("can not find scanPayResp for %s: %s", errorCode, err)
+		// 没找到对应应答码，返回默认应答
+		return defaultResp
 	}
 
 	// save cache
-	spRespCache.Set(code, resp, cache.NoExpiration)
+	spRespCache.Set(errorCode, resp, cache.NoExpiration)
 
 	return resp
 }
 
 // GetByAlp 由支付宝应答得到Resp对象
-func (c *scanPayRespCollection) GetByAlp(code, busicd string) (resp *scanPayResp) {
-	resp = &scanPayResp{}
-	database.C(c.name).Find(bson.M{"alp.code": code}).One(resp)
+func (c *scanPayRespCollection) GetByAlp(code, busicd string) (resp *model.ScanPayRespCode) {
+	resp = &model.ScanPayRespCode{}
+	err := database.C(c.name).Find(bson.M{"alp.code": code}).One(resp)
+	if err != nil {
+		log.Errorf("can not find scanPayResp for %s: %s", code, err)
+		return defaultResp
+	}
+
 	return resp
 }
 
 // GetByWxp 由微信应答得到Resp对象
-func (c *scanPayRespCollection) GetByWxp(code, busicd string) (resp *scanPayResp) {
-	resp = &scanPayResp{}
-	database.C(c.name).Find(bson.M{"wxp.code": code}).One(resp)
+func (c *scanPayRespCollection) GetByWxp(code, busicd string) (resp *model.ScanPayRespCode) {
+	resp = &model.ScanPayRespCode{}
+	err := database.C(c.name).Find(bson.M{"wxp.code": code}).One(resp)
+	if err != nil {
+		log.Errorf("can not find scanPayResp for %s: %s", code, err)
+		return defaultResp
+	}
 	return resp
 }

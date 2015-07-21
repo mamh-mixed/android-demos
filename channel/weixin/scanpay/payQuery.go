@@ -74,7 +74,7 @@ type PayQueryResp struct {
 	OpenID         string `xml:"openid"`                // 用户标识
 	IsSubscribe    string `xml:"is_subscribe"`          // 是否关注公众账号
 	TradeType      string `xml:"trade_type"`            // 交易类型
-	TradeState     string `xml:"tradeState"`            // 交易状态
+	TradeState     string `xml:"trade_state"`           // 交易状态
 	BankType       string `xml:"bank_type"`             // 付款银行
 	FeeType        string `xml:"fee_type"`              // 货币类型
 	TotalFee       string `xml:"total_fee"`             // 总金额

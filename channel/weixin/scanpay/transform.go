@@ -52,7 +52,7 @@ func init() {
 	weixinRespCodeMap["REFUND"] = &respCodeMap{"REFUND", "转入退款", "没问题", "54", "转入退款"}
 }
 
-func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string) (status, msg string) {
+func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string, tradeState ...string) (status, msg string) {
 
 	// 描述长度限制
 	returnMsgRune := []rune(returnMsg)
@@ -69,9 +69,12 @@ func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string) (s
 		return cilError.Respcd, returnMsg
 	}
 
-	// 如果结果正确，返回代码 00，消息为交易成功
+	// 如果结果正确，并且交易状态位空
 	if resultCode == "SUCCESS" {
-		return success.Respcd, success.ErrorDetail
+		if len(tradeState) == 0 {
+			return success.Respcd, success.ErrorDetail
+		}
+		errCode = tradeState[0]
 	}
 
 	if m, ok := weixinRespCodeMap[errCode]; ok {
