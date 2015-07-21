@@ -112,7 +112,7 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 	}
 
 	ret.ErrorDetail = alipay.DetailErrorDes
-	ret.Respcd = queryCd(query, ret.ChanRespCode)
+	ret.Respcd = queryCd(ret.ChanRespCode)
 }
 
 // refundHandle 退款处理
