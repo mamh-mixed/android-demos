@@ -6,7 +6,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -73,14 +72,8 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Busicd:     req.Busicd,
 		Inscd:      req.Inscd,
 		Terminalid: req.Terminalid,
+		TransAmt:   req.IntTxamt,
 	}
-
-	// 金额单位转换 txamt:000000000010分
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		return logicErrorHandler(t, "DATA_ERROR")
-	}
-	t.TransAmt = int64(f)
 
 	// 根据扫码Id判断走哪个渠道
 	if req.Chcd == "" {
@@ -136,14 +129,8 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Inscd:      req.Inscd,
 		ChanCode:   req.Chcd,
 		Terminalid: req.Terminalid,
+		TransAmt:   req.IntTxamt,
 	}
-
-	// 金额单位转换
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		return logicErrorHandler(t, "DATA_ERROR")
-	}
-	t.TransAmt = int64(f)
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -189,15 +176,8 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Inscd:        req.Inscd,
 		ChanCode:     req.Chcd,
 		Terminalid:   req.Terminalid,
+		TransAmt:     req.IntTxamt,
 	}
-
-	// 金额单位转换
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		log.Errorf("转换金额错误，txamt = %s", req.Txamt)
-		return logicErrorHandler(refund, "DATA_ERROR")
-	}
-	refund.TransAmt = int64(f)
 
 	// 判断是否存在该订单
 	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)

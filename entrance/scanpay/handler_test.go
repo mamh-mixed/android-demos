@@ -16,7 +16,7 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "201507151103002",
-		ScanCodeId: "130492842833571121",
+		ScanCodeId: "230492842833571121",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
@@ -66,7 +66,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayEnquiry
+	scanPay = scanPayBarcodePay
 )
 
 func TestScanPay(t *testing.T) {

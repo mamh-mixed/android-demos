@@ -70,6 +70,7 @@ type ScanPayRequest struct {
 	ActTxamt    string `json:"-"` //  实际交易金额 不同渠道单位不同
 	ChanMerId   string `json:"-"` // 渠道商户Id
 	SignCert    string `json:"-"` // 可能表示md5key等
+	IntTxamt    int64  `json:"-"`
 }
 
 // ScanPayResponse 下单支付返回体
