@@ -8,7 +8,7 @@ import (
 )
 
 func TestProcessBarcodePay(t *testing.T) {
-	m := &model.ScanPay{
+	m := &model.ScanPayRequest{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
 		SubMchId:   "1247075201",         // 子商户
@@ -34,7 +34,7 @@ func TestProcessBarcodePay(t *testing.T) {
 }
 
 func TestProcessEnquiry(t *testing.T) {
-	m := &model.ScanPay{
+	m := &model.ScanPayRequest{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
 		SubMchId:   "1247075201",
@@ -60,7 +60,7 @@ func TestProcessEnquiry(t *testing.T) {
 }
 
 func TestProcessClose(t *testing.T) {
-	m := &model.ScanPay{
+	m := &model.ScanPayRequest{
 		AppID:        "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:    "1236593202",         // 商户号
 		SubMchId:     "1247075201",
