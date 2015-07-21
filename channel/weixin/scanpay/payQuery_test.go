@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -14,7 +14,7 @@ func TestPayQuery(t *testing.T) {
 		Appid:    "wx25ac886b6dac7dd2", // 公众账号ID
 		MchID:    "1236593202",         // 商户号
 		SubMchId: "1247075201",         // 子商户号（文档没有该字段）
-		NonceStr: tools.Nonce(32),      // 随机字符串
+		NonceStr: util.Nonce(32),       // 随机字符串
 		Sign:     "",                   // 签名
 
 		WeixinMD5Key: "12sdffjjguddddd2widousldadi9o0i1",
@@ -36,12 +36,12 @@ func TestPayQuery(t *testing.T) {
 
 func TestScanPayQueryGenSign(t *testing.T) {
 	d := &PayQueryReq{
-		Appid:         "wx25ac886b6dac7dd2", // 公众账号ID
-		MchID:         "1236593202",         // 商户号
-		SubMchId:      "1247075201",
+		Appid:         "wx25ac886b6dac7dd2",           // 公众账号ID
+		MchID:         "1236593202",                   // 商户号
+		SubMchId:      "1247075201",                   // 文档没有
 		TransactionId: "1010070115201506230291458545", // 微信支付订单号
 		OutTradeNo:    "",                             // 商户订单号
-		NonceStr:      tools.Nonce(32),                // 商品详情
+		NonceStr:      util.Nonce(32),                 // 商品详情
 		Sign:          "",
 		WeixinMD5Key:  "12sdffjjguddddd2widousldadi9o0i1",
 	}
