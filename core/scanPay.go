@@ -174,7 +174,6 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransType:    model.RefundTrans,
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
-		ChanCode:     req.Chcd,
 		Terminalid:   req.Terminalid,
 		TransAmt:     req.IntTxamt,
 	}
@@ -186,10 +185,15 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	refund.ChanCode = orig.ChanCode
 
-	// 退款只能隔天退
-	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-		return logicErrorHandler(refund, "REFUND_TIME_ERROR")
+	// 上送渠道号与原渠道号不一致
+	if req.Chcd != "" && req.Chcd != orig.ChanCode {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
+
+	// 退款只能隔天退
+	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+	// 	return logicErrorHandler(refund, "REFUND_TIME_ERROR")
+	// }
 
 	// 是否是支付交易
 	if orig.TransType != model.PayTrans {

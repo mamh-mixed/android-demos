@@ -155,7 +155,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 
 	// 特殊处理
 	// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
-	if t.ChanCode == "ALP" && t.Busicd == "paut" && ret.ErrorDetail == "TRADE_NOT_EXIST" {
+	if t.ChanCode == "ALP" && t.Busicd == model.Paut && ret.ChanRespCode == "TRADE_NOT_EXIST" {
 		inporcess := mongo.OffLineRespCd("INPROCESS")
 		ret.Respcd = inporcess.Respcd
 		ret.ErrorDetail = inporcess.ErrorDetail

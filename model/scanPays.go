@@ -257,11 +257,12 @@ type SpChanCSV struct {
 
 // ScanPayCSV 扫码支付应答码
 type ScanPayCSV struct {
-	RespCode      string `bson:"respCode"`
-	RespMsg       string `bson:"respMsg"`
-	ISO8583Code   string `bson:"ISO8583Code"`
-	ISO8583Msg    string `bson:"ISO8583Msg"`
-	IsUseChanDesc bool   `bson:"isUseChanDesc"`
+	RespCode    string `bson:"respCode"`
+	RespMsg     string `bson:"respMsg"`
+	ISO8583Code string `bson:"ISO8583Code"`
+	ISO8583Msg  string `bson:"ISO8583Msg"`
+	IsUseISO    bool   `bson:"isUseISO"`
+	ErrorCode   string `bson:"errorCode"`
 
 	Alp []*SpChanCSV `bson:"alp,omitempty"`
 	Wxp []*SpChanCSV `bson:"wxp,omitempty"`

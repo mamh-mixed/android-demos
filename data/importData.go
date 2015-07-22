@@ -92,6 +92,25 @@ func AddCardBinFromCSV(path string, rebuild bool) error {
 	return nil
 }
 
+// AddScanPayFromCSV 从csv文件里读取应答码表，若存在的跳过，若新增的便添加
+func AddScanPayFromCSV(path string) error {
+
+	data, err := readScanPayCSV(path)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range data {
+		_, err := mongo.ScanPayRespCol.FindOne(v.ISO8583Code)
+		if err != nil {
+			// fmt.Printf("New Add: %+v \n", v)
+			mongo.ScanPayRespCol.Add(v)
+		}
+	}
+	fmt.Printf("\nImported ScanPayRespCode %d records\n", len(data))
+	return nil
+}
+
 // AddSysCodeFromCSV 从csv文件里读取应答码表，若存在的跳过，若新增的便添加
 func AddSysCodeFromCSV(path string) error {
 
@@ -109,6 +128,54 @@ func AddSysCodeFromCSV(path string) error {
 		}
 	}
 	fmt.Printf("\nImported RespCode %d records\n", len(data))
+	return nil
+}
+
+// AddSpChanCodeFromScv 增加扫码渠道应答码
+func AddSpChanCodeFromScv(channel, path string) error {
+
+	data, err := readSpChanCSV(path)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range data {
+		// fmt.Printf("%+v \n", v)
+		q, err := mongo.ScanPayRespCol.FindOne(v.ISOCode)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		// 不保存 ISOCode,ISOMsg 两个字段
+		v.ISOCode = ""
+		v.ISOMsg = ""
+		switch {
+		case channel == "wxp":
+			for i, wxp := range q.Wxp {
+				if wxp.Code == v.Code && wxp.Busicd == v.Busicd {
+					// delete
+					q.Wxp = append(q.Wxp[:i], q.Wxp[i+1:]...)
+				}
+			}
+			q.Wxp = append(q.Wxp, v)
+		case channel == "alp":
+			// 过滤重复的
+			for i, alp := range q.Alp {
+				if alp.Code == v.Code && alp.Busicd == v.Busicd {
+					// delete
+					q.Alp = append(q.Alp[:i], q.Alp[i+1:]...)
+				}
+			}
+			q.Alp = append(q.Alp, v)
+		default:
+			// ...更多渠道
+		}
+		// fmt.Printf("%+v \n", q)
+		err = mongo.ScanPayRespCol.Update(q)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	return nil
 }
 
@@ -179,6 +246,30 @@ func readSettSchemeCdCSV(path string) ([]*model.SettSchemeCd, error) {
 	return qs, nil
 }
 
+// readScanPayCSV 读取扫码应答码csv文件
+// 并持久化
+func readScanPayCSV(path string) ([]*model.ScanPayCSV, error) {
+
+	data, err := readCSV(path)
+	if err != nil {
+		return nil, err
+	}
+	qs := make([]*model.ScanPayCSV, 0, len(data))
+
+	// 根据数据规则遍历
+	for i, each := range data {
+		if i == 0 {
+			continue
+		}
+		isUseIso, _ := strconv.ParseBool(each[3])
+		q := &model.ScanPayCSV{ISO8583Code: each[0], ISO8583Msg: each[1], ErrorCode: each[2], IsUseISO: isUseIso}
+		// fmt.Printf("%+v \n", q)
+		qs = append(qs, q)
+	}
+	// fmt.Println(len(qs))
+	return qs, nil
+}
+
 // ReadQuickpayCSV 读取系统应答码csv文件
 // 并持久化
 func readQuickpayCSV(path string) ([]*model.QuickpayCSV, error) {
@@ -199,6 +290,26 @@ func readQuickpayCSV(path string) ([]*model.QuickpayCSV, error) {
 		qs = append(qs, q)
 	}
 	// fmt.Println(len(qs))
+	return qs, nil
+}
+
+// readSpChanCSV 读取扫码渠道应答码文件
+func readSpChanCSV(path string) ([]*model.SpChanCSV, error) {
+	data, err := readCSV(path)
+	if err != nil {
+		return nil, err
+	}
+	qs := make([]*model.SpChanCSV, 0, len(data))
+
+	// 根据渠道应答码文件规则遍历
+	for i, each := range data {
+		if i == 0 {
+			continue
+		}
+		q := &model.SpChanCSV{each[0], each[1], each[2], each[3], ""}
+		// fmt.Printf("%+v \n", q)
+		qs = append(qs, q)
+	}
 	return qs, nil
 }
 

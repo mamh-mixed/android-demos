@@ -7,15 +7,37 @@ import (
 	// "github.com/omigo/log"
 )
 
-func TestAddScanPayRespFromCSV(t *testing.T) {
+// 导入扫码渠道应答码，同quickpay
+func xTestAddSpChanFromCSV(t *testing.T) {
 
-	data, err := readQuickpayCSV("respCode_scanpay.csv")
+	// 导入微信
+	err := AddSpChanCodeFromScv("wxp", "respCode_wxp.csv")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(len(data))
+	// 导入支付宝
+	err = AddSpChanCodeFromScv("alp", "respCode_alp.csv")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log("SUCCESS")
+}
+
+// 导入scanPay应答码，同quickpay
+func xTestAddScanPayRespFromCSV(t *testing.T) {
+
+	err := AddScanPayFromCSV("respCode_scanpay.csv")
+	// data, err := readScanPayCSV("respCode_scanpay.csv")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log("SUCCESS")
 }
 
 // 导入系统应答码，存在时跳过，不存在插入

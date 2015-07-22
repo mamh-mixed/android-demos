@@ -116,3 +116,7 @@ func TestProcessCancel(t *testing.T) {
 		})
 	})
 }
+
+func TestDmf2(t *testing.T) {
+	ProcessPreOrder()
+}

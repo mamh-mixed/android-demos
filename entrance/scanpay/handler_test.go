@@ -16,9 +16,9 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "201507151103002",
-		ScanCodeId: "230492842833571121",
+		ScanCodeId: "282870143941230525",
 		Inscd:      "CIL00002",
-		Txamt:      "000000000001",
+		Txamt:      "000000000003",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
@@ -31,30 +31,31 @@ var (
 		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "WXP",
+		Chcd:      "ALP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPayRequest{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1437450977711",
+		OrigOrderNum: "1437466708733",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
 		Busicd:       "REFD",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1436757857954",
+		OrigOrderNum: "1437469939806",
 		Inscd:        "CIL00002",
 		Txamt:        "000000000001",
+		Chcd:         "WXP",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPayRequest{
 		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1436757857954",
+		OrigOrderNum: "14374664739380",
 		Inscd:        "CIL00002",
 	}
 	// 关单
@@ -66,7 +67,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayBarcodePay
+	scanPay = scanPayRefund
 )
 
 func TestScanPay(t *testing.T) {

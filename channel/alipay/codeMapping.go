@@ -89,7 +89,6 @@ func queryCd(code string) string {
 	case "TRADE_PENDING":
 		return "01"
 	case "TRADE_FINISHED":
-		// TODO check
 		return "00"
 	// 8.1业务错误码
 	case "TRADE_NOT_EXIST":

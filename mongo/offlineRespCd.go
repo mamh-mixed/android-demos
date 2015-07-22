@@ -123,7 +123,7 @@ func (c *scanPayRespCollection) Get(errorCode string) (resp *model.ScanPayRespCo
 }
 
 // GetByAlp 由支付宝应答得到Resp对象
-func (c *scanPayRespCollection) GetByAlp(code, busicd string) (resp *model.ScanPayRespCode) {
+func (c *scanPayRespCollection) GetByAlp(code string) (resp *model.ScanPayRespCode) {
 	resp = &model.ScanPayRespCode{}
 	err := database.C(c.name).Find(bson.M{"alp.code": code}).One(resp)
 	if err != nil {
@@ -137,10 +137,28 @@ func (c *scanPayRespCollection) GetByAlp(code, busicd string) (resp *model.ScanP
 // GetByWxp 由微信应答得到Resp对象
 func (c *scanPayRespCollection) GetByWxp(code, busicd string) (resp *model.ScanPayRespCode) {
 	resp = &model.ScanPayRespCode{}
-	err := database.C(c.name).Find(bson.M{"wxp.code": code}).One(resp)
+	err := database.C(c.name).Find(bson.M{"wxp.code": code, "wxp.busicd": busicd}).One(resp)
 	if err != nil {
 		log.Errorf("can not find scanPayResp for %s: %s", code, err)
 		return defaultResp
 	}
 	return resp
+}
+
+/* only use for import respCode */
+
+func (c *scanPayRespCollection) Add(r *model.ScanPayCSV) error {
+	err := database.C(c.name).Insert(r)
+	return err
+}
+
+func (c *scanPayRespCollection) FindOne(code string) (*model.ScanPayCSV, error) {
+	q := new(model.ScanPayCSV)
+	err := database.C(c.name).Find(bson.M{"ISO8583Code": code}).One(q)
+	return q, err
+}
+
+func (c *scanPayRespCollection) Update(r *model.ScanPayCSV) error {
+	err := database.C(c.name).Update(bson.M{"ISO8583Code": r.ISO8583Code}, r)
+	return err
 }
