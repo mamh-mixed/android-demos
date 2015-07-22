@@ -5,6 +5,8 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestProcessBarcodePay(t *testing.T) {
@@ -26,11 +28,25 @@ func TestProcessBarcodePay(t *testing.T) {
 
 	ret, err := DefaultWeixinScanPay.ProcessBarcodePay(m)
 
+	Convey("应该不出现错误", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	Convey("应该有响应信息", t, func() {
+		So(ret, ShouldNotBeNil)
+	})
+
+	Convey("应答码应该是14", t, func() {
+		So(ret.Respcd, ShouldEqual, "14")
+	})
+
+	m.ScanCodeId = "130502284209256489"
+	ret, err = DefaultWeixinScanPay.ProcessBarcodePay(m)
+	Convey("应答码应该是00", t, func() {
+		So(ret.Respcd, ShouldEqual, "00")
+	})
 	t.Logf("%#v", ret)
 
-	if err != nil {
-		t.Error(err)
-	}
 }
 
 func TestProcessEnquiry(t *testing.T) {
