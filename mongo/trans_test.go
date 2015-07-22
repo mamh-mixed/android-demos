@@ -26,7 +26,7 @@ func TestFindTransQuery(t *testing.T) {
 
 	t.Logf("total : %d", total)
 	for _, v := range transInfo {
-		t.Logf("%s,%s", v.OrderNum, v.TransTime)
+		t.Logf("%s,%s", v.OrderNum, v.CreateTime)
 	}
 
 	// t.Logf("%d", len(transInfo))

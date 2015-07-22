@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
 )
@@ -15,7 +15,7 @@ func TestPay(t *testing.T) {
 		Appid:    "wx25ac886b6dac7dd2", // 公众账号ID
 		MchID:    "1236593202",         // 商户号
 		SubMchId: "1247075201",         // 子商户号（文档没有该字段）
-		NonceStr: tools.Nonce(32),      // 随机字符串
+		NonceStr: util.Nonce(32),       // 随机字符串
 		Sign:     "",                   // 签名
 
 		WeixinMD5Key: "12sdffjjguddddd2widousldadi9o0i1",
@@ -24,10 +24,10 @@ func TestPay(t *testing.T) {
 		Body:           "product desc",       // 商品描述
 		Detail:         "",                   // 商品详情
 		Attach:         "",                   // 附加数据
-		OutTradeNo:     tools.SerialNumber(), // 商户订单号
+		OutTradeNo:     util.SerialNumber(),  // 商户订单号
 		TotalFee:       "3",                  // 总金额
 		FeeType:        "",                   // 货币类型
-		SpbillCreateIP: tools.LocalIP,        // 终端IP
+		SpbillCreateIP: util.LocalIP,         // 终端IP
 		GoodsGag:       "",                   // 商品标记
 		AuthCode:       "130413885648248844", // 授权码
 	}

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/tools"
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func TestProcessBarcodePay(t *testing.T) {
@@ -16,7 +16,7 @@ func TestProcessBarcodePay(t *testing.T) {
 		Subject:    "被扫支付测试",             // 商品描述
 		GoodsInfo:  "",                   // 商品详情
 		Attach:     "订单额外描述",             // 附加数据
-		OrderNum:   tools.Millisecond(),  // 商户订单号
+		OrderNum:   util.Millisecond(),   // 商户订单号
 		ActTxamt:   "1",                  // 总金额
 		CurrType:   "CNY",                // 货币类型
 		GoodsGag:   "",                   // 商品标记

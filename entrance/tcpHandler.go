@@ -35,7 +35,6 @@ func ListenScanPay() {
 }
 
 func handleConnection(conn net.Conn) {
-
 	log.Debugf("%s connected", conn.RemoteAddr())
 
 	for {
