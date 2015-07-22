@@ -1,49 +1,41 @@
 package scanpay
 
 import (
-	"crypto/rsa"
 	"encoding/json"
+	"net/url"
 )
+
+// https://app.alipay.com/market/document.htm?name=saomazhifu#page-16
+// 应用场景实例
+// 调用支付宝支付接口时未返回明确的返回结果(如由于系统错误或网络异常导 致无返回结果)，可使用本接口将交易进行撤销。
+// 如果用户支付失败，支付宝会将此订单关闭；如果用户支付成功，支付宝会将 支付的资金退还给用户。
 
 // CancelReq 撤销订单
 type CancelReq struct {
 	CommonParams
-	Subject    string `json:"subject" validate:"nonzero"`
+
 	OutTradeNo string `json:"out_trade_no" validate:"nonzero"` // 原支付请求的商户订单号
 }
 
-// NewCancelReq 建议调用这个构造函数，以免漏掉默认参数
-func NewCancelReq(appID string, privateKey *rsa.PrivateKey) *CancelReq {
-	return &CancelReq{
-		CommonParams: NewCommonParams("alipay.trade.cancel", appID, privateKey),
-	}
-}
-
-// CancelBody 撤销订单报文
-type CancelBody struct {
-	Sign string          `json:"sign"`                         // 签名
-	Raw  json.RawMessage `json:"alipay_trade_cancel_response"` // 返回消息体
-}
-
-// GetSign 撤销订单报文签名
-func (d *CancelBody) GetSign() string {
-	return d.Sign
-}
-
-// GetRaw 撤销订单报文内容
-func (d *CancelBody) GetRaw() []byte {
-	return []byte(d.Raw)
+// Values 组装公共参数
+func (c *CancelReq) Values() (v url.Values) {
+	c.CommonParams.Method = "alipay.trade.cancel"
+	return c.CommonParams.Values()
 }
 
 // CancelResp 撤销订单
 type CancelResp struct {
-	Code       string `json:"code"`                   // 结果码
-	Msg        string `json:"msg"`                    // 结果码描述
-	SubCode    string `json:"sub_code,omitempty"`     // 错误子代码
-	SubMsg     string `json:"sub_msg,omitempty" `     // 错误子代码描述
+	CommonBody
+
+	Raw json.RawMessage `json:"alipay_trade_cancel_response"` // 返回消息体
+
 	TradeNo    string `json:"trade_no,omitempty"`     // 支付宝交易号
-	OutTradeNo string `json:"out_trade_no,omitempty"` // 商户订单号
-	RetryFlag  string `json:"retry_flag,omitempty"`   // 商户订单号
-	Action     string `json:"action,omitempty"`       // 商户订单号
-	Close      string `json:"close,omitempty"`        // 商户订单号
+	OutTradeNo string `json:"out_trade_no,omitempty"` // 原支付请求的商户订单号
+	RetryFlag  string `json:"retry_flag,omitempty"`   // 撤销已成功，无需重试
+	Action     string `json:"action,omitempty"`       // 撤销执行的动作，close：直接撤销，无退款；refund：撤销，有退款。
+}
+
+// GetRaw 报文内容
+func (c *CancelResp) GetRaw() []byte {
+	return []byte(c.Raw)
 }

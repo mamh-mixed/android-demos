@@ -12,21 +12,22 @@ import (
 	"github.com/omigo/log"
 )
 
-var openAPIURL = goconf.Config.AlipayScanPay.OpenAPIURL + "?charset=utf-8"
+var openAPIURL = goconf.Config.AlipayScanPay.OpenAPIURL + "?charset=" + CharsetUTF8
 
-func sendRequest(req BaseReq, body BaseBody, resp BaseResp) error {
+func sendRequest(req BaseReq, resp BaseResp) error {
 	v, err := prepareData(req)
 	if err != nil {
 		return err
 	}
+	log.Infof(">>> to alipay message: %s", v.Encode())
 
-	log.Infof("to alipay message: %s", v.Encode())
-	ret, err := send(v)
+	body, err := send(v)
 	if err != nil {
 		return err
 	}
+	log.Infof("<<< alipay return message: %s", string(body))
 
-	err = processResponseBody(ret, body, resp)
+	err = parseBody(body, resp)
 	if err != nil {
 		return err
 	}
@@ -62,7 +63,7 @@ func prepareData(d BaseReq) (v url.Values, err error) {
 	}
 
 	// 计算签名
-	sign, err := Sha1WithRsa(buf.Bytes(), d.PrivateKey())
+	sign, err := Sha1WithRsa(buf.Bytes(), d.GetPrivateKey())
 	if err != nil {
 		log.Errorf("sign error: %s", err)
 		return nil, err
@@ -87,30 +88,29 @@ func send(v url.Values) (body []byte, err error) {
 		log.Errorf("unable to read from res %s", err)
 		return nil, err
 	}
-	log.Infof("alipay return message: %s", string(body))
 
 	return body, nil
 }
 
-func processResponseBody(data []byte, body BaseBody, resp BaseResp) error {
+func parseBody(data []byte, resp BaseResp) error {
 	// 解析第一层报文，以便验签
-	err := json.Unmarshal(data, body)
+	err := json.Unmarshal(data, resp)
 	if err != nil {
 		log.Errorf("json(%s) to struct error: %s", string(data), err)
 		return err
 	}
 
 	// 验签
-	err = Verify(body.GetRaw(), body.GetSign())
+	err = Verify(resp.GetRaw(), resp.GetSign())
 	if err != nil {
-		log.Errorf("verify sign error, raw=%s, sing=%s: %s", body.GetRaw(), body.GetSign(), err)
+		log.Errorf("verify sign error, raw=%s, sing=%s: %s", resp.GetRaw(), resp.GetSign(), err)
 		return err
 	}
 
 	// 解析第二层报文，得到报文内容
-	err = json.Unmarshal(body.GetRaw(), resp)
+	err = json.Unmarshal(resp.GetRaw(), resp)
 	if err != nil {
-		log.Errorf("unmarshal json(%s) error: %s", body.GetRaw(), err)
+		log.Errorf("unmarshal json(%s) error: %s", resp.GetRaw(), err)
 		return err
 	}
 	return nil

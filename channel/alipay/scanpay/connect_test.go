@@ -25,8 +25,13 @@ yce5HEyuEKr0BS1+ZTYBmXMNHV/5VclzO85ez9wXxd8CNrfheu9gH0woz1K0dOHE
 `
 
 func TestPrepareData(t *testing.T) {
-	d := NewCancelReq("2015051100069108", LoadPrivateKey([]byte(privateKeyPem)))
-	d.OutTradeNo = "14141341234"
+	d := &CancelReq{
+		CommonParams: CommonParams{
+			AppID:      "2015051100069108",
+			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
+		},
+		OutTradeNo: "14141341234",
+	}
 
 	v, err := prepareData(d)
 	if err != nil {
