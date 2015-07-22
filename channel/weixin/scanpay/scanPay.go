@@ -44,6 +44,18 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		return nil, err
 	}
 
+	// TODO 如果通信标识为失败，一般‘签名失败’，‘参数格式校验失败’都会返回失败的通信标识
+	if p.ReturnCode == "FAIL" {
+		// TODO
+	}
+
+	// TODO 如果业务结果标识成功，直接返回给前台成功的应答码
+	if p.ResultCode == "SUCCESS" {
+
+	}
+
+	// TODO 业务结果失败，则根据具体的错误码转换对应的应答码
+
 	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
