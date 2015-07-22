@@ -52,6 +52,10 @@ func init() {
 	weixinRespCodeMap["REFUND"] = &respCodeMap{"REFUND", "转入退款", "没问题", "54", "转入退款"}
 }
 
+func transformX(tranType, errCode string) {
+
+}
+
 func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string, tradeState ...string) (status, msg string) {
 
 	// 描述长度限制
