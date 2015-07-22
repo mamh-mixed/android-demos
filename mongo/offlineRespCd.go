@@ -90,7 +90,7 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 
 var ScanPayRespCol = &scanPayRespCollection{"respCode.sp"}
 var OffLineCdCol map[string]string
-var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答", false, "UNKNOWN"}
+var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答,请联系管理员", true, "UNKNOWN"}
 
 type scanPayRespCollection struct {
 	name string

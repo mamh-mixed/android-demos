@@ -143,7 +143,7 @@ func AddSpChanCodeFromScv(channel, path string) error {
 		// fmt.Printf("%+v \n", v)
 		q, err := mongo.ScanPayRespCol.FindOne(v.ISOCode)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("error: %s, code: %s, errorData: %+v \n", err, q.ISO8583Code, v)
 			continue
 		}
 		// 不保存 ISOCode,ISOMsg 两个字段
@@ -173,7 +173,7 @@ func AddSpChanCodeFromScv(channel, path string) error {
 		// fmt.Printf("%+v \n", q)
 		err = mongo.ScanPayRespCol.Update(q)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("error: %s, code: %s", err, q.ISO8583Code)
 		}
 	}
 	return nil

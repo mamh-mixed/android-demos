@@ -16,9 +16,9 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "201507151103002",
-		ScanCodeId: "282870143941230525",
+		ScanCodeId: "289426590597995160",
 		Inscd:      "CIL00002",
-		Txamt:      "000000000003",
+		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
@@ -28,7 +28,7 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		Inscd:     "CIL00002",
-		Txamt:     "000000000001",
+		Txamt:     "0000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
 		Chcd:      "ALP",
@@ -67,7 +67,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayRefund
+	scanPay = scanPayBarcodePay
 )
 
 func TestScanPay(t *testing.T) {

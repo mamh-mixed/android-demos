@@ -10,10 +10,13 @@ import (
 	"time"
 )
 
+// 使用8583应答
 var (
-	orderClosed = mongo.OffLineRespCd("ORDER_CLOSED")
-	success     = mongo.OffLineRespCd("SUCCESS")
-	inprocess   = mongo.OffLineRespCd("INPROCESS")
+	orderClosed = mongo.ScanPayRespCol.Get("ORDER_CLOSED").ISO8583Code
+	inprocess   = mongo.ScanPayRespCol.Get("INPROCESS").ISO8583Code
+	successResp = mongo.ScanPayRespCol.Get("SUCCESS")
+	successCode = successResp.ISO8583Code
+	successMsg  = successResp.ISO8583Msg
 )
 
 // TransQuery 交易查询
@@ -235,7 +238,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret = adaptor.ProcessRefund(orig, refund, req)
 
 	// 更新原交易状态
-	if ret.Respcd == success.Respcd {
+	if ret.Respcd == successCode {
 		mongo.SpTransColl.Update(orig)
 	}
 
@@ -342,13 +345,13 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	default:
 		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
 		orig.TransStatus = model.TransClosed
-		orig.RespCode = orderClosed.Respcd // 订单已关闭或取消
+		orig.RespCode = orderClosed // 订单已关闭或取消
 	}
 
 	ret = adaptor.ProcessCancel(orig, cancel, req)
 
 	// 原交易状态更新
-	if ret.Respcd == success.Respcd {
+	if ret.Respcd == successCode {
 		mongo.SpTransColl.Update(orig)
 	}
 
@@ -439,7 +442,10 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 					ret = adaptor.ProcessWxpClose(orig, closed, req)
 				} else {
 					// 系统落地,异步执行关单
-					ret = success
+					ret = &model.ScanPayResponse{
+						Respcd:      successCode,
+						ErrorDetail: successMsg,
+					}
 					time.AfterFunc(5*time.Minute-interval, func() {
 						adaptor.ProcessWxpClose(orig, closed, req)
 					})
@@ -454,9 +460,9 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 成功应答
-	if ret.Respcd == success.Respcd {
+	if ret.Respcd == successCode {
 		orig.TransStatus = model.TransClosed
-		orig.RespCode = orderClosed.Respcd // 订单已关闭或取消
+		orig.RespCode = orderClosed // 订单已关闭或取消
 		// 更新原交易信息
 		mongo.SpTransColl.Update(orig)
 	}
@@ -469,11 +475,18 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // logicErrorHandler 逻辑错误处理
 func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
-	ret := mongo.OffLineRespCd(errorCode)
-	t.RespCode = ret.Respcd
+
+	spRespCol := mongo.ScanPayRespCol.Get(errorCode)
+
+	// 使用iso应答
+	t.RespCode = spRespCol.ISO8583Code
 	t.ErrorCode = errorCode
 	mongo.SpTransColl.Add(t)
-	return ret
+
+	return &model.ScanPayResponse{
+		Respcd:      spRespCol.ISO8583Code,
+		ErrorDetail: spRespCol.ISO8583Msg,
+	}
 }
 
 // updateTrans 更新交易信息
@@ -489,9 +502,9 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
-	case success.Respcd:
+	case successCode:
 		t.TransStatus = model.TransSuccess
-	case inprocess.Respcd:
+	case inprocess:
 		t.TransStatus = model.TransHandling
 	default:
 		t.TransStatus = model.TransFail
