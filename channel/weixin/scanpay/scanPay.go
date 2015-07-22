@@ -81,7 +81,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		return nil, err
 	}
 
-	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode, p.ErrCodeDes, p.TradeState)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C

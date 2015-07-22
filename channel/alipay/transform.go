@@ -103,7 +103,6 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		// 计算折扣
 		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
 		ret.ChanRespCode = alipay.TradeStatus
-		alipay.DetailErrorDes = success.ErrorDetail
 	case "FAIL", "PROCESS_EXCEPTION":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
@@ -111,8 +110,8 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ChanRespCode = alipay.ResultCode
 	}
 
-	ret.ErrorDetail = alipay.DetailErrorDes
-	ret.Respcd = queryCd(query, ret.ChanRespCode)
+	ret.Respcd = queryCd(ret.ChanRespCode)
+	ret.ErrorDetail = mongo.OffLineCdCol[ret.Respcd]
 }
 
 // refundHandle 退款处理

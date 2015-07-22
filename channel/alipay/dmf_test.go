@@ -11,17 +11,17 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-var pay = &model.ScanPay{
+var pay = &model.ScanPayRequest{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   util.SerialNumber(),
 	SignCert:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ScanCodeId: "280192311263062742",
+	ScanCodeId: "281095002166152011",
 	ActTxamt:   "0.01",
 	Subject:    "讯联测试",
 	ChanMerId:  "2088811767473826",
 }
 
-var prePay = &model.ScanPay{
+var prePay = &model.ScanPayRequest{
 	GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 	OrderNum:  util.Millisecond(),
 	SignCert:  "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
@@ -30,22 +30,22 @@ var prePay = &model.ScanPay{
 	ChanMerId: "2088811767473826",
 }
 
-var cancelPay = &model.ScanPay{
+var cancelPay = &model.ScanPayRequest{
 	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	Subject:      "讯联测试",
 	ChanMerId:    "2088811767473826",
 	OrigOrderNum: "1435564308178",
 }
 
-var enquiry = &model.ScanPay{
-	OrderNum:  "1435564308178",
+var enquiry = &model.ScanPayRequest{
+	OrderNum:  "e148a25a84f14024511c5f3cde5d4594",
 	SignCert:  "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ChanMerId: "2088811767473826",
 }
 
-var refundPay = &model.ScanPay{
+var refundPay = &model.ScanPayRequest{
 	OrderNum:     util.Millisecond(),
-	OrigOrderNum: "1435564111647",
+	OrigOrderNum: "e148a25a84f14024511c5f3cde5d4594",
 	SignCert:     "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
 	ChanMerId:    "2088811767473826",
 	ActTxamt:     "0.01",

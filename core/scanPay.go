@@ -6,7 +6,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -73,14 +72,8 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Busicd:     req.Busicd,
 		Inscd:      req.Inscd,
 		Terminalid: req.Terminalid,
+		TransAmt:   req.IntTxamt,
 	}
-
-	// 金额单位转换 txamt:000000000010分
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		return logicErrorHandler(t, "DATA_ERROR")
-	}
-	t.TransAmt = int64(f)
 
 	// 根据扫码Id判断走哪个渠道
 	if req.Chcd == "" {
@@ -136,14 +129,8 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Inscd:      req.Inscd,
 		ChanCode:   req.Chcd,
 		Terminalid: req.Terminalid,
+		TransAmt:   req.IntTxamt,
 	}
-
-	// 金额单位转换
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		return logicErrorHandler(t, "DATA_ERROR")
-	}
-	t.TransAmt = int64(f)
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -187,17 +174,9 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransType:    model.RefundTrans,
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
-		ChanCode:     req.Chcd,
 		Terminalid:   req.Terminalid,
+		TransAmt:     req.IntTxamt,
 	}
-
-	// 金额单位转换
-	f, err := strconv.ParseFloat(req.Txamt, 64)
-	if err != nil {
-		log.Errorf("转换金额错误，txamt = %s", req.Txamt)
-		return logicErrorHandler(refund, "DATA_ERROR")
-	}
-	refund.TransAmt = int64(f)
 
 	// 判断是否存在该订单
 	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
@@ -206,10 +185,15 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	refund.ChanCode = orig.ChanCode
 
-	// 退款只能隔天退
-	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-		return logicErrorHandler(refund, "REFUND_TIME_ERROR")
+	// 上送渠道号与原渠道号不一致
+	if req.Chcd != "" && req.Chcd != orig.ChanCode {
+		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
+
+	// 退款只能隔天退
+	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+	// 	return logicErrorHandler(refund, "REFUND_TIME_ERROR")
+	// }
 
 	// 是否是支付交易
 	if orig.TransType != model.PayTrans {

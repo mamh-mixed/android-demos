@@ -21,14 +21,15 @@ func TestGetRespCode(t *testing.T) {
 
 func TestGetRespCodeByCfca(t *testing.T) {
 
-	ret := RespCodeColl.GetByCfca(cfcacode)
+	// ret := RespCodeColl.GetByCfca(cfcacode)
+	ret := ScanPayRespCol.GetByWxp("SYSTEMERROR", "prePay")
 
 	if ret == nil {
 		t.Error("cfca code not exist")
 	}
 
-	expected := "金额过大"
-	if ret.RespMsg != expected {
+	expected := "外部系统错误"
+	if ret.ISO8583Msg != expected {
 		t.Errorf("respCode %s message must be `%s`, but get %s", cfcacode, expected, ret.RespMsg)
 	}
 }

@@ -5,6 +5,12 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
+	"strconv"
+)
+
+const (
+	minTxamt = 0
+	maxTxamt = 1e10 - 1
 )
 
 // validateBarcodePay 验证扫码下单的参数
@@ -19,6 +25,10 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
 
+	if matched, _ := regexp.MatchString(`^0{12}$`, req.Txamt); matched {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
@@ -26,6 +36,19 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	if matched, _ := regexp.MatchString(`^\d{14,24}$`, req.ScanCodeId); !matched {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
+
+	// 转换金额
+	txamt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	if err != nil {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
+	// 金额范围
+	if txamt == minTxamt || txamt > maxTxamt {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
+	req.IntTxamt = txamt
 
 	return
 }
@@ -38,7 +61,7 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 	if req.OrderNum == "" || req.Chcd == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
-	// TODO ..
+
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
@@ -50,6 +73,20 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
+
+	// 转换金额
+	txamt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	if err != nil {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
+	// 金额范围
+	if txamt == minTxamt || txamt > maxTxamt {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
+	req.IntTxamt = txamt
+
 	return
 }
 
@@ -85,6 +122,19 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
 		return mongo.OffLineRespCd("DATA_ERROR")
 	}
+
+	// 转换金额
+	txamt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	if err != nil {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
+	// 金额范围
+	if txamt == minTxamt || txamt > maxTxamt {
+		return mongo.OffLineRespCd("DATA_ERROR")
+	}
+
+	req.IntTxamt = txamt
 
 	return
 }
