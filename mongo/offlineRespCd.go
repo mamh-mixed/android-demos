@@ -1,11 +1,13 @@
 package mongo
 
 import (
+	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
+	"gopkg.in/mgo.v2/bson"
 )
 
-var OffLineCdCol map[string]string
-
+// TODO delete
 func init() {
 	OffLineCdCol = make(map[string]string)
 	OffLineCdCol["00"] = "成功"
@@ -29,9 +31,9 @@ func init() {
 	OffLineCdCol["91"] = "外部系统错误"
 	OffLineCdCol["96"] = "内部系统错误"
 	OffLineCdCol["98"] = "交易超时"
-
 }
 
+// TODO delete
 // OffLineRespCd 扫码支付应答码
 func OffLineRespCd(code string) *model.ScanPayResponse {
 
@@ -84,4 +86,79 @@ func OffLineRespCd(code string) *model.ScanPayResponse {
 
 	errorDetail = OffLineCdCol[respCd]
 	return &model.ScanPayResponse{ErrorDetail: errorDetail, Respcd: respCd}
+}
+
+var ScanPayRespCol = &scanPayRespCollection{"respCode.sp"}
+var OffLineCdCol map[string]string
+var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答", false, "UNKNOWN"}
+
+type scanPayRespCollection struct {
+	name string
+}
+
+var spRespCache = cache.New(model.Cache_ScanPayResp)
+
+// Get 根据传入的errorCode类型得到Resp对象
+// 屏蔽8583与6位应答码的差别
+func (c *scanPayRespCollection) Get(errorCode string) (resp *model.ScanPayRespCode) {
+
+	o, found := spRespCache.Get(errorCode)
+	if found {
+		resp = o.(*model.ScanPayRespCode)
+		return resp
+	}
+
+	resp = &model.ScanPayRespCode{}
+	err := database.C(c.name).Find(bson.M{"errorCode": errorCode}).One(resp)
+	if err != nil {
+		log.Errorf("can not find scanPayResp for %s: %s", errorCode, err)
+		// 没找到对应应答码，返回默认应答
+		return defaultResp
+	}
+
+	// save cache
+	spRespCache.Set(errorCode, resp, cache.NoExpiration)
+
+	return resp
+}
+
+// GetByAlp 由支付宝应答得到Resp对象
+func (c *scanPayRespCollection) GetByAlp(code string) (resp *model.ScanPayRespCode) {
+	resp = &model.ScanPayRespCode{}
+	err := database.C(c.name).Find(bson.M{"alp.code": code}).One(resp)
+	if err != nil {
+		log.Errorf("can not find scanPayResp for %s: %s", code, err)
+		return defaultResp
+	}
+
+	return resp
+}
+
+// GetByWxp 由微信应答得到Resp对象
+func (c *scanPayRespCollection) GetByWxp(code, busicd string) (resp *model.ScanPayRespCode) {
+	resp = &model.ScanPayRespCode{}
+	err := database.C(c.name).Find(bson.M{"wxp.code": code, "wxp.busicd": busicd}).One(resp)
+	if err != nil {
+		log.Errorf("can not find scanPayResp for %s: %s", code, err)
+		return defaultResp
+	}
+	return resp
+}
+
+/* only use for import respCode */
+
+func (c *scanPayRespCollection) Add(r *model.ScanPayCSV) error {
+	err := database.C(c.name).Insert(r)
+	return err
+}
+
+func (c *scanPayRespCollection) FindOne(code string) (*model.ScanPayCSV, error) {
+	q := new(model.ScanPayCSV)
+	err := database.C(c.name).Find(bson.M{"ISO8583Code": code}).One(q)
+	return q, err
+}
+
+func (c *scanPayRespCollection) Update(r *model.ScanPayCSV) error {
+	err := database.C(c.name).Update(bson.M{"ISO8583Code": r.ISO8583Code}, r)
+	return err
 }

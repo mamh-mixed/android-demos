@@ -70,6 +70,7 @@ type ScanPayRequest struct {
 	ActTxamt    string `json:"-"` //  实际交易金额 不同渠道单位不同
 	ChanMerId   string `json:"-"` // 渠道商户Id
 	SignCert    string `json:"-"` // 可能表示md5key等
+	IntTxamt    int64  `json:"-"`
 }
 
 // ScanPayResponse 下单支付返回体
@@ -231,4 +232,39 @@ func genSignMsg(o interface{}) string {
 		}
 	}
 	return buf.String()
+}
+
+// ScanPayRespCode 扫码支付应答
+type ScanPayRespCode struct {
+	RespCode    string `bson:"respCode"`
+	RespMsg     string `bson:"respMsg"`
+	ISO8583Code string `bson:"ISO8583Code"`
+	ISO8583Msg  string `bson:"ISO8583Msg"`
+	IsUseISO    bool   `bson:"isUseISO"`
+	ErrorCode   string `bson:"errorCode"`
+}
+
+/* only use for import respCode */
+
+// SpChanCSV 渠道文件csv
+type SpChanCSV struct {
+	Code    string `bson:"code"`
+	Msg     string `bson:"msg"`
+	Busicd  string `bson:"busicd"`
+	ISOCode string `bson:"-"`
+	ISOMsg  string `bson:"-"`
+}
+
+// ScanPayCSV 扫码支付应答码
+type ScanPayCSV struct {
+	RespCode    string `bson:"respCode"`
+	RespMsg     string `bson:"respMsg"`
+	ISO8583Code string `bson:"ISO8583Code"`
+	ISO8583Msg  string `bson:"ISO8583Msg"`
+	IsUseISO    bool   `bson:"isUseISO"`
+	ErrorCode   string `bson:"errorCode"`
+
+	Alp []*SpChanCSV `bson:"alp,omitempty"`
+	Wxp []*SpChanCSV `bson:"wxp,omitempty"`
+	//...
 }
