@@ -75,7 +75,7 @@ func notify(changes []*model.CheckAndNotify) {
 				log.Error(err)
 				continue
 			}
-		case model.Cache_Merchant, model.Cache_ChanMer, model.Cache_CfcaBankMap, model.Cache_ChanMerRSAPrivKey,
+		case model.Cache_Merchant, model.Cache_ChanMer, model.Cache_CfcaBankMap, model.Cache_CfcaMerRSAPrivKey,
 			model.Cache_RespCode:
 			// 获得缓存
 			c := cache.Client.Get(v.BizType)

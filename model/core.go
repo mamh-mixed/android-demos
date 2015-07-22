@@ -43,7 +43,7 @@ const (
 	Cache_Merchant            = "merchant"
 	Cache_ChanMer             = "chanMer"
 	Cache_CfcaBankMap         = "cfcaBankMap"
-	Cache_ChanMerRSAPrivKey   = "chanMerRSAPrivKey"
+	Cache_CfcaMerRSAPrivKey   = "cfcaMerRSAPrivKey"
 	Cache_AlipayMerRSAPrivKey = "alipayMerRSAPrivKey"
 )
 
