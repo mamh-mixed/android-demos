@@ -37,12 +37,13 @@ const (
 
 // cache name
 const (
-	Cache_RespCode          = "respCode"
-	Cache_CardBin           = "cardBin"
-	Cache_Merchant          = "merchant"
-	Cache_ChanMer           = "chanMer"
-	Cache_CfcaBankMap       = "cfcaBankMap"
-	Cache_ChanMerRSAPrivKey = "chanMerRSAPrivKey"
+	Cache_RespCode            = "respCode"
+	Cache_CardBin             = "cardBin"
+	Cache_Merchant            = "merchant"
+	Cache_ChanMer             = "chanMer"
+	Cache_CfcaBankMap         = "cfcaBankMap"
+	Cache_CfcaMerRSAPrivKey   = "cfcaMerRSAPrivKey"
+	Cache_AlipayMerRSAPrivKey = "alipayMerRSAPrivKey"
 )
 
 // RouterPolicy 路由策略

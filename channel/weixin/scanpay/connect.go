@@ -18,7 +18,7 @@ var url = goconf.Config.WeixinScanPay.URL
 
 var cli *http.Client
 
-// 初始化中金 HTTPS 客户端
+// 初始化微信 HTTPS 客户端
 func init() {
 	cliCrt, err := tls.LoadX509KeyPair(goconf.Config.WeixinScanPay.ClientCert,
 		goconf.Config.WeixinScanPay.ClientKey)
