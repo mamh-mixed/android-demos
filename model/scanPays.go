@@ -234,6 +234,15 @@ func genSignMsg(o interface{}) string {
 	return buf.String()
 }
 
+// NewScanPayResponse 构造方法
+// 默认使用8583应答
+func NewScanPayResponse(s ScanPayRespCode) *ScanPayResponse {
+	return &ScanPayResponse{
+		Respcd:      s.ISO8583Code,
+		ErrorDetail: s.ISO8583Msg,
+	}
+}
+
 // ScanPayRespCode 扫码支付应答
 type ScanPayRespCode struct {
 	RespCode    string `bson:"respCode"`

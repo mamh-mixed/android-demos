@@ -1,11 +1,11 @@
 package scanpay
 
 import (
-	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -13,42 +13,68 @@ const (
 	maxTxamt = 1e10 - 1
 )
 
+// fieldName
+const (
+	txamt        = "txamt"
+	orderNum     = "orderNum"
+	origOrderNum = "origOrderNum"
+	inscd        = "inscd"
+	mchntid      = "mchntid"
+	scanCodeId   = "scanCodeId"
+	chcd         = "chcd"
+)
+
+var (
+	emptyError  = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
+	formatError = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
+)
+
 // validateBarcodePay 验证扫码下单的参数
 func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
-	if req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" || req.ScanCodeId == "" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.Txamt == "":
+		return fieldEmptyError(txamt)
+	case req.ScanCodeId == "":
+		return fieldEmptyError(scanCodeId)
 	}
 
+	// 验证格式
 	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
-	}
-
-	if matched, _ := regexp.MatchString(`^0{12}$`, req.Txamt); matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(txamt)
 	}
 
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(mchntid)
 	}
 
 	if matched, _ := regexp.MatchString(`^\d{14,24}$`, req.ScanCodeId); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(scanCodeId)
+	}
+
+	if len(orderNum) > 64 {
+		return fieldFormatError(orderNum)
 	}
 
 	// 转换金额
-	txamt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
 	if err != nil {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(txamt)
 	}
 
 	// 金额范围
-	if txamt == minTxamt || txamt > maxTxamt {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	if toInt == minTxamt || toInt > maxTxamt {
+		return fieldFormatError(txamt)
 	}
 
-	req.IntTxamt = txamt
+	req.IntTxamt = toInt
 
 	return
 }
@@ -56,36 +82,45 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 // validateQrCodeOfflinePay 验证预下单的参数
 func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	fmt.Println(req.OrderNum == "")
 	// 验证非空
-	if req.OrderNum == "" || req.Chcd == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Chcd == "":
+		return fieldEmptyError(chcd)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.Txamt == "":
+		return fieldEmptyError(txamt)
 	}
 
+	// 验证格式
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(chcd)
 	}
 
 	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(txamt)
 	}
 
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(mchntid)
 	}
 
 	// 转换金额
-	txamt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
 	if err != nil {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(txamt)
 	}
 
 	// 金额范围
-	if txamt == minTxamt || txamt > maxTxamt {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	if toInt == minTxamt || toInt > maxTxamt {
+		return fieldFormatError(txamt)
 	}
 
-	req.IntTxamt = txamt
+	req.IntTxamt = toInt
 
 	return
 }
@@ -94,13 +129,18 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
-	if req.OrigOrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	switch {
+	case req.OrigOrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
 	}
 
 	// TODO validate format
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(mchntid)
 	}
 
 	return
@@ -110,31 +150,40 @@ func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
-	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" || req.Txamt == "" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.Txamt == "":
+		return fieldEmptyError(txamt)
+	case req.OrigOrderNum == "":
+		return fieldEmptyError(origOrderNum)
 	}
 
 	// TODO validate format
 	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(txamt)
 	}
 
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(mchntid)
 	}
 
 	// 转换金额
-	txamt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
 	if err != nil {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(txamt)
 	}
 
 	// 金额范围
-	if txamt == minTxamt || txamt > maxTxamt {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	if toInt == minTxamt || toInt > maxTxamt {
+		return fieldFormatError(txamt)
 	}
 
-	req.IntTxamt = txamt
+	req.IntTxamt = toInt
 
 	return
 }
@@ -143,12 +192,20 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
-	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.OrigOrderNum == "":
+		return fieldEmptyError(origOrderNum)
 	}
 
+	// 验证格式
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(mchntid)
 	}
 
 	return
@@ -158,13 +215,41 @@ func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 验证非空
-	if req.OrigOrderNum == "" || req.OrderNum == "" || req.Inscd == "" || req.Mchntid == "" {
-		return mongo.OffLineRespCd("DATA_ERROR")
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.OrigOrderNum == "":
+		return fieldEmptyError(origOrderNum)
 	}
 
+	// 验证格式
 	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return mongo.OffLineRespCd("DATA_ERROR")
+		return fieldFormatError(mchntid)
 	}
 
 	return
+}
+
+// fieldEmptyError 字段为空
+func fieldEmptyError(f string) *model.ScanPayResponse {
+
+	errMsg := strings.Replace(emptyError.ISO8583Msg, "fieldName", f, 1)
+	return &model.ScanPayResponse{
+		Respcd:      emptyError.ISO8583Code,
+		ErrorDetail: errMsg,
+	}
+}
+
+// fieldFormatError 字段格式错误
+func fieldFormatError(f string) *model.ScanPayResponse {
+
+	errMsg := strings.Replace(formatError.ISO8583Msg, "fieldName", f, 1)
+	return &model.ScanPayResponse{
+		Respcd:      formatError.ISO8583Code,
+		ErrorDetail: errMsg,
+	}
 }

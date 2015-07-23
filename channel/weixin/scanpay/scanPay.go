@@ -45,7 +45,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		return nil, err
 	}
 
-	status, msg := transformX("pay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("pay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
@@ -85,7 +85,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 
 	log.Debugf("ProcessEnquiry response data is %#v", p)
 
-	status, msg := transformX("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	// 如果返回的是成功的，要对trade_state做判断
 	// SUCCESS—支付成功;REFUND—转入退款;NOTPAY—未支付;CLOSED—已关闭;REVOKED—已撤销;USERPAYING--用户支付中;PAYERROR--支付失败(其他原因，如银行返回失败)
@@ -147,7 +147,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		return nil, err
 	}
 
-	status, msg := transformX("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
 		Respcd:          status,    // 交易结果  M
@@ -189,7 +189,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		return nil, err
 	}
 
-	status, msg := transformX("refund", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("refund", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
@@ -226,7 +226,7 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 		return nil, err
 	}
 
-	status, msg := transformX("refundQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("refundQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Txndir:          "A",             // 交易方向 M M
 		Busicd:          m.Busicd,        // 交易类型 M M
@@ -268,7 +268,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 		return nil, err
 	}
 
-	status, msg := transformX("reverse", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("reverse", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,       // 交易结果  M
 		ChannelOrderNum: "",           // 渠道交易号 C
@@ -302,7 +302,7 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 		return nil, err
 	}
 
-	status, msg := transformX("close", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transform("close", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:       status,    // 交易结果  M
 		ErrorDetail:  msg,       // 错误信息   C
