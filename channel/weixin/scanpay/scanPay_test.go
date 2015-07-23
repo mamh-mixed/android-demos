@@ -58,7 +58,7 @@ func TestProcessEnquiry(t *testing.T) {
 		Subject:    "被扫支付测试",             // 商品描述
 		GoodsInfo:  "",                   // 商品详情
 		Attach:     "订单额外描述",             // 附加数据
-		OrderNum:   "1415757673",         // 商户订单号
+		OrderNum:   "1437537877995",      // 商户订单号
 		Txamt:      "1",                  // 总金额
 		CurrType:   "CNY",                // 货币类型
 		GoodsGag:   "",                   // 商品标记
