@@ -9,6 +9,7 @@ iso8583Code,iso8583Msg,errorCode,isUseISO,respCode,respMsg
 15,无此渠道,NO_CHANNEL,true,,
 19,订单号重复,ORDER_DUPLICATE,true,,
 25,订单不存在,TRADE_NOT_EXIST,true,,
+30,报文错误,DATA_ERROR,true,,
 31,权限不足,NO_ROUTERPOLICY,true,,
 51,余额不足,INSUFFICIENT_BALANCE,false,,
 61,退款失败，商家账户余额不足,,true,,

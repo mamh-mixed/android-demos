@@ -481,15 +481,17 @@ func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
 func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
 
 	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	// 8583应答
+	code, msg := spResp.ISO8583Code, spResp.ISO8583Msg
 
-	// 使用iso应答
-	t.RespCode = spResp.ISO8583Code
-	t.ErrorCode = errorCode
+	// 交易保存
+	t.RespCode = code
+	t.ErrorDetail = msg
 	mongo.SpTransColl.Add(t)
 
 	return &model.ScanPayResponse{
-		Respcd:      spResp.ISO8583Code,
-		ErrorDetail: spResp.ISO8583Msg,
+		Respcd:      code,
+		ErrorDetail: msg,
 	}
 }
 

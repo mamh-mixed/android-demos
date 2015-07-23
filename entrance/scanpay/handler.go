@@ -85,7 +85,7 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 		ret = doScanPay(validateClose, core.Close, req)
 	default:
-		ret = mongo.OffLineRespCd("DATA_ERROR")
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("DATA_ERROR"))
 	}
 
 	return ret
@@ -102,7 +102,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPayRequest) (re
 
 	mer, err := mongo.MerchantColl.Find(req.Mchntid)
 	if err != nil {
-		ret = mongo.OffLineRespCd("NO_MERCHANT")
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
 		fillResponseInfo(req, ret)
 		return
 	}
@@ -116,7 +116,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPayRequest) (re
 		s := signWithSHA1(content)
 		if s != sign {
 			log.Errorf("sign should be %s, but get %s", s, sign)
-			ret = mongo.OffLineRespCd("SIGN_AUTH_ERROR")
+			ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("SIGN_AUTH_ERROR"))
 			fillResponseInfo(req, ret)
 			return
 		}
@@ -125,7 +125,7 @@ func doScanPay(validateFuc, processFuc HandleFuc, req *model.ScanPayRequest) (re
 	// 验证接口权限
 	if !strings.Contains(strings.Join(mer.Permission, ","), req.Busicd) {
 		log.Errorf("merchant %s request %s interface without permission!", req.Mchntid, req.Busicd)
-		ret = mongo.OffLineRespCd("NO_PERMISSION")
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_PERMISSION"))
 		fillResponseInfo(req, ret)
 		return
 	}
@@ -179,7 +179,11 @@ func fillResponseInfo(req *model.ScanPayRequest, ret *model.ScanPayResponse) {
 // ErrorResponse 返回错误信息
 func ErrorResponse(req *model.ScanPayRequest, errorCode string) []byte {
 
-	ret := mongo.OffLineRespCd(errorCode)
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	ret := &model.ScanPayResponse{
+		Respcd:      spResp.ISO8583Code,
+		ErrorDetail: spResp.ISO8583Msg,
+	}
 	fillResponseInfo(req, ret)
 
 	retBytes, err := json.Marshal(ret)

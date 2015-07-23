@@ -123,7 +123,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return logicErrorHandler("NO_CHANMER")
+		return logicErrorHandler(t, "NO_CHANMER")
 	}
 	// 上送参数
 
@@ -311,14 +311,16 @@ func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
 // logicErrorHandler 逻辑错误处理
 func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
 	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	// 8583应答
+	code, msg := spResp.ISO8583Code, spResp.ISO8583Msg
 
-	// 使用iso应答
-	t.RespCode = spResp.ISO8583Code
-	t.ErrorCode = errorCode
+	// 交易保存
+	t.RespCode = code
+	t.ErrorDetail = msg
 	mongo.SpTransColl.Add(t)
 
 	return &model.ScanPayResponse{
-		Respcd:      spResp.ISO8583Code,
-		ErrorDetail: spResp.ISO8583Msg,
+		Respcd:      code,
+		ErrorDetail: msg,
 	}
 }
