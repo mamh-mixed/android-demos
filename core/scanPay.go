@@ -60,11 +60,11 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 	if count > 0 {
 		// 订单号重复
-		return mongo.OffLineRespCd("ORDER_DUPLICATE")
+		return returnWithErrorCode("ORDER_DUPLICATE")
 	}
 
 	// 记录该笔交易
@@ -116,11 +116,11 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 	if count > 0 {
 		// 订单号重复
-		return mongo.OffLineRespCd("ORDER_DUPLICATE")
+		return returnWithErrorCode("ORDER_DUPLICATE")
 	}
 
 	// 记录该笔交易
@@ -163,10 +163,10 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 	if count > 0 {
-		return mongo.OffLineRespCd("ORDER_DUPLICATE")
+		return returnWithErrorCode("ORDER_DUPLICATE")
 	}
 
 	// 记录这笔退款
@@ -188,15 +188,10 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	refund.ChanCode = orig.ChanCode
 
-	// 上送渠道号与原渠道号不一致
-	if req.Chcd != "" && req.Chcd != orig.ChanCode {
-		return logicErrorHandler(refund, "TRADE_NOT_EXIST")
-	}
-
 	// 退款只能隔天退
-	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-	// 	return logicErrorHandler(refund, "REFUND_TIME_ERROR")
-	// }
+	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+		return logicErrorHandler(refund, "REFUND_TIME_ERROR")
+	}
 
 	// 是否是支付交易
 	if orig.TransType != model.PayTrans {
@@ -255,7 +250,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	t, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return mongo.OffLineRespCd("TRADE_NOT_EXIST")
+		return returnWithErrorCode("TRADE_NOT_EXIST")
 	}
 	log.Debugf("trans:(%+v)", t)
 
@@ -276,7 +271,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret.ChcdDiscount = t.ChanDiscount
 		ret.MerDiscount = t.MerDiscount
 		ret.Respcd = t.RespCode
-		ret.ErrorDetail = mongo.OffLineCdCol[ret.Respcd]
+		ret.ErrorDetail = t.ErrorDetail
 	}
 
 	// 渠道
@@ -294,10 +289,10 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 	if count > 0 {
-		return mongo.OffLineRespCd("ORDER_DUPLICATE")
+		return returnWithErrorCode("ORDER_DUPLICATE")
 	}
 
 	// 记录这笔撤销
@@ -368,11 +363,11 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR") // todo check error code
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 	if count > 0 {
 		// 订单号重复
-		return mongo.OffLineRespCd("ORDER_DUPLICATE") // todo check error code
+		return returnWithErrorCode("ORDER_DUPLICATE")
 	}
 
 	// 记录这笔关单
@@ -473,19 +468,28 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return ret
 }
 
+// returnWithErrorCode 使用错误码直接返回
+func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	return &model.ScanPayResponse{
+		Respcd:      spResp.ISO8583Code,
+		ErrorDetail: spResp.ISO8583Msg,
+	}
+}
+
 // logicErrorHandler 逻辑错误处理
 func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
 
-	spRespCol := mongo.ScanPayRespCol.Get(errorCode)
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
 
 	// 使用iso应答
-	t.RespCode = spRespCol.ISO8583Code
+	t.RespCode = spResp.ISO8583Code
 	t.ErrorCode = errorCode
 	mongo.SpTransColl.Add(t)
 
 	return &model.ScanPayResponse{
-		Respcd:      spRespCol.ISO8583Code,
-		ErrorDetail: spRespCol.ISO8583Msg,
+		Respcd:      spResp.ISO8583Code,
+		ErrorDetail: spResp.ISO8583Msg,
 	}
 }
 
@@ -499,6 +503,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 	t.ConsumerAccount = ret.ConsumerAccount
 	t.ConsumerId = ret.ConsumerId
 	t.RespCode = ret.Respcd
+	t.ErrorDetail = ret.ErrorDetail
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {

@@ -144,7 +144,7 @@ ILLEGAL_TARGET_SERVICE,错误的target_service,cancel,96
 ILLEGAL_ACCESS_SWITCH_SYSTEM,partner不允许访问该类型的系统,cancel,96
 EXTERFACE_IS_CLOSED,接口已关闭,cancel,96
 INVALID_PARAMETER,参数无效,query,96
-TRADE_NOT_EXIST,交易不存在,query,25
+TRADE_NOT_EXIST,交易不存在,query,09
 ILLEGAL_SIGN,签名不正确,query,91
 ILLEGAL_DYN_MD5_KEY,动态密钥信息错误,query,91
 ILLEGAL_ENCRYPT,加密不正确,query,91

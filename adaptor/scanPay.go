@@ -36,7 +36,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	// 记录交易
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 不同渠道参数转换
@@ -54,12 +54,12 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	if sp == nil {
-		return mongo.OffLineRespCd("NO_CHANNEL")
+		return returnWithErrorCode("NO_CHANNEL")
 	}
 	ret, err = sp.ProcessBarcodePay(req)
 	if err != nil {
 		log.Errorf("process BarcodePay error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -100,18 +100,18 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	// 记录交易
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	if sp == nil {
-		return mongo.OffLineRespCd("NO_CHANNEL")
+		return returnWithErrorCode("NO_CHANNEL")
 	}
 	ret, err = sp.ProcessQrCodeOfflinePay(req)
 	if err != nil {
 		log.Errorf("process QrCodeOfflinePay error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -123,7 +123,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return mongo.OffLineRespCd("NO_CHANMER")
+		return logicErrorHandler("NO_CHANMER")
 	}
 	// 上送参数
 
@@ -144,22 +144,23 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 	// 向渠道查询
 	sp := channel.GetScanPayChan(t.ChanCode)
 	if sp == nil {
-		return mongo.OffLineRespCd("NO_CHANNEL")
+		return returnWithErrorCode("NO_CHANNEL")
 	}
 
 	ret, err = sp.ProcessEnquiry(req)
 	if err != nil {
 		log.Errorf("process enquiry error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 特殊处理
 	// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
-	if t.ChanCode == "ALP" && t.Busicd == model.Paut && ret.ChanRespCode == "TRADE_NOT_EXIST" {
-		inporcess := mongo.OffLineRespCd("INPROCESS")
-		ret.Respcd = inporcess.Respcd
-		ret.ErrorDetail = inporcess.ErrorDetail
-	}
+	// 已在应答码中转换
+	// if t.ChanCode == "ALP" && t.Busicd == model.Paut && ret.ChanRespCode == "TRADE_NOT_EXIST" {
+	// 	inporcess := mongo.ScanPayRespCol.Get("INPROCESS")
+	// 	ret.Respcd = inporcess.ISO8583Code
+	// 	ret.ErrorDetail = inporcess.ISO8583Msg
+	// }
 
 	return ret
 }
@@ -197,19 +198,19 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	// 记录交易
 	err = mongo.SpTransColl.Add(current)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 请求退款
 	sp := channel.GetScanPayChan(orig.ChanCode)
 	if sp == nil {
-		return mongo.OffLineRespCd("NO_CHANNEL")
+		return returnWithErrorCode("NO_CHANNEL")
 	}
 
 	ret, err = sp.ProcessRefund(req)
 	if err != nil {
 		log.Errorf("process refund error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -235,7 +236,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	// 记录交易
 	err = mongo.SpTransColl.Add(current)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 请求撤销
@@ -257,7 +258,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 
 	if err != nil {
 		log.Errorf("process cancel error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -284,7 +285,7 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	// 记录交易
 	err = mongo.SpTransColl.Add(current)
 	if err != nil {
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 指定微信
@@ -292,17 +293,32 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	ret, err = sp.ProcessClose(req)
 	if err != nil {
 		log.Errorf("process weixin Close error:%s", err)
-		return mongo.OffLineRespCd("SYSTEM_ERROR")
+		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
 }
 
+// returnWithErrorCode 使用错误码直接返回
+func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	return &model.ScanPayResponse{
+		Respcd:      spResp.ISO8583Code,
+		ErrorDetail: spResp.ISO8583Msg,
+	}
+}
+
 // logicErrorHandler 逻辑错误处理
 func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
-	ret := mongo.OffLineRespCd(errorCode)
-	t.RespCode = ret.Respcd
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
+
+	// 使用iso应答
+	t.RespCode = spResp.ISO8583Code
 	t.ErrorCode = errorCode
 	mongo.SpTransColl.Add(t)
-	return ret
+
+	return &model.ScanPayResponse{
+		Respcd:      spResp.ISO8583Code,
+		ErrorDetail: spResp.ISO8583Msg,
+	}
 }

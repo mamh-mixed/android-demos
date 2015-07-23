@@ -203,7 +203,7 @@ type Trans struct {
 	Inscd           string `bson:"inscd,omitempty" json:"inscd,omitempty"`                     //机构号
 	QrCode          string `bson:"qrCode,omitempty" json:"-"`                                  //预下单时的二维码
 	Terminalid      string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`           //终端号
-	ErrorCode       string `bson:"errorCode,omitempty" json:"-"`                               //错误代码
+	ErrorDetail     string `bson:"errorDetail,omitempty" json:"errorDetail"`                   //错误信息
 }
 
 // SummarySettData 交易汇总
