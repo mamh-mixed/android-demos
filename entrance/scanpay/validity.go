@@ -23,6 +23,7 @@ const (
 	mchntid      = "mchntid"
 	scanCodeId   = "scanCodeId"
 	chcd         = "chcd"
+	goodsInfo    = "goodsInfo"
 )
 
 var (
@@ -47,34 +48,18 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	}
 
 	// 验证格式
-	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return fieldFormatError(txamt)
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
 	}
-
-	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return fieldFormatError(mchntid)
-	}
-
 	if matched, _ := regexp.MatchString(`^\d{14,24}$`, req.ScanCodeId); !matched {
 		return fieldFormatError(scanCodeId)
 	}
-
-	if len(orderNum) > 64 {
-		return fieldFormatError(orderNum)
+	if matched, err := validateTxamt(req); !matched {
+		return err
 	}
-
-	// 转换金额
-	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
-	if err != nil {
-		return fieldFormatError(txamt)
+	if matched, err := validateGoodsInfo(req.GoodsInfo); !matched {
+		return err
 	}
-
-	// 金额范围
-	if toInt == minTxamt || toInt > maxTxamt {
-		return fieldFormatError(txamt)
-	}
-
-	req.IntTxamt = toInt
 
 	return
 }
@@ -99,27 +84,15 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
 		return fieldFormatError(chcd)
 	}
-
-	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return fieldFormatError(txamt)
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
 	}
-
-	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return fieldFormatError(mchntid)
+	if matched, err := validateTxamt(req); !matched {
+		return err
 	}
-
-	// 转换金额
-	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
-	if err != nil {
-		return fieldFormatError(txamt)
+	if matched, err := validateGoodsInfo(req.GoodsInfo); !matched {
+		return err
 	}
-
-	// 金额范围
-	if toInt == minTxamt || toInt > maxTxamt {
-		return fieldFormatError(txamt)
-	}
-
-	req.IntTxamt = toInt
 
 	return
 }
@@ -136,9 +109,8 @@ func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return fieldEmptyError(mchntid)
 	}
 
-	// TODO validate format
-	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return fieldFormatError(mchntid)
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
 	}
 
 	return
@@ -160,27 +132,13 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return fieldEmptyError(origOrderNum)
 	}
 
-	// TODO validate format
-	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return fieldFormatError(txamt)
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
 	}
 
-	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return fieldFormatError(mchntid)
+	if matched, err := validateTxamt(req); !matched {
+		return err
 	}
-
-	// 转换金额
-	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
-	if err != nil {
-		return fieldFormatError(txamt)
-	}
-
-	// 金额范围
-	if toInt == minTxamt || toInt > maxTxamt {
-		return fieldFormatError(txamt)
-	}
-
-	req.IntTxamt = toInt
 
 	return
 }
@@ -200,8 +158,8 @@ func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 验证格式
-	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return fieldFormatError(mchntid)
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
 	}
 
 	return
@@ -222,11 +180,55 @@ func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 验证格式
-	if matched, _ := regexp.MatchString(`^\d{15}$`, req.Mchntid); !matched {
-		return fieldFormatError(mchntid)
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
 	}
 
 	return
+}
+
+// validateGoodsInfo 验证商品格式
+func validateGoodsInfo(goods string) (bool, *model.ScanPayResponse) {
+
+	if goods != "" {
+		toRunes := []rune(goods)
+		if len(toRunes) > 120 {
+			return false, fieldFormatError(goodsInfo)
+		}
+		// todo 验证格式
+	}
+
+	return true, nil
+}
+
+// validateTxamt 验证金额
+func validateTxamt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
+
+	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
+		return false, fieldFormatError(txamt)
+	}
+
+	// 转换金额
+	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
+	if err != nil {
+		return false, fieldFormatError(txamt)
+	}
+
+	// 金额范围
+	if toInt == minTxamt || toInt > maxTxamt {
+		return false, fieldFormatError(txamt)
+	}
+
+	req.IntTxamt = toInt
+	return true, nil
+}
+
+// validateMchntid 验证商户号格式
+func validateMchntid(mcid string) (bool, *model.ScanPayResponse) {
+	if len(mcid) != 15 {
+		return false, fieldFormatError(mchntid)
+	}
+	return true, nil
 }
 
 // fieldEmptyError 字段为空

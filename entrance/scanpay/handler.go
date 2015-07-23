@@ -73,7 +73,8 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case model.Canc:
 		ret = doScanPay(validateClose, core.Close, req)
 	default:
-		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("DATA_ERROR"))
+		ret = fieldFormatError("busicd")
+		fillResponseInfo(req, ret)
 	}
 
 	return ret
@@ -100,8 +101,6 @@ func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (re
 	sign := req.Sign
 	if mer.IsNeedSign {
 		req.Sign = "" // 置空
-		// content := req.SignMsg() + mer.SignKey
-		// log.Debugf("sign content %s", content)
 		s := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
 		if s != sign {
 			log.Errorf("sign should be %s, but get %s", s, sign)
@@ -127,7 +126,6 @@ func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (re
 
 	// 签名
 	if mer.IsNeedSign {
-		// content := ret.SignMsg() + mer.SignKey
 		ret.Sign = security.SHA1WithKey(ret.SignMsg(), mer.SignKey)
 	}
 
