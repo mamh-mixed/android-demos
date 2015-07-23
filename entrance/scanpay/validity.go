@@ -1,11 +1,12 @@
 package scanpay
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 const (
@@ -31,7 +32,6 @@ var (
 
 // validateBarcodePay 验证扫码下单的参数
 func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 验证非空
 	switch {
 	case req.OrderNum == "":
@@ -81,7 +81,6 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 
 // validateQrCodeOfflinePay 验证预下单的参数
 func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 验证非空
 	switch {
 	case req.OrderNum == "":
@@ -127,7 +126,6 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 
 // validateEnquiry 验证查询接口的参数
 func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 验证非空
 	switch {
 	case req.OrigOrderNum == "":
@@ -148,7 +146,6 @@ func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // validateRefund 验证退款接口的参数
 func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 验证非空
 	switch {
 	case req.OrderNum == "":
@@ -190,7 +187,6 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // validateCancel 验证撤销接口参数
 func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 验证非空
 	switch {
 	case req.OrderNum == "":
@@ -213,7 +209,6 @@ func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // validateCancel 验证关闭订单接口参数
 func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 验证非空
 	switch {
 	case req.OrderNum == "":

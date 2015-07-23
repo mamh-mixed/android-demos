@@ -10,6 +10,15 @@ import (
 	"github.com/omigo/log"
 )
 
+// https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
+// 统一下单
+// 应用场景
+// 除被扫支付场景以外，商户系统先调用该接口在微信支付服务后台生成预支付交易单，返回正确的预支付交易回话标识后再按扫码、JSAPI、APP等不同场景生成交易串调起支付。
+// 接口链接
+// URL地址：https://api.mch.weixin.qq.com/pay/unifiedorder
+// 是否需要证书
+// 不需要
+
 // PayReq 请求被扫支付API需要提交的数据
 type PayReq struct {
 	XMLName xml.Name `xml:"xml"`

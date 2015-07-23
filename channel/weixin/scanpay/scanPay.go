@@ -87,8 +87,9 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 
 	status, msg := transform("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
-	// 如果返回的是成功的，要对trade_state做判断
-	// SUCCESS—支付成功;REFUND—转入退款;NOTPAY—未支付;CLOSED—已关闭;REVOKED—已撤销;USERPAYING--用户支付中;PAYERROR--支付失败(其他原因，如银行返回失败)
+	// 如果返回的是成功的，要对 trade_state 做判断
+	// SUCCESS—支付成功;REFUND—转入退款;NOTPAY—未支付;CLOSED—已关闭;REVOKED—已撤销;
+	// USERPAYING-用户支付中;PAYERROR-支付失败(其他原因，如银行返回失败)
 	if status == "00" {
 		respCode := mongo.ScanPayRespCol.GetByWxp(p.TradeState, "payQuery")
 		status, msg = respCode.ISO8583Code, respCode.ISO8583Msg
