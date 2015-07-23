@@ -16,9 +16,9 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "289526980697905109",
-		ScanCodeId: "286761307832629641",
+		ScanCodeId: "286235706060278591",
 		Inscd:      "CIL00002",
-		Txamt:      "000000000001",
+		Txamt:      "000000000002",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
@@ -45,9 +45,9 @@ var (
 		Busicd:       "REFD",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1437469939806",
+		OrigOrderNum: "1437634914781",
 		Inscd:        "CIL00002",
-		Txamt:        "000000000001",
+		Txamt:        "000000000002",
 		Chcd:         "WXP",
 	}
 	// 撤销
@@ -67,7 +67,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayCancel
+	scanPay = scanPayRefund
 )
 
 func TestScanPay(t *testing.T) {
