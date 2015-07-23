@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
@@ -12,9 +16,6 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 )
 
 // Scanpay 扫码支付入口(测试页面)
@@ -27,30 +28,34 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 
 	bytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "读取数据出错", http.StatusNotAcceptable)
+		log.Error(err)
+		http.Error(w, "read body error", http.StatusNotAcceptable)
 		return
 	}
 
-	switch r.URL.Path {
-	case "/scanpay/":
+	if r.URL.Path != "/scanpay/query" {
 		// 请求扫码支付
 		retBytes := scanpay.ScanPayHandle(bytes)
 		w.Write(retBytes)
-	case "/scanpay/query":
-		q := &model.QueryCondition{}
-		err = json.Unmarshal(bytes, q)
-		if err != nil {
-			http.Error(w, "数据格式错误: "+err.Error(), http.StatusNotAcceptable)
-			return
-		}
-		ret := core.TransQuery(q)
-		retBytes, err := json.Marshal(ret)
-		if err != nil {
-			http.Error(w, "数据格式错误: "+err.Error(), http.StatusNotAcceptable)
-			return
-		}
-		w.Write(retBytes)
+		return
 	}
+
+	// 交易查询
+	q := &model.QueryCondition{}
+	err = json.Unmarshal(bytes, q)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "json format error: "+err.Error(), http.StatusPreconditionFailed)
+		return
+	}
+	ret := core.TransQuery(q)
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
 }
 
 // Quickpay 快捷支付统一入口
