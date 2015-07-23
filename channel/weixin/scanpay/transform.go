@@ -52,6 +52,34 @@ func init() {
 	weixinRespCodeMap["REFUND"] = &respCodeMap{"REFUND", "转入退款", "没问题", "54", "转入退款"}
 }
 
+// transformX 根据业务类型和错误码查找应答码
+func transformX(busicd string, resp *PayResp) (status, msg string) {
+	// 如果通信标识为失败，一般‘签名失败’，‘参数格式校验失败’都会返回失败的通信标识
+	if resp.ReturnCode == "FAIL" {
+		log.Error("weixin request fail, return code is FAIL")
+		return "91", "外部系统错误"
+	}
+
+	// 如果业务结果标识成功，直接返回给前台成功的应答码
+	if resp.ResultCode == "SUCCESS" {
+		return "00", "成功"
+	}
+
+	// 业务结果失败，则根据具体的错误码转换对应的应答码
+	respCode := mongo.ScanPayRespCol.GetByWxp(resp.ErrCode, busicd)
+	log.Debugf("response code is %#v", respCode)
+	if respCode == nil {
+		log.Errorf("respCode(weixin, busicd=%s, errCode=%s) not exist", busicd, resp.ErrCode)
+		return "", ""
+	}
+
+	if respCode.IsUseISO {
+		return respCode.ISO8583Code, respCode.ISO8583Msg
+	}
+
+	return respCode.ISO8583Code, resp.ErrCodeDes
+}
+
 func transform(returnCode, returnMsg, resultCode, errCode, errCodeDes string, tradeState ...string) (status, msg string) {
 
 	// 描述长度限制

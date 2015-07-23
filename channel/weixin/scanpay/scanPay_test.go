@@ -5,10 +5,12 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestProcessBarcodePay(t *testing.T) {
-	m := &model.ScanPay{
+	m := &model.ScanPayRequest{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
 		SubMchId:   "1247075201",         // 子商户
@@ -26,15 +28,29 @@ func TestProcessBarcodePay(t *testing.T) {
 
 	ret, err := DefaultWeixinScanPay.ProcessBarcodePay(m)
 
+	Convey("应该不出现错误", t, func() {
+		So(err, ShouldBeNil)
+	})
+
+	Convey("应该有响应信息", t, func() {
+		So(ret, ShouldNotBeNil)
+	})
+
+	Convey("应答码应该是14", t, func() {
+		So(ret.Respcd, ShouldEqual, "14")
+	})
+
+	m.ScanCodeId = "130502284209256489"
+	ret, err = DefaultWeixinScanPay.ProcessBarcodePay(m)
+	Convey("应答码应该是00", t, func() {
+		So(ret.Respcd, ShouldEqual, "00")
+	})
 	t.Logf("%#v", ret)
 
-	if err != nil {
-		t.Error(err)
-	}
 }
 
 func TestProcessEnquiry(t *testing.T) {
-	m := &model.ScanPay{
+	m := &model.ScanPayRequest{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
 		SubMchId:   "1247075201",
@@ -60,7 +76,7 @@ func TestProcessEnquiry(t *testing.T) {
 }
 
 func TestProcessClose(t *testing.T) {
-	m := &model.ScanPay{
+	m := &model.ScanPayRequest{
 		AppID:        "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:    "1236593202",         // 商户号
 		SubMchId:     "1247075201",

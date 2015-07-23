@@ -44,7 +44,8 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		return nil, err
 	}
 
-	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg := transformX("pay", p)
+
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
@@ -81,7 +82,18 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		return nil, err
 	}
 
-	status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode, p.ErrCodeDes, p.TradeState)
+	status, msg := "", ""
+	// 如果通信标识为失败，一般‘签名失败’，‘参数格式校验失败’都会返回失败的通信标识
+	if p.ReturnCode == "FAIL" {
+		log.Error("WEIXIN ProcessBarcodePay fail, return code is FAIL")
+		ret = &model.ScanPayResponse{
+			Respcd:      "91",
+			ErrorDetail: "外部系统错误",
+		}
+		return ret, nil
+	}
+
+	// status, msg := transform(p.ReturnCode, p.ReturnMsg, p.ResultCode, p.ErrCode, p.ErrCodeDes, p.TradeState)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C

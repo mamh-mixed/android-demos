@@ -524,7 +524,7 @@
         // 刷新订单号
         handleRefreshOrderNoTapped: function() {
             var now = new Date();
-            this.set('scanCode.orderNum', now.valueOf());
+            this.set('scanCode.orderNum', now.valueOf().toString());
         },
     });
 </script>
