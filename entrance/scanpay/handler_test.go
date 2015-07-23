@@ -15,7 +15,7 @@ var (
 	scanPayBarcodePay = &model.ScanPayRequest{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		// OrderNum:  util.Millisecond(),
-		OrderNum:   "1437637400097",
+		OrderNum:   "哈哈中文订单号",
 		ScanCodeId: "289460729295591093",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",

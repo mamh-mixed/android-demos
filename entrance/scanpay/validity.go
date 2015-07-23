@@ -16,14 +16,13 @@ const (
 
 // fieldName
 const (
-	txamt        = "txamt"
-	orderNum     = "orderNum"
-	origOrderNum = "origOrderNum"
-	inscd        = "inscd"
-	mchntid      = "mchntid"
-	scanCodeId   = "scanCodeId"
-	chcd         = "chcd"
-	goodsInfo    = "goodsInfo"
+	txamt      = "txamt"
+	orderNum   = "orderNum或origOrderNum"
+	inscd      = "inscd"
+	mchntid    = "mchntid"
+	scanCodeId = "scanCodeId"
+	chcd       = "chcd"
+	goodsInfo  = "goodsInfo"
 )
 
 var (
@@ -60,6 +59,9 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	if matched, err := validateGoodsInfo(req.GoodsInfo); !matched {
 		return err
 	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
 
 	return
 }
@@ -93,6 +95,9 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 	if matched, err := validateGoodsInfo(req.GoodsInfo); !matched {
 		return err
 	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
 
 	return
 }
@@ -112,6 +117,9 @@ func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if matched, err := validateMchntid(req.Mchntid); !matched {
 		return err
 	}
+	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
+		return err
+	}
 
 	return
 }
@@ -129,14 +137,19 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.Txamt == "":
 		return fieldEmptyError(txamt)
 	case req.OrigOrderNum == "":
-		return fieldEmptyError(origOrderNum)
+		return fieldEmptyError(orderNum)
 	}
 
 	if matched, err := validateMchntid(req.Mchntid); !matched {
 		return err
 	}
-
 	if matched, err := validateTxamt(req); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
 		return err
 	}
 
@@ -154,11 +167,17 @@ func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.OrigOrderNum == "":
-		return fieldEmptyError(origOrderNum)
+		return fieldEmptyError(orderNum)
 	}
 
 	// 验证格式
 	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
 		return err
 	}
 
@@ -176,15 +195,34 @@ func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.OrigOrderNum == "":
-		return fieldEmptyError(origOrderNum)
+		return fieldEmptyError(orderNum)
 	}
 
 	// 验证格式
 	if matched, err := validateMchntid(req.Mchntid); !matched {
 		return err
 	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
+		return err
+	}
 
 	return
+}
+
+// validateOrderNum 验证订单号
+func validateOrderNum(no string) (bool, *model.ScanPayResponse) {
+
+	if len(no) > 64 {
+		return false, fieldFormatError(orderNum)
+	}
+	// 是否包含中文或其他非法字符
+	if len([]rune(no)) != len(no) {
+		return false, fieldFormatError(orderNum)
+	}
+	return true, nil
 }
 
 // validateGoodsInfo 验证商品格式
@@ -225,7 +263,7 @@ func validateTxamt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 
 // validateMchntid 验证商户号格式
 func validateMchntid(mcid string) (bool, *model.ScanPayResponse) {
-	if len(mcid) != 15 {
+	if len(mcid) > 15 {
 		return false, fieldFormatError(mchntid)
 	}
 	return true, nil
