@@ -16,6 +16,13 @@ POST_DATA_EMPTY,post数据为空,prePay,96
 NOT_UTF8,编码格式错误,prePay,96
 ORDERNOTEXIST,此交易订单号不存在,payQuery,25
 SYSTEMERROR,系统错误,payQuery,91
+SUCCESS,支付成功,payQuery,00
+REFUND,转入退款,payQuery,R3
+NOTPAY,未支付,payQuery,09
+CLOSED,已关闭,payQuery,H3
+REVOKED,已撤销,payQuery,H3
+USERPAYING,用户支付中,payQuery,09
+PAYERROR,支付失败(其他原因，如银行返回失败),payQuery,01
 ORDERPAID,订单已支付,close,01
 SYSTEMERROR,系统错误,close,91
 ORDERNOTEXIST,订单不存在,close,25

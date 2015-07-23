@@ -56,7 +56,11 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	}
 
 	if matched, _ := regexp.MatchString(`^\d{14,24}$`, req.ScanCodeId); !matched {
-		return fieldFormatError("scanCodeId")
+		return fieldFormatError(scanCodeId)
+	}
+
+	if len(orderNum) > 64 {
+		return fieldFormatError(orderNum)
 	}
 
 	// 转换金额

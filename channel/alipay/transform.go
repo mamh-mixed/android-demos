@@ -6,6 +6,10 @@ import (
 	"github.com/omigo/log"
 )
 
+var (
+	inprocess = mongo.ScanPayRespCol.Get("")
+)
+
 // transform 支付宝返回报文处理
 func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, error) {
 
