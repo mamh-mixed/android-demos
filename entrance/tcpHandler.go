@@ -2,12 +2,14 @@
 package entrance
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"strconv"
 
 	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -31,24 +33,43 @@ func ListenScanPay() {
 			go handleConnection(conn)
 		}
 	}()
-
 }
 
+// 处理这个连接，无论遇到任何错误，都立即断开连接
+// TODO 为便于调试跟踪问题，断开前，可以返回 JSON，告知通信异常
 func handleConnection(conn net.Conn) {
 	log.Debugf("%s connected", conn.RemoteAddr())
+	defer conn.Close()
 
 	for {
 		reqBytes, err := read(conn)
 		if err != nil {
 			if err == io.EOF {
+				// read end
 				return
 			}
+			log.Error(err)
+			return
 		}
-		// process scanpay
-		respBytes := scanpay.TcpScanPayHandle(reqBytes)
 
-		// return
-		_, err = conn.Write(respBytes)
+		// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
+		utf8, ok := util.GBKTranscoder.Decode(string(reqBytes))
+		if !ok {
+			log.Error("decode failed")
+			return
+		}
+
+		// process scanpay
+		respBytes := scanpay.ScanPayHandle([]byte(utf8))
+
+		// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
+		gbk, ok := util.GBKTranscoder.Encode(string(respBytes))
+		if !ok {
+			log.Error("encode failed")
+			return
+		}
+
+		err = write(conn, gbk)
 		if err != nil {
 			log.Error(err)
 			return
@@ -71,10 +92,12 @@ func read(conn net.Conn) ([]byte, error) {
 		return nil, err
 	}
 
-	switch {
-	case mlen > 9999 || mlen < 0:
+	if mlen < 0 {
 		log.Errorf("read error message length %d", mlen)
-	case mlen == 0:
+		return nil, fmt.Errorf("error message length %d", mlen)
+	}
+
+	if mlen == 0 {
 		log.Debugf("read keepalive length %d", mlen)
 		return nil, nil
 	}
@@ -99,4 +122,11 @@ func read(conn net.Conn) ([]byte, error) {
 	log.Debugf("recieve message: %d %s", size, msg)
 
 	return msg, err
+}
+
+func write(conn net.Conn, msg string) error {
+	mlen := fmt.Sprintf("%04d", len(msg))
+
+	_, err := conn.Write([]byte(mlen + msg))
+	return err
 }

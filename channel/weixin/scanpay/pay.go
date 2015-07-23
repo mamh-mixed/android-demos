@@ -10,6 +10,15 @@ import (
 	"github.com/omigo/log"
 )
 
+// https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
+// 统一下单
+// 应用场景
+// 除被扫支付场景以外，商户系统先调用该接口在微信支付服务后台生成预支付交易单，返回正确的预支付交易回话标识后再按扫码、JSAPI、APP等不同场景生成交易串调起支付。
+// 接口链接
+// URL地址：https://api.mch.weixin.qq.com/pay/unifiedorder
+// 是否需要证书
+// 不需要
+
 // PayReq 请求被扫支付API需要提交的数据
 type PayReq struct {
 	XMLName xml.Name `xml:"xml"`
@@ -23,16 +32,17 @@ type PayReq struct {
 
 	WeixinMD5Key string `xml:"-" validate:"nonzero"`
 
-	DeviceInfo     string `xml:"device_info,omitempty"`                  // 设备号
-	Body           string `xml:"body" validate:"nonzero"`                // 商品描述
-	Detail         string `xml:"detail,omitempty"`                       // 商品详情
-	Attach         string `xml:"attach,omitempty"`                       // 附加数据
-	OutTradeNo     string `xml:"out_trade_no" validate:"nonzero"`        // 商户订单号
-	TotalFee       string `xml:"total_fee" validate:"nonzero"`           // 总金额
-	FeeType        string `xml:"fee_type,omitempty"`                     // 货币类型
-	SpbillCreateIP string `xml:"spbill_create_ip" validate:"nonzero"`    // 终端IP
-	GoodsGag       string `xml:"goods_tag,omitempty"`                    // 商品标记
-	AuthCode       string `xml:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
+	DeviceInfo     string `xml:"device_info,omitempty"`               // 设备号
+	Body           string `xml:"body" validate:"nonzero"`             // 商品描述
+	Detail         string `xml:"detail,omitempty"`                    // 商品详情
+	Attach         string `xml:"attach,omitempty"`                    // 附加数据
+	OutTradeNo     string `xml:"out_trade_no" validate:"nonzero"`     // 商户订单号
+	TotalFee       string `xml:"total_fee" validate:"nonzero"`        // 总金额
+	FeeType        string `xml:"fee_type,omitempty"`                  // 货币类型
+	SpbillCreateIP string `xml:"spbill_create_ip" validate:"nonzero"` // 终端IP
+	GoodsGag       string `xml:"goods_tag,omitempty"`                 // 商品标记
+	AuthCode       string `xml:"auth_code"`                           // 授权码
+	// AuthCode       string `xml:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }
 
 // GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）
