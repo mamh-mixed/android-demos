@@ -171,3 +171,6 @@ TRADE_SUCCESS,交易成功，如:多级分润、退款等。,query,00
 TRADE_PENDING,等待卖家收款,query,01
 TRADE_FINISHED,交易成功且结束，即不可再做任何操作,query,00
 WAIT_BUYER_PAY,交易创建，等待买家付款。,query,09
+
+SOUNDWAVE_PARSER_FAIL
+

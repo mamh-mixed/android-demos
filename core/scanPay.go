@@ -12,11 +12,9 @@ import (
 
 // 使用8583应答
 var (
-	orderClosed = mongo.ScanPayRespCol.Get("ORDER_CLOSED").ISO8583Code
-	inprocess   = mongo.ScanPayRespCol.Get("INPROCESS").ISO8583Code
-	successResp = mongo.ScanPayRespCol.Get("SUCCESS")
-	successCode = successResp.ISO8583Code
-	successMsg  = successResp.ISO8583Msg
+	closeCode, closeMsg         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
+	inprocessCode, inprocessMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
+	successCode, successMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
 )
 
 // TransQuery 交易查询
@@ -79,16 +77,22 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 根据扫码Id判断走哪个渠道
-	if req.Chcd == "" {
-		if strings.HasPrefix(req.ScanCodeId, "1") {
-			req.Chcd = "WXP"
-		} else if strings.HasPrefix(req.ScanCodeId, "2") {
-			req.Chcd = "ALP"
-		} else {
-			return logicErrorHandler(t, "NO_CHANNEL")
-		}
+	shouldChcd := ""
+	switch req.ScanCodeId[0:1] {
+	case "1":
+		shouldChcd = "WXP"
+	case "2":
+		shouldChcd = "ALP"
+	default:
+		return logicErrorHandler(t, "NO_CHANNEL")
 	}
-	t.ChanCode = req.Chcd
+
+	// 上送渠道与付款码不符
+	if req.Chcd != "" && req.Chcd != shouldChcd {
+		return logicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
+	}
+	req.Chcd = shouldChcd
+	t.ChanCode = shouldChcd
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -340,7 +344,8 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	default:
 		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
 		orig.TransStatus = model.TransClosed
-		orig.RespCode = orderClosed // 订单已关闭或取消
+		orig.RespCode = closeCode // 订单已关闭或取消
+		orig.ErrorDetail = closeMsg
 	}
 
 	ret = adaptor.ProcessCancel(orig, cancel, req)
@@ -457,7 +462,8 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 成功应答
 	if ret.Respcd == successCode {
 		orig.TransStatus = model.TransClosed
-		orig.RespCode = orderClosed // 订单已关闭或取消
+		orig.RespCode = closeCode // 订单已关闭或取消
+		orig.ErrorDetail = closeMsg
 		// 更新原交易信息
 		mongo.SpTransColl.Update(orig)
 	}
@@ -511,7 +517,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 	switch ret.Respcd {
 	case successCode:
 		t.TransStatus = model.TransSuccess
-	case inprocess:
+	case inprocessCode:
 		t.TransStatus = model.TransHandling
 	default:
 		t.TransStatus = model.TransFail
