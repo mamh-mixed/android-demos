@@ -83,6 +83,7 @@ type ScanPayResponse struct {
 	Inscd           string `json:"inscd,omitempty"`           // 机构号 M M
 	Chcd            string `json:"chcd,omitempty"`            // 渠道 C C
 	Mchntid         string `json:"mchntid"`                   // 商户号 M M
+	Terminalid      string `json:"terminalid,omitempty"`      // 终端号
 	Txamt           string `json:"txamt,omitempty"`           // 订单金额 M M
 	ChannelOrderNum string `json:"channelOrderNum,omitempty"` // 渠道交易号 C
 	ConsumerAccount string `json:"consumerAccount,omitempty"` // 渠道账号  C

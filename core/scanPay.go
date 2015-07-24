@@ -228,7 +228,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret = adaptor.ProcessRefund(orig, refund, req)
 
 	// 更新原交易状态
-	if ret.Respcd == adaptor.SuccessMsg {
+	if ret.Respcd == adaptor.SuccessCode {
 		mongo.SpTransColl.Update(orig)
 	}
 
@@ -343,7 +343,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret = adaptor.ProcessCancel(orig, cancel, req)
 
 	// 原交易状态更新
-	if ret.Respcd == adaptor.SuccessMsg {
+	if ret.Respcd == adaptor.SuccessCode {
 		mongo.SpTransColl.Update(orig)
 	}
 
@@ -402,7 +402,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret = adaptor.ProcessClose(orig, closed, req)
 
 	// 成功应答
-	if ret.Respcd == adaptor.SuccessMsg {
+	if ret.Respcd == adaptor.SuccessCode {
 		orig.TransStatus = model.TransClosed
 		orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		orig.ErrorDetail = adaptor.CloseMsg
@@ -439,7 +439,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
-	case adaptor.SuccessMsg:
+	case adaptor.SuccessCode:
 		t.TransStatus = model.TransSuccess
 	case adaptor.InprocessCode:
 		t.TransStatus = model.TransHandling

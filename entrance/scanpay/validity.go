@@ -25,6 +25,7 @@ const (
 	goodsInfo  = "goodsInfo"
 	insCode    = "inscd"
 	buiscd     = "busicd"
+	terminalid = "terminalid"
 )
 
 var (

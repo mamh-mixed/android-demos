@@ -99,7 +99,6 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 机构号不符
-	log.Debug(mer.InsCode)
 	if mer.InsCode != req.Inscd {
 		ret = fieldContentError(insCode)
 		fillResponseInfo(req, ret)
@@ -154,6 +153,9 @@ func fillResponseInfo(req *model.ScanPayRequest, ret *model.ScanPayResponse) {
 	}
 	if ret.Mchntid == "" {
 		ret.Mchntid = req.Mchntid
+	}
+	if ret.Terminalid == "" {
+		ret.Terminalid = req.Terminalid
 	}
 	if ret.Txamt == "" {
 		ret.Txamt = req.Txamt

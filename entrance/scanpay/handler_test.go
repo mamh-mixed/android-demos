@@ -13,12 +13,13 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPayRequest{
-		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
+		GoodsInfo: "鞋子，1000.00，2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "289460729295591093",
+		ScanCodeId: "280677501748010261",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
+		Chcd:       "ALP",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
@@ -28,17 +29,17 @@ var (
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		Inscd:     "CIL00002",
-		Txamt:     "0000000000010",
+		Txamt:     "000000000001",
 		Busicd:    "PAUT",
 		Mchntid:   "100000000000203",
-		Chcd:      "ALP",
+		Chcd:      "WXP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPayRequest{
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1437706064574",
+		OrigOrderNum: "1437725314234",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
@@ -55,7 +56,7 @@ var (
 		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1437637363469",
+		OrigOrderNum: "1437725314234",
 		Inscd:        "CIL00002",
 	}
 	// 关单
@@ -63,7 +64,7 @@ var (
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1437637363469",
+		OrigOrderNum: "1437710054199",
 		Inscd:        "CIL00002",
 	}
 
