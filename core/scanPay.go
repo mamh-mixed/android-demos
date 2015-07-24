@@ -259,6 +259,11 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	log.Debugf("trans:(%+v)", t)
 
+	// 原订单非支付交易
+	if t.TransType != model.PayTrans {
+		return returnWithErrorCode("CAN_NOT_QUERY_NOT_PAYTRANS")
+	}
+
 	// 判断订单的状态
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询

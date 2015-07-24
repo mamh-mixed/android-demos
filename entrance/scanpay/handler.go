@@ -97,6 +97,13 @@ func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (re
 		return
 	}
 
+	// 机构号不符
+	if mer.InsCode != req.Inscd {
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR"))
+		fillResponseInfo(req, ret)
+		return
+	}
+
 	// 验签
 	sign := req.Sign
 	if mer.IsNeedSign {
