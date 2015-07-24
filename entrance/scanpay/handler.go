@@ -84,7 +84,7 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
-func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func doScanPay(validateFuc, processFunc handleFunc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 验证字段
 	if ret = validateFuc(req); ret != nil {
 		fillResponseInfo(req, ret)
