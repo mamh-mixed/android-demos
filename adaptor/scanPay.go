@@ -289,6 +289,8 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 				return ProcessRefund(orig, closed, req)
 			}
 
+			// TODO 是否发起查询请求，确认订单状态
+
 			return weixinCloseOrder(orig, closed, req)
 		}
 

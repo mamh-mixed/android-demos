@@ -154,6 +154,9 @@ func fillResponseInfo(req *model.ScanPayRequest, ret *model.ScanPayResponse) {
 	if ret.Mchntid == "" {
 		ret.Mchntid = req.Mchntid
 	}
+	if ret.Terminalid == "" {
+		ret.Terminalid = req.Terminalid
+	}
 	if ret.Txamt == "" {
 		ret.Txamt = req.Txamt
 	}
