@@ -23,11 +23,14 @@ const (
 	scanCodeId = "scanCodeId"
 	chcd       = "chcd"
 	goodsInfo  = "goodsInfo"
+	insCode    = "inscd"
+	buiscd     = "busicd"
 )
 
 var (
-	emptyError  = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
-	formatError = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
+	emptyError   = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
+	formatError  = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
+	contentError = mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR")
 )
 
 // validateBarcodePay 验证扫码下单的参数
@@ -84,7 +87,7 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 
 	// 验证格式
 	if req.Chcd != "WXP" && req.Chcd != "ALP" {
-		return fieldFormatError(chcd)
+		return fieldContentError(chcd)
 	}
 	if matched, err := validateMchntid(req.Mchntid); !matched {
 		return err
@@ -234,6 +237,7 @@ func validateGoodsInfo(goods string) (bool, *model.ScanPayResponse) {
 			return false, fieldFormatError(goodsInfo)
 		}
 		// todo 验证格式
+
 	}
 
 	return true, nil
@@ -267,6 +271,16 @@ func validateMchntid(mcid string) (bool, *model.ScanPayResponse) {
 		return false, fieldFormatError(mchntid)
 	}
 	return true, nil
+}
+
+// fieldContentError 字段内容错误
+func fieldContentError(f string) *model.ScanPayResponse {
+
+	errMsg := strings.Replace(contentError.ISO8583Msg, "fieldName", f, 1)
+	return &model.ScanPayResponse{
+		Respcd:      contentError.ISO8583Code,
+		ErrorDetail: errMsg,
+	}
 }
 
 // fieldEmptyError 字段为空

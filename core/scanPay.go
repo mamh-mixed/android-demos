@@ -199,6 +199,11 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(refund, "NOT_PAYTRADE")
 	}
 
+	// 交易状态是否正常
+	if orig.TransStatus == model.TransFail || orig.TransStatus == model.TransHandling {
+		return logicErrorHandler(refund, "NOT_SUCESS_TRADE")
+	}
+
 	refundAmt := refund.TransAmt
 	// 退款状态是否可退
 	switch orig.RefundStatus {
@@ -225,11 +230,6 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		} else {
 			orig.RefundStatus = model.TransPartRefunded
 		}
-	}
-
-	// 交易状态是否正常
-	if orig.TransStatus != model.TransSuccess {
-		return logicErrorHandler(refund, "NOT_SUCESS_TRADE")
 	}
 
 	ret = adaptor.ProcessRefund(orig, refund, req)

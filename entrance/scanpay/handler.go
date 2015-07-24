@@ -74,7 +74,7 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case model.Canc:
 		ret = doScanPay(validateClose, core.Close, req)
 	default:
-		ret = fieldFormatError("busicd")
+		ret = fieldContentError(buiscd)
 		fillResponseInfo(req, ret)
 	}
 
@@ -84,9 +84,9 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
-func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 验证字段
-	if ret = validateFuc(req); ret != nil {
+	if ret = validateFunc(req); ret != nil {
 		fillResponseInfo(req, ret)
 		return ret
 	}
@@ -100,7 +100,7 @@ func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (re
 
 	// 机构号不符
 	if mer.InsCode != req.Inscd {
-		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR"))
+		ret = fieldContentError(insCode)
 		fillResponseInfo(req, ret)
 		return
 	}
