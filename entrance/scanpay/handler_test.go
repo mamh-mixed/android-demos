@@ -13,9 +13,9 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPayRequest{
-		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
-		// OrderNum:  util.Millisecond(),
-		OrderNum:   "哈哈中文订单号",
+		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
+		OrderNum:  util.Millisecond(),
+		// OrderNum:   "哈哈中文订单号",
 		ScanCodeId: "289460729295591093",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
@@ -38,7 +38,7 @@ var (
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1437637622151",
+		OrigOrderNum: "1437706064574",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{

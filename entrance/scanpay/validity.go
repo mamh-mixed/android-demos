@@ -237,7 +237,21 @@ func validateGoodsInfo(goods string) (bool, *model.ScanPayResponse) {
 			return false, fieldFormatError(goodsInfo)
 		}
 		// todo 验证格式
-
+		goodsArray := strings.Split(goods, ";")
+		for _, v := range goodsArray {
+			good := strings.Split(v, ",")
+			if len(good) != 3 {
+				return false, fieldFormatError(goodsInfo)
+			}
+			// 金额
+			if matched, _ := regexp.MatchString(`^(([1-9]\d*)|0)(\.(\d){1,2})?$`, good[1]); !matched {
+				return false, fieldFormatError(goodsInfo)
+			}
+			// 数量
+			if matched, _ := regexp.MatchString(`^\d+$`, good[2]); !matched {
+				return false, fieldFormatError(goodsInfo)
+			}
+		}
 	}
 
 	return true, nil
