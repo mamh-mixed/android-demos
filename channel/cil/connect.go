@@ -235,22 +235,12 @@ func (c *CilOnlinePay) ReceiveOne() (back *model.CilMsg, err error) {
 	log.Debugf("message length %d", mlen)
 
 	msg := make([]byte, mlen)
-	var size int
-	for size < mlen {
-		// log.Debug(size)
-		rlen, err := c.conn.Read(msg[size:])
-		if err != nil {
-			if err == io.EOF {
-				// read end
-				break
-			}
-			log.Error(err)
-			break
-		}
-		size += rlen
+	_, err = io.ReadFull(c.conn, msg)
+	if err != nil {
+		return nil, err
 	}
 
-	log.Infof("recieve message: %s%s", string(mLenByte), string(msg))
+	log.Infof("recieve message: %04d%s", string(mLenByte), string(msg))
 
 	back = &model.CilMsg{}
 	err = json.Unmarshal(msg, back)
