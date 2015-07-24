@@ -2,6 +2,7 @@ package adaptor
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -21,7 +22,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(t, "NO_CHANMER")
+		return LogicErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 上送参数
@@ -70,7 +71,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(t, "NO_CHANMER")
+		return LogicErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 不同渠道参数转换
@@ -121,7 +122,7 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(current, "NO_CHANMER")
+		return LogicErrorHandler(current, "NO_CHANMER")
 	}
 
 	// 不同渠道参数转换
@@ -171,7 +172,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(t, "NO_CHANMER")
+		return LogicErrorHandler(t, "NO_CHANMER")
 	}
 	// 上送参数
 
@@ -218,7 +219,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(current, "NO_CHANMER")
+		return LogicErrorHandler(current, "NO_CHANMER")
 	}
 
 	// 渠道参数
@@ -260,12 +261,78 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	return ret
 }
 
+// ProcessClose 关闭订单
+func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 支付交易（下单、预下单）
+	if orig.ChanCode == channel.ChanCodeAlipay {
+		// 成功支付的交易标记已退款
+		if orig.TransStatus == model.TransSuccess {
+			orig.RefundStatus = model.TransRefunded
+		}
+		// 执行撤销流程
+		return ProcessCancel(orig, closed, req)
+	}
+
+	if orig.ChanCode == channel.ChanCodeWeixin {
+		// 下单，微信叫做刷卡支付，即被扫，收银员使用扫码设备读取微信用户刷卡授权码
+		if orig.Busicd == model.Purc {
+			return ProcessCancel(orig, closed, req)
+		}
+
+		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
+		if orig.Busicd == model.Paut {
+			// 支付成功，调用退款接口
+			if orig.TransStatus == model.TransSuccess {
+				// 预下单全额退款
+				closed.TransAmt = orig.TransAmt
+				orig.RefundStatus = model.TransRefunded
+				return ProcessRefund(orig, closed, req)
+			}
+
+			return weixinCloseOrder(orig, closed, req)
+		}
+
+		return LogicErrorHandler(closed, "NOT_SUPPORT_TYPE")
+	}
+	return LogicErrorHandler(closed, "NO_CHANNEL")
+}
+
+func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 以下情况需要调用关单接口：
+	// 商户订单支付失败需要生成新单号重新发起支付，要对原订单号调用关单，避免重复支付；
+	// 系统下单后，用户支付超时，系统退出不再受理，避免用户继续，请调用关单接口。
+	// 注意：订单生成后不能马上调用关单接口，最短调用时间间隔为5分钟。
+	transTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
+	if err != nil {
+		log.Errorf("parse time error: creatTime=%s, mchntid=%s, origOrderNum=%s",
+			orig.CreateTime, req.Mchntid, req.OrigOrderNum)
+		return LogicErrorHandler(closed, "SYSTERM_ERROR")
+	}
+
+	interval := time.Now().Sub(transTime)
+	// 超过5分钟
+	if interval >= 5*time.Minute {
+		return ProcessWxpClose(orig, closed, req)
+	}
+
+	// 系统落地，异步执行关单
+	time.AfterFunc(5*time.Minute-interval, func() {
+		ProcessWxpClose(orig, closed, req)
+	})
+
+	// TODO 直接返回 ？？？
+	return &model.ScanPayResponse{
+		Respcd:      SuccessCode,
+		ErrorDetail: SuccessMsg,
+	}
+}
+
 // ProcessWxpClose 微信关闭接口
 func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
-		return logicErrorHandler(current, "NO_CHANMER")
+		return LogicErrorHandler(current, "NO_CHANMER")
 	}
 
 	// 渠道参数
@@ -293,30 +360,4 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	}
 
 	return ret
-}
-
-// returnWithErrorCode 使用错误码直接返回
-func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
-	spResp := mongo.ScanPayRespCol.Get(errorCode)
-	return &model.ScanPayResponse{
-		Respcd:      spResp.ISO8583Code,
-		ErrorDetail: spResp.ISO8583Msg,
-	}
-}
-
-// logicErrorHandler 逻辑错误处理
-func logicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
-	spResp := mongo.ScanPayRespCol.Get(errorCode)
-	// 8583应答
-	code, msg := spResp.ISO8583Code, spResp.ISO8583Msg
-
-	// 交易保存
-	t.RespCode = code
-	t.ErrorDetail = msg
-	mongo.SpTransColl.Add(t)
-
-	return &model.ScanPayResponse{
-		Respcd:      code,
-		ErrorDetail: msg,
-	}
 }

@@ -1,7 +1,6 @@
 package pay
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance"
@@ -16,7 +15,7 @@ func Initialize() {
 	core.BuildTree()
 
 	// 连接到 线下网关
-	cil.Connect()
+	// cil.Connect()
 
 	// 检查数据配置是否有变化
 	check.DoCheck()
