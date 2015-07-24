@@ -21,8 +21,10 @@ func init() {
 		os.Exit(4)
 	}
 
-	// 删除注释
-	re := regexp.MustCompile(`\s*//\s.+|/\*.+?\*/`)
+	// 删除注释，为避免删除非注释文本，配置文件有如下规定:
+	// 1. 单行注释文本前必须加一个空字符，与 http://example.com 区分开
+	// 2. 多行注释文本前后都必须加一个空格
+	re := regexp.MustCompile(`\s*//\s.+|\s*/\*\s[\S\s]+?\s\*/`)
 	content = re.ReplaceAll(content, []byte(""))
 	log.Debugf("config content: %s", content)
 

@@ -1,10 +1,6 @@
 FROM golang
 
-RUN go get github.com/omigo/log && \
-    go get github.com/nu7hatch/gouuid && \
-    go get github.com/omigo/mahonia && \
-    go get gopkg.in/mgo.v2 && \
-    go get gopkg.in/mgo.v2/bson
+RUN go get ./...
 ADD . /go/src/github.com/CardInfoLink/quickpay
 
 RUN go install github.com/CardInfoLink/quickpay
@@ -12,4 +8,4 @@ RUN go install github.com/CardInfoLink/quickpay
 WORKDIR /go/src/github.com/CardInfoLink/quickpay
 ENTRYPOINT /go/bin/quickpay
 
-EXPOSE 3009
+EXPOSE 6800 6600
