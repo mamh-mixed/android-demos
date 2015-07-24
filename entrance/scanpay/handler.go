@@ -59,10 +59,10 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-type handleFuc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
+type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
-func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func doScanPay(validateFuc, processFunc handleFunc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 补充原信息返回
 	defer fillResponseInfo(req, ret)
 
@@ -95,7 +95,7 @@ func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (re
 	}
 
 	// process
-	ret = processFuc(req)
+	ret = processFunc(req)
 
 	// 签名
 	if mer.IsNeedSign {

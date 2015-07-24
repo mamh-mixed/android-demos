@@ -1,13 +1,14 @@
 package core
 
 import (
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"strings"
-	"time"
 )
 
 // 使用8583应答
@@ -54,7 +55,6 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
 
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
@@ -81,9 +81,9 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 根据扫码Id判断走哪个渠道
 	if req.Chcd == "" {
 		if strings.HasPrefix(req.ScanCodeId, "1") {
-			req.Chcd = "WXP"
+			req.Chcd = channel.ChanCodeWeixin
 		} else if strings.HasPrefix(req.ScanCodeId, "2") {
-			req.Chcd = "ALP"
+			req.Chcd = channel.ChanCodeAlipay
 		} else {
 			return logicErrorHandler(t, "NO_CHANNEL")
 		}
@@ -110,7 +110,6 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // QrCodeOfflinePay 扫二维码预下单
 func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
@@ -138,7 +137,6 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		// TODO check error code
 		return logicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
@@ -157,7 +155,6 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // Refund 退款
 func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
@@ -245,7 +242,6 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // Enquiry 查询
 func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	ret = new(model.ScanPayResponse)
 	// 判断是否存在该订单
 	t, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
@@ -258,11 +254,9 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
 	case model.TransHandling, "":
-
 		ret = adaptor.ProcessEnquiry(t, req)
 		// 更新交易结果
 		updateTrans(t, ret)
-
 	default:
 		// 原交易信息
 		ret.ChannelOrderNum = t.ChanOrderNum
@@ -283,7 +277,6 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // Cancel 撤销
 func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
@@ -358,7 +351,6 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // Close 关闭订单
 func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 判断订单是否存在
 	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
 	if err != nil {
