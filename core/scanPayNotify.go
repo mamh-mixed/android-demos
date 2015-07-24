@@ -3,11 +3,13 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
+
+	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"net/url"
-	"strconv"
 )
 
 // ProcessAlpNotify 支付宝异步通知处理
@@ -77,8 +79,8 @@ func ProcessAlpNotify(params url.Values) {
 				ChannelOrderNum: tradeNo,
 				ConsumerAccount: account,
 				MerDiscount:     fmt.Sprintf("%0.2f", merDiscount),
-				Respcd:          successCode,
-				ErrorDetail:     successMsg,
+				Respcd:          adaptor.SuccessCode,
+				ErrorDetail:     adaptor.SuccessMsg,
 			})
 		case "WAIT_BUYER_PAY":
 			// do nothing
@@ -116,8 +118,8 @@ func ProcessWeixinNotify(req *model.WeixinNotifyReq) {
 			ChanRespCode:    req.ResultCode,
 			ChannelOrderNum: req.TransactionId,
 			ConsumerAccount: req.OpenID,
-			Respcd:          successCode,
-			ErrorDetail:     successMsg,
+			Respcd:          adaptor.SuccessCode,
+			ErrorDetail:     adaptor.SuccessMsg,
 		})
 	default:
 		updateTrans(t, returnWithErrorCode(req.ErrCode))

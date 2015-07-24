@@ -8,6 +8,7 @@ import (
 )
 
 var ScanPayRespCol = &scanPayRespCollection{"respCode.sp"}
+
 var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答,请联系管理员", true, "UNKNOWN"}
 
 type scanPayRespCollection struct {
