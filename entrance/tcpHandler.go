@@ -80,7 +80,7 @@ func handleConnection(conn net.Conn) {
 func read(conn net.Conn) ([]byte, error) {
 	mLenByte := make([]byte, 4)
 
-	_, err := conn.Read(mLenByte)
+	_, err := io.ReadFull(conn, mLenByte)
 	if err != nil {
 		log.Errorf("read length error: %s", err)
 		return nil, err
@@ -91,34 +91,24 @@ func read(conn net.Conn) ([]byte, error) {
 		log.Errorf("can not convert string %s to int: %s", mLenByte, err)
 		return nil, err
 	}
+	log.Debugf("message length %d", mlen)
 
 	if mlen < 0 {
 		log.Errorf("read error message length %d", mlen)
 		return nil, fmt.Errorf("error message length %d", mlen)
 	}
 
+	// 长度为 0 ，表明读取到 ping 消息
 	if mlen == 0 {
 		log.Debugf("read keepalive length %d", mlen)
 		return nil, nil
 	}
 
-	log.Debugf("message length %d", mlen)
-
 	msg := make([]byte, mlen)
-	var size int
-	for size < mlen {
-		rlen, err := conn.Read(msg[size:])
-		if err != nil {
-			if err == io.EOF {
-				// read end
-				break
-			}
-			log.Error(err)
-			break
-		}
-		size += rlen
+	size, err := io.ReadFull(conn, msg)
+	if err != nil {
+		return nil, err
 	}
-
 	log.Debugf("recieve message: %d %s", size, msg)
 
 	return msg, err
