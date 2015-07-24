@@ -3,11 +3,13 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
+
+	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"net/url"
-	"strconv"
 )
 
 // ProcessAlpNotify 支付宝异步通知处理
@@ -15,7 +17,7 @@ import (
 // 支付宝的其它接口将不接受异步通知
 func ProcessAlpNotify(params url.Values) {
 
-	log.Debugf("alp async notify: %+v", params)
+	log.Infof("alp async notify: %+v", params)
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
 	// 交易订单号
@@ -77,15 +79,13 @@ func ProcessAlpNotify(params url.Values) {
 				ChannelOrderNum: tradeNo,
 				ConsumerAccount: account,
 				MerDiscount:     fmt.Sprintf("%0.2f", merDiscount),
-				Respcd:          "00",
+				Respcd:          adaptor.SuccessCode,
+				ErrorDetail:     adaptor.SuccessMsg,
 			})
 		case "WAIT_BUYER_PAY":
 			// do nothing
 		default:
-			updateTrans(t, &model.ScanPayResponse{
-				ChanRespCode: tradeStatus,
-				Respcd:       "12", // TODO
-			})
+			updateTrans(t, returnWithErrorCode(tradeStatus))
 		}
 	}
 
@@ -118,13 +118,11 @@ func ProcessWeixinNotify(req *model.WeixinNotifyReq) {
 			ChanRespCode:    req.ResultCode,
 			ChannelOrderNum: req.TransactionId,
 			ConsumerAccount: req.OpenID,
-			Respcd:          "00",
+			Respcd:          adaptor.SuccessCode,
+			ErrorDetail:     adaptor.SuccessMsg,
 		})
 	default:
-		updateTrans(t, &model.ScanPayResponse{
-			ChanRespCode: req.ErrCode,
-			Respcd:       "01",
-		})
+		updateTrans(t, returnWithErrorCode(req.ErrCode))
 	}
 
 	// TODO 可能需要通知接入方

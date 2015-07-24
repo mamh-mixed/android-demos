@@ -26,6 +26,7 @@ ERROR_SELLER_CERTIFY_LEVEL_LIMIT,卖家未通过人行认证,createandpay,R8
 CLIENT_VERSION_NOT_MATCH,钱包版本过低，请升级到最新版本后使用,createandpay,S2
 AUTH_NO_ERROR,授权号错误,createandpay,14
 PULL_MOBILE_CASHIER_FAIL,请重新刷新应答码,createandpay,14
+SOUNDWAVE_PARSER_FAIL,请重新刷新应答码,createandpay,14
 ILLEGAL_SIGN,签名不正确,createandpay,91
 ILLEGAL_DYN_MD5_KEY,动态密钥信息错误,createandpay,91
 ILLEGAL_ENCRYPT,加密不正确,createandpay,91
@@ -171,6 +172,3 @@ TRADE_SUCCESS,交易成功，如:多级分润、退款等。,query,00
 TRADE_PENDING,等待卖家收款,query,01
 TRADE_FINISHED,交易成功且结束，即不可再做任何操作,query,00
 WAIT_BUYER_PAY,交易创建，等待买家付款。,query,09
-
-SOUNDWAVE_PARSER_FAIL
-
