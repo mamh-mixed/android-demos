@@ -2,6 +2,7 @@ package adaptor
 
 import (
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -17,7 +18,6 @@ var (
 
 // ProcessBarcodePay 扫条码下单
 func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
@@ -41,9 +41,9 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
-	case "ALP":
+	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-	case "WXP":
+	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
 		req.SubMchId = c.SubMchId
@@ -67,7 +67,6 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 
 // ProcessQrCodeOfflinePay 二维码预下单
 func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
@@ -76,10 +75,10 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
-	case "ALP":
+	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.NotifyUrl = alipayNotifyUrl
-	case "WXP":
+	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
 		req.SubMchId = c.SubMchId
@@ -117,57 +116,8 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	return ret
 }
 
-// ProcessEnquiry 查询
-func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return logicErrorHandler(t, "NO_CHANMER")
-	}
-	// 上送参数
-
-	req.OrderNum = t.OrderNum
-	req.SignCert = c.SignCert
-	req.ChanMerId = c.ChanMerId
-
-	// 不同渠道参数转换
-	switch t.ChanCode {
-	case "ALP":
-		// do nothing...
-	case "WXP":
-		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
-	default:
-	}
-
-	// 向渠道查询
-	sp := channel.GetScanPayChan(t.ChanCode)
-	if sp == nil {
-		return returnWithErrorCode("NO_CHANNEL")
-	}
-
-	ret, err = sp.ProcessEnquiry(req)
-	if err != nil {
-		log.Errorf("process enquiry error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-
-	// 特殊处理
-	// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
-	// 已在应答码中转换
-	// if t.ChanCode == "ALP" && t.Busicd == model.Paut && ret.ChanRespCode == "TRADE_NOT_EXIST" {
-	// 	inporcess := mongo.ScanPayRespCol.Get("INPROCESS")
-	// 	ret.Respcd = inporcess.ISO8583Code
-	// 	ret.ErrorDetail = inporcess.ISO8583Msg
-	// }
-
-	return ret
-}
-
 // ProcessRefund 请求渠道退款，不做逻辑处理
 func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
@@ -216,9 +166,55 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	return ret
 }
 
-// processCancel 请求渠道撤销，不做逻辑处理
-func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+// ProcessEnquiry 查询
+func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return logicErrorHandler(t, "NO_CHANMER")
+	}
+	// 上送参数
 
+	req.OrderNum = t.OrderNum
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
+	// 不同渠道参数转换
+	switch t.ChanCode {
+	case channel.ChanCodeAlipay:
+		// do nothing...
+	case channel.ChanCodeWeixin:
+		req.AppID = c.WxpAppId
+		req.SubMchId = c.SubMchId
+	default:
+	}
+
+	// 向渠道查询
+	sp := channel.GetScanPayChan(t.ChanCode)
+	if sp == nil {
+		return returnWithErrorCode("NO_CHANNEL")
+	}
+
+	ret, err = sp.ProcessEnquiry(req)
+	if err != nil {
+		log.Errorf("process enquiry error:%s", err)
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	// 特殊处理
+	// 原交易为支付宝预下单并且返回值为交易不存在时，自动处理为09
+	// 已在应答码中转换
+	// if t.ChanCode == channel.ChanCodeAlipay && t.Busicd == model.Paut && ret.ChanRespCode == "TRADE_NOT_EXIST" {
+	// 	inporcess := mongo.ScanPayRespCol.Get("INPROCESS")
+	// 	ret.Respcd = inporcess.ISO8583Code
+	// 	ret.ErrorDetail = inporcess.ISO8583Msg
+	// }
+
+	return ret
+}
+
+// ProcessCancel 请求渠道撤销，不做逻辑处理
+func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
@@ -264,7 +260,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	return ret
 }
 
-// processWxpClose 微信关闭接口
+// ProcessWxpClose 微信关闭接口
 func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)

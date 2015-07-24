@@ -3,6 +3,7 @@ package scanpay
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -80,7 +81,7 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-type handleFuc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
+type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
 func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -119,7 +120,7 @@ func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (re
 	}
 
 	// process
-	ret = processFuc(req)
+	ret = processFunc(req)
 
 	// 补充原信息返回
 	fillResponseInfo(req, ret)
