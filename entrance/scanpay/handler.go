@@ -2,6 +2,7 @@ package scanpay
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
@@ -10,6 +11,26 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
+
+// TcpScanPayHandle tcp处理
+func TcpScanPayHandle(reqBytes []byte) []byte {
+
+	// gbk解编码
+	dgbk, _ := util.GBKTranscoder.Decode(string(reqBytes))
+
+	// 处理
+	retBytes := ScanPayHandle([]byte(dgbk))
+
+	// gbk编码
+	retStr := string(retBytes)
+
+	egbk, _ := util.GBKTranscoder.Encode(retStr)
+
+	// 长度位
+	retLen := fmt.Sprintf("%04d", len(egbk))
+
+	return []byte(retLen + egbk)
+}
 
 // ScanPayHandle 执行扫码支付逻辑
 func ScanPayHandle(reqBytes []byte) []byte {
@@ -53,7 +74,8 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case model.Canc:
 		ret = doScanPay(validateClose, core.Close, req)
 	default:
-		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("DATA_ERROR"))
+		ret = fieldFormatError("busicd")
+		fillResponseInfo(req, ret)
 	}
 
 	return ret
@@ -62,40 +84,46 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
-func doScanPay(validateFuc, processFunc handleFunc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 补充原信息返回
-	defer fillResponseInfo(req, ret)
-
+func doScanPay(validateFuc, processFuc handleFuc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 验证字段
 	if ret = validateFuc(req); ret != nil {
+		fillResponseInfo(req, ret)
 		return ret
 	}
 
 	mer, err := mongo.MerchantColl.Find(req.Mchntid)
 	if err != nil {
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
+		fillResponseInfo(req, ret)
 		return
 	}
 
 	// 验签
+	sign := req.Sign
 	if mer.IsNeedSign {
-		sig := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
-		if sig != req.Sign {
-			log.Errorf("mer(%s) sign failed: data=%v, sign=%s", req.Mchntid, req, sig)
+		req.Sign = "" // 置空
+		s := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
+		if s != sign {
+			log.Errorf("sign should be %s, but get %s", s, sign)
 			ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("SIGN_AUTH_ERROR"))
+			fillResponseInfo(req, ret)
 			return
 		}
 	}
 
 	// 验证接口权限
 	if !util.StringInSlice(req.Busicd, mer.Permission) {
-		log.Errorf("merchant(%s) request(%s) refused", req.Mchntid, req.Busicd)
+		log.Errorf("merchant %s request %s interface without permission!", req.Mchntid, req.Busicd)
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_PERMISSION"))
+		fillResponseInfo(req, ret)
 		return
 	}
 
 	// process
 	ret = processFunc(req)
+
+	// 补充原信息返回
+	fillResponseInfo(req, ret)
 
 	// 签名
 	if mer.IsNeedSign {

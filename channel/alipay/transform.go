@@ -31,13 +31,6 @@ func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, er
 	ret := new(model.ScanPayResponse)
 	// 成功返回参数
 	alipay := alpResp.Response.Alipay
-
-	// 中文长度限制
-	r := []rune(alipay.DetailErrorDes)
-	if len(r) > 64 {
-		alipay.DetailErrorDes = string(r[:64])
-	}
-
 	switch service {
 	// 下单
 	case createAndPay:
@@ -65,16 +58,25 @@ func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, er
 
 // errorCodeMapping 错误码映射
 func errorCodeMapping(errorCode, errorDetail, service string) (ret *model.ScanPayResponse, err error) {
-	spCode := mongo.ScanPayRespCol.GetByAlp(ret.ChanRespCode, service)
+	spCode := mongo.ScanPayRespCol.GetByAlp(errorCode, service)
 	ret = &model.ScanPayResponse{}
 	ret.Respcd = spCode.ISO8583Code
+
 	if spCode.IsUseISO || errorDetail == "" {
 		ret.ErrorDetail = spCode.ISO8583Msg
-	} else {
-		// 使用渠道应答
-		log.Infof("use alipay errorDetail info: %s", errorDetail)
-		ret.ErrorDetail = errorDetail
+		return
 	}
+
+	// 中文长度限制
+	r := []rune(errorDetail)
+	if len(r) > 64 {
+		errorDetail = string(r[:64])
+	}
+
+	// 使用渠道应答
+	log.Infof("use alipay errorDetail info: %s", errorDetail)
+	ret.ErrorDetail = errorDetail
+
 	return ret, err
 }
 
@@ -133,8 +135,6 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		// 计算折扣
 		ret.MerDiscount, ret.ChcdDiscount = alipay.DisCount()
 		ret.ChanRespCode = alipay.TradeStatus
-		ret.Respcd = success.ISO8583Code
-		ret.ErrorDetail = success.ISO8583Msg
 	case "FAIL", "PROCESS_EXCEPTION":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
