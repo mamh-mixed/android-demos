@@ -106,6 +106,7 @@
                             <option value="INQY">查询订单</option>
                             <option value="VOID">撤销</option>
                             <option value="REFD">退款</option>
+                            <option value="CANC">关单</option>
                         </select>
                     </div>
                     <paper-input class="col m12 l6" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
@@ -408,6 +409,14 @@
                     inscd: true,
                     mchntid: true,
                     txamt: true,
+                    orderNum: true,
+                    origOrderNum: true
+                },
+                // 关单
+                'CANC': {
+                    busicd: true,
+                    inscd: true,
+                    mchntid: true,
                     orderNum: true,
                     origOrderNum: true
                 }
