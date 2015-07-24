@@ -107,6 +107,7 @@ type Merchant struct {
 	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         //备注信息
 	Permission []string  `bson:"permission,omitempty" josn:"permission,omitempty"` //接口权限
 	Detail     MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      //商户详细信息
+	InsCode    string    `bson:"insCode,omitempty" bson:"insCode,omitempty"`       //机构号
 }
 
 // MerDetail 商户详细信息

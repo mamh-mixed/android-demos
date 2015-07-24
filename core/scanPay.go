@@ -199,6 +199,11 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return logicErrorHandler(refund, "NOT_PAYTRADE")
 	}
 
+	// 交易状态是否正常
+	if orig.TransStatus == model.TransFail || orig.TransStatus == model.TransHandling {
+		return logicErrorHandler(refund, "NOT_SUCESS_TRADE")
+	}
+
 	refundAmt := refund.TransAmt
 	// 退款状态是否可退
 	switch orig.RefundStatus {
@@ -227,11 +232,6 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		}
 	}
 
-	// 交易状态是否正常
-	if orig.TransStatus != model.TransSuccess {
-		return logicErrorHandler(refund, "NOT_SUCESS_TRADE")
-	}
-
 	ret = adaptor.ProcessRefund(orig, refund, req)
 
 	// 更新原交易状态
@@ -254,6 +254,11 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return returnWithErrorCode("TRADE_NOT_EXIST")
 	}
 	log.Debugf("trans:(%+v)", t)
+
+	// 原订单非支付交易
+	if t.TransType != model.PayTrans {
+		return returnWithErrorCode("CAN_NOT_QUERY_NOT_PAYTRANS")
+	}
 
 	// 判断订单的状态
 	switch t.TransStatus {
