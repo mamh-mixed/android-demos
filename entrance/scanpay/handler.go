@@ -75,7 +75,7 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validateClose, core.Close, req)
 	default:
 		ret = fieldContentError(buiscd)
-		fillResponseInfo(req, ret)
+		ret.FillWithRequest(req)
 	}
 
 	return ret
@@ -85,91 +85,61 @@ type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
 func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 验证字段
+	// 修复请求失败时，应答签名也失败的 bug
+	var signKey string
+	defer func() {
+		// 7. 补充信息
+		ret.FillWithRequest(req)
+		// 8. 对返回报文签名
+		if signKey != "" {
+			ret.Sign = security.SHA1WithKey(ret.SignMsg(), signKey)
+		}
+	}()
+
+	// 1. 开始处理逻辑前，验证字段
 	if ret = validateFunc(req); ret != nil {
-		fillResponseInfo(req, ret)
 		return ret
 	}
 
+	// 2. 先检查商户代码，如果不存在，直接报错
 	mer, err := mongo.MerchantColl.Find(req.Mchntid)
 	if err != nil {
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
-		fillResponseInfo(req, ret)
 		return
 	}
+	// log.Debugf("mer=%#v", mer)
 
-	// 机构号不符
+	if mer.IsNeedSign {
+		signKey = mer.SignKey
+	}
+
+	// 3. 验签通过后，检查机构号
 	if mer.InsCode != req.Inscd {
 		ret = fieldContentError(insCode)
-		fillResponseInfo(req, ret)
 		return
 	}
 
-	// 验签
-	sign := req.Sign
+	// 4. 商户、验签、机构号都通过后，验证接口权限
+	if !util.StringInSlice(req.Busicd, mer.Permission) {
+		log.Errorf("merchant(%s) request(%s) refused", req.Mchntid, req.Busicd)
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_PERMISSION"))
+		return
+	}
+
+	// 5. 商户存在，则验签
 	if mer.IsNeedSign {
-		req.Sign = "" // 置空
-		s := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
-		if s != sign {
-			log.Errorf("sign should be %s, but get %s", s, sign)
+		sig := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
+		if sig != req.Sign {
+			log.Errorf("mer(%s) sign failed: data=%v, sign=%s", req.Mchntid, req, sig)
 			ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("SIGN_AUTH_ERROR"))
-			fillResponseInfo(req, ret)
 			return
 		}
 	}
 
-	// 验证接口权限
-	if !util.StringInSlice(req.Busicd, mer.Permission) {
-		log.Errorf("merchant %s request %s interface without permission!", req.Mchntid, req.Busicd)
-		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_PERMISSION"))
-		fillResponseInfo(req, ret)
-		return
-	}
-
-	// process
+	// 6. 开始业务处理
 	ret = processFunc(req)
 
-	// 补充原信息返回
-	fillResponseInfo(req, ret)
-
-	// 签名
-	if mer.IsNeedSign {
-		ret.Sign = security.SHA1WithKey(ret.SignMsg(), mer.SignKey)
-	}
-
 	return ret
-}
-
-// fillResponseInfo 如果空白，默认将原信息返回
-func fillResponseInfo(req *model.ScanPayRequest, ret *model.ScanPayResponse) {
-	if ret.Busicd == "" {
-		ret.Busicd = req.Busicd
-	}
-	if ret.Inscd == "" {
-		ret.Inscd = req.Inscd
-	}
-	if ret.Chcd == "" {
-		ret.Chcd = req.Chcd
-	}
-	if ret.Mchntid == "" {
-		ret.Mchntid = req.Mchntid
-	}
-	if ret.Terminalid == "" {
-		ret.Terminalid = req.Terminalid
-	}
-	if ret.Txamt == "" {
-		ret.Txamt = req.Txamt
-	}
-	if ret.OrigOrderNum == "" {
-		ret.OrigOrderNum = req.OrigOrderNum
-	}
-	if ret.OrderNum == "" {
-		ret.OrderNum = req.OrderNum
-	}
-	if ret.Sign == "" {
-		ret.Sign = req.Sign
-	}
-	ret.Txndir = "A"
 }
 
 // ErrorResponse 返回错误信息
@@ -179,7 +149,7 @@ func ErrorResponse(req *model.ScanPayRequest, errorCode string) []byte {
 		Respcd:      spResp.ISO8583Code,
 		ErrorDetail: spResp.ISO8583Msg,
 	}
-	fillResponseInfo(req, ret)
+	ret.FillWithRequest(req)
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
