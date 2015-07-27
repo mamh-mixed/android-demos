@@ -282,18 +282,25 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
 		if orig.Busicd == model.Paut {
 			// 支付成功，调用退款接口
-			if orig.TransStatus == model.TransSuccess {
+		Tag:
+			switch orig.TransStatus {
+			case model.TransSuccess:
 				// 预下单全额退款
 				closed.TransAmt = orig.TransAmt
 				orig.RefundStatus = model.TransRefunded
 				return ProcessRefund(orig, closed, req)
+			case model.TransHandling:
+				// 发起查询请求，确认订单状态
+				orderStatus := ProcessEnquiry(orig, &model.ScanPayRequest{OrderNum: orig.OrderNum})
+				if orderStatus.Respcd == SuccessCode {
+					orig.TransStatus = model.TransSuccess
+					goto Tag
+				}
+				fallthrough
+			default:
+				return weixinCloseOrder(orig, closed, req)
 			}
-
-			// TODO 是否发起查询请求，确认订单状态
-
-			return weixinCloseOrder(orig, closed, req)
 		}
-
 		return LogicErrorHandler(closed, "NOT_SUPPORT_TYPE")
 	}
 	return LogicErrorHandler(closed, "NO_CHANNEL")

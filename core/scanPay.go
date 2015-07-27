@@ -322,7 +322,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 存在部分退款交易
 	if orig.RefundStatus == model.TransPartRefunded {
-		return adaptor.LogicErrorHandler(cancel, "TRADE_HAS_REFUND")
+		return adaptor.LogicErrorHandler(cancel, "TRADE_REFUNDED")
 	}
 
 	// 判断交易状态
@@ -391,7 +391,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 存在部分退款交易
 	if orig.RefundStatus == model.TransPartRefunded {
-		return adaptor.LogicErrorHandler(closed, "TRADE_HAS_REFUND")
+		return adaptor.LogicErrorHandler(closed, "TRADE_REFUNDED")
 	}
 
 	// 交易已关闭

@@ -13,13 +13,13 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPayRequest{
-		GoodsInfo: "鞋子，1000.00，2;衣服,1500,3",
+		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
 		ScanCodeId: "280677501748010261",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
-		Chcd:       "ALP",
+		Chcd:       "ALPA",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
@@ -39,7 +39,7 @@ var (
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1437725314234",
+		OrigOrderNum: "1437989991423",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
@@ -64,11 +64,11 @@ var (
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1437710054199",
+		OrigOrderNum: "1437987401004",
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayBarcodePay
+	scanPay = scanPayEnquiry
 )
 
 func TestScanPay(t *testing.T) {
