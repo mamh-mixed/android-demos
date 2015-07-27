@@ -106,6 +106,7 @@
                             <option value="INQY">查询订单</option>
                             <option value="VOID">撤销</option>
                             <option value="REFD">退款</option>
+                            <option value="CANC">关单</option>
                         </select>
                     </div>
                     <paper-input class="col m12 l6" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
@@ -410,6 +411,14 @@
                     txamt: true,
                     orderNum: true,
                     origOrderNum: true
+                },
+                // 关单
+                'CANC': {
+                    busicd: true,
+                    inscd: true,
+                    mchntid: true,
+                    orderNum: true,
+                    origOrderNum: true
                 }
             };
             this.requiredDetector = {};
@@ -488,7 +497,22 @@
         // 支付请求响应事件
         handleSendPayResponse: function(e) {
             var response = event.detail.response;
+            // 对响应验签
+            var fields = [];
+            Object.keys(response).sort().forEach(function(v) {
+                if (v !== 'sign' && response[v] && response[v] !== '') {
+                    fields.push(v + '=' + response[v]);
+                }
+            });
+
+            var plainText = fields.join('&') + this.key;
+            var sign = SHA1(plainText)
             jQuery(this.$.sendBtn).removeClass('active');
+
+            if (sign.toLowerCase() !== response.sign.toLowerCase()) {
+                Materialize.toast('对响应数据验签失败', 5000);
+                return;
+            }
             this.responseJsonData = JSON.stringify(response, function(k, v) {
                 if (v === '') {
                     return undefined;
