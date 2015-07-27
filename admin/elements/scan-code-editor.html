@@ -497,7 +497,22 @@
         // 支付请求响应事件
         handleSendPayResponse: function(e) {
             var response = event.detail.response;
+            // 对响应验签
+            var fields = [];
+            Object.keys(response).sort().forEach(function(v) {
+                if (v !== 'sign' && response[v] && response[v] !== '') {
+                    fields.push(v + '=' + response[v]);
+                }
+            });
+
+            var plainText = fields.join('&') + this.key;
+            var sign = SHA1(plainText)
             jQuery(this.$.sendBtn).removeClass('active');
+
+            if (sign.toLowerCase() !== response.sign.toLowerCase()) {
+                Materialize.toast('对响应数据验签失败', 5000);
+                return;
+            }
             this.responseJsonData = JSON.stringify(response, function(k, v) {
                 if (v === '') {
                     return undefined;
