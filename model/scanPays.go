@@ -73,6 +73,36 @@ type ScanPayRequest struct {
 	IntTxamt    int64  `json:"-"`
 }
 
+// FillWithRequest 如果空白，默认将原信息返回
+func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
+	ret.Txndir = "A"
+
+	if ret.Busicd == "" {
+		ret.Busicd = req.Busicd
+	}
+	if ret.Inscd == "" {
+		ret.Inscd = req.Inscd
+	}
+	if ret.Chcd == "" {
+		ret.Chcd = req.Chcd
+	}
+	if ret.Mchntid == "" {
+		ret.Mchntid = req.Mchntid
+	}
+	if ret.Terminalid == "" {
+		ret.Terminalid = req.Terminalid
+	}
+	if ret.Txamt == "" {
+		ret.Txamt = req.Txamt
+	}
+	if ret.OrigOrderNum == "" {
+		ret.OrigOrderNum = req.OrigOrderNum
+	}
+	if ret.OrderNum == "" {
+		ret.OrderNum = req.OrderNum
+	}
+}
+
 // ScanPayResponse 下单支付返回体
 // M:返回时必须带上
 // C:可选
@@ -199,6 +229,9 @@ func genSignMsg(o interface{}) string {
 	t := sv.Type().Elem()
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
+		if f.Name == "Sign" {
+			continue
+		}
 		mFields = append(mFields, f.Name)
 	}
 
