@@ -3,7 +3,6 @@ package scanpay
 import "testing"
 
 func TestQuery(t *testing.T) {
-	// num := util.SerialNumber()
 	req := &QueryReq{
 		CommonParams: CommonParams{
 			AppID:      "2015051100069108",
