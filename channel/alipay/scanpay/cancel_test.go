@@ -8,7 +8,7 @@ func TestCancel(t *testing.T) {
 			AppID:      "2015051100069108",
 			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
 		},
-		OutTradeNo: "14141341234",
+		OutTradeNo: "42608e0f54f940624a86d4696da83f7d",
 	}
 
 	resp := &CancelResp{}
@@ -18,5 +18,9 @@ func TestCancel(t *testing.T) {
 		t.FailNow()
 	}
 
+	if resp.Code != "10000" {
+		t.Errorf("cancel failed")
+		t.FailNow()
+	}
 	t.Logf("%+v", resp)
 }

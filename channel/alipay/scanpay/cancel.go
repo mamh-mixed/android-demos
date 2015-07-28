@@ -29,10 +29,10 @@ type CancelResp struct {
 
 	Raw json.RawMessage `json:"alipay_trade_cancel_response"` // 返回消息体
 
-	TradeNo    string `json:"trade_no,omitempty"`     // 支付宝交易号
-	OutTradeNo string `json:"out_trade_no,omitempty"` // 原支付请求的商户订单号
-	RetryFlag  string `json:"retry_flag,omitempty"`   // 撤销已成功，无需重试
-	Action     string `json:"action,omitempty"`       // 撤销执行的动作，close：直接撤销，无退款；refund：撤销，有退款。
+	TradeNo    string `json:"trade_no"`         // 支付宝交易号
+	OutTradeNo string `json:"out_trade_no"`     // 原支付请求的商户订单号
+	RetryFlag  string `json:"retry_flag"`       // 撤销已成功，无需重试
+	Action     string `json:"action,omitempty"` // 撤销执行的动作，close：直接撤销，无退款；refund：撤销，有退款。
 }
 
 // GetRaw 报文内容
