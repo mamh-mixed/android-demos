@@ -7,8 +7,19 @@ import (
 	// "github.com/omigo/log"
 )
 
+// 导入原扫码系统商户 包含商户、渠道商户、路由策略
+func xTestAddMerFromNodejsDB(t *testing.T) {
+
+	err := AddMerchantFromOldDB()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log("SUCCESS")
+}
+
 // 导入扫码渠道应答码，同quickpay
-func TestAddSpChanFromCSV(t *testing.T) {
+func xTestAddSpChanFromCSV(t *testing.T) {
 
 	// 导入微信
 	// err := AddSpChanCodeFromScv("wxp", "respCode_wxp.csv")

@@ -16,12 +16,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "280677501748010261",
-		Inscd:      "CIL00002",
+		ScanCodeId: "282726193897225120",
+		Inscd:      "10134001",
 		Txamt:      "000000000001",
-		Chcd:       "ALPA",
+		Chcd:       "ALP",
 		Busicd:     "PURC",
-		Mchntid:    "100000000000203",
+		Mchntid:    "888888888888888",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -68,7 +68,7 @@ var (
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayEnquiry
+	scanPay = scanPayBarcodePay
 )
 
 func TestScanPay(t *testing.T) {
