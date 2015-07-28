@@ -1,8 +1,6 @@
 package mongo
 
 import (
-	"errors"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -33,15 +31,12 @@ func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer
 // Add 增加一个渠道商户
 func (col *chanMerCollection) Add(c *model.ChanMer) error {
 	bo := bson.M{
-		"chanCode": c.ChanCode,
+		"chanMerId": c.ChanMerId,
+		"chanCode":  c.ChanCode,
 	}
-	err := database.C(col.name).Find(bo).One(nil)
-	if err == nil {
-		log.Error("Add channel merchant fail，error is: chanCode(%s) is existed!", c.ChanCode)
-		return errors.New("chanCode is existed!")
-	}
+	_, err := database.C(col.name).Upsert(bo, c)
 
-	return database.C(col.name).Insert(c)
+	return err
 }
 
 // Modify 更新渠道商户信息

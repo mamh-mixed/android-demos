@@ -113,13 +113,13 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		signKey = mer.SignKey
 	}
 
-	// 3. 验签通过后，检查机构号
+	// 3. 检查机构号
 	if mer.InsCode != req.Inscd {
 		ret = fieldContentError(insCode)
 		return
 	}
 
-	// 4. 商户、验签、机构号都通过后，验证接口权限
+	// 4. 商户、机构号都通过后，验证接口权限
 	if !util.StringInSlice(req.Busicd, mer.Permission) {
 		log.Errorf("merchant(%s) request(%s) refused", req.Mchntid, req.Busicd)
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_PERMISSION"))

@@ -25,9 +25,14 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 		return LogicErrorHandler(t, "NO_CHANMER")
 	}
 
+	mer, err := mongo.MerchantColl.Find(t.MerId)
+	if err != nil {
+		return LogicErrorHandler(t, "NO_MERCHANT")
+	}
+
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
-	req.Subject = c.ChanMerName // TODO check
+	req.Subject = mer.Detail.CommodityName
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 
@@ -74,6 +79,11 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 		return LogicErrorHandler(t, "NO_CHANMER")
 	}
 
+	mer, err := mongo.MerchantColl.Find(t.MerId)
+	if err != nil {
+		return LogicErrorHandler(t, "NO_MERCHANT")
+	}
+
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
@@ -90,7 +100,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
-	req.Subject = c.ChanMerName // TODO check
+	req.Subject = mer.Detail.CommodityName
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 

@@ -114,6 +114,7 @@ type Merchant struct {
 type MerDetail struct {
 	// MerId         string `bson:"merId,omitempty"`         //商户号
 	MerName       string `bson:"merName,omitempty" json:"merName,omitempty"`             //商户名称
+	CommodityName string `bson:"commodityName,omitempty" json:"commodityName,omitempty"` //商品名称
 	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         //商户简称
 	City          string `bson:"city,omitempty" json:"city,omitempty"`                   //商户城市
 	Nation        string `bson:"nation,omitempty" json:"nation,omitempty"`               //商户国家
@@ -149,6 +150,8 @@ type ChanMer struct {
 	InsCode        string `bson:"insCode,omitempty" json:"insCode,omitempty"`               //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId     string `bson:"terminalId,omitempty" json:"terminalId,omitempty"`         //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
 	SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
+	AcqFee         string `bson:"acqFee,omitempty" json:"acqFee,omitempty"`                 //讯联跟渠道费率
+	MerFee         string `bson:"merFee,omitempty" json:"merFee,omitempty"`                 //商户跟讯联费率
 	//...
 }
 
