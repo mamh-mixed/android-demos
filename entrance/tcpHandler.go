@@ -21,7 +21,7 @@ func ListenScanPay() {
 		log.Errorf("fail to listen %s port: %s ", port, err)
 		return
 	}
-	log.Infof("ScanPay is listening on %s", port)
+	log.Infof("ScanPay TCP is listening at %s", port)
 
 	go func() {
 		for {
