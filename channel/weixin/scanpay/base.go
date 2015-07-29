@@ -1,6 +1,8 @@
 package scanpay
 
 import (
+	"encoding/xml"
+
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
 )
@@ -8,6 +10,20 @@ import (
 // BaseReq 只是为了注入签名方便
 type BaseReq interface {
 	GenSign()
+}
+
+// CommonParams 公共参数
+type CommonParams struct {
+	XMLName xml.Name `xml:"xml"`
+
+	// 公共字段
+	Appid    string `xml:"appid" validate:"len=18"`       // 公众账号ID
+	MchID    string `xml:"mch_id" validate:"nonzero"`     // 商户号
+	SubMchId string `xml:"sub_mch_id" validate:"nonzero"` // 子商户号（文档没有该字段）
+	NonceStr string `xml:"nonce_str" validate:"nonzero"`  // 随机字符串
+	Sign     string `xml:"sign"`                          // 签名
+
+	WeixinMD5Key string `xml:"-" validate:"nonzero"`
 }
 
 // BaseResp 只是为了传参方便

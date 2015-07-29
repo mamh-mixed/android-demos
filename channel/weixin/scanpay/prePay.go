@@ -15,16 +15,7 @@ var weixinNotifyURL = goconf.Config.WeixinScanPay.NotifyURL + "/quickpay/back/we
 
 // PrePayReq 请求被扫支付API需要提交的数据
 type PrePayReq struct {
-	XMLName xml.Name `xml:"xml"`
-
-	// 公共字段
-	Appid    string `xml:"appid" validate:"len=18"`       // 公众账号ID
-	MchID    string `xml:"mch_id" validate:"nonzero"`     // 商户号
-	SubMchId string `xml:"sub_mch_id" validate:"nonzero"` // 子商户号（文档没有该字段）
-	NonceStr string `xml:"nonce_str" validate:"nonzero"`  // 随机字符串
-	Sign     string `xml:"sign"`                          // 签名
-
-	WeixinMD5Key string `xml:"-" validate:"nonzero"`
+	CommonParams
 
 	DeviceInfo     string `xml:"device_info,omitempty"`               // 设备号
 	Body           string `xml:"body" validate:"nonzero"`             // 商品描述

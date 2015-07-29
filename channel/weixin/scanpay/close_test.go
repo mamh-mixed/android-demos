@@ -3,20 +3,17 @@ package scanpay
 import (
 	"encoding/xml"
 
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/validator"
-	"testing"
 )
 
 func TestClose(t *testing.T) {
 	// TODO 需要补充单元测试
 	d := &CloseReq{
-		Appid:         "wx25ac886b6dac7dd2",
-		MchID:         "1236593202",
-		SubMchId:      "1247075201",
-		NonceStr:      util.Nonce(32),
-		Sign:          "C380BEC2BFD727A4B6845133519F3AD6",
-		WeixinMD5Key:  "12sdffjjguddddd2widousldadi9o0i1",
+		CommonParams: testCommonParams,
+
 		TransactionId: "",
 		OutTradeNo:    util.Millisecond(),
 	}
@@ -35,12 +32,8 @@ func TestClose(t *testing.T) {
 
 func TestCloseGenSign(t *testing.T) {
 	d := &CloseReq{
-		Appid:         "wx2421b1c4370ec43b",
-		MchID:         "10000100",
-		SubMchId:      "1247075201",
-		NonceStr:      util.Nonce(32),
-		Sign:          "C380BEC2BFD727A4B6845133519F3AD6",
-		WeixinMD5Key:  "0123435657",
+		CommonParams: testCommonParams,
+
 		TransactionId: "",
 		OutTradeNo:    util.Millisecond(),
 	}
@@ -59,12 +52,8 @@ func TestCloseGenSign(t *testing.T) {
 
 func TestValidateCloseReqData(t *testing.T) {
 	d := &CloseReq{
-		Appid:         "wx2421b1c4370ec43b",
-		MchID:         "10000100",
-		SubMchId:      "1247075201",
-		NonceStr:      util.Nonce(32),
-		Sign:          "C380BEC2BFD727A4B6845133519F3AD6",
-		WeixinMD5Key:  "0123435657",
+		CommonParams: testCommonParams,
+
 		TransactionId: "",
 		OutTradeNo:    util.Millisecond(),
 	}

@@ -8,14 +8,7 @@ import (
 
 func TestRefund(t *testing.T) {
 	d := &RefundReq{
-		// 公共字段
-		Appid:    "wx25ac886b6dac7dd2", // 公众账号ID
-		MchID:    "1236593202",         // 商户号
-		SubMchId: "1247075201",         // 子商户号（文档没有该字段）
-		NonceStr: util.Nonce(32),       // 随机字符串
-		Sign:     "",                   // 签名
-
-		WeixinMD5Key: "12sdffjjguddddd2widousldadi9o0i1",
+		CommonParams: testCommonParams,
 
 		DeviceInfo:    "",                  // 设备号
 		TransactionId: "",                  // 微信的订单号，优先使用

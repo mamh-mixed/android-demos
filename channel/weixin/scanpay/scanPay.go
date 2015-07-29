@@ -16,21 +16,28 @@ type WeixinScanPay struct{}
 // DefaultWeixinScanPay 微信扫码支付默认实现
 var DefaultWeixinScanPay WeixinScanPay
 
+func getCommonParams(m *model.ScanPayRequest) *CommonParams {
+	return &CommonParams{
+		Appid:    m.AppID,        // 公众账号ID
+		MchID:    m.ChanMerId,    // 商户号
+		SubMchId: m.SubMchId,     // 子商户号
+		NonceStr: util.Nonce(32), // 随机字符串
+		Sign:     "",             // 签名
+
+		WeixinMD5Key: m.SignCert, // md5key
+	}
+}
+
 // ProcessBarcodePay 扫条码下单
 func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &PayReq{
-		// 必填
-		Appid:          m.AppID,        // 公众账号ID
-		MchID:          m.ChanMerId,    // 商户号
-		SubMchId:       m.SubMchId,     // 子商户号
-		NonceStr:       util.Nonce(16), // 随机字符串
-		Body:           m.Subject,      // 商品描述
-		OutTradeNo:     m.OrderNum,     // 商户订单号
-		Sign:           "",             // 签名
-		AuthCode:       m.ScanCodeId,   // 授权码
-		TotalFee:       m.ActTxamt,     // 总金额
-		WeixinMD5Key:   m.SignCert,     // md5key
-		SpbillCreateIP: util.LocalIP,   // 终端IP
+		CommonParams: *getCommonParams(m),
+
+		Body:           m.Subject,    // 商品描述
+		OutTradeNo:     m.OrderNum,   // 商户订单号
+		AuthCode:       m.ScanCodeId, // 授权码
+		TotalFee:       m.ActTxamt,   // 总金额
+		SpbillCreateIP: util.LocalIP, // 终端IP
 
 		// 非必填
 		DeviceInfo: m.DeviceInfo,     // 设备号
@@ -68,14 +75,10 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 // ProcessEnquiry 查询
 func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &PayQueryReq{
-		Appid:         m.AppID,        // 公众账号ID
-		MchID:         m.ChanMerId,    // 商户号
-		SubMchId:      m.SubMchId,     // 子商户号
-		TransactionId: "",             // 微信支付订单号
-		OutTradeNo:    m.OrderNum,     // 商户订单号
-		NonceStr:      util.Nonce(32), // 商品详情
-		Sign:          "",
-		WeixinMD5Key:  m.SignCert,
+		CommonParams: *getCommonParams(m),
+
+		TransactionId: "",         // 微信支付订单号
+		OutTradeNo:    m.OrderNum, // 商户订单号
 	}
 
 	p := &PayQueryResp{}
@@ -116,15 +119,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 // ProcessQrCodeOfflinePay 扫二维码预下单
 func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &PrePayReq{
-
-		// 公共字段
-		Appid:    m.AppID,        // 公众账号ID
-		MchID:    m.ChanMerId,    // 商户号
-		SubMchId: m.SubMchId,     // 子商户号
-		NonceStr: util.Nonce(32), // 随机字符串
-		Sign:     "",             // 签名
-
-		WeixinMD5Key: m.SignCert, // md5key
+		CommonParams: *getCommonParams(m),
 
 		DeviceInfo:     m.DeviceInfo,     // 设备号
 		Body:           m.Subject,        // 商品描述
@@ -167,13 +162,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	log.Debugf("%#c", m)
 	d := &RefundReq{
-		// 公共字段
-		Appid:        m.AppID,        // 公众账号ID
-		MchID:        m.ChanMerId,    // 商户号
-		SubMchId:     m.SubMchId,     // 子商户号
-		NonceStr:     util.Nonce(16), // 随机字符串
-		Sign:         "",             // 签名
-		WeixinMD5Key: m.SignCert,
+		CommonParams: *getCommonParams(m),
 
 		DeviceInfo:    m.DeviceInfo,   // 设备号
 		TransactionId: "",             // 微信订单号
@@ -207,13 +196,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 // ProcessRefundQuery 退款查询
 func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &RefundQueryReq{
-		// 公共字段
-		Appid:        m.AppID,        // 公众账号ID
-		MchID:        m.ChanMerId,    // 商户号
-		SubMchId:     m.SubMchId,     // 子商户号
-		NonceStr:     util.Nonce(16), // 随机字符串
-		Sign:         "",             // 签名
-		WeixinMD5Key: m.SignCert,
+		CommonParams: *getCommonParams(m),
 
 		DeviceInfo:    m.DeviceInfo,   // 设备号
 		TransactionId: "",             // 微信订单号
@@ -252,13 +235,7 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 // ProcessCancel 撤销
 func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &ReverseReq{
-		// 公共字段
-		Appid:        m.AppID,        // 公众账号ID
-		MchID:        m.ChanMerId,    // 商户号
-		SubMchId:     m.SubMchId,     // 子商户号
-		NonceStr:     util.Nonce(16), // 随机字符串
-		Sign:         "",             // 签名
-		WeixinMD5Key: m.SignCert,
+		CommonParams: *getCommonParams(m),
 
 		TransactionId: "",             // 微信订单号
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
@@ -286,13 +263,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 // ProcessClose 关闭接口
 func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 	d := &CloseReq{
-		// 公共字段
-		Appid:        m.AppID,        // 公众账号ID
-		MchID:        m.ChanMerId,    // 商户号
-		SubMchId:     m.SubMchId,     // 子商户号
-		NonceStr:     util.Nonce(16), // 随机字符串
-		Sign:         "",             // 签名
-		WeixinMD5Key: m.SignCert,
+		CommonParams: *getCommonParams(m),
 
 		TransactionId: "",             // 微信订单号
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
