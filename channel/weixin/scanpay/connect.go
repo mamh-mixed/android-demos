@@ -44,6 +44,7 @@ const (
 	refundQueryURI = "/pay/refundquery"
 	reverseURI     = "/secapi/pay/reverse"
 	closeURI       = "/pay/closeorder"
+	enterpriseURI  = "/mmpaymkttransfers/promotion/transfers"
 )
 
 func getUri(req BaseReq) string {
@@ -62,6 +63,8 @@ func getUri(req BaseReq) string {
 		return reverseURI
 	case *CloseReq:
 		return closeURI
+	case *EnterprisePayReq:
+		return enterpriseURI
 	default:
 		log.Errorf("unknown BaseReq type: %#v", v)
 		return "/404"

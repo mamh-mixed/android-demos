@@ -216,6 +216,36 @@ func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return
 }
 
+// validateEnterprisePay 验证企业付款接口参数
+func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 验证非空
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Chcd == "":
+		return fieldEmptyError(chcd)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.Txamt == "":
+		return fieldEmptyError(txamt)
+	}
+
+	// 验证格式
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
+		return err
+	}
+
+	return
+}
+
 // validateOrderNum 验证订单号
 func validateOrderNum(no string) (bool, *model.ScanPayResponse) {
 
