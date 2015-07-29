@@ -8,7 +8,7 @@ import (
 // 参考文档 https://app.alipay.com/market/document.htm?name=saomazhifu#page-14
 // 收银员通过本接口将订单信息上送至支付宝后，将支付宝返回的二维码信息展示给用户，由用户扫描二维码完成订单支付。
 
-// PrecreateReq 撤销订单
+// PrecreateReq 预下单
 type PrecreateReq struct {
 	CommonParams
 
@@ -34,7 +34,7 @@ func (c *PrecreateReq) Values() (v url.Values) {
 	return c.CommonParams.Values()
 }
 
-// PrecreateResp 撤销订单
+// PrecreateResp 预下单
 type PrecreateResp struct {
 	CommonBody
 

@@ -77,10 +77,12 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 		return err
 	}
 
+	log.Infof(">>> send to weixin: %s", string(xmlBytes))
 	ret, err := send(getUri(req), xmlBytes)
 	if err != nil {
 		return err
 	}
+	log.Infof("<<< return from weixin: %s", string(ret))
 
 	return processResponseBody(ret, resp)
 }
@@ -93,8 +95,6 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 		log.Errorf("struct(%#v) to xml error: %s", d, err)
 		return nil, err
 	}
-
-	log.Infof("xml to weixin: %s", string(xmlBytes))
 
 	return xmlBytes, nil
 }
@@ -119,7 +119,6 @@ func send(uri string, body []byte) (ret []byte, err error) {
 		log.Errorf("unable to read from resp %s", err)
 		return nil, err
 	}
-	log.Debugf("resp: \n%s", string(ret))
 
 	return ret, nil
 }

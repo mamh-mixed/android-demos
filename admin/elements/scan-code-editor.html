@@ -150,14 +150,17 @@
                 <div class="divider"></div>
 
                 <div class="row">
-                    <paper-textarea class="col m12 l6" label="请求数据" value="{{requestJsonData}}"></paper-textarea>
+                    <paper-textarea class="col m12 l6" label="HTTP 请求报文：" value="{{requestJsonData}}"></paper-textarea>
                     <div class="col m12 l1 action-row">
                         <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
                     </div>
-                    <paper-textarea class="col m12 l5" label="响应数据" value="{{responseJsonData}}" row="16"></paper-textarea>
+                    <paper-textarea class="col m12 l5" label="HTTP 响应报文：" value="{{responseJsonData}}" row="16"></paper-textarea>
                     <div id="qrcodeBtn">
                         <paper-button class="cycan" raised on-tap="handleShowQrcodeMaskTapped">二维码</paper-button>
                     </div>
+                </div>
+                <div class="row">
+                    <paper-textarea class="col l12" label="TCP 请求报文（UTF-8）：" value="{{noindentRequestJsonData}}"></paper-textarea>
                 </div>
             </div>
         </div>
@@ -171,13 +174,6 @@
 </dom-module>
 <script src="../bower_components/qrcode.js/qrcode.js"></script>
 <script type="text/javascript">
-    /**
-     *
-     *  Secure Hash Algorithm (SHA1)
-     *  http://www.webtoolkit.info/
-     *
-     **/
-
     function SHA1(msg) {
 
         function rotate_left(n, s) {
@@ -447,13 +443,19 @@
             '_convertToJSON(scanCode.busicd, scanCode.inscd, scanCode.chcd, scanCode.mchntid)',
             '_convertToJSON(scanCode.terminalid,scanCode.txamt, scanCode.currency, scanCode.goodsInfo)',
             '_convertToJSON(scanCode.orderNum, scanCode.origOrderNum, scanCode.scanCodeId, scanCode.notifyUrl)',
-            '_watchBusicdChange(scanCode.busicd)'
+            '_watchBusicdChange(scanCode.busicd)',
+            '_requestJsonDataChange(requestJsonData)'
         ],
         _convertToJSON: function(busicd, inscd, chcd, mchntid,
             terminalid, txamt, currency, goodsInfo,
             orderNum, origOrderNum, scanCodeId, notifyUrl) {
             this.scanCode.sign = this._sign();
             this.requestJsonData = JSON.stringify(this.scanCode, null, 5);
+        },
+        _requestJsonDataChange: function(requestJsonData) {
+            var noindent = this.requestJsonData.replace(/\s+/g, '');
+            var len = (""+(noindent.length+10000)).substr(1,4);
+            this.noindentRequestJsonData = len + noindent;
         },
         // 监听交易类型变化
         _watchBusicdChange: function(busicd) {
@@ -496,23 +498,10 @@
         },
         // 支付请求响应事件
         handleSendPayResponse: function(e) {
-            var response = event.detail.response;
-            // 对响应验签
-            var fields = [];
-            Object.keys(response).sort().forEach(function(v) {
-                if (v !== 'sign' && response[v] && response[v] !== '') {
-                    fields.push(v + '=' + response[v]);
-                }
-            });
-
-            var plainText = fields.join('&') + this.key;
-            var sign = SHA1(plainText)
             jQuery(this.$.sendBtn).removeClass('active');
 
-            if (sign.toLowerCase() !== response.sign.toLowerCase()) {
-                Materialize.toast('对响应数据验签失败', 5000);
-                return;
-            }
+            var response = event.detail.response;
+
             this.responseJsonData = JSON.stringify(response, function(k, v) {
                 if (v === '') {
                     return undefined;
@@ -520,6 +509,10 @@
                 return v;
             }, 5);
             Materialize.toast('成功响应请求', 2000);
+
+            if (response.sign != "") {
+                this.checkSign(response);
+            }
 
             // 二维码生成
             this.$.qrcodeBtn.style.display = 'none';
@@ -532,6 +525,23 @@
                 }
                 this.$.qrcodeMask.style.display = 'block';
                 this.$.qrcodeBtn.style.display = 'block';
+            }
+        },
+        checkSign: function(response) {
+            // 对响应验签
+            var fields = [];
+            Object.keys(response).sort().forEach(function(v) {
+                if (v !== 'sign' && response[v] && response[v] !== '') {
+                    fields.push(v + '=' + response[v]);
+                }
+            });
+
+            var plainText = fields.join('&') + this.key;
+            var sign = SHA1(plainText);
+
+            if (sign.toLowerCase() !== response.sign.toLowerCase()) {
+                Materialize.toast('对响应数据验签失败', 5000);
+                return;
             }
         },
         // 点击mask除了二维码之外的东西，关闭mask

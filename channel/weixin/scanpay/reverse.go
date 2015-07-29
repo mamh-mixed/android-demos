@@ -12,16 +12,7 @@ import (
 
 // ReverseReq 撤销订单
 type ReverseReq struct {
-	XMLName xml.Name `xml:"xml"`
-
-	// 公共字段
-	Appid    string `xml:"appid" validate:"len=18"`       // 公众账号ID
-	MchID    string `xml:"mch_id" validate:"nonzero"`     // 商户号
-	SubMchId string `xml:"sub_mch_id" validate:"nonzero"` // 子商户号（文档没有该字段）
-	NonceStr string `xml:"nonce_str" validate:"nonzero"`  // 随机字符串
-	Sign     string `xml:"sign"`                          // 签名
-
-	WeixinMD5Key string `xml:"-" validate:"nonzero"`
+	CommonParams
 
 	TransactionId string `xml:"transaction_id,omiempty"`         // 微信订单号
 	OutTradeNo    string `xml:"out_trade_no" validate:"nonzero"` // 商户订单号
@@ -59,6 +50,7 @@ type ReverseResp struct {
 	Appid      string `xml:"appid"`                  // 公众账号ID
 	MchID      string `xml:"mch_id"`                 // 商户号
 	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
+	SubAppid   string `xml:"sub_appid"`              // 子商户公众账号 ID
 	NonceStr   string `xml:"nonce_str"`              // 随机字符串
 	Sign       string `xml:"sign"`                   // 签名
 	ResultCode string `xml:"result_code"`            // 业务结果
