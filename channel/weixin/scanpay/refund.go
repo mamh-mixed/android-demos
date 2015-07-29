@@ -14,8 +14,6 @@ import (
 type RefundReq struct {
 	CommonParams
 
-	WeixinMD5Key string `xml:"-" validate:"nonzero"`
-
 	DeviceInfo    string `xml:"device_info,omiempty"`             // 设备号
 	TransactionId string `xml:"transaction_id,omiempty"`          // 微信订单号
 	OutTradeNo    string `xml:"out_trade_no" validate:"nonzero"`  // 商户订单号

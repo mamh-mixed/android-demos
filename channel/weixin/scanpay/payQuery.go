@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/xml"
 	"strings"
 
 	"github.com/omigo/log"
@@ -24,8 +23,6 @@ import (
 // PayQueryReq 请求被扫支付API需要提交的数据
 type PayQueryReq struct {
 	CommonParams
-
-	WeixinMD5Key string `xml:"-" validate:"nonzero"`
 
 	TransactionId string `xml:"transaction_id,omitempty"`         // 微信的订单号，优先使用
 	OutTradeNo    string `xml:"out_trade_no"  validate:"nonzero"` // 商户系统内部的订单号，当没提供transaction_id时需要传这个
@@ -56,23 +53,7 @@ func (d *PayQueryReq) GenSign() {
 
 // PayQueryResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PayQueryResp struct {
-	XMLName xml.Name `xml:"xml"`
-
-	ReturnCode string `xml:"return_code"`          // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
-
-	// 当return_code为SUCCESS的时候，还会包括以下字段：
-	Appid      string `xml:"appid"`                  // 公众账号ID
-	MchID      string `xml:"mch_id"`                 // 商户号
-	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
-	SubAppid   string `xml:"sub_appid"`              // 子商户公众账号 ID
-	NonceStr   string `xml:"nonce_str"`              // 随机字符串
-	Sign       string `xml:"sign"`                   // 签名
-	ResultCode string `xml:"result_code"`            // 业务结果
-	ErrCode    string `xml:"err_code,omitempty"`     // 错误代码
-	ErrCodeDes string `xml:"err_code_des,omitempty"` // 错误代码描述
-
-	// 以上为微信接口公共字段
+	CommonBody
 
 	// 当return_code 和result_code都为SUCCESS的时，还会包括以下字段：
 	DeviceInfo     string `xml:"device_info,omitempty"` // 设备号

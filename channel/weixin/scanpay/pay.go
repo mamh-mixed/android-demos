@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/xml"
 	"strings"
 
 	"github.com/omigo/log"
@@ -32,7 +31,7 @@ type PayReq struct {
 	FeeType        string `xml:"fee_type,omitempty"`                  // 货币类型
 	SpbillCreateIP string `xml:"spbill_create_ip" validate:"nonzero"` // 终端IP
 	GoodsGag       string `xml:"goods_tag,omitempty"`                 // 商品标记
-	AuthCode       string `xml:"auth_code"`                           // 授权码
+	AuthCode       string `xml:"auth_code" validate:"nonzero"`        // 授权码
 	// AuthCode       string `xml:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }
 
@@ -74,23 +73,7 @@ func (d *PayReq) GenSign() {
 
 // PayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PayResp struct {
-	XMLName xml.Name `xml:"xml"`
-
-	ReturnCode string `xml:"return_code"`          // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
-
-	// 当 return_code 为 SUCCESS 的时候，还会包括以下字段：
-	Appid      string `xml:"appid"`                  // 公众账号ID
-	MchID      string `xml:"mch_id"`                 // 商户号
-	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
-	SubAppid   string `xml:"sub_appid"`              // 子商户公众账号 ID
-	NonceStr   string `xml:"nonce_str"`              // 随机字符串
-	Sign       string `xml:"sign"`                   // 签名
-	ResultCode string `xml:"result_code"`            // 业务结果
-	ErrCode    string `xml:"err_code,omitempty"`     // 错误代码
-	ErrCodeDes string `xml:"err_code_des,omitempty"` // 错误代码描述
-
-	// 以上为微信接口公共字段
+	CommonBody
 
 	DeviceInfo string `xml:"device_info,omitempty"` // 设备号
 

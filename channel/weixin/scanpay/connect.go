@@ -79,7 +79,7 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	if err != nil {
 		return err
 	}
-	log.Infof("<<< return from weixin: %s", string(xmlBytes))
+	log.Infof("<<< return from weixin: %s", string(ret))
 
 	return processResponseBody(ret, resp)
 }
@@ -116,7 +116,6 @@ func send(uri string, body []byte) (ret []byte, err error) {
 		log.Errorf("unable to read from resp %s", err)
 		return nil, err
 	}
-	log.Debugf("resp: \n%s", string(ret))
 
 	return ret, nil
 }

@@ -12,7 +12,7 @@ func TestPayQuery(t *testing.T) {
 		CommonParams: testCommonParams,
 
 		TransactionId: "",              // 微信的订单号，优先使用
-		OutTradeNo:    "1438137518988", // 商户系统内部的订单号，当没提供transaction_id时需要传这个
+		OutTradeNo:    "1438140832742", // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 	}
 
 	r := &PayQueryResp{}

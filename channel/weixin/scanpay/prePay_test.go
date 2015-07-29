@@ -25,6 +25,7 @@ func TestPrePay(t *testing.T) {
 		TradeType:      "NATIVE",            // 交易类型
 		ProductID:      "",                  // 商品ID
 		Openid:         "",                  // 用户标识
+		SubOpenid:      "",                  // 用户标识
 	}
 
 	r := &PrePayResp{}
