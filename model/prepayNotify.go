@@ -57,7 +57,7 @@ type AlipayNotifyReq struct {
 	Sign             string `json:"sign" validate:"nonzero"`               // 签名
 	NotifyActionType string `json:"notify_action_type" validate:"nonzero"` // 通知动作类型
 	TradeNo          string `json:"trade_no" validate:"nonzero"`           // 支付宝交易号
-	AppID            string `json:"app_id" validate:"nonzero"`             // 开发者的app_id
+	AppID            string `json:"app_id" validate:"nonzero"`             // 开发者的appid
 	OutTradeNo       string `json:"out_trade_no,omitempty"`                // 商户订单号
 	OutBizNo         string `json:"out_biz_no,omitempty"`                  // 商户业务号
 	OpenID           string `json:"open_id,omitempty"`                     // 买家支付宝用户号
