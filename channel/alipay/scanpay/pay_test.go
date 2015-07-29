@@ -15,7 +15,7 @@ func TestPay(t *testing.T) {
 		},
 		OutTradeNo:  num,
 		Scene:       "bar_code",
-		AuthCode:    "282521983827835830",
+		AuthCode:    "282528673824835509",
 		Subject:     "2024-" + num,
 		TotalAmount: "0.01",
 	}
