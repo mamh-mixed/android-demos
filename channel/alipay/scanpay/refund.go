@@ -40,7 +40,7 @@ type RefundResp struct {
 	OutTradeNo           string `json:"out_trade_no,omitempty"`   // 商户订单号
 	OpenID               string `json:"open_id,omitempty"`        // 买家支付宝用户号
 	BuyerLogonID         string `json:"buyer_logon_id,omitempty"` // 买家支付宝账号
-	FundChange           string `json:"fund_change"`              // 本次退款请求是 否发生资金变动
+	FundChange           string `json:"fund_change"`              // 本次退款请求是否发生资金变动
 	RefundFee            string `json:"fund_change,omitempty"`    // 累计退款金额
 	GmtRefundPay         string `json:"gmt_refund_pay,omitempty"` // 退款时间
 	RefundDetailItemList []struct {
