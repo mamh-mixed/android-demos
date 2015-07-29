@@ -8,7 +8,7 @@ func TestRefund(t *testing.T) {
 			AppID:      "2015051100069108",
 			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
 		},
-		TradeNo:      "2015072821001004000056602110",
+		TradeNo:      "2015072821001004000056841780",
 		RefundAmount: "0.01",
 	}
 
