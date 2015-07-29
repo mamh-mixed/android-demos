@@ -72,6 +72,7 @@ type PayQueryResp struct {
 	Appid      string `xml:"appid"`                  // 公众账号ID
 	MchID      string `xml:"mch_id"`                 // 商户号
 	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
+	SubAppid   string `xml:"sub_appid"`              // 子商户公众账号 ID
 	NonceStr   string `xml:"nonce_str"`              // 随机字符串
 	Sign       string `xml:"sign"`                   // 签名
 	ResultCode string `xml:"result_code"`            // 业务结果
@@ -98,4 +99,6 @@ type PayQueryResp struct {
 	Attach         string `xml:"attach"`                // 商家数据包
 	TimeEnd        string `xml:"time_end"`              // 支付完成时间
 	TradeStateDesc string `xml:"trade_state_desc"`      // 交易状态描述
+	SubOpenid      string `xml:"sub_openid"`            // 子商户 Open ID
+	SubIsSubscribe string `xml:"sub_is_subscribe"`      // 是否关注子商户公众账号
 }

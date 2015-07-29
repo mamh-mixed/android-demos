@@ -19,8 +19,8 @@ func TestPayQuery(t *testing.T) {
 
 		WeixinMD5Key: "12sdffjjguddddd2widousldadi9o0i1",
 
-		TransactionId: "",                                 // 微信的订单号，优先使用
-		OutTradeNo:    "ed70f371a97a446257b539f7514afd87", // 商户系统内部的订单号，当没提供transaction_id时需要传这个
+		TransactionId: "",              // 微信的订单号，优先使用
+		OutTradeNo:    "1438137518988", // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 	}
 
 	r := &PayQueryResp{}

@@ -92,6 +92,7 @@ type PayResp struct {
 	Appid      string `xml:"appid"`                  // 公众账号ID
 	MchID      string `xml:"mch_id"`                 // 商户号
 	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
+	SubAppid   string `xml:"sub_appid"`              // 子商户公众账号 ID
 	NonceStr   string `xml:"nonce_str"`              // 随机字符串
 	Sign       string `xml:"sign"`                   // 签名
 	ResultCode string `xml:"result_code"`            // 业务结果
@@ -103,17 +104,19 @@ type PayResp struct {
 	DeviceInfo string `xml:"device_info,omitempty"` // 设备号
 
 	// 当 return_code 和 result_code 都为 SUCCESS 的时，还会包括以下字段：
-	OpenID        string `xml:"openid"`         // 用户标识
-	IsSubscribe   string `xml:"is_subscribe"`   // 是否关注公众账号
-	TradeType     string `xml:"trade_type"`     // 交易类型
-	BankType      string `xml:"bank_type"`      // 付款银行
-	FeeType       string `xml:"fee_type"`       // 货币类型
-	TotalFee      string `xml:"total_fee"`      // 总金额
-	CashFeeType   string `xml:"cash_fee_type"`  // 现金支付货币类型
-	CashFee       string `xml:"cash_fee"`       // 现金支付金额
-	CouponFee     string `xml:"coupon_fee"`     // 代金券或立减优惠金额
-	TransactionId string `xml:"transaction_id"` // 微信支付订单号
-	OutTradeNo    string `xml:"out_trade_no"`   // 商户订单号
-	Attach        string `xml:"attach"`         // 商家数据包
-	TimeEnd       string `xml:"time_end"`       // 支付完成时间
+	Openid         string `xml:"openid"`           // 用户标识
+	IsSubscribe    string `xml:"is_subscribe"`     // 是否关注公众账号
+	TradeType      string `xml:"trade_type"`       // 交易类型
+	BankType       string `xml:"bank_type"`        // 付款银行
+	FeeType        string `xml:"fee_type"`         // 货币类型
+	TotalFee       string `xml:"total_fee"`        // 总金额
+	CashFeeType    string `xml:"cash_fee_type"`    // 现金支付货币类型
+	CashFee        string `xml:"cash_fee"`         // 现金支付金额
+	CouponFee      string `xml:"coupon_fee"`       // 代金券或立减优惠金额
+	TransactionId  string `xml:"transaction_id"`   // 微信支付订单号
+	OutTradeNo     string `xml:"out_trade_no"`     // 商户订单号
+	Attach         string `xml:"attach"`           // 商家数据包
+	TimeEnd        string `xml:"time_end"`         // 支付完成时间
+	SubOpenid      string `xml:"sub_openid"`       // 子商户 Open ID
+	SubIsSubscribe string `xml:"sub_is_subscribe"` // 是否关注子商户公众账号
 }

@@ -510,7 +510,9 @@
             }, 5);
             Materialize.toast('成功响应请求', 2000);
 
-            checkSign(response);
+            if (response.sign != "") {
+                this.checkSign(response);
+            }
 
             // 二维码生成
             this.$.qrcodeBtn.style.display = 'none';

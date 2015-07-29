@@ -50,7 +50,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
-		ConsumerAccount: p.OpenID,        // 渠道账号  C
+		ConsumerAccount: p.SubOpenid,     // 渠道账号  C
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
@@ -98,7 +98,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
-		ConsumerAccount: p.OpenID,        // 渠道账号  C
+		ConsumerAccount: p.SubOpenid,     // 渠道账号  C
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
