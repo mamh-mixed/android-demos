@@ -24,7 +24,7 @@ type CommonParams struct {
 	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`   // 随机字符串
 	Sign     string `xml:"sign" url:"-"`                                   // 签名
 
-	WeixinMD5Key string `xml:"-" validate:"nonzero" url:"-"`
+	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero"`
 }
 
 // SetSign sign setter
@@ -42,21 +42,21 @@ type BaseResp interface{}
 
 // CommonBody 微信接口返回公共字段
 type CommonBody struct {
-	XMLName xml.Name `xml:"xml"`
+	XMLName xml.Name `xml:"xml" url:"-"`
 
-	ReturnCode string `xml:"return_code"`          // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
+	ReturnCode string `xml:"return_code" url:"return_code"`                   // 返回状态码
+	ReturnMsg  string `xml:"return_msg,omitempty" url:"return_msg,omitempty"` // 返回信息
 
 	// 当 return_code 为 SUCCESS 的时候，还会包括以下字段：
-	Appid      string `xml:"appid"`                  // 公众账号ID
-	MchID      string `xml:"mch_id"`                 // 商户号
-	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
-	SubAppid   string `xml:"sub_appid"`              // 子商户公众账号 ID
-	NonceStr   string `xml:"nonce_str"`              // 随机字符串
-	Sign       string `xml:"sign"`                   // 签名
-	ResultCode string `xml:"result_code"`            // 业务结果
-	ErrCode    string `xml:"err_code,omitempty"`     // 错误代码
-	ErrCodeDes string `xml:"err_code_des,omitempty"` // 错误代码描述
+	Appid      string `xml:"appid" url:"appid"`                                   // 公众账号ID
+	MchID      string `xml:"mch_id" url:"mch_id"`                                 // 商户号
+	SubMchId   string `xml:"sub_mch_id" url:"sub_mch_id"`                         // 子商户号（文档没有该字段）
+	SubAppid   string `xml:"sub_appid" url:"sub_appid"`                           // 子商户公众账号 ID
+	NonceStr   string `xml:"nonce_str" url:"nonce_str"`                           // 随机字符串
+	Sign       string `xml:"sign" url:"-"`                                        // 签名
+	ResultCode string `xml:"result_code" url:"result_code"`                       // 业务结果
+	ErrCode    string `xml:"err_code,omitempty" url:"err_code,omitempty"`         // 错误代码
+	ErrCodeDes string `xml:"err_code_des,omitempty" url:"err_code_des,omitempty"` // 错误代码描述
 }
 
 func base(d BaseReq, r BaseResp) (err error) {
