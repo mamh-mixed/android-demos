@@ -7,7 +7,7 @@ func TestClose(t *testing.T) {
 		CommonParams: testCommonParams,
 
 		TransactionId: "",
-		OutTradeNo:    "21212",
+		OutTradeNo:    "723f7c7a90f14dfb47356d4cfdebb212",
 	}
 
 	r := &PayResp{}
