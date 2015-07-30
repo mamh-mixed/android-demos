@@ -70,11 +70,11 @@ func (d *PrePayReq) GenSign() {
 	if d.SubOpenid != "" {
 		buf.WriteString("&sub_openid=" + d.SubOpenid)
 	}
-	if d.TimeStart != "" {
-		buf.WriteString("&time_start=" + d.TimeStart)
-	}
 	if d.TimeExpire != "" {
 		buf.WriteString("&time_expire=" + d.TimeExpire)
+	}
+	if d.TimeStart != "" {
+		buf.WriteString("&time_start=" + d.TimeStart)
 	}
 	buf.WriteString("&total_fee=" + d.TotalFee)
 	buf.WriteString("&trade_type=" + d.TradeType)

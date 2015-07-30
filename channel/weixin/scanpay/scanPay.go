@@ -2,12 +2,12 @@ package scanpay
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"strconv"
+	"time"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -19,8 +19,8 @@ var DefaultWeixinScanPay WeixinScanPay
 func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 	return &CommonParams{
 		Appid:        m.AppID,        // 公众账号ID
-		MchID:        m.ChanMerId,    // 商户号
-		SubMchId:     m.SubMchId,     // 子商户号
+		MchID:        m.SuperMchId,   // 商户号
+		SubMchId:     m.ChanMerId,    // 子商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignCert,     // md5key
@@ -117,24 +117,26 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 
 // ProcessQrCodeOfflinePay 扫二维码预下单
 func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
+	startTime := time.Now()
+	endTime := startTime.Add(5 * time.Minute)
 	d := &PrePayReq{
 		CommonParams: *getCommonParams(m),
 
-		DeviceInfo:     m.DeviceInfo,     // 设备号
-		Body:           m.Subject,        // 商品描述
-		Detail:         m.MarshalGoods(), // 商品详情
-		Attach:         m.SysOrderNum,    // 附加数据 这里送系统订单号
-		OutTradeNo:     m.OrderNum,       // 商户订单号
-		TotalFee:       m.ActTxamt,       // 总金额
-		FeeType:        m.CurrType,       // 货币类型
-		SpbillCreateIP: util.LocalIP,     // 终端IP
-		TimeStart:      "",               // 交易起始时间
-		TimeExpire:     "",               // 交易结束时间
-		GoodsGag:       m.GoodsGag,       // 商品标记
-		NotifyURL:      m.NotifyUrl,      // 通知地址
-		TradeType:      "NATIVE",         // 交易类型
-		ProductID:      "",               // 商品ID
-		Openid:         "",               // 用户标识
+		DeviceInfo:     m.DeviceInfo,                       // 设备号
+		Body:           m.Subject,                          // 商品描述
+		Detail:         m.MarshalGoods(),                   // 商品详情
+		Attach:         m.SysOrderNum,                      // 附加数据 这里送系统订单号
+		OutTradeNo:     m.OrderNum,                         // 商户订单号
+		TotalFee:       m.ActTxamt,                         // 总金额
+		FeeType:        m.CurrType,                         // 货币类型
+		SpbillCreateIP: util.LocalIP,                       // 终端IP
+		TimeStart:      startTime.Format("20060102150405"), // 交易起始时间
+		TimeExpire:     endTime.Format("20060102150405"),   // 交易结束时间
+		GoodsGag:       m.GoodsGag,                         // 商品标记
+		NotifyURL:      m.NotifyUrl,                        // 通知地址
+		TradeType:      "NATIVE",                           // 交易类型
+		ProductID:      "",                                 // 商品ID
+		Openid:         "",                                 // 用户标识
 	}
 
 	p := &PrePayResp{}

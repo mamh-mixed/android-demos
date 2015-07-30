@@ -65,7 +65,7 @@ type ScanPayRequest struct {
 	Attach     string `json:"-"` // 附加数据
 	CurrType   string `json:"-"` // 货币类型
 	GoodsGag   string `json:"-"` // 商品标记
-	SubMchId   string `json:"-"` // 子商户
+	SuperMchId string `json:"-"` // 大商户
 	TotalTxamt string `json:"-"` // 订单总金额
 
 	// 辅助字段

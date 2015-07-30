@@ -149,9 +149,10 @@ type ChanMer struct {
 	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty" json:"wxpEncryptCert,omitempty"` //微信支付加密证书
 	InsCode        string `bson:"insCode,omitempty" json:"insCode,omitempty"`               //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId     string `bson:"terminalId,omitempty" json:"terminalId,omitempty"`         //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
-	AcqFee         string `bson:"acqFee,omitempty" json:"acqFee,omitempty"`                 //讯联跟渠道费率
-	MerFee         string `bson:"merFee,omitempty" json:"merFee,omitempty"`                 //商户跟讯联费率
+	// SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
+	AcqFee     string `bson:"acqFee,omitempty" json:"acqFee,omitempty"`         //讯联跟渠道费率
+	MerFee     string `bson:"merFee,omitempty" json:"merFee,omitempty"`         //商户跟讯联费率
+	SuperMchId string `bson:"superMchId,omitempty" json:"superMchId,omitempty"` //父商户Id
 	//...
 }
 

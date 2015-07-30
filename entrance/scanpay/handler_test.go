@@ -16,12 +16,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "282726193897225120",
-		Inscd:      "10134001",
+		ScanCodeId: "130310801902094244",
+		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
-		Chcd:       "ALP",
+		Chcd:       "WXP",
 		Busicd:     "PURC",
-		Mchntid:    "888888888888888",
+		Mchntid:    "100000000000203",
 		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -39,7 +39,7 @@ var (
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1437989991423",
+		OrigOrderNum: "1438224715967",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
