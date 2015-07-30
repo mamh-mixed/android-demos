@@ -94,13 +94,20 @@ func AddMerchantFromOldDB() error {
 		if mer.Wxp.MchId != "" {
 			// 导入渠道商户
 			wxp := &model.ChanMer{}
-			wxp.ChanMerId = mer.Wxp.MchId
+
 			wxp.SignCert = mer.Wxp.Md5
 			wxp.ChanCode = "WXP"
-			wxp.SubMchId = mer.Wxp.SubMchId
 			wxp.WxpAppId = mer.Wxp.AppId
 			wxp.AcqFee = mer.Wxp.AcqFee
 			wxp.MerFee = mer.Wxp.MerFee
+			// 代理商模式
+			if mer.Wxp.SubMchId != "" {
+				wxp.ChanMerId = mer.Wxp.SubMchId
+				wxp.SuperMchId = mer.Wxp.MchId
+			} else {
+				wxp.ChanMerId = mer.Wxp.MchId
+			}
+
 			err = mongo.ChanMerColl.Add(wxp)
 			if err != nil {
 				return err

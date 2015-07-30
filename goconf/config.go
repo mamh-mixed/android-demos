@@ -50,6 +50,7 @@ type ConfigStruct struct {
 		OpenAPIURL   string
 		URL          string
 		NotifyUrl    string
+		AgentId      string
 	}
 }
 
