@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/xml"
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -15,16 +14,7 @@ var weixinNotifyURL = goconf.Config.WeixinScanPay.NotifyURL + "/quickpay/back/we
 
 // PrePayReq 请求被扫支付API需要提交的数据
 type PrePayReq struct {
-	XMLName xml.Name `xml:"xml"`
-
-	// 公共字段
-	Appid    string `xml:"appid" validate:"len=18"`       // 公众账号ID
-	MchID    string `xml:"mch_id" validate:"nonzero"`     // 商户号
-	SubMchId string `xml:"sub_mch_id" validate:"nonzero"` // 子商户号（文档没有该字段）
-	NonceStr string `xml:"nonce_str" validate:"nonzero"`  // 随机字符串
-	Sign     string `xml:"sign"`                          // 签名
-
-	WeixinMD5Key string `xml:"-" validate:"nonzero"`
+	CommonParams
 
 	DeviceInfo     string `xml:"device_info,omitempty"`               // 设备号
 	Body           string `xml:"body" validate:"nonzero"`             // 商品描述
@@ -41,6 +31,7 @@ type PrePayReq struct {
 	TradeType      string `xml:"trade_type" validate:"nonzero"`       // 交易类型
 	ProductID      string `xml:"product_id,omitempty"`                // 商品ID
 	Openid         string `xml:"openid,omitempty"`                    // 用户标识
+	SubOpenid      string `xml:"sub_openid,omitempty"`                // 子商户用户标识
 }
 
 // GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）
@@ -76,6 +67,9 @@ func (d *PrePayReq) GenSign() {
 	}
 	buf.WriteString("&spbill_create_ip=" + d.SpbillCreateIP)
 	buf.WriteString("&sub_mch_id=" + d.SubMchId)
+	if d.SubOpenid != "" {
+		buf.WriteString("&sub_openid=" + d.SubOpenid)
+	}
 	if d.TimeStart != "" {
 		buf.WriteString("&time_start=" + d.TimeStart)
 	}
@@ -94,22 +88,7 @@ func (d *PrePayReq) GenSign() {
 
 // PrePayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PrePayResp struct {
-	XMLName xml.Name `xml:"xml"`
-
-	ReturnCode string `xml:"return_code"`          // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
-
-	// 当 return_code 为 SUCCESS 的时候，还会包括以下字段：
-	Appid      string `xml:"appid"`                  // 公众账号ID
-	MchID      string `xml:"mch_id"`                 // 商户号
-	SubMchId   string `xml:"sub_mch_id"`             // 子商户号（文档没有该字段）
-	NonceStr   string `xml:"nonce_str"`              // 随机字符串
-	Sign       string `xml:"sign"`                   // 签名
-	ResultCode string `xml:"result_code"`            // 业务结果
-	ErrCode    string `xml:"err_code,omitempty"`     // 错误代码
-	ErrCodeDes string `xml:"err_code_des,omitempty"` // 错误代码描述
-
-	// 以上为微信接口公共字段
+	CommonBody
 
 	DeviceInfo string `xml:"device_info,omitempty"` // 设备号
 
