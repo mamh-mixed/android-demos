@@ -10,7 +10,7 @@ func TestClose(t *testing.T) {
 		OutTradeNo:    "723f7c7a90f14dfb47356d4cfdebb212",
 	}
 
-	r := &PayResp{}
+	r := &CloseResp{}
 
 	err := base(d, r)
 	if err != nil {

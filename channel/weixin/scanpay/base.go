@@ -18,9 +18,10 @@ type CommonParams struct {
 	XMLName xml.Name `xml:"xml" url:"-"`
 
 	// 公共字段
-	Appid    string `xml:"appid" url:"appid" validate:"len=18"`            // 公众账号ID
-	MchID    string `xml:"mch_id" url:"mch_id" validate:"nonzero"`         // 商户号
-	SubMchId string `xml:"sub_mch_id" url:"sub_mch_id" validate:"nonzero"` // 子商户号（文档没有该字段）
+	Appid    string `xml:"appid" url:"appid" validate:"len=18"`            // 微信分配的公众账号ID
+	SubAppid string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`  // 微信分配的子商户公众账号ID
+	MchID    string `xml:"mch_id" url:"mch_id" validate:"nonzero"`         // 微信支付分配的商户号
+	SubMchId string `xml:"sub_mch_id" url:"sub_mch_id" validate:"nonzero"` // 微信支付分配的子商户号，开发者模式下必填
 	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`   // 随机字符串
 	Sign     string `xml:"sign" url:"-"`                                   // 签名
 
@@ -38,7 +39,9 @@ func (c *CommonParams) GetSignKey() string {
 }
 
 // BaseResp 只是为了传参方便
-type BaseResp interface{}
+type BaseResp interface {
+	GetSign() string
+}
 
 // CommonBody 微信接口返回公共字段
 type CommonBody struct {
@@ -57,6 +60,11 @@ type CommonBody struct {
 	ResultCode string `xml:"result_code" url:"result_code"`                       // 业务结果
 	ErrCode    string `xml:"err_code,omitempty" url:"err_code,omitempty"`         // 错误代码
 	ErrCodeDes string `xml:"err_code_des,omitempty" url:"err_code_des,omitempty"` // 错误代码描述
+}
+
+// GetSign sign getter
+func (c *CommonBody) GetSign() string {
+	return c.Sign
 }
 
 func base(d BaseReq, r BaseResp) (err error) {

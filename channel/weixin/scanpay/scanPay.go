@@ -61,6 +61,10 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 	}
+	// 如果非大商户模式，用自己的 openid
+	if d.SubMchId == "" {
+		ret.ConsumerAccount = p.Openid
+	}
 
 	ret.MerDiscount, ret.ChcdDiscount = "0.00", "0.00"
 	if p.CouponFee != "" {
@@ -104,6 +108,10 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+	}
+	// 如果非大商户模式，用自己的 openid
+	if d.SubMchId == "" {
+		ret.ConsumerAccount = p.Openid
 	}
 
 	ret.MerDiscount, ret.ChcdDiscount = "0.00", "0.00"

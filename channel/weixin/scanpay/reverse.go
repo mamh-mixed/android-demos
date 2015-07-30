@@ -21,5 +21,5 @@ type ReverseReq struct {
 type ReverseResp struct {
 	CommonBody
 
-	Recall string `xml:"recall" url:"recall"` // 是否重调
+	Recall string `xml:"recall" url:"recall,omitempty"` // 是否重调
 }

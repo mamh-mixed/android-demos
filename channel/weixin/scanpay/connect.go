@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"encoding/hex"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -84,7 +85,7 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	}
 	log.Infof("<<< return from weixin: %s", string(ret))
 
-	return processResponseBody(ret, resp)
+	return processRespBody(ret, req.GetSignKey(), resp)
 }
 
 func prepareData(d BaseReq) (xmlBytes []byte, err error) {
@@ -94,7 +95,7 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 		return nil, err
 	}
 	buf.WriteString("&key=" + d.GetSignKey())
-	log.Debug(buf.String())
+	// log.Debugf("%s", buf.String())
 
 	sign := md5.Sum(buf.Bytes())
 	d.SetSign(strings.ToUpper(hex.EncodeToString(sign[:])))
@@ -132,11 +133,28 @@ func send(uri string, body []byte) (ret []byte, err error) {
 	return ret, nil
 }
 
-func processResponseBody(body []byte, respData interface{}) error {
-	err := xml.Unmarshal(body, respData)
+func processRespBody(body []byte, signKey string, resp BaseResp) error {
+	err := xml.Unmarshal(body, resp)
 	if err != nil {
 		log.Errorf("xml(%s) to struct error: %s", string(body), err)
 		return err
+	}
+
+	// 验签
+	buf, err := util.Query(resp)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+	buf.WriteString("&key=" + signKey)
+	log.Debugf("%s", buf.String())
+
+	sign := md5.Sum(buf.Bytes())
+	actual := strings.ToUpper(hex.EncodeToString(sign[:]))
+
+	if actual != resp.GetSign() {
+		log.Errorf("check sign error: query={%s}, expected=%s, actual=%s", buf.String(), resp.GetSign(), actual)
+		return errors.New("check sign error")
 	}
 
 	return nil

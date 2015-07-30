@@ -38,7 +38,7 @@ type PrePayResp struct {
 	CommonBody
 
 	DeviceInfo string `xml:"device_info,omitempty" url:"device_info,omitempty"` // 设备号
-	TradeType  string `xml:"trade_type" url:"trade_type"`                       // 交易类型
-	PrepayID   string `xml:"prepay_id" url:"prepay_id"`                         // 预支付交易会话标识
+	TradeType  string `xml:"trade_type" url:"trade_type,omitempty"`             // 交易类型
+	PrepayID   string `xml:"prepay_id" url:"prepay_id,omitempty"`               // 预支付交易会话标识
 	CodeURL    string `xml:"code_url,omitempty" url:"code_url,omitempty"`       // 二维码链接
 }
