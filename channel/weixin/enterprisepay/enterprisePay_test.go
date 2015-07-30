@@ -10,13 +10,13 @@ func TestEnterprisePay(t *testing.T) {
 
 	req := &model.ScanPayRequest{}
 	req.ActTxamt = "1"
-	req.AppID = "wx8854422b20240ed2"
-	req.ChanMerId = "1230768802"
+	req.AppID = "wxaa785395d3d09403"
+	req.ChanMerId = "1228767002"
 	req.CheckName = "NO_CHECK"
 	req.Desc = "ipad mini 16G"
-	req.OpenId = "omYJss7PyKb02j3Y5pnZLm2IL6F4"
+	req.OpenId = "omYJssw14onUqv2tocdt0EID3dIc"
 	req.OrderNum = util.Millisecond()
-	req.SignCert = "0F79610BEBC81F7BFD6212CD656FB467"
+	req.SignCert = "dskskfasfsdsjdjqisi343sd99f9djfj"
 
 	DefaultClient.ProcessPay(req)
 

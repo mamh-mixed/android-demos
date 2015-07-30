@@ -1,53 +1,42 @@
 package enterprisepay
 
 import (
-	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
 	"strings"
 
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
 // PayReq 请求被扫支付API需要提交的数据
 type EnterprisePayReq struct {
-	XMLName xml.Name `xml:"xml"`
+	XMLName xml.Name `xml:"xml" url:"-"`
 
 	// 公共字段
-	MchAappid string `xml:"mch_appid"`                // 商户appid
-	MchID     string `xml:"mchid" validate:"nonzero"` // 商户号
+	MchAappid string `xml:"mch_appid" url:"mch_appid"`            // 商户appid
+	MchID     string `xml:"mchid" url:"mchid" validate:"nonzero"` // 商户号
 	// SubMchId  string `xml:"sub_mch_id" validate:"nonzero"` // 子商户号（文档没有该字段）
-	NonceStr       string `xml:"nonce_str" validate:"nonzero"` // 随机字符串
-	Sign           string `xml:"sign"`                         // 签名
-	PartnerTradeNo string `xml:"partner_trade_no"`
-	OpenId         string `xml:"openid"`
-	CheckName      string `xml:"check_name"`
-	ReUserName     string `xml:"re_user_name"`
-	Amount         string `xml:"amount"`
-	Desc           string `xml:"desc"`
-	SpbillCreateIp string `xml:"spbill_create_ip"`
-	WeixinMD5Key   string `xml:"-" validate:"nonzero"`
+	NonceStr       string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"` // 随机字符串
+	Sign           string `xml:"sign" url:"sign,omitempty"`                    // 签名
+	PartnerTradeNo string `xml:"partner_trade_no" url:"partner_trade_no"`
+	OpenId         string `xml:"openid" url:"openid"`
+	CheckName      string `xml:"check_name" url:"check_name"`
+	ReUserName     string `xml:"re_user_name" url:"re_user_name,omitempty"`
+	Amount         string `xml:"amount" url:"amount"`
+	Desc           string `xml:"desc" url:"desc"`
+	SpbillCreateIp string `xml:"spbill_create_ip" url:"spbill_create_ip,omitempty"`
+	WeixinMD5Key   string `xml:"-" validate:"nonzero" url:"-" validate:"nonzero"`
 }
 
 // GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）
 func (d *EnterprisePayReq) GenSign() {
-	buf := bytes.Buffer{}
-
-	buf.WriteString("amount=" + d.Amount)
-	buf.WriteString("&check_name=" + d.CheckName)
-	buf.WriteString("&desc=" + d.Desc)
-	buf.WriteString("&nonce_str=" + d.NonceStr)
-	buf.WriteString("&mch_appid=" + d.MchAappid)
-	buf.WriteString("&mchid=" + d.MchID)
-	buf.WriteString("&openid=" + d.OpenId)
-	buf.WriteString("&partner_trade_no=" + d.PartnerTradeNo)
-	if d.ReUserName != "" {
-		buf.WriteString("&re_user_name=" + d.ReUserName)
+	buf, err := util.Query(d)
+	if err != nil {
+		log.Error(err)
 	}
-	buf.WriteString("&spbill_create_ip=" + d.SpbillCreateIp)
 	buf.WriteString("&key=" + d.WeixinMD5Key)
-
 	log.Debug(buf.String())
 
 	sign := md5.Sum(buf.Bytes())

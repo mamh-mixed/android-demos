@@ -29,7 +29,8 @@ func init() {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			// InsecureSkipVerify: true, // only for testing
-			Certificates: []tls.Certificate{cliCrt}},
+			Certificates: []tls.Certificate{cliCrt},
+		},
 	}
 	cli = &http.Client{Transport: tr}
 }
@@ -83,7 +84,7 @@ func send(uri string, body []byte) (ret []byte, err error) {
 
 	resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
 	if err != nil {
-		log.Errorf("unable to connect WeixinScanPay gateway: %s", err)
+		log.Errorf("unable to connect WeixinEnterprisePay gateway: %s", err)
 		return nil, err
 	}
 	defer resp.Body.Close()

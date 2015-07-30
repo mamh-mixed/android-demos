@@ -95,7 +95,11 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.SuperMchId = c.SuperMchId
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -135,8 +139,12 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.SuperMchId = c.SuperMchId
 		req.NotifyUrl = weixinNotifyUrl
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -184,9 +192,13 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
 	case channel.ChanCodeWeixin:
 		req.AppID = c.WxpAppId
-		req.SuperMchId = c.SuperMchId
 		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -239,7 +251,11 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 		// do nothing...
 	case channel.ChanCodeWeixin:
 		req.AppID = c.WxpAppId
-		req.SuperMchId = c.SuperMchId
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 	}
 
@@ -296,9 +312,13 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
 		req.AppID = c.WxpAppId
-		req.SuperMchId = c.SuperMchId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)
@@ -402,7 +422,12 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
-	req.SuperMchId = c.SuperMchId
+
+	// 判断是否代理商模式
+	if c.SuperMchId != "" {
+		req.ChanMerId = c.SuperMchId
+		req.SubMchId = c.ChanMerId
+	}
 
 	// 系统订单号
 	current.SysOrderNum = req.SysOrderNum
