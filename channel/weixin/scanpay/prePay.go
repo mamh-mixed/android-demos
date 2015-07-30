@@ -1,5 +1,12 @@
 package scanpay
 
+// 参考文档 https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
+// 应用场景
+// 除被扫支付场景以外，商户系统先调用该接口在微信支付服务后台生成预支付交易单，返回正确的预支付交易回话标识后再按扫码、JSAPI、APP等不同场景生成交易串调起支付。
+// 接口链接
+// URL地址：https://api.mch.weixin.qq.com/pay/unifiedorder
+// 是否需要证书: 不需要
+
 import (
 	"bytes"
 	"crypto/md5"
@@ -16,22 +23,22 @@ var weixinNotifyURL = goconf.Config.WeixinScanPay.NotifyURL + "/quickpay/back/we
 type PrePayReq struct {
 	CommonParams
 
-	DeviceInfo     string `xml:"device_info,omitempty"`               // 设备号
-	Body           string `xml:"body" validate:"nonzero"`             // 商品描述
-	Detail         string `xml:"detail,omitempty"`                    // 商品详情
-	Attach         string `xml:"attach,omitempty"`                    // 附加数据
-	OutTradeNo     string `xml:"out_trade_no" validate:"nonzero"`     // 商户订单号
-	TotalFee       string `xml:"total_fee" validate:"nonzero"`        // 总金额
-	FeeType        string `xml:"fee_type,omitempty"`                  // 货币类型
-	SpbillCreateIP string `xml:"spbill_create_ip" validate:"nonzero"` // 终端IP
-	TimeStart      string `xml:"time_start,omitempty"`                // 交易起始时间
-	TimeExpire     string `xml:"time_expire,omitempty"`               // 交易结束时间
-	GoodsGag       string `xml:"goods_tag,omitempty"`                 // 商品标记
-	NotifyURL      string `xml:"notify_url" validate:"nonzero"`       // 通知地址
-	TradeType      string `xml:"trade_type" validate:"nonzero"`       // 交易类型
-	ProductID      string `xml:"product_id,omitempty"`                // 商品ID
-	Openid         string `xml:"openid,omitempty"`                    // 用户标识
-	SubOpenid      string `xml:"sub_openid,omitempty"`                // 子商户用户标识
+	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`          // 设备号
+	Body           string `xml:"body" url:"body" validate:"nonzero"`                         // 商品描述
+	Detail         string `xml:"detail,omitempty" url:"detail,omitempty"`                    // 商品详情
+	Attach         string `xml:"attach,omitempty" url:"attach,omitempty"`                    // 附加数据
+	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`         // 商户订单号
+	TotalFee       string `xml:"total_fee" url:"total_fee" validate:"nonzero"`               // 总金额
+	FeeType        string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`                // 货币类型
+	SpbillCreateIP string `xml:"spbill_create_ip" url:"spbill_create_ip" validate:"nonzero"` // 终端IP
+	TimeStart      string `xml:"time_start,omitempty" url:"time_start,omitempty"`            // 交易起始时间
+	TimeExpire     string `xml:"time_expire,omitempty" url:"time_expire,omitempty"`          // 交易结束时间
+	GoodsGag       string `xml:"goods_tag,omitempty" url:"goods_tag,omitempty"`              // 商品标记
+	NotifyURL      string `xml:"notify_url" url:"notify_url" validate:"nonzero"`             // 通知地址
+	TradeType      string `xml:"trade_type" url:"trade_type" validate:"nonzero"`             // 交易类型
+	ProductID      string `xml:"product_id,omitempty" url:"product_id,omitempty"`            // 商品ID
+	Openid         string `xml:"openid,omitempty" url:"openid,omitempty"`                    // 用户标识
+	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`            // 子商户用户标识
 }
 
 // GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）
@@ -90,10 +97,10 @@ func (d *PrePayReq) GenSign() {
 type PrePayResp struct {
 	CommonBody
 
-	DeviceInfo string `xml:"device_info,omitempty"` // 设备号
+	DeviceInfo string `xml:"device_info,omitempty" url:"device_info,omitempty"` // 设备号
 
 	// 当 return_code 和 result_code 都为 SUCCESS 的时，还会包括以下字段：
-	TradeType string `xml:"trade_type"` // 交易类型
-	PrepayID  string `xml:"prepay_id"`  // 预支付交易会话标识
-	CodeURL   string `xml:"code_url"`   // 二维码链接
+	TradeType string `xml:"trade_type" url:"trade_type"`                 // 交易类型
+	PrepayID  string `xml:"prepay_id" url:"prepay_id"`                   // 预支付交易会话标识
+	CodeURL   string `xml:"code_url,omitempty" url:"code_url,omitempty"` // 二维码链接
 }

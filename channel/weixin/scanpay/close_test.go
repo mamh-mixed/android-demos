@@ -10,12 +10,11 @@ import (
 )
 
 func TestClose(t *testing.T) {
-	// TODO 需要补充单元测试
 	d := &CloseReq{
 		CommonParams: testCommonParams,
 
 		TransactionId: "",
-		OutTradeNo:    util.Millisecond(),
+		OutTradeNo:    "21212",
 	}
 
 	r := &PayResp{}
