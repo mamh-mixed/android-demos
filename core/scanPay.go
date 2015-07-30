@@ -11,6 +11,58 @@ import (
 	"github.com/omigo/log"
 )
 
+// EnterprisePay 企业支付接口
+func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+	if count > 0 {
+		// 订单号重复
+		return returnWithErrorCode("ORDER_DUPLICATE")
+	}
+
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:         req.Mchntid,
+		OrderNum:      req.OrderNum,
+		TransType:     model.PayTrans,
+		Busicd:        req.Busicd,
+		Inscd:         req.Inscd,
+		Terminalid:    req.Terminalid,
+		TransAmt:      req.IntTxamt,
+		Remark:        req.Desc,
+		GatheringId:   req.OpenId,
+		GatheringName: req.UserName,
+	}
+
+	// 渠道是否合法
+	switch req.Chcd {
+	case channel.ChanCodeWeixin:
+		// ok
+	default:
+		// alipay not support now
+		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
+	}
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+	}
+	t.ChanMerId = rp.ChanMerId
+
+	ret = adaptor.ProcessEnterprisePay(t, req)
+
+	// 更新交易信息
+	updateTrans(t, ret)
+
+	return ret
+}
+
 // TransQuery 交易查询
 func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
 

@@ -149,9 +149,10 @@ type ChanMer struct {
 	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty" json:"wxpEncryptCert,omitempty"` //微信支付加密证书
 	InsCode        string `bson:"insCode,omitempty" json:"insCode,omitempty"`               //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId     string `bson:"terminalId,omitempty" json:"terminalId,omitempty"`         //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
-	AcqFee         string `bson:"acqFee,omitempty" json:"acqFee,omitempty"`                 //讯联跟渠道费率
-	MerFee         string `bson:"merFee,omitempty" json:"merFee,omitempty"`                 //商户跟讯联费率
+	// SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
+	AcqFee     string `bson:"acqFee,omitempty" json:"acqFee,omitempty"`         //讯联跟渠道费率
+	MerFee     string `bson:"merFee,omitempty" json:"merFee,omitempty"`         //商户跟讯联费率
+	SuperMchId string `bson:"superMchId,omitempty" json:"superMchId,omitempty"` //父商户Id
 	//...
 }
 
@@ -187,12 +188,12 @@ type Trans struct {
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      //交易创建时间 yyyy-mm-dd hh:mm:ss
 	UpdateTime   string        `bson:"updateTime,omitempty" json:"-"`                        //交易更新时间 yyyy-mm-dd hh:mm:ss
 	RefundStatus int8          `bson:"refundStatus,omitempty" json:"-"`                      //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	Remark       string        `bson:"remark,omitempty" json:"-"`                            //备注
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       //交易账户
 	SendSmsId     string `bson:"sendSmsId,omitempty" json:"-"`     //短信流水号
 	SmsCode       string `bson:"smsCode,omitempty" json:"-"`       //短信验证码
-	Remark        string `bson:"remark,omitempty" json:"-"`        //备注
 	SubMerId      string `bson:"subMerId,omitempty" json:"-"`      //子商户id
 	BindingId     string `bson:"bindingId,omitempty" json:"-"`     //商户绑定ID
 	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"` //渠道绑定ID
@@ -208,6 +209,8 @@ type Trans struct {
 	QrCode          string `bson:"qrCode,omitempty" json:"-"`                                  //预下单时的二维码
 	Terminalid      string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`           //终端号
 	ErrorDetail     string `bson:"errorDetail,omitempty" json:"errorDetail"`                   //错误信息
+	GatheringId     string `bson:"gatheringId,omitempty" json:"-"`                             //收款号
+	GatheringName   string `bson:"gatheringName,omitempty" json:"-"`                           //收款人
 }
 
 // SummarySettData 交易汇总

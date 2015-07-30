@@ -73,6 +73,8 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validateCancel, core.Cancel, req)
 	case model.Canc:
 		ret = doScanPay(validateClose, core.Close, req)
+	case model.Qyfk:
+		ret = doScanPay(validateEnterprisePay, core.EnterprisePay, req)
 	default:
 		ret = fieldContentError(buiscd)
 		ret.FillWithRequest(req)

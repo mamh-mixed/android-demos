@@ -17,6 +17,49 @@ var (
 	weixinNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
 )
 
+// ProcessEnterprisePay 企业支付
+func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 上送参数
+	req.SysOrderNum = util.SerialNumber()
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+
+	// 交易参数
+	t.SysOrderNum = req.SysOrderNum
+
+	// 记录交易
+	err = mongo.SpTransColl.Add(t)
+	if err != nil {
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	// 不同渠道参数转换
+	switch t.ChanCode {
+	// 目前暂时不支付支付宝
+	// case channel.ChanCodeAlipay:
+	// 	req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+	case channel.ChanCodeWeixin:
+		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		req.AppID = c.WxpAppId
+		// req.SubMchId = c.SubMchId // remark:暂不支持受理商模式
+	}
+
+	ep := channel.GetEnterprisePayChan(t.ChanCode)
+	ret, err = ep.ProcessPay(req)
+	if err != nil {
+		log.Errorf("process BarcodePay error:%s", err)
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+	return ret
+}
+
 // ProcessBarcodePay 扫条码下单
 func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 获取渠道商户
@@ -52,7 +95,11 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -92,8 +139,12 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
 		req.NotifyUrl = weixinNotifyUrl
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -141,9 +192,13 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
 	case channel.ChanCodeWeixin:
 		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
 		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -196,7 +251,11 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 		// do nothing...
 	case channel.ChanCodeWeixin:
 		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 	default:
 	}
 
@@ -253,9 +312,13 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
 		req.AppID = c.WxpAppId
-		req.SubMchId = c.SubMchId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
+		// 判断是否代理商模式
+		if c.SuperMchId != "" {
+			req.ChanMerId = c.SuperMchId
+			req.SubMchId = c.ChanMerId
+		}
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)
@@ -359,7 +422,12 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
-	req.SubMchId = c.SubMchId
+
+	// 判断是否代理商模式
+	if c.SuperMchId != "" {
+		req.ChanMerId = c.SuperMchId
+		req.SubMchId = c.ChanMerId
+	}
 
 	// 系统订单号
 	current.SysOrderNum = req.SysOrderNum
