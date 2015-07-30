@@ -6,8 +6,8 @@ func TestReverse(t *testing.T) {
 	d := &ReverseReq{
 		CommonParams: testCommonParams,
 
-		TransactionId: "",                                 // 微信的订单号，优先使用
-		OutTradeNo:    "7a5d8c60e1284fe8697af775c60d15d7", // 商户系统内部的订单号，当没提供transaction_id时需要传这个
+		TransactionId: "1002080115201507300508612145",     // 微信的订单号，优先使用
+		OutTradeNo:    "ffef191aca3e4cf15e7672a5eb2113da", // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 	}
 
 	r := &ReverseResp{}
