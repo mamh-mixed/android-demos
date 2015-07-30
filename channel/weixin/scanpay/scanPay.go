@@ -18,13 +18,12 @@ var DefaultWeixinScanPay WeixinScanPay
 
 func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 	return &CommonParams{
-		Appid:    m.AppID,        // 公众账号ID
-		MchID:    m.ChanMerId,    // 商户号
-		SubMchId: m.SubMchId,     // 子商户号
-		NonceStr: util.Nonce(32), // 随机字符串
-		Sign:     "",             // 签名
-
-		WeixinMD5Key: m.SignCert, // md5key
+		Appid:        m.AppID,        // 公众账号ID
+		MchID:        m.ChanMerId,    // 商户号
+		SubMchId:     m.SubMchId,     // 子商户号
+		NonceStr:     util.Nonce(32), // 随机字符串
+		Sign:         "",             // 签名
+		WeixinMD5Key: m.SignCert,     // md5key
 	}
 }
 

@@ -230,6 +230,13 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
 		return fieldEmptyError(txamt)
+	// TODO
+	case req.OpenId == "":
+		return fieldEmptyError("openid")
+	case req.CheckName == "":
+		return fieldEmptyError("checkName")
+	case req.Desc == "":
+		return fieldEmptyError("desc")
 	}
 
 	// 验证格式
@@ -239,11 +246,30 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
 		return err
 	}
-	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
+	if matched, err := validateUserName(req); !matched {
+		return err
+	}
+	if matched, err := validateTxamt(req); !matched {
 		return err
 	}
 
 	return
+}
+
+// validateUserName 验证商户名称
+func validateUserName(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
+
+	switch req.CheckName {
+	case "FORCE_CHECK", "OPTION_CHECK":
+		if req.UserName == "" {
+			return false, fieldEmptyError("userName")
+		}
+	case "NO_CHECK":
+		// do nothing
+	default:
+		return false, fieldContentError("checkName")
+	}
+	return true, nil
 }
 
 // validateOrderNum 验证订单号

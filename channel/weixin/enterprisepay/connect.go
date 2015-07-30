@@ -1,17 +1,15 @@
-package scanpay
+package enterprisepay
 
 import (
 	"bytes"
 	"crypto/tls"
 	"encoding/xml"
 	"fmt"
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strings"
-
-	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
 )
 
 var url = goconf.Config.WeixinScanPay.URL
@@ -37,31 +35,15 @@ func init() {
 }
 
 const (
-	payURI         = "/pay/micropay"
-	prePayURI      = "/pay/unifiedorder"
-	payQueryURI    = "/pay/orderquery"
-	refundURI      = "/secapi/pay/refund"
-	refundQueryURI = "/pay/refundquery"
-	reverseURI     = "/secapi/pay/reverse"
-	closeURI       = "/pay/closeorder"
+	enterprisePayURI   = "/mmpaymkttransfers/promotion/transfers"
+	enterpriseQueryURI = "/mmpaymkttransfers/gettransferinfo"
 )
 
 func getUri(req BaseReq) string {
 	switch v := req.(type) {
-	case *PayReq:
-		return payURI
-	case *PrePayReq:
-		return prePayURI
-	case *PayQueryReq:
-		return payQueryURI
-	case *RefundReq:
-		return refundURI
-	case *RefundQueryReq:
-		return refundQueryURI
-	case *ReverseReq:
-		return reverseURI
-	case *CloseReq:
-		return closeURI
+
+	case *EnterprisePayReq:
+		return enterprisePayURI
 	default:
 		log.Errorf("unknown BaseReq type: %#v", v)
 		return "/404"
@@ -99,11 +81,7 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 func send(uri string, body []byte) (ret []byte, err error) {
 	var resp *http.Response
 
-	if strings.HasPrefix(uri, "/secapi") {
-		resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
-	} else {
-		resp, err = http.Post(url+uri, "text/xml", bytes.NewBuffer(body))
-	}
+	resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
 	if err != nil {
 		log.Errorf("unable to connect WeixinScanPay gateway: %s", err)
 		return nil, err

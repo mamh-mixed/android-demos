@@ -53,16 +53,20 @@ type ScanPayRequest struct {
 	ScanCodeId   string `json:"scanCodeId,omitempty"`   // 扫码号
 	Sign         string `json:"sign,omitempty"`         // 签名
 	NotifyUrl    string `json:"notifyUrl,omitempty"`    // 异步通知地址
+	OpenId       string `json:"openid,omitempty"`       // openid
+	CheckName    string `json:"checkName,omitempty"`    // 校验用户姓名选项
+	UserName     string `json:"userName,omitempty"`     // 用户名
+	Desc         string `json:"desc,omitempty"`         // 描述
 
 	// 微信需要的字段
-	AppID      string // 公众号ID
-	DeviceInfo string // 设备号
-	GoodsDesc  string // 商品描述
-	Attach     string // 附加数据
-	CurrType   string // 货币类型
-	GoodsGag   string // 商品标记
-	SubMchId   string // 子商户
-	TotalTxamt string // 订单总金额
+	AppID      string `json:"-"` // 公众号ID
+	DeviceInfo string `json:"-"` // 设备号
+	GoodsDesc  string `json:"-"` // 商品描述
+	Attach     string `json:"-"` // 附加数据
+	CurrType   string `json:"-"` // 货币类型
+	GoodsGag   string `json:"-"` // 商品标记
+	SubMchId   string `json:"-"` // 子商户
+	TotalTxamt string `json:"-"` // 订单总金额
 
 	// 辅助字段
 	Subject     string `json:"-"` //  商品名称

@@ -1,4 +1,4 @@
-package scanpay
+package enterprisepay
 
 import (
 	"bytes"
