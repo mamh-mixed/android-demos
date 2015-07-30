@@ -22,17 +22,17 @@ import (
 type PayReq struct {
 	CommonParams
 
-	DeviceInfo     string `xml:"device_info,omitempty"`               // 设备号
-	Body           string `xml:"body" validate:"nonzero"`             // 商品描述
-	Detail         string `xml:"detail,omitempty"`                    // 商品详情
-	Attach         string `xml:"attach,omitempty"`                    // 附加数据
-	OutTradeNo     string `xml:"out_trade_no" validate:"nonzero"`     // 商户订单号
-	TotalFee       string `xml:"total_fee" validate:"nonzero"`        // 总金额
-	FeeType        string `xml:"fee_type,omitempty"`                  // 货币类型
-	SpbillCreateIP string `xml:"spbill_create_ip" validate:"nonzero"` // 终端IP
-	GoodsGag       string `xml:"goods_tag,omitempty"`                 // 商品标记
-	AuthCode       string `xml:"auth_code" validate:"nonzero"`        // 授权码
-	// AuthCode       string `xml:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
+	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`          // 设备号
+	Body           string `xml:"body" url:"body" validate:"nonzero"`                         // 商品描述
+	Detail         string `xml:"detail,omitempty" url:"detail,omitempty"`                    // 商品详情
+	Attach         string `xml:"attach,omitempty" url:"attach,omitempty"`                    // 附加数据
+	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`         // 商户订单号
+	TotalFee       string `xml:"total_fee" url:"total_fee" validate:"nonzero"`               // 总金额
+	FeeType        string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`                // 货币类型
+	SpbillCreateIP string `xml:"spbill_create_ip" url:"spbill_create_ip" validate:"nonzero"` // 终端IP
+	GoodsGag       string `xml:"goods_tag,omitempty" url:"goods_tag,omitempty"`              // 商品标记
+	AuthCode       string `xml:"auth_code" url:"auth_code" validate:"nonzero"`               // 授权码
+	// AuthCode       string `xml:"auth_code" url:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }
 
 // GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）

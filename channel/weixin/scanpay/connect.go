@@ -2,7 +2,9 @@ package scanpay
 
 import (
 	"bytes"
+	"crypto/md5"
 	"crypto/tls"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -11,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -85,7 +88,16 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 }
 
 func prepareData(d BaseReq) (xmlBytes []byte, err error) {
-	d.GenSign()
+	buf, err := util.Query(d)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	buf.WriteString("&key=" + d.GetSignKey())
+	log.Debug(buf.String())
+
+	sign := md5.Sum(buf.Bytes())
+	d.SetSign(strings.ToUpper(hex.EncodeToString(sign[:])))
 
 	xmlBytes, err = xml.Marshal(d)
 	if err != nil {
