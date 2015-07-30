@@ -7,15 +7,7 @@ package scanpay
 // URL地址：https://api.mch.weixin.qq.com/pay/unifiedorder
 // 是否需要证书: 不需要
 
-import (
-	"bytes"
-	"crypto/md5"
-	"encoding/hex"
-	"strings"
-
-	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
-)
+import "github.com/CardInfoLink/quickpay/goconf"
 
 var weixinNotifyURL = goconf.Config.WeixinScanPay.NotifyURL + "/quickpay/back/weixin"
 
@@ -41,66 +33,12 @@ type PrePayReq struct {
 	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`            // 子商户用户标识
 }
 
-// GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）
-func (d *PrePayReq) GenSign() {
-	buf := bytes.Buffer{}
-
-	buf.WriteString("appid=" + d.Appid)
-	if d.Attach != "" {
-		buf.WriteString("&attach=" + d.Attach)
-	}
-	buf.WriteString("&body=" + d.Body)
-	if d.Detail != "" {
-		buf.WriteString("&detail=" + d.Detail)
-	}
-	if d.DeviceInfo != "" {
-		buf.WriteString("&device_info=" + d.DeviceInfo)
-	}
-	if d.FeeType != "" {
-		buf.WriteString("&fee_type=" + d.FeeType)
-	}
-	if d.GoodsGag != "" {
-		buf.WriteString("&goods_tag=" + d.GoodsGag)
-	}
-	buf.WriteString("&mch_id=" + d.MchID)
-	buf.WriteString("&nonce_str=" + d.NonceStr)
-	buf.WriteString("&notify_url=" + d.NotifyURL)
-	if d.Openid != "" {
-		buf.WriteString("&openid=" + d.Openid)
-	}
-	buf.WriteString("&out_trade_no=" + d.OutTradeNo)
-	if d.ProductID != "" {
-		buf.WriteString("&product_id=" + d.ProductID)
-	}
-	buf.WriteString("&spbill_create_ip=" + d.SpbillCreateIP)
-	buf.WriteString("&sub_mch_id=" + d.SubMchId)
-	if d.SubOpenid != "" {
-		buf.WriteString("&sub_openid=" + d.SubOpenid)
-	}
-	if d.TimeStart != "" {
-		buf.WriteString("&time_start=" + d.TimeStart)
-	}
-	if d.TimeExpire != "" {
-		buf.WriteString("&time_expire=" + d.TimeExpire)
-	}
-	buf.WriteString("&total_fee=" + d.TotalFee)
-	buf.WriteString("&trade_type=" + d.TradeType)
-	buf.WriteString("&key=" + d.WeixinMD5Key)
-
-	sign := md5.Sum(buf.Bytes())
-	d.Sign = strings.ToUpper(hex.EncodeToString(sign[:]))
-
-	log.Debugf("%s = md5( %s )", d.Sign, buf.String())
-}
-
 // PrePayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PrePayResp struct {
 	CommonBody
 
 	DeviceInfo string `xml:"device_info,omitempty" url:"device_info,omitempty"` // 设备号
-
-	// 当 return_code 和 result_code 都为 SUCCESS 的时，还会包括以下字段：
-	TradeType string `xml:"trade_type" url:"trade_type"`                 // 交易类型
-	PrepayID  string `xml:"prepay_id" url:"prepay_id"`                   // 预支付交易会话标识
-	CodeURL   string `xml:"code_url,omitempty" url:"code_url,omitempty"` // 二维码链接
+	TradeType  string `xml:"trade_type" url:"trade_type"`                       // 交易类型
+	PrepayID   string `xml:"prepay_id" url:"prepay_id"`                         // 预支付交易会话标识
+	CodeURL    string `xml:"code_url,omitempty" url:"code_url,omitempty"`       // 二维码链接
 }

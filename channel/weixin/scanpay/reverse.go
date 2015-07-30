@@ -9,16 +9,6 @@ package scanpay
 // 是否需要证书
 // 请求需要双向证书。
 
-import (
-	"bytes"
-	"crypto/md5"
-	"encoding/hex"
-	"encoding/xml"
-	"strings"
-
-	"github.com/omigo/log"
-)
-
 // ReverseReq 撤销订单
 type ReverseReq struct {
 	CommonParams
@@ -27,46 +17,9 @@ type ReverseReq struct {
 	OutTradeNo    string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`      // 商户订单号
 }
 
-// GenSign 计算签名
-func (d *ReverseReq) GenSign() {
-	buf := bytes.Buffer{}
-
-	buf.WriteString("appid=" + d.Appid)
-	buf.WriteString("&mch_id=" + d.MchID)
-	buf.WriteString("&nonce_str=" + d.NonceStr)
-	buf.WriteString("&out_trade_no=" + d.OutTradeNo)
-	buf.WriteString("&sub_mch_id=" + d.SubMchId)
-	if d.TransactionId != "" {
-		buf.WriteString("&transaction_id=" + d.TransactionId)
-	}
-
-	buf.WriteString("&key=" + d.WeixinMD5Key)
-
-	log.Debug(buf.String())
-
-	sign := md5.Sum(buf.Bytes())
-	d.Sign = strings.ToUpper(hex.EncodeToString(sign[:]))
-}
-
 // ReverseResp 撤销订单
 type ReverseResp struct {
-	XMLName xml.Name `xml:"xml" url:"-"`
-
-	ReturnCode string `xml:"return_code" url:"return_code"`                   // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty" url:"return_msg,omitempty"` // 返回信息
-
-	// 当 return_code 为 SUCCESS 的时候，还会包括以下字段：
-	Appid      string `xml:"appid" url:"appid"`                                   // 公众账号ID
-	MchID      string `xml:"mch_id" url:"mch_id"`                                 // 商户号
-	SubMchId   string `xml:"sub_mch_id" url:"sub_mch_id"`                         // 子商户号（文档没有该字段）
-	SubAppid   string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`       // 子商户公众账号 ID
-	NonceStr   string `xml:"nonce_str" url:"nonce_str"`                           // 随机字符串
-	Sign       string `xml:"sign" url:"-"`                                        // 签名
-	ResultCode string `xml:"result_code" url:"result_code"`                       // 业务结果
-	ErrCode    string `xml:"err_code,omitempty" url:"err_code,omitempty"`         // 错误代码
-	ErrCodeDes string `xml:"err_code_des,omitempty" url:"err_code_des,omitempty"` // 错误代码描述
-
-	// 以上为微信接口公共字段
+	CommonBody
 
 	Recall string `xml:"recall" url:"recall"` // 是否重调
 }

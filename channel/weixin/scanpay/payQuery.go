@@ -11,51 +11,18 @@ package scanpay
 // 接口链接 https://api.mch.weixin.qq.com/pay/orderquery
 // 是否需要证书 :不需要
 
-import (
-	"bytes"
-	"crypto/md5"
-	"encoding/hex"
-	"strings"
-
-	"github.com/omigo/log"
-)
-
 // PayQueryReq 请求被扫支付API需要提交的数据
 type PayQueryReq struct {
 	CommonParams
 
-	TransactionId string `xml:"transaction_id" url:"transaction_id" validate:"nonzero"` // 微信的订单号，优先使用
-	OutTradeNo    string `xml:"out_trade_no,omitempty" url:"out_trade_no,omitempty"`    // 商户系统内部的订单号，当没提供transaction_id时需要传这个
-}
-
-// GenSign 计算签名 （写一个 marshal 方法，类似 json 和 xml ，作为工具类，一次搞定 拼串）
-func (d *PayQueryReq) GenSign() {
-	buf := bytes.Buffer{}
-
-	buf.WriteString("appid=" + d.Appid)
-	buf.WriteString("&mch_id=" + d.MchID)
-	buf.WriteString("&nonce_str=" + d.NonceStr)
-	if d.OutTradeNo != "" {
-		buf.WriteString("&out_trade_no=" + d.OutTradeNo)
-	}
-	buf.WriteString("&sub_mch_id=" + d.SubMchId)
-	if d.TransactionId != "" {
-		buf.WriteString("&transaction_id=" + d.TransactionId)
-	}
-
-	buf.WriteString("&key=" + d.WeixinMD5Key)
-
-	log.Debug(buf.String())
-
-	sign := md5.Sum(buf.Bytes())
-	d.Sign = strings.ToUpper(hex.EncodeToString(sign[:]))
+	TransactionId string `xml:"transaction_id,omitempty" url:"transaction_id,omitempty"` // 微信的订单号，优先使用
+	OutTradeNo    string `xml:"out_trade_no,omitempty" url:"out_trade_no,omitempty"`     // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 }
 
 // PayQueryResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PayQueryResp struct {
 	CommonBody
 
-	// 当return_code 和result_code都为SUCCESS的时，还会包括以下字段：
 	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`     // 设备号
 	OpenID         string `xml:"openid" url:"openid"`                                   // 用户标识
 	IsSubscribe    string `xml:"is_subscribe" url:"is_subscribe"`                       // 是否关注公众账号
