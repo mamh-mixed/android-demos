@@ -33,12 +33,12 @@
         "ClientCert": "config/pem/weixin/apiclient_cert.pem", // Weixin 客户端证书
         "ClientKey": "config/pem/weixin/apiclient_key.pem", // Weixin 客户端密钥
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
-        "NotifyURL": "http://test.ipay.so" // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "http://quick.ipay.so" // 异步消息通知地址，路径是固定的，只需要域名和端口
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
         "URL": "https://mapi.alipay.com/gateway.do", // 支付宝扫码支付接口地址
-        "NotifyUrl": "http://test.ipay.so" // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyUrl": "http://quick.ipay.so" // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
     }
 }
