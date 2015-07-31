@@ -1,5 +1,7 @@
 package scanpay
 
+import "github.com/CardInfoLink/quickpay/channel/weixin"
+
 // 参考文档 https://pay.weixin.qq.com/wiki/doc/api/micropay_sl.php?chapter=9_10&index=1
 // 应用场景
 // 收银员使用扫码设备读取微信用户刷卡授权码以后，二维码或条码信息传送至商户收银台，由商户收银台或者商户后台调用该接口发起支付。
@@ -10,7 +12,7 @@ package scanpay
 
 // PayReq 请求被扫支付API需要提交的数据
 type PayReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`          // 设备号
 	Body           string `xml:"body" url:"body" validate:"nonzero"`                         // 商品描述
@@ -25,26 +27,29 @@ type PayReq struct {
 	// AuthCode       string `xml:"auth_code" url:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }
 
+// GetURI 取接口地址
+func (p *PayReq) GetURI() string {
+	return "/pay/micropay"
+}
+
 // PayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PayResp struct {
-	CommonBody
+	weixin.CommonBody
 
-	DeviceInfo string `xml:"device_info,omitempty" url:"device_info,omitempty"` // 设备号
-
-	// 当 return_code 和 result_code 都为 SUCCESS 的时，还会包括以下字段：
-	Openid         string `xml:"openid" url:"openid"`                                   // 用户标识
-	IsSubscribe    string `xml:"is_subscribe" url:"is_subscribe"`                       // 是否关注公众账号
-	TradeType      string `xml:"trade_type" url:"trade_type"`                           // 交易类型
-	BankType       string `xml:"bank_type" url:"bank_type"`                             // 付款银行
+	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`     // 设备号
+	Openid         string `xml:"openid" url:"openid,omitempty"`                         // 用户标识
+	IsSubscribe    string `xml:"is_subscribe" url:"is_subscribe,omitempty"`             // 是否关注公众账号
+	TradeType      string `xml:"trade_type" url:"trade_type,omitempty"`                 // 交易类型
+	BankType       string `xml:"bank_type" url:"bank_type,omitempty"`                   // 付款银行
 	FeeType        string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`           // 货币类型
-	TotalFee       string `xml:"total_fee" url:"total_fee"`                             // 总金额
+	TotalFee       string `xml:"total_fee" url:"total_fee,omitempty"`                   // 总金额
 	CashFeeType    string `xml:"cash_fee_type,omitempty" url:"cash_fee_type,omitempty"` // 现金支付货币类型
-	CashFee        string `xml:"cash_fee" url:"cash_fee"`                               // 现金支付金额
+	CashFee        string `xml:"cash_fee" url:"cash_fee,omitempty"`                     // 现金支付金额
 	CouponFee      string `xml:"coupon_fee,omitempty" url:"coupon_fee,omitempty"`       // 代金券或立减优惠金额
-	TransactionId  string `xml:"transaction_id" url:"transaction_id"`                   // 微信支付订单号
-	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no"`                       // 商户订单号
+	TransactionId  string `xml:"transaction_id" url:"transaction_id,omitempty"`         // 微信支付订单号
+	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no,omitempty"`             // 商户订单号
 	Attach         string `xml:"attach,omitempty" url:"attach,omitempty"`               // 商家数据包
-	TimeEnd        string `xml:"time_end" url:"time_end"`                               // 支付完成时间
+	TimeEnd        string `xml:"time_end" url:"time_end,omitempty"`                     // 支付完成时间
 	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`       // 子商户 Open ID
-	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe"`               // 是否关注子商户公众账号
+	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"`     // 是否关注子商户公众账号
 }

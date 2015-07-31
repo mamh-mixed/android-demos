@@ -7,13 +7,16 @@ package scanpay
 // URL地址：https://api.mch.weixin.qq.com/pay/unifiedorder
 // 是否需要证书: 不需要
 
-import "github.com/CardInfoLink/quickpay/goconf"
+import (
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/goconf"
+)
 
 var weixinNotifyURL = goconf.Config.WeixinScanPay.NotifyURL + "/quickpay/back/weixin"
 
 // PrePayReq 请求被扫支付API需要提交的数据
 type PrePayReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`          // 设备号
 	Body           string `xml:"body" url:"body" validate:"nonzero"`                         // 商品描述
@@ -33,12 +36,17 @@ type PrePayReq struct {
 	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`            // 子商户用户标识
 }
 
+// GetURI 取接口地址
+func (p *PrePayReq) GetURI() string {
+	return "/pay/unifiedorder"
+}
+
 // PrePayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PrePayResp struct {
-	CommonBody
+	weixin.CommonBody
 
 	DeviceInfo string `xml:"device_info,omitempty" url:"device_info,omitempty"` // 设备号
-	TradeType  string `xml:"trade_type" url:"trade_type"`                       // 交易类型
-	PrepayID   string `xml:"prepay_id" url:"prepay_id"`                         // 预支付交易会话标识
+	TradeType  string `xml:"trade_type" url:"trade_type,omitempty"`             // 交易类型
+	PrepayID   string `xml:"prepay_id" url:"prepay_id,omitempty"`               // 预支付交易会话标识
 	CodeURL    string `xml:"code_url,omitempty" url:"code_url,omitempty"`       // 二维码链接
 }

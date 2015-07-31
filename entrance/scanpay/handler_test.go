@@ -16,7 +16,7 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "283738984809326309",
+		ScanCodeId: "283018504189354361",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Chcd:       "ALP",
@@ -39,7 +39,7 @@ var (
 		Busicd:       "INQY",
 		Mchntid:      "100000000000203",
 		Inscd:        "CIL00002",
-		OrigOrderNum: "1438249640235",
+		OrigOrderNum: "1438326266238",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
@@ -56,7 +56,7 @@ var (
 		Busicd:       "VOID",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1437725314234",
+		OrigOrderNum: "1438326266238",
 		Inscd:        "CIL00002",
 	}
 	// 关单
@@ -64,11 +64,11 @@ var (
 		Busicd:       "CANC",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1437987401004",
+		OrigOrderNum: "1438326233412",
 		Inscd:        "CIL00002",
 	}
 
-	scanPay = scanPayEnquiry
+	scanPay = scanPayClose
 )
 
 func TestScanPay(t *testing.T) {

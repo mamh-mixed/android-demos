@@ -1,25 +1,31 @@
 package scanpay
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
 
 func TestRefundQuery(t *testing.T) {
 	d := &RefundQueryReq{
 		CommonParams: testCommonParams,
 
-		DeviceInfo:    "",                                 // 设备号
-		TransactionId: "",                                 // 微信订单号
-		OutTradeNo:    "7a5d8c60e1284fe8697af775c60d15d7", // 商户订单号
-		OutRefundNo:   "005ffbd5f14e4fda429a745d7987b0be", // 商户退款单号
-		RefundId:      "2010070115201506260012210940",     // 微信退款单号
+		DeviceInfo:    "xxx",                              // 设备号
+		TransactionId: "1002080115201507300508405226",     // 微信订单号
+		OutTradeNo:    "c0048d6aff60453a4dd7c66ea74cbcc5", // 商户订单号
+		OutRefundNo:   "f08c673a804a441947464733761bba7b", // 商户退款单号
+		RefundId:      "2002080115201507300022072313",     // 微信退款单号
 	}
 
 	r := &RefundQueryResp{}
-	err := base(d, r)
+	err := weixin.Execute(d, r)
 	if err != nil {
 		t.Errorf("weixin scan pay error: %s", err)
+		t.FailNow()
 	}
 
-	if r.ReturnCode != "SUCCESS" {
+	if r.ResultCode != "SUCCESS" {
 		t.Logf("weixin scanpay return: %#v", r)
+		t.FailNow()
 	}
 }

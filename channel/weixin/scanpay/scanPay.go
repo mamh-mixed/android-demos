@@ -2,12 +2,14 @@ package scanpay
 
 import (
 	"fmt"
+	"strconv"
+	"time"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"strconv"
-	"time"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -16,14 +18,16 @@ type WeixinScanPay struct{}
 // DefaultWeixinScanPay 微信扫码支付默认实现
 var DefaultWeixinScanPay WeixinScanPay
 
-func getCommonParams(m *model.ScanPayRequest) *CommonParams {
-	return &CommonParams{
+func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
+	return &weixin.CommonParams{
 		Appid:        m.AppID,        // 公众账号ID
 		MchID:        m.ChanMerId,    // 商户号
 		SubMchId:     m.SubMchId,     // 子商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignCert,     // md5key
+		ClientCert:   m.WeixinClientCert,
+		ClientKey:    m.WeixinClientKey,
 	}
 }
 
@@ -47,7 +51,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 	}
 
 	p := &PayResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
@@ -60,6 +64,10 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+	}
+	// 如果非大商户模式，用自己的 openid
+	if d.SubMchId == "" {
+		ret.ConsumerAccount = p.Openid
 	}
 
 	ret.MerDiscount, ret.ChcdDiscount = "0.00", "0.00"
@@ -81,7 +89,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 	}
 
 	p := &PayQueryResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
@@ -104,6 +112,10 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+	}
+	// 如果非大商户模式，用自己的 openid
+	if d.SubMchId == "" {
+		ret.ConsumerAccount = p.Openid
 	}
 
 	ret.MerDiscount, ret.ChcdDiscount = "0.00", "0.00"
@@ -151,7 +163,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 	}
 
 	p := &PrePayResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
@@ -173,7 +185,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 
 // ProcessRefund 退款
 func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
-	log.Debugf("%#c", m)
+	// log.Debugf("%#c", m)
 	d := &RefundReq{
 		CommonParams: *getCommonParams(m),
 
@@ -188,7 +200,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 	}
 
 	p := &RefundResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
@@ -219,7 +231,7 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 	}
 
 	p := &RefundQueryResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
@@ -255,7 +267,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 	}
 
 	p := &ReverseResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
@@ -283,7 +295,7 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 	}
 
 	p := &CloseResp{}
-	if err = base(d, p); err != nil {
+	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 

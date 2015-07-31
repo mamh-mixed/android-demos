@@ -9,7 +9,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestProcessBarcodePay(t *testing.T) {
+func xTestProcessBarcodePay(t *testing.T) {
 	m := &model.ScanPayRequest{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
@@ -49,7 +49,7 @@ func TestProcessBarcodePay(t *testing.T) {
 
 }
 
-func TestProcessEnquiry(t *testing.T) {
+func xTestProcessEnquiry(t *testing.T) {
 	m := &model.ScanPayRequest{
 		AppID:      "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:  "1236593202",         // 商户号
@@ -75,7 +75,7 @@ func TestProcessEnquiry(t *testing.T) {
 	}
 }
 
-func TestProcessClose(t *testing.T) {
+func xTestProcessClose(t *testing.T) {
 	m := &model.ScanPayRequest{
 		AppID:        "wx25ac886b6dac7dd2", // 公众账号ID
 		ChanMerId:    "1236593202",         // 商户号

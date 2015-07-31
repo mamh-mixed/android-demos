@@ -43,7 +43,14 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if rp == nil {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
+
 	t.ChanMerId = rp.ChanMerId
+
+	// 是否是代理商模式
+	if rp.IsAgent {
+		req.SubMchId = rp.SubMerId
+		t.SubChanMerId = rp.SubMerId
+	}
 
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
@@ -96,6 +103,12 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
+
+	// 是否是代理商模式
+	if rp.IsAgent {
+		req.SubMchId = rp.SubMerId
+		t.SubChanMerId = rp.SubMerId
+	}
 
 	ret = adaptor.ProcessEnterprisePay(t, req)
 
@@ -182,6 +195,12 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
+	// 是否是代理商模式
+	if rp.IsAgent {
+		req.SubMchId = rp.SubMerId
+		t.SubChanMerId = rp.SubMerId
+	}
+
 	ret = adaptor.ProcessBarcodePay(t, req)
 
 	// 渠道
@@ -219,6 +238,12 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
+
+	// 是否是代理商模式
+	if rp.IsAgent {
+		req.SubMchId = rp.SubMerId
+		t.SubChanMerId = rp.SubMerId
+	}
 
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, req)

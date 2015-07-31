@@ -1,5 +1,11 @@
 package scanpay
 
+import (
+	"net/http"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
+
 // 参考文档 https://pay.weixin.qq.com/wiki/doc/api/micropay_sl.php?chapter=9_11&index=3
 // 应用场景
 // 支付交易返回失败或支付系统超时，调用该接口撤销交易。如果此订单用户支付失败，微信支付系统会将此订单关闭；如果用户支付成功，微信支付系统会将此订单资金退还给用户。
@@ -11,15 +17,25 @@ package scanpay
 
 // ReverseReq 撤销订单
 type ReverseReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	TransactionId string `xml:"transaction_id,omitempty" url:"transaction_id,omitempty"` // 微信订单号
 	OutTradeNo    string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`      // 商户订单号
 }
 
+// GetURI 取接口地址
+func (r *ReverseReq) GetURI() string {
+	return "/secapi/pay/reverse"
+}
+
+// GetHTTPClient 使用双向 HTTPS 认证
+func (r *ReverseReq) GetHTTPClient() *http.Client {
+	return r.GetHTTPSClient()
+}
+
 // ReverseResp 撤销订单
 type ReverseResp struct {
-	CommonBody
+	weixin.CommonBody
 
-	Recall string `xml:"recall" url:"recall"` // 是否重调
+	Recall string `xml:"recall" url:"recall,omitempty"` // 是否重调
 }

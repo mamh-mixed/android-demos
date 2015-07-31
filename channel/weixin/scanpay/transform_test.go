@@ -6,7 +6,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestTransformX(t *testing.T) {
+func xTestTransform(t *testing.T) {
 	returnCode, resultCode, errCode, errCodeDes := "SUCCESS", "FAIL", "OUT_TRADE_NO_USED", ""
 	status, msg := transform("prePay", returnCode, resultCode, errCode, errCodeDes)
 	Convey("应该返回非空的应答码", t, func() {
