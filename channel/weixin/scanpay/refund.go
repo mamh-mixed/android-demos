@@ -1,5 +1,11 @@
 package scanpay
 
+import (
+	"net/http"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
+
 // 参考文档 https://pay.weixin.qq.com/wiki/doc/api/micropay_sl.php?chapter=9_4
 // 应用场景
 // 当交易发生之后一段时间内，由于买家或者卖家的原因需要退款时，卖家可以通过退款接口将支付款退还给买家，微信支付将在收到退款请求并且验证成功之后，按照退款规则将支付款按原路退到买家帐号上。
@@ -12,7 +18,7 @@ package scanpay
 
 // RefundReq 申请退款
 type RefundReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	DeviceInfo    string `xml:"device_info,omitempty" url:"device_info,omitempty"`         // 设备号
 	TransactionId string `xml:"transaction_id" url:"transaction_id" validate:"nonzero"`    // 微信订单号
@@ -24,9 +30,19 @@ type RefundReq struct {
 	OpUserId      string `xml:"op_user_id" url:"op_user_id" validate:"nonzero"`            // 操作员
 }
 
+// GetURI 取接口地址
+func (r *RefundReq) GetURI() string {
+	return "/secapi/pay/refund"
+}
+
+// GetHTTPClient 使用双向 HTTPS 认证
+func (r *RefundReq) GetHTTPClient() *http.Client {
+	return r.GetHTTPSClient()
+}
+
 // RefundResp 申请退款
 type RefundResp struct {
-	CommonBody
+	weixin.CommonBody
 
 	DeviceInfo        string `xml:"device_info,omitempty" url:"device_info,omitempty"`                 // 设备号
 	TransactionId     string `xml:"transaction_id" url:"transaction_id,omitempty"`                     // 微信订单号

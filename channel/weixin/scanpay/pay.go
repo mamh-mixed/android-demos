@@ -1,5 +1,7 @@
 package scanpay
 
+import "github.com/CardInfoLink/quickpay/channel/weixin"
+
 // 参考文档 https://pay.weixin.qq.com/wiki/doc/api/micropay_sl.php?chapter=9_10&index=1
 // 应用场景
 // 收银员使用扫码设备读取微信用户刷卡授权码以后，二维码或条码信息传送至商户收银台，由商户收银台或者商户后台调用该接口发起支付。
@@ -10,7 +12,7 @@ package scanpay
 
 // PayReq 请求被扫支付API需要提交的数据
 type PayReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`          // 设备号
 	Body           string `xml:"body" url:"body" validate:"nonzero"`                         // 商品描述
@@ -25,9 +27,14 @@ type PayReq struct {
 	// AuthCode       string `xml:"auth_code" url:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }
 
+// GetURI 取接口地址
+func (p *PayReq) GetURI() string {
+	return "/pay/micropay"
+}
+
 // PayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PayResp struct {
-	CommonBody
+	weixin.CommonBody
 
 	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`     // 设备号
 	Openid         string `xml:"openid" url:"openid,omitempty"`                         // 用户标识

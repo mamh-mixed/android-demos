@@ -1,6 +1,10 @@
 package scanpay
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
 
 func TestClose(t *testing.T) {
 	d := &CloseReq{
@@ -12,12 +16,14 @@ func TestClose(t *testing.T) {
 
 	r := &CloseResp{}
 
-	err := base(d, r)
+	err := weixin.Execute(d, r)
 	if err != nil {
 		t.Errorf("weixin close error: %s", err)
+		t.FailNow()
 	}
 
-	if r.ReturnCode != "SUCCESS" {
+	if r.ResultCode != "SUCCESS" {
 		t.Logf("weixin close return: %#v", r)
+		t.FailNow()
 	}
 }

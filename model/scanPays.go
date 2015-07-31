@@ -37,7 +37,7 @@ type QueryCondition struct {
 	Rec          []Trans `json:"rec,omitempty"`
 }
 
-// ScanPay 扫码支付
+// ScanPayRequest 扫码支付
 type ScanPayRequest struct {
 	Txndir       string `json:"txndir,omitempty"`       // 交易方向
 	Busicd       string `json:"busicd,omitempty"`       // 交易类型
@@ -69,12 +69,14 @@ type ScanPayRequest struct {
 	TotalTxamt string `json:"-"` // 订单总金额
 
 	// 辅助字段
-	Subject     string `json:"-"` //  商品名称
-	SysOrderNum string `json:"-"` //  渠道交易号
-	ActTxamt    string `json:"-"` //  实际交易金额 不同渠道单位不同
-	ChanMerId   string `json:"-"` // 渠道商户Id
-	SignCert    string `json:"-"` // 可能表示md5key等
-	IntTxamt    int64  `json:"-"`
+	Subject          string `json:"-"` // 商品名称
+	SysOrderNum      string `json:"-"` // 渠道交易号
+	ActTxamt         string `json:"-"` // 实际交易金额 不同渠道单位不同
+	IntTxamt         int64  `json:"-"` // 以分为单位的交易金额
+	ChanMerId        string `json:"-"` // 渠道商户Id
+	SignCert         string `json:"-"` // 可能表示md5key等
+	WeixinClientCert []byte `json:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
+	WeixinClientKey  []byte `json:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -133,14 +135,14 @@ type ScanPayResponse struct {
 	ChanRespCode string `json:"-"` // 渠道详细应答码
 }
 
-// DictSortMsg 字典排序报文
+// SignMsg 字典排序报文
 func (s *ScanPayRequest) SignMsg() string {
 	return genSignMsg(s)
 }
 
-// DictSortMsg 字典排序报文
-func (s *ScanPayResponse) SignMsg() string {
-	return genSignMsg(s)
+// SignMsg 字典排序报文
+func (ret *ScanPayResponse) SignMsg() string {
+	return genSignMsg(ret)
 }
 
 // MarshalGoods 将商品详情解析成字符json字符串

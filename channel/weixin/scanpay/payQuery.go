@@ -1,5 +1,7 @@
 package scanpay
 
+import "github.com/CardInfoLink/quickpay/channel/weixin"
+
 // 参考文档https://pay.weixin.qq.com/wiki/doc/api/micropay_sl.php?chapter=9_2
 // 应用场景
 // 该接口提供所有微信支付订单的查询，商户可以通过该接口主动查询订单状态，完成下一步的业务逻辑。
@@ -13,15 +15,20 @@ package scanpay
 
 // PayQueryReq 请求被扫支付API需要提交的数据
 type PayQueryReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	TransactionId string `xml:"transaction_id,omitempty" url:"transaction_id,omitempty"` // 微信的订单号，优先使用
 	OutTradeNo    string `xml:"out_trade_no,omitempty" url:"out_trade_no,omitempty"`     // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 }
 
+// GetURI 取接口地址
+func (p *PayQueryReq) GetURI() string {
+	return "/pay/orderquery"
+}
+
 // PayQueryResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据
 type PayQueryResp struct {
-	CommonBody
+	weixin.CommonBody
 
 	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty"`     // 设备号
 	Openid         string `xml:"openid" url:"openid,omitempty"`                         // 用户标识

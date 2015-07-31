@@ -1,6 +1,10 @@
 package scanpay
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
 
 func TestReverse(t *testing.T) {
 	d := &ReverseReq{
@@ -11,12 +15,14 @@ func TestReverse(t *testing.T) {
 	}
 
 	r := &ReverseResp{}
-	err := base(d, r)
+	err := weixin.Execute(d, r)
 	if err != nil {
 		t.Errorf("weixin scan pay error: %s", err)
+		t.FailNow()
 	}
 
-	if r.ReturnCode != "SUCCESS" {
+	if r.ResultCode != "SUCCESS" {
 		t.Logf("weixin scanpay return: %#v", r)
+		t.FailNow()
 	}
 }

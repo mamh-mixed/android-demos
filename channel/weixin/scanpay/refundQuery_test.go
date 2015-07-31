@@ -1,6 +1,10 @@
 package scanpay
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
 
 func TestRefundQuery(t *testing.T) {
 	d := &RefundQueryReq{
@@ -14,12 +18,14 @@ func TestRefundQuery(t *testing.T) {
 	}
 
 	r := &RefundQueryResp{}
-	err := base(d, r)
+	err := weixin.Execute(d, r)
 	if err != nil {
 		t.Errorf("weixin scan pay error: %s", err)
+		t.FailNow()
 	}
 
-	if r.ReturnCode != "SUCCESS" {
+	if r.ResultCode != "SUCCESS" {
 		t.Logf("weixin scanpay return: %#v", r)
+		t.FailNow()
 	}
 }

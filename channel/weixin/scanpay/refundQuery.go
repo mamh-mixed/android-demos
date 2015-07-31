@@ -1,5 +1,7 @@
 package scanpay
 
+import "github.com/CardInfoLink/quickpay/channel/weixin"
+
 // 参考文档 https://pay.weixin.qq.com/wiki/doc/api/micropay_sl.php?chapter=9_5
 // 应用场景
 // 提交退款申请后，通过调用该接口查询退款状态。退款有一定延时，用零钱支付的退款20分钟内到账，银行卡支付的退款3个工作日后重新查询退款状态。
@@ -8,7 +10,7 @@ package scanpay
 
 // RefundQueryReq 查询退款
 type RefundQueryReq struct {
-	CommonParams
+	weixin.CommonParams
 
 	DeviceInfo    string `xml:"device_info,omitempty" url:"device_info,omitempty"`       // 设备号
 	TransactionId string `xml:"transaction_id,omitempty" url:"transaction_id,omitempty"` // 微信订单号
@@ -17,9 +19,14 @@ type RefundQueryReq struct {
 	RefundId      string `xml:"refund_id,omitempty" url:"refund_id,omitempty"`           // 微信退款单号
 }
 
+// GetURI 取接口地址
+func (p *RefundQueryReq) GetURI() string {
+	return "/pay/refundquery"
+}
+
 // RefundQueryResp 查询退款
 type RefundQueryResp struct {
-	CommonBody
+	weixin.CommonBody
 
 	DeviceInfo      string `xml:"device_info,omitempty" url:"device_info,omitempty"`             // 设备号
 	TransactionId   string `xml:"transaction_id" url:"transaction_id,omitempty"`                 // 微信订单号

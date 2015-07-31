@@ -3,6 +3,7 @@ package scanpay
 import (
 	"testing"
 
+	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/util"
 )
 
@@ -29,12 +30,14 @@ func TestPrePay(t *testing.T) {
 	}
 
 	r := &PrePayResp{}
-	err := base(d, r)
+	err := weixin.Execute(d, r)
 	if err != nil {
 		t.Errorf("weixin scan pay error: %s", err)
+		t.FailNow()
 	}
 
-	if r.ReturnCode != "SUCCESS" {
+	if r.ResultCode != "SUCCESS" {
 		t.Logf("weixin scanpay return: %#v", r)
+		t.FailNow()
 	}
 }

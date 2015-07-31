@@ -30,8 +30,6 @@
         "URL": "https://test.china-clearing.com/Gateway/InterfaceII" // API 地址
     },
     "WeixinScanPay": {
-        "ClientCert": "config/pem/weixin/apiclient_cert.pem", // Weixin 客户端证书
-        "ClientKey": "config/pem/weixin/apiclient_key.pem", // Weixin 客户端密钥
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
         "NotifyURL": "http://dev.ipay.so" // 异步消息通知地址，路径是固定的，只需要域名和端口
     },

@@ -1,85 +1,38 @@
-package scanpay
+package weixin
 
 import (
 	"bytes"
 	"crypto/md5"
-	"crypto/tls"
 	"encoding/hex"
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"github.com/omigo/validator"
 )
 
 var url = goconf.Config.WeixinScanPay.URL
 
-var cli *http.Client
-
-// 初始化微信 HTTPS 客户端
-func init() {
-	cliCrt, err := tls.LoadX509KeyPair(goconf.Config.WeixinScanPay.ClientCert,
-		goconf.Config.WeixinScanPay.ClientKey)
-	if err != nil {
-		fmt.Println("Loadx509keypair err:", err)
-		os.Exit(4)
+// Execute 发送报文执行微信支付
+func Execute(req BaseReq, resp BaseResp) error {
+	if err := validator.Validate(req); err != nil {
+		log.Errorf("validate error, %s", err)
+		return err
 	}
 
-	// 发送请求
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			// InsecureSkipVerify: true, // only for testing
-			Certificates: []tls.Certificate{cliCrt}},
-	}
-	cli = &http.Client{Transport: tr}
-}
-
-const (
-	payURI         = "/pay/micropay"
-	prePayURI      = "/pay/unifiedorder"
-	payQueryURI    = "/pay/orderquery"
-	refundURI      = "/secapi/pay/refund"
-	refundQueryURI = "/pay/refundquery"
-	reverseURI     = "/secapi/pay/reverse"
-	closeURI       = "/pay/closeorder"
-)
-
-func getUri(req BaseReq) string {
-	switch v := req.(type) {
-	case *PayReq:
-		return payURI
-	case *PrePayReq:
-		return prePayURI
-	case *PayQueryReq:
-		return payQueryURI
-	case *RefundReq:
-		return refundURI
-	case *RefundQueryReq:
-		return refundQueryURI
-	case *ReverseReq:
-		return reverseURI
-	case *CloseReq:
-		return closeURI
-	default:
-		log.Errorf("unknown BaseReq type: %#v", v)
-		return "/404"
-	}
-}
-
-func sendRequest(req BaseReq, resp BaseResp) error {
 	xmlBytes, err := prepareData(req)
 	if err != nil {
 		return err
 	}
 
 	log.Infof(">>> send to weixin: %s", string(xmlBytes))
-	ret, err := send(getUri(req), xmlBytes)
+	ret, err := send(req.GetHTTPClient(), req.GetURI(), xmlBytes)
 	if err != nil {
 		return err
 	}
@@ -109,14 +62,22 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 	return xmlBytes, nil
 }
 
-func send(uri string, body []byte) (ret []byte, err error) {
+func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 	var resp *http.Response
 
-	if strings.HasPrefix(uri, "/secapi") {
+	// 如果连接失败，重试 3 次，休眠 3s、6s
+	for i := 1; i <= 3; i++ {
 		resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
-	} else {
-		resp, err = http.Post(url+uri, "text/xml", bytes.NewBuffer(body))
+		if err == nil {
+			break
+		}
+		log.Warnf("unable to connect WeixinScanPay gateway: %s", err)
+		sleepTime := time.Duration(i*3) * time.Second
+		log.Warnf("after %s retry...", sleepTime)
+		time.Sleep(sleepTime)
 	}
+
+	// 如果有错，说明重试了 3 次，都失败，那么直接返回
 	if err != nil {
 		log.Errorf("unable to connect WeixinScanPay gateway: %s", err)
 		return nil, err
