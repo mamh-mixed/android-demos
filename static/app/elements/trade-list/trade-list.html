@@ -1,0 +1,118 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id="trade-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    .condition {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap
+    }
+
+    .condition > paper-input,
+    .condition > x-select {
+      min-width: 170px;
+      margin-right: 20px;
+    }
+
+    .x-select paper-button{
+        width: 100%;
+        background: #3498db;
+    }
+
+    .condition > .buttons {
+      position: relative;
+      min-width: 170px;
+    }
+
+    .condition > .buttons > paper-button {
+      width: 100%;
+      position: absolute;
+      bottom: 10px;
+      margin: 0;
+    }
+
+    paper-button[raised].colorful {
+      background: #3498db;
+      color: #fff;
+    }
+  </style>
+  <template>
+    <div class="condition">
+      <paper-input label="交易时间从"></paper-input>
+      <paper-input label="交易时间到"></paper-input>
+      <x-select items="[[busicds]]" selected-item="{{buside}}" label="交易类型">
+        <paper-button class="dropdown-trigger">交易类型</paper-button>
+      </x-select>
+      <paper-input label="订单号"></paper-input>
+      <paper-input label="关联订单号"></paper-input>
+      <paper-input label="商户代码"></paper-input>
+      <div class="buttons">
+        <paper-button class="colorful" raised>查询</paper-button>
+      </div>
+    </div>
+
+    <div class="list">
+      <trade-item></trade-item>
+    </div>
+    <div>这里是交易列表
+      <span>data-route</span>
+      <span>{{buside.value}}</span>
+    </div>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'trade-list',
+
+        properties: {
+          dataRoute: {
+            type: String,
+            value: 'trade.list',
+            notify: true
+          },
+          busicds: {
+            type: Array,
+            value: [{
+              key: 'PURC',
+              value: '下单支付'
+            }, {
+              key: 'PAUT',
+              value: '预下单'
+            }, {
+              key: 'VOID',
+              value: '撤销'
+            }, {
+              key: 'REFD',
+              value: '退款'
+            }, {
+              key: 'VERI',
+              value: '卡券核销'
+            }],
+            readOnly: true
+          }
+        },
+        ready: function() {
+          
+        }
+      });
+    })();
+  </script>
+</dom-module>

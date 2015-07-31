@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Polymer Starter Kit" />
+  <title>快捷支付管理平台</title>
+  <!-- Place favicon.ico in the `app/` directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#303F9F">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PSK">
+  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild-->
+
+  <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <!-- endbuild -->
+
+  <!-- will be replaced with elements/elements.vulcanized.html -->
+  <link rel="import" href="elements/elements.html">
+  <!-- endreplace-->
+</head>
+
+<body unresolved class="fullbleed layout vertical">
+  <span id="browser-sync-binding"></span>
+  <template is="dom-bind" id="app">
+
+    <paper-drawer-panel id="paperDrawerPanel">
+      <!-- Drawer Scroll Header Panel -->
+      <paper-scroll-header-panel drawer fixed>
+
+        <!-- Drawer Toolbar -->
+        <paper-toolbar id="drawerToolbar">
+          <current-user></current-user>
+        </paper-toolbar>
+
+        <!-- 菜单列表 -->
+        <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+          <a data-route="system" href="/system" onclick="document.querySelector('#systemCollapse').toggle();">
+            <iron-icon icon="settings"></iron-icon>
+            <span>系统管理</span>
+          </a>
+          <iron-collapse id="systemCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+              <a data-route="system.users" href="/system/users">
+                <iron-icon icon="social:group"></iron-icon>
+                <span>用户管理</span>
+              </a>
+              <a data-route="system.roles" href="/system/roles">
+                <iron-icon icon="face"></iron-icon>
+                <span>角色管理</span>
+              </a>
+              <a data-route="system.menus" href="/system/menus">
+                <iron-icon icon="menu"></iron-icon>
+                <span>菜单管理</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
+
+          <a data-route="system" href="/tradeMgt" onclick="document.querySelector('#tradeCollapse').toggle();">
+            <iron-icon icon="swap-horiz"></iron-icon>
+            <span>交易管理</span>
+          </a>
+          <iron-collapse id="tradeCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+              <a data-route="trade.list" href="/trades">
+                <iron-icon icon="list"></iron-icon>
+                <span>交易列表</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
+
+          <a data-route="home" href="/">
+            <iron-icon icon="home"></iron-icon>
+            <span>Home</span>
+          </a>
+
+          <a data-route="users" href="/users">
+            <iron-icon icon="info"></iron-icon>
+            <span>Users</span>
+          </a>
+
+          <a data-route="contact" href="/contact">
+            <iron-icon icon="mail"></iron-icon>
+            <span>Contact</span>
+          </a>
+        </paper-menu>
+      </paper-scroll-header-panel>
+
+      <!-- Main Area -->
+      <paper-scroll-header-panel main condenses keep-condensed-header>
+
+        <!-- Main Toolbar -->
+        <paper-toolbar id="mainToolbar" class="tall">
+          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+          <span class="flex"></span>
+
+          <!-- Toolbar icons -->
+          <paper-icon-button icon="refresh"></paper-icon-button>
+          <paper-icon-button icon="search"></paper-icon-button>
+
+          <!-- Application name -->
+          <div class="middle middle-container center horizontal layout">
+            <div class="app-name">快捷支付管理平台</div>
+          </div>
+
+          <!-- Application sub title -->
+          <div class="bottom bottom-container center horizontal layout">
+            <div class="bottom-title paper-font-subhead">上海讯联数据服务有限公司</div>
+          </div>
+
+        </paper-toolbar>
+
+        <!-- Main Content -->
+        <div class="content">
+          <iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+            <section data-route="system">
+              <paper-material elevation="1">
+                <p class="paper-font-body2">This is Home page</p>
+              </paper-material>
+
+            </section>
+
+            <section data-route="system.users">
+              <paper-material elevation="1">
+                <p class="paper-font-body2">system.users</p>
+              </paper-material>
+            </section>
+            <section data-route="system.roles">
+              <paper-material elevation="1">
+                <p class="paper-font-body2">system.roles</p>
+              </paper-material>
+            </section>
+            <section data-route="system.menus">
+              <paper-material elevation="1">
+                <p class="paper-font-body2">system.menus</p>
+              </paper-material>
+            </section>
+
+            <trade-list data-route="trade.list"></trade-list>
+
+            <section data-route="home">
+              <paper-material elevation="1">
+                <p class="paper-font-body2">This is Home page</p>
+              </paper-material>
+
+            </section>
+
+            <section data-route="users">
+              <paper-material elevation="1">
+                <h2 class="paper-font-display2">Users</h2>
+                <p>This is the users section</p>
+                <a href="/users/Rob">Rob</a>
+              </paper-material>
+            </section>
+
+            <section data-route="user-info">
+              <paper-material elevation="1">
+                <h2 class="paper-font-display2">
+                  User:
+                  <span>{{params.name}}</span>
+                </h2>
+                <div>This is
+                  <span>{{params.name}}</span>'s section</div>
+              </paper-material>
+            </section>
+
+            <section data-route="contact">
+              <paper-material elevation="1">
+                <h2 class="paper-font-display2">Contact</h2>
+                <p>This is the contact section</p>
+              </paper-material>
+            </section>
+
+          </iron-pages>
+        </div>
+      </paper-scroll-header-panel>
+    </paper-drawer-panel>
+
+
+    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline.">
+    </paper-toast>
+
+
+  </template>
+
+  <!-- build:js scripts/app.js -->
+  <script src="scripts/app.js"></script>
+  <script src="scripts/util.js"></script>
+  <!-- endbuild-->
+</body>
+
+</html>
