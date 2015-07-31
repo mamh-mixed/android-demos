@@ -21,8 +21,8 @@ type RefundReq struct {
 	weixin.CommonParams
 
 	DeviceInfo    string `xml:"device_info,omitempty" url:"device_info,omitempty"`         // 设备号
-	TransactionId string `xml:"transaction_id" url:"transaction_id,omitempty"`             // 微信订单号
-	OutTradeNo    string `xml:"out_trade_no" url:"out_trade_no,omitempty"`                 // 商户订单号
+	TransactionId string `xml:"transaction_id,omitempty" url:"transaction_id,omitempty"`   // 微信订单号
+	OutTradeNo    string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`        // 商户订单号
 	OutRefundNo   string `xml:"out_refund_no" url:"out_refund_no" validate:"nonzero"`      // 商户退款单号
 	TotalFee      string `xml:"total_fee" url:"total_fee" validate:"nonzero"`              // 总金额
 	RefundFee     string `xml:"refund_fee" url:"refund_fee" validate:"nonzero"`            // 退款金额
@@ -44,18 +44,18 @@ func (r *RefundReq) GetHTTPClient() *http.Client {
 type RefundResp struct {
 	weixin.CommonBody
 
-	DeviceInfo        string `xml:"device_info,omitempty" url:"device_info,omitempty"`           // 设备号
-	TransactionId     string `xml:"transaction_id" url:"transaction_id,omitempty"`               // 微信订单号
-	OutTradeNo        string `xml:"out_trade_no" url:"out_trade_no,omitempty"`                   // 商户订单号
-	OutRefundNo       string `xml:"out_refund_no" url:"out_refund_no,omitempty"`                 // 商户退款单号
-	RefundId          string `xml:"refund_id" url:"refund_id,omitempty"`                         // 微信退款单号
-	RefundChannel     string `xml:"refund_channel,omitempty" url:"refund_channel,omitempty"`     // 退款渠道
-	RefundFee         string `xml:"refund_fee" url:"refund_fee,omitempty"`                       // 退款金额
-	TotalFee          string `xml:"total_fee" url:"total_fee,omitempty"`                         // 订单总金额
-	FeeType           string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`                 // 订单金额货币种类
-	CashFee           int    `xml:"cash_fee" url:"cash_fee,omitempty"`                           // 现金支付金额
-	CashRefundFee     int    `xml:"cash_refund_fee,omitempty" url:"cash_refund_fee,omitempty"`   // 现金退款金额
-	CouponRefundFee   int    `xml:"coupon_refund_fee" url:"coupon_refund_fee"`                   // 代金券或立减优惠退款金额
-	CouponRefundCount int    `xml:"coupon_refund_count" url:"coupon_refund_count"`               // 代金券或立减优惠使用数量
-	CouponRefundId    string `xml:"coupon_refund_id,omitempty" url:"coupon_refund_id,omitempty"` // 代金券或立减优惠ID
+	DeviceInfo        string `xml:"device_info,omitempty" url:"device_info,omitempty"`                 // 设备号
+	TransactionId     string `xml:"transaction_id" url:"transaction_id,omitempty"`                     // 微信订单号
+	OutTradeNo        string `xml:"out_trade_no" url:"out_trade_no,omitempty"`                         // 商户订单号
+	OutRefundNo       string `xml:"out_refund_no" url:"out_refund_no,omitempty"`                       // 商户退款单号
+	RefundId          string `xml:"refund_id" url:"refund_id,omitempty"`                               // 微信退款单号
+	RefundChannel     string `xml:"refund_channel,omitempty" url:"refund_channel,omitempty"`           // 退款渠道
+	RefundFee         string `xml:"refund_fee" url:"refund_fee,omitempty"`                             // 退款金额
+	TotalFee          string `xml:"total_fee" url:"total_fee,omitempty"`                               // 订单总金额
+	FeeType           string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`                       // 订单金额货币种类
+	CashFee           string `xml:"cash_fee" url:"cash_fee,omitempty"`                                 // 现金支付金额
+	CashRefundFee     string `xml:"cash_refund_fee,omitempty" url:"cash_refund_fee,omitempty"`         // 现金退款金额
+	CouponRefundFee   string `xml:"coupon_refund_fee,omitempty" url:"coupon_refund_fee,omitempty"`     // 代金券或立减优惠退款金额
+	CouponRefundCount string `xml:"coupon_refund_count,omitempty" url:"coupon_refund_count,omitempty"` // 代金券或立减优惠使用数量
+	CouponRefundId    string `xml:"coupon_refund_id,omitempty" url:"coupon_refund_id,omitempty"`       // 代金券或立减优惠ID
 }

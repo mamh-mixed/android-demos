@@ -42,12 +42,12 @@ type RefundQueryResp struct {
 	OutRefundNo0           string `xml:"out_refund_no_0" url:"out_refund_no_0,omitempty"`
 	RefundID0              string `xml:"refund_id_0" url:"refund_id_0,omitempty"`
 	RefundChannel0         string `xml:"refund_channel_0,omitempty" url:"refund_channel_0,omitempty"`
-	RefundFee0             int    `xml:"refund_fee_0" url:"refund_fee_0,omitempty"`
+	RefundFee0             string `xml:"refund_fee_0" url:"refund_fee_0,omitempty"`
 	FeeType0               string `xml:"fee_type_0,omitempty" url:"fee_type_0,omitempty"`
-	CouponRefundFee1       int    `xml:"coupon_refund_fee_1,omitempty" url:"coupon_refund_fee_1,omitempty"`
-	CouponRefundCount1     int    `xml:"coupon_refund_count_1,omitempty" url:"coupon_refund_count_1,omitempty"`
+	CouponRefundFee1       string `xml:"coupon_refund_fee_1,omitempty" url:"coupon_refund_fee_1,omitempty"`
+	CouponRefundCount1     string `xml:"coupon_refund_count_1,omitempty" url:"coupon_refund_count_1,omitempty"`
 	CouponRefundBatchID1_1 string `xml:"coupon_refund_batch_id_1_1,omitempty" url:"coupon_refund_batch_id_1_1,omitempty"`
 	CouponRefundID1_1      string `xml:"coupon_refund_id_1_1,omitempty" url:"coupon_refund_id_1_1,omitempty"`
-	CouponRefundFee1_1     int    `xml:"coupon_refund_fee_1_1,omitempty" url:"coupon_refund_fee_1_1,omitempty"`
+	CouponRefundFee1_1     string `xml:"coupon_refund_fee_1_1,omitempty" url:"coupon_refund_fee_1_1,omitempty"`
 	RefundStatus0          string `xml:"refund_status_0,omitempty" url:"refund_status_0,omitempty"`
 }
