@@ -42,8 +42,8 @@ go install github.com/CardInfoLink/quickpay
 启动
 ----
 
-1. 启动前，需要在系统中配置一个环境变量，表明是开发环境、测试环境、还是生产环境。把如下配置加入到
-`~/.bashrc` 或 `~/.profile` 或 `~/.bash_profile` 中：
+1. 启动前，需要在系统中配置一个环境变量，表明是开发环境，测试环境，还是生产环境。把如下配置
+   加入到 `~/.bash_profile` 或 `~/.bashrc` 或 `~/.profile` 中：
 
     ```bash
     # 配置快捷支付环境变量，QUICKPAY_ENV 的值只能是 develop、testing 或 product 中的一个
