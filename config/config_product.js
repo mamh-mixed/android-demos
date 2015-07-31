@@ -40,6 +40,6 @@
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
         "URL": "https://mapi.alipay.com/gateway.do", // 支付宝扫码支付接口地址
         "NotifyUrl": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
-        "AgentId":"{\"AgentId\":\"12010128a1\"}" // 标识讯联交易
+        "AgentId":"{\"AGENT_ID\":\"12010128a1\"}" // 标识讯联交易
     }
 }
