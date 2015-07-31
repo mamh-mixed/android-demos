@@ -11,18 +11,60 @@ import (
 	"github.com/omigo/log"
 )
 
+// PublicPay 公众号页面支付
+func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
+	}
+
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:      req.Mchntid,
+		OrderNum:   req.OrderNum,
+		TransType:  model.PayTrans,
+		Busicd:     req.Busicd,
+		Inscd:      req.Inscd,
+		Terminalid: req.Terminalid,
+		TransAmt:   req.IntTxamt,
+	}
+
+	// TODO: token换取openid
+	openId := ""
+	t.ConsumerAccount = openId
+	req.OpenId = openId
+
+	// TODO: 判断是否取用户信息
+
+	// TODO: 走预下单渠道
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+	}
+	t.ChanMerId = rp.ChanMerId
+
+	// 请求渠道
+	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
+
+	// 预支付凭证
+	t.PrePayId = ret.PrePayId
+
+	// 更新交易信息
+	updateTrans(t, ret)
+
+	// TODO:包装返回值
+
+	return ret
+}
+
 // EnterprisePay 企业支付接口
 func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 判断订单是否存在
-	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-	if count > 0 {
-		// 订单号重复
-		return returnWithErrorCode("ORDER_DUPLICATE")
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
 	}
 
 	// 记录该笔交易
@@ -98,16 +140,10 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
 
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	ret = new(model.ScanPayResponse)
+
 	// 判断订单是否存在
-	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-	if count > 0 {
-		// 订单号重复
-		return returnWithErrorCode("ORDER_DUPLICATE")
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
 	}
 
 	// 记录该笔交易
@@ -159,16 +195,10 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // QrCodeOfflinePay 扫二维码预下单
 func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	ret = new(model.ScanPayResponse)
+
 	// 判断订单是否存在
-	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-	if count > 0 {
-		// 订单号重复
-		return returnWithErrorCode("ORDER_DUPLICATE")
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
 	}
 
 	// 记录该笔交易
@@ -204,15 +234,9 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // Refund 退款
 func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
-	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-	if count > 0 {
-		return returnWithErrorCode("ORDER_DUPLICATE")
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
 	}
 
 	// 记录这笔退款
@@ -332,15 +356,9 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // Cancel 撤销
 func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	ret = new(model.ScanPayResponse)
 	// 判断订单是否存在
-	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-	if count > 0 {
-		return returnWithErrorCode("ORDER_DUPLICATE")
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
 	}
 
 	// 记录这笔撤销
@@ -408,14 +426,8 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 // Close 关闭订单
 func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断订单是否存在
-	count, err := mongo.SpTransColl.Count(req.Mchntid, req.OrderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-	if count > 0 {
-		// 订单号重复
-		return returnWithErrorCode("ORDER_DUPLICATE")
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
 	}
 
 	// 记录这笔关单
@@ -466,6 +478,20 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	updateTrans(closed, ret)
 
 	return ret
+}
+
+// isOrderDuplicate 判断订单号是否重复
+func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
+	count, err := mongo.SpTransColl.Count(mchId, orderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return returnWithErrorCode("SYSTEM_ERROR"), true
+	}
+	if count > 0 {
+		// 订单号重复
+		return returnWithErrorCode("ORDER_DUPLICATE"), true
+	}
+	return nil, false
 }
 
 // returnWithErrorCode 使用错误码直接返回

@@ -207,6 +207,7 @@ type Trans struct {
 	Busicd          string `bson:"busicd,omitempty" json:"busicd"`                             //业务id
 	Inscd           string `bson:"inscd,omitempty" json:"inscd,omitempty"`                     //机构号
 	QrCode          string `bson:"qrCode,omitempty" json:"-"`                                  //预下单时的二维码
+	PrePayId        string `bson:"prePayId,omitempty" json:"-"`                                //预支付凭证
 	Terminalid      string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`           //终端号
 	ErrorDetail     string `bson:"errorDetail,omitempty" json:"errorDetail"`                   //错误信息
 	GatheringId     string `bson:"gatheringId,omitempty" json:"-"`                             //收款号
