@@ -45,9 +45,9 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		// 非必填
 		DeviceInfo: m.DeviceInfo,     // 设备号
 		Detail:     m.MarshalGoods(), // 商品详情
-		Attach:     m.Attach,         // 附加数据
-		FeeType:    m.CurrType,       // 货币类型
-		GoodsGag:   m.GoodsGag,       // 商品标记
+		// Attach:     m.Attach,         // 附加数据
+		// FeeType:    m.CurrType,       // 货币类型
+		// GoodsGag:   m.GoodsGag,       // 商品标记
 	}
 
 	p := &PayResp{}
@@ -129,8 +129,19 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 
 // ProcessQrCodeOfflinePay 扫二维码预下单
 func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
+
+	// 设置失效时间
 	startTime := time.Now()
 	endTime := startTime.Add(5 * time.Minute)
+
+	// 判断tradeType
+	tradeType := ""
+	if m.OpenId == "" {
+		tradeType = "NATIVE"
+	} else {
+		tradeType = "JSAPI"
+	}
+
 	d := &PrePayReq{
 		CommonParams: *getCommonParams(m),
 
@@ -140,15 +151,15 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		Attach:         m.SysOrderNum,                      // 附加数据 这里送系统订单号
 		OutTradeNo:     m.OrderNum,                         // 商户订单号
 		TotalFee:       m.ActTxamt,                         // 总金额
-		FeeType:        m.CurrType,                         // 货币类型
 		SpbillCreateIP: util.LocalIP,                       // 终端IP
 		TimeStart:      startTime.Format("20060102150405"), // 交易起始时间
 		TimeExpire:     endTime.Format("20060102150405"),   // 交易结束时间
-		GoodsGag:       m.GoodsGag,                         // 商品标记
 		NotifyURL:      m.NotifyUrl,                        // 通知地址
-		TradeType:      "NATIVE",                           // 交易类型
+		TradeType:      tradeType,                          // 交易类型
 		ProductID:      "",                                 // 商品ID
-		Openid:         "",                                 // 用户标识
+		Openid:         m.OpenId,                           // 用户标识
+		// FeeType:        m.CurrType,                         // 货币类型
+		// GoodsGag:       m.GoodsGag,                         // 商品标记
 	}
 
 	p := &PrePayResp{}
@@ -159,13 +170,14 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 	status, msg := transform("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
-		Respcd:          status,    // 交易结果  M
-		ChannelOrderNum: "",        // 渠道交易号 C
-		ConsumerAccount: "",        // 渠道账号  C
-		ConsumerId:      "",        // 渠道账号ID   C
-		ErrorDetail:     msg,       // 错误信息   C
-		QrCode:          p.CodeURL, // 二维码 C
-		ChanRespCode:    p.ErrCode, // 渠道详细应答码
+		Respcd:          status,     // 交易结果  M
+		ChannelOrderNum: "",         // 渠道交易号 C
+		ConsumerAccount: "",         // 渠道账号  C
+		ConsumerId:      "",         // 渠道账号ID   C
+		ErrorDetail:     msg,        // 错误信息   C
+		QrCode:          p.CodeURL,  // 二维码 C
+		ChanRespCode:    p.ErrCode,  // 渠道详细应答码
+		PrePayId:        p.PrepayID, // 预支付标识
 	}
 
 	return ret, err
@@ -173,7 +185,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 
 // ProcessRefund 退款
 func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
-	log.Debugf("%#c", m)
+	// log.Debugf("%#c", m)
 	d := &RefundReq{
 		CommonParams: *getCommonParams(m),
 
@@ -183,8 +195,8 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		OutRefundNo:   m.OrderNum,     // 商户退款单号
 		TotalFee:      m.TotalTxamt,   // 总金额
 		RefundFee:     m.ActTxamt,     // 退款金额
-		RefundFeeType: m.CurrType,     // 货币种类
 		OpUserId:      m.ChanMerId,    // 操作员
+		// RefundFeeType: m.CurrType,     // 货币种类
 	}
 
 	p := &RefundResp{}

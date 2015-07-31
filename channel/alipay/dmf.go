@@ -1,12 +1,14 @@
 package alipay
 
 import (
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
 )
 
 var DefaultClient alp
+var agentId = goconf.Config.AlipayScanPay.AgentId
 
 // alp 当面付，扫码支付
 type alp struct{}
@@ -39,8 +41,8 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.ActTxamt,
-		ExtendParams:  "",   //...
-		ItBPay:        "1m", // 超时时间
+		ExtendParams:  agentId, //...
+		ItBPay:        "1m",    // 超时时间
 		DynamicIdType: "bar_code",
 		DynamicId:     req.ScanCodeId,
 	}
@@ -71,7 +73,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
-		ExtendParams:   "",
+		ExtendParams:   agentId,
 		ItBPay:         "1m", // 超时时间
 	}
 

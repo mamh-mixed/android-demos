@@ -1,10 +1,9 @@
 package model
 
 import (
-	"bytes"
 	"encoding/json"
-	"reflect"
-	"sort"
+	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
 	"strings"
 )
 
@@ -39,34 +38,30 @@ type QueryCondition struct {
 
 // ScanPayRequest 扫码支付
 type ScanPayRequest struct {
-	Txndir       string `json:"txndir,omitempty"`       // 交易方向
-	Busicd       string `json:"busicd,omitempty"`       // 交易类型
-	Inscd        string `json:"inscd,omitempty"`        // 机构号
-	Chcd         string `json:"chcd,omitempty"`         // 渠道机构
-	Mchntid      string `json:"mchntid,omitempty"`      // 商户号
-	Terminalid   string `json:"terminalid,omitempty"`   // 终端号
-	Txamt        string `json:"txamt,omitempty"`        // 订单金额
-	Currency     string `json:"currency,omitempty"`     // 币种
-	GoodsInfo    string `json:"goodsInfo,omitempty"`    // 商品详情
-	OrderNum     string `json:"orderNum,omitempty"`     // 订单号
-	OrigOrderNum string `json:"origOrderNum,omitempty"` // 原订单号
-	ScanCodeId   string `json:"scanCodeId,omitempty"`   // 扫码号
-	Sign         string `json:"sign,omitempty"`         // 签名
-	NotifyUrl    string `json:"notifyUrl,omitempty"`    // 异步通知地址
-	OpenId       string `json:"openid,omitempty"`       // openid
-	CheckName    string `json:"checkName,omitempty"`    // 校验用户姓名选项
-	UserName     string `json:"userName,omitempty"`     // 用户名
-	Desc         string `json:"desc,omitempty"`         // 描述
+	Txndir       string `json:"txndir,omitempty" url:"txndir,omitempty"`             // 交易方向
+	Busicd       string `json:"busicd,omitempty" url:"busicd,omitempty"`             // 交易类型
+	Inscd        string `json:"inscd,omitempty" url:"inscd,omitempty"`               // 机构号
+	Chcd         string `json:"chcd,omitempty" url:"chcd,omitempty"`                 // 渠道机构
+	Mchntid      string `json:"mchntid,omitempty" url:"mchntid,omitempty"`           // 商户号
+	Terminalid   string `json:"terminalid,omitempty" url:"terminalid,omitempty"`     // 终端号
+	Txamt        string `json:"txamt,omitempty" url:"txamt,omitempty"`               // 订单金额
+	Currency     string `json:"currency,omitempty" url:"currency,omitempty"`         // 币种
+	GoodsInfo    string `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty"`       // 商品详情
+	OrderNum     string `json:"orderNum,omitempty" url:"orderNum,omitempty"`         // 订单号
+	OrigOrderNum string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty"` // 原订单号
+	ScanCodeId   string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty"`     // 扫码号
+	Sign         string `json:"sign,omitempty" url:"-"`                              // 签名
+	NotifyUrl    string `json:"notifyUrl,omitempty"url:"notifyUrl,omitempty" `       // 异步通知地址
+	OpenId       string `json:"openid,omitempty" url:"openid,omitempty" `            // openid
+	CheckName    string `json:"checkName,omitempty" url:"checkName,omitempty"`       // 校验用户姓名选项
+	UserName     string `json:"userName,omitempty" url:"userName,omitempty"`         // 用户名
+	Desc         string `json:"desc,omitempty" url:"desc,omitempty"`                 // 描述
 
 	// 微信需要的字段
-	AppID      string `json:"-"` // 公众号ID
-	DeviceInfo string `json:"-"` // 设备号
-	GoodsDesc  string `json:"-"` // 商品描述
-	Attach     string `json:"-"` // 附加数据
-	CurrType   string `json:"-"` // 货币类型
-	GoodsGag   string `json:"-"` // 商品标记
-	SubMchId   string `json:"-"` // 子商户
-	TotalTxamt string `json:"-"` // 订单总金额
+	AppID      string `json:"-" url:"-"` // 公众号ID
+	DeviceInfo string `json:"-" url:"-"` // 设备号
+	SubMchId   string `json:"-" url:"-"` // 子商户
+	TotalTxamt string `json:"-" url:"-"` // 订单总金额
 
 	// 辅助字段
 	Subject          string `json:"-"` // 商品名称
@@ -113,26 +108,27 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 // M:返回时必须带上
 // C:可选
 type ScanPayResponse struct {
-	Txndir          string `json:"txndir"`                    // 交易方向 M M
-	Busicd          string `json:"busicd"`                    // 交易类型 M M
-	Respcd          string `json:"respcd"`                    // 交易结果  M
-	Inscd           string `json:"inscd,omitempty"`           // 机构号 M M
-	Chcd            string `json:"chcd,omitempty"`            // 渠道 C C
-	Mchntid         string `json:"mchntid"`                   // 商户号 M M
-	Terminalid      string `json:"terminalid,omitempty"`      // 终端号
-	Txamt           string `json:"txamt,omitempty"`           // 订单金额 M M
-	ChannelOrderNum string `json:"channelOrderNum,omitempty"` // 渠道交易号 C
-	ConsumerAccount string `json:"consumerAccount,omitempty"` // 渠道账号  C
-	ConsumerId      string `json:"consumerId,omitempty"`      // 渠道账号ID   C
-	ErrorDetail     string `json:"errorDetail,omitempty"`     // 错误信息   C
-	OrderNum        string `json:"orderNum,omitempty"`        // 订单号 M C
-	OrigOrderNum    string `json:"origOrderNum,omitempty"`    // 源订单号 M C
-	Sign            string `json:"sign"`                      // 签名 M M
-	ChcdDiscount    string `json:"chcdDiscount,omitempty"`    // 渠道优惠  C
-	MerDiscount     string `json:"merDiscount,omitempty"`     // 商户优惠  C
-	QrCode          string `json:"qrcode,omitempty"`          // 二维码 C
+	Txndir          string `json:"txndir" url:"txndir"`                                       // 交易方向 M M
+	Busicd          string `json:"busicd" url:"busicd"`                                       // 交易类型 M M
+	Respcd          string `json:"respcd" url:"respcd"`                                       // 交易结果  M
+	Inscd           string `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 机构号 M M
+	Chcd            string `json:"chcd,omitempty" url:"chcd,omitempty"`                       // 渠道 C C
+	Mchntid         string `json:"mchntid" url:"mchntid"`                                     // 商户号 M M
+	Terminalid      string `json:"terminalid,omitempty" url:"terminalid,omitempty"`           // 终端号
+	Txamt           string `json:"txamt,omitempty" url:"txamt,omitempty"`                     // 订单金额 M M
+	ChannelOrderNum string `json:"channelOrderNum,omitempty" url:"channelOrderNum,omitempty"` // 渠道交易号 C
+	ConsumerAccount string `json:"consumerAccount,omitempty" url:"consumerAccount,omitempty"` // 渠道账号  C
+	ConsumerId      string `json:"consumerId,omitempty" url:"consumerId,omitempty"`           // 渠道账号ID   C
+	ErrorDetail     string `json:"errorDetail,omitempty" url:"errorDetail,omitempty"`         // 错误信息   C
+	OrderNum        string `json:"orderNum,omitempty" url:"orderNum,omitempty"`               // 订单号 M C
+	OrigOrderNum    string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty"`       // 源订单号 M C
+	Sign            string `json:"sign" url:"-"`                                              // 签名 M M
+	ChcdDiscount    string `json:"chcdDiscount,omitempty" url:"chcdDiscount,omitempty"`       // 渠道优惠  C
+	MerDiscount     string `json:"merDiscount,omitempty" url:"merDiscount,omitempty"`         // 商户优惠  C
+	QrCode          string `json:"qrcode,omitempty" url:"qrcode,omitempty"`                   // 二维码 C
+	PrePayId        string `json:"-" url:"-"`
 	// 辅助字段
-	ChanRespCode string `json:"-"` // 渠道详细应答码
+	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
 }
 
 // SignMsg 字典排序报文
@@ -181,49 +177,10 @@ func (s *ScanPayRequest) MarshalGoods() string {
 // genSignMsg 获取字符串签名字段
 func genSignMsg(o interface{}) string {
 
-	var mFields []string
-	sv := reflect.ValueOf(o)
-	if sv.Kind() != reflect.Ptr || sv.IsNil() {
+	buf, err := util.Query(o)
+	if err != nil {
+		log.Errorf("gen sign msg error: %s", err)
 		return ""
-	}
-	t := sv.Type().Elem()
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		if f.Name == "Sign" {
-			continue
-		}
-		mFields = append(mFields, f.Name)
-	}
-
-	// 排序
-	sort.Strings(mFields)
-	var buf bytes.Buffer
-	for _, field := range mFields {
-
-		// jsonTag
-		v := sv.Elem().FieldByName(field)
-		f, _ := t.FieldByName(field)
-		jsonTag := f.Tag.Get("json")
-
-		// fieldName
-		jn := ""
-		jn = strings.Split(jsonTag, ",")[0]
-		if jn == "" {
-			jn = field
-		}
-
-		// 组装报文
-		if jsonTag != "-" && v.CanSet() {
-			if v.Kind() == reflect.String {
-				fv := v.String()
-				if fv != "" {
-					if buf.Len() > 0 {
-						buf.WriteByte('&')
-					}
-					buf.WriteString(jn + "=" + fv)
-				}
-			}
-		}
 	}
 	return buf.String()
 }

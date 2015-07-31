@@ -78,12 +78,11 @@ func notify(changes []*model.CheckAndNotify) {
 		case model.Cache_Merchant, model.Cache_ChanMer, model.Cache_CfcaBankMap, model.Cache_CfcaMerRSAPrivKey,
 			model.Cache_RespCode:
 			// 获得缓存
-			c := cache.Client.Get(v.BizType)
-			log.Debugf("get %s cache...%+v", v.BizType, c)
+			c, ok := cache.Client.Get(v.BizType)
 			// 清空
-			if c != nil {
-				log.Debugf("clear %s cache...", v.BizType)
+			if ok {
 				c.Clear()
+				log.Infof("clear %s cache...", v.BizType)
 			}
 		default:
 			log.Errorf("unimplement business type %s", v.BizType)

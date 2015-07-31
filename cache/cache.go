@@ -111,7 +111,10 @@ func (c *cachePool) Add(name string, cache *Cache) {
 }
 
 // Get 取一个
-func (c *cachePool) Get(name string) *Cache {
-	cache := c.caches[name]
-	return cache
+func (c *cachePool) Get(name string) (*Cache, bool) {
+
+	if cache, ok := c.caches[name]; ok {
+		return cache, ok
+	}
+	return nil, false
 }

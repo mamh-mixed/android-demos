@@ -59,6 +59,8 @@ type RouterPolicy struct {
 	MaxAmount string `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
 	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
+	SubMerId  string `json:"subMerId" bson:"subMerId,omitempty"`   // 子商户id，代理商模式下该字段不为空
+	IsAgent   bool   `json:"isAgent" bson:"isAgent"`               // 是否是代理商模式
 }
 
 // BindingInfo 商家绑定信息
@@ -136,23 +138,23 @@ type MerDetail struct {
 
 // ChanMer 渠道商户
 type ChanMer struct {
-	ChanCode       string `bson:"chanCode,omitempty" json:"chanCode,omitempty"`             //渠道代码
-	ChanMerId      string `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`           //商户号
-	ChanMerName    string `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"`       //商户名称
-	SettFlag       string `bson:"settFlag,omitempty" json:"settFlag,omitempty"`             //清算标识
-	SettRole       string `bson:"settRole,omitempty" json:"settRole,omitempty"`             //清算角色
-	SignCert       string `bson:"signCert,omitempty" json:"signCert,omitempty"`             //签名证书
-	CheckSignCert  string `bson:"checkSignCert,omitempty" json:"checkSignCert,omitempty"`   //验签证书
-	AlpMd5Key      string `bson:"alpMd5Key,omitempty" json:"alpMd5Key,omitempty"`           //支付宝 MD5 Key
-	WxpAppId       string `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`             //微信支付App Id
-	WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty" json:"wxpPartnerKey,omitempty"`   //微信支付Partner Key
-	WxpEncryptCert string `bson:"wxpEncryptCert,omitempty" json:"wxpEncryptCert,omitempty"` //微信支付加密证书
-	InsCode        string `bson:"insCode,omitempty" json:"insCode,omitempty"`               //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
-	TerminalId     string `bson:"terminalId,omitempty" json:"terminalId,omitempty"`         //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	// SubMchId       string `bson:"subMchId,omitempty" json:"subMchId,omitempty"`             //子商户Id
+	ChanCode      string `bson:"chanCode,omitempty" json:"chanCode,omitempty"`           //渠道代码
+	ChanMerId     string `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`         //商户号
+	ChanMerName   string `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"`     //商户名称
+	SettFlag      string `bson:"settFlag,omitempty" json:"settFlag,omitempty"`           //清算标识
+	SettRole      string `bson:"settRole,omitempty" json:"settRole,omitempty"`           //清算角色
+	SignCert      string `bson:"signCert,omitempty" json:"signCert,omitempty"`           //签名证书
+	CheckSignCert string `bson:"checkSignCert,omitempty" json:"checkSignCert,omitempty"` //验签证书
+	// AlpMd5Key      string `bson:"alpMd5Key,omitempty" json:"alpMd5Key,omitempty"`           //支付宝 MD5 Key
+	WxpAppId string `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"` //微信支付App Id
+	// WxpPartnerKey  string `bson:"wxpPartnerKey,omitempty" json:"wxpPartnerKey,omitempty"`   //微信支付Partner Key
+	// WxpEncryptCert string `bson:"wxpEncryptCert,omitempty" json:"wxpEncryptCert,omitempty"` //微信支付加密证书
+	InsCode    string `bson:"insCode,omitempty" json:"insCode,omitempty"`       //机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId string `bson:"terminalId,omitempty" json:"terminalId,omitempty"` //终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
 	AcqFee     string `bson:"acqFee,omitempty" json:"acqFee,omitempty"`         //讯联跟渠道费率
 	MerFee     string `bson:"merFee,omitempty" json:"merFee,omitempty"`         //商户跟讯联费率
-	SuperMchId string `bson:"superMchId,omitempty" json:"superMchId,omitempty"` //父商户Id
+	HttpCert   string `bson:"httpCert,omitempty" json:"httpCert,omitempty"`     //http cert证书
+	HttpKey    string `bson:"httpKey,omitempty" json:"httpKey,omitempty"`       //http key 证书
 	//...
 }
 
@@ -183,6 +185,7 @@ type Trans struct {
 	TransStatus  string        `bson:"transStatus,omitempty" json:"transStatus"`             //交易状态 10-处理中 20-失败 30-成功 40-已关闭
 	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 //交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
 	ChanMerId    string        `bson:"chanMerId,omitempty" json:"-"`                         //渠道商户号
+	SubChanMerId string        `bson:"subChanMerId,omitempty" json:"-"`                      //渠道子商户号
 	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   //渠道代码
 	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      //渠道应答码
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      //交易创建时间 yyyy-mm-dd hh:mm:ss
@@ -207,6 +210,7 @@ type Trans struct {
 	Busicd          string `bson:"busicd,omitempty" json:"busicd"`                             //业务id
 	Inscd           string `bson:"inscd,omitempty" json:"inscd,omitempty"`                     //机构号
 	QrCode          string `bson:"qrCode,omitempty" json:"-"`                                  //预下单时的二维码
+	PrePayId        string `bson:"prePayId,omitempty" json:"-"`                                //预支付凭证
 	Terminalid      string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`           //终端号
 	ErrorDetail     string `bson:"errorDetail,omitempty" json:"errorDetail"`                   //错误信息
 	GatheringId     string `bson:"gatheringId,omitempty" json:"-"`                             //收款号

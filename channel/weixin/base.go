@@ -21,7 +21,7 @@ type CommonParams struct {
 	XMLName xml.Name `xml:"xml" url:"-"`
 
 	// 公共字段
-	Appid    string `xml:"appid" url:"appid" validate:"len=18"`            // 微信分配的公众账号ID
+	Appid    string `xml:"appid" url:"appid"`                              // 微信分配的公众账号ID validate:"len=18
 	SubAppid string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`  // 微信分配的子商户公众账号ID
 	MchID    string `xml:"mch_id" url:"mch_id" validate:"nonzero"`         // 微信支付分配的商户号
 	SubMchId string `xml:"sub_mch_id" url:"sub_mch_id" validate:"nonzero"` // 微信支付分配的子商户号，开发者模式下必填
