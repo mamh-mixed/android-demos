@@ -1,4 +1,4 @@
-package scanpay
+package weixin
 
 import (
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -16,7 +16,7 @@ var (
 // returnCode: 通信标识
 // resultCode: 业务结果标识
 // errCode: 渠道返回的错误码
-func transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (status, msg string) {
+func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (status, msg string) {
 	// 如果通信标识为失败，一般‘签名失败’，‘参数格式校验失败’都会返回失败的通信标识
 	if returnCode == "FAIL" {
 		log.Error("weixin request fail, return code is FAIL")

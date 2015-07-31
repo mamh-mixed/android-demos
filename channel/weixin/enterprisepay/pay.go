@@ -2,17 +2,18 @@ package enterprisepay
 
 import (
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"net/http"
 )
 
 // PayReq 请求被扫支付API需要提交的数据
 type EnterprisePayReq struct {
 	weixin.CommonParams
-
+	MchID          string `xml:"mchid" url:"mchid"`
 	MchAappid      string `xml:"mch_appid" url:"mch_appid"` // 商户appid
 	PartnerTradeNo string `xml:"partner_trade_no" url:"partner_trade_no"`
 	OpenId         string `xml:"openid" url:"openid"`
 	CheckName      string `xml:"check_name" url:"check_name"`
-	ReUserName     string `xml:"re_user_name" url:"re_user_name,omitempty"`
+	ReUserName     string `xml:"re_user_name,omitempty" url:"re_user_name,omitempty"`
 	Amount         string `xml:"amount" url:"amount"`
 	Desc           string `xml:"desc" url:"desc"`
 	SpbillCreateIp string `xml:"spbill_create_ip" url:"spbill_create_ip,omitempty"`
@@ -21,6 +22,11 @@ type EnterprisePayReq struct {
 // GetURI 取接口地址
 func (p *EnterprisePayReq) GetURI() string {
 	return "/mmpaymkttransfers/promotion/transfers"
+}
+
+// GetHTTPClient 使用双向 HTTPS 认证
+func (p *EnterprisePayReq) GetHTTPClient() *http.Client {
+	return p.GetHTTPSClient()
 }
 
 // PayResp 被扫支付提交Post数据给到API之后，API会返回XML格式的数据，这个类用来装这些数据

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/CardInfoLink/quickpay/adaptor"
+	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -93,7 +94,7 @@ func ProcessAlpNotify(params url.Values) {
 }
 
 // ProcessWeixinNotify 微信异步通知处理(预下单)
-func ProcessWeixinNotify(req *model.WeixinNotifyReq) {
+func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) {
 	log.Infof("weixin paut async request: %#v", req)
 
 	// 上送的订单号

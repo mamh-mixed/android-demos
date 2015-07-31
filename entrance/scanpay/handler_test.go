@@ -67,8 +67,20 @@ var (
 		OrigOrderNum: "1438326233412",
 		Inscd:        "CIL00002",
 	}
+	// 企业支付
+	scanPayEnterprise = &model.ScanPayRequest{
+		Busicd:    "QYFK",
+		Mchntid:   "888888888888888",
+		OrderNum:  util.Millisecond(),
+		Inscd:     "10134001",
+		Chcd:      "WXP",
+		Txamt:     "000000000099",
+		OpenId:    "omYJss7PyKb02j3Y5pnZLm2IL6F4",
+		CheckName: "NO_CHECK",
+		Desc:      "ipad2 mini 64G",
+	}
 
-	scanPay = scanPayClose
+	scanPay = scanPayEnterprise
 )
 
 func TestScanPay(t *testing.T) {

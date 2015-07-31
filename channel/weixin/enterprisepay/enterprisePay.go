@@ -15,7 +15,6 @@ type WeixinEnterprisePay struct{}
 
 func getCommonParams(req *model.ScanPayRequest) *weixin.CommonParams {
 	return &weixin.CommonParams{
-		MchID:        req.ChanMerId,  // 商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
 		WeixinMD5Key: req.SignCert,   // md5key
@@ -27,9 +26,9 @@ func getCommonParams(req *model.ScanPayRequest) *weixin.CommonParams {
 // ProcessPay 支付
 func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 
-	pay := &EnterprisePayReq{
-		CommonParams: *getCommonParams(req),
-
+	q := &EnterprisePayReq{
+		CommonParams:   *getCommonParams(req),
+		MchID:          req.ChanMerId, // 商户号
 		MchAappid:      req.AppID,
 		OpenId:         req.OpenId,
 		CheckName:      req.CheckName,
@@ -39,15 +38,22 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 		PartnerTradeNo: req.OrderNum,
 		Amount:         req.ActTxamt,
 	}
-	resp := &EnterprisePayResp{}
+	p := &EnterprisePayResp{}
 
-	err = weixin.Execute(pay, resp)
+	err = weixin.Execute(q, p)
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("%+v", resp)
+	log.Debugf("%+v", p)
 
-	ret = &model.ScanPayResponse{}
+	status, msg := weixin.Transform("enterprisePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+
+	ret = &model.ScanPayResponse{
+		Respcd:          status,    // 交易结果  M
+		ErrorDetail:     msg,       // 错误信息   C
+		ChanRespCode:    p.ErrCode, // 渠道详细应答码
+		ChannelOrderNum: p.PaymentNo,
+	}
 
 	return ret, nil
 }
