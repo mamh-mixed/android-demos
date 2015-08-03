@@ -57,6 +57,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.route = 'contact';
     });
 
+    // 商户，渠道商户和路由 start
+    page('/merchants', function () {
+      app.route = 'merchant.list';
+    });
+    page('/chanMers', function () {
+      app.route = 'chanMer.list';
+    });
+    page('/routes', function () {
+      app.route = 'route.list';
+    });
+    // 商户，渠道商户和路由 end
+
     // add #! before urls
     page({
       hashbang: true

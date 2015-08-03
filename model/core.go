@@ -107,9 +107,9 @@ type Merchant struct {
 	IsNeedSign bool      `bson:"isNeedSign,omitempty" json:"isNeedSign,omitempty"` //是否开启验签
 	EncryptKey string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` //商户加密密钥
 	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         //备注信息
-	Permission []string  `bson:"permission,omitempty" josn:"permission,omitempty"` //接口权限
+	Permission []string  `bson:"permission,omitempty" json:"permission,omitempty"` //接口权限
 	Detail     MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      //商户详细信息
-	InsCode    string    `bson:"insCode,omitempty" bson:"insCode,omitempty"`       //机构号
+	InsCode    string    `bson:"insCode,omitempty" json:"insCode,omitempty"`       //机构号
 }
 
 // MerDetail 商户详细信息
