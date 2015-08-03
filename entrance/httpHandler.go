@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/entrance/applepay"
 	"github.com/CardInfoLink/quickpay/entrance/bindingpay"
@@ -175,7 +176,7 @@ func AsyncNotify(w http.ResponseWriter, r *http.Request) {
 // WeixinNotify 接受微信异步通知
 func weixinNotify(r *http.Request) ([]byte, error) {
 
-	ret := &model.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}
+	ret := &weixin.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -185,7 +186,7 @@ func weixinNotify(r *http.Request) ([]byte, error) {
 		return xml.Marshal(ret)
 	}
 
-	var req model.WeixinNotifyReq
+	var req weixin.WeixinNotifyReq
 	err = xml.Unmarshal(data, &req)
 	if err != nil {
 		log.Errorf("unmarshal body error: %s, body: %s", err, string(data))

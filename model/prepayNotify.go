@@ -1,42 +1,5 @@
 package model
 
-import (
-	"encoding/xml"
-
-	"github.com/CardInfoLink/quickpay/channel/weixin"
-)
-
-// WeixinNotifyReq 支付完成后，微信会把相关支付结果和用户信息发送给商户，商户需要接收处理，并返回应答
-type WeixinNotifyReq struct {
-	weixin.CommonBody
-
-	DeviceInfo     string `xml:"device_info,omitempty"`                             // 设备号
-	OpenID         string `xml:"openid"`                                            // 用户标识
-	IsSubscribe    string `xml:"is_subscribe"`                                      // 是否关注公众账号
-	TradeType      string `xml:"trade_type"`                                        // 交易类型
-	BankType       string `xml:"bank_type"`                                         // 付款银行
-	FeeType        string `xml:"fee_type"`                                          // 货币类型
-	TotalFee       string `xml:"total_fee"`                                         // 总金额
-	CashFeeType    string `xml:"cash_fee_type"`                                     // 现金支付货币类型
-	CashFee        string `xml:"cash_fee"`                                          // 现金支付金额
-	CouponFee      string `xml:"coupon_fee"`                                        // 代金券或立减优惠金额
-	CouponCount    string `xml:"coupon_count"`                                      // 代金券或立减优惠使用数量
-	TransactionId  string `xml:"transaction_id"`                                    // 微信支付订单号
-	OutTradeNo     string `xml:"out_trade_no"`                                      // 商户订单号
-	Attach         string `xml:"attach"`                                            // 商家数据包
-	TimeEnd        string `xml:"time_end"`                                          // 支付完成时间
-	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`   // 子商户 Open ID
-	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"` // 是否关注子商户公众账号
-}
-
-// WeixinNotifyResp 商户需要接收处理，并返回应答
-type WeixinNotifyResp struct {
-	XMLName xml.Name `xml:"xml"`
-
-	ReturnCode string `xml:"return_code"`          // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
-}
-
 // AlipayNotifyReq 预下单用户支付完成后，支付宝会把相关支付结果和用户信息发送给商户，商户需要接收处理，并返回应答
 type AlipayNotifyReq struct {
 	NotifyTime       string `json:"notify_time" validate:"nonzero"`        // 通知时间

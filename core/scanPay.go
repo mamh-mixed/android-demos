@@ -86,12 +86,14 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Remark:        req.Desc,
 		GatheringId:   req.OpenId,
 		GatheringName: req.UserName,
+		ChanCode:      req.Chcd,
 	}
 
 	// 渠道是否合法
 	switch req.Chcd {
 	case channel.ChanCodeWeixin:
 		// ok
+
 	default:
 		// alipay not support now
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")

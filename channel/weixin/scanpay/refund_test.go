@@ -7,13 +7,13 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 )
 
-func TestRefund(t *testing.T) {
+func TestRefundPay(t *testing.T) {
 	d := &RefundReq{
 		CommonParams: testCommonParams,
 
 		DeviceInfo:    "xxx",               // 设备号
 		TransactionId: "",                  // 微信的订单号，优先使用
-		OutTradeNo:    "1438325771857",     // 商户系统内部的订单号，当没提供transaction_id时需要传这个
+		OutTradeNo:    "1438325425005",     // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 		OutRefundNo:   util.SerialNumber(), // 商户退款单号
 		TotalFee:      "1",                 // 总金额
 		RefundFee:     "1",                 // 退款金额

@@ -48,6 +48,8 @@ func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
+		req.WeixinClientCert = []byte(c.HttpCert)
+		req.WeixinClientKey = []byte(c.HttpKey)
 		// req.SubMchId = c.SubMchId // remark:暂不支持受理商模式
 	}
 

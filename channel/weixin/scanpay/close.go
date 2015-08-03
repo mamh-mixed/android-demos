@@ -1,6 +1,8 @@
 package scanpay
 
-import "github.com/CardInfoLink/quickpay/channel/weixin"
+import (
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+)
 
 // CloseReq 关闭订单
 type CloseReq struct {
