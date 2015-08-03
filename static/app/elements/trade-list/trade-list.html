@@ -51,7 +51,7 @@
         text-align: center;
     }
 
-    table tr th:nth-of-type(8), table tr td:nth-of-type(8) {
+    table tr td:nth-of-type(1), table tr th:nth-of-type(8), table tr td:nth-of-type(8) {
         text-align: right;
     }
   </style>
@@ -75,7 +75,7 @@
         <table style="width:100%;">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th></th>
                     <th>订单号</th>
                     <th>交易状态</th>
                     <th>渠道</th>
@@ -90,7 +90,7 @@
                 <template is="dom-repeat" items="{{trades}}">
                     <tr>
                         <td>
-                            #<span>{{index}}</span>
+                            <span>{{addOneFilter(index)}}</span>
                         </td>
                         <td>
                             <span>{{item.orderNum}}</span>
@@ -128,6 +128,20 @@
   </template>
   <script>
     (function() {
+        var TRANS_TYPE_MAP = {
+            'PURC': '下单支付',
+            'PAUT': '预下单',
+            'VOID': '撤销',
+            'REFD': '退款',
+            'VERI': '卡券核销',
+            'purc': '下单支付',
+            'paut': '预下单',
+            'void': '撤销',
+            'refd': '退款',
+            'veri': '卡券核销',
+            'QYFK': '企业付款'
+        };
+
       Polymer({
         is: 'trade-list',
 
@@ -146,23 +160,16 @@
           },
           busicds: {
             type: Array,
-            value: [{
-              key: 'PURC',
-              value: '下单支付'
-            }, {
-              key: 'PAUT',
-              value: '预下单'
-            }, {
-              key: 'VOID',
-              value: '撤销'
-            }, {
-              key: 'REFD',
-              value: '退款'
-            }, {
-              key: 'VERI',
-              value: '卡券核销'
-            }],
-            readOnly: true
+            value: (function() {
+                var busicds = [];
+                for (var k in TRANS_TYPE_MAP){
+                    busicds.push({
+                          key: k,
+                          value: TRANS_TYPE_MAP[k]
+                    });
+                }
+                return busicds;
+            })()
           }
         },
         ready: function() {
@@ -211,6 +218,9 @@
             this.$.queryAjax.body = JSON.stringify(this.cond);
             this.$.queryAjax.generateRequest();
         },
+        addOneFilter: function(index) {
+            return index + 1;
+        },
         chanFilter: function(chanCode) {
             var map = {
                 'ALP': '支付宝',
@@ -219,19 +229,7 @@
             return map[chanCode];
         },
         busicdFilter: function(busicd) {
-            var map = {
-                'PURC': '下单支付',
-                'PAUT': '预下单',
-                'VOID': '撤销',
-                'REFD': '退款',
-                'VERI': '卡券核销',
-                'purc': '下单支付',
-                'paut': '预下单',
-                'void': '撤销',
-                'refd': '退款',
-                'veri': '卡券核销'
-            };
-            return map[busicd] || busicd;
+            return TRANS_TYPE_MAP[busicd] || busicd;
         },
         transStatusFilter: function(status) {
             var map = {
