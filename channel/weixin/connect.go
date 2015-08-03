@@ -5,7 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
-	// "errors"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -120,8 +120,7 @@ func processRespBody(body []byte, signKey string, resp BaseResp) error {
 
 	if actual != resp.GetSign() {
 		log.Errorf("check sign error: query={%s}, expected=%s, actual=%s", buf.String(), resp.GetSign(), actual)
-		// TODO 企业付款成功没有返回签名
-		// return errors.New("check sign error")
+		return errors.New("check sign error")
 	}
 
 	return nil
