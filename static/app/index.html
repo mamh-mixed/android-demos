@@ -55,12 +55,14 @@
 
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
-          <current-user></current-user>
+          <!-- <current-user></current-user> -->
+          <div class="app-name">快捷支付管理平台</div>
         </paper-toolbar>
 
         <!-- 菜单列表 -->
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-          <a data-route="system" href="/system" onclick="document.querySelector('#systemCollapse').toggle();">
+          <!--
+          <a onclick="document.querySelector('#systemCollapse').toggle();">
             <iron-icon icon="settings"></iron-icon>
             <span>系统管理</span>
           </a>
@@ -80,40 +82,42 @@
               </a>
             </paper-menu>
           </iron-collapse>
+          -->
 
-          <a data-route="system" href="/tradeMgt" onclick="document.querySelector('#tradeCollapse').toggle();">
-            <iron-icon icon="swap-horiz"></iron-icon>
-            <span>交易管理</span>
-          </a>
-          <iron-collapse id="tradeCollapse">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-              <a data-route="trade.list" href="/trades">
-                <iron-icon icon="list"></iron-icon>
-                <span>交易列表</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
-          <a data-route="system" onclick="document.querySelector('#MCRCollapse').toggle();">
+          <a onclick="document.querySelector('#MCRCollapse').toggle();">
             <iron-icon icon="build"></iron-icon>
-            <span>商户、渠道和路由</span>
+            <span>商户配置</span>
           </a>
           <iron-collapse id="MCRCollapse">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-              <a data-route="merchant.list" href="/merchants">
+              <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
-                <span>商户管理</span>
+                <span>机构商户</span>
               </a>
-              <a data-route="chanMer.list" href="/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户管理</span>
-              </a>
-              <a data-route="route.list" href="/routes">
+              <a data-route="config.routes" href="/config/routes">
                 <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由管理</span>
+                <span>路由策略</span>
+              </a>
+              <a data-route="config.chanMers" href="/config/chanMers">
+                <iron-icon icon="account-balance"></iron-icon>
+                <span>渠道商户</span>
               </a>
             </paper-menu>
           </iron-collapse>
+
+          <a onclick="document.querySelector('#tradeCollapse').toggle();">
+            <iron-icon icon="swap-horiz"></iron-icon>
+            <span>交易查询</span>
+          </a>
+          <iron-collapse id="tradeCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+              <a data-route="trades.list" href="/trades/list">
+                <iron-icon icon="list"></iron-icon>
+                <span>扫码交易</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
+
         </paper-menu>
       </paper-scroll-header-panel>
 
@@ -131,26 +135,19 @@
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
-            <div class="app-name">快捷支付管理平台</div>
+            <div class="app-name">{{route.title}}</div>
           </div>
 
           <!-- Application sub title -->
           <div class="bottom bottom-container center horizontal layout">
-            <div class="bottom-title paper-font-subhead">上海讯联数据服务有限公司</div>
+            <div class="bottom-title paper-font-subhead">{{route.subtitle}}</div>
           </div>
 
         </paper-toolbar>
 
         <!-- Main Content -->
         <div class="content">
-          <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
-            <section data-route="system">
-              <paper-material elevation="1">
-                <p class="paper-font-body2">This is Home page</p>
-              </paper-material>
-
-            </section>
+          <iron-pages attr-for-selected="data-route" selected="{{route.name}}">
 
             <section data-route="system.users">
               <paper-material elevation="1">
@@ -168,20 +165,28 @@
               </paper-material>
             </section>
 
-            <section data-route="trade.list">
-              <trade-list></trade-list>
+            <section data-route="trades.list">
+              <paper-material elevation="1">
+                <trade-list></trade-list>
+              </paper-material>
             </section>
 
-            <section data-route="merchant.list">
-              <merchant-list></merchant-list>
+            <section data-route="config.merchants">
+              <paper-material elevation="1">
+                <merchant-list></merchant-list>
+              </paper-material>
             </section>
 
-            <section data-route="chanMer.list">
-              <channel-merchant-list></channel-merchant-list>
+            <section data-route="config.chanMers">
+              <paper-material elevation="1">
+                <channel-merchant-list></channel-merchant-list>
+              </paper-material>
             </section>
 
-            <section data-route="route.list">
-              <route-list></route-list>
+            <section data-route="config.routes">
+              <paper-material elevation="1">
+                <route-list></route-list>
+              </paper-material>
             </section>
           </iron-pages>
         </div>

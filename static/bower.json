@@ -10,7 +10,8 @@
     "iron-list": "PolymerElements/iron-list#~1.0.1",
     "iron-dropdown": "PolymerElements/iron-dropdown#~1.0.3",
     "x-select": "https://github.com/wonsikin/x-select.git",
-    "webcomponentsjs": "~0.7.7"
+    "webcomponentsjs": "~0.7.7",
+    "paper-date-picker": "omigo/paper-date-picker#~1.0.3"
   },
   "devDependencies": {
     "web-component-tester": "*",
