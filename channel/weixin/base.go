@@ -88,7 +88,7 @@ type CommonBody struct {
 
 	// 当 return_code 为 SUCCESS 的时候，还会包括以下字段：
 	Appid      string `xml:"appid,omitempty" url:"appid,omitempty"`               // 公众账号ID
-	MchID      string `xml:"mch_id" url:"mch_id"`                                 // 商户号
+	MchID      string `xml:"mch_id,omitempty" url:"mch_id,omitempty"`             // 商户号
 	SubMchId   string `xml:"sub_mch_id,omitempty" url:"sub_mch_id,omitempty"`     // 子商户号
 	SubAppid   string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`       // 子商户公众账号 ID
 	NonceStr   string `xml:"nonce_str" url:"nonce_str"`                           // 随机字符串

@@ -74,7 +74,7 @@ var (
 		OrderNum:  util.Millisecond(),
 		Inscd:     "10134001",
 		Chcd:      "WXP",
-		Txamt:     "000000000099",
+		Txamt:     "000000000100",
 		OpenId:    "omYJss7PyKb02j3Y5pnZLm2IL6F4",
 		CheckName: "NO_CHECK",
 		Desc:      "ipad2 mini 64G",
