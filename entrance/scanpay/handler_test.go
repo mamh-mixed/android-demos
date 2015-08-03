@@ -16,7 +16,7 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "283018504189354361",
+		ScanCodeId: "2820876992391976800",
 		Inscd:      "CIL00002",
 		Txamt:      "000000000001",
 		Chcd:       "ALP",
@@ -80,7 +80,7 @@ var (
 		Desc:      "ipad2 mini 64G",
 	}
 
-	scanPay = scanPayEnterprise
+	scanPay = scanPayBarcodePay
 )
 
 func TestScanPay(t *testing.T) {

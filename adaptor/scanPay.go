@@ -5,16 +5,10 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-)
-
-var (
-	alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
-	weixinNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
 )
 
 // ProcessEnterprisePay 企业支付
@@ -134,11 +128,11 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.NotifyUrl = alipayNotifyUrl
+		// req.NotifyUrl = alipayNotifyUrl
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.NotifyUrl = weixinNotifyUrl
+		// req.NotifyUrl = weixinNotifyUrl
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:

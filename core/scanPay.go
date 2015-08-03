@@ -170,6 +170,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Inscd:      req.Inscd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
+		Remark:     req.GoodsInfo,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -232,6 +233,8 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ChanCode:   req.Chcd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
+		Remark:     req.GoodsInfo,
+		NotifyUrl:  req.NotifyUrl,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
