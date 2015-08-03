@@ -21,12 +21,12 @@ type CommonParams struct {
 	XMLName xml.Name `xml:"xml" url:"-"`
 
 	// 公共字段
-	Appid    string `xml:"appid" url:"appid"`                              // 微信分配的公众账号ID validate:"len=18
-	SubAppid string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`  // 微信分配的子商户公众账号ID
-	MchID    string `xml:"mch_id" url:"mch_id" validate:"nonzero"`         // 微信支付分配的商户号
-	SubMchId string `xml:"sub_mch_id" url:"sub_mch_id" validate:"nonzero"` // 微信支付分配的子商户号，开发者模式下必填
-	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`   // 随机字符串
-	Sign     string `xml:"sign" url:"-"`                                   // 签名
+	Appid    string `xml:"appid,omitempty" url:"appid,omitempty"`           // 微信分配的公众账号ID validate:"len=18
+	SubAppid string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`   // 微信分配的子商户公众账号ID
+	MchID    string `xml:"mch_id,omitempty" url:"mch_id,omitempty"`         // 微信支付分配的商户号
+	SubMchId string `xml:"sub_mch_id,omitempty" url:"sub_mch_id,omitempty"` // 微信支付分配的子商户号，开发者模式下必填
+	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`    // 随机字符串
+	Sign     string `xml:"sign" url:"-"`                                    // 签名
 
 	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero"`
 
@@ -87,10 +87,10 @@ type CommonBody struct {
 	ReturnMsg  string `xml:"return_msg,omitempty" url:"return_msg,omitempty"` // 返回信息
 
 	// 当 return_code 为 SUCCESS 的时候，还会包括以下字段：
-	Appid      string `xml:"appid" url:"appid"`                                   // 公众账号ID
-	MchID      string `xml:"mch_id" url:"mch_id"`                                 // 商户号
-	SubMchId   string `xml:"sub_mch_id" url:"sub_mch_id"`                         // 子商户号
-	SubAppid   string `xml:"sub_appid" url:"sub_appid"`                           // 子商户公众账号 ID
+	Appid      string `xml:"appid,omitempty" url:"appid,omitempty"`               // 公众账号ID
+	MchID      string `xml:"mch_id,omitempty" url:"mch_id,omitempty"`             // 商户号
+	SubMchId   string `xml:"sub_mch_id,omitempty" url:"sub_mch_id,omitempty"`     // 子商户号
+	SubAppid   string `xml:"sub_appid,omitempty" url:"sub_appid,omitempty"`       // 子商户公众账号 ID
 	NonceStr   string `xml:"nonce_str" url:"nonce_str"`                           // 随机字符串
 	Sign       string `xml:"sign" url:"-"`                                        // 签名
 	ResultCode string `xml:"result_code" url:"result_code"`                       // 业务结果
@@ -101,4 +101,35 @@ type CommonBody struct {
 // GetSign sign getter
 func (c *CommonBody) GetSign() string {
 	return c.Sign
+}
+
+// WeixinNotifyReq 支付完成后，微信会把相关支付结果和用户信息发送给商户，商户需要接收处理，并返回应答
+type WeixinNotifyReq struct {
+	CommonBody
+
+	DeviceInfo     string `xml:"device_info,omitempty"`                             // 设备号
+	OpenID         string `xml:"openid"`                                            // 用户标识
+	IsSubscribe    string `xml:"is_subscribe"`                                      // 是否关注公众账号
+	TradeType      string `xml:"trade_type"`                                        // 交易类型
+	BankType       string `xml:"bank_type"`                                         // 付款银行
+	FeeType        string `xml:"fee_type"`                                          // 货币类型
+	TotalFee       string `xml:"total_fee"`                                         // 总金额
+	CashFeeType    string `xml:"cash_fee_type"`                                     // 现金支付货币类型
+	CashFee        string `xml:"cash_fee"`                                          // 现金支付金额
+	CouponFee      string `xml:"coupon_fee"`                                        // 代金券或立减优惠金额
+	CouponCount    string `xml:"coupon_count"`                                      // 代金券或立减优惠使用数量
+	TransactionId  string `xml:"transaction_id"`                                    // 微信支付订单号
+	OutTradeNo     string `xml:"out_trade_no"`                                      // 商户订单号
+	Attach         string `xml:"attach"`                                            // 商家数据包
+	TimeEnd        string `xml:"time_end"`                                          // 支付完成时间
+	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`   // 子商户 Open ID
+	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"` // 是否关注子商户公众账号
+}
+
+// WeixinNotifyResp 商户需要接收处理，并返回应答
+type WeixinNotifyResp struct {
+	XMLName xml.Name `xml:"xml"`
+
+	ReturnCode string `xml:"return_code"`          // 返回状态码
+	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
 }

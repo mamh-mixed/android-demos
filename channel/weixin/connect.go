@@ -101,6 +101,11 @@ func processRespBody(body []byte, signKey string, resp BaseResp) error {
 		return err
 	}
 
+	// 通讯失败或者没有返回签名时，不验签
+	if resp.GetSign() == "" {
+		return nil
+	}
+
 	// 验签
 	buf, err := util.Query(resp)
 	if err != nil {

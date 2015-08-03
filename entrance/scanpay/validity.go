@@ -26,6 +26,10 @@ const (
 	insCode    = "inscd"
 	buiscd     = "busicd"
 	terminalid = "terminalid"
+	openId     = "openid"
+	checkName  = "checkName"
+	desc       = "desc"
+	userName   = "userName"
 )
 
 var (
@@ -218,6 +222,7 @@ func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 // validateEnterprisePay 验证企业付款接口参数
 func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
 	// 验证非空
 	switch {
 	case req.OrderNum == "":
@@ -230,13 +235,12 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
 		return fieldEmptyError(txamt)
-	// TODO
 	case req.OpenId == "":
-		return fieldEmptyError("openid")
+		return fieldEmptyError(openId)
 	case req.CheckName == "":
-		return fieldEmptyError("checkName")
+		return fieldEmptyError(checkName)
 	case req.Desc == "":
-		return fieldEmptyError("desc")
+		return fieldEmptyError(desc)
 	}
 
 	// 验证格式
@@ -252,6 +256,9 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	if matched, err := validateTxamt(req); !matched {
 		return err
 	}
+	if len(req.OpenId) > 64 {
+		return fieldFormatError(openId)
+	}
 
 	return
 }
@@ -262,12 +269,12 @@ func validateUserName(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) 
 	switch req.CheckName {
 	case "FORCE_CHECK", "OPTION_CHECK":
 		if req.UserName == "" {
-			return false, fieldEmptyError("userName")
+			return false, fieldEmptyError(userName)
 		}
 	case "NO_CHECK":
 		// do nothing
 	default:
-		return false, fieldContentError("checkName")
+		return false, fieldContentError(checkName)
 	}
 	return true, nil
 }
