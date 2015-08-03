@@ -8,6 +8,7 @@ import (
 // 使用8583应答
 var (
 	CloseCode, CloseMsg         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
+	FailCode, FailMsg           = mongo.ScanPayRespCol.Get8583CodeAndMsg("FAIL")
 	InprocessCode, InprocessMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
 	SuccessCode, SuccessMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
 )
