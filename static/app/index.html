@@ -94,20 +94,26 @@
             </paper-menu>
           </iron-collapse>
 
-          <a data-route="home" href="/">
-            <iron-icon icon="home"></iron-icon>
-            <span>Home</span>
+          <a data-route="system" onclick="document.querySelector('#MCRCollapse').toggle();">
+            <iron-icon icon="build"></iron-icon>
+            <span>商户、渠道和路由</span>
           </a>
-
-          <a data-route="users" href="/users">
-            <iron-icon icon="info"></iron-icon>
-            <span>Users</span>
-          </a>
-
-          <a data-route="contact" href="/contact">
-            <iron-icon icon="mail"></iron-icon>
-            <span>Contact</span>
-          </a>
+          <iron-collapse id="MCRCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+              <a data-route="merchant.list" href="/merchants">
+                <iron-icon icon="store"></iron-icon>
+                <span>商户管理</span>
+              </a>
+              <a data-route="chanMer.list" href="/chanMers">
+                <iron-icon icon="account-balance"></iron-icon>
+                <span>渠道商户管理</span>
+              </a>
+              <a data-route="route.list" href="/routes">
+                <iron-icon icon="settings-input-component"></iron-icon>
+                <span>路由管理</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
         </paper-menu>
       </paper-scroll-header-panel>
 
@@ -162,41 +168,21 @@
               </paper-material>
             </section>
 
-            <trade-list data-route="trade.list"></trade-list>
-
-            <section data-route="home">
-              <paper-material elevation="1">
-                <p class="paper-font-body2">This is Home page</p>
-              </paper-material>
-
+            <section data-route="trade.list">
+              <trade-list></trade-list>
             </section>
 
-            <section data-route="users">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
-              </paper-material>
+            <section data-route="merchant.list">
+              <merchant-list></merchant-list>
             </section>
 
-            <section data-route="user-info">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">
-                  User:
-                  <span>{{params.name}}</span>
-                </h2>
-                <div>This is
-                  <span>{{params.name}}</span>'s section</div>
-              </paper-material>
+            <section data-route="chanMer.list">
+              <channel-merchant-list></channel-merchant-list>
             </section>
 
-            <section data-route="contact">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Contact</h2>
-                <p>This is the contact section</p>
-              </paper-material>
+            <section data-route="route.list">
+              <route-list></route-list>
             </section>
-
           </iron-pages>
         </div>
       </paper-scroll-header-panel>
