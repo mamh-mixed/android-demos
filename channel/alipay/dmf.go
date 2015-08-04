@@ -8,7 +8,10 @@ import (
 )
 
 var DefaultClient alp
-var agentId = goconf.Config.AlipayScanPay.AgentId
+var (
+	agentId         = goconf.Config.AlipayScanPay.AgentId
+	alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
+)
 
 // alp 当面付，扫码支付
 type alp struct{}
@@ -66,7 +69,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 	alpReq := &alpRequest{
 		Partner:        req.ChanMerId,
 		Service:        preCreate,
-		NotifyUrl:      req.NotifyUrl,
+		NotifyUrl:      alipayNotifyUrl,
 		OutTradeNo:     req.OrderNum, // 送的是原订单号，不转换,
 		Subject:        req.Subject,
 		GoodsDetail:    req.MarshalGoods(),

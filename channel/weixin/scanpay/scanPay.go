@@ -154,7 +154,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		SpbillCreateIP: util.LocalIP,                       // 终端IP
 		TimeStart:      startTime.Format("20060102150405"), // 交易起始时间
 		TimeExpire:     endTime.Format("20060102150405"),   // 交易结束时间
-		NotifyURL:      m.NotifyUrl,                        // 通知地址
+		NotifyURL:      weixinNotifyURL,                    // 通知地址
 		TradeType:      tradeType,                          // 交易类型
 		ProductID:      "",                                 // 商品ID
 		Openid:         m.OpenId,                           // 用户标识

@@ -170,6 +170,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Inscd:      req.Inscd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
+		Remark:     req.GoodsInfo,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -232,6 +233,8 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ChanCode:   req.Chcd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
+		Remark:     req.GoodsInfo,
+		NotifyUrl:  req.NotifyUrl,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -349,20 +352,45 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return returnWithErrorCode("TRADE_NOT_EXIST")
 	}
-	log.Debugf("trans:(%+v)", t)
-
 	// 原订单非支付交易
-	if t.TransType != model.PayTrans {
-		return returnWithErrorCode("CAN_NOT_QUERY_NOT_PAYTRANS")
-	}
+	// if t.TransType != model.PayTrans {
+	// 	return returnWithErrorCode("CAN_NOT_QUERY_NOT_PAYTRANS")
+	// }
 
 	// 判断订单的状态
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
 	case model.TransHandling, "":
-		ret = adaptor.ProcessEnquiry(t, req)
-		// 更新交易结果
+		// 支付交易则向渠道查询
+		if t.TransType == model.PayTrans {
+			ret = adaptor.ProcessEnquiry(t, req)
+			// 更新交易结果
+			updateTrans(t, ret)
+			break
+		}
+
+		// TODO 待确定
+		// 查看原交易的状态
+		orig, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
+		if err != nil {
+			return returnWithErrorCode("TRADE_NOT_EXIST")
+		}
+
+		ret = &model.ScanPayResponse{}
+		switch orig.TransStatus {
+		// 撤销、退款、取消成功时，订单状态都是已关闭
+		case model.TransClosed:
+			ret.Respcd, ret.ErrorDetail = adaptor.SuccessCode, adaptor.SuccessMsg
+		// TODO 如果是部分退款呢？
+		default:
+			ret.Respcd, ret.ErrorDetail = adaptor.FailCode, adaptor.FailMsg
+		}
+
+		// 更新
 		updateTrans(t, ret)
+
+		fallthrough
+
 	default:
 		// 原交易信息
 		ret.ChannelOrderNum = t.ChanOrderNum

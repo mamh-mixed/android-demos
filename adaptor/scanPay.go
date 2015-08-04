@@ -5,16 +5,10 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-)
-
-var (
-	alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
-	weixinNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
 )
 
 // ProcessEnterprisePay 企业支付
@@ -134,11 +128,11 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.NotifyUrl = alipayNotifyUrl
+		// req.NotifyUrl = alipayNotifyUrl
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.NotifyUrl = weixinNotifyUrl
+		// req.NotifyUrl = weixinNotifyUrl
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:
@@ -339,7 +333,9 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 	if orig.ChanCode == channel.ChanCodeWeixin {
 		// 下单，微信叫做刷卡支付，即被扫，收银员使用扫码设备读取微信用户刷卡授权码
 		if orig.Busicd == model.Purc {
-			return ProcessCancel(orig, closed, req)
+
+			// 走微信撤销接口
+			return ProcessWxpCancel(orig, closed, req)
 		}
 
 		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
@@ -354,6 +350,7 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 				return ProcessRefund(orig, closed, req)
 			case model.TransHandling:
 				// 发起查询请求，确认订单状态
+				log.Info("query order status before close ...")
 				orderStatus := ProcessEnquiry(orig, &model.ScanPayRequest{OrderNum: orig.OrderNum})
 				if orderStatus.Respcd == SuccessCode {
 					orig.TransStatus = model.TransSuccess
@@ -399,8 +396,47 @@ func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret
 	}
 }
 
+// ProcessWxpCancel 微信撤销接口
+func ProcessWxpCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	var err error
+	errResp := prepareWxpReqData(orig, current, req)
+	if errResp != nil {
+		return errResp
+	}
+
+	// 指定微信
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
+	ret, err = sp.ProcessCancel(req)
+	if err != nil {
+		log.Errorf("process weixin cancel error:%s", err)
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	return ret
+}
+
 // ProcessWxpClose 微信关闭接口
 func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	var err error
+	errResp := prepareWxpReqData(orig, current, req)
+	if errResp != nil {
+		return errResp
+	}
+
+	// 指定微信
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
+	ret, err = sp.ProcessClose(req)
+	if err != nil {
+		log.Errorf("process weixin Close error:%s", err)
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	return ret
+}
+
+func prepareWxpReqData(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
@@ -424,14 +460,5 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	if err != nil {
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}
-
-	// 指定微信
-	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
-	ret, err = sp.ProcessClose(req)
-	if err != nil {
-		log.Errorf("process weixin Close error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
-	}
-
-	return ret
+	return nil
 }
