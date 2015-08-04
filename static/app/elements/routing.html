@@ -15,7 +15,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // We use Page.js for routing. This is a Micro
     // client-side router inspired by the Express router
     // More info: https://visionmedia.github.io/page.js/
-
+    page('/', function () {
+      app.route = {
+          name: 'home',
+          path: '/',
+          title: '快捷支付管理平台',
+          subtitle: '上海讯联数据服务有限公司'
+      };
+    });
     //
     // page('/system/users', function () {
     //   app.route = 'system.users';

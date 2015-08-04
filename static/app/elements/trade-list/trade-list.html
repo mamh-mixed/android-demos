@@ -8,7 +8,8 @@
     .condition {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap
+      flex-wrap: wrap;
+      margin-bottom: 15px;
     }
 
     .condition > paper-input,
@@ -23,15 +24,12 @@
     }
 
     .condition > .buttons {
-      position: relative;
       min-width: 170px;
     }
 
     .condition > .buttons > paper-button {
       width: 100%;
-      position: absolute;
-      bottom: 10px;
-      margin: 0;
+      margin: 10px 0px 0px;
     }
 
     paper-button[raised].colorful {
@@ -39,20 +37,22 @@
       color: #fff;
     }
 
-    .loading-more-wrapper{
-        text-align: center;
+    .loading-more-wrapper {
+      text-align: center;
     }
 
-    table{
-        width: 100%;
+    table {
+      width: 100%;
     }
 
     table td {
-        text-align: center;
+      text-align: center;
     }
 
-    table tr td:nth-of-type(1), table tr th:nth-of-type(8), table tr td:nth-of-type(8) {
-        text-align: right;
+    table tr td:nth-of-type(1),
+    table tr th:nth-of-type(8),
+    table tr td:nth-of-type(8) {
+      text-align: right;
     }
   </style>
   <template>
@@ -88,75 +88,75 @@
     </div>
 
     <div class="list">
-        <table style="width:100%;">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>订单号</th>
-                    <th>交易状态</th>
-                    <th>渠道</th>
-                    <th>机构代码</th>
-                    <th>交易类型</th>
-                    <th>交易时间</th>
-                    <th>交易金额</th>
-                    <th>应答码</th>
-                </tr>
-            </thead>
-            <tbody>
-                <template is="dom-repeat" items="{{trades}}">
-                    <tr>
-                        <td>
-                            <span>{{addOneFilter(index)}}</span>
-                        </td>
-                        <td>
-                            <span>{{item.orderNum}}</span>
-                        </td>
-                        <td>
-                            <span>{{transStatusFilter(item.transStatus)}}</span>
-                        </td>
-                        <td>
-                            <span>{{chanFilter(item.chanCode)}}</span>
-                        </td>
-                        <td>
-                            <span>{{item.inscd}}</span>
-                        </td>
-                        <td>
-                            <span>{{busicdFilter(item.busicd)}}</span>
-                        </td>
-                        <td>
-                            <span>{{item.transTime}}</span>
-                        </td>
-                        <td>
-                            <span>{{item.transAmt}}</span>
-                        </td>
-                        <td>
-                            <span>{{item.respcd}}</span>
-                        </td>
-                    </tr>
-              </template>
-            </tbody>
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>订单号</th>
+            <th>交易状态</th>
+            <th>渠道</th>
+            <th>机构代码</th>
+            <th>交易类型</th>
+            <th>交易时间</th>
+            <th>交易金额</th>
+            <th>应答码</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{trades}}">
+            <tr>
+              <td>
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.orderNum}}</span>
+              </td>
+              <td>
+                <span>{{transStatusFilter(item.transStatus)}}</span>
+              </td>
+              <td>
+                <span>{{chanFilter(item.chanCode)}}</span>
+              </td>
+              <td>
+                <span>{{item.inscd}}</span>
+              </td>
+              <td>
+                <span>{{busicdFilter(item.busicd)}}</span>
+              </td>
+              <td>
+                <span>{{item.transTime}}</span>
+              </td>
+              <td>
+                <span>{{item.transAmt}}</span>
+              </td>
+              <td>
+                <span>{{item.respcd}}</span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
 
-        </table>
-        <div class="loading-more-wrapper">
-            <paper-button class="colorful" raised on-tap="handleLoadingMoreTapped">加载更多</paper-button>
-        </div>
+      </table>
+      <div class="loading-more-wrapper">
+        <paper-button class="colorful" raised on-tap="handleLoadingMoreTapped">加载更多</paper-button>
+      </div>
     </div>
   </template>
   <script>
     (function() {
-        var TRANS_TYPE_MAP = {
-            'PURC': '下单支付',
-            'PAUT': '预下单',
-            'VOID': '撤销',
-            'REFD': '退款',
-            'VERI': '卡券核销',
-            'purc': '下单支付',
-            'paut': '预下单',
-            'void': '撤销',
-            'refd': '退款',
-            'veri': '卡券核销',
-            'QYFK': '企业付款'
-        };
+      var TRANS_TYPE_MAP = {
+        'PURC': '下单支付',
+        'PAUT': '预下单',
+        'VOID': '撤销',
+        'REFD': '退款',
+        'VERI': '卡券核销',
+        'purc': '下单支付',
+        'paut': '预下单',
+        'void': '撤销',
+        'refd': '退款',
+        'veri': '卡券核销',
+        'QYFK': '企业付款'
+      };
 
       Polymer({
         is: 'trade-list',
@@ -168,8 +168,8 @@
             notify: true
           },
           trades: {
-              type: Array,
-              value: []
+            type: Array,
+            value: []
           },
           busicd: {
             type: Object
@@ -177,14 +177,14 @@
           busicds: {
             type: Array,
             value: (function() {
-                var busicds = [];
-                for (var k in TRANS_TYPE_MAP){
-                    busicds.push({
-                          key: k,
-                          value: TRANS_TYPE_MAP[k]
-                    });
-                }
-                return busicds;
+              var busicds = [];
+              for (var k in TRANS_TYPE_MAP) {
+                busicds.push({
+                  key: k,
+                  value: TRANS_TYPE_MAP[k]
+                });
+              }
+              return busicds;
             })()
           }
         },
@@ -203,9 +203,6 @@
           '_watchBusicdChange(busicd.key)'
         ],
         _watchBusicdChange: function(key) {
-          if (!key || key === '') {
-            return;
-          }
           this.cond.busicd = key;
         },
         // 日期、时间控件
@@ -225,7 +222,6 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
-          console.log(this.cond);
           this.cond.page = 1;
           this.trades = [];
           this.$.queryAjax.body = JSON.stringify(this.cond);
@@ -233,43 +229,43 @@
         },
         // ajax请求响应处理
         handleQueryResponse: function(e) {
-            var response = e.detail.response;
-            if (response.respCode !== '000000') {
-                Util.toast(response.respMsg, 3000);
-            }
+          var response = e.detail.response;
+          if (response.respCode !== '000000') {
+            Util.toast(response.respMsg, 3000);
+          }
 
-            if (response.rec){
-                this.trades = this.trades.concat(response.rec.slice(0));
-            }
-            this.cond.total = response.total;
+          if (response.rec) {
+            this.trades = this.trades.concat(response.rec.slice(0));
+          }
+          this.cond.total = response.total;
         },
         // 加载更多
         handleLoadingMoreTapped: function() {
-            this.cond.page = 2;
-            this.$.queryAjax.body = JSON.stringify(this.cond);
-            this.$.queryAjax.generateRequest();
+          this.cond.page = 2;
+          this.$.queryAjax.body = JSON.stringify(this.cond);
+          this.$.queryAjax.generateRequest();
         },
         addOneFilter: function(index) {
-            return index + 1;
+          return index + 1;
         },
         chanFilter: function(chanCode) {
-            var map = {
-                'ALP': '支付宝',
-                'WXP': '微信'
-            };
-            return map[chanCode];
+          var map = {
+            'ALP': '支付宝',
+            'WXP': '微信'
+          };
+          return map[chanCode];
         },
         busicdFilter: function(busicd) {
-            return TRANS_TYPE_MAP[busicd] || busicd;
+          return TRANS_TYPE_MAP[busicd] || busicd;
         },
         transStatusFilter: function(status) {
-            var map = {
-                '10': '处理中',
-                '20': '失败',
-                '30': '成功',
-                '40': '已关闭'
-            };
-            return map[status];
+          var map = {
+            '10': '处理中',
+            '20': '失败',
+            '30': '成功',
+            '40': '已关闭'
+          };
+          return map[status];
         }
       });
     })();
