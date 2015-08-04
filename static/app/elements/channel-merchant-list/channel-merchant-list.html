@@ -15,15 +15,99 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
     }
+
+    .condition {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .condition > paper-input,
+    .condition > x-select {
+      min-width: 170px;
+      margin-right: 20px;
+    }
+
+    .x-select paper-button {
+      width: 100%;
+      background: #3498db;
+    }
+
+    .condition > .buttons {
+      min-width: 170px;
+    }
+
+    .condition > .buttons > paper-button {
+      width: 100%;
+      margin: 10px 0px 0px;
+    }
+
+    paper-button[raised].colorful {
+      background: #3498db;
+      color: #fff;
+    }
+
+    channel-merchant-item {
+      margin: 30px;
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
   </style>
   <template>
-    <div>渠道商户列表</div>
+    <iron-ajax id="queryAjax" method="POST" url="/quickMaster/channelMerchant/all" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <div class="condition">
+      <paper-input label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
+      <paper-input label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
+      <paper-input label="商户名称" value="{{cond.chanMerName::input}}"></paper-input>
+      <div class="buttons">
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      </div>
+    </div>
+
+    <template is="dom-repeat" items="{{merchants}}">
+      <channel-merchant-item item="{{item}}"></channel-merchant-item>
+    </template>
+
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+    </paper-fab>
   </template>
   <script>
-  (function() {
-    Polymer({
-      is: 'channel-merchant-list'
-    });
-  })();
+    (function() {
+      Polymer({
+        is: 'channel-merchant-list',
+        ready: function() {
+          this.merchants = [];
+          this.cond = {};
+        },
+        // 发送查询交易的ajax请求
+        handleQueryTapped: function() {
+          this.merchants = [];
+          this.$.queryAjax.body = JSON.stringify(this.cond);
+          this.$.queryAjax.generateRequest();
+        },
+        // ajax请求响应处理
+        handleQueryResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+          }
+
+          this.merchants = response.data.slice(0);
+        },
+        // 新增机构商户事件
+        handleCreateFabTapped: function() {
+          this.$.merchantEditor.open();
+        },
+        // 新机构商户保存成功事件，刷新列表
+        handleMerchantSave: function() {
+          this.handleQueryTapped();
+        }
+      });
+    })();
   </script>
 </dom-module>
