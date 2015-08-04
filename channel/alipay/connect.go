@@ -36,10 +36,19 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 
 	var res *http.Response
 	var err error
-	res, err = http.PostForm(requestURL, values)
-	if err != nil {
-		log.Errorf("connect %s fail : %s", requestURL, err)
-		return nil, err
+	var count int
+	// 重试
+	for {
+		count++
+		res, err = http.PostForm(requestURL, values)
+		if err != nil {
+			log.Errorf("connect %s fail : %s, retry ... %d", requestURL, err, count)
+			if count == 3 {
+				return nil, err
+			}
+			continue
+		}
+		break
 	}
 
 	defer res.Body.Close()
