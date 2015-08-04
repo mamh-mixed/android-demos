@@ -1,12 +1,11 @@
 package scanpay
 
 import (
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 const (
@@ -300,9 +299,12 @@ func validateGoodsInfo(goods string) (bool, *model.ScanPayResponse) {
 		if len(toRunes) > 120 {
 			return false, fieldFormatError(goodsInfo)
 		}
-		// todo 验证格式
 		goodsArray := strings.Split(goods, ";")
-		for _, v := range goodsArray {
+		for i, v := range goodsArray {
+			// 处理最后多送了;的情况
+			if i == len(goodsArray)-1 && v == "" {
+				continue
+			}
 			good := strings.Split(v, ",")
 			if len(good) != 3 {
 				return false, fieldFormatError(goodsInfo)

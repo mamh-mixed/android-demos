@@ -215,6 +215,7 @@ type Trans struct {
 	ErrorDetail     string `bson:"errorDetail,omitempty" json:"errorDetail"`                   //错误信息
 	GatheringId     string `bson:"gatheringId,omitempty" json:"-"`                             //收款号
 	GatheringName   string `bson:"gatheringName,omitempty" json:"-"`                           //收款人
+	NotifyUrl       string `bson:"notifyUrl,omitempty" json:"-"`                               //异步通知地址
 }
 
 // SummarySettData 交易汇总

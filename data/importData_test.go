@@ -19,7 +19,7 @@ func xTestAddMerFromNodejsDB(t *testing.T) {
 }
 
 // 导入扫码渠道应答码，同quickpay
-func xTestAddSpChanFromCSV(t *testing.T) {
+func TestAddSpChanFromCSV(t *testing.T) {
 
 	// 导入微信
 	// err := AddSpChanCodeFromScv("wxp", "respCode_wxp.csv")

@@ -11,9 +11,14 @@ function main() {
 
     workdir="/opt/$prog"
 
+    mkdir -p distrib/static/app
     cp -r config distrib/
-    cd static && bower install && cd ..
-    cp -r static distrib/
+    cd static
+    bower install
+    cp -r app/fonts/font-roboto bower_components/
+    gulp
+    cd ..
+    cp -r static/dist/ distrib/static/app/
     cd admin && bower install && cd ..
     cp -r admin distrib/
 
@@ -26,6 +31,7 @@ function main() {
     # host="quick@app2.set.shou.money"
 
     deploy $host $workdir
+    rm -rf distrib/
 }
 
 function deploy() {
@@ -34,7 +40,8 @@ function deploy() {
 
     # 上传文件
     echo "=== Uploading $prog..."
-    rsync -rcv --progress distrib/ --exclude=.DS_Store $host:$workdir/
+    rsync -rcv --exclude=logs --exclude=.DS_Store \
+        --delete --progress distrib/ $host:$workdir/
 
     # 远程执行重启命令
     echo "=== SSH $host"
