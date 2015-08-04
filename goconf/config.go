@@ -11,10 +11,11 @@ var Config = &ConfigStruct{}
 // ConfigStruct 对应于 config_<env>.js 文件
 type ConfigStruct struct {
 	App struct {
-		LogLevel   log.Level
-		EncryptKey string
-		HTTPAddr   string
-		TCPPort    string
+		LogLevel         log.Level
+		EncryptKey       string
+		HTTPAddr         string
+		TCPPort          string
+		DefaultCacheTime int
 	}
 
 	Mongo struct {

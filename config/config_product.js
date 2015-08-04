@@ -8,7 +8,8 @@
         // 加密存储密钥 44 位，加密密钥由两部分组成，后 22 位在程序中写死，前 22 位在这里配置
         "EncryptKey": "Ky3ETaC0WjgGTQQtFVfl9",
         "HTTPAddr": ":6800", // HTTP 接口
-        "TCPPort": ":6600" // 扫码 TCP 接口
+        "TCPPort": ":6600", // 扫码 TCP 接口
+        "DefaultCacheTime":0     // 单位分钟 0-表示永远不过期
     },
     "Mongo": {
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
