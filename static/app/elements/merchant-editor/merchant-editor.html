@@ -42,7 +42,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="row">
           <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
           <paper-input label="商户状态" value="{{merchant.merStatus::input}}"></paper-input>
-
+        </div>
+        <div class="row">
+          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+          <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="是否开启验签" value="{{merchant.isNeedSign::input}}"></paper-input>
+          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
+          <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商户详细信息" value="{{merchant.detail::input}}"></paper-input>
+          <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
