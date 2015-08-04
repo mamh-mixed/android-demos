@@ -36,7 +36,7 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 
 	var res *http.Response
 	var err error
-	var count int
+	var count = 0
 	// 重试
 	for {
 		count++
