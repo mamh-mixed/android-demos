@@ -55,12 +55,14 @@
 
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
-          <current-user></current-user>
+          <!-- <current-user></current-user> -->
+          <div class="app-name">快捷支付管理平台</div>
         </paper-toolbar>
 
         <!-- 菜单列表 -->
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-          <a data-route="system" href="/system" onclick="document.querySelector('#systemCollapse').toggle();">
+          <!--
+          <a onclick="document.querySelector('#systemCollapse').toggle();">
             <iron-icon icon="settings"></iron-icon>
             <span>系统管理</span>
           </a>
@@ -80,34 +82,42 @@
               </a>
             </paper-menu>
           </iron-collapse>
+          -->
 
-          <a data-route="system" href="/tradeMgt" onclick="document.querySelector('#tradeCollapse').toggle();">
-            <iron-icon icon="swap-horiz"></iron-icon>
-            <span>交易管理</span>
+          <a onclick="document.querySelector('#MCRCollapse').toggle();">
+            <iron-icon icon="build"></iron-icon>
+            <span>商户配置</span>
           </a>
-          <iron-collapse id="tradeCollapse">
+          <iron-collapse id="MCRCollapse">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-              <a data-route="trade.list" href="/trades">
-                <iron-icon icon="list"></iron-icon>
-                <span>交易列表</span>
+              <a data-route="config.merchants" href="/config/merchants">
+                <iron-icon icon="store"></iron-icon>
+                <span>机构商户</span>
+              </a>
+              <a data-route="config.routes" href="/config/routes">
+                <iron-icon icon="settings-input-component"></iron-icon>
+                <span>路由策略</span>
+              </a>
+              <a data-route="config.chanMers" href="/config/chanMers">
+                <iron-icon icon="account-balance"></iron-icon>
+                <span>渠道商户</span>
               </a>
             </paper-menu>
           </iron-collapse>
 
-          <a data-route="home" href="/">
-            <iron-icon icon="home"></iron-icon>
-            <span>Home</span>
+          <a onclick="document.querySelector('#tradeCollapse').toggle();">
+            <iron-icon icon="swap-horiz"></iron-icon>
+            <span>交易查询</span>
           </a>
+          <iron-collapse id="tradeCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+              <a data-route="trades.list" href="/trades/list">
+                <iron-icon icon="list"></iron-icon>
+                <span>扫码交易</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
 
-          <a data-route="users" href="/users">
-            <iron-icon icon="info"></iron-icon>
-            <span>Users</span>
-          </a>
-
-          <a data-route="contact" href="/contact">
-            <iron-icon icon="mail"></iron-icon>
-            <span>Contact</span>
-          </a>
         </paper-menu>
       </paper-scroll-header-panel>
 
@@ -125,26 +135,19 @@
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
-            <div class="app-name">快捷支付管理平台</div>
+            <div class="app-name">{{route.title}}</div>
           </div>
 
           <!-- Application sub title -->
           <div class="bottom bottom-container center horizontal layout">
-            <div class="bottom-title paper-font-subhead">上海讯联数据服务有限公司</div>
+            <div class="bottom-title paper-font-subhead">{{route.subtitle}}</div>
           </div>
 
         </paper-toolbar>
 
         <!-- Main Content -->
         <div class="content">
-          <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
-            <section data-route="system">
-              <paper-material elevation="1">
-                <p class="paper-font-body2">This is Home page</p>
-              </paper-material>
-
-            </section>
+          <iron-pages attr-for-selected="data-route" selected="{{route.name}}">
 
             <section data-route="system.users">
               <paper-material elevation="1">
@@ -162,41 +165,29 @@
               </paper-material>
             </section>
 
-            <trade-list data-route="trade.list"></trade-list>
-
-            <section data-route="home">
+            <section data-route="trades.list">
               <paper-material elevation="1">
-                <p class="paper-font-body2">This is Home page</p>
-              </paper-material>
-
-            </section>
-
-            <section data-route="users">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">Users</h2>
-                <p>This is the users section</p>
-                <a href="/users/Rob">Rob</a>
+                <trade-list></trade-list>
               </paper-material>
             </section>
 
-            <section data-route="user-info">
+            <section data-route="config.merchants">
               <paper-material elevation="1">
-                <h2 class="paper-font-display2">
-                  User:
-                  <span>{{params.name}}</span>
-                </h2>
-                <div>This is
-                  <span>{{params.name}}</span>'s section</div>
+                <merchant-list></merchant-list>
               </paper-material>
             </section>
 
-            <section data-route="contact">
+            <section data-route="config.chanMers">
               <paper-material elevation="1">
-                <h2 class="paper-font-display2">Contact</h2>
-                <p>This is the contact section</p>
+                <channel-merchant-list></channel-merchant-list>
               </paper-material>
             </section>
 
+            <section data-route="config.routes">
+              <paper-material elevation="1">
+                <route-list></route-list>
+              </paper-material>
+            </section>
           </iron-pages>
         </div>
       </paper-scroll-header-panel>
