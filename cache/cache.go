@@ -1,12 +1,16 @@
 package cache
 
 import (
+	"github.com/CardInfoLink/quickpay/goconf"
 	"sync"
 	"time"
 )
 
+// 默认缓存失效时间
+var DefaultExpiration = time.Duration(goconf.Config.App.DefaultCacheTime) * time.Minute
+
 const (
-	NoExpiration = -1
+	NoExpiration = 0
 )
 
 // 维护应用中的缓存对象

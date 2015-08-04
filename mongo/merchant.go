@@ -51,7 +51,7 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 		return nil, err
 	}
 	// save
-	merCache.Set(merId, m, cache.NoExpiration)
+	merCache.Set(merId, m, cache.DefaultExpiration)
 
 	return m, nil
 }
