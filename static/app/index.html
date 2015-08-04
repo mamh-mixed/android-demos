@@ -60,7 +60,7 @@
         </paper-toolbar>
 
         <!-- 菜单列表 -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+        <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
           <!--
           <a onclick="document.querySelector('#systemCollapse').toggle();">
             <iron-icon icon="settings"></iron-icon>
@@ -89,7 +89,7 @@
             <span>商户配置</span>
           </a>
           <iron-collapse id="MCRCollapse">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
               <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>

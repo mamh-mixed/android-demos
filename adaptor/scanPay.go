@@ -2,8 +2,6 @@ package adaptor
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -358,7 +356,8 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 				}
 				fallthrough
 			default:
-				return weixinCloseOrder(orig, closed, req)
+				// 直接关单 不用判断时间
+				return ProcessWxpClose(orig, closed, req)
 			}
 		}
 		return LogicErrorHandler(closed, "NOT_SUPPORT_TYPE")
@@ -366,35 +365,35 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 	return LogicErrorHandler(closed, "NO_CHANNEL")
 }
 
-func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 以下情况需要调用关单接口：
-	// 商户订单支付失败需要生成新单号重新发起支付，要对原订单号调用关单，避免重复支付；
-	// 系统下单后，用户支付超时，系统退出不再受理，避免用户继续，请调用关单接口。
-	// 注意：订单生成后不能马上调用关单接口，最短调用时间间隔为5分钟。
-	transTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
-	if err != nil {
-		log.Errorf("parse time error: creatTime=%s, mchntid=%s, origOrderNum=%s",
-			orig.CreateTime, req.Mchntid, req.OrigOrderNum)
-		return LogicErrorHandler(closed, "SYSTERM_ERROR")
-	}
+// func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+// 	// 以下情况需要调用关单接口：
+// 	// 商户订单支付失败需要生成新单号重新发起支付，要对原订单号调用关单，避免重复支付；
+// 	// 系统下单后，用户支付超时，系统退出不再受理，避免用户继续，请调用关单接口。
+// 	// 注意：订单生成后不能马上调用关单接口，最短调用时间间隔为5分钟。
+// 	transTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
+// 	if err != nil {
+// 		log.Errorf("parse time error: creatTime=%s, mchntid=%s, origOrderNum=%s",
+// 			orig.CreateTime, req.Mchntid, req.OrigOrderNum)
+// 		return LogicErrorHandler(closed, "SYSTERM_ERROR")
+// 	}
 
-	interval := time.Now().Sub(transTime)
-	// 超过5分钟
-	if interval >= 5*time.Minute {
-		return ProcessWxpClose(orig, closed, req)
-	}
+// 	interval := time.Now().Sub(transTime)
+// 	// 超过5分钟
+// 	if interval >= 5*time.Minute {
+// 		return ProcessWxpClose(orig, closed, req)
+// 	}
 
-	// 系统落地，异步执行关单
-	time.AfterFunc(5*time.Minute-interval, func() {
-		ProcessWxpClose(orig, closed, req)
-	})
+// 	// 系统落地，异步执行关单
+// 	time.AfterFunc(5*time.Minute-interval, func() {
+// 		ProcessWxpClose(orig, closed, req)
+// 	})
 
-	// TODO 直接返回 ？？？
-	return &model.ScanPayResponse{
-		Respcd:      SuccessCode,
-		ErrorDetail: SuccessMsg,
-	}
-}
+// 	// TODO 直接返回 ？？？
+// 	return &model.ScanPayResponse{
+// 		Respcd:      SuccessCode,
+// 		ErrorDetail: SuccessMsg,
+// 	}
+// }
 
 // ProcessWxpCancel 微信撤销接口
 func ProcessWxpCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {

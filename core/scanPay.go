@@ -289,9 +289,9 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	refund.ChanCode = orig.ChanCode
 
 	// 退款只能隔天退
-	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-		return adaptor.LogicErrorHandler(refund, "REFUND_TIME_ERROR")
-	}
+	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+	// 	return adaptor.LogicErrorHandler(refund, "REFUND_TIME_ERROR")
+	// }
 
 	// 是否是支付交易
 	if orig.TransType != model.PayTrans {
