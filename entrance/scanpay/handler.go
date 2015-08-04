@@ -112,6 +112,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	// log.Debugf("mer=%#v", mer)
 
 	if mer.IsNeedSign {
+		// log.Debug("sign key: " + mer.SignKey)
 		signKey = mer.SignKey
 	}
 
@@ -130,6 +131,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 	// 5. 商户存在，则验签
 	if mer.IsNeedSign {
+		log.Debug("sign msg : " + req.SignMsg())
 		sig := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
 		if sig != req.Sign {
 			log.Errorf("mer(%s) sign failed: data=%v, sign=%s", req.Mchntid, req, sig)

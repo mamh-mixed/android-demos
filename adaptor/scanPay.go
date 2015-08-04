@@ -51,6 +51,7 @@ func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model
 		log.Errorf("process BarcodePay error:%s", err)
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}
+
 	return ret
 }
 
