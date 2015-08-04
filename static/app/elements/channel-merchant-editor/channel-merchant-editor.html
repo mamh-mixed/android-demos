@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
     }
+
     paper-dialog {
       background-color: #ffffff;
     }
@@ -66,44 +67,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input label="http cert证书" value="{{chanMer.httpCert::input}}"></paper-input>
           <paper-input label="http key 证书" value="{{chanMer.httpKey::input}}"></paper-input>
         </div>
-
-
-
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
   </template>
   <script>
-  (function() {
-    Polymer({
-      is: 'channel-merchant-editor',
+    (function() {
+      Polymer({
+        is: 'channel-merchant-editor',
 
-      properties: {
-        chanMer: {
-          type: Object
-        }
-      },
-      ready: function() {
-        this.chanMer = {};
-      },
+        properties: {
+          chanMer: {
+            type: Object
+          }
+        },
+        ready: function() {
+          this.chanMer = {};
+        },
 
-      open: function() {
-        console.log('open me');
-        this.$.dialog.open();
-      },
-      // 点击保存事件
-      handleSaveTapped: function() {
-        console.log(this.chanMer);
-        this.$.saveAjax.body = JSON.stringify(this.merchant);
-        this.$.saveAjax.generateRequest();
-      },
-      // 保存事件响应结果
-      handleSaveChannelMerchantResponse: function(e) {
-        var response = e.detail.response;
-        if (response.status !== 0) {
-          Util.toast(response.message, 3000);
-          return;
+        open: function() {
+          console.log('open me');
+          this.$.dialog.open();
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          console.log(this.chanMer);
+          this.$.saveAjax.body = JSON.stringify(this.chanMer);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveChannelMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialog.close();
+
+          this.fire('saved');
         }
-        this.$.dialog.close();
-      }
-    });
-  })();
+      });
+    })();
   </script>
 </dom-module>
