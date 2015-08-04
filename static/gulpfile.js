@@ -93,6 +93,7 @@ gulp.task('images', function() {
 gulp.task('copy', function() {
   var app = gulp.src([
     'app/*',
+    '!app/bower_components',
     '!app/test',
     '!app/precache.json'
   ], {
