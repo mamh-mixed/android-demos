@@ -12,26 +12,6 @@ import (
 	"github.com/omigo/log"
 )
 
-// TcpScanPayHandle tcp处理
-func TcpScanPayHandle(reqBytes []byte) []byte {
-
-	// gbk解编码
-	dgbk, _ := util.GBKTranscoder.Decode(string(reqBytes))
-
-	// 处理
-	retBytes := ScanPayHandle([]byte(dgbk))
-
-	// gbk编码
-	retStr := string(retBytes)
-
-	egbk, _ := util.GBKTranscoder.Encode(retStr)
-
-	// 长度位
-	retLen := fmt.Sprintf("%04d", len(egbk))
-
-	return []byte(retLen + egbk)
-}
-
 // ScanPayHandle 执行扫码支付逻辑
 func ScanPayHandle(reqBytes []byte) []byte {
 	log.Infof("from merchant message: %s", string(reqBytes))

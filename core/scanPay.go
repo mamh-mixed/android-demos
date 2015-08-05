@@ -341,6 +341,9 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 更新这笔交易
 	updateTrans(refund, ret)
 
+	// 返回真实渠道
+	req.Chcd = refund.ChanCode
+
 	return
 }
 
@@ -424,7 +427,6 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransType:    model.CancelTrans,
 		Busicd:       req.Busicd,
 		Inscd:        req.Inscd,
-		ChanCode:     req.Chcd,
 		Terminalid:   req.Terminalid,
 	}
 
@@ -474,6 +476,9 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新交易状态
 	updateTrans(cancel, ret)
+
+	// 返回真实渠道
+	req.Chcd = cancel.ChanCode
 
 	return ret
 }
@@ -531,6 +536,9 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新交易状态
 	updateTrans(closed, ret)
+
+	// 返回真实渠道
+	req.Chcd = closed.ChanCode
 
 	return ret
 }
