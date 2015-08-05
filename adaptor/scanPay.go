@@ -1,13 +1,17 @@
 package adaptor
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
+
+var agentId = goconf.Config.AlipayScanPay.AgentId
 
 // ProcessEnterprisePay 企业支付
 func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -87,6 +91,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		req.ExtendParams = genExtendParams(mer)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
@@ -127,11 +132,10 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		// req.NotifyUrl = alipayNotifyUrl
+		req.ExtendParams = genExtendParams(mer)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		// req.NotifyUrl = weixinNotifyUrl
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:
@@ -396,6 +400,35 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 // 	}
 // }
 
+// ProcessWxpRefundQuery 微信查询退款接口
+func ProcessWxpRefundQuery(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return LogicErrorHandler(t, "NO_CHANMER")
+	}
+	// 上送参数
+
+	req.OrderNum = t.OrderNum
+	req.SignCert = c.SignCert
+	req.ChanMerId = c.ChanMerId
+	req.AppID = c.WxpAppId
+	req.SubMchId = t.SubChanMerId
+	req.WeixinClientCert = []byte(c.HttpCert)
+	req.WeixinClientKey = []byte(c.HttpKey)
+
+	// 指定微信
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
+	ret, err = sp.ProcessRefundQuery(req)
+	if err != nil {
+		log.Errorf("process weixin refundQuery error:%s", err)
+		return returnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	return ret
+}
+
 // ProcessWxpCancel 微信撤销接口
 func ProcessWxpCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
@@ -461,4 +494,16 @@ func prepareWxpReqData(orig, current *model.Trans, req *model.ScanPayRequest) (r
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}
 	return nil
+}
+
+func genExtendParams(mer *model.Merchant) string {
+	var shopInfo = &struct {
+		AGENT_ID   string `json:",omitempty"`
+		STORE_ID   string `json:",omitempty"`
+		STORE_TYPE string `json:",omitempty"`
+		SHOP_ID    string `json:",omitempty"`
+	}{agentId, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
+	bytes, _ := json.Marshal(shopInfo)
+	fmt.Println("extendParams: " + string(bytes))
+	return string(bytes)
 }
