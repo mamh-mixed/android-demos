@@ -60,76 +60,76 @@
     </div>
 
     <template is="dom-repeat" items="{{merchants}}">
-      <card-item>
-          <dl>
-            <dt>渠道代码</dt>
-            <dd>
-              <span>{{item.chanCode}}</span>
-            </dd>
+      <card-item on-item-stared="handleItemStaredEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}">
+        <dl>
+          <dt>渠道代码</dt>
+          <dd>
+            <span>{{item.chanCode}}</span>
+          </dd>
 
-            <dt>商户编号</dt>
-            <dd>
-              <span>{{item.chanMerId}}</span>
-            </dd>
+          <dt>商户编号</dt>
+          <dd>
+            <span>{{item.chanMerId}}</span>
+          </dd>
 
-            <dt>商户名称</dt>
-            <dd>
-              <span>{{item.chanMerName}}</span>
-            </dd>
+          <dt>商户名称</dt>
+          <dd>
+            <span>{{item.chanMerName}}</span>
+          </dd>
 
-            <dt hidden$="{{tiny}}">清算标识</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.settFlag}}</span>
-            </dd>
+          <dt hidden$="{{tiny}}">清算标识</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.settFlag}}</span>
+          </dd>
 
-            <dt hidden$="{{tiny}}">清算角色</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.settRole}}</span>
-            </dd>
+          <dt hidden$="{{tiny}}">清算角色</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.settRole}}</span>
+          </dd>
 
-            <dt hidden$="{{tiny}}">签名证书</dt>
-            <dd hidden$="{{tiny}}">
-              <p>
-                <pre>{{item.signCert}}</pre>
-              </p>
-            </dd>
+          <dt hidden$="{{tiny}}">签名证书</dt>
+          <dd hidden$="{{tiny}}">
+            <p>
+              <pre>{{item.signCert}}</pre>
+            </p>
+          </dd>
 
-            <dt hidden$="{{tiny}}">验签证书</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.checkSignCert}}</span>
-            </dd>
+          <dt hidden$="{{tiny}}">验签证书</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.checkSignCert}}</span>
+          </dd>
 
-            <dt>微信支付 APPID</dt>
-            <dd>
-              <span>{{item.wxpAppId}}</span>
-            </dd>
+          <dt>微信支付 APPID</dt>
+          <dd>
+            <span>{{item.wxpAppId}}</span>
+          </dd>
 
-            <dt>机构号</dt>
-            <dd>
-              <span>{{item.insCode}}</span>
-            </dd>
+          <dt>机构号</dt>
+          <dd>
+            <span>{{item.insCode}}</span>
+          </dd>
 
-            <dt>终端号</dt>
-            <dd>
-              <span>{{item.terminalId}}</span>
-            </dd>
-            <dt hidden$="{{tiny}}">渠道费率</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.acqFee}}</span>
-            </dd>
-            <dt hidden$="{{tiny}}">商户费率</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.merFee}}</span>
-            </dd>
-            <dt hidden$="{{tiny}}">HTTP Cert</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.httpCert}}</span>
-            </dd>
-            <dt hidden$="{{tiny}}">HTTP Key</dt>
-            <dd hidden$="{{tiny}}">
-              <span>{{item.httpKey}}</span>
-            </dd>
-          </dl>
+          <dt>终端号</dt>
+          <dd>
+            <span>{{item.terminalId}}</span>
+          </dd>
+          <dt hidden$="{{tiny}}">渠道费率</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.acqFee}}</span>
+          </dd>
+          <dt hidden$="{{tiny}}">商户费率</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.merFee}}</span>
+          </dd>
+          <dt hidden$="{{tiny}}">HTTP Cert</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.httpCert}}</span>
+          </dd>
+          <dt hidden$="{{tiny}}">HTTP Key</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.httpKey}}</span>
+          </dd>
+        </dl>
       </card-item>
     </template>
 
@@ -150,6 +150,10 @@
           autoLoading: {
             type: Boolean,
             value: false
+          },
+          isAllowSelected: {
+            type: Boolean,
+            value: false
           }
         },
         ready: function() {
@@ -158,7 +162,7 @@
         },
         attached: function() {
           if (this.autoLoading) {
-              this.handleQueryTapped();
+            this.handleQueryTapped();
           }
         },
         // 发送查询交易的ajax请求
@@ -175,6 +179,21 @@
           }
 
           this.merchants = response.data.slice(0);
+        },
+        // 商户选中事件
+        handleItemStaredEvent: function(e) {
+          var staredItem = e.model.item;
+          this.fire('item-selected', staredItem);
+          if (!staredItem.stared) {
+            return;
+          }
+
+          for (var i = 0, l = this.merchants.length; i < l; i++) {
+            var item = this.merchants[i];
+            if (item.chanCode !== staredItem.chanCode) {
+              this.set('merchants.' + i + '.stared', false);
+            }
+          }
         },
         // 新增机构商户事件
         handleCreateFabTapped: function() {

@@ -61,7 +61,7 @@
     </div>
 
     <template is="dom-repeat" items="{{merchants}}">
-      <card-item>
+      <card-item on-item-stared="handleItemStaredEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}">
         <dl>
           <dt>商户编号</dt>
           <dd>
@@ -150,6 +150,10 @@
           autoLoading: {
             type: Boolean,
             value: false
+          },
+          isAllowSelected: {
+            type: Boolean,
+            value: false
           }
         },
         ready: function() {
@@ -192,6 +196,21 @@
         // 新机构商户保存成功事件，刷新列表
         handleMerchantSave: function() {
           this.handleQueryTapped();
+        },
+        // 商户选中事件
+        handleItemStaredEvent: function(e) {
+          var staredItem = e.model.item;
+          this.fire('item-selected', staredItem);
+          if (!staredItem.stared) {
+            return;
+          }
+
+          for (var i = 0, l = this.merchants.length; i < l; i++) {
+            var item = this.merchants[i];
+            if (item.merId !== staredItem.merId) {
+              this.set('merchants.' + i + '.stared', false);
+            }
+          }
         },
         _computePermissions: function(permissions) {
           if (!permissions) {

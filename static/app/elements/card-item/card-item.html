@@ -37,9 +37,21 @@
     paper-material >::content dd:after {
       clear: both;
     }
+
+    iron-icon {
+      position: absolute;
+      right: 30px;
+      top: 30px;
+      cursor: pointer;
+    }
+
+    iron-icon[stared] {
+      color: #f1c40f;
+    }
   </style>
   <template>
     <paper-material elevation="1">
+      <iron-icon icon="check-box" hidden$="{{!isAllowStared}}" stared$="{{item.stared}}" on-tap="handleStaredTapped"></iron-icon>
       <content select="dl"></content>
     </paper-material>
   </template>
@@ -49,11 +61,21 @@
         is: 'card-item',
 
         properties: {
-          foo: {
-            type: String,
-            value: 'bar',
-            notify: true
+          item: {
+            type: Object
+          },
+          stared: {
+            type: Boolean,
+            value: false
+          },
+          isAllowStared: {
+            type: Boolean,
+            value: false
           }
+        },
+        handleStaredTapped: function() {
+          this.set('item.stared', !this.item.stared);
+          this.fire('item-stared');
         }
       });
     })();
