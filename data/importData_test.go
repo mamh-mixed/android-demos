@@ -19,27 +19,27 @@ func xTestAddMerFromNodejsDB(t *testing.T) {
 }
 
 // 导入扫码渠道应答码，同quickpay
-func TestAddSpChanFromCSV(t *testing.T) {
+func xTestAddSpChanFromCSV(t *testing.T) {
 
 	// 导入微信
-	// err := AddSpChanCodeFromScv("wxp", "respCode_wxp.csv")
-	// if err != nil {
-	// 	t.Error(err)
-	// 	t.FailNow()
-	// }
-
-	// 导入支付宝
-	err := AddSpChanCodeFromScv("alp", "respCode_alp.csv")
+	err := AddSpChanCodeFromScv("wxp", "respCode_wxp.csv")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
+	// 导入支付宝
+	// err := AddSpChanCodeFromScv("alp", "respCode_alp.csv")
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+
 	t.Log("SUCCESS")
 }
 
 // 导入scanPay应答码，同quickpay
-func TestAddScanPayRespFromCSV(t *testing.T) {
+func xTestAddScanPayRespFromCSV(t *testing.T) {
 
 	err := AddScanPayFromCSV("respCode_scanpay.csv")
 	// data, err := readScanPayCSV("respCode_scanpay.csv")

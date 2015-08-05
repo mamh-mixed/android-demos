@@ -41,7 +41,7 @@ function deploy() {
     # 上传文件
     echo "=== Uploading $prog..."
     rsync -rcv --exclude=logs --exclude=.DS_Store \
-        --delete --progress distrib/ $host:roboto/
+        --delete --progress distrib/ $host:$workdir/
 
     # 远程执行重启命令
     echo "=== SSH $host"
@@ -49,14 +49,14 @@ function deploy() {
 
 cd $workdir
 
-echo "=== Killing roboto/$prog process..."
-ps -ef | grep "roboto/$prog"
-ps -ef | grep "roboto/$prog" | awk '{print \$2}' | xargs kill -9
+echo "=== Killing $prog process..."
+ps -ef | grep "$prog"
+ps -ef | grep "$prog" | awk '{print \$2}' | xargs kill -9
 pwd
 echo "=== Starting $prog process ..."
 mkdir -p logs
-nohup ./$prog >> roboto/logs/$prog.log 2>&1 &
-ps -ef | grep roboto/$prog
+nohup ./$prog >> logs/$prog.log 2>&1 &
+ps -ef | grep $prog
 
 echo "=== Sleep 3 seconds..."
 sleep 2
