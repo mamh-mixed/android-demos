@@ -180,11 +180,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         handleMerchantSave: function() {
           this.handleQueryTapped();
         },
-        _computeYesOrNo(flag) {
+        _computeYesOrNo: function(flag) {
           if (flag) {
             return '是';
           }
-
           return '否';
         }
       });
