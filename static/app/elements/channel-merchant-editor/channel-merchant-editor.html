@@ -14,6 +14,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style>
     :host {
       display: block;
+      --paper-dialog-scrollable: {
+        min-width: 600px;
+        min-height: 300px;
+      }
     }
 
     paper-dialog {
@@ -52,8 +56,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input label="签名证书" value="{{chanMer.signCert::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="验签证书" value="{{chanMer.settRole::input}}"></paper-input>
-          <paper-input label="微信支付App Id" value="{{chanMer.signCert::input}}"></paper-input>
+          <paper-input label="验签证书" value="{{chanMer.checkSignCert::input}}"></paper-input>
+          <paper-input label="微信支付App Id" value="{{chanMer.wxpAppId::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="机构号" value="{{chanMer.insCode::input}}"></paper-input>
