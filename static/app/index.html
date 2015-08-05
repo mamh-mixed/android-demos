@@ -60,7 +60,7 @@
         </paper-toolbar>
 
         <!-- 菜单列表 -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+        <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
           <!--
           <a onclick="document.querySelector('#systemCollapse').toggle();">
             <iron-icon icon="settings"></iron-icon>
@@ -84,12 +84,12 @@
           </iron-collapse>
           -->
 
-          <a onclick="document.querySelector('#MCRCollapse').toggle();">
+          <a href="/" onclick="document.querySelector('#MCRCollapse').toggle();">
             <iron-icon icon="build"></iron-icon>
             <span>商户配置</span>
           </a>
           <iron-collapse id="MCRCollapse">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
               <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>
@@ -105,7 +105,7 @@
             </paper-menu>
           </iron-collapse>
 
-          <a onclick="document.querySelector('#tradeCollapse').toggle();">
+          <a href="/" onclick="document.querySelector('#tradeCollapse').toggle();">
             <iron-icon icon="swap-horiz"></iron-icon>
             <span>交易查询</span>
           </a>

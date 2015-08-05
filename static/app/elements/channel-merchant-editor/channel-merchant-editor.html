@@ -1,0 +1,120 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="channel-merchant-editor">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 600px;
+        min-height: 300px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    .row paper-input {
+      min-width: 300px;
+    }
+
+    .row paper-input:first-child {
+      margin-right: 20px;
+    }
+  </style>
+  <template>
+    <iron-ajax id="saveAjax" method="POST" url="/quickMaster/channelMerchant/add" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
+    <paper-dialog id="dialog">
+      <h2>编辑渠道商户</h2>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <paper-input label="渠道代码" value="{{chanMer.chanCode::input}}"></paper-input>
+          <paper-input label="商户号" value="{{chanMer.chanMerId::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商户名称" value="{{chanMer.chanMerName::input}}"></paper-input>
+          <paper-input label="清算标识" value="{{chanMer.settFlag::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="清算角色" value="{{chanMer.settRole::input}}"></paper-input>
+          <paper-input label="签名证书" value="{{chanMer.signCert::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="验签证书" value="{{chanMer.checkSignCert::input}}"></paper-input>
+          <paper-input label="微信支付App Id" value="{{chanMer.wxpAppId::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="机构号" value="{{chanMer.insCode::input}}"></paper-input>
+          <paper-input label="终端号" value="{{chanMer.terminalId::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="讯联跟渠道费率" value="{{chanMer.acqFee::input}}"></paper-input>
+          <paper-input label="商户跟讯联费率" value="{{chanMer.merFee::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="http cert证书" value="{{chanMer.httpCert::input}}"></paper-input>
+          <paper-input label="http key 证书" value="{{chanMer.httpKey::input}}"></paper-input>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'channel-merchant-editor',
+
+        properties: {
+          chanMer: {
+            type: Object
+          }
+        },
+        ready: function() {
+          this.chanMer = {};
+        },
+
+        open: function() {
+          console.log('open me');
+          this.$.dialog.open();
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          console.log(this.chanMer);
+          this.$.saveAjax.body = JSON.stringify(this.chanMer);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveChannelMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialog.close();
+
+          this.fire('saved');
+          this.set('chanMer', {});
+        }
+      });
+    })();
+  </script>
+</dom-module>

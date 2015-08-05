@@ -50,7 +50,7 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("mashal data error"))
 	}
 
-	log.Debugf("response message: %s", rdata)
+	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
 

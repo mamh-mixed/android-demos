@@ -16,9 +16,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // client-side router inspired by the Express router
     // More info: https://visionmedia.github.io/page.js/
     page('/', function () {
-      app.route = 'home';
+      app.route = {
+          name: 'home',
+          path: '/',
+          title: '快捷支付管理平台',
+          subtitle: '上海讯联数据服务有限公司'
+      };
     });
-
     //
     // page('/system/users', function () {
     //   app.route = 'system.users';
@@ -30,43 +34,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     //   app.route = 'system.menus';
     // });
 
-    // 交易管理 start
-    page('/trades/list', function () {
+    // 商户，渠道商户和路由 start
+    page('/config/merchants', function() {
       app.route = {
-          name: 'trades.list',
-          path: '/trades/list',
-          title: '扫码支付交易查询',
-          subtitle: '下单、预下单、支付、查询、退款、关闭订单'
+        name: 'config.merchants',
+        path: '/config/merchants',
+        title: '机构商户',
+        subtitle: '下单、预下单、支付、查询、退款、关闭订单'
       };
     });
-
-
-    // 商户，渠道商户和路由 start
-    page('/config/merchants', function () {
-        app.route = {
-            name: 'config.merchants',
-            path: '/trades/list',
-            title: '机构商户',
-            subtitle: '下单、预下单、支付、查询、退款、关闭订单'
-        };
+    page('/config/chanMers', function() {
+      app.route = {
+        name: 'config.chanMers',
+        path: '/config/chanMers',
+        title: '渠道商户',
+        subtitle: '下单、预下单、支付、查询、退款、关闭订单'
+      };
     });
-    page('/config/chanMers', function () {
-        app.route = {
-            name: 'config.chanMers',
-            path: '/trades/list',
-            title: '渠道商户',
-            subtitle: '下单、预下单、支付、查询、退款、关闭订单'
-        };
-    });
-    page('/config/routes', function () {
-        app.route = {
-            name: 'config.routes',
-            path: '/trades/list',
-            title: '路由策略',
-            subtitle: '下单、预下单、支付、查询、退款、关闭订单'
-        };
+    page('/config/routes', function() {
+      app.route = {
+        name: 'config.routes',
+        path: '/config/routes',
+        title: '路由策略',
+        subtitle: '下单、预下单、支付、查询、退款、关闭订单'
+      };
     });
     // 商户，渠道商户和路由 end
+
+    // 交易管理 start
+    page('/trades/list', function() {
+      app.route = {
+        name: 'trades.list',
+        path: '/trades/list',
+        title: '扫码支付交易查询',
+        subtitle: '下单、预下单、支付、查询、退款、关闭订单'
+      };
+    });
 
     // add #! before urls
     page({
@@ -74,4 +77,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
   });
+
 </script>

@@ -26,10 +26,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     --default-primary-color: #3F51B5;*/
     --dark-primary-color: #2980b9;
     --default-primary-color: #3498db;
-    --light-primary-color: #C5CAE9;
+    --light-primary-color: #ffffff;
     --text-primary-color: #ffffff; /*text/icons*/
     --accent-color: #FF4081;
-    --primary-background-color: #c5cae9;
+    --primary-background-color: #ffffff;
     --primary-text-color: #212121;
     --secondary-text-color: #727272;
     --disabled-text-color: #bdbdbd;
@@ -45,10 +45,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /* paper-menu */
     --paper-menu-background-color: #fff;
     --menu-link-color: #111111;
+
+    --paper-menu-selected-item: {
+        background-color: rgb(226,240,249);
+    }
+  }
+
+  .content {
+      min-height: 500px;
   }
 
   /* General styles */
-
   #drawerToolbar {
     color: var(--secondary-text-color);
     background-color: var(--drawer-menu-color);

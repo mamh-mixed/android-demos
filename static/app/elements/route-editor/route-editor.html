@@ -1,0 +1,240 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="route-editor">
+  <style>
+    :host {
+      display: block;
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+      width: 670px;
+    }
+
+    .x-select paper-button {
+      width: 100%;
+      background: #3498db;
+    }
+
+    .progress-wrap > paper-progress {
+      width: 100%;
+    }
+
+    paper-progress.blue {
+      --paper-progress-active-color: var(--paper-light-blue-500);
+      --paper-progress-secondary-color: var(--paper-light-blue-100);
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    .row paper-input,
+    .row x-select {
+      min-width: 300px;
+    }
+
+    .row paper-input:first-child {
+      margin-right: 20px;
+    }
+
+    merchant-list,
+    channel-merchant-list {
+      max-height: 500px;
+    }
+  </style>
+  <!-- 使用分步骤方法创建路由策略 -->
+  <template>
+    <iron-ajax id="saveAjax" method="POST" url="/quickMaster/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <paper-dialog id="dialog" modal>
+      <h2>{{currentProgress.name}}</h2>
+      <div class="progress-wrap">
+        <paper-progress value$="{{currentProgress.progressValue}}" secondary-progress$="{{currentProgress.secondProgressValue}}" class="blue"></paper-progress>
+        <br>
+      </div>
+      <paper-dialog-scrollable>
+
+        <section hidden$="{{isHiddenCurrentSection(currentProgress.step, 0)}}" id="merchantSection">
+          <merchant-list tiny auto-loading is-allow-selected on-item-selected="handleMerchantSelected"></merchant-list>
+        </section>
+
+        <section hidden$="{{isHiddenCurrentSection(currentProgress.step, 1)}}" id="channelMerchantSection">
+          <channel-merchant-list tiny auto-loading is-allow-selected on-item-selected="handleChannelMerchantSelected"></channel-merchant-list>
+        </section>
+
+        <section hidden$="{{isHiddenCurrentSection(currentProgress.step, 2)}}" id="editSection">
+          <div class="row">
+            <paper-input label="商户编号" value="{{route.merId::input}}"></paper-input>
+            <x-select items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌"></x-select>
+          </div>
+          <div class="row">
+            <paper-input label="渠道代码" value="{{route.chanCode::input}}"></paper-input>
+            <paper-input label="渠道商户号" value="{{route.chanMerId::input}}"></paper-input>
+          </div>
+          <div class="row">
+            <paper-input label="子商户号" value="{{route.subMerId::input}}"></paper-input>
+            <paper-input label="是否是代理商模式" value="{{route.isAgent::input}}"></paper-input>
+          </div>
+          <div class="row">
+            <paper-input label="卡类型" value="{{route.cardType::input}}"></paper-input>
+            <paper-input label="卡Bin组" value="{{route.binGroup::input}}"></paper-input>
+          </div>
+          <div class="row">
+            <paper-input label="交易类型" value="{{route.transType::input}}"></paper-input>
+            <paper-input label="输入方式" value="{{route.inputWay::input}}"></paper-input>
+          </div>
+          <div class="row">
+            <paper-input label="起始金额" value="{{route.minAmount::input}}"></paper-input>
+            <paper-input label="最大金额" value="{{route.maxAmount::input}}"></paper-input>
+          </div>
+        </section>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button on-tap="toFirstStep" hidden$="{{isHiddenCurrentSection(currentProgress.step, 1)}}">上一步</paper-button>
+        <paper-button on-tap="toSecondStep" hidden$="{{isHiddenCurrentSection(currentProgress.step, 2)}}">上一步</paper-button>
+        <paper-button on-tap="handleDialogCloseEvent" dialog-dismiss>取消</paper-button>
+        <paper-button on-tap="toSecondStep" hidden$="{{isHiddenCurrentSection(currentProgress.step, 0)}}">下一步</paper-button>
+        <paper-button on-tap="toLastStep" hidden$="{{isHiddenCurrentSection(currentProgress.step, 1)}}">下一步</paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped" hidden$="{{isHiddenCurrentSection(currentProgress.step, 2)}}">保存</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'route-editor',
+
+        properties: {
+          cardBrands: {
+            type: Array,
+            value: [{
+              key: 'CUP',
+              value: '银联国内卡'
+            }, {
+              key: 'UPI',
+              value: '银联国际卡'
+            }, {
+              key: 'VIS',
+              value: 'VISA 卡'
+            }, {
+              key: 'MCC',
+              value: '万事达卡'
+            }, {
+              key: 'JCB',
+              value: 'JCB 卡'
+            }, {
+              key: 'ALP',
+              value: '支付宝'
+            }, {
+              key: 'WXP',
+              value: '微信'
+            }]
+          },
+          route: {
+            type: Object
+          },
+          progress: {
+            type: Array,
+            value: [{
+              name: '选择机构商户',
+              progressValue: 33.3,
+              isCurrent: true
+            }, {
+              name: '选择渠道商户',
+              progressValue: 66.6,
+              isCurrent: true
+            }, {
+              name: '编辑路由信息',
+              progressValue: 100,
+              isCurrent: true
+            }]
+          },
+          currentProgress: {
+            type: Object,
+            value: {
+              secondProgressValue: 0
+            }
+          }
+        },
+        ready: function() {
+          this.route = {};
+          this.handleStepChange(0);
+        },
+        open: function() {
+          this.$.dialog.open();
+        },
+        observers: [
+          '_watchCardBrandChange(cardBrand.key)'
+        ],
+        _watchCardBrandChange: function(key) {
+          this.set('route.cardBrand', key);
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          this.$.saveAjax.body = JSON.stringify(this.route);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          Util.toast(response.message, 1000);
+          this.$.dialog.close();
+
+          this.fire('saved');
+
+          this.handleDialogCloseEvent();
+        },
+        // 机构商户选择列表
+        handleMerchantSelected: function(e, detail) {
+          if (detail.stared) {
+            this.set('route.merId', detail.merId);
+            return;
+          }
+          this.set('route.merId', '');
+        },
+        // 渠道商户选择列表
+        handleChannelMerchantSelected: function(e, detail) {
+          if (detail.stared) {
+            this.set('route.chanCode', detail.chanCode);
+            this.set('route.chanMerId', detail.chanMerId);
+            return;
+          }
+          this.set('route.chanCode', '');
+          this.set('route.chanMerId', '');
+        },
+        // 弹窗关闭触发事件，数据清零
+        handleDialogCloseEvent: function() {
+          this.currentProgress = this.progress[0];
+          this.set('currentProgress.step', 0);
+          this.set('currentProgress.secondProgressValue', 0);
+          this.set('route', {});
+        },
+        isHiddenCurrentSection: function(value, target) {
+          return value !== target;
+        },
+        // 步骤改变事件
+        handleStepChange: function(step) {
+          var tempValue = this.currentProgress.secondProgressValue;
+          this.currentProgress = this.progress[step];
+          this.set('currentProgress.step', step);
+          this.set('currentProgress.secondProgressValue', Math.max(tempValue, (33.3 + 33.3 * step)));
+        },
+        toFirstStep: function() {
+          this.handleStepChange(0);
+        },
+        toSecondStep: function() {
+          this.handleStepChange(1);
+        },
+        toLastStep: function() {
+          this.handleStepChange(2);
+        },
+      });
+    })();
+  </script>
+</dom-module>

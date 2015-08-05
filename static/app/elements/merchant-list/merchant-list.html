@@ -1,13 +1,3 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="merchant-list">
@@ -15,15 +5,231 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
     }
+
+    .condition {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .condition > paper-input,
+    .condition > x-select {
+      min-width: 170px;
+      margin-right: 20px;
+    }
+
+    .x-select paper-button {
+      width: 100%;
+      background: #3498db;
+    }
+
+    .condition > .buttons {
+      min-width: 170px;
+    }
+
+    .condition > .buttons > paper-button {
+      width: 100%;
+      margin: 10px 0px 0px;
+    }
+
+    paper-button[raised].colorful {
+      background: #3498db;
+      color: #fff;
+    }
+
+    card-item {
+      margin: 20px;
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
   </style>
   <template>
-    <div>商户列表</div>
+    <iron-ajax id="queryAjax" method="POST" url="/quickMaster/merchant/all" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <div class="condition">
+      <paper-input label="商户编号" value="{{cond.merId::input}}"></paper-input>
+      <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态">
+        <paper-button class="dropdown-trigger">交易类型</paper-button>
+      </x-select>
+      <div class="buttons">
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      </div>
+    </div>
+
+    <template is="dom-repeat" items="{{merchants}}">
+      <card-item on-item-stared="handleItemStaredEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}">
+        <dl>
+          <dt>商户编号</dt>
+          <dd>
+            <span>{{item.merId}}</span>
+          </dd>
+
+          <dt>商户名称</dt>
+          <dd>
+            <span>{{item.detail.merName}}</span>
+            <!-- <a hidden$="{{!item.detail.merName}}" href="{{link}}">查看详情</a> -->
+          </dd>
+
+          <dt>机构编号</dt>
+          <dd>
+            <span>{{item.insCode}}</span>
+          </dd>
+
+          <dt>商户状态</dt>
+          <dd>
+            <span>{{item.merStatus}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">交易币种</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.transCurr}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">签名密钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.signKey}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">是否需要验签</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{_computeYesOrNo(item.isNeedSign)}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">加密密钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.encryptKey}}</span>
+          </dd>
+
+          <dt>接口授权</dt>
+          <dd>
+            <span>{{_computePermissions(item.permission)}}</span>
+          </dd>
+          <dt hidden$="{{tiny}}">备注</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.remark}}</span>
+          </dd>
+        </dl>
+      </card-item>
+      <!-- <merchant-item tiny="{{tiny}}" item="{{item}}"></merchant-item> -->
+    </template>
+
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+    </paper-fab>
+
+    <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
   </template>
   <script>
-  (function() {
-    Polymer({
-      is: 'merchant-list'
-    });
-  })();
+    (function() {
+      Polymer({
+        is: 'merchant-list',
+        properties: {
+          merStatusMap: {
+            type: Array,
+            value: [{
+              key: 'Normal',
+              value: '正常商户'
+            }, {
+              key: 'Test',
+              value: '测试商户'
+            }, {
+              key: 'Deleted',
+              value: '已删除商户'
+            }]
+          },
+          merStatus: {
+            type: Object
+          },
+          tiny: {
+            type: Boolean,
+            value: false
+          },
+          autoLoading: {
+            type: Boolean,
+            value: false
+          },
+          isAllowSelected: {
+            type: Boolean,
+            value: false
+          }
+        },
+        ready: function() {
+          this.merchants = [];
+          this.cond = {
+            detail: {}
+          };
+          //   this.handleQueryTapped();
+        },
+        attached: function() {
+          if (this.autoLoading) {
+            this.handleQueryTapped();
+          }
+        },
+        observers: [
+          '_watchMerStatusChange(merStatus.key)'
+        ],
+        _watchMerStatusChange: function(key) {
+          this.cond.merStatus = key;
+        },
+        // 发送查询交易的ajax请求
+        handleQueryTapped: function() {
+          this.merchants = [];
+          this.$.queryAjax.body = JSON.stringify(this.cond);
+          this.$.queryAjax.generateRequest();
+        },
+        // ajax请求响应处理
+        handleQueryResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          this.merchants = response.data.slice(0);
+
+          if (this.merchants.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
+        },
+        // 新增机构商户事件
+        handleCreateFabTapped: function() {
+          this.$.merchantEditor.open();
+        },
+        // 新机构商户保存成功事件，刷新列表
+        handleMerchantSave: function() {
+          this.handleQueryTapped();
+        },
+        // 商户选中事件
+        handleItemStaredEvent: function(e) {
+          var staredItem = e.model.item;
+          this.fire('item-selected', staredItem);
+          if (!staredItem.stared) {
+            return;
+          }
+
+          for (var i = 0, l = this.merchants.length; i < l; i++) {
+            var item = this.merchants[i];
+            if (item.merId !== staredItem.merId) {
+              this.set('merchants.' + i + '.stared', false);
+            }
+          }
+        },
+        _computePermissions: function(permissions) {
+          if (!permissions) {
+            return '';
+          }
+          return permissions.join(',');
+        },
+        _computeYesOrNo: function(flag) {
+          if (flag) {
+            return '是';
+          }
+          return '否';
+        }
+      });
+    })();
   </script>
 </dom-module>
