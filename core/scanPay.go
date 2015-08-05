@@ -287,6 +287,8 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
 	refund.ChanCode = orig.ChanCode
+	refund.ChanMerId = orig.ChanMerId
+	refund.SubChanMerId = orig.SubChanMerId
 
 	// 退款只能隔天退
 	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
@@ -355,10 +357,6 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return returnWithErrorCode("TRADE_NOT_EXIST")
 	}
-	// 原订单非支付交易
-	// if t.TransType != model.PayTrans {
-	// 	return returnWithErrorCode("CAN_NOT_QUERY_NOT_PAYTRANS")
-	// }
 
 	// 判断订单的状态
 	switch t.TransStatus {
@@ -372,19 +370,41 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			break
 		}
 
-		// TODO 待确定
-		// 查看原交易的状态
+		// 来到这一般是系统故障，没有更新成功
+		// 先拿到原交易
 		orig, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
 		if err != nil {
 			return returnWithErrorCode("TRADE_NOT_EXIST")
 		}
 
+		// 查看原交易的状态
 		ret = &model.ScanPayResponse{}
 		switch orig.TransStatus {
 		// 撤销、退款、取消成功时，订单状态都是已关闭
 		case model.TransClosed:
 			ret.Respcd, ret.ErrorDetail = adaptor.SuccessCode, adaptor.SuccessMsg
-		// TODO 如果是部分退款呢？
+		// 原交易状态没变
+		case model.TransSuccess:
+			// 如果是退款
+			if t.TransType == model.RefundTrans {
+				// 部分退款的标识
+				if orig.RefundStatus == model.TransPartRefunded {
+					ret.Respcd, ret.ErrorDetail = adaptor.SuccessCode, adaptor.SuccessMsg
+					break
+				}
+				// 如果是退款，且原交易状态没变，这时需要去查询
+				// 微信可以查退款
+				if t.ChanCode == channel.ChanCodeWeixin {
+					req.OrderNum = t.OrderNum
+					req.OrigOrderNum = t.OrigOrderNum
+					ret = adaptor.ProcessWxpRefundQuery(t, req)
+					if ret.Respcd == adaptor.SuccessCode {
+						// 更新原交易状态
+
+					}
+				}
+			}
+
 		default:
 			ret.Respcd, ret.ErrorDetail = adaptor.FailCode, adaptor.FailMsg
 		}
@@ -392,8 +412,16 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 更新
 		updateTrans(t, ret)
 
-		fallthrough
+	// 交易失败
+	case model.TransFail:
+		// TODO 系统超时
+		// 这里只处理渠道应答错误的情况，如渠道系统超时，应答码为91-外部系统错误
+		// if t.RespCode == adaptor.UnKnownCode {
 
+		// }
+
+		// 其他情况跳过
+		fallthrough
 	default:
 		// 原交易信息
 		ret.ChannelOrderNum = t.ChanOrderNum
@@ -436,6 +464,8 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
 	cancel.ChanCode = orig.ChanCode
+	cancel.ChanMerId = orig.ChanMerId
+	cancel.SubChanMerId = orig.SubChanMerId
 
 	// 撤销只能撤当天交易
 	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
@@ -507,6 +537,8 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(closed, "TRADE_NOT_EXIST")
 	}
 	closed.ChanCode = orig.ChanCode
+	closed.ChanMerId = orig.ChanMerId
+	closed.SubChanMerId = orig.SubChanMerId
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {

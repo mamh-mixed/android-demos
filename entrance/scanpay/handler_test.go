@@ -75,7 +75,8 @@ var (
 		Chcd:      "WXP",
 		Txamt:     "000000000100",
 		OpenId:    "omYJss7PyKb02j3Y5pnZLm2IL6F4", //omYJss7PyKb02j3Y5pnZLm2IL6F4
-		CheckName: "NO_CHECK",
+		CheckName: "FORCE_CHECK",
+		UserName:  "陈芝锐",
 		Desc:      "ipad2 mini 64G",
 	}
 

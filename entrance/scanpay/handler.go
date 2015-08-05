@@ -2,8 +2,6 @@ package scanpay
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
