@@ -38,8 +38,8 @@
       color: #fff;
     }
 
-    merchant-item {
-      margin: 30px;
+    card-item {
+      margin: 20px;
     }
 
     paper-fab {
@@ -61,7 +61,60 @@
     </div>
 
     <template is="dom-repeat" items="{{merchants}}">
-      <merchant-item tiny="{{tiny}}" item="{{item}}"></merchant-item>
+      <card-item>
+        <dl>
+          <dt>商户编号</dt>
+          <dd>
+            <span>{{item.merId}}</span>
+          </dd>
+
+          <dt>商户名称</dt>
+          <dd>
+            <span>{{item.detail.merName}}</span>
+            <!-- <a hidden$="{{!item.detail.merName}}" href="{{link}}">查看详情</a> -->
+          </dd>
+
+          <dt>机构编号</dt>
+          <dd>
+            <span>{{item.insCode}}</span>
+          </dd>
+
+          <dt>商户状态</dt>
+          <dd>
+            <span>{{item.merStatus}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">交易币种</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.transCurr}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">签名密钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.signKey}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">是否需要验签</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{_computeYesOrNo(item.isNeedSign)}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">加密密钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.encryptKey}}</span>
+          </dd>
+
+          <dt>接口授权</dt>
+          <dd>
+            <span>{{_computePermissions(item.permission)}}</span>
+          </dd>
+          <dt hidden$="{{tiny}}">备注</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.remark}}</span>
+          </dd>
+        </dl>
+      </card-item>
+      <!-- <merchant-item tiny="{{tiny}}" item="{{item}}"></merchant-item> -->
     </template>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
@@ -108,7 +161,7 @@
         },
         attached: function() {
           if (this.autoLoading) {
-              this.handleQueryTapped();
+            this.handleQueryTapped();
           }
         },
         observers: [
@@ -139,6 +192,18 @@
         // 新机构商户保存成功事件，刷新列表
         handleMerchantSave: function() {
           this.handleQueryTapped();
+        },
+        _computePermissions: function(permissions) {
+          if (!permissions) {
+            return '';
+          }
+          return permissions.join(',');
+        },
+        _computeYesOrNo: function(flag) {
+          if (flag) {
+            return '是';
+          }
+          return '否';
         }
       });
     })();

@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="card-item">
+  <style>
+    :host {
+      display: block;
+    }
+
+    paper-material {
+      padding: 16px;
+    }
+
+    paper-material >::content dl {}
+
+    paper-material >::content dl dt {
+      float: left;
+      width: 100px;
+      overflow: hidden;
+      clear: left;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.5;
+    }
+
+    paper-material >::content dl dd {
+      margin-left: 120px;
+      word-break: break-all;
+    }
+
+    paper-material >::content dd:after,
+    paper-material >::content dd:before {
+      display: table;
+      content: " ";
+    }
+
+    paper-material >::content dd:after {
+      clear: both;
+    }
+  </style>
+  <template>
+    <paper-material elevation="1">
+      <content select="dl"></content>
+    </paper-material>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'card-item',
+
+        properties: {
+          foo: {
+            type: String,
+            value: 'bar',
+            notify: true
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
