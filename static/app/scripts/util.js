@@ -1,4 +1,4 @@
-(function(window) {
+;(function(window) {
   var Util = (function() {
     var init = function() {};
     var toast = function(text, duration) {
@@ -13,9 +13,19 @@
       toast.duration = duration;
       toast.show();
     };
+    var query = function(obj) {
+        var q = '';
+        for (var k in obj) {
+            if (!obj[k]) {continue;}
+            var v = encodeURIComponent(obj[k]);
+            q += '&' + k + '='+v;
+        }
+        return q.substring(1);
+    };
     return {
       init: init,
-      toast: toast
+      toast: toast,
+      query: query
     };
   }());
 
