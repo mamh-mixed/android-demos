@@ -63,6 +63,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input label="商户详细信息" value="{{merchant.detail::input}}"></paper-input>
           <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
         </div>
+        <div class="row">
+          <paper-input label="门店ID" value="{{merchant.shopId::input}}"></paper-input>
+          <paper-input label="门店类型" value="{{merchant.shopType::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
