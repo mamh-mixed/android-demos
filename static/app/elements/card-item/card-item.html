@@ -10,6 +10,21 @@
       padding: 16px;
     }
 
+    paper-material >::content .row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    paper-material >::content .row > .cell {
+      width: 48%;
+    }
+
+    paper-material >::content .row > .cell:first-child {}
+
+    paper-material >::content .row > .cell:last-child {}
+
     paper-material >::content dl {}
 
     paper-material >::content dl dt {
@@ -52,7 +67,7 @@
   <template>
     <paper-material elevation="1">
       <iron-icon icon="check-box" hidden$="{{!isAllowStared}}" stared$="{{item.stared}}" on-tap="handleStaredTapped"></iron-icon>
-      <content select="dl"></content>
+      <content></content>
     </paper-material>
   </template>
   <script>
