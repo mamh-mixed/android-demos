@@ -63,7 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <dt>商户名称</dt>
         <dd>
           <span>{{item.detail.merName}}</span>
-          <a hidden$="{{!item.detail.merName}}" href="{{link}}">查看详情</a>
+          <!-- <a hidden$="{{!item.detail.merName}}" href="{{link}}">查看详情</a> -->
         </dd>
 
         <dt>机构编号</dt>
@@ -76,23 +76,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <span>{{item.merStatus}}</span>
         </dd>
 
-        <dt>交易币种</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">交易币种</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.transCurr}}</span>
         </dd>
 
-        <dt>签名密钥</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">签名密钥</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.signKey}}</span>
         </dd>
 
-        <dt>是否需要验签</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">是否需要验签</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.isNeedSign}}</span>
         </dd>
 
-        <dt>加密密钥</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">加密密钥</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.encryptKey}}</span>
         </dd>
 
@@ -100,8 +100,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <dd>
           <span>{{_computePermissions(item.permission)}}</span>
         </dd>
-        <dt>备注</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">备注</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.remark}}</span>
         </dd>
       </dl>
@@ -116,6 +116,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           item: {
             type: Object,
             notify: true
+          },
+          tiny: {
+            type: Boolean,
+            value: false
           }
         },
         ready: function() {},

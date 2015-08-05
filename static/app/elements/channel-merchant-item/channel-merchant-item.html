@@ -66,23 +66,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <span>{{item.chanMerName}}</span>
         </dd>
 
-        <dt>清算标识</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">清算标识</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.settFlag}}</span>
         </dd>
 
-        <dt>清算角色</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">清算角色</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.settRole}}</span>
         </dd>
 
-        <dt>签名证书</dt>
-        <dd>
-          <p><pre>{{item.signCert}}</pre></p>
+        <dt hidden$="{{tiny}}">签名证书</dt>
+        <dd hidden$="{{tiny}}">
+          <p>
+            <pre>{{item.signCert}}</pre>
+          </p>
         </dd>
 
-        <dt>验签证书</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">验签证书</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.checkSignCert}}</span>
         </dd>
 
@@ -100,20 +102,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <dd>
           <span>{{item.terminalId}}</span>
         </dd>
-        <dt>渠道费率</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">渠道费率</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.acqFee}}</span>
         </dd>
-        <dt>商户费率</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">商户费率</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.merFee}}</span>
         </dd>
-        <dt>HTTP Cert</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">HTTP Cert</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.httpCert}}</span>
         </dd>
-        <dt>HTTP Key</dt>
-        <dd>
+        <dt hidden$="{{tiny}}">HTTP Key</dt>
+        <dd hidden$="{{tiny}}">
           <span>{{item.httpKey}}</span>
         </dd>
       </dl>
@@ -128,6 +130,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           item: {
             type: Object,
             notify: true
+          },
+          tiny: {
+            type: Boolean,
+            value: false
           }
         }
       });

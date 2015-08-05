@@ -71,7 +71,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
 
     <template is="dom-repeat" items="{{merchants}}">
-      <merchant-item item="{{item}}"></merchant-item>
+      <merchant-item tiny="{{tiny}}" item="{{item}}"></merchant-item>
     </template>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
@@ -99,6 +99,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           merStatus: {
             type: Object
+          },
+          tiny: {
+            type: Boolean,
+            value: false
           }
         },
         ready: function() {

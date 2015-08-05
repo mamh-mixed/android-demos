@@ -63,14 +63,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="condition">
       <paper-input label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
       <paper-input label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
-      <paper-input label="商户名称" value="{{cond.chanMerName::input}}"></paper-input>
+      <paper-input label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
     </div>
 
     <template is="dom-repeat" items="{{merchants}}">
-      <channel-merchant-item item="{{item}}"></channel-merchant-item>
+      <channel-merchant-item tiny="{{tiny}}" item="{{item}}"></channel-merchant-item>
     </template>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
@@ -82,6 +82,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     (function() {
       Polymer({
         is: 'channel-merchant-list',
+        properties: {
+          tiny: {
+            type: Boolean,
+            value: false
+          }
+        },
         ready: function() {
           this.merchants = [];
           this.cond = {};
