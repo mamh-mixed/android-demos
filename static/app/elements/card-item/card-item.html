@@ -1,0 +1,98 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="card-item">
+  <style>
+    :host {
+      display: block;
+    }
+
+    paper-material {
+      padding: 16px;
+    }
+
+    paper-material >::content .row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    paper-material >::content .row > .cell {
+      width: 48%;
+    }
+
+    paper-material >::content .row > .cell:first-child {}
+
+    paper-material >::content .row > .cell:last-child {}
+
+    paper-material >::content dl {}
+
+    paper-material >::content dl dt {
+      float: left;
+      width: 100px;
+      overflow: hidden;
+      clear: left;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.5;
+    }
+
+    paper-material >::content dl dd {
+      margin-left: 120px;
+      word-break: break-all;
+    }
+
+    paper-material >::content dd:after,
+    paper-material >::content dd:before {
+      display: table;
+      content: " ";
+    }
+
+    paper-material >::content dd:after {
+      clear: both;
+    }
+
+    iron-icon {
+      position: absolute;
+      right: 30px;
+      top: 30px;
+      cursor: pointer;
+    }
+
+    iron-icon[stared] {
+      color: #f1c40f;
+    }
+  </style>
+  <template>
+    <paper-material elevation="1">
+      <iron-icon icon="check-box" hidden$="{{!isAllowStared}}" stared$="{{item.stared}}" on-tap="handleStaredTapped"></iron-icon>
+      <content></content>
+    </paper-material>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'card-item',
+
+        properties: {
+          item: {
+            type: Object
+          },
+          stared: {
+            type: Boolean,
+            value: false
+          },
+          isAllowStared: {
+            type: Boolean,
+            value: false
+          }
+        },
+        handleStaredTapped: function() {
+          this.set('item.stared', !this.item.stared);
+          this.fire('item-stared');
+        }
+      });
+    })();
+  </script>
+</dom-module>
