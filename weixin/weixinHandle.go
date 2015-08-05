@@ -61,19 +61,19 @@ func GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, 
 	authAccessTokenURLT := fmt.Sprintf(authAccessTokenURL, appID, appSECRET, code)
 	resp, err := http.Get(authAccessTokenURLT)
 	if err != nil {
-		log.Errorf("http.Get authAccessToken err,%s\n", err.Error())
+		log.Errorf("http.Get authAccessToken err,%s", err)
 		return nil, err
 	}
 	bs, err := ioutil.ReadAll(resp.Body)
-	log.Debug("authAccessTokenResp:", string(bs))
+	log.Debugf("authAccessTokenResp:%s", string(bs))
 	if err != nil {
-		log.Errorf("read body of AuthAccessToken err,%s\n", err.Error())
+		log.Errorf("read body of AuthAccessToken err,%s", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	err = json.Unmarshal(bs, &authAccessTokenResp)
 	if err != nil {
-		log.Errorf("json unmarshal AuthAccessToken err,%s\n", err.Error())
+		log.Errorf("json unmarshal AuthAccessToken err,%s", err)
 		return nil, err
 	}
 	return authAccessTokenResp, nil
@@ -84,19 +84,19 @@ func GetAuthUserInfo(authAccessToken, openId string) (authUserInfoResp *AuthUser
 	authUserInfoURLT := fmt.Sprintf(authUserInfoURL, authAccessToken, openId)
 	resp, err := http.Get(authUserInfoURLT)
 	if err != nil {
-		log.Errorf("http.Get authUserInfo err,%s\n", err.Error())
+		log.Errorf("http.Get authUserInfo err,%s", err)
 		return nil, err
 	}
 	bs, err := ioutil.ReadAll(resp.Body)
-	log.Debug("authUserInfoResp:", string(bs))
+	log.Debugf("authUserInfoResp:", string(bs))
 	if err != nil {
-		log.Errorf("read body of resp authUserInfo err,%s\n", err.Error())
+		log.Errorf("read body of resp authUserInfo err,%s", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	err = json.Unmarshal(bs, &authUserInfoResp)
 	if err != nil {
-		log.Errorf("json unmarshal authUserInfo err,%s\n", err.Error())
+		log.Errorf("json unmarshal authUserInfo err,%s", err)
 		return nil, err
 	}
 	return authUserInfoResp, err
@@ -107,19 +107,19 @@ func RefreshAuthAccessToken(appid, refreshToken string) (refreshAATokenResp *Ref
 	refreshAATokenURLT := fmt.Sprintf(refreshAATokenURL, appid, refreshToken)
 	resp, err := http.Get(refreshAATokenURLT)
 	if err != nil {
-		log.Errorf("http.Get refreshAAToken err,%s\n", err.Error())
+		log.Errorf("http.Get refreshAAToken err,%s", err)
 		return nil, err
 	}
 	bs, err := ioutil.ReadAll(resp.Body)
-	log.Debug("refreshAATokenResp:", string(bs))
+	log.Debugf("refreshAATokenResp:%s", string(bs))
 	if err != nil {
-		log.Errorf("read body of refreshAATokenResp err,%s\n", err.Error())
+		log.Errorf("read body of refreshAATokenResp err,%s", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	err = json.Unmarshal(bs, &refreshAATokenResp)
 	if err != nil {
-		log.Errorf("json unmarshal refreshAATokenResp err,%s\n", err.Error())
+		log.Errorf("json unmarshal refreshAATokenResp err,%s", err)
 		return nil, err
 	}
 	return refreshAATokenResp, err
