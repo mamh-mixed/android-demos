@@ -76,4 +76,14 @@ APPID_MCHID_NOT_MATCH,appid和mch_id不匹配,refundQuery,96
 REQUIRE_POST_METHOD,请使用post方法,refundQuery,96
 SIGNERROR,签名错误,refundQuery,96
 XML_FORMAT_ERROR,XML格式错误,refundQuery,96
-
+NOAUTH,没有权限,enterprisePay,05
+AMOUNT_LIMIT,付款金额不能小于最低限额,enterprisePay,S3
+PARAM_ERROR,参数错误,enterprisePay,96
+OPENID_ERROR,Openid错误,enterprisePay,S4
+NOTENOUGH,余额不足,enterprisePay,51
+SYSTEMERROR,系统繁忙，请稍后再试。,enterprisePay,95
+NAME_MISMATCH,姓名校验出错,enterprisePay,S5
+SIGN_ERROR,签名错误,enterprisePay,96
+XML_ERROR,Post内容出错,enterprisePay,96
+FATAL_ERROR,两次请求参数不一致,enterprisePay,19
+CA_ERROR,证书出错,enterprisePay,96
