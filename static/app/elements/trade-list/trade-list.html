@@ -209,7 +209,7 @@
         _watchBusicdChange: function(key) {
           this.cond.busicd = key;
         },
-        _watchCondChange: function(cond) {
+        _watchCondChange: function() {
             var t = new Date().format('yyyyMMdd-hhmmss');
             this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_'+t+'.xlsx';
         },

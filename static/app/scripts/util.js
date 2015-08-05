@@ -16,7 +16,7 @@
     var query = function(obj) {
         var q = '';
         for (var k in obj) {
-            if (!obj[k]) continue;
+            if (!obj[k]) {continue;}
             var v = encodeURIComponent(obj[k]);
             q += '&' + k + '='+v;
         }
