@@ -17,9 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .condition {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
+      @apply(--layout-horizontal);
       margin-bottom: 15px;
     }
 
@@ -69,8 +67,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <template is="dom-repeat" items="{{routes}}">
       <card-item>
-        <div class="row">
-          <div class="cell">
+        <div class="layout horizontal wrap">
+          <div class="flex-6">
             <dl>
               <dt>商户编号</dt>
               <dd>
@@ -103,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               </dd>
             </dl>
           </div>
-          <div class="cell">
+          <div class="flex-6">
             <dl>
               <dt>卡品牌</dt>
               <dd>
@@ -184,7 +182,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (flag) {
             return '是';
           }
-
           return '否';
         }
       });
