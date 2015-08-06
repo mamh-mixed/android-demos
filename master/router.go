@@ -33,6 +33,16 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = Merchant.Find(merId, merStatus)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
+	case "/master/router/save":
+		ret = RouterPolicy.Save(data)
+	case "/master/router/find":
+		merId := r.FormValue("merId")
+		ret = RouterPolicy.Find(merId)
+	case "/master/router/delete":
+		merId := r.FormValue("merId")
+		chanCode := r.FormValue("chanCode")
+		cardBrand := r.FormValue("cardBrand")
+		ret = RouterPolicy.Delete(merId, chanCode, cardBrand)
 	default:
 		w.WriteHeader(404)
 	}
