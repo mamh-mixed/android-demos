@@ -42,7 +42,8 @@
     }
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="POST" url="/quickMaster/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <div class="condition">
       <paper-input label="商户编号" value="{{cond.merId::input}}"></paper-input>
       <div class="buttons">
@@ -51,7 +52,7 @@
     </div>
 
     <template is="dom-repeat" items="{{routes}}">
-      <card-item>
+      <card-item item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}" on-item-deleted="handleItemDeletedEvent">
         <div class="layout horizontal wrap">
           <div class="flex-6">
             <dl>
@@ -131,6 +132,16 @@
     (function() {
       Polymer({
         is: 'route-list',
+        properties: {
+          isEditable: {
+            type: Boolean,
+            value: false
+          },
+          isDeletable: {
+            type: Boolean,
+            value: true
+          }
+        },
         ready: function() {
           this.routes = [];
           this.cond = {};
@@ -158,6 +169,26 @@
         // 新增路由策略事件
         handleCreateFabTapped: function() {
           this.$.editor.open();
+        },
+        // 删除路由事件
+        handleItemDeletedEvent: function(e, detail) {
+          var obj = {
+            merId: detail.merId,
+            chanCode: detail.chanCode,
+            cardBrand: detail.cardBrand
+          };
+          this.$.deleteAjax.params = obj;
+          this.$.deleteAjax.generateRequest();
+        },
+        // 删除路由响应事件
+        handleDeleteResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          this.handleQueryTapped();
         },
         // 新增路由策略保存成功事件，刷新列表
         handleMerchantSave: function() {
