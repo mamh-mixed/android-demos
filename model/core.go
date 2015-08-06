@@ -134,6 +134,9 @@ type MerDetail struct {
 	Addr          string `bson:"addr,omitempty" json:"addr,omitempty"`                   //商户地址
 	Postcode      string `bson:"postcode,omitempty" json:"postcode,omitempty"`           //商户邮编
 	Password      string `bson:"password,omitempty" json:"password,omitempty"`           //商户密码
+	ShopID        string `bson:"shopID,omitempty" json:"shopID,omitempty"`               //门店id
+	ShopType      string `bson:"shopType,omitempty" json:"shopType,omitempty"`           //门店类型
+	BrandNum      string `bson:"brandNum,omitempty" json:"brandNum,omitempty"`           //品牌编号
 }
 
 // ChanMer 渠道商户

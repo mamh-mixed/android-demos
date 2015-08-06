@@ -1,6 +1,7 @@
 package alipay
 
 import (
+	"errors"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -8,10 +9,7 @@ import (
 )
 
 var DefaultClient alp
-var (
-	agentId         = goconf.Config.AlipayScanPay.AgentId
-	alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
-)
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
 
 // alp 当面付，扫码支付
 type alp struct{}
@@ -44,8 +42,8 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		GoodsDetail:   req.MarshalGoods(),
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.ActTxamt,
-		ExtendParams:  agentId, //...
-		ItBPay:        "1m",    // 超时时间
+		ExtendParams:  req.ExtendParams, //...
+		ItBPay:        "1m",             // 超时时间
 		DynamicIdType: "bar_code",
 		DynamicId:     req.ScanCodeId,
 	}
@@ -76,7 +74,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
-		ExtendParams:   agentId,
+		ExtendParams:   req.ExtendParams,
 		ItBPay:         "1m", // 超时时间
 	}
 
@@ -161,6 +159,11 @@ func (a *alp) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 // ProcessClose 关闭接口即撤销接口
 func (a *alp) ProcessClose(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 	return a.ProcessCancel(req)
+}
+
+// ProcessRefundQuery 退款查询
+func (a *alp) ProcessRefundQuery(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+	return nil, errors.New("not support now")
 }
 
 func toMap(req *alpRequest) map[string]string {

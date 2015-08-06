@@ -11,6 +11,7 @@ var (
 	FailCode, FailMsg           = mongo.ScanPayRespCol.Get8583CodeAndMsg("FAIL")
 	InprocessCode, InprocessMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
 	SuccessCode, SuccessMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
+	UnKnownCode, UnKnownMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
 )
 
 // returnWithErrorCode 使用错误码直接返回

@@ -5,7 +5,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -74,9 +73,10 @@ var (
 		OrderNum:  util.Millisecond(),
 		Inscd:     "10134001",
 		Chcd:      "WXP",
-		Txamt:     "000000000001",
+		Txamt:     "000000000100",
 		OpenId:    "omYJss7PyKb02j3Y5pnZLm2IL6F4", //omYJss7PyKb02j3Y5pnZLm2IL6F4
-		CheckName: "NO_CHECK",
+		CheckName: "FORCE_CHECK",
+		UserName:  "陈芝锐",
 		Desc:      "ipad2 mini 64G",
 	}
 
@@ -87,17 +87,11 @@ func TestScanPay(t *testing.T) {
 
 	log.SetOutputLevel(log.Ldebug)
 	reqBytes, _ := json.Marshal(scanPay)
-	e := mahonia.NewEncoder("gbk")
-	gbk := e.ConvertString(string(reqBytes))
 
-	respBytes := TcpScanPayHandle([]byte(gbk))
-	respStr := string(respBytes)
-
-	d := mahonia.NewDecoder("gbk")
-	utf8 := d.ConvertString(respStr)
+	respBytes := ScanPayHandle(reqBytes)
 
 	resp := new(model.ScanPayResponse)
-	err := json.Unmarshal([]byte(utf8[4:]), resp)
+	err := json.Unmarshal(respBytes, resp)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

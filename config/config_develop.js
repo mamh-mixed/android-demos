@@ -9,7 +9,7 @@
         "EncryptKey": "Ky3ETaC0WjgGTQQtFVfl0",
         "HTTPAddr": ":6800", // HTTP 接口
         "TCPPort": ":6600", // 扫码 TCP 接口
-        "DefaultCacheTime":1     // 单位分钟 0-表示永远不过期
+        "DefaultCacheTime": "1s" // 缓存有效时间，0 表示永不过期（慎用），比如 "1h2m3s"
     },
     "Mongo": {
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
@@ -39,6 +39,6 @@
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
         "URL": "https://mapi.alipay.com/gateway.do", // 支付宝扫码支付接口地址
         "NotifyUrl": "http://dev.quick.ipay.so", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
-        "AgentId":"{\"AGENT_ID\":\"12010128a1\"}" // 标识讯联交易
+        "AgentId": "12010128a1" // 标识讯联交易
     }
 }

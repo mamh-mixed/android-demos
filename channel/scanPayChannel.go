@@ -32,6 +32,9 @@ type ScanPayChan interface {
 
 	// ProcessClose 关闭
 	ProcessClose(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
+
+	// ProcessRefundQuery 退款查询
+	ProcessRefundQuery(req *model.ScanPayRequest) (*model.ScanPayResponse, error)
 }
 
 // GetScanPayChan 扫码支付渠道

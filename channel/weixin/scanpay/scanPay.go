@@ -223,7 +223,6 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 	d := &RefundQueryReq{
 		CommonParams: *getCommonParams(m),
 
-		DeviceInfo:    m.DeviceInfo,   // 设备号
 		TransactionId: "",             // 微信订单号
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
 		OutRefundNo:   m.OrderNum,     // 商户退款单号
@@ -238,19 +237,9 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 	status, msg := weixin.Transform("refundQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Txndir:          "A",             // 交易方向 M M
-		Busicd:          m.Busicd,        // 交易类型 M M
 		Respcd:          status,          // 交易结果  M
-		Inscd:           m.Inscd,         // 机构号 M M
-		Chcd:            m.Chcd,          // 渠道 C C
-		Mchntid:         p.MchID,         // 商户号 M M
-		Txamt:           m.Txamt,         // 订单金额 M M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
-		ConsumerAccount: "",              // 渠道账号  C
-		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
-		OrderNum:        m.OrderNum,      // 订单号 M C
-		OrigOrderNum:    "",              // 源订单号 M C
-		QrCode:          m.ScanCodeId,    // 二维码 C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 	}
 
