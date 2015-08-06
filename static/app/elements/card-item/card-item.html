@@ -50,11 +50,12 @@
       clear: both;
     }
 
-    iron-icon {
+    .icon-container {
       position: absolute;
       right: 30px;
       top: 30px;
       cursor: pointer;
+      @apply(--layout-horizontal-reverse);
     }
 
     iron-icon[stared] {
@@ -63,7 +64,11 @@
   </style>
   <template>
     <paper-material elevation="1">
-      <iron-icon icon="check-box" hidden$="{{!isAllowStared}}" stared$="{{item.stared}}" on-tap="handleStaredTapped"></iron-icon>
+      <div class="icon-container">
+        <iron-icon icon="check-box" hidden$="{{!isAllowStared}}" stared$="{{item.stared}}" on-tap="handleStaredTapped"></iron-icon>
+        <iron-icon icon="create" hidden$="{{!isEditable}}" on-tap="handleEditedTapped"></iron-icon>
+        <iron-icon icon="delete" hidden$="{{!isDeletable}}" on-tap="handleDeletedTapped"></iron-icon>
+      </div>
       <content></content>
     </paper-material>
   </template>
@@ -83,11 +88,25 @@
           isAllowStared: {
             type: Boolean,
             value: false
+          },
+          isEditable: {
+            type: Boolean,
+            value: true
+          },
+          isDeletable: {
+            type: Boolean,
+            value: false
           }
         },
         handleStaredTapped: function() {
           this.set('item.stared', !this.item.stared);
           this.fire('item-stared');
+        },
+        handleEditedTapped: function() {
+          this.fire('item-edited', this.item);
+        },
+        handleDeletedTapped: function() {
+          this.fire('item-deleted', this.item);
         }
       });
     })();
