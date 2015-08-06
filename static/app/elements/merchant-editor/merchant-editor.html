@@ -27,7 +27,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/quickMaster/merchant/add" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <paper-dialog id="dialog">
       <h2>编辑机构商户</h2>
       <paper-dialog-scrollable>
@@ -48,15 +48,12 @@
           <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商户详细信息" value="{{merchant.detail::input}}"></paper-input>
           <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
+          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="门店ID" value="{{merchant.shopId::input}}"></paper-input>
           <paper-input label="门店类型" value="{{merchant.shopType::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -72,7 +69,9 @@
 
         properties: {
           merchant: {
-            type: Object
+            type: Object,
+            notify: true,
+            reflectToAttribute: true
           }
         },
         ready: function() {
