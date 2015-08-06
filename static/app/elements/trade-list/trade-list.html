@@ -18,11 +18,6 @@
       margin-right: 20px;
     }
 
-    .x-select paper-button {
-      width: 100%;
-      background: #3498db;
-    }
-
     .condition > .buttons {
       min-width: 170px;
     }
@@ -76,9 +71,7 @@
         </div>
       </paper-dialog>
 
-      <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型">
-        <paper-button class="dropdown-trigger">交易类型</paper-button>
-      </x-select>
+      <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
       <paper-input label="订单号" value="{{cond.orderNum::input}}"></paper-input>
       <paper-input label="关联订单号" value="{{cond.origOrderNum::input}}"></paper-input>
       <paper-input label="商户代码" value="{{cond.mchntid::input}}"></paper-input>

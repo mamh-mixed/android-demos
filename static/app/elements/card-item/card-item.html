@@ -11,14 +11,11 @@
     }
 
     paper-material >::content .row {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
+      @apply(--layout-horizontal);
     }
 
     paper-material >::content .row > .cell {
-      width: 48%;
+      @apply(‑‑layout-flex-6);
     }
 
     paper-material >::content .row > .cell:first-child {}
