@@ -7,9 +7,8 @@
     }
 
     .condition {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
       margin-bottom: 15px;
     }
 
@@ -44,7 +43,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="POST" url="/quickMaster/channelMerchant/all" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <div class="condition">
       <paper-input label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
       <paper-input label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
@@ -55,7 +54,7 @@
     </div>
 
     <template is="dom-repeat" items="{{merchants}}">
-      <card-item on-item-stared="handleItemStaredEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}">
+      <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
         <dl>
           <dt>渠道代码</dt>
           <dd>
@@ -149,6 +148,16 @@
           isAllowSelected: {
             type: Boolean,
             value: false
+          },
+          isEditable: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          isDeletable: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
           }
         },
         ready: function() {
@@ -163,7 +172,7 @@
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.merchants = [];
-          this.$.queryAjax.body = JSON.stringify(this.cond);
+          this.$.queryAjax.params = this.cond;
           this.$.queryAjax.generateRequest();
         },
         // ajax请求响应处理
@@ -189,6 +198,11 @@
               this.set('merchants.' + i + '.stared', false);
             }
           }
+        },
+        // 编辑机构商户
+        handleItemEditedEvent: function(e, detail) {
+          this.$.merchantEditor.chanMer = detail;
+          this.$.merchantEditor.open();
         },
         // 新增机构商户事件
         handleCreateFabTapped: function() {

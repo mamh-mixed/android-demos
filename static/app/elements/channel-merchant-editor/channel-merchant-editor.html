@@ -27,7 +27,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/quickMaster/channelMerchant/add" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
     <paper-dialog id="dialog">
       <h2>编辑渠道商户</h2>
       <paper-dialog-scrollable>
