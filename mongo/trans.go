@@ -188,10 +188,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 		match["origOrderNum"] = q.OrigOrderNum
 	}
 
-	if q.Busicd != "" {
-		match["busicd"] = q.Busicd
-	}
-
 	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
 
 	// 取消的订单和查询的订单不显示，过滤掉

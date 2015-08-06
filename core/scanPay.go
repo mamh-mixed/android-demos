@@ -400,7 +400,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 					ret = adaptor.ProcessWxpRefundQuery(t, req)
 					if ret.Respcd == adaptor.SuccessCode {
 						// 更新原交易状态
-
+						// TODO
 					}
 				}
 			}
