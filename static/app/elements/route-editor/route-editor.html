@@ -47,7 +47,7 @@
   </style>
   <!-- 使用分步骤方法创建路由策略 -->
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/quickMaster/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <paper-dialog id="dialog" modal>
       <h2>{{currentProgress.name}}</h2>
       <div class="progress-wrap">

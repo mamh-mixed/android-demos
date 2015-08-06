@@ -1,13 +1,3 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="merchant-editor">
@@ -25,13 +15,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
+      @apply(--layout-horizontal);
     }
 
-    .row paper-input {
-      min-width: 300px;
+    .row paper-input,
+    .row x-select {
+      @apply(--layout-flex-6);
     }
 
     .row paper-input:first-child {
@@ -39,13 +28,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/quickMaster/merchant/add" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <paper-dialog id="dialog">
       <h2>编辑机构商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
-          <paper-input label="商户状态" value="{{merchant.merStatus::input}}"></paper-input>
+          <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
         </div>
         <div class="row">
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
@@ -60,15 +49,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商户详细信息" value="{{merchant.detail::input}}"></paper-input>
           <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
+          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="门店ID" value="{{merchant.shopId::input}}"></paper-input>
           <paper-input label="门店类型" value="{{merchant.shopType::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -81,10 +67,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     (function() {
       Polymer({
         is: 'merchant-editor',
-
         properties: {
-          merchant: {
+          merStatusMap: {
+            type: Array,
+            value: [{
+              key: 'Normal',
+              value: '正常商户'
+            }, {
+              key: 'Test',
+              value: '测试商户'
+            }, {
+              key: 'Deleted',
+              value: '已删除商户'
+            }]
+          },
+          merStatus: {
             type: Object
+          },
+          merchant: {
+            type: Object,
+            notify: true,
+            reflectToAttribute: true
           }
         },
         ready: function() {
@@ -93,6 +96,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         open: function() {
           console.log('open me');
           this.$.dialog.open();
+        },
+        observers: [
+          '_watchMerStatusChange(merStatus.key)'
+        ],
+        _watchMerStatusChange: function(key) {
+          this.merchant.merStatus = key;
         },
         // 点击保存事件
         handleSaveTapped: function() {

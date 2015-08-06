@@ -1,0 +1,93 @@
+package master
+
+import (
+	"encoding/json"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
+)
+
+type routerPolicy struct{}
+
+var RouterPolicy routerPolicy
+
+// Find 查找路由列表，参数是 merId。
+func (i *routerPolicy) Find(merId string) (result *model.ResultBody) {
+	routers, err := mongo.RouterPolicyColl.FindAllOfOneMerchant(merId)
+
+	if err != nil {
+		log.Errorf("查询商户(%s)的所有路由失败: %s", merId, err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    routers,
+	}
+
+	return result
+}
+
+// Save 新增一个路由策略
+func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
+	r := new(model.RouterPolicy)
+	err := json.Unmarshal(data, r)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if r.MerId == "" {
+		log.Error("MerId")
+		return model.NewResultBody(3, "缺失必要元素 merId")
+	}
+
+	if r.ChanCode == "" {
+		log.Error("没有 ChanCode")
+		return model.NewResultBody(3, "缺失必要元素 chanCode")
+	}
+
+	if r.ChanMerId == "" {
+		log.Error("没有 ChanMerId")
+		return model.NewResultBody(3, "缺失必要元素 chanMerId")
+	}
+
+	if r.CardBrand == "" {
+		log.Error("没有 CardBrand")
+		return model.NewResultBody(3, "缺失必要元素 cardBrand")
+	}
+
+	err = mongo.RouterPolicyColl.Insert(r)
+	if err != nil {
+		log.Errorf("保存路由信息失败:%s", err)
+		return model.NewResultBody(1, "保存路由信息失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "保存成功",
+		Data:    r,
+	}
+
+	return
+}
+
+// Delete 删除路由，参数是 merId，chanCode，cardBrand。
+func (i *routerPolicy) Delete(merId, chanCode, cardBrand string) (result *model.ResultBody) {
+
+	err := mongo.RouterPolicyColl.Remove(merId, chanCode, cardBrand)
+
+	if err != nil {
+		log.Errorf("删除路由失败: %s", err)
+		return model.NewResultBody(1, "删除路由失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "删除成功",
+	}
+
+	return result
+}

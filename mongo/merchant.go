@@ -17,18 +17,13 @@ var MerchantColl = merchantCollection{"merchant"}
 
 var merCache = cache.New(model.Cache_Merchant)
 
-// Insert 插入一个商户信息
+// Insert 插入一个商户信息。如果存在则更新，不存在则插入。@WonSikin
 func (c *merchantCollection) Insert(m *model.Merchant) error {
-	m1 := new(model.Merchant)
 	q := bson.M{"merId": m.MerId}
-	err := database.C(c.name).Find(q).One(m1)
-	if err == nil {
-		return errors.New("MerId is existed!")
-	}
 
-	err = database.C(c.name).Insert(m)
+	_, err := database.C(c.name).Upsert(q, m)
 	if err != nil {
-		log.Errorf("'Insert Merchant ERROR!' Merchant is (%+v);error is (%s)", m, err)
+		log.Errorf("'Upsert Merchant ERROR!' Merchant is (%+v); error is (%s)", m, err)
 	}
 	return err
 }
