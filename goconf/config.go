@@ -15,7 +15,7 @@ type ConfigStruct struct {
 		EncryptKey       string
 		HTTPAddr         string
 		TCPPort          string
-		DefaultCacheTime int
+		DefaultCacheTime Duration
 	}
 
 	Mongo struct {
