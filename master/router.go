@@ -43,6 +43,13 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		chanCode := r.FormValue("chanCode")
 		cardBrand := r.FormValue("cardBrand")
 		ret = RouterPolicy.Delete(merId, chanCode, cardBrand)
+	case "/master/channelMerchant/find":
+		chanCode := r.FormValue("chanCode")
+		chanMerId := r.FormValue("chanMerId")
+		chanMerName := r.FormValue("chanMerName")
+		ret = ChanMer.Find(chanCode, chanMerId, chanMerName)
+	case "/master/channelMerchant/save":
+		ret = ChanMer.Save(data)
 	default:
 		w.WriteHeader(404)
 	}
