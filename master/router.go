@@ -33,6 +33,13 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = Merchant.Find(merId, merStatus)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
+	case "/master/channelMerchant/find":
+		chanCode := r.FormValue("chanCode")
+		chanMerId := r.FormValue("chanMerId")
+		chanMerName := r.FormValue("chanMerName")
+		ret = ChanMer.Find(chanCode, chanMerId, chanMerName)
+	case "/master/channelMerchant/save":
+		ret = ChanMer.Save(data)
 	default:
 		w.WriteHeader(404)
 	}
