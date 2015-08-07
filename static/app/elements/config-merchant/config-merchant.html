@@ -12,6 +12,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 
 <dom-module id="config-merchant">
   <style>
@@ -33,30 +35,60 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.15);
     }
 
-    iron-pages section {
-      padding: 20px;
-    }
-
+    iron-pages section {}
+    
     .row {
       @apply(--layout-horizontal);
+      @apply(--layout-wrap);
     }
 
-    .row paper-input,.row paper-textarea,
+    .row paper-input,
+    .row paper-textarea,
+    .row paper-checkbox,
+    .row paper-radio-button,
+    .row .check-box-group,
     .row x-select {
       @apply(--layout-flex-6);
+      margin-right: 20px;
     }
 
-    .row paper-input{
-      margin: auto 10px;
+    .row paper-input:last-child,
+    .row paper-textarea:last-child,
+    .row paper-checkbox:last-child,
+    .row paper-radio-button:last-child,
+    .row .check-box-group:last-child,
+    .row x-select:last-child {
+      margin-right: 0;
+    }
+
+    .row paper-checkbox,
+    .row paper-radio-button {
+      padding-top: 20px;
+    }
+
+    .check-box-group > label {
+      color: #727272;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 24px;
+    }
+
+    .check-box-area paper-checkbox {
+      padding-top: 0;
     }
 
     paper-button[raised] {
       background: #3498db;
       color: #fff;
     }
-
   </style>
   <template>
+    <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
     <paper-tabs selected="{{idx}}">
       <paper-tab>商户</paper-tab>
       <paper-tab>支付宝</paper-tab>
@@ -68,30 +100,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <section>
         <div class="row">
           <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
-          <paper-input label="商户名称" value="{{merchant.merName::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+          <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+        </div>
+        <div class="row">
+          <div class="check-box-group">
+            <label for="permissionGroup">接口权限</label>
+            <div id="permissionGroup" class="check-box-area">
+              <template is="dom-repeat" items="{{permissionArray}}">
+                <paper-checkbox checked$="{{_computePermissionChecked(item.key)}}" on-change="handlePermissionChangeEvent">
+                  <span>{{item.value}}</span>
+                </paper-checkbox>
+              </template>
+            </div>
+          </div>
+          <!-- <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input> -->
+          <!-- <paper-input label="是否开启验签" value="{{merchant.isNeedSign::input}}"></paper-input> -->
+          <paper-radio-button id="sNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
+        </div>
+        <div class="row" hidden$="{{!merchant.isNeedSign}}">
+          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
           <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="是否开启验签" value="{{merchant.isNeedSign::input}}"></paper-input>
-          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
+          <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
+          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="门店ID" value="{{merchant.detail.shopId::input}}"></paper-input>
+          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
-          <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
-          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="门店ID" value="{{merchant.shopId::input}}"></paper-input>
-          <paper-input label="门店类型" value="{{merchant.shopType::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+          <paper-button raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
         </div>
       </section>
       <section>
@@ -106,11 +152,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="row">
           <paper-input label="签名证书" value="{{alipay.signCert::input}}"></paper-input>
         </div>
+        <div class="row">
+          <paper-button raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
+        </div>
       </section>
       <section>
         <div class="row">
           <paper-input label="商户号" value="{{weixin.chanMerId::input}}"></paper-input>
           <paper-input label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-checkbox id="isAngentCheck" checked on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
+          <paper-input label="子商户号" value="{{weixin.subMerId::input}}" disabled$="{{!weixin.isAgent}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="讯联跟渠道费率" value="{{weixin.acqFee::input}}"></paper-input>
@@ -126,18 +179,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="row">
           <paper-textarea label="HTTP 密钥" style="font-family: monospace !important;" value="{{weixin.httpKey::input}}"></paper-textarea>
         </div>
+        <div class="row">
+          <paper-button raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
+        </div>
       </section>
       <section>即将上线。。。</section>
     </iron-pages>
-    <div class="buttons">
-      <paper-button raised>保存</paper-button>
-    </div>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'config-merchant',
-
+        properties: {
+          permissionArray: {
+            type: Array,
+            value: [{
+              key: 'PURC',
+              value: '下单支付'
+            }, {
+              key: 'PAUT',
+              value: '预下单'
+            }, {
+              key: 'QYFK',
+              value: '企业付款'
+            }, {
+              key: 'INQY',
+              value: '查询订单'
+            }, {
+              key: 'VOID',
+              value: '撤销'
+            }, {
+              key: 'REFD',
+              value: '退款'
+            }, {
+              key: 'CANC',
+              value: '关单'
+            }]
+          }
+        },
         ready: function() {
           this.idx = 0;
           this.merStatusMap = [{
@@ -152,38 +231,159 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }];
           this.merchant = {
             merId: '100000000000203',
-            merName: '讯联数据测试商户',
+            detail: {
+              merName: '讯联数据测试商户',
+              brandNum: 'xxxxxxxxx',
+              shopId: '22424242',
+              shopType: '餐饮'
+
+            },
             merStatus: 'Normal',
             transCurr: '156',
             signKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycs',
-            isNeedSign: '是',
+            isNeedSign: false,
             encryptKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycszsdfyreuo=',
-            permission: 'PAUT,INQY,REFD,VOID,CANC,PURC',
-            insCode: 'CIL00002',
-            brandNum: 'xxxxxxxxx',
-            shopId: '22424242',
-            shopType: '餐饮'
+            permission: [
+              "PAUT",
+              "PURC",
+              "CANC",
+              "VOID",
+              "INQY",
+              "REFD"
+            ],
+            insCode: 'CIL00002'
           };
           this.alipay = {
+            chanCode: 'ALP',
             chanMerId: '2088811767473826',
             chanMerName: '讯联数据测试商户',
-            acqFee: 0.02,
-            merFee: 0.03,
+            acqFee: '0.02',
+            merFee: '0.03',
             signCert: 'eu1dr0c8znpa43blzy1wirzmk8jqdaon'
           };
           this.weixin = {
+            chanCode: 'WXP',
+            isAgent: true,
             chanMerId: '1236593202',
             chanMerName: '讯联数据测试商户',
-            acqFee: 0.006,
-            merFee: 0.006,
+            acqFee: '0.006',
+            merFee: '0.006',
             wxpAppId: 'wx25ac886b6dac7dd2',
             signCert: '12sdffjjguddddd2widousldadi9o0i1',
             httpCert: '-----BEGIN CERTIFICATE-----\nMIIEaDCCA9GgAwIBAgIDAfqVMA0GCSqGSIb3DQEBBQUAMIGKMQswCQYDVQQGEwJD\nTjESMBAGA1UECBMJR3Vhbmdkb25nMREwDwYDVQQHEwhTaGVuemhlbjEQMA4GA1UE\nChMHVGVuY2VudDEMMAoGA1UECxMDV1hHMRMwEQYDVQQDEwpNbXBheW1jaENBMR8w\nHQYJKoZIhvcNAQkBFhBtbXBheW1jaEB0ZW5jZW50MB4XDTE1MDQwMzAyMzAwNFoX\nDTI1MDMzMTAyMzAwNFowgZgxCzAJBgNVBAYTAkNOMRIwEAYDVQQIEwlHdWFuZ2Rv\nbmcxETAPBgNVBAcTCFNoZW56aGVuMRAwDgYDVQQKEwdUZW5jZW50MQ4wDAYDVQQL\nEwVNTVBheTEtMCsGA1UEAxQk5LiK5rW36K6v6IGU5pWw5o2u5pyN5Yqh5pyJ6ZmQ\n5YWs5Y+4MREwDwYDVQQEEwgxMDE2NzQxMTCCASIwDQYJKoZIhvcNAQEBBQADggEP\nADCCAQoCggEBAMxA1RYF2AMSCh0RePIV9FVqtwgTMGYLx9AxMfCcq/0NcWx3RlBG\nCfixd7KrI0GT7WGBj6PN2U/yMegkyTnSdHUlfyvDpIztTzYIxAPUg7cIqB+ixaF1\n5yOFiDLsrPxVKb8viU1vUuSb0N9i/beEia8Bfq2Jk+mrZi1I7ohoSkrCAKoxFbWw\n084bZz4T1U7hUQ6abXyEgzBtL8KGriXrr5+XV+JF0BQM0w2JuE3UQxgbPglOoTWI\ntp7cdRrzL5bN2iPn02Q1EDCkNv8m2KRaDOeloaACe4jN4SW6hzQZU6z9WzHjVjak\nV0NcJXBI5mk8fN1EhqwAt2Sop55OZ1ClNAsCAwEAAaOCAUYwggFCMAkGA1UdEwQC\nMAAwLAYJYIZIAYb4QgENBB8WHSJDRVMtQ0EgR2VuZXJhdGUgQ2VydGlmaWNhdGUi\nMB0GA1UdDgQWBBR5JD3KNtUZo81jYIlCwBBvRsQy7TCBvwYDVR0jBIG3MIG0gBQ+\nBSb2ImK0FVuIzWR+sNRip+WGdKGBkKSBjTCBijELMAkGA1UEBhMCQ04xEjAQBgNV\nBAgTCUd1YW5nZG9uZzERMA8GA1UEBxMIU2hlbnpoZW4xEDAOBgNVBAoTB1RlbmNl\nbnQxDDAKBgNVBAsTA1dYRzETMBEGA1UEAxMKTW1wYXltY2hDQTEfMB0GCSqGSIb3\nDQEJARYQbW1wYXltY2hAdGVuY2VudIIJALtUlyu8AOhXMA4GA1UdDwEB/wQEAwIG\nwDAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQUFAAOBgQBoedyK\nGXJ1pklDV1vgIYT+lrog8dE2U/TBxhwL65mSVT7Litgmxy2Mylm726+FoGiy4Mkx\nBoSj6A0Dfb3rtd3q4fmG8cK5eq1Uz0KTjMhlQs+WR3AYy18vQgKb3YmhGVnoPFLU\n5LF6DTYvAnRgGA2I5UrTRXYsuqXm7qKXK9E+7Q==\n-----END CERTIFICATE-----',
             httpKey: '-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEAzEDVFgXYAxIKHRF48hX0VWq3CBMwZgvH0DEx8Jyr/Q1xbHdG\nUEYJ+LF3sqsjQZPtYYGPo83ZT/Ix6CTJOdJ0dSV/K8OkjO1PNgjEA9SDtwioH6LF\noXXnI4WIMuys/FUpvy+JTW9S5JvQ32L9t4SJrwF+rYmT6atmLUjuiGhKSsIAqjEV\ntbDTzhtnPhPVTuFRDpptfISDMG0vwoauJeuvn5dX4kXQFAzTDYm4TdRDGBs+CU6h\nNYi2ntx1GvMvls3aI+fTZDUQMKQ2/ybYpFoM56WhoAJ7iM3hJbqHNBlTrP1bMeNW\nNqRXQ1wlcEjmaTx83USGrAC3ZKinnk5nUKU0CwIDAQABAoIBAQCvl8jYnvt+YELL\njJrSW+dqi0yAp6aDA/uqUrChLr9409a/raaIGj42S7MgqZmspdR8b9qhsrTw0sDu\n1rkbeX7euvaiFBZhhR4E0PJabJczgkCuuct3LBoiYoidZvSsFTbHgsFiDaNQn1eo\nw7xkyY9oITvbSpwbVVuI8NsH78h2jNqdxBmEo9JAWQiJwVG28Gvcf0+KxZydAj9q\nGlfiCVDoYeqejCVVSU1yjzvJwhNC4fK4Jy0JzpmFYBMj3BMRT/lnzvJdXABbxb/7\n2FWojkq4IRaUL1g/r0W0pErJavx5PSHgm3sQawXdHcmZ8ZLCDZZmG0mZOqAohtH+\nRNdJsTcZAoGBAOsT7Dc44hJhMvZKkjvHhixWWl6L3E6yXZ8LxhaQ0qw5vYwMQ6BU\nJjY+PzjMjskJs9hYz5MWB9bcWPHkBLHajiUqp53W4S6/5046VrcQyIGxwlea0s8w\nufNrcQUXVT9EnYTvBvfW1DheUJiyn3rnr7hKyXVxrX5PY+DT64REHCLFAoGBAN5u\nmB0xTpXuiR5BdtVa8de7ChCOqTwXYIKtNiX6Q30UxKZJ7OwZoyASDKRsTXSeGW/r\n6Tb3jUEa/wcdngonacrid4BdGmKaMwHaKaZowxHMn5j3g6901mUu/AtV0q3nbJq5\nuCuFXeOnDA4vSpaml/UDvWvRqJbiPzLvqyhNcyiPAoGBAI7bfZqVi/VlckXwTWvc\ntfItzB9W2VxN0s07p3bBLfYR5Nm9/j7pxIsESwFmdoM/zTZ1yjd1lPAC2l6tlhjL\nW8TEZjZqhlAVuSh2FYqMvXzrnNIGOYRF9UsziOxyIJEhTqShadelizRyRIJ3Uqmr\nMMNLV6Byo991uZnAz4iCp6KNAoGBAJyTM0bRb6VBHYqLwI/djgIzKpmPIvgm6Iv0\nS/qd2aYR2X/I6BsmzNqFehrAFiHyLKvJYAiOaAOdckpbAeXZ6rGji0VzxGAGdcNn\nBAydEDvWU75E9ZCr6UOeuFNuXXiHQL8F3uvb3MSk0WqmxZWYvbz+nfdoxYk4yA4e\nAdjD9D1nAoGAVDUAqgbUMYp7toDTgamj0Qlu+Uz1QK8QXN7O0QN+iDi9Gr1BSUAh\ngkztyH0g0nY1tD7WPAwM/kNupd0SI9z9q5K36wGrNlETF7wdOHgWl3sQlTDepNzr\nlCxbgNyTgFhC6N+1YhY1QKOvjjPS+tHAhMR0FnH9gUW1RtBQLUxpfFM=\n-----END RSA PRIVATE KEY-----'
           };
+        },
+        // 保存商户的按钮事件
+        handleSaveMerchantTapped: function() {
+          this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+          this.$.saveMerchantAjax.generateRequest();
+        },
+        // 保存商户的ajax响应事件
+        handleSaveMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          Util.toast(response.message, 1000);
+        },
+        // 保存支付宝信息的按钮事件
+        handleSaveALPTapped: function() {
+          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
+          this.$.saveChannelMerchantAjax.generateRequest();
+
+          var obj = {
+            merId: this.merchant.merId,
+            cardBrand: 'ALP',
+            chanCode: this.alipay.chanCode,
+            chanMerId: this.alipay.chanMerId
+          };
+
+          this.$.saveRouterAjax.body = JSON.stringify(obj);
+          this.$.saveRouterAjax.generateRequest();
+        },
+        // 保存微信信息的按钮事件
+        handleSaveWXPTapped: function() {
+          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
+          this.$.saveChannelMerchantAjax.generateRequest();
+
+          var obj = {
+            merId: this.merchant.merId,
+            cardBrand: 'WXP',
+            chanCode: this.weixin.chanCode,
+            chanMerId: this.weixin.chanMerId
+          };
+
+          if (this.weixin.isAgent) {
+            obj.isAgent = this.weixin.isAgent;
+            obj.subMerId = this.weixin.subMerId;
+          }
+
+          this.$.saveRouterAjax.body = JSON.stringify(obj);
+          this.$.saveRouterAjax.generateRequest();
+        },
+        // 保存路由的ajax响应事件
+        handleSaveRouterResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          Util.toast(response.message, 1000);
+        },
+        // 保存渠道商户ajax请求响应事件
+        handleSaveChannelMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          Util.toast(response.message, 1000);
+        },
+        // 是否代理商模式的改变事件
+        handleIsAgentChangeEvent: function(e) {
+          this.set('weixin.isAgent', this.$.isAngentCheck.checked);
+          if (!this.weixin.isAgent) {
+            this.set('weixin.subMerId', '');
+          }
+        },
+        // 是否需要验签的改变事件
+        handleIsNeedSignChangeEvent: function(e) {
+          this.set('merchant.isNeedSign', this.$.sNeedSignCheck.checked);
+        },
+        // 判断商户的接口权限是否应该勾选
+        _computePermissionChecked: function(key) {
+          var index = this.merchant.permission.indexOf(key);
+          if (index >= 0) {
+            return true;
+          }
+          return false;
+        },
+        // 接口权限中的复选框组的改变事件
+        handlePermissionChangeEvent: function(e) {
+          var checkbox = e.target,
+            item = e.model.item,
+            index = this.merchant.permission.indexOf(item.key);
+
+          if (checkbox.checked) {
+            // 勾选了
+            if (index >= 0) {
+              return;
+            }
+            this.push('merchant.permission', item.key);
+          } else {
+            // 没勾选
+            if (index < 0) {
+              return;
+            }
+            this.splice('merchant.permission', index, 1);
+          }
         }
       });
     })();
-
   </script>
 </dom-module>
