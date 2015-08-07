@@ -1,18 +1,24 @@
 package core
 
 import (
-	"strings"
-	"time"
-
+	"crypto/md5"
+	"encoding/json"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/util"
+	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
+	"strings"
+	"time"
 )
 
 // PublicPay 公众号页面支付
 func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	jsPayInfo := &model.PayJson{}
 
 	// 判断订单是否存在
 	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
@@ -28,16 +34,20 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Inscd:      req.Inscd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
+		ChanCode:   channel.ChanCodeWeixin,
+		VeriCode:   req.VeriCode,
 	}
 
-	// TODO: token换取openid
-	openId := ""
-	t.ConsumerAccount = openId
+	// 网页授权获取token和openid
+	token, err := weixin.GetAuthAccessToken(req.Code)
+	if err != nil {
+		log.Errorf("get accessToken error: %s", err)
+		return adaptor.LogicErrorHandler(t, "SYSTEM_ERROR") // TODO 定义一个授权码错误的应答码
+	}
+	openId := token.OpenId
 	req.OpenId = openId
 
-	// TODO: 判断是否取用户信息
-
-	// TODO: 走预下单渠道
+	// 走预下单渠道
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
@@ -55,13 +65,52 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
 
+	// 如果下单成功
+	if ret.Respcd == adaptor.InprocessCode {
+
+		if req.NeedUserInfo == "YES" {
+			// 用token换取用户信息
+			userInfo, err := weixin.GetAuthUserInfo(token.AccessToken, token.OpenId)
+			if err != nil {
+				log.Errorf("unable to get userInfo by accessToken: %s", err)
+			}
+			jsPayInfo.UserInfo = userInfo
+		}
+
+		// 包装返回值
+		config := &model.JsConfig{
+			AppID:     req.AppID,
+			NonceStr:  util.Nonce(32),
+			Timestamp: util.Millisecond(),
+		}
+		wxpPay := &model.JsWxpPay{
+			AppID:     req.AppID,
+			NonceStr:  util.Nonce(32),
+			TimeStamp: util.Millisecond(),
+			SignType:  "MD5",
+			Package:   fmt.Sprintf("prepay_id=%s", ret.PrePayId),
+		}
+
+		// 签名
+		config.Signature = signWithMD5(config, req.SignCert)
+		wxpPay.PaySign = signWithMD5(wxpPay, req.SignCert)
+		jsPayInfo.Config = config
+		jsPayInfo.WxpPay = wxpPay
+
+		bytes, err := json.Marshal(jsPayInfo)
+		if err != nil {
+			log.Errorf("marshal jsPayInfo error:%s", err)
+		}
+		ret.PayJsonStr = string(bytes) // 该这段签名时使用
+		ret.PayJson = jsPayInfo
+	}
+
 	// 预支付凭证
 	t.PrePayId = ret.PrePayId
+	ret.ConsumerAccount = openId
 
 	// 更新交易信息
 	updateTrans(t, ret)
-
-	// TODO:包装返回值
 
 	return ret
 }
@@ -466,6 +515,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	cancel.ChanCode = orig.ChanCode
 	cancel.ChanMerId = orig.ChanMerId
 	cancel.SubChanMerId = orig.SubChanMerId
+	cancel.TransAmt = orig.TransAmt
 
 	// 撤销只能撤当天交易
 	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
@@ -539,6 +589,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	closed.ChanCode = orig.ChanCode
 	closed.ChanMerId = orig.ChanMerId
 	closed.SubChanMerId = orig.SubChanMerId
+	closed.TransAmt = orig.TransAmt
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {
@@ -620,4 +671,15 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 		t.TransStatus = model.TransFail
 	}
 	mongo.SpTransColl.Update(t)
+}
+
+func signWithMD5(s interface{}, key string) string {
+	buf, err := util.Query(s)
+	if err != nil {
+		log.Errorf("gen query params error:%s", err)
+		return ""
+	}
+	sign := buf.String() + "&key=" + key
+	md5Bytes := md5.Sum([]byte(sign))
+	return fmt.Sprintf("%X", md5Bytes[:])
 }
