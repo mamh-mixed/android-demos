@@ -63,17 +63,6 @@
           <dt>商户名称</dt>
           <dd>
             <span>{{item.detail.merName}}</span>
-            <!-- <a hidden$="{{!item.detail.merName}}" href="{{link}}">查看详情</a> -->
-          </dd>
-
-          <dt>机构编号</dt>
-          <dd>
-            <span>{{item.insCode}}</span>
-          </dd>
-
-          <dt>商户状态</dt>
-          <dd>
-            <span>{{item.merStatus}}</span>
           </dd>
 
           <dt hidden$="{{tiny}}">交易币种</dt>
@@ -81,19 +70,9 @@
             <span>{{item.transCurr}}</span>
           </dd>
 
-          <dt hidden$="{{tiny}}">签名密钥</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.signKey}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">是否需要验签</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{_computeYesOrNo(item.isNeedSign)}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">加密密钥</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.encryptKey}}</span>
+          <dt>商户状态</dt>
+          <dd>
+            <span>{{item.merStatus}}</span>
           </dd>
 
           <dt>接口授权</dt>
@@ -104,6 +83,42 @@
           <dd hidden$="{{tiny}}">
             <span>{{item.remark}}</span>
           </dd>
+
+          <dt>机构编号</dt>
+          <dd>
+            <span>{{item.insCode}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">是否需要验签</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{_computeYesOrNo(item.isNeedSign)}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">签名密钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.signKey}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">加密密钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.encryptKey}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">品牌编号</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.detail.brandNum}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">门店ID</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.detail.shopID}}</span>
+          </dd>
+
+          <dt hidden$="{{tiny}}">门店类型</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.detail.shopType}}</span>
+          </dd>
+
         </dl>
       </card-item>
     </template>
@@ -129,6 +144,31 @@
             }, {
               key: 'Deleted',
               value: '已删除商户'
+            }]
+          },
+          permissionArray: {
+            type: Array,
+            value: [{
+              key: 'PURC',
+              value: '下单支付'
+            }, {
+              key: 'PAUT',
+              value: '预下单'
+            }, {
+              key: 'QYFK',
+              value: '企业付款'
+            }, {
+              key: 'INQY',
+              value: '查询订单'
+            }, {
+              key: 'VOID',
+              value: '撤销'
+            }, {
+              key: 'REFD',
+              value: '退款'
+            }, {
+              key: 'CANC',
+              value: '关单'
             }]
           },
           merStatus: {
@@ -222,10 +262,20 @@
           this.$.merchantEditor.open();
         },
         _computePermissions: function(permissions) {
+          var map = {};
+          for (var i = 0, l = this.permissionArray.length; i < l; i++) {
+            var item = this.permissionArray[i];
+            map[item.key] = item.value;
+          }
+
           if (!permissions) {
             return '';
           }
-          return permissions.join(',');
+
+          var permissionCN = permissions.map(function(value) {
+            return map[value];
+          });
+          return permissionCN.join(',');
         },
         _computeYesOrNo: function(flag) {
           if (flag) {
