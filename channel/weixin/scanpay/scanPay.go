@@ -170,14 +170,11 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 	status, msg := weixin.Transform("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
-		Respcd:          status,     // 交易结果  M
-		ChannelOrderNum: "",         // 渠道交易号 C
-		ConsumerAccount: "",         // 渠道账号  C
-		ConsumerId:      "",         // 渠道账号ID   C
-		ErrorDetail:     msg,        // 错误信息   C
-		QrCode:          p.CodeURL,  // 二维码 C
-		ChanRespCode:    p.ErrCode,  // 渠道详细应答码
-		PrePayId:        p.PrepayID, // 预支付标识
+		Respcd:       status,     // 交易结果  M
+		ErrorDetail:  msg,        // 错误信息   C
+		QrCode:       p.CodeURL,  // 二维码 C
+		ChanRespCode: p.ErrCode,  // 渠道详细应答码
+		PrePayId:     p.PrepayID, // 预支付标识
 	}
 
 	return ret, err
