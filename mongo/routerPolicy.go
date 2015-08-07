@@ -19,6 +19,7 @@ func (c *routerPolicyCollection) Insert(rp *model.RouterPolicy) error {
 	cond := bson.M{
 		"merId":     rp.MerId,
 		"cardBrand": rp.CardBrand,
+		"chanCode":  rp.ChanCode,
 	}
 	if _, err := database.C(c.name).Upsert(cond, rp); err != nil {
 		return err
@@ -53,4 +54,22 @@ func (c *routerPolicyCollection) FindAllOfOneMerchant(merId string) (r []model.R
 		return nil, err
 	}
 	return r, nil
+}
+
+// Remove 删除路由策略
+func (c *routerPolicyCollection) Remove(merId, chanCode, cardBrand string) (err error) {
+	q := bson.M{}
+	if merId != "" {
+		q["merId"] = merId
+	}
+	if cardBrand != "" {
+		q["cardBrand"] = cardBrand
+	}
+	if chanCode != "" {
+		q["chanCode"] = chanCode
+	}
+
+	err = database.C(c.name).Remove(q)
+
+	return err
 }

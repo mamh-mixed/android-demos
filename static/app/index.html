@@ -86,11 +86,15 @@
 
           <a href="/" onclick="document.querySelector('#MCRCollapse').toggle();">
             <iron-icon icon="build"></iron-icon>
-            <span>商户配置</span>
+            <span>配置管理</span>
           </a>
           <iron-collapse id="MCRCollapse">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
-              <a data-route="config.merchants" href="/config/merchants">
+                <a data-route="config.configMer" href="/config/configMer">
+                  <iron-icon icon="settings-input-component"></iron-icon>
+                  <span>商户配置</span>
+                </a>
+                <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>
               </a>
@@ -114,6 +118,19 @@
               <a data-route="trades.list" href="/trades/list">
                 <iron-icon icon="list"></iron-icon>
                 <span>扫码交易</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
+
+          <a onclick="document.querySelector('#testCollapse').toggle();">
+            <iron-icon icon="swap-horiz"></iron-icon>
+            <span>测试</span>
+          </a>
+          <iron-collapse id="testCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+              <a data-route="test.scanpay" href="/test/scanpay">
+                <iron-icon icon="list"></iron-icon>
+                <span>扫码测试</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -148,7 +165,7 @@
         <!-- Main Content -->
         <div class="content">
           <iron-pages attr-for-selected="data-route" selected="{{route.name}}">
-
+            <!--
             <section data-route="system.users">
               <paper-material elevation="1">
                 <p class="paper-font-body2">system.users</p>
@@ -164,6 +181,7 @@
                 <p class="paper-font-body2">system.menus</p>
               </paper-material>
             </section>
+        -->
 
             <section data-route="trades.list">
               <paper-material elevation="1">
@@ -171,32 +189,43 @@
               </paper-material>
             </section>
 
+            <section data-route="config.configMer">
+              <paper-material elevation="1">
+                <config-merchant is-editable></config-merchant>
+              </paper-material>
+            </section>
+
             <section data-route="config.merchants">
               <paper-material elevation="1">
-                <merchant-list></merchant-list>
+                <merchant-list is-editable></merchant-list>
               </paper-material>
             </section>
 
             <section data-route="config.chanMers">
               <paper-material elevation="1">
-                <channel-merchant-list></channel-merchant-list>
+                <channel-merchant-list is-editable></channel-merchant-list>
               </paper-material>
             </section>
 
             <section data-route="config.routes">
               <paper-material elevation="1">
-                <route-list></route-list>
+                <route-list is-deletable></route-list>
               </paper-material>
             </section>
+
+            <section data-route="test.scanpay">
+              <paper-material elevation="1">
+                <test-scanpay is-deletable></test-scanpay>
+              </paper-material>
+            </section>
+
           </iron-pages>
         </div>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
 
-
-    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline.">
-    </paper-toast>
-
+    <paper-toast id="toast" duration="5000" visible="true"
+        text="Caching complete! This app will work offline."></paper-toast>
 
   </template>
 
