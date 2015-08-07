@@ -103,6 +103,7 @@
                             <option value="" disabled selected>选择一个交易类型</option>
                             <option value="PURC">下单支付</option>
                             <option value="PAUT">预下单</option>
+                            <option value="QYFK">企业付款</option>
                             <option value="INQY">查询订单</option>
                             <option value="VOID">撤销</option>
                             <option value="REFD">退款</option>
@@ -143,6 +144,14 @@
                         </div>
                     </div>
                     <paper-input required$="{{requiredDetector.origOrderNum}}" class="col m12 l6" id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input required$="{{requiredDetector.openid}}" class="col m12 l6" id="openid" name="openid" label="OpenID(openid)" value="{{scanCode.openid::input}}"></paper-input>
+                    <paper-input required$="{{requiredDetector.desc}}" class="col m12 l6" id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
+                </div>
+                <div class="row">
+                    <paper-input required$="{{requiredDetector.checkName}}" class="col m12 l6" id="checkName" name="checkName" label="校验用户姓名选项(checkName)" value="{{scanCode.checkName::input}}"></paper-input>
+                    <paper-input required$="{{requiredDetector.userName}}" class="col m12 l6" id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
                 </div>
                 <div class="row">
                     <paper-input required$="{{requiredDetector.notifyUrl}}" class="col m12 l6" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
@@ -374,6 +383,20 @@
                     orderNum: true,
                     scanCodeId: true
                 },
+                // 企业付款
+                'QYFK': {
+                    busicd: true,
+                    chcd: true,
+                    inscd: true,
+                    mchntid: true,
+                    txamt: true,
+                    goodsInfo: true,
+                    orderNum: true,
+                    openid: true,
+                    checkName: true,
+                    userName: true,
+                    desc: true
+                },
                 // 预下单
                 'PAUT': {
                     busicd: true,
@@ -454,7 +477,7 @@
         },
         _requestJsonDataChange: function(requestJsonData) {
             var noindent = this.requestJsonData.replace(/\s+/g, '');
-            var len = (""+(noindent.length+10000)).substr(1,4);
+            var len = ("" + (noindent.length + 10000)).substr(1, 4);
             this.noindentRequestJsonData = len + noindent;
         },
         // 监听交易类型变化
