@@ -14,8 +14,8 @@ const (
 	authUserInfoURL    = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN"
 	refreshAATokenURL  = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=%s&grant_type=refresh_token&refresh_token=%s"
 	// 智慧微商会支付
-	appID     = "wxdb1a8e71a25753a0"
-	appSECRET = "fc17ad6aaa0da0434d75f51a2c96c3f9"
+	appID     = "wx25ac886b6dac7dd2"
+	appSECRET = "efe4a6a3627eceae040401b0d6d9a159"
 )
 
 // AuthAccessTokenResp 获取网页授权用户信息时用的access_token
@@ -76,6 +76,9 @@ func GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, 
 		log.Errorf("json unmarshal AuthAccessToken err,%s", err)
 		return nil, err
 	}
+	if authAccessTokenResp.Errcode != 0 {
+		return nil, fmt.Errorf("errCode:%d, errMsg:%s", authAccessTokenResp.Errcode, authAccessTokenResp.Errmsg)
+	}
 	return authAccessTokenResp, nil
 }
 
@@ -98,6 +101,9 @@ func GetAuthUserInfo(authAccessToken, openId string) (authUserInfoResp *AuthUser
 	if err != nil {
 		log.Errorf("json unmarshal authUserInfo err,%s", err)
 		return nil, err
+	}
+	if authUserInfoResp.Errcode != 0 {
+		return nil, fmt.Errorf("errCode:%d, errMsg:%s", authUserInfoResp.Errcode, authUserInfoResp.Errmsg)
 	}
 	return authUserInfoResp, err
 }

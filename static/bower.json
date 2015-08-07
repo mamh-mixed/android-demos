@@ -11,7 +11,8 @@
     "iron-dropdown": "PolymerElements/iron-dropdown#~1.0.3",
     "x-select": "https://github.com/wonsikin/x-select.git",
     "webcomponentsjs": "~0.7.7",
-    "paper-date-picker": "omigo/paper-date-picker#~1.0.3"
+    "paper-date-picker": "omigo/paper-date-picker#~1.0.3",
+    "qrcode.js": "davidshimjs/qrcodejs"
   },
   "devDependencies": {
     "web-component-tester": "*",

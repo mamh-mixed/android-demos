@@ -219,6 +219,7 @@ type Trans struct {
 	GatheringId     string `bson:"gatheringId,omitempty" json:"-"`                             //收款号
 	GatheringName   string `bson:"gatheringName,omitempty" json:"-"`                           //收款人
 	NotifyUrl       string `bson:"notifyUrl,omitempty" json:"-"`                               //异步通知地址
+	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                //交易凭证
 }
 
 // SummarySettData 交易汇总

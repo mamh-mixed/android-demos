@@ -262,6 +262,44 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	return
 }
 
+// validatePublicPay 验证企业付款接口参数
+func validatePublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	var needUserInfo = "needUserInfo"
+
+	// 验证非空
+	switch {
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Chcd == "":
+		return fieldEmptyError(chcd)
+	case req.Inscd == "":
+		return fieldEmptyError(inscd)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.Txamt == "":
+		return fieldEmptyError(txamt)
+	case req.NeedUserInfo == "":
+		return fieldEmptyError(needUserInfo)
+	}
+
+	// 验证格式
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+	if matched, err := validateTxamt(req); !matched {
+		return err
+	}
+	if req.NeedUserInfo != "YES" && req.NeedUserInfo != "NO" {
+		return fieldContentError(needUserInfo)
+	}
+
+	return
+}
+
 // validateUserName 验证商户名称
 func validateUserName(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 
