@@ -1,0 +1,154 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+
+<dom-module id="config-merchant">
+  <style>
+    :host {
+      display: block;
+    }
+
+    paper-tabs {
+      background-color: #00bcd4;
+      color: #fff;
+      box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    paper-tabs[noink][no-bar] paper-tab.iron-selected {
+      color: #ffff8d;
+    }
+
+    paper-tabs[align-bottom] {
+      box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    iron-pages section {
+        padding: 20px;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row paper-input,
+    .row x-select {
+      @apply(--layout-flex-6);
+    }
+
+    .row paper-input {
+      margin: auto 10px;
+    }
+
+        paper-button[raised] {
+          background: #3498db;
+          color: #fff;
+        }
+
+  </style>
+  <template>
+    <paper-tabs selected="{{idx}}">
+      <paper-tab>商户</paper-tab>
+      <paper-tab>支付宝</paper-tab>
+      <paper-tab>微信</paper-tab>
+      <paper-tab>QQ 钱包</paper-tab>
+    </paper-tabs>
+
+    <iron-pages selected="{{idx}}">
+      <section>
+        <div class="row">
+          <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
+          <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+        </div>
+        <div class="row">
+          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+          <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="是否开启验签" value="{{merchant.isNeedSign::input}}"></paper-input>
+          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
+          <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
+          <paper-input label="品牌编号" value="{{merchant.brandNum::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="门店ID" value="{{merchant.shopId::input}}"></paper-input>
+          <paper-input label="门店类型" value="{{merchant.shopType::input}}"></paper-input>
+        </div>
+      </section>
+      <section>
+        <div class="row">
+          <paper-input label="商户号" value="{{chanMer.chanMerId::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{chanMer.chanMerName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="讯联跟渠道费率" value="{{chanMer.acqFee::input}}"></paper-input>
+          <paper-input label="商户跟讯联费率" value="{{chanMer.merFee::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="签名证书" value="{{chanMer.signCert::input}}"></paper-input>
+        </div>
+      </section>
+      <section>
+        <div class="row">
+          <paper-input label="商户号" value="{{chanMer.chanMerId::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{chanMer.chanMerName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="讯联跟渠道费率" value="{{chanMer.acqFee::input}}"></paper-input>
+          <paper-input label="商户跟讯联费率" value="{{chanMer.merFee::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="微信支付App Id" value="{{chanMer.wxpAppId::input}}"></paper-input>
+          <paper-input label="签名证书" value="{{chanMer.signCert::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="http cert 证书" value="{{chanMer.httpCert::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="http key 证书" value="{{chanMer.httpKey::input}}"></paper-input>
+        </div>
+      </section>
+      <section>即将上线。。。</section>
+    </iron-pages>
+    <div class="buttons">
+      <paper-button raised>保存</paper-button>
+    </div>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'config-merchant',
+
+        ready: function() {
+          this.idx = 0;
+          this.merStatusMap = [{
+            key: 'Normal',
+            value: '正常商户'
+          }, {
+            key: 'Test',
+            value: '测试商户'
+          }, {
+            key: 'Deleted',
+            value: '已删除商户'
+        }];
+        },
+      });
+    })();
+
+  </script>
+</dom-module>
