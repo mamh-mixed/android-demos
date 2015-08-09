@@ -377,8 +377,10 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			orig.TransStatus = model.TransClosed
 			orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 			orig.ErrorDetail = adaptor.CloseMsg
+			orig.RefundAmt = refundAmt
 		} else {
 			orig.RefundStatus = model.TransPartRefunded
+			orig.RefundAmt = refundAmt // 这个字段的作用主要是为了方便报表时计算部分退款，位了一致性，撤销，取消接口也都统一加上，虽然并没啥作用
 		}
 	}
 
@@ -545,6 +547,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		orig.TransStatus = model.TransClosed
 		orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		orig.ErrorDetail = adaptor.CloseMsg
+		orig.RefundAmt = orig.TransAmt
 	}
 
 	ret = adaptor.ProcessCancel(orig, cancel, req)
@@ -589,7 +592,6 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	closed.ChanCode = orig.ChanCode
 	closed.ChanMerId = orig.ChanMerId
 	closed.SubChanMerId = orig.SubChanMerId
-	closed.TransAmt = orig.TransAmt
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {
@@ -610,11 +612,18 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 成功应答
 	if ret.Respcd == adaptor.SuccessCode {
+		// 如果原交易成功
+		if orig.TransStatus == model.TransSuccess {
+			// 这样做方便于报表导出计算
+			closed.TransAmt = orig.TransAmt
+			orig.RefundAmt = orig.TransAmt
+		}
+		// 更新原交易信息
 		orig.TransStatus = model.TransClosed
 		orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		orig.ErrorDetail = adaptor.CloseMsg
-		// 更新原交易信息
 		mongo.SpTransColl.Update(orig)
+
 	}
 
 	// 更新交易状态

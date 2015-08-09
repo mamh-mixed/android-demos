@@ -23,6 +23,7 @@ const (
 // QueryCondition 扫码交易查询
 type QueryCondition struct {
 	Mchntid      string  `json:"mchntid,omitempty"`
+	TransStatus  string  `json:"transStatus,omitempty"`
 	StartTime    string  `json:"startTime,omitempty"`
 	EndTime      string  `json:"endTime,omitempty"`
 	Busicd       string  `json:"busicd,omitempty"`

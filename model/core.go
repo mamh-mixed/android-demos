@@ -194,6 +194,7 @@ type Trans struct {
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      //交易创建时间 yyyy-mm-dd hh:mm:ss
 	UpdateTime   string        `bson:"updateTime,omitempty" json:"-"`                        //交易更新时间 yyyy-mm-dd hh:mm:ss
 	RefundStatus int8          `bson:"refundStatus,omitempty" json:"-"`                      //退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         //已退款金额
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            //备注
 
 	// 快捷支付
