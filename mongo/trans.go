@@ -187,6 +187,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	if q.OrigOrderNum != "" {
 		match["origOrderNum"] = q.OrigOrderNum
 	}
+	if q.TransStatus != "" {
+		match["transStatus"] = q.TransStatus
+	}
 
 	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
 

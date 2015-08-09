@@ -2,9 +2,10 @@ package master
 
 import (
 	"fmt"
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
-	// "github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"net/http"
@@ -29,6 +30,7 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 		Size:        maxReportRec,
 		IsForReport: true,
 		Page:        1,
+		TransStatus: model.TransSuccess,
 	}
 
 	// 查询
@@ -75,12 +77,19 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		Busicd       string
 		ChanCode     string
 		TransTime    string
-		ErrorDetail  string
-	}{"商户号", "订单号", "原订单号", "终端号", "机构号", "应答码", "交易金额（元）", "交易状态", "交易类型", "渠道", "交易时间", "详情"}
+		// ErrorDetail  string
+	}{"商户号", "订单号", "原订单号", "终端号", "机构号", "应答码", "交易金额（元）", "交易状态", "交易类型", "渠道", "交易时间"}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
 	sheet.SetColWidth(0, 9, 18)
+
+	// 支付宝交易金额、退款金额
+	var alpTransAmt, alpRefundAmt, alpFee int64 = 0, 0, 0
+	// 微信交易金额、退款金额
+	var wxpTransAmt, wxpRefundAmt, wxpFee int64 = 0, 0, 0
+	// 总交易金额、退款金额
+	var transAmt, refundAmt, fee int64 = 0, 0, 0
 
 	// 生成数据
 	for _, v := range trans {
@@ -152,29 +161,69 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		cell = row.AddCell()
 		cell.Value = v.CreateTime
 		// 详情
-		cell = row.AddCell()
-		cell.Value = v.ErrorDetail
+		// cell = row.AddCell()
+		// cell.Value = v.ErrorDetail
+
+		// TODO 统计
+		// 金额
+		switch v.TransType {
+		case model.PayTrans:
+			if v.ChanCode == channel.ChanCodeAlipay {
+				alpTransAmt += v.TransAmt - v.RefundAmt
+			}
+			if v.ChanCode == channel.ChanCodeWeixin {
+				wxpTransAmt += v.TransAmt - v.RefundAmt
+			}
+		// 退款、撤销、取消
+		default:
+			if v.ChanCode == channel.ChanCodeAlipay {
+				alpRefundAmt += v.TransAmt
+			}
+			if v.ChanCode == channel.ChanCodeWeixin {
+				wxpRefundAmt += v.TransAmt
+			}
+		}
 	}
 
-	// TODO 利用商户数据，完善报表数据
-	// mer, err := mongo.MerchantColl.Find(merId)
-	// if err != nil {
+	// 利用商户数据，完善报表数据
+	var merName string
+	if merId != "" {
+		mer, err := mongo.MerchantColl.Find(merId)
+		if err == nil {
+			merName = mer.Detail.MerName
+		}
+	}
 
-	// }
+	// 总金额
+	transAmt = wxpTransAmt + alpTransAmt
+	refundAmt = wxpRefundAmt + alpRefundAmt
 
 	// 写入汇总数据
+	// TODO 手续费计算，在记录交易时计算
 	rows := sheet.Rows
 	row = rows[0]
 	row.WriteStruct(&summary{
-		"名称：", "讯联测试报表", "支付宝交易金额：", "500", "支付宝退款金额：", "200", "支付宝手续费：", "50", "支付宝清算金额：", "50",
+		"名称：", merName,
+		"支付宝交易金额：", float64(alpTransAmt) / 100,
+		"支付宝退款金额：", float64(alpRefundAmt) / 100,
+		"支付宝手续费：", float64(alpFee) / 100,
+		// "支付宝清算金额：", 50.00,
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
-		"", "", "微信交易金额：", "500", "微信退款金额：", "200", "微信手续费：", "50", "微信清算金额：", "50",
+		"", "",
+		"微信交易金额：", float64(wxpTransAmt) / 100,
+		"微信退款金额：", float64(wxpRefundAmt) / 100,
+		"微信手续费：", float64(wxpFee) / 100,
+		// "微信清算金额：", 50.00,
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
-		"总计：", "", "交易总额：", "1000", "退款总额：", "400", "手续费总额：", "100", "清算总额：", "100",
+		"总计：", "",
+		"交易总额：", float64(transAmt) / 100,
+		"退款总额：", float64(refundAmt) / 100,
+		"手续费总额：", float64(fee) / 100,
+		// "清算总额：", 100.00,
 	}, -1)
 }
 
@@ -182,11 +231,11 @@ type summary struct {
 	Cell0 string
 	Cell1 string
 	Cell2 string
-	Cell3 string
+	Cell3 float64
 	Cell4 string
-	Cell5 string
+	Cell5 float64
 	Cell6 string
-	Cell7 string
-	Cell8 string
-	Cell9 string
+	Cell7 float64
+	// Cell8 string
+	// Cell9 float64
 }
