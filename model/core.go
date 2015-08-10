@@ -278,6 +278,11 @@ type TransSett struct {
 	ChanFee     int64  `bson:"chanFee"`     //渠道手续费
 }
 
+// TransSummary 交易汇总
+// type TransSummary struct {
+
+// }
+
 // TransSettInfo 清分信息明细
 type TransSettInfo struct {
 	OrderNum   string `bson:"orderNum" json:"orderNum"`     //订单号

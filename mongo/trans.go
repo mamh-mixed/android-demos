@@ -238,3 +238,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	err = database.C(col.name).Pipe(p).All(&trans)
 	return trans, total, err
 }
+
+// // Summary 统计
+// func (col *transCollection) Summary(transDate string) ([]model.Trans, int, error) {
+
+// }
