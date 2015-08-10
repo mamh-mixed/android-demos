@@ -64,7 +64,9 @@ gulp.task('jshint', function() {
   return gulp.src([
       'app/scripts/**/*.js',
       'app/elements/**/*.js',
-      'app/elements/**/*.html'
+      'app/elements/**/*.html',
+      '!app/elements/test-scanpay/test-scanpay.html',
+      '!app/elements/test-qiniu/test-qiniu.html'
     ])
     .pipe(reload({
       stream: true,
