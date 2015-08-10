@@ -187,9 +187,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	if q.OrigOrderNum != "" {
 		match["origOrderNum"] = q.OrigOrderNum
 	}
-
-	if q.Busicd != "" {
-		match["busicd"] = q.Busicd
+	if q.TransStatus != "" {
+		match["transStatus"] = q.TransStatus
 	}
 
 	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
@@ -222,18 +221,19 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	skip := bson.M{"$skip": (q.Page - 1) * q.Size}
 
 	// 不同类型排序
-	sortByTime := bson.M{"$sort": bson.M{"createTime": -1}}
-	// sortByOrderNum := bson.M{"$sort": bson.M{"orderNum": 1}}
+	sort := bson.M{"$sort": bson.M{"createTime": -1}}
 
 	// 商户实际拉取为Size+1
 	limit := bson.M{"$limit": q.Size}
-	// if q.NextOrderNum != "" {
-	// 	// 使用orderNum拉取
-	// 	next := bson.M{"$match": bson.M{"orderNum": bson.M{"$gte": q.NextOrderNum}}}
-	// 	p = append(p, sortByOrderNum, next, skip, limit)
-	// } else {
-	p = append(p, sortByTime, skip, limit)
-	// }
+
+	// 如果是导出报表
+	if q.IsForReport {
+		sortByChan := bson.M{"$sort": bson.M{"chanCode": 1}}
+		sort = bson.M{"$sort": bson.M{"busicd": 1}}
+		p = append(p, sort, skip, limit, sortByChan)
+	} else {
+		p = append(p, sort, skip, limit)
+	}
 
 	err = database.C(col.name).Pipe(p).All(&trans)
 	return trans, total, err

@@ -90,11 +90,11 @@
           </a>
           <iron-collapse id="MCRCollapse">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
-                <a data-route="config.configMer" href="/config/configMer">
-                  <iron-icon icon="settings-input-component"></iron-icon>
-                  <span>商户配置</span>
-                </a>
-                <a data-route="config.merchants" href="/config/merchants">
+              <a data-route="config.configMer" href="/config/configMer">
+                <iron-icon icon="settings-input-component"></iron-icon>
+                <span>商户配置</span>
+              </a>
+              <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>
               </a>
@@ -122,6 +122,19 @@
               <a data-route="trades.list" href="/trades/list">
                 <iron-icon icon="list"></iron-icon>
                 <span>扫码交易</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
+
+          <a onclick="document.querySelector('#testCollapse').toggle();">
+            <iron-icon icon="swap-horiz"></iron-icon>
+            <span>测试</span>
+          </a>
+          <iron-collapse id="testCollapse">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+              <a data-route="test.scanpay" href="/test/scanpay">
+                <iron-icon icon="list"></iron-icon>
+                <span>扫码测试</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -204,9 +217,15 @@
               </paper-material>
             </section>
 
+
             <section data-route="config.agents">
               <paper-material elevation="1">
                 <agent-list is-editable is-deletable></agent-list>
+              </paper-material>
+            </section>
+            <section data-route="test.scanpay">
+              <paper-material elevation="1">
+                <test-scanpay is-deletable></test-scanpay>
               </paper-material>
             </section>
 
@@ -215,10 +234,7 @@
       </paper-scroll-header-panel>
     </paper-drawer-panel>
 
-
-    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline.">
-    </paper-toast>
-
+    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
 
   </template>
 

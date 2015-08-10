@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/CardInfoLink/quickpay/util"
+	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
 	"strings"
 )
@@ -16,11 +17,13 @@ const (
 	Void = "VOID"
 	Canc = "CANC"
 	Qyfk = "QYFK" // 企业付款
+	Jszf = "JSZF"
 )
 
 // QueryCondition 扫码交易查询
 type QueryCondition struct {
 	Mchntid      string  `json:"mchntid,omitempty"`
+	TransStatus  string  `json:"transStatus,omitempty"`
 	StartTime    string  `json:"startTime,omitempty"`
 	EndTime      string  `json:"endTime,omitempty"`
 	Busicd       string  `json:"busicd,omitempty"`
@@ -34,6 +37,7 @@ type QueryCondition struct {
 	Total        int     `json:"total,omitempty"`
 	Size         int     `json:"size,omitempty"`
 	Rec          []Trans `json:"rec,omitempty"`
+	IsForReport  bool    `json:"-"`
 }
 
 // ScanPayRequest 扫码支付
@@ -56,6 +60,9 @@ type ScanPayRequest struct {
 	CheckName    string `json:"checkName,omitempty" url:"checkName,omitempty"`       // 校验用户姓名选项
 	UserName     string `json:"userName,omitempty" url:"userName,omitempty"`         // 用户名
 	Desc         string `json:"desc,omitempty" url:"desc,omitempty"`                 // 描述
+	Code         string `json:"code,omitempty" url:"code,omitempty"`                 // 认证码
+	NeedUserInfo string `json:"needUserInfo,omitempty" url:"needUserInfo,omitempty"` // 是否需要获取用户信息
+	VeriCode     string `json:"veriCode,omitempty" url:"veriCode,omitempty"`         // js支付用到的凭证
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-"` // 公众号ID
@@ -103,33 +110,62 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 	if ret.OrderNum == "" {
 		ret.OrderNum = req.OrderNum
 	}
+	if ret.VeriCode == "" {
+		ret.VeriCode = req.VeriCode
+	}
 }
 
 // ScanPayResponse 下单支付返回体
 // M:返回时必须带上
 // C:可选
 type ScanPayResponse struct {
-	Txndir          string `json:"txndir" url:"txndir"`                                       // 交易方向 M M
-	Busicd          string `json:"busicd" url:"busicd"`                                       // 交易类型 M M
-	Respcd          string `json:"respcd" url:"respcd"`                                       // 交易结果  M
-	Inscd           string `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 机构号 M M
-	Chcd            string `json:"chcd,omitempty" url:"chcd,omitempty"`                       // 渠道 C C
-	Mchntid         string `json:"mchntid" url:"mchntid"`                                     // 商户号 M M
-	Terminalid      string `json:"terminalid,omitempty" url:"terminalid,omitempty"`           // 终端号
-	Txamt           string `json:"txamt,omitempty" url:"txamt,omitempty"`                     // 订单金额 M M
-	ChannelOrderNum string `json:"channelOrderNum,omitempty" url:"channelOrderNum,omitempty"` // 渠道交易号 C
-	ConsumerAccount string `json:"consumerAccount,omitempty" url:"consumerAccount,omitempty"` // 渠道账号  C
-	ConsumerId      string `json:"consumerId,omitempty" url:"consumerId,omitempty"`           // 渠道账号ID   C
-	ErrorDetail     string `json:"errorDetail,omitempty" url:"errorDetail,omitempty"`         // 错误信息   C
-	OrderNum        string `json:"orderNum,omitempty" url:"orderNum,omitempty"`               // 订单号 M C
-	OrigOrderNum    string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty"`       // 源订单号 M C
-	Sign            string `json:"sign" url:"-"`                                              // 签名 M M
-	ChcdDiscount    string `json:"chcdDiscount,omitempty" url:"chcdDiscount,omitempty"`       // 渠道优惠  C
-	MerDiscount     string `json:"merDiscount,omitempty" url:"merDiscount,omitempty"`         // 商户优惠  C
-	QrCode          string `json:"qrcode,omitempty" url:"qrcode,omitempty"`                   // 二维码 C
-	PrePayId        string `json:"-" url:"-"`
+	Txndir          string   `json:"txndir" url:"txndir"`                                       // 交易方向 M M
+	Busicd          string   `json:"busicd" url:"busicd"`                                       // 交易类型 M M
+	Respcd          string   `json:"respcd" url:"respcd"`                                       // 交易结果  M
+	Inscd           string   `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 机构号 M M
+	Chcd            string   `json:"chcd,omitempty" url:"chcd,omitempty"`                       // 渠道 C C
+	Mchntid         string   `json:"mchntid" url:"mchntid"`                                     // 商户号 M M
+	Terminalid      string   `json:"terminalid,omitempty" url:"terminalid,omitempty"`           // 终端号
+	Txamt           string   `json:"txamt,omitempty" url:"txamt,omitempty"`                     // 订单金额 M M
+	ChannelOrderNum string   `json:"channelOrderNum,omitempty" url:"channelOrderNum,omitempty"` // 渠道交易号 C
+	ConsumerAccount string   `json:"consumerAccount,omitempty" url:"consumerAccount,omitempty"` // 渠道账号  C
+	ConsumerId      string   `json:"consumerId,omitempty" url:"consumerId,omitempty"`           // 渠道账号ID   C
+	ErrorDetail     string   `json:"errorDetail,omitempty" url:"errorDetail,omitempty"`         // 错误信息   C
+	OrderNum        string   `json:"orderNum,omitempty" url:"orderNum,omitempty"`               // 订单号 M C
+	OrigOrderNum    string   `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty"`       // 源订单号 M C
+	Sign            string   `json:"sign" url:"-"`                                              // 签名 M M
+	ChcdDiscount    string   `json:"chcdDiscount,omitempty" url:"chcdDiscount,omitempty"`       // 渠道优惠  C
+	MerDiscount     string   `json:"merDiscount,omitempty" url:"merDiscount,omitempty"`         // 商户优惠  C
+	QrCode          string   `json:"qrcode,omitempty" url:"qrcode,omitempty"`                   // 二维码 C
+	PayJson         *PayJson `json:"payjson,omitempty" url:"-"`                                 // json字符串
+	PayJsonStr      string   `json:"-" url:"payjson,omitempty"`                                 // 签名时用
+	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty"`
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
+	PrePayId     string `json:"-" url:"-"`
+}
+
+// PayJson 公众号支付字段
+type PayJson struct {
+	UserInfo *weixin.AuthUserInfoResp `json:"userinfo,omitempty"`
+	Config   *JsConfig                `json:"config,omitempty"`
+	WxpPay   *JsWxpPay                `json:"chooseWXPay,omitempty"`
+}
+
+type JsConfig struct {
+	AppID     string `json:"appId" url:"appId"`
+	NonceStr  string `json:"nonceStr" url:"nonceStr"`
+	Signature string `json:"signature" url:"-"`
+	Timestamp string `json:"timestamp" url:"timestamp"` // 中间不用大写
+}
+
+type JsWxpPay struct {
+	AppID     string `json:"appId" url:"appId"`
+	NonceStr  string `json:"nonceStr" url:"nonceStr"`
+	Package   string `json:"package" url:"package"`
+	PaySign   string `json:"paySign" url:"-"`
+	TimeStamp string `json:"timeStamp" url:"timeStamp"` //支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+	SignType  string `json:"signType" url:"signType"`
 }
 
 // SignMsg 字典排序报文

@@ -53,6 +53,8 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validateClose, core.Close, req)
 	case model.Qyfk:
 		ret = doScanPay(validateEnterprisePay, core.EnterprisePay, req)
+	case model.Jszf:
+		ret = doScanPay(validatePublicPay, core.PublicPay, req)
 	default:
 		ret = fieldContentError(buiscd)
 		ret.FillWithRequest(req)
@@ -72,6 +74,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		ret.FillWithRequest(req)
 		// 8. 对返回报文签名
 		if signKey != "" {
+			log.Debug("sign content to return : " + ret.SignMsg())
 			ret.Sign = security.SHA1WithKey(ret.SignMsg(), signKey)
 		}
 	}()

@@ -3,6 +3,8 @@ package scanpay
 import (
 	"encoding/json"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
@@ -79,19 +81,37 @@ var (
 		UserName:  "陈芝锐",
 		Desc:      "ipad2 mini 64G",
 	}
+	// 公众号支付
+	scanPayPublic = &model.ScanPayRequest{
+		GoodsInfo:    "鞋子,1000,2;衣服,1500,3",
+		Busicd:       "JSZF",
+		Txamt:        "000000000001",
+		Mchntid:      "100000000000203",
+		OrderNum:     util.Millisecond(),
+		Inscd:        "CIL00002",
+		Chcd:         "WXP",
+		Code:         "001fbfbe9b2a351311e4212dd30c6f83",
+		NeedUserInfo: "YES",
+	}
 
-	scanPay = scanPayEnterprise
+	scanPay = scanPayPublic
 )
 
 func TestScanPay(t *testing.T) {
 
 	log.SetOutputLevel(log.Ldebug)
+	// sign
+	mer, err := mongo.MerchantColl.Find(scanPay.Mchntid)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+	scanPay.Sign = security.SHA1WithKey(scanPay.SignMsg(), mer.SignKey)
 	reqBytes, _ := json.Marshal(scanPay)
-
 	respBytes := ScanPayHandle(reqBytes)
-
+	log.Debug(string(respBytes))
 	resp := new(model.ScanPayResponse)
-	err := json.Unmarshal(respBytes, resp)
+	err = json.Unmarshal(respBytes, resp)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
