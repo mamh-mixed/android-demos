@@ -105,6 +105,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       };
     });
 
+    page('/test/qiniu', function() {
+      app.route = {
+        name: 'test.qiniu',
+        path: '/test/qiniu',
+        title: '测试七牛上传文件',
+        subtitle: '测试七牛 Ajax 上传文件'
+      };
+    });
+
     // add #! before urls
     page({
       hashbang: true

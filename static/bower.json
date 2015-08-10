@@ -12,7 +12,9 @@
     "x-select": "wonsikin/x-select",
     "webcomponentsjs": "~0.7.7",
     "paper-date-picker": "omigo/paper-date-picker#~1.0.3",
-    "qrcode.js": "davidshimjs/qrcodejs"
+    "qrcode.js": "davidshimjs/qrcodejs",
+    "plupload": "moxiecode/plupload#v2.1.8",
+    "qiniu-js-sdk":"qiniu/js-sdk#v1.0.7-beta"
   },
   "devDependencies": {
     "web-component-tester": "*",

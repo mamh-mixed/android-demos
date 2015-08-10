@@ -457,14 +457,14 @@
           Util.toast(response.message, 1000);
         },
         // 是否代理商模式的改变事件
-        handleIsAgentChangeEvent: function(e) {
+        handleIsAgentChangeEvent: function() {
           this.set('weixin.isAgent', this.$.isAngentCheck.checked);
           //   if (!this.weixin.isAgent) {
           //     this.set('weixin.subMerId', '');
           //   }
         },
         // 是否需要验签的改变事件
-        handleIsNeedSignChangeEvent: function(e) {
+        handleIsNeedSignChangeEvent: function() {
           this.set('merchant.isNeedSign', this.$.sNeedSignCheck.checked);
         },
         // 接口权限中的复选框组的改变事件

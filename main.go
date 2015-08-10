@@ -32,6 +32,7 @@ func main() {
 	http.HandleFunc("/scanpay/", entrance.Scanpay)
 	http.HandleFunc("/quickMaster/", master.QuickMaster)
 	http.HandleFunc("/master/", master.MasterRoute)
+	http.HandleFunc("/service/", master.Service)
 	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
 
 	log.Infof("Quickpay HTTP is listening at %s", goconf.Config.App.HTTPAddr)
