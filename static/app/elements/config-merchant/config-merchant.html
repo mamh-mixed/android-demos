@@ -1,19 +1,4 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
 
 <dom-module id="config-merchant">
   <style>
@@ -36,7 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     iron-pages section {}
-    
+
     .row {
       @apply(--layout-horizontal);
       @apply(--layout-wrap);
@@ -86,9 +71,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   </style>
   <template>
-    <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
-    <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
-    <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
     <paper-tabs selected="{{idx}}">
       <paper-tab>商户</paper-tab>
       <paper-tab>支付宝</paper-tab>
@@ -110,15 +92,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="check-box-group">
             <label for="permissionGroup">接口权限</label>
             <div id="permissionGroup" class="check-box-area">
-              <template is="dom-repeat" items="{{permissionArray}}">
-                <paper-checkbox checked$="{{_computePermissionChecked(item.key)}}" on-change="handlePermissionChangeEvent">
+              <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
+                <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
                   <span>{{item.value}}</span>
                 </paper-checkbox>
               </template>
             </div>
           </div>
-          <!-- <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input> -->
-          <!-- <paper-input label="是否开启验签" value="{{merchant.isNeedSign::input}}"></paper-input> -->
           <paper-radio-button id="sNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row" hidden$="{{!merchant.isNeedSign}}">
@@ -130,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="门店ID" value="{{merchant.detail.shopId::input}}"></paper-input>
+          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
         </div>
         <div class="row">
@@ -185,52 +165,191 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </section>
       <section>即将上线。。。</section>
     </iron-pages>
+    <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
+    <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
+    <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
+    <iron-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></iron-ajax>
+    <iron-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></iron-ajax>
+    <iron-ajax id="wxpRouterAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleWxpRouterResponse"></iron-ajax>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'config-merchant',
         properties: {
+          merId: {
+            type: String,
+            reflectToAttribute: true
+          },
+          params: {
+            type: Object
+          },
+          merStatusMap: {
+            type: Array,
+            value: [{
+              key: 'Normal',
+              value: '正常商户'
+            }, {
+              key: 'Test',
+              value: '测试商户'
+            }, {
+              key: 'Deleted',
+              value: '已删除商户'
+            }]
+          },
           permissionArray: {
             type: Array,
             value: [{
               key: 'PURC',
-              value: '下单支付'
+              value: '下单支付',
+              isChecked: false
             }, {
               key: 'PAUT',
-              value: '预下单'
+              value: '预下单',
+              isChecked: false
             }, {
               key: 'QYFK',
-              value: '企业付款'
+              value: '企业付款',
+              isChecked: false
             }, {
               key: 'INQY',
-              value: '查询订单'
+              value: '查询订单',
+              isChecked: false
             }, {
               key: 'VOID',
-              value: '撤销'
+              value: '撤销',
+              isChecked: false
             }, {
               key: 'REFD',
-              value: '退款'
+              value: '退款',
+              isChecked: false
             }, {
               key: 'CANC',
-              value: '关单'
+              value: '关单',
+              isChecked: false
             }]
           }
         },
+        attributeChanged: function() {
+          if (!this.merId) {
+            return;
+          }
+          this.set('merchant', {});
+          this.set('alipay', {});
+          this.set('weixin', {});
+
+          // 根据merId查找商户信息
+          var params = {
+            merId: this.merId
+          };
+          this.$.queryMerchantAjax.params = params;
+          this.$.queryMerchantAjax.generateRequest();
+
+          // 根据merId查找支付宝渠道信息
+          var alpParams = {
+            merId: this.merId,
+            cardBrand: 'ALP'
+          };
+          this.$.alpChanMerAjax.params = alpParams;
+          this.$.alpChanMerAjax.generateRequest();
+
+          // 根据merId查找微信渠道信息
+          var wxpParams = {
+            merId: this.merId,
+            cardBrand: 'WXP'
+          };
+          this.$.wxpChanMerAjax.params = wxpParams;
+          this.$.wxpChanMerAjax.generateRequest();
+        },
+        // 编辑的时候查询一个商户的响应事件
+        handleQueryMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          var merchants = response.data.slice();
+          if (merchants.length === 0) {
+            return;
+          }
+
+          if (merchants.length > 1) {
+            Util.toast('找到两条商户信息', 3000);
+            return;
+          }
+
+
+
+          var item = merchants[0],
+            permissions = item.permission || [];
+          this.set('merchant', item);
+          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
+            }
+          }
+
+          for (var i = 0, l = this.merStatusMap.length; i < l; i++) {
+            var merStatusItem = this.merStatusMap[i];
+            if (item.merStatus === merStatusItem.key) {
+              this.set('merStatus', merStatusItem);
+              break;
+            }
+          }
+        },
+        // 编辑的时候查询支付宝路由渠道商户请求的响应事件
+        handleAlpChanMerResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0 || !response.data) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          this.set('alipay', response.data);
+        },
+        // 编辑的时候查询微信路由渠道商户请求的响应事件
+        handleWxpChanMerResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0 || !response.data) {
+            Util.toast(response.message, 3000);
+            this.set('weixin.httpCert', '');
+            this.set('weixin.httpKey', '');
+            return;
+          }
+
+          this.set('weixin', response.data);
+
+          // 加载微信路由信息
+          var params = {
+            merId: this.merId,
+            cardBrand: 'WXP'
+          };
+          this.$.wxpRouterAjax.params = params;
+          this.$.wxpRouterAjax.generateRequest();
+        },
+        // 编辑的时候查询微信路由请求的响应事件
+        handleWxpRouterResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0 || !response.data) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          this.set('weixin.subMerId', response.data.subMerId);
+          this.set('weixin.isAgent', response.data.isAgent);
+        },
         ready: function() {
           this.idx = 0;
-          this.merStatusMap = [{
-            key: 'Normal',
-            value: '正常商户'
-          }, {
-            key: 'Test',
-            value: '测试商户'
-          }, {
-            key: 'Deleted',
-            value: '已删除商户'
-          }];
           this.merchant = {
-            merId: '100000000000203',
+            merId: 'wonsikinTest',
             detail: {
               merName: '讯联数据测试商户',
               brandNum: 'xxxxxxxxx',
@@ -243,14 +362,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             signKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycs',
             isNeedSign: false,
             encryptKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycszsdfyreuo=',
-            permission: [
-              "PAUT",
-              "PURC",
-              "CANC",
-              "VOID",
-              "INQY",
-              "REFD"
-            ],
+            permission: [],
             insCode: 'CIL00002'
           };
           this.alipay = {
@@ -347,21 +459,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // 是否代理商模式的改变事件
         handleIsAgentChangeEvent: function(e) {
           this.set('weixin.isAgent', this.$.isAngentCheck.checked);
-          if (!this.weixin.isAgent) {
-            this.set('weixin.subMerId', '');
-          }
+          //   if (!this.weixin.isAgent) {
+          //     this.set('weixin.subMerId', '');
+          //   }
         },
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function(e) {
           this.set('merchant.isNeedSign', this.$.sNeedSignCheck.checked);
-        },
-        // 判断商户的接口权限是否应该勾选
-        _computePermissionChecked: function(key) {
-          var index = this.merchant.permission.indexOf(key);
-          if (index >= 0) {
-            return true;
-          }
-          return false;
         },
         // 接口权限中的复选框组的改变事件
         handlePermissionChangeEvent: function(e) {

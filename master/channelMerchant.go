@@ -12,7 +12,7 @@ type chanMer struct{}
 
 var ChanMer chanMer
 
-//// Find 根据条件查找商户。
+// Find 根据条件查找商户。
 func (c *chanMer) Find(chanCode, chanMerId, chanMerName string) (result *model.ResultBody) {
 	log.Debugf("chanCode is %s; chanMerId is %s; chanMerName is %s", chanCode, chanMerId, chanMerName)
 
@@ -41,6 +41,30 @@ func (c *chanMer) Find(chanCode, chanMerId, chanMerName string) (result *model.R
 		Status:  0,
 		Message: "查询成功",
 		Data:    chanMers,
+	}
+
+	return result
+}
+
+// FindByMerIdAndCardBrand 通过机构商户的id和卡品牌查找渠道商户的信息
+func (i *chanMer) FindByMerIdAndCardBrand(merId, cardBrand string) (result *model.ResultBody) {
+	router := mongo.RouterPolicyColl.Find(merId, cardBrand)
+
+	if router == nil {
+		log.Errorf("未找到商户(%s)的一个路由(%s)", merId, cardBrand)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	mer, err := mongo.ChanMerColl.Find(router.ChanCode, router.ChanMerId)
+	if err != nil {
+		log.Errorf("未找到渠道商户(%s)失败：(%s)", router.ChanCode, err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    mer,
 	}
 
 	return result

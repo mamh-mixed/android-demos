@@ -90,11 +90,11 @@
           </a>
           <iron-collapse id="MCRCollapse">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
-                <a data-route="config.configMer" href="/config/configMer">
-                  <iron-icon icon="settings-input-component"></iron-icon>
-                  <span>商户配置</span>
-                </a>
-                <a data-route="config.merchants" href="/config/merchants">
+              <a data-route="config.configMer" href="/config/configMer">
+                <iron-icon icon="settings-input-component"></iron-icon>
+                <span>商户配置</span>
+              </a>
+              <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>
               </a>
@@ -191,7 +191,13 @@
 
             <section data-route="config.configMer">
               <paper-material elevation="1">
-                <config-merchant is-editable></config-merchant>
+                <config-merchant></config-merchant>
+              </paper-material>
+            </section>
+
+            <section data-route="config.merchant">
+              <paper-material elevation="1">
+                <config-merchant mer-id="{{route.params.merId}}"></config-merchant>
               </paper-material>
             </section>
 
@@ -224,8 +230,7 @@
       </paper-scroll-header-panel>
     </paper-drawer-panel>
 
-    <paper-toast id="toast" duration="5000" visible="true"
-        text="Caching complete! This app will work offline."></paper-toast>
+    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
 
   </template>
 
