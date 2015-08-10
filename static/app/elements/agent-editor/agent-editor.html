@@ -1,0 +1,83 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="agent-editor">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 300px;
+        min-height: 120px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row paper-input {
+      min-width: 300px;
+    }
+
+    .row paper-input:first-child {
+      margin-right: 20px;
+    }
+  </style>
+  <template>
+    <iron-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></iron-ajax>
+    <paper-dialog id="dialog">
+      <h2>编辑代理商</h2>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <paper-input label="代理商代码" value="{{agent.agentCode::input}}"></paper-input>
+          <paper-input label="代理商名称" value="{{agent.agentName::input}}"></paper-input>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'agent-editor',
+
+        properties: {
+          agent: {
+            type:Object
+          }
+        },
+        ready: function(){
+          this.agent={};
+        },
+        open: function() {
+          console.log('open me');
+          this.$.dialog.open();
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          console.log(this.agent);
+          this.$.saveAjax.body = JSON.stringify(this.agent);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveAgentResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialog.close();
+
+          this.fire('saved');
+          this.set('agent', {});
+        }
+      });
+    })();
+  </script>
+</dom-module>

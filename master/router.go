@@ -38,6 +38,10 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/router/find":
 		merId := r.FormValue("merId")
 		ret = RouterPolicy.Find(merId)
+	case "/master/router/one":
+		merId := r.FormValue("merId")
+		cardBrand := r.FormValue("cardBrand")
+		ret = RouterPolicy.FindOne(merId, cardBrand)
 	case "/master/router/delete":
 		merId := r.FormValue("merId")
 		chanCode := r.FormValue("chanCode")
@@ -48,8 +52,23 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		chanMerId := r.FormValue("chanMerId")
 		chanMerName := r.FormValue("chanMerName")
 		ret = ChanMer.Find(chanCode, chanMerId, chanMerName)
+	case "/master/channelMerchant/findByMerIdAndCardBrand":
+		merId := r.FormValue("merId")
+		cardBrand := r.FormValue("cardBrand")
+		ret = ChanMer.FindByMerIdAndCardBrand(merId, cardBrand)
 	case "/master/channelMerchant/save":
 		ret = ChanMer.Save(data)
+	case "/master/agent/find":
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
+		ret = Agent.Find(agentCode, agentName)
+	case "/master/agent/delete":
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
+		ret = Agent.Delete(agentCode, agentName)
+	case "/master/agent/save":
+		ret = Agent.Save(data)
+
 	default:
 		w.WriteHeader(404)
 	}

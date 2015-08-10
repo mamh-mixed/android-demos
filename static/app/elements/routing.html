@@ -43,6 +43,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '录入机构商户，配置渠道商户（微信、支付宝、QQ 钱包）'
       };
     });
+    page('/config/merchant/:merId', function(data) {
+      app.route = {
+        name: 'config.merchant',
+        path: '/config/merchant/:merId',
+        title: '变更扫码支付商户和渠道',
+        subtitle: '变更机构商户，配置渠道商户（微信、支付宝、QQ 钱包）',
+        params: data.params
+      };
+    });
     page('/config/merchants', function() {
       app.route = {
         name: 'config.merchants',
@@ -65,6 +74,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         path: '/config/routes',
         title: '路由策略',
         subtitle: '路由策略'
+      };
+    });
+    page('/config/agents', function() {
+      app.route = {
+        name: 'config.agents',
+        path: '/config/agents',
+        title: '代理商',
+        subtitle: '下单、预下单、支付、查询、退款、关闭订单'
       };
     });
     // 商户，渠道商户和路由 end

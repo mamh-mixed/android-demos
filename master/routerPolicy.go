@@ -30,6 +30,24 @@ func (i *routerPolicy) Find(merId string) (result *model.ResultBody) {
 	return result
 }
 
+// FindOne 查找路由列表，参数是 merId 和 cardBrand。
+func (i *routerPolicy) FindOne(merId, cardBrand string) (result *model.ResultBody) {
+	router := mongo.RouterPolicyColl.Find(merId, cardBrand)
+
+	if router == nil {
+		log.Errorf("未找到商户(%s)的一个路由(%s)", merId, cardBrand)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    router,
+	}
+
+	return result
+}
+
 // Save 新增一个路由策略
 func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 	r := new(model.RouterPolicy)

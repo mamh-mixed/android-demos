@@ -161,6 +161,11 @@ type ChanMer struct {
 	//...
 }
 
+type Agent struct {
+	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理商代码
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` //代理商名称
+}
+
 // SettSchemeCd 计费方案代码
 type SettSchemeCd struct {
 	SchemeCd  string `bson:"schemeCd"`
