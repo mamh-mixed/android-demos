@@ -58,6 +58,17 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = ChanMer.FindByMerIdAndCardBrand(merId, cardBrand)
 	case "/master/channelMerchant/save":
 		ret = ChanMer.Save(data)
+	case "/master/agent/find":
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
+		ret = Agent.Find(agentCode, agentName)
+	case "/master/agent/delete":
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
+		ret = Agent.Delete(agentCode, agentName)
+	case "/master/agent/save":
+		ret = Agent.Save(data)
+
 	default:
 		w.WriteHeader(404)
 	}

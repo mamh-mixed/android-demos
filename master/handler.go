@@ -41,6 +41,10 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 	case "/quickMaster/router/find":
 		merId := r.FormValue("merId")
 		ret = AllRouterOfOneMerchant(merId)
+	case "/quickMaster/agent/all":
+		ret = AllAgent(data)
+	case "/quickMaster/agent/add":
+		ret = AddAgent(data)
 	default:
 		w.WriteHeader(404)
 	}
@@ -222,6 +226,65 @@ func AllRouterOfOneMerchant(merId string) (result *model.ResultBody) {
 		Status:  0,
 		Message: "查询成功",
 		Data:    routers,
+	}
+
+	return
+}
+
+// AllAgent 处理查找所有代理商的请求
+func AllAgent(data []byte) (result *model.ResultBody) {
+	cond := new(model.Agent)
+	err := json.Unmarshal(data, cond)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	agents, err := mongo.AgentColl.FindByCondition(cond)
+
+	if err != nil {
+		log.Errorf("查询代理商出错:%s", err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    agents,
+	}
+
+	return
+}
+
+// AddAgent 处理新增一个商户的请求
+func AddAgent(data []byte) (result *model.ResultBody) {
+	a := new(model.Agent)
+	err := json.Unmarshal(data, a)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if a.AgentCode == "" {
+		log.Error("没有AgentCode")
+		return model.NewResultBody(3, "缺失必要元素AgentCode")
+	}
+
+	if a.AgentName == "" {
+		log.Error("没有AgentName")
+		return model.NewResultBody(3, "缺失必要元素AgentName")
+	}
+
+	err = mongo.AgentColl.Add(a)
+	if err != nil {
+		log.Errorf("新增代理商失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    a,
 	}
 
 	return
