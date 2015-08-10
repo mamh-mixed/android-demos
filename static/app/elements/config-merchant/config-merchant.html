@@ -36,7 +36,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     iron-pages section {}
-    
+
     .row {
       @apply(--layout-horizontal);
       @apply(--layout-wrap);
@@ -89,6 +89,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
     <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
+    <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
     <paper-tabs selected="{{idx}}">
       <paper-tab>商户</paper-tab>
       <paper-tab>支付宝</paper-tab>
@@ -110,15 +111,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="check-box-group">
             <label for="permissionGroup">接口权限</label>
             <div id="permissionGroup" class="check-box-area">
-              <template is="dom-repeat" items="{{permissionArray}}">
-                <paper-checkbox checked$="{{_computePermissionChecked(item.key)}}" on-change="handlePermissionChangeEvent">
+              <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
+                <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
                   <span>{{item.value}}</span>
                 </paper-checkbox>
               </template>
             </div>
           </div>
-          <!-- <paper-input label="接口权限" value="{{merchant.permission::input}}"></paper-input> -->
-          <!-- <paper-input label="是否开启验签" value="{{merchant.isNeedSign::input}}"></paper-input> -->
           <paper-radio-button id="sNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row" hidden$="{{!merchant.isNeedSign}}">
@@ -130,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="门店ID" value="{{merchant.detail.shopId::input}}"></paper-input>
+          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
         </div>
         <div class="row">
@@ -191,30 +190,94 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       Polymer({
         is: 'config-merchant',
         properties: {
+          merId: {
+            type: String,
+            reflectToAttribute: true
+          },
+          params: {
+            type: Object
+          },
           permissionArray: {
             type: Array,
             value: [{
               key: 'PURC',
-              value: '下单支付'
+              value: '下单支付',
+              isChecked: false
             }, {
               key: 'PAUT',
-              value: '预下单'
+              value: '预下单',
+              isChecked: false
             }, {
               key: 'QYFK',
-              value: '企业付款'
+              value: '企业付款',
+              isChecked: false
             }, {
               key: 'INQY',
-              value: '查询订单'
+              value: '查询订单',
+              isChecked: false
             }, {
               key: 'VOID',
-              value: '撤销'
+              value: '撤销',
+              isChecked: false
             }, {
               key: 'REFD',
-              value: '退款'
+              value: '退款',
+              isChecked: false
             }, {
               key: 'CANC',
-              value: '关单'
+              value: '关单',
+              isChecked: false
             }]
+          }
+        },
+        attributeChanged: function() {
+          console.log(this.merId);
+          if (!this.merId) {
+            return;
+          }
+          this.set('merchant', {});
+          this.set('alipay', {});
+          this.set('weixin', {});
+          // 根据merId查找商户信息
+          var params = {
+            merId: this.merId
+          };
+          this.$.queryMerchantAjax.params = params;
+          this.$.queryMerchantAjax.generateRequest();
+          // TODO 根据merId查找支付宝渠道信息
+          // TODO 根据merId查找微信渠道信息
+        },
+        // 编辑的时候查询一个商户
+        handleQueryMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          var merchants = response.data.slice();
+          if (merchants.length === 0) {
+            return;
+          }
+
+          if (merchants.length > 1) {
+            Util.toast('找到两条商户信息', 3000);
+            return;
+          }
+
+          var item = merchants[0],
+            permissions = item.permission.slice();
+          this.set('merchant', item);
+          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var item = this.permissionArray[j];
+              if (item.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
+            }
           }
         },
         ready: function() {
@@ -230,7 +293,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: '已删除商户'
           }];
           this.merchant = {
-            merId: '100000000000203',
+            merId: 'wonsikinTest',
             detail: {
               merName: '讯联数据测试商户',
               brandNum: 'xxxxxxxxx',
@@ -243,14 +306,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             signKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycs',
             isNeedSign: false,
             encryptKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycszsdfyreuo=',
-            permission: [
-              "PAUT",
-              "PURC",
-              "CANC",
-              "VOID",
-              "INQY",
-              "REFD"
-            ],
+            permission: [],
             insCode: 'CIL00002'
           };
           this.alipay = {
@@ -354,14 +410,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function(e) {
           this.set('merchant.isNeedSign', this.$.sNeedSignCheck.checked);
-        },
-        // 判断商户的接口权限是否应该勾选
-        _computePermissionChecked: function(key) {
-          var index = this.merchant.permission.indexOf(key);
-          if (index >= 0) {
-            return true;
-          }
-          return false;
         },
         // 接口权限中的复选框组的改变事件
         handlePermissionChangeEvent: function(e) {
