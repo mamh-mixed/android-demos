@@ -106,6 +106,10 @@
                 <iron-icon icon="account-balance"></iron-icon>
                 <span>渠道商户</span>
               </a>
+              <a data-route="config.agents" href="/config/agents">
+                <iron-icon icon="assignment-ind"></iron-icon>
+                <span>代理商</span>
+              </a>
             </paper-menu>
           </iron-collapse>
 
@@ -199,6 +203,13 @@
                 <route-list is-deletable></route-list>
               </paper-material>
             </section>
+
+            <section data-route="config.agents">
+              <paper-material elevation="1">
+                <agent-list is-editable is-deletable></agent-list>
+              </paper-material>
+            </section>
+
           </iron-pages>
         </div>
       </paper-scroll-header-panel>
