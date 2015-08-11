@@ -1,9 +1,4 @@
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 <dom-module id="test-scanpay">
   <style>
     :host {
@@ -100,63 +95,65 @@
       left: -10px;
       top: 50%;
     }
-
   </style>
   <template>
     <div class="form-container">
       <div class="row">
-        <x-select items="[[busicds]]" class="col validate-container" required$="{{requiredDetector.busicd}}" selected-item="{{scanCode.busicd::input}}" label="交易类型(busicd)"></x-select>
-        <paper-input class="col " id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
+        <x-select items="[[busicds]]" class="col validate-container" required selected-item="{{busicd}}" label="交易类型(busicd)"></x-select>
+        <paper-input class="col" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
       </div>
       <div class="row">
-        <x-select items="[[chcds]]" class="col validate-container" required$="{{requiredDetector.chcd}}" selected-item="{{scanCode.chcd::input}}" label="渠道机构(chcd)"></x-select>
-        <paper-input required$="{{requiredDetector.inscd}}" class="col " id="inscd" name="inscd" label="机构号(inscd)" value="{{scanCode.inscd::input}}"></paper-input>
+        <x-select items="[[chcds]]" class="col validate-container" required$="{{requiredDetector.chcd}}" selected-item="{{chcd}}" label="渠道机构(chcd)"></x-select>
+        <paper-input required$="{{requiredDetector.inscd}}" class="col" id="inscd" name="inscd" label="机构号(inscd)" value="{{scanCode.inscd::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.mchntid}}" class="col " id="mchntid" name="mchntid" label="商户号(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.terminalid}}" class="col " id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.mchntid}}" class="col" id="mchntid" name="mchntid" label="商户号(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.terminalid}}" class="col" id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.txamt}}" class="col " id="txamt" name="txamt" label="订单金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.currency}}" class="col " id="currency" name="currency" label="币种(currency)" value="{{scanCode.currency::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.txamt}}" class="col" id="txamt" name="txamt" label="订单金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.currency}}" class="col" id="currency" name="currency" label="币种(currency)" value="{{scanCode.currency::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.goodsInfo}}" class="col " id="goodsInfo" name="goodsInfo" label="商品详情(goodsInfo)" value="{{scanCode.goodsInfo::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.scanCodeId}}" class="col " id="scanCodeId" name="scanCodeId" label="扫码号(scanCodeId)" value="{{scanCode.scanCodeId::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.goodsInfo}}" class="col" id="goodsInfo" name="goodsInfo" label="商品详情(goodsInfo)" value="{{scanCode.goodsInfo::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.scanCodeId}}" class="col" id="scanCodeId" name="scanCodeId" label="扫码号(scanCodeId)" value="{{scanCode.scanCodeId::input}}"></paper-input>
       </div>
       <div class="row">
-        <div class="col ">
-          <div class="row">
-            <paper-input required$="{{requiredDetector.orderNum}}" class="col " id="orderNum" name="orderNum" label="订单号(orderNum)" value="{{scanCode.orderNum::input}}"></paper-input>
-            <paper-button class="col cycan " raised on-tap="handleRefreshOrderNoTapped">刷新</paper-button>
+        <div class="col">
+          <div class="layout horizontal">
+            <paper-input required$="{{requiredDetector.orderNum}}" class="flex-6" id="orderNum" name="orderNum" label="订单号(orderNum)" value="{{scanCode.orderNum::input}}"></paper-input>
+            <div class="flex-4">
+              <paper-button class="cycan" raised on-tap="handleRefreshOrderNoTapped">刷新</paper-button>
+            </div>
           </div>
         </div>
-        <paper-input required$="{{requiredDetector.origOrderNum}}" class="col " id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.origOrderNum}}" class="col" id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.openid}}" class="col " id="openid" name="openid" label="OpenID(openid)" value="{{scanCode.openid::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.desc}}" class="col " id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.openid}}" class="col" id="openid" name="openid" label="OpenID(openid)" value="{{scanCode.openid::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.desc}}" class="col" id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.checkName}}" class="col " id="checkName" name="checkName" label="校验用户姓名选项(checkName)" value="{{scanCode.checkName::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.userName}}" class="col " id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
+        <!-- <paper-input required$="{{requiredDetector.checkName}}" class="col" id="checkName" name="checkName" label="校验用户姓名选项(checkName)" value="{{scanCode.checkName::input}}"></paper-input> -->
+        <x-select items="[[checkNames]]" class="col validate-container" required$="{{requiredDetector.checkName}}" selected-item="{{checkName}}" label="校验用户姓名选项(checkName)"></x-select>
+        <paper-input required$="{{requiredDetector.userName}}" class="col" id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.notifyUrl}}" class="col " id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.notifyUrl}}" class="col" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
       </div>
       <div class="divider"></div>
 
       <div class="row">
-        <paper-textarea class="col " label="HTTP 请求报文：" value="{{requestJsonData}}"></paper-textarea>
+        <paper-textarea class="col" label="HTTP 请求报文：" value="{{requestJsonData}}"></paper-textarea>
         <div class="action-row">
           <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
           <paper-button class="cycan" raised on-tap="handleShowQrcodeMaskTapped">二维码</paper-button>
           <div id="qrcodeBtn"></div>
         </div>
-        <paper-textarea class="col " label="HTTP 响应报文：" value="{{responseJsonData}}" row="16"></paper-textarea>
+        <paper-textarea class="col" label="HTTP 响应报文：" value="{{responseJsonData}}" row="16"></paper-textarea>
       </div>
       <div class="row">
-        <paper-textarea class="col " label="TCP 请求报文（UTF-8）：" value="{{noindentRequestJsonData}}"></paper-textarea>
+        <paper-textarea class="col" label="TCP 请求报文（UTF-8）：" value="{{noindentRequestJsonData}}"></paper-textarea>
       </div>
     </div>
     <div class="qrcode-mask" id="qrcodeMask">
@@ -333,7 +330,6 @@
 
     return temp.toLowerCase();
   }
-
 </script>
 <script>
   var TRANS_TYPE_MAP = {
@@ -373,12 +369,16 @@
       busicds: {
         type: Array,
         value: (function() {
-          var busicds = [];
+          var busicds = [],
+            obj = {};
           for (var k in TRANS_TYPE_MAP) {
-            busicds.push({
-              key: k,
-              value: TRANS_TYPE_MAP[k]
-            });
+            if (!obj[k.toUpperCase()]) {
+              obj[k.toUpperCase()] = TRANS_TYPE_MAP[k];
+              busicds.push({
+                key: k.toUpperCase(),
+                value: TRANS_TYPE_MAP[k]
+              });
+            }
           }
           return busicds;
         })()
@@ -391,7 +391,17 @@
       }, {
         "value": "微信",
         "key": "WXP"
-      }, ];
+      }];
+      this.checkNames = [{
+        "key": "NO_CHECK",
+        "value": "NO_CHECK"
+      }, {
+        "key": "OPTION_CHECK",
+        "value": "OPTION_CHECK"
+      }, {
+        "key": "FORCE_CHECK",
+        "value": "FORCE_CHECK"
+      }];
 
       var now = new Date();
       this.requiredFlags = {
@@ -416,7 +426,6 @@
           orderNum: true,
           openid: true,
           checkName: true,
-          userName: true,
           desc: true
         },
         // 预下单
@@ -485,15 +494,13 @@
       this.ready = true;
     },
     observers: [
-      '_convertToJSON(scanCode.busicd, scanCode.inscd, scanCode.chcd, scanCode.mchntid)',
-      '_convertToJSON(scanCode.terminalid,scanCode.txamt, scanCode.currency, scanCode.goodsInfo)',
-      '_convertToJSON(scanCode.orderNum, scanCode.origOrderNum, scanCode.scanCodeId, scanCode.notifyUrl)',
-      '_watchBusicdChange(scanCode.busicd)',
+      '_convertToJSON(scanCode.*)',
+      '_watchBusicdChange(busicd.key)',
+      '_watchChcdChange(chcd.key)',
+      '_watchCheckNameChange(checkName.key)',
       '_requestJsonDataChange(requestJsonData)'
     ],
-    _convertToJSON: function(busicd, inscd, chcd, mchntid,
-      terminalid, txamt, currency, goodsInfo,
-      orderNum, origOrderNum, scanCodeId, notifyUrl) {
+    _convertToJSON: function() {
       this.scanCode.sign = this._sign();
       this.requestJsonData = JSON.stringify(this.scanCode, null, 5);
     },
@@ -503,8 +510,9 @@
       this.noindentRequestJsonData = len + noindent;
     },
     // 监听交易类型变化
-    _watchBusicdChange: function(busicd) {
-      var flag = this.requiredFlags[busicd];
+    _watchBusicdChange: function(key) {
+      this.set('scanCode.busicd', key);
+      var flag = this.requiredFlags[key];
       if (!flag) {
         return;
       }
@@ -512,6 +520,18 @@
       Object.keys(flag).forEach(function(v) {
         this.set('requiredDetector.' + v, flag[v]);
       }.bind(this));
+    },
+    // 监听渠道机构变化
+    _watchChcdChange: function(key) {
+      this.set('scanCode.chcd', key);
+    },
+    _watchCheckNameChange: function(key) {
+      this.set('scanCode.checkName', key);
+      if (key === 'NO_CHECK') {
+        this.set('requiredDetector.userName', false);
+      } else {
+        this.set('requiredDetector.userName', true);
+      }
     },
     // 签名方法
     _sign: function() {
@@ -606,5 +626,4 @@
       this.set('scanCode.orderNum', now.valueOf().toString());
     },
   });
-
 </script>
