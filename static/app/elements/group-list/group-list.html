@@ -7,8 +7,9 @@
     }
 
     .condition {
-      @apply(--layout-horizontal);
-      @apply(--layout-wrap);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
       margin-bottom: 15px;
     }
 
@@ -23,7 +24,7 @@
     }
 
     .condition > .buttons > paper-button {
-      width: 100%;
+      /*width: 100%;*/
       margin: 10px 0px 0px;
     }
 
@@ -32,14 +33,32 @@
       color: #fff;
     }
 
-    card-item {
+    /*card-item {
       margin-bottom: 20px;
+    }*/
+
+    .loading-more-wrapper {
+      text-align: center;
     }
 
     paper-fab {
       position: fixed;
       bottom: 100px;
       right: 10%;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    table td {
+      text-align: center;
+    }
+
+    table tr td:nth-of-type(1),
+    table tr th:nth-of-type(8),
+    table tr td:nth-of-type(8) {
+      text-align: right;
     }
   </style>
   <template>
@@ -53,9 +72,19 @@
       </div>
     </div>
 
-    <template is="dom-repeat" items="{{groups}}">
+    <!-- <template is="dom-repeat" items="{{groups}}">
       <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" on-item-deleted="handleItemDeletedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
         <dl>
+          <dt>代理商代码</dt>
+          <dd>
+            <span>{{item.agentCode}}</span>
+          </dd>
+
+          <dt>代理商名称</dt>
+          <dd>
+            <span>{{item.agentName}}</span>
+          </dd>
+
           <dt>集团代码</dt>
           <dd>
             <span>{{item.groupCode}}</span>
@@ -67,7 +96,44 @@
           </dd>
         </dl>
       </card-item>
-    </template>
+    </template> -->
+    <div class="list">
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>代理商代码</th>
+            <th>代理商名称</th>
+            <th>集团代码</th>
+            <th>集团名称</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{groups}}">
+            <tr>
+              <td>
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.agentCode}}</span>
+              </td>
+              <td>
+                <span>{{item.agentName}}</span>
+              </td>
+              <td>
+                <span>{{item.groupCode}}</span>
+              </td>
+              <td>
+                <span>{{item.groupName}}</span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+    <div class="loading-more-wrapper">
+      <paper-button class="colorful" raised on-tap="handleLoadingMoreTapped">加载更多</paper-button>
+    </div>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
@@ -118,9 +184,14 @@
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
+            return;
           }
 
           this.groups = response.data.slice(0);
+
+          if (this.groups.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
         },
         // 代理商选中事件
         handleItemStaredEvent: function(e) {
@@ -167,6 +238,15 @@
         // 新集团商户保存成功事件，刷新列表
         handleGroupSave: function() {
           this.handleQueryTapped();
+        },
+        // 加载更多
+        handleLoadingMoreTapped: function() {
+          this.cond.page = 2;
+          this.$.queryAjax.body = JSON.stringify(this.cond);
+          this.$.queryAjax.generateRequest();
+        },
+        addOneFilter: function(index) {
+          return index + 1;
         }
       });
     })();
