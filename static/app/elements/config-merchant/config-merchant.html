@@ -106,7 +106,7 @@
           </div>
           <paper-radio-button id="sNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
-        <div class="row" hidden$="{{!merchant.isNeedSign}}">
+        <div class="row">
           <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
           <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
         </div>

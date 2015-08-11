@@ -29,7 +29,7 @@
 
     paper-button.colorful {
       background: var(--dark-primary-color);
-      color: #000;
+      color: var(--text-primary-color);
     }
 
     card-item {
@@ -41,7 +41,6 @@
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -176,6 +175,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>
