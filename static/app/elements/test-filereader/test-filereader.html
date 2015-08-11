@@ -36,24 +36,25 @@
               reader.onload = function() {
                 console.log(this.result);
                 _this.fileContent = this.result;
-              }
+              };
               reader.readAsText(file);
             } else if (/image\/\w+/.test(file.type)) {
               reader.onload = function() {
                 console.log(this.result);
                 _this.fileContent = this.result;
-              }
+              };
               reader.readAsDataURL(file);
             } else {
               reader.onload = function() {
                 console.log(this.result);
                 _this.fileContent = this.result;
-              }
+              };
               reader.readAsText(file);
             }
           }
         }
       });
     })();
+
   </script>
 </dom-module>

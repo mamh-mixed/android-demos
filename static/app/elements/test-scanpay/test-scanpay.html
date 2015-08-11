@@ -5,590 +5,606 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <dom-module id="test-scanpay">
-    <style>
-        :host {
-            display: block;
-        }
+  <style>
+    :host {
+      display: block;
+    }
 
-        .row {
-          @apply(--layout-horizontal);
-        }
+    .row {
+      @apply(--layout-horizontal);
+    }
 
-        .row > .col{
-            @apply(--layout-flex-6);
-            margin: 0  20px;
-        }
+    .row > .col {
+      @apply(--layout-flex-6);
+      margin: 0 20px;
+    }
 
-        .divider {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
+    .divider {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
 
-        .action-row {
-            margin-top: 20px;
-        }
+    .action-row {
+      margin-top: 20px;
+    }
 
-        paper-fab {
-            display: block;
-            margin: 182px auto;
-        }
+    paper-fab {
+      display: block;
+      margin: 182px auto;
+    }
 
-        paper-fab.cyan {
-            background-color: #00bcd4 !important;
-        }
+    paper-fab.cyan {
+      background-color: #00bcd4 !important;
+    }
 
-        paper-fab.active {
-            background-size: 40px 40px;
-            background-image: linear-gradient(45deg, rgba(255, 255, 255, .3)25%, rgba(0, 0, 0, 0)25%, rgba(0, 0, 0, 0)50%, rgba(255, 255, 255, .3)50%, rgba(255, 255, 255, .3)75%, rgba(0, 0, 0, 0)75%, rgba(0, 0, 0, 0));
-            animation: pregress-button-stripes .5s linear infinite;
-        }
+    paper-fab.active {
+      background-size: 40px 40px;
+      background-image: linear-gradient(45deg, rgba(255, 255, 255, .3)25%, rgba(0, 0, 0, 0)25%, rgba(0, 0, 0, 0)50%, rgba(255, 255, 255, .3)50%, rgba(255, 255, 255, .3)75%, rgba(0, 0, 0, 0)75%, rgba(0, 0, 0, 0));
+      animation: pregress-button-stripes .5s linear infinite;
+    }
 
-        @keyframes pregress-button-stripes {
-            from {
-                background-position: 40px 0;
-            }
-            to {
-                background-position: 0 0;
-            }
-        }
+    @keyframes pregress-button-stripes {
+      from {
+        background-position: 40px 0;
+      }
+      to {
+        background-position: 0 0;
+      }
+    }
 
-        .qrcode-mask {
-            position: fixed;
-            display: none;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
+    .qrcode-mask {
+      position: fixed;
+      display: none;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
 
-        .qrcode-mask > .qrcode-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            top: 0;
-        }
+    .qrcode-mask > .qrcode-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+    }
 
-        #qrcodeBtn {
-            display: none;
-        }
+    #qrcodeBtn {
+      display: none;
+    }
 
-        paper-button.cycan {
-            background-color: #00bcd4 !important;
-            color: #fff;
-        }
+    paper-button.cycan {
+      background-color: #00bcd4 !important;
+      color: #fff;
+    }
 
-        paper-input,
-        .validate-container {
-            position: relative;
-        }
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
 
-        paper-input[required]::after,
-        .validate-container[required]::after {
-            content: "*";
-            color: #F00;
-            display: block;
-            position: absolute;
-            left: -10px;
-            top: 50%;
-        }
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
 
-
-    </style>
-    <template>
-            <div class="form-container">
-                <div class="row">
-                    <div class="col validate-container" required$="{{requiredDetector.busicd}}">
-                        <label>交易类型(busicd)</label>
-                        <select class="browser-default" value="{{scanCode.busicd::input}}">
-                            <option value="" disabled selected>选择一个交易类型</option>
-                            <option value="PURC">下单支付</option>
-                            <option value="PAUT">预下单</option>
-                            <option value="QYFK">企业付款</option>
-                            <option value="INQY">查询订单</option>
-                            <option value="VOID">撤销</option>
-                            <option value="REFD">退款</option>
-                            <option value="CANC">关单</option>
-                        </select>
-                    </div>
-                    <paper-input class="col " id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
-                </div>
-                <div class="row">
-                    <div class="col validate-container" required$="{{requiredDetector.chcd}}">
-                        <label>渠道机构(chcd)</label>
-                        <select class="browser-default" value="{{scanCode.chcd::input}}">
-                            <option value="" disabled selected>选择一个渠道机构</option>
-                            <option value="ALP">支付宝</option>
-                            <option value="WXP">微信</option>
-                            <option value="">无机构</option>
-                        </select>
-                    </div>
-                    <paper-input required$="{{requiredDetector.inscd}}" class="col " id="inscd" name="inscd" label="机构号(inscd)" value="{{scanCode.inscd::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <paper-input required$="{{requiredDetector.mchntid}}" class="col " id="mchntid" name="mchntid" label="商户号(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
-                    <paper-input required$="{{requiredDetector.terminalid}}" class="col " id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <paper-input required$="{{requiredDetector.txamt}}" class="col " id="txamt" name="txamt" label="订单金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
-                    <paper-input required$="{{requiredDetector.currency}}" class="col " id="currency" name="currency" label="币种(currency)" value="{{scanCode.currency::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <paper-input required$="{{requiredDetector.goodsInfo}}" class="col " id="goodsInfo" name="goodsInfo" label="商品详情(goodsInfo)" value="{{scanCode.goodsInfo::input}}"></paper-input>
-                    <paper-input required$="{{requiredDetector.scanCodeId}}" class="col " id="scanCodeId" name="scanCodeId" label="扫码号(scanCodeId)" value="{{scanCode.scanCodeId::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <div class="col ">
-                        <div class="row">
-                            <paper-input required$="{{requiredDetector.orderNum}}" class="col " id="orderNum" name="orderNum" label="订单号(orderNum)" value="{{scanCode.orderNum::input}}"></paper-input>
-                            <paper-button class="col cycan " raised on-tap="handleRefreshOrderNoTapped">刷新</paper-button>
-                        </div>
-                    </div>
-                    <paper-input required$="{{requiredDetector.origOrderNum}}" class="col " id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <paper-input required$="{{requiredDetector.openid}}" class="col " id="openid" name="openid" label="OpenID(openid)" value="{{scanCode.openid::input}}"></paper-input>
-                    <paper-input required$="{{requiredDetector.desc}}" class="col " id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <paper-input required$="{{requiredDetector.checkName}}" class="col " id="checkName" name="checkName" label="校验用户姓名选项(checkName)" value="{{scanCode.checkName::input}}"></paper-input>
-                    <paper-input required$="{{requiredDetector.userName}}" class="col " id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
-                </div>
-                <div class="row">
-                    <paper-input required$="{{requiredDetector.notifyUrl}}" class="col " id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
-                </div>
-                <div class="divider"></div>
-
-                <div class="row">
-                    <paper-textarea class="col " label="HTTP 请求报文：" value="{{requestJsonData}}"></paper-textarea>
-                    <div class="action-row">
-                        <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
-                        <paper-button class="cycan" raised on-tap="handleShowQrcodeMaskTapped">二维码</paper-button>
-                        <div id="qrcodeBtn"></div>
-                    </div>
-                    <paper-textarea class="col " label="HTTP 响应报文：" value="{{responseJsonData}}" row="16"></paper-textarea>
-                </div>
-                <div class="row">
-                    <paper-textarea class="col " label="TCP 请求报文（UTF-8）：" value="{{noindentRequestJsonData}}"></paper-textarea>
-                </div>
+  </style>
+  <template>
+    <div class="form-container">
+      <div class="row">
+        <x-select items="[[busicds]]" class="col validate-container" required$="{{requiredDetector.busicd}}" selected-item="{{scanCode.busicd::input}}" label="交易类型(busicd)"></x-select>
+        <paper-input class="col " id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
+      </div>
+      <div class="row">
+        <x-select items="[[chcds]]" class="col validate-container" required$="{{requiredDetector.chcd}}" selected-item="{{scanCode.chcd::input}}" label="渠道机构(chcd)"></x-select>
+        <paper-input required$="{{requiredDetector.inscd}}" class="col " id="inscd" name="inscd" label="机构号(inscd)" value="{{scanCode.inscd::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.mchntid}}" class="col " id="mchntid" name="mchntid" label="商户号(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.terminalid}}" class="col " id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.txamt}}" class="col " id="txamt" name="txamt" label="订单金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.currency}}" class="col " id="currency" name="currency" label="币种(currency)" value="{{scanCode.currency::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.goodsInfo}}" class="col " id="goodsInfo" name="goodsInfo" label="商品详情(goodsInfo)" value="{{scanCode.goodsInfo::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.scanCodeId}}" class="col " id="scanCodeId" name="scanCodeId" label="扫码号(scanCodeId)" value="{{scanCode.scanCodeId::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <div class="col ">
+          <div class="row">
+            <paper-input required$="{{requiredDetector.orderNum}}" class="col " id="orderNum" name="orderNum" label="订单号(orderNum)" value="{{scanCode.orderNum::input}}"></paper-input>
+            <paper-button class="col cycan " raised on-tap="handleRefreshOrderNoTapped">刷新</paper-button>
+          </div>
         </div>
-        <div class="qrcode-mask" id="qrcodeMask">
-            <div class="qrcode-container" on-tap="handleCloseQrcodeMaskTapped">
-                <div id="qrcode" on-tap="handleQrcodeTapped"></div>
-            </div>
+        <paper-input required$="{{requiredDetector.origOrderNum}}" class="col " id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.openid}}" class="col " id="openid" name="openid" label="OpenID(openid)" value="{{scanCode.openid::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.desc}}" class="col " id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.checkName}}" class="col " id="checkName" name="checkName" label="校验用户姓名选项(checkName)" value="{{scanCode.checkName::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.userName}}" class="col " id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.notifyUrl}}" class="col " id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
+      </div>
+      <div class="divider"></div>
+
+      <div class="row">
+        <paper-textarea class="col " label="HTTP 请求报文：" value="{{requestJsonData}}"></paper-textarea>
+        <div class="action-row">
+          <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
+          <paper-button class="cycan" raised on-tap="handleShowQrcodeMaskTapped">二维码</paper-button>
+          <div id="qrcodeBtn"></div>
         </div>
-        <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></iron-ajax>
-    </template>
+        <paper-textarea class="col " label="HTTP 响应报文：" value="{{responseJsonData}}" row="16"></paper-textarea>
+      </div>
+      <div class="row">
+        <paper-textarea class="col " label="TCP 请求报文（UTF-8）：" value="{{noindentRequestJsonData}}"></paper-textarea>
+      </div>
+    </div>
+    <div class="qrcode-mask" id="qrcodeMask">
+      <div class="qrcode-container" on-tap="handleCloseQrcodeMaskTapped">
+        <div id="qrcode" on-tap="handleQrcodeTapped"></div>
+      </div>
+    </div>
+    <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></iron-ajax>
+  </template>
 </dom-module>
 <script src="../../bower_components/qrcode.js/qrcode.js"></script>
 <script type="text/javascript">
-    function SHA1(msg) {
+  function SHA1(msg) {
 
-        function rotate_left(n, s) {
-            var t4 = (n << s) | (n >>> (32 - s));
-            return t4;
-        };
+    function rotate_left(n, s) {
+      var t4 = (n << s) | (n >>> (32 - s));
+      return t4;
+    };
 
-        function lsb_hex(val) {
-            var str = "";
-            var i;
-            var vh;
-            var vl;
+    function lsb_hex(val) {
+      var str = "";
+      var i;
+      var vh;
+      var vl;
 
-            for (i = 0; i <= 6; i += 2) {
-                vh = (val >>> (i * 4 + 4)) & 0x0f;
-                vl = (val >>> (i * 4)) & 0x0f;
-                str += vh.toString(16) + vl.toString(16);
-            }
-            return str;
-        };
+      for (i = 0; i <= 6; i += 2) {
+        vh = (val >>> (i * 4 + 4)) & 0x0f;
+        vl = (val >>> (i * 4)) & 0x0f;
+        str += vh.toString(16) + vl.toString(16);
+      }
+      return str;
+    };
 
-        function cvt_hex(val) {
-            var str = "";
-            var i;
-            var v;
+    function cvt_hex(val) {
+      var str = "";
+      var i;
+      var v;
 
-            for (i = 7; i >= 0; i--) {
-                v = (val >>> (i * 4)) & 0x0f;
-                str += v.toString(16);
-            }
-            return str;
-        };
+      for (i = 7; i >= 0; i--) {
+        v = (val >>> (i * 4)) & 0x0f;
+        str += v.toString(16);
+      }
+      return str;
+    };
 
 
-        function Utf8Encode(string) {
-            string = string.replace(/\r\n/g, "\n");
-            var utftext = "";
+    function Utf8Encode(string) {
+      string = string.replace(/\r\n/g, "\n");
+      var utftext = "";
 
-            for (var n = 0; n < string.length; n++) {
+      for (var n = 0; n < string.length; n++) {
 
-                var c = string.charCodeAt(n);
+        var c = string.charCodeAt(n);
 
-                if (c < 128) {
-                    utftext += String.fromCharCode(c);
-                } else if ((c > 127) && (c < 2048)) {
-                    utftext += String.fromCharCode((c >> 6) | 192);
-                    utftext += String.fromCharCode((c & 63) | 128);
-                } else {
-                    utftext += String.fromCharCode((c >> 12) | 224);
-                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-                    utftext += String.fromCharCode((c & 63) | 128);
-                }
-
-            }
-
-            return utftext;
-        };
-
-        var blockstart;
-        var i, j;
-        var W = new Array(80);
-        var H0 = 0x67452301;
-        var H1 = 0xEFCDAB89;
-        var H2 = 0x98BADCFE;
-        var H3 = 0x10325476;
-        var H4 = 0xC3D2E1F0;
-        var A, B, C, D, E;
-        var temp;
-
-        msg = Utf8Encode(msg);
-
-        var msg_len = msg.length;
-
-        var word_array = new Array();
-        for (i = 0; i < msg_len - 3; i += 4) {
-            j = msg.charCodeAt(i) << 24 | msg.charCodeAt(i + 1) << 16 |
-                msg.charCodeAt(i + 2) << 8 | msg.charCodeAt(i + 3);
-            word_array.push(j);
+        if (c < 128) {
+          utftext += String.fromCharCode(c);
+        } else if ((c > 127) && (c < 2048)) {
+          utftext += String.fromCharCode((c >> 6) | 192);
+          utftext += String.fromCharCode((c & 63) | 128);
+        } else {
+          utftext += String.fromCharCode((c >> 12) | 224);
+          utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+          utftext += String.fromCharCode((c & 63) | 128);
         }
 
-        switch (msg_len % 4) {
-            case 0:
-                i = 0x080000000;
-                break;
-            case 1:
-                i = msg.charCodeAt(msg_len - 1) << 24 | 0x0800000;
-                break;
+      }
 
-            case 2:
-                i = msg.charCodeAt(msg_len - 2) << 24 | msg.charCodeAt(msg_len - 1) << 16 | 0x08000;
-                break;
+      return utftext;
+    };
 
-            case 3:
-                i = msg.charCodeAt(msg_len - 3) << 24 | msg.charCodeAt(msg_len - 2) << 16 | msg.charCodeAt(msg_len - 1) << 8 | 0x80;
-                break;
-        }
+    var blockstart;
+    var i, j;
+    var W = new Array(80);
+    var H0 = 0x67452301;
+    var H1 = 0xEFCDAB89;
+    var H2 = 0x98BADCFE;
+    var H3 = 0x10325476;
+    var H4 = 0xC3D2E1F0;
+    var A, B, C, D, E;
+    var temp;
 
-        word_array.push(i);
+    msg = Utf8Encode(msg);
 
-        while ((word_array.length % 16) != 14) word_array.push(0);
+    var msg_len = msg.length;
 
-        word_array.push(msg_len >>> 29);
-        word_array.push((msg_len << 3) & 0x0ffffffff);
-
-
-        for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
-
-            for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
-            for (i = 16; i <= 79; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
-
-            A = H0;
-            B = H1;
-            C = H2;
-            D = H3;
-            E = H4;
-
-            for (i = 0; i <= 19; i++) {
-                temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
-                E = D;
-                D = C;
-                C = rotate_left(B, 30);
-                B = A;
-                A = temp;
-            }
-
-            for (i = 20; i <= 39; i++) {
-                temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
-                E = D;
-                D = C;
-                C = rotate_left(B, 30);
-                B = A;
-                A = temp;
-            }
-
-            for (i = 40; i <= 59; i++) {
-                temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
-                E = D;
-                D = C;
-                C = rotate_left(B, 30);
-                B = A;
-                A = temp;
-            }
-
-            for (i = 60; i <= 79; i++) {
-                temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
-                E = D;
-                D = C;
-                C = rotate_left(B, 30);
-                B = A;
-                A = temp;
-            }
-
-            H0 = (H0 + A) & 0x0ffffffff;
-            H1 = (H1 + B) & 0x0ffffffff;
-            H2 = (H2 + C) & 0x0ffffffff;
-            H3 = (H3 + D) & 0x0ffffffff;
-            H4 = (H4 + E) & 0x0ffffffff;
-
-        }
-
-        var temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
-
-        return temp.toLowerCase();
+    var word_array = new Array();
+    for (i = 0; i < msg_len - 3; i += 4) {
+      j = msg.charCodeAt(i) << 24 | msg.charCodeAt(i + 1) << 16 |
+        msg.charCodeAt(i + 2) << 8 | msg.charCodeAt(i + 3);
+      word_array.push(j);
     }
+
+    switch (msg_len % 4) {
+      case 0:
+        i = 0x080000000;
+        break;
+      case 1:
+        i = msg.charCodeAt(msg_len - 1) << 24 | 0x0800000;
+        break;
+
+      case 2:
+        i = msg.charCodeAt(msg_len - 2) << 24 | msg.charCodeAt(msg_len - 1) << 16 | 0x08000;
+        break;
+
+      case 3:
+        i = msg.charCodeAt(msg_len - 3) << 24 | msg.charCodeAt(msg_len - 2) << 16 | msg.charCodeAt(msg_len - 1) << 8 | 0x80;
+        break;
+    }
+
+    word_array.push(i);
+
+    while ((word_array.length % 16) != 14) word_array.push(0);
+
+    word_array.push(msg_len >>> 29);
+    word_array.push((msg_len << 3) & 0x0ffffffff);
+
+
+    for (blockstart = 0; blockstart < word_array.length; blockstart += 16) {
+
+      for (i = 0; i < 16; i++) W[i] = word_array[blockstart + i];
+      for (i = 16; i <= 79; i++) W[i] = rotate_left(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16], 1);
+
+      A = H0;
+      B = H1;
+      C = H2;
+      D = H3;
+      E = H4;
+
+      for (i = 0; i <= 19; i++) {
+        temp = (rotate_left(A, 5) + ((B & C) | (~B & D)) + E + W[i] + 0x5A827999) & 0x0ffffffff;
+        E = D;
+        D = C;
+        C = rotate_left(B, 30);
+        B = A;
+        A = temp;
+      }
+
+      for (i = 20; i <= 39; i++) {
+        temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0x6ED9EBA1) & 0x0ffffffff;
+        E = D;
+        D = C;
+        C = rotate_left(B, 30);
+        B = A;
+        A = temp;
+      }
+
+      for (i = 40; i <= 59; i++) {
+        temp = (rotate_left(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[i] + 0x8F1BBCDC) & 0x0ffffffff;
+        E = D;
+        D = C;
+        C = rotate_left(B, 30);
+        B = A;
+        A = temp;
+      }
+
+      for (i = 60; i <= 79; i++) {
+        temp = (rotate_left(A, 5) + (B ^ C ^ D) + E + W[i] + 0xCA62C1D6) & 0x0ffffffff;
+        E = D;
+        D = C;
+        C = rotate_left(B, 30);
+        B = A;
+        A = temp;
+      }
+
+      H0 = (H0 + A) & 0x0ffffffff;
+      H1 = (H1 + B) & 0x0ffffffff;
+      H2 = (H2 + C) & 0x0ffffffff;
+      H3 = (H3 + D) & 0x0ffffffff;
+      H4 = (H4 + E) & 0x0ffffffff;
+
+    }
+
+    var temp = cvt_hex(H0) + cvt_hex(H1) + cvt_hex(H2) + cvt_hex(H3) + cvt_hex(H4);
+
+    return temp.toLowerCase();
+  }
+
 </script>
 <script>
-    Polymer({
-        is: 'test-scanpay',
-        properties: {
-            scanCode: {
-                type: Object
-            },
-            requestJsonData: {
-                type: String
-            },
-            responseJsonData: {
-                type: String
-            },
-            key: {
-                type: String,
-                value: 'dawdawdnjawdjwbdhabbd'
-            },
-            ready: {
-                type: Boolean,
-                value: false
-            }
-        },
-        ready: function() {
-            var now = new Date();
-            this.requiredFlags = {
-                // 下单支付
-                'PURC': {
-                    busicd: true,
-                    inscd: true,
-                    mchntid: true,
-                    txamt: true,
-                    goodsInfo: true,
-                    orderNum: true,
-                    scanCodeId: true
-                },
-                // 企业付款
-                'QYFK': {
-                    busicd: true,
-                    chcd: true,
-                    inscd: true,
-                    mchntid: true,
-                    txamt: true,
-                    goodsInfo: true,
-                    orderNum: true,
-                    openid: true,
-                    checkName: true,
-                    userName: true,
-                    desc: true
-                },
-                // 预下单
-                'PAUT': {
-                    busicd: true,
-                    inscd: true,
-                    chcd: true,
-                    mchntid: true,
-                    txamt: true,
-                    goodsInfo: true,
-                    orderNum: true
-                },
-                // 查询订单
-                'INQY': {
-                    busicd: true,
-                    inscd: true,
-                    mchntid: true,
-                    origOrderNum: true
-                },
-                // 撤销
-                'VOID': {
-                    busicd: true,
-                    inscd: true,
-                    mchntid: true,
-                    orderNum: true,
-                    origOrderNum: true
-                },
-                // 退款
-                'REFD': {
-                    busicd: true,
-                    inscd: true,
-                    mchntid: true,
-                    txamt: true,
-                    orderNum: true,
-                    origOrderNum: true
-                },
-                // 关单
-                'CANC': {
-                    busicd: true,
-                    inscd: true,
-                    mchntid: true,
-                    orderNum: true,
-                    origOrderNum: true
-                }
-            };
-            this.requiredDetector = {};
-            this.scanCode = {
-                txndir: 'Q',
-                busicd: '',
-                inscd: '10134001',
-                chcd: '',
-                mchntid: '100000000000204',
-                terminalid: '000000000001',
-                txamt: '000000000001',
-                currency: '156',
-                goodsInfo: '鞋子,1000,2;衣服,1500,3',
-                orderNum: '' + now.valueOf(),
-                origOrderNum: '',
-                scanCodeId: '',
-                sign: '',
-                notifyUrl: ''
-            };
-            this.responseJsonData = '';
-        },
-        attached: function() {
-            this.ready = true;
-        },
-        observers: [
-            '_convertToJSON(scanCode.busicd, scanCode.inscd, scanCode.chcd, scanCode.mchntid)',
-            '_convertToJSON(scanCode.terminalid,scanCode.txamt, scanCode.currency, scanCode.goodsInfo)',
-            '_convertToJSON(scanCode.orderNum, scanCode.origOrderNum, scanCode.scanCodeId, scanCode.notifyUrl)',
-            '_watchBusicdChange(scanCode.busicd)',
-            '_requestJsonDataChange(requestJsonData)'
-        ],
-        _convertToJSON: function(busicd, inscd, chcd, mchntid,
-            terminalid, txamt, currency, goodsInfo,
-            orderNum, origOrderNum, scanCodeId, notifyUrl) {
-            this.scanCode.sign = this._sign();
-            this.requestJsonData = JSON.stringify(this.scanCode, null, 5);
-        },
-        _requestJsonDataChange: function(requestJsonData) {
-            var noindent = this.requestJsonData.replace(/\s+/g, '');
-            var len = ("" + (noindent.length + 10000)).substr(1, 4);
-            this.noindentRequestJsonData = len + noindent;
-        },
-        // 监听交易类型变化
-        _watchBusicdChange: function(busicd) {
-            var flag = this.requiredFlags[busicd];
-            if (!flag) {
-                return;
-            }
-            this.set('requiredDetector', {});
-            Object.keys(flag).forEach(function(v) {
-                this.set('requiredDetector.' + v, flag[v]);
-            }.bind(this));
-        },
-        // 签名方法
-        _sign: function() {
-            if (!this.ready) {
-                return;
-            }
-            var sign = '';
-            delete this.scanCode.sign;
-            var tempArr = [];
-            Object.keys(this.scanCode).sort().forEach(function(v, i) {
-                if (this.scanCode[v] && this.scanCode[v] !== '') {
-                    tempArr.push(v + '=' + this.scanCode[v]);
-                }
-            }.bind(this));
-
-            var plainText = tempArr.join('&') + this.key;
-            // SHA1运算
-            sign = SHA1(plainText);
-            return sign;
-        },
-        // 发送支付请求的点击事件
-        handleSendPayRequestTapped: function(e) {
-            // if (this.$.sendBtn.hasClass('active')) {
-            //     return;
-            // }
-            e.currentTarget.className += ' active';
-            this.$.sendPayAjax.body = this.requestJsonData;
-            this.$.sendPayAjax.generateRequest();
-        },
-        // 支付请求响应事件
-        handleSendPayResponse: function(e) {
-            this.$.sendBtn.toggleClass('active', false);
-
-            var response = event.detail.response;
-
-            this.responseJsonData = JSON.stringify(response, function(k, v) {
-                if (v === '') {
-                    return undefined;
-                }
-                return v;
-            }, 5);
-            Util.toast('成功响应请求', 2000);
-
-            if (response.sign != "") {
-                this.checkSign(response);
-            }
-
-            // 二维码生成
-            this.$.qrcodeBtn.style.display = 'none';
-            if (this.scanCode.busicd === 'PAUT' && response.qrcode) {
-                if (this.qrcode) {
-                    this.qrcode.clear();
-                    this.qrcode.makeCode(response.qrcode);
-                } else {
-                    this.qrcode = new QRCode(document.getElementById('qrcode'), response.qrcode);
-                }
-                this.$.qrcodeMask.style.display = 'block';
-                this.$.qrcodeBtn.style.display = 'block';
-            }
-        },
-        checkSign: function(response) {
-            // 对响应验签
-            var fields = [];
-            Object.keys(response).sort().forEach(function(v) {
-                if (v !== 'sign' && response[v] && response[v] !== '') {
-                    fields.push(v + '=' + response[v]);
-                }
+  var TRANS_TYPE_MAP = {
+    'PURC': '下单支付',
+    'PAUT': '预下单',
+    'VOID': '撤销',
+    'REFD': '退款',
+    'VERI': '卡券核销',
+    'purc': '下单支付',
+    'paut': '预下单',
+    'void': '撤销',
+    'refd': '退款',
+    'veri': '卡券核销',
+    'QYFK': '企业付款',
+    'JSZF': '公众号支付'
+  };
+  Polymer({
+    is: 'test-scanpay',
+    properties: {
+      scanCode: {
+        type: Object
+      },
+      requestJsonData: {
+        type: String
+      },
+      responseJsonData: {
+        type: String
+      },
+      key: {
+        type: String,
+        value: 'dawdawdnjawdjwbdhabbd'
+      },
+      ready: {
+        type: Boolean,
+        value: false
+      },
+      busicds: {
+        type: Array,
+        value: (function() {
+          var busicds = [];
+          for (var k in TRANS_TYPE_MAP) {
+            busicds.push({
+              key: k,
+              value: TRANS_TYPE_MAP[k]
             });
+          }
+          return busicds;
+        })()
+      }
+    },
+    ready: function() {
+      this.chcds = [{
+        "value": "支付宝",
+        "key": "ALP"
+      }, {
+        "value": "微信",
+        "key": "WXP"
+      }, ];
 
-            var plainText = fields.join('&') + this.key;
-            var sign = SHA1(plainText);
+      var now = new Date();
+      this.requiredFlags = {
+        // 下单支付
+        'PURC': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          txamt: true,
+          goodsInfo: true,
+          orderNum: true,
+          scanCodeId: true
+        },
+        // 企业付款
+        'QYFK': {
+          busicd: true,
+          chcd: true,
+          inscd: true,
+          mchntid: true,
+          txamt: true,
+          goodsInfo: true,
+          orderNum: true,
+          openid: true,
+          checkName: true,
+          userName: true,
+          desc: true
+        },
+        // 预下单
+        'PAUT': {
+          busicd: true,
+          inscd: true,
+          chcd: true,
+          mchntid: true,
+          txamt: true,
+          goodsInfo: true,
+          orderNum: true
+        },
+        // 查询订单
+        'INQY': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          origOrderNum: true
+        },
+        // 撤销
+        'VOID': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          orderNum: true,
+          origOrderNum: true
+        },
+        // 退款
+        'REFD': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          txamt: true,
+          orderNum: true,
+          origOrderNum: true
+        },
+        // 关单
+        'CANC': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          orderNum: true,
+          origOrderNum: true
+        }
+      };
+      this.requiredDetector = {};
+      this.scanCode = {
+        txndir: 'Q',
+        busicd: '',
+        inscd: '10134001',
+        chcd: '',
+        mchntid: '100000000000204',
+        terminalid: '000000000001',
+        txamt: '000000000001',
+        currency: '156',
+        goodsInfo: '鞋子,1000,2;衣服,1500,3',
+        orderNum: '' + now.valueOf(),
+        origOrderNum: '',
+        scanCodeId: '',
+        sign: '',
+        notifyUrl: ''
+      };
+      this.responseJsonData = '';
+    },
+    attached: function() {
+      this.ready = true;
+    },
+    observers: [
+      '_convertToJSON(scanCode.busicd, scanCode.inscd, scanCode.chcd, scanCode.mchntid)',
+      '_convertToJSON(scanCode.terminalid,scanCode.txamt, scanCode.currency, scanCode.goodsInfo)',
+      '_convertToJSON(scanCode.orderNum, scanCode.origOrderNum, scanCode.scanCodeId, scanCode.notifyUrl)',
+      '_watchBusicdChange(scanCode.busicd)',
+      '_requestJsonDataChange(requestJsonData)'
+    ],
+    _convertToJSON: function(busicd, inscd, chcd, mchntid,
+      terminalid, txamt, currency, goodsInfo,
+      orderNum, origOrderNum, scanCodeId, notifyUrl) {
+      this.scanCode.sign = this._sign();
+      this.requestJsonData = JSON.stringify(this.scanCode, null, 5);
+    },
+    _requestJsonDataChange: function(requestJsonData) {
+      var noindent = this.requestJsonData.replace(/\s+/g, '');
+      var len = ("" + (noindent.length + 10000)).substr(1, 4);
+      this.noindentRequestJsonData = len + noindent;
+    },
+    // 监听交易类型变化
+    _watchBusicdChange: function(busicd) {
+      var flag = this.requiredFlags[busicd];
+      if (!flag) {
+        return;
+      }
+      this.set('requiredDetector', {});
+      Object.keys(flag).forEach(function(v) {
+        this.set('requiredDetector.' + v, flag[v]);
+      }.bind(this));
+    },
+    // 签名方法
+    _sign: function() {
+      if (!this.ready) {
+        return;
+      }
+      var sign = '';
+      delete this.scanCode.sign;
+      var tempArr = [];
+      Object.keys(this.scanCode).sort().forEach(function(v, i) {
+        if (this.scanCode[v] && this.scanCode[v] !== '') {
+          tempArr.push(v + '=' + this.scanCode[v]);
+        }
+      }.bind(this));
 
-            if (sign.toLowerCase() !== response.sign.toLowerCase()) {
-                Util.toast('对响应数据验签失败', 5000);
-                return;
-            }
-        },
-        // 点击mask除了二维码之外的东西，关闭mask
-        handleCloseQrcodeMaskTapped: function(e) {
-            this.$.qrcodeMask.style.display = 'none';
-        },
-        handleShowQrcodeMaskTapped: function(e) {
-            this.$.qrcodeMask.style.display = 'block';
-        },
-        // 点击二维码事件，不冒泡，不处理
-        handleQrcodeTapped: function(e) {
-            e.stopPropagation();
-        },
-        // 刷新订单号
-        handleRefreshOrderNoTapped: function() {
-            var now = new Date();
-            this.set('scanCode.orderNum', now.valueOf().toString());
-        },
-    });
+      var plainText = tempArr.join('&') + this.key;
+      // SHA1运算
+      sign = SHA1(plainText);
+      return sign;
+    },
+    // 发送支付请求的点击事件
+    handleSendPayRequestTapped: function(e) {
+      // if (this.$.sendBtn.hasClass('active')) {
+      //     return;
+      // }
+      e.currentTarget.className += ' active';
+      this.$.sendPayAjax.body = this.requestJsonData;
+      this.$.sendPayAjax.generateRequest();
+    },
+    // 支付请求响应事件
+    handleSendPayResponse: function(e) {
+      this.$.sendBtn.toggleClass('active', false);
+
+      var response = event.detail.response;
+
+      this.responseJsonData = JSON.stringify(response, function(k, v) {
+        if (v === '') {
+          return undefined;
+        }
+        return v;
+      }, 5);
+      Util.toast('成功响应请求', 2000);
+
+      if (response.sign != "") {
+        this.checkSign(response);
+      }
+
+      // 二维码生成
+      this.$.qrcodeBtn.style.display = 'none';
+      if (this.scanCode.busicd === 'PAUT' && response.qrcode) {
+        if (this.qrcode) {
+          this.qrcode.clear();
+          this.qrcode.makeCode(response.qrcode);
+        } else {
+          this.qrcode = new QRCode(document.getElementById('qrcode'), response.qrcode);
+        }
+        this.$.qrcodeMask.style.display = 'block';
+        this.$.qrcodeBtn.style.display = 'block';
+      }
+    },
+    checkSign: function(response) {
+      // 对响应验签
+      var fields = [];
+      Object.keys(response).sort().forEach(function(v) {
+        if (v !== 'sign' && response[v] && response[v] !== '') {
+          fields.push(v + '=' + response[v]);
+        }
+      });
+
+      var plainText = fields.join('&') + this.key;
+      var sign = SHA1(plainText);
+
+      if (sign.toLowerCase() !== response.sign.toLowerCase()) {
+        Util.toast('对响应数据验签失败', 5000);
+        return;
+      }
+    },
+    // 点击mask除了二维码之外的东西，关闭mask
+    handleCloseQrcodeMaskTapped: function(e) {
+      this.$.qrcodeMask.style.display = 'none';
+    },
+    handleShowQrcodeMaskTapped: function(e) {
+      this.$.qrcodeMask.style.display = 'block';
+    },
+    // 点击二维码事件，不冒泡，不处理
+    handleQrcodeTapped: function(e) {
+      e.stopPropagation();
+    },
+    // 刷新订单号
+    handleRefreshOrderNoTapped: function() {
+      var now = new Date();
+      this.set('scanCode.orderNum', now.valueOf().toString());
+    },
+  });
+
 </script>

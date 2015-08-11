@@ -27,9 +27,9 @@
       margin: 10px 0px 0px;
     }
 
-    paper-button[raised].colorful {
-      background: #3498db;
-      color: #fff;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: #000;
     }
 
     .loading-more-wrapper {
@@ -49,6 +49,7 @@
     table tr td:nth-of-type(8) {
       text-align: right;
     }
+
   </style>
   <template>
     <iron-ajax id="queryAjax" method="POST" url="/scanpay/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -78,7 +79,7 @@
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
         <paper-button class="colorful" raised>
-            <a style="display:block; width:100%; height:100%; text-decoration:none" href="{{reportUri}}">下载报表</a>
+          <a style="display:block; width:100%; height:100%; text-decoration:none" href="{{reportUri}}">下载报表</a>
         </paper-button>
       </div>
     </div>
@@ -151,7 +152,8 @@
         'void': '撤销',
         'refd': '退款',
         'veri': '卡券核销',
-        'QYFK': '企业付款'
+        'QYFK': '企业付款',
+        'JSZF': '公众号支付'
       };
 
       Polymer({
@@ -203,8 +205,8 @@
           this.cond.busicd = key;
         },
         _watchCondChange: function() {
-            var t = new Date().format('yyyyMMdd-hhmmss');
-            this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_'+t+'.xlsx';
+          var t = new Date().format('yyyyMMdd-hhmmss');
+          this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
         },
         // 日期、时间控件
         dismissStartTimeDialog: function() {
@@ -270,5 +272,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

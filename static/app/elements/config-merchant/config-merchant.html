@@ -509,14 +509,14 @@
               reader.onload = function() {
                 //   console.log(this.result);
                 if (/BEGIN CERTIFICATE/.test(this.result) === false) {
-                  Util.toast("文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头", 3000);
+                  Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
                   return;
                 }
                 _this.set('weixin.httpCert', this.result);
-              }
+              };
               reader.readAsText(file);
             } else {
-              Util.toast("文件格式错误，只能上传 PEM 格式的文件", 3000);
+              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
             }
           }
         },
@@ -531,14 +531,14 @@
               reader.onload = function() {
                 console.log(this.result);
                 if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
-                  Util.toast("文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头", 3000);
+                  Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
                   return;
                 }
                 _this.set('weixin.httpKey', this.result);
-              }
+              };
               reader.readAsText(file);
             } else {
-              Util.toast("文件格式错误，只能上传 PEM 格式的文件", 3000);
+              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
             }
           }
         }
