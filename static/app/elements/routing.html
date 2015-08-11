@@ -75,7 +75,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '下单、预下单、支付、查询、退款、关闭订单'
       };
     });
-    // 商户，渠道商户和路由 end
+    page('/config/groups', function() {
+      app.route = {
+        name: 'config.groups',
+        path: '/config/groups',
+        title: '集团商户',
+        subtitle: '下单、预下单、支付、查询、退款、关闭订单'
+      };
+    });
+
+    // 商户，渠道商户,路由,代理商,集团商户 end
 
     // 交易管理 start
     page('/trades/list', function() {
