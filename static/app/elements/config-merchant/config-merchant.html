@@ -28,6 +28,8 @@
     }
 
     .row paper-input,
+    .row pre,
+    .row label,
     .row paper-textarea,
     .row paper-checkbox,
     .row paper-radio-button,
@@ -38,6 +40,8 @@
     }
 
     .row paper-input:last-child,
+    .row pre:last-child,
+    .row label:last-child,
     .row paper-textarea:last-child,
     .row paper-checkbox:last-child,
     .row paper-radio-button:last-child,
@@ -69,6 +73,7 @@
       background: #3498db;
       color: #fff;
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -154,10 +159,16 @@
           <paper-input label="签名证书" value="{{weixin.signCert::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-textarea label="HTTP 证书" class="code" value="{{weixin.httpCert::input}}"></paper-textarea>
+          <paper-input label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+          <paper-input label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
         </div>
         <div class="row">
-          <paper-textarea label="HTTP 密钥" style="font-family: monospace !important;" value="{{weixin.httpKey::input}}"></paper-textarea>
+          <label>HTTP 证书</label>
+          <label>HTTP 密钥</label>
+        </div>
+        <div class="row">
+          <pre>{{weixin.httpCert}}</pre>
+          <pre>{{weixin.httpKey}}</pre>
         </div>
         <div class="row">
           <paper-button raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
@@ -280,8 +291,6 @@
             return;
           }
 
-
-
           var item = merchants[0],
             permissions = item.permission || [];
           this.set('merchant', item);
@@ -297,7 +306,7 @@
             }
           }
           i = 0;
-          for (  var l = this.merStatusMap.length; i < l; i++) {
+          for (var l = this.merStatusMap.length; i < l; i++) {
             var merStatusItem = this.merStatusMap[i];
             if (item.merStatus === merStatusItem.key) {
               this.set('merStatus', merStatusItem);
@@ -382,8 +391,8 @@
             merFee: '0.006',
             wxpAppId: 'wx25ac886b6dac7dd2',
             signCert: '12sdffjjguddddd2widousldadi9o0i1',
-            httpCert: '-----BEGIN CERTIFICATE-----\nMIIEaDCCA9GgAwIBAgIDAfqVMA0GCSqGSIb3DQEBBQUAMIGKMQswCQYDVQQGEwJD\nTjESMBAGA1UECBMJR3Vhbmdkb25nMREwDwYDVQQHEwhTaGVuemhlbjEQMA4GA1UE\nChMHVGVuY2VudDEMMAoGA1UECxMDV1hHMRMwEQYDVQQDEwpNbXBheW1jaENBMR8w\nHQYJKoZIhvcNAQkBFhBtbXBheW1jaEB0ZW5jZW50MB4XDTE1MDQwMzAyMzAwNFoX\nDTI1MDMzMTAyMzAwNFowgZgxCzAJBgNVBAYTAkNOMRIwEAYDVQQIEwlHdWFuZ2Rv\nbmcxETAPBgNVBAcTCFNoZW56aGVuMRAwDgYDVQQKEwdUZW5jZW50MQ4wDAYDVQQL\nEwVNTVBheTEtMCsGA1UEAxQk5LiK5rW36K6v6IGU5pWw5o2u5pyN5Yqh5pyJ6ZmQ\n5YWs5Y+4MREwDwYDVQQEEwgxMDE2NzQxMTCCASIwDQYJKoZIhvcNAQEBBQADggEP\nADCCAQoCggEBAMxA1RYF2AMSCh0RePIV9FVqtwgTMGYLx9AxMfCcq/0NcWx3RlBG\nCfixd7KrI0GT7WGBj6PN2U/yMegkyTnSdHUlfyvDpIztTzYIxAPUg7cIqB+ixaF1\n5yOFiDLsrPxVKb8viU1vUuSb0N9i/beEia8Bfq2Jk+mrZi1I7ohoSkrCAKoxFbWw\n084bZz4T1U7hUQ6abXyEgzBtL8KGriXrr5+XV+JF0BQM0w2JuE3UQxgbPglOoTWI\ntp7cdRrzL5bN2iPn02Q1EDCkNv8m2KRaDOeloaACe4jN4SW6hzQZU6z9WzHjVjak\nV0NcJXBI5mk8fN1EhqwAt2Sop55OZ1ClNAsCAwEAAaOCAUYwggFCMAkGA1UdEwQC\nMAAwLAYJYIZIAYb4QgENBB8WHSJDRVMtQ0EgR2VuZXJhdGUgQ2VydGlmaWNhdGUi\nMB0GA1UdDgQWBBR5JD3KNtUZo81jYIlCwBBvRsQy7TCBvwYDVR0jBIG3MIG0gBQ+\nBSb2ImK0FVuIzWR+sNRip+WGdKGBkKSBjTCBijELMAkGA1UEBhMCQ04xEjAQBgNV\nBAgTCUd1YW5nZG9uZzERMA8GA1UEBxMIU2hlbnpoZW4xEDAOBgNVBAoTB1RlbmNl\nbnQxDDAKBgNVBAsTA1dYRzETMBEGA1UEAxMKTW1wYXltY2hDQTEfMB0GCSqGSIb3\nDQEJARYQbW1wYXltY2hAdGVuY2VudIIJALtUlyu8AOhXMA4GA1UdDwEB/wQEAwIG\nwDAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQUFAAOBgQBoedyK\nGXJ1pklDV1vgIYT+lrog8dE2U/TBxhwL65mSVT7Litgmxy2Mylm726+FoGiy4Mkx\nBoSj6A0Dfb3rtd3q4fmG8cK5eq1Uz0KTjMhlQs+WR3AYy18vQgKb3YmhGVnoPFLU\n5LF6DTYvAnRgGA2I5UrTRXYsuqXm7qKXK9E+7Q==\n-----END CERTIFICATE-----',
-            httpKey: '-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEAzEDVFgXYAxIKHRF48hX0VWq3CBMwZgvH0DEx8Jyr/Q1xbHdG\nUEYJ+LF3sqsjQZPtYYGPo83ZT/Ix6CTJOdJ0dSV/K8OkjO1PNgjEA9SDtwioH6LF\noXXnI4WIMuys/FUpvy+JTW9S5JvQ32L9t4SJrwF+rYmT6atmLUjuiGhKSsIAqjEV\ntbDTzhtnPhPVTuFRDpptfISDMG0vwoauJeuvn5dX4kXQFAzTDYm4TdRDGBs+CU6h\nNYi2ntx1GvMvls3aI+fTZDUQMKQ2/ybYpFoM56WhoAJ7iM3hJbqHNBlTrP1bMeNW\nNqRXQ1wlcEjmaTx83USGrAC3ZKinnk5nUKU0CwIDAQABAoIBAQCvl8jYnvt+YELL\njJrSW+dqi0yAp6aDA/uqUrChLr9409a/raaIGj42S7MgqZmspdR8b9qhsrTw0sDu\n1rkbeX7euvaiFBZhhR4E0PJabJczgkCuuct3LBoiYoidZvSsFTbHgsFiDaNQn1eo\nw7xkyY9oITvbSpwbVVuI8NsH78h2jNqdxBmEo9JAWQiJwVG28Gvcf0+KxZydAj9q\nGlfiCVDoYeqejCVVSU1yjzvJwhNC4fK4Jy0JzpmFYBMj3BMRT/lnzvJdXABbxb/7\n2FWojkq4IRaUL1g/r0W0pErJavx5PSHgm3sQawXdHcmZ8ZLCDZZmG0mZOqAohtH+\nRNdJsTcZAoGBAOsT7Dc44hJhMvZKkjvHhixWWl6L3E6yXZ8LxhaQ0qw5vYwMQ6BU\nJjY+PzjMjskJs9hYz5MWB9bcWPHkBLHajiUqp53W4S6/5046VrcQyIGxwlea0s8w\nufNrcQUXVT9EnYTvBvfW1DheUJiyn3rnr7hKyXVxrX5PY+DT64REHCLFAoGBAN5u\nmB0xTpXuiR5BdtVa8de7ChCOqTwXYIKtNiX6Q30UxKZJ7OwZoyASDKRsTXSeGW/r\n6Tb3jUEa/wcdngonacrid4BdGmKaMwHaKaZowxHMn5j3g6901mUu/AtV0q3nbJq5\nuCuFXeOnDA4vSpaml/UDvWvRqJbiPzLvqyhNcyiPAoGBAI7bfZqVi/VlckXwTWvc\ntfItzB9W2VxN0s07p3bBLfYR5Nm9/j7pxIsESwFmdoM/zTZ1yjd1lPAC2l6tlhjL\nW8TEZjZqhlAVuSh2FYqMvXzrnNIGOYRF9UsziOxyIJEhTqShadelizRyRIJ3Uqmr\nMMNLV6Byo991uZnAz4iCp6KNAoGBAJyTM0bRb6VBHYqLwI/djgIzKpmPIvgm6Iv0\nS/qd2aYR2X/I6BsmzNqFehrAFiHyLKvJYAiOaAOdckpbAeXZ6rGji0VzxGAGdcNn\nBAydEDvWU75E9ZCr6UOeuFNuXXiHQL8F3uvb3MSk0WqmxZWYvbz+nfdoxYk4yA4e\nAdjD9D1nAoGAVDUAqgbUMYp7toDTgamj0Qlu+Uz1QK8QXN7O0QN+iDi9Gr1BSUAh\ngkztyH0g0nY1tD7WPAwM/kNupd0SI9z9q5K36wGrNlETF7wdOHgWl3sQlTDepNzr\nlCxbgNyTgFhC6N+1YhY1QKOvjjPS+tHAhMR0FnH9gUW1RtBQLUxpfFM=\n-----END RSA PRIVATE KEY-----'
+            httpCert: '',
+            httpKey: ''
           };
         },
         // 保存商户的按钮事件
@@ -486,8 +495,55 @@
             }
             this.splice('merchant.permission', index, 1);
           }
+        },
+
+        // html5 读取证书文件内容
+        handleWeixinHttpCertFile: function(e) {
+          var _this = this;
+          var files = e.srcElement.files;
+          // console.log(files);
+          if (files.length) {
+            var file = files[0];
+            if ('application/x-x509-ca-cert' === file.type) {
+              var reader = new FileReader();
+              reader.onload = function() {
+                //   console.log(this.result);
+                if (/BEGIN CERTIFICATE/.test(this.result) === false) {
+                  Util.toast("文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头", 3000);
+                  return;
+                }
+                _this.set('weixin.httpCert', this.result);
+              }
+              reader.readAsText(file);
+            } else {
+              Util.toast("文件格式错误，只能上传 PEM 格式的文件", 3000);
+            }
+          }
+        },
+        handleWeixinHttpKeyFile: function(e) {
+          var _this = this;
+          var files = e.srcElement.files;
+          // console.log(files);
+          if (files.length) {
+            var file = files[0];
+            if ('application/x-x509-ca-cert' === file.type) {
+              var reader = new FileReader();
+              reader.onload = function() {
+                console.log(this.result);
+                if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
+                  Util.toast("文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头", 3000);
+                  return;
+                }
+                _this.set('weixin.httpKey', this.result);
+              }
+              reader.readAsText(file);
+            } else {
+              Util.toast("文件格式错误，只能上传 PEM 格式的文件", 3000);
+            }
+          }
         }
       });
     })();
+
   </script>
 </dom-module>

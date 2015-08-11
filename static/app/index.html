@@ -110,6 +110,10 @@
                 <iron-icon icon="assignment-ind"></iron-icon>
                 <span>代理商</span>
               </a>
+              <a data-route="config.groups" href="/config/groups">
+                <iron-icon icon="store"></iron-icon>
+                <span>集团商户</span>
+              </a>
             </paper-menu>
           </iron-collapse>
 
@@ -138,7 +142,11 @@
               </a>
               <a data-route="test.qiniu" href="/test/qiniu">
                 <iron-icon icon="list"></iron-icon>
-                <span>测试七牛 Ajax 上传文件</span>
+                <span>七牛 Ajax 上传文件</span>
+              </a>
+              <a data-route="test.filereader" href="/test/filereader">
+                <iron-icon icon="list"></iron-icon>
+                <span>HTML5读取文件内容</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -233,6 +241,13 @@
                 <agent-list is-editable is-deletable></agent-list>
               </paper-material>
             </section>
+
+            <section data-route="config.groups">
+              <paper-material elevation="1">
+                <group-list is-editable is-deletable></group-list>
+              </paper-material>
+            </section>
+
             <section data-route="test.scanpay">
               <paper-material elevation="1">
                 <test-scanpay is-deletable></test-scanpay>
@@ -242,6 +257,12 @@
             <section data-route="test.qiniu">
               <paper-material elevation="1">
                 <test-qiniu is-deletable></test-qiniu>
+              </paper-material>
+            </section>
+
+            <section data-route="test.filereader">
+              <paper-material elevation="1">
+                <test-filereader is-deletable></test-filereader>
               </paper-material>
             </section>
 
