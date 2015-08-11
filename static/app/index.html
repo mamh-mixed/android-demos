@@ -138,7 +138,11 @@
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
               <a data-route="test.scanpay" href="/test/scanpay">
                 <iron-icon icon="list"></iron-icon>
-                <span>扫码测试</span>
+                <span>测试扫码</span>
+              </a>
+              <a data-route="test.qiniu" href="/test/qiniu">
+                <iron-icon icon="list"></iron-icon>
+                <span>测试七牛 Ajax 上传文件</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -199,7 +203,13 @@
 
             <section data-route="config.configMer">
               <paper-material elevation="1">
-                <config-merchant is-editable></config-merchant>
+                <config-merchant></config-merchant>
+              </paper-material>
+            </section>
+
+            <section data-route="config.merchant">
+              <paper-material elevation="1">
+                <config-merchant mer-id="{{route.params.merId}}"></config-merchant>
               </paper-material>
             </section>
 
@@ -240,6 +250,12 @@
               </paper-material>
             </section>
 
+            <section data-route="test.qiniu">
+              <paper-material elevation="1">
+                <test-qiniu is-deletable></test-qiniu>
+              </paper-material>
+            </section>
+
           </iron-pages>
         </div>
       </paper-scroll-header-panel>
@@ -253,6 +269,8 @@
   <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
   <!-- endbuild-->
+
+</script>
 </body>
 
 </html>

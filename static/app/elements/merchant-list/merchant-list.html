@@ -257,9 +257,10 @@
         },
         // 编辑机构商户
         handleItemEditedEvent: function(e, detail) {
-          console.log('edite item');
-          this.$.merchantEditor.merchant = detail;
-          this.$.merchantEditor.open();
+          //   this.$.merchantEditor.merchant = detail;
+          //   this.$.merchantEditor.open();
+          window.location.href = '/#!/config/merchant/' + detail.merId;
+          window.location.reload();
         },
         _computePermissions: function(permissions) {
           var map = {};

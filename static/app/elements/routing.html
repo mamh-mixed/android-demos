@@ -43,6 +43,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '录入机构商户，配置渠道商户（微信、支付宝、QQ 钱包）'
       };
     });
+    page('/config/merchant/:merId', function(data) {
+      app.route = {
+        name: 'config.merchant',
+        path: '/config/merchant/:merId',
+        title: '变更扫码支付商户和渠道',
+        subtitle: '变更机构商户，配置渠道商户（微信、支付宝、QQ 钱包）',
+        params: data.params
+      };
+    });
     page('/config/merchants', function() {
       app.route = {
         name: 'config.merchants',
@@ -102,6 +111,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         path: '/test/scanpay',
         title: '扫码支付交易测试',
         subtitle: '可以测试下单、预下单、支付、查询、退款、关闭订单、企业支付'
+      };
+    });
+
+    page('/test/qiniu', function() {
+      app.route = {
+        name: 'test.qiniu',
+        path: '/test/qiniu',
+        title: '测试七牛上传文件',
+        subtitle: '测试七牛 Ajax 上传文件'
       };
     });
 
