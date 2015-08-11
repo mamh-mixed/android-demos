@@ -7,8 +7,8 @@
     }
 
     paper-tabs {
-      background-color: #00bcd4;
-      color: #fff;
+      background-color: var(--default-primary-color);
+      color: var(--text-primary-color);
       box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
     }
 
@@ -69,9 +69,9 @@
       padding-top: 0;
     }
 
-    paper-button[raised] {
-      background: #3498db;
-      color: #fff;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
     }
 
   </style>
@@ -122,7 +122,7 @@
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-button raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
         </div>
       </section>
       <section>
@@ -138,7 +138,7 @@
           <paper-input label="签名证书" value="{{alipay.signCert::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-button raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
       </section>
       <section>
@@ -171,10 +171,14 @@
           <pre>{{weixin.httpKey}}</pre>
         </div>
         <div class="row">
-          <paper-button raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
         </div>
       </section>
-      <section>即将上线。。。</section>
+      <section>
+        <div class="row">
+          <paper-input label="即将上线。。。" value=""></paper-input>
+        </div>
+      </section>
     </iron-pages>
     <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>

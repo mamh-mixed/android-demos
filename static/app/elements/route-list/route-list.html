@@ -26,9 +26,9 @@
       margin: 10px 0px 0px;
     }
 
-    paper-button[raised].colorful {
-      background: #3498db;
-      color: #fff;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
     }
 
     card-item {
@@ -40,6 +40,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -202,5 +203,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

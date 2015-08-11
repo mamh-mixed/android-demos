@@ -28,11 +28,10 @@
       margin: 10px 0px 0px;
     }
 
-    paper-button[raised].colorful {
-      background: #3498db;
-      color: #fff;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
     }
-
     /*card-item {
       margin-bottom: 20px;
     }*/
@@ -60,6 +59,7 @@
     table tr td:nth-of-type(8) {
       text-align: right;
     }
+
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -250,5 +250,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>
