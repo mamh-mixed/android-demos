@@ -34,7 +34,7 @@
 
     paper-button.colorful {
       background: var(--dark-primary-color);
-      color: #000;
+      color: var(--text-primary-color);
     }
 
     .loading-more-wrapper {
@@ -78,7 +78,6 @@
     table tr td:nth-last-of-type(2) {
       text-align: right;
     }
-
   </style>
   <template>
     <iron-ajax id="queryAjax" method="POST" url="/scanpay/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -292,6 +291,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>
