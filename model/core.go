@@ -166,6 +166,11 @@ type Agent struct {
 	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` //代理商名称
 }
 
+type Group struct {
+	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"` // 集团代码
+	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"` //集团名称
+}
+
 // SettSchemeCd 计费方案代码
 type SettSchemeCd struct {
 	SchemeCd  string `bson:"schemeCd"`
