@@ -1,0 +1,174 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="group-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    .condition {
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
+      margin-bottom: 15px;
+    }
+
+    .condition > paper-input,
+    .condition > x-select {
+      min-width: 170px;
+      margin-right: 20px;
+    }
+
+    .condition > .buttons {
+      min-width: 170px;
+    }
+
+    .condition > .buttons > paper-button {
+      width: 100%;
+      margin: 10px 0px 0px;
+    }
+
+    paper-button[raised].colorful {
+      background: #3498db;
+      color: #fff;
+    }
+
+    card-item {
+      margin-bottom: 20px;
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
+  </style>
+  <template>
+    <iron-ajax id="queryAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <div class="condition">
+      <paper-input label="集团代码" value="{{cond.groupCode::input}}"></paper-input>
+      <paper-input label="集团名称" value="{{cond.groupName::input}}"></paper-input>
+      <div class="buttons">
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      </div>
+    </div>
+
+    <template is="dom-repeat" items="{{groups}}">
+      <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" on-item-deleted="handleItemDeletedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
+        <dl>
+          <dt>集团代码</dt>
+          <dd>
+            <span>{{item.groupCode}}</span>
+          </dd>
+
+          <dt>集团名称</dt>
+          <dd>
+            <span>{{item.groupName}}</span>
+          </dd>
+        </dl>
+      </card-item>
+    </template>
+
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+    </paper-fab>
+
+    <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'group-list',
+        properties: {
+          autoLoading: {
+            type: Boolean,
+            value: false
+          },
+          isAllowSelected: {
+            type: Boolean,
+            value: false
+          },
+          isEditable: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          isDeletable: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          }
+        },
+        ready: function() {
+          this.groups = [];
+          this.cond = {};
+        },
+        attached: function() {
+          if (this.autoLoading) {
+            this.handleQueryTapped();
+          }
+        },
+        // 发送查询交易的ajax请求
+        handleQueryTapped: function() {
+          this.groups = [];
+          this.$.queryAjax.params = this.cond;
+          this.$.queryAjax.generateRequest();
+        },
+        // ajax请求响应处理
+        handleQueryResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+          }
+
+          this.groups = response.data.slice(0);
+        },
+        // 代理商选中事件
+        handleItemStaredEvent: function(e) {
+          var staredItem = e.model.item;
+          this.fire('item-selected', staredItem);
+          if (!staredItem.stared) {
+            return;
+          }
+
+          for (var i = 0, l = this.groups.length; i < l; i++) {
+            var item = this.groups[i];
+            if (item.groupCode !== staredItem.groupCode) {
+              this.set('groups.' + i + '.stared', false);
+            }
+          }
+        },
+        // 编辑集团商户
+        handleItemEditedEvent: function(e, detail) {
+          this.$.groupEditor.group = detail;
+          this.$.groupEditor.open();
+        },
+        // 删除集团商户事件
+        handleItemDeletedEvent: function(e, detail) {
+          var obj = {
+            groupCode: detail.groupCode,
+            groupName: detail.groupName
+          };
+          this.$.deleteAjax.params = obj;
+          this.$.deleteAjax.generateRequest();
+        },
+        // 删除集团商户响应事件,刷新列表
+        handleDeleteResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.handleQueryTapped();
+        },
+        // 新增集团商户事件
+        handleCreateFabTapped: function() {
+          this.$.groupEditor.open();
+        },
+        // 新集团商户保存成功事件，刷新列表
+        handleGroupSave: function() {
+          this.handleQueryTapped();
+        }
+      });
+    })();
+  </script>
+</dom-module>

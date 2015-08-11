@@ -45,6 +45,10 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 		ret = AllAgent(data)
 	case "/quickMaster/agent/add":
 		ret = AddAgent(data)
+	case "/quickMaster/group/all":
+		ret = AllGroup(data)
+	case "/quickMaster/group/add":
+		ret = AddGroup(data)
 	default:
 		w.WriteHeader(404)
 	}
@@ -285,6 +289,65 @@ func AddAgent(data []byte) (result *model.ResultBody) {
 		Status:  0,
 		Message: "操作成功",
 		Data:    a,
+	}
+
+	return
+}
+
+// AllGroup 处理查找所有集团的请求
+func AllGroup(data []byte) (result *model.ResultBody) {
+	cond := new(model.Group)
+	err := json.Unmarshal(data, cond)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	groups, err := mongo.GroupColl.FindByCondition(cond)
+
+	if err != nil {
+		log.Errorf("查询集团商户出错:%s", err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    groups,
+	}
+
+	return
+}
+
+// AddGroup 处理新增一个集团商户的请求
+func AddGroup(data []byte) (result *model.ResultBody) {
+	g := new(model.Group)
+	err := json.Unmarshal(data, g)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if g.GroupCode == "" {
+		log.Error("没有GroupCode")
+		return model.NewResultBody(3, "缺失必要元素GroupCode")
+	}
+
+	if g.GroupName == "" {
+		log.Error("没有GroupName")
+		return model.NewResultBody(3, "缺失必要元素GroupName")
+	}
+
+	err = mongo.GroupColl.Add(g)
+	if err != nil {
+		log.Errorf("新增集团商户失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    g,
 	}
 
 	return

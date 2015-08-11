@@ -68,6 +68,16 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = Agent.Delete(agentCode, agentName)
 	case "/master/agent/save":
 		ret = Agent.Save(data)
+	case "/master/group/find":
+		groupCode := r.FormValue("groupCode")
+		groupName := r.FormValue("groupName")
+		ret = Group.Find(groupCode, groupName)
+	case "/master/group/delete":
+		groupCode := r.FormValue("groupCode")
+		groupName := r.FormValue("groupName")
+		ret = Group.Delete(groupCode, groupName)
+	case "/master/group/save":
+		ret = Group.Save(data)
 
 	default:
 		w.WriteHeader(404)
