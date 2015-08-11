@@ -16,12 +16,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // client-side router inspired by the Express router
     // More info: https://visionmedia.github.io/page.js/
     page('/', function () {
-      app.route = {
-          name: 'home',
-          path: '/',
-          title: '快捷支付管理平台',
-          subtitle: '上海讯联数据服务有限公司'
-      };
+        app.route = {
+          name: 'config.configMer',
+          path: '/config/configMer',
+          title: '配置扫码支付商户和渠道',
+          subtitle: '录入机构商户，配置渠道商户（微信、支付宝、QQ 钱包）'
+        };
     });
     //
     // page('/system/users', function () {
@@ -111,6 +111,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         path: '/test/qiniu',
         title: '测试七牛上传文件',
         subtitle: '测试七牛 Ajax 上传文件'
+      };
+    });
+
+    page('/test/filereader', function() {
+      app.route = {
+        name: 'test.filereader',
+        path: '/test/filereader',
+        title: '测试 HTML5 读取文件内容',
+        subtitle: '测试 HTML5 读取文件内容'
       };
     });
 

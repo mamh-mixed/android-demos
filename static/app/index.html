@@ -138,7 +138,11 @@
               </a>
               <a data-route="test.qiniu" href="/test/qiniu">
                 <iron-icon icon="list"></iron-icon>
-                <span>测试七牛 Ajax 上传文件</span>
+                <span>七牛 Ajax 上传文件</span>
+              </a>
+              <a data-route="test.filereader" href="/test/filereader">
+                <iron-icon icon="list"></iron-icon>
+                <span>HTML5读取文件内容</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -242,6 +246,12 @@
             <section data-route="test.qiniu">
               <paper-material elevation="1">
                 <test-qiniu is-deletable></test-qiniu>
+              </paper-material>
+            </section>
+
+            <section data-route="test.filereader">
+              <paper-material elevation="1">
+                <test-filereader is-deletable></test-filereader>
               </paper-material>
             </section>
 
