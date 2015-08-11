@@ -118,9 +118,14 @@
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
+            return;
           }
 
           this.agents = response.data.slice(0);
+
+          if (this.agents.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
         },
         // 代理商选中事件
         handleItemStaredEvent: function(e) {

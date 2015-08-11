@@ -5,8 +5,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 300px;
-        min-height: 120px;
+        min-width: 320px;
+        min-height: 160px;
       }
     }
 
@@ -33,6 +33,8 @@
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input label="代理商代码" value="{{agent.agentCode::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input label="代理商名称" value="{{agent.agentName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>

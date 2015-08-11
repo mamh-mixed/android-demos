@@ -5,8 +5,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 300px;
-        min-height: 120px;
+        min-width: 320px;
+        min-height: 220px;
       }
     }
 
@@ -32,7 +32,15 @@
       <h2>编辑集团商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
+          <paper-input label="代理商代码" value="{{group.agentCode::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="代理商名称" value="{{group.agentName::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input label="集团代码" value="{{group.groupCode::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input label="集团名称" value="{{group.groupName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
@@ -49,11 +57,11 @@
 
         properties: {
           group: {
-            type:Object
+            type: Object
           }
         },
-        ready: function(){
-          this.group={};
+        ready: function() {
+          this.group = {};
         },
         open: function() {
           console.log('open me');
