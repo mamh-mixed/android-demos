@@ -8,12 +8,30 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestTransFindAndGroupBy(t *testing.T) {
+
+	q := &model.QueryCondition{
+		StartTime:   "2015-07-01 00:00:00",
+		EndTime:     "2015-08-30 00:00:00",
+		TransStatus: model.TransSuccess,
+		TransType:   model.PayTrans,
+		MerIds:      []string{"100000000000203", "wonsikinTest"},
+	}
+	t.Logf("%+v", q)
+	ss, err := SpTransColl.FindAndGroupBy(q)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log(ss)
+}
+
 func TestFindTransQuery(t *testing.T) {
 
 	q := &model.QueryCondition{
 		StartTime: "2015-07-01 00:00:00",
 		EndTime:   "2015-07-30 00:00:00",
-		Mchntid:   "100000000000203",
+		MerId:     "100000000000203",
 		Page:      1,
 		Size:      10,
 	}

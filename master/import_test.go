@@ -1,45 +1,20 @@
 package master
 
 import (
-	"bytes"
-	"io"
 	"io/ioutil"
-	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"os"
+	"net/url"
 	"testing"
 )
 
 func TestImportFromCsv(t *testing.T) {
 
-	buf := &bytes.Buffer{}
-	fw := multipart.NewWriter(buf)
-	w, err := fw.CreateFormFile("merchant", "merchant.csv")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	file, err := os.Open("/Users/zhiruichen/Desktop/respCode_scanpay.csv")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	_, err = io.Copy(w, file)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	contentType := fw.FormDataContentType()
-	t.Log("contentType: " + contentType)
-	fw.Close()
-
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { importMerchant(w, r) }))
 
-	resp, err := http.Post(ts.URL, contentType, buf)
+	params := url.Values{}
+	params.Add("key", "tple.xlsx")
+	resp, err := http.PostForm(ts.URL, params)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

@@ -20,24 +20,62 @@ const (
 	Jszf = "JSZF"
 )
 
-// QueryCondition 扫码交易查询
+// QueryCondition 扫码交易查询字段
 type QueryCondition struct {
-	Mchntid      string  `json:"mchntid,omitempty"`
-	TransStatus  string  `json:"transStatus,omitempty"`
-	StartTime    string  `json:"startTime,omitempty"`
-	EndTime      string  `json:"endTime,omitempty"`
-	Busicd       string  `json:"busicd,omitempty"`
-	OrderNum     string  `json:"orderNum,omitempty"`
-	OrigOrderNum string  `json:"origOrderNum,omitempty"`
-	NextOrderNum string  `json:"nextOrderNum,omitempty"`
-	RespCode     string  `json:"respCode,omitempty"`
-	RespMsg      string  `json:"respMsg,omitempty"`
-	Count        int     `json:"count,omitempty"`
-	Page         int     `json:"page,omitempty"`
-	Total        int     `json:"total,omitempty"`
-	Size         int     `json:"size,omitempty"`
-	Rec          []Trans `json:"rec,omitempty"`
-	IsForReport  bool    `json:"-"`
+	MerName      string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
+	MerId        string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
+	MerIds       []string `json:"-"`
+	TransStatus  string   `json:"transStatus,omitempty"`
+	TransType    int      `json:"transType,omitempty"`
+	StartTime    string   `json:"startTime,omitempty"`
+	EndTime      string   `json:"endTime,omitempty"`
+	Busicd       string   `json:"busicd,omitempty"`
+	OrderNum     string   `json:"orderNum,omitempty"`
+	OrigOrderNum string   `json:"origOrderNum,omitempty"`
+	NextOrderNum string   `json:"nextOrderNum,omitempty"`
+	Count        int      `json:"count,omitempty"`
+	Page         int      `json:"page,omitempty"`
+	Total        int      `json:"total,omitempty"`
+	Size         int      `json:"size,omitempty"`
+	IsForReport  bool     `json:"-"`
+}
+
+// QueryResult 查询结果值
+type QueryResult struct {
+	Rec      []Trans    `json:"rec,omitempty"`     // 交易明细
+	Summary  []*Summary `json:"summary,omitempty"` // 交易概括
+	Page     int        `json:"page,omitempty"`
+	Total    int        `json:"total,omitempty"`
+	Size     int        `json:"size,omitempty"`
+	Count    int        `json:"count,omitempty"`
+	RespCode string     `json:"respCode,omitempty"`
+	RespMsg  string     `json:"respMsg,omitempty"`
+}
+
+// Summary 商户交易汇总
+type Summary struct {
+	MerId         string  `json:"merId"`
+	TotalTransAmt float64 `json:"totalTransAmt"`
+	TotalTransNum int     `json:"totalTransNum"`
+	Wxp           struct {
+		TransAmt float64 `json:"transAmt"`
+		TransNum int     `json:"transNum"`
+	}
+	Alp struct {
+		TransAmt float64 `json:"transAmt"`
+		TransNum int     `json:"transNum"`
+	}
+}
+
+// TransGroup 按商户号和渠道号统计分组
+type TransGroup struct {
+	TransAmt  int64 `bson:"transAmt"`
+	RefundAmt int64 `bson:"refundNum"`
+	TransNum  int   `bson:"transNum"`
+	Key       struct {
+		MerId    string `bson:"merId"`
+		ChanCode string `bson:"chanCode"`
+	} `bson:"key,omitempty"`
 }
 
 // ScanPayRequest 扫码支付

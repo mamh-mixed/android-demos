@@ -1,52 +1,77 @@
 package master
 
 import (
-	"encoding/csv"
-	"github.com/CardInfoLink/quickpay/model"
+	"archive/zip"
+	"bytes"
 	"github.com/omigo/log"
+	"github.com/tealeg/xlsx"
+	"io/ioutil"
 	"net/http"
-	"strings"
+	"qiniupkg.com/api.v7/conf"
+	"qiniupkg.com/api.v7/kodo"
 )
 
 const (
-	totalFieldNum = 22
+	domain = "7xl02q.com1.z0.glb.clouddn.com"
 )
 
-// importMerchant 接受csv格式文件，导入商户
+var client = kodo.Client{}
+
+func init() {
+	conf.ACCESS_KEY = "-OOrgfZJbxz29kiW6HQsJ_OQJcjX6gaPRDf6xOcc"
+	conf.SECRET_KEY = "rgBxbGeGJluv8ApEjY1RL2vq9IIfXcQAQqH4ttGo"
+}
+
+// importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
 
-	r.ParseMultipartForm(32 << 20)
-	file, handler, err := r.FormFile("merchant")
+	// 调用七牛api获取刚上传的图片
+	key := r.FormValue("key")
+	baseUrl := kodo.MakeBaseUrl(domain, key)
+	privateUrl := client.MakePrivateUrl(baseUrl, nil)
+
+	resp, err := http.Get(privateUrl)
 	if err != nil {
-		w.Write([]byte("文件上传错误，请重新上传:" + err.Error()))
-		return
-	}
-	defer file.Close()
-
-	// 判断是否csv文件
-	filename := handler.Filename
-	log.Debugf("file name : %s", filename)
-	if !strings.HasSuffix(filename, "csv") {
-		w.Write([]byte("文件类型错误，请上传csv文件"))
+		log.Error(err)
 		return
 	}
 
-	reader := csv.NewReader(file)
-	reader.TrimLeadingSpace = true
-	reader.Comment = '\n'
-	rawCSVdata, err := reader.ReadAll()
+	ebytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Error(err)
+		return
+	}
 
-	// 顺序 [商户编号 商户名称 机构号 权限（空即默认全部开放） 是否开启验签 签名密钥 商户商品名称 支付宝商户号 支付宝商户名称 讯联跟支付宝费率 商户跟讯联费率(支付宝) 支付宝密钥 微信商户号 微信子商户号 微信商户名称 是否代理商模式 微信AppId 讯联跟微信费率 商户跟讯联费率(微信) 微信签名密钥 微信http证书 微信http密钥]
-	for i, mer := range rawCSVdata {
-		log.Debug(len(mer))
-		// 跳过头行
-		if i == 0 {
-			continue
-		}
-		if len(mer) != totalFieldNum {
-			m := &model.Merchant{}
-			m.MerId = mer[0]
+	// 判断内容类型
+	contentType := resp.Header.Get("content-type")
+	if contentType == "application/json" {
+		log.Error(string(ebytes))
+		return
+	}
+
+	// 包装成zipReader
+	reader := bytes.NewReader(ebytes)
+	zipReader, err := zip.NewReader(reader, int64(len(ebytes)))
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	// 转换成excel
+	file, err := xlsx.ReadZipReader(zipReader)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	// 读取数据
+	for _, v := range file.Sheets {
+		for _, r := range v.Rows {
+			for _, c := range r.Cells {
+				log.Debug(c.Value)
+			}
 		}
 	}
 
+	// TODO 校验数据、入库
 }

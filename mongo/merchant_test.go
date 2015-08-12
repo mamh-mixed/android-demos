@@ -62,3 +62,12 @@ func TestFindAllMerchant(t *testing.T) {
 	}
 
 }
+
+func TestFuzzyFind(t *testing.T) {
+	mers, total, err := MerchantColl.FuzzyFind(&model.QueryCondition{})
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log(mers, total)
+}

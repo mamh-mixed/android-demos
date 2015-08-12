@@ -178,8 +178,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	if q.OrderNum != "" {
 		match["orderNum"] = q.OrderNum
 	}
-	if q.Mchntid != "" {
-		match["merId"] = q.Mchntid
+	if q.MerId != "" {
+		match["merId"] = q.MerId
 	}
 	if q.Busicd != "" {
 		match["busicd"] = q.Busicd
@@ -239,7 +239,32 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	return trans, total, err
 }
 
-// // Summary 统计
-// func (col *transCollection) Summary(transDate string) ([]model.Trans, int, error) {
+// FindAndGroupBy 统计
+func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, error) {
 
-// }
+	//根据商户号、清算时间查找成功清算交易的汇总信息
+	var s []model.TransGroup
+
+	//使用pipe统计
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": bson.M{
+			"createTime":  bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+			"merId":       bson.M{"$in": q.MerIds},
+			"transStatus": q.TransStatus,
+			"transType":   q.TransType,
+		}},
+		{"$group": bson.M{
+			"_id":       bson.M{"chanCode": "$chanCode", "merId": "$merId"},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum":  bson.M{"$sum": 1},
+		}},
+		{"$project": bson.M{"key": "$_id",
+			"transAmt":  1,
+			"chanCode":  1,
+			"refundAmt": 1,
+			"transNum":  1}},
+	}).All(&s)
+
+	return s, err
+}

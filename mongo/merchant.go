@@ -75,3 +75,30 @@ func (c *merchantCollection) FindAllMerchant(cond *model.Merchant) (results []mo
 
 	return
 }
+
+// FuzzyFind 模糊查询拿到merId
+func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Merchant, int, error) {
+
+	q := bson.M{}
+	if cond.MerName != "" {
+		or := []bson.M{}
+		or = append(or, bson.M{"merDetail.merName": bson.RegEx{cond.MerName, "."}})
+		or = append(or, bson.M{"merDetail.shortName": bson.RegEx{cond.MerName, "."}})
+		q["$or"] = or
+	}
+	if cond.MerId != "" {
+		and := []bson.M{}
+		and = append(and, bson.M{"merId": bson.RegEx{cond.MerId, "."}})
+		q["$and"] = and
+	}
+
+	total, err := database.C(c.name).Find(q).Count()
+	if err != nil {
+		return nil, total, err
+	}
+
+	skip := (cond.Page - 1) * cond.Size
+	var mers []*model.Merchant
+	err = database.C(c.name).Find(q).Sort("-merId").Select(bson.M{"merId": 1}).Skip(skip).Limit(cond.Size).All(&mers)
+	return mers, total, err
+}
