@@ -335,8 +335,10 @@
   var TRANS_TYPE_MAP = {
     'PURC': '下单支付',
     'PAUT': '预下单',
+    'INQY': '查询',
     'VOID': '撤销',
     'REFD': '退款',
+    'CANC': '关单',
     'VERI': '卡券核销',
     'QYFK': '企业付款',
     'JSZF': '公众号支付'
@@ -386,6 +388,9 @@
       }, {
         "value": "微信",
         "key": "WXP"
+      }, {
+        "value": "(不填)",
+        "key": ""
       }];
       this.checkNames = [{
         "key": "NO_CHECK",
