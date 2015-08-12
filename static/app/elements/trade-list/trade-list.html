@@ -265,7 +265,7 @@
           }
 
           if (response.rec) {
-            this.trades = this.trades.concat(response.rec.slice(0));
+            this.trades = response.rec.slice(0);
           }
           this.set('cond.total', response.total);
           this.set('cond.page', response.page);
