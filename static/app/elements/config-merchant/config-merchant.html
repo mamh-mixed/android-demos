@@ -87,12 +87,16 @@
       <section>
         <div class="row">
           <paper-input label="代理代码/机构代码" value="{{merchant.agentCode::input}}"></paper-input>
-          <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <paper-input label="代理名称/机构名称" value="{{merchant.agentName::input}}"></paper-input>
         </div>
-      <div class="row">
-        <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
-        <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
-      </div>
+        <div class="row">
+            <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
+        </div>
         <div class="row">
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
           <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
@@ -367,7 +371,9 @@
           this.idx = 0;
           this.merchant = {
             agentCode: '',
+            agentName: '',
             groupCode: '',
+            groupName: '',
             merId: '',
             detail: {
               merName: '',
@@ -376,7 +382,7 @@
               shopType: ''
             },
             merStatus: '',
-            transCurr: '',
+            transCurr: '156',
             signKey: '',
             isNeedSign: false,
             encryptKey: '',

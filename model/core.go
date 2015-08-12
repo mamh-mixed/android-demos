@@ -102,7 +102,9 @@ type CardBin struct {
 type Merchant struct {
 	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
 	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 商户状态（Normal，Deleted，Test）
+	AgentName  string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 商户状态（Normal，Deleted，Test）
 	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 代理/机构代码
+	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 代理/机构代码
 	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 集团商户代码
 	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
 	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
