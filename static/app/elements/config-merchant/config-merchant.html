@@ -191,7 +191,7 @@
     <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
     <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
-    <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
+    <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
     <iron-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></iron-ajax>
     <iron-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></iron-ajax>
     <iron-ajax id="wxpRouterAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleWxpRouterResponse"></iron-ajax>
@@ -293,17 +293,8 @@
             return;
           }
 
-          var merchants = response.data.slice();
-          if (merchants.length === 0) {
-            return;
-          }
 
-          if (merchants.length > 1) {
-            Util.toast('找到两条商户信息', 3000);
-            return;
-          }
-
-          var item = merchants[0],
+          var item = response.data,
             permissions = item.permission || [];
           this.set('merchant', item);
           // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示

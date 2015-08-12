@@ -13,34 +13,36 @@ type chanMer struct{}
 var ChanMer chanMer
 
 // Find 根据条件查找商户。
-func (c *chanMer) Find(chanCode, chanMerId, chanMerName string) (result *model.ResultBody) {
+func (c *chanMer) Find(chanCode, chanMerId, chanMerName string, size, page int) (result *model.ResultBody) {
 	log.Debugf("chanCode is %s; chanMerId is %s; chanMerName is %s", chanCode, chanMerId, chanMerName)
 
-	cond := new(model.ChanMer)
-
-	if chanCode != "" {
-		cond.ChanCode = chanCode
+	if page <= 0 {
+		return model.NewResultBody(400, "page 参数错误")
 	}
 
-	if chanMerId != "" {
-		cond.ChanMerId = chanMerId
+	if size == 0 {
+		size = 10
 	}
 
-	if chanMerName != "" {
-		cond.ChanMerName = chanMerName
-	}
-
-	chanMers, err := mongo.ChanMerColl.FindByCondition(cond)
-
+	chanMers, total, err := mongo.ChanMerColl.PaginationFind(chanCode, chanMerId, chanMerName, size, page)
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  page,
+		Total: total,
+		Size:  size,
+		Count: len(chanMers),
+		Data:  chanMers,
+	}
+
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",
-		Data:    chanMers,
+		Data:    pagination,
 	}
 
 	return result

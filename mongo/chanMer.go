@@ -66,3 +66,39 @@ func (col *chanMerCollection) FindByCondition(cond *model.ChanMer) (results []mo
 
 	return
 }
+
+// PaginationFind 分页查找渠道商户的信息
+func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName string, size, page int) (results []model.ChanMer, total int, err error) {
+	results = make([]model.ChanMer, 1)
+
+	match := bson.M{}
+	if chanCode != "" {
+		match["chanCode"] = chanCode
+	}
+	if chanMerId != "" {
+		match["chanMerId"] = chanMerId
+	}
+	if chanMerName != "" {
+		match["chanMerName"] = chanMerName
+	}
+
+	// 计算总数
+	total, err = database.C(col.name).Find(match).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	cond := []bson.M{
+		{"$match": match},
+	}
+
+	skip := bson.M{"$skip": (page - 1) * size}
+
+	limit := bson.M{"$limit": size}
+
+	cond = append(cond, skip, limit)
+
+	err = database.C(col.name).Pipe(cond).All(&results)
+
+	return results, total, err
+}
