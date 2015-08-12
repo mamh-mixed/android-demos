@@ -89,15 +89,15 @@
             <span>配置管理</span>
           </a>
           <iron-collapse opened="{{ startWith(route.name, 'config') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" >
-                <a data-route="config.agents" href="/config/agents">
-                  <iron-icon icon="assignment-ind"></iron-icon>
-                  <span>代理/机构</span>
-                </a>
-                <a data-route="config.groups" href="/config/groups">
-                  <iron-icon icon="store"></iron-icon>
-                  <span>集团商户</span>
-                </a>
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
+              <a data-route="config.agents" href="/config/agents">
+                <iron-icon icon="assignment-ind"></iron-icon>
+                <span>代理/机构</span>
+              </a>
+              <a data-route="config.groups" href="/config/groups">
+                <iron-icon icon="store"></iron-icon>
+                <span>集团商户</span>
+              </a>
               <a data-route="config.configMer" href="/config/configMer">
                 <iron-icon icon="settings-input-component"></iron-icon>
                 <span>商户录入</span>
@@ -122,7 +122,7 @@
             <span>交易查询</span>
           </a>
           <iron-collapse opened="{{ startWith(route.name, 'trades') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" >
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="trades.list" href="/trades/list">
                 <iron-icon icon="list"></iron-icon>
                 <span>扫码交易</span>
@@ -280,7 +280,7 @@
   <script src="scripts/util.js"></script>
   <!-- endbuild-->
 
-</script>
+  </script>
 </body>
 
 </html>
