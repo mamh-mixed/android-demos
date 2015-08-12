@@ -12,11 +12,19 @@ type merchant struct{}
 
 var Merchant merchant
 
-// Find 根据条件查找商户。
-func (m *merchant) Find(merId, merStatus string) (result *model.ResultBody) {
+// Find 根据条件分页查找商户。
+func (m *merchant) Find(merId, merStatus string, size, page int) (result *model.ResultBody) {
 	log.Debugf("merId is %s; merStatus is %s", merId, merStatus)
 
+	if page <= 0 {
+		return model.NewResultBody(400, "page 参数错误")
+	}
+
 	cond := new(model.Merchant)
+
+	if size == 0 {
+		size = 10
+	}
 
 	if merId != "" {
 		cond.MerId = merId
@@ -26,17 +34,25 @@ func (m *merchant) Find(merId, merStatus string) (result *model.ResultBody) {
 		cond.MerStatus = merStatus
 	}
 
-	merchants, err := mongo.MerchantColl.FindAllMerchant(cond)
-
+	merchants, total, err := mongo.MerchantColl.PaginationFind(merId, merStatus, size, page)
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  page,
+		Total: total,
+		Size:  size,
+		Count: len(merchants),
+		Data:  merchants,
+	}
+
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",
-		Data:    merchants,
+		Data:    pagination,
 	}
 
 	return result

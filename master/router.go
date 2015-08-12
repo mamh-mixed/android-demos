@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/CardInfoLink/quickpay/model"
 
@@ -30,7 +31,9 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/merchant/find":
 		merId := r.FormValue("merId")
 		merStatus := r.FormValue("merStatus")
-		ret = Merchant.Find(merId, merStatus)
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		ret = Merchant.Find(merId, merStatus, size, page)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
 	case "/master/router/save":
