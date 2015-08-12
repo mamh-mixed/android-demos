@@ -104,6 +104,8 @@ type Merchant struct {
 	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
 	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
 	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
+	AgentName  string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理/机构名称
+	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
 	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
 	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
 	IsNeedSign bool      `bson:"isNeedSign,omitempty" json:"isNeedSign,omitempty"` // 是否开启验签

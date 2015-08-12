@@ -63,6 +63,19 @@ var (
 // -----END RSA PRIVATE KEY-----`
 )
 
+func TestPaginationFindChanMer(t *testing.T) {
+	chanCode, chanMerId, chanMerName := "", "", ""
+	size, page := 10, 1
+	results, total, err := ChanMerColl.PaginationFind(chanCode, chanMerId, chanMerName, size, page)
+	if err != nil {
+		log.Errorf("fail: %s", err)
+	}
+
+	t.Logf("total is %d; collections are %#v", total, results)
+
+	t.Logf("current count is %d", len(results))
+}
+
 func TestChanMerFind(t *testing.T) {
 	chanMer, err := ChanMerColl.Find(chanCode, chanMerId)
 	if err != nil {
