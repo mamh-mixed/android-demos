@@ -119,13 +119,11 @@
           <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-        </div>
-        <div class="row">
           <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
         </div>
         <div class="row">
+          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
         <div class="row">
@@ -360,7 +358,7 @@
         ready: function() {
           this.idx = 0;
           this.merchant = {
-            insCode: ''
+            insCode: '',
             agentName: '',
             groupCode: '',
             groupName: '',
@@ -376,7 +374,7 @@
             signKey: '',
             isNeedSign: false,
             encryptKey: '',
-            permission: [],
+            permission: []
           };
           this.alipay = {
             chanCode: 'ALP',
