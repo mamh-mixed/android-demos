@@ -20,18 +20,8 @@ func (m *merchant) Find(merId, merStatus string, size, page int) (result *model.
 		return model.NewResultBody(400, "page 参数错误")
 	}
 
-	cond := new(model.Merchant)
-
 	if size == 0 {
 		size = 10
-	}
-
-	if merId != "" {
-		cond.MerId = merId
-	}
-
-	if merStatus != "" {
-		cond.MerStatus = merStatus
 	}
 
 	merchants, total, err := mongo.MerchantColl.PaginationFind(merId, merStatus, size, page)

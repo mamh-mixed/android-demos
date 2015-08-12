@@ -31,8 +31,8 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/merchant/find":
 		merId := r.FormValue("merId")
 		merStatus := r.FormValue("merStatus")
-		page, _ := strconv.Atoi(r.FormValue("page"))
 		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
 		ret = Merchant.Find(merId, merStatus, size, page)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
@@ -54,7 +54,9 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		chanCode := r.FormValue("chanCode")
 		chanMerId := r.FormValue("chanMerId")
 		chanMerName := r.FormValue("chanMerName")
-		ret = ChanMer.Find(chanCode, chanMerId, chanMerName)
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = ChanMer.Find(chanCode, chanMerId, chanMerName, size, page)
 	case "/master/channelMerchant/findByMerIdAndCardBrand":
 		merId := r.FormValue("merId")
 		cardBrand := r.FormValue("cardBrand")
