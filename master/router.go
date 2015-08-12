@@ -34,6 +34,9 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		size, _ := strconv.Atoi(r.FormValue("size"))
 		page, _ := strconv.Atoi(r.FormValue("page"))
 		ret = Merchant.Find(merId, merStatus, size, page)
+	case "/master/merchant/one":
+		merId := r.FormValue("merId")
+		ret = Merchant.FindOne(merId)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
 	case "/master/router/save":

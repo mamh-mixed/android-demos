@@ -13,6 +13,25 @@ type merchant struct{}
 var Merchant merchant
 
 // Find 根据条件分页查找商户。
+func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
+	log.Debugf("merId is %s", merId)
+
+	merchant, err := mongo.MerchantColl.Find(merId)
+	if err != nil {
+		log.Errorf("查询一个商户(%s)出错: %s", merId, err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    merchant,
+	}
+
+	return result
+}
+
+// Find 根据条件分页查找商户。
 func (m *merchant) Find(merId, merStatus string, size, page int) (result *model.ResultBody) {
 	log.Debugf("merId is %s; merStatus is %s", merId, merStatus)
 
