@@ -12,31 +12,57 @@ type group struct{}
 
 var Group group
 
-//// Find 根据条件查找集团商户。
-func (g *group) Find(groupCode, groupName string) (result *model.ResultBody) {
-	log.Debugf("groupCode is %s; groupName is %s", groupCode, groupName)
+// Find 根据条件分页查找集团商户
+func (g *group) FindOne(groupCode string) (result *model.ResultBody) {
+	log.Debugf("groupCode is %s", groupCode)
 
-	cond := new(model.Group)
-
-	if groupCode != "" {
-		cond.GroupCode = groupCode
-	}
-
-	if groupName != "" {
-		cond.GroupName = groupName
-	}
-
-	groups, err := mongo.GroupColl.FindByCondition(cond)
+	group, err := mongo.GroupColl.Find(groupCode)
 
 	if err != nil {
-		log.Errorf("查询所有集团商户出错:%s", err)
+		log.Errorf("查询集团(%s)出错: %s", groupCode, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",
-		Data:    groups,
+		Data:    group,
+	}
+
+	return result
+}
+
+// Find 根据条件分页查找商户。
+func (g *group) Find(groupCode, groupName string, size, page int) (result *model.ResultBody) {
+	log.Debugf("groupCode is %s; groupName is %s", groupCode, groupName)
+
+	if page <= 0 {
+		return model.NewResultBody(400, "page 参数错误")
+	}
+
+	if size == 0 {
+		size = 10
+	}
+
+	groups, total, err := mongo.GroupColl.PaginationFind(groupCode, groupName, size, page)
+	if err != nil {
+		log.Errorf("查询所有集团出错:%s", err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  page,
+		Total: total,
+		Size:  size,
+		Count: len(groups),
+		Data:  groups,
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    pagination,
 	}
 
 	return result
@@ -76,10 +102,10 @@ func (i *group) Save(data []byte) (result *model.ResultBody) {
 	return result
 }
 
-// Delete 删除集团商户，参数是 groupCode, groupName
-func (g *group) Delete(groupCode, groupName string) (result *model.ResultBody) {
+// Delete 删除集团商户
+func (g *group) Delete(groupCode string) (result *model.ResultBody) {
 
-	err := mongo.GroupColl.Remove(groupCode, groupName)
+	err := mongo.GroupColl.Remove(groupCode)
 
 	if err != nil {
 		log.Errorf("删除集团商户失败: %s", err)

@@ -12,31 +12,56 @@ type agent struct{}
 
 var Agent agent
 
-//// Find 根据条件查找代理商。
-func (a *agent) Find(agentCode, agentName string) (result *model.ResultBody) {
-	log.Debugf("agentCode is %s; agentName is %s", agentCode, agentName)
+//// Find 根据条件分页查找代理商
+func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
+	log.Debugf("agentCode is %s", agentCode)
 
-	cond := new(model.Agent)
-
-	if agentCode != "" {
-		cond.AgentCode = agentCode
-	}
-
-	if agentName != "" {
-		cond.AgentName = agentName
-	}
-
-	agents, err := mongo.AgentColl.FindByCondition(cond)
-
+	agent, err := mongo.AgentColl.Find(agentCode)
 	if err != nil {
-		log.Errorf("查询所有代理商出错:%s", err)
+		log.Errorf("查询代理商(%s)出错:%s", agentCode, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",
-		Data:    agents,
+		Data:    agent,
+	}
+
+	return result
+}
+
+// Find 根据条件分页查找商户。
+func (a *agent) Find(agentCode, agentName string, size, page int) (result *model.ResultBody) {
+	log.Debugf("agentCode is %s; agentName is %s", agentCode, agentName)
+
+	if page <= 0 {
+		return model.NewResultBody(400, "page 参数错误")
+	}
+
+	if size == 0 {
+		size = 10
+	}
+
+	agents, total, err := mongo.AgentColl.PaginationFind(agentCode, agentName, size, page)
+	if err != nil {
+		log.Errorf("查询所有代理商出错:%s", err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  page,
+		Total: total,
+		Size:  size,
+		Count: len(agents),
+		Data:  agents,
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    pagination,
 	}
 
 	return result
@@ -76,10 +101,10 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 	return result
 }
 
-// Delete 删除代理商，参数是 agentCode, agentName
-func (a *agent) Delete(agentCode, agentName string) (result *model.ResultBody) {
+// Delete 删除代理商
+func (a *agent) Delete(agentCode string) (result *model.ResultBody) {
 
-	err := mongo.AgentColl.Remove(agentCode, agentName)
+	err := mongo.AgentColl.Remove(agentCode)
 
 	if err != nil {
 		log.Errorf("删除代理商失败: %s", err)
