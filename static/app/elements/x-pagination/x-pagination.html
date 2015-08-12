@@ -142,11 +142,10 @@
           this.set('page', this.page || 0);
 
           var maxPage = Math.ceil(this.total / this.size);
-          console.log('max page is ', maxPage);
           this.set('pageArray', []);
 
           var i = this.page - 2;
-          if (maxPage - this.page < 5) {
+          if (maxPage - this.page < 3) {
             i = maxPage - 4;
           }
           for (var l = 1; l <= Math.min(5, maxPage); i++) {
@@ -165,7 +164,7 @@
             this.isPreEllipsis = false;
           }
 
-          if (maxPage - this.page > 2) {
+          if (this.pageArray[4].value < maxPage) {
             this.isAfterEllipsis = true;
           } else {
             this.isAfterEllipsis = false;
