@@ -86,9 +86,13 @@
     <iron-pages selected="{{idx}}">
       <section>
         <div class="row">
-          <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
-          <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
+          <paper-input label="代理代码/机构代码" value="{{merchant.agentCode::input}}"></paper-input>
+          <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
         </div>
+      <div class="row">
+        <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
+        <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
+      </div>
         <div class="row">
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
           <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
@@ -362,39 +366,40 @@
         ready: function() {
           this.idx = 0;
           this.merchant = {
-            merId: 'wonsikinTest',
+            agentCode: '',
+            groupCode: '',
+            merId: '',
             detail: {
-              merName: '讯联数据测试商户',
-              brandNum: 'xxxxxxxxx',
-              shopId: '22424242',
-              shopType: '餐饮'
-
+              merName: '',
+              brandNum: '',
+              shopId: '',
+              shopType: ''
             },
-            merStatus: 'Normal',
-            transCurr: '156',
-            signKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycs',
+            merStatus: '',
+            transCurr: '',
+            signKey: '',
             isNeedSign: false,
-            encryptKey: 'zsdfyreuoyamdphhaweyrjbvzkgfdycszsdfyreuo=',
+            encryptKey: '',
             permission: [],
-            insCode: 'CIL00002'
+            insCode: ''
           };
           this.alipay = {
             chanCode: 'ALP',
-            chanMerId: '2088811767473826',
-            chanMerName: '讯联数据测试商户',
-            acqFee: '0.02',
-            merFee: '0.03',
-            signCert: 'eu1dr0c8znpa43blzy1wirzmk8jqdaon'
+            chanMerId: '',
+            chanMerName: '',
+            acqFee: '',
+            merFee: '',
+            signCert: ''
           };
           this.weixin = {
             chanCode: 'WXP',
             isAgent: true,
-            chanMerId: '1236593202',
-            chanMerName: '讯联数据测试商户',
-            acqFee: '0.006',
-            merFee: '0.006',
-            wxpAppId: 'wx25ac886b6dac7dd2',
-            signCert: '12sdffjjguddddd2widousldadi9o0i1',
+            chanMerId: '',
+            chanMerName: '',
+            acqFee: '',
+            merFee: '',
+            wxpAppId: '',
+            signCert: '',
             httpCert: '',
             httpKey: ''
           };
