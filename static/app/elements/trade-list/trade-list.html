@@ -5,6 +5,12 @@
       display: block;
     }
 
+    * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
     .condition {
       display: flex;
       flex-direction: row;
@@ -23,13 +29,12 @@
     }
 
     .condition > .buttons > paper-button {
-      /*width: 100%;*/
       margin: 10px 0px 0px;
     }
 
-    paper-button[raised].colorful {
-      background: #3498db;
-      color: #fff;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
     }
 
     .loading-more-wrapper {
@@ -38,15 +43,39 @@
 
     table {
       width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 30px;
     }
 
     table td {
       text-align: center;
     }
 
-    table tr td:nth-of-type(1),
-    table tr th:nth-of-type(8),
-    table tr td:nth-of-type(8) {
+    tr > th,
+    tr > td {
+      padding: 8px;
+    }
+
+    table > thead {}
+
+    thead > tr {}
+
+    thead > tr > th {
+      line-height: 1.42857143;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table > tbody {
+      min-height: 700px;
+    }
+
+    tbody>tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    table tr th:nth-last-of-type(2),
+    table tr td:nth-last-of-type(2) {
       text-align: right;
     }
   </style>
@@ -78,16 +107,15 @@
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
         <paper-button class="colorful" raised>
-            <a style="display:block; width:100%; height:100%; text-decoration:none" href="{{reportUri}}">下载报表</a>
+          <a style="display:block; width:100%; height:100%; text-decoration:none" href="{{reportUri}}">下载报表</a>
         </paper-button>
       </div>
     </div>
 
     <div class="list">
-      <table style="width:100%;">
+      <table>
         <thead>
           <tr>
-            <th></th>
             <th>订单号</th>
             <th>交易状态</th>
             <th>渠道</th>
@@ -101,9 +129,6 @@
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr>
-              <td>
-                <span>{{addOneFilter(index)}}</span>
-              </td>
               <td>
                 <span>{{item.orderNum}}</span>
               </td>
@@ -134,7 +159,7 @@
 
       </table>
       <div class="loading-more-wrapper">
-        <paper-button class="colorful" raised on-tap="handleLoadingMoreTapped">加载更多</paper-button>
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
       </div>
     </div>
   </template>
@@ -151,7 +176,8 @@
         'void': '撤销',
         'refd': '退款',
         'veri': '卡券核销',
-        'QYFK': '企业付款'
+        'QYFK': '企业付款',
+        'JSZF': '公众号支付'
       };
 
       Polymer({
@@ -203,8 +229,8 @@
           this.cond.busicd = key;
         },
         _watchCondChange: function() {
-            var t = new Date().format('yyyyMMdd-hhmmss');
-            this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_'+t+'.xlsx';
+          var t = new Date().format('yyyyMMdd-hhmmss');
+          this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
         },
         // 日期、时间控件
         dismissStartTimeDialog: function() {
@@ -223,7 +249,10 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
-          this.cond.page = 1;
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+        generateAjaxRequest: function() {
           this.trades = [];
           this.$.queryAjax.body = JSON.stringify(this.cond);
           this.$.queryAjax.generateRequest();
@@ -236,18 +265,10 @@
           }
 
           if (response.rec) {
-            this.trades = this.trades.concat(response.rec.slice(0));
+            this.trades = response.rec.slice(0);
           }
-          this.cond.total = response.total;
-        },
-        // 加载更多
-        handleLoadingMoreTapped: function() {
-          this.cond.page = 2;
-          this.$.queryAjax.body = JSON.stringify(this.cond);
-          this.$.queryAjax.generateRequest();
-        },
-        addOneFilter: function(index) {
-          return index + 1;
+          this.set('cond.total', response.total);
+          this.set('cond.page', response.page);
         },
         chanFilter: function(chanCode) {
           var map = {

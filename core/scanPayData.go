@@ -97,7 +97,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		Total:    total,
 		RespCode: "000000",
 		RespMsg:  "成功",
-		Summary:  summarys,
+		Rec:      summarys,
 		Count:    size,
 	}
 

@@ -9,7 +9,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <style is="custom-style">
-
   /*
    Polymer includes a shim for CSS Custom Properties that we can use for application theming.
    Below, you'll find the default palette for the Polymer Starter Kit layout. Feel free to play
@@ -18,48 +17,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    See https://www.polymer-project.org/1.0/docs/devguide/styling.html#xscope-styling-details
    for further information on custom CSS properties.
    */
-
   /* Application theme */
 
   :root {
-    /*--dark-primary-color: #303F9F;
-    --default-primary-color: #3F51B5;*/
-    --dark-primary-color: #2980b9;
-    --default-primary-color: #3498db;
+    --dark-primary-color: #05B0CF;
+    --default-primary-color: #00BCD4;
     --light-primary-color: #ffffff;
-    --text-primary-color: #ffffff; /*text/icons*/
+    --text-primary-color: #ffffff;
+    /*text/icons*/
     --accent-color: #FF4081;
     --primary-background-color: #ffffff;
     --primary-text-color: #212121;
     --secondary-text-color: #727272;
     --disabled-text-color: #bdbdbd;
     --divider-color: #B6B6B6;
-
     /* Components */
-
     /* paper-drawer-panel */
     --drawer-menu-color: #ffffff;
     --drawer-border-color: 1px solid #ccc;
     --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
-
     /* paper-menu */
     --paper-menu-background-color: #fff;
     --menu-link-color: #111111;
-
     --paper-menu-selected-item: {
-        background-color: rgb(226,240,249);
+      background-color: rgb(226, 240, 249);
     }
   }
 
   .content {
-      min-height: 500px;
+    min-height: 500px;
+  }
+  /* General styles */
+
+  #drawerToolbar {
+    font-size: 20px;
+    color: var(--text-primary-color);
+    background-color: var(--default-primary-color);
   }
 
-  /* General styles */
-  #drawerToolbar {
-    color: var(--secondary-text-color);
-    background-color: var(--drawer-menu-color);
-    border-bottom: var(--drawer-toolbar-border-color);
+  #drawerToolbar .logo {
+    margin: auto auto 10px;
   }
 
   paper-scroll-header-panel {
@@ -106,8 +103,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     padding: 0 16px;
   }
 
-  iron-collapse > paper-menu a > iron-icon{
-      margin-left: 15px;
+  iron-collapse > paper-menu a > iron-icon {
+    margin-left: 15px;
   }
 
   paper-toolbar.tall .app-name {
@@ -118,7 +115,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     transform-origin: left center;
   }
 
-  #mainToolbar .middle-container  {
+  #mainToolbar .middle-container {
     height: 100%;
     margin-left: 48px;
   }
@@ -134,62 +131,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     -webkit-transform-origin: left center;
     transform-origin: left center;
   }
-
   /* Breakpoints */
-
   /* Small */
-  @media (max-width: 600px) {
 
+  @media (max-width: 600px) {
     paper-material {
       --menu-container-display: none;
       width: calc(97.33% - 32px);
       padding-left: 16px;
       padding-right: 16px;
     }
-
     .paper-font-display1 {
       font-size: 12px;
     }
-
     paper-toolbar.tall .app-name {
       font-size: 24px;
       font-weight: 400;
     }
-
     #drawer .paper-toolbar {
       margin-left: 16px;
     }
-
     #overlay {
       min-width: 360px;
     }
-
     .bg {
       background: white;
     }
-
   }
-
   /* Tablet+ */
-  @media (min-width: 601px) {
 
+  @media (min-width: 601px) {
     paper-material {
       width: calc(98% - 46px);
       margin-bottom: 32px;
       padding-left: 30px;
       padding-right: 30px;
     }
-
-    #drawer.paper-drawer-panel > [drawer] {
+    /*#drawer.paper-drawer-panel > [drawer] {
       border-right: 1px solid rgba(0, 0, 0, 0.14);
-    }
-
+    }*/
     iron-pages {
       padding: 14px 16px;
     }
-
   }
-
   /* Material Design Adaptive Breakpoints */
   /*
     Below you'll find CSS media queries based on the breakpoint guidance
@@ -198,37 +182,53 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     http://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-breakpoints
    */
-
   /* mobile-small */
-  @media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) { }
+
+  @media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) {}
   /* mobile-large */
-  @media all and (min-width: 361px) and (orientation: portrait) { }
+
+  @media all and (min-width: 361px) and (orientation: portrait) {}
   /* mobile-small-landscape */
-  @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) { }
+
+  @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) {}
   /* mobile-large-landscape */
-  @media all and (min-width: 481px) and (orientation: landscape) { }
+
+  @media all and (min-width: 481px) and (orientation: landscape) {}
   /* tablet-small-landscape */
-  @media all and (min-width: 600px) and (max-width: 960px) and (orientation: landscape) { }
+
+  @media all and (min-width: 600px) and (max-width: 960px) and (orientation: landscape) {}
   /* tablet-large-landscape */
-  @media all and (min-width: 961px) and (orientation: landscape) { }
+
+  @media all and (min-width: 961px) and (orientation: landscape) {}
   /* tablet-small */
-  @media all and (min-width: 600px) and (orientation: portrait) { }
+
+  @media all and (min-width: 600px) and (orientation: portrait) {}
   /* tablet-large */
-  @media all and (min-width: 601px) and (max-width: 840px) and (orientation : portrait) { }
+
+  @media all and (min-width: 601px) and (max-width: 840px) and (orientation: portrait) {}
   /* desktop-x-small-landscape */
-  @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) { }
+
+  @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) {}
   /* desktop-x-small */
-  @media all and (min-width: 0) and (max-width: 480px) and (max-aspect-ratio: 4/3) { }
+
+  @media all and (min-width: 0) and (max-width: 480px) and (max-aspect-ratio: 4/3) {}
   /* desktop-small-landscape */
-  @media all and (min-width: 481px) and (max-width: 840px) and (orientation: landscape) { }
+
+  @media all and (min-width: 481px) and (max-width: 840px) and (orientation: landscape) {}
   /* desktop-small */
-  @media all and (min-width: 481px) and (max-width: 840px) and (max-aspect-ratio: 4/3) { }
+
+  @media all and (min-width: 481px) and (max-width: 840px) and (max-aspect-ratio: 4/3) {}
   /* desktop-medium-landscape */
-  @media all and (min-width: 841px) and (max-width: 1280px) and (orientation: landscape) { }
+
+  @media all and (min-width: 841px) and (max-width: 1280px) and (orientation: landscape) {}
   /* desktop-medium */
-  @media all and (min-width: 841px) and (max-width: 1280px) and (max-aspect-ratio: 4/3) { }
+
+  @media all and (min-width: 841px) and (max-width: 1280px) and (max-aspect-ratio: 4/3) {}
   /* desktop-large */
-  @media all and (min-width: 1281px) and (max-width: 1600px) { }
+
+  @media all and (min-width: 1281px) and (max-width: 1600px) {}
   /* desktop-xlarge */
-  @media all and (min-width: 1601px) and (max-width: 1920px) { }
+
+  @media all and (min-width: 1601px) and (max-width: 1920px) {}
+
 </style>

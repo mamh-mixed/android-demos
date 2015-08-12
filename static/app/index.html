@@ -55,18 +55,18 @@
 
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
-          <!-- <current-user></current-user> -->
+          <img src="images/logo2.svg" alt="云收银" class="logo">
           <div class="app-name">快捷支付管理平台</div>
         </paper-toolbar>
 
         <!-- 菜单列表 -->
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
           <!--
-          <a onclick="document.querySelector('#systemCollapse').toggle();">
+          <a data-route="system">
             <iron-icon icon="settings"></iron-icon>
             <span>系统管理</span>
           </a>
-          <iron-collapse id="systemCollapse">
+          <iron-collapse opened="{{ startWith(route.name, 'system') }}>
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
               <a data-route="system.users" href="/system/users">
                 <iron-icon icon="social:group"></iron-icon>
@@ -84,15 +84,23 @@
           </iron-collapse>
           -->
 
-          <a href="/" onclick="document.querySelector('#MCRCollapse').toggle();">
+          <a data-route="config">
             <iron-icon icon="build"></iron-icon>
             <span>配置管理</span>
           </a>
-          <iron-collapse id="MCRCollapse">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+          <iron-collapse opened="{{ startWith(route.name, 'config') }}">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" >
+                <a data-route="config.agents" href="/config/agents">
+                  <iron-icon icon="assignment-ind"></iron-icon>
+                  <span>代理</span>
+                </a>
+                <a data-route="config.groups" href="/config/groups">
+                  <iron-icon icon="store"></iron-icon>
+                  <span>集团</span>
+                </a>
               <a data-route="config.configMer" href="/config/configMer">
                 <iron-icon icon="settings-input-component"></iron-icon>
-                <span>商户配置</span>
+                <span>商户录入</span>
               </a>
               <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
@@ -106,19 +114,15 @@
                 <iron-icon icon="account-balance"></iron-icon>
                 <span>渠道商户</span>
               </a>
-              <a data-route="config.agents" href="/config/agents">
-                <iron-icon icon="assignment-ind"></iron-icon>
-                <span>代理商</span>
-              </a>
             </paper-menu>
           </iron-collapse>
 
-          <a href="/" onclick="document.querySelector('#tradeCollapse').toggle();">
+          <a data-route="trades">
             <iron-icon icon="swap-horiz"></iron-icon>
             <span>交易查询</span>
           </a>
-          <iron-collapse id="tradeCollapse">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+          <iron-collapse opened="{{ startWith(route.name, 'trades') }}">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" >
               <a data-route="trades.list" href="/trades/list">
                 <iron-icon icon="list"></iron-icon>
                 <span>扫码交易</span>
@@ -126,19 +130,23 @@
             </paper-menu>
           </iron-collapse>
 
-          <a onclick="document.querySelector('#testCollapse').toggle();">
-            <iron-icon icon="swap-horiz"></iron-icon>
+          <a data-route="test">
+            <iron-icon icon="account-balance"></iron-icon>
             <span>测试</span>
           </a>
-          <iron-collapse id="testCollapse">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+          <iron-collapse opened="{{ startWith(route.name, 'test') }}">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="test.scanpay" href="/test/scanpay">
                 <iron-icon icon="list"></iron-icon>
                 <span>测试扫码</span>
               </a>
               <a data-route="test.qiniu" href="/test/qiniu">
+                <iron-icon icon="account-balance"></iron-icon>
+                <span>七牛 Ajax 上传文件</span>
+              </a>
+              <a data-route="test.filereader" href="/test/filereader">
                 <iron-icon icon="list"></iron-icon>
-                <span>测试七牛 Ajax 上传文件</span>
+                <span>HTML5读取文件内容</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -233,6 +241,13 @@
                 <agent-list is-editable is-deletable></agent-list>
               </paper-material>
             </section>
+
+            <section data-route="config.groups">
+              <paper-material elevation="1">
+                <group-list is-editable is-deletable></group-list>
+              </paper-material>
+            </section>
+
             <section data-route="test.scanpay">
               <paper-material elevation="1">
                 <test-scanpay is-deletable></test-scanpay>
@@ -242,6 +257,12 @@
             <section data-route="test.qiniu">
               <paper-material elevation="1">
                 <test-qiniu is-deletable></test-qiniu>
+              </paper-material>
+            </section>
+
+            <section data-route="test.filereader">
+              <paper-material elevation="1">
+                <test-filereader is-deletable></test-filereader>
               </paper-material>
             </section>
 

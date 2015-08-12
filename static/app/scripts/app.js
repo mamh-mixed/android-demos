@@ -62,4 +62,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
+  app.startWith = function(name, prefix) {
+      if (!name || !prefix) {return true;}
+      return name.substring(0, prefix.length) === prefix;
+  };
+
 })(document);

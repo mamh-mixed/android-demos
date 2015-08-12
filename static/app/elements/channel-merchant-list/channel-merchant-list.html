@@ -23,13 +23,12 @@
     }
 
     .condition > .buttons > paper-button {
-      width: 100%;
       margin: 10px 0px 0px;
     }
 
-    paper-button[raised].colorful {
-      background: #3498db;
-      color: #fff;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
     }
 
     card-item {
@@ -41,6 +40,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -180,9 +180,14 @@
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
+            return;
           }
 
           this.merchants = response.data.slice(0);
+
+          if (this.merchants.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
         },
         // 商户选中事件
         handleItemStaredEvent: function(e) {
@@ -214,5 +219,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

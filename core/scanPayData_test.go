@@ -10,6 +10,7 @@ func TestTransStatistics(t *testing.T) {
 
 	q := &model.QueryCondition{
 		// MerName:     "讯联数据测试商户",
+		AgentCode:   "123131",
 		StartTime:   "2015-07-01 00:00:00",
 		EndTime:     "2015-08-30 00:00:00",
 		TransStatus: model.TransSuccess,

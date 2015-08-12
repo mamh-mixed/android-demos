@@ -14,6 +14,29 @@ import (
 
 var maxReportRec = 10000
 
+// tradeQueryStatistics 交易查询统计信息
+func tradeQueryStatistics(q *model.QueryCondition) (result *model.ResultBody) {
+
+	// 调用core方法统计
+	qr := core.TransStatistics(q)
+
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  qr.Page,
+		Total: qr.Total,
+		Size:  qr.Size,
+		Count: qr.Size,
+		Data:  qr.Rec,
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    pagination,
+	}
+	return result
+}
+
 // tradeReport 处理查找所有商户的请求
 func tradeReport(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
@@ -23,7 +46,7 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 
 	var merId = params.Get("mchntid")
 	req := &model.QueryCondition{
-		Mchntid:     merId,
+		MerId:       merId,
 		Busicd:      params.Get("busicd"),
 		StartTime:   params.Get("startTime"),
 		EndTime:     params.Get("endTime"),
@@ -36,11 +59,14 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 	// 查询
 	ret := core.TransQuery(req)
 
-	// 生成报表
-	before := time.Now()
-	genReport(merId, file, ret.Rec)
-	after := time.Now()
-	log.Debugf("gen trans report spent %s", after.Sub(before))
+	// 类型转换
+	if trans, ok := ret.Rec.([]model.Trans); ok {
+		// 生成报表
+		before := time.Now()
+		genReport(merId, file, trans)
+		after := time.Now()
+		log.Debugf("gen trans report spent %s", after.Sub(before))
+	}
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`,

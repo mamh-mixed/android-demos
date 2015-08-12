@@ -1,0 +1,60 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="test-filereader">
+  <style>
+    :host {
+      display: block;
+    }
+
+  </style>
+  <template>
+    <paper-input type="file" id="file" on-change="handleFiles"></paper-input>
+
+    <pre>{{fileContent}}</pre>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'test-filereader',
+
+        properties: {
+          foo: {
+            type: String,
+            value: 'bar',
+            notify: true
+          }
+        },
+        handleFiles: function(e) {
+          var _this = this;
+          var files = e.srcElement.files;
+          console.log(files);
+
+          if (files.length) {
+            var file = files[0];
+            var reader = new FileReader();
+            if ('application/x-x509-ca-cert' === file.type) {
+              reader.onload = function() {
+                console.log(this.result);
+                _this.fileContent = this.result;
+              };
+              reader.readAsText(file);
+            } else if (/image\/\w+/.test(file.type)) {
+              reader.onload = function() {
+                console.log(this.result);
+                _this.fileContent = this.result;
+              };
+              reader.readAsDataURL(file);
+            } else {
+              reader.onload = function() {
+                console.log(this.result);
+                _this.fileContent = this.result;
+              };
+              reader.readAsText(file);
+            }
+          }
+        }
+      });
+    })();
+
+  </script>
+</dom-module>

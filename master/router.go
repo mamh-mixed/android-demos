@@ -2,10 +2,10 @@ package master
 
 import (
 	"encoding/json"
+	"github.com/CardInfoLink/quickpay/model"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/CardInfoLink/quickpay/model"
+	"strconv"
 
 	"github.com/omigo/log"
 )
@@ -27,10 +27,25 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/trade/report":
 		tradeReport(w, r)
 		return
+	case "/master/trade/query":
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		q := &model.QueryCondition{
+			MerId:     r.FormValue("merId"),
+			AgentCode: r.FormValue("agentCode"),
+			Page:      page,
+			Size:      size,
+			MerName:   r.FormValue("merName"),
+			StartTime: r.FormValue("startTime"),
+			EndTime:   r.FormValue("endTime"),
+		}
+		ret = tradeQueryStatistics(q)
 	case "/master/merchant/find":
 		merId := r.FormValue("merId")
 		merStatus := r.FormValue("merStatus")
-		ret = Merchant.Find(merId, merStatus)
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		ret = Merchant.Find(merId, merStatus, size, page)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
 	case "/master/router/save":
@@ -68,6 +83,16 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = Agent.Delete(agentCode, agentName)
 	case "/master/agent/save":
 		ret = Agent.Save(data)
+	case "/master/group/find":
+		groupCode := r.FormValue("groupCode")
+		groupName := r.FormValue("groupName")
+		ret = Group.Find(groupCode, groupName)
+	case "/master/group/delete":
+		groupCode := r.FormValue("groupCode")
+		groupName := r.FormValue("groupName")
+		ret = Group.Delete(groupCode, groupName)
+	case "/master/group/save":
+		ret = Group.Save(data)
 
 	default:
 		w.WriteHeader(404)

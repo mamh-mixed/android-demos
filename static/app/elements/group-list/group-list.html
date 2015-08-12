@@ -1,14 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="agent-list">
+<dom-module id="group-list">
   <style>
     :host {
       display: block;
     }
 
     .condition {
-      @apply(--layout-horizontal);
-      @apply(--layout-wrap);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
       margin-bottom: 15px;
     }
 
@@ -30,9 +31,12 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
-
-    card-item {
+    /*card-item {
       margin-bottom: 20px;
+    }*/
+
+    .loading-more-wrapper {
+      text-align: center;
     }
 
     paper-fab {
@@ -40,19 +44,34 @@
       bottom: 100px;
       right: 10%;
     }
+
+    table {
+      width: 100%;
+    }
+
+    table td {
+      text-align: center;
+    }
+
+    table tr td:nth-of-type(1),
+    table tr th:nth-of-type(8),
+    table tr td:nth-of-type(8) {
+      text-align: right;
+    }
+
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <div class="condition">
-      <paper-input label="代理商代码" value="{{cond.agentCode::input}}"></paper-input>
-      <paper-input label="代理商名称" value="{{cond.agentName::input}}"></paper-input>
+      <paper-input label="集团代码" value="{{cond.groupCode::input}}"></paper-input>
+      <paper-input label="集团名称" value="{{cond.groupName::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
     </div>
 
-    <template is="dom-repeat" items="{{agents}}">
+    <!-- <template is="dom-repeat" items="{{groups}}">
       <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" on-item-deleted="handleItemDeletedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
         <dl>
           <dt>代理商代码</dt>
@@ -64,19 +83,66 @@
           <dd>
             <span>{{item.agentName}}</span>
           </dd>
+
+          <dt>集团代码</dt>
+          <dd>
+            <span>{{item.groupCode}}</span>
+          </dd>
+
+          <dt>集团名称</dt>
+          <dd>
+            <span>{{item.groupName}}</span>
+          </dd>
         </dl>
       </card-item>
-    </template>
+    </template> -->
+    <div class="list">
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>代理商代码</th>
+            <th>代理商名称</th>
+            <th>集团代码</th>
+            <th>集团名称</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{groups}}">
+            <tr>
+              <td>
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.agentCode}}</span>
+              </td>
+              <td>
+                <span>{{item.agentName}}</span>
+              </td>
+              <td>
+                <span>{{item.groupCode}}</span>
+              </td>
+              <td>
+                <span>{{item.groupName}}</span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+    <div class="loading-more-wrapper">
+      <paper-button class="colorful" raised on-tap="handleLoadingMoreTapped">加载更多</paper-button>
+    </div>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
-    <agent-editor id="agentEditor" on-saved="handleAgentSave"></agent-editor>
+    <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
   </template>
   <script>
     (function() {
       Polymer({
-        is: 'agent-list',
+        is: 'group-list',
         properties: {
           autoLoading: {
             type: Boolean,
@@ -98,7 +164,7 @@
           }
         },
         ready: function() {
-          this.agents = [];
+          this.groups = [];
           this.cond = {};
         },
         attached: function() {
@@ -108,7 +174,7 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
-          this.agents = [];
+          this.groups = [];
           this.$.queryAjax.params = this.cond;
           this.$.queryAjax.generateRequest();
         },
@@ -120,9 +186,9 @@
             return;
           }
 
-          this.agents = response.data.slice(0);
+          this.groups = response.data.slice(0);
 
-          if (this.agents.length === 0) {
+          if (this.groups.length === 0) {
             Util.toast('没有数据', 2000);
           }
         },
@@ -134,28 +200,28 @@
             return;
           }
 
-          for (var i = 0, l = this.agents.length; i < l; i++) {
-            var item = this.agents[i];
-            if (item.agentCode !== staredItem.agentCode) {
-              this.set('agents.' + i + '.stared', false);
+          for (var i = 0, l = this.groups.length; i < l; i++) {
+            var item = this.groups[i];
+            if (item.groupCode !== staredItem.groupCode) {
+              this.set('groups.' + i + '.stared', false);
             }
           }
         },
-        // 编辑代理商
+        // 编辑集团商户
         handleItemEditedEvent: function(e, detail) {
-          this.$.agentEditor.agent = detail;
-          this.$.agentEditor.open();
+          this.$.groupEditor.group = detail;
+          this.$.groupEditor.open();
         },
-        // 删除代理商事件
+        // 删除集团商户事件
         handleItemDeletedEvent: function(e, detail) {
           var obj = {
-            agentCode: detail.agentCode,
-            agentName: detail.agentName
+            groupCode: detail.groupCode,
+            groupName: detail.groupName
           };
           this.$.deleteAjax.params = obj;
           this.$.deleteAjax.generateRequest();
         },
-        // 删除代理商响应事件,刷新列表
+        // 删除集团商户响应事件,刷新列表
         handleDeleteResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
@@ -164,15 +230,25 @@
           }
           this.handleQueryTapped();
         },
-        // 新增代理商事件
+        // 新增集团商户事件
         handleCreateFabTapped: function() {
-          this.$.agentEditor.open();
+          this.$.groupEditor.open();
         },
-        // 新代理商保存成功事件，刷新列表
-        handleAgentSave: function() {
+        // 新集团商户保存成功事件，刷新列表
+        handleGroupSave: function() {
           this.handleQueryTapped();
+        },
+        // 加载更多
+        handleLoadingMoreTapped: function() {
+          this.cond.page = 2;
+          this.$.queryAjax.body = JSON.stringify(this.cond);
+          this.$.queryAjax.generateRequest();
+        },
+        addOneFilter: function(index) {
+          return index + 1;
         }
       });
     })();
+
   </script>
 </dom-module>

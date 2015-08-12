@@ -13,3 +13,12 @@ func NewResultBody(status int, msg string) (ret *ResultBody) {
 		Message: msg,
 	}
 }
+
+// Pagination 分页对象
+type Pagination struct {
+	Page  int         `json:"page"`  // 当前页
+	Total int         `json:"total"` // 总记录数
+	Size  int         `json:"size"`  // 每页记录数
+	Count int         `json:"count"` // 当前页记录数
+	Data  interface{} `json:"data"`  // 数据
+}

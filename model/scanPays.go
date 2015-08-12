@@ -25,6 +25,7 @@ type QueryCondition struct {
 	MerName      string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId        string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds       []string `json:"-"`
+	AgentCode    string   `json:"agentCode,omitempty"`
 	TransStatus  string   `json:"transStatus,omitempty"`
 	TransType    int      `json:"transType,omitempty"`
 	StartTime    string   `json:"startTime,omitempty"`
@@ -42,14 +43,13 @@ type QueryCondition struct {
 
 // QueryResult 查询结果值
 type QueryResult struct {
-	Rec      []Trans    `json:"rec,omitempty"`     // 交易明细
-	Summary  []*Summary `json:"summary,omitempty"` // 交易概括
-	Page     int        `json:"page,omitempty"`
-	Total    int        `json:"total,omitempty"`
-	Size     int        `json:"size,omitempty"`
-	Count    int        `json:"count,omitempty"`
-	RespCode string     `json:"respCode,omitempty"`
-	RespMsg  string     `json:"respMsg,omitempty"`
+	Rec      interface{} `json:"rec,omitempty"` // 交易明细
+	Page     int         `json:"page,omitempty"`
+	Total    int         `json:"total,omitempty"`
+	Size     int         `json:"size,omitempty"`
+	Count    int         `json:"count,omitempty"`
+	RespCode string      `json:"respCode,omitempty"`
+	RespMsg  string      `json:"respMsg,omitempty"`
 }
 
 // Summary 商户交易汇总

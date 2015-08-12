@@ -80,6 +80,10 @@ func (c *merchantCollection) FindAllMerchant(cond *model.Merchant) (results []mo
 func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Merchant, int, error) {
 
 	q := bson.M{}
+	if cond.AgentCode != "" {
+		q["agentCode"] = cond.AgentCode
+	}
+
 	if cond.MerName != "" {
 		or := []bson.M{}
 		or = append(or, bson.M{"merDetail.merName": bson.RegEx{cond.MerName, "."}})
@@ -101,4 +105,37 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 	var mers []*model.Merchant
 	err = database.C(c.name).Find(q).Sort("-merId").Select(bson.M{"merId": 1}).Skip(skip).Limit(cond.Size).All(&mers)
 	return mers, total, err
+}
+
+// PaginationFind 分页查找机构商户
+func (c *merchantCollection) PaginationFind(merId, merStatus string, size, page int) (results []model.Merchant, total int, err error) {
+	results = make([]model.Merchant, 1)
+
+	match := bson.M{}
+	if merId != "" {
+		match["merId"] = merId
+	}
+	if merStatus != "" {
+		match["merStatus"] = merStatus
+	}
+
+	// 计算总数
+	total, err = database.C(c.name).Find(match).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	cond := []bson.M{
+		{"$match": match},
+	}
+
+	skip := bson.M{"$skip": (page - 1) * size}
+
+	limit := bson.M{"$limit": size}
+
+	cond = append(cond, skip, limit)
+
+	err = database.C(c.name).Pipe(cond).All(&results)
+
+	return results, total, err
 }

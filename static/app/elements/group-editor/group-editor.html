@@ -1,12 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="agent-editor">
+<dom-module id="group-editor">
   <style>
     :host {
       display: block;
       --paper-dialog-scrollable: {
         min-width: 320px;
-        min-height: 160px;
+        min-height: 220px;
       }
     }
 
@@ -27,15 +27,21 @@
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></iron-ajax>
+    <iron-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></iron-ajax>
     <paper-dialog id="dialog">
-      <h2>编辑代理商</h2>
+      <h2>编辑集团商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input label="代理商代码" value="{{agent.agentCode::input}}"></paper-input>
+          <paper-input label="代理商代码" value="{{group.agentCode::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="代理商名称" value="{{agent.agentName::input}}"></paper-input>
+          <paper-input label="代理商名称" value="{{group.agentName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="集团代码" value="{{group.groupCode::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="集团名称" value="{{group.groupName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -47,15 +53,15 @@
   <script>
     (function() {
       Polymer({
-        is: 'agent-editor',
+        is: 'group-editor',
 
         properties: {
-          agent: {
-            type:Object
+          group: {
+            type: Object
           }
         },
-        ready: function(){
-          this.agent={};
+        ready: function() {
+          this.group = {};
         },
         open: function() {
           console.log('open me');
@@ -63,12 +69,12 @@
         },
         // 点击保存事件
         handleSaveTapped: function() {
-          console.log(this.agent);
-          this.$.saveAjax.body = JSON.stringify(this.agent);
+          console.log(this.group);
+          this.$.saveAjax.body = JSON.stringify(this.group);
           this.$.saveAjax.generateRequest();
         },
         // 保存事件响应结果
-        handleSaveAgentResponse: function(e) {
+        handleSaveGroupResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
@@ -77,7 +83,7 @@
           this.$.dialog.close();
 
           this.fire('saved');
-          this.set('agent', {});
+          this.set('group', {});
         }
       });
     })();

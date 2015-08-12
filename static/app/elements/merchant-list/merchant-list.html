@@ -22,14 +22,13 @@
       min-width: 170px;
     }
 
-    .condition > .buttons > paper-button {
-      width: 100%;
-      margin: 10px 0px 0px;
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
     }
 
-    paper-button[raised].colorful {
-      background: #3498db;
-      color: #fff;
+    .condition > .buttons > paper-button {
+      margin: 10px 0px 0px;
     }
 
     card-item {
@@ -122,6 +121,7 @@
         </dl>
       </card-item>
     </template>
+    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
@@ -199,7 +199,11 @@
         },
         ready: function() {
           this.merchants = [];
-          this.cond = {};
+          this.cond = {
+            page: 1,
+            size: 10,
+            total: 0
+          };
         },
         attached: function() {
           if (this.autoLoading) {
@@ -214,6 +218,10 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+        generateAjaxRequest: function() {
           this.merchants = [];
           this.$.queryAjax.params = this.cond;
           this.$.queryAjax.generateRequest();
@@ -226,7 +234,11 @@
             return;
           }
 
-          this.merchants = response.data.slice(0);
+          var pagination = response.data;
+          this.merchants = pagination.data.slice(0);
+
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
 
           if (this.merchants.length === 0) {
             Util.toast('没有数据', 2000);
