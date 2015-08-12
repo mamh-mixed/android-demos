@@ -55,12 +55,13 @@
       margin-bottom: 30px;
     }
 
-    table td {
+    .center {
       text-align: center;
     }
 
     tr > th,
     tr > td {
+      text-align: left;
       padding: 8px;
     }
 
@@ -104,13 +105,13 @@
             <th>集团商户名称</th>
             <th>代理代码/机构代码</th>
             <th>代理名称/机构名称</th>
-            <th>操作</th>
+            <th class="center">操作</th>
           </tr>
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{groups}}">
             <tr>
-              <td>
+              <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
               <td>
@@ -125,7 +126,7 @@
               <td>
                 <span>{{item.agentName}}</span>
               </td>
-              <td>
+              <td class="center">
                 <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
                 <iron-icon icon="delete" on-tap="handleDeleteEvent"></iron-icon>
               </td>
@@ -227,7 +228,7 @@
         },
 
         // 编辑集团商户
-        handleEditEvent: function(e, detail) {
+        handleEditEvent: function(e) {
           this.$.groupEditor.group = e.model.item;
           this.$.groupEditor.open();
         },

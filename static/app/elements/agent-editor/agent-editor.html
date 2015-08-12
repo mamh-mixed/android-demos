@@ -29,13 +29,13 @@
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></iron-ajax>
     <paper-dialog id="dialog">
-      <h2>编辑代理商</h2>
+      <h2>编辑代理</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input label="代理商代码" value="{{agent.agentCode::input}}"></paper-input>
+          <paper-input label="代理代码" value="{{agent.agentCode::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="代理商名称" value="{{agent.agentName::input}}"></paper-input>
+          <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
