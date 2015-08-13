@@ -65,6 +65,8 @@ func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return ret
 }
 
+var nonCheckSignBusicd = model.Jszf
+
 type handleFunc func(req *model.ScanPayRequest) (ret *model.ScanPayResponse)
 
 // doScanPay 执行业务逻辑
@@ -96,10 +98,8 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
 		return
 	}
-	// log.Debugf("mer=%#v", mer)
 
 	if mer.IsNeedSign {
-		// log.Debug("sign key: " + mer.SignKey)
 		signKey = mer.SignKey
 	}
 
@@ -117,7 +117,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 5. 商户存在，则验签
-	if mer.IsNeedSign {
+	if mer.IsNeedSign && req.Busicd != nonCheckSignBusicd {
 		log.Debug("sign msg : " + req.SignMsg())
 		sig := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
 		if sig != req.Sign {
