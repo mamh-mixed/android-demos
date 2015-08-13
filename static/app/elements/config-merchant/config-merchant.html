@@ -285,7 +285,7 @@
         handleQueryMerchantResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('查询机构商户信息失败', 3000);
             return;
           }
 
@@ -317,23 +317,25 @@
         handleAlpChanMerResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0 || !response.data) {
-            Util.toast(response.message, 3000);
+            Util.toast('查询支付宝渠道商户信息失败', 3000);
             return;
           }
 
           this.set('alipay', response.data);
+          this.set('alipay.chanCode', 'ALP');
         },
         // 编辑的时候查询微信路由渠道商户请求的响应事件
         handleWxpChanMerResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0 || !response.data) {
-            Util.toast(response.message, 3000);
+            Util.toast('查询微信渠道商户信息失败', 3000);
             this.set('weixin.httpCert', '');
             this.set('weixin.httpKey', '');
             return;
           }
 
           this.set('weixin', response.data);
+          this.set('weixin.chanCode', 'WXP');
 
           // 加载微信路由信息
           var params = {
@@ -347,7 +349,7 @@
         handleWxpRouterResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0 || !response.data) {
-            Util.toast(response.message, 3000);
+            Util.toast('查询微信路由信息失败', 3000);
             return;
           }
 
@@ -452,7 +454,7 @@
         handleSaveRouterResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('保存路由信息失败', 3000);
             return;
           }
 
