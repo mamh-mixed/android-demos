@@ -91,6 +91,8 @@
     <div class="condition">
       <paper-input label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
+      <paper-input label="代理代码/机构代码" value="{{cond.agentCode::input}}"></paper-input>
+      <paper-input label="代理名称/机构名称" value="{{cond.agentName::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
@@ -230,8 +232,9 @@
         // 编辑集团商户
         handleEditEvent: function(e) {
           this.$.groupEditor.group = e.model.item;
-          this.$.groupEditor.open();
+          this.$.groupEditor.open2();
         },
+
         // 删除集团商户事件
         handleDeleteEvent: function(e) {
           this.$.deleteAjax.params = {
@@ -248,9 +251,10 @@
           }
           this.handleQueryTapped();
         },
+
         // 新增集团商户事件
         handleCreateFabTapped: function() {
-          this.$.groupEditor.open();
+          this.$.groupEditor.open1();
         },
         // 新集团商户保存成功事件，刷新列表
         handleGroupSave: function() {
