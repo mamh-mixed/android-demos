@@ -23,10 +23,6 @@ import (
 func Scanpay(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("url = %s", r.URL.String())
 
-	// 允许跨域
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "*")
-
 	bytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Error(err)
@@ -34,28 +30,8 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Path != "/scanpay/query" {
-		// 请求扫码支付
-		retBytes := scanpay.ScanPayHandle(bytes)
-		w.Write(retBytes)
-		return
-	}
-
-	// 交易查询
-	q := &model.QueryCondition{}
-	err = json.Unmarshal(bytes, q)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "json format error: "+err.Error(), http.StatusPreconditionFailed)
-		return
-	}
-	ret := core.TransQuery(q)
-	retBytes, err := json.Marshal(ret)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// 请求扫码支付
+	retBytes := scanpay.ScanPayHandle(bytes)
 	w.Write(retBytes)
 }
 

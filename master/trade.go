@@ -1,16 +1,46 @@
 package master
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
-	"net/http"
-	"time"
 )
+
+// tradeQuery 交易查询
+func tradeQuery(w http.ResponseWriter, data []byte) {
+
+	// // 允许跨域
+	// w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	// 交易查询
+	q := &model.QueryCondition{}
+	err := json.Unmarshal(data, q)
+	if err != nil {
+		log.Errorf("unmarshal json(%s) error: %s", data, err)
+		http.Error(w, "json format error: "+err.Error(), http.StatusPreconditionFailed)
+		return
+	}
+	if q.EndTime != "" {
+		q.EndTime += " 23:59:59"
+	}
+	ret := core.TransQuery(q)
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
+}
 
 var maxReportRec = 10000
 

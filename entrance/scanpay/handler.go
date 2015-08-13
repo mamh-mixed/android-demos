@@ -26,7 +26,6 @@ func ScanPayHandle(reqBytes []byte) []byte {
 
 	// 具体业务
 	ret := router(req)
-	// ret.ErrorDetail = "ok" // 测试中文编码
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
@@ -75,6 +74,10 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	defer func() {
 		// 7. 补充信息
 		ret.FillWithRequest(req)
+
+		// ret.ErrorDetail = "ok" // 联机测试
+		// ret.Terminalid = ""
+
 		// 8. 对返回报文签名
 		if signKey != "" {
 			log.Debug("sign content to return : " + ret.SignMsg())

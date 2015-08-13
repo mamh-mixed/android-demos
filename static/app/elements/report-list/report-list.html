@@ -258,7 +258,7 @@
         </tbody>
       </table>
     </div>
-    <iron-ajax id="queryAjax" method="GET" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
 
   </template>
