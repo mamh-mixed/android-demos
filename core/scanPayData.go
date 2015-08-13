@@ -72,7 +72,11 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	// 将数据合并
 	for _, d := range group {
 		if mer, ok := m[d.MerId]; ok {
-			s := model.Summary{MerId: d.MerId, AgentName: mer.AgentName, MerName: mer.Detail.MerName}
+			s := model.Summary{
+				MerId:     d.MerId,
+				AgentName: mer.AgentName,
+				MerName:   mer.Detail.MerName,
+			}
 			// 遍历渠道，合并数据
 			combine(&s, d.Detail)
 			data = append(data, s)

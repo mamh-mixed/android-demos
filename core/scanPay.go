@@ -42,7 +42,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	token, err := weixin.GetAuthAccessToken(req.Code)
 	if err != nil {
 		log.Errorf("get accessToken error: %s", err)
-		return adaptor.LogicErrorHandler(t, "SYSTEM_ERROR") // TODO 定义一个授权码错误的应答码
+		return adaptor.LogicErrorHandler(t, "AUTH_CODE_ERROR")
 	}
 	openId := token.OpenId
 	req.OpenId = openId
