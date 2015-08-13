@@ -46,7 +46,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
-	// 先找商户，按商户分页
+	// 先找商户所有商户号
 	mers, err := mongo.MerchantColl.FuzzyFind(q)
 	if err != nil {
 		log.Errorf("find merchant error: %s", err)
@@ -62,9 +62,8 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
 	q.MerIds = merIds
-	// log.Debugf("%+v", q)
 	// 查询交易
-	group, all, err := mongo.SpTransColl.FindAndGroupBy(q)
+	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
 		return errResult
@@ -86,13 +85,11 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	size := len(data)
 	ret = &model.QueryResult{
-		Page:     q.Page,
-		Size:     size,
-		Total:    len(merIds),
-		RespCode: "000000",
-		RespMsg:  "成功",
-		Rec:      summary,
-		Count:    size,
+		Page:  q.Page,
+		Size:  size,
+		Total: total,
+		Rec:   summary,
+		Count: size,
 	}
 
 	return ret

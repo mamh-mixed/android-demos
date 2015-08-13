@@ -240,9 +240,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 }
 
 // FindAndGroupBy 统计
-func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, []model.Channel, error) {
+func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, []model.Channel, int, error) {
 
-	var s []model.TransGroup
+	var group []model.TransGroup
 
 	find := bson.M{
 		"createTime":  bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
@@ -250,6 +250,17 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		"transStatus": q.TransStatus,
 		"transType":   q.TransType,
 	}
+
+	// 计算total
+	type ID struct {
+		Id string `bson:"_id"`
+	}
+	var Ids []ID
+	database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": "$merId"}},
+	}).All(&Ids)
+
 	//使用pipe统计
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
@@ -270,21 +281,24 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		{"$sort": bson.M{"transNum": -1}},
 		{"$skip": (q.Page - 1) * q.Size},
 		{"$limit": q.Size},
-	}).All(&s)
+	}).All(&group)
 
-	var total []model.Channel
+	// 按渠道汇总所有符合条件数据
+	var all []model.Channel
 	err = database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": "$chanCode",
-			"transAmt": bson.M{"$sum": "$transAmt"},
-			"transNum": bson.M{"$sum": 1},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum":  bson.M{"$sum": 1},
 		}},
 		{"$project": bson.M{
-			"chanCode": "$_id",
-			"transAmt": 1,
-			"transNum": 1,
+			"chanCode":  "$_id",
+			"transAmt":  1,
+			"transNum":  1,
+			"refundAmt": 1,
 		}},
-	}).All(&total)
+	}).All(&all)
 
-	return s, total, err
+	return group, all, len(Ids), err
 }

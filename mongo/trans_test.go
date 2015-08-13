@@ -11,7 +11,7 @@ import (
 func TestTransFindAndGroupBy(t *testing.T) {
 
 	q := &model.QueryCondition{
-		StartTime:   "2015-07-01 00:00:00",
+		StartTime:   "2015-06-01 00:00:00",
 		EndTime:     "2015-08-30 00:00:00",
 		TransStatus: model.TransSuccess,
 		TransType:   model.PayTrans,
@@ -20,13 +20,13 @@ func TestTransFindAndGroupBy(t *testing.T) {
 		Size:        4,
 	}
 	t.Logf("%+v", q)
-	ss, all, err := SpTransColl.FindAndGroupBy(q)
+	ss, all, total, err := SpTransColl.FindAndGroupBy(q)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Logf("%+v	%+v", ss, all)
-	t.Log(len(ss))
+	t.Log(len(ss), total)
 }
 
 func TestFindTransQuery(t *testing.T) {
