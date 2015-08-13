@@ -63,6 +63,15 @@ func TestFindAllMerchant(t *testing.T) {
 
 }
 
+func TestFuzzyFind(t *testing.T) {
+	mers, err := MerchantColl.FuzzyFind(&model.QueryCondition{})
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log(mers)
+}
+
 func TestPaginationFind(t *testing.T) {
 	merId, merStatus := "", ""
 	page, size := 1, 10

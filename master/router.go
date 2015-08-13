@@ -2,11 +2,10 @@ package master
 
 import (
 	"encoding/json"
+	"github.com/CardInfoLink/quickpay/model"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/log"
 )
@@ -28,6 +27,19 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/trade/report":
 		tradeReport(w, r)
 		return
+	case "/master/trade/query":
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		q := &model.QueryCondition{
+			MerId:     r.FormValue("merId"),
+			AgentCode: r.FormValue("agentCode"),
+			Page:      page,
+			Size:      size,
+			MerName:   r.FormValue("merName"),
+			StartTime: r.FormValue("startTime"),
+			EndTime:   r.FormValue("endTime"),
+		}
+		ret = tradeQueryStatistics(q)
 	case "/master/merchant/find":
 		merId := r.FormValue("merId")
 		merStatus := r.FormValue("merStatus")
