@@ -56,6 +56,7 @@
     tr > th,
     tr > td {
       padding: 8px;
+      /*border: 1px solid #ddd;*/
     }
 
     table > thead {}
@@ -64,20 +65,50 @@
 
     thead > tr > th {
       line-height: 1.42857143;
+    }
+
+    thead > tr:first-child > th:nth-of-type(1),
+    thead > tr:first-child > th:nth-last-of-type(2),
+    thead > tr:first-child > th:nth-last-of-type(1) {
       border-bottom: 1px solid #ddd;
+    }
+
+    thead > tr:last-child > th {
+      border-bottom: 1px solid #ddd;
+    }
+
+    thead > tr:first-child th {
+      text-align: center;
+    }
+
+    thead > tr:last-child th {
+      text-align: right;
     }
 
     table > tbody {
       min-height: 700px;
     }
 
-    tbody>tr:hover {
+    tbody > tr:hover {
       background-color: #f5f5f5;
     }
 
-    table tr th:nth-last-of-type(2),
-    table tr td:nth-last-of-type(2) {
+    tbody tr td,
+    tbody tr th {
       text-align: right;
+    }
+
+    tbody tr th:nth-of-type(1),
+    tbody tr td:nth-of-type(1),
+    tbody tr th:nth-last-of-type(2),
+    tbody tr td:nth-last-of-type(2),
+    tbody tr th:nth-last-of-type(1),
+    tbody tr td:nth-last-of-type(1) {
+      text-align: center;
+    }
+
+    table > tbody tr:last-child th {
+      border-top: 1px solid #ddd;
     }
   </style>
   <template>
@@ -111,12 +142,32 @@
       <table>
         <thead>
           <tr>
-            <th>商户名称</th>
-            <th>交易总笔数(金额)</th>
-            <th>支付宝交易笔数(金额)</th>
-            <th>微信交易笔数(金额)</th>
-            <th>代理名称</th>
-            <th>下载</th>
+            <th rowspan="2">
+              商户名称
+            </th>
+            <th colspan="2">
+              汇总
+            </th>
+            <th colspan="2">
+              支付宝
+            </th>
+            <th colspan="2">
+              微信
+            </th>
+            <th rowspan="2">
+              代理名称
+            </th>
+            <th rowspan="2">
+              下载
+            </th>
+          </tr>
+          <tr>
+            <th>总笔数</th>
+            <th>总金额</th>
+            <th>笔数</th>
+            <th>金额</th>
+            <th>笔数</th>
+            <th>金额</th>
           </tr>
         </thead>
         <tbody>
@@ -127,14 +178,20 @@
               </td>
               <td>
                 <span>{{item.totalTransNum}}</span>
+              </td>
+              <td>
                 <span>{{_computeAmount(item.totalTransAmt)}}</span>
               </td>
               <td>
                 <span>{{item.alp.transNum}}</span>
+              </td>
+              <td>
                 <span>{{_computeAmount(item.alp.transAmt)}}</span>
               </td>
               <td>
                 <span>{{item.wxp.transNum}}</span>
+              </td>
+              <td>
                 <span>{{_computeAmount(item.wxp.transAmt)}}</span>
               </td>
               <td>
@@ -151,19 +208,26 @@
             </th>
             <th>
               <span>{{summary.totalTransNum}}</span>
+            </th>
+            <th>
               <span>{{_computeAmount(summary.totalTransAmt)}}</span>
             </th>
             <th>
               <span>{{summary.alp.transNum}}</span>
+            </th>
+            <th>
               <span>{{_computeAmount(summary.alp.transAmt)}}</span>
             </th>
             <th>
               <span>{{summary.wxp.transNum}}</span>
+            </th>
+            <th>
               <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
-              <th></th>
-              <th>
-                <a href="#">点我下载当前所有商户交易汇总</a>
-              </th>
+            </th>
+            <th></th>
+            <th>
+              <a href="#">点我下载当前所有商户交易汇总</a>
+            </th>
           </tr>
         </tbody>
 
@@ -172,7 +236,7 @@
         <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
       </div>
     </div>
-    <iron-ajax id="queryAjax" method="GET" url="http://localhost:8080/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="GET" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
 
   </template>
@@ -218,6 +282,11 @@
 
           var pagination = response.data;
           this.set('summary', pagination.data);
+
+          if (pagination.count <= 0) {
+            Util.toast('没有数据', 1000);
+            return;
+          }
           this.records = pagination.data.data.slice(0);
 
           this.set('cond.total', pagination.total);
@@ -229,7 +298,10 @@
         },
         // 查询代理列表
         handleQueryAgentsEvent: function() {
-          this.$.queryAgentAjax.params = {};
+          this.$.queryAgentAjax.params = {
+            page: 1,
+            size: 1000
+          };
           this.$.queryAgentAjax.generateRequest();
         },
         // 代理列表响应
@@ -240,7 +312,13 @@
             return;
           }
 
-          var agents = response.data.slice(0);
+          var pagination = response.data;
+          if (pagination.count <= 0) {
+            Util.toast('没有代理数据', 2000);
+            return;
+          }
+
+          var agents = response.data.data.slice(0);
           this.set('agents', []);
           for (var i = 0, l = agents.length; i < l; i++) {
             this.push('agents', {
@@ -277,7 +355,7 @@
         },
         // 修饰金额的方法
         _computeAmount: function(amount) {
-          return '(' + amount + '元)'
+          return amount + '元';
         },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
