@@ -200,7 +200,7 @@ type Trans struct {
 	OrigOrderNum string        `bson:"origOrderNum,omitempty" json:"origOrderNum,omitempty"` // 源订单号 当交易类型为退款/撤销/关单时
 	RespCode     string        `bson:"respCode,omitempty" json:"respcd,omitempty"`           // 网关应答码
 	MerId        string        `bson:"merId,omitempty" json:"-"`                             // 商户号
-	TransAmt     int64         `bson:"transAmt,omitempty" json:"transAmt"`                   // 交易金额
+	TransAmt     int64         `bson:"transAmt" json:"transAmt"`                             // 交易金额 没有即为0
 	TransStatus  string        `bson:"transStatus,omitempty" json:"transStatus"`             // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
 	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
 	ChanMerId    string        `bson:"chanMerId,omitempty" json:"-"`                         // 渠道商户号

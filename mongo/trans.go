@@ -200,19 +200,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	}
 	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
 
-	// 取消的订单和查询的订单不显示，过滤掉
-	notShowBusicd := []string{"CANC", "INQY"}
-	if q.Busicd != "" {
-		showBusicd := []string{q.Busicd}
-		match["busicd"] = bson.M{
-			"$nin": notShowBusicd,
-			"$in":  showBusicd,
-		}
-	} else {
-		match["busicd"] = bson.M{
-			"$nin": notShowBusicd,
-		}
-	}
+	// 将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
+	match["transAmt"] = bson.M{"$ne": 0}
 
 	p := []bson.M{
 		{"$match": match},

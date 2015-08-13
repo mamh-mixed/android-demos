@@ -152,7 +152,8 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		case model.TransHandling:
 			cell.Value = "交易处理中"
 		case model.TransClosed:
-			cell.Value = "交易已关闭"
+			// 针对退款的交易
+			cell.Value = "交易已退款"
 		default:
 			cell.Value = "未知"
 		}
@@ -171,6 +172,8 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 			cell.Value = "取消"
 		case model.Qyfk:
 			cell.Value = "企业付款"
+		case model.Jszf:
+			cell.Value = "公众号支付"
 		default:
 			cell.Value = "未知"
 		}
