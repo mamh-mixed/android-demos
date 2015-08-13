@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+
 <dom-module id="trade-list">
   <style>
     :host {
@@ -80,7 +81,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="POST" url="/scanpay/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="POST" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <div class="condition">
       <paper-input label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
@@ -116,6 +117,7 @@
       <table>
         <thead>
           <tr>
+            <th></th>
             <th>订单号</th>
             <th>交易状态</th>
             <th>渠道</th>
@@ -130,6 +132,9 @@
           <template is="dom-repeat" items="{{trades}}">
             <tr>
               <td>
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
                 <span>{{item.orderNum}}</span>
               </td>
               <td>
@@ -138,8 +143,7 @@
               <td>
                 <span>{{chanFilter(item.chanCode)}}</span>
               </td>
-              <td>
-                <span>{{item.inscd}}</span>
+              <td>{{item.inscd}}</span>
               </td>
               <td>
                 <span>{{busicdFilter(item.busicd)}}</span>
@@ -288,6 +292,9 @@
             '40': '已关闭'
           };
           return map[status];
+        },
+        addOneFilter: function(index) {
+          return index + 1;
         }
       });
     })();

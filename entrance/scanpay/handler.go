@@ -2,6 +2,8 @@ package scanpay
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -74,6 +76,10 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	defer func() {
 		// 7. 补充信息
 		ret.FillWithRequest(req)
+
+		// ret.ErrorDetail = "ok" // 联机测试
+		// ret.Terminalid = ""
+
 		// 8. 对返回报文签名
 		if signKey != "" {
 			log.Debug("sign content to return : " + ret.SignMsg())
@@ -122,6 +128,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 6. 开始业务处理
+	req.Chcd = strings.Trim(req.Chcd, " ")
 	ret = processFunc(req)
 
 	return ret

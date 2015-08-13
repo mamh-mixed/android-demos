@@ -61,20 +61,50 @@ func (col *agentCollection) FindByCondition(cond *model.Agent) (results []model.
 		return nil, err
 	}
 
-	return
+	return results, err
 }
 
 // Remove 删除代理商
-func (col *agentCollection) Remove(agentCode, agentName string) (err error) {
+func (col *agentCollection) Remove(agentCode string) (err error) {
 	bo := bson.M{}
 	if agentCode != "" {
 		bo["agentCode"] = agentCode
 	}
+	err = database.C(col.name).Remove(bo)
+	return err
+}
+
+// PaginationFind 分页查找机构商户
+func (c *agentCollection) PaginationFind(agentCode, agentName string, size, page int) (results []model.Agent, total int, err error) {
+	results = make([]model.Agent, 1)
+
+	match := bson.M{}
+	if agentCode != "" {
+		match["agentCode"] = agentCode
+	}
 	if agentName != "" {
-		bo["agentName"] = agentName
+		match["agentName"] = agentName
 	}
 
-	err = database.C(col.name).Remove(bo)
+	// 计算总数
+	total, err = database.C(c.name).Find(match).Count()
+	if err != nil {
+		return nil, 0, err
+	}
 
-	return err
+	cond := []bson.M{
+		{"$match": match},
+	}
+
+	sort := bson.M{"$sort": bson.M{"agentCode": 1}}
+
+	skip := bson.M{"$skip": (page - 1) * size}
+
+	limit := bson.M{"$limit": size}
+
+	cond = append(cond, sort, skip, limit)
+
+	err = database.C(c.name).Pipe(cond).All(&results)
+
+	return results, total, err
 }

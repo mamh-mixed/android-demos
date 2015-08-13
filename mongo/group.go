@@ -61,20 +61,56 @@ func (col *groupCollection) FindByCondition(cond *model.Group) (results []model.
 		return nil, err
 	}
 
-	return
+	return results, err
 }
 
 // Remove 删除代理商
-func (col *groupCollection) Remove(groupCode, groupName string) (err error) {
+func (col *groupCollection) Remove(groupCode string) (err error) {
 	bo := bson.M{}
 	if groupCode != "" {
 		bo["groupCode"] = groupCode
 	}
+	err = database.C(col.name).Remove(bo)
+	return err
+}
+
+// PaginationFind 分页查找机构商户
+func (c *groupCollection) PaginationFind(groupCode, groupName, agentCode, agentName string, size, page int) (results []model.Group, total int, err error) {
+	results = make([]model.Group, 1)
+
+	match := bson.M{}
+	if groupCode != "" {
+		match["groupCode"] = groupCode
+	}
 	if groupName != "" {
-		bo["groupName"] = groupName
+		match["groupName"] = groupName
+	}
+	if agentCode != "" {
+		match["agentCode"] = agentCode
+	}
+	if agentName != "" {
+		match["agentName"] = agentName
 	}
 
-	err = database.C(col.name).Remove(bo)
+	// 计算总数
+	total, err = database.C(c.name).Find(match).Count()
+	if err != nil {
+		return nil, 0, err
+	}
 
-	return err
+	cond := []bson.M{
+		{"$match": match},
+	}
+
+	sort := bson.M{"$sort": bson.M{"groupCode": 1}}
+
+	skip := bson.M{"$skip": (page - 1) * size}
+
+	limit := bson.M{"$limit": size}
+
+	cond = append(cond, sort, skip, limit)
+
+	err = database.C(c.name).Pipe(cond).All(&results)
+
+	return results, total, err
 }

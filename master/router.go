@@ -2,10 +2,11 @@ package master
 
 import (
 	"encoding/json"
-	"github.com/CardInfoLink/quickpay/model"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/log"
 )
@@ -24,10 +25,13 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.URL.Path {
+	case "/master/trade/query":
+		tradeQuery(w, data)
+		return
 	case "/master/trade/report":
 		tradeReport(w, r)
 		return
-	case "/master/trade/query":
+	case "/master/trade/stat":
 		page, _ := strconv.Atoi(r.FormValue("page"))
 		size, _ := strconv.Atoi(r.FormValue("size"))
 		q := &model.QueryCondition{
@@ -81,21 +85,25 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/agent/find":
 		agentCode := r.FormValue("agentCode")
 		agentName := r.FormValue("agentName")
-		ret = Agent.Find(agentCode, agentName)
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = Agent.Find(agentCode, agentName, size, page)
 	case "/master/agent/delete":
 		agentCode := r.FormValue("agentCode")
-		agentName := r.FormValue("agentName")
-		ret = Agent.Delete(agentCode, agentName)
+		ret = Agent.Delete(agentCode)
 	case "/master/agent/save":
 		ret = Agent.Save(data)
 	case "/master/group/find":
 		groupCode := r.FormValue("groupCode")
 		groupName := r.FormValue("groupName")
-		ret = Group.Find(groupCode, groupName)
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = Group.Find(groupCode, groupName, agentCode, agentName, size, page)
 	case "/master/group/delete":
 		groupCode := r.FormValue("groupCode")
-		groupName := r.FormValue("groupName")
-		ret = Group.Delete(groupCode, groupName)
+		ret = Group.Delete(groupCode)
 	case "/master/group/save":
 		ret = Group.Save(data)
 
