@@ -9,20 +9,23 @@ import (
 	"strconv"
 
 	"github.com/CardInfoLink/quickpay/entrance/scanpay"
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
 // ListenScanPay 启动扫码支付端口监听
-func ListenScanPay() {
-	port := goconf.Config.App.TCPPort
-	ln, err := net.Listen("tcp", port)
+func ListenScanPay(addr string, useGBK ...bool) {
+	gbk := false
+	if len(useGBK) > 0 {
+		gbk = useGBK[0]
+	}
+
+	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Errorf("fail to listen %s port: %s ", port, err)
+		log.Errorf("fail to listen %s port: %s", addr, err)
 		return
 	}
-	log.Infof("ScanPay TCP is listening at %s", port)
+	log.Infof("ScanPay TCP is listening, addr=%s, gbk=%t", addr, gbk)
 
 	go func() {
 		for {
@@ -31,7 +34,7 @@ func ListenScanPay() {
 				log.Errorf("listener fail to accept: %s ", err)
 				return
 			}
-			go handleConnection(conn)
+			go handleConnection(conn, gbk)
 		}
 	}()
 }
@@ -40,7 +43,7 @@ var errPing = errors.New("ping message")
 
 // 处理这个连接，无论遇到任何错误，都立即断开连接
 // TODO 为便于调试跟踪问题，断开前，可以返回 JSON，告知通信异常
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, gbk bool) {
 	log.Debugf("%s connected", conn.RemoteAddr())
 	defer conn.Close()
 
@@ -59,26 +62,30 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 
-		// gbk := string(scanpay.ScanPayHandle([]byte(reqBytes))) // 测试中文编码
+		var msg string
+		var ok bool
+		if !gbk {
+			// UTF-8 编码
+			msg = string(scanpay.ScanPayHandle([]byte(reqBytes))) // 测试中文编码
+		} else {
+			// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
+			msg, ok = util.GBKTranscoder.Decode(string(reqBytes))
+			if !ok {
+				log.Error("decode failed")
+				return
+			}
 
-		// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
-		utf8, ok := util.GBKTranscoder.Decode(string(reqBytes))
-		if !ok {
-			log.Error("decode failed")
-			return
+			// process scanpay
+			respBytes := scanpay.ScanPayHandle([]byte(msg))
+
+			// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
+			msg, ok = util.GBKTranscoder.Encode(string(respBytes))
+			if !ok {
+				log.Error("encode failed")
+				return
+			}
 		}
-
-		// process scanpay
-		respBytes := scanpay.ScanPayHandle([]byte(utf8))
-
-		// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
-		gbk, ok := util.GBKTranscoder.Encode(string(respBytes))
-		if !ok {
-			log.Error("encode failed")
-			return
-		}
-
-		err = write(conn, gbk)
+		err = write(conn, msg)
 		if err != nil {
 			log.Error(err)
 			return

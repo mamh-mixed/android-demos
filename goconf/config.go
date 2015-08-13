@@ -14,7 +14,8 @@ type ConfigStruct struct {
 		LogLevel         log.Level
 		EncryptKey       string
 		HTTPAddr         string
-		TCPPort          string
+		TCPAddr          string
+		TCPGBKAddr       string
 		DefaultCacheTime Duration
 	}
 
