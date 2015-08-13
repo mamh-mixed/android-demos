@@ -1,0 +1,263 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="report-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    .condition {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .condition > paper-input,
+    .condition > x-select {
+      min-width: 170px;
+      margin-right: 20px;
+    }
+
+    .condition > .buttons {
+      min-width: 170px;
+    }
+
+    .condition > .buttons > paper-button {
+      margin: 10px 0px 0px;
+    }
+
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+    }
+
+    .loading-more-wrapper {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    table td {
+      text-align: center;
+    }
+
+    tr > th,
+    tr > td {
+      padding: 8px;
+    }
+
+    table > thead {}
+
+    thead > tr {}
+
+    thead > tr > th {
+      line-height: 1.42857143;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table > tbody {
+      min-height: 700px;
+    }
+
+    tbody>tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    table tr th:nth-last-of-type(2),
+    table tr td:nth-last-of-type(2) {
+      text-align: right;
+    }
+  </style>
+  <template>
+    <div class="condition">
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
+        <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button dialog-confirm>OK</paper-button>
+        </div>
+      </paper-dialog>
+
+      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}}"></paper-input>
+      <paper-dialog id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
+        <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button dialog-confirm>OK</paper-button>
+        </div>
+      </paper-dialog>
+
+      <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
+      <paper-input label="商户代码/名称" value="{{cond.mer::input}}"></paper-input>
+      <div class="buttons">
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      </div>
+    </div>
+
+    <div class="list">
+      <table>
+        <thead>
+          <tr>
+            <th>商户名称</th>
+            <th>交易总笔数(金额)</th>
+            <th>支付宝交易笔数(金额)</th>
+            <th>微信交易笔数(金额)</th>
+            <th>代理名称</th>
+            <th>下载</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{records}}">
+            <tr>
+              <td>
+                <span>{{item.merName}}</span>
+              </td>
+              <td>
+                <span>{{item.totalTransNum}}</span>
+                (
+                <span>{{item.totalTransAmt}}</span>元)
+              </td>
+              <td>
+                <span>{{item.alp.transNum}}</span>
+                (
+                <span>{{item.alp.transAmt}}</span>元)
+              </td>
+              <td>
+                <span>{{item.wxp.transNum}}</span>
+                (
+                <span>{{item.wxp.transAmt}}</span>元)
+                <td>
+                  <span>{{item.agentName}}</span>
+                </td>
+                <td>
+                  <a href="#">下载</a>
+                </td>
+            </tr>
+          </template>
+        </tbody>
+
+      </table>
+      <div class="loading-more-wrapper">
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+      </div>
+    </div>
+    <iron-ajax id="queryAjax" method="GET" url="http://localhost:8080/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
+
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'report-list',
+
+        properties: {
+          cond: {
+            type: Object,
+            value: {}
+          }
+        },
+        ready: function() {
+          this.cond = {
+            startTime: this.getYesterdayISODate(),
+            endTime: this.getYesterdayISODate(),
+            page: 1,
+            size: 10,
+            total: 0
+          };
+          // 加载代理列表
+          this.handleQueryAgentsEvent();
+        },
+        // 查询交易报表事件
+        handleQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+        generateAjaxRequest: function() {
+          this.records = [];
+          this.$.queryAjax.params = this.cond;
+          this.$.queryAjax.generateRequest();
+        },
+        // 查询交易报表的响应事件
+        handelQueryResponse: function(e) {
+          var response = e.detail.response;
+
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          var pagination = response.data;
+          this.records = pagination.data.slice(0);
+
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
+
+          if (this.records.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
+        },
+        // 查询代理列表
+        handleQueryAgentsEvent: function() {
+          this.$.queryAgentAjax.params = {};
+          this.$.queryAgentAjax.generateRequest();
+        },
+        // 代理列表响应
+        handleQueryAgentsResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast('加载代理列表失败', 3000);
+            return;
+          }
+
+          var agents = response.data.slice(0);
+          this.set('agents', []);
+          for (var i = 0, l = agents.length; i < l; i++) {
+            this.push('agents', {
+              key: agents[i].agentCode,
+              value: agents[i].agentName
+            });
+          }
+        },
+        observers: [
+          '_watchAgentChange(agent.key)'
+        ],
+        _watchAgentChange: function(key) {
+          this.set('cond.agentCode', key);
+        },
+        getYesterdayISODate: function() {
+          var now = new Date();
+          var yesterday = new Date(now.valueOf() - 24 * 60 * 60 * 1000);
+          return yesterday.format('yyyy-MM-dd');
+        },
+        // 日期、时间控件
+        dismissStartTimeDialog: function() {
+          var startTime = this.$.startTimePicker.date;
+          this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
+        },
+        showStartTimeDialog: function() {
+          this.$.startTimeDailog.toggle();
+        },
+        dismissEndTimeDialog: function() {
+          var endTime = this.$.endTimePicker.date;
+          this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
+        },
+        showEndTimeDialog: function() {
+          this.$.endTimeDailog.toggle();
+        },
+      });
+    })();
+  </script>
+</dom-module>
