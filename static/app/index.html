@@ -117,13 +117,13 @@
             </paper-menu>
           </iron-collapse>
 
-          <a data-route="trades">
+          <a data-route="trade">
             <iron-icon icon="swap-horiz"></iron-icon>
             <span>交易查询</span>
           </a>
-          <iron-collapse opened="{{ startWith(route.name, 'trades') }}">
+          <iron-collapse opened="{{ startWith(route.name, 'trade') }}">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="trades.list" href="/trades/list">
+              <a data-route="trade.list" href="/trade/list">
                 <iron-icon icon="list"></iron-icon>
                 <span>扫码交易</span>
               </a>
@@ -203,7 +203,7 @@
             </section>
         -->
 
-            <section data-route="trades.list">
+            <section data-route="trade.list">
               <paper-material elevation="1">
                 <trade-list></trade-list>
               </paper-material>
