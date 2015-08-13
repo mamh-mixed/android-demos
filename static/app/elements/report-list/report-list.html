@@ -127,26 +127,44 @@
               </td>
               <td>
                 <span>{{item.totalTransNum}}</span>
-                (
-                <span>{{item.totalTransAmt}}</span>元)
+                <span>{{_computeAmount(item.totalTransAmt)}}</span>
               </td>
               <td>
                 <span>{{item.alp.transNum}}</span>
-                (
-                <span>{{item.alp.transAmt}}</span>元)
+                <span>{{_computeAmount(item.alp.transAmt)}}</span>
               </td>
               <td>
                 <span>{{item.wxp.transNum}}</span>
-                (
-                <span>{{item.wxp.transAmt}}</span>元)
-                <td>
-                  <span>{{item.agentName}}</span>
-                </td>
-                <td>
-                  <a href="#">下载</a>
-                </td>
+                <span>{{_computeAmount(item.wxp.transAmt)}}</span>
+              </td>
+              <td>
+                <span>{{item.agentName}}</span>
+              </td>
+              <td>
+                <a href="#">点我下载明细</a>
+              </td>
             </tr>
           </template>
+          <tr>
+            <th>
+              <span>汇总:</span>
+            </th>
+            <th>
+              <span>{{summary.totalTransNum}}</span>
+              <span>{{_computeAmount(summary.totalTransAmt)}}</span>
+            </th>
+            <th>
+              <span>{{summary.alp.transNum}}</span>
+              <span>{{_computeAmount(summary.alp.transAmt)}}</span>
+            </th>
+            <th>
+              <span>{{summary.wxp.transNum}}</span>
+              <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
+              <th></th>
+              <th>
+                <a href="#">点我下载当前所有商户交易汇总</a>
+              </th>
+          </tr>
         </tbody>
 
       </table>
@@ -193,14 +211,14 @@
         // 查询交易报表的响应事件
         handelQueryResponse: function(e) {
           var response = e.detail.response;
-
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
             return;
           }
 
           var pagination = response.data;
-          this.records = pagination.data.slice(0);
+          this.set('summary', pagination.data);
+          this.records = pagination.data.data.slice(0);
 
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
@@ -257,6 +275,9 @@
         showEndTimeDialog: function() {
           this.$.endTimeDailog.toggle();
         },
+        _computeAmount: function(amount) {
+          return '(' + amount + '元)'
+        }
       });
     })();
   </script>
