@@ -240,31 +240,51 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 }
 
 // FindAndGroupBy 统计
-func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, error) {
+func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, []model.Channel, error) {
 
-	//根据商户号、清算时间查找成功清算交易的汇总信息
 	var s []model.TransGroup
 
+	find := bson.M{
+		"createTime":  bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+		"merId":       bson.M{"$in": q.MerIds},
+		"transStatus": q.TransStatus,
+		"transType":   q.TransType,
+	}
 	//使用pipe统计
 	err := database.C(col.name).Pipe([]bson.M{
-		{"$match": bson.M{
-			"createTime":  bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
-			"merId":       bson.M{"$in": q.MerIds},
-			"transStatus": q.TransStatus,
-			"transType":   q.TransType,
-		}},
+		{"$match": find},
 		{"$group": bson.M{
-			"_id":       bson.M{"chanCode": "$chanCode", "merId": "$merId"},
+			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode"},
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
 		}},
-		{"$project": bson.M{"key": "$_id",
-			"transAmt":  1,
-			"chanCode":  1,
-			"refundAmt": 1,
-			"transNum":  1}},
+		{"$group": bson.M{
+			"_id":       "$_id.merId",
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"transNum":  bson.M{"$sum": "$transNum"},
+			"count":     bson.M{"$sum": 1},
+			"detail":    bson.M{"$push": bson.M{"chanCode": "$_id.chanCode", "transNum": "$transNum", "transAmt": "$transAmt", "refundAmt": "$refundAmt"}},
+		}},
+		{"$sort": bson.M{"transNum": -1}},
+		{"$skip": (q.Page - 1) * q.Size},
+		{"$limit": q.Size},
 	}).All(&s)
 
-	return s, err
+	var total []model.Channel
+	err = database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": "$chanCode",
+			"transAmt": bson.M{"$sum": "$transAmt"},
+			"transNum": bson.M{"$sum": 1},
+		}},
+		{"$project": bson.M{
+			"chanCode": "$_id",
+			"transAmt": 1,
+			"transNum": 1,
+		}},
+	}).All(&total)
+
+	return s, total, err
 }

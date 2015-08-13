@@ -54,7 +54,9 @@ type QueryResult struct {
 
 // Summary 商户交易汇总
 type Summary struct {
-	MerId         string  `json:"merId"`
+	MerId         string  `json:"merId,omitempty"`
+	MerName       string  `json:"merName,omitempty"`
+	AgentName     string  `json:"agentName,omitempty"`
 	TotalTransAmt float64 `json:"totalTransAmt"`
 	TotalTransNum int     `json:"totalTransNum"`
 	Wxp           struct {
@@ -65,17 +67,24 @@ type Summary struct {
 		TransAmt float64 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
 	}
+	Data []Summary `json:"data,omitempty"` // 包含每个商户单独数据
 }
 
 // TransGroup 按商户号和渠道号统计分组
 type TransGroup struct {
-	TransAmt  int64 `bson:"transAmt"`
-	RefundAmt int64 `bson:"refundNum"`
-	TransNum  int   `bson:"transNum"`
-	Key       struct {
-		MerId    string `bson:"merId"`
-		ChanCode string `bson:"chanCode"`
-	} `bson:"key,omitempty"`
+	TransAmt  int64     `bson:"transAmt"`
+	RefundAmt int64     `bson:"refundNum"`
+	TransNum  int       `bson:"transNum"`
+	Detail    []Channel `bson:"detail"`
+	MerId     string    `bson:"_id"`
+	Count     int       `bson:"count"`
+}
+
+type Channel struct {
+	ChanCode  string `bson:"chanCode"`
+	TransAmt  int64  `bson:"transAmt"`
+	RefundAmt int64  `bson:"refundNum"`
+	TransNum  int    `bson:"transNum"`
 }
 
 // ScanPayRequest 扫码支付

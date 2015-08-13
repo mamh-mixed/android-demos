@@ -77,7 +77,7 @@ func (c *merchantCollection) FindAllMerchant(cond *model.Merchant) (results []mo
 }
 
 // FuzzyFind 模糊查询拿到merId
-func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Merchant, int, error) {
+func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Merchant, error) {
 
 	q := bson.M{}
 	if cond.AgentCode != "" {
@@ -96,15 +96,9 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 		q["$and"] = and
 	}
 
-	total, err := database.C(c.name).Find(q).Count()
-	if err != nil {
-		return nil, total, err
-	}
-
-	skip := (cond.Page - 1) * cond.Size
 	var mers []*model.Merchant
-	err = database.C(c.name).Find(q).Sort("-merId").Select(bson.M{"merId": 1}).Skip(skip).Limit(cond.Size).All(&mers)
-	return mers, total, err
+	err := database.C(c.name).Find(q).Select(bson.M{"merId": 1, "merDetail.merName": 1, "agentName": 1}).All(&mers)
+	return mers, err
 }
 
 // PaginationFind 分页查找机构商户
