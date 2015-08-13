@@ -104,12 +104,12 @@ func combine(s *model.Summary, detail []model.Channel) {
 	for _, d := range detail {
 		switch d.ChanCode {
 		case channel.ChanCodeAlipay:
-			s.Alp.TransAmt = float64(d.TransAmt-d.RefundAmt) / 100
+			s.Alp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
 			s.Alp.TransNum = d.TransNum
 			s.TotalTransAmt += s.Alp.TransAmt
 			s.TotalTransNum += s.Alp.TransNum
 		case channel.ChanCodeWeixin:
-			s.Wxp.TransAmt = float64(d.TransAmt-d.RefundAmt) / 100
+			s.Wxp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
 			s.Wxp.TransNum = d.TransNum
 			s.TotalTransAmt += s.Wxp.TransAmt
 			s.TotalTransNum += s.Wxp.TransNum

@@ -46,14 +46,15 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 
 	var merId = params.Get("mchntid")
 	req := &model.QueryCondition{
-		MerId:       merId,
-		Busicd:      params.Get("busicd"),
-		StartTime:   params.Get("startTime"),
-		EndTime:     params.Get("endTime"),
-		Size:        maxReportRec,
-		IsForReport: true,
-		Page:        1,
-		TransStatus: model.TransSuccess,
+		MerId:        merId,
+		Busicd:       params.Get("busicd"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		Size:         maxReportRec,
+		IsForReport:  true,
+		Page:         1,
+		RefundStatus: model.TransRefunded,
+		TransStatus:  model.TransSuccess,
 	}
 
 	// 查询
