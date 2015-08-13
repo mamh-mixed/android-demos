@@ -178,8 +178,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	if q.OrderNum != "" {
 		match["orderNum"] = q.OrderNum
 	}
-	if q.Mchntid != "" {
-		match["merId"] = q.Mchntid
+	if q.MerId != "" {
+		match["merId"] = q.MerId
 	}
 	if q.Busicd != "" {
 		match["busicd"] = q.Busicd
@@ -237,4 +237,68 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 
 	err = database.C(col.name).Pipe(p).All(&trans)
 	return trans, total, err
+}
+
+// FindAndGroupBy 统计
+func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, []model.Channel, int, error) {
+
+	var group []model.TransGroup
+
+	find := bson.M{
+		"createTime":  bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+		"merId":       bson.M{"$in": q.MerIds},
+		"transStatus": q.TransStatus,
+		"transType":   q.TransType,
+	}
+
+	// 计算total
+	type ID struct {
+		Id string `bson:"_id"`
+	}
+	var Ids []ID
+	database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": "$merId"}},
+	}).All(&Ids)
+
+	//使用pipe统计
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{
+			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode"},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum":  bson.M{"$sum": 1},
+		}},
+		{"$group": bson.M{
+			"_id":       "$_id.merId",
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"transNum":  bson.M{"$sum": "$transNum"},
+			"count":     bson.M{"$sum": 1},
+			"detail":    bson.M{"$push": bson.M{"chanCode": "$_id.chanCode", "transNum": "$transNum", "transAmt": "$transAmt", "refundAmt": "$refundAmt"}},
+		}},
+		{"$sort": bson.M{"transNum": -1}},
+		{"$skip": (q.Page - 1) * q.Size},
+		{"$limit": q.Size},
+	}).All(&group)
+
+	// 按渠道汇总所有符合条件数据
+	var all []model.Channel
+	err = database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": "$chanCode",
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum":  bson.M{"$sum": 1},
+		}},
+		{"$project": bson.M{
+			"chanCode":  "$_id",
+			"transAmt":  1,
+			"transNum":  1,
+			"refundAmt": 1,
+		}},
+	}).All(&all)
+
+	return group, all, len(Ids), err
 }

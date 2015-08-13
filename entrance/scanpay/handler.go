@@ -25,6 +25,7 @@ func ScanPayHandle(reqBytes []byte) []byte {
 
 	// 具体业务
 	ret := router(req)
+	// ret.ErrorDetail = "ok" // 测试中文编码
 
 	// 应答
 	retBytes, err := json.Marshal(ret)

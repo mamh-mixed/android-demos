@@ -81,7 +81,7 @@ AMOUNT_LIMIT,付款金额不能小于最低限额,enterprisePay,S3
 PARAM_ERROR,参数错误,enterprisePay,96
 OPENID_ERROR,Openid错误,enterprisePay,S4
 NOTENOUGH,余额不足,enterprisePay,51
-SYSTEMERROR,系统繁忙，请稍后再试。,enterprisePay,95
+SYSTEMERROR,系统繁忙，请稍后再试。,enterprisePay,91
 NAME_MISMATCH,姓名校验出错,enterprisePay,S5
 SIGN_ERROR,签名错误,enterprisePay,96
 XML_ERROR,Post内容出错,enterprisePay,96

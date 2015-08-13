@@ -2,6 +2,7 @@
 package entrance
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -34,6 +36,8 @@ func ListenScanPay() {
 	}()
 }
 
+var errPing = errors.New("ping message")
+
 // 处理这个连接，无论遇到任何错误，都立即断开连接
 // TODO 为便于调试跟踪问题，断开前，可以返回 JSON，告知通信异常
 func handleConnection(conn net.Conn) {
@@ -43,6 +47,10 @@ func handleConnection(conn net.Conn) {
 	for {
 		reqBytes, err := read(conn)
 		if err != nil {
+			if err == errPing {
+				continue
+			}
+
 			if err == io.EOF {
 				// read end
 				return
@@ -51,24 +59,24 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 
-		gbk := string(scanpay.ScanPayHandle([]byte(reqBytes)))
+		// gbk := string(scanpay.ScanPayHandle([]byte(reqBytes))) // 测试中文编码
 
-		// // 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
-		// utf8, ok := util.GBKTranscoder.Decode(string(reqBytes))
-		// if !ok {
-		// 	log.Error("decode failed")
-		// 	return
-		// }
-		//
-		// // process scanpay
-		// respBytes := scanpay.ScanPayHandle([]byte(utf8))
-		//
-		// // 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
-		// gbk, ok := util.GBKTranscoder.Encode(string(respBytes))
-		// if !ok {
-		// 	log.Error("encode failed")
-		// 	return
-		// }
+		// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
+		utf8, ok := util.GBKTranscoder.Decode(string(reqBytes))
+		if !ok {
+			log.Error("decode failed")
+			return
+		}
+
+		// process scanpay
+		respBytes := scanpay.ScanPayHandle([]byte(utf8))
+
+		// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
+		gbk, ok := util.GBKTranscoder.Encode(string(respBytes))
+		if !ok {
+			log.Error("encode failed")
+			return
+		}
 
 		err = write(conn, gbk)
 		if err != nil {
@@ -102,7 +110,7 @@ func read(conn net.Conn) ([]byte, error) {
 	// 长度为 0 ，表明读取到 ping 消息
 	if mlen == 0 {
 		log.Debugf("read keepalive length %d", mlen)
-		return nil, nil
+		return nil, errPing
 	}
 
 	msg := make([]byte, mlen)
@@ -110,7 +118,7 @@ func read(conn net.Conn) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("recieve message: %d %s", size, msg)
+	log.Debugf("recieve message: %d%s", size, msg)
 
 	return msg, err
 }
