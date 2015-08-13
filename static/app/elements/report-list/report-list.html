@@ -141,7 +141,7 @@
                 <span>{{item.agentName}}</span>
               </td>
               <td>
-                <a href="#">点我下载明细</a>
+                <a target="_blank" href="{{_computeDownLoadUrl(item)}}">点我下载明细</a>
               </td>
             </tr>
           </template>
@@ -275,8 +275,21 @@
         showEndTimeDialog: function() {
           this.$.endTimeDailog.toggle();
         },
+        // 修饰金额的方法
         _computeAmount: function(amount) {
           return '(' + amount + '元)'
+        },
+        // 整理下载报表的url
+        _computeDownLoadUrl: function(item) {
+          var t = new Date().format('yyyyMMdd-hhmmss');
+          var obj = {};
+          for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
+            var v = arr[i]
+            obj[v] = this.cond[v];
+          }
+          obj.merId = item.merId;
+          obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
+          return '/master/trade/report?' + Util.query(obj);
         }
       });
     })();
