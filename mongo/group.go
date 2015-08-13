@@ -75,7 +75,7 @@ func (col *groupCollection) Remove(groupCode string) (err error) {
 }
 
 // PaginationFind 分页查找机构商户
-func (c *groupCollection) PaginationFind(groupCode, groupName string, size, page int) (results []model.Group, total int, err error) {
+func (c *groupCollection) PaginationFind(groupCode, groupName, agentCode, agentName string, size, page int) (results []model.Group, total int, err error) {
 	results = make([]model.Group, 1)
 
 	match := bson.M{}
@@ -84,6 +84,12 @@ func (c *groupCollection) PaginationFind(groupCode, groupName string, size, page
 	}
 	if groupName != "" {
 		match["groupName"] = groupName
+	}
+	if agentCode != "" {
+		match["agentCode"] = agentCode
+	}
+	if agentName != "" {
+		match["agentName"] = agentName
 	}
 
 	// 计算总数
@@ -96,11 +102,13 @@ func (c *groupCollection) PaginationFind(groupCode, groupName string, size, page
 		{"$match": match},
 	}
 
+	sort := bson.M{"$sort": bson.M{"groupCode": 1}}
+
 	skip := bson.M{"$skip": (page - 1) * size}
 
 	limit := bson.M{"$limit": size}
 
-	cond = append(cond, skip, limit)
+	cond = append(cond, sort, skip, limit)
 
 	err = database.C(c.name).Pipe(cond).All(&results)
 

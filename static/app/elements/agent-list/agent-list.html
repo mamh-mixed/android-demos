@@ -223,8 +223,9 @@
         // 编辑代理
         handleEditEvent: function(e) {
           this.$.agentEditor.agent = e.model.item;
-          this.$.agentEditor.open();
+          this.$.agentEditor.open2();
         },
+        
         // 删除代理事件
         handleDeleteEvent: function(e, detail) {
           this.$.deleteAjax.params = {
@@ -243,7 +244,7 @@
         },
         // 新增代理事件
         handleCreateFabTapped: function() {
-          this.$.agentEditor.open();
+          this.$.agentEditor.open1();
         },
         // 新代理保存成功事件，刷新列表
         handleAgentSave: function() {
