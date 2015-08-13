@@ -92,9 +92,11 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/group/find":
 		groupCode := r.FormValue("groupCode")
 		groupName := r.FormValue("groupName")
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
 		size, _ := strconv.Atoi(r.FormValue("size"))
 		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = Group.Find(groupCode, groupName, size, page)
+		ret = Group.Find(groupCode, groupName, agentCode, agentName, size, page)
 	case "/master/group/delete":
 		groupCode := r.FormValue("groupCode")
 		ret = Group.Delete(groupCode)

@@ -2,6 +2,7 @@ package scanpay
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
@@ -124,6 +125,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 6. 开始业务处理
+	req.Chcd = strings.Trim(req.Chcd, " ")
 	ret = processFunc(req)
 
 	return ret
