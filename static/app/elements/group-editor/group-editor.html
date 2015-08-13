@@ -25,6 +25,7 @@
     .row paper-input:first-child {
       margin-right: 20px;
     }
+
   </style>
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></iron-ajax>
@@ -32,16 +33,16 @@
       <h2>编辑集团商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input label="代理商代码" value="{{group.agentCode::input}}"></paper-input>
+          <paper-input label="集团商户代码" value="{{group.groupCode::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="代理商名称" value="{{group.agentName::input}}"></paper-input>
+          <paper-input label="集团商户名称" value="{{group.groupName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="集团代码" value="{{group.groupCode::input}}"></paper-input>
+          <paper-input label="代理代码" value="{{group.agentCode::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="集团名称" value="{{group.groupName::input}}"></paper-input>
+          <paper-input label="代理名称" value="{{group.agentName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -87,5 +88,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

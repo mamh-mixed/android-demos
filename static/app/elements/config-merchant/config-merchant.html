@@ -85,8 +85,12 @@
     <iron-pages selected="{{idx}}">
       <section>
         <div class="row">
-          <paper-input label="代理代码/机构代码" value="{{merchant.agentCode::input}}"></paper-input>
+          <paper-input label="代理代码/机构代码" value="{{merchant.insCode::input}}"></paper-input>
+          <paper-input label="代理名称/机构名称" value="{{merchant.agentName::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
@@ -114,14 +118,11 @@
           <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="机构号" value="{{merchant.insCode::input}}"></paper-input>
-          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-        </div>
-        <div class="row">
           <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
         </div>
         <div class="row">
+          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
         <div class="row">
@@ -356,8 +357,10 @@
         ready: function() {
           this.idx = 0;
           this.merchant = {
-            agentCode: '',
+            insCode: '',
+            agentName: '',
             groupCode: '',
+            groupName: '',
             merId: '',
             detail: {
               merName: '',
@@ -366,12 +369,11 @@
               shopType: ''
             },
             merStatus: '',
-            transCurr: '',
+            transCurr: '156',
             signKey: '',
             isNeedSign: false,
             encryptKey: '',
-            permission: [],
-            insCode: ''
+            permission: []
           };
           this.alipay = {
             chanCode: 'ALP',
@@ -530,7 +532,7 @@
             if ('application/x-x509-ca-cert' === file.type) {
               var reader = new FileReader();
               reader.onload = function() {
-                console.log(this.result);
+                // console.log(this.result);
                 if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
                   Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
                   return;

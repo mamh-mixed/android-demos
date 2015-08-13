@@ -9,7 +9,6 @@ import (
 
 	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -52,22 +51,24 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 
-		// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
-		utf8, ok := util.GBKTranscoder.Decode(string(reqBytes))
-		if !ok {
-			log.Error("decode failed")
-			return
-		}
+		gbk := string(scanpay.ScanPayHandle([]byte(reqBytes)))
 
-		// process scanpay
-		respBytes := scanpay.ScanPayHandle([]byte(utf8))
-
-		// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
-		gbk, ok := util.GBKTranscoder.Encode(string(respBytes))
-		if !ok {
-			log.Error("encode failed")
-			return
-		}
+		// // 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
+		// utf8, ok := util.GBKTranscoder.Decode(string(reqBytes))
+		// if !ok {
+		// 	log.Error("decode failed")
+		// 	return
+		// }
+		//
+		// // process scanpay
+		// respBytes := scanpay.ScanPayHandle([]byte(utf8))
+		//
+		// // 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
+		// gbk, ok := util.GBKTranscoder.Encode(string(respBytes))
+		// if !ok {
+		// 	log.Error("encode failed")
+		// 	return
+		// }
 
 		err = write(conn, gbk)
 		if err != nil {

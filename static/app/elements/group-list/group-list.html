@@ -6,6 +6,12 @@
       display: block;
     }
 
+    * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
     .condition {
       display: flex;
       flex-direction: row;
@@ -31,9 +37,6 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
-    /*card-item {
-      margin-bottom: 20px;
-    }*/
 
     .loading-more-wrapper {
       text-align: center;
@@ -47,77 +50,69 @@
 
     table {
       width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 30px;
     }
 
-    table td {
+    .center {
       text-align: center;
     }
 
-    table tr td:nth-of-type(1),
-    table tr th:nth-of-type(8),
-    table tr td:nth-of-type(8) {
-      text-align: right;
+    tr > th,
+    tr > td {
+      text-align: left;
+      padding: 8px;
     }
 
+    table > thead {}
+
+    thead > tr {}
+
+    thead > tr > th {
+      line-height: 1.42857143;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table > tbody {
+      min-height: 700px;
+    }
+
+    tbody>tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    table tr th:nth-last-of-type(2),
+    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <div class="condition">
-      <paper-input label="集团代码" value="{{cond.groupCode::input}}"></paper-input>
-      <paper-input label="集团名称" value="{{cond.groupName::input}}"></paper-input>
+      <paper-input label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
+      <paper-input label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
     </div>
 
-    <!-- <template is="dom-repeat" items="{{groups}}">
-      <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" on-item-deleted="handleItemDeletedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
-        <dl>
-          <dt>代理商代码</dt>
-          <dd>
-            <span>{{item.agentCode}}</span>
-          </dd>
-
-          <dt>代理商名称</dt>
-          <dd>
-            <span>{{item.agentName}}</span>
-          </dd>
-
-          <dt>集团代码</dt>
-          <dd>
-            <span>{{item.groupCode}}</span>
-          </dd>
-
-          <dt>集团名称</dt>
-          <dd>
-            <span>{{item.groupName}}</span>
-          </dd>
-        </dl>
-      </card-item>
-    </template> -->
     <div class="list">
       <table style="width:100%;">
         <thead>
           <tr>
             <th></th>
-            <th>代理商代码</th>
-            <th>代理商名称</th>
-            <th>集团代码</th>
-            <th>集团名称</th>
+            <th>集团商户代码</th>
+            <th>集团商户名称</th>
+            <th>代理代码/机构代码</th>
+            <th>代理名称/机构名称</th>
+            <th class="center">操作</th>
           </tr>
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{groups}}">
             <tr>
-              <td>
+              <td class="center">
                 <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td>
-                <span>{{item.agentCode}}</span>
-              </td>
-              <td>
-                <span>{{item.agentName}}</span>
               </td>
               <td>
                 <span>{{item.groupCode}}</span>
@@ -125,13 +120,23 @@
               <td>
                 <span>{{item.groupName}}</span>
               </td>
+              <td>
+                <span>{{item.agentCode}}</span>
+              </td>
+              <td>
+                <span>{{item.agentName}}</span>
+              </td>
+              <td class="center">
+                <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
+                <iron-icon icon="delete" on-tap="handleDeleteEvent"></iron-icon>
+              </td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
     <div class="loading-more-wrapper">
-      <paper-button class="colorful" raised on-tap="handleLoadingMoreTapped">加载更多</paper-button>
+      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </div>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
@@ -165,7 +170,11 @@
         },
         ready: function() {
           this.groups = [];
-          this.cond = {};
+          this.cond = {
+            page: 1,
+            size: 10,
+            total: 0
+          };
         },
         attached: function() {
           if (this.autoLoading) {
@@ -174,6 +183,11 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+
+        generateAjaxRequest: function() {
           this.groups = [];
           this.$.queryAjax.params = this.cond;
           this.$.queryAjax.generateRequest();
@@ -186,13 +200,18 @@
             return;
           }
 
-          this.groups = response.data.slice(0);
+          var pagination = response.data;
+          this.groups = pagination.data.slice(0);
+
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
 
           if (this.groups.length === 0) {
             Util.toast('没有数据', 2000);
           }
         },
-        // 代理商选中事件
+
+        // 集团选中事件
         handleItemStaredEvent: function(e) {
           var staredItem = e.model.item;
           this.fire('item-selected', staredItem);
@@ -207,18 +226,17 @@
             }
           }
         },
+
         // 编辑集团商户
-        handleItemEditedEvent: function(e, detail) {
-          this.$.groupEditor.group = detail;
+        handleEditEvent: function(e) {
+          this.$.groupEditor.group = e.model.item;
           this.$.groupEditor.open();
         },
         // 删除集团商户事件
-        handleItemDeletedEvent: function(e, detail) {
-          var obj = {
-            groupCode: detail.groupCode,
-            groupName: detail.groupName
+        handleDeleteEvent: function(e) {
+          this.$.deleteAjax.params = {
+            groupCode: e.model.item.groupCode
           };
-          this.$.deleteAjax.params = obj;
           this.$.deleteAjax.generateRequest();
         },
         // 删除集团商户响应事件,刷新列表
@@ -238,17 +256,11 @@
         handleGroupSave: function() {
           this.handleQueryTapped();
         },
-        // 加载更多
-        handleLoadingMoreTapped: function() {
-          this.cond.page = 2;
-          this.$.queryAjax.body = JSON.stringify(this.cond);
-          this.$.queryAjax.generateRequest();
-        },
+
         addOneFilter: function(index) {
           return index + 1;
         }
       });
     })();
-
   </script>
 </dom-module>
