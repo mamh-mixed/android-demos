@@ -169,39 +169,6 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// TransQuery 交易查询
-func TransQuery(q *model.QueryCondition) (ret *model.QueryCondition) {
-
-	now := time.Now().Format("2006-01-02")
-	// 默认当天开始
-	if q.StartTime == "" {
-		q.StartTime = now + " 00:00:00"
-	}
-	// 默认当天结束
-	if q.EndTime == "" {
-		q.EndTime = now + " 23:59:59"
-	}
-
-	// mongo统计
-	trans, total, err := mongo.SpTransColl.Find(q)
-	if err != nil {
-		log.Errorf("find trans error: %s", err)
-	}
-
-	size := len(trans)
-	ret = &model.QueryCondition{
-		Page:     q.Page,
-		Size:     size,
-		Total:    total,
-		RespCode: "000000",
-		RespMsg:  "成功",
-		Rec:      trans,
-		Count:    size,
-	}
-
-	return ret
-}
-
 // BarcodePay 条码下单
 func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 

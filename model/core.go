@@ -101,11 +101,11 @@ type CardBin struct {
 // Merchant 商户基本信息
 type Merchant struct {
 	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
-	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 商户状态（Normal，Deleted，Test）
-	AgentName  string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 商户状态（Normal，Deleted，Test）
-	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 代理/机构代码
-	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 代理/机构代码
-	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 集团商户代码
+	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
+	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
+	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
+	AgentName  string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理/机构名称
+	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
 	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
 	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
 	IsNeedSign bool      `bson:"isNeedSign,omitempty" json:"isNeedSign,omitempty"` // 是否开启验签
@@ -293,6 +293,11 @@ type TransSett struct {
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
 	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
 }
+
+// TransSummary 交易汇总
+// type TransSummary struct {
+
+// }
 
 // TransSettInfo 清分信息明细
 type TransSettInfo struct {
