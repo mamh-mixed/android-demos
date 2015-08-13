@@ -62,11 +62,11 @@ type Summary struct {
 	Wxp           struct {
 		TransAmt float64 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
-	}
+	} `json:"wxp"`
 	Alp struct {
 		TransAmt float64 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
-	}
+	} `json:"alp"`
 	Data []Summary `json:"data,omitempty"` // 包含每个商户单独数据
 }
 
