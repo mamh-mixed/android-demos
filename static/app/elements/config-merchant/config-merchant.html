@@ -73,7 +73,6 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
-
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -151,12 +150,12 @@
       </section>
       <section>
         <div class="row">
-          <paper-input label="商户号" value="{{weixin.chanMerId::input}}"></paper-input>
-          <paper-input label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
+          <paper-input label="微信商户号" value="{{weixin.chanMerId::input}}"></paper-input>
+          <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-checkbox id="isAngentCheck" checked on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
-          <paper-input label="子商户号" value="{{weixin.subMerId::input}}" disabled$="{{!weixin.isAgent}}"></paper-input>
+          <paper-input label="大商户号" value="{{weixin.subMerId::input}}" disabled$="{{!weixin.isAgent}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="讯联跟渠道费率" value="{{weixin.acqFee::input}}"></paper-input>
@@ -390,6 +389,7 @@
           this.weixin = {
             chanCode: 'WXP',
             isAgent: true,
+            subMerId: '1236593202',
             chanMerId: '',
             chanMerName: '',
             acqFee: '',
@@ -432,22 +432,23 @@
         },
         // 保存微信信息的按钮事件
         handleSaveWXPTapped: function() {
-          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
-          this.$.saveChannelMerchantAjax.generateRequest();
-
-          var obj = {
+          var router = {
             merId: this.merchant.merId,
             cardBrand: 'WXP',
             chanCode: this.weixin.chanCode,
             chanMerId: this.weixin.chanMerId
           };
 
+          // 如果是代理上模式，交换 chanMerId 和
           if (this.weixin.isAgent) {
-            obj.isAgent = this.weixin.isAgent;
-            obj.subMerId = this.weixin.subMerId;
+            router.isAgent = this.weixin.isAgent;
+            router.subMerId = this.weixin.merId;
+            router.chanMerId = this.weixin.subMerId;
           }
+          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
+          this.$.saveChannelMerchantAjax.generateRequest();
 
-          this.$.saveRouterAjax.body = JSON.stringify(obj);
+          this.$.saveRouterAjax.body = JSON.stringify(router);
           this.$.saveRouterAjax.generateRequest();
         },
         // 保存路由的ajax响应事件
@@ -549,6 +550,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>
