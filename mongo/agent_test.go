@@ -78,7 +78,7 @@ func TestAgentFindByCondition(t *testing.T) {
 }
 
 func TestAgentRemove(t *testing.T) {
-	agentCode := "TESTCODE"
+	agentCode := "123123123123123123"
 	err := AgentColl.Remove(agentCode)
 	if err != nil {
 		t.Error("remove agent unsuccessful ", err)

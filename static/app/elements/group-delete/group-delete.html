@@ -4,9 +4,9 @@
   <style>
     :host {
       display: block;
-      --paper-dialog: {
-        min-width: 320px;
-        min-height: 180px;
+      --paper-dialog-scrollable: {
+        min-width: 340px;
+        min-height: 160px;
       }
     }
 
@@ -18,22 +18,18 @@
       @apply(--layout-horizontal);
     }
 
-    .row paper-input {
-      min-width: 300px;
-    }
-
     .row iron-icon {
       color: red;
     }
-
   </style>
   <template>
-    <iron-ajax id="deleteAjax" method="POST" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <paper-dialog id="dialogDelete">
-      <h2>删除集团商户</h2>
+      <h2>删除【<span>{{group.groupName}}</span>】集团商户</h2>
       <div class="row">
-        <iron-icon icon="report-problem" ></iron-icon>
-        <td>是否删除此集团商户?</td>
+        <iron-icon icon="report-problem"></iron-icon>
+        &nbsp;&nbsp;&nbsp;
+        <span>是否删除此集团商户?</span>
       </div>
       <div class="buttons">
         <paper-button dialog-dismiss>否</paper-button>
@@ -53,13 +49,15 @@
           }
         },
         open: function() {
-          console.log('open me');
+          // console.log('open me');
           this.$.dialogDelete.open();
         },
         // 点击确定删除事件
         handleDeleteTapped: function() {
-          console.log(this.group);
-          this.$.deleteAjax.body = JSON.stringify(this.group);
+          // console.log(this.group);
+          this.$.deleteAjax.params = {
+            groupCode: this.group.groupCode
+          };
           this.$.deleteAjax.generateRequest();
         },
         // 删除事件响应结果
