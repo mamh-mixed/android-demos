@@ -133,3 +133,27 @@ func (c *merchantCollection) PaginationFind(merId, merStatus string, size, page 
 
 	return results, total, err
 }
+
+// BatchAdd 批量增加商户
+func (c *merchantCollection) BatchAdd(mers []model.Merchant) error {
+
+	var temps []interface{}
+	for _, m := range mers {
+		temps = append(temps, m)
+	}
+	err := database.C(c.name).Insert(temps...)
+	return err
+}
+
+// BatchRemove 批量删除
+func (c *merchantCollection) BatchRemove(merIds []string) error {
+
+	selector := bson.M{
+		"$in": merIds,
+	}
+	change, err := database.C(c.name).RemoveAll(selector)
+	if change.Removed != len(merIds) {
+		log.Warnf("expect remove %d records,but %d removed", len(merIds), change.Removed)
+	}
+	return err
+}

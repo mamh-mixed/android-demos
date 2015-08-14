@@ -39,6 +39,35 @@ func (col *chanMerCollection) Add(c *model.ChanMer) error {
 	return err
 }
 
+// BatchAdd 批量增加渠道商户
+func (col *chanMerCollection) BatchAdd(cms []model.ChanMer) error {
+
+	var temp []interface{}
+	for _, cm := range cms {
+		temp = append(temp, cm)
+	}
+	err := database.C(col.name).Insert(temp...)
+	return err
+}
+
+// BatchRemove 批量删除渠道商户
+func (col *chanMerCollection) BatchRemove(cms []model.ChanMer) error {
+
+	var keys []bson.M
+	for _, cm := range cms {
+		keys = append(keys, bson.M{"chanCode": cm.ChanCode, "chanMerId": cm.ChanMerId})
+	}
+
+	selector := bson.M{
+		"$or": keys,
+	}
+	change, err := database.C(col.name).RemoveAll(selector)
+	if change.Removed != len(cms) {
+		log.Warnf("expect remove %d records,but %d removed", len(cms), change.Removed)
+	}
+	return err
+}
+
 // Modify 更新渠道商户信息
 func (col *chanMerCollection) Update(c *model.ChanMer) error {
 	bo := bson.M{

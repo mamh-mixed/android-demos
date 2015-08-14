@@ -504,6 +504,5 @@ func genExtendParams(mer *model.Merchant) string {
 		SHOP_ID    string `json:",omitempty"`
 	}{agentId, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
 	bytes, _ := json.Marshal(shopInfo)
-	fmt.Println("extendParams: " + string(bytes))
 	return string(bytes)
 }

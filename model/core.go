@@ -113,7 +113,6 @@ type Merchant struct {
 	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         // 备注信息
 	Permission []string  `bson:"permission,omitempty" json:"permission,omitempty"` // 接口权限
 	Detail     MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      // 商户详细信息
-	InsCode    string    `bson:"insCode,omitempty" json:"insCode,omitempty"`       // 机构号
 }
 
 // MerDetail 商户详细信息
@@ -228,7 +227,7 @@ type Trans struct {
 	ConsumerAccount string `bson:"consumerAccount,omitempty" json:"consumerAccount,omitempty"` // 消费帐号 支付宝、微信
 	ConsumerId      string `bson:"consumerId,omitempty" json:"consumerId,omitempty"`           // 消费id  支付宝、微信
 	Busicd          string `bson:"busicd,omitempty" json:"busicd"`                             // 业务id
-	Inscd           string `bson:"inscd,omitempty" json:"inscd,omitempty"`                     // 机构号
+	AgentCode       string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`             // 代理/机构号
 	QrCode          string `bson:"qrCode,omitempty" json:"-"`                                  // 预下单时的二维码
 	PrePayId        string `bson:"prePayId,omitempty" json:"-"`                                // 预支付凭证
 	Terminalid      string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`           // 终端号

@@ -43,7 +43,7 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	switch {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -81,7 +81,7 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 		return fieldEmptyError(orderNum)
 	case req.Chcd == "":
 		return fieldEmptyError(chcd)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -115,7 +115,7 @@ func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch {
 	case req.OrigOrderNum == "":
 		return fieldEmptyError(orderNum)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -137,7 +137,7 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -169,7 +169,7 @@ func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -197,7 +197,7 @@ func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -228,7 +228,7 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 		return fieldEmptyError(orderNum)
 	case req.Chcd == "":
 		return fieldEmptyError(chcd)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
@@ -273,7 +273,7 @@ func validatePublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return fieldEmptyError(orderNum)
 	case req.Chcd == "":
 		return fieldEmptyError(chcd)
-	case req.Inscd == "":
+	case req.AgentCode == "":
 		return fieldEmptyError(inscd)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
