@@ -98,6 +98,7 @@
     tbody > tr:hover {
       background-color: #f5f5f5;
     }
+
     tbody > tr:nth-last-of-type(2):hover {
       background-color: #fff;
     }
@@ -147,6 +148,7 @@
       <paper-input label="商户号/名称" value="{{cond.mer::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-button class="colorful" raised on-tap="handleOldOldSysQueryTapped">旧系统查询</paper-button>
       </div>
     </div>
 
@@ -222,7 +224,8 @@
           </template>
           <tr>
             <td colspan="10">
-              <div class="" style="height:50px;">
+              <div class="" style="width:100%;">
+                <paper-progress id="progress" style="width:100%;"></paper-progress>
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
               </div>
             </td>
@@ -259,8 +262,8 @@
       </table>
     </div>
     <iron-ajax id="queryAjax" method="GET" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
-
   </template>
   <script>
     (function() {
@@ -284,19 +287,34 @@
           // 加载代理列表
           this.handleQueryAgentsEvent();
         },
+        // 旧系统查询
+        handleOldOldSysQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.set('isUseOldSys', true);
+          this.generateAjaxRequest();
+        },
         // 查询交易报表事件
         handleQueryTapped: function() {
           this.set('cond.page', 1);
+          this.set('isUseOldSys', false);
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
+          this.progressGo();
           this.records = [];
-          this.$.queryAjax.params = this.cond;
-          this.$.queryAjax.generateRequest();
+          var ajax;
+          if (this.isUseOldSys) {
+            ajax = this.$.oldQueryAjax;
+          } else {
+            ajax = this.$.queryAjax;
+          }
+          ajax.params = this.cond;
+          ajax.generateRequest();
         },
         // 查询交易报表的响应事件
         handelQueryResponse: function(e) {
           var response = e.detail.response;
+          this.progressStop();
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
             return;
@@ -313,7 +331,6 @@
 
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
-
           if (this.records.length === 0) {
             Util.toast('没有数据', 2000);
           }
@@ -390,6 +407,42 @@
           obj.merId = item.merId;
           obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
           return '/master/trade/report?' + Util.query(obj);
+        },
+        progressGo: function() {
+          var progress = this.$.progress,
+            repeat = 0,
+            maxRepeat = 5,
+            animating = false;
+
+          function startProgress() {
+            repeat = 0;
+            progress.value = progress.min;
+            if (!animating) {
+              progress.setAttribute('stop', false);
+              nextProgress();
+            }
+          }
+
+          function nextProgress() {
+            var isStop = progress.getAttribute('stop');
+            animating = true;
+            if (progress.value < progress.max) {
+              progress.value += (progress.step || 1);
+            } else {
+              if (isStop === 'true') {
+                animating = false;
+                return;
+              }
+              progress.value = progress.min;
+            }
+
+            requestAnimationFrame(nextProgress);
+          };
+          startProgress();
+        },
+        progressStop: function() {
+          var progress = this.$.progress;
+          progress.setAttribute('stop', true);
         }
       });
     })();
