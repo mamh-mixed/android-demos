@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="group-delete">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 340px;
+        min-height: 160px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+  </style>
+  <template>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <paper-dialog id="dialogDelete">
+      <h2>删除【<span>{{group.groupName}}</span>】集团商户</h2>
+      <div class="row">
+        <iron-icon icon="report-problem"></iron-icon>
+        &nbsp;&nbsp;&nbsp;
+        <span>是否删除此集团商户?</span>
+      </div>
+      <div class="buttons">
+        <paper-button dialog-dismiss>否</paper-button>
+        <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'group-delete',
+
+        properties: {
+          group: {
+            type: Object
+          }
+        },
+        open: function() {
+          // console.log('open me');
+          this.$.dialogDelete.open();
+        },
+        // 点击确定删除事件
+        handleDeleteTapped: function() {
+          // console.log(this.group);
+          this.$.deleteAjax.params = {
+            groupCode: this.group.groupCode
+          };
+          this.$.deleteAjax.generateRequest();
+        },
+        // 删除事件响应结果
+        handleDeleteResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialogDelete.close();
+          this.fire('saved');
+        }
+      });
+    })();
+  </script>
+</dom-module>

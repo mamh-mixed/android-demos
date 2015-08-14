@@ -170,10 +170,10 @@ type Agent struct {
 }
 
 type Group struct {
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理商代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理商名称
 	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"` // 集团代码
 	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"` // 集团名称
+	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
 }
 
 // SettSchemeCd 计费方案代码
