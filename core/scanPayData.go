@@ -27,15 +27,15 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		log.Errorf("find trans error: %s", err)
 	}
 
-	size := len(trans)
+	count := len(trans)
 	ret = &model.QueryResult{
 		Page:     q.Page,
-		Size:     size,
+		Size:     q.Size,
 		Total:    total,
 		RespCode: "000000",
 		RespMsg:  "成功",
 		Rec:      trans,
-		Count:    size,
+		Count:    count,
 	}
 
 	return ret
@@ -87,13 +87,13 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	summary := model.Summary{Data: data}
 	combine(&summary, all)
 
-	size := len(data)
+	count := len(data)
 	ret = &model.QueryResult{
 		Page:  q.Page,
-		Size:  size,
+		Size:  q.Size,
 		Total: total,
 		Rec:   summary,
-		Count: size,
+		Count: count,
 	}
 
 	return ret
