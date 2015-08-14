@@ -87,7 +87,7 @@
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <!-- <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax> -->
     <div class="condition">
       <paper-input label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
@@ -145,6 +145,7 @@
     </paper-fab>
 
     <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
+    <group-delete id="groupDelete" on-saved="handleGroupSave"></group-delete>
   </template>
   <script>
     (function() {
@@ -237,11 +238,10 @@
 
         // 删除集团商户事件
         handleDeleteEvent: function(e) {
-          this.$.deleteAjax.params = {
-            groupCode: e.model.item.groupCode
-          };
-          this.$.deleteAjax.generateRequest();
+          this.$.groupDelete.group = e.model.item;
+          this.$.groupDelete.open();
         },
+
         // 删除集团商户响应事件,刷新列表
         handleDeleteResponse: function(e) {
           var response = e.detail.response;

@@ -84,11 +84,10 @@
 
     table tr th:nth-last-of-type(2),
     table tr td:nth-last-of-type(2) {}
-
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <!-- <iron-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax> -->
     <div class="condition">
       <paper-input label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
       <paper-input label="代理名称" value="{{cond.agentName::input}}"></paper-input>
@@ -136,6 +135,7 @@
     </paper-fab>
 
     <agent-editor id="agentEditor" on-saved="handleAgentSave"></agent-editor>
+    <agent-delete id="agentDelete" on-saved="handleAgentSave"></agent-delete>
   </template>
   <script>
     (function() {
@@ -227,20 +227,10 @@
 
         // 删除代理事件
         handleDeleteEvent: function(e) {
-          this.$.deleteAjax.params = {
-            agentCode: e.model.item.agentCode
-          };
-          this.$.deleteAjax.generateRequest();
+          this.$.agentDelete.agent = e.model.item;
+          this.$.agentDelete.open();
         },
-        // 删除代理响应事件,刷新列表
-        handleDeleteResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-          this.handleQueryTapped();
-        },
+
         // 新增代理事件
         handleCreateFabTapped: function() {
           this.$.agentEditor.open1();
@@ -254,6 +244,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>

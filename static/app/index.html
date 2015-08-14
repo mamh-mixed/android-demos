@@ -95,11 +95,11 @@
                 <span>代理/机构</span>
               </a>
               <a data-route="config.groups" href="/config/groups">
-                <iron-icon icon="store"></iron-icon>
+                <iron-icon icon="home"></iron-icon>
                 <span>集团商户</span>
               </a>
               <a data-route="config.configMer" href="/config/configMer">
-                <iron-icon icon="settings-input-component"></iron-icon>
+                <iron-icon icon="create"></iron-icon>
                 <span>商户录入</span>
               </a>
               <a data-route="config.merchants" href="/config/merchants">
@@ -135,21 +135,21 @@
           </iron-collapse>
 
           <a data-route="test">
-            <iron-icon icon="account-balance"></iron-icon>
+            <iron-icon icon="bug-report"></iron-icon>
             <span>测试</span>
           </a>
           <iron-collapse opened="{{ startWith(route.name, 'test') }}">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="test.scanpay" href="/test/scanpay">
-                <iron-icon icon="list"></iron-icon>
+                <iron-icon icon="pageview"></iron-icon>
                 <span>测试扫码</span>
               </a>
               <a data-route="test.qiniu" href="/test/qiniu">
-                <iron-icon icon="account-balance"></iron-icon>
+                <iron-icon icon="cloud-upload"></iron-icon>
                 <span>七牛 Ajax 上传文件</span>
               </a>
               <a data-route="test.filereader" href="/test/filereader">
-                <iron-icon icon="list"></iron-icon>
+                <iron-icon icon="get-app"></iron-icon>
                 <span>HTML5读取文件内容</span>
               </a>
             </paper-menu>
