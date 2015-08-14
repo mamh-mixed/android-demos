@@ -145,7 +145,8 @@
       </paper-dialog>
 
       <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
-      <paper-input label="商户号/名称" value="{{cond.mer::input}}"></paper-input>
+      <paper-input label="商户号" value="{{cond.merId::input}}"></paper-input>
+      <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
         <paper-button class="colorful" raised on-tap="handleOldOldSysQueryTapped">旧系统查询</paper-button>
@@ -180,7 +181,7 @@
           </tr>
           <tr>
             <th>总笔数</th>
-            <th>总金额</th>
+            <th>总金额(元)</th>
             <th>笔数</th>
             <th>金额(元)</th>
             <th>笔数</th>
@@ -200,19 +201,19 @@
                 <span>{{item.totalTransNum}}</span>
               </td>
               <td>
-                <span>{{ item.totalTransAmt }}</span>
+                <span>{{_computeAmount(item.totalTransAmt)}}</span>
               </td>
               <td>
                 <span>{{item.alp.transNum}}</span>
               </td>
               <td>
-                <span>{{ item.alp.transAmt }}</span>
+                <span>{{_computeAmount(item.alp.transAmt)}}</span>
               </td>
               <td>
                 <span>{{item.wxp.transNum}}</span>
               </td>
               <td>
-                <span>{{ item.wxp.transAmt }}</span>
+                <span>{{_computeAmount(item.wxp.transAmt)}}</span>
               </td>
               <td>
                 <span>{{item.agentName}}</span>
@@ -262,7 +263,12 @@
       </table>
     </div>
     <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <!--
+        测试环境的链接为 211.147.72.70:10003
+        生产环境的链接为 211.144.213.118
+    -->
     <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
   </template>
   <script>
@@ -370,7 +376,11 @@
           '_watchAgentChange(agent.key)'
         ],
         _watchAgentChange: function(key) {
-          this.set('cond.agentCode', key);
+          if (key) {
+            this.set('cond.agentCode', key);
+          } else {
+            delete this.cond.agentCode;
+          }
         },
         getYesterdayISODate: function() {
           var now = new Date();
@@ -392,12 +402,15 @@
         showEndTimeDialog: function() {
           this.$.endTimeDailog.toggle();
         },
-        // // 修饰金额的方法
-        // _computeAmount: function(amount) {
-        //   return amount + '元';
-        // },
+        // 修饰金额的方法
+        _computeAmount: function(amount) {
+          return amount.toFixed(2);
+        },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
+          if (this.isUseOldSys) {
+            return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
+          }
           var t = new Date().format('yyyyMMdd-hhmmss');
           var obj = {};
           for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
