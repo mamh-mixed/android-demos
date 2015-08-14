@@ -1,16 +1,46 @@
 package master
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
-	"net/http"
-	"time"
 )
+
+// tradeQuery 交易查询
+func tradeQuery(w http.ResponseWriter, data []byte) {
+
+	// // 允许跨域
+	// w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	// 交易查询
+	q := &model.QueryCondition{}
+	err := json.Unmarshal(data, q)
+	if err != nil {
+		log.Errorf("unmarshal json(%s) error: %s", data, err)
+		http.Error(w, "json format error: "+err.Error(), http.StatusPreconditionFailed)
+		return
+	}
+	if q.EndTime != "" {
+		q.EndTime += " 23:59:59"
+	}
+	ret := core.TransQuery(q)
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
+}
 
 var maxReportRec = 10000
 
@@ -46,14 +76,15 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 
 	var merId = params.Get("mchntid")
 	req := &model.QueryCondition{
-		MerId:       merId,
-		Busicd:      params.Get("busicd"),
-		StartTime:   params.Get("startTime"),
-		EndTime:     params.Get("endTime"),
-		Size:        maxReportRec,
-		IsForReport: true,
-		Page:        1,
-		TransStatus: model.TransSuccess,
+		MerId:        merId,
+		Busicd:       params.Get("busicd"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		Size:         maxReportRec,
+		IsForReport:  true,
+		Page:         1,
+		RefundStatus: model.TransRefunded,
+		TransStatus:  model.TransSuccess,
 	}
 
 	// 查询
@@ -151,7 +182,8 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		case model.TransHandling:
 			cell.Value = "交易处理中"
 		case model.TransClosed:
-			cell.Value = "交易已关闭"
+			// 针对退款的交易
+			cell.Value = "交易已退款"
 		default:
 			cell.Value = "未知"
 		}
@@ -170,6 +202,8 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 			cell.Value = "取消"
 		case model.Qyfk:
 			cell.Value = "企业付款"
+		case model.Jszf:
+			cell.Value = "公众号支付"
 		default:
 			cell.Value = "未知"
 		}

@@ -2,10 +2,11 @@ package master
 
 import (
 	"encoding/json"
-	"github.com/CardInfoLink/quickpay/model"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/log"
 )
@@ -24,10 +25,13 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.URL.Path {
+	case "/master/trade/query":
+		tradeQuery(w, data)
+		return
 	case "/master/trade/report":
 		tradeReport(w, r)
 		return
-	case "/master/trade/query":
+	case "/master/trade/stat":
 		page, _ := strconv.Atoi(r.FormValue("page"))
 		size, _ := strconv.Atoi(r.FormValue("size"))
 		q := &model.QueryCondition{
