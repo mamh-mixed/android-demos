@@ -104,7 +104,8 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 3. 检查机构号
-	if mer.InsCode != req.Inscd {
+	agentCode := strings.Trim(req.AgentCode, " ")
+	if mer.AgentCode != agentCode {
 		ret = fieldContentError(insCode)
 		return
 	}
@@ -127,8 +128,11 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		}
 	}
 
-	// 6. 开始业务处理
+	// 过滤包含空格字符串
 	req.Chcd = strings.Trim(req.Chcd, " ")
+	req.AgentCode = agentCode
+
+	// 6. 开始业务处理
 	ret = processFunc(req)
 
 	return ret

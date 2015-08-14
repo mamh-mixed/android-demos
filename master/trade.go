@@ -165,7 +165,7 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		cell.Value = v.Terminalid
 		// 机构号
 		cell = row.AddCell()
-		cell.Value = v.Inscd
+		cell.Value = v.AgentCode
 		// 应答码
 		cell = row.AddCell()
 		cell.Value = v.RespCode
@@ -224,7 +224,6 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		// cell = row.AddCell()
 		// cell.Value = v.ErrorDetail
 
-		// TODO 统计
 		// 金额
 		switch v.TransType {
 		case model.PayTrans:

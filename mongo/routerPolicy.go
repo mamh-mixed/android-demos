@@ -27,6 +27,31 @@ func (c *routerPolicyCollection) Insert(rp *model.RouterPolicy) error {
 	return nil
 }
 
+// BatchAdd 批量增加路由策略
+func (c *routerPolicyCollection) BatchAdd(routers []model.RouterPolicy) error {
+	var temp []interface{}
+	for _, r := range routers {
+		temp = append(temp, r)
+	}
+	return database.C(c.name).Insert(temp...)
+}
+
+// BatchRemove 批量删除路由策略
+func (c *routerPolicyCollection) BatchRemove(routers []model.RouterPolicy) error {
+	var rs []bson.M
+	for _, r := range routers {
+		rs = append(rs, bson.M{"merId": r.MerId, "cardBrand": r.CardBrand})
+	}
+	selector := bson.M{
+		"$in": rs,
+	}
+	change, err := database.C(c.name).RemoveAll(selector)
+	if change.Removed != len(routers) {
+		log.Warnf("expect remove %d records,but %d removed", len(routers), change.Removed)
+	}
+	return err
+}
+
 // Find 根据源商户Id 和 卡品牌查找路由
 func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterPolicy) {
 	r = &model.RouterPolicy{}

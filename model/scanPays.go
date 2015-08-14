@@ -91,7 +91,7 @@ type Channel struct {
 type ScanPayRequest struct {
 	Txndir       string `json:"txndir,omitempty" url:"txndir,omitempty"`             // 交易方向
 	Busicd       string `json:"busicd,omitempty" url:"busicd,omitempty"`             // 交易类型
-	Inscd        string `json:"inscd,omitempty" url:"inscd,omitempty"`               // 机构号
+	AgentCode    string `json:"inscd,omitempty" url:"inscd,omitempty"`               // 代理/机构号
 	Chcd         string `json:"chcd,omitempty" url:"chcd,omitempty"`                 // 渠道机构
 	Mchntid      string `json:"mchntid,omitempty" url:"mchntid,omitempty"`           // 商户号
 	Terminalid   string `json:"terminalid,omitempty" url:"terminalid,omitempty"`     // 终端号
@@ -136,8 +136,8 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 	if ret.Busicd == "" {
 		ret.Busicd = req.Busicd
 	}
-	if ret.Inscd == "" {
-		ret.Inscd = req.Inscd
+	if ret.AgentCode == "" {
+		ret.AgentCode = req.AgentCode
 	}
 	if ret.Chcd == "" {
 		ret.Chcd = req.Chcd
@@ -169,7 +169,7 @@ type ScanPayResponse struct {
 	Txndir          string   `json:"txndir" url:"txndir"`                                       // 交易方向 M M
 	Busicd          string   `json:"busicd" url:"busicd"`                                       // 交易类型 M M
 	Respcd          string   `json:"respcd" url:"respcd"`                                       // 交易结果  M
-	Inscd           string   `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 机构号 M M
+	AgentCode       string   `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 代理/机构号 M M
 	Chcd            string   `json:"chcd,omitempty" url:"chcd,omitempty"`                       // 渠道 C C
 	Mchntid         string   `json:"mchntid" url:"mchntid"`                                     // 商户号 M M
 	Terminalid      string   `json:"terminalid,omitempty" url:"terminalid,omitempty"`           // 终端号
