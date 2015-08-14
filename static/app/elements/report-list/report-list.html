@@ -424,7 +424,6 @@
         progressGo: function() {
           var progress = this.$.progress,
             repeat = 0,
-            maxRepeat = 5,
             animating = false;
 
           function startProgress() {
@@ -450,7 +449,7 @@
             }
 
             requestAnimationFrame(nextProgress);
-          };
+          }
           startProgress();
         },
         progressStop: function() {

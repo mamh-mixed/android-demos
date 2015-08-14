@@ -360,7 +360,7 @@
           if (this.weixin.isAgent) {
             // 代理商模式
             var temp = this.weixin.chanMerId;
-            this.set('weixin.chanMerId', response.data.subMerId)
+            this.set('weixin.chanMerId', response.data.subMerId);
             this.set('weixin.subMerId', temp);
           } else {
             this.set('weixin.subMerId', response.data.subMerId);
