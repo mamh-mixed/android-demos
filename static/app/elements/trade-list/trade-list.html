@@ -81,7 +81,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="POST" url="/scanpay/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax id="queryAjax" method="POST" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <div class="condition">
       <paper-input label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">

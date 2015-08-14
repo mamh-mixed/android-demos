@@ -17,7 +17,7 @@ func TestTransFindAndGroupBy(t *testing.T) {
 		TransType:   model.PayTrans,
 		MerIds:      []string{"100000000000203", "100000000000204", "888888888888888"},
 		Page:        1,
-		Size:        4,
+		Size:        10,
 	}
 	t.Logf("%+v", q)
 	ss, all, total, err := SpTransColl.FindAndGroupBy(q)

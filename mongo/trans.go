@@ -187,25 +187,21 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]model.Trans, int, e
 	if q.OrigOrderNum != "" {
 		match["origOrderNum"] = q.OrigOrderNum
 	}
+	// or 退款的和成功的
+	or := []bson.M{}
 	if q.TransStatus != "" {
-		match["transStatus"] = q.TransStatus
+		or = append(or, bson.M{"transStatus": q.TransStatus})
 	}
-
+	if q.RefundStatus != 0 {
+		or = append(or, bson.M{"refundStatus": q.RefundStatus})
+	}
+	if len(or) > 0 {
+		match["$or"] = or
+	}
 	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
 
-	// 取消的订单和查询的订单不显示，过滤掉
-	notShowBusicd := []string{"CANC", "INQY"}
-	if q.Busicd != "" {
-		showBusicd := []string{q.Busicd}
-		match["busicd"] = bson.M{
-			"$nin": notShowBusicd,
-			"$in":  showBusicd,
-		}
-	} else {
-		match["busicd"] = bson.M{
-			"$nin": notShowBusicd,
-		}
-	}
+	// 将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
+	match["transAmt"] = bson.M{"$ne": 0}
 
 	p := []bson.M{
 		{"$match": match},
@@ -245,21 +241,21 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 	var group []model.TransGroup
 
 	find := bson.M{
-		"createTime":  bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
-		"merId":       bson.M{"$in": q.MerIds},
-		"transStatus": q.TransStatus,
-		"transType":   q.TransType,
+		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+		"merId":      bson.M{"$in": q.MerIds},
+		"transType":  q.TransType,
+		"$or":        []bson.M{bson.M{"transStatus": q.TransStatus}, bson.M{"refundStatus": q.RefundStatus}},
 	}
 
 	// 计算total
-	type ID struct {
-		Id string `bson:"_id"`
-	}
-	var Ids []ID
+	var total = struct {
+		Value int `bson:"total"`
+	}{}
 	database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": "$merId"}},
-	}).All(&Ids)
+		{"$group": bson.M{"_id": "null", "total": bson.M{"$sum": 1}}},
+	}).One(&total)
 
 	//使用pipe统计
 	err := database.C(col.name).Pipe([]bson.M{
@@ -275,7 +271,6 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"transNum":  bson.M{"$sum": "$transNum"},
-			"count":     bson.M{"$sum": 1},
 			"detail":    bson.M{"$push": bson.M{"chanCode": "$_id.chanCode", "transNum": "$transNum", "transAmt": "$transAmt", "refundAmt": "$refundAmt"}},
 		}},
 		{"$sort": bson.M{"transNum": -1}},
@@ -300,5 +295,5 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		}},
 	}).All(&all)
 
-	return group, all, len(Ids), err
+	return group, all, total.Value, err
 }

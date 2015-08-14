@@ -4,6 +4,9 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
@@ -11,8 +14,6 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
-	"strings"
-	"time"
 )
 
 // PublicPay 公众号页面支付
@@ -42,7 +43,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	token, err := weixin.GetAuthAccessToken(req.Code)
 	if err != nil {
 		log.Errorf("get accessToken error: %s", err)
-		return adaptor.LogicErrorHandler(t, "SYSTEM_ERROR") // TODO 定义一个授权码错误的应答码
+		return adaptor.LogicErrorHandler(t, "AUTH_CODE_ERROR")
 	}
 	openId := token.OpenId
 	req.OpenId = openId
@@ -200,10 +201,11 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
 	}
 
-	// 上送渠道与付款码不符
-	if req.Chcd != "" && req.Chcd != shouldChcd {
-		return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
-	}
+	// 下单时忽略渠道，以免误送渠道导致交易失败
+	// // 上送渠道与付款码不符
+	// if req.Chcd != "" && req.Chcd != shouldChcd {
+	// 	return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
+	// }
 	req.Chcd = shouldChcd
 	t.ChanCode = shouldChcd
 

@@ -27,6 +27,7 @@ type QueryCondition struct {
 	MerIds       []string `json:"-"`
 	AgentCode    string   `json:"agentCode,omitempty"`
 	TransStatus  string   `json:"transStatus,omitempty"`
+	RefundStatus int      `json:"refundStatus,omitempty"`
 	TransType    int      `json:"transType,omitempty"`
 	StartTime    string   `json:"startTime,omitempty"`
 	EndTime      string   `json:"endTime,omitempty"`
@@ -57,14 +58,14 @@ type Summary struct {
 	MerId         string  `json:"merId,omitempty"`
 	MerName       string  `json:"merName,omitempty"`
 	AgentName     string  `json:"agentName,omitempty"`
-	TotalTransAmt float64 `json:"totalTransAmt"`
+	TotalTransAmt float32 `json:"totalTransAmt"`
 	TotalTransNum int     `json:"totalTransNum"`
 	Wxp           struct {
-		TransAmt float64 `json:"transAmt"`
+		TransAmt float32 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
 	} `json:"wxp"`
 	Alp struct {
-		TransAmt float64 `json:"transAmt"`
+		TransAmt float32 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
 	} `json:"alp"`
 	Data []Summary `json:"data,omitempty"` // 包含每个商户单独数据
@@ -73,17 +74,16 @@ type Summary struct {
 // TransGroup 按商户号和渠道号统计分组
 type TransGroup struct {
 	TransAmt  int64     `bson:"transAmt"`
-	RefundAmt int64     `bson:"refundNum"`
+	RefundAmt int64     `bson:"refundAmt"`
 	TransNum  int       `bson:"transNum"`
 	Detail    []Channel `bson:"detail"`
 	MerId     string    `bson:"_id"`
-	Count     int       `bson:"count"`
 }
 
 type Channel struct {
 	ChanCode  string `bson:"chanCode"`
 	TransAmt  int64  `bson:"transAmt"`
-	RefundAmt int64  `bson:"refundNum"`
+	RefundAmt int64  `bson:"refundAmt"`
 	TransNum  int    `bson:"transNum"`
 }
 
