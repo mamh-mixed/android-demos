@@ -122,7 +122,7 @@
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
         </div>
         <div class="row">
-        <paper-input label="商品名称" value="{{merchant.detail.commodityName::input}}"></paper-input>
+          <paper-input label="商品名称" value="{{merchant.detail.commodityName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
@@ -154,7 +154,7 @@
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-checkbox id="isAngentCheck" checked on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
+          <paper-checkbox id="isAngentCheck" checked$="{{weixin.isAgent}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
           <paper-input label="大商户号" value="{{weixin.subMerId::input}}" disabled$="{{!weixin.isAgent}}"></paper-input>
         </div>
         <div class="row">
@@ -356,8 +356,15 @@
             return;
           }
 
-          this.set('weixin.subMerId', response.data.subMerId);
           this.set('weixin.isAgent', response.data.isAgent);
+          if (this.weixin.isAgent) {
+            // 代理商模式
+            var temp = this.weixin.chanMerId;
+            this.set('weixin.chanMerId', response.data.subMerId);
+            this.set('weixin.subMerId', temp);
+          } else {
+            this.set('weixin.subMerId', response.data.subMerId);
+          }
         },
         ready: function() {
           this.idx = 0;
