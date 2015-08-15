@@ -267,8 +267,8 @@
         测试环境的链接为 211.147.72.70:10003
         生产环境的链接为 211.144.213.118
     -->
-    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
-    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
+    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
+    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
   </template>
   <script>
@@ -409,7 +409,9 @@
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
           if (this.isUseOldSys) {
-            return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
+              Util.toast('旧系统暂时不提供报表下载的功能');
+              return;
+            // return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
           }
           var t = new Date().format('yyyyMMdd-hhmmss');
           var obj = {};

@@ -3,15 +3,16 @@ package data
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2"
-	"os"
 )
 
 type merchant struct {
-	Inscd         string  `bson:"inscd"`
+	AgentCode     string  `bson:"inscd"`
 	Clientid      string  `bson:"clientid"`
 	CommodityName string  `bson:"commodityName"`
 	ClientidName  string  `bson:"clientidName"`
@@ -55,7 +56,7 @@ func AddMerchantFromOldDB() error {
 		m.Detail.CommodityName = mer.CommodityName
 		m.Detail.MerName = mer.ClientidName
 		m.MerId = mer.Clientid
-		m.InsCode = mer.Inscd
+		m.AgentCode = mer.AgentCode
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd}
 		m.Remark = "老扫码系统商户"
 		m.SignKey = mer.SignKey

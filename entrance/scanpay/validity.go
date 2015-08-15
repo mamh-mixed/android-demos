@@ -1,11 +1,12 @@
 package scanpay
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 )
 
 const (
@@ -17,12 +18,11 @@ const (
 const (
 	txamt      = "txamt"
 	orderNum   = "orderNum或origOrderNum"
-	inscd      = "inscd"
+	agentCode  = "inscd"
 	mchntid    = "mchntid"
 	scanCodeId = "scanCodeId"
 	chcd       = "chcd"
 	goodsInfo  = "goodsInfo"
-	insCode    = "inscd"
 	buiscd     = "busicd"
 	terminalid = "terminalid"
 	openId     = "openid"
@@ -44,7 +44,7 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
@@ -82,7 +82,7 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 	case req.Chcd == "":
 		return fieldEmptyError(chcd)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
@@ -116,7 +116,7 @@ func validateEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.OrigOrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	}
@@ -138,7 +138,7 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
@@ -170,7 +170,7 @@ func validateCancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.OrigOrderNum == "":
@@ -198,7 +198,7 @@ func validateClose(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.OrigOrderNum == "":
@@ -229,7 +229,7 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	case req.Chcd == "":
 		return fieldEmptyError(chcd)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
@@ -274,7 +274,7 @@ func validatePublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case req.Chcd == "":
 		return fieldEmptyError(chcd)
 	case req.AgentCode == "":
-		return fieldEmptyError(inscd)
+		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
