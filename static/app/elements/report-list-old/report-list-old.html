@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="report-list">
+<dom-module id="report-list-old">
   <style>
     :host {
       display: block;
@@ -113,8 +113,8 @@
     tbody tr td:nth-of-type(1),
     tbody tr th:nth-of-type(2),
     tbody tr td:nth-of-type(2),
-    tbody tr th:nth-last-of-type(2),
-    tbody tr td:nth-last-of-type(2),
+    /*tbody tr th:nth-last-of-type(2),*/
+    /*tbody tr td:nth-last-of-type(2),*/
     tbody tr th:nth-last-of-type(1),
     tbody tr td:nth-last-of-type(1) {
       text-align: center;
@@ -144,11 +144,12 @@
         </div>
       </paper-dialog>
 
-      <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
+      <!-- <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select> -->
       <paper-input label="商户号" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <div class="buttons">
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <!-- <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button> -->
+        <paper-button class="colorful" raised on-tap="handleOldOldSysQueryTapped">查询</paper-button>
       </div>
     </div>
 
@@ -174,9 +175,9 @@
             <th rowspan="2">
               代理名称
             </th>
-            <th rowspan="2">
+            <!-- <th rowspan="2">
               下载
-            </th>
+            </th> -->
           </tr>
           <tr>
             <th>总笔数</th>
@@ -217,13 +218,13 @@
               <td>
                 <span>{{item.agentName}}</span>
               </td>
-              <td>
-                <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
-              </td>
+              <!-- <td> -->
+                <!-- <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
+              <!-- </td> -->
             </tr>
           </template>
           <tr>
-            <td colspan="10">
+            <td colspan="9">
               <div class="" style="width:100%;">
                 <paper-progress id="progress" style="width:100%;"></paper-progress>
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
@@ -254,25 +255,24 @@
               <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
             </th>
             <th></th>
-            <th>
-              <a href="#" title="点我下载当前所有商户交易汇总">下载汇总</a>
-            </th>
+            <!-- <th></th> -->
           </tr>
         </tbody>
       </table>
     </div>
-    <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <!-- <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
     <!--
         测试环境的链接为 211.147.72.70:10003
         生产环境的链接为 211.144.213.118
     -->
-    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
+    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
   </template>
   <script>
     (function() {
       Polymer({
-        is: 'report-list',
+        is: 'report-list-old',
 
         properties: {
           cond: {
@@ -289,17 +289,29 @@
             total: 0
           };
           // 加载代理列表
-          this.handleQueryAgentsEvent();
+        //   this.handleQueryAgentsEvent();
+        },
+        // 旧系统查询
+        handleOldOldSysQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.set('isUseOldSys', true);
+          this.generateAjaxRequest();
         },
         // 查询交易报表事件
         handleQueryTapped: function() {
           this.set('cond.page', 1);
+          this.set('isUseOldSys', false);
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
           this.progressGo();
           this.records = [];
-          var ajax = this.$.queryAjax;
+          var ajax;
+          if (this.isUseOldSys) {
+            ajax = this.$.oldQueryAjax;
+          } else {
+            ajax = this.$.queryAjax;
+          }
           ajax.params = this.cond;
           ajax.generateRequest();
         },
@@ -394,8 +406,11 @@
         },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
-          var t = new Date().format('yyyyMMdd-hhmmss'),
-            obj = {};
+          if (this.isUseOldSys) {
+            return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
+          }
+          var t = new Date().format('yyyyMMdd-hhmmss');
+          var obj = {};
           for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
             var v = arr[i];
             obj[v] = this.cond[v];

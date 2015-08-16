@@ -214,7 +214,11 @@
           '_watchMerStatusChange(merStatus.key)'
         ],
         _watchMerStatusChange: function(key) {
-          this.cond.merStatus = key;
+          if (key) {
+            this.cond.merStatus = key;
+          } else {
+            delete this.cond.merStatus;
+          }
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
