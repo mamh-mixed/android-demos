@@ -32,7 +32,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrderNum:   req.OrderNum,
 		TransType:  model.PayTrans,
 		Busicd:     req.Busicd,
-		Inscd:      req.Inscd,
+		AgentCode:  req.AgentCode,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
 		ChanCode:   channel.ChanCodeWeixin,
@@ -130,7 +130,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrderNum:      req.OrderNum,
 		TransType:     model.PayTrans,
 		Busicd:        req.Busicd,
-		Inscd:         req.Inscd,
+		AgentCode:     req.AgentCode,
 		Terminalid:    req.Terminalid,
 		TransAmt:      req.IntTxamt,
 		Remark:        req.Desc,
@@ -184,7 +184,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrderNum:   req.OrderNum,
 		TransType:  model.PayTrans,
 		Busicd:     req.Busicd,
-		Inscd:      req.Inscd,
+		AgentCode:  req.AgentCode,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
 		Remark:     req.GoodsInfo,
@@ -202,7 +202,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
-	// // 上送渠道与付款码不符
+	// 上送渠道与付款码不符
 	// if req.Chcd != "" && req.Chcd != shouldChcd {
 	// 	return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
 	// }
@@ -247,7 +247,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrderNum:   req.OrderNum,
 		TransType:  model.PayTrans,
 		Busicd:     req.Busicd,
-		Inscd:      req.Inscd,
+		AgentCode:  req.AgentCode,
 		ChanCode:   req.Chcd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
@@ -294,7 +294,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.RefundTrans,
 		Busicd:       req.Busicd,
-		Inscd:        req.Inscd,
+		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
 		TransAmt:     req.IntTxamt,
 	}
@@ -474,7 +474,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CancelTrans,
 		Busicd:       req.Busicd,
-		Inscd:        req.Inscd,
+		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
 	}
 
@@ -549,7 +549,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CloseTrans,
 		Busicd:       req.Busicd,
-		Inscd:        req.Inscd,
+		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
 	}
 

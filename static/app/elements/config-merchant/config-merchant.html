@@ -85,7 +85,7 @@
     <iron-pages selected="{{idx}}">
       <section>
         <div class="row">
-          <paper-input label="代理代码/机构代码" value="{{merchant.insCode::input}}"></paper-input>
+          <paper-input label="代理代码/机构代码" value="{{merchant.agentCode::input}}"></paper-input>
           <paper-input label="代理名称/机构名称" value="{{merchant.agentName::input}}"></paper-input>
         </div>
         <div class="row">
@@ -370,7 +370,7 @@
         ready: function() {
           this.idx = 0;
           this.merchant = {
-            insCode: '',
+            agentCode: '',
             agentName: '',
             groupCode: '',
             groupName: '',
