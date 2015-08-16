@@ -131,6 +131,10 @@
                 <iron-icon icon="list"></iron-icon>
                 <span>报表下载</span>
               </a>
+              <a data-route="trade.old.reports" href="/trade/old/reports">
+                <iron-icon icon="list"></iron-icon>
+                <span>旧系统报表下载</span>
+              </a>
             </paper-menu>
           </iron-collapse>
 
@@ -255,6 +259,12 @@
             <section data-route="trade.reports">
               <paper-material elevation="1">
                 <report-list></report-list>
+              </paper-material>
+            </section>
+
+            <section data-route="trade.old.reports">
+              <paper-material elevation="1">
+                <report-list-old></report-list-old>
               </paper-material>
             </section>
 

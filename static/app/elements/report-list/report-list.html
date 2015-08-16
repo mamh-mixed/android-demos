@@ -149,7 +149,6 @@
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-        <paper-button class="colorful" raised on-tap="handleOldOldSysQueryTapped">旧系统查询</paper-button>
       </div>
     </div>
 
@@ -263,12 +262,6 @@
       </table>
     </div>
     <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
-    <!--
-        测试环境的链接为 211.147.72.70:10003
-        生产环境的链接为 211.144.213.118
-    -->
-    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
-    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
     <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
   </template>
   <script>
@@ -293,27 +286,15 @@
           // 加载代理列表
           this.handleQueryAgentsEvent();
         },
-        // 旧系统查询
-        handleOldOldSysQueryTapped: function() {
-          this.set('cond.page', 1);
-          this.set('isUseOldSys', true);
-          this.generateAjaxRequest();
-        },
         // 查询交易报表事件
         handleQueryTapped: function() {
           this.set('cond.page', 1);
-          this.set('isUseOldSys', false);
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
           this.progressGo();
           this.records = [];
-          var ajax;
-          if (this.isUseOldSys) {
-            ajax = this.$.oldQueryAjax;
-          } else {
-            ajax = this.$.queryAjax;
-          }
+          var ajax = this.$.queryAjax;
           ajax.params = this.cond;
           ajax.generateRequest();
         },
@@ -408,11 +389,8 @@
         },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
-          if (this.isUseOldSys) {
-            return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
-          }
-          var t = new Date().format('yyyyMMdd-hhmmss');
-          var obj = {};
+          var t = new Date().format('yyyyMMdd-hhmmss'),
+            obj = {};
           for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
             var v = arr[i];
             obj[v] = this.cond[v];
