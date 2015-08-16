@@ -407,7 +407,9 @@
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
           if (this.isUseOldSys) {
-            return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
+            // return 'javascript:alert("旧系统暂时不提供报表下载的功能")';
+            Util.toast('旧系统暂时不提供报表下载的功能', 2000);
+            return;
           }
           var t = new Date().format('yyyyMMdd-hhmmss');
           var obj = {};
