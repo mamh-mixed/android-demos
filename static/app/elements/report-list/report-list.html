@@ -225,7 +225,7 @@
           <tr>
             <td colspan="10">
               <div class="" style="width:100%;">
-                <paper-progress id="progress" style="width:100%;"></paper-progress>
+                <paper-progress id="progress" style="width:100%;" step=2></paper-progress>
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
               </div>
             </td>
@@ -255,7 +255,7 @@
             </th>
             <th></th>
             <th>
-              <a href="#" title="点我下载当前所有商户交易汇总">下载汇总</a>
+              <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="_blank">下载汇总</a>
             </th>
           </tr>
         </tbody>
@@ -359,8 +359,13 @@
           }
         },
         observers: [
-          '_watchAgentChange(agent.key)'
+          '_watchAgentChange(agent.key)',
+          '_watchCondChange(cond.*)'
         ],
+        _watchCondChange: function() {
+            var t = new Date().format('yyyyMMdd-hhmmss');
+            this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=汇总报表_' + t + '.xlsx';
+        },
         _watchAgentChange: function(key) {
           if (key) {
             this.set('cond.agentCode', key);
@@ -400,7 +405,7 @@
             var v = arr[i];
             obj[v] = this.cond[v];
           }
-          obj.merId = item.merId;
+          obj.mchntid = item.merId;
           obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
           return '/master/trade/report?' + Util.query(obj);
         },
