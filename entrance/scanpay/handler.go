@@ -104,8 +104,8 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 3. 检查机构号
-	agentCode := strings.Trim(req.AgentCode, " ")
-	if mer.AgentCode != agentCode {
+	ac := strings.Trim(req.AgentCode, " ")
+	if mer.AgentCode != ac {
 		ret = fieldContentError(agentCode)
 		return
 	}

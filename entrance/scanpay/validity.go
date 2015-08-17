@@ -17,7 +17,7 @@ const (
 // fieldName
 const (
 	txamt      = "txamt"
-	orderNum   = "orderNum或origOrderNum"
+	orderNum   = "orderNum 或 origOrderNum"
 	agentCode  = "inscd"
 	mchntid    = "mchntid"
 	scanCodeId = "scanCodeId"
