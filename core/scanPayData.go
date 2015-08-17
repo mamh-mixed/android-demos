@@ -15,10 +15,14 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 	// 默认当天开始
 	if q.StartTime == "" {
 		q.StartTime = now + " 00:00:00"
+	} else {
+		q.StartTime += " 00:00:00"
 	}
 	// 默认当天结束
 	if q.EndTime == "" {
 		q.EndTime = now + " 23:59:59"
+	} else {
+		q.EndTime += " 23:59:59"
 	}
 
 	// mongo统计

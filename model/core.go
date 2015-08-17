@@ -119,6 +119,7 @@ type Merchant struct {
 type MerDetail struct {
 	// MerId         string `bson:"merId,omitempty"`         // 商户号
 	MerName       string `bson:"merName,omitempty" json:"merName,omitempty"`             // 商户名称
+	GoodsTag      string `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
 	CommodityName string `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
 	City          string `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
@@ -140,6 +141,8 @@ type MerDetail struct {
 	ShopID        string `bson:"shopID,omitempty" json:"shopID,omitempty"`               // 门店id
 	ShopType      string `bson:"shopType,omitempty" json:"shopType,omitempty"`           // 门店类型
 	BrandNum      string `bson:"brandNum,omitempty" json:"brandNum,omitempty"`           // 品牌编号
+	BankId        string `bson:"bankId,omitempty" json:"bankId,omitempty"`               // 行号
+	BankName      string `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 开户银行名称
 }
 
 // ChanMer 渠道商户
@@ -292,11 +295,6 @@ type TransSett struct {
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
 	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
 }
-
-// TransSummary 交易汇总
-// type TransSummary struct {
-
-// }
 
 // TransSettInfo 清分信息明细
 type TransSettInfo struct {
