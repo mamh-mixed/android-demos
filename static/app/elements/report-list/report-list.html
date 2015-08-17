@@ -218,7 +218,7 @@
                 <span>{{item.agentName}}</span>
               </td>
               <td>
-                <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
+                <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
               </td>
             </tr>
           </template>
@@ -255,7 +255,7 @@
             </th>
             <th></th>
             <th>
-              <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="_blank">下载汇总</a>
+              <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
             </th>
           </tr>
         </tbody>
