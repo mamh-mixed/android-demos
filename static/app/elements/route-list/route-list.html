@@ -39,7 +39,6 @@
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -123,6 +122,7 @@
         </div>
       </card-item>
     </template>
+    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
 
@@ -144,11 +144,19 @@
         },
         ready: function() {
           this.routes = [];
-          this.cond = {};
+          this.cond = {
+            page: 1,
+            size: 10,
+            total: 0
+          };
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.routes = [];
+          this.generateAjaxRequest();
+        },
+        generateAjaxRequest: function() {
+          this.merchants = [];
           this.$.queryAjax.params = this.cond;
           this.$.queryAjax.generateRequest();
         },
@@ -160,7 +168,10 @@
             return;
           }
 
-          this.routes = response.data.slice(0);
+          var pagination = response.data;
+          this.routes = pagination.data.slice(0);
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
 
           if (this.routes.length === 0) {
             Util.toast('没有数据', 2000);
@@ -202,6 +213,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>

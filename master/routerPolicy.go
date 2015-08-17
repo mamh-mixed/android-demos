@@ -13,18 +13,35 @@ type routerPolicy struct{}
 var RouterPolicy routerPolicy
 
 // Find 查找路由列表，参数是 merId。
-func (i *routerPolicy) Find(merId string) (result *model.ResultBody) {
-	routers, err := mongo.RouterPolicyColl.FindAllOfOneMerchant(merId)
+func (i *routerPolicy) Find(merId string, size, page int) (result *model.ResultBody) {
 
+	if page <= 0 {
+		return model.NewResultBody(400, "page 参数错误")
+	}
+
+	if size <= 0 {
+		size = 10
+	}
+
+	routers, total, err := mongo.RouterPolicyColl.PaginationFind(merId, size, page)
 	if err != nil {
 		log.Errorf("查询商户(%s)的所有路由失败: %s", merId, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  page,
+		Total: total,
+		Size:  size,
+		Count: len(routers),
+		Data:  routers,
+	}
+
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",
-		Data:    routers,
+		Data:    pagination,
 	}
 
 	return result
