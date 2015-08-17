@@ -115,6 +115,7 @@
     tbody tr td:nth-of-type(2),
     /*tbody tr th:nth-last-of-type(2),*/
     /*tbody tr td:nth-last-of-type(2),*/
+
     tbody tr th:nth-last-of-type(1),
     tbody tr td:nth-last-of-type(1) {
       text-align: center;
@@ -219,14 +220,14 @@
                 <span>{{item.agentName}}</span>
               </td>
               <!-- <td> -->
-                <!-- <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
+              <!-- <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
               <!-- </td> -->
             </tr>
           </template>
           <tr>
             <td colspan="9">
               <div class="" style="width:100%;">
-                <paper-progress id="progress" style="width:100%;"></paper-progress>
+                <paper-progress id="progress" style="width:100%;" step=2></paper-progress>
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
               </div>
             </td>
@@ -289,7 +290,7 @@
             total: 0
           };
           // 加载代理列表
-        //   this.handleQueryAgentsEvent();
+          //   this.handleQueryAgentsEvent();
         },
         // 旧系统查询
         handleOldOldSysQueryTapped: function() {

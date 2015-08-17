@@ -225,7 +225,7 @@
           <tr>
             <td colspan="10">
               <div class="" style="width:100%;">
-                <paper-progress id="progress" style="width:100%;"></paper-progress>
+                <paper-progress id="progress" style="width:100%;" step=2></paper-progress>
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
               </div>
             </td>
@@ -400,7 +400,7 @@
             var v = arr[i];
             obj[v] = this.cond[v];
           }
-          obj.merId = item.merId;
+          obj.mchntid = item.merId;
           obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
           return '/master/trade/report?' + Util.query(obj);
         },
