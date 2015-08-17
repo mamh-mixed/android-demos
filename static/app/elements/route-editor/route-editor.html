@@ -57,11 +57,11 @@
       <paper-dialog-scrollable>
 
         <section hidden$="{{isHiddenCurrentSection(currentProgress.step, 0)}}" id="merchantSection">
-          <merchant-list tiny auto-loading is-allow-selected on-item-selected="handleMerchantSelected"></merchant-list>
+          <merchant-list id="merchantList" tiny auto-loading is-allow-selected on-item-selected="handleMerchantSelected"></merchant-list>
         </section>
 
         <section hidden$="{{isHiddenCurrentSection(currentProgress.step, 1)}}" id="channelMerchantSection">
-          <channel-merchant-list tiny auto-loading is-allow-selected on-item-selected="handleChannelMerchantSelected"></channel-merchant-list>
+          <channel-merchant-list id="channelMerchantList" tiny auto-loading is-allow-selected on-item-selected="handleChannelMerchantSelected"></channel-merchant-list>
         </section>
 
         <section hidden$="{{isHiddenCurrentSection(currentProgress.step, 2)}}" id="editSection">
@@ -214,6 +214,9 @@
           this.set('currentProgress.step', 0);
           this.set('currentProgress.secondProgressValue', 0);
           this.set('route', {});
+          this.set('cardBrand', {});
+          this.$.merchantList.initialList();
+          this.$.channelMerchantList.initialList();
         },
         isHiddenCurrentSection: function(value, target) {
           return value !== target;
