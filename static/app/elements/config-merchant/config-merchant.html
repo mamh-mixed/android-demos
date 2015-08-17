@@ -293,7 +293,6 @@
             return;
           }
 
-
           var item = response.data;
           this.set('merchant', item);
           if (item.permission) {
@@ -516,7 +515,16 @@
             this.splice('merchant.permission', index, 1);
           }
         },
-
+        observers: [
+          '_watchMerStatusChange(merStatus.key)'
+        ],
+        _watchMerStatusChange: function(key) {
+          if (key) {
+            this.set('merchant.merStatus', key);
+          } else {
+            this.set('merchant.merStatus', '');
+          }
+        },
         // html5 读取证书文件内容
         handleWeixinHttpCertFile: function(e) {
           var _this = this;
