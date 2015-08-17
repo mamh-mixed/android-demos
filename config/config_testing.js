@@ -14,7 +14,7 @@
     },
     "Mongo": {
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
-        "URL": "mongodb://quickpay:quickpay@quick.ipay.so:27017,quick.ipay.so:27018,quick.ipay.so:27019/quickpay",
+        "URL": "mongodb://quickpay:quickpay@test.ipay.so:27017,test.ipay.so:27018,test.ipay.so:27019/quickpay",
         "DB": "quickpay"
     },
     "CILOnline": {
