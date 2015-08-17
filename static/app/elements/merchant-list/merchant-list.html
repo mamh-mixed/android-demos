@@ -274,15 +274,12 @@
         // 清除商户选中的标志
         initialList: function() {
           for (var i = 0, l = this.merchants.length; i < l; i++) {
-              this.set('merchants.' + i + '.stared', false);
+            this.set('merchants.' + i + '.stared', false);
           }
         },
         // 编辑机构商户
         handleItemEditedEvent: function(e, detail) {
-          //   this.$.merchantEditor.merchant = detail;
-          //   this.$.merchantEditor.open();
-          window.location.href = '/#!/config/merchant/' + detail.merId;
-          window.location.reload();
+          page('/config/merchant/' + detail.merId);
         },
         _computePermissions: function(permissions) {
           var map = {};
