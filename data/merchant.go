@@ -62,10 +62,16 @@ func AddMerchantFromOldDB() error {
 		m.MerId = mer.Clientid
 		m.AgentCode = mer.AgentCode
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
-		m.Remark = "老扫码系统商户"
+		m.Remark = "old_system_data"
 		m.SignKey = mer.SignKey
-		m.AgentCode = mer.Agent.AgentCode
-		m.AgentName = mer.Agent.AgentName
+		// 代理代码
+		if mer.Agent.AgentCode != "" {
+			m.AgentCode = mer.Agent.AgentCode
+			m.AgentName = mer.Agent.AgentName
+		} else {
+			m.AgentCode = "99911888"
+			m.AgentName = "讯联O2O机构"
+		}
 		// TODO:集团
 		if m.SignKey != "" {
 			m.IsNeedSign = true
