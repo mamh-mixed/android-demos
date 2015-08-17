@@ -74,7 +74,7 @@ gulp.task('jshint', function() {
     }))
     .pipe($.jshint.extract()) // Extract JS from .html files
     .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
+    .pipe($.jshint.reporter('default'))
     .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
 });
 
