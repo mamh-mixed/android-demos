@@ -64,6 +64,39 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 	return r
 }
 
+// PaginationFind 分页查找
+func (c *routerPolicyCollection) PaginationFind(merId string, size, page int) (results []model.RouterPolicy, total int, err error) {
+	results = make([]model.RouterPolicy, 0)
+	match := bson.M{}
+	if merId != "" {
+		match["merId"] = merId
+	}
+
+	// 计算总数
+	total, err = database.C(c.name).Find(match).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	cond := []bson.M{
+		{"$match": match},
+	}
+
+	skip := bson.M{
+		"$skip": (page - 1) * size,
+	}
+
+	limit := bson.M{
+		"$limit": size,
+	}
+
+	cond = append(cond, skip, limit)
+
+	err = database.C(c.name).Pipe(cond).All(&results)
+
+	return results, total, err
+}
+
 // FindAllOfOneMerchant 根据源商户Id查找该商户下的所有路由信息
 func (c *routerPolicyCollection) FindAllOfOneMerchant(merId string) (r []model.RouterPolicy, err error) {
 	r = make([]model.RouterPolicy, 0)

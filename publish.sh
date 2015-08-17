@@ -22,8 +22,8 @@ function main() {
     cd admin && bower install && cd ..
     cp -r admin distrib/
 
-    # host="webapp@dev.ipay.so"
-    host="webapp@test.ipay.so"
+    host="webapp@dev.ipay.so"
+    # host="webapp@test.ipay.so"
 
     # host="quick@app1.set.shou.money"
 

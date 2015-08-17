@@ -62,7 +62,9 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = RouterPolicy.Save(data)
 	case "/master/router/find":
 		merId := r.FormValue("merId")
-		ret = RouterPolicy.Find(merId)
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = RouterPolicy.Find(merId, size, page)
 	case "/master/router/one":
 		merId := r.FormValue("merId")
 		cardBrand := r.FormValue("cardBrand")

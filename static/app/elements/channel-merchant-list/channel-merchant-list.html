@@ -217,14 +217,20 @@
             }
           }
         },
+        // 清除商户选中的标志
+        initialList: function() {
+          for (var i = 0, l = this.merchants.length; i < l; i++) {
+              this.set('merchants.' + i + '.stared', false);
+          }
+        },
         // 编辑机构商户
         handleItemEditedEvent: function(e, detail) {
           this.$.merchantEditor.chanMer = detail;
-          this.$.merchantEditor.open();
+          this.$.merchantEditor.open2();
         },
         // 新增机构商户事件
         handleCreateFabTapped: function() {
-          this.$.merchantEditor.open();
+          this.$.merchantEditor.open1();
         },
         // 新机构商户保存成功事件，刷新列表
         handleMerchantSave: function() {

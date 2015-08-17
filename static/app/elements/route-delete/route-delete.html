@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="agent-delete">
+<dom-module id="route-delete">
   <style>
     :host {
       display: block;
@@ -24,15 +24,14 @@
     }
   </style>
   <template>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <paper-dialog id="dialogDelete">
-      <h2>删除【
-        <span>{{agent.agentName}}</span>】代理</h2>
+      <h2>删除路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <iron-icon icon="report-problem"></iron-icon>
           &nbsp;&nbsp;&nbsp;
-          <span>是否删除此代理?</span>
+          <span>是否删除此路由策略?</span>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -45,22 +44,22 @@
   <script>
     (function() {
       Polymer({
-        is: 'agent-delete',
+        is: 'route-delete',
 
         properties: {
-          agent: {
+          route: {
             type: Object
           }
         },
         open: function() {
-          // console.log('open me');
           this.$.dialogDelete.open();
         },
         // 点击确定删除事件
         handleDeleteTapped: function() {
-          // console.log(this.agent);
           this.$.deleteAjax.params = {
-            agentCode: this.agent.agentCode
+            merId: this.route.merId,
+            chanCode: this.route.chanCode,
+            cardBrand: this.route.cardBrand
           };
           this.$.deleteAjax.generateRequest();
         },

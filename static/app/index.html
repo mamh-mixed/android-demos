@@ -124,15 +124,15 @@
           <iron-collapse opened="{{ startWith(route.name, 'trade') }}">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="trade.list" href="/trade/list">
-                <iron-icon icon="list"></iron-icon>
+                <iron-icon icon="payment"></iron-icon>
                 <span>扫码交易</span>
               </a>
               <a data-route="trade.reports" href="/trade/reports">
-                <iron-icon icon="list"></iron-icon>
+                <iron-icon icon="file-download"></iron-icon>
                 <span>报表下载</span>
               </a>
               <a data-route="trade.old.reports" href="/trade/old/reports">
-                <iron-icon icon="list"></iron-icon>
+                <iron-icon icon="cloud-download"></iron-icon>
                 <span>旧系统报表下载</span>
               </a>
             </paper-menu>
@@ -221,7 +221,7 @@
 
             <section data-route="config.merchant">
               <paper-material elevation="1">
-                <config-merchant mer-id="{{route.params.merId}}"></config-merchant>
+                <config-merchant mer-id="{{route.params.merId}}" update></config-merchant>
               </paper-material>
             </section>
 
