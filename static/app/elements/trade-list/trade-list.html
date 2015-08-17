@@ -46,7 +46,7 @@
       width: 100%;
       border-spacing: 0;
       border-collapse: collapse;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
     }
 
     table td {
@@ -108,7 +108,7 @@
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
         <paper-button class="colorful" raised>
-          <a style="display:block; width:100%; height:100%; text-decoration:none" href="{{reportUri}}">下载报表</a>
+          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="_blank" href="{{reportUri}}">下载报表</a>
         </paper-button>
       </div>
     </div>
@@ -175,11 +175,13 @@
         'VOID': '撤销',
         'REFD': '退款',
         'VERI': '卡券核销',
+        'CANC': '取消',
         'purc': '下单支付',
         'paut': '预下单',
         'void': '撤销',
         'refd': '退款',
         'veri': '卡券核销',
+        'canc': '取消',
         'QYFK': '企业付款',
         'JSZF': '公众号支付'
       };

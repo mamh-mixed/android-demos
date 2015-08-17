@@ -56,7 +56,6 @@
     tr > th,
     tr > td {
       padding: 8px;
-      /*border: 1px solid #ddd;*/
     }
 
     table > thead {}
@@ -77,9 +76,7 @@
       border-bottom: 1px solid #ddd;
     }
 
-    thead > tr:first-child th {
-      /*border-top: 1px solid #ddd;*/
-    }
+    thead > tr:first-child th {}
 
     thead > tr:last-child th {
       text-align: center;
@@ -113,8 +110,6 @@
     tbody tr td:nth-of-type(1),
     tbody tr th:nth-of-type(2),
     tbody tr td:nth-of-type(2),
-    /*tbody tr th:nth-last-of-type(2),*/
-    /*tbody tr td:nth-last-of-type(2),*/
     tbody tr th:nth-last-of-type(1),
     tbody tr td:nth-last-of-type(1) {
       text-align: center;
@@ -144,7 +139,7 @@
         </div>
       </paper-dialog>
 
-      <!-- <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select> -->
+      <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
       <paper-input label="商户号" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <div class="buttons">
@@ -216,17 +211,17 @@
                 <span>{{_computeAmount(item.wxp.transAmt)}}</span>
               </td>
               <td>
-                <span>{{item.agentName}}</span>
+                <span>{{_agentFilter(item.agentName)}}</span>
               </td>
               <!-- <td> -->
-                <!-- <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
+              <!-- <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
               <!-- </td> -->
             </tr>
           </template>
           <tr>
             <td colspan="9">
               <div class="" style="width:100%;">
-                <paper-progress id="progress" style="width:100%;"></paper-progress>
+                <paper-progress id="progress" style="width:100%;" step=2></paper-progress>
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
               </div>
             </td>
@@ -265,17 +260,21 @@
         测试环境的链接为 211.147.72.70:10003
         生产环境的链接为 211.144.213.118
     -->
-    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
-    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
-    <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
+    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
+    <iron-ajax id="queryAgentAjax" method="GET" url="http://211.147.72.70:10003/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
+    <!-- <iron-ajax id="queryAgentAjax" method="GET" url="http://211.144.213.118/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax> -->
   </template>
   <script>
     (function() {
       Polymer({
         is: 'report-list-old',
-
         properties: {
           cond: {
+            type: Object,
+            value: {}
+          },
+          agentsMap: {
             type: Object,
             value: {}
           }
@@ -289,7 +288,7 @@
             total: 0
           };
           // 加载代理列表
-        //   this.handleQueryAgentsEvent();
+          this.handleQueryAgentsEvent();
         },
         // 旧系统查询
         handleOldOldSysQueryTapped: function() {
@@ -297,21 +296,10 @@
           this.set('isUseOldSys', true);
           this.generateAjaxRequest();
         },
-        // 查询交易报表事件
-        handleQueryTapped: function() {
-          this.set('cond.page', 1);
-          this.set('isUseOldSys', false);
-          this.generateAjaxRequest();
-        },
         generateAjaxRequest: function() {
           this.progressGo();
           this.records = [];
-          var ajax;
-          if (this.isUseOldSys) {
-            ajax = this.$.oldQueryAjax;
-          } else {
-            ajax = this.$.queryAjax;
-          }
+          var ajax = this.$.oldQueryAjax;
           ajax.params = this.cond;
           ajax.generateRequest();
         },
@@ -363,10 +351,12 @@
 
           var agents = response.data.data.slice(0);
           this.set('agents', []);
+          this.set('agentsMap', {});
           for (var i = 0, l = agents.length; i < l; i++) {
+            this.set('agentsMap.' + agents[i].agentCode, agents[i].name);
             this.push('agents', {
               key: agents[i].agentCode,
-              value: agents[i].agentName
+              value: agents[i].name
             });
           }
         },
@@ -399,6 +389,13 @@
         },
         showEndTimeDialog: function() {
           this.$.endTimeDailog.toggle();
+        },
+        // 代理商filter
+        _agentFilter: function(code) {
+          if (this.agentsMap[code]) {
+            return this.agentsMap[code];
+          }
+          return code;
         },
         // 修饰金额的方法
         _computeAmount: function(amount) {
