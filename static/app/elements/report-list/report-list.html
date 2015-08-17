@@ -405,7 +405,7 @@
             var v = arr[i];
             obj[v] = this.cond[v];
           }
-          obj.mchntid = item.merId;
+          obj.merId = item.merId;
           obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
           return '/master/trade/report?' + Util.query(obj);
         },
