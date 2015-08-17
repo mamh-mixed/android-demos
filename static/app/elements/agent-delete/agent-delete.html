@@ -5,8 +5,9 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 340px;
-        min-height: 120px;
+        min-width: 250px;
+        min-height: 50px;
+        font-size: 15px;
       }
     }
 
@@ -27,11 +28,13 @@
     <paper-dialog id="dialogDelete">
       <h2>删除【
         <span>{{agent.agentName}}</span>】代理</h2>
-      <div class="row">
-        <iron-icon icon="report-problem"></iron-icon>
-        &nbsp;&nbsp;&nbsp;
-        <span>是否删除此代理?</span>
-      </div>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <iron-icon icon="report-problem"></iron-icon>
+          &nbsp;&nbsp;&nbsp;
+          <span>是否删除此代理?</span>
+        </div>
+      </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>否</paper-button>
         <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
