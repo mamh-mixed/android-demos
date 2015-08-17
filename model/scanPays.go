@@ -68,7 +68,7 @@ type Summary struct {
 		TransAmt float32 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
 	} `json:"alp"`
-	Data []Summary `json:"data,omitempty"` // 包含每个商户单独数据
+	Data []Summary `json:"data"` // 包含每个商户单独数据
 }
 
 // TransGroup 按商户号和渠道号统计分组
