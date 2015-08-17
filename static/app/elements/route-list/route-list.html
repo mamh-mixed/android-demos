@@ -43,7 +43,6 @@
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <div class="condition">
       <paper-input label="商户编号" value="{{cond.merId::input}}"></paper-input>
       <div class="buttons">
@@ -126,7 +125,8 @@
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
 
-    <route-editor id="editor"></route-editor>
+    <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
+    <route-delete id="routeDelete" on-saved="handleMerchantSave"></route-delete>
   </template>
   <script>
     (function() {
@@ -166,30 +166,31 @@
             Util.toast('没有数据', 2000);
           }
         },
+
+        handleItemStaredEvent: function(e) {
+          var staredItem = e.model.item;
+          this.fire('item-selected', staredItem);
+          if (!staredItem.stared) {
+            return;
+          }
+
+          for (var i = 0, l = this.routes.length; i < l; i++) {
+            var item = this.routes[i];
+            if (item.merId !== staredItem.merId) {
+              this.set('routes.' + i + '.stared', false);
+            }
+          }
+        },
         // 新增路由策略事件
         handleCreateFabTapped: function() {
           this.$.editor.open();
         },
         // 删除路由事件
         handleItemDeletedEvent: function(e, detail) {
-          var obj = {
-            merId: detail.merId,
-            chanCode: detail.chanCode,
-            cardBrand: detail.cardBrand
-          };
-          this.$.deleteAjax.params = obj;
-          this.$.deleteAjax.generateRequest();
+          this.$.routeDelete.route = e.model.item;
+          this.$.routeDelete.open();
         },
-        // 删除路由响应事件
-        handleDeleteResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
 
-          this.handleQueryTapped();
-        },
         // 新增路由策略保存成功事件，刷新列表
         handleMerchantSave: function() {
           this.handleQueryTapped();
