@@ -6,6 +6,20 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 )
 
+func TestPaginationFindRouterPolicy(t *testing.T) {
+	merId := ""
+	page, size := 1, 10
+
+	result, total, err := RouterPolicyColl.PaginationFind(merId, size, page)
+	if err != nil {
+		t.Errorf("fail %s", err)
+	}
+
+	t.Logf("total is %d; collections are %#v", total, result)
+
+	t.Logf("count is %d", len(result))
+}
+
 func TestInsertRouterPolicy(t *testing.T) {
 
 	if debug {

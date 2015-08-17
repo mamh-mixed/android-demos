@@ -68,7 +68,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		log.Errorf("find trans error: %s", err)
 		return errResult
 	}
-	var data []model.Summary
+	var data = make([]model.Summary, 0)
 	// 将数据合并
 	for _, d := range group {
 		if mer, ok := m[d.MerId]; ok {
