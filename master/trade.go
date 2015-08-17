@@ -57,6 +57,8 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 		Busicd:       params.Get("busicd"),
 		StartTime:    params.Get("startTime"),
 		EndTime:      params.Get("endTime"),
+		OrderNum:     params.Get("orderNum"),
+		OrigOrderNum: params.Get("origOrderNum"),
 		Size:         maxReportRec,
 		IsForReport:  true,
 		Page:         1,

@@ -22,6 +22,10 @@ type merchant struct {
 	AcctNum       string  `bson:"account"`
 	AcctName      string  `bson:"accountName"`
 	SignKey       string  `bson:"merchantMd5"`
+	Agent         struct {
+		AgentCode string `bson:"merId"`
+		AgentName string `bson:"commodityName"`
+	} `bson:"headMerchant"`
 }
 
 type channel struct {
@@ -57,9 +61,12 @@ func AddMerchantFromOldDB() error {
 		m.Detail.MerName = mer.ClientidName
 		m.MerId = mer.Clientid
 		m.AgentCode = mer.AgentCode
-		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd}
+		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
 		m.Remark = "老扫码系统商户"
 		m.SignKey = mer.SignKey
+		m.AgentCode = mer.Agent.AgentCode
+		m.AgentName = mer.Agent.AgentName
+		// TODO:集团
 		if m.SignKey != "" {
 			m.IsNeedSign = true
 		}
