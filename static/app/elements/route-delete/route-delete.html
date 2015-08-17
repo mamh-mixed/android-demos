@@ -5,8 +5,9 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 340px;
-        min-height: 120px;
+        min-width: 250px;
+        min-height: 50px;
+        font-size: 15px;
       }
     }
 
@@ -26,11 +27,13 @@
     <iron-ajax id="deleteAjax" method="GET" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <paper-dialog id="dialogDelete">
       <h2>删除路由策略</h2>
-      <div class="row">
-        <iron-icon icon="report-problem"></iron-icon>
-        &nbsp;&nbsp;&nbsp;
-        <span>是否删除此路由策略?</span>
-      </div>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <iron-icon icon="report-problem"></iron-icon>
+          &nbsp;&nbsp;&nbsp;
+          <span>是否删除此路由策略?</span>
+        </div>
+      </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>否</paper-button>
         <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
