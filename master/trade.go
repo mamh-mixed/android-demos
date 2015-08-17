@@ -14,6 +14,8 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+var maxReportRec = 10000
+
 // tradeQuery 交易查询
 func tradeQuery(w http.ResponseWriter, data []byte) {
 
@@ -42,31 +44,6 @@ func tradeQuery(w http.ResponseWriter, data []byte) {
 	w.Write(retBytes)
 }
 
-var maxReportRec = 10000
-
-// tradeQueryStatistics 交易查询统计信息
-func tradeQueryStatistics(q *model.QueryCondition) (result *model.ResultBody) {
-
-	// 调用core方法统计
-	qr := core.TransStatistics(q)
-
-	// 分页信息
-	pagination := &model.Pagination{
-		Page:  qr.Page,
-		Total: qr.Total,
-		Size:  qr.Size,
-		Count: qr.Size,
-		Data:  qr.Rec,
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    pagination,
-	}
-	return result
-}
-
 // tradeReport 处理查找所有商户的请求
 func tradeReport(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
@@ -74,7 +51,7 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 
 	var file = xlsx.NewFile()
 
-	var merId = params.Get("mchntid")
+	var merId = params.Get("merId")
 	req := &model.QueryCondition{
 		MerId:        merId,
 		Busicd:       params.Get("busicd"),

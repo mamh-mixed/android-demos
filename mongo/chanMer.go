@@ -39,6 +39,15 @@ func (col *chanMerCollection) Add(c *model.ChanMer) error {
 	return err
 }
 
+// CountByKey 验证是否存在
+func (col *chanMerCollection) CountByKey(chanCode, chanMerId string) (int, error) {
+	bo := bson.M{
+		"chanCode":  chanCode,
+		"chanMerId": chanMerId,
+	}
+	return database.C(col.name).Find(bo).Count()
+}
+
 // BatchAdd 批量增加渠道商户
 func (col *chanMerCollection) BatchAdd(cms []model.ChanMer) error {
 

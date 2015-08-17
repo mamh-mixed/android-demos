@@ -43,7 +43,10 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 			StartTime: r.FormValue("startTime"),
 			EndTime:   r.FormValue("endTime"),
 		}
-		ret = tradeQueryStatistics(q)
+		ret = tradeQueryStats(q)
+	case "/master/trade/stat/report":
+		tradeQueryStatsReport(w, r)
+		return
 	case "/master/merchant/find":
 		merId := r.FormValue("merId")
 		merStatus := r.FormValue("merStatus")
