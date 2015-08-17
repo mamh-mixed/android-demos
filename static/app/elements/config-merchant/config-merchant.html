@@ -93,7 +93,7 @@
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
+          <paper-input label="商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}"></paper-input>
           <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
         </div>
         <div class="row">
@@ -205,6 +205,11 @@
             type: String,
             reflectToAttribute: true
           },
+          update: {
+            type: Boolean,
+            value: false,
+            notify: true
+          },
           params: {
             type: Object
           },
@@ -293,23 +298,26 @@
             return;
           }
 
-
-          var item = response.data,
-            permissions = item.permission || [];
+          var item = response.data;
           this.set('merchant', item);
-          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
-          for (var i = 0, il = permissions.length; i < il; i++) {
-            var p = permissions[i];
-            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
-              var pa = this.permissionArray[j];
-              if (pa.key === p) {
-                this.set('permissionArray.' + j + '.isChecked', true);
-                break;
+          if (item.permission) {
+            var permissions = item.permission;
+            // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+            for (var i = 0, il = permissions.length; i < il; i++) {
+              var p = permissions[i];
+              for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+                var pa = this.permissionArray[j];
+                if (pa.key === p) {
+                  this.set('permissionArray.' + j + '.isChecked', true);
+                  break;
+                }
               }
             }
+          } else {
+            this.set('merchant.permission', []);
           }
-          i = 0;
-          for (var l = this.merStatusMap.length; i < l; i++) {
+
+          for (var i = 0, l = this.merStatusMap.length; i < l; i++) {
             var merStatusItem = this.merStatusMap[i];
             if (item.merStatus === merStatusItem.key) {
               this.set('merStatus', merStatusItem);
@@ -512,7 +520,16 @@
             this.splice('merchant.permission', index, 1);
           }
         },
-
+        observers: [
+          '_watchMerStatusChange(merStatus.key)'
+        ],
+        _watchMerStatusChange: function(key) {
+          if (key) {
+            this.set('merchant.merStatus', key);
+          } else {
+            this.set('merchant.merStatus', '');
+          }
+        },
         // html5 读取证书文件内容
         handleWeixinHttpCertFile: function(e) {
           var _this = this;
