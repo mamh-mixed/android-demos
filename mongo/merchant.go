@@ -51,6 +51,12 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 	return m, nil
 }
 
+// CountById 检查商户是否存在
+func (c *merchantCollection) CountById(merId string) (int, error) {
+	q := bson.M{"merId": merId}
+	return database.C(c.name).Find(q).Count()
+}
+
 // Update 更新一个商户信息。
 func (c *merchantCollection) Update(m *model.Merchant) error {
 	if m.MerId == "" {
