@@ -294,22 +294,26 @@
           }
 
 
-          var item = response.data,
-            permissions = item.permission || [];
+          var item = response.data;
           this.set('merchant', item);
-          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
-          for (var i = 0, il = permissions.length; i < il; i++) {
-            var p = permissions[i];
-            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
-              var pa = this.permissionArray[j];
-              if (pa.key === p) {
-                this.set('permissionArray.' + j + '.isChecked', true);
-                break;
+          if (item.permission) {
+            var permissions = item.permission;
+            // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+            for (var i = 0, il = permissions.length; i < il; i++) {
+              var p = permissions[i];
+              for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+                var pa = this.permissionArray[j];
+                if (pa.key === p) {
+                  this.set('permissionArray.' + j + '.isChecked', true);
+                  break;
+                }
               }
             }
+          } else {
+            this.set('merchant.permission', []);
           }
-          i = 0;
-          for (var l = this.merStatusMap.length; i < l; i++) {
+
+          for (var i = 0, l = this.merStatusMap.length; i < l; i++) {
             var merStatusItem = this.merStatusMap[i];
             if (item.merStatus === merStatusItem.key) {
               this.set('merStatus', merStatusItem);
