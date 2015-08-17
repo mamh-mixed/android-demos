@@ -93,7 +93,7 @@
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商户编号" value="{{merchant.merId::input}}"></paper-input>
+          <paper-input label="商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}"></paper-input>
           <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
         </div>
         <div class="row">
@@ -204,6 +204,11 @@
           merId: {
             type: String,
             reflectToAttribute: true
+          },
+          update: {
+            type: Boolean,
+            value: false,
+            notify: true
           },
           params: {
             type: Object
