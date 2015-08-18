@@ -7,7 +7,10 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strconv"
 )
 
@@ -22,10 +25,15 @@ type merchant struct {
 	AcctNum       string  `bson:"account"`
 	AcctName      string  `bson:"accountName"`
 	SignKey       string  `bson:"merchantMd5"`
-	Agent         struct {
-		AgentCode string `bson:"merId"`
-		AgentName string `bson:"commodityName"`
+	Group         struct {
+		GroupCode string `bson:"merId"`
+		GroupName string `bson:"commodityName"`
 	} `bson:"headMerchant"`
+}
+
+type Agent struct {
+	AgentCode string `bson:"inscd"`
+	AgentName string `bson:"name"`
 }
 
 type channel struct {
@@ -39,8 +47,75 @@ type channel struct {
 	SubMchId  string `bson:"sub_mch_id"`
 }
 
-func AddMerchantFromOldDB() error {
+type merCert struct {
+	MerId    string
+	HttpCert string
+	HttpKey  string
+}
 
+// AddHttpCertFromFile 导入文件
+func AddHttpCertFromFile(root string) (map[string]merCert, error) {
+
+	var filePaths []string
+	// 读取该目录下所有文件名称
+	filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
+		if f == nil {
+			return err
+		}
+		if f.IsDir() {
+			filename := f.Name()
+			// log.Debug(filename)
+			if matched, _ := regexp.MatchString(`^\d+$`, filename); matched {
+				filePaths = append(filePaths, filename)
+			}
+		}
+		return nil
+	})
+	// log.Debug(filePaths)
+	certsMap := make(map[string]merCert)
+	for _, merId := range filePaths {
+		certPath := root + "/" + merId + "/apiclient_cert.pem"
+		cert, err := os.Open(certPath)
+		if err != nil {
+			return certsMap, err
+		}
+		certBytes, err := ioutil.ReadAll(cert)
+		if err != nil {
+			return certsMap, err
+		}
+		cert.Close()
+		keyPath := root + "/" + merId + "/apiclient_key.pem"
+		key, err := os.Open(keyPath)
+		if err != nil {
+			return certsMap, err
+		}
+		keyBytes, err := ioutil.ReadAll(key)
+		if err != nil {
+			return certsMap, err
+		}
+		key.Close()
+		c := merCert{MerId: merId, HttpCert: string(certBytes), HttpKey: string(keyBytes)}
+		certsMap[merId] = c
+	}
+
+	return certsMap, nil
+}
+
+// AddMerchantFromOldDB 导入商户
+func AddMerchantFromOldDB(path string) error {
+	merCerts, err := AddHttpCertFromFile(path)
+	if err != nil {
+		return err
+	}
+	connect()
+	agents, err := readAgentFromOldDB()
+	if err != nil {
+		return err
+	}
+	agentMap := make(map[string]string)
+	for _, agent := range agents {
+		agentMap[agent.AgentCode] = agent.AgentName
+	}
 	mers, err := readMerFromOldDB()
 	if err != nil {
 		return err
@@ -52,7 +127,7 @@ func AddMerchantFromOldDB() error {
 			continue
 		}
 		count++
-		// 导入商户
+		// 基本信息
 		m := &model.Merchant{}
 		m.Detail.AcctName = mer.AcctName
 		m.Detail.AcctNum = mer.AcctNum
@@ -60,19 +135,16 @@ func AddMerchantFromOldDB() error {
 		m.Detail.CommodityName = mer.CommodityName
 		m.Detail.MerName = mer.ClientidName
 		m.MerId = mer.Clientid
-		m.AgentCode = mer.AgentCode
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
 		m.Remark = "old_system_data"
 		m.SignKey = mer.SignKey
+		// 集团
+		m.GroupCode = mer.Group.GroupCode
+		m.GroupName = mer.Group.GroupName
 		// 代理代码
-		if mer.Agent.AgentCode != "" {
-			m.AgentCode = mer.Agent.AgentCode
-			m.AgentName = mer.Agent.AgentName
-		} else {
-			m.AgentCode = "99911888"
-			m.AgentName = "讯联O2O机构"
-		}
-		// TODO:集团
+		m.AgentCode = mer.AgentCode
+		m.AgentName = agentMap[m.AgentCode]
+
 		if m.SignKey != "" {
 			m.IsNeedSign = true
 		}
@@ -132,6 +204,14 @@ func AddMerchantFromOldDB() error {
 			wxp.AcqFee = float32(acqFee)
 			wxp.MerFee = float32(merFee)
 			wxp.ChanMerId = wxpMerId
+			// 保存证书
+			if merCert, ok := merCerts[wxpMerId]; ok {
+				wxp.HttpCert = merCert.HttpCert
+				wxp.HttpKey = merCert.HttpKey
+			} else {
+				log.Errorf("找不到商户：%s, 相应证书。", wxpMerId)
+			}
+
 			err = mongo.ChanMerColl.Add(wxp)
 			if err != nil {
 				return err
@@ -155,10 +235,15 @@ func AddMerchantFromOldDB() error {
 }
 
 func readMerFromOldDB() ([]merchant, error) {
-	connect()
 	var mers []merchant
 	err := saomaDB.C("merchant").Find(nil).All(&mers)
 	return mers, err
+}
+
+func readAgentFromOldDB() ([]Agent, error) {
+	var agents []Agent
+	err := saomaDB.C("acq").Find(nil).All(&agents)
+	return agents, err
 }
 
 var saomaDB *mgo.Database

@@ -7,10 +7,16 @@ import (
 	// "github.com/omigo/log"
 )
 
+// 导入原扫码系统商户证书
+func TestAddHttpCert(t *testing.T) {
+	AddHttpCertFromFile("/Users/zhiruichen/Desktop/")
+}
+
 // 导入原扫码系统商户 包含商户、渠道商户、路由策略
 func TestAddMerFromNodejsDB(t *testing.T) {
 
-	err := AddMerchantFromOldDB()
+	var path string
+	err := AddMerchantFromOldDB(path)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

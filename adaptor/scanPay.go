@@ -210,6 +210,12 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	if err != nil {
 		return LogicErrorHandler(current, "NO_CHANMER")
 	}
+
+	// 重新计算手续费
+	if orig.RefundStatus == model.TransPartRefunded {
+		orig.Fee = float32(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
+	}
+
 	var subMchId string
 	// 代理商模式
 	if c.IsAgentMode {

@@ -323,9 +323,11 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 			orig.ErrorDetail = adaptor.CloseMsg
 			orig.RefundAmt = refundAmt
+			orig.Fee = 0 // 被全额退款时，手续费清零
 		} else {
 			orig.RefundStatus = model.TransPartRefunded
-			orig.RefundAmt = refundAmt // 这个字段的作用主要是为了方便报表时计算部分退款，位了一致性，撤销，取消接口也都统一加上，虽然并没啥作用
+			orig.RefundAmt = refundAmt // 这个字段的作用主要是为了方便报表时计算部分退款，为了一致性，撤销，取消接口也都统一加上，虽然并没啥作用
+			// 重新计算手续费
 		}
 	}
 
@@ -493,6 +495,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		orig.ErrorDetail = adaptor.CloseMsg
 		orig.RefundAmt = orig.TransAmt
+		orig.Fee = 0 // 手续费清零
 	}
 
 	ret = adaptor.ProcessCancel(orig, cancel, req)
@@ -562,6 +565,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			// 这样做方便于报表导出计算
 			closed.TransAmt = orig.TransAmt
 			orig.RefundAmt = orig.TransAmt
+			orig.Fee = 0
 		}
 		// 更新原交易信息
 		orig.TransStatus = model.TransClosed
