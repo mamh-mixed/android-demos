@@ -87,8 +87,8 @@ func TestChanMerFind(t *testing.T) {
 
 func TestChanMerAdd(t *testing.T) {
 	chanMer := &model.ChanMer{
-		ChanCode:      "TEST1",
-		ChanMerId:     "TEST",
+		ChanCode:      "TEST2",
+		ChanMerId:     "TEST0001",
 		ChanMerName:   "TEST",
 		SettFlag:      "TEST",
 		SettRole:      "TEST",
@@ -107,22 +107,17 @@ func TestChanMerAdd(t *testing.T) {
 }
 
 func TestChanMerModify(t *testing.T) {
-	chanMer := &model.ChanMer{
-		ChanCode:      chanCode,
-		ChanMerId:     chanMerId,
-		ChanMerName:   chanMerName,
-		SettFlag:      settFlag,
-		SettRole:      settRole,
-		SignCert:      priKeyPem,
-		CheckSignCert: checkSignCert,
-	}
 
-	err := ChanMerColl.Update(chanMer)
+	c, _ := ChanMerColl.Find("WXP", "1228767002")
+	a, _ := ChanMerColl.Find("WXP", "1236593202")
+	c.AgentMer = a
+
+	err := ChanMerColl.Update(c)
 	if err != nil {
 		t.Errorf("update chanMer unsuccessful %s", err)
 		t.FailNow()
 	}
-	log.Debugf("update chanMer success %s", chanMer)
+	log.Debugf("update chanMer success %s", c)
 }
 
 func TestChanMerFindAll(t *testing.T) {
