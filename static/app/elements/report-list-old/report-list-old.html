@@ -214,7 +214,7 @@
                 <span>{{_agentFilter(item.agentName)}}</span>
               </td>
               <!-- <td> -->
-              <!-- <a target="_blank" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
+              <!-- <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a> -->
               <!-- </td> -->
             </tr>
           </template>
@@ -260,10 +260,10 @@
         测试环境的链接为 211.147.72.70:10003
         生产环境的链接为 211.144.213.118
     -->
-    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
-    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
-    <iron-ajax id="queryAgentAjax" method="GET" url="http://211.147.72.70:10003/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
-    <!-- <iron-ajax id="queryAgentAjax" method="GET" url="http://211.144.213.118/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax> -->
+    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
+    <iron-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
+    <!-- <iron-ajax id="queryAgentAjax" method="GET" url="http://211.147.72.70:10003/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax> -->
+    <iron-ajax id="queryAgentAjax" method="GET" url="http://211.144.213.118/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
   </template>
   <script>
     (function() {

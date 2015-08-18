@@ -317,8 +317,8 @@
             this.set('merchant.permission', []);
           }
 
-          for (var z = 0, l = this.merStatusMap.length; z < l; z++) {
-            var merStatusItem = this.merStatusMap[z];
+          for (var k in this.merStatusMap) {
+            var merStatusItem = this.merStatusMap[k];
             if (item.merStatus === merStatusItem.key) {
               this.set('merStatus', merStatusItem);
               break;
