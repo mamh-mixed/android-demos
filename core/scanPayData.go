@@ -51,38 +51,37 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
 	// 先找商户所有商户号
-	before := time.Now()
 	mers, err := mongo.MerchantColl.FuzzyFind(q)
 	if err != nil {
 		log.Errorf("find merchant error: %s", err)
 		return errResult
 	}
+
 	var merIds []string
 	m := make(map[string]*model.Merchant)
+	// 暂存商户信息
 	for _, mer := range mers {
 		merIds = append(merIds, mer.MerId)
 		m[mer.MerId] = mer
 	}
-	after := time.Now()
-	log.Debugf("spent time %s", after.Sub(before))
+
+	// 设置条件过滤
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
 	q.RefundStatus = model.TransRefunded
 	q.MerIds = merIds
 	q.StartTime += " 00:00:00"
 	q.EndTime += " 23:59:59"
+
 	// 查询交易
-	before = time.Now()
 	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
 		return errResult
 	}
-	after = time.Now()
-	log.Debugf("spent time %s", after.Sub(before))
 	var data = make([]model.Summary, 0)
+
 	// 将数据合并
-	before = time.Now()
 	for _, d := range group {
 		if mer, ok := m[d.MerId]; ok {
 			s := model.Summary{
@@ -99,9 +98,8 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	// 汇总数据
 	summary := model.Summary{Data: data}
 	combine(&summary, all)
-	after = time.Now()
-	log.Debugf("spent time %s", after.Sub(before))
 
+	// 组装返回报文
 	count := len(data)
 	ret = &model.QueryResult{
 		Page:  q.Page,
