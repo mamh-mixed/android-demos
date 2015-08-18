@@ -58,7 +58,7 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 	qr := core.TransStatistics(q)
 
 	if summarys, ok := qr.Rec.(model.Summary); ok {
-		genQueryStatReport(file, summarys)
+		genQueryStatReport(file, summarys, q)
 	}
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
@@ -68,7 +68,7 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 }
 
 // TODO: 优化
-func genQueryStatReport(file *xlsx.File, result model.Summary) {
+func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.QueryCondition) {
 
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
@@ -77,27 +77,9 @@ func genQueryStatReport(file *xlsx.File, result model.Summary) {
 	sheet = file.AddSheet("商户交易报表汇总")
 
 	// 表头样式
-	genHead(sheet, row, cell)
+	genHead(sheet, row, cell, cond)
 
 	// 填充数据
-	// 先填写汇总
-	row = sheet.AddRow()
-	for i := 0; i < 4; i++ {
-		row.AddCell()
-	}
-	cell = row.AddCell()
-	cell.SetInt(result.TotalTransNum)
-	cell = row.AddCell()
-	cell.SetFloat(float64(result.TotalTransAmt))
-	cell = row.AddCell()
-	cell.SetInt(result.Alp.TransNum)
-	cell = row.AddCell()
-	cell.SetFloat(float64(result.Alp.TransAmt))
-	cell = row.AddCell()
-	cell.SetInt(result.Wxp.TransNum)
-	cell = row.AddCell()
-	cell.SetFloat(float64(result.Wxp.TransAmt))
-
 	// 详细数据
 	for _, d := range result.Data {
 		row = sheet.AddRow()
@@ -114,20 +96,66 @@ func genQueryStatReport(file *xlsx.File, result model.Summary) {
 		cell = row.AddCell()
 		cell.SetFloat(float64(d.TotalTransAmt))
 		cell = row.AddCell()
+		cell.SetFloat(0)
+		cell = row.AddCell()
 		cell.SetInt(d.Alp.TransNum)
 		cell = row.AddCell()
 		cell.SetFloat(float64(d.Alp.TransAmt))
+		cell = row.AddCell()
+		cell.SetFloat(0)
 		cell = row.AddCell()
 		cell.SetInt(d.Wxp.TransNum)
 		cell = row.AddCell()
 		cell.SetFloat(float64(d.Wxp.TransAmt))
 		cell = row.AddCell()
+		cell.SetFloat(0)
+		cell = row.AddCell()
 		cell.Value = d.AgentName
 		cell.Merge(1, 0)
 	}
+
+	// 最后填写汇总
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "总计："
+	cell.Merge(3, 0)
+	for i := 0; i < 3; i++ {
+		row.AddCell()
+	}
+	cell = row.AddCell()
+	cell.SetInt(result.TotalTransNum)
+	cell = row.AddCell()
+	cell.SetFloat(float64(result.TotalTransAmt))
+	cell = row.AddCell()
+	cell.SetFloat(0)
+	cell = row.AddCell()
+	cell.SetInt(result.Alp.TransNum)
+	cell = row.AddCell()
+	cell.SetFloat(float64(result.Alp.TransAmt))
+	cell = row.AddCell()
+	cell.SetFloat(0)
+	cell = row.AddCell()
+	cell.SetInt(result.Wxp.TransNum)
+	cell = row.AddCell()
+	cell.SetFloat(float64(result.Wxp.TransAmt))
+	cell = row.AddCell()
+	cell.SetFloat(0)
+	row.AddCell().Merge(1, 0)
 }
 
-func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell) {
+func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.QueryCondition) {
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "开始日期："
+	cell = row.AddCell()
+	cell.Value = cond.StartTime
+	cell = row.AddCell()
+	cell.Value = "结束日期："
+	cell = row.AddCell()
+	cell.Value = cond.EndTime
+	cell = row.AddCell()
+	cell.Value = "注：手续费为每笔单笔计算后四舍五入精确到分，跟总额计算手续费略有误差。因本表仅统计了讯联数据系统的数据，数据仅供参考"
+	cell.Merge(10, 0)
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "商户号"
@@ -139,15 +167,18 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell) {
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "汇总"
-	cell.Merge(1, 0)
+	cell.Merge(2, 0)
+	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "支付宝"
-	cell.Merge(1, 0)
+	cell.Merge(2, 0)
+	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "微信"
-	cell.Merge(1, 0)
+	cell.Merge(2, 0)
+	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "代理名称"
@@ -162,11 +193,17 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell) {
 	cell = row.AddCell()
 	cell.Value = "总金额"
 	cell = row.AddCell()
-	cell.Value = "笔数"
-	cell = row.AddCell()
-	cell.Value = "金额"
+	cell.Value = "手续费"
 	cell = row.AddCell()
 	cell.Value = "笔数"
 	cell = row.AddCell()
 	cell.Value = "金额"
+	cell = row.AddCell()
+	cell.Value = "手续费"
+	cell = row.AddCell()
+	cell.Value = "笔数"
+	cell = row.AddCell()
+	cell.Value = "金额"
+	cell = row.AddCell()
+	cell.Value = "手续费"
 }
