@@ -9,6 +9,14 @@
         return;
       }
       var toast = Polymer.Base.$$('#toast');
+      if (!toast) {
+          toast = document.getElementById('toast');
+      }
+
+      if (!toast) {
+          window.alert(text);
+          return;
+      }
       toast.text = text;
       toast.duration = duration;
       toast.show();
