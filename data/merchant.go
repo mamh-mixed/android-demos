@@ -3,12 +3,12 @@ package data
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2"
+	"os"
+	"strconv"
 )
 
 type merchant struct {
@@ -87,8 +87,10 @@ func AddMerchantFromOldDB() error {
 			alp.ChanMerId = mer.Alp.PartnerId
 			alp.SignCert = mer.Alp.Md5
 			alp.ChanCode = "ALP"
-			alp.AcqFee = mer.Alp.AcqFee
-			alp.MerFee = mer.Alp.MerFee
+			acqFee, _ := strconv.ParseFloat(mer.Alp.AcqFee, 32)
+			merFee, _ := strconv.ParseFloat(mer.Alp.MerFee, 32)
+			alp.AcqFee = float32(acqFee)
+			alp.MerFee = float32(merFee)
 			err = mongo.ChanMerColl.Add(alp)
 			if err != nil {
 				return err
@@ -108,12 +110,28 @@ func AddMerchantFromOldDB() error {
 		if mer.Wxp.MchId != "" {
 			// 导入渠道商户
 			wxp := &model.ChanMer{}
+			// 非受理商模式
+			wxpMerId := ""
+			if mer.Wxp.SubMchId != "" {
+				wxpMerId = mer.Wxp.SubMchId
+				a, err := mongo.ChanMerColl.Find("WXP", mer.Wxp.MchId)
+				if err != nil {
+					log.Errorf("受理商模式下，没找到受理商商户，商户ID为：%s", mer.Wxp.MchId)
+				}
+				wxp.AgentMer = a
+				wxp.IsAgentMode = true
+			} else {
+				wxpMerId = mer.Wxp.MchId
+			}
+			// 只保存子渠道商户
 			wxp.SignCert = mer.Wxp.Md5
 			wxp.ChanCode = "WXP"
 			wxp.WxpAppId = mer.Wxp.AppId
-			wxp.AcqFee = mer.Wxp.AcqFee
-			wxp.MerFee = mer.Wxp.MerFee
-			wxp.ChanMerId = mer.Wxp.MchId
+			acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
+			merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
+			wxp.AcqFee = float32(acqFee)
+			wxp.MerFee = float32(merFee)
+			wxp.ChanMerId = wxpMerId
 			err = mongo.ChanMerColl.Add(wxp)
 			if err != nil {
 				return err
@@ -125,12 +143,6 @@ func AddMerchantFromOldDB() error {
 			rwxp.ChanCode = wxp.ChanCode
 			rwxp.CardBrand = wxp.ChanCode
 			rwxp.ChanMerId = wxp.ChanMerId
-
-			// 代理商模式
-			if mer.Wxp.SubMchId != "" {
-				rwxp.IsAgent = true
-				rwxp.SubMerId = mer.Wxp.SubMchId
-			}
 			err = mongo.RouterPolicyColl.Insert(rwxp)
 			if err != nil {
 				return err

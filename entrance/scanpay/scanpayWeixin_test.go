@@ -19,7 +19,7 @@ func TestWXPayConfusionBusicd(t *testing.T) {
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   orderNum,
 		ScanCodeId: "131008245544067366",
-		Inscd:      "CIL00002",
+		AgentCode:  "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PAUT",
 		Mchntid:    "100000000000203",
@@ -41,7 +41,7 @@ func TestWXPayWrongBusicd(t *testing.T) {
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   orderNum,
 		ScanCodeId: "",
-		Inscd:      "CIL00002",
+		AgentCode:  "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "ANSD",
 		Mchntid:    "100000000000203",
@@ -63,7 +63,7 @@ func TestWXPayCloseSuccess(t *testing.T) {
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   orderNum,
 		ScanCodeId: "130939087138632762",
-		Inscd:      "CIL00002",
+		AgentCode:  "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
@@ -81,7 +81,7 @@ func TestWXPayCloseSuccess(t *testing.T) {
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
 		OrigOrderNum: orderNum,
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 	}
 
 	resp = doSendWXPayRequest(req)
@@ -97,7 +97,7 @@ func TestWXPrePayCloseSuccess(t *testing.T) {
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
 		OrigOrderNum: "1437718003292",
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 	}
 
 	resp := doSendWXPayRequest(req)
@@ -113,7 +113,7 @@ func TestWXReverseCloseSuccess(t *testing.T) {
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
 		OrigOrderNum: "1437638534585",
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 	}
 
 	resp := doSendWXPayRequest(req)
@@ -129,7 +129,7 @@ func TestWXRefundCloseSuccess(t *testing.T) {
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
 		OrigOrderNum: "1437641588899",
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 	}
 
 	resp := doSendWXPayRequest(req)
@@ -146,7 +146,7 @@ func TestWXPayUseAlPQrcode(t *testing.T) {
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   orderNum,
 		ScanCodeId: "289948455182572311",
-		Inscd:      "CIL00002",
+		AgentCode:  "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
@@ -168,7 +168,7 @@ func TestWXScanPay(t *testing.T) {
 		GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 		OrderNum:   orderNum,
 		ScanCodeId: "130322701451895248",
-		Inscd:      "CIL00002",
+		AgentCode:  "CIL00002",
 		Txamt:      "000000000001",
 		Busicd:     "PURC",
 		Mchntid:    "100000000000203",
@@ -207,7 +207,7 @@ func TestWXScanPay(t *testing.T) {
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
 		OrigOrderNum: orderNum,
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 		Chcd:         "WXP",
 	}
 	t.Logf("撤销：%#v", req)

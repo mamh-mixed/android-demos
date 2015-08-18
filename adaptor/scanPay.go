@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"math"
 )
 
 var agentId = goconf.Config.AlipayScanPay.AgentId
@@ -61,10 +62,25 @@ func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model
 
 // ProcessBarcodePay 扫条码下单
 func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
 		return LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 计算费率 四舍五入
+	t.Fee = float32(math.Floor(float64(t.TransAmt)*float64(c.MerFee)+0.5)) / 100
+
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(t, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
 	}
 
 	mer, err := mongo.MerchantColl.Find(t.MerId)
@@ -95,6 +111,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
+		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:
@@ -123,6 +140,20 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 		return LogicErrorHandler(t, "NO_CHANMER")
 	}
 
+	// 计算费率 四舍五入
+	t.Fee = float32(math.Floor(float64(t.TransAmt)*float64(c.MerFee)+0.5)) / 100
+
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(t, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
+	}
+
 	mer, err := mongo.MerchantColl.Find(t.MerId)
 	if err != nil {
 		return LogicErrorHandler(t, "NO_MERCHANT")
@@ -136,6 +167,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
+		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:
@@ -178,20 +210,15 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	if err != nil {
 		return LogicErrorHandler(current, "NO_CHANMER")
 	}
-
-	// 不同渠道参数转换
-	switch orig.ChanCode {
-	case channel.ChanCodeAlipay:
-		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
-	case channel.ChanCodeWeixin:
-		req.AppID = c.WxpAppId
-		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
-		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
-		req.SubMchId = orig.SubChanMerId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
-	default:
-		req.ActTxamt = req.Txamt
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(current, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
 	}
 
 	// 渠道参数
@@ -201,6 +228,21 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 
 	// 交易参数
 	current.SysOrderNum = req.SysOrderNum
+
+	// 不同渠道参数转换
+	switch orig.ChanCode {
+	case channel.ChanCodeAlipay:
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
+	case channel.ChanCodeWeixin:
+		req.AppID = c.WxpAppId
+		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
+		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.SubMchId = subMchId
+		req.WeixinClientCert = []byte(c.HttpCert)
+		req.WeixinClientKey = []byte(c.HttpKey)
+	default:
+		req.ActTxamt = req.Txamt
+	}
 
 	// 记录交易
 	err = mongo.SpTransColl.Add(current)
@@ -230,8 +272,19 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 	if err != nil {
 		return LogicErrorHandler(t, "NO_CHANMER")
 	}
-	// 上送参数
 
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(t, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
+	}
+
+	// 上送参数
 	req.OrderNum = t.OrderNum
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
@@ -242,7 +295,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 		// do nothing...
 	case channel.ChanCodeWeixin:
 		req.AppID = c.WxpAppId
-		req.SubMchId = t.SubChanMerId
+		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:
@@ -280,6 +333,17 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 		return LogicErrorHandler(current, "NO_CHANMER")
 	}
 
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(current, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
+	}
+
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
@@ -303,7 +367,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 		req.AppID = c.WxpAppId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
-		req.SubMchId = orig.SubChanMerId
+		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 		ret, err = sp.ProcessRefund(req)
@@ -408,13 +472,24 @@ func ProcessWxpRefundQuery(t *model.Trans, req *model.ScanPayRequest) (ret *mode
 	if err != nil {
 		return LogicErrorHandler(t, "NO_CHANMER")
 	}
-	// 上送参数
 
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(t, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
+	}
+
+	// 上送参数
 	req.OrderNum = t.OrderNum
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
-	req.SubMchId = t.SubChanMerId
+	req.SubMchId = subMchId
 	req.WeixinClientCert = []byte(c.HttpCert)
 	req.WeixinClientKey = []byte(c.HttpKey)
 
@@ -476,12 +551,23 @@ func prepareWxpReqData(orig, current *model.Trans, req *model.ScanPayRequest) (r
 		return LogicErrorHandler(current, "NO_CHANMER")
 	}
 
+	var subMchId string
+	// 代理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			log.Error("use agentMode but not supply agentMer,please check.")
+			return LogicErrorHandler(current, "SYSTEM_ERROR")
+		}
+		subMchId = c.ChanMerId
+		c = c.AgentMer
+	}
+
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
 	req.SignCert = c.SignCert
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
-	req.SubMchId = orig.SubChanMerId
+	req.SubMchId = subMchId
 	req.WeixinClientCert = []byte(c.HttpCert)
 	req.WeixinClientKey = []byte(c.HttpKey)
 

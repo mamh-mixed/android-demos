@@ -57,12 +57,6 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	t.ChanMerId = rp.ChanMerId
 
-	// 是否是代理商模式
-	if rp.IsAgent {
-		req.SubMchId = rp.SubMerId
-		t.SubChanMerId = rp.SubMerId
-	}
-
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
 
@@ -156,12 +150,6 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
-	// 是否是代理商模式
-	if rp.IsAgent {
-		req.SubMchId = rp.SubMerId
-		t.SubChanMerId = rp.SubMerId
-	}
-
 	ret = adaptor.ProcessEnterprisePay(t, req)
 
 	// 更新交易信息
@@ -216,12 +204,6 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
-	// 是否是代理商模式
-	if rp.IsAgent {
-		req.SubMchId = rp.SubMerId
-		t.SubChanMerId = rp.SubMerId
-	}
-
 	ret = adaptor.ProcessBarcodePay(t, req)
 
 	// 渠道
@@ -262,12 +244,6 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
-	// 是否是代理商模式
-	if rp.IsAgent {
-		req.SubMchId = rp.SubMerId
-		t.SubChanMerId = rp.SubMerId
-	}
-
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
 
@@ -306,7 +282,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	refund.ChanCode = orig.ChanCode
 	refund.ChanMerId = orig.ChanMerId
-	refund.SubChanMerId = orig.SubChanMerId
+	// refund.SubChanMerId = orig.SubChanMerId
 
 	// 退款只能隔天退
 	if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
@@ -485,7 +461,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	cancel.ChanCode = orig.ChanCode
 	cancel.ChanMerId = orig.ChanMerId
-	cancel.SubChanMerId = orig.SubChanMerId
+	// cancel.SubChanMerId = orig.SubChanMerId
 	cancel.TransAmt = orig.TransAmt
 
 	// 撤销只能撤当天交易
@@ -560,7 +536,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	closed.ChanCode = orig.ChanCode
 	closed.ChanMerId = orig.ChanMerId
-	closed.SubChanMerId = orig.SubChanMerId
+	// closed.SubChanMerId = orig.SubChanMerId
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {
