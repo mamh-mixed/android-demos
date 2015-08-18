@@ -134,9 +134,12 @@
         <paper-input required$="{{requiredDetector.desc}}" class="col" id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
       </div>
       <div class="row">
-        <!-- <paper-input required$="{{requiredDetector.checkName}}" class="col" id="checkName" name="checkName" label="校验用户姓名选项(checkName)" value="{{scanCode.checkName::input}}"></paper-input> -->
         <x-select items="[[checkNames]]" class="col validate-container" required$="{{requiredDetector.checkName}}" selected-item="{{checkName}}" label="校验用户姓名选项(checkName)"></x-select>
         <paper-input required$="{{requiredDetector.userName}}" class="col" id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
+      </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.needUserInfo}}" class="col" id="needUserInfo" name="needUserInfo" label="是否需要用户信息(needUserInfo)" value="{{scanCode.needUserInfo::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.code}}" class="col" id="code" name="code" label="授权码(code)" value="{{scanCode.code::input}}"></paper-input>
       </div>
       <div class="row">
         <paper-input required$="{{requiredDetector.notifyUrl}}" class="col" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
@@ -335,13 +338,13 @@
   var TRANS_TYPE_MAP = {
     'PURC': '下单支付',
     'PAUT': '预下单',
+    'QYFK': '企业付款',
+    'JSZF': '公众号支付',
     'INQY': '查询',
     'VOID': '撤销',
     'REFD': '退款',
     'CANC': '取消',
-    'VERI': '卡券核销',
-    'QYFK': '企业付款',
-    'JSZF': '公众号支付'
+    'VERI': '卡券核销'
   };
   Polymer({
     is: 'test-scanpay',
@@ -414,6 +417,18 @@
           orderNum: true,
           scanCodeId: true
         },
+        // 公众号支付
+        'JSZF': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          txamt: true,
+          goodsInfo: true,
+          orderNum: true,
+          chcd: true,
+          code: true,
+          needUserInfo: true
+        },
         // 企业付款
         'QYFK': {
           busicd: true,
@@ -468,7 +483,8 @@
           mchntid: true,
           orderNum: true,
           origOrderNum: true
-        }
+        },
+        'VERI': {}
       };
       this.requiredDetector = {};
       this.scanCode = {
@@ -510,12 +526,12 @@
     },
     // 监听交易类型变化
     _watchBusicdChange: function(key) {
-      this.set('scanCode.busicd', key);
+      this.set('scanCode.busicd', key|| '');
+      this.set('requiredDetector', {});
       var flag = this.requiredFlags[key];
       if (!flag) {
         return;
       }
-      this.set('requiredDetector', {});
       Object.keys(flag).forEach(function(v) {
         this.set('requiredDetector.' + v, flag[v]);
       }.bind(this));
