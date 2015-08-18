@@ -11,7 +11,7 @@ type chanMerCollection struct {
 }
 
 // ChanMerColl 渠道商户 Collection
-var ChanMerColl = chanMerCollection{"chanMer"}
+var ChanMerColl = chanMerCollection{"chanMer.old"}
 
 // Find 根据渠道代码、商户号查找
 func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer, err error) {

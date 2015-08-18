@@ -59,8 +59,8 @@ type RouterPolicy struct {
 	MaxAmount string `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
 	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
-	SubMerId  string `json:"subMerId" bson:"subMerId,omitempty"`   // 子商户id，代理商模式下该字段不为空
-	IsAgent   bool   `json:"isAgent" bson:"isAgent"`               // 是否是代理商模式
+	// SubMerId  string `json:"subMerId" bson:"subMerId,omitempty"`   // 子商户id，代理商模式下该字段不为空
+	// IsAgent   bool   `json:"isAgent" bson:"isAgent"`               // 是否是代理商模式
 }
 
 // BindingInfo 商家绑定信息
@@ -205,7 +205,6 @@ type Trans struct {
 	TransStatus  string        `bson:"transStatus,omitempty" json:"transStatus"`             // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
 	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
 	ChanMerId    string        `bson:"chanMerId,omitempty" json:"-"`                         // 渠道商户号
-	SubChanMerId string        `bson:"subChanMerId,omitempty" json:"-"`                      // 渠道子商户号
 	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   // 渠道代码
 	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      // 渠道应答码
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      // 交易创建时间 yyyy-mm-dd hh:mm:ss

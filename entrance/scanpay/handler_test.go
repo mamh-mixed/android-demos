@@ -17,63 +17,63 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "2820876992391976800",
-		Inscd:      "CIL00002",
+		ScanCodeId: "130008385386503891",
+		AgentCode:  "CIL00002",
 		Txamt:      "000000000001",
-		Chcd:       "ALP",
+		Chcd:       "WXP",
 		Busicd:     "PURC",
-		Mchntid:    "100000000000203",
-		Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
+		Mchntid:    "100000000000210",
+		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
 	scanPayQrCodeOfflinePay = &model.ScanPayRequest{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
-		Inscd:     "CIL00002",
-		Txamt:     "000000000001",
+		AgentCode: "CIL00002",
+		Txamt:     "100000000000210",
 		Busicd:    "PAUT",
-		Mchntid:   "100000000000203",
-		Chcd:      "ALP",
+		Mchntid:   "100000000000021",
+		Chcd:      "WXP",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPayRequest{
 		Busicd:       "INQY",
-		Mchntid:      "100000000000203",
-		Inscd:        "CIL00002",
-		OrigOrderNum: "1438592656543",
+		Mchntid:      "100000000000210",
+		AgentCode:    "CIL00002",
+		OrigOrderNum: "1439884584561",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
 		Busicd:       "REFD",
-		Mchntid:      "100000000000203",
+		Mchntid:      "100000000000210",
 		OrderNum:     util.Millisecond(),
 		OrigOrderNum: "14376349147810",
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 		Txamt:        "000000000002",
 		Chcd:         "WXP",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPayRequest{
 		Busicd:       "VOID",
-		Mchntid:      "100000000000203",
+		Mchntid:      "100000000000210",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1438591850427",
-		Inscd:        "CIL00002",
+		OrigOrderNum: "1439884520799",
+		AgentCode:    "CIL00002",
 	}
 	// 关单
 	scanPayClose = &model.ScanPayRequest{
 		Busicd:       "CANC",
-		Mchntid:      "100000000000203",
+		Mchntid:      "100000000000210",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1438592472784",
-		Inscd:        "CIL00002",
+		OrigOrderNum: "1439886859870",
+		AgentCode:    "CIL00002",
 	}
 	// 企业支付
 	scanPayEnterprise = &model.ScanPayRequest{
 		Busicd:    "QYFK",
 		Mchntid:   "888888888888888",
 		OrderNum:  util.Millisecond(),
-		Inscd:     "10134001",
+		AgentCode: "10134001",
 		Chcd:      "WXP",
 		Txamt:     "000000000100",
 		OpenId:    "omYJss7PyKb02j3Y5pnZLm2IL6F4", //omYJss7PyKb02j3Y5pnZLm2IL6F4
@@ -88,13 +88,13 @@ var (
 		Txamt:        "000000000001",
 		Mchntid:      "100000000000203",
 		OrderNum:     util.Millisecond(),
-		Inscd:        "CIL00002",
+		AgentCode:    "CIL00002",
 		Chcd:         "WXP",
 		Code:         "001fbfbe9b2a351311e4212dd30c6f83",
 		NeedUserInfo: "YES",
 	}
 
-	scanPay = scanPayPublic
+	scanPay = scanPayClose
 )
 
 func TestScanPay(t *testing.T) {

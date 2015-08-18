@@ -72,12 +72,14 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	// 计算费率 四舍五入
 	t.Fee = float32(math.Floor(float64(t.TransAmt)*float64(c.MerFee)+0.5)) / 100
 
+	var subMchId string
 	// 代理商模式
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
 			log.Error("use agentMode but not supply agentMer,please check.")
 			return LogicErrorHandler(t, "SYSTEM_ERROR")
 		}
+		subMchId = c.ChanMerId
 		c = c.AgentMer
 	}
 
@@ -109,6 +111,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
+		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:
@@ -140,12 +143,14 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	// 计算费率 四舍五入
 	t.Fee = float32(math.Floor(float64(t.TransAmt)*float64(c.MerFee)+0.5)) / 100
 
+	var subMchId string
 	// 代理商模式
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
 			log.Error("use agentMode but not supply agentMer,please check.")
 			return LogicErrorHandler(t, "SYSTEM_ERROR")
 		}
+		subMchId = c.ChanMerId
 		c = c.AgentMer
 	}
 
@@ -162,6 +167,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
+		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(c.HttpCert)
 		req.WeixinClientKey = []byte(c.HttpKey)
 	default:

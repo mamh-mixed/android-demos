@@ -89,8 +89,8 @@ func AddMerchantFromOldDB() error {
 			alp.ChanCode = "ALP"
 			acqFee, _ := strconv.ParseFloat(mer.Alp.AcqFee, 32)
 			merFee, _ := strconv.ParseFloat(mer.Alp.MerFee, 32)
-			alp.AcqFee = acqFee
-			alp.MerFee = merFee
+			alp.AcqFee = float32(acqFee)
+			alp.MerFee = float32(merFee)
 			err = mongo.ChanMerColl.Add(alp)
 			if err != nil {
 				return err
@@ -112,13 +112,16 @@ func AddMerchantFromOldDB() error {
 			wxp := &model.ChanMer{}
 			// 非受理商模式
 			wxpMerId := ""
-			if mer.Wxp.SubMchId == "" {
-				if mer.Wxp.MchId != "" {
-					log.Errorf("受理商模式商户，商户ID：%s,受理商ID：%s，应为1236593202", mer.Clientid, mer.Wxp.MchId)
-				}
-				wxpMerId = mer.Wxp.MchId
-			} else {
+			if mer.Wxp.SubMchId != "" {
 				wxpMerId = mer.Wxp.SubMchId
+				a, err := mongo.ChanMerColl.Find("WXP", mer.Wxp.MchId)
+				if err != nil {
+					log.Errorf("受理商模式下，没找到受理商商户，商户ID为：%s", mer.Wxp.MchId)
+				}
+				wxp.AgentMer = a
+				wxp.IsAgentMode = true
+			} else {
+				wxpMerId = mer.Wxp.MchId
 			}
 			// 只保存子渠道商户
 			wxp.SignCert = mer.Wxp.Md5
@@ -126,8 +129,8 @@ func AddMerchantFromOldDB() error {
 			wxp.WxpAppId = mer.Wxp.AppId
 			acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
 			merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
-			wxp.AcqFee = acqFee
-			wxp.MerFee = merFee
+			wxp.AcqFee = float32(acqFee)
+			wxp.MerFee = float32(merFee)
 			wxp.ChanMerId = wxpMerId
 			err = mongo.ChanMerColl.Add(wxp)
 			if err != nil {
@@ -140,12 +143,6 @@ func AddMerchantFromOldDB() error {
 			rwxp.ChanCode = wxp.ChanCode
 			rwxp.CardBrand = wxp.ChanCode
 			rwxp.ChanMerId = wxp.ChanMerId
-
-			// 代理商模式
-			if mer.Wxp.SubMchId != "" {
-				rwxp.IsAgent = true
-				rwxp.SubMerId = mer.Wxp.SubMchId
-			}
 			err = mongo.RouterPolicyColl.Insert(rwxp)
 			if err != nil {
 				return err

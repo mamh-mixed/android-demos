@@ -108,7 +108,7 @@ func TestChanMerAdd(t *testing.T) {
 
 func TestChanMerModify(t *testing.T) {
 
-	c, _ := ChanMerColl.Find("WXP", "1228767002")
+	c, _ := ChanMerColl.Find("WXP", "1247075201")
 	a, _ := ChanMerColl.Find("WXP", "1236593202")
 	c.AgentMer = a
 
