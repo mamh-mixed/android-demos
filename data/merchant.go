@@ -3,12 +3,12 @@ package data
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2"
+	"os"
+	"strconv"
 )
 
 type merchant struct {
@@ -87,8 +87,10 @@ func AddMerchantFromOldDB() error {
 			alp.ChanMerId = mer.Alp.PartnerId
 			alp.SignCert = mer.Alp.Md5
 			alp.ChanCode = "ALP"
-			alp.AcqFee = mer.Alp.AcqFee
-			alp.MerFee = mer.Alp.MerFee
+			acqFee, _ := strconv.ParseFloat(mer.Alp.AcqFee, 32)
+			merFee, _ := strconv.ParseFloat(mer.Alp.MerFee, 32)
+			alp.AcqFee = acqFee
+			alp.MerFee = merFee
 			err = mongo.ChanMerColl.Add(alp)
 			if err != nil {
 				return err
@@ -108,12 +110,25 @@ func AddMerchantFromOldDB() error {
 		if mer.Wxp.MchId != "" {
 			// 导入渠道商户
 			wxp := &model.ChanMer{}
+			// 非受理商模式
+			wxpMerId := ""
+			if mer.Wxp.SubMchId == "" {
+				if mer.Wxp.MchId != "" {
+					log.Errorf("受理商模式商户，商户ID：%s,受理商ID：%s，应为1236593202", mer.Clientid, mer.Wxp.MchId)
+				}
+				wxpMerId = mer.Wxp.MchId
+			} else {
+				wxpMerId = mer.Wxp.SubMchId
+			}
+			// 只保存子渠道商户
 			wxp.SignCert = mer.Wxp.Md5
 			wxp.ChanCode = "WXP"
 			wxp.WxpAppId = mer.Wxp.AppId
-			wxp.AcqFee = mer.Wxp.AcqFee
-			wxp.MerFee = mer.Wxp.MerFee
-			wxp.ChanMerId = mer.Wxp.MchId
+			acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
+			merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
+			wxp.AcqFee = acqFee
+			wxp.MerFee = merFee
+			wxp.ChanMerId = wxpMerId
 			err = mongo.ChanMerColl.Add(wxp)
 			if err != nil {
 				return err
