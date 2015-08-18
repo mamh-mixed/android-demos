@@ -199,18 +199,17 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 		// 交易时间
 		cell = row.AddCell()
 		cell.Value = v.CreateTime
-		// 详情
-		// cell = row.AddCell()
-		// cell.Value = v.ErrorDetail
 
 		// 金额
 		switch v.TransType {
 		case model.PayTrans:
 			if v.ChanCode == channel.ChanCodeAlipay {
 				alpTransAmt += v.TransAmt - v.RefundAmt
+				alpFee += v.Fee
 			}
 			if v.ChanCode == channel.ChanCodeWeixin {
 				wxpTransAmt += v.TransAmt - v.RefundAmt
+				wxpFee += v.Fee
 			}
 		// 退款、撤销、取消
 		default:
@@ -235,6 +234,7 @@ func genReport(merId string, file *xlsx.File, trans []model.Trans) {
 	// 总金额
 	transAmt = wxpTransAmt + alpTransAmt
 	refundAmt = wxpRefundAmt + alpRefundAmt
+	fee = alpFee + wxpFee
 
 	// 写入汇总数据
 	// TODO 手续费计算，在记录交易时计算

@@ -60,13 +60,16 @@ type Summary struct {
 	AgentName     string  `json:"agentName,omitempty"`
 	TotalTransAmt float32 `json:"totalTransAmt"`
 	TotalTransNum int     `json:"totalTransNum"`
+	TotalFee      float32 `json:"-"`
 	Wxp           struct {
 		TransAmt float32 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
+		Fee      float32 `json:"-"`
 	} `json:"wxp"`
 	Alp struct {
 		TransAmt float32 `json:"transAmt"`
 		TransNum int     `json:"transNum"`
+		Fee      float32 `json:"-"`
 	} `json:"alp"`
 	Data []Summary `json:"data"` // 包含每个商户单独数据
 }
@@ -78,6 +81,7 @@ type TransGroup struct {
 	TransNum  int       `bson:"transNum"`
 	Detail    []Channel `bson:"detail"`
 	MerId     string    `bson:"_id"`
+	Fee       int64     `bson:"fee" json:"-"`
 }
 
 type Channel struct {
@@ -85,6 +89,7 @@ type Channel struct {
 	TransAmt  int64  `bson:"transAmt"`
 	RefundAmt int64  `bson:"refundAmt"`
 	TransNum  int    `bson:"transNum"`
+	Fee       int64  `bson:"fee" json:"-"`
 }
 
 // ScanPayRequest 扫码支付

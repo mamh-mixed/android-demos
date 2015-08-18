@@ -112,13 +112,17 @@ func combine(s *model.Summary, detail []model.Channel) {
 		case channel.ChanCodeAlipay:
 			s.Alp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
 			s.Alp.TransNum = d.TransNum
+			s.Alp.Fee = float32(d.Fee) / 100
 			s.TotalTransAmt += s.Alp.TransAmt
 			s.TotalTransNum += s.Alp.TransNum
+			s.TotalFee += s.Alp.Fee
 		case channel.ChanCodeWeixin:
 			s.Wxp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
 			s.Wxp.TransNum = d.TransNum
+			s.Wxp.Fee = float32(d.Fee) / 100
 			s.TotalTransAmt += s.Wxp.TransAmt
 			s.TotalTransNum += s.Wxp.TransNum
+			s.TotalFee += s.Wxp.Fee
 		}
 	}
 }
