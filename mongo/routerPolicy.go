@@ -12,7 +12,7 @@ type routerPolicyCollection struct {
 	name string
 }
 
-var RouterPolicyColl = routerPolicyCollection{"routerPolicy.old"}
+var RouterPolicyColl = routerPolicyCollection{"routerPolicy"}
 
 // Insert 插入一个路由策略到数据库中，如果路由中已经存在一模一样的，就更新
 func (c *routerPolicyCollection) Insert(rp *model.RouterPolicy) error {

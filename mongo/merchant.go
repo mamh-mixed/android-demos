@@ -13,7 +13,7 @@ type merchantCollection struct {
 	name string
 }
 
-var MerchantColl = merchantCollection{"merchant.old"}
+var MerchantColl = merchantCollection{"merchant"}
 
 var merCache = cache.New(model.Cache_Merchant)
 
