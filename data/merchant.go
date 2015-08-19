@@ -97,7 +97,7 @@ func AddHttpCertFromFile(root string) (map[string]merCert, error) {
 		c := merCert{MerId: merId, HttpCert: string(certBytes), HttpKey: string(keyBytes)}
 		certsMap[merId] = c
 	}
-
+	// log.Debug(certsMap)
 	return certsMap, nil
 }
 
@@ -194,6 +194,13 @@ func AddMerchantFromOldDB(path string) error {
 				wxp.IsAgentMode = true
 			} else {
 				wxpMerId = mer.Wxp.MchId
+				// 保存证书
+				if merCert, ok := merCerts[mer.Clientid]; ok {
+					wxp.HttpCert = merCert.HttpCert
+					wxp.HttpKey = merCert.HttpKey
+				} else {
+					log.Errorf("找不到商户：%s, 相应证书。", mer.Clientid)
+				}
 			}
 			// 只保存子渠道商户
 			wxp.SignCert = mer.Wxp.Md5
@@ -204,13 +211,6 @@ func AddMerchantFromOldDB(path string) error {
 			wxp.AcqFee = float32(acqFee)
 			wxp.MerFee = float32(merFee)
 			wxp.ChanMerId = wxpMerId
-			// 保存证书
-			if merCert, ok := merCerts[wxpMerId]; ok {
-				wxp.HttpCert = merCert.HttpCert
-				wxp.HttpKey = merCert.HttpKey
-			} else {
-				log.Errorf("找不到商户：%s, 相应证书。", wxpMerId)
-			}
 
 			err = mongo.ChanMerColl.Add(wxp)
 			if err != nil {
