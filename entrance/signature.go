@@ -41,6 +41,10 @@ func CheckSignature(data []byte, merId, signature string) (result bool, ret *mod
 		return true, nil
 	}
 
+	if signature == "" {
+		return false, nil
+	}
+
 	return CheckSignatureUseSha1(data, m.SignKey, signature), nil
 }
 
