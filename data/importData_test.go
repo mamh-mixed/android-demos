@@ -7,10 +7,11 @@ import (
 	// "github.com/omigo/log"
 )
 
-// 导入原扫码系统商户 包含商户、渠道商户、路由策略
-func TestAddMerFromNodejsDB(t *testing.T) {
+// 导入原扫码系统商户 包含商户、渠道商户、路由策略、证书
+func xTestAddMerFromNodejsDB(t *testing.T) {
 
-	err := AddMerchantFromOldDB()
+	var path = "/Users/zhiruichen/Desktop/pem/"
+	err := AddMerchantFromOldDB(path)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

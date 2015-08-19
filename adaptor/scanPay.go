@@ -70,7 +70,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 	}
 
 	// 计算费率 四舍五入
-	t.Fee = float32(math.Floor(float64(t.TransAmt)*float64(c.MerFee)+0.5)) / 100
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
 
 	var subMchId string
 	// 代理商模式
@@ -141,7 +141,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 	}
 
 	// 计算费率 四舍五入
-	t.Fee = float32(math.Floor(float64(t.TransAmt)*float64(c.MerFee)+0.5)) / 100
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
 
 	var subMchId string
 	// 代理商模式
@@ -210,6 +210,12 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	if err != nil {
 		return LogicErrorHandler(current, "NO_CHANMER")
 	}
+
+	// 重新计算手续费
+	if orig.RefundStatus == model.TransPartRefunded {
+		orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
+	}
+
 	var subMchId string
 	// 代理商模式
 	if c.IsAgentMode {

@@ -16,27 +16,25 @@
 
 * 安装后端依赖
 
-```bash
-go get ./...
-```
+    ```bash
+    go get ./...
+    ```
 
 * 安装前端依赖
 
-```bash
-# 通过 bower 安装前端依赖
-# polymer 0.5 绑定支付
-cd static && bower install && cd ..
-# polymer 1.0 扫码支付
-cd admin && bower install && cd ..
-```
+    ```bash
+    # 通过 bower 安装前端依赖
+    # polymer 1.0 扫码支付
+    cd static && bower install && cd ..
+    ```
 
 
 编译安装
 -------
 
-```bash
-go install github.com/CardInfoLink/quickpay
-```
+    ```bash
+    go install github.com/CardInfoLink/quickpay
+    ```
 
 
 启动
@@ -60,13 +58,10 @@ go install github.com/CardInfoLink/quickpay
     └── pem
         ├── alipay
         │   └── pubkey.pem
-        ├── cfca
-        │   ├── cert_testing.pem
-        │   ├── evCcaCrt_testing.pem
-        │   └── evRootCrt_testing.pem
-        └── weixin
-            ├── apiclient_cert.pem
-            └── apiclient_key.pem
+        └── cfca
+            ├── cert_testing.pem
+            ├── evCcaCrt_testing.pem
+            └── evRootCrt_testing.pem
     ```
 
 3. 在程序的启动目录下创建 logs 目录，用于存放日志文件

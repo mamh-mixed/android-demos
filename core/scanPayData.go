@@ -56,18 +56,23 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		log.Errorf("find merchant error: %s", err)
 		return errResult
 	}
+
 	var merIds []string
 	m := make(map[string]*model.Merchant)
+	// 暂存商户信息
 	for _, mer := range mers {
 		merIds = append(merIds, mer.MerId)
 		m[mer.MerId] = mer
 	}
 
+	// 设置条件过滤
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
+	q.RefundStatus = model.TransRefunded
 	q.MerIds = merIds
 	q.StartTime += " 00:00:00"
 	q.EndTime += " 23:59:59"
+
 	// 查询交易
 	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {
@@ -75,6 +80,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		return errResult
 	}
 	var data = make([]model.Summary, 0)
+
 	// 将数据合并
 	for _, d := range group {
 		if mer, ok := m[d.MerId]; ok {
@@ -93,6 +99,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	summary := model.Summary{Data: data}
 	combine(&summary, all)
 
+	// 组装返回报文
 	count := len(data)
 	ret = &model.QueryResult{
 		Page:  q.Page,
@@ -112,13 +119,17 @@ func combine(s *model.Summary, detail []model.Channel) {
 		case channel.ChanCodeAlipay:
 			s.Alp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
 			s.Alp.TransNum = d.TransNum
+			s.Alp.Fee = float32(d.Fee) / 100
 			s.TotalTransAmt += s.Alp.TransAmt
 			s.TotalTransNum += s.Alp.TransNum
+			s.TotalFee += s.Alp.Fee
 		case channel.ChanCodeWeixin:
 			s.Wxp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
 			s.Wxp.TransNum = d.TransNum
+			s.Wxp.Fee = float32(d.Fee) / 100
 			s.TotalTransAmt += s.Wxp.TransAmt
 			s.TotalTransNum += s.Wxp.TransNum
+			s.TotalFee += s.Wxp.Fee
 		}
 	}
 }
