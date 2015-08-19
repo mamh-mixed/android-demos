@@ -63,6 +63,17 @@ var (
 // -----END RSA PRIVATE KEY-----`
 )
 
+func TestFuzzyFindChanMer(t *testing.T) {
+	chanCode, chanMerId, chanMerName := "", "wx", ""
+	maxSize := 10
+	results, err := ChanMerColl.FuzzyFind(chanCode, chanMerId, chanMerName, maxSize)
+	if err != nil {
+		t.Errorf("fail: %s", err)
+	}
+
+	t.Logf("the length of the results is %d; result is %#v", len(results), results)
+}
+
 func TestPaginationFindChanMer(t *testing.T) {
 	chanCode, chanMerId, chanMerName := "", "", ""
 	size, page := 10, 1
