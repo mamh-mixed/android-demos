@@ -26,7 +26,6 @@ func main() {
 	pay.Initialize()
 
 	http.Handle("/", http.FileServer(http.Dir("static/app")))
-	http.Handle("/admin/", http.StripPrefix("/admin/", http.FileServer(http.Dir("admin"))))
 	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
 	http.HandleFunc("/scanpay/", entrance.Scanpay)
