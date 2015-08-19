@@ -155,8 +155,8 @@
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-checkbox id="isAngentCheck" checked$="{{weixin.isAgent}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
-          <paper-input label="大商户号" value="{{weixin.subMerId::input}}" disabled$="{{!weixin.isAgent}}"></paper-input>
+          <paper-checkbox id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
+          <paper-input label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="讯联跟渠道费率" value="{{weixin.acqFee::input}}"></paper-input>
@@ -191,10 +191,10 @@
     <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
     <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
+
     <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
     <iron-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></iron-ajax>
     <iron-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></iron-ajax>
-    <iron-ajax id="wxpRouterAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleWxpRouterResponse"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -239,6 +239,10 @@
             }, {
               key: 'QYFK',
               value: '企业付款',
+              isChecked: false
+            }, {
+              key: 'JSZF',
+              value: '公众号支付',
               isChecked: false
             }, {
               key: 'INQY',
@@ -314,9 +318,11 @@
               }
             }
           } else {
+            // 如果商户权限未定义的话，设置未空数组，防止保存的时候权限信息没有传到后台
             this.set('merchant.permission', []);
           }
 
+          // 显示商户的状态
           for (var k in this.merStatusMap) {
             var merStatusItem = this.merStatusMap[k];
             if (item.merStatus === merStatusItem.key) {
@@ -334,7 +340,6 @@
           }
 
           this.set('alipay', response.data);
-          this.set('alipay.chanCode', 'ALP');
         },
         // 编辑的时候查询微信路由渠道商户请求的响应事件
         handleWxpChanMerResponse: function(e) {
@@ -348,31 +353,8 @@
 
           this.set('weixin', response.data);
           this.set('weixin.chanCode', 'WXP');
-
-          // 加载微信路由信息
-          var params = {
-            merId: this.merId,
-            cardBrand: 'WXP'
-          };
-          this.$.wxpRouterAjax.params = params;
-          this.$.wxpRouterAjax.generateRequest();
-        },
-        // 编辑的时候查询微信路由请求的响应事件
-        handleWxpRouterResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0 || !response.data) {
-            Util.toast('查询微信路由信息失败', 3000);
-            return;
-          }
-
-          this.set('weixin.isAgent', response.data.isAgent);
-          if (this.weixin.isAgent) {
-            // 代理商模式
-            var temp = this.weixin.chanMerId;
-            this.set('weixin.chanMerId', response.data.subMerId);
-            this.set('weixin.subMerId', temp);
-          } else {
-            this.set('weixin.subMerId', response.data.subMerId);
+          if (!this.weixin.agentMer) {
+            this.set('weixin.agentMer', {});
           }
         },
         ready: function() {
@@ -406,8 +388,8 @@
           };
           this.weixin = {
             chanCode: 'WXP',
-            isAgent: true,
-            subMerId: '1236593202',
+            isAgentMode: true,
+            agentMer: {},
             chanMerId: '',
             chanMerName: '',
             acqFee: '',
@@ -435,37 +417,49 @@
         },
         // 保存支付宝信息的按钮事件
         handleSaveALPTapped: function() {
+          var acqFee = parseFloat(this.alipay.acqFee),
+            merFee = parseFloat(this.alipay.merFee);
+          if (isNaN(acqFee) || isNaN(merFee)) {
+            Util.toast('支付宝渠道的费率必须是数字', 3000);
+            return;
+          }
+          this.set('alipay.acqFee', acqFee);
+          this.set('alipay.merFee', merFee);
+          this.set('alipay.chanCode', 'ALP');
           this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
           this.$.saveChannelMerchantAjax.generateRequest();
 
+          // 支付宝路由信息
           var obj = {
             merId: this.merchant.merId,
             cardBrand: 'ALP',
             chanCode: this.alipay.chanCode,
             chanMerId: this.alipay.chanMerId
           };
-
           this.$.saveRouterAjax.body = JSON.stringify(obj);
           this.$.saveRouterAjax.generateRequest();
         },
         // 保存微信信息的按钮事件
         handleSaveWXPTapped: function() {
+          var acqFee = parseFloat(this.weixin.acqFee),
+            merFee = parseFloat(this.weixin.merFee);
+          if (isNaN(acqFee) || isNaN(merFee)) {
+            Util.toast('支付宝渠道的费率必须是数字', 3000);
+            return;
+          }
+          this.set('weixin.acqFee', acqFee);
+          this.set('weixin.merFee', merFee);
+          this.set('weixin.chanCode', 'WXP');
+          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
+          this.$.saveChannelMerchantAjax.generateRequest();
+
+          // 微信路由信息
           var router = {
             merId: this.merchant.merId,
             cardBrand: 'WXP',
             chanCode: this.weixin.chanCode,
             chanMerId: this.weixin.chanMerId
           };
-
-          // 如果是代理上模式，交换 chanMerId 和
-          if (this.weixin.isAgent) {
-            router.isAgent = this.weixin.isAgent;
-            router.subMerId = this.weixin.merId;
-            router.chanMerId = this.weixin.subMerId;
-          }
-          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
-          this.$.saveChannelMerchantAjax.generateRequest();
-
           this.$.saveRouterAjax.body = JSON.stringify(router);
           this.$.saveRouterAjax.generateRequest();
         },
@@ -491,10 +485,7 @@
         },
         // 是否代理商模式的改变事件
         handleIsAgentChangeEvent: function() {
-          this.set('weixin.isAgent', this.$.isAngentCheck.checked);
-          //   if (!this.weixin.isAgent) {
-          //     this.set('weixin.subMerId', '');
-          //   }
+          this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
         },
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function() {
