@@ -51,37 +51,13 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	var ret *model.BindingReturn
 
 	result, ret := CheckSignature(data, merId, sign)
-	if ret == nil && !result {
-		log.Errorf("check sign error %s", err)
+	if ret != nil { // 商户不存在等错误
+		log.Errorf("merchant error: merId=%s, err=(%s)%s", merId, ret.RespCode, ret.RespMsg)
+	} else if !result { // 签名错误
+		log.Errorf("check sign error: data=%s, merId=%s, sign=%s", string(data), merId, sign)
 		ret = mongo.RespCodeColl.Get("200010")
-	}
-
-	// 验签通过，执行业务逻辑
-	if result {
-		switch r.URL.Path {
-		case "/quickpay/bindingCreate":
-			ret = bindingpay.BindingCreateHandle(data, merId)
-		case "/quickpay/bindingRemove":
-			ret = bindingpay.BindingRemoveHandle(data, merId)
-		case "/quickpay/bindingEnquiry":
-			ret = bindingpay.BindingEnquiryHandle(data, merId)
-		case "/quickpay/bindingPayment":
-			ret = bindingpay.BindingPaymentHandle(data, merId)
-		case "/quickpay/refund":
-			ret = bindingpay.BindingRefundHandle(data, merId)
-		case "/quickpay/orderEnquiry":
-			ret = bindingpay.OrderEnquiryHandle(data, merId)
-		case "/quickpay/billingDetails":
-			ret = bindingpay.BillingDetailsHandle(data, merId)
-		case "/quickpay/billingSummary":
-			ret = bindingpay.BillingSummaryHandle(data, merId)
-		case "/quickpay/noTrackPayment":
-			ret = bindingpay.NoTrackPaymentHandle(data, merId)
-		case "/quickpay/applePay":
-			ret = applepay.ApplePayHandle(data, merId)
-		default:
-			w.WriteHeader(404)
-		}
+	} else {
+		ret = route(r.URL.Path, data, merId, w)
 	}
 
 	rdata, err := json.Marshal(ret)
@@ -95,6 +71,34 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("to merchant message: %s", rdata)
 	w.Write(rdata)
+}
+
+func route(uri string, data []byte, merId string, w http.ResponseWriter) (ret *model.BindingReturn) {
+	switch uri {
+	case "/quickpay/bindingCreate":
+		ret = bindingpay.BindingCreateHandle(data, merId)
+	case "/quickpay/bindingRemove":
+		ret = bindingpay.BindingRemoveHandle(data, merId)
+	case "/quickpay/bindingEnquiry":
+		ret = bindingpay.BindingEnquiryHandle(data, merId)
+	case "/quickpay/bindingPayment":
+		ret = bindingpay.BindingPaymentHandle(data, merId)
+	case "/quickpay/refund":
+		ret = bindingpay.BindingRefundHandle(data, merId)
+	case "/quickpay/orderEnquiry":
+		ret = bindingpay.OrderEnquiryHandle(data, merId)
+	case "/quickpay/billingDetails":
+		ret = bindingpay.BillingDetailsHandle(data, merId)
+	case "/quickpay/billingSummary":
+		ret = bindingpay.BillingSummaryHandle(data, merId)
+	case "/quickpay/noTrackPayment":
+		ret = bindingpay.NoTrackPaymentHandle(data, merId)
+	case "/quickpay/applePay":
+		ret = applepay.ApplePayHandle(data, merId)
+	default:
+		w.WriteHeader(404)
+	}
+	return ret
 }
 
 func prepareData(r *http.Request) (merId, sign string, data []byte, status int, err error) {
