@@ -19,7 +19,7 @@ type transCollection struct {
 var TransColl = transCollection{"trans"}
 
 // SpTransColl 扫码交易 Collection
-var SpTransColl = transCollection{"trans.sp.old"}
+var SpTransColl = transCollection{"trans.sp"}
 
 // Add 添加一笔交易
 func (col *transCollection) Add(t *model.Trans) error {
