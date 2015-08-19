@@ -1,15 +1,11 @@
 package cfca
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -18,33 +14,34 @@ import (
 
 var requestURL = goconf.Config.CFCA.URL
 
-var cli *http.Client
-
-// 初始化中金 HTTPS 客户端
-func init() {
-	ccaCertFile := goconf.Config.CFCA.CCACert
-	cfcaEvCcaCrt, err := ioutil.ReadFile(ccaCertFile)
-
-	rootCert := goconf.Config.CFCA.RootCert
-	cfcaEvRootCrt, err := ioutil.ReadFile(rootCert)
-	if err != nil {
-		fmt.Printf("read cfca ev_root_cert error: %s", err)
-		os.Exit(3)
-	}
-
-	certs := x509.NewCertPool()
-	certs.AppendCertsFromPEM(cfcaEvCcaCrt)
-	certs.AppendCertsFromPEM(cfcaEvRootCrt)
-
-	// 发送请求
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			RootCAs: certs,
-			// InsecureSkipVerify: true, // only for testing
-		},
-	}
-	cli = &http.Client{Transport: tr}
-}
+//
+// var cli *http.Client
+//
+// // 初始化中金 HTTPS 客户端
+// func init() {
+// 	ccaCertFile := goconf.Config.CFCA.CCACert
+// 	cfcaEvCcaCrt, err := ioutil.ReadFile(ccaCertFile)
+//
+// 	rootCert := goconf.Config.CFCA.RootCert
+// 	cfcaEvRootCrt, err := ioutil.ReadFile(rootCert)
+// 	if err != nil {
+// 		fmt.Printf("read cfca ev_root_cert error: %s", err)
+// 		os.Exit(3)
+// 	}
+//
+// 	certs := x509.NewCertPool()
+// 	certs.AppendCertsFromPEM(cfcaEvCcaCrt)
+// 	certs.AppendCertsFromPEM(cfcaEvRootCrt)
+//
+// 	// 发送请求
+// 	tr := &http.Transport{
+// 		TLSClientConfig: &tls.Config{
+// 			RootCAs: certs,
+// 			// InsecureSkipVerify: true, // only for testing
+// 		},
+// 	}
+// 	cli = &http.Client{Transport: tr}
+// }
 
 // sendRequest 对中金接口访问的统一处理
 func sendRequest(req *BindingRequest) *BindingResponse {
@@ -87,7 +84,8 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 }
 
 func send(v *url.Values) (body []byte) {
-	resp, err := cli.PostForm(requestURL, *v)
+	// resp, err := cli.PostForm(requestURL, *v) // 双向认证
+	resp, err := http.PostForm(requestURL, *v)
 	if err != nil {
 		log.Errorf("unable to connect Cfca gratway %s", err)
 		return nil
@@ -117,14 +115,15 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	log.Debugf("received: %s", rxmlBytes)
 
 	// 返回消息验签失败的可能性极小，所以异步验签，提高效率
-	go func() {
-		rhexSign := strings.TrimSpace(result[1])
-		log.Tracef("signed: %s", rhexSign)
-		err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
-		if err != nil {
-			log.Errorf("check sign failed，xml=%s, sign=%s: %s", string(rxmlBytes), rhexSign, err)
-		}
-	}()
+	// go func() {
+	rhexSign := strings.TrimSpace(result[1])
+	log.Tracef("signed: %s", rhexSign)
+	err = checkSignatureUseSha1WithRsa(rxmlBytes, rhexSign)
+	if err != nil {
+		log.Errorf("check sign failed，xml=%s, sign=%s: %s", string(rxmlBytes), rhexSign, err)
+		return nil
+	}
+	// }()
 
 	// 解编 xml
 	resp = new(BindingResponse)

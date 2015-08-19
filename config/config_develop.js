@@ -29,7 +29,7 @@
         "Cert": "config/pem/cfca/cert_testing.pem", // CFCA  验签公钥
         "CCACert": "config/pem/cfca/evCcaCrt_testing.pem", // HTTPS 证书
         "RootCert": "config/pem/cfca/evRootCrt_testing.pem", // CFCA 根证书
-        "URL": "https://test.china-clearing.com/Gateway/InterfaceII" // API 地址
+        "URL": "https://test.cpcn.com.cn/Gateway/InterfaceII" // API 地址
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
