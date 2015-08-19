@@ -66,6 +66,8 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
 	q.MerIds = merIds
+	q.StartTime += " 00:00:00"
+	q.EndTime += " 23:59:59"
 	// 查询交易
 	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {

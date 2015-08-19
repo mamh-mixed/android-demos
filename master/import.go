@@ -265,8 +265,8 @@ func (i *importer) doDataMapping() {
 		wxpRoute.ChanCode = wxpRoute.CardBrand
 		wxpRoute.MerId = r.MerId
 		wxpRoute.ChanMerId = r.WxpMerId
-		wxpRoute.IsAgent = r.IsAgent
-		wxpRoute.SubMerId = r.WxpSubMerId
+		// wxpRoute.IsAgent = r.IsAgent
+		// wxpRoute.SubMerId = r.WxpSubMerId
 		i.RouterPolicys = append(i.RouterPolicys, alpRoute, wxpRoute)
 	}
 }
