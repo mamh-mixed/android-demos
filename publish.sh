@@ -19,10 +19,8 @@ function main() {
     gulp
     cd ..
     cp -r static/dist/ distrib/static/app/
-    cd admin && bower install && cd ..
-    cp -r admin distrib/
 
-    #host="webapp@dev.ipay.so"
+    # host="webapp@dev.ipay.so"
     host="webapp@test.ipay.so"
 
     # host="quick@app1.set.shou.money"
