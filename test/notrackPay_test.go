@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/util"
+	"github.com/CardInfoLink/quickpay/security"
+	// "github.com/CardInfoLink/quickpay/util"
 )
 
 func xTestNoTrackPaymentHandle(t *testing.T) {
@@ -29,7 +30,7 @@ func xTestNoTrackPaymentHandle(t *testing.T) {
 		Cvv2:        testMSCCVV2,
 	}
 
-	var aes = util.NewAESCBCEncrypt(testEncryptKey)
+	var aes = security.NewAESCBCEncrypt(testEncryptKey)
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)

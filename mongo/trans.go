@@ -19,7 +19,7 @@ type transCollection struct {
 var TransColl = transCollection{"trans"}
 
 // SpTransColl 扫码交易 Collection
-var SpTransColl = transCollection{"trans.sp"}
+var SpTransColl = transCollection{"trans.sp.old"}
 
 // Add 添加一笔交易
 func (col *transCollection) Add(t *model.Trans) error {
@@ -31,9 +31,18 @@ func (col *transCollection) Add(t *model.Trans) error {
 	}
 	err := database.C(col.name).Insert(t)
 	if err != nil {
-		log.Error("add trans(%+v) fail: %s", t, err)
+		log.Errorf("add trans(%+v) fail: %s", t, err)
 	}
 	return err
+}
+
+// BatchAdd 批量添加
+func (col *transCollection) BatchAdd(ts []*model.Trans) error {
+	var temp []interface{}
+	for _, t := range ts {
+		temp = append(temp, t)
+	}
+	return database.C(col.name).Insert(temp...)
 }
 
 // Update 通过Add时生成的Id来修改

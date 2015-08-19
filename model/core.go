@@ -14,8 +14,9 @@ const (
 	PayTrans    = 1 // 支付交易
 	RefundTrans = 2 // 退款交易
 	// ... 预授权
-	CancelTrans = 4 // 撤销交易
-	CloseTrans  = 5 // 关单
+	CancelTrans     = 4 // 撤销交易
+	CloseTrans      = 5 // 关单
+	EnterpriseTrans = 6 // 企业付款
 
 	// settStatus
 	SettSuccess    = 1 // 勾兑成功
@@ -238,6 +239,10 @@ type Trans struct {
 	GatheringName   string `bson:"gatheringName,omitempty" json:"-"`                           // 收款人
 	NotifyUrl       string `bson:"notifyUrl,omitempty" json:"-"`                               // 异步通知地址
 	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                // 交易凭证
+	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
+
+	// 批导辅助字段
+	MerFee float64 `bson:"-" json:"-"` // 计算手续费字段 用于批导，待结束可删除
 }
 
 // SummarySettData 交易汇总
