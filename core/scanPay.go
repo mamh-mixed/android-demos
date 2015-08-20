@@ -307,11 +307,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(refund, "TRADE_REFUNDED")
 	// 部分退款
 	case model.TransPartRefunded:
-		refunded, err := mongo.SpTransColl.FindTransRefundAmt(req.Mchntid, req.OrigOrderNum)
-		if err != nil {
-			return adaptor.LogicErrorHandler(refund, "SYSTEM_ERROR")
-		}
-		refundAmt += refunded
+		refundAmt += orig.RefundAmt
 		fallthrough
 	default:
 		// 金额过大

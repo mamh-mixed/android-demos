@@ -103,19 +103,38 @@ func AddHttpCertFromFile(root string) (map[string]merCert, error) {
 
 // AddMerchantFromOldDB 导入商户
 func AddMerchantFromOldDB(path string) error {
+	// 从某个目录获取证书信息
 	merCerts, err := AddHttpCertFromFile(path)
 	if err != nil {
 		return err
 	}
+
+	// 建立连接
 	connect()
+
+	// 获取老系统代理信息
 	agents, err := readAgentFromOldDB()
 	if err != nil {
 		return err
 	}
+
+	// 更新新系统代理信息
+	aRec := 0
 	agentMap := make(map[string]string)
 	for _, agent := range agents {
 		agentMap[agent.AgentCode] = agent.AgentName
+		a := &model.Agent{AgentCode: agent.AgentCode, AgentName: agent.AgentName}
+		err = mongo.AgentColl.Upsert(a)
+		if err == nil {
+			aRec++
+		}
 	}
+	log.Infof("在旧系统查找到 %d 条代理信息，成功插入新系统 %d 条。", len(agents), aRec)
+
+	// 集团信息
+	groupMap := make(map[string]*model.Group)
+
+	// 读取商户
 	mers, err := readMerFromOldDB()
 	if err != nil {
 		return err
@@ -138,12 +157,24 @@ func AddMerchantFromOldDB(path string) error {
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
 		m.Remark = "old_system_data"
 		m.SignKey = mer.SignKey
-		// 集团
-		m.GroupCode = mer.Group.GroupCode
-		m.GroupName = mer.Group.GroupName
 		// 代理代码
 		m.AgentCode = mer.AgentCode
 		m.AgentName = agentMap[m.AgentCode]
+
+		// 集团
+		m.GroupCode = mer.Group.GroupCode
+		m.GroupName = mer.Group.GroupName
+		if m.GroupCode != "" {
+			if _, ok := groupMap[m.GroupCode]; !ok {
+				// 没有则存放
+				groupMap[m.GroupCode] = &model.Group{
+					GroupCode: m.GroupCode,
+					GroupName: m.GroupName,
+					AgentCode: m.AgentCode,
+					AgentName: m.AgentName,
+				}
+			}
+		}
 
 		if m.SignKey != "" {
 			m.IsNeedSign = true
@@ -230,7 +261,16 @@ func AddMerchantFromOldDB(path string) error {
 		}
 	}
 
-	log.Debugf("success add %d records", count)
+	gRec := 0
+	for _, g := range groupMap {
+		err = mongo.GroupColl.Upsert(g)
+		if err == nil {
+			gRec++
+		}
+	}
+	log.Infof("在旧系统查找到 %d 条集团信息，成功插入新系统 %d 条。", len(groupMap), gRec)
+	log.Infof("在旧系统查找到 %d 条商户信息，成功插入新系统 %d 条。", len(mers), count)
+
 	return nil
 }
 

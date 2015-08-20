@@ -17,9 +17,11 @@ func TestAddTransFromNodejsDB(t *testing.T) {
 }
 
 // 导入原扫码系统商户 包含商户、渠道商户、路由策略、证书
-func xTestAddMerFromNodejsDB(t *testing.T) {
+func TestAddMerFromNodejsDB(t *testing.T) {
 
-	var path = "/Users/zhiruichen/Desktop/pem/"
+	// 不重写url就是导入测试环境的
+	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+	var path = "/Users/zhiruichen/Desktop/test_pem/"
 	err := AddMerchantFromOldDB(path)
 	if err != nil {
 		t.Error(err)

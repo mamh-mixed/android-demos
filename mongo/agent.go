@@ -37,12 +37,21 @@ func (col *agentCollection) Add(a *model.Agent) error {
 	return err
 }
 
-// Modify 更新代理商信息
+// Update 更新代理商信息
 func (col *agentCollection) Update(a *model.Agent) error {
 	bo := bson.M{
 		"agentCode": a.AgentCode,
 	}
 	return database.C(col.name).Update(bo, a)
+}
+
+// Upsert 有则修改，没有则插入
+func (col *agentCollection) Upsert(a *model.Agent) error {
+	bo := bson.M{
+		"agentCode": a.AgentCode,
+	}
+	_, err := database.C(col.name).Upsert(bo, a)
+	return err
 }
 
 // FindByCode 得到某个代理商的名称
