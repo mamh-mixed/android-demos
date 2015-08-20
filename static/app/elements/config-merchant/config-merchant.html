@@ -419,12 +419,12 @@
         // 查询渠道商户的响应事件，这里是查找大商户
         handleFindChanMerResponse: function(e) {
           var response = e.detail.response;
-          if (response.status != 0) {
+          if (response.status !== 0) {
             return;
           }
 
           var pagination = response.data;
-          if (!pagination.data || pagination.data.length == 0) {
+          if (!pagination.data || pagination.data.length === 0) {
             return;
           }
           this.set('bigMerchant', pagination.data[0]);
