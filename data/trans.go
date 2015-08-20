@@ -7,6 +7,7 @@ import (
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 	"math"
+	"net/http"
 	"strconv"
 )
 
@@ -16,82 +17,30 @@ var (
 	CloseCode, CloseMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
 )
 
-// {
-//     "_id" : ObjectId("55d3d89fcfa871957f82f4dd"),
-//     "gw_date" : "2015-08-19",
-//     "gw_time" : "09:15:11",
-//     "system_date" : "20150819091511",
-//     "current_time" : 1.439946911748E12,
-//     "m_request" : {
-//         "busicd" : "PAUT",
-//         "txndir" : "Q",
-//         "inscd" : "90711888",
-//         "chcd" : "ALP",
-//         "mchntid" : "907118885840003",
-//         "terminalid" : "90710004",
-//         "txamt" : "000000000001",
-//         "orderNum" : "231091115456"
-//     },
-//     "merchant" : {
-//         "_id" : ObjectId("55bb08a82309f012f8b00a6e"),
-//         "clientid" : "907118885840003",
-//         "commodityName" : "上海讯联测试商",
-//         "WXP" : {
-//             "md5" : "42Ugz8i5OAI44MDJqjfXyX7juIGzP4Es",
-//             "mch_id" : "10013970",
-//             "appid" : "wx8c2e6e8f0f46d469",
-//             "acqfee" : "0.02",
-//             "merfee" : "0.03",
-//             "fee" : "0.01"
-//         },
-//         "ALP" : {
-//             "partnerId" : "2088811767473826",
-//             "md5" : "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-//             "acqfee" : "0.02",
-//             "merfee" : "0.03",
-//             "fee" : "0.03"
-//         },
-//         "clientidName" : "test",
-//         "inscd" : "10134001",
-//         "signRule" : "0",
-//         "merchantMd5" : "",
-//         "insMd5" : "",
-//         "signType" : "sha1"
-//     },
-//     "front_response_to_g" : "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<alipay><is_success>T</is_success><request><param name=\"subject\">上海讯联测试商</param><param name=\"sign_type\">MD5</param><param name=\"notify_url\">http://211.147.72.70:10003/back?schema=ALP-907118885840003231091115456</param><param name=\"out_trade_no\">231091115456</param><param name=\"currency\">156</param><param name=\"sign\">e128a62b2856c36f65a6f145dba0f607</param><param name=\"_input_charset\">utf-8</param><param name=\"it_b_pay\">20m</param><param name=\"product_code\">QR_CODE_OFFLINE</param><param name=\"total_fee\">0.01</param><param name=\"service\">alipay.acquire.precreate</param><param name=\"seller_id\">2088811767473826</param><param name=\"partner\">2088811767473826</param></request><response><alipay><big_pic_url>https://mobilecodec.alipay.com/show.htm?code=bal9or45m1vwrug092&amp;d&amp;picSize=L</big_pic_url><out_trade_no>231091115456</out_trade_no><pic_url>https://mobilecodec.alipay.com/show.htm?code=bal9or45m1vwrug092&amp;d&amp;picSize=M</pic_url><qr_code>https://qr.alipay.com/bal9or45m1vwrug092</qr_code><result_code>SUCCESS</result_code><small_pic_url>https://mobilecodec.alipay.com/show.htm?code=bal9or45m1vwrug092&amp;d&amp;picSize=S</small_pic_url><voucher_type>qrcode</voucher_type></alipay></response><sign>2ec3bb7b9524eed7fb0732912666529f</sign><sign_type>MD5</sign_type></alipay>",
-//     "resposeDetail" : "ORDER_SUCCESS_PAY_INPROCESS",
-//     "response" : "00",
-//     "channelOrderNum" : "2015081921001004970078059703",
-//     "qrcode" : "https://qr.alipay.com/bal9or45m1vwrug092",
-//     "chcdDiscount" : "0.00",
-//     "merDiscount" : "0.00",
-//     "back_response_to_g" : {
-//         "schema" : "ALP-907118885840003231091115456",
-//         "subject" : "上海讯联测试商",
-//         "trade_no" : "2015081921001004970078059703",
-//         "paytools_pay_amount" : "[{\"ALIPAYACCOUNT\":\"0.01\"}]",
-//         "buyer_email" : "15071440565@163.com",
-//         "gmt_create" : "2015-08-19 09:15:59",
-//         "notify_type" : "trade_status_sync",
-//         "quantity" : "1",
-//         "out_trade_no" : "231091115456",
-//         "notify_time" : "2015-08-19 09:16:05",
-//         "seller_id" : "2088811767473826",
-//         "trade_status" : "TRADE_SUCCESS",
-//         "total_fee" : "0.01",
-//         "gmt_payment" : "2015-08-19 09:16:05",
-//         "seller_email" : "andy.li@cardinfolink.com",
-//         "price" : "0.01",
-//         "buyer_id" : "2088702949897971",
-//         "notify_id" : "d294a517c778130dc662adc5b693dc7nhg",
-//         "sign_type" : "MD5",
-//         "sign" : "eb9175c85596598838f828cfafa81310"
-//     },
-//     "notify_action_type" : null,
-//     "consumerAccount" : "15071440565@163.com",
-//     "consumerId" : "2088702949897971",
-//     "status" : "1"
-// }
+const (
+	crypto = "cilxl123$"
+)
+
+func init() {
+	connect()
+}
+
+func ImportOldTrans(w http.ResponseWriter, r *http.Request) {
+	key := r.FormValue("key")
+	if crypto != key {
+		return
+	}
+
+	st := r.FormValue("st")
+	et := r.FormValue("et")
+
+	go func() {
+		err := AddTransFromOldDB(st, et)
+		log.Error(err)
+	}()
+
+	w.Write([]byte("已开始导入交易，请查看后台日志"))
+}
 
 // txn 交易表数据
 type txn struct {
@@ -134,16 +83,19 @@ type txn struct {
 	Status          string `bson:"status"`
 }
 
-func AddTransFromOldDB() error {
-	connect()
-
+func AddTransFromOldDB(st, et string) error {
 	// TODO 判断新系统是否包含该天的数据，如果包含，那么报错，避免数据紊乱
 
-	txns, err := readTransFromOldDB("2015-08-18", "2015-08-19")
+	txns, err := readTransFromOldDB(st, et)
 	if err != nil {
 		return err
 	}
-	log.Debugf("%+v", txns[0])
+
+	if len(txns) == 0 {
+		log.Warn("没有找到符合条件数据。。")
+		return nil
+	}
+	log.Debugf("从老系统取出 %d 条符合条件交易数据，正在逻辑处理。。。", len(txns))
 
 	// 存放退款、撤销、取消的交易
 	var reversalTrans []*model.Trans
@@ -190,6 +142,7 @@ func AddTransFromOldDB() error {
 			tran.ErrorDetail = inprocess.ISO8583Msg
 			tran.TransStatus = model.TransHandling
 		default:
+			// 用原来的应答码，失败的应答码没什么意义
 			tran.TransStatus = model.TransFail
 		}
 

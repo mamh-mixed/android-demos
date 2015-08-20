@@ -143,7 +143,8 @@ type MerDetail struct {
 	ShopType      string `bson:"shopType,omitempty" json:"shopType,omitempty"`           // 门店类型
 	BrandNum      string `bson:"brandNum,omitempty" json:"brandNum,omitempty"`           // 品牌编号
 	BankId        string `bson:"bankId,omitempty" json:"bankId,omitempty"`               // 行号
-	BankName      string `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 开户银行名称
+	OpenBankName  string `bson:"openBankName,omitempty" json:"openBankName,omitempty"`   // 开户银行名称
+	BankName      string `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 银行名称
 }
 
 // ChanMer 渠道商户

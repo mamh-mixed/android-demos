@@ -95,7 +95,7 @@ func TestBindingCreate(t *testing.T) {
 	b := model.BindingCreate{
 		MerId:     testMerId,
 		BindingId: bindingId,
-		AcctName:  "测试账号",
+		AcctName:  "张三",
 		AcctNum:   "6222022003008481261",
 		IdentType: "0",
 		IdentNum:  "440583199111031012",
