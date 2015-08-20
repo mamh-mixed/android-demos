@@ -107,7 +107,7 @@ func (col *chanMerCollection) FindByCondition(cond *model.ChanMer) (results []mo
 
 // PaginationFind 分页查找渠道商户的信息
 func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName string, size, page int) (results []model.ChanMer, total int, err error) {
-	results = make([]model.ChanMer, 1)
+	results = make([]model.ChanMer, 0)
 
 	match := bson.M{}
 	if chanCode != "" {
@@ -139,4 +139,41 @@ func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName st
 	err = database.C(col.name).Pipe(cond).All(&results)
 
 	return results, total, err
+}
+
+// FuzzyFind 模糊查找
+func (col *chanMerCollection) FuzzyFind(chanCode, chanMerId, chanMerName string, maxSize int) (results []model.ChanMer, err error) {
+	results = make([]model.ChanMer, 0)
+
+	q := bson.M{}
+
+	if chanCode != "" {
+		cc := []bson.M{}
+		cc = append(cc, bson.M{"chanCode": bson.RegEx{chanCode, "i."}})
+		q["$and"] = cc
+	}
+
+	if chanMerId != "" {
+		cmi := []bson.M{}
+		cmi = append(cmi, bson.M{"chanMerId": bson.RegEx{chanMerId, "i."}})
+		q["$and"] = cmi
+	}
+
+	if chanMerName != "" {
+		cmn := []bson.M{}
+		cmn = append(cmn, bson.M{"chanMerName": bson.RegEx{chanMerName, "i."}})
+		q["$and"] = cmn
+	}
+
+	err = database.C(col.name).Find(q).Sort("chanMerId", "chanCode").All(&results)
+	if err != nil {
+		log.Errorf("fuzzy find channel merchant error: %s", err)
+		return nil, err
+	}
+
+	if len(results) > maxSize {
+		return results[:maxSize], err
+	}
+
+	return results, err
 }
