@@ -38,8 +38,8 @@ function main() {
     fi
 
     host=${hosts[$idx]}
-    echo "You selected host: $input => $host"
-    read -t 30 -p "Press any key to continue. "
+    echo -e "You selected host:\033[1;31m $input => $host \033[0m"
+    read -t 30 -p "Press any key to continue..."
     echo
 
     # Golang 跨平台编译
