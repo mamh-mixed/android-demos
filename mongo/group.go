@@ -45,6 +45,15 @@ func (col *groupCollection) Update(g *model.Group) error {
 	return database.C(col.name).Update(bo, g)
 }
 
+// Upsert 有则更新无则插入
+func (col *groupCollection) Upsert(g *model.Group) error {
+	bo := bson.M{
+		"groupCode": g.GroupCode,
+	}
+	_, err := database.C(col.name).Upsert(bo, g)
+	return err
+}
+
 // FindByCode 得到某个集团的名称
 func (col *groupCollection) FindByCode(groupCode string) ([]*model.Group, error) {
 	var cs []*model.Group
