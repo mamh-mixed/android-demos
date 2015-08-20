@@ -91,11 +91,6 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素chanMerId")
 	}
 
-	if c.ChanMerName == "" {
-		log.Error("没有chanMerName")
-		return model.NewResultBody(3, "缺失必要元素chanMerName")
-	}
-
 	err = mongo.ChanMerColl.Add(c)
 	if err != nil {
 		log.Errorf("新增渠道商户失败:%s", err)

@@ -119,18 +119,15 @@
         },
 
         open1: function() {
-          console.log('open me');
           this.$.dialogAdd.open();
         },
 
         open2: function() {
-          console.log('open me');
           this.$.dialogEdit.open();
         },
 
         // 点击保存事件
         handleSaveTapped: function() {
-          console.log(this.chanMer);
           this.$.saveAjax.body = JSON.stringify(this.chanMer);
           this.$.saveAjax.generateRequest();
         },

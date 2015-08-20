@@ -565,13 +565,11 @@
         handleWeixinHttpCertFile: function(e) {
           var _this = this;
           var files = e.srcElement.files;
-          // console.log(files);
           if (files.length) {
             var file = files[0];
             if ('application/x-x509-ca-cert' === file.type) {
               var reader = new FileReader();
               reader.onload = function() {
-                //   console.log(this.result);
                 if (/BEGIN CERTIFICATE/.test(this.result) === false) {
                   Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
                   return;
@@ -587,13 +585,11 @@
         handleWeixinHttpKeyFile: function(e) {
           var _this = this;
           var files = e.srcElement.files;
-          // console.log(files);
           if (files.length) {
             var file = files[0];
             if ('application/x-x509-ca-cert' === file.type) {
               var reader = new FileReader();
               reader.onload = function() {
-                // console.log(this.result);
                 if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
                   Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
                   return;
