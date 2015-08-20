@@ -110,3 +110,23 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 
 	return result
 }
+
+// Match 模糊查找渠道商户
+func (i *chanMer) Match(chanCode, chanMerId, chanMerName string, maxSize int) (result *model.ResultBody) {
+	if maxSize <= 0 {
+		maxSize = 10
+	}
+
+	chanMers, err := mongo.ChanMerColl.FuzzyFind(chanCode, chanMerId, chanMerName, maxSize)
+	if err != nil {
+		log.Errorf("未找到渠道商户(chanCode: %s; chanMerId: %s; chanMerName: %s)失败：(%s)", chanCode, chanMerId, chanMerName, err)
+		return model.NewResultBody(1, "查询失败")
+	}
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    chanMers,
+	}
+
+	return result
+}

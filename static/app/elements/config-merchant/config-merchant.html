@@ -34,6 +34,7 @@
     .row paper-checkbox,
     .row paper-radio-button,
     .row .check-box-group,
+    .row channel-merchant-typeahead,
     .row x-select {
       @apply(--layout-flex-6);
       margin-right: 20px;
@@ -45,6 +46,7 @@
     .row paper-textarea:last-child,
     .row paper-checkbox:last-child,
     .row paper-radio-button:last-child,
+    .row channel-merchant-typeahead:last-child,
     .row .check-box-group:last-child,
     .row x-select:last-child {
       margin-right: 0;
@@ -157,6 +159,7 @@
         <div class="row">
           <paper-checkbox id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
           <paper-input label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}"></paper-input>
+          <!-- <channel-merchant-typeahead label="大商户号"></channel-merchant-typeahead> -->
         </div>
         <div class="row">
           <paper-input label="讯联跟渠道费率" value="{{weixin.acqFee::input}}"></paper-input>
@@ -195,6 +198,7 @@
     <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
     <iron-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></iron-ajax>
     <iron-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></iron-ajax>
+    <iron-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -209,6 +213,9 @@
             type: Boolean,
             value: false,
             notify: true
+          },
+          bigMerchant: {
+            type: Object
           },
           params: {
             type: Object
@@ -389,7 +396,9 @@
           this.weixin = {
             chanCode: 'WXP',
             isAgentMode: true,
-            agentMer: {},
+            agentMer: {
+              chanMerId: '1236593202'
+            },
             chanMerId: '',
             chanMerName: '',
             acqFee: '',
@@ -399,6 +408,26 @@
             httpCert: '',
             httpKey: ''
           };
+
+          // 大商户
+          this.$.findChanMerAjax.params = {
+            page: 1,
+            chanMerId: '1236593202'
+          };
+          this.$.findChanMerAjax.generateRequest();
+        },
+        // 查询渠道商户的响应事件，这里是查找大商户
+        handleFindChanMerResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status != 0) {
+            return;
+          }
+
+          var pagination = response.data;
+          if (!pagination.data || pagination.data.length == 0) {
+            return;
+          }
+          this.set('bigMerchant', pagination.data[0]);
         },
         // 保存商户的按钮事件
         handleSaveMerchantTapped: function() {
@@ -450,6 +479,12 @@
           this.set('weixin.acqFee', acqFee);
           this.set('weixin.merFee', merFee);
           this.set('weixin.chanCode', 'WXP');
+          // 如果勾选了代理商模式，就直接填充上大商户的信息
+          if (this.weixin.isAgentMode) {
+            this.set('weixin.agentMer', this.bigMerchant);
+          } else {
+            this.set('weixin.agentMer', {});
+          }
           this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
           this.$.saveChannelMerchantAjax.generateRequest();
 
@@ -486,6 +521,11 @@
         // 是否代理商模式的改变事件
         handleIsAgentChangeEvent: function() {
           this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
+          if (this.weixin.isAgentMode) {
+            this.set('weixin.agentMer', this.bigMerchant);
+          } else {
+            this.set('weixin.agentMer', {});
+          }
         },
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function() {

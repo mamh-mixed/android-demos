@@ -81,6 +81,12 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		size, _ := strconv.Atoi(r.FormValue("size"))
 		page, _ := strconv.Atoi(r.FormValue("page"))
 		ret = ChanMer.Find(chanCode, chanMerId, chanMerName, size, page)
+	case "/master/channelMerchant/match":
+		chanCode := r.FormValue("chanCode")
+		chanMerId := r.FormValue("chanMerId")
+		chanMerName := r.FormValue("chanMerName")
+		maxSize, _ := strconv.Atoi(r.FormValue("maxSize"))
+		ret = ChanMer.Match(chanCode, chanMerId, chanMerName, maxSize)
 	case "/master/channelMerchant/findByMerIdAndCardBrand":
 		merId := r.FormValue("merId")
 		cardBrand := r.FormValue("cardBrand")
