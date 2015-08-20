@@ -100,7 +100,7 @@
     <div class="form-container">
       <div class="row">
         <x-select items="[[busicds]]" class="col validate-container" required selected-item="{{busicd}}" label="交易类型(busicd)"></x-select>
-        <paper-input class="col" id="txndir" name="txndir" label="交易方向(txndir)" value="{{scanCode.txndir::input}}" disabled></paper-input>
+        <paper-input class="col" id="key" name="key" label="签名证书(key)" value="{{key::input}}"></paper-input>
       </div>
       <div class="row">
         <x-select items="[[chcds]]" class="col validate-container" required$="{{requiredDetector.chcd}}" selected-item="{{chcd}}" label="渠道机构(chcd)"></x-select>
@@ -360,9 +360,10 @@
       },
       key: {
         type: String,
-        value: 'dawdawdnjawdjwbdhabbdalsjdfaflas'
+        value: 'dawdawdnjawdjwbdhabbdalsjdfaflas',
+        observer: '_convertToJSON'
       },
-      ready: {
+      isReady: {
         type: Boolean,
         value: false
       },
@@ -506,7 +507,7 @@
       this.responseJsonData = '';
     },
     attached: function() {
-      this.ready = true;
+      this.isReady = true;
     },
     observers: [
       '_convertToJSON(scanCode.*)',
@@ -516,6 +517,9 @@
       '_requestJsonDataChange(requestJsonData)'
     ],
     _convertToJSON: function() {
+      if (!this.isReady) {
+        return
+      }
       this.scanCode.sign = this._sign();
       this.requestJsonData = JSON.stringify(this.scanCode, null, 5);
     },
@@ -526,7 +530,7 @@
     },
     // 监听交易类型变化
     _watchBusicdChange: function(key) {
-      this.set('scanCode.busicd', key|| '');
+      this.set('scanCode.busicd', key || '');
       this.set('requiredDetector', {});
       var flag = this.requiredFlags[key];
       if (!flag) {
@@ -550,7 +554,7 @@
     },
     // 签名方法
     _sign: function() {
-      if (!this.ready) {
+      if (!this.isReady) {
         return;
       }
       var sign = '';
