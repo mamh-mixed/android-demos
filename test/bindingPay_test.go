@@ -10,13 +10,17 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
 const (
-	testMerId      = "012345678901234"
-	testSign       = "0123456789"
+	// testMerId      = "012345678901234"
+	testMerId = "001405"
+	// testSign       = "0123456789"
+	testSign = "0123456789"
+	// testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
 	testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
 
 	// 银联卡测试数据
@@ -104,7 +108,7 @@ func TestBindingCreate(t *testing.T) {
 		BankId:    "102",
 	}
 
-	var aes = util.NewAESCBCEncrypt(testEncryptKey)
+	var aes = security.NewAESCBCEncrypt(testEncryptKey)
 	b.AcctName = aes.Encrypt(b.AcctName)
 	b.AcctNum = aes.Encrypt(b.AcctNum)
 	b.IdentNum = aes.Encrypt(b.IdentNum)

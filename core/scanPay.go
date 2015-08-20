@@ -122,7 +122,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	t := &model.Trans{
 		MerId:         req.Mchntid,
 		OrderNum:      req.OrderNum,
-		TransType:     model.PayTrans,
+		TransType:     model.EnterpriseTrans,
 		Busicd:        req.Busicd,
 		AgentCode:     req.AgentCode,
 		Terminalid:    req.Terminalid,
@@ -175,7 +175,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		AgentCode:  req.AgentCode,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
-		Remark:     req.GoodsInfo,
+		GoodsInfo:  req.GoodsInfo,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -233,7 +233,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ChanCode:   req.Chcd,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
-		Remark:     req.GoodsInfo,
+		GoodsInfo:  req.GoodsInfo,
 		NotifyUrl:  req.NotifyUrl,
 	}
 
@@ -284,7 +284,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	refund.ChanMerId = orig.ChanMerId
 	// refund.SubChanMerId = orig.SubChanMerId
 
-	// 退款只能隔天退
+	// TODO 退款只能隔天退，按需求投产后先缓冲一段时间再开启。
 	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
 	// 	return adaptor.LogicErrorHandler(refund, "REFUND_TIME_ERROR")
 	// }
@@ -327,7 +327,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		} else {
 			orig.RefundStatus = model.TransPartRefunded
 			orig.RefundAmt = refundAmt // 这个字段的作用主要是为了方便报表时计算部分退款，为了一致性，撤销，取消接口也都统一加上，虽然并没啥作用
-			// 重新计算手续费
+			// 会在adaptor重新计算费率，这样做是为了确保报表的准确
 		}
 	}
 
