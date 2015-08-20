@@ -53,12 +53,10 @@
           }
         },
         open: function() {
-          // console.log('open me');
           this.$.dialogDelete.open();
         },
         // 点击确定删除事件
         handleDeleteTapped: function() {
-          // console.log(this.agent);
           this.$.deleteAjax.params = {
             agentCode: this.agent.agentCode
           };
