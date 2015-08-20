@@ -17,12 +17,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "28920007008349186",
-		AgentCode:  "90321888",
-		Txamt:      "000000000001",
+		ScanCodeId: "130075726866740249",
+		AgentCode:  "96683320",
+		Txamt:      "000000000002",
 		Chcd:       "ALP",
 		Busicd:     "PURC",
-		Mchntid:    "032100048120001",
+		Mchntid:    "966833200000007",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -47,18 +47,18 @@ var (
 		Busicd:       "REFD",
 		Mchntid:      "100000000000210",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1439912290481",
+		OrigOrderNum: "1440032751947",
 		AgentCode:    "CIL00002",
-		Txamt:        "000000000100",
+		Txamt:        "000000000001",
 		Chcd:         "WXP",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPayRequest{
 		Busicd:       "VOID",
-		Mchntid:      "100000000000210",
+		Mchntid:      "966833200000007",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1439908003492",
-		AgentCode:    "CIL00002",
+		OrigOrderNum: "1440040340745",
+		AgentCode:    "96683320",
 	}
 	// 关单
 	scanPayClose = &model.ScanPayRequest{
@@ -94,7 +94,7 @@ var (
 		NeedUserInfo: "YES",
 	}
 
-	scanPay = scanPayBarcodePay
+	scanPay = scanPayCancel
 )
 
 func TestScanPay(t *testing.T) {
