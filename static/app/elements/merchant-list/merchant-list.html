@@ -108,7 +108,7 @@
           </tr>
         </thead>
         <tbody>
-          <template is="dom-repeat" items="{{merchants}}" >
+          <template is="dom-repeat" items="{{merchants}}">
             <tr on-click="viewMerchantTap">
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
@@ -217,6 +217,25 @@
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
+          if (this.$.merId.value) {
+            this.cond.merId = this.$.merId.value;
+          }
+          if (this.$.merName.value) {
+            this.cond.merName = this.$.merName.value;
+          }
+          if (this.$.agentCode.value) {
+            this.cond.agentCode = this.$.agentCode.value;
+          }
+          if (this.$.agentName.value) {
+            this.cond.agentName = this.$.agentName.value;
+          }
+          if (this.$.groupCode.value) {
+            this.cond.groupCode = this.$.groupCode.value;
+          }
+          if (this.$.groupName.value) {
+            this.cond.groupName = this.$.groupName.value;
+          }
+
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
@@ -281,26 +300,27 @@
         },
         // 查看商户详细信息
         viewMerchantTap: function(event) {
-            this.merchant=event.model.item
-            this.$.merchantView.open();
+          this.merchant = event.model.item
+          this.$.merchantView.open();
         },
         // 清除查询条件
-        handleClearTapped:function(){
-            this.$.merId.value="";
-            this.cond.merId="";
-            this.$.merName.value="";
-            this.cond.merName="";
-            this.$.merStatus.selectedItem="";
-            this.cond.merStatus="";
-            this.$.agentCode.value="";
-            this.cond.agentCode="";
-            this.$.agentName.value="";
-            this.cond.agentName="";
-            this.$.groupCode.value="";
-            this.cond.groupCode="";
-            this.$.groupName.value="";
-            this.cond.groupName="";
-            this.handleQueryTapped();
+        handleClearTapped: function() {
+          this.$.merId.value = "";
+          this.cond.merId = "";
+          this.$.merName.value = "";
+          this.cond.merName = "";
+          this.$.merStatus.selectedItem = "";
+          this.cond.merStatus = "";
+          this.$.agentCode.value = "";
+          this.cond.agentCode = "";
+          this.$.agentName.value = "";
+          this.cond.agentName = "";
+          this.$.groupCode.value = "";
+          this.cond.groupCode = "";
+          this.$.groupName.value = "";
+          this.cond.groupName = "";
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
         }
       });
     })();

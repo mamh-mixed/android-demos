@@ -17,14 +17,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         --paper-dialog-scrollable: {
-          min-width: 500px;
-          min-height: 80px;
+          min-width: 600px;
+          min-height: 450px;
           font-size: 15px;
         }
       }
 
       paper-dialog {
         background-color: #ffffff;
+        height:85%;
       }
 
       paper-dialog > *:first-child {
@@ -43,12 +44,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background:#CD4F39;
         border-radius: 0%;
       }
+      .header{
+          padding:0px;
+          margin:0px;
+          background:red;
+          color:#ffffff;
+          heigth:40px;
+          line-height:40px;
+          font-weight:bold;
+          font-size:16px;
+      }
     </style>
 
     <paper-dialog id="dialogView">
-      <div style="padding:0px;margin:0px;background:red;color:#ffffff;heigth:40px;line-height:40px;font-weight:bold;font-size:16px;">
+      <div class="header">
          <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
-          查看商户信息
+          查看机构商户信息
       </div>
       <paper-dialog-scrollable>
         <div>
