@@ -50,9 +50,14 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 	case "/master/merchant/find":
 		merId := r.FormValue("merId")
 		merStatus := r.FormValue("merStatus")
+		merName := r.FormValue("merName")
+		groupCode := r.FormValue("groupCode")
+		groupName := r.FormValue("groupName")
+		agentCode := r.FormValue("agentCode")
+		agentName := r.FormValue("agentName")
 		size, _ := strconv.Atoi(r.FormValue("size"))
 		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = Merchant.Find(merId, merStatus, size, page)
+		ret = Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
 	case "/master/merchant/one":
 		merId := r.FormValue("merId")
 		ret = Merchant.FindOne(merId)
