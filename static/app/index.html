@@ -59,106 +59,23 @@
           <div class="app-name">快捷支付管理平台</div>
         </paper-toolbar>
 
-        <!-- 菜单列表 -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
-          <!--
-          <a data-route="system">
-            <iron-icon icon="settings"></iron-icon>
-            <span>系统管理</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'system') }}>
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-              <a data-route="system.users" href="/system/users">
-                <iron-icon icon="social:group"></iron-icon>
-                <span>用户管理</span>
-              </a>
-              <a data-route="system.roles" href="/system/roles">
-                <iron-icon icon="face"></iron-icon>
-                <span>角色管理</span>
-              </a>
-              <a data-route="system.menus" href="/system/menus">
-                <iron-icon icon="menu"></iron-icon>
-                <span>菜单管理</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-          -->
-
-          <a data-route="config">
-            <iron-icon icon="build"></iron-icon>
-            <span>配置管理</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'config') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="config.agents" href="/config/agents">
-                <iron-icon icon="assignment-ind"></iron-icon>
-                <span>代理/机构</span>
-              </a>
-              <a data-route="config.groups" href="/config/groups">
-                <iron-icon icon="home"></iron-icon>
-                <span>集团商户</span>
-              </a>
-              <a data-route="config.configMer" href="/config/configMer">
-                <iron-icon icon="create"></iron-icon>
-                <span>商户录入</span>
-              </a>
-              <a data-route="config.merchants" href="/config/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
-              </a>
-              <a data-route="config.routes" href="/config/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-              <a data-route="config.chanMers" href="/config/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
-          <a data-route="trade">
-            <iron-icon icon="swap-horiz"></iron-icon>
-            <span>交易查询</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'trade') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="trade.list" href="/trade/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>扫码交易</span>
-              </a>
-              <a data-route="trade.reports" href="/trade/reports">
-                <iron-icon icon="file-download"></iron-icon>
-                <span>报表下载</span>
-              </a>
-              <a data-route="trade.old.reports" href="/trade/old/reports">
-                <iron-icon icon="cloud-download"></iron-icon>
-                <span>旧系统报表下载</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
-          <a data-route="test">
-            <iron-icon icon="bug-report"></iron-icon>
-            <span>测试</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'test') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="test.scanpay" href="/test/scanpay">
-                <iron-icon icon="pageview"></iron-icon>
-                <span>测试扫码</span>
-              </a>
-              <a data-route="test.qiniu" href="/test/qiniu">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>七牛 Ajax 上传文件</span>
-              </a>
-              <a data-route="test.filereader" href="/test/filereader">
-                <iron-icon icon="get-app"></iron-icon>
-                <span>HTML5读取文件内容</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
+        <paper-menu attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
+          <template is="dom-repeat" items="{{menus}}" as="menu">
+            <a data-route$="{{menu.route}}">
+              <iron-icon icon$="{{menu.icon}}"></iron-icon>
+              <span>{{menu.nameCN}}</span>
+            </a>
+            <iron-collapse opened="{{ startWith(route.name, menu.route) }}">
+              <paper-menu attr-for-selected="data-route" selected="{{route.name}}">
+                <template is="dom-repeat" items="{{menu.children}}" as="subMenu" index-as="sub_menu_no">
+                  <a data-route$="{{subMenu.route}}" href$="{{subMenu.url}}">
+                    <iron-icon icon$="{{subMenu.icon}}"></iron-icon>
+                    <span>{{subMenu.nameCN}}</span>
+                  </a>
+                </template>
+              </paper-menu>
+            </iron-collapse>
+          </template>
         </paper-menu>
       </paper-scroll-header-panel>
 
@@ -206,6 +123,11 @@
               </paper-material>
             </section>
         -->
+            <section data-route="dashboard">
+              <paper-material elevation="1">
+                <h3>Dashboard</h3>
+              </paper-material>
+            </section>
 
             <section data-route="trade.list">
               <paper-material elevation="1">
@@ -292,7 +214,7 @@
     </paper-drawer-panel>
 
     <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
-
+    <iron-ajax auto id="menuAjax" method="GET" url="/api/menu.json" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
   </template>
 
   <!-- build:js scripts/app.js -->
