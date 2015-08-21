@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 type merchant struct {
@@ -24,6 +25,9 @@ type merchant struct {
 	City          string  `bson:"city"`
 	AcctNum       string  `bson:"account"`
 	AcctName      string  `bson:"accountName"`
+	BankName      string  `bson:"bankName"`
+	BankId        string  `bson:"bankNum"`
+	OpenBank      string  `bson:"openBank"`
 	SignKey       string  `bson:"merchantMd5"`
 	Group         struct {
 		GroupCode string `bson:"merId"`
@@ -153,6 +157,9 @@ func AddMerchantFromOldDB(path string) error {
 		m.Detail.City = mer.City
 		m.Detail.CommodityName = mer.CommodityName
 		m.Detail.MerName = mer.ClientidName
+		m.Detail.BankId = mer.BankId
+		m.Detail.BankName = mer.BankName
+		m.Detail.OpenBankName = mer.OpenBank
 		m.MerId = mer.Clientid
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
 		m.Remark = "old_system_data"
@@ -299,8 +306,9 @@ func connect() {
 		os.Exit(1)
 	}
 
-	session.SetMode(mgo.Eventual, true) //需要指定为Eventual
-	session.SetSafe(&mgo.Safe{})
+	session.SetMode(mgo.Strong, true) //需要指定为Eventual
+	session.SetSafe(nil)
+	session.SetSocketTimeout(time.Hour * 1)
 
 	saomaDB = session.DB(dbname)
 

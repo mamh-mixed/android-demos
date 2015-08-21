@@ -189,10 +189,10 @@ func TestValidateNoTrackPayment(t *testing.T) {
 }
 
 func TestIsChineseOrJapaneseOrAlphanumeric(t *testing.T) {
-	result := isChineseOrJapaneseOrAlphanumeric("你好啊，小伙子")
+	result := isChineseOrJapaneseOrAlphanumeric("zhangsan")
 
-	if result {
-		t.Error("出错啦")
+	if !result {
+		t.Error("哪里出错啦")
 	}
 
 	result = isChineseOrJapaneseOrAlphanumeric("姚明")
