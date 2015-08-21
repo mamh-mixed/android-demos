@@ -85,7 +85,7 @@
     </paper-tabs>
 
     <iron-pages selected="{{idx}}">
-      <section>
+      <section alias="merchant">
         <div class="row">
           <paper-input label="代理代码/机构代码" value="{{merchant.agentCode::input}}"></paper-input>
           <paper-input label="代理名称/机构名称" value="{{merchant.agentName::input}}"></paper-input>
@@ -113,7 +113,7 @@
               </template>
             </div>
           </div>
-          <paper-radio-button id="sNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
+          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
           <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
@@ -132,10 +132,22 @@
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
         <div class="row">
+          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
+          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="行号" value="{{merchant.detail.bankId::input}}"></paper-input>
+          <paper-input label="开户银行支行" value="{{merchant.detail.bankName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
         </div>
       </section>
-      <section>
+
+      <section alias="alipay">
         <div class="row">
           <paper-input label="商户号" value="{{alipay.chanMerId::input}}"></paper-input>
           <paper-input label="商户名称" value="{{alipay.chanMerName::input}}"></paper-input>
@@ -151,13 +163,14 @@
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
       </section>
-      <section>
+
+      <section alias="tenpay">
         <div class="row">
           <paper-input label="微信商户号" value="{{weixin.chanMerId::input}}"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-checkbox id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-checkbox>
+          <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
           <paper-input label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}"></paper-input>
           <!-- <channel-merchant-typeahead label="大商户号"></channel-merchant-typeahead> -->
         </div>
@@ -185,7 +198,8 @@
           <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
         </div>
       </section>
-      <section>
+
+      <section alias="comingsoon">
         <div class="row">
           <paper-input label="即将上线。。。" value=""></paper-input>
         </div>
@@ -529,7 +543,7 @@
         },
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function() {
-          this.set('merchant.isNeedSign', this.$.sNeedSignCheck.checked);
+          this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
         },
         // 接口权限中的复选框组的改变事件
         handlePermissionChangeEvent: function(e) {
@@ -565,13 +579,11 @@
         handleWeixinHttpCertFile: function(e) {
           var _this = this;
           var files = e.srcElement.files;
-          // console.log(files);
           if (files.length) {
             var file = files[0];
             if ('application/x-x509-ca-cert' === file.type) {
               var reader = new FileReader();
               reader.onload = function() {
-                //   console.log(this.result);
                 if (/BEGIN CERTIFICATE/.test(this.result) === false) {
                   Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
                   return;
@@ -587,13 +599,11 @@
         handleWeixinHttpKeyFile: function(e) {
           var _this = this;
           var files = e.srcElement.files;
-          // console.log(files);
           if (files.length) {
             var file = files[0];
             if ('application/x-x509-ca-cert' === file.type) {
               var reader = new FileReader();
               reader.onload = function() {
-                // console.log(this.result);
                 if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
                   Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
                   return;

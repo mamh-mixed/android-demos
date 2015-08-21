@@ -38,7 +38,8 @@ function main() {
     fi
 
     host=${hosts[$idx]}
-    echo "Host is $input=$host"
+    echo -e "You selected host:\033[1;31m $input => $host \033[0m"
+    read -t 30 -p "Press any key to continue..."
     echo
 
     # Golang 跨平台编译
@@ -74,7 +75,6 @@ function goBuild() {
 }
 
 function gulpPackage() {
-    pwd
     mkdir -p distrib/static/app
     cd static
     bower install

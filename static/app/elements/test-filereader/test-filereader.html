@@ -27,26 +27,22 @@
         handleFiles: function(e) {
           var _this = this;
           var files = e.srcElement.files;
-          console.log(files);
 
           if (files.length) {
             var file = files[0];
             var reader = new FileReader();
             if ('application/x-x509-ca-cert' === file.type) {
               reader.onload = function() {
-                console.log(this.result);
                 _this.fileContent = this.result;
               };
               reader.readAsText(file);
             } else if (/image\/\w+/.test(file.type)) {
               reader.onload = function() {
-                console.log(this.result);
                 _this.fileContent = this.result;
               };
               reader.readAsDataURL(file);
             } else {
               reader.onload = function() {
-                console.log(this.result);
                 _this.fileContent = this.result;
               };
               reader.readAsText(file);

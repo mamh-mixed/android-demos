@@ -75,17 +75,14 @@
           this.agent={};
         },
         open1: function() {
-          console.log('open me');
           this.$.dialogAdd.open();
           this.set('agent', {});
         },
         open2: function() {
-          console.log('open me');
           this.$.dialogEdit.open();
         },
         // 点击保存事件
         handleSaveTapped: function() {
-          console.log(this.agent);
           this.$.saveAjax.body = JSON.stringify(this.agent);
           this.$.saveAjax.generateRequest();
         },
