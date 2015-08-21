@@ -243,7 +243,8 @@ type Trans struct {
 	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
 
 	// 批导辅助字段
-	MerFee float64 `bson:"-" json:"-"` // 计算手续费字段 用于批导，待结束可删除
+	MerFee  float64 `bson:"-" json:"-"`       // 计算手续费字段 用于批导，待结束可删除
+	MerName string  `bson:"-" json:"merName"` // 商户名称
 }
 
 // SummarySettData 交易汇总

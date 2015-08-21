@@ -70,7 +70,7 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 	ret := core.TransQuery(req)
 
 	// 类型转换
-	if trans, ok := ret.Rec.([]model.Trans); ok {
+	if trans, ok := ret.Rec.([]*model.Trans); ok {
 		// 生成报表
 		before := time.Now()
 		genReport(merId, file, trans)
@@ -85,7 +85,7 @@ func tradeReport(w http.ResponseWriter, r *http.Request) {
 }
 
 // genReport 生成报表
-func genReport(merId string, file *xlsx.File, trans []model.Trans) {
+func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row

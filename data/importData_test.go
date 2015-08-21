@@ -7,15 +7,6 @@ import (
 	// "github.com/omigo/log"
 )
 
-func TestAddTransFromNodejsDB(t *testing.T) {
-	err := AddTransFromOldDB()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Log("SUCCESS")
-}
-
 // 导入原扫码系统商户 包含商户、渠道商户、路由策略、证书
 func TestAddMerFromNodejsDB(t *testing.T) {
 

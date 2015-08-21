@@ -22,10 +22,11 @@ const (
 )
 
 func init() {
+	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
 	connect()
 }
 
-func ImportOldTrans(w http.ResponseWriter, r *http.Request) {
+func Import(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
 	if crypto != key {
 		return
