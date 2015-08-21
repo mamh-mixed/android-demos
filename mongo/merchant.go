@@ -100,6 +100,10 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 		and := []bson.M{}
 		and = append(and, bson.M{"merId": bson.RegEx{cond.MerId, "."}})
 		q["$and"] = and
+	} else {
+		if len(cond.MerIds) != 0 {
+			q["merId"] = bson.M{"$in": cond.MerIds}
+		}
 	}
 
 	var mers []*model.Merchant

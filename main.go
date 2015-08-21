@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/CardInfoLink/quickpay/data"
 	"github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
@@ -34,7 +33,6 @@ func main() {
 	http.HandleFunc("/master/", master.MasterRoute)
 	http.HandleFunc("/service/", master.Service)
 	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
-	http.HandleFunc("/import", data.Import)
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))

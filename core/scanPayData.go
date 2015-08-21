@@ -32,6 +32,7 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 	}
 	var mers []*model.Merchant
 	var mersMap map[string]*model.Merchant
+	var merIds []string
 
 	// 没有数组的话返回空数据
 	if len(trans) == 0 {
@@ -39,13 +40,18 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		goto RETURN
 	}
 
+	for _, tran := range trans {
+		merIds = append(merIds, tran.MerId)
+	}
+
 	// 关联商户名称 TODO 后期优化
+	q.MerIds = merIds
 	mers, err = mongo.MerchantColl.FuzzyFind(q)
 	if err != nil {
 		log.Error("find mers error: %s", err)
 		goto RETURN
 	}
-
+	log.Debug(len(mers))
 	mersMap = make(map[string]*model.Merchant)
 	for _, mer := range mers {
 		mersMap[mer.MerId] = mer
