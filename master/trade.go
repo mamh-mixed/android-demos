@@ -103,18 +103,17 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	row = sheet.AddRow()
 	headRow := &struct {
 		MerId        string
+		MerName      string
 		OrderNum     string
-		OrigOrderNum string
-		TerminalId   string
-		Inscd        string
-		RespCode     string
 		TransAmt     string
-		TransStatus  string
-		Busicd       string
 		ChanCode     string
 		TransTime    string
-		// ErrorDetail  string
-	}{"商户号", "订单号", "原订单号", "终端号", "机构号", "应答码", "交易金额（元）", "交易状态", "交易类型", "渠道", "交易时间"}
+		TransStatus  string
+		AgentCode    string
+		TerminalId   string
+		Busicd       string
+		OrigOrderNum string
+	}{"商户号", "商户名称", "订单号", "金额", "渠道", "交易时间", "交易状态", "机构", "终端号", "交易类型", "原订单号"}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -129,28 +128,33 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 
 	// 生成数据
 	for _, v := range trans {
+		//商户号，商户名称，订单号，金额，渠道，交易时间，交易状态，终端号，交易类型，原订单号
 		row = sheet.AddRow()
 		// 商户号
 		cell = row.AddCell()
 		cell.Value = v.MerId
+		// 商户名称
+		cell = row.AddCell()
+		cell.Value = v.MerName
 		// 订单号
 		cell = row.AddCell()
 		cell.Value = v.OrderNum
-		// 原订单号
-		cell = row.AddCell()
-		cell.Value = v.OrigOrderNum
-		// 终端号
-		cell = row.AddCell()
-		cell.Value = v.Terminalid
-		// 机构号
-		cell = row.AddCell()
-		cell.Value = v.AgentCode
-		// 应答码
-		cell = row.AddCell()
-		cell.Value = v.RespCode
 		// 交易金额
 		cell = row.AddCell()
 		cell.SetFloat(float64(v.TransAmt) / 100)
+		// 渠道
+		cell = row.AddCell()
+		switch v.ChanCode {
+		case "WXP":
+			cell.Value = "微信"
+		case "ALP":
+			cell.Value = "支付宝"
+		default:
+			cell.Value = "未知"
+		}
+		// 交易时间
+		cell = row.AddCell()
+		cell.Value = v.CreateTime
 		// 交易状态
 		cell = row.AddCell()
 		switch v.TransStatus {
@@ -166,6 +170,12 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		default:
 			cell.Value = "未知"
 		}
+		// 机构号
+		cell = row.AddCell()
+		cell.Value = v.AgentCode
+		// 终端号
+		cell = row.AddCell()
+		cell.Value = v.Terminalid
 		// 交易类型
 		cell = row.AddCell()
 		switch v.Busicd {
@@ -186,21 +196,13 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		default:
 			cell.Value = "未知"
 		}
-		// 渠道
-		cell = row.AddCell()
-		switch v.ChanCode {
-		case "WXP":
-			cell.Value = "微信"
-		case "ALP":
-			cell.Value = "支付宝"
-		default:
-			cell.Value = "未知"
-		}
-		// 交易时间
-		cell = row.AddCell()
-		cell.Value = v.CreateTime
 
-		// 金额
+		// 原订单号
+		cell = row.AddCell()
+		cell.Value = v.OrigOrderNum
+
+		// 交易金额 = 成功的交易金额-部分被退款的金额
+		// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
 		switch v.TransType {
 		case model.PayTrans:
 			if v.ChanCode == channel.ChanCodeAlipay {
@@ -215,9 +217,11 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		default:
 			if v.ChanCode == channel.ChanCodeAlipay {
 				alpRefundAmt += v.TransAmt
+				alpFee -= v.Fee
 			}
 			if v.ChanCode == channel.ChanCodeWeixin {
 				wxpRefundAmt += v.TransAmt
+				wxpFee -= v.Fee
 			}
 		}
 	}
@@ -237,7 +241,6 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	fee = alpFee + wxpFee
 
 	// 写入汇总数据
-	// TODO 手续费计算，在记录交易时计算
 	rows := sheet.Rows
 	row = rows[0]
 	row.WriteStruct(&summary{
@@ -245,7 +248,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"支付宝交易金额：", float64(alpTransAmt) / 100,
 		"支付宝退款金额：", float64(alpRefundAmt) / 100,
 		"支付宝手续费：", float64(alpFee) / 100,
-		// "支付宝清算金额：", 50.00,
+		"支付宝清算金额：", float64(alpTransAmt-alpFee) / 100,
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
@@ -253,7 +256,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"微信交易金额：", float64(wxpTransAmt) / 100,
 		"微信退款金额：", float64(wxpRefundAmt) / 100,
 		"微信手续费：", float64(wxpFee) / 100,
-		// "微信清算金额：", 50.00,
+		"微信清算金额：", float64(wxpTransAmt-wxpFee) / 100,
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
@@ -261,7 +264,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"交易总额：", float64(transAmt) / 100,
 		"退款总额：", float64(refundAmt) / 100,
 		"手续费总额：", float64(fee) / 100,
-		// "清算总额：", 100.00,
+		"清算总额：", float64(transAmt-fee) / 100,
 	}, -1)
 }
 
@@ -274,6 +277,6 @@ type summary struct {
 	Cell5 float64
 	Cell6 string
 	Cell7 float64
-	// Cell8 string
-	// Cell9 float64
+	Cell8 string
+	Cell9 float64
 }

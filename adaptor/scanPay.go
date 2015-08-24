@@ -9,19 +9,12 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"math"
 )
 
 var agentId = goconf.Config.AlipayScanPay.AgentId
 
 // ProcessEnterprisePay 企业支付
-func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(t, "NO_CHANMER")
-	}
+func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
@@ -32,7 +25,7 @@ func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model
 	t.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(t)
+	err := mongo.SpTransColl.Add(t)
 	if err != nil {
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}
@@ -61,16 +54,7 @@ func ProcessEnterprisePay(t *model.Trans, req *model.ScanPayRequest) (ret *model
 }
 
 // ProcessBarcodePay 扫条码下单
-func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(t, "NO_CHANMER")
-	}
-
-	// 计算费率 四舍五入
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -133,15 +117,7 @@ func ProcessBarcodePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.Sc
 }
 
 // ProcessQrCodeOfflinePay 二维码预下单
-func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(t, "NO_CHANMER")
-	}
-
-	// 计算费率 四舍五入
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -204,17 +180,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, req *model.ScanPayRequest) (ret *mo
 }
 
 // ProcessRefund 请求渠道退款，不做逻辑处理
-func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 获得渠道商户
-	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(current, "NO_CHANMER")
-	}
-
-	// 重新计算手续费
-	if orig.RefundStatus == model.TransPartRefunded {
-		orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
-	}
+func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -251,7 +217,7 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	}
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(current)
+	err := mongo.SpTransColl.Add(current)
 	if err != nil {
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}
@@ -272,12 +238,7 @@ func ProcessRefund(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 }
 
 // ProcessEnquiry 查询
-func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(t, "NO_CHANMER")
-	}
+func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -313,7 +274,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 		return returnWithErrorCode("NO_CHANNEL")
 	}
 
-	ret, err = sp.ProcessEnquiry(req)
+	ret, err := sp.ProcessEnquiry(req)
 	if err != nil {
 		log.Errorf("process enquiry error:%s", err)
 		return returnWithErrorCode("SYSTEM_ERROR")
@@ -332,12 +293,7 @@ func ProcessEnquiry(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanP
 }
 
 // ProcessCancel 请求渠道撤销，不做逻辑处理
-func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 获得渠道商户
-	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(current, "NO_CHANMER")
-	}
+func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -359,7 +315,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(current)
+	err := mongo.SpTransColl.Add(current)
 	if err != nil {
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}
@@ -392,7 +348,7 @@ func ProcessCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *
 }
 
 // ProcessClose 关闭订单
-func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 支付交易（下单、预下单）
 	if orig.ChanCode == channel.ChanCodeAlipay {
 		// 成功支付的交易标记已退款
@@ -400,7 +356,7 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 			orig.RefundStatus = model.TransRefunded
 		}
 		// 执行撤销流程
-		return ProcessCancel(orig, closed, req)
+		return ProcessCancel(orig, closed, c, req)
 	}
 
 	if orig.ChanCode == channel.ChanCodeWeixin {
@@ -408,7 +364,7 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 		if orig.Busicd == model.Purc {
 
 			// 走微信撤销接口
-			return ProcessWxpCancel(orig, closed, req)
+			return ProcessWxpCancel(orig, closed, c, req)
 		}
 
 		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
@@ -420,11 +376,11 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 				// 预下单全额退款
 				closed.TransAmt = orig.TransAmt
 				orig.RefundStatus = model.TransRefunded
-				return ProcessRefund(orig, closed, req)
+				return ProcessRefund(orig, closed, c, req)
 			case model.TransHandling:
 				// 发起查询请求，确认订单状态
 				log.Info("query order status before close ...")
-				orderStatus := ProcessEnquiry(orig, &model.ScanPayRequest{OrderNum: orig.OrderNum})
+				orderStatus := ProcessEnquiry(orig, c, &model.ScanPayRequest{OrderNum: orig.OrderNum})
 				if orderStatus.Respcd == SuccessCode {
 					orig.TransStatus = model.TransSuccess
 					goto Tag
@@ -432,7 +388,7 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 				fallthrough
 			default:
 				// 直接关单 不用判断时间
-				return ProcessWxpClose(orig, closed, req)
+				return ProcessWxpClose(orig, closed, c, req)
 			}
 		}
 		return LogicErrorHandler(closed, "NOT_SUPPORT_TYPE")
@@ -471,13 +427,7 @@ func ProcessClose(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *mo
 // }
 
 // ProcessWxpRefundQuery 微信查询退款接口
-func ProcessWxpRefundQuery(t *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(t, "NO_CHANMER")
-	}
+func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -501,7 +451,7 @@ func ProcessWxpRefundQuery(t *model.Trans, req *model.ScanPayRequest) (ret *mode
 
 	// 指定微信
 	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
-	ret, err = sp.ProcessRefundQuery(req)
+	ret, err := sp.ProcessRefundQuery(req)
 	if err != nil {
 		log.Errorf("process weixin refundQuery error:%s", err)
 		return returnWithErrorCode("SYSTEM_ERROR")
@@ -511,10 +461,10 @@ func ProcessWxpRefundQuery(t *model.Trans, req *model.ScanPayRequest) (ret *mode
 }
 
 // ProcessWxpCancel 微信撤销接口
-func ProcessWxpCancel(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessWxpCancel(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, current, req)
+	errResp := prepareWxpReqData(orig, current, c, req)
 	if errResp != nil {
 		return errResp
 	}
@@ -531,10 +481,10 @@ func ProcessWxpCancel(orig, current *model.Trans, req *model.ScanPayRequest) (re
 }
 
 // ProcessWxpClose 微信关闭接口
-func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessWxpClose(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, current, req)
+	errResp := prepareWxpReqData(orig, current, c, req)
 	if errResp != nil {
 		return errResp
 	}
@@ -550,12 +500,7 @@ func ProcessWxpClose(orig, current *model.Trans, req *model.ScanPayRequest) (ret
 	return ret
 }
 
-func prepareWxpReqData(orig, current *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-	// 获得渠道商户
-	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
-	if err != nil {
-		return LogicErrorHandler(current, "NO_CHANMER")
-	}
+func prepareWxpReqData(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var subMchId string
 	// 代理商模式
@@ -581,7 +526,7 @@ func prepareWxpReqData(orig, current *model.Trans, req *model.ScanPayRequest) (r
 	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(current)
+	err := mongo.SpTransColl.Add(current)
 	if err != nil {
 		return returnWithErrorCode("SYSTEM_ERROR")
 	}

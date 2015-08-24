@@ -21,10 +21,10 @@ const (
 	crypto = "cilxl123$"
 )
 
-// func init() {
-// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-// 	connect()
-// }
+func init() {
+	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+	connect()
+}
 
 func Import(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
@@ -108,6 +108,7 @@ func AddTransFromOldDB(st, et string) error {
 		tran := &model.Trans{}
 		tran.Id = bson.NewObjectId()
 		tran.MerId = t.Merchant.MerId
+		tran.Terminalid = t.Request.Terminalid
 		tran.AgentCode = t.Merchant.Inscd
 		tran.OrderNum = t.Request.OrderNum
 		tran.OrigOrderNum = t.Request.OrigOrderNum
@@ -121,6 +122,7 @@ func AddTransFromOldDB(st, et string) error {
 		tran.GoodsInfo = t.Request.GoodsInfo
 		tran.TransCurr = t.Request.Currency
 		tran.ChanOrderNum = t.ChannelOrderNum
+		tran.RespCode = t.RespCode
 		if tran.ChanCode == "ALP" {
 			tran.ChanMerId = t.Merchant.Alp.MerId
 		} else {
@@ -192,15 +194,20 @@ func AddTransFromOldDB(st, et string) error {
 			tran, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
 			if err != nil {
 				log.Errorf("从内存和数据库里获取不到原交易，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
-				break
+				continue
 			}
 			isGetFromDB = true
 			orig = tran
 		}
+
+		// 计算手续费
+		if orig.TransStatus == model.TransSuccess {
+			t.Fee = int64(math.Floor(float64(t.TransAmt))*orig.MerFee + 0.5)
+		}
+
 		// 具体处理
 		switch t.Busicd {
 		case model.Refd:
-
 			// 累计退款
 			refundedAmt := t.TransAmt + orig.RefundAmt
 			// 对原交易逻辑处理
@@ -211,15 +218,12 @@ func AddTransFromOldDB(st, et string) error {
 				orig.RefundAmt = orig.TransAmt
 				orig.RefundStatus = model.TransRefunded
 				orig.TransStatus = model.TransClosed
-				orig.Fee = 0
+				// orig.Fee = 0
 			} else if refundedAmt < orig.TransAmt {
 				// 部分退款
 				orig.RefundAmt = refundedAmt
 				orig.RefundStatus = model.TransPartRefunded
-				// 重新计算手续费
-				orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*orig.MerFee + 0.5)
 			}
-
 		case model.Canc:
 			// 判断原交易是否成功
 			if orig.TransStatus == model.TransSuccess {
@@ -230,7 +234,7 @@ func AddTransFromOldDB(st, et string) error {
 			orig.RespCode = CloseCode
 			orig.ErrorDetail = CloseMsg
 			orig.TransStatus = model.TransClosed
-			orig.Fee = 0
+			// orig.Fee = 0
 
 		case model.Void:
 			// 相当于全额退款
@@ -240,7 +244,7 @@ func AddTransFromOldDB(st, et string) error {
 			orig.RefundAmt = orig.TransAmt
 			orig.RefundStatus = model.TransRefunded
 			orig.TransStatus = model.TransClosed
-			orig.Fee = 0
+			// orig.Fee = 0
 		}
 
 		// 如果是从数据库拿的，那么更新数据库里的数据

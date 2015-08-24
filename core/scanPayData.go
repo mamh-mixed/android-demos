@@ -107,11 +107,14 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	q.EndTime += " 23:59:59"
 
 	// 查询交易
+	now := time.Now()
 	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
 		return errResult
 	}
+	after := time.Now()
+	log.Debugf("spent %s", after.Sub(now))
 	var data = make([]model.Summary, 0)
 
 	// 将数据合并

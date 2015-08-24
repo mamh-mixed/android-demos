@@ -220,6 +220,14 @@ func AddMerchantFromOldDB(path string) error {
 		if mer.Wxp.MchId != "" {
 			// 导入渠道商户
 			wxp := &model.ChanMer{}
+			// 只保存子渠道商户
+			wxp.SignCert = mer.Wxp.Md5
+			wxp.ChanCode = "WXP"
+			wxp.WxpAppId = mer.Wxp.AppId
+			acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
+			merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
+			wxp.AcqFee = float32(acqFee)
+			wxp.MerFee = float32(merFee)
 			// 非受理商模式
 			wxpMerId := ""
 			if mer.Wxp.SubMchId != "" {
@@ -229,6 +237,8 @@ func AddMerchantFromOldDB(path string) error {
 					log.Errorf("受理商模式下，没找到受理商商户，商户ID为：%s", mer.Wxp.MchId)
 				}
 				wxp.AgentMer = a
+				wxp.SignCert = "" // 清空证书以及appid，这时的数据是大商户的。
+				wxp.WxpAppId = ""
 				wxp.IsAgentMode = true
 			} else {
 				wxpMerId = mer.Wxp.MchId
@@ -240,14 +250,6 @@ func AddMerchantFromOldDB(path string) error {
 					log.Errorf("找不到商户：%s, 相应证书。", mer.Clientid)
 				}
 			}
-			// 只保存子渠道商户
-			wxp.SignCert = mer.Wxp.Md5
-			wxp.ChanCode = "WXP"
-			wxp.WxpAppId = mer.Wxp.AppId
-			acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
-			merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
-			wxp.AcqFee = float32(acqFee)
-			wxp.MerFee = float32(merFee)
 			wxp.ChanMerId = wxpMerId
 
 			err = mongo.ChanMerColl.Add(wxp)

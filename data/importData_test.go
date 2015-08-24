@@ -11,8 +11,8 @@ import (
 func TestAddMerFromNodejsDB(t *testing.T) {
 
 	// 不重写url就是导入测试环境的
-	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-	var path = "/Users/zhiruichen/Desktop/product_pem/"
+	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+	var path = "/Users/zhiruichen/Desktop/test_pem/"
 	err := AddMerchantFromOldDB(path)
 	if err != nil {
 		t.Error(err)
