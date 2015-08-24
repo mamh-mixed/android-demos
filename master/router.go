@@ -122,11 +122,53 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = Group.Delete(groupCode)
 	case "/master/group/save":
 		ret = Group.Save(data)
-
+	case "/master/user/login":
+		userName := r.FormValue("userName")
+		password := r.FormValue("password")
+		ret = User.Login(userName, password)
+	case "/master/user/create":
+		ret = User.CreateUser(data)
+	case "/master/user/update":
+		ret = User.UpdateUser(data)
+	case "/master/user/find":
+		userName := r.FormValue("userName")
+		nickName := r.FormValue("nickName")
+		roleName := r.FormValue("roleName")
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = User.Find(userName, nickName, roleName, size, page)
+	case "/master/user/remove":
+		userName := r.FormValue("userName")
+		ret = User.RemoveUser(userName)
+	case "/master/menu/create":
+		ret = Menu.CreateMenu(data)
+	case "/master/menu/update":
+		ret = Menu.UpdateMenu(data)
+	case "/master/menu/find":
+		nameCN := r.FormValue("nameCN")
+		route := r.FormValue("route")
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = Menu.Find(nameCN, route, size, page)
+	case "/master/menu/remove":
+		route := r.FormValue("route")
+		ret = Menu.RemoveMenu(route)
+	case "/master/role/create":
+		ret = Role.CreateRole(data)
+	case "/master/role/update":
+		ret = Role.UpdateRole(data)
+	case "/master/role/find":
+		roleID := r.FormValue("roleID")
+		name := r.FormValue("name")
+		size, _ := strconv.Atoi(r.FormValue("size"))
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		ret = Role.Find(roleID, name, size, page)
+	case "/master/role/remove":
+		roleID := r.FormValue("roleID")
+		ret = Role.RemoveRole(roleID)
 	default:
 		w.WriteHeader(404)
 	}
-
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))

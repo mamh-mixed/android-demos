@@ -150,6 +150,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '测试 HTML5 读取文件内容'
       };
     });
+    page('/authManage/menu', function() {
+      app.route = {
+        name: 'authManage.menu',
+        path: '/authManage/menu',
+        title: '菜单',
+        subtitle: '菜单'
+      };
+    });
+    page('/authManage/role', function() {
+      app.route = {
+        name: 'authManage.role',
+        path: '/authManage/role',
+        title: '角色',
+        subtitle: '角色'
+      };
+    });
+    page('/authManage/user', function() {
+      app.route = {
+        name: 'authManage.user',
+        path: '/authManage/user',
+        title: '用户',
+        subtitle: '用户'
+      };
+    });
 
     // add #! before urls
     page({

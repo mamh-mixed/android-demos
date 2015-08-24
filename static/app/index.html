@@ -158,7 +158,26 @@
               </a>
             </paper-menu>
           </iron-collapse>
-
+          <a data-route="authManage">
+            <iron-icon icon="bug-report"></iron-icon>
+            <span>权限管理</span>
+          </a>
+          <iron-collapse opened="{{ startWith(route.name, 'authManage') }}">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
+              <a data-route="authManage.menu" href="/authManage/menu">
+                <iron-icon icon="pageview"></iron-icon>
+                <span>菜单</span>
+              </a>
+              <a data-route="authManage.role" href="/authManage/role">
+                <iron-icon icon="pageview"></iron-icon>
+                <span>角色</span>
+              </a>
+              <a data-route="authManage.user" href="/authManage/role">
+                <iron-icon icon="pageview"></iron-icon>
+                <span>用户</span>
+              </a>
+            </paper-menu>
+          </iron-collapse>
         </paper-menu>
       </paper-scroll-header-panel>
 
@@ -286,6 +305,21 @@
               </paper-material>
             </section>
 
+            <section data-route="authManage.menu">
+              <paper-material elevation="1">
+                <menu-list is-deletable></menu-list>
+              </paper-material>
+            </section>
+            <section data-route="authManage.role">
+              <paper-material elevation="1">
+                <role-list is-deletable></role-list>
+              </paper-material>
+            </section>
+            <section data-route="authManage.user">
+              <paper-material elevation="1">
+                <user-list is-deletable></user-list>
+              </paper-material>
+            </section>
           </iron-pages>
         </div>
       </paper-scroll-header-panel>
