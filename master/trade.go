@@ -128,6 +128,35 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 
 	// 生成数据
 	for _, v := range trans {
+
+		var amt float64
+
+		// 交易金额 = 成功的交易金额
+		// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
+		switch v.TransType {
+		case model.PayTrans:
+			amt = float64(v.TransAmt) / 100
+			if v.ChanCode == channel.ChanCodeAlipay {
+				alpTransAmt += v.TransAmt
+				alpFee += v.Fee
+			}
+			if v.ChanCode == channel.ChanCodeWeixin {
+				wxpTransAmt += v.TransAmt
+				wxpFee += v.Fee
+			}
+		// 退款、撤销、取消
+		default:
+			amt = -float64(v.TransAmt) / 100
+			if v.ChanCode == channel.ChanCodeAlipay {
+				alpRefundAmt += v.TransAmt
+				alpFee -= v.Fee
+			}
+			if v.ChanCode == channel.ChanCodeWeixin {
+				wxpRefundAmt += v.TransAmt
+				wxpFee -= v.Fee
+			}
+		}
+
 		//商户号，商户名称，订单号，金额，渠道，交易时间，交易状态，终端号，交易类型，原订单号
 		row = sheet.AddRow()
 		// 商户号
@@ -141,7 +170,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		cell.Value = v.OrderNum
 		// 交易金额
 		cell = row.AddCell()
-		cell.SetFloat(float64(v.TransAmt) / 100)
+		cell.SetFloat(amt)
 		// 渠道
 		cell = row.AddCell()
 		switch v.ChanCode {
@@ -201,29 +230,6 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		cell = row.AddCell()
 		cell.Value = v.OrigOrderNum
 
-		// 交易金额 = 成功的交易金额-部分被退款的金额
-		// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
-		switch v.TransType {
-		case model.PayTrans:
-			if v.ChanCode == channel.ChanCodeAlipay {
-				alpTransAmt += v.TransAmt - v.RefundAmt
-				alpFee += v.Fee
-			}
-			if v.ChanCode == channel.ChanCodeWeixin {
-				wxpTransAmt += v.TransAmt - v.RefundAmt
-				wxpFee += v.Fee
-			}
-		// 退款、撤销、取消
-		default:
-			if v.ChanCode == channel.ChanCodeAlipay {
-				alpRefundAmt += v.TransAmt
-				alpFee -= v.Fee
-			}
-			if v.ChanCode == channel.ChanCodeWeixin {
-				wxpRefundAmt += v.TransAmt
-				wxpFee -= v.Fee
-			}
-		}
 	}
 
 	// 利用商户数据，完善报表数据
@@ -246,7 +252,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	row.WriteStruct(&summary{
 		"名称：", merName,
 		"支付宝交易金额：", float64(alpTransAmt) / 100,
-		"支付宝退款金额：", float64(alpRefundAmt) / 100,
+		"支付宝退款金额：", -float64(alpRefundAmt) / 100,
 		"支付宝手续费：", float64(alpFee) / 100,
 		"支付宝清算金额：", float64(alpTransAmt-alpFee) / 100,
 	}, -1)
@@ -254,7 +260,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	row.WriteStruct(&summary{
 		"", "",
 		"微信交易金额：", float64(wxpTransAmt) / 100,
-		"微信退款金额：", float64(wxpRefundAmt) / 100,
+		"微信退款金额：", -float64(wxpRefundAmt) / 100,
 		"微信手续费：", float64(wxpFee) / 100,
 		"微信清算金额：", float64(wxpTransAmt-wxpFee) / 100,
 	}, -1)
@@ -262,7 +268,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	row.WriteStruct(&summary{
 		"总计：", "",
 		"交易总额：", float64(transAmt) / 100,
-		"退款总额：", float64(refundAmt) / 100,
+		"退款总额：", -float64(refundAmt) / 100,
 		"手续费总额：", float64(fee) / 100,
 		"清算总额：", float64(transAmt-fee) / 100,
 	}, -1)
