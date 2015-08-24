@@ -26,9 +26,9 @@
         "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
     },
     "CFCA": {
-        "Cert": "config/pem/cfca/cert_testing.pem", // CFCA  验签公钥
-        "CCACert": "config/pem/cfca/evCcaCrt_testing.pem", // HTTPS 证书
-        "RootCert": "config/pem/cfca/evRootCrt_testing.pem", // CFCA 根证书
+        "SignCert": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
+        "CPCNCert": "config/pem/cfca/test.cpcn.com.cn.pem", // HTTPS 证书
+        "RootCert": "config/pem/cfca/test.cpcn.com.cn_root.pem", // CFCA 根证书
         "URL": "https://test.cpcn.com.cn/Gateway/InterfaceII" // API 地址
     },
     "WeixinScanPay": {

@@ -34,8 +34,8 @@ type ConfigStruct struct {
 	}
 
 	CFCA struct {
-		Cert     string
-		CCACert  string
+		SignCert string
+		CPCNCert string
 		RootCert string
 		URL      string
 	}
@@ -56,8 +56,8 @@ type ConfigStruct struct {
 
 // postProcess 后续处理
 func (c *ConfigStruct) postProcess() {
-	Config.CFCA.CCACert = util.WorkDir + "/" + Config.CFCA.CCACert
-	Config.CFCA.Cert = util.WorkDir + "/" + Config.CFCA.Cert
+	Config.CFCA.CPCNCert = util.WorkDir + "/" + Config.CFCA.CPCNCert
+	Config.CFCA.SignCert = util.WorkDir + "/" + Config.CFCA.SignCert
 	Config.CFCA.RootCert = util.WorkDir + "/" + Config.CFCA.RootCert
 
 	Config.AlipayScanPay.AlipayPubKey = util.WorkDir + "/" + Config.AlipayScanPay.AlipayPubKey
