@@ -104,7 +104,7 @@
       <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
       <paper-input label="订单号" value="{{cond.orderNum::input}}"></paper-input>
       <paper-input label="关联订单号" value="{{cond.origOrderNum::input}}"></paper-input>
-      <paper-input label="商户代码" value="{{cond.merId::input}}"></paper-input>
+      <paper-input label="商户代码" value="{{cond.mchntid::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
         <paper-button class="colorful" raised>
@@ -116,7 +116,7 @@
       <table>
         <thead>
           <tr>
-            <!-- <th>序号</th> -->
+            <th>序号</th>
             <th>应答码</th>
             <th>订单号</th>
             <th>金额(元)</th>
@@ -132,7 +132,7 @@
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr>
-              <!-- <td>{{addOneFilter(index)}}</td> -->
+              <td>{{addOneFilter(index)}}</td>
               <td>{{item.respcd}}</td>
               <td>{{item.orderNum}}</td>
               <td>{{_currencyFilter(item.transAmt)}}</td>
@@ -203,7 +203,7 @@
                     key: v,
                     value: map[v]
                   });
-                });
+              });
               return busicds;
             })()
           }
