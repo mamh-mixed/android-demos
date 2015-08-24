@@ -37,12 +37,28 @@ func (col *transCollection) Add(t *model.Trans) error {
 }
 
 // BatchAdd 批量添加
-func (col *transCollection) BatchAdd(ts []*model.Trans) error {
+func (col *transCollection) BatchAdd(ts []*model.Trans) (err error) {
+
+	l := len(ts)
 	var temp []interface{}
 	for _, t := range ts {
 		temp = append(temp, t)
 	}
-	return database.C(col.name).Insert(temp...)
+
+	// 一次最多一W
+	batch := 10000
+	for s, e := 0, batch; s < l; s, e = e, e+batch {
+		if e > l {
+			e = l
+		}
+		err = database.C(col.name).Insert(temp[s:e]...)
+		if err != nil {
+			return err
+		}
+		log.Infof("insert coupon [%d, %d)", s, e)
+	}
+
+	return nil
 }
 
 // Update 通过Add时生成的Id来修改
@@ -274,7 +290,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
-			"fee":       bson.M{"$sum": "$fee"},
+			"netFee":    bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
 		}},
 		{"$group": bson.M{
 			"_id":       "$_id.merId",
@@ -285,7 +301,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 				"transNum":  "$transNum",
 				"transAmt":  "$transAmt",
 				"refundAmt": "$refundAmt",
-				"fee":       "$fee",
+				"fee":       "$netFee",
 			}},
 		}},
 		{"$sort": bson.M{"transNum": -1}},
@@ -301,7 +317,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
-			"fee":       bson.M{"$sum": "$fee"},
+			"fee":       bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
 		}},
 		{"$project": bson.M{
 			"chanCode":  "$_id",

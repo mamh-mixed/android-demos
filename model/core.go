@@ -215,6 +215,7 @@ type Trans struct {
 	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         // 已退款金额
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
+	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户

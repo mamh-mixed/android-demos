@@ -17,12 +17,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "130075726866740249",
-		AgentCode:  "96683320",
-		Txamt:      "000000000002",
-		Chcd:       "ALP",
+		ScanCodeId: "130271057733106881",
+		AgentCode:  "99911888",
+		Txamt:      "000000000001",
+		Chcd:       "WXP",
 		Busicd:     "PURC",
-		Mchntid:    "966833200000007",
+		Mchntid:    "999118880000312",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -94,7 +94,7 @@ var (
 		NeedUserInfo: "YES",
 	}
 
-	scanPay = scanPayCancel
+	scanPay = scanPayBarcodePay
 )
 
 func TestScanPay(t *testing.T) {
