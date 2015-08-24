@@ -83,7 +83,7 @@
     <div class="condition">
       <paper-input id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
       <paper-input id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
-      <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+      <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
       <paper-input id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
       <paper-input id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
       <paper-input id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
@@ -152,22 +152,6 @@
       Polymer({
         is: 'merchant-list',
         properties: {
-          merStatusMap: {
-            type: Array,
-            value: [{
-              key: 'Normal',
-              value: '正常商户'
-            }, {
-              key: 'Test',
-              value: '测试商户'
-            }, {
-              key: 'Deleted',
-              value: '已删除商户'
-            }]
-          },
-          merStatus: {
-            type: Object
-          },
           tiny: {
             type: Boolean,
             value: false
@@ -309,8 +293,6 @@
           this.cond.merId = "";
           this.$.merName.value = "";
           this.cond.merName = "";
-          this.$.merStatus.selectedItem = "";
-          this.cond.merStatus = "";
           this.$.agentCode.value = "";
           this.cond.agentCode = "";
           this.$.agentName.value = "";
