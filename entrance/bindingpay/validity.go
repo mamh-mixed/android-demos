@@ -139,6 +139,50 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 	return nil
 }
 
+// validateSendBindingPaySMS 交易发送短信接口报文验证
+func validateSendBindingPaySMS(in *model.BindingPayment) (ret *model.BindingReturn) {
+	if in.BindingId == "" {
+		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
+	}
+
+	if in.TransAmt == 0 {
+		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
+	}
+
+	if in.MerOrderNum == "" {
+		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
+	}
+
+	if in.TransAmt < 0 {
+		return mongo.RespCodeColl.Get("200180")
+	}
+
+	if !isAlphanumeric(in.BindingId) {
+		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
+	}
+
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+
+	return nil
+}
+
+// validateBindingPayWithSMS 带验证码交易报文验证
+func validateBindingPayWithSMS(in *model.BindingPayment) (ret *model.BindingReturn) {
+	if in.MerOrderNum == "" {
+		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
+	}
+	if in.SmsCode == "" {
+		return model.NewBindingReturn("200050", "字段 smsCode 不能为空")
+	}
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+	// TODO:短信验证码格式验证
+	return nil
+}
+
 // validateBindingRefund 退款请求报文验证
 func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 	if in.MerOrderNum == "" {

@@ -10,17 +10,47 @@ type CFCABindingPay struct{}
 
 // 中金交易类型
 const (
-	version              = "2.0"
-	correctCode          = "2000"
-	BindingCreateTxCode  = "2501"
-	BindingEnquiryTxCode = "2502"
-	BindingRemoveTxCode  = "2503"
-	BindingPaymentTxCode = "2511"
-	BindingRefundTxCode  = "2521"
-	PaymentEnquiryTxCode = "2512"
-	RefundEnquiryTxCode  = "2522"
-	TransCheckingTxCode  = "1810"
+	version                 = "2.0"
+	correctCode             = "2000"
+	BindingCreateTxCode     = "2501"
+	BindingEnquiryTxCode    = "2502"
+	BindingRemoveTxCode     = "2503"
+	BindingPaymentTxCode    = "2511"
+	BindingRefundTxCode     = "2521"
+	PaymentEnquiryTxCode    = "2512"
+	RefundEnquiryTxCode     = "2522"
+	TransCheckingTxCode     = "1810"
+	SendBindingPaySMSTxCode = "2541" // 快捷支付(发送验证短信)
+	PaymentWithSMSTxCode    = "2542" // 快捷支付(验证并绑定)
 )
+
+// ProcessPaymentWithSMS 快捷支付(验证并绑定)
+func (c *CFCABindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// 组装参数
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			InstitutionID: be.ChanMerId,
+			TxCode:        PaymentWithSMSTxCode,
+		},
+		Body: requestBody{
+			PaymentNo:         be.SysOrderNum,
+			SMSValidationCode: be.SmsCode,
+		},
+		SignCert: be.SignCert,
+	}
+	// 请求
+	resp := sendRequest(req)
+	// 应答码转换
+	ret = transformResp(resp, req.Head.TxCode)
+	return ret
+}
+
+// ProcessSendBindingPaySMS 快捷支付(发送验证短信)
+func (c *CFCABindingPay) ProcessSendBindingPaySMS(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// 2541
+	return quickPayment(be, SendBindingPaySMSTxCode)
+}
 
 // ProcessBindingCreate 建立绑定关系
 func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
@@ -48,10 +78,8 @@ func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 
 	// 请求
 	resp := sendRequest(req)
-
 	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
-
 	return ret
 }
 
@@ -106,12 +134,19 @@ func (c *CFCABindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 
 // ProcessBindingPayment 快捷支付
 func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// 2511
+	return quickPayment(be, BindingPaymentTxCode)
+}
+
+// quickPayment 快捷支付，根据业务代码的不同，走不同接口
+// 2511、2541接口。
+func quickPayment(be *model.BindingPayment, txCode string) (ret *model.BindingReturn) {
 	// 组装参数
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        BindingPaymentTxCode,
+			TxCode:        txCode,
 		},
 		Body: requestBody{
 			PaymentNo:      be.SysOrderNum,
@@ -125,10 +160,8 @@ func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *m
 
 	// 请求
 	resp := sendRequest(req)
-
 	// 应答码转换
 	ret = transformResp(resp, req.Head.TxCode)
-
 	return ret
 }
 

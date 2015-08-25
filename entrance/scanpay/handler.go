@@ -129,7 +129,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 过滤包含空格字符串
-	req.Chcd = strings.Trim(req.Chcd, " ")
+	req.Chcd = strings.TrimSpace(req.Chcd)
 	req.AgentCode = ac
 
 	// 6. 开始业务处理
