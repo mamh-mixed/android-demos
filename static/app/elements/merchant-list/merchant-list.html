@@ -251,23 +251,23 @@
         },
         // 查看商户详细信息
         viewMerchantTap: function(event) {
-          this.merchant = event.model.item
+          this.merchant = event.model.item;
           this.$.merchantView.open();
         },
         // 清除查询条件
         handleClearTapped: function() {
-          this.$.merId.value = "";
-          this.cond.merId = "";
-          this.$.merName.value = "";
-          this.cond.merName = "";
-          this.$.agentCode.value = "";
-          this.cond.agentCode = "";
-          this.$.agentName.value = "";
-          this.cond.agentName = "";
-          this.$.groupCode.value = "";
-          this.cond.groupCode = "";
-          this.$.groupName.value = "";
-          this.cond.groupName = "";
+          this.$.merId.value = '';
+          this.cond.merId = '';
+          this.$.merName.value = '';
+          this.cond.merName = '';
+          this.$.agentCode.value = '';
+          this.cond.agentCode = '';
+          this.$.agentName.value = '';
+          this.cond.agentName = '';
+          this.$.groupCode.value = '';
+          this.cond.groupCode = '';
+          this.$.groupName.value = '';
+          this.cond.groupName = '';
           this.set('cond.page', 1);
           this.generateAjaxRequest();
         }

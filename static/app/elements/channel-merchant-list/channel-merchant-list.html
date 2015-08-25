@@ -101,7 +101,7 @@
             <th>清算标识</th>
             <th>清算角色</th>
             <!-- <th>签名证书</th> -->
-            <th class="center">操作</th>
+            <!-- <th class="center">操作</th> -->
           </tr>
         </thead>
         <tbody>
@@ -131,10 +131,9 @@
               <td>
                 <span>{{item.settRole}}</span>
               </td>
-
-              <td class="center">
+              <!-- <td class="center">
                 <iron-icon icon="create" on-click="handleItemEditedEvent"></iron-icon>
-              </td>
+              </td> -->
             </tr>
           </template>
         </tbody>
@@ -149,7 +148,6 @@
     <channel-merchant-view id="merchantView" item="{{channelMer}}"></channel-merchant-view>
   </template>
   <script>
-    (function() {
       Polymer({
         is: 'channel-merchant-list',
         properties: {
@@ -231,6 +229,5 @@
             this.$.merchantView.open();
         }
       });
-    })();
   </script>
 </dom-module>

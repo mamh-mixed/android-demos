@@ -149,22 +149,23 @@ type MerDetail struct {
 
 // ChanMer 渠道商户
 type ChanMer struct {
-	ChanCode      string   `bson:"chanCode,omitempty" json:"chanCode,omitempty"`           // 渠道代码
-	ChanMerId     string   `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`         // 商户号
-	ChanMerName   string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"`     // 商户名称
-	SettFlag      string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`           // 清算标识
-	SettRole      string   `bson:"settRole,omitempty" json:"settRole,omitempty"`           // 清算角色
-	SignCert      string   `bson:"signCert,omitempty" json:"signCert,omitempty"`           // 签名证书
-	CheckSignCert string   `bson:"checkSignCert,omitempty" json:"checkSignCert,omitempty"` // 验签证书
-	WxpAppId      string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`           // 微信支付App Id
-	InsCode       string   `bson:"insCode,omitempty" json:"insCode,omitempty"`             // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
-	TerminalId    string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`       // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	AcqFee        float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`               // 讯联跟渠道费率
-	MerFee        float32  `bson:"merFee,omitempty" json:"merFee,omitempty"`               // 商户跟讯联费率
-	HttpCert      string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`           // http cert证书
-	HttpKey       string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`             // http key 证书
-	IsAgentMode   bool     `bson:"isAgentMode" json:"isAgentMode"`                         // 是否受理商模式
-	AgentMer      *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`           // 受理商商户
+	ChanCode    string   `bson:"chanCode,omitempty" json:"chanCode,omitempty"`       // 渠道代码
+	ChanMerId   string   `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`     // 商户号
+	ChanMerName string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"` // 商户名称
+	SettFlag    string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`       // 清算标识
+	SettRole    string   `bson:"settRole,omitempty" json:"settRole,omitempty"`       // 清算角色
+	SignKey     string   `bson:"signKey,omitempty" json:"signKey,omitempty"`         // 签名密钥
+	PrivateKey  string   `bson:"privateKey,omitempty" json:"privateKey,omitempty"`   // 渠道商户私钥
+	PublicKey   string   `bson:"publicKey,omitempty" json:"publicKey,omitempty"`     // 渠道商户公钥
+	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
+	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
+	AcqFee      float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
+	MerFee      float32  `bson:"merFee,omitempty" json:"merFee,omitempty"`           // 商户跟讯联费率
+	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
+	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
+	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
+	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	// ...
 }
 

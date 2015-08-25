@@ -19,7 +19,7 @@ import (
 	"github.com/omigo/mahonia"
 )
 
-// Scanpay 扫码支付入口(测试页面)
+// Scanpay 扫码支付入口
 func Scanpay(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("url = %s", r.URL.String())
 
@@ -32,6 +32,8 @@ func Scanpay(w http.ResponseWriter, r *http.Request) {
 
 	// 请求扫码支付
 	retBytes := scanpay.ScanPayHandle(bytes)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(retBytes)
 }
 
@@ -70,6 +72,7 @@ func Quickpay(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Sign", sign)
 
 	log.Infof("to merchant message: %s", rdata)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(rdata)
 }
 

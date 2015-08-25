@@ -3,6 +3,7 @@ package adaptor
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -18,7 +19,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
 	// 交易参数
@@ -75,7 +76,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
 	req.Subject = mer.Detail.CommodityName
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
 	// 交易参数
@@ -153,7 +154,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
 	req.Subject = mer.Detail.CommodityName
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
 	// 交易参数
@@ -195,7 +196,7 @@ func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
 	// 交易参数
@@ -253,7 +254,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 
 	// 上送参数
 	req.OrderNum = t.OrderNum
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
 	// 不同渠道参数转换
@@ -308,7 +309,7 @@ func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
 	// 交易参数
@@ -442,7 +443,7 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 
 	// 上送参数
 	req.OrderNum = t.OrderNum
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
 	req.SubMchId = subMchId
@@ -515,7 +516,7 @@ func prepareWxpReqData(orig, current *model.Trans, c *model.ChanMer, req *model.
 
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignCert = c.SignCert
+	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
 	req.SubMchId = subMchId

@@ -4,16 +4,17 @@ import (
 	"archive/zip"
 	"bytes"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
 	"github.com/tealeg/xlsx"
-	"io/ioutil"
-	"net/http"
 	"qiniupkg.com/api.v7/conf"
 	"qiniupkg.com/api.v7/kodo"
-	"strings"
 )
 
 const (
@@ -237,7 +238,7 @@ func (i *importer) doDataMapping() {
 		alpChanMer := model.ChanMer{}
 		alpChanMer.ChanMerId = r.AlpMerId
 		alpChanMer.ChanCode = "ALP"
-		alpChanMer.SignCert = r.AlpMd5
+		alpChanMer.SignKey = r.AlpMd5
 		// TODO 费率
 
 		wxpChanMer := model.ChanMer{}
@@ -248,7 +249,7 @@ func (i *importer) doDataMapping() {
 			wxpChanMer.ChanMerId = r.WxpMerId
 			wxpChanMer.WxpAppId = r.WxpAppId
 		}
-		wxpChanMer.SignCert = r.WxpMd5
+		wxpChanMer.SignKey = r.WxpMd5
 		wxpChanMer.ChanCode = "WXP"
 		// TODO 费率
 		i.ChanMers = append(i.ChanMers, alpChanMer, wxpChanMer)

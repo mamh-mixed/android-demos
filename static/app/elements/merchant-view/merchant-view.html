@@ -49,8 +49,9 @@
         min-width: 70px;
         vertical-align: top;
       }
-      .key{
-          width:70px;
+
+      .key {
+        width: 70px;
       }
     </style>
 
@@ -105,7 +106,7 @@
             <td>{{item.detail.acctName}}</td>
           </tr>
           <tr>
-            <td >开户行号:</td>
+            <td>开户行号:</td>
             <td>{{item.detail.bankId}}</td>
             <td>支行名称:</td>
             <td>{{item.detail.bankName}}</td>
@@ -166,24 +167,16 @@
         <paper-button hidden$="{{!deleteFlag}}">【确定】</paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">【删除】</paper-button>
         <paper-button on-tap="handleItemEditedEvent">【编辑】</paper-button>
-        <paper-button on-tap="handleDeleteTapped">【查看路由】</paper-button>
+        <paper-button on-tap="handleViewRouteTapped">【查看路由】</paper-button>
       </div>
     </paper-dialog>
 
   </template>
   <script>
-    (function() {
-      'use strict';
-
       Polymer({
         is: 'merchant-view',
 
         properties: {
-          foo: {
-            type: String,
-            value: 'merchant-view',
-            notify: true
-          },
           permissionArray: {
             type: Array,
             value: [{
@@ -218,7 +211,7 @@
           "_permissionChanged(item.permission)"
         ],
         _permissionChanged: function(value) {
-            this.deleteFlag=false;
+          this.deleteFlag = false;
           for (var i = 0, il = this.permissionArray.length; i < il; i++) {
             this.set('permissionArray.' + i + '.isChecked', false);
           }
@@ -238,22 +231,6 @@
         },
         open: function() {
           this.$.dialogView.open();
-        },
-        _computePermissions: function(permissions) {
-          var map = {};
-          for (var i = 0, l = this.permissionArray.length; i < l; i++) {
-            var item = this.permissionArray[i];
-            map[item.key] = item.value;
-          }
-
-          if (!permissions) {
-            return '';
-          }
-
-          var permissionCN = permissions.map(function(value) {
-            return map[value];
-          });
-          return permissionCN.join(',');
         },
         _computeYesOrNo: function(flag) {
           if (flag) {
@@ -282,14 +259,18 @@
           this.fire('editor');
         },
         // 删除事件
-        deleteTap:function(){
-            this.deleteFlag=true;
+        deleteTap: function() {
+          this.deleteFlag = true;
         },
         // 取消删除事件
-        cancelDeleteTap:function(){
-            this.deleteFlag=false;
+        cancelDeleteTap: function() {
+          this.deleteFlag = false;
         },
-      });
-    })();
+        // 查看路由
+        handleViewRouteTapped:function(){
+            page('/config/routes2/' + this.item.merId);
+        },
+
+      })();
   </script>
 </dom-module>
