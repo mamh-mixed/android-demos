@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/CardInfoLink/quickpay/data"
 	"github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
@@ -12,7 +11,7 @@ import (
 	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/omigo/log"
 
-	_ "net/http/pprof"
+	// _ "net/http/pprof"
 )
 
 func main() {
@@ -30,11 +29,11 @@ func main() {
 	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 	http.HandleFunc("/quickpay/", entrance.Quickpay)
 	http.HandleFunc("/scanpay/", entrance.Scanpay)
-	http.HandleFunc("/quickMaster/", master.QuickMaster)
-	http.HandleFunc("/master/", master.MasterRoute)
-	http.HandleFunc("/service/", master.Service)
 	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
-	http.HandleFunc("/import", data.Import)
+
+	http.HandleFunc("/master/", master.MasterRoute())
+
+	// http.HandleFunc("/import", data.Import)
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))

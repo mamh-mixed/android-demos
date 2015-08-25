@@ -23,17 +23,6 @@ func init() {
 	cli = kodo.New(zone, nil) // 用默认配置创建 Client
 }
 
-func Service(w http.ResponseWriter, req *http.Request) {
-	switch req.URL.Path {
-	case "/service/uptoken":
-		handleUptoken(w, req)
-	case "/service/uploaded":
-		handleDownURL(w, req)
-	default:
-		http.Redirect(w, req, "/service/uptoken", 302)
-	}
-}
-
 func handleUptoken(w http.ResponseWriter, req *http.Request) {
 	policy := &kodo.PutPolicy{
 		Scope:   BUCKET,
