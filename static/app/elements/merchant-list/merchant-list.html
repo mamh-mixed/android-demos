@@ -141,7 +141,7 @@
     </paper-fab>
 
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
-    <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent"></merchant-view>
+    <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>
   </template>
   <script>
     (function() {
@@ -270,7 +270,10 @@
           this.cond.groupName = '';
           this.set('cond.page', 1);
           this.generateAjaxRequest();
-        }
+        },
+        handleAfterDelete: function() {
+            this.handleQueryTapped();
+        },
       });
     })();
   </script>

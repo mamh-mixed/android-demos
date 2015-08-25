@@ -63,6 +63,9 @@ func MasterRoute(w http.ResponseWriter, r *http.Request) {
 		ret = Merchant.FindOne(merId)
 	case "/master/merchant/save":
 		ret = Merchant.Save(data)
+	case "/master/merchant/delete":
+		merId := r.FormValue("merId")
+		ret = Merchant.Delete(merId)
 	case "/master/router/save":
 		ret = RouterPolicy.Save(data)
 	case "/master/router/find":
