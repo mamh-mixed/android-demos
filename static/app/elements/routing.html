@@ -68,12 +68,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '渠道商户'
       };
     });
+    page('/config/routes2/:merId', function(data) {
+      app.route = {
+        name: 'config.routes2',
+        path: '/config/routes2/:merId',
+        title: '路由策略',
+        subtitle: '路由策略',
+        params: data.params
+      };
+    });
     page('/config/routes', function() {
       app.route = {
         name: 'config.routes',
         path: '/config/routes',
         title: '路由策略',
-        subtitle: '路由策略'
+        subtitle: '路由策略',
       };
     });
     page('/config/agents', function() {

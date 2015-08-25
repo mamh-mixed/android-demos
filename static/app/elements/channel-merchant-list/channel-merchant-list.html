@@ -41,6 +41,42 @@
       right: 10%;
     }
 
+    table {
+      width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    tr > th,
+    tr > td {
+      text-align: left;
+      padding: 8px;
+    }
+
+    table > thead {}
+
+    thead > tr {}
+
+    thead > tr > th {
+      line-height: 1.42857143;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table > tbody {
+      min-height: 700px;
+    }
+
+    tbody>tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    table tr th:nth-last-of-type(2),
+    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -52,96 +88,66 @@
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
     </div>
-
-    <template is="dom-repeat" items="{{merchants}}">
-      <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
-        <dl>
-          <dt>渠道代码</dt>
-          <dd>
-            <span>{{item.chanCode}}</span>
-          </dd>
-
-          <dt>商户编号</dt>
-          <dd>
-            <span>{{item.chanMerId}}</span>
-          </dd>
-
-          <dt>商户名称</dt>
-          <dd>
-            <span>{{item.chanMerName}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">清算标识</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.settFlag}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">清算角色</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.settRole}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">签名密钥</dt>
-          <dd hidden$="{{tiny}}">
-            <p>
-              <pre>{{item.signKey}}</pre>
-            </p>
-          </dd>
-
-          <dt hidden$="{{tiny}}">渠道商户私钥</dt>
-          <dd hidden$="{{tiny}}">
-            <p>
-              <pre>{{item.privateKey}}</pre>
-            </p>
-          </dd>
-
-          <dt hidden$="{{tiny}}">渠道商户公钥</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.publicKey}}</span>
-          </dd>
-
-          <dt>微信支付 APPID</dt>
-          <dd>
-            <span>{{item.wxpAppId}}</span>
-          </dd>
-
-          <dt>机构号</dt>
-          <dd>
-            <span>{{item.agentCode}}</span>
-          </dd>
-
-          <dt>终端号</dt>
-          <dd>
-            <span>{{item.terminalId}}</span>
-          </dd>
-          <dt hidden$="{{tiny}}">渠道费率</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.acqFee}}</span>
-          </dd>
-          <dt hidden$="{{tiny}}">商户费率</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.merFee}}</span>
-          </dd>
-          <dt hidden$="{{tiny}}">HTTP Cert</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.httpCert}}</span>
-          </dd>
-          <dt hidden$="{{tiny}}">HTTP Key</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.httpKey}}</span>
-          </dd>
-        </dl>
-      </card-item>
-    </template>
+    <div class="list">
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>渠道代码</th>
+            <th>商户编号</th>
+            <th>渠道费率</th>
+            <th>商户费率</th>
+            <th>商户名称</th>
+            <th>清算标识</th>
+            <th>清算角色</th>
+            <!-- <th>签名证书</th> -->
+            <!-- <th class="center">操作</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{merchants}}">
+            <tr on-click="viewMerchantTap">
+              <td class="center">
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.chanCode}}</span>
+              </td>
+              <td>
+                <span>{{item.chanMerId}}</span>
+              </td>
+              <td>
+                <span>{{item.acqFee}}</span>
+              </td>
+              <td>
+                <span>{{item.merFee}}</span>
+              </td>
+              <td>
+                <span>{{item.chanMerName}}</span>
+              </td>
+              <td>
+                <span>{{item.settFlag}}</span>
+              </td>
+              <td>
+                <span>{{item.settRole}}</span>
+              </td>
+              <!-- <td class="center">
+                <iron-icon icon="create" on-click="handleItemEditedEvent"></iron-icon>
+              </td> -->
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
     <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
     <channel-merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></channel-merchant-editor>
+    <channel-merchant-view id="merchantView" item="{{channelMer}}"></channel-merchant-view>
   </template>
   <script>
-    (function() {
       Polymer({
         is: 'channel-merchant-list',
         properties: {
@@ -153,20 +159,6 @@
             type: Boolean,
             value: false
           },
-          isAllowSelected: {
-            type: Boolean,
-            value: false
-          },
-          isEditable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          isDeletable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          }
         },
         ready: function() {
           this.merchants = [];
@@ -209,21 +201,6 @@
             Util.toast('没有数据', 2000);
           }
         },
-        // 商户选中事件
-        handleItemStaredEvent: function(e) {
-          var staredItem = e.model.item;
-          this.fire('item-selected', staredItem);
-          if (!staredItem.stared) {
-            return;
-          }
-
-          for (var i = 0, l = this.merchants.length; i < l; i++) {
-            var item = this.merchants[i];
-            if (item.chanCode !== staredItem.chanCode) {
-              this.set('merchants.' + i + '.stared', false);
-            }
-          }
-        },
         // 清除商户选中的标志
         initialList: function() {
           for (var i = 0, l = this.merchants.length; i < l; i++) {
@@ -231,8 +208,8 @@
           }
         },
         // 编辑机构商户
-        handleItemEditedEvent: function(e, detail) {
-          this.$.merchantEditor.chanMer = detail;
+        handleItemEditedEvent: function(e) {
+          this.$.merchantEditor.chanMer = e.model.item;
           this.$.merchantEditor.open2();
         },
         // 新增机构商户事件
@@ -242,9 +219,15 @@
         // 新机构商户保存成功事件，刷新列表
         handleMerchantSave: function() {
           this.handleQueryTapped();
+        },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        // 查看渠道商户详情
+        viewMerchantTap: function(e) {
+            this.channelMer=e.model.item;
+            this.$.merchantView.open();
         }
       });
-    })();
-
   </script>
 </dom-module>
