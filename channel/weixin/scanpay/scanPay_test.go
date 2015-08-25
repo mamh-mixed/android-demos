@@ -20,7 +20,7 @@ func xTestProcessBarcodePay(t *testing.T) {
 		OrderNum:   util.Millisecond(),   // 商户订单号
 		ActTxamt:   "1",                  // 总金额
 		ScanCodeId: "130466765198371945", // 授权码
-		SignCert:   "12sdffjjguddddd2widousldadi9o0i1",
+		SignKey:    "12sdffjjguddddd2widousldadi9o0i1",
 	}
 
 	ret, err := DefaultWeixinScanPay.ProcessBarcodePay(m)
@@ -57,7 +57,7 @@ func TestProcessEnquiry(t *testing.T) {
 		OrderNum:   "1437537877995",      // 商户订单号
 		Txamt:      "1",                  // 总金额
 		ScanCodeId: "130512005267470788", // 授权码
-		SignCert:   "12sdffjjguddddd2widousldadi9o0i1",
+		SignKey:    "12sdffjjguddddd2widousldadi9o0i1",
 	}
 
 	ret, err := DefaultWeixinScanPay.ProcessEnquiry(m)
@@ -75,7 +75,7 @@ func xTestProcessClose(t *testing.T) {
 		ChanMerId:    "1236593202",         // 商户号
 		SubMchId:     "1247075201",
 		OrigOrderNum: "1415757673", // 商户订单号
-		SignCert:     "12sdffjjguddddd2widousldadi9o0i1",
+		SignKey:      "12sdffjjguddddd2widousldadi9o0i1",
 	}
 
 	ret, err := DefaultWeixinScanPay.ProcessClose(m)

@@ -9,7 +9,7 @@ type ApplePay struct {
 	MerOrderNum   string       `json:"merOrderNum"`          //商户订单号
 	TransactionId string       `json:"transactionId"`        //ApplePay标识
 	ApplePayData  ApplePayData `json:"applePayData"`         //ApplePay数据
-	SignCert      string       `json:"signCert,omitempty"`   //签名密钥
+	SignKey       string       `json:"SignKey,omitempty"`    //签名密钥
 	Chcd          string       `json:"chcd,omitempty"`       //下游商户配置的渠道机构号
 	Mchntid       string       `json:"mchntid,omitempty"`    //下游商户配置的渠道商户号
 	CliSN         string       `json:"cliSN,omitempty"`      //商户的终端在当天对应的一个序列号

@@ -26,7 +26,7 @@
         "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
     },
     "CFCA": {
-        "SignCert": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
+        "CFCAPublicKey": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
         "CPCNCert": "config/pem/cfca/cpcn_cert_testing.pem", // HTTPS 证书
         "RootCert": "config/pem/cfca/root_cert_testing.pem", // CFCA 根证书
         "URL": "https://www.china-clearing.com/Gateway/InterfaceII" // API 地址

@@ -61,7 +61,7 @@ type BindingCreate struct {
 	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
 	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
-	SignCert      string `json:"-"`                                            // 签名密钥
+	PrivateKey    string `json:"-"`                                            // 签名密钥
 	// 存储解密字段，辅助
 	AcctNumDecrypt   string `json:"-"`
 	AcctNameDecrypt  string `json:"-"`
@@ -78,7 +78,7 @@ type BindingRemove struct {
 	TxSNUnBinding string `json:"txSNUnBinding"` //解绑流水号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
-	SignCert      string //签名密钥
+	PrivateKey    string //签名密钥
 }
 
 // BindingEnquiry 绑定关系查询
@@ -87,7 +87,7 @@ type BindingEnquiry struct {
 	BindingId     string `json:"bindingId"` // 银行卡绑定ID
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
-	SignCert      string //签名密钥
+	PrivateKey    string //签名密钥
 }
 
 // BindingPayment 绑定支付请求
@@ -105,7 +105,7 @@ type BindingPayment struct {
 	SysOrderNum   string //系统订单号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
-	SignCert      string //签名密钥
+	PrivateKey    string //签名密钥
 }
 
 // BindingRefund 退款
@@ -118,7 +118,7 @@ type BindingRefund struct {
 	SysOrderNum     string //系统订单号
 	SysOrigOrderNum string //系统原支付订单号
 	ChanMerId       string //渠道商户ID
-	SignCert        string //签名密钥
+	PrivateKey      string //签名密钥
 }
 
 // BillingSummary 交易对账汇总
@@ -141,7 +141,7 @@ type OrderEnquiry struct {
 	SysOrderNum  string `json:"sysOrderNum"`  //原网关订单号
 	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
 	ChanMerId    string //渠道商户Id
-	SignCert     string //签名密钥
+	PrivateKey   string //签名密钥
 }
 
 // NoTrackPayment 无卡直接支付
