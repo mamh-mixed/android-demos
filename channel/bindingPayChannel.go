@@ -28,6 +28,12 @@ type BindingPayChan interface {
 	// ProcessRefundEnquiry 快捷支付退款查询
 	ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn)
 
+	// ProcessSendBindingPaySMS 快捷支付发送短信验证码
+	ProcessSendBindingPaySMS(be *model.BindingPayment) (ret *model.BindingReturn)
+
+	// ProcessPaymentWithSMS 快捷支付短信验证支付
+	ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn)
+
 	// ProcessTransChecking 交易对账，清算
 	// ProcessTransChecking(chanMerId, settDate, signCert string) (resp *BindingResponse)
 }

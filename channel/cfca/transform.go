@@ -33,6 +33,8 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		}
 		return
 	}
+
+AGAIN:
 	// 成功受理的请求
 	switch txCode {
 	//根据交易类型处理结果
@@ -41,13 +43,13 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		// ret.BindingId = resp.Body.TxSNBinding
 		//10=绑定处理中 20=绑定失败 30=绑定成功 40=解绑成功
 		switch resp.Body.Status {
-		case 10:
+		case "10":
 			ret.RespCode = "000009"
-		case 20:
+		case "20":
 			ret.RespCode = "100040"
-		case 30:
+		case "30":
 			ret.RespCode = "000000"
-		case 40:
+		case "40":
 			ret.RespCode = "100050"
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
@@ -57,11 +59,11 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	case BindingRemoveTxCode:
 		//10=解绑处理中 20=解绑成功 30=解绑失败(等于已绑定)
 		switch resp.Body.Status {
-		case 10:
+		case "10":
 			ret.RespCode = "000009"
-		case 20:
+		case "20":
 			ret.RespCode = "000000"
-		case 30:
+		case "30":
 			ret.RespCode = "100060"
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
@@ -71,11 +73,11 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	case BindingPaymentTxCode, PaymentEnquiryTxCode:
 		//10=处理中 20=支付成功 30=支付失败
 		switch resp.Body.Status {
-		case 10:
+		case "10":
 			ret.RespCode = "000009"
-		case 20:
+		case "20":
 			ret.RespCode = "000000"
-		case 30:
+		case "30":
 			ret.RespCode = "100070"
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
@@ -87,14 +89,31 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	case RefundEnquiryTxCode:
 		//10=已受理 20=正在退款 30=退款成功 40=退款失败
 		switch resp.Body.Status {
-		case 10, 20, 30:
+		case "10", "20", "30":
 			ret.RespCode = "000000"
-		case 40:
+		case "40":
 			ret.RespCode = "100080"
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
+	case PaymentWithSMSTxCode:
+		// 验证码状态
+		switch resp.Body.VerifyStatus {
+		case "40":
+			// 验证码通过，验证status
+			txCode = BindingPaymentTxCode
+			goto AGAIN
+		case "20":
+			// TODO:验证码超时
+			ret.RespCode = "400000"
+		case "30":
+			// TODO:验证未通过
+			ret.RespCode = "400001"
+		}
+
+	case SendBindingPaySMSTxCode:
+		ret.RespCode = "000000"
 	case TransCheckingTxCode:
 		ret.RespCode = "000000"
 
