@@ -1,0 +1,187 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="channel-merchant-view">
+  <template>
+
+    <style>
+      :host {
+        display: block;
+        --paper-dialog-scrollable: {
+          min-width: 500px;
+          min-height: 100%;
+          font-size: 15px;
+        }
+      }
+
+      paper-dialog {
+        background-color: #ffffff;
+      }
+
+      paper-dialog > *:first-child {
+        margin-top: 0px;
+      }
+
+      .row {
+        @apply(--layout-horizontal);
+      }
+
+      .row iron-icon {
+        color: red;
+      }
+
+      paper-icon-button.red:hover {
+        background: #CD4F39;
+        border-radius: 0%;
+      }
+
+      .header {
+        padding: 0px;
+        margin: 0px;
+        background: red;
+        color: #ffffff;
+        heigth: 40px;
+        line-height: 40px;
+        font-weight: bold;
+        font-size: 16px;
+      }
+       dl dt {
+        float: left;
+        width: 100px;
+        overflow: hidden;
+        clear: left;
+        text-align: right;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        opacity: 0.5;
+      }
+
+       dl dd {
+        margin-left: 120px;
+        word-break: break-all;
+      }
+
+       dd:after,
+       dd:before {
+        display: table;
+        content: " ";
+      }
+
+       dd:after {
+        clear: both;
+      }
+    </style>
+
+    <paper-dialog id="dialogView">
+      <div class="header">
+        <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
+        查看渠道商户信息
+      </div>
+      <paper-dialog-scrollable>
+        <div>
+          <dl>
+            <dt>渠道代码:</dt>
+            <dd>
+              <span>{{item.chanCode}}</span>
+            </dd>
+
+            <dt>商户编号:</dt>
+            <dd>
+              <span>{{item.chanMerId}}</span>
+            </dd>
+
+            <dt>商户名称:</dt>
+            <dd>
+              <span>{{item.chanMerName}}</span>
+            </dd>
+
+            <dt hidden$="{{tiny}}">清算标识:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.settFlag}}</span>
+            </dd>
+
+            <dt hidden$="{{tiny}}">清算角色:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.settRole}}</span>
+            </dd>
+
+            <dt hidden$="{{tiny}}">签名证书:</dt>
+            <dd hidden$="{{tiny}}">
+              <p>
+                <pre>{{item.signCert}}</pre>
+              </p>
+            </dd>
+
+            <dt hidden$="{{tiny}}">验签证书:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.checkSignCert}}</span>
+            </dd>
+
+            <dt>微信支付APPID:</dt>
+            <dd>
+              <span>{{item.wxpAppId}}</span>
+            </dd>
+
+            <dt>机构号:</dt>
+            <dd>
+              <span>{{item.agentCode}}</span>
+            </dd>
+
+            <dt>终端号:</dt>
+            <dd>
+              <span>{{item.terminalId}}</span>
+            </dd>
+            <dt hidden$="{{tiny}}">渠道费率:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.acqFee}}</span>
+            </dd>
+            <dt hidden$="{{tiny}}">商户费率:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.merFee}}</span>
+            </dd>
+            <dt hidden$="{{tiny}}">HTTP Cert:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.httpCert}}</span>
+            </dd>
+            <dt hidden$="{{tiny}}">HTTP Key:</dt>
+            <dd hidden$="{{tiny}}">
+              <span>{{item.httpKey}}</span>
+            </dd>
+          </dl>
+          </card-item>
+        </div>
+        <paper-dialog-scrollable>
+    </paper-dialog>
+
+  </template>
+  <script>
+      Polymer({
+        is: 'channel-merchant-view',
+
+        properties: {
+          foo: {
+            type: String,
+            value: 'channel-merchant-view',
+            notify: true
+          },
+          item: Object
+        },
+        open: function() {
+          this.$.dialogView.open();
+        },
+        // 关闭事件
+        handleClose: function() {
+          this.$.dialogView.close();
+        }
+      });
+  </script>
+</dom-module>

@@ -30,97 +30,115 @@
       color: var(--text-primary-color);
     }
 
-    card-item {
-      margin-bottom: 20px;
-    }
-
     paper-fab {
       position: fixed;
       bottom: 100px;
       right: 10%;
     }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    tr > th,
+    tr > td {
+      text-align: left;
+      padding: 8px;
+    }
+
+    table > thead {}
+
+    thead > tr {}
+
+    thead > tr > th {
+      line-height: 1.42857143;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table > tbody {
+      min-height: 700px;
+    }
+
+    tbody>tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    table tr th:nth-last-of-type(2),
+    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <div class="condition">
-      <paper-input label="商户编号" value="{{cond.merId::input}}"></paper-input>
+      <paper-input id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
     </div>
-
-    <template is="dom-repeat" items="{{routes}}">
-      <card-item item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}" on-item-deleted="handleItemDeletedEvent">
-        <div class="layout horizontal wrap">
-          <div class="flex-6">
-            <dl>
-              <dt>商户编号</dt>
-              <dd>
+    <div class="list">
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>商户编号</th>
+            <th>卡品牌</th>
+            <th>渠道代码</th>
+            <th>渠道商户号</th>
+            <th>卡Bin组</th>
+            <th>卡类型</th>
+            <th>交易类型</th>
+            <th>输入方式</th>
+            <th>起始金额</th>
+            <th>最大金额</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{routes}}">
+            <tr on-click="viewMerchantTap">
+              <td class="center">
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
                 <span>{{item.merId}}</span>
-              </dd>
-
-              <dt>渠道代码</dt>
-              <dd>
+              </td>
+              <td>
+                <span>{{tansCardBrands(item.cardBrand)}}</span>
+              </td>
+              <td>
                 <span>{{item.chanCode}}</span>
-              </dd>
-
-              <dt>渠道商户号</dt>
-              <dd>
+              </td>
+              <td>
                 <span>{{item.chanMerId}}</span>
-              </dd>
-
-              <dt>子商户号</dt>
-              <dd>
-                <span>{{item.subMerId}}</span>
-              </dd>
-
-              <dt>交易类型</dt>
-              <dd>
-                <span>{{item.transType}}</span>
-              </dd>
-
-              <dt>是否代理商</dt>
-              <dd>
-                <span>{{_computeYesOrNo(item.isAgent)}}</span>
-              </dd>
-            </dl>
-          </div>
-          <div class="flex-6">
-            <dl>
-              <dt>卡品牌</dt>
-              <dd>
-                <span>{{item.cardBrand}}</span>
-              </dd>
-
-              <dt>卡Bin组</dt>
-              <dd>
+              </td>
+              <td>
                 <span>{{item.binGroup}}</span>
-              </dd>
-
-              <dt>卡类型</dt>
-              <dd>
+              </td>
+              <td>
                 <span>{{item.cardType}}</span>
-              </dd>
-
-              <dt>起始金额</dt>
-              <dd>
-                <span>{{item.minAmount}}</span>
-              </dd>
-
-              <dt>最大金额</dt>
-              <dd>
-                <span>{{item.maxAmount}}</span>
-              </dd>
-
-              <dt>输入方式</dt>
-              <dd>
+              </td>
+              <td>
+                <span>{{item.transType}}</span>
+              </td>
+              <td>
                 <span>{{item.inputWay}}</span>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      </card-item>
-    </template>
+              </td>
+              <td>
+                <span>{{item.minAmount}}</span>
+              </td>
+              <td>
+                <span>{{item.maxAmount}}</span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
     <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
@@ -133,14 +151,17 @@
       Polymer({
         is: 'route-list',
         properties: {
-          isEditable: {
-            type: Boolean,
-            value: false
-          },
-          isDeletable: {
-            type: Boolean,
-            value: true
-          }
+            merId: {
+              type: String,
+              reflectToAttribute: true,
+              observer:'_merIdChandged'
+            },
+        },
+        _merIdChandged:function(value){
+            this.$.merId.value=value;
+            this.cond.merId=value;
+            this.routes = [];
+            this.generateAjaxRequest();
         },
         ready: function() {
           this.routes = [];
@@ -177,21 +198,6 @@
             Util.toast('没有数据', 2000);
           }
         },
-
-        handleItemStaredEvent: function(e) {
-          var staredItem = e.model.item;
-          this.fire('item-selected', staredItem);
-          if (!staredItem.stared) {
-            return;
-          }
-
-          for (var i = 0, l = this.routes.length; i < l; i++) {
-            var item = this.routes[i];
-            if (item.merId !== staredItem.merId) {
-              this.set('routes.' + i + '.stared', false);
-            }
-          }
-        },
         // 新增路由策略事件
         handleCreateFabTapped: function() {
           this.$.editor.open();
@@ -211,6 +217,29 @@
             return '是';
           }
           return '否';
+        },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        // 转换卡品牌
+        tansCardBrands: function(value) {
+          if (value == "CUP") {
+            return "银联国内卡";
+          } else if (value == "UPI") {
+            return "银联国际卡";
+          } else if (value == "VIS") {
+            return "VISA 卡";
+          } else if (value == "MCC") {
+            return "万事达卡";
+          } else if (value == "JCB") {
+            return "JCB 卡";
+          } else if (value == "ALP") {
+            return "支付宝";
+          } else if (value == "WXP") {
+            return "微信";
+          } else {
+            return value;
+          }
         }
       });
     })();

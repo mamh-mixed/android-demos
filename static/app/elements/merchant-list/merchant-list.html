@@ -104,7 +104,6 @@
             <th>代理名称</th>
             <th>集团商户代码</th>
             <th>集团商户名称</th>
-            <th class="center">操作</th>
           </tr>
         </thead>
         <tbody>
@@ -131,9 +130,6 @@
               <td>
                 <span>{{item.groupName}}</span>
               </td>
-              <td class="center">
-                <iron-icon icon="create" on-tap="handleItemEditedEvent"></iron-icon>
-              </td>
             </tr>
           </template>
         </tbody>
@@ -145,7 +141,7 @@
     </paper-fab>
 
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
-    <merchant-view id="merchantView" item="{{merchant}}"></merchant-view>
+    <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent"></merchant-view>
   </template>
   <script>
     (function() {
@@ -160,20 +156,6 @@
             type: Boolean,
             value: false
           },
-          isAllowSelected: {
-            type: Boolean,
-            value: false
-          },
-          isEditable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          isDeletable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          }
         },
         ready: function() {
           this.merchants = [];
@@ -253,21 +235,6 @@
         handleMerchantSave: function() {
           this.handleQueryTapped();
         },
-        // 商户选中事件
-        handleItemStaredEvent: function(e) {
-          var staredItem = e.model.item;
-          this.fire('item-selected', staredItem);
-          if (!staredItem.stared) {
-            return;
-          }
-
-          for (var i = 0, l = this.merchants.length; i < l; i++) {
-            var item = this.merchants[i];
-            if (item.merId !== staredItem.merId) {
-              this.set('merchants.' + i + '.stared', false);
-            }
-          }
-        },
         // 清除商户选中的标志
         initialList: function() {
           for (var i = 0, l = this.merchants.length; i < l; i++) {
@@ -275,8 +242,8 @@
           }
         },
         // 编辑机构商户
-        handleItemEditedEvent: function(e) {
-          page('/config/merchant/' + e.model.item.merId);
+        handleItemEditedEvent: function() {
+          page('/config/merchant/' + this.merchant.merId);
         },
 
         addOneFilter: function(index) {
