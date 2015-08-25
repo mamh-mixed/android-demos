@@ -18,7 +18,7 @@
       }
 
       paper-dialog > *:first-child {
-         margin-top:0px;
+        margin-top: 0px;
       }
 
       .row {
@@ -30,106 +30,144 @@
       }
 
       paper-icon-button.red:hover {
-        background:#CD4F39;
+        background: #CD4F39;
         border-radius: 0%;
       }
-      .header{
-          padding:0px;
-          margin:0px;
-          background:red;
-          color:#ffffff;
-          heigth:40px;
-          line-height:40px;
-          font-weight:bold;
-          font-size:16px;
+
+      .header {
+        padding: 0px;
+        margin: 0px;
+        background: red;
+        color: #ffffff;
+        heigth: 40px;
+        line-height: 40px;
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      td {
+        min-width: 70px;
+        vertical-align: top;
+      }
+      .key{
+          width:70px;
       }
     </style>
 
     <paper-dialog id="dialogView">
       <div class="header">
-         <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
-          查看机构商户信息
+        <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
+        <span>{{item.detail.merName}}</span>
       </div>
       <paper-dialog-scrollable>
-        <div>
-          <dl>
-            <dt>商户编号:</dt>
-            <dd>
-              <span>{{item.merId}}</span>
-            </dd>
-            <dt>商户名称:</dt>
-            <dd>
-              <span>{{item.detail.merName}}</span>
-            </dd>
-            <dt>代理编号:</dt>
-            <dd>
-              <span>{{item.agentCode}}</span>
-            </dd>
-            <dt>代理名称:</dt>
-            <dd>
-              <span>{{item.agentName}}</span>
-            </dd>
-
-            <dt>集团商户编码:</dt>
-            <dd>
-              <span>{{item.groupCode}}</span>
-            </dd>
-            <dt>集团商户名称:</dt>
-            <dd>
-              <span>{{item.groupName}}</span>
-            </dd>
-
-            <dt>交易币种:</dt>
-            <dd>
-              <span>{{item.transCurr}}</span>
-            </dd>
-
-            <dt>商户状态:</dt>
-            <dd>
-              <span>{{item.merStatus}}</span>
-            </dd>
-
-            <dt>接口授权:</dt>
-            <dd>
-              <span>{{_computePermissions(item.permission)}}</span>
-            </dd>
-            <dt>备注:</dt>
-            <dd>
-              <span>{{item.remark}}</span>
-            </dd>
-            <dt>是否需要验签:</dt>
-            <dd>
-              <span>{{_computeYesOrNo(item.isNeedSign)}}</span>
-            </dd>
-
-            <dt>签名密钥:</dt>
-            <dd>
-              <span>{{item.signKey}}</span>
-            </dd>
-
-            <dt>加密密钥:</dt>
-            <dd>
-              <span>{{item.encryptKey}}</span>
-            </dd>
-
-            <dt>品牌编号:</dt>
-            <dd>
-              <span>{{item.detail.brandNum}}</span>
-            </dd>
-
-            <dt>门店ID:</dt>
-            <dd>
-              <span>{{item.detail.shopID}}</span>
-            </dd>
-
-            <dt>门店类型:</dt>
-            <dd>
-              <span>{{item.detail.shopType}}</span>
-            </dd>
-
-          </dl>
-        </div>
-        <paper-dialog-scrollable>
+        <table>
+          <tr>
+            <td class="key">商户编号:</td>
+            <td>{{item.merId}}</td>
+            <td class="key">商户名称:</td>
+            <td>{{item.detail.merName}}</td>
+          </tr>
+          <tr>
+            <td class="key">代理编号:</td>
+            <td>{{item.agentCode}}</td>
+            <td class="key">代理名称:</td>
+            <td>{{item.agentName}}</td>
+          </tr>
+          <tr>
+            <td class="key">集团编码:</td>
+            <td>{{item.groupCode}}</td>
+            <td class="key">集团名称:</td>
+            <td>{{item.groupName}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <paper-radio-button id="isNeedSignCheck" checked$="{{item.isNeedSign}}" disabled> 是否开启验签</paper-radio-button>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">签名密钥:</td>
+            <td colspan="3" style="word-break:break-all;">{{item.signKey}}</td>
+          </tr>
+          <tr>
+            <td class="key">加密密钥:</td>
+            <td colspan="3" style="word-break:break-all;">{{item.encryptKey}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="key">开户账户:</td>
+            <td>{{item.detail.acctNum}}</td>
+            <td class="key">开户姓名:</td>
+            <td>{{item.detail.acctName}}</td>
+          </tr>
+          <tr>
+            <td >开户行号:</td>
+            <td>{{item.detail.bankId}}</td>
+            <td>支行名称:</td>
+            <td>{{item.detail.bankName}}</td>
+          </tr>
+          <tr>
+            <td>城市:</td>
+            <td>{{item.detail.city}}</td>
+            <td>交易币种:</td>
+            <td>{{item.transCurr}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>门店类型:</td>
+            <td>{{item.detail.shopType}}</td>
+            <td>门店 ID:</td>
+            <td>{{item.detail.shopID}}</td>
+          </tr>
+          <tr>
+            <td>商品标签:</td>
+            <td>{{item.detail.goodsTag}}</td>
+            <td>商品名称:</td>
+            <td>{{item.detail.commodityName}}</td>
+          </tr>
+          <tr>
+            <td>品牌编号:</td>
+            <td colspan="3">{{item.detail.brandNum}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>商户状态:</td>
+            <td>{{getMerStatus(item.merStatus)}}</td>
+          </tr>
+          <tr>
+            <td>备注:</td>
+            <td colspan="3" style="word-break:break-all;">{{item.remark}}</td>
+          </tr>
+          <tr>
+            <td>授权接口:</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
+                <paper-checkbox checked$="{{perm.isChecked}}" disabled>
+                  <span>{{perm.value}}</span>
+                </paper-checkbox>
+              </template>
+            </td>
+          </tr>
+        </table>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">【取消】</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}">【确定】</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">【删除】</paper-button>
+        <paper-button on-tap="handleItemEditedEvent">【编辑】</paper-button>
+        <paper-button on-tap="handleDeleteTapped">【查看路由】</paper-button>
+      </div>
     </paper-dialog>
 
   </template>
@@ -171,10 +209,32 @@
               value: '退款'
             }, {
               key: 'CANC',
-              value: '关单'
+              value: '取消'
             }]
           },
           item: Object,
+        },
+        observers: [
+          "_permissionChanged(item.permission)"
+        ],
+        _permissionChanged: function(value) {
+            this.deleteFlag=false;
+          for (var i = 0, il = this.permissionArray.length; i < il; i++) {
+            this.set('permissionArray.' + i + '.isChecked', false);
+          }
+          var permissions = value;
+          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
+
+            }
+          }
         },
         open: function() {
           this.$.dialogView.open();
@@ -202,9 +262,33 @@
           return '否';
         },
         // 关闭事件
-        handleClose:function(){
-            this.$.dialogView.close();
-        }
+        handleClose: function() {
+          this.$.dialogView.close();
+        },
+        //   将商户状态转换为中文
+        getMerStatus: function(status) {
+          if (status == "Normal") {
+            return "正常";
+          } else if (status == "Test") {
+            return "测试商户";
+          } else if (status == "Deleted") {
+            return "已删除商户";
+          } else {
+            return status;
+          }
+        },
+        // 编辑事件
+        handleItemEditedEvent: function() {
+          this.fire('editor');
+        },
+        // 删除事件
+        deleteTap:function(){
+            this.deleteFlag=true;
+        },
+        // 取消删除事件
+        cancelDeleteTap:function(){
+            this.deleteFlag=false;
+        },
       });
     })();
   </script>
