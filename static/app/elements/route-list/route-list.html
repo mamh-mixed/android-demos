@@ -223,20 +223,20 @@
         },
         // 转换卡品牌
         tansCardBrands: function(value) {
-          if (value == "CUP") {
-            return "银联国内卡";
-          } else if (value == "UPI") {
-            return "银联国际卡";
-          } else if (value == "VIS") {
-            return "VISA 卡";
-          } else if (value == "MCC") {
-            return "万事达卡";
-          } else if (value == "JCB") {
-            return "JCB 卡";
-          } else if (value == "ALP") {
-            return "支付宝";
-          } else if (value == "WXP") {
-            return "微信";
+          if (value === 'CUP') {
+            return '银联国内卡';
+          } else if (value === 'UPI') {
+            return '银联国际卡';
+          } else if (value === 'VIS') {
+            return 'VISA 卡';
+          } else if (value === 'MCC') {
+            return '万事达卡';
+          } else if (value === 'JCB') {
+            return 'JCB 卡';
+          } else if (value === 'ALP') {
+            return '支付宝';
+          } else if (value === 'WXP') {
+            return '微信';
           } else {
             return value;
           }
