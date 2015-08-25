@@ -18,7 +18,7 @@
       }
 
       paper-dialog > *:first-child {
-         margin-top:0px;
+        margin-top: 0px;
       }
 
       .row {
@@ -30,25 +30,27 @@
       }
 
       paper-icon-button.red:hover {
-        background:#CD4F39;
+        background: #CD4F39;
         border-radius: 0%;
       }
-      .header{
-          padding:0px;
-          margin:0px;
-          background:red;
-          color:#ffffff;
-          heigth:40px;
-          line-height:40px;
-          font-weight:bold;
-          font-size:16px;
+
+      .header {
+        padding: 0px;
+        margin: 0px;
+        background: red;
+        color: #ffffff;
+        heigth: 40px;
+        line-height: 40px;
+        font-weight: bold;
+        font-size: 16px;
       }
+
     </style>
 
     <paper-dialog id="dialogView">
       <div class="header">
-         <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
-          查看机构商户信息
+        <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
+        查看机构商户信息
       </div>
       <paper-dialog-scrollable>
         <div>
@@ -134,78 +136,75 @@
 
   </template>
   <script>
-    (function() {
-      'use strict';
+    Polymer({
+      is: 'merchant-view',
 
-      Polymer({
-        is: 'merchant-view',
-
-        properties: {
-          foo: {
-            type: String,
-            value: 'merchant-view',
-            notify: true
-          },
-          permissionArray: {
-            type: Array,
-            value: [{
-              key: 'PURC',
-              value: '下单支付'
-            }, {
-              key: 'PAUT',
-              value: '预下单'
-            }, {
-              key: 'QYFK',
-              value: '企业付款'
-            }, {
-              key: 'JSZF',
-              value: '公众号支付'
-            }, {
-              key: 'INQY',
-              value: '查询订单'
-            }, {
-              key: 'VOID',
-              value: '撤销'
-            }, {
-              key: 'REFD',
-              value: '退款'
-            }, {
-              key: 'CANC',
-              value: '关单'
-            }]
-          },
-          item: Object,
+      properties: {
+        foo: {
+          type: String,
+          value: 'merchant-view',
+          notify: true
         },
-        open: function() {
-          this.$.dialogView.open();
+        permissionArray: {
+          type: Array,
+          value: [{
+            key: 'PURC',
+            value: '下单支付'
+          }, {
+            key: 'PAUT',
+            value: '预下单'
+          }, {
+            key: 'QYFK',
+            value: '企业付款'
+          }, {
+            key: 'JSZF',
+            value: '公众号支付'
+          }, {
+            key: 'INQY',
+            value: '查询订单'
+          }, {
+            key: 'VOID',
+            value: '撤销'
+          }, {
+            key: 'REFD',
+            value: '退款'
+          }, {
+            key: 'CANC',
+            value: '关单'
+          }]
         },
-        _computePermissions: function(permissions) {
-          var map = {};
-          for (var i = 0, l = this.permissionArray.length; i < l; i++) {
-            var item = this.permissionArray[i];
-            map[item.key] = item.value;
-          }
-
-          if (!permissions) {
-            return '';
-          }
-
-          var permissionCN = permissions.map(function(value) {
-            return map[value];
-          });
-          return permissionCN.join(',');
-        },
-        _computeYesOrNo: function(flag) {
-          if (flag) {
-            return '是';
-          }
-          return '否';
-        },
-        // 关闭事件
-        handleClose:function(){
-            this.$.dialogView.close();
+        item: Object,
+      },
+      open: function() {
+        this.$.dialogView.open();
+      },
+      _computePermissions: function(permissions) {
+        var map = {};
+        for (var i = 0, l = this.permissionArray.length; i < l; i++) {
+          var item = this.permissionArray[i];
+          map[item.key] = item.value;
         }
-      });
-    })();
+
+        if (!permissions) {
+          return '';
+        }
+
+        var permissionCN = permissions.map(function(value) {
+          return map[value];
+        });
+        return permissionCN.join(',');
+      },
+      _computeYesOrNo: function(flag) {
+        if (flag) {
+          return '是';
+        }
+        return '否';
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      }
+    });
+
   </script>
 </dom-module>

@@ -163,7 +163,7 @@ func doTransSett() {
 			be := &model.OrderEnquiry{
 				ChanMerId:   v.ChanMerId,
 				SysOrderNum: v.SysOrderNum,
-				SignCert:    chanMer.SignCert,
+				PrivateKey:  chanMer.PrivateKey,
 			}
 
 			// 根据交易类型处理
@@ -215,7 +215,7 @@ func doCFCATransCheck() {
 
 	// 遍历渠道商户
 	for _, v := range chanMers {
-		resp := c.ProcessTransChecking(v.ChanMerId, yesterday, v.SignCert)
+		resp := c.ProcessTransChecking(v.ChanMerId, yesterday, v.PrivateKey)
 		if resp != nil && len(resp.Body.Tx) > 0 {
 			for _, tx := range resp.Body.Tx {
 				// 根据订单号查找

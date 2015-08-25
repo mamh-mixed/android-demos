@@ -56,7 +56,7 @@ func initPrivKey(priKeyPem string) *rsa.PrivateKey {
 
 // 读证书
 func init() {
-	certPemFile := goconf.Config.CFCA.Cert
+	certPemFile := goconf.Config.CFCA.CFCAPublicKey
 	certPem, err := ioutil.ReadFile(certPemFile)
 	if err != nil {
 		fmt.Printf("read cfca cert error: %s\n", err)
@@ -83,7 +83,6 @@ func init() {
 // SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名
 func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
 	// gen privatekey
-	// TODO 优化，只需要初始化一次
 	chinaPaymentPriKey := initPrivKey(priKeyPem)
 	hashed := sha1.Sum(origin)
 

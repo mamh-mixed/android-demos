@@ -452,19 +452,19 @@
           if (this.$.merId.validate() && this.$.merName.validate() && this.$.commodityName.validate() && this.$.merStatus.selectedItem) {
             if (this.$.isNeedSignCheck.checked) {
               if (!this.$.signKey.validate()) {
-                return true
+                return true;
               }
             }
-            return false
+            return false;
           } else {
-            return true
+            return true;
           }
         },
         // 保存商户的按钮事件
         handleSaveMerchantTapped: function() {
           if (this.isMerchantConfigEmpty()) {
-            Util.toast("必填项不能为空", 3000);
-            return
+            Util.toast('必填项不能为空', 3000);
+            return;
           }
 
           this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
@@ -483,14 +483,14 @@
         // 判断支付宝必填项是否为空
         isALPConfigEmpty: function() {
           if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignCert.validate()) {
-            return false
+            return false;
           }
-          return true
+          return true;
         },
         // 保存支付宝信息的按钮事件
         handleSaveALPTapped: function() {
           if (this.isALPConfigEmpty()) {
-            Util.toast("必填项不能为空", 3000);
+            Util.toast('必填项不能为空', 3000);
             return;
           }
           var acqFee = parseFloat(this.alipay.acqFee),
@@ -519,31 +519,31 @@
         isWXPConfigEmpty: function() {
           if (this.weixin.isAgentMode) {
             if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.bigChanMerId.validate()) {
-              return false
+              return false;
             }
           } else {
             if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() &&
               this.$.wsignCert.validate()) {
-              return false
+              return false;
             }
           }
-          return true
+          return true;
         },
         // 保存微信信息的按钮事件
         handleSaveWXPTapped: function() {
           if (this.isWXPConfigEmpty()) {
             Util.toast('必填项不能为空', 3000);
-            return
+            return;
           }
           //   http证书与HTTP密钥文件格式必须为PEM格式的文件,后台还未
           if (!this.weixin.isAgentMode) {
             if (!this.httpCertFlag) {
               Util.toast('HTTP证书文件格式，必须为PEM格式的文件', 3000);
-              return
+              return;
             }
             if (!this.httpKeyFlag) {
               Util.toast('HTTP密钥文件格式，必须为PEM格式的文件', 3000);
-              return
+              return;
             }
           }
 
@@ -603,10 +603,10 @@
             this.$.bigChanMerId.required = true;
             this.$.wxpAppId.required = false;
             this.$.wsignCert.required = false;
-            this.$.wxpAppId.label = "微信支付App Id";
-            this.$.wsignCert.label = "签名证书";
-            this.$.httpCertL.textContent = "HTTP 证书";
-            this.$.httpKeyL.textContent = "HTTP 密钥";
+            this.$.wxpAppId.label = '微信支付App Id';
+            this.$.wsignCert.label = '签名证书';
+            this.$.httpCertL.textContent = 'HTTP 证书';
+            this.$.httpKeyL.textContent = 'HTTP 密钥';
             this.$.wxpAppId.validate();
             this.$.wsignCert.validate();
           } else {
@@ -615,20 +615,20 @@
             this.$.wxpAppId.required = true;
             this.$.wsignCert.required = true;
             this.$.bigChanMerId.validate();
-            this.$.wxpAppId.label = "*微信支付App Id";
-            this.$.wsignCert.label = "*签名证书";
-            this.$.httpCertL.textContent = "*HTTP 证书";
-            this.$.httpKeyL.textContent = "*HTTP 密钥";
+            this.$.wxpAppId.label = '*微信支付App Id';
+            this.$.wsignCert.label = '*签名证书';
+            this.$.httpCertL.textContent = '*HTTP 证书';
+            this.$.httpKeyL.textContent = '*HTTP 密钥';
           }
         },
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function() {
           this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
           if (this.$.isNeedSignCheck.checked) {
-            this.$.signKey.label = "*商户签名密钥";
+            this.$.signKey.label = '*商户签名密钥';
             this.$.signKey.required = true;
           } else {
-            this.$.signKey.label = "商户签名密钥";
+            this.$.signKey.label = '商户签名密钥';
             this.$.signKey.required = false;
             this.$.signKey.validate();
           }

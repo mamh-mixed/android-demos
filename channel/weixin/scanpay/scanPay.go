@@ -25,7 +25,7 @@ func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
 		SubMchId:     m.SubMchId,     // 子商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
-		WeixinMD5Key: m.SignCert,     // md5key
+		WeixinMD5Key: m.SignKey,     // md5key
 		ClientCert:   m.WeixinClientCert,
 		ClientKey:    m.WeixinClientKey,
 	}

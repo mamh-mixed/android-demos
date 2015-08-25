@@ -1,9 +1,10 @@
 package enterprisepay
 
 import (
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
-	"testing"
 )
 
 var clientCert = []byte(`-----BEGIN CERTIFICATE-----
@@ -72,7 +73,7 @@ func TestEnterprisePay(t *testing.T) {
 	req.Desc = "ipad mini 16G"
 	req.OpenId = "omYJssw14onUqv2tocdt0EID3dIc"
 	req.OrderNum = util.Millisecond()
-	req.SignCert = "dskskfasfsdsjdjqisi343sd99f9djfj"
+	req.SignKey = "dskskfasfsdsjdjqisi343sd99f9djfj"
 
 	req.WeixinClientCert = clientCert
 	req.WeixinClientKey = clientKey

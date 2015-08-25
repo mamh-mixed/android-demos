@@ -99,7 +99,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
-	bc.SignCert = chanMer.SignCert
+	bc.PrivateKey = chanMer.PrivateKey
 
 	log.Tracef("'BindingCreate' is: %+v", bc)
 
@@ -172,7 +172,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 转换绑定关系、请求
 	be.ChanMerId = bm.ChanMerId
 	be.ChanBindingId = bm.ChanBindingId
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 
 	// 查找该商户配置的渠道。
 	c := channel.GetChan(bm.ChanCode)
@@ -351,7 +351,7 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 	be.ChanBindingId = trans.ChanBindingId
 	be.ChanMerId = trans.ChanMerId
 	be.SysOrderNum = trans.SysOrderNum
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 
 	if isSendSMS {
 		// 发送支付验证码
@@ -413,7 +413,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	br.ChanMerId = bm.ChanMerId
 	br.ChanBindingId = bm.ChanBindingId
 	br.TxSNUnBinding = util.SerialNumber()
-	br.SignCert = chanMer.SignCert
+	br.PrivateKey = chanMer.PrivateKey
 
 	// 到渠道解绑
 	c := channel.GetChan(chanMer.ChanCode)
@@ -540,7 +540,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	be.ChanMerId = orign.ChanMerId
 	be.SysOrderNum = util.SerialNumber()
 	be.SysOrigOrderNum = orign.SysOrderNum
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 	// 交易信息
 	refund.SysOrderNum = be.SysOrderNum
 
@@ -600,7 +600,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	//赋值
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 	be.ChanMerId = chanMer.ChanMerId
 	be.SysOrderNum = t.SysOrderNum
 

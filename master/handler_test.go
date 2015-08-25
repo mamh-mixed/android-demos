@@ -50,13 +50,13 @@ func TestAddMerchant(t *testing.T) {
 
 func TestAddChannelMerchant(t *testing.T) {
 	cond := &model.ChanMer{
-		ChanCode:      "TEST2",
-		ChanMerId:     "TEST",
-		ChanMerName:   "TEST",
-		SettFlag:      "TEST",
-		SettRole:      "TEST",
-		SignCert:      "TEST",
-		CheckSignCert: "TEST",
+		ChanCode:    "TEST2",
+		ChanMerId:   "TEST",
+		ChanMerName: "TEST",
+		SettFlag:    "TEST",
+		SettRole:    "TEST",
+		PrivateKey:  "TEST",
+		publickKey:  "TEST",
 	}
 
 	t.Log("============")

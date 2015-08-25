@@ -81,16 +81,23 @@
             <span>{{item.settRole}}</span>
           </dd>
 
-          <dt hidden$="{{tiny}}">签名证书</dt>
+          <dt hidden$="{{tiny}}">签名密钥</dt>
           <dd hidden$="{{tiny}}">
             <p>
-              <pre>{{item.signCert}}</pre>
+              <pre>{{item.signKey}}</pre>
             </p>
           </dd>
 
-          <dt hidden$="{{tiny}}">验签证书</dt>
+          <dt hidden$="{{tiny}}">渠道商户私钥</dt>
           <dd hidden$="{{tiny}}">
-            <span>{{item.checkSignCert}}</span>
+            <p>
+              <pre>{{item.privateKey}}</pre>
+            </p>
+          </dd>
+
+          <dt hidden$="{{tiny}}">渠道商户公钥</dt>
+          <dd hidden$="{{tiny}}">
+            <span>{{item.publicKey}}</span>
           </dd>
 
           <dt>微信支付 APPID</dt>
@@ -164,9 +171,9 @@
         ready: function() {
           this.merchants = [];
           this.cond = {
-              page: 1,
-              size: 10,
-              total: 0
+            page: 1,
+            size: 10,
+            total: 0
           };
         },
         attached: function() {
@@ -220,7 +227,7 @@
         // 清除商户选中的标志
         initialList: function() {
           for (var i = 0, l = this.merchants.length; i < l; i++) {
-              this.set('merchants.' + i + '.stared', false);
+            this.set('merchants.' + i + '.stared', false);
           }
         },
         // 编辑机构商户

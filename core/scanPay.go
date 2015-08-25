@@ -4,6 +4,10 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"math"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
@@ -11,9 +15,6 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
-	"math"
-	"strings"
-	"time"
 )
 
 // PublicPay 公众号页面支付
@@ -97,8 +98,8 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		}
 
 		// 签名
-		config.Signature = signWithMD5(config, req.SignCert)
-		wxpPay.PaySign = signWithMD5(wxpPay, req.SignCert)
+		config.Signature = signWithMD5(config, req.SignKey)
+		wxpPay.PaySign = signWithMD5(wxpPay, req.SignKey)
 		jsPayInfo.Config = config
 		jsPayInfo.WxpPay = wxpPay
 

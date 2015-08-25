@@ -73,7 +73,7 @@ func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 			ValidDate:            be.ValidDateDecrypt,
 			CVN2:                 be.Cvv2Decrypt,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 请求
@@ -95,7 +95,7 @@ func (c *CFCABindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *m
 		Body: requestBody{
 			TxSNBinding: be.ChanBindingId,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 向中金发起请求
@@ -120,7 +120,7 @@ func (c *CFCABindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 			TxSNUnBinding: be.TxSNUnBinding,
 			TxSNBinding:   be.ChanBindingId,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 向中金发起请求
@@ -155,7 +155,7 @@ func quickPayment(be *model.BindingPayment, txCode string) (ret *model.BindingRe
 			SettlementFlag: be.SettFlag,
 			Remark:         be.Remark,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 请求
@@ -177,7 +177,7 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 		Body: requestBody{
 			PaymentNo: be.SysOrderNum,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 请求
@@ -204,7 +204,7 @@ func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 			Amount:    be.TransAmt,
 			Remark:    be.Remark,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 请求
@@ -228,7 +228,7 @@ func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 		Body: requestBody{
 			TxSN: be.SysOrderNum, //退款交易流水号
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 
 	// 请求
@@ -241,7 +241,7 @@ func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 }
 
 // ProcessTransChecking 交易对账，清算
-func (c *CFCABindingPay) ProcessTransChecking(chanMerId, settDate, signCert string) (resp *BindingResponse) {
+func (c *CFCABindingPay) ProcessTransChecking(chanMerId, settDate, PrivateKey string) (resp *BindingResponse) {
 	// 将参数转化为CfcaRequest
 	req := &BindingRequest{
 		Version: version,
@@ -252,7 +252,7 @@ func (c *CFCABindingPay) ProcessTransChecking(chanMerId, settDate, signCert stri
 			InstitutionID: chanMerId,
 			Date:          settDate,
 		},
-		SignCert: signCert,
+		PrivateKey: PrivateKey,
 	}
 
 	// 请求
