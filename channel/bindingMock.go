@@ -67,6 +67,22 @@ func (m *MockBindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
 
+// ProcessSendBindingPaySMS 快捷支付发送短信验证码
+func (m *MockBindingPay) ProcessSendBindingPaySMS(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
+
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
+
+// ProcessPaymentWithSMS 快捷支付短信验证支付
+func (m *MockBindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
+
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
+
 // Consume 模拟一个消费(无卡直接支付)的处理。
 func (m *MockBindingPay) Consume(be *model.NoTrackPayment) (ret *model.BindingReturn) {
 	// TODO validate feilds

@@ -17,7 +17,7 @@ import (
 
 const (
 	// testMerId      = "012345678901234"
-	testMerId = "001405"
+	testMerId = "000000001405"
 	// testSign       = "0123456789"
 	testSign = "0123456789"
 	// testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
@@ -39,7 +39,7 @@ const (
 )
 
 var (
-	bindingId string = "1431654779479"
+	bindingId string = "1440486130527"
 	orderNum  string
 )
 
@@ -99,13 +99,13 @@ func TestBindingCreate(t *testing.T) {
 		AcctNum:   "6222022003008481261",
 		IdentType: "0",
 		IdentNum:  "440583199111031012",
-		PhoneNum:  "18205960039",
-		AcctType:  "20",
-		ValidDate: "0612",
-		Cvv2:      "793",
+		PhoneNum:  "15618103236",
+		AcctType:  "10",
+		// ValidDate: "0612",
+		// Cvv2:      "793",
 		SendSmsId: "",
 		SmsCode:   "",
-		BankId:    "102",
+		// BankId:    "102",
 	}
 
 	var aes = security.NewAESCBCEncrypt(testEncryptKey)
@@ -139,6 +139,29 @@ func TestBindingPaymentHandle(t *testing.T) {
 	doPost(url, b, t)
 }
 
+func TestSendBindingPaySMS(t *testing.T) {
+	url := "http://quick.ipay.so/quickpay/sendBindingPaySms?merId=" + testMerId
+	orderNum = util.Millisecond()
+	b := model.BindingPayment{
+		MerOrderNum: orderNum,
+		TransAmt:    1000,
+		BindingId:   bindingId,
+		MerId:       testMerId,
+	}
+	doPost(url, b, t)
+}
+
+func TestBindingPayWithSMS(t *testing.T) {
+	url := "http://quick.ipay.so/quickpay/bindingPayWithSms?merId=" + testMerId
+	orderNum = "1440488933169"
+	b := model.BindingPayment{
+		MerOrderNum: orderNum,
+		MerId:       testMerId,
+		SmsCode:     "123456",
+	}
+	doPost(url, b, t)
+}
+
 func TestOrderEnquiry(t *testing.T) {
 	url := "http://quick.ipay.so/quickpay/orderEnquiry?merId=" + testMerId
 	b := model.OrderEnquiry{
@@ -150,9 +173,9 @@ func TestOrderEnquiry(t *testing.T) {
 func TestBindingRefundHandle(t *testing.T) {
 	url := "http://quick.ipay.so/quickpay/refund?merId=" + testMerId
 	b := model.BindingRefund{
-		OrigOrderNum: orderNum,
+		OrigOrderNum: "1440488933169",
 		MerOrderNum:  util.Millisecond(),
-		TransAmt:     100,
+		TransAmt:     1000,
 	}
 	doPost(url, b, t)
 }

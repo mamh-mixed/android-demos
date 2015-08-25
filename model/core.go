@@ -154,7 +154,7 @@ type ChanMer struct {
 	ChanMerName string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"` // 商户名称
 	SettFlag    string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`       // 清算标识
 	SettRole    string   `bson:"settRole,omitempty" json:"settRole,omitempty"`       // 清算角色
-	SignKey     string   `bson:"signKey,omitempty" json:"signKey,omitempty"`         // 签名密钥
+	SignKey     string   `bson:"signCert,omitempty" json:"signCert,omitempty"`       // 签名密钥 !!!!数据库存的是signCert
 	PrivateKey  string   `bson:"privateKey,omitempty" json:"privateKey,omitempty"`   // 渠道商户私钥
 	PublicKey   string   `bson:"publicKey,omitempty" json:"publicKey,omitempty"`     // 渠道商户公钥
 	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id

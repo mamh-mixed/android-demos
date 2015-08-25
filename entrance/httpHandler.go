@@ -98,6 +98,10 @@ func route(uri string, data []byte, merId string, w http.ResponseWriter) (ret *m
 		ret = bindingpay.NoTrackPaymentHandle(data, merId)
 	case "/quickpay/applePay":
 		ret = applepay.ApplePayHandle(data, merId)
+	case "/quickpay/bindingPayWithSms":
+		ret = bindingpay.BindingPayWithSMS(data, merId)
+	case "/quickpay/sendBindingPaySms":
+		ret = bindingpay.SendBindingPaySMS(data, merId)
 	default:
 		w.WriteHeader(404)
 	}
