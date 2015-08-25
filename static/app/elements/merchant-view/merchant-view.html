@@ -53,6 +53,7 @@
       .key {
         width: 70px;
       }
+
     </style>
 
     <paper-dialog id="dialogView">
@@ -173,104 +174,105 @@
 
   </template>
   <script>
-      Polymer({
-        is: 'merchant-view',
+    Polymer({
+      is: 'merchant-view',
 
-        properties: {
-          permissionArray: {
-            type: Array,
-            value: [{
-              key: 'PURC',
-              value: '下单支付'
-            }, {
-              key: 'PAUT',
-              value: '预下单'
-            }, {
-              key: 'QYFK',
-              value: '企业付款'
-            }, {
-              key: 'JSZF',
-              value: '公众号支付'
-            }, {
-              key: 'INQY',
-              value: '查询订单'
-            }, {
-              key: 'VOID',
-              value: '撤销'
-            }, {
-              key: 'REFD',
-              value: '退款'
-            }, {
-              key: 'CANC',
-              value: '取消'
-            }]
-          },
-          item: Object,
+      properties: {
+        permissionArray: {
+          type: Array,
+          value: [{
+            key: 'PURC',
+            value: '下单支付'
+          }, {
+            key: 'PAUT',
+            value: '预下单'
+          }, {
+            key: 'QYFK',
+            value: '企业付款'
+          }, {
+            key: 'JSZF',
+            value: '公众号支付'
+          }, {
+            key: 'INQY',
+            value: '查询订单'
+          }, {
+            key: 'VOID',
+            value: '撤销'
+          }, {
+            key: 'REFD',
+            value: '退款'
+          }, {
+            key: 'CANC',
+            value: '取消'
+          }]
         },
-        observers: [
-          "_permissionChanged(item.permission)"
-        ],
-        _permissionChanged: function(value) {
-          this.deleteFlag = false;
-          for (var i = 0, il = this.permissionArray.length; i < il; i++) {
-            this.set('permissionArray.' + i + '.isChecked', false);
-          }
-          var permissions = value;
-          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
-          for (var i = 0, il = permissions.length; i < il; i++) {
-            var p = permissions[i];
-            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
-              var pa = this.permissionArray[j];
-              if (pa.key === p) {
-                this.set('permissionArray.' + j + '.isChecked', true);
-                break;
-              }
-
+        item: Object,
+      },
+      observers: [
+        '_permissionChanged(item.permission)'
+      ],
+      _permissionChanged: function(value) {
+        this.deleteFlag = false;
+        for (var i = 0, il = this.permissionArray.length; i < il; i++) {
+          this.set('permissionArray.' + i + '.isChecked', false);
+        }
+        var permissions = value;
+        // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+        for (i = 0, il = permissions.length; i < il; i++) {
+          var p = permissions[i];
+          for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+            var pa = this.permissionArray[j];
+            if (pa.key === p) {
+              this.set('permissionArray.' + j + '.isChecked', true);
+              break;
             }
-          }
-        },
-        open: function() {
-          this.$.dialogView.open();
-        },
-        _computeYesOrNo: function(flag) {
-          if (flag) {
-            return '是';
-          }
-          return '否';
-        },
-        // 关闭事件
-        handleClose: function() {
-          this.$.dialogView.close();
-        },
-        //   将商户状态转换为中文
-        getMerStatus: function(status) {
-          if (status == "Normal") {
-            return "正常";
-          } else if (status == "Test") {
-            return "测试商户";
-          } else if (status == "Deleted") {
-            return "已删除商户";
-          } else {
-            return status;
-          }
-        },
-        // 编辑事件
-        handleItemEditedEvent: function() {
-          this.fire('editor');
-        },
-        // 删除事件
-        deleteTap: function() {
-          this.deleteFlag = true;
-        },
-        // 取消删除事件
-        cancelDeleteTap: function() {
-          this.deleteFlag = false;
-        },
-        // 查看路由
-        handleViewRouteTapped:function(){
-            page('/config/routes2/' + this.item.merId);
-        },
 
-      })();
+          }
+        }
+      },
+      open: function() {
+        this.$.dialogView.open();
+      },
+      _computeYesOrNo: function(flag) {
+        if (flag) {
+          return '是';
+        }
+        return '否';
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      },
+      //   将商户状态转换为中文
+      getMerStatus: function(status) {
+        if (status === 'Normal') {
+          return '正常';
+        } else if (status === 'Test') {
+          return '测试商户';
+        } else if (status === 'Deleted') {
+          return '已删除商户';
+        } else {
+          return status;
+        }
+      },
+      // 编辑事件
+      handleItemEditedEvent: function() {
+        this.fire('editor');
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 查看路由
+      handleViewRouteTapped: function() {
+        page('/config/routes2/' + this.item.merId);
+      },
+
+    })();
+
   </script>
 </dom-module>
