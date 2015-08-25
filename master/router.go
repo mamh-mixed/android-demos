@@ -3,8 +3,8 @@ package master
 import "net/http"
 
 // MasterRoute 后台管理的请求统一入口
-func MasterRoute(w http.ResponseWriter, r *http.Request) (mux *http.ServeMux) {
-	mux = new(http.ServeMux)
+func MasterRoute() (mux *http.ServeMux) {
+	mux = http.NewServeMux()
 
 	mux.HandleFunc("/master/trade/query", tradeQueryHandle)
 	mux.HandleFunc("/master/trade/report", tradeReportHandle)
