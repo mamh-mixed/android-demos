@@ -37,7 +37,7 @@ func (c *CFCABindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *m
 			PaymentNo:         be.SysOrderNum,
 			SMSValidationCode: be.SmsCode,
 		},
-		SignCert: be.SignCert,
+		PrivateKey: be.PrivateKey,
 	}
 	// 请求
 	resp := sendRequest(req)

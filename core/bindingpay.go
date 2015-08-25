@@ -237,7 +237,7 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 渠道需要参数
 	be.SysOrderNum = orig.SysOrderNum
 	be.ChanMerId = orig.ChanMerId
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 
 	ret = c.ProcessPaymentWithSMS(be)
 
