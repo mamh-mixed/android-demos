@@ -24,11 +24,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     paper-dialog {
       background-color: #ffffff;
     }
-
-    paper-dialog > *:first-child {
-      margin-top: 0px;
-    }
-
     .row {
       @apply(--layout-horizontal);
     }
@@ -81,10 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <template>
     <paper-dialog id="dialogView">
-      <div class="header">
-        <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
-        查看渠道商户信息
-      </div>
+        <h2>查看渠道商户信息</h2>
       <paper-dialog-scrollable>
         <div>
           <dl>
@@ -159,6 +151,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </card-item>
         </div>
       </paper-dialog-scrollable>
+      <div class="buttons">
+         <paper-button on-tap="handleClose" style="margin-right:50px;">取消</paper-button>
+      </div>
     </paper-dialog>
 
   </template>

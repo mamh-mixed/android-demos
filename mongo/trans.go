@@ -194,7 +194,7 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, error) {
 
-	// log.Debugf("condition is %+v", q)
+	log.Debugf("condition is %+v", q)
 
 	var trans []*model.Trans
 
@@ -211,6 +211,15 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 	if q.OrigOrderNum != "" {
 		match["origOrderNum"] = q.OrigOrderNum
+	}
+	if q.AgentCode != "" {
+		match["agentCode"] = q.AgentCode
+	}
+	if q.GroupCode != "" {
+		match["groupCode"] = q.GroupCode
+	}
+	if q.Respcd != "" {
+		match["respCode"] = q.Respcd
 	}
 	// or 退款的和成功的
 	or := []bson.M{}

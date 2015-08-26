@@ -15,11 +15,6 @@
     paper-dialog {
       background-color: #ffffff;
     }
-
-    paper-dialog > *:first-child {
-      margin-top: 0px;
-    }
-
     .row {
       @apply(--layout-horizontal);
     }
@@ -56,10 +51,7 @@
   </style>
   <template>
     <paper-dialog id="dialogView">
-      <div class="header">
-        <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
-        <span>{{item.detail.merName}}</span>
-      </div>
+        <h2>{{item.detail.merName}}</h2>
       <paper-dialog-scrollable>
         <table>
           <tr>
@@ -163,11 +155,12 @@
       </paper-dialog-scrollable>
       <div class="buttons">
         <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">【取消】</paper-button>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">【确定】</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">【删除】</paper-button>
-        <paper-button on-tap="handleItemEditedEvent">【编辑】</paper-button>
-        <paper-button on-tap="handleViewRouteTapped">【查看路由】</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
+        <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button on-tap="handleViewRouteTapped">查看路由</paper-button>
+        <paper-button on-tap="handleClose">关闭</paper-button>
       </div>
     </paper-dialog>
     <iron-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>

@@ -41,6 +41,8 @@ type QueryCondition struct {
 	Total        int      `json:"total,omitempty"`
 	Size         int      `json:"size,omitempty"`
 	IsForReport  bool     `json:"-"`
+	GroupCode    string   `json:"groupCode,omitempty"`
+	Respcd       string   `json:"respcd" url:"respcd"`
 }
 
 // QueryResult 查询结果值
