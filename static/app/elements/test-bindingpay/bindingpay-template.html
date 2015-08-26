@@ -60,7 +60,7 @@
 
   <script>
     Polymer({
-      is: "bindingpay-template",
+      is: 'bindingpay-template',
       properties: {
         url: {
           type: String
@@ -98,11 +98,11 @@
           signKey: '0123456789',
           encryptKey: 'AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8='
         };
-        this.rcvd = "";
+        this.rcvd = '';
       },
       submit: function() {
-        // postAjax.url = this.url + "?merId=012345678901234";
-        this.$.postAjax.url = this.url + "?merId=" + this.merchant.merId;
+        // postAjax.url = this.url + '?merId=012345678901234';
+        this.$.postAjax.url = this.url + '?merId=' + this.merchant.merId;
         var body = {};
         for (var i = 0; i < this.elems.length; i++) {
           var value = this.elems[i].value;
@@ -117,8 +117,8 @@
               value = JSON.parse(value);
             } catch (e) {
               this.$.ret.toggle();
-              this.rcvd = "JSON 格式有误: " + e;
-              return
+              this.rcvd = 'JSON 格式有误: ' + e;
+              return;
             }
           }
           body[this.elems[i].name] = value;
@@ -126,7 +126,7 @@
         this.$.postAjax.body = JSON.stringify(body);
         var hash = CryptoJS.SHA1(this.$.postAjax.body + this.merchant.signKey);
         this.$.postAjax.headers = {
-          "X-Sign": hash
+          'X-Sign': hash
         };
         this.$.postAjax.generateRequest();
       },
