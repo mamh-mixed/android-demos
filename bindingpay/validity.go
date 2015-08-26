@@ -75,6 +75,15 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 	return nil
 }
 
+// validateGetCardInfo 验证获取卡片接口字段
+func validateGetCardInfo(in *model.CardInfo) (ret *model.BindingReturn) {
+
+	if !isAlphanumericOrSpecial(in.CardNum) {
+		return mongo.RespCodeColl.Get("200110")
+	}
+	return nil
+}
+
 // validateBindingRemove 移除绑定关系的时候验证请求报文
 func validateBindingRemove(in *model.BindingRemove) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
