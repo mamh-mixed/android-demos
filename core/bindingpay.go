@@ -15,6 +15,29 @@ var (
 	handlingCode = "000009"
 )
 
+// ProcessGetCardInfo 获取卡片信息
+func ProcessGetCardInfo(c *model.CardInfo) (ret *model.BindingReturn) {
+
+	// 获取卡bin详情
+	cardBin, err := findCardBin(c.CardNum)
+	if err != nil {
+		log.Error(err)
+		return mongo.RespCodeColl.Get("200110")
+	}
+
+	// TODO:判断某个渠道是否支持该银行卡
+
+	ret = mongo.RespCodeColl.Get(successCode)
+	// 返回卡片信息
+	ret.CardNum = c.CardNum
+	ret.CardBrand = cardBin.CardBrand
+	ret.AcctType = cardBin.AcctType
+	ret.IssBankName = cardBin.InsName
+	ret.IssBankNum = cardBin.InsCode
+
+	return ret
+}
+
 // ProcessBindingCreate 绑定建立的业务处理
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 默认返回
@@ -239,8 +262,11 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.ChanMerId = orig.ChanMerId
 	be.PrivateKey = chanMer.PrivateKey
 
+	// 请求支付
 	ret = c.ProcessPaymentWithSMS(be)
 
+	orig.RespCode = ret.RespCode
+	orig.RespCode = ret.ChanRespCode
 	switch ret.RespCode {
 	case successCode:
 		orig.TransStatus = model.TransSuccess
