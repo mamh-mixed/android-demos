@@ -11,76 +11,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="channel-merchant-view">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 500px;
+        min-height: 400px;
+        font-size: 15px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    paper-dialog > *:first-child {
+      margin-top: 0px;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+
+    paper-icon-button.red:hover {
+      background: #CD4F39;
+      border-radius: 0%;
+    }
+
+    .header {
+      padding: 0px;
+      margin: 0px;
+      background: red;
+      color: #ffffff;
+      heigth: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    dl dt {
+      float: left;
+      width: 100px;
+      overflow: hidden;
+      clear: left;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.5;
+    }
+
+    dl dd {
+      margin-left: 120px;
+      word-break: break-all;
+    }
+
+    dd:after,
+    dd:before {
+      display: table;
+      content: " ";
+    }
+
+    dd:after {
+      clear: both;
+    }
+  </style>
   <template>
-
-    <style>
-      :host {
-        display: block;
-        --paper-dialog-scrollable: {
-          min-width: 500px;
-          min-height: 100%;
-          font-size: 15px;
-        }
-      }
-
-      paper-dialog {
-        background-color: #ffffff;
-      }
-
-      paper-dialog > *:first-child {
-        margin-top: 0px;
-      }
-
-      .row {
-        @apply(--layout-horizontal);
-      }
-
-      .row iron-icon {
-        color: red;
-      }
-
-      paper-icon-button.red:hover {
-        background: #CD4F39;
-        border-radius: 0%;
-      }
-
-      .header {
-        padding: 0px;
-        margin: 0px;
-        background: red;
-        color: #ffffff;
-        heigth: 40px;
-        line-height: 40px;
-        font-weight: bold;
-        font-size: 16px;
-      }
-       dl dt {
-        float: left;
-        width: 100px;
-        overflow: hidden;
-        clear: left;
-        text-align: right;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        opacity: 0.5;
-      }
-
-       dl dd {
-        margin-left: 120px;
-        word-break: break-all;
-      }
-
-       dd:after,
-       dd:before {
-        display: table;
-        content: " ";
-      }
-
-       dd:after {
-        clear: both;
-      }
-    </style>
-
     <paper-dialog id="dialogView">
       <div class="header">
         <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
@@ -159,29 +158,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </dl>
           </card-item>
         </div>
-        <paper-dialog-scrollable>
+      </paper-dialog-scrollable>
     </paper-dialog>
 
   </template>
   <script>
-      Polymer({
-        is: 'channel-merchant-view',
+    Polymer({
+      is: 'channel-merchant-view',
 
-        properties: {
-          foo: {
-            type: String,
-            value: 'channel-merchant-view',
-            notify: true
-          },
-          item: Object
+      properties: {
+        foo: {
+          type: String,
+          value: 'channel-merchant-view',
+          notify: true
         },
-        open: function() {
-          this.$.dialogView.open();
-        },
-        // 关闭事件
-        handleClose: function() {
-          this.$.dialogView.close();
-        }
-      });
+        item: Object
+      },
+      open: function() {
+        this.$.dialogView.open();
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      }
+    });
   </script>
 </dom-module>

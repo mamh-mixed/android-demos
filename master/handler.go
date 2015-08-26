@@ -107,7 +107,7 @@ func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 	merId := r.FormValue("merId")
-	ret := Agent.Delete(merId)
+	ret := Merchant.Delete(merId)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
