@@ -1,0 +1,140 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<script src="../../bower_components/cryptojslib/rollups/sha1.js"></script>
+<script src="../../bower_components/cryptojslib/rollups/aes.js"></script>
+
+<dom-module id="bindingpay-template">
+  <style>
+    paper-toast {
+      top: 10px;
+      bottom: auto;
+      right: 10px;
+      left: auto;
+    }
+
+    .merchant > paper-input:nth-of-type(1) {
+      width: 19%;
+      display: inline-block;
+    }
+
+    .merchant > paper-input:nth-of-type(2) {
+      width: 35%;
+      display: inline-block;
+    }
+
+    .merchant > paper-input:nth-of-type(3) {
+      width: 44.5%;
+      display: inline-block;
+    }
+
+    .form {
+      margin: 20px auto;
+    }
+
+    .form > paper-input {
+      width: 49.5%;
+      display: inline-block;
+    }
+
+  </style>
+  <template>
+    <iron-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-response="handleResponse"></iron-ajax>
+
+    <div class="merchant">
+      <paper-input label="商户 ID" value="{{merchant.merId::input}}"></paper-input>
+      <paper-input label="签名密钥" value="{{merchant.signKey::input}}"></paper-input>
+      <paper-input label="加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
+    </div>
+
+    <div class="form">
+      <template is="dom-repeat" items="{{elems}}">
+        <paper-input label="{{item.label}}" name="{{item.name}}" maxlength="{{item.maxlength}}" required="{{item.required}}" value="{{item.value}}"></paper-input>
+      </template>
+    </div>
+
+    <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="submit"></paper-fab>
+
+    <paper-textarea label="响应" value="{{rcvd}}"></paper-textarea>
+    <paper-toast id="toast" text="{{rcvd}}"></paper-toast>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'bindingpay-template',
+      properties: {
+        url: {
+          type: String
+        },
+        elems: {
+          type: Array,
+          value: []
+        }
+      },
+      encrypt: function(plaintext) {
+        // var plaintext = '000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f'
+        //
+        // var key = CryptoJS.enc.Base64.parse('');
+        var key = CryptoJS.enc.Base64.parse(this.merchant.encryptKey);
+        // var iv  = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f');
+        var iv = CryptoJS.lib.WordArray.random(16);
+        var encrypted = CryptoJS.AES.encrypt(plaintext, key, {
+          iv: iv
+        });
+        //
+        // // var encrypted = CryptoJS.AES.encrypt("Message", "Secret Passphrase");
+        //
+        // console.log(encrypted.key+"");        // 000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f
+        // console.log(encrypted.iv+"");         // 000102030405060708090a0b0c0d0e0f
+        // console.log(encrypted.salt+"");       // undefined
+        // console.log(encrypted.ciphertext+""); // 8bbfb86054acf430e44245c4bf74b2549e85387d6887a257bcaf1fb29f7969b20dd40628c7cf734f35b4fdbadd24ee2843e198a202e0850b79038b4562909a7cf40c9ee3ec08e9047b3a7859a6502220
+        var b64encrypted = encrypted.iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64)
+          // console.log(b64encrypted)
+        return b64encrypted;
+      },
+
+      ready: function() {
+        this.merchant = {
+          merId: '000000001405',
+          signKey: '0123456789',
+          encryptKey: 'AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8='
+        };
+        this.rcvd = '';
+      },
+      submit: function() {
+        // postAjax.url = this.url + '?merId=012345678901234';
+        this.$.postAjax.url = this.url + '?merId=' + this.merchant.merId;
+        var body = {};
+        for (var i = 0; i < this.elems.length; i++) {
+          var value = this.elems[i].value;
+          if (this.elems[i].encrypt && this.elems[i].encrypt === true) {
+            value = this.encrypt(value)
+          }
+          if (this.elems[i].numeric && this.elems[i].numeric === true) {
+            value = +value;
+          }
+          if (this.elems[i].object && this.elems[i].object === true) {
+            try {
+              value = JSON.parse(value);
+            } catch (e) {
+              this.$.ret.toggle();
+              this.rcvd = 'JSON 格式有误: ' + e;
+              return;
+            }
+          }
+          body[this.elems[i].name] = value;
+        }
+        this.$.postAjax.body = JSON.stringify(body);
+        var hash = CryptoJS.SHA1(this.$.postAjax.body + this.merchant.signKey);
+        this.$.postAjax.headers = {
+          'X-Sign': hash
+        };
+        this.$.postAjax.generateRequest();
+      },
+      handleResponse: function(e) {
+        this.$.toast.toggle();
+        this.rcvd = JSON.stringify(e.detail.response);
+      }
+    });
+
+  </script>
+</dom-module>

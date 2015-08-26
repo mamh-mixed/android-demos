@@ -80,6 +80,7 @@
     table tr td:nth-of-type(4) {
       text-align: right;
     }
+
   </style>
   <template>
     <iron-ajax id="queryAjax" method="POST" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -109,8 +110,6 @@
       <paper-input label="应答码" value="{{cond.respcd::input}}"></paper-input>
       <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
       <x-select items="[[transStatusMap]]" selected-item="{{transStatus}}" label="交易状态"></x-select>
-
-
 
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
@@ -260,8 +259,8 @@
         this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
       },
       // 交易状态选择框改变
-      _watchTransStatusChange(key){
-          this.cond.transStatus = key;
+      _watchTransStatusChange: function(key) {
+        this.cond.transStatus = key;
       },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
@@ -327,18 +326,19 @@
         return index + 1;
       },
       // 应答码着色
-      getRespcdColor(value) {
+      getRespcdColor: function(value) {
         var map = {
           '00': 'background:green;',
           '96': 'background:#ff0000;',
         };
         var commonStyle = 'display:inline-block;color:#ffffff;border-radius:50%;width:30px;height:30px;line-height:30px;vertical-align:middle;text-align:center;';
-        if (value == '00' || value == '96') {
+        if (value === '00' || value === '96') {
           return map[value] + commonStyle;
         } else {
           return 'background:#FF7F24;' + commonStyle;
         }
       }
     });
+
   </script>
 </dom-module>
