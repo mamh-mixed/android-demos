@@ -83,7 +83,7 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	}
 
 	if m.MerStatus == "" {
-		m.MerStatus = NormalMerStatus
+		m.MerStatus = model.MerStatusNormal
 	}
 
 	err = mongo.MerchantColl.Insert(m)

@@ -99,6 +99,8 @@ type CardBin struct {
 	InsCode   string `json:"insCode" bson:"insCode,omitempty"`     // 发卡行代码
 }
 
+const MerStatusNormal = "Normal"
+
 // Merchant 商户基本信息
 type Merchant struct {
 	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号

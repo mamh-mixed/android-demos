@@ -175,7 +175,6 @@
   <script>
     Polymer({
       is: 'merchant-view',
-
       properties: {
         permissionArray: {
           type: Array,
@@ -208,7 +207,7 @@
         item: Object,
       },
       observers: [
-        "_permissionChanged(item.permission)"
+        '_permissionChanged(item.permission)'
       ],
       _permissionChanged: function(value) {
         this.deleteFlag = false;
@@ -226,7 +225,6 @@
                 this.set('permissionArray.' + j + '.isChecked', true);
                 break;
               }
-
             }
           }
         }

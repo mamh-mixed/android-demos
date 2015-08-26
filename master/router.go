@@ -1,140 +1,35 @@
 package master
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"strconv"
-
-	"github.com/CardInfoLink/quickpay/model"
-
-	"github.com/omigo/log"
-)
+import "net/http"
 
 // MasterRoute 后台管理的请求统一入口
-func MasterRoute(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.String())
+func MasterRoute() (mux *http.ServeMux) {
+	mux = http.NewServeMux()
 
-	var ret *model.ResultBody
+	mux.HandleFunc("/master/trade/query", tradeQueryHandle)
+	mux.HandleFunc("/master/trade/report", tradeReportHandle)
+	mux.HandleFunc("/master/trade/stat", tradeQueryStatsHandle)
+	mux.HandleFunc("/master/trade/stat/report", tradeQueryStatsReportHandle)
+	mux.HandleFunc("/master/merchant/find", merchantFindHandle)
+	mux.HandleFunc("/master/merchant/one", merchantFindOneHandle)
+	mux.HandleFunc("/master/merchant/save", merchantSaveHandle)
+	mux.HandleFunc("/master/merchant/save", merchantDeleteHandle)
+	mux.HandleFunc("/master/router/save", routerSaveHandle)
+	mux.HandleFunc("/master/router/find", routerFindHandle)
+	mux.HandleFunc("/master/router/one", routerFindOneHandle)
+	mux.HandleFunc("/master/router/delete", routerDeleteHandle)
+	mux.HandleFunc("/master/channelMerchant/find", channelMerchantFindHandle)
+	mux.HandleFunc("/master/channelMerchant/match", channelMerchantMatchHandle)
+	mux.HandleFunc("/master/channelMerchant/findByMerIdAndCardBrand", channelFindByMerIdAndCardBrandHandle)
+	mux.HandleFunc("/master/channelMerchant/save", channelMerchantSaveHandle)
+	mux.HandleFunc("/master/agent/find", agentFindHandle)
+	mux.HandleFunc("/master/agent/delete", agentDeleteHandle)
+	mux.HandleFunc("/master/agent/save", agentSaveHandle)
+	mux.HandleFunc("/master/group/find", groupFindHandle)
+	mux.HandleFunc("/master/group/delete", groupDeleteHandle)
+	mux.HandleFunc("/master/group/save", groupSaveHandle)
+	mux.HandleFunc("/master/qiniu/uptoken", handleUptoken)
+	mux.HandleFunc("/master/qiniu/uploaded", handleDownURL)
 
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Errorf("Read all body error: %s", err)
-		w.WriteHeader(501)
-		return
-	}
-
-	switch r.URL.Path {
-	case "/master/trade/query":
-		tradeQuery(w, data)
-		return
-	case "/master/trade/report":
-		tradeReport(w, r)
-		return
-	case "/master/trade/stat":
-		page, _ := strconv.Atoi(r.FormValue("page"))
-		size, _ := strconv.Atoi(r.FormValue("size"))
-		q := &model.QueryCondition{
-			MerId:     r.FormValue("merId"),
-			AgentCode: r.FormValue("agentCode"),
-			Page:      page,
-			Size:      size,
-			MerName:   r.FormValue("merName"),
-			StartTime: r.FormValue("startTime"),
-			EndTime:   r.FormValue("endTime"),
-		}
-		ret = tradeQueryStats(q)
-	case "/master/trade/stat/report":
-		tradeQueryStatsReport(w, r)
-		return
-	case "/master/merchant/find":
-		merId := r.FormValue("merId")
-		merStatus := r.FormValue("merStatus")
-		merName := r.FormValue("merName")
-		groupCode := r.FormValue("groupCode")
-		groupName := r.FormValue("groupName")
-		agentCode := r.FormValue("agentCode")
-		agentName := r.FormValue("agentName")
-		size, _ := strconv.Atoi(r.FormValue("size"))
-		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
-	case "/master/merchant/one":
-		merId := r.FormValue("merId")
-		ret = Merchant.FindOne(merId)
-	case "/master/merchant/save":
-		ret = Merchant.Save(data)
-	case "/master/merchant/delete":
-		merId := r.FormValue("merId")
-		ret = Merchant.Delete(merId)
-	case "/master/router/save":
-		ret = RouterPolicy.Save(data)
-	case "/master/router/find":
-		merId := r.FormValue("merId")
-		size, _ := strconv.Atoi(r.FormValue("size"))
-		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = RouterPolicy.Find(merId, size, page)
-	case "/master/router/one":
-		merId := r.FormValue("merId")
-		cardBrand := r.FormValue("cardBrand")
-		ret = RouterPolicy.FindOne(merId, cardBrand)
-	case "/master/router/delete":
-		merId := r.FormValue("merId")
-		chanCode := r.FormValue("chanCode")
-		cardBrand := r.FormValue("cardBrand")
-		ret = RouterPolicy.Delete(merId, chanCode, cardBrand)
-	case "/master/channelMerchant/find":
-		chanCode := r.FormValue("chanCode")
-		chanMerId := r.FormValue("chanMerId")
-		chanMerName := r.FormValue("chanMerName")
-		size, _ := strconv.Atoi(r.FormValue("size"))
-		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = ChanMer.Find(chanCode, chanMerId, chanMerName, size, page)
-	case "/master/channelMerchant/match":
-		chanCode := r.FormValue("chanCode")
-		chanMerId := r.FormValue("chanMerId")
-		chanMerName := r.FormValue("chanMerName")
-		maxSize, _ := strconv.Atoi(r.FormValue("maxSize"))
-		ret = ChanMer.Match(chanCode, chanMerId, chanMerName, maxSize)
-	case "/master/channelMerchant/findByMerIdAndCardBrand":
-		merId := r.FormValue("merId")
-		cardBrand := r.FormValue("cardBrand")
-		ret = ChanMer.FindByMerIdAndCardBrand(merId, cardBrand)
-	case "/master/channelMerchant/save":
-		ret = ChanMer.Save(data)
-	case "/master/agent/find":
-		agentCode := r.FormValue("agentCode")
-		agentName := r.FormValue("agentName")
-		size, _ := strconv.Atoi(r.FormValue("size"))
-		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = Agent.Find(agentCode, agentName, size, page)
-	case "/master/agent/delete":
-		agentCode := r.FormValue("agentCode")
-		ret = Agent.Delete(agentCode)
-	case "/master/agent/save":
-		ret = Agent.Save(data)
-	case "/master/group/find":
-		groupCode := r.FormValue("groupCode")
-		groupName := r.FormValue("groupName")
-		agentCode := r.FormValue("agentCode")
-		agentName := r.FormValue("agentName")
-		size, _ := strconv.Atoi(r.FormValue("size"))
-		page, _ := strconv.Atoi(r.FormValue("page"))
-		ret = Group.Find(groupCode, groupName, agentCode, agentName, size, page)
-	case "/master/group/delete":
-		groupCode := r.FormValue("groupCode")
-		ret = Group.Delete(groupCode)
-	case "/master/group/save":
-		ret = Group.Save(data)
-
-	default:
-		w.WriteHeader(404)
-	}
-
-	rdata, err := json.Marshal(ret)
-	if err != nil {
-		w.Write([]byte("mashal data error"))
-	}
-
-	log.Tracef("response message: %s", rdata)
-	w.Write(rdata)
+	return mux
 }
