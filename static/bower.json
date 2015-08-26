@@ -14,7 +14,8 @@
     "paper-date-picker": "omigo/paper-date-picker#master",
     "qrcode.js": "davidshimjs/qrcodejs",
     "plupload": "moxiecode/plupload#v2.1.8",
-    "qiniu-js-sdk":"qiniu/js-sdk#v1.0.7-beta"
+    "qiniu-js-sdk":"qiniu/js-sdk#v1.0.7-beta",
+    "cryptojslib": "~3.1.2"
   },
   "devDependencies": {
     "web-component-tester": "*",

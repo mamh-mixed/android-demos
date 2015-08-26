@@ -260,7 +260,7 @@
         this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
       },
       // 交易状态选择框改变
-      _watchTransStatusChange(key){
+      _watchTransStatusChange: function(key){
           this.cond.transStatus = key;
       },
       // 日期、时间控件
@@ -327,7 +327,7 @@
         return index + 1;
       },
       // 应答码着色
-      getRespcdColor(value) {
+      getRespcdColor: function(value) {
         var map = {
           '00': 'background:green;',
           '96': 'background:#ff0000;',

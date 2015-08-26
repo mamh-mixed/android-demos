@@ -140,13 +140,17 @@
 
           <a data-route="test">
             <iron-icon icon="bug-report"></iron-icon>
-            <span>测试</span>
+            <span>内部测试</span>
           </a>
           <iron-collapse opened="{{ startWith(route.name, 'test') }}">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="test.scanpay" href="/test/scanpay">
                 <iron-icon icon="pageview"></iron-icon>
-                <span>测试扫码</span>
+                <span>扫码支付</span>
+              </a>
+              <a data-route="test.bindingpay" href="/test/bindingpay">
+                <iron-icon icon="pageview"></iron-icon>
+                <span>绑定支付</span>
               </a>
               <a data-route="test.qiniu" href="/test/qiniu">
                 <iron-icon icon="cloud-upload"></iron-icon>
@@ -154,7 +158,7 @@
               </a>
               <a data-route="test.filereader" href="/test/filereader">
                 <iron-icon icon="get-app"></iron-icon>
-                <span>HTML5读取文件内容</span>
+                <span>HTML5 读取文件内容</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -276,6 +280,12 @@
             <section data-route="test.scanpay">
               <paper-material elevation="1">
                 <test-scanpay is-deletable></test-scanpay>
+              </paper-material>
+            </section>
+
+            <section data-route="test.bindingpay">
+              <paper-material elevation="1">
+                <test-bindingpay is-deletable></test-bindingpay>
               </paper-material>
             </section>
 
