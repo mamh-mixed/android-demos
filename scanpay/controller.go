@@ -2,8 +2,10 @@ package scanpay
 
 import (
 	"encoding/json"
+	"net/url"
 	"strings"
 
+	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -21,25 +23,25 @@ func ScanPayHandle(reqBytes []byte) []byte {
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal json(%s): %s", reqBytes, err)
-		return ErrorResponse(req, "DATA_ERROR")
+		return errorResp(req, "DATA_ERROR")
 	}
 
 	// 具体业务
-	ret := router(req)
+	ret := dispatch(req)
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
-		return ErrorResponse(req, "SYSTEM_ERROR")
+		return errorResp(req, "SYSTEM_ERROR")
 	}
 
 	log.Infof("to merchant message: %s", retBytes)
 	return retBytes
 }
 
-// router 分发业务逻辑
-func router(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+// dispatch 分发业务逻辑
+func dispatch(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch req.Busicd {
 	case model.Purc:
 		ret = doScanPay(validateBarcodePay, core.BarcodePay, req)
@@ -138,8 +140,8 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	return ret
 }
 
-// ErrorResponse 返回错误信息
-func ErrorResponse(req *model.ScanPayRequest, errorCode string) []byte {
+// errorResp 返回错误信息
+func errorResp(req *model.ScanPayRequest, errorCode string) []byte {
 	spResp := mongo.ScanPayRespCol.Get(errorCode)
 	ret := &model.ScanPayResponse{
 		Respcd:      spResp.ISO8583Code,
@@ -152,4 +154,14 @@ func ErrorResponse(req *model.ScanPayRequest, errorCode string) []byte {
 		log.Error(err)
 	}
 	return retBytes
+}
+
+// weixinNotifyCtrl 微信异步通知处理(预下单)
+func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) {
+	core.ProcessWeixinNotify(req)
+}
+
+// alipayNotifyCtrl 支付宝异步通知处理(预下单)
+func alipayNotifyCtrl(v url.Values) {
+	core.ProcessAlipayNotify(v)
 }

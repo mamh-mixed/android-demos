@@ -9,8 +9,10 @@ import (
 	"github.com/omigo/mahonia"
 )
 
+const NotifyURL = "/scanpay/upNotify/alipay"
+
 var DefaultClient alp
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyURL
 
 // alp 当面付，扫码支付
 type alp struct{}

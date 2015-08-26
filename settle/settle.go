@@ -28,8 +28,8 @@ const (
 	lt       = "2006-01-02 15:04:05"
 )
 
-// DoSettWork 开启任务routine
-func doSettWork() {
+// DoSettWork 开启任务
+func DoSettWork() {
 	go processTransSettle()
 }
 
