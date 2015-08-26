@@ -250,7 +250,7 @@ type Trans struct {
 	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
 
 	// 可用于关联查询字段
-	MerName   string `bson:"-" json:"merName"` // 商户名称
+	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
 	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"`
 	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
 	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"`
