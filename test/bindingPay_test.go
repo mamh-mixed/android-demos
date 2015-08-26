@@ -153,7 +153,7 @@ func TestSendBindingPaySMS(t *testing.T) {
 
 func TestBindingPayWithSMS(t *testing.T) {
 	url := "http://quick.ipay.so/quickpay/bindingPayWithSms?merId=" + testMerId
-	orderNum = "1440488933169"
+	orderNum = "1440497277874"
 	b := model.BindingPayment{
 		MerOrderNum: orderNum,
 		MerId:       testMerId,

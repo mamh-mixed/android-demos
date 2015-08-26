@@ -72,6 +72,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	if err != nil {
 		return LogicErrorHandler(t, "NO_MERCHANT")
 	}
+	addRelatedProperties(t, mer)
 
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
@@ -135,6 +136,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	if err != nil {
 		return LogicErrorHandler(t, "NO_MERCHANT")
 	}
+	addRelatedProperties(t, mer)
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
@@ -246,7 +248,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
 			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(t, "SYSTEM_ERROR")
+			return returnWithErrorCode("SYSTEM_ERROR")
 		}
 		subMchId = c.ChanMerId
 		c = c.AgentMer
@@ -435,7 +437,7 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
 			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(t, "SYSTEM_ERROR")
+			return returnWithErrorCode("SYSTEM_ERROR")
 		}
 		subMchId = c.ChanMerId
 		c = c.AgentMer
@@ -543,4 +545,13 @@ func genExtendParams(mer *model.Merchant) string {
 	}{agentId, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
 	bytes, _ := json.Marshal(shopInfo)
 	return string(bytes)
+}
+
+// 为交易关联商户属性
+func addRelatedProperties(current *model.Trans, m *model.Merchant) {
+	current.MerName = m.Detail.MerName
+	current.AgentName = m.AgentName
+	current.GroupCode = m.GroupCode
+	current.GroupName = m.GroupName
+	current.ShortName = m.Detail.ShortName
 }

@@ -317,8 +317,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
-	refund.ChanCode = orig.ChanCode
-	refund.ChanMerId = orig.ChanMerId
+	copyProperties(refund, orig)
 	// refund.SubChanMerId = orig.SubChanMerId
 
 	// TODO 退款只能隔天退，按需求投产后先缓冲一段时间再开启。
@@ -517,9 +516,8 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
-	cancel.ChanCode = orig.ChanCode
-	cancel.ChanMerId = orig.ChanMerId
-	// cancel.SubChanMerId = orig.SubChanMerId
+	copyProperties(cancel, orig)
+	// 撤销交易，金额=原交易金额
 	cancel.TransAmt = orig.TransAmt
 
 	// 撤销只能撤当天交易
@@ -603,8 +601,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(closed, "TRADE_NOT_EXIST")
 	}
-	closed.ChanCode = orig.ChanCode
-	closed.ChanMerId = orig.ChanMerId
+	copyProperties(closed, orig)
 	// closed.SubChanMerId = orig.SubChanMerId
 
 	// 不支持退款、撤销等其他类型交易
@@ -707,6 +704,17 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 		t.TransStatus = model.TransFail
 	}
 	mongo.SpTransColl.Update(t)
+}
+
+// copyProperties 从原交易拷贝属性
+func copyProperties(current *model.Trans, orig *model.Trans) {
+	current.ChanCode = orig.ChanCode
+	current.ChanMerId = orig.ChanMerId
+	current.MerName = orig.MerName
+	current.AgentName = orig.AgentName
+	current.GroupCode = orig.GroupCode
+	current.GroupName = orig.GroupName
+	current.ShortName = orig.ShortName
 }
 
 func signWithMD5(s interface{}, key string) string {
