@@ -88,7 +88,7 @@ func xTestAddChanCodeFromCSV(t *testing.T) {
 }
 
 // TestAddCardBinFromCSV 导入卡 bin 表，执行单元测试时去掉 x
-func TestAddCardBinFromCSV(t *testing.T) {
+func xTestAddCardBinFromCSV(t *testing.T) {
 	// false 时会更新数据，但不会删除
 	// true 时会丢掉集合，重新建立
 	err := AddCardBinFromCSV("cardBin.csv", true)

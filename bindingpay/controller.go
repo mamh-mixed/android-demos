@@ -53,6 +53,25 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	return ret
 }
 
+// GetCardInfoHandle 获取卡片信息
+func GetCardInfoHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	b := new(model.CardInfo)
+	err := json.Unmarshal(data, b)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return mongo.RespCodeColl.Get("200020")
+	}
+	b.MerId = merId
+
+	ret = validateGetCardInfo(b)
+	if ret != nil {
+		return ret
+	}
+	// 业务处理
+	ret = core.ProcessGetCardInfo(b)
+	return ret
+}
+
 // BindingRemoveHandle 解除绑定关系
 func BindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	br := new(model.BindingRemove)

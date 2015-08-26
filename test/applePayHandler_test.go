@@ -9,8 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CardInfoLink/quickpay/entrance"
+	. "github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/security"
 	"github.com/omigo/log"
 )
 
@@ -28,10 +29,10 @@ func applePayPost(method, url, body string, t *testing.T) {
 	if err != nil {
 		t.Error("创建POST请求失败")
 	}
-	req.Header.Set("X-Sign", entrance.SignatureUseSha1([]byte(body), "0123456789")) // TODO
+	req.Header.Set("X-Sign", security.SHA1WithKey(body, "0123456789")) // TODO
 
 	w := httptest.NewRecorder()
-	entrance.Quickpay(w, req)
+	BindingpayHandle(w, req)
 	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
