@@ -9,6 +9,7 @@ path=$GOPATH/src/$pkg
 cd $path
 pwd
 
+# auto update
 cp .hooks/* .git/hooks/
 
 cd -
