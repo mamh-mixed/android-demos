@@ -395,7 +395,16 @@
         },
         // 修饰金额的方法
         _computeAmount: function(amount) {
-          return amount.toFixed(2);
+            amount = amount.toFixed(2);
+              x = amount.split('.');
+              x1 = x[0];
+              var x2 = '';
+              x2 = x.length > 1 ? '.' + x[1] : '';
+              var rgx = /(\d+)(\d{3})/;
+              while (rgx.test(x1)) {
+                  x1 = x1.replace(rgx, '$1' + ',' + '$2');
+              }
+              return x1 + x2;
         },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
