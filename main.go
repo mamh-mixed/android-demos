@@ -54,7 +54,7 @@ func startBindingpay() {
 	// 连接到 线下网关
 	// cil.Connect()
 
-	http.Handle("/bindingpay/", bindingpay.Route)
+	http.Handle("/bindingpay/", bindingpay.Route())
 }
 
 func startSettle() {

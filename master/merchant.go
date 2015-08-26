@@ -100,3 +100,26 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 
 	return result
 }
+
+// Delete 删除机构商户
+func (i *merchant) Delete(merId string) (result *model.ResultBody) {
+	log.Debugf("delete merchant by merId,merId=%s", merId)
+	if merId == "" {
+		log.Errorf("merId为空")
+		return model.NewResultBody(2, "merId不能为空")
+	}
+
+	err := mongo.MerchantColl.Remove(merId)
+
+	if err != nil {
+		log.Errorf("删除机构商户失败: %s", err)
+		return model.NewResultBody(1, "删除机构商户失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "删除成功",
+	}
+
+	return result
+}

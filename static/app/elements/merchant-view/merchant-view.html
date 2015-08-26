@@ -55,8 +55,6 @@
 
   </style>
   <template>
-
-
     <paper-dialog id="dialogView">
       <div class="header">
         <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
@@ -166,18 +164,17 @@
       <div class="buttons">
         <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">【取消】</paper-button>
-        <paper-button hidden$="{{!deleteFlag}}">【确定】</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">【确定】</paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">【删除】</paper-button>
         <paper-button on-tap="handleItemEditedEvent">【编辑】</paper-button>
         <paper-button on-tap="handleViewRouteTapped">【查看路由】</paper-button>
       </div>
     </paper-dialog>
-
+    <iron-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>
   </template>
   <script>
     Polymer({
       is: 'merchant-view',
-
       properties: {
         permissionArray: {
           type: Array,
@@ -214,20 +211,21 @@
       ],
       _permissionChanged: function(value) {
         this.deleteFlag = false;
-        for (var i = 0, il = this.permissionArray.length; i < il; i++) {
-          this.set('permissionArray.' + i + '.isChecked', false);
+        for (var k = 0; k < this.permissionArray.length; k++) {
+          this.set('permissionArray.' + k + '.isChecked', false);
         }
         var permissions = value;
         // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
-        for (i = 0, il = permissions.length; i < il; i++) {
-          var p = permissions[i];
-          for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
-            var pa = this.permissionArray[j];
-            if (pa.key === p) {
-              this.set('permissionArray.' + j + '.isChecked', true);
-              break;
+        if (permissions) {
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
             }
-
           }
         }
       },
@@ -271,8 +269,25 @@
       // 查看路由
       handleViewRouteTapped: function() {
         page('/config/routes2/' + this.item.merId);
-      }
-
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          merId: this.item.merId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
+      },
     });
 
   </script>

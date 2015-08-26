@@ -181,3 +181,13 @@ func (c *merchantCollection) BatchRemove(merIds []string) error {
 	}
 	return err
 }
+
+// Remove 删除机构商户
+func (col *merchantCollection) Remove(merId string) (err error) {
+	bo := bson.M{}
+	if merId != "" {
+		bo["merId"] = merId
+	}
+	err = database.C(col.name).Remove(bo)
+	return err
+}
