@@ -31,7 +31,7 @@ func main() {
 	http.HandleFunc("/scanpay/", entrance.Scanpay)
 	http.HandleFunc("/qp/back/", entrance.AsyncNotify)
 
-	// http.Handle("/master/", master.MasterRoute())
+	http.Handle("/master/", master.MasterRoute())
 
 	// http.HandleFunc("/import", data.Import)
 
