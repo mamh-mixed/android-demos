@@ -10,11 +10,6 @@
         font-size: 15px;
       }
     }
-
-    paper-dialog > *:first-child {
-      margin-top: 0px;
-    }
-
     .row {
       @apply(--layout-horizontal);
     }
@@ -47,10 +42,7 @@
   <!-- 使用分步骤方法创建路由策略 -->
 <template>
     <paper-dialog id="dialogView">
-      <div class="header">
-        <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
-        创建路由策略
-      </div>
+        <h2>创建路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input id="rmerId" label="*商户编号" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
@@ -78,6 +70,7 @@
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
+         <paper-button on-tap="handleClose">取消</paper-button>
         <paper-button on-tap="handleSaveTapped" style="margin-right:50px;">保存</paper-button>
       </div>
     </paper-dialog>
