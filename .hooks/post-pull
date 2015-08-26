@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -ex
+
+pkg="github.com/CardInfoLink/quickpay"
+
+path=$GOPATH/src/$pkg
+
+cd $path
+pwd
+
+cp .hooks/* .git/hooks/
+
+cd -
+exit 0
