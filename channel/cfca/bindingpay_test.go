@@ -12,7 +12,7 @@ var (
 	// merId            = "1426727710113"
 	// bindingId        = "1000000000011"
 	chanMerId       = "001405"
-	chanBingingId   = "cf00fd61d5ef4d924485db88b584897e"
+	chanBingingId   = "e169a3bd64ab455045b0129e1a18d53d"
 	sysOrderNum     = "aaaaaaaaaaaaaaaaaabb"
 	sysOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
 	acctName        = "张三"
@@ -124,6 +124,19 @@ func TestProcessBindingPayment(t *testing.T) {
 		PrivateKey:  priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingPayment(be)
+	log.Debugf("response message  %s", resp)
+}
+
+func TestProcessSendBindingPaySMS(t *testing.T) {
+	be := &model.BindingPayment{
+		ChanMerId:     chanMerId,
+		ChanBindingId: chanBingingId,
+		SettFlag:      settFlag,
+		SysOrderNum:   sysOrderNum,
+		TransAmt:      int64(transAmt),
+		PrivateKey:    priKeyPem,
+	}
+	resp := DefaultClient.ProcessSendBindingPaySMS(be)
 	log.Debugf("response message  %s", resp)
 }
 

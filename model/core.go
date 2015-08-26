@@ -97,6 +97,9 @@ type CardBin struct {
 	CardLen   int    `json:"cardLen" bson:"cardLen,omitempty"`     // 卡号长度
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
 	InsCode   string `json:"insCode" bson:"insCode,omitempty"`     // 发卡行代码
+	InsName   string `json:"insName" bson:"insName,omitempty"`     // 发卡行名称
+	CardName  string `json:"cardName" bson:"cardName,omitempty"`   // 卡名
+	AcctType  string `json:"acctType" bson:"acctType,omitempty"`   // 账户类型
 }
 
 const MerStatusNormal = "Normal"
@@ -246,9 +249,15 @@ type Trans struct {
 	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                // 交易凭证
 	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
 
+	// 可用于关联查询字段
+	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"`
+	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
+	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"`
+	ShortName string `bson:"shortName,omitempty" json:"shortName,omitempty"`
+
 	// 批导辅助字段
-	MerFee  float64 `bson:"-" json:"-"`       // 计算手续费字段 用于批导，待结束可删除
-	MerName string  `bson:"-" json:"merName"` // 商户名称
+	MerFee float64 `bson:"-" json:"-"` // 计算手续费字段 用于批导，待结束可删除
 }
 
 // SummarySettData 交易汇总
