@@ -1,60 +1,61 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="merchant-view">
+
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 450px;
+        min-height: 100%;
+        font-size: 14px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    paper-dialog > *:first-child {
+      margin-top: 0px;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+
+    paper-icon-button.red:hover {
+      background: #CD4F39;
+      border-radius: 0%;
+    }
+
+    .header {
+      padding: 0px;
+      margin: 0px;
+      background: red;
+      color: #ffffff;
+      heigth: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    td {
+      min-width: 70px;
+      vertical-align: top;
+    }
+
+    .key {
+      width: 70px;
+    }
+
+  </style>
   <template>
 
-    <style>
-      :host {
-        display: block;
-        --paper-dialog-scrollable: {
-          min-width: 450px;
-          min-height: 100%;
-          font-size: 15px;
-        }
-      }
-
-      paper-dialog {
-        background-color: #ffffff;
-      }
-
-      paper-dialog > *:first-child {
-        margin-top: 0px;
-      }
-
-      .row {
-        @apply(--layout-horizontal);
-      }
-
-      .row iron-icon {
-        color: red;
-      }
-
-      paper-icon-button.red:hover {
-        background: #CD4F39;
-        border-radius: 0%;
-      }
-
-      .header {
-        padding: 0px;
-        margin: 0px;
-        background: red;
-        color: #ffffff;
-        heigth: 40px;
-        line-height: 40px;
-        font-weight: bold;
-        font-size: 16px;
-      }
-
-      td {
-        min-width: 70px;
-        vertical-align: top;
-      }
-
-      .key {
-        width: 70px;
-      }
-
-    </style>
 
     <paper-dialog id="dialogView">
       <div class="header">
@@ -270,9 +271,9 @@
       // 查看路由
       handleViewRouteTapped: function() {
         page('/config/routes2/' + this.item.merId);
-      },
+      }
 
-    })();
+    });
 
   </script>
 </dom-module>
