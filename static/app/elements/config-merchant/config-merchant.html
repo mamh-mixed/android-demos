@@ -86,6 +86,10 @@
 
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
+          <div class="row">
+            <paper-input id="merId" label="*商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
+            <paper-input id="merName" label="*商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+          </div>
         <div class="row">
           <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
           <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
@@ -94,18 +98,51 @@
           <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
-        <div class="row">
-          <paper-input id="merId" label="*商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
-          <paper-input id="merName" label="*商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+        <div class="row" style="margin-top:30px;">
+            <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
-          <paper-input id="commodityName" label="*商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
-          <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="*商户状态"></x-select>
+          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" required=false error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
         </div>
 
+        <div class="row" style="margin-top:30px;">
+          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
+          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
+        </div>
         <div class="row">
-          <div class="check-box-group">
+          <paper-input label="开户行号" value="{{merchant.detail.bankId::input}}"></paper-input>
+          <paper-input label="支行名称" value="{{merchant.detail.bankName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
+           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
+          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
+           <paper-input id="commodityName" label="*商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+            <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
+        </div>
+        <div class="row" style="margin-top:30px;">
+          <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="*商户状态"></x-select>
+        </div>
+        <div class="row">
+          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
+        </div>
+        <div class="row">
             <label for="permissionGroup">接口权限</label>
+        </div>
+        <div class="row" style="margin-top:15px;margin-bottom:20px;">
+          <div class="check-box-group">
             <div id="permissionGroup" class="check-box-area">
               <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
                 <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
@@ -114,34 +151,6 @@
               </template>
             </div>
           </div>
-          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
-        </div>
-        <div class="row">
-          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
-          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" required=false error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
-          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
-          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
-          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="行号" value="{{merchant.detail.bankId::input}}"></paper-input>
-          <paper-input label="开户银行支行" value="{{merchant.detail.bankName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
