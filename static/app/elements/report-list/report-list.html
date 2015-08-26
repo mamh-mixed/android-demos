@@ -123,6 +123,7 @@
     table > tbody tr:last-child th {
       border-top: 1px solid #ddd;
     }
+
   </style>
   <template>
     <div class="condition">
@@ -363,8 +364,8 @@
           '_watchCondChange(cond.*)'
         ],
         _watchCondChange: function() {
-            var t = new Date().format('yyyyMMdd-hhmmss');
-            this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=汇总报表_' + t + '.xlsx';
+          var t = new Date().format('yyyyMMdd-hhmmss');
+          this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=汇总报表_' + t + '.xlsx';
         },
         _watchAgentChange: function(key) {
           if (key) {
@@ -395,16 +396,16 @@
         },
         // 修饰金额的方法
         _computeAmount: function(amount) {
-            amount = amount.toFixed(2);
-              x = amount.split('.');
-              x1 = x[0];
-              var x2 = '';
-              x2 = x.length > 1 ? '.' + x[1] : '';
-              var rgx = /(\d+)(\d{3})/;
-              while (rgx.test(x1)) {
-                  x1 = x1.replace(rgx, '$1' + ',' + '$2');
-              }
-              return x1 + x2;
+          amount = amount.toFixed(2);
+          var x = amount.split('.');
+          var x1 = x[0];
+          var x2 = '';
+          x2 = x.length > 1 ? '.' + x[1] : '';
+          var rgx = /(\d+)(\d{3})/;
+          while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+          }
+          return x1 + x2;
         },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
@@ -455,5 +456,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

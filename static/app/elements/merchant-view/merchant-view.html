@@ -1,60 +1,60 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="merchant-view">
+
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 450px;
+        min-height: 100%;
+        font-size: 14px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    paper-dialog > *:first-child {
+      margin-top: 0px;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+
+    paper-icon-button.red:hover {
+      background: #CD4F39;
+      border-radius: 0%;
+    }
+
+    .header {
+      padding: 0px;
+      margin: 0px;
+      background: red;
+      color: #ffffff;
+      heigth: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    td {
+      min-width: 70px;
+      vertical-align: top;
+    }
+
+    .key {
+      width: 70px;
+    }
+
+  </style>
   <template>
-
-    <style>
-      :host {
-        display: block;
-        --paper-dialog-scrollable: {
-          min-width: 450px;
-          min-height: 500px;
-          font-size: 15px;
-        }
-      }
-
-      paper-dialog {
-        background-color: #ffffff;
-      }
-
-      paper-dialog > *:first-child {
-        margin-top: 0px;
-      }
-
-      .row {
-        @apply(--layout-horizontal);
-      }
-
-      .row iron-icon {
-        color: red;
-      }
-
-      paper-icon-button.red:hover {
-        background: #CD4F39;
-        border-radius: 0%;
-      }
-
-      .header {
-        padding: 0px;
-        margin: 0px;
-        background: red;
-        color: #ffffff;
-        heigth: 40px;
-        line-height: 40px;
-        font-weight: bold;
-        font-size: 16px;
-      }
-
-      td {
-        min-width: 70px;
-        vertical-align: top;
-      }
-
-      .key {
-        width: 70px;
-      }
-    </style>
-
     <paper-dialog id="dialogView">
       <div class="header">
         <paper-icon-button icon="clear" alt="clear" style="width:40px;text-align:center;" class="red" on-tap="handleClose"></paper-icon-button>
@@ -211,8 +211,8 @@
       ],
       _permissionChanged: function(value) {
         this.deleteFlag = false;
-        for (var i = 0, il = this.permissionArray.length; i < il; i++) {
-          this.set('permissionArray.' + i + '.isChecked', false);
+        for (var k = 0; k < this.permissionArray.length; k++) {
+          this.set('permissionArray.' + k + '.isChecked', false);
         }
         var permissions = value;
         // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
@@ -244,12 +244,12 @@
       },
       //   将商户状态转换为中文
       getMerStatus: function(status) {
-        if (status == "Normal") {
-          return "正常";
-        } else if (status == "Test") {
-          return "测试商户";
-        } else if (status == "Deleted") {
-          return "已删除商户";
+        if (status === 'Normal') {
+          return '正常';
+        } else if (status === 'Test') {
+          return '测试商户';
+        } else if (status === 'Deleted') {
+          return '已删除商户';
         } else {
           return status;
         }
@@ -288,6 +288,7 @@
         this.$.dialogView.close();
         this.fire('delete-ok');
       },
-    })();
+    });
+
   </script>
 </dom-module>

@@ -2,8 +2,8 @@ package master
 
 import "net/http"
 
-// MasterRoute 后台管理的请求统一入口
-func MasterRoute() (mux *http.ServeMux) {
+// Route 后台管理的请求统一入口
+func Route() (mux *http.ServeMux) {
 	mux = http.NewServeMux()
 
 	mux.HandleFunc("/master/trade/query", tradeQueryHandle)
