@@ -166,7 +166,8 @@ func sendNotifyToMerchant(url string, ret *model.ScanPayResponse) {
 	}
 	log.Infof("send notify: %s", string(bs))
 
-	var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
+	// var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
+	var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 	for i, d := range interval {
 		log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
 		resp, err := http.Post(url, "application/json", bytes.NewReader(bs))
@@ -193,6 +194,9 @@ func sendNotifyToMerchant(url string, ret *model.ScanPayResponse) {
 		// 异步通知成功，返回
 		return
 	}
+
+	// 异步通知失败，为该笔交易增加标签
+	mongo.SpTransColl.UpdateNotifyStatus(1, ret.SysOrderNum)
 }
 
 func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
@@ -202,8 +206,9 @@ func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
 	ret.Terminalid = t.Terminalid
 	ret.OrderNum = t.OrderNum
 	ret.Chcd = t.ChanCode
-	ret.Txamt = fmt.Sprintf("%012d", (t.TransAmt * 100))
+	ret.Txamt = fmt.Sprintf("%012d", t.TransAmt)
 	ret.MerDiscount = t.MerDiscount
 	ret.ChcdDiscount = t.ChanDiscount
 	ret.QrCode = t.QrCode
+	ret.SysOrderNum = t.SysOrderNum
 }

@@ -84,7 +84,7 @@ func TestProcessBindingCreate(t *testing.T) {
 	be := &model.BindingCreate{
 		ChanMerId:     chanMerId,
 		ChanBindingId: chanBingingId,
-		BankId:        bankId,
+		BankCode:      bankId,
 		AcctName:      acctName,
 		AcctNum:       acctNum,
 		IdentType:     identType,
@@ -146,7 +146,7 @@ func TestProcessPaymentWithSMS(t *testing.T) {
 		ChanMerId: chanMerId,
 		// ChanBindingId: chanBingingId,
 		// SettFlag:      settFlag,
-		SysOrderNum: "81540061459846ce663a5138cd19ca3d",
+		SysOrderNum: "72bd6786041d47917a8d06ee71dfa761",
 		// TransAmt:      int64(transAmt),
 		PrivateKey: priKeyPem,
 		SmsCode:    "123456",

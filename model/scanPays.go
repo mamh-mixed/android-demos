@@ -198,6 +198,7 @@ type ScanPayResponse struct {
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-"`
+	SysOrderNum  string `json:"-" url:"-"`
 }
 
 // PayJson 公众号支付字段

@@ -223,6 +223,7 @@ type Trans struct {
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
+	NotifyStatus int8          `bson:"notifyStatus,omitempty" json:"-"`                      // 异步通知状态
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户
