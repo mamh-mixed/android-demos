@@ -1,0 +1,94 @@
+[{
+	"nameCN": "配置管理",
+	"nameEN": "",
+	"icon": "build",
+	"url": "",
+	"route": "config",
+	"children": [{
+		"nameCN": "代理/机构",
+		"nameEN": "",
+		"icon": "assignment-ind",
+		"url": "/config/agents",
+		"route": "config.agents"
+	}, {
+		"nameCN": "集团商户",
+		"nameEN": "",
+		"icon": "home",
+		"url": "/config/groups",
+		"route": "config.groups"
+	}, {
+		"nameCN": "商户录入",
+		"nameEN": "",
+		"icon": "create",
+		"url": "/config/configMer",
+		"route": "config.configMer"
+	}, {
+		"nameCN": "机构商户",
+		"nameEN": "",
+		"icon": "store",
+		"url": "/config/merchants",
+		"route": "config.merchants"
+	}, {
+		"nameCN": "路由策略",
+		"nameEN": "",
+		"icon": "settings-input-component",
+		"url": "/config/routes",
+		"route": "config.routes"
+	}, {
+		"nameCN": "渠道商户",
+		"nameEN": "",
+		"icon": "account-balance",
+		"url": "/config/chanMers",
+		"route": "config.chanMers"
+	}]
+}, {
+	"nameCN": "交易查询",
+	"nameEN": "",
+	"icon": "swap-horiz",
+	"url": "",
+	"route": "trade",
+	"children": [{
+		"nameCN": "扫码交易",
+		"nameEN": "",
+		"icon": "payment",
+		"url": "/trade/list",
+		"route": "trade.list"
+	}, {
+		"nameCN": "报表下载",
+		"nameEN": "",
+		"icon": "file-download",
+		"url": "/trade/reports",
+		"route": "trade.reports"
+	}, {
+		"nameCN": "旧系统报表下载",
+		"nameEN": "",
+		"icon": "cloud-download",
+		"url": "/trade/old/reports",
+		"route": "trade.old.reports"
+	}]
+}, {
+	"nameCN": "测试",
+	"nameEN": "",
+	"icon": "bug-report",
+	"url": "",
+	"route": "test",
+	"children": [{
+		"nameCN": "测试扫码",
+		"nameEN": "",
+		"icon": "pageview",
+		"url": "/test/scanpay",
+		"route": "test.scanpay"
+	}, {
+		"nameCN": "七牛 Ajax 上传文件",
+		"nameEN": "",
+		"icon": "cloud-upload",
+		"url": "/test/qiniu",
+		"route": "test.qiniu"
+	}, {
+		"nameCN": "HTML5读取文件内容",
+		"nameEN": "",
+		"icon": "get-app",
+		"url": "/test/filereader",
+		"route": "test.filereader"
+	}]
+}]
