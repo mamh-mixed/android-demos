@@ -71,6 +71,20 @@ func (col *transCollection) Update(t *model.Trans) error {
 	return err
 }
 
+// UpdateNotifyStatus 更新异步通知状态
+func (col *transCollection) UpdateNotifyStatus(status int8, sysOrderNum string) {
+
+	update := bson.M{
+		"$set": bson.M{
+			"notifyStatus": status,
+		},
+	}
+	err := database.C(col.name).Update(bson.M{"sysOrderNum": sysOrderNum}, update)
+	if err != nil {
+		log.Errorf("update sysOrderNum=%s, notifyStatus=%d, fail", sysOrderNum, status)
+	}
+}
+
 // Count 通过订单号、商户号查找交易数量
 func (col *transCollection) Count(merId, orderNum string) (count int, err error) {
 

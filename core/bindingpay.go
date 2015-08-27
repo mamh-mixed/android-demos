@@ -16,24 +16,40 @@ var (
 )
 
 // ProcessGetCardInfo 获取卡片信息
-func ProcessGetCardInfo(c *model.CardInfo) (ret *model.BindingReturn) {
+func ProcessGetCardInfo(bc *model.CardInfo) (ret *model.BindingReturn) {
 
 	// 获取卡bin详情
-	cardBin, err := findCardBin(c.CardNum)
+	cardBin, err := findCardBin(bc.CardNum)
 	if err != nil {
 		log.Error(err)
 		return mongo.RespCodeColl.Get("200110")
 	}
 
-	// TODO:判断某个渠道是否支持该银行卡
+	// 通过路由策略找到渠道和渠道商户
+	// rp := mongo.RouterPolicyColl.Find(bc.MerId, cardBin.CardBrand)
+	// if rp == nil {
+	// 	return mongo.RespCodeColl.Get("300030")
+	// }
 
-	ret = mongo.RespCodeColl.Get(successCode)
 	// 返回卡片信息
-	ret.CardNum = c.CardNum
+	ret = mongo.RespCodeColl.Get(successCode)
+	ret.CardNum = bc.CardNum
 	ret.CardBrand = cardBin.CardBrand
 	ret.AcctType = cardBin.AcctType
 	ret.IssBankName = cardBin.InsName
 	ret.IssBankNum = cardBin.InsCode
+
+	// 暂时判断中金渠道是否支持该银行卡
+	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
+	if err != nil {
+		// 没找到说明不支持
+		ret.IsSupport = "0"
+		return ret
+	}
+
+	ret.IsSupport = "1"
+	ret.BankCode = cm.BankId
+	// ...图片地址
 
 	return ret
 }
@@ -85,7 +101,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		AcctType:  bc.IdentType,
 		AcctName:  bc.AcctName,
 		AcctNum:   bc.AcctNum,
-		BankId:    bc.BankId,
+		BankId:    bc.BankCode,
 		IdentType: bc.IdentType,
 		IdentNum:  bc.IdentNum,
 		PhoneNum:  bc.PhoneNum,
@@ -126,13 +142,16 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 	log.Tracef("'BindingCreate' is: %+v", bc)
 
+	// 如果接入方没有送，则到渠道获取
 	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
-	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
-	if err != nil {
-		log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
-		return mongo.RespCodeColl.Get("400020")
+	if bc.BankCode == "" {
+		cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
+		if err != nil {
+			log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
+			return mongo.RespCodeColl.Get("400020")
+		}
+		bc.BankCode = cm.BankId
 	}
-	bc.BankId = cm.BankId
 
 	// 根据路由策略里面不同的渠道调用不同的绑定接口
 	c := channel.GetChan(bm.ChanCode)
@@ -238,9 +257,9 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("200080")
 	}
 
-	// 订单状态是否合法
-	if orig.TransStatus != model.TransHandling {
-		return mongo.RespCodeColl.Get("200080") // TODO:返回原订单短信发送失败的应答。
+	// 订单状态是否是待支付
+	if orig.TransStatus != model.TransNotPay {
+		return mongo.RespCodeColl.Get("200081") // TODO:返回订单号重复。待确认
 	}
 
 	// 获取渠道接口
@@ -271,6 +290,7 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 	case successCode:
 		orig.TransStatus = model.TransSuccess
 	case handlingCode:
+		orig.TransStatus = model.TransHandling
 	default:
 		orig.TransStatus = model.TransFail
 	}
@@ -382,9 +402,9 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 	if isSendSMS {
 		// 发送支付验证码
 		ret = c.ProcessSendBindingPaySMS(be)
-		// TODO:发送结果成功，交易处理中
+		// 发送结果成功，交易待支付
 		if ret.RespCode == successCode {
-			trans.TransStatus = model.TransHandling
+			trans.TransStatus = model.TransNotPay
 		}
 	} else {
 		// 直接支付
@@ -451,7 +471,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	ret = c.ProcessBindingRemove(br)
 
 	// 如果解绑成功，更新本地数据库
-	if ret.RespCode == "000000" {
+	if ret.RespCode == successCode {
 		bm.BindingStatus = model.BindingRemoved
 		mongo.BindingMapColl.Update(bm)
 	}

@@ -1,16 +1,20 @@
 package core
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/url"
-	"strconv"
-
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/security"
 	"github.com/omigo/log"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strconv"
+	"time"
 )
 
 // ProcessAlpNotify 支付宝异步通知处理
@@ -39,6 +43,7 @@ func ProcessAlipayNotify(params url.Values) {
 		return
 	}
 
+	ret := &model.ScanPayResponse{}
 	switch notifyAction {
 	// 退款
 	case "refundFPAction":
@@ -75,22 +80,28 @@ func ProcessAlipayNotify(params url.Values) {
 		// 交易状态更新
 		switch tradeStatus {
 		case "TRADE_SUCCESS":
-			updateTrans(t, &model.ScanPayResponse{
-				ChanRespCode:    tradeStatus,
-				ChannelOrderNum: tradeNo,
-				ConsumerAccount: account,
-				MerDiscount:     fmt.Sprintf("%0.2f", merDiscount),
-				Respcd:          adaptor.SuccessCode,
-				ErrorDetail:     adaptor.SuccessMsg,
-			})
+			ret.ChanRespCode = tradeStatus
+			ret.ChannelOrderNum = tradeNo
+			ret.ConsumerAccount = account
+			ret.Respcd = adaptor.SuccessCode
+			ret.ErrorDetail = adaptor.SuccessMsg
+			ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
+			updateTrans(t, ret)
 		case "WAIT_BUYER_PAY":
-			// do nothing
+			log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
+			ret.Respcd = adaptor.InprocessCode
+			ret.ErrorDetail = adaptor.InprocessMsg
 		default:
-			updateTrans(t, returnWithErrorCode(tradeStatus))
+			ret = returnWithErrorCode(tradeStatus)
+			updateTrans(t, ret)
 		}
 	}
 
-	// TODO 可能需要通知接入方
+	// 可能需要通知接入方
+	if t.NotifyUrl != "" {
+		copyNotifyProperties(ret, t)
+		go sendNotifyToMerchant(t.NotifyUrl, sysOrderNum, ret)
+	}
 }
 
 // ProcessWeixinNotify 微信异步通知处理(预下单)
@@ -112,19 +123,91 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) {
 		return
 	}
 
+	ret := &model.ScanPayResponse{}
 	// 更新交易信息
 	switch req.ResultCode {
 	case "SUCCESS":
-		updateTrans(t, &model.ScanPayResponse{
-			ChanRespCode:    req.ResultCode,
-			ChannelOrderNum: req.TransactionId,
-			ConsumerAccount: req.OpenID,
-			Respcd:          adaptor.SuccessCode,
-			ErrorDetail:     adaptor.SuccessMsg,
-		})
+		ret.ChanRespCode = req.ResultCode
+		ret.ChannelOrderNum = req.TransactionId
+		ret.ConsumerAccount = req.OpenID
+		ret.Respcd = adaptor.SuccessCode
+		ret.ErrorDetail = adaptor.SuccessMsg
+		updateTrans(t, ret)
 	default:
-		updateTrans(t, returnWithErrorCode(req.ErrCode))
+		ret = returnWithErrorCode(req.ErrCode)
+		updateTrans(t, ret)
 	}
 
-	// TODO 可能需要通知接入方
+	// 可能需要通知接入方
+	if t.NotifyUrl != "" {
+		copyNotifyProperties(ret, t)
+		go sendNotifyToMerchant(t.NotifyUrl, sysOrderNum, ret)
+	}
+}
+
+// sendNotifyToMerchant 向接入方发送异步消息通知
+func sendNotifyToMerchant(url, sysOrderNum string, ret *model.ScanPayResponse) {
+
+	mer, err := mongo.MerchantColl.Find(ret.Mchntid)
+	if err != nil {
+		log.Errorf("send notify error: %s", err)
+		return
+	}
+	// 签名
+	if mer.IsNeedSign {
+		log.Debug("send notify sign content to return : " + ret.SignMsg())
+		ret.Sign = security.SHA1WithKey(ret.SignMsg(), mer.SignKey)
+	}
+
+	bs, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("json marshal error: %s", err)
+		return
+	}
+	log.Infof("send notify: %s", string(bs))
+
+	var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
+	// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
+	for i, d := range interval {
+		log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
+		resp, err := http.Post(url, "application/json", bytes.NewReader(bs))
+		if err != nil {
+			time.Sleep(time.Second * d)
+			continue
+		}
+		defer resp.Body.Close()
+		rs, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			time.Sleep(time.Second * d)
+			continue
+		}
+		clientResp := &model.ScanPayResponse{}
+		err = json.Unmarshal(rs, clientResp)
+		if err != nil {
+			time.Sleep(time.Second * d)
+			continue
+		}
+		if clientResp.Respcd != adaptor.SuccessCode {
+			time.Sleep(time.Second * d)
+			continue
+		}
+		// 异步通知成功，返回
+		return
+	}
+
+	// 异步通知失败，为该笔交易增加标签
+	mongo.SpTransColl.UpdateNotifyStatus(1, sysOrderNum)
+}
+
+func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
+	ret.Busicd = "NOTI"
+	ret.Mchntid = t.MerId
+	ret.AgentCode = t.AgentCode
+	ret.Terminalid = t.Terminalid
+	ret.OrderNum = t.OrderNum
+	ret.Chcd = t.ChanCode
+	ret.Txamt = fmt.Sprintf("%012d", t.TransAmt)
+	ret.MerDiscount = t.MerDiscount
+	ret.ChcdDiscount = t.ChanDiscount
+	ret.QrCode = t.QrCode
 }

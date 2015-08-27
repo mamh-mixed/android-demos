@@ -174,7 +174,7 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 // M:返回时必须带上
 // C:可选
 type ScanPayResponse struct {
-	Txndir          string   `json:"txndir" url:"txndir"`                                       // 交易方向 M M
+	Txndir          string   `json:"txndir,omitempty" url:"txndir,omitempty"`                   // 交易方向 M M
 	Busicd          string   `json:"busicd" url:"busicd"`                                       // 交易类型 M M
 	Respcd          string   `json:"respcd" url:"respcd"`                                       // 交易结果  M
 	AgentCode       string   `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 代理/机构号 M M

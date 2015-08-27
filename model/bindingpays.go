@@ -40,6 +40,8 @@ type BindingReturn struct {
 	CardNum     string `json:"cardNum,omitempty"`
 	IssBankName string `json:"issBankName,omitempty"`
 	IssBankNum  string `json:"issBankNum,omitempty"`
+	BankCode    string `json:"bankCode,omitempty"`
+	IsSupport   string `json:"isSupport,omitempty"`
 }
 
 // NewBindingReturn 构造函数
@@ -71,7 +73,7 @@ type BindingCreate struct {
 	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`                   // CVV2
 	SendSmsId     string `json:"sendSmsId" bson:"sendSmsId,omitempty"`         // 发送短信验证码的交易流水
 	SmsCode       string `json:"smsCode" bson:"smsCode,omitempty"`             // 短信验证码
-	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
+	BankCode      string `json:"bankCode" bson:"bankCode,omitempty"`           // 银行ID
 	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
 	PrivateKey    string `json:"-"`                                            // 签名密钥
