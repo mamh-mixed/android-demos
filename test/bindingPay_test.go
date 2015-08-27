@@ -39,7 +39,7 @@ const (
 )
 
 var (
-	bindingId string = "1440486130527"
+	bindingId string = "1440641997359"
 	orderNum  string
 )
 
@@ -179,7 +179,7 @@ func TestOrderEnquiry(t *testing.T) {
 func TestBindingRefundHandle(t *testing.T) {
 	url := "http://quick.ipay.so/bindingpay/refund?merId=" + testMerId
 	b := model.BindingRefund{
-		OrigOrderNum: "1440488933169",
+		OrigOrderNum: "1440643274621",
 		MerOrderNum:  util.Millisecond(),
 		TransAmt:     1000,
 	}
