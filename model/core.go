@@ -28,6 +28,7 @@ const (
 	TransFail     = "20" // 交易失败
 	TransSuccess  = "30" // 交易成功
 	TransClosed   = "40" // 交易已关闭
+	TransNotPay   = "50" // 交易待支付
 
 	// bindingStatus
 	BindingHandling = "10" // 绑定处理中

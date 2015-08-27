@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -13,7 +13,7 @@ var (
 	// bindingId        = "1000000000011"
 	chanMerId       = "001405"
 	chanBingingId   = "e169a3bd64ab455045b0129e1a18d53d"
-	sysOrderNum     = "aaaaaaaaaaaaaaaaaabb"
+	sysOrderNum     = util.SerialNumber()
 	sysOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
 	acctName        = "张三"
 	acctNum         = "6222020302062061908"
@@ -128,6 +128,7 @@ func TestProcessBindingPayment(t *testing.T) {
 }
 
 func TestProcessSendBindingPaySMS(t *testing.T) {
+
 	be := &model.BindingPayment{
 		ChanMerId:     chanMerId,
 		ChanBindingId: chanBingingId,
@@ -137,6 +138,20 @@ func TestProcessSendBindingPaySMS(t *testing.T) {
 		PrivateKey:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessSendBindingPaySMS(be)
+	log.Debugf("response message  %s", resp)
+}
+
+func TestProcessPaymentWithSMS(t *testing.T) {
+	be := &model.BindingPayment{
+		ChanMerId: chanMerId,
+		// ChanBindingId: chanBingingId,
+		// SettFlag:      settFlag,
+		SysOrderNum: "81540061459846ce663a5138cd19ca3d",
+		// TransAmt:      int64(transAmt),
+		PrivateKey: priKeyPem,
+		SmsCode:    "123456",
+	}
+	resp := DefaultClient.ProcessPaymentWithSMS(be)
 	log.Debugf("response message  %s", resp)
 }
 
