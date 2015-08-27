@@ -58,6 +58,7 @@
           <img src="images/logo2.svg" alt="云收银" class="logo">
           <div class="app-name">快捷支付管理平台</div>
         </paper-toolbar>
+        <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <a data-route$="{{menu.route}}">
               <iron-icon icon$="{{menu.icon}}"></iron-icon>
