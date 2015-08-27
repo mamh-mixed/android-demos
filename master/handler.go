@@ -53,7 +53,6 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
-
 	merId := r.FormValue("merId")
 	merStatus := r.FormValue("merStatus")
 	merName := r.FormValue("merName")
@@ -63,6 +62,7 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 	agentName := r.FormValue("agentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
+
 	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
 
 	rdata, err := json.Marshal(ret)
@@ -104,8 +104,8 @@ func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
-func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
+func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	merId := r.FormValue("merId")
 	ret := Merchant.Delete(merId)
 	rdata, err := json.Marshal(ret)

@@ -64,6 +64,9 @@ func startSettle() {
 }
 
 func startMaster() {
+	// 静态文件
 	http.Handle("/", http.FileServer(http.Dir("static/app")))
+
+	// 动态请求
 	http.Handle("/master/", master.Route())
 }
