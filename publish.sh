@@ -39,7 +39,9 @@ function main() {
 
     host=${hosts[$idx]}
     echo -e "You selected host:\033[1;31m $input => $host \033[0m"
-    read -t 30 -p "Press any key to continue..."
+    if [ "$idx" != "0" ]; then
+        read -t 30 -p "Press any key to continue..."
+    fi
     echo
 
     # Golang 跨平台编译
