@@ -1,5 +1,4 @@
-// Package entrance 主要为了兼容 支付宝/微信 扫码 TCP 接口
-package entrance
+package scanpay
 
 import (
 	"errors"
@@ -8,10 +7,11 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/CardInfoLink/quickpay/entrance/scanpay"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
+
+// 兼容 支付宝/微信 扫码 TCP 接口
 
 // ListenScanPay 启动扫码支付端口监听
 func ListenScanPay(addr string, useGBK ...bool) {
@@ -25,7 +25,7 @@ func ListenScanPay(addr string, useGBK ...bool) {
 		log.Errorf("fail to listen %s port: %s", addr, err)
 		return
 	}
-	log.Infof("ScanPay TCP is listening, addr=%s, gbk=%t", addr, gbk)
+	log.Infof("ScanPay TCP is listening, addr=%s, GBK? %t", addr, gbk)
 
 	go func() {
 		for {
@@ -44,7 +44,7 @@ var errPing = errors.New("ping message")
 // 处理这个连接，无论遇到任何错误，都立即断开连接
 // TODO 为便于调试跟踪问题，断开前，可以返回 JSON，告知通信异常
 func handleConnection(conn net.Conn, gbk bool) {
-	log.Debugf("%s connected", conn.RemoteAddr())
+	log.Infof("%s connected, GBK? %t", conn.RemoteAddr(), gbk)
 	defer conn.Close()
 
 	for {
@@ -54,10 +54,13 @@ func handleConnection(conn net.Conn, gbk bool) {
 				continue
 			}
 
+			// read end
 			if err == io.EOF {
-				// read end
+				log.Infof("read EOF from %s, close connection", conn.RemoteAddr())
+				conn.Close()
 				return
 			}
+
 			log.Error(err)
 			return
 		}
@@ -66,7 +69,7 @@ func handleConnection(conn net.Conn, gbk bool) {
 		var ok bool
 		if !gbk {
 			// UTF-8 编码
-			msg = string(scanpay.ScanPayHandle([]byte(reqBytes))) // 测试中文编码
+			msg = string(ScanPayHandle([]byte(reqBytes))) // 测试中文编码
 		} else {
 			// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
 			msg, ok = util.GBKTranscoder.Decode(string(reqBytes))
@@ -76,7 +79,7 @@ func handleConnection(conn net.Conn, gbk bool) {
 			}
 
 			// process scanpay
-			respBytes := scanpay.ScanPayHandle([]byte(msg))
+			respBytes := ScanPayHandle([]byte(msg))
 
 			// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
 			msg, ok = util.GBKTranscoder.Encode(string(respBytes))
@@ -98,7 +101,9 @@ func read(conn net.Conn) ([]byte, error) {
 
 	_, err := io.ReadFull(conn, mLenByte)
 	if err != nil {
-		log.Errorf("read length error: %s", err)
+		if err != io.EOF {
+			log.Errorf("read length error: %s", err)
+		}
 		return nil, err
 	}
 

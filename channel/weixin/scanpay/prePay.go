@@ -12,7 +12,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 )
 
-var weixinNotifyURL = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/weixin"
+var weixinNotifyURL = goconf.Config.AlipayScanPay.NotifyUrl + weixin.NotifyURL
 
 // PrePayReq 请求被扫支付API需要提交的数据
 type PrePayReq struct {

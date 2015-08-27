@@ -53,6 +53,25 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	return ret
 }
 
+// GetCardInfoHandle 获取卡片信息
+func GetCardInfoHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	b := new(model.CardInfo)
+	err := json.Unmarshal(data, b)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return mongo.RespCodeColl.Get("200020")
+	}
+	b.MerId = merId
+
+	ret = validateGetCardInfo(b)
+	if ret != nil {
+		return ret
+	}
+	// 业务处理
+	ret = core.ProcessGetCardInfo(b)
+	return ret
+}
+
 // BindingRemoveHandle 解除绑定关系
 func BindingRemoveHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	br := new(model.BindingRemove)
@@ -93,7 +112,7 @@ func BindingEnquiryHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	return ret
 }
 
-// BindingPaymentHandle 绑定支付关系
+// BindingPaymentHandle 绑定支付
 func BindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	b := new(model.BindingPayment)
 	err := json.Unmarshal(data, b)
@@ -108,8 +127,50 @@ func BindingPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	if ret != nil {
 		return ret
 	}
-	//  todo 业务处理
-	ret = core.ProcessBindingPayment(b)
+	// 直接支付
+	ret = core.ProcessBindingPayment(b, false)
+
+	return ret
+}
+
+// SendBindingPaySMS 绑定支付发送短信验证码
+func SendBindingPaySMS(data []byte, merId string) (ret *model.BindingReturn) {
+	b := new(model.BindingPayment)
+	err := json.Unmarshal(data, b)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return mongo.RespCodeColl.Get("200020")
+	}
+	b.MerId = merId
+
+	// 验证请求报文格式
+	ret = validateSendBindingPaySMS(b)
+	if ret != nil {
+		return ret
+	}
+	// 发送支付短信验证码
+	ret = core.ProcessBindingPayment(b, true)
+
+	return ret
+}
+
+// BindingPayWithSMS 带验证码的支付
+func BindingPayWithSMS(data []byte, merId string) (ret *model.BindingReturn) {
+	b := new(model.BindingPayment)
+	err := json.Unmarshal(data, b)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return mongo.RespCodeColl.Get("200020")
+	}
+	b.MerId = merId
+
+	// 验证请求报文格式
+	ret = validateBindingPayWithSMS(b)
+	if ret != nil {
+		return ret
+	}
+	// 带验证码的支付
+	ret = core.ProcessPaymentWithSMS(b)
 
 	return ret
 }
@@ -241,5 +302,24 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 	log.Debugf("请求对象： %+v；校验结果：%+v", b, ret)
 	ret = core.ProcessNoTrackPayment(b)
 
+	return ret
+}
+
+// ApplePayHandle Apple Pay 支付入口
+func ApplePayHandle(data []byte, merId string) (ret *model.BindingReturn) {
+	ap := new(model.ApplePay)
+
+	if err := json.Unmarshal(data, ap); err != nil {
+		log.Errorf("can't unmarshal `%s` to json: %s", string(data), err)
+		return mongo.RespCodeColl.Get("200020")
+	}
+
+	ap.MerId = merId
+
+	if ret = validateApplePay(ap); ret != nil {
+		return ret
+	}
+
+	ret = core.ProcessApplePay(ap)
 	return ret
 }

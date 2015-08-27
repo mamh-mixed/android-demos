@@ -12,7 +12,7 @@ var (
 	// merId            = "1426727710113"
 	// bindingId        = "1000000000011"
 	chanMerId       = "001405"
-	chanBingingId   = "cf00fd61d5ef4d924485db88b584897e"
+	chanBingingId   = "e169a3bd64ab455045b0129e1a18d53d"
 	sysOrderNum     = "aaaaaaaaaaaaaaaaaabb"
 	sysOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
 	acctName        = "张三"
@@ -58,7 +58,7 @@ func TestSendRequest(t *testing.T) {
 		Body: requestBody{
 			TxSNBinding: chanBingingId,
 		},
-		SignCert: priKeyPem,
+		PrivateKey: priKeyPem,
 	}
 
 	response := sendRequest(req)
@@ -72,7 +72,7 @@ func TestProcessBindingEnquiry(t *testing.T) {
 	be := &model.BindingEnquiry{
 		ChanBindingId: chanBingingId,
 		ChanMerId:     chanMerId,
-		SignCert:      priKeyPem,
+		PrivateKey:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingEnquiry(be)
 
@@ -95,7 +95,7 @@ func TestProcessBindingCreate(t *testing.T) {
 		Cvv2:          cvv2,
 		SendSmsId:     sendSmsId,
 		SmsCode:       smsCode,
-		SignCert:      priKeyPem,
+		PrivateKey:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingCreate(be)
 	log.Debugf("response message  %s", resp)
@@ -107,7 +107,7 @@ func TestProcessBindingRemove(t *testing.T) {
 		ChanMerId:     chanMerId,
 		ChanBindingId: chanBingingId,
 		TxSNUnBinding: txSNUnBinding,
-		SignCert:      priKeyPem,
+		PrivateKey:    priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingRemove(be)
 	log.Debugf("response message  %s", resp)
@@ -121,9 +121,22 @@ func TestProcessBindingPayment(t *testing.T) {
 		//需要变化
 		SysOrderNum: sysOrderNum,
 		TransAmt:    int64(transAmt),
-		SignCert:    priKeyPem,
+		PrivateKey:  priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingPayment(be)
+	log.Debugf("response message  %s", resp)
+}
+
+func TestProcessSendBindingPaySMS(t *testing.T) {
+	be := &model.BindingPayment{
+		ChanMerId:     chanMerId,
+		ChanBindingId: chanBingingId,
+		SettFlag:      settFlag,
+		SysOrderNum:   sysOrderNum,
+		TransAmt:      int64(transAmt),
+		PrivateKey:    priKeyPem,
+	}
+	resp := DefaultClient.ProcessSendBindingPaySMS(be)
 	log.Debugf("response message  %s", resp)
 }
 
@@ -133,7 +146,7 @@ func TestProcessBindingRefund(t *testing.T) {
 		SysOrderNum:     sysOrderNum,
 		SysOrigOrderNum: sysOrigOrderNum,
 		TransAmt:        int64(transAmt),
-		SignCert:        priKeyPem,
+		PrivateKey:      priKeyPem,
 	}
 	resp := DefaultClient.ProcessBindingRefund(be)
 	log.Debugf("response message  %s", resp)
@@ -143,7 +156,7 @@ func TestProcessPaymentEnquiry(t *testing.T) {
 	be := &model.OrderEnquiry{
 		ChanMerId:   chanMerId,
 		SysOrderNum: sysOrderNum,
-		SignCert:    priKeyPem,
+		PrivateKey:  priKeyPem,
 	}
 	resp := DefaultClient.ProcessPaymentEnquiry(be)
 	log.Debugf("response message  %s", resp)
@@ -153,7 +166,7 @@ func TestProcessRefundEnquiry(t *testing.T) {
 	be := &model.OrderEnquiry{
 		ChanMerId:   chanMerId,
 		SysOrderNum: sysOrderNum,
-		SignCert:    priKeyPem,
+		PrivateKey:  priKeyPem,
 	}
 	resp := DefaultClient.ProcessRefundEnquiry(be)
 	log.Debugf("response message  %s", resp)
@@ -163,7 +176,7 @@ func TestProcessTransChecking(t *testing.T) {
 	// be := &model.BillingSummary{
 	// 	ChanMerId: "001405",
 	// 	SettDate:  "2015-03-19",
-	// 	SignCert:  priKeyPem,
+	// 	PrivateKey:  priKeyPem,
 	// }
 	resp := DefaultClient.ProcessTransChecking(chanMerId, "2015-04-13", priKeyPem)
 	log.Debugf("response message  %#v", resp)

@@ -83,7 +83,7 @@
     <div class="condition">
       <paper-input id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
       <paper-input id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
-      <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+      <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
       <paper-input id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
       <paper-input id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
       <paper-input id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
@@ -104,7 +104,6 @@
             <th>代理名称</th>
             <th>集团商户代码</th>
             <th>集团商户名称</th>
-            <th class="center">操作</th>
           </tr>
         </thead>
         <tbody>
@@ -131,9 +130,6 @@
               <td>
                 <span>{{item.groupName}}</span>
               </td>
-              <td class="center">
-                <iron-icon icon="create" on-tap="handleItemEditedEvent"></iron-icon>
-              </td>
             </tr>
           </template>
         </tbody>
@@ -145,29 +141,13 @@
     </paper-fab>
 
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
-    <merchant-view id="merchantView" item="{{merchant}}"></merchant-view>
+    <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'merchant-list',
         properties: {
-          merStatusMap: {
-            type: Array,
-            value: [{
-              key: 'Normal',
-              value: '正常商户'
-            }, {
-              key: 'Test',
-              value: '测试商户'
-            }, {
-              key: 'Deleted',
-              value: '已删除商户'
-            }]
-          },
-          merStatus: {
-            type: Object
-          },
           tiny: {
             type: Boolean,
             value: false
@@ -176,20 +156,6 @@
             type: Boolean,
             value: false
           },
-          isAllowSelected: {
-            type: Boolean,
-            value: false
-          },
-          isEditable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          isDeletable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          }
         },
         ready: function() {
           this.merchants = [];
@@ -269,21 +235,6 @@
         handleMerchantSave: function() {
           this.handleQueryTapped();
         },
-        // 商户选中事件
-        handleItemStaredEvent: function(e) {
-          var staredItem = e.model.item;
-          this.fire('item-selected', staredItem);
-          if (!staredItem.stared) {
-            return;
-          }
-
-          for (var i = 0, l = this.merchants.length; i < l; i++) {
-            var item = this.merchants[i];
-            if (item.merId !== staredItem.merId) {
-              this.set('merchants.' + i + '.stared', false);
-            }
-          }
-        },
         // 清除商户选中的标志
         initialList: function() {
           for (var i = 0, l = this.merchants.length; i < l; i++) {
@@ -291,8 +242,8 @@
           }
         },
         // 编辑机构商户
-        handleItemEditedEvent: function(e, detail) {
-          page('/config/merchant/' + e.model.item.merId);
+        handleItemEditedEvent: function() {
+          page('/config/merchant/' + this.merchant.merId);
         },
 
         addOneFilter: function(index) {
@@ -300,28 +251,29 @@
         },
         // 查看商户详细信息
         viewMerchantTap: function(event) {
-          this.merchant = event.model.item
+          this.merchant = event.model.item;
           this.$.merchantView.open();
         },
         // 清除查询条件
         handleClearTapped: function() {
-          this.$.merId.value = "";
-          this.cond.merId = "";
-          this.$.merName.value = "";
-          this.cond.merName = "";
-          this.$.merStatus.selectedItem = "";
-          this.cond.merStatus = "";
-          this.$.agentCode.value = "";
-          this.cond.agentCode = "";
-          this.$.agentName.value = "";
-          this.cond.agentName = "";
-          this.$.groupCode.value = "";
-          this.cond.groupCode = "";
-          this.$.groupName.value = "";
-          this.cond.groupName = "";
+          this.$.merId.value = '';
+          this.cond.merId = '';
+          this.$.merName.value = '';
+          this.cond.merName = '';
+          this.$.agentCode.value = '';
+          this.cond.agentCode = '';
+          this.$.agentName.value = '';
+          this.cond.agentName = '';
+          this.$.groupCode.value = '';
+          this.cond.groupCode = '';
+          this.$.groupName.value = '';
+          this.cond.groupName = '';
           this.set('cond.page', 1);
           this.generateAjaxRequest();
-        }
+        },
+        handleAfterDelete: function() {
+            this.handleQueryTapped();
+        },
       });
     })();
   </script>

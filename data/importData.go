@@ -71,6 +71,8 @@ func AddCardBinFromCSV(path string, rebuild bool) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("%+v	", cardBins[2])
+	// return nil
 	// fmt.Println(len(cardBins))
 	// 重建
 	if rebuild {
@@ -347,8 +349,9 @@ func readCardBinCSV(path string) ([]*model.CardBin, error) {
 		if i == 0 {
 			continue
 		}
-		// 判断该记录的长度是否为5
-		if len(each) >= 6 && each[5] != "" {
+		// BIN,BIN_LEN,INS_CODE,CARD_LEN,ACCT_TYPE,INS_NAME,CARD_NAME,CARD_BRAND
+		// 判断该记录的长度是否为8
+		if len(each) != 8 {
 			return nil, fmt.Errorf("%d 行格式错误，检测到有%d 个字段", i+1, len(each))
 		}
 
@@ -369,13 +372,27 @@ func readCardBinCSV(path string) ([]*model.CardBin, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%d 行，cardLen 应为数字，实际为：%s", i+1, each[3])
 		}
-
-		if matched, _ := regexp.MatchString(`^[A-Z]+$`, each[4]); !matched {
-			return nil, fmt.Errorf("%d  行，cardBrand  应为大写字母，实际为：%s", i+1, each[4])
+		acctType := ""
+		switch each[4] {
+		case "1":
+			// 表示借记卡
+			acctType = "10"
+		case "2", "3":
+			// 贷记卡\准贷记卡
+			acctType = "20"
+		case "4":
+			// 预付卡
+			acctType = "30"
+		default:
+			return nil, fmt.Errorf("%d 行，账户类型 应为【1，2，3，4】，实际为：%s", i+1, each[4])
 		}
 
-		c := &model.CardBin{Bin: each[0], BinLen: binLen,
-			InsCode: strings.TrimSpace(each[2]), CardLen: cardLen, CardBrand: each[4]}
+		if matched, _ := regexp.MatchString(`^[A-Z]+$`, each[7]); !matched {
+			return nil, fmt.Errorf("%d  行，cardBrand  应为大写字母，实际为：%s", i+1, each[7])
+		}
+
+		c := &model.CardBin{Bin: each[0], BinLen: binLen, InsName: each[5], CardName: each[6],
+			InsCode: strings.TrimSpace(each[2]), CardLen: cardLen, CardBrand: each[7], AcctType: acctType}
 		cs = append(cs, c)
 	}
 	return cs, nil

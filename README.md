@@ -59,9 +59,11 @@
         ├── alipay
         │   └── pubkey.pem
         └── cfca
-            ├── cert_testing.pem
-            ├── evCcaCrt_testing.pem
-            └── evRootCrt_testing.pem
+            ├── sign_cert_testing.pem
+            ├── test.cpcn.com.cn.pem
+            ├── test.cpcn.com.cn_root.pem
+            ├── www.china-clearing.com.pem
+            └── www.china-clearing.com_root.pem
     ```
 
 3. 在程序的启动目录下创建 logs 目录，用于存放日志文件

@@ -23,6 +23,7 @@
     .condition > x-select {
       min-width: 170px;
       margin-right: 20px;
+      font-size: 12px;
     }
 
     .condition > .buttons {
@@ -75,10 +76,11 @@
       background-color: #f5f5f5;
     }
 
-    table tr th:nth-of-type(3),
-    table tr td:nth-of-type(3) {
+    table tr th:nth-of-type(4),
+    table tr td:nth-of-type(4) {
       text-align: right;
     }
+
   </style>
   <template>
     <iron-ajax id="queryAjax" method="POST" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
@@ -100,11 +102,15 @@
           <paper-button dialog-confirm>OK</paper-button>
         </div>
       </paper-dialog>
-
-      <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
+      <paper-input label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+      <paper-input label="集团代码" value="{{cond.groupCode::input}}"></paper-input>
+      <paper-input label="商户代码" value="{{cond.mchntid::input}}"></paper-input>
       <paper-input label="订单号" value="{{cond.orderNum::input}}"></paper-input>
       <paper-input label="关联订单号" value="{{cond.origOrderNum::input}}"></paper-input>
-      <paper-input label="商户代码" value="{{cond.mchntid::input}}"></paper-input>
+      <paper-input label="应答码" value="{{cond.respcd::input}}"></paper-input>
+      <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
+      <x-select items="[[transStatusMap]]" selected-item="{{transStatus}}" label="交易状态"></x-select>
+
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
         <paper-button class="colorful" raised>
@@ -132,9 +138,11 @@
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr>
-              <td>{{addOneFilter(index)}}</td>
-              <td>{{item.respcd}}</td>
-              <td>{{item.orderNum}}</td>
+              <td style="text-align:right;">{{addOneFilter(index)}}</td>
+              <td>
+                <span style$="{{getRespcdColor(item.respcd)}}">{{item.respcd}}</span>
+              </td>
+              <td style="text-align:left;">{{item.orderNum}}</td>
               <td>{{_currencyFilter(item.transAmt)}}</td>
               <td>{{item.transTime}}</td>
               <td>{{transStatusFilter(item.transStatus)}}</td>
@@ -154,146 +162,183 @@
     </div>
   </template>
   <script>
-    (function() {
-      var TRANS_TYPE_MAP = {
-        'PURC': '下单支付',
-        'PAUT': '预下单',
-        'VOID': '撤销',
-        'REFD': '退款',
-        'VERI': '卡券核销',
-        'CANC': '取消',
-        'purc': '下单支付',
-        'paut': '预下单',
-        'void': '撤销',
-        'refd': '退款',
-        'veri': '卡券核销',
-        'canc': '取消',
-        'QYFK': '企业付款',
-        'JSZF': '公众号支付'
-      };
+    var TRANS_TYPE_MAP = {
+      'PURC': '下单支付',
+      'PAUT': '预下单',
+      'VOID': '撤销',
+      'REFD': '退款',
+      'VERI': '卡券核销',
+      'CANC': '取消',
+      'purc': '下单支付',
+      'paut': '预下单',
+      'void': '撤销',
+      'refd': '退款',
+      'veri': '卡券核销',
+      'canc': '取消',
+      'QYFK': '企业付款',
+      'JSZF': '公众号支付'
+    };
 
-      Polymer({
-        is: 'trade-list',
+    Polymer({
+      is: 'trade-list',
 
-        properties: {
-          dataRoute: {
-            type: String,
-            value: 'trade.list',
-            notify: true
-          },
-          trades: {
-            type: Array,
-            value: []
-          },
-          busicd: {
-            type: Object
-          },
-          busicds: {
-            type: Array,
-            value: (function() {
-              var busicds = [],
-                map = {};
-              for (var k in TRANS_TYPE_MAP) {
-                if (!map[k.toUpperCase()]) {
-                  map[k.toUpperCase()] = TRANS_TYPE_MAP[k];
-                }
+      properties: {
+        dataRoute: {
+          type: String,
+          value: 'trade.list',
+          notify: true
+        },
+        trades: {
+          type: Array,
+          value: []
+        },
+        busicd: {
+          type: Object
+        },
+        busicds: {
+          type: Array,
+          value: (function() {
+            var busicds = [],
+              map = {};
+            for (var k in TRANS_TYPE_MAP) {
+              if (!map[k.toUpperCase()]) {
+                map[k.toUpperCase()] = TRANS_TYPE_MAP[k];
               }
-              Object.keys(map).forEach(function(v) {
-                  busicds.push({
-                    key: v,
-                    value: map[v]
-                  });
+            }
+            Object.keys(map).forEach(function(v) {
+              busicds.push({
+                key: v,
+                value: map[v]
               });
-              return busicds;
-            })()
-          }
+            });
+            return busicds;
+          })()
         },
-        ready: function() {
-          this.cond = {
-            startTime: new Date().format('yyyy-MM-dd'),
-            endTime: new Date().format('yyyy-MM-dd'),
-            total: 0,
-            page: 1,
-            size: 20
-          };
-          this.busicd = {};
-          this.trades = [];
+        transStatus: {
+          type: Object
         },
-        observers: [
-          '_watchBusicdChange(busicd.key)',
-          '_watchCondChange(cond.*)'
-        ],
-        _watchBusicdChange: function(key) {
-          this.cond.busicd = key;
-        },
-        _watchCondChange: function() {
-          var t = new Date().format('yyyyMMdd-hhmmss');
-          this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
-        },
-        // 日期、时间控件
-        dismissStartTimeDialog: function() {
-          var startTime = this.$.startTimePicker.date;
-          this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
-        },
-        showStartTimeDialog: function() {
-          this.$.startTimeDailog.toggle();
-        },
-        dismissEndTimeDialog: function() {
-          var endTime = this.$.endTimePicker.date;
-          this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
-        },
-        showEndTimeDialog: function() {
-          this.$.endTimeDailog.toggle();
-        },
-        // 发送查询交易的ajax请求
-        handleQueryTapped: function() {
-          this.set('cond.page', 1);
-          this.generateAjaxRequest();
-        },
-        generateAjaxRequest: function() {
-          this.trades = [];
-          this.$.queryAjax.body = JSON.stringify(this.cond);
-          this.$.queryAjax.generateRequest();
-        },
-        // ajax请求响应处理
-        handleQueryResponse: function(e) {
-          var response = e.detail.response;
-          if (response.respCode !== '000000') {
-            Util.toast(response.respMsg, 3000);
-          }
-
-          if (response.rec) {
-            this.trades = response.rec.slice(0);
-          }
-          this.set('cond.total', response.total);
-          this.set('cond.page', response.page);
-        },
-        chanFilter: function(chanCode) {
-          var map = {
-            'ALP': '支付宝',
-            'WXP': '微信'
-          };
-          return map[chanCode];
-        },
-        busicdFilter: function(busicd) {
-          return TRANS_TYPE_MAP[busicd] || busicd;
-        },
-        _currencyFilter: function(money) {
-          return (money / 100).toFixed(2);
-        },
-        transStatusFilter: function(status) {
-          var map = {
-            '10': '处理中',
-            '20': '失败',
-            '30': '成功',
-            '40': '已关闭'
-          };
-          return map[status];
-        },
-        addOneFilter: function(index) {
-          return index + 1;
+        transStatusMap: {
+          type: Array,
+          value: [{
+            key: '10',
+            value: '处理中'
+          }, {
+            key: '20',
+            value: '失败'
+          }, {
+            key: '30',
+            value: '成功'
+          }, {
+            key: '40',
+            value: '已关闭'
+          }, ]
         }
-      });
-    })();
+      },
+      ready: function() {
+        this.cond = {
+          startTime: new Date().format('yyyy-MM-dd'),
+          endTime: new Date().format('yyyy-MM-dd'),
+          total: 0,
+          page: 1,
+          size: 20
+        };
+        this.busicd = {};
+        this.trades = [];
+        this.transStatus = {};
+      },
+      observers: [
+        '_watchBusicdChange(busicd.key)',
+        '_watchCondChange(cond.*)',
+        '_watchTransStatusChange(transStatus.key)'
+      ],
+      _watchBusicdChange: function(key) {
+        this.cond.busicd = key;
+      },
+      _watchCondChange: function() {
+        var t = new Date().format('yyyyMMdd-hhmmss');
+        this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
+      },
+      // 交易状态选择框改变
+      _watchTransStatusChange: function(key) {
+        this.cond.transStatus = key;
+      },
+      // 日期、时间控件
+      dismissStartTimeDialog: function() {
+        var startTime = this.$.startTimePicker.date;
+        this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
+      },
+      showStartTimeDialog: function() {
+        this.$.startTimeDailog.toggle();
+      },
+      dismissEndTimeDialog: function() {
+        var endTime = this.$.endTimePicker.date;
+        this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
+      },
+      showEndTimeDialog: function() {
+        this.$.endTimeDailog.toggle();
+      },
+      // 发送查询交易的ajax请求
+      handleQueryTapped: function() {
+        this.set('cond.page', 1);
+        this.generateAjaxRequest();
+      },
+      generateAjaxRequest: function() {
+        this.trades = [];
+        this.$.queryAjax.body = JSON.stringify(this.cond);
+        this.$.queryAjax.generateRequest();
+      },
+      // ajax请求响应处理
+      handleQueryResponse: function(e) {
+        var response = e.detail.response;
+        if (response.respCode !== '000000') {
+          Util.toast(response.respMsg, 3000);
+        }
+
+        if (response.rec) {
+          this.trades = response.rec.slice(0);
+        }
+        this.set('cond.total', response.total);
+        this.set('cond.page', response.page);
+      },
+      chanFilter: function(chanCode) {
+        var map = {
+          'ALP': '支付宝',
+          'WXP': '微信'
+        };
+        return map[chanCode];
+      },
+      busicdFilter: function(busicd) {
+        return TRANS_TYPE_MAP[busicd] || busicd;
+      },
+      _currencyFilter: function(money) {
+        return (money / 100).toFixed(2);
+      },
+      transStatusFilter: function(status) {
+        var map = {
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭'
+        };
+        return map[status];
+      },
+      addOneFilter: function(index) {
+        return index + 1;
+      },
+      // 应答码着色
+      getRespcdColor: function(value) {
+        var map = {
+          '00': 'background:green;',
+          '96': 'background:#ff0000;',
+        };
+        var commonStyle = 'display:inline-block;color:#ffffff;border-radius:50%;width:30px;height:30px;line-height:30px;vertical-align:middle;text-align:center;';
+        if (value === '00' || value === '96') {
+          return map[value] + commonStyle;
+        } else {
+          return 'background:#FF7F24;' + commonStyle;
+        }
+      }
+    });
+
   </script>
 </dom-module>

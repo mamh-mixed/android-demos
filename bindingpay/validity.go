@@ -75,6 +75,15 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 	return nil
 }
 
+// validateGetCardInfo 验证获取卡片接口字段
+func validateGetCardInfo(in *model.CardInfo) (ret *model.BindingReturn) {
+
+	if !isAlphanumericOrSpecial(in.CardNum) {
+		return mongo.RespCodeColl.Get("200110")
+	}
+	return nil
+}
+
 // validateBindingRemove 移除绑定关系的时候验证请求报文
 func validateBindingRemove(in *model.BindingRemove) (ret *model.BindingReturn) {
 	if in.BindingId == "" {
@@ -136,6 +145,50 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 		return model.NewBindingReturn("200050", "字段 smsCode 不能为空")
 	}
 
+	return nil
+}
+
+// validateSendBindingPaySMS 交易发送短信接口报文验证
+func validateSendBindingPaySMS(in *model.BindingPayment) (ret *model.BindingReturn) {
+	if in.BindingId == "" {
+		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
+	}
+
+	if in.TransAmt == 0 {
+		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
+	}
+
+	if in.MerOrderNum == "" {
+		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
+	}
+
+	if in.TransAmt < 0 {
+		return mongo.RespCodeColl.Get("200180")
+	}
+
+	if !isAlphanumeric(in.BindingId) {
+		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
+	}
+
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+
+	return nil
+}
+
+// validateBindingPayWithSMS 带验证码交易报文验证
+func validateBindingPayWithSMS(in *model.BindingPayment) (ret *model.BindingReturn) {
+	if in.MerOrderNum == "" {
+		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
+	}
+	if in.SmsCode == "" {
+		return model.NewBindingReturn("200050", "字段 smsCode 不能为空")
+	}
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+	// TODO:短信验证码格式验证
 	return nil
 }
 
@@ -313,9 +366,85 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 	return nil
 }
 
-// isAlphanumeric 用来判断一个字符串是否是字母或者数字
+func validateApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
+	// TransType
+	if ap.TransType == "" {
+		return model.NewBindingReturn("200050", "字段 transType 不能为空")
+	}
+	if ap.TransType != "SALE" && ap.TransType != "AUTH" {
+		return mongo.RespCodeColl.Get("100030")
+	}
+
+	// SubMerId
+	if ap.SubMerId != "" && !isAlphanumeric(ap.SubMerId) {
+		return model.NewBindingReturn("200051", "字段 subMerId 不符合要求")
+	}
+
+	// TerminalId
+	if ap.TerminalId != "" && !isAlphanumeric(ap.TerminalId) {
+		return model.NewBindingReturn("200051", "字段 terminalId 不符合要求")
+	}
+
+	// MerOrderNum
+	if ap.MerOrderNum == "" {
+		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
+	}
+	if !isAlphanumeric(ap.MerOrderNum) {
+		return model.NewBindingReturn("200051", "字段 merOrderNum 不符合要求")
+	}
+
+	// TransactionId
+	if ap.TransactionId == "" {
+		return model.NewBindingReturn("200050", "字段 transactionId 不能为空")
+	}
+	// TODO 判断transactonID，目前接口需求不确定，先以线下网关的规定为准，只能纯数字，最多20位
+	if matched, _ := regexp.MatchString(`^\d{3,20}$`, ap.TransactionId); !matched {
+		return mongo.RespCodeColl.Get("200253")
+	}
+
+	// 判断主账号ApplicationPrimaryAccountNumber
+	if ap.ApplePayData.ApplicationPrimaryAccountNumber == "" {
+		return model.NewBindingReturn("200050", "字段 applePayData.applicationPrimaryAccountNumber 不能为空")
+	}
+	if matched, _ := regexp.MatchString(`^\d{4,}$`, ap.ApplePayData.ApplicationPrimaryAccountNumber); !matched {
+		return mongo.RespCodeColl.Get("200110")
+	}
+
+	// ApplePayData.ApplicationExpirationDate
+	if ap.ApplePayData.ApplicationExpirationDate == "" {
+		return model.NewBindingReturn("200050", "字段 applePayData.applicationExpirationDate 不能为空")
+	}
+	if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])(0[1-9]|[1-2][0-9]|3[0-1])$`, ap.ApplePayData.ApplicationExpirationDate); !matched {
+		return mongo.RespCodeColl.Get("200250")
+	}
+
+	// ApplePayData.CurrencyCode
+	if ap.ApplePayData.CurrencyCode == "" {
+		return model.NewBindingReturn("200050", "字段 applePayData.currencyCode 不能为空")
+	}
+	if matched, _ := regexp.MatchString(`^\d{3}$`, ap.ApplePayData.CurrencyCode); !matched {
+		return mongo.RespCodeColl.Get("200251")
+	}
+
+	// ApplePayData.TransactionAmount
+	if ap.ApplePayData.TransactionAmount == 0 {
+		return model.NewBindingReturn("200050", "字段 applePayData.transactionAmount 不能为空")
+	}
+
+	// ApplePayData.PaymentDataType
+	if ap.ApplePayData.PaymentDataType == "" {
+		return model.NewBindingReturn("200050", "字段 applePayData.paymentDataType 不能为空")
+	}
+	if ap.ApplePayData.PaymentDataType != "EMV" && ap.ApplePayData.PaymentDataType != "3DSecure" {
+		return mongo.RespCodeColl.Get("200252")
+	}
+
+	return nil
+}
+
+// isAlphabeticOrNumeric 用来判断一个字符串是否是字母或者数字
 func isAlphanumeric(str string) (result bool) {
-	matched, _ := regexp.MatchString(`^(?i)[a-z0-9]+$`, str)
+	matched, _ := regexp.MatchString(`^[A-Za-z0-9]+$`, str)
 	if matched {
 		return true
 	}

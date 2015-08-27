@@ -1,0 +1,730 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="./bindingpay-template.html">
+
+<dom-module id="test-bindingpay">
+  <style>
+    :host {
+      display: block;
+      --paper-tab-ink: #eee;
+      --paper-tabs-selection-bar-color: #eee;
+    }
+
+    paper-tabs {
+      background-color: var(--default-primary-color);
+      color: var(--text-primary-color);
+      box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    paper-tabs[noink][no-bar] paper-tab.iron-selected {
+      color: #ffff8d;
+    }
+
+    paper-tabs[align-bottom] {
+      box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
+    }
+
+    .row paper-input,
+    .row pre,
+    .row label,
+    .row paper-textarea,
+    .row paper-checkbox,
+    .row paper-radio-button,
+    .row .check-box-group,
+    .row channel-merchant-typeahead,
+    .row x-select {
+      @apply(--layout-flex-6);
+      margin-right: 20px;
+    }
+
+    .row paper-input:last-child,
+    .row pre:last-child,
+    .row label:last-child,
+    .row paper-textarea:last-child,
+    .row paper-checkbox:last-child,
+    .row paper-radio-button:last-child,
+    .row channel-merchant-typeahead:last-child,
+    .row .check-box-group:last-child,
+    .row x-select:last-child {
+      margin-right: 0;
+    }
+
+    .row paper-checkbox,
+    .row paper-radio-button {
+      padding-top: 20px;
+    }
+
+    .check-box-group > label {
+      color: #727272;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 24px;
+    }
+
+    .check-box-area paper-checkbox {
+      padding-top: 0;
+    }
+
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+    }
+
+  </style>
+  <template>
+    <paper-tabs selected="{{idx}}">
+      <paper-tab>绑定</paper-tab>
+      <paper-tab>解绑</paper-tab>
+      <paper-tab>查询绑定</paper-tab>
+      <paper-tab>支付(验证码)</paper-tab>
+      <paper-tab>确认支付</paper-tab>
+      <paper-tab>退款</paper-tab>
+      <paper-tab>交易汇总</paper-tab>
+      <paper-tab>交易明细</paper-tab>
+      <paper-tab>查询订单</paper-tab>
+      <paper-tab>直接支付</paper-tab>
+      <paper-tab>Apple Pay</paper-tab>
+    </paper-tabs>
+
+    <iron-pages selected="{{idx}}">
+      <section alias="bindingCreate">
+        <bindingpay-template url="/bindingpay/bindingCreate" elems='[
+         {
+             "id": "bindingId",
+             "name": "bindingId",
+             "label": "银行卡绑定ID",
+             "tooltip": "接入商户自行指定，同商户全局唯一，后续支付凭证",
+             "value": "012345678901234",
+             "required": true,
+             "maxlength": "32",
+             "autoValidate": true,
+             "error": "必填，最长 32 个字符"
+         },
+         {
+             "id": "acctName",
+             "name": "acctName",
+             "label": "账户名称",
+             "tooltip": "*加密字段，待绑定的银行卡在银行登记的用户名称",
+             "value": "张三",
+             "required": true,
+             "maxlength": "64",
+             "autoValidate": true,
+             "error": "必填，最长 64 个字符",
+             "encrypt": true
+         },
+         {
+             "id": "acctNum",
+             "name": "acctNum",
+             "label": "账户号码",
+             "tooltip": "*加密字段，一般为银行卡卡号",
+             "value": "6222022003008481261",
+             "required": true,
+             "maxlength": "32",
+             "autoValidate": true,
+             "error": "必填，最长 32 个字符",
+             "encrypt": true
+         },
+         {
+             "id": "identType",
+             "name": "identType",
+             "label": "证件类型",
+             "tooltip": "可通过获取卡片信息接口获得卡片的借贷记类型，卡品牌，发卡行信息等,卡品牌为银联卡时，此项必填：0=身份证，1=户口簿，  2=护照，  3=军官证，  4=士兵证， 5=港澳居民来往内地通行证， 6=台湾同胞来往内地通行证， 7=临时身份证， 8=外国人居留证，  9=警官证， X=其他证件",
+             "value": "0",
+             "required": false,
+             "maxlength": "1",
+             "autoValidate": false,
+             "error": "最长 1 个字符"
+         },
+         {
+             "id": "identNum",
+             "name": "identNum",
+             "label": "证件号码",
+             "tooltip": "*加密字段，卡品牌为银联卡必填",
+             "value": "440583199111031012",
+             "required": false,
+             "maxlength": "32",
+             "autoValidate": false,
+             "error": "必填，最长 32 个字符",
+             "encrypt": true
+         },
+         {
+             "id": "phoneNum",
+             "name": "phoneNum",
+             "label": "手机号",
+             "tooltip": "*加密字段，需要验证短信时必填，卡品牌为银联卡必填",
+             "value": "18205960039",
+             "required": false,
+             "maxlength": "18",
+             "autoValidate": true,
+             "error": "最长 18 个字符",
+             "encrypt": true
+         },
+         {
+             "id": "acctType",
+             "name": "acctType",
+             "label": "账户类型",
+             "tooltip": "10=个人借记，20=个人贷记",
+             "value": "10",
+             "required": true,
+             "maxlength": "2",
+             "autoValidate": true,
+             "error": "必填，最长 2 个字符"
+         },
+         {
+             "id": "validDate",
+             "name": "validDate",
+             "label": "信用卡有限期",
+             "tooltip": "*加密字段，账户类型为贷记卡必填，格式YYMM",
+             "value": "0612",
+             "required": false,
+             "maxlength": "4",
+             "autoValidate": false,
+             "error": "最长 4 个字符",
+             "encrypt": true
+         },
+         {
+             "id": "cvv2",
+             "name": "cvv2",
+             "label": "CVV2",
+             "tooltip": "*加密字段，账户类型为贷记卡必填",
+             "value": "387",
+             "required": false,
+             "maxlength": "3",
+             "autoValidate": false,
+             "error": "最长 3 个字符",
+             "encrypt": true
+         },
+         {
+             "id": "sendSmsId",
+             "name": "sendSmsId",
+             "label": "发送短信验证码的交易流水",
+             "tooltip": "在此请求发送之前进行过发送短信验证码交易，并且需要网关验证短信验证码时必填",
+             "value": "",
+             "required": false,
+             "maxlength": "32",
+             "autoValidate": false,
+             "error": "最长 32 个字符"
+         },
+         {
+             "id": "smsCode",
+             "name": "smsCode",
+             "label": "短信验证码",
+             "tooltip": "在需要网关验证此字段时必填",
+             "value": "",
+             "required": false,
+             "maxlength": "8",
+             "autoValidate": false,
+             "error": "最长 8 个字符"
+         }
+        ]'></bindingpay-template>
+      </section>
+      <section alias="bindingRemove">
+        <bindingpay-template url="/bindingpay/bindingRemove" elems='[
+         {
+             "id": "bindingId",
+             "name": "bindingId",
+             "label": "银行卡绑定ID",
+             "tooltip": "建立绑定关系时的银行卡绑定ID",
+             "value": "",
+             "required": true,
+             "maxlength": "32",
+             "autoValidate": true,
+             "error": "必填，最长 32 个字符"
+         }
+        ]'></bindingpay-template>
+      </section>
+      <section alias="bindingEnquiry">
+        <bindingpay-template url="/bindingpay/bindingEnquiry" elems='[
+         {
+             "id": "bindingId",
+             "name": "bindingId",
+             "label": "银行卡绑定ID",
+             "tooltip": "建立绑定关系时的银行卡绑定ID",
+             "value": "",
+             "required": true,
+             "maxlength": "32",
+             "autoValidate": true,
+             "error": "必填，最长 32 个字符"
+         }
+    ]'></bindingpay-template>
+      </section>
+      <section alias="sendBindingPaySms">
+        <bindingpay-template url="/bindingpay/sendBindingPaySms" elems='[
+            {
+                "id": "merOrderNum",
+                "name": "merOrderNum",
+                "label": "* 商户订单号",
+                "tooltip": "该笔交易在商户侧的流水号",
+                "value": "",
+                "required": true,
+                "maxlength": "32",
+                "autoValidate": true,
+                "error": "必填，最长 32 个字符"
+            },
+            {
+                "id": "settOrderNum",
+                "name": "settOrderNum",
+                "label": "结算订单号",
+                "tooltip": "如有此需求，可选输入",
+                "value": "",
+                "required": false,
+                "maxlength": "15",
+                "autoValidate": false,
+                "error": "最长 15 个字符"
+            },
+            {
+                "id": "bindingId",
+                "name": "bindingId",
+                "label": "银行卡绑定ID",
+                "tooltip": "通过建立绑定关系创建的银行卡绑定ID",
+                "value": "",
+                "required": true,
+                "maxlength": "32",
+                "autoValidate": true,
+                "error": "必填，最长 32 个字符"
+            },
+            {
+                "id": "transAmt",
+                "name": "transAmt",
+                "label": "支付金额",
+                "tooltip": "支付金额,单位分",
+                "numeric": true,
+                "value": "",
+                "required": true,
+                "maxlength": "10",
+                "autoValidate": true,
+                "error": "必填，最长 10 个字符"
+            },
+            {
+                "id": "remark",
+                "name": "remark",
+                "label": "备注",
+                "tooltip": "备注",
+                "value": "",
+                "required": false,
+                "maxlength": "32",
+                "autoValidate": false,
+                "error": "最长 32 个字符"
+            }
+        ]'></bindingpay-template>
+      </section>
+
+      <section alias="bindingPayWithSms">
+        <bindingpay-template url="/bindingpay/bindingPayWithSms" elems='[
+            {
+                "id": "merOrderNum",
+                "name": "merOrderNum",
+                "label": "* 商户订单号",
+                "tooltip": "该笔交易在商户侧的流水号",
+                "value": "",
+                "required": true,
+                "maxlength": "32",
+                "autoValidate": true,
+                "error": "必填，最长 32 个字符"
+            },
+            {
+                "id": "settOrderNum",
+                "name": "settOrderNum",
+                "label": "结算订单号",
+                "tooltip": "如有此需求，可选输入",
+                "value": "",
+                "required": false,
+                "maxlength": "15",
+                "autoValidate": false,
+                "error": "最长 15 个字符"
+            },
+            {
+                "id": "smsCode",
+                "name": "smsCode",
+                "label": "短信验证码",
+                "tooltip": "在需要网关验证此字段时必填",
+                "value": "",
+                "required": false,
+                "maxlength": "8",
+                "autoValidate": false,
+                "error": "最长 8 个字符"
+            }
+        ]'></bindingpay-template>
+      </section>
+      <section alias="refund">
+        <bindingpay-template url="/bindingpay/refund" elems='[
+            {
+                "id": "merOrderNum",
+                "name": "merOrderNum",
+                "label": "商户订单号",
+                "tooltip": "该笔交易在商户侧的流水号",
+                "value": "",
+                "required": true,
+                "maxlength": "32",
+                "autoValidate": true,
+                "error": "必填，最长 32 个字符"
+            },
+            {
+                "id": "origOrderNum",
+                "name": "origOrderNum",
+                "label": "原支付交易商户订单号",
+                "tooltip": "要查询的原交易订单号",
+                "value": "",
+                "required": true,
+                "maxlength": "32",
+                "autoValidate": true,
+                "error": "最长 32 个字符"
+            },
+            {
+                "id": "transAmt",
+                "name": "transAmt",
+                "label": "退款金额",
+                "tooltip": "退款金额,单位分",
+                "numeric": true,
+                "value": "",
+                "required": true,
+                "maxlength": "10",
+                "autoValidate": true,
+                "error": "必填，最长 10 个字符"
+            }
+        ]'></bindingpay-template>
+      </section>
+      <section alias="billingSummary">
+        <bindingpay-template url="/bindingpay/billingSummary" elems='[
+         {
+             "id": "settDate",
+             "name": "settDate",
+             "label": "对账日期",
+             "tooltip": "格式：YYYY-MM-DD",
+             "value": "",
+             "required": true,
+             "maxlength": "10",
+             "autoValidate": true,
+             "error": "必填，最长 10 个字符"
+         }
+        ]'></bindingpay-template>
+      </section>
+      <section alias="billingDetails">
+        <bindingpay-template url="/bindingpay/billingDetails" elems='[
+        {
+            "id": "settDate",
+            "name": "settDate",
+            "label": "对账日期",
+            "tooltip": "格式：YYYY-MM-DD",
+            "value": "",
+            "required": true,
+            "maxlength": "10",
+            "autoValidate": true,
+            "error": "必填，最长 10 个字符"
+        },
+        {
+            "id": "nextOrderNum",
+            "name": "nextOrderNum",
+            "label": "拉取的第一条记录的商户订单号",
+            "tooltip": "不填默认从头开始拉取， 使用上一次调用返回的nextOrderNum可连续拉取",
+            "value": "",
+            "required": false,
+            "maxlength": "32",
+            "autoValidate": false,
+            "error": "最长 32 个字符"
+        }
+    ]'></bindingpay-template>
+      </section>
+      <section alias="orderEnquiry">
+        <bindingpay-template url="/bindingpay/orderEnquiry" elems='[
+        {
+            "id": "origOrderNum",
+            "name": "origOrderNum",
+            "label": "原交易订单号",
+            "tooltip": "要查询的原交易订单号",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        },
+        {
+            "id": "showOrigInfo",
+            "name": "showOrigInfo",
+            "label": "是否需要返回原交易详细信息",
+            "tooltip": "0:不需要，1:需要，不送默认为0",
+            "value": "",
+            "required": false,
+            "maxlength": "1",
+            "autoValidate": false,
+            "error": "最长 1 个字符"
+        }
+    ]'></bindingpay-template>
+      </section>
+      <section alias="noTrackPayment">
+        <bindingpay-template url="/bindingpay/noTrackPayment" elems='[
+        {
+            "id": "transType",
+            "name": "transType",
+            "label": "交易子类",
+            "tooltip": "交易子类型：SALE－消费（直接扣款），AUTH－预授权",
+            "value": "",
+            "required": true,
+            "maxlength": "4",
+            "autoValidate": true,
+            "error": "必填，最长 4 个字符"
+        },
+        {
+            "id": "subMerId",
+            "name": "subMerId",
+            "label": "子商户号",
+            "tooltip": "如有此需求，可选输入",
+            "value": "",
+            "required": false,
+            "maxlength": "15",
+            "autoValidate": false,
+            "error": "最长 15 个字符"
+        },
+        {
+            "id": "terminalId",
+            "name": "terminalId",
+            "label": "终端号",
+            "tooltip": "上送交易的终端号，如有，可选输入",
+            "value": "",
+            "required": false,
+            "maxlength": "16",
+            "autoValidate": false,
+            "error": "最长 16 个字符"
+        },
+        {
+            "id": "merOrderNum",
+            "name": "merOrderNum",
+            "label": "商户订单号",
+            "tooltip": "接入商户自行指定，同商户全局唯一",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符"
+        },
+        {
+            "id": "currCode",
+            "name": "currCode",
+            "label": "交易币种",
+            "tooltip": "交易币种，默认 156",
+            "value": "156",
+            "maxlength": "10",
+            "autoValidate": false,
+            "error": "选填，不填默认 156 处理"
+        },
+        {
+            "id": "transAmt",
+            "name": "transAmt",
+            "label": "支付金额",
+            "tooltip": "支付金额,单位分",
+            "numeric": true,
+            "value": "",
+            "required": true,
+            "maxlength": "10",
+            "autoValidate": true,
+            "error": "必填，最长 10 个字符"
+        },
+        {
+            "id": "acctName",
+            "name": "acctName",
+            "label": "账户名称",
+            "tooltip": "*加密字段，待绑定的银行卡在银行登记的用户名称",
+            "value": "",
+            "required": true,
+            "maxlength": "64",
+            "autoValidate": true,
+            "error": "必填，最长 64 个字符",
+            "encrypt": true
+        },
+        {
+            "id": "acctNum",
+            "name": "acctNum",
+            "label": "账户号码",
+            "tooltip": "*加密字段，一般为银行卡卡号",
+            "value": "",
+            "required": true,
+            "maxlength": "32",
+            "autoValidate": true,
+            "error": "必填，最长 32 个字符",
+            "encrypt": true
+        },
+        {
+            "id": "identType",
+            "name": "identType",
+            "label": "证件类型",
+            "tooltip": "可通过获取卡片信息接口获得卡片的借贷记类型，卡品牌，发卡行信息等,卡品牌为银联卡时，此项必填：0=身份证，  1=户口簿，  2=护照，  3=军官证，  4=士兵证， 5=港澳居民来往内地通行证， 6=台湾同胞来往内地通行证， 7=临时身份证， 8=外国人居留证，  9=警官证， X=其他证件",
+            "value": "",
+            "required": false,
+            "maxlength": "1",
+            "autoValidate": false,
+            "error": "最长 1 个字符"
+        },
+        {
+            "id": "identNum",
+            "name": "identNum",
+            "label": "证件号码",
+            "tooltip": "*加密字段，卡品牌为银联卡必填",
+            "value": "",
+            "required": false,
+            "maxlength": "32",
+            "autoValidate": false,
+            "error": "最长 32 个字符",
+            "encrypt": true
+        },
+        {
+            "id": "phoneNum",
+            "name": "phoneNum",
+            "label": "手机号",
+            "tooltip": "*加密字段，卡品牌为银联卡必填，需要验证短信时必填",
+            "value": "",
+            "required": false,
+            "maxlength": "18",
+            "autoValidate": false,
+            "error": "最长 18 个字符",
+            "encrypt": true
+        },
+        {
+            "id": "acctType",
+            "name": "acctType",
+            "label": "账户类型",
+            "tooltip": "10=个人借记，20=个人贷记",
+            "value": "",
+            "required": true,
+            "maxlength": "2",
+            "autoValidate": true,
+            "error": "必填，最长 2 个字符"
+        },
+        {
+            "id": "validDate",
+            "name": "validDate",
+            "label": "信用卡有限期",
+            "tooltip": "*加密字段，账户类型为贷记卡必填",
+            "value": "",
+            "required": false,
+            "maxlength": "4",
+            "autoValidate": false,
+            "error": "最长 4 个字符",
+            "encrypt": true
+        },
+        {
+            "id": "cvv2",
+            "name": "cvv2",
+            "label": "CVV2",
+            "tooltip": "*加密字段，账户类型为贷记卡必填",
+            "value": "",
+            "required": false,
+            "maxlength": "3",
+            "autoValidate": true,
+            "error": "必填，最长 3 个字符",
+            "encrypt": true
+        },
+        {
+            "id": "sendSmsId",
+            "name": "sendSmsId",
+            "label": "申请短信验证码的交易流水",
+            "tooltip": "在此请求发送之前进行过请求短信验证码交易并且在需要网关验证短信验证码时必填",
+            "value": "",
+            "required": false,
+            "maxlength": "32",
+            "autoValidate": false,
+            "error": "最长 32 个字符"
+        },
+        {
+            "id": "smsCode",
+            "name": "smsCode",
+            "label": "短信验证码",
+            "tooltip": "在需要网关验证此字段时必填",
+            "value": "",
+            "required": false,
+            "maxlength": "8",
+            "autoValidate": true,
+            "error": "最长 8 个字符"
+        }
+    ]'></bindingpay-template>
+      </section>
+      <section alias="applepay">
+        <bindingpay-template url="/bindingpay/applePay" elems='[
+          {
+              "id": "transType",
+              "name": "transType",
+              "label": "交易子类",
+              "tooltip": "交易子类型： SALE:消费（直接扣款） AUTH:预授权",
+              "value": "",
+              "required": true,
+              "maxlength": "4",
+              "autoValidate": true,
+              "error": "必填，最长 4 个字符"
+          },
+          {
+              "id": "subMerId",
+              "name": "subMerId",
+              "label": "子商户号",
+              "tooltip": "如有此需求，可选输入",
+              "value": "",
+              "required": false,
+              "maxlength": "15",
+              "autoValidate": false,
+              "error": "最长 15 个字符"
+          },
+          {
+              "id": "terminalId",
+              "name": "terminalId",
+              "label": "终端号",
+              "tooltip": "上送交易的终端号，如有，可选输入",
+              "value": "",
+              "required": false,
+              "maxlength": "16",
+              "autoValidate": false,
+              "error": "最长 16 个字符"
+          },
+          {
+              "id": "merOrderNum",
+              "name": "merOrderNum",
+              "label": "商户订单号",
+              "tooltip": "接入商户自行指定，同商户全局唯一",
+              "value": "",
+              "required": true,
+              "maxlength": "32",
+              "autoValidate": true,
+              "error": "必填，最长 32 个字符"
+          },
+          {
+              "id": "transactionId",
+              "name": "transactionId",
+              "label": "ApplePay标识",
+              "tooltip": "ApplePay标识",
+              "value": "",
+              "required": true,
+              "maxlength": "128",
+              "autoValidate": true,
+              "error": "必填，最长 128 个字符"
+          },
+          {
+              "id": "applePayData",
+              "name": "applePayData",
+              "label": "ApplePay数据",
+              "tooltip": "ApplePay支付数据，有EMV和3D Secure 两种，参数见示例。",
+              "value": "",
+              "required": true,
+              "maxlength": "4096",
+              "autoValidate": true,
+              "error": "必填，最长 4096 个字符",
+              "object": true
+          }
+      ]'></bindingpay-template>
+      </section>
+    </iron-pages>
+  </template>
+  <script>
+    Polymer({
+      is: 'test-bindingpay',
+
+      ready: function() {
+        this.idx = 0;
+      }
+    });
+
+  </script>
+</dom-module>

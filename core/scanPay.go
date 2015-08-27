@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -57,8 +58,18 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	t.ChanMerId = rp.ChanMerId
 
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 计算费率 四舍五入
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+	t.NetFee = t.Fee // 净手续费，会在退款时更新
+
 	// 请求渠道
-	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
+	ret = adaptor.ProcessQrCodeOfflinePay(t, c, req)
 
 	// 如果下单成功
 	if ret.Respcd == adaptor.InprocessCode {
@@ -87,8 +98,8 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		}
 
 		// 签名
-		config.Signature = signWithMD5(config, req.SignCert)
-		wxpPay.PaySign = signWithMD5(wxpPay, req.SignCert)
+		config.Signature = signWithMD5(config, req.SignKey)
+		wxpPay.PaySign = signWithMD5(wxpPay, req.SignKey)
 		jsPayInfo.Config = config
 		jsPayInfo.WxpPay = wxpPay
 
@@ -150,7 +161,13 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
-	ret = adaptor.ProcessEnterprisePay(t, req)
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	ret = adaptor.ProcessEnterprisePay(t, c, req)
 
 	// 更新交易信息
 	updateTrans(t, ret)
@@ -204,7 +221,17 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
-	ret = adaptor.ProcessBarcodePay(t, req)
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 计算费率 四舍五入
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+	t.NetFee = t.Fee // 净手续费，会在退款时更新
+
+	ret = adaptor.ProcessBarcodePay(t, c, req)
 
 	// 渠道
 	ret.Chcd = req.Chcd
@@ -244,8 +271,18 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 计算费率 四舍五入
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+	t.NetFee = t.Fee // 净手续费，会在退款时更新
+
 	// 请求渠道
-	ret = adaptor.ProcessQrCodeOfflinePay(t, req)
+	ret = adaptor.ProcessQrCodeOfflinePay(t, c, req)
 
 	// 二维码
 	t.QrCode = ret.QrCode
@@ -280,8 +317,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(refund, "TRADE_NOT_EXIST")
 	}
-	refund.ChanCode = orig.ChanCode
-	refund.ChanMerId = orig.ChanMerId
+	copyProperties(refund, orig)
 	// refund.SubChanMerId = orig.SubChanMerId
 
 	// TODO 退款只能隔天退，按需求投产后先缓冲一段时间再开启。
@@ -316,18 +352,31 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		} else if refundAmt == orig.TransAmt {
 			orig.RefundStatus = model.TransRefunded
 			orig.TransStatus = model.TransClosed
-			orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
-			orig.ErrorDetail = adaptor.CloseMsg
 			orig.RefundAmt = refundAmt
-			orig.Fee = 0 // 被全额退款时，手续费清零
+			// 不更新原订单应答码。在查询时做处理，只更新交易的状态。
+			// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
+			// orig.ErrorDetail = adaptor.CloseMsg
+			// orig.Fee = 0 // 被全额退款时，手续费清零
 		} else {
 			orig.RefundStatus = model.TransPartRefunded
 			orig.RefundAmt = refundAmt // 这个字段的作用主要是为了方便报表时计算部分退款，为了一致性，撤销，取消接口也都统一加上，虽然并没啥作用
-			// 会在adaptor重新计算费率，这样做是为了确保报表的准确
 		}
 	}
 
-	ret = adaptor.ProcessRefund(orig, refund, req)
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(refund, "NO_CHANMER")
+	}
+	// 重新计算手续费
+	// if orig.RefundStatus == model.TransPartRefunded {
+	// 	orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
+	// }
+	// 退款算退款部分的手续费，出报表时，将原订单的跟退款的相减
+	refund.Fee = int64(math.Floor(float64(refund.TransAmt))*float64(c.MerFee) + 0.5)
+	orig.NetFee = orig.NetFee - refund.Fee // 重新计算原订单的手续费
+
+	ret = adaptor.ProcessRefund(orig, refund, c, req)
 
 	// 更新原交易状态
 	if ret.Respcd == adaptor.SuccessCode {
@@ -356,9 +405,16 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
 	case model.TransHandling, "":
+
+		// 获取渠道商户
+		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+		if err != nil {
+			return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		}
+
 		// 支付交易则向渠道查询
 		if t.TransType == model.PayTrans {
-			ret = adaptor.ProcessEnquiry(t, req)
+			ret = adaptor.ProcessEnquiry(t, c, req)
 			// 更新交易结果
 			updateTrans(t, ret)
 			break
@@ -391,7 +447,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 				if t.ChanCode == channel.ChanCodeWeixin {
 					req.OrderNum = t.OrderNum
 					req.OrigOrderNum = t.OrigOrderNum
-					ret = adaptor.ProcessWxpRefundQuery(t, req)
+					ret = adaptor.ProcessWxpRefundQuery(t, c, req)
 					if ret.Respcd == adaptor.SuccessCode {
 						// 更新原交易状态
 						// TODO
@@ -405,17 +461,20 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 		// 更新
 		updateTrans(t, ret)
-
-	// 交易失败
-	case model.TransFail:
-		// TODO 系统超时
-		// 这里只处理渠道应答错误的情况，如渠道系统超时，应答码为91-外部系统错误
-		// if t.RespCode == adaptor.UnKnownCode {
-
-		// }
-
-		// 其他情况跳过
+	case model.TransClosed:
+		// 订单被关闭时，返回关闭的应答码。
+		t.RespCode = adaptor.CloseCode
+		t.ErrorDetail = adaptor.CloseMsg
 		fallthrough
+	// 交易失败
+	// case model.TransFail:
+	// TODO 系统超时
+	// 这里只处理渠道应答错误的情况，如渠道系统超时，应答码为91-外部系统错误
+	// if t.RespCode == adaptor.UnKnownCode {
+
+	// }
+	// 其他情况跳过
+	// fallthrough
 	default:
 		// 原交易信息
 		ret.ChannelOrderNum = t.ChanOrderNum
@@ -457,9 +516,8 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(cancel, "TRADE_NOT_EXIST")
 	}
-	cancel.ChanCode = orig.ChanCode
-	cancel.ChanMerId = orig.ChanMerId
-	// cancel.SubChanMerId = orig.SubChanMerId
+	copyProperties(cancel, orig)
+	// 撤销交易，金额=原交易金额
 	cancel.TransAmt = orig.TransAmt
 
 	// 撤销只能撤当天交易
@@ -488,13 +546,23 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	default:
 		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
 		orig.TransStatus = model.TransClosed
-		orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
-		orig.ErrorDetail = adaptor.CloseMsg
 		orig.RefundAmt = orig.TransAmt
-		orig.Fee = 0 // 手续费清零
+		// orig.Fee = 0 // 手续费清零
+		// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
+		// orig.ErrorDetail = adaptor.CloseMsg
 	}
 
-	ret = adaptor.ProcessCancel(orig, cancel, req)
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(cancel, "NO_CHANMER")
+	}
+
+	// 对这笔撤销计算手续费，不然会对应不上，出现多扣少退。
+	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt))*float64(c.MerFee) + 0.5)
+	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
+
+	ret = adaptor.ProcessCancel(orig, cancel, c, req)
 
 	// 原交易状态更新
 	if ret.Respcd == adaptor.SuccessCode {
@@ -533,8 +601,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(closed, "TRADE_NOT_EXIST")
 	}
-	closed.ChanCode = orig.ChanCode
-	closed.ChanMerId = orig.ChanMerId
+	copyProperties(closed, orig)
 	// closed.SubChanMerId = orig.SubChanMerId
 
 	// 不支持退款、撤销等其他类型交易
@@ -552,7 +619,19 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(closed, "ORDER_CLOSED")
 	}
 
-	ret = adaptor.ProcessClose(orig, closed, req)
+	// 获得渠道商户
+	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(closed, "NO_CHANMER")
+	}
+
+	// 原交易成功，那么计算这笔取消的手续费
+	if orig.TransStatus == model.TransSuccess {
+		closed.Fee = int64(math.Floor(float64(closed.TransAmt))*float64(c.MerFee) + 0.5)
+		orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
+	}
+
+	ret = adaptor.ProcessClose(orig, closed, c, req)
 
 	// 成功应答
 	if ret.Respcd == adaptor.SuccessCode {
@@ -561,13 +640,13 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			// 这样做方便于报表导出计算
 			closed.TransAmt = orig.TransAmt
 			orig.RefundAmt = orig.TransAmt
-			orig.Fee = 0
+			// orig.Fee = 0
 		}
 		// 更新原交易信息
 		orig.TransStatus = model.TransClosed
-		orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
-		orig.ErrorDetail = adaptor.CloseMsg
 		mongo.SpTransColl.Update(orig)
+		// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
+		// orig.ErrorDetail = adaptor.CloseMsg
 
 	}
 
@@ -625,6 +704,17 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 		t.TransStatus = model.TransFail
 	}
 	mongo.SpTransColl.Update(t)
+}
+
+// copyProperties 从原交易拷贝属性
+func copyProperties(current *model.Trans, orig *model.Trans) {
+	current.ChanCode = orig.ChanCode
+	current.ChanMerId = orig.ChanMerId
+	current.MerName = orig.MerName
+	current.AgentName = orig.AgentName
+	current.GroupCode = orig.GroupCode
+	current.GroupName = orig.GroupName
+	current.ShortName = orig.ShortName
 }
 
 func signWithMD5(s interface{}, key string) string {

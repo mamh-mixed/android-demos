@@ -4,6 +4,8 @@
   <style>
     :host {
       display: block;
+      --paper-tab-ink: #eee;
+      --paper-tabs-selection-bar-color: #eee;
     }
 
     paper-tabs {
@@ -75,6 +77,7 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -87,24 +90,62 @@
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
         <div class="row">
-          <paper-input label="代理代码/机构代码" value="{{merchant.agentCode::input}}"></paper-input>
-          <paper-input label="代理名称/机构名称" value="{{merchant.agentName::input}}"></paper-input>
+          <paper-input id="merId" label="*商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
+          <paper-input id="merName" label="*商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
+          <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
-        <div class="row">
-          <paper-input label="商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}"></paper-input>
-          <paper-input label="商户名称" value="{{merchant.detail.merName::input}}"></paper-input>
+        <div class="row" style="margin-top:30px;">
+          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
+          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" required=false error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
+          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="开户行号" value="{{merchant.detail.bankId::input}}"></paper-input>
+          <paper-input label="支行名称" value="{{merchant.detail.bankName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
-          <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
+          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
         </div>
         <div class="row">
+          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
+          <paper-input id="commodityName" label="*商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
+        </div>
+        <div class="row" style="margin-top:30px;">
+          <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="*商户状态"></x-select>
+        </div>
+        <div class="row">
+          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <label for="permissionGroup">接口权限</label>
+        </div>
+        <div class="row" style="margin-top:15px;margin-bottom:20px;">
           <div class="check-box-group">
-            <label for="permissionGroup">接口权限</label>
             <div id="permissionGroup" class="check-box-area">
               <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
                 <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
@@ -113,34 +154,6 @@
               </template>
             </div>
           </div>
-          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
-        </div>
-        <div class="row">
-          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
-          <paper-input label="商户签名密钥" value="{{merchant.signKey::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
-          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="商品名称" value="{{merchant.detail.commodityName::input}}"></paper-input>
-          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
-          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="行号" value="{{merchant.detail.bankId::input}}"></paper-input>
-          <paper-input label="开户银行支行" value="{{merchant.detail.bankName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
@@ -149,15 +162,15 @@
 
       <section alias="alipay">
         <div class="row">
-          <paper-input label="商户号" value="{{alipay.chanMerId::input}}"></paper-input>
+          <paper-input id="achanMerId" label="*Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input label="商户名称" value="{{alipay.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="讯联跟渠道费率" value="{{alipay.acqFee::input}}"></paper-input>
-          <paper-input label="商户跟讯联费率" value="{{alipay.merFee::input}}"></paper-input>
+          <paper-input id="aacqFee" label="*讯联跟渠道费率" value="{{alipay.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="amerFee" label="*商户跟讯联费率" value="{{alipay.merFee::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="签名证书" value="{{alipay.signCert::input}}"></paper-input>
+          <paper-input id="asignCert" label="*MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
@@ -166,29 +179,29 @@
 
       <section alias="tenpay">
         <div class="row">
-          <paper-input label="微信商户号" value="{{weixin.chanMerId::input}}"></paper-input>
+          <paper-input id="wchanMerId" label="*微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
-          <paper-input label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}"></paper-input>
+          <paper-input id="bigChanMerId" label="*大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
           <!-- <channel-merchant-typeahead label="大商户号"></channel-merchant-typeahead> -->
         </div>
         <div class="row">
-          <paper-input label="讯联跟渠道费率" value="{{weixin.acqFee::input}}"></paper-input>
-          <paper-input label="商户跟讯联费率" value="{{weixin.merFee::input}}"></paper-input>
+          <paper-input id="wacqFee" label="*讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wmerFee" label="*商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="微信支付App Id" value="{{weixin.wxpAppId::input}}"></paper-input>
-          <paper-input label="签名证书" value="{{weixin.signCert::input}}"></paper-input>
+          <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" required=false error-message="必填项"></paper-input>
+          <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" required=false error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
-          <paper-input label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+          <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+          <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
         </div>
         <div class="row">
-          <label>HTTP 证书</label>
-          <label>HTTP 密钥</label>
+          <label id="httpCertL">HTTP 证书</label>
+          <label id="httpKeyL">HTTP 密钥</label>
         </div>
         <div class="row">
           <pre>{{weixin.httpCert}}</pre>
@@ -215,408 +228,498 @@
     <iron-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></iron-ajax>
   </template>
   <script>
-    (function() {
-      Polymer({
-        is: 'config-merchant',
-        properties: {
-          merId: {
-            type: String,
-            reflectToAttribute: true
-          },
-          update: {
-            type: Boolean,
-            value: false,
-            notify: true
-          },
-          bigMerchant: {
-            type: Object
-          },
-          params: {
-            type: Object
-          },
-          merStatusMap: {
-            type: Array,
-            value: [{
-              key: 'Normal',
-              value: '正常商户'
-            }, {
-              key: 'Test',
-              value: '测试商户'
-            }, {
-              key: 'Deleted',
-              value: '已删除商户'
-            }]
-          },
-          permissionArray: {
-            type: Array,
-            value: [{
-              key: 'PURC',
-              value: '下单支付',
-              isChecked: false
-            }, {
-              key: 'PAUT',
-              value: '预下单',
-              isChecked: false
-            }, {
-              key: 'QYFK',
-              value: '企业付款',
-              isChecked: false
-            }, {
-              key: 'JSZF',
-              value: '公众号支付',
-              isChecked: false
-            }, {
-              key: 'INQY',
-              value: '查询订单',
-              isChecked: false
-            }, {
-              key: 'VOID',
-              value: '撤销',
-              isChecked: false
-            }, {
-              key: 'REFD',
-              value: '退款',
-              isChecked: false
-            }, {
-              key: 'CANC',
-              value: '取消',
-              isChecked: false
-            }]
-          }
+    Polymer({
+      is: 'config-merchant',
+      properties: {
+        merId: {
+          type: String,
+          reflectToAttribute: true
         },
-        attributeChanged: function() {
-          if (!this.merId) {
-            return;
-          }
-          this.set('merchant', {});
-          this.set('alipay', {});
-          this.set('weixin', {});
-
-          // 根据merId查找商户信息
-          var params = {
-            merId: this.merId
-          };
-          this.$.queryMerchantAjax.params = params;
-          this.$.queryMerchantAjax.generateRequest();
-
-          // 根据merId查找支付宝渠道信息
-          var alpParams = {
-            merId: this.merId,
-            cardBrand: 'ALP'
-          };
-          this.$.alpChanMerAjax.params = alpParams;
-          this.$.alpChanMerAjax.generateRequest();
-
-          // 根据merId查找微信渠道信息
-          var wxpParams = {
-            merId: this.merId,
-            cardBrand: 'WXP'
-          };
-          this.$.wxpChanMerAjax.params = wxpParams;
-          this.$.wxpChanMerAjax.generateRequest();
+        update: {
+          type: Boolean,
+          value: false,
+          notify: true
         },
-        // 编辑的时候查询一个商户的响应事件
-        handleQueryMerchantResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast('查询机构商户信息失败', 3000);
-            return;
-          }
+        bigMerchant: {
+          type: Object
+        },
+        params: {
+          type: Object
+        },
+        merStatusMap: {
+          type: Array,
+          value: [{
+            key: 'Normal',
+            value: '正常商户'
+          }, {
+            key: 'Test',
+            value: '测试商户'
+          }, {
+            key: 'Deleted',
+            value: '已删除商户'
+          }]
+        },
+        permissionArray: {
+          type: Array,
+          value: [{
+            key: 'PURC',
+            value: '下单支付',
+            isChecked: false
+          }, {
+            key: 'PAUT',
+            value: '预下单',
+            isChecked: false
+          }, {
+            key: 'QYFK',
+            value: '企业付款',
+            isChecked: false
+          }, {
+            key: 'JSZF',
+            value: '公众号支付',
+            isChecked: false
+          }, {
+            key: 'INQY',
+            value: '查询订单',
+            isChecked: false
+          }, {
+            key: 'VOID',
+            value: '撤销',
+            isChecked: false
+          }, {
+            key: 'REFD',
+            value: '退款',
+            isChecked: false
+          }, {
+            key: 'CANC',
+            value: '取消',
+            isChecked: false
+          }]
+        }
+      },
+      attributeChanged: function() {
+        if (!this.merId) {
+          return;
+        }
+        this.set('merchant', {});
+        this.set('alipay', {});
+        this.set('weixin', {});
 
-          var item = response.data;
-          this.set('merchant', item);
-          if (item.permission) {
-            var permissions = item.permission;
-            // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
-            for (var i = 0, il = permissions.length; i < il; i++) {
-              var p = permissions[i];
-              for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
-                var pa = this.permissionArray[j];
-                if (pa.key === p) {
-                  this.set('permissionArray.' + j + '.isChecked', true);
-                  break;
-                }
+        // 根据merId查找商户信息
+        var params = {
+          merId: this.merId
+        };
+        this.$.queryMerchantAjax.params = params;
+        this.$.queryMerchantAjax.generateRequest();
+
+        // 根据merId查找支付宝渠道信息
+        var alpParams = {
+          merId: this.merId,
+          cardBrand: 'ALP'
+        };
+        this.$.alpChanMerAjax.params = alpParams;
+        this.$.alpChanMerAjax.generateRequest();
+
+        // 根据merId查找微信渠道信息
+        var wxpParams = {
+          merId: this.merId,
+          cardBrand: 'WXP'
+        };
+        this.$.wxpChanMerAjax.params = wxpParams;
+        this.$.wxpChanMerAjax.generateRequest();
+      },
+      // 编辑的时候查询一个商户的响应事件
+      handleQueryMerchantResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('查询机构商户信息失败', 3000);
+          return;
+        }
+
+        var item = response.data;
+        this.set('merchant', item);
+        if (item.permission) {
+          var permissions = item.permission;
+          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
               }
             }
-          } else {
-            // 如果商户权限未定义的话，设置未空数组，防止保存的时候权限信息没有传到后台
-            this.set('merchant.permission', []);
           }
+        } else {
+          // 如果商户权限未定义的话，设置未空数组，防止保存的时候权限信息没有传到后台
+          this.set('merchant.permission', []);
+        }
 
-          // 显示商户的状态
-          for (var k in this.merStatusMap) {
-            var merStatusItem = this.merStatusMap[k];
-            if (item.merStatus === merStatusItem.key) {
-              this.set('merStatus', merStatusItem);
-              break;
-            }
-          }
-        },
-        // 编辑的时候查询支付宝路由渠道商户请求的响应事件
-        handleAlpChanMerResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0 || !response.data) {
-            Util.toast('查询支付宝渠道商户信息失败', 3000);
-            return;
-          }
-
-          this.set('alipay', response.data);
-        },
-        // 编辑的时候查询微信路由渠道商户请求的响应事件
-        handleWxpChanMerResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0 || !response.data) {
-            Util.toast('查询微信渠道商户信息失败', 3000);
-            this.set('weixin.httpCert', '');
-            this.set('weixin.httpKey', '');
-            return;
-          }
-
-          this.set('weixin', response.data);
-          this.set('weixin.chanCode', 'WXP');
-          if (!this.weixin.agentMer) {
-            this.set('weixin.agentMer', {});
-          }
-        },
-        ready: function() {
-          this.idx = 0;
-          this.merchant = {
-            agentCode: '',
-            agentName: '',
-            groupCode: '',
-            groupName: '',
-            merId: '',
-            detail: {
-              merName: '',
-              brandNum: '',
-              shopId: '',
-              shopType: ''
-            },
-            merStatus: '',
-            transCurr: '156',
-            signKey: '',
-            isNeedSign: false,
-            encryptKey: '',
-            permission: []
-          };
-          this.alipay = {
-            chanCode: 'ALP',
-            chanMerId: '',
-            chanMerName: '',
-            acqFee: '',
-            merFee: '',
-            signCert: ''
-          };
-          this.weixin = {
-            chanCode: 'WXP',
-            isAgentMode: true,
-            agentMer: {
-              chanMerId: '1236593202'
-            },
-            chanMerId: '',
-            chanMerName: '',
-            acqFee: '',
-            merFee: '',
-            wxpAppId: '',
-            signCert: '',
-            httpCert: '',
-            httpKey: ''
-          };
-
-          // 大商户
-          this.$.findChanMerAjax.params = {
-            page: 1,
-            chanMerId: '1236593202'
-          };
-          this.$.findChanMerAjax.generateRequest();
-        },
-        // 查询渠道商户的响应事件，这里是查找大商户
-        handleFindChanMerResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            return;
-          }
-
-          var pagination = response.data;
-          if (!pagination.data || pagination.data.length === 0) {
-            return;
-          }
-          this.set('bigMerchant', pagination.data[0]);
-        },
-        // 保存商户的按钮事件
-        handleSaveMerchantTapped: function() {
-          this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
-          this.$.saveMerchantAjax.generateRequest();
-        },
-        // 保存商户的ajax响应事件
-        handleSaveMerchantResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-
-          Util.toast(response.message, 1000);
-        },
-        // 保存支付宝信息的按钮事件
-        handleSaveALPTapped: function() {
-          var acqFee = parseFloat(this.alipay.acqFee),
-            merFee = parseFloat(this.alipay.merFee);
-          if (isNaN(acqFee) || isNaN(merFee)) {
-            Util.toast('支付宝渠道的费率必须是数字', 3000);
-            return;
-          }
-          this.set('alipay.acqFee', acqFee);
-          this.set('alipay.merFee', merFee);
-          this.set('alipay.chanCode', 'ALP');
-          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
-          this.$.saveChannelMerchantAjax.generateRequest();
-
-          // 支付宝路由信息
-          var obj = {
-            merId: this.merchant.merId,
-            cardBrand: 'ALP',
-            chanCode: this.alipay.chanCode,
-            chanMerId: this.alipay.chanMerId
-          };
-          this.$.saveRouterAjax.body = JSON.stringify(obj);
-          this.$.saveRouterAjax.generateRequest();
-        },
-        // 保存微信信息的按钮事件
-        handleSaveWXPTapped: function() {
-          var acqFee = parseFloat(this.weixin.acqFee),
-            merFee = parseFloat(this.weixin.merFee);
-          if (isNaN(acqFee) || isNaN(merFee)) {
-            Util.toast('支付宝渠道的费率必须是数字', 3000);
-            return;
-          }
-          this.set('weixin.acqFee', acqFee);
-          this.set('weixin.merFee', merFee);
-          this.set('weixin.chanCode', 'WXP');
-          // 如果勾选了代理商模式，就直接填充上大商户的信息
-          if (this.weixin.isAgentMode) {
-            this.set('weixin.agentMer', this.bigMerchant);
-          } else {
-            this.set('weixin.agentMer', {});
-          }
-          this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
-          this.$.saveChannelMerchantAjax.generateRequest();
-
-          // 微信路由信息
-          var router = {
-            merId: this.merchant.merId,
-            cardBrand: 'WXP',
-            chanCode: this.weixin.chanCode,
-            chanMerId: this.weixin.chanMerId
-          };
-          this.$.saveRouterAjax.body = JSON.stringify(router);
-          this.$.saveRouterAjax.generateRequest();
-        },
-        // 保存路由的ajax响应事件
-        handleSaveRouterResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast('保存路由信息失败', 3000);
-            return;
-          }
-
-          Util.toast(response.message, 1000);
-        },
-        // 保存渠道商户ajax请求响应事件
-        handleSaveChannelMerchantResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-
-          Util.toast(response.message, 1000);
-        },
-        // 是否代理商模式的改变事件
-        handleIsAgentChangeEvent: function() {
-          this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
-          if (this.weixin.isAgentMode) {
-            this.set('weixin.agentMer', this.bigMerchant);
-          } else {
-            this.set('weixin.agentMer', {});
-          }
-        },
-        // 是否需要验签的改变事件
-        handleIsNeedSignChangeEvent: function() {
-          this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
-        },
-        // 接口权限中的复选框组的改变事件
-        handlePermissionChangeEvent: function(e) {
-          var checkbox = e.target,
-            item = e.model.item,
-            index = this.merchant.permission.indexOf(item.key);
-
-          if (checkbox.checked) {
-            // 勾选了
-            if (index >= 0) {
-              return;
-            }
-            this.push('merchant.permission', item.key);
-          } else {
-            // 没勾选
-            if (index < 0) {
-              return;
-            }
-            this.splice('merchant.permission', index, 1);
-          }
-        },
-        observers: [
-          '_watchMerStatusChange(merStatus.key)'
-        ],
-        _watchMerStatusChange: function(key) {
-          if (key) {
-            this.set('merchant.merStatus', key);
-          } else {
-            this.set('merchant.merStatus', '');
-          }
-        },
-        // html5 读取证书文件内容
-        handleWeixinHttpCertFile: function(e) {
-          var _this = this;
-          var files = e.srcElement.files;
-          if (files.length) {
-            var file = files[0];
-            if ('application/x-x509-ca-cert' === file.type) {
-              var reader = new FileReader();
-              reader.onload = function() {
-                if (/BEGIN CERTIFICATE/.test(this.result) === false) {
-                  Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
-                  return;
-                }
-                _this.set('weixin.httpCert', this.result);
-              };
-              reader.readAsText(file);
-            } else {
-              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-            }
-          }
-        },
-        handleWeixinHttpKeyFile: function(e) {
-          var _this = this;
-          var files = e.srcElement.files;
-          if (files.length) {
-            var file = files[0];
-            if ('application/x-x509-ca-cert' === file.type) {
-              var reader = new FileReader();
-              reader.onload = function() {
-                if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
-                  Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
-                  return;
-                }
-                _this.set('weixin.httpKey', this.result);
-              };
-              reader.readAsText(file);
-            } else {
-              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-            }
+        // 显示商户的状态
+        for (var k in this.merStatusMap) {
+          var merStatusItem = this.merStatusMap[k];
+          if (item.merStatus === merStatusItem.key) {
+            this.set('merStatus', merStatusItem);
+            break;
           }
         }
-      });
-    })();
+      },
+      // 编辑的时候查询支付宝路由渠道商户请求的响应事件
+      handleAlpChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0 || !response.data) {
+          Util.toast('查询支付宝渠道商户信息失败', 3000);
+          return;
+        }
+
+        this.set('alipay', response.data);
+      },
+      // 编辑的时候查询微信路由渠道商户请求的响应事件
+      handleWxpChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0 || !response.data) {
+          Util.toast('查询微信渠道商户信息失败', 3000);
+          this.set('weixin.httpCert', '');
+          this.set('weixin.httpKey', '');
+          return;
+        }
+
+        this.set('weixin', response.data);
+        this.set('weixin.chanCode', 'WXP');
+        if (!this.weixin.agentMer) {
+          this.set('weixin.agentMer', {});
+        }
+      },
+      ready: function() {
+        // 创建微信商户时HTTP证书和HTTP密钥是否正确
+        this.httpKeyFlag = false;
+        this.httpKeyFlag = false;
+        this.idx = 0;
+        this.merchant = {
+          agentCode: '',
+          agentName: '',
+          groupCode: '',
+          groupName: '',
+          merId: '',
+          detail: {
+            merName: '',
+            brandNum: '',
+            shopId: '',
+            shopType: ''
+          },
+          merStatus: '',
+          transCurr: '156',
+          signKey: '',
+          isNeedSign: false,
+          encryptKey: '',
+          permission: []
+        };
+        this.alipay = {
+          chanCode: 'ALP',
+          chanMerId: '',
+          chanMerName: '',
+          acqFee: '',
+          merFee: '',
+          signCert: ''
+        };
+        this.weixin = {
+          chanCode: 'WXP',
+          isAgentMode: true,
+          agentMer: {
+            chanMerId: '1236593202'
+          },
+          chanMerId: '',
+          chanMerName: '',
+          acqFee: '',
+          merFee: '',
+          wxpAppId: '',
+          signCert: '',
+          httpCert: '',
+          httpKey: ''
+        };
+
+        // 大商户
+        this.$.findChanMerAjax.params = {
+          page: 1,
+          chanMerId: '1236593202'
+        };
+        this.$.findChanMerAjax.generateRequest();
+      },
+      // 查询渠道商户的响应事件，这里是查找大商户
+      handleFindChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          return;
+        }
+
+        var pagination = response.data;
+        if (!pagination.data || pagination.data.length === 0) {
+          return;
+        }
+        this.set('bigMerchant', pagination.data[0]);
+      },
+      //判断商户录入必填项是否为空
+      isMerchantConfigEmpty: function() {
+        if (this.$.merId.validate() && this.$.merName.validate() && this.$.commodityName.validate() && this.$.merStatus.selectedItem) {
+          if (this.$.isNeedSignCheck.checked) {
+            if (!this.$.signKey.validate()) {
+              return true;
+            }
+          }
+          return false;
+        } else {
+          return true;
+        }
+      },
+      // 保存商户的按钮事件
+      handleSaveMerchantTapped: function() {
+        if (this.isMerchantConfigEmpty()) {
+          Util.toast('必填项不能为空', 3000);
+          return;
+        }
+
+        this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+        this.$.saveMerchantAjax.generateRequest();
+      },
+      // 保存商户的ajax响应事件
+      handleSaveMerchantResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+
+        Util.toast(response.message, 1000);
+      },
+      // 判断支付宝必填项是否为空
+      isALPConfigEmpty: function() {
+        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignCert.validate()) {
+          return false;
+        }
+        return true;
+      },
+      // 保存支付宝信息的按钮事件
+      handleSaveALPTapped: function() {
+        if (this.isALPConfigEmpty()) {
+          Util.toast('必填项不能为空', 3000);
+          return;
+        }
+        var acqFee = parseFloat(this.alipay.acqFee),
+          merFee = parseFloat(this.alipay.merFee);
+        if (isNaN(acqFee) || isNaN(merFee)) {
+          Util.toast('支付宝渠道的费率必须是数字', 3000);
+          return;
+        }
+        this.set('alipay.acqFee', acqFee);
+        this.set('alipay.merFee', merFee);
+        this.set('alipay.chanCode', 'ALP');
+        this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
+        this.$.saveChannelMerchantAjax.generateRequest();
+
+        // 支付宝路由信息
+        var obj = {
+          merId: this.merchant.merId,
+          cardBrand: 'ALP',
+          chanCode: this.alipay.chanCode,
+          chanMerId: this.alipay.chanMerId
+        };
+        this.$.saveRouterAjax.body = JSON.stringify(obj);
+        this.$.saveRouterAjax.generateRequest();
+      },
+      // 微信必填项是否为空
+      isWXPConfigEmpty: function() {
+        if (this.weixin.isAgentMode) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.bigChanMerId.validate()) {
+            return false;
+          }
+        } else {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() &&
+            this.$.wsignCert.validate()) {
+            return false;
+          }
+        }
+        return true;
+      },
+      // 保存微信信息的按钮事件
+      handleSaveWXPTapped: function() {
+        if (this.isWXPConfigEmpty()) {
+          Util.toast('必填项不能为空', 3000);
+          return;
+        }
+        //   http证书与HTTP密钥文件格式必须为PEM格式的文件,后台还未
+        if (!this.weixin.isAgentMode) {
+          if (!this.httpCertFlag) {
+            Util.toast('HTTP证书文件格式，必须为PEM格式的文件', 3000);
+            return;
+          }
+          if (!this.httpKeyFlag) {
+            Util.toast('HTTP密钥文件格式，必须为PEM格式的文件', 3000);
+            return;
+          }
+        }
+
+        var acqFee = parseFloat(this.weixin.acqFee),
+          merFee = parseFloat(this.weixin.merFee);
+        if (isNaN(acqFee) || isNaN(merFee)) {
+          Util.toast('支付宝渠道的费率必须是数字', 3000);
+          return;
+        }
+        this.set('weixin.acqFee', acqFee);
+        this.set('weixin.merFee', merFee);
+        this.set('weixin.chanCode', 'WXP');
+        // 如果勾选了代理商模式，就直接填充上大商户的信息
+        if (this.weixin.isAgentMode) {
+          this.set('weixin.agentMer', this.bigMerchant);
+        } else {
+          this.set('weixin.agentMer', {});
+        }
+        this.$.saveChannelMerchantAjax.body = JSON.stringify(this.weixin);
+        this.$.saveChannelMerchantAjax.generateRequest();
+
+        // 微信路由信息
+        var router = {
+          merId: this.merchant.merId,
+          cardBrand: 'WXP',
+          chanCode: this.weixin.chanCode,
+          chanMerId: this.weixin.chanMerId
+        };
+        this.$.saveRouterAjax.body = JSON.stringify(router);
+        this.$.saveRouterAjax.generateRequest();
+      },
+      // 保存路由的ajax响应事件
+      handleSaveRouterResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('保存路由信息失败', 3000);
+          return;
+        }
+
+        Util.toast(response.message, 1000);
+      },
+      // 保存渠道商户ajax请求响应事件
+      handleSaveChannelMerchantResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+
+        Util.toast(response.message, 1000);
+      },
+      // 是否代理商模式的改变事件
+      handleIsAgentChangeEvent: function() {
+        this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
+        if (this.weixin.isAgentMode) {
+          this.set('weixin.agentMer', this.bigMerchant);
+          this.$.bigChanMerId.required = true;
+          this.$.wxpAppId.required = false;
+          this.$.wsignCert.required = false;
+          this.$.wxpAppId.label = '微信支付App Id';
+          this.$.wsignCert.label = '签名证书';
+          this.$.httpCertL.textContent = 'HTTP 证书';
+          this.$.httpKeyL.textContent = 'HTTP 密钥';
+          this.$.wxpAppId.validate();
+          this.$.wsignCert.validate();
+        } else {
+          this.set('weixin.agentMer', {});
+          this.$.bigChanMerId.required = false;
+          this.$.wxpAppId.required = true;
+          this.$.wsignCert.required = true;
+          this.$.bigChanMerId.validate();
+          this.$.wxpAppId.label = '*微信支付App Id';
+          this.$.wsignCert.label = '*签名证书';
+          this.$.httpCertL.textContent = '*HTTP 证书';
+          this.$.httpKeyL.textContent = '*HTTP 密钥';
+        }
+      },
+      // 是否需要验签的改变事件
+      handleIsNeedSignChangeEvent: function() {
+        this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
+        if (this.$.isNeedSignCheck.checked) {
+          this.$.signKey.label = '*商户签名密钥';
+          this.$.signKey.required = true;
+        } else {
+          this.$.signKey.label = '商户签名密钥';
+          this.$.signKey.required = false;
+          this.$.signKey.validate();
+        }
+      },
+      // 接口权限中的复选框组的改变事件
+      handlePermissionChangeEvent: function(e) {
+        var checkbox = e.target,
+          item = e.model.item,
+          index = this.merchant.permission.indexOf(item.key);
+
+        if (checkbox.checked) {
+          // 勾选了
+          if (index >= 0) {
+            return;
+          }
+          this.push('merchant.permission', item.key);
+        } else {
+          // 没勾选
+          if (index < 0) {
+            return;
+          }
+          this.splice('merchant.permission', index, 1);
+        }
+      },
+      observers: [
+        '_watchMerStatusChange(merStatus.key)'
+      ],
+      _watchMerStatusChange: function(key) {
+        if (key) {
+          this.set('merchant.merStatus', key);
+        } else {
+          this.set('merchant.merStatus', '');
+        }
+      },
+      // html5 读取证书文件内容
+      handleWeixinHttpCertFile: function(e) {
+        var _this = this;
+        var files = e.srcElement.files;
+        if (files.length) {
+          var file = files[0];
+          if ('application/x-x509-ca-cert' === file.type) {
+            var reader = new FileReader();
+            reader.onload = function() {
+              if (/BEGIN CERTIFICATE/.test(this.result) === false) {
+                Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
+                return;
+              }
+              _this.set('weixin.httpCert', this.result);
+            };
+            reader.readAsText(file);
+            this.httpCertFlag = true;
+          } else {
+            this.httpCertFlag = false;
+            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+          }
+        }
+      },
+      handleWeixinHttpKeyFile: function(e) {
+        var _this = this;
+        var files = e.srcElement.files;
+        if (files.length) {
+          var file = files[0];
+          if ('application/x-x509-ca-cert' === file.type) {
+            var reader = new FileReader();
+            reader.onload = function() {
+              if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
+                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
+                return;
+              }
+              _this.set('weixin.httpKey', this.result);
+            };
+            reader.readAsText(file);
+            this.httpKeyFlag = true;
+          } else {
+            this.httpKeyFlag = false;
+            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+          }
+        }
+      }
+    });
+
   </script>
 </dom-module>

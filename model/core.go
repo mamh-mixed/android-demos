@@ -97,7 +97,12 @@ type CardBin struct {
 	CardLen   int    `json:"cardLen" bson:"cardLen,omitempty"`     // 卡号长度
 	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
 	InsCode   string `json:"insCode" bson:"insCode,omitempty"`     // 发卡行代码
+	InsName   string `json:"insName" bson:"insName,omitempty"`     // 发卡行名称
+	CardName  string `json:"cardName" bson:"cardName,omitempty"`   // 卡名
+	AcctType  string `json:"acctType" bson:"acctType,omitempty"`   // 账户类型
 }
+
+const MerStatusNormal = "Normal"
 
 // Merchant 商户基本信息
 type Merchant struct {
@@ -149,22 +154,23 @@ type MerDetail struct {
 
 // ChanMer 渠道商户
 type ChanMer struct {
-	ChanCode      string   `bson:"chanCode,omitempty" json:"chanCode,omitempty"`           // 渠道代码
-	ChanMerId     string   `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`         // 商户号
-	ChanMerName   string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"`     // 商户名称
-	SettFlag      string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`           // 清算标识
-	SettRole      string   `bson:"settRole,omitempty" json:"settRole,omitempty"`           // 清算角色
-	SignCert      string   `bson:"signCert,omitempty" json:"signCert,omitempty"`           // 签名证书
-	CheckSignCert string   `bson:"checkSignCert,omitempty" json:"checkSignCert,omitempty"` // 验签证书
-	WxpAppId      string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`           // 微信支付App Id
-	InsCode       string   `bson:"insCode,omitempty" json:"insCode,omitempty"`             // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
-	TerminalId    string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`       // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	AcqFee        float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`               // 讯联跟渠道费率
-	MerFee        float32  `bson:"merFee,omitempty" json:"merFee,omitempty"`               // 商户跟讯联费率
-	HttpCert      string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`           // http cert证书
-	HttpKey       string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`             // http key 证书
-	IsAgentMode   bool     `bson:"isAgentMode" json:"isAgentMode"`                         // 是否受理商模式
-	AgentMer      *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`           // 受理商商户
+	ChanCode    string   `bson:"chanCode,omitempty" json:"chanCode,omitempty"`       // 渠道代码
+	ChanMerId   string   `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`     // 商户号
+	ChanMerName string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"` // 商户名称
+	SettFlag    string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`       // 清算标识
+	SettRole    string   `bson:"settRole,omitempty" json:"settRole,omitempty"`       // 清算角色
+	SignKey     string   `bson:"signCert,omitempty" json:"signCert,omitempty"`       // 签名密钥 !!!!数据库存的是signCert
+	PrivateKey  string   `bson:"privateKey,omitempty" json:"privateKey,omitempty"`   // 渠道商户私钥
+	PublicKey   string   `bson:"publicKey,omitempty" json:"publicKey,omitempty"`     // 渠道商户公钥
+	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
+	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
+	AcqFee      float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
+	MerFee      float32  `bson:"merFee,omitempty" json:"merFee,omitempty"`           // 商户跟讯联费率
+	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
+	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
+	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
+	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	// ...
 }
 
@@ -215,6 +221,7 @@ type Trans struct {
 	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         // 已退款金额
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
+	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户
@@ -242,9 +249,15 @@ type Trans struct {
 	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                // 交易凭证
 	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
 
+	// 可用于关联查询字段
+	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"`
+	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
+	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"`
+	ShortName string `bson:"shortName,omitempty" json:"shortName,omitempty"`
+
 	// 批导辅助字段
-	MerFee  float64 `bson:"-" json:"-"`       // 计算手续费字段 用于批导，待结束可删除
-	MerName string  `bson:"-" json:"merName"` // 商户名称
+	MerFee float64 `bson:"-" json:"-"` // 计算手续费字段 用于批导，待结束可删除
 }
 
 // SummarySettData 交易汇总

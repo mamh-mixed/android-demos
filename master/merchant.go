@@ -33,7 +33,7 @@ func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
 
 // Find 根据条件分页查找商户。
 func (m *merchant) Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName string, size, page int) (result *model.ResultBody) {
-	log.Debugf("merId is %s; merStatus is %s;merName is %s;groupCode is %s, groupName is %s, agentCode is %s, agentName is %s",
+	log.Debugf("merId is %s; merName is %s;groupCode is %s, groupName is %s, agentCode is %s, agentName is %s",
 		merId, merStatus, merName, groupCode, groupName, agentCode, agentName)
 
 	if page <= 0 {
@@ -83,7 +83,7 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	}
 
 	if m.MerStatus == "" {
-		m.MerStatus = NormalMerStatus
+		m.MerStatus = model.MerStatusNormal
 	}
 
 	err = mongo.MerchantColl.Insert(m)
@@ -96,6 +96,29 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 		Status:  0,
 		Message: "操作成功",
 		Data:    m,
+	}
+
+	return result
+}
+
+// Delete 删除机构商户
+func (i *merchant) Delete(merId string) (result *model.ResultBody) {
+	log.Debugf("delete merchant by merId,merId=%s", merId)
+	if merId == "" {
+		log.Errorf("merId为空")
+		return model.NewResultBody(2, "merId不能为空")
+	}
+
+	err := mongo.MerchantColl.Remove(merId)
+
+	if err != nil {
+		log.Errorf("删除机构商户失败: %s", err)
+		return model.NewResultBody(1, "删除机构商户失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "删除成功",
 	}
 
 	return result
