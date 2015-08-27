@@ -63,7 +63,7 @@ func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 		},
 		Body: requestBody{
 			TxSNBinding:          be.ChanBindingId,
-			BankID:               be.BankId,
+			BankID:               be.BankCode,
 			AccountName:          be.AcctNameDecrypt,
 			AccountNumber:        be.AcctNumDecrypt,
 			IdentificationType:   be.IdentType,

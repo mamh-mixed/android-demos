@@ -26,12 +26,10 @@ func ProcessGetCardInfo(bc *model.CardInfo) (ret *model.BindingReturn) {
 	}
 
 	// 通过路由策略找到渠道和渠道商户
-	rp := mongo.RouterPolicyColl.Find(bc.MerId, cardBin.CardBrand)
-	if rp == nil {
-		return mongo.RespCodeColl.Get("300030")
-	}
-
-	// TODO:判断某个渠道是否支持该银行卡
+	// rp := mongo.RouterPolicyColl.Find(bc.MerId, cardBin.CardBrand)
+	// if rp == nil {
+	// 	return mongo.RespCodeColl.Get("300030")
+	// }
 
 	// 返回卡片信息
 	ret = mongo.RespCodeColl.Get(successCode)
@@ -40,7 +38,18 @@ func ProcessGetCardInfo(bc *model.CardInfo) (ret *model.BindingReturn) {
 	ret.AcctType = cardBin.AcctType
 	ret.IssBankName = cardBin.InsName
 	ret.IssBankNum = cardBin.InsCode
-	// ...完善信息
+
+	// 暂时判断中金渠道是否支持该银行卡
+	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
+	if err != nil {
+		// 没找到说明不支持
+		ret.IsSupport = "0"
+		return ret
+	}
+
+	ret.IsSupport = "1"
+	ret.BankCode = cm.BankId
+	// ...图片地址
 
 	return ret
 }
@@ -92,7 +101,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		AcctType:  bc.IdentType,
 		AcctName:  bc.AcctName,
 		AcctNum:   bc.AcctNum,
-		BankId:    bc.BankId,
+		BankId:    bc.BankCode,
 		IdentType: bc.IdentType,
 		IdentNum:  bc.IdentNum,
 		PhoneNum:  bc.PhoneNum,
@@ -135,13 +144,13 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 	// 如果接入方没有送，则到渠道获取
 	// 如果是中金渠道，到数据库查找中金支持的银行卡的ID，并赋值给bindingCreate
-	if bc.BankId == "" {
+	if bc.BankCode == "" {
 		cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 		if err != nil {
 			log.Errorf("find CfcaBankMap ERROR!error message is: %s", err)
 			return mongo.RespCodeColl.Get("400020")
 		}
-		bc.BankId = cm.BankId
+		bc.BankCode = cm.BankId
 	}
 
 	// 根据路由策略里面不同的渠道调用不同的绑定接口
