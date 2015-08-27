@@ -2,10 +2,11 @@ package model
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
-	"strings"
 )
 
 // busiType
@@ -40,6 +41,8 @@ type QueryCondition struct {
 	Total        int      `json:"total,omitempty"`
 	Size         int      `json:"size,omitempty"`
 	IsForReport  bool     `json:"-"`
+	GroupCode    string   `json:"groupCode,omitempty"`
+	Respcd       string   `json:"respcd" url:"respcd"`
 }
 
 // QueryResult 查询结果值
@@ -128,7 +131,7 @@ type ScanPayRequest struct {
 	ActTxamt         string `json:"-" url:"-"` // 实际交易金额 不同渠道单位不同
 	IntTxamt         int64  `json:"-" url:"-"` // 以分为单位的交易金额
 	ChanMerId        string `json:"-" url:"-"` // 渠道商户Id
-	SignCert         string `json:"-" url:"-"` // 可能表示md5key等
+	SignKey          string `json:"-" url:"-"` // 可能表示md5key等
 	ExtendParams     string `json:"-" url:"-"` // 业务扩展参数
 	WeixinClientCert []byte `json:"-" url:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
 	WeixinClientKey  []byte `json:"-" url:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥

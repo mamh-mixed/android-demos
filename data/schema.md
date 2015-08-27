@@ -61,8 +61,8 @@
 | 渠道商户名称          | chanMerName    |                                  |
 | 清算角色            | settRole       |                                  |
 | 结算标识（中金渠道商户特有）  | settFlag       |                                  |
-| 签名证书            | signCert       |                                  |
-| 验签证书            | checkSignCert  |                                  |
+| 渠道商户私钥            | privateKey       |                                  |
+| 渠道商户公钥            | publicKey       |                                  |
 | 支付宝 MD5Key      | alpMd5Key      |                                  |
 | 微信支付AppId       | wxpAppId       |                                  |
 | 微信支付PartnerKey  | wxpPartnerKey  |                                  |

@@ -1,4 +1,4 @@
-package entrance
+package scanpay
 
 import (
 	"encoding/json"
@@ -7,12 +7,19 @@ import (
 	"net"
 	"testing"
 
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
 func TestListenTcp(t *testing.T) {
-	Listen()
+	// 扫码 TCP 接口，UTF-8 编码传输，UTF-8 签名
+	port := goconf.Config.App.TCPAddr
+	ListenScanPay(port)
+
+	// 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
+	port = goconf.Config.App.TCPGBKAddr
+	ListenScanPay(port, true)
 }
 
 func TestDailTcp(t *testing.T) {

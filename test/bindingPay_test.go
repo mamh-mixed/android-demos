@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	. "github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/core"
-	. "github.com/CardInfoLink/quickpay/entrance"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
@@ -17,7 +17,7 @@ import (
 
 const (
 	// testMerId      = "012345678901234"
-	testMerId = "001405"
+	testMerId = "000000001405"
 	// testSign       = "0123456789"
 	testSign = "0123456789"
 	// testEncryptKey = "AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8="
@@ -39,7 +39,7 @@ const (
 )
 
 var (
-	bindingId string = "1431654779479"
+	bindingId string = "1440486130527"
 	orderNum  string
 )
 
@@ -67,10 +67,10 @@ func doPost(url string, m interface{}, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req.Header.Set("X-Sign", SignatureUseSha1(j, testSign))
+	req.Header.Set("X-Sign", security.SHA1WithKey(string(j), testSign))
 
 	w := httptest.NewRecorder()
-	Quickpay(w, req)
+	BindingpayHandle(w, req)
 	log.Infof("%d - %s", w.Code, w.Body.String())
 	if w.Code != 200 {
 		t.Errorf("response error with status %d", w.Code)
@@ -88,7 +88,7 @@ func doPost(url string, m interface{}, t *testing.T) {
 }
 
 func TestBindingCreate(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/bindingCreate?merId=" + testMerId
+	url := "http://quick.ipay.so/bindingpay/bindingCreate?merId=" + testMerId
 
 	bindingId = util.Millisecond()
 
@@ -99,13 +99,13 @@ func TestBindingCreate(t *testing.T) {
 		AcctNum:   "6222022003008481261",
 		IdentType: "0",
 		IdentNum:  "440583199111031012",
-		PhoneNum:  "18205960039",
-		AcctType:  "20",
-		ValidDate: "0612",
-		Cvv2:      "793",
+		PhoneNum:  "15618103236",
+		AcctType:  "10",
+		// ValidDate: "0612",
+		// Cvv2:      "793",
 		SendSmsId: "",
 		SmsCode:   "",
-		BankId:    "102",
+		// BankId:    "102",
 	}
 
 	var aes = security.NewAESCBCEncrypt(testEncryptKey)
@@ -121,14 +121,20 @@ func TestBindingCreate(t *testing.T) {
 	doPost(url, b, t)
 }
 
+func TestGetCardInfo(t *testing.T) {
+	url := "http://quick.ipay.so/bindingpay/getCardInfo?merId=" + testMerId
+	b := model.CardInfo{CardNum: "6225768739233847"}
+	doPost(url, b, t)
+}
+
 func TestBindingEnquiryHandle(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/bindingEnquiry?merId=" + testMerId
+	url := "http://quick.ipay.so/bindingpay/bindingEnquiry?merId=" + testMerId
 	b := model.BindingEnquiry{BindingId: bindingId}
 	doPost(url, b, t)
 }
 
 func TestBindingPaymentHandle(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/bindingPayment?merId=" + testMerId
+	url := "http://quick.ipay.so/bindingpay/bindingPayment?merId=" + testMerId
 	orderNum = util.Millisecond()
 	b := model.BindingPayment{
 		MerOrderNum: orderNum,
@@ -139,8 +145,31 @@ func TestBindingPaymentHandle(t *testing.T) {
 	doPost(url, b, t)
 }
 
+func TestSendBindingPaySMS(t *testing.T) {
+	url := "http://quick.ipay.so/bindingpay/sendBindingPaySms?merId=" + testMerId
+	orderNum = util.Millisecond()
+	b := model.BindingPayment{
+		MerOrderNum: orderNum,
+		TransAmt:    1000,
+		BindingId:   bindingId,
+		MerId:       testMerId,
+	}
+	doPost(url, b, t)
+}
+
+func TestBindingPayWithSMS(t *testing.T) {
+	url := "http://quick.ipay.so/bindingpay/bindingPayWithSms?merId=" + testMerId
+	orderNum = "1440497277874"
+	b := model.BindingPayment{
+		MerOrderNum: orderNum,
+		MerId:       testMerId,
+		SmsCode:     "123456",
+	}
+	doPost(url, b, t)
+}
+
 func TestOrderEnquiry(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/orderEnquiry?merId=" + testMerId
+	url := "http://quick.ipay.so/bindingpay/orderEnquiry?merId=" + testMerId
 	b := model.OrderEnquiry{
 		OrigOrderNum: orderNum,
 	}
@@ -148,29 +177,29 @@ func TestOrderEnquiry(t *testing.T) {
 }
 
 func TestBindingRefundHandle(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/refund?merId=" + testMerId
+	url := "http://quick.ipay.so/bindingpay/refund?merId=" + testMerId
 	b := model.BindingRefund{
-		OrigOrderNum: orderNum,
+		OrigOrderNum: "1440488933169",
 		MerOrderNum:  util.Millisecond(),
-		TransAmt:     100,
+		TransAmt:     1000,
 	}
 	doPost(url, b, t)
 }
 
 func TestBindingRemoveHandle(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/bindingRemove?merId=" + testMerId
+	url := "http://quick.ipay.so/bindingpay/bindingRemove?merId=" + testMerId
 	b := model.BindingEnquiry{BindingId: bindingId}
 	doPost(url, b, t)
 }
 
 func TestBillingSummaryHandle(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/billingSummary?merId=001405"
+	url := "http://quick.ipay.so/bindingpay/billingSummary?merId=001405"
 	b := model.BillingSummary{SettDate: "2015-05-20"}
 	doPost(url, b, t)
 }
 
 func TestBillingDetailsHandle(t *testing.T) {
-	url := "http://quick.ipay.so/quickpay/billingDetails?merId=001405"
+	url := "http://quick.ipay.so/bindingpay/billingDetails?merId=001405"
 	b := model.BillingDetails{SettDate: "2015-05-20"}
 	doPost(url, b, t)
 }

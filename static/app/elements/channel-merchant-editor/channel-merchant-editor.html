@@ -6,7 +6,8 @@
       display: block;
       --paper-dialog-scrollable: {
         min-width: 600px;
-        min-height: 300px;
+        min-height: 500px;
+        max-height: 500px;
       }
     }
 
@@ -14,7 +15,7 @@
       background-color: #ffffff;
     }
 
-    .row {
+    /*.row {
       @apply(--layout-horizontal);
     }
 
@@ -24,40 +25,38 @@
 
     .row paper-input:first-child {
       margin-right: 20px;
-    }
+    }*/
+
+
   </style>
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
     <paper-dialog id="dialogAdd">
       <h2>添加渠道商户</h2>
       <paper-dialog-scrollable>
-        <div class="row">
+        <div class="flex">
           <paper-input label="渠道代码" value="{{chanMer.chanCode::input}}"></paper-input>
-          <paper-input label="商户号" value="{{chanMer.chanMerId::input}}"></paper-input>
-        </div>
-        <div class="row">
+
+          <paper-input label="商户代码" value="{{chanMer.chanMerId::input}}"></paper-input>
           <paper-input label="商户名称" value="{{chanMer.chanMerName::input}}"></paper-input>
+
+          <paper-input label="机构代码" value="{{chanMer.agentCode::input}}"></paper-input>
+          <paper-input label="终端代码" value="{{chanMer.terminalId::input}}"></paper-input>
+
           <paper-input label="清算标识" value="{{chanMer.settFlag::input}}"></paper-input>
-        </div>
-        <div class="row">
           <paper-input label="清算角色" value="{{chanMer.settRole::input}}"></paper-input>
-          <paper-input label="签名证书" value="{{chanMer.signCert::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="验签证书" value="{{chanMer.checkSignCert::input}}"></paper-input>
-          <paper-input label="微信支付App Id" value="{{chanMer.wxpAppId::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="机构号" value="{{chanMer.agentCode::input}}"></paper-input>
-          <paper-input label="终端号" value="{{chanMer.terminalId::input}}"></paper-input>
-        </div>
-        <div class="row">
+
           <paper-input label="讯联跟渠道费率" value="{{chanMer.acqFee::input}}"></paper-input>
           <paper-input label="商户跟讯联费率" value="{{chanMer.merFee::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="http cert 证书" value="{{chanMer.httpCert::input}}"></paper-input>
-          <paper-input label="http key 证书" value="{{chanMer.httpKey::input}}"></paper-input>
+
+          <paper-input label="签名密钥" value="{{chanMer.signKey::input}}"></paper-input>
+          <paper-input label="微信 AppID" value="{{chanMer.wxpAppId::input}}"></paper-input>
+          <paper-input label="微信 HTTPS 证书" value="{{chanMer.httpCert::input}}"></paper-input>
+          <paper-input label="微信 HTTPS 密钥" value="{{chanMer.httpKey::input}}"></paper-input>
+
+          <paper-input label="CFCA 商户私钥" value="{{chanMer.PrivateKey::input}}"></paper-input>
+          <paper-input label="CFCA 商户公钥" value="{{chanMer.PublicKey::input}}"></paper-input>
+
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -71,30 +70,26 @@
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input label="渠道代码" value="{{chanMer.chanCode::input}}"></paper-input>
-          <paper-input label="商户号" value="{{chanMer.chanMerId::input}}" disabled></paper-input>
-        </div>
-        <div class="row">
+
+          <paper-input label="商户代码" value="{{chanMer.chanMerId::input}}"></paper-input>
           <paper-input label="商户名称" value="{{chanMer.chanMerName::input}}"></paper-input>
+
+          <paper-input label="机构代码" value="{{chanMer.agentCode::input}}"></paper-input>
+          <paper-input label="终端代码" value="{{chanMer.terminalId::input}}"></paper-input>
+
+          <paper-input label="签名密钥" value="{{chanMer.signKey::input}}"></paper-input>
+          <paper-input label="渠道商户私钥" value="{{chanMer.PrivateKey::input}}"></paper-input>
+          <paper-input label="渠道商户公钥" value="{{chanMer.PublicKey::input}}"></paper-input>
+
           <paper-input label="清算标识" value="{{chanMer.settFlag::input}}"></paper-input>
-        </div>
-        <div class="row">
           <paper-input label="清算角色" value="{{chanMer.settRole::input}}"></paper-input>
-          <paper-input label="签名证书" value="{{chanMer.signCert::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="验签证书" value="{{chanMer.checkSignCert::input}}"></paper-input>
-          <paper-input label="微信支付App Id" value="{{chanMer.wxpAppId::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="机构号" value="{{chanMer.agentCode::input}}"></paper-input>
-          <paper-input label="终端号" value="{{chanMer.terminalId::input}}"></paper-input>
-        </div>
-        <div class="row">
+
+          <paper-input label="微信 AppID" value="{{chanMer.wxpAppId::input}}"></paper-input>
+
           <paper-input label="讯联跟渠道费率" value="{{chanMer.acqFee::input}}"></paper-input>
           <paper-input label="商户跟讯联费率" value="{{chanMer.merFee::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="http cert证书" value="{{chanMer.httpCert::input}}"></paper-input>
+
+          <paper-input label="http cert 证书" value="{{chanMer.httpCert::input}}"></paper-input>
           <paper-input label="http key 证书" value="{{chanMer.httpKey::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>

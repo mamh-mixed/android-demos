@@ -4,22 +4,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 )
 
-const (
-	NormalMerStatus = "Normal"
-)
-
-// QuickMaster 后台管理的请求统一入口
-func QuickMaster(w http.ResponseWriter, r *http.Request) {
-	log.Infof("url = %s", r.URL.String())
-
-	var ret *model.ResultBody
-
+func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -27,31 +18,26 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch r.URL.Path {
-	case "/quickMaster/merchant/all":
-		ret = AllMerchant(data)
-	case "/quickMaster/merchant/add":
-		ret = AddMerchant(data)
-	case "/quickMaster/channelMerchant/all":
-		ret = AllChannelMerchant(data)
-	case "/quickMaster/channelMerchant/add":
-		ret = AddChannelMerchant(data)
-	case "/quickMaster/router/save":
-		ret = AddRouter(data)
-	case "/quickMaster/router/find":
-		merId := r.FormValue("merId")
-		ret = AllRouterOfOneMerchant(merId)
-	case "/quickMaster/agent/all":
-		ret = AllAgent(data)
-	case "/quickMaster/agent/add":
-		ret = AddAgent(data)
-	case "/quickMaster/group/all":
-		ret = AllGroup(data)
-	case "/quickMaster/group/add":
-		ret = AddGroup(data)
-	default:
-		w.WriteHeader(404)
+	tradeQuery(w, data)
+}
+
+func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
+	tradeReport(w, r)
+}
+
+func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	q := &model.QueryCondition{
+		MerId:     r.FormValue("merId"),
+		AgentCode: r.FormValue("agentCode"),
+		Page:      page,
+		Size:      size,
+		MerName:   r.FormValue("merName"),
+		StartTime: r.FormValue("startTime"),
+		EndTime:   r.FormValue("endTime"),
 	}
+	ret := tradeQueryStats(q)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -62,293 +48,306 @@ func QuickMaster(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// AllMerchant 处理查找所有商户的请求
-func AllMerchant(data []byte) (result *model.ResultBody) {
-	cond := new(model.Merchant)
-	err := json.Unmarshal(data, cond)
-	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
-	}
-
-	merchants, err := mongo.MerchantColl.FindAllMerchant(cond)
-
-	if err != nil {
-		log.Errorf("查询所有商户出错:%s", err)
-		return model.NewResultBody(1, "查询失败")
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    merchants,
-	}
-
-	return
+func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
+	tradeQueryStatsReport(w, r)
 }
 
-// AddMerchant 处理新增一个商户的请求
-func AddMerchant(data []byte) (result *model.ResultBody) {
-	m := new(model.Merchant)
-	err := json.Unmarshal(data, m)
+func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
+
+	merId := r.FormValue("merId")
+	merStatus := r.FormValue("merStatus")
+	merName := r.FormValue("merName")
+	groupCode := r.FormValue("groupCode")
+	groupName := r.FormValue("groupName")
+	agentCode := r.FormValue("agentCode")
+	agentName := r.FormValue("agentName")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
+
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	if m.MerId == "" {
-		log.Error("没有MerId")
-		return model.NewResultBody(3, "缺失必要元素merId")
-	}
-
-	if m.MerStatus == "" {
-		m.MerStatus = NormalMerStatus
-	}
-
-	err = mongo.MerchantColl.Insert(m)
-	if err != nil {
-		log.Errorf("新增商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "操作成功",
-		Data:    m,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AllChannelMerchant 处理查找所有商户的请求
-func AllChannelMerchant(data []byte) (result *model.ResultBody) {
-	cond := new(model.ChanMer)
-	err := json.Unmarshal(data, cond)
+func merchantFindOneHandle(w http.ResponseWriter, r *http.Request) {
+	merId := r.FormValue("merId")
+	ret := Merchant.FindOne(merId)
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	merchants, err := mongo.ChanMerColl.FindByCondition(cond)
-
-	if err != nil {
-		log.Errorf("查询所有商户出错:%s", err)
-		return model.NewResultBody(1, "查询失败")
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    merchants,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AddChannelMerchant 处理新增一个渠道商户的请求
-func AddChannelMerchant(data []byte) (result *model.ResultBody) {
-	m := new(model.ChanMer)
-	err := json.Unmarshal(data, m)
+func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
 	}
 
-	if m.ChanCode == "" {
-		log.Error("没有ChanCode")
-		return model.NewResultBody(3, "缺失必要元素chanCode")
-	}
+	ret := Merchant.Save(data)
 
-	err = mongo.ChanMerColl.Add(m)
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("新增渠道商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		w.Write([]byte("mashal data error"))
 	}
 
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "操作成功",
-		Data:    m,
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+
+	merId := r.FormValue("merId")
+	ret := Merchant.Delete(merId)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
 	}
 
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AddRouter 处理新增一个路由的请求
-func AddRouter(data []byte) (result *model.ResultBody) {
-	r := new(model.RouterPolicy)
-	err := json.Unmarshal(data, r)
+func routerSaveHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
-	}
-	if r.MerId == "" {
-		log.Error("MerId")
-		return model.NewResultBody(3, "缺失必要元素 merId")
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
 	}
 
-	if r.ChanCode == "" {
-		log.Error("没有 ChanCode")
-		return model.NewResultBody(3, "缺失必要元素 chanCode")
-	}
+	ret := RouterPolicy.Save(data)
 
-	if r.ChanMerId == "" {
-		log.Error("没有 ChanMerId")
-		return model.NewResultBody(3, "缺失必要元素 chanMerId")
-	}
-
-	if r.CardBrand == "" {
-		log.Error("没有 CardBrand")
-		return model.NewResultBody(3, "缺失必要元素 cardBrand")
-	}
-
-	err = mongo.RouterPolicyColl.Insert(r)
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("保存路由信息失败:%s", err)
-		return model.NewResultBody(1, "保存路由信息失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "保存成功",
-		Data:    r,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AllRouterOfOneMerchant 处理查找商户的所有路由的请求
-func AllRouterOfOneMerchant(merId string) (result *model.ResultBody) {
-	routers, err := mongo.RouterPolicyColl.FindAllOfOneMerchant(merId)
+func routerFindHandle(w http.ResponseWriter, r *http.Request) {
+	merId := r.FormValue("merId")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := RouterPolicy.Find(merId, size, page)
 
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("查询商户(%s)的所有路由失败: %s", merId, err)
-		return model.NewResultBody(1, "查询失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    routers,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AllAgent 处理查找所有代理商的请求
-func AllAgent(data []byte) (result *model.ResultBody) {
-	cond := new(model.Agent)
-	err := json.Unmarshal(data, cond)
+func routerFindOneHandle(w http.ResponseWriter, r *http.Request) {
+	merId := r.FormValue("merId")
+	cardBrand := r.FormValue("cardBrand")
+	ret := RouterPolicy.FindOne(merId, cardBrand)
+
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	agents, err := mongo.AgentColl.FindByCondition(cond)
-
-	if err != nil {
-		log.Errorf("查询代理商出错:%s", err)
-		return model.NewResultBody(1, "查询失败")
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    agents,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AddAgent 处理新增一个商户的请求
-func AddAgent(data []byte) (result *model.ResultBody) {
-	a := new(model.Agent)
-	err := json.Unmarshal(data, a)
+func routerDeleteHandle(w http.ResponseWriter, r *http.Request) {
+
+	merId := r.FormValue("merId")
+	chanCode := r.FormValue("chanCode")
+	cardBrand := r.FormValue("cardBrand")
+	ret := RouterPolicy.Delete(merId, chanCode, cardBrand)
+
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	if a.AgentCode == "" {
-		log.Error("没有AgentCode")
-		return model.NewResultBody(3, "缺失必要元素AgentCode")
-	}
-
-	if a.AgentName == "" {
-		log.Error("没有AgentName")
-		return model.NewResultBody(3, "缺失必要元素AgentName")
-	}
-
-	err = mongo.AgentColl.Add(a)
-	if err != nil {
-		log.Errorf("新增代理商失败:%s", err)
-		return model.NewResultBody(1, err.Error())
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "操作成功",
-		Data:    a,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AllGroup 处理查找所有集团的请求
-func AllGroup(data []byte) (result *model.ResultBody) {
-	cond := new(model.Group)
-	err := json.Unmarshal(data, cond)
+func channelMerchantFindHandle(w http.ResponseWriter, r *http.Request) {
+	chanCode := r.FormValue("chanCode")
+	chanMerId := r.FormValue("chanMerId")
+	chanMerName := r.FormValue("chanMerName")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := ChanMer.Find(chanCode, chanMerId, chanMerName, size, page)
+
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	groups, err := mongo.GroupColl.FindByCondition(cond)
-
-	if err != nil {
-		log.Errorf("查询集团商户出错:%s", err)
-		return model.NewResultBody(1, "查询失败")
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    groups,
-	}
-
-	return
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
 
-// AddGroup 处理新增一个集团商户的请求
-func AddGroup(data []byte) (result *model.ResultBody) {
-	g := new(model.Group)
-	err := json.Unmarshal(data, g)
+func channelMerchantMatchHandle(w http.ResponseWriter, r *http.Request) {
+	chanCode := r.FormValue("chanCode")
+	chanMerId := r.FormValue("chanMerId")
+	chanMerName := r.FormValue("chanMerName")
+	maxSize, _ := strconv.Atoi(r.FormValue("maxSize"))
+	ret := ChanMer.Match(chanCode, chanMerId, chanMerName, maxSize)
+
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		w.Write([]byte("mashal data error"))
 	}
 
-	if g.GroupCode == "" {
-		log.Error("没有GroupCode")
-		return model.NewResultBody(3, "缺失必要元素GroupCode")
-	}
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
 
-	if g.GroupName == "" {
-		log.Error("没有GroupName")
-		return model.NewResultBody(3, "缺失必要元素GroupName")
-	}
+func channelFindByMerIdAndCardBrandHandle(w http.ResponseWriter, r *http.Request) {
 
-	err = mongo.GroupColl.Add(g)
+	merId := r.FormValue("merId")
+	cardBrand := r.FormValue("cardBrand")
+	ret := ChanMer.FindByMerIdAndCardBrand(merId, cardBrand)
+	rdata, err := json.Marshal(ret)
 	if err != nil {
-		log.Errorf("新增集团商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		w.Write([]byte("mashal data error"))
 	}
 
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "操作成功",
-		Data:    g,
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
 	}
 
-	return
+	ret := ChanMer.Save(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func agentFindHandle(w http.ResponseWriter, r *http.Request) {
+	agentCode := r.FormValue("agentCode")
+	agentName := r.FormValue("agentName")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := Agent.Find(agentCode, agentName, size, page)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func agentDeleteHandle(w http.ResponseWriter, r *http.Request) {
+
+	agentCode := r.FormValue("agentCode")
+	ret := Agent.Delete(agentCode)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func agentSaveHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Agent.Save(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func groupFindHandle(w http.ResponseWriter, r *http.Request) {
+	groupCode := r.FormValue("groupCode")
+	groupName := r.FormValue("groupName")
+	agentCode := r.FormValue("agentCode")
+	agentName := r.FormValue("agentName")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := Group.Find(groupCode, groupName, agentCode, agentName, size, page)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func groupDeleteHandle(w http.ResponseWriter, r *http.Request) {
+
+	groupCode := r.FormValue("groupCode")
+	ret := Group.Delete(groupCode)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func groupSaveHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Group.Save(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func uptokenHandle(w http.ResponseWriter, r *http.Request) {
+	handleUptoken(w, r)
+}
+
+func downURLHandle(w http.ResponseWriter, r *http.Request) {
+	handleDownURL(w, r)
 }

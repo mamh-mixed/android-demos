@@ -112,7 +112,7 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 }
 
 // PaginationFind 分页查找机构商户
-func (c *merchantCollection) PaginationFind(merId, merStatus string, size, page int) (results []model.Merchant, total int, err error) {
+func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName string, size, page int) (results []model.Merchant, total int, err error) {
 	results = make([]model.Merchant, 1)
 
 	match := bson.M{}
@@ -122,7 +122,21 @@ func (c *merchantCollection) PaginationFind(merId, merStatus string, size, page 
 	if merStatus != "" {
 		match["merStatus"] = merStatus
 	}
-
+	if merName != "" {
+		match["merDetail.merName"] = merName
+	}
+	if groupCode != "" {
+		match["groupCode"] = groupCode
+	}
+	if groupName != "" {
+		match["groupName"] = groupName
+	}
+	if agentCode != "" {
+		match["agentCode"] = agentCode
+	}
+	if agentName != "" {
+		match["agentName"] = agentName
+	}
 	// 计算总数
 	total, err = database.C(c.name).Find(match).Count()
 	if err != nil {
@@ -165,5 +179,15 @@ func (c *merchantCollection) BatchRemove(merIds []string) error {
 	if change.Removed != len(merIds) {
 		log.Warnf("expect remove %d records,but %d removed", len(merIds), change.Removed)
 	}
+	return err
+}
+
+// Remove 删除机构商户
+func (col *merchantCollection) Remove(merId string) (err error) {
+	bo := bson.M{}
+	if merId != "" {
+		bo["merId"] = merId
+	}
+	err = database.C(col.name).Remove(bo)
 	return err
 }

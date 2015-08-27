@@ -10,6 +10,34 @@ import (
 	"github.com/omigo/log"
 )
 
+var (
+	successCode  = "000000"
+	handlingCode = "000009"
+)
+
+// ProcessGetCardInfo 获取卡片信息
+func ProcessGetCardInfo(c *model.CardInfo) (ret *model.BindingReturn) {
+
+	// 获取卡bin详情
+	cardBin, err := findCardBin(c.CardNum)
+	if err != nil {
+		log.Error(err)
+		return mongo.RespCodeColl.Get("200110")
+	}
+
+	// TODO:判断某个渠道是否支持该银行卡
+
+	ret = mongo.RespCodeColl.Get(successCode)
+	// 返回卡片信息
+	ret.CardNum = c.CardNum
+	ret.CardBrand = cardBin.CardBrand
+	ret.AcctType = cardBin.AcctType
+	ret.IssBankName = cardBin.InsName
+	ret.IssBankNum = cardBin.InsCode
+
+	return ret
+}
+
 // ProcessBindingCreate 绑定建立的业务处理
 func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// 默认返回
@@ -33,7 +61,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 		log.Error(err)
 		return mongo.RespCodeColl.Get("200110")
 	}
-	log.Debugf("CardBin: %+v", cardBin)
+	// log.Debugf("CardBin: %+v", cardBin)
 
 	// 如果是银联卡，验证证件信息
 	if strings.EqualFold("CUP", cardBin.CardBrand) || strings.EqualFold("UPI", cardBin.CardBrand) {
@@ -94,7 +122,7 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 	// bc(BindingCreate)用来向渠道发送请求，增加一些渠道要求的数据。
 	bc.ChanMerId = rp.ChanMerId
 	bc.ChanBindingId = bm.ChanBindingId
-	bc.SignCert = chanMer.SignCert
+	bc.PrivateKey = chanMer.PrivateKey
 
 	log.Tracef("'BindingCreate' is: %+v", bc)
 
@@ -117,9 +145,9 @@ func ProcessBindingCreate(bc *model.BindingCreate) (ret *model.BindingReturn) {
 
 	// 渠道返回后，根据应答码，判断绑定是否成功，如果成功，更新绑定关系映射，绑定关系生效
 	switch ret.RespCode {
-	case "000000":
+	case successCode:
 		bm.BindingStatus = model.BindingSuccess
-	case "000009":
+	case handlingCode:
 		bm.BindingStatus = model.BindingHandling
 	default:
 		bm.BindingStatus = model.BindingFail
@@ -167,7 +195,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	// 转换绑定关系、请求
 	be.ChanMerId = bm.ChanMerId
 	be.ChanBindingId = bm.ChanBindingId
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 
 	// 查找该商户配置的渠道。
 	c := channel.GetChan(bm.ChanCode)
@@ -180,9 +208,9 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 
 	// 转换绑定状态
 	switch ret.RespCode {
-	case "000000":
+	case successCode:
 		bm.BindingStatus = model.BindingSuccess
-	case "000009":
+	case handlingCode:
 		bm.BindingStatus = model.BindingHandling
 	default:
 		bm.BindingStatus = model.BindingFail
@@ -195,14 +223,66 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	}
 
 	return &model.BindingReturn{
-		RespCode:      "000000",
+		RespCode:      successCode,
 		RespMsg:       "请求处理成功",
 		BindingStatus: bm.BindingStatus,
 	}
 }
 
+// ProcessPaymentWithSMS 通过验证码完成交易
+func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
+
+	// 找到原订单
+	orig, err := mongo.TransColl.FindOne(be.MerId, be.MerOrderNum)
+	if err != nil {
+		return mongo.RespCodeColl.Get("200080")
+	}
+
+	// 订单状态是否合法
+	if orig.TransStatus != model.TransHandling {
+		return mongo.RespCodeColl.Get("200080") // TODO:返回原订单短信发送失败的应答。
+	}
+
+	// 获取渠道接口
+	c := channel.GetChan(orig.ChanCode)
+	if c == nil {
+		// 来到这里必须是系统错误。
+		return mongo.RespCodeColl.Get("000001")
+	}
+
+	// 根据绑定关系得到渠道商户信息
+	chanMer, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		// 来到这里必须是系统错误。
+		return mongo.RespCodeColl.Get("000001")
+	}
+
+	// 渠道需要参数
+	be.SysOrderNum = orig.SysOrderNum
+	be.ChanMerId = orig.ChanMerId
+	be.PrivateKey = chanMer.PrivateKey
+
+	// 请求支付
+	ret = c.ProcessPaymentWithSMS(be)
+
+	orig.RespCode = ret.RespCode
+	orig.RespCode = ret.ChanRespCode
+	switch ret.RespCode {
+	case successCode:
+		orig.TransStatus = model.TransSuccess
+	case handlingCode:
+	default:
+		orig.TransStatus = model.TransFail
+	}
+
+	// 更新交易
+	mongo.TransColl.Update(orig)
+	return ret
+}
+
 // ProcessBindingPayment 绑定支付
-func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
+// isSendSMS:true 将调用支付前发短信接口;false 直接支付，中金暂不支持
+func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model.BindingReturn) {
 	// 默认返回
 	ret = mongo.RespCodeColl.Get("000001")
 
@@ -252,7 +332,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		mongo.TransColl.Add(trans)
 		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
-	// channel info
 	trans.ChanCode = bm.ChanCode
 	trans.ChanMerId = bm.ChanMerId
 	trans.ChanBindingId = bm.ChanBindingId
@@ -264,7 +343,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 		mongo.TransColl.Add(trans)
 		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
-	// acctNum
 	trans.AcctNum = bi.AcctNum
 
 	// TODO 金额是否超出最大可支付金额
@@ -288,7 +366,6 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 
 	// 交易参数
 	trans.SysOrderNum = util.SerialNumber()
-
 	// 记录这笔交易
 	if err = mongo.TransColl.Add(trans); err != nil {
 		log.Errorf("add trans error: %s", err)
@@ -300,22 +377,32 @@ func ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) 
 	be.ChanBindingId = trans.ChanBindingId
 	be.ChanMerId = trans.ChanMerId
 	be.SysOrderNum = trans.SysOrderNum
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 
-	// 支付
-	ret = c.ProcessBindingPayment(be)
-
-	// 处理结果
-	trans.ChanRespCode = ret.ChanRespCode
-	trans.RespCode = ret.RespCode
-	switch ret.RespCode {
-	case "000000":
-		trans.TransStatus = model.TransSuccess
-	case "000009":
-		trans.TransStatus = model.TransHandling
-	default:
-		trans.TransStatus = model.TransFail
+	if isSendSMS {
+		// 发送支付验证码
+		ret = c.ProcessSendBindingPaySMS(be)
+		// TODO:发送结果成功，交易处理中
+		if ret.RespCode == successCode {
+			trans.TransStatus = model.TransHandling
+		}
+	} else {
+		// 直接支付
+		ret = c.ProcessBindingPayment(be)
+		// 处理结果
+		trans.ChanRespCode = ret.ChanRespCode
+		trans.RespCode = ret.RespCode
+		switch ret.RespCode {
+		case successCode:
+			trans.TransStatus = model.TransSuccess
+		case handlingCode:
+			trans.TransStatus = model.TransHandling
+		default:
+			trans.TransStatus = model.TransFail
+		}
 	}
+
+	// 更新交易
 	mongo.TransColl.Update(trans)
 	return ret
 }
@@ -352,7 +439,7 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	br.ChanMerId = bm.ChanMerId
 	br.ChanBindingId = bm.ChanBindingId
 	br.TxSNUnBinding = util.SerialNumber()
-	br.SignCert = chanMer.SignCert
+	br.PrivateKey = chanMer.PrivateKey
 
 	// 到渠道解绑
 	c := channel.GetChan(chanMer.ChanCode)
@@ -479,7 +566,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	be.ChanMerId = orign.ChanMerId
 	be.SysOrderNum = util.SerialNumber()
 	be.SysOrigOrderNum = orign.SysOrderNum
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 	// 交易信息
 	refund.SysOrderNum = be.SysOrderNum
 
@@ -495,13 +582,13 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	refund.ChanRespCode = ret.ChanRespCode
 	refund.RespCode = ret.RespCode
 	switch ret.RespCode {
-	case "000000":
+	case successCode:
 		refund.TransStatus = model.TransSuccess
 		//更新原交易状态
 		orign.RefundStatus = refundStatus
 		mongo.TransColl.Update(orign)
 	//只有超时才会出现000009
-	case "000009":
+	case handlingCode:
 		refund.TransStatus = model.TransHandling
 	default:
 		refund.TransStatus = model.TransFail
@@ -514,7 +601,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	// 默认返回成功的应答码
-	ret = mongo.RespCodeColl.Get("000000")
+	ret = mongo.RespCodeColl.Get(successCode)
 
 	// 是否有该订单号
 	t, err := mongo.TransColl.FindOne(be.MerId, be.OrigOrderNum)
@@ -539,7 +626,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	//赋值
-	be.SignCert = chanMer.SignCert
+	be.PrivateKey = chanMer.PrivateKey
 	be.ChanMerId = chanMer.ChanMerId
 	be.SysOrderNum = t.SysOrderNum
 
@@ -562,9 +649,9 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 
 	//更新交易状态
 	switch result.RespCode {
-	case "000000":
+	case successCode:
 		t.TransStatus = model.TransSuccess
-	case "000009":
+	case handlingCode:
 		t.TransStatus = model.TransHandling
 	default:
 		t.TransStatus = model.TransFail
@@ -586,7 +673,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) {
 
 	//default return
-	ret = mongo.RespCodeColl.Get("000000")
+	ret = mongo.RespCodeColl.Get(successCode)
 
 	//查询
 	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate, be.NextOrderNum)
@@ -616,7 +703,7 @@ func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) 
 func ProcessBillingSummary(be *model.BillingSummary) (ret *model.BindingReturn) {
 
 	//default return
-	ret = mongo.RespCodeColl.Get("000000")
+	ret = mongo.RespCodeColl.Get(successCode)
 
 	//查询
 	data, err := mongo.TransSettColl.Summary(be.MerId, be.SettDate)
@@ -765,9 +852,9 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 	trans.ChanRespCode = ret.ChanRespCode
 	trans.RespCode = ret.RespCode
 	switch ret.RespCode {
-	case "000000":
+	case successCode:
 		trans.TransStatus = model.TransSuccess
-	case "000009":
+	case handlingCode:
 		trans.TransStatus = model.TransHandling
 	default:
 		trans.TransStatus = model.TransFail

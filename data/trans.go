@@ -21,10 +21,10 @@ const (
 	crypto = "cilxl123$"
 )
 
-// func init() {
-// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-// 	connect()
-// }
+func init() {
+	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+	connect()
+}
 
 func Import(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
@@ -64,12 +64,12 @@ type txn struct {
 		MerId string `bson:"clientid"`
 		Inscd string `bson:"inscd"`
 		Wxp   struct {
-			MerFee   string `bson:"merFee"`
+			MerFee   string `bson:"merfee"`
 			MerId    string `bson:"mch_id"`
 			SubMerId string `bson:"sub_mch_id"`
 		} `bson:"WXP"`
 		Alp struct {
-			MerFee string `bson:"merFee"`
+			MerFee string `bson:"merfee"`
 			MerId  string `bson:"partnerId"`
 		} `bson:"ALP"`
 	} `bson:"merchant"`
@@ -108,6 +108,7 @@ func AddTransFromOldDB(st, et string) error {
 		tran := &model.Trans{}
 		tran.Id = bson.NewObjectId()
 		tran.MerId = t.Merchant.MerId
+		tran.Terminalid = t.Request.Terminalid
 		tran.AgentCode = t.Merchant.Inscd
 		tran.OrderNum = t.Request.OrderNum
 		tran.OrigOrderNum = t.Request.OrigOrderNum
@@ -121,6 +122,7 @@ func AddTransFromOldDB(st, et string) error {
 		tran.GoodsInfo = t.Request.GoodsInfo
 		tran.TransCurr = t.Request.Currency
 		tran.ChanOrderNum = t.ChannelOrderNum
+		tran.RespCode = t.RespCode
 		if tran.ChanCode == "ALP" {
 			tran.ChanMerId = t.Merchant.Alp.MerId
 		} else {
@@ -157,12 +159,19 @@ func AddTransFromOldDB(st, et string) error {
 			// 计算费率
 			var merFee float64
 			if tran.ChanCode == "ALP" {
-				merFee, _ = strconv.ParseFloat(t.Merchant.Alp.MerFee, 64)
+				merFee, err = strconv.ParseFloat(t.Merchant.Alp.MerFee, 64)
+				if err != nil {
+					log.Errorf("商户号：%s，支付宝手续费：%s，转换错误：%s", tran.MerId, t.Merchant.Alp.MerFee, err)
+				}
 			} else {
-				merFee, _ = strconv.ParseFloat(t.Merchant.Wxp.MerFee, 64)
+				merFee, err = strconv.ParseFloat(t.Merchant.Wxp.MerFee, 64)
+				if err != nil {
+					log.Errorf("商户号：%s，微信手续费：%s，转换错误：%s", tran.MerId, t.Merchant.Wxp.MerFee, err)
+				}
 			}
 			tran.MerFee = merFee
 			tran.Fee = int64(math.Floor(float64(tran.TransAmt)*merFee + 0.5))
+			tran.NetFee = tran.Fee
 			payTransMap[tran.MerId+tran.OrderNum] = tran
 		case model.Refd:
 			tran.TransType = model.RefundTrans
@@ -192,55 +201,61 @@ func AddTransFromOldDB(st, et string) error {
 			tran, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
 			if err != nil {
 				log.Errorf("从内存和数据库里获取不到原交易，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
-				break
+				continue
 			}
 			isGetFromDB = true
 			orig = tran
 		}
+
+		// 计算手续费
+		if orig.TransStatus == model.TransSuccess {
+			t.Fee = int64(math.Floor(float64(t.TransAmt))*orig.MerFee + 0.5)
+			orig.NetFee = orig.NetFee - t.Fee
+		}
+
 		// 具体处理
 		switch t.Busicd {
 		case model.Refd:
-
 			// 累计退款
 			refundedAmt := t.TransAmt + orig.RefundAmt
 			// 对原交易逻辑处理
 			if refundedAmt >= orig.TransAmt {
 				// 全额退款
-				orig.RespCode = CloseCode
-				orig.ErrorDetail = CloseMsg
+				// orig.RespCode = CloseCode
+				// orig.ErrorDetail = CloseMsg
 				orig.RefundAmt = orig.TransAmt
 				orig.RefundStatus = model.TransRefunded
 				orig.TransStatus = model.TransClosed
-				orig.Fee = 0
+				// orig.Fee = 0
 			} else if refundedAmt < orig.TransAmt {
 				// 部分退款
 				orig.RefundAmt = refundedAmt
 				orig.RefundStatus = model.TransPartRefunded
-				// 重新计算手续费
-				orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*orig.MerFee + 0.5)
 			}
-
 		case model.Canc:
 			// 判断原交易是否成功
 			if orig.TransStatus == model.TransSuccess {
 				t.TransAmt = orig.TransAmt
 				orig.RefundStatus = model.TransRefunded
 				orig.RefundAmt = orig.TransAmt
+				orig.TransStatus = model.TransClosed
+				break
 			}
-			orig.RespCode = CloseCode
-			orig.ErrorDetail = CloseMsg
+			// orig.RespCode = CloseCode
+			// orig.ErrorDetail = CloseMsg
 			orig.TransStatus = model.TransClosed
-			orig.Fee = 0
+			t.TransAmt = 0 // 如果原交易不成功，则交易金额为0
+			// orig.Fee = 0
 
 		case model.Void:
 			// 相当于全额退款
 			t.TransAmt = orig.TransAmt
-			orig.RespCode = CloseCode
-			orig.ErrorDetail = CloseMsg
+			// orig.RespCode = CloseCode
+			// orig.ErrorDetail = CloseMsg
 			orig.RefundAmt = orig.TransAmt
 			orig.RefundStatus = model.TransRefunded
 			orig.TransStatus = model.TransClosed
-			orig.Fee = 0
+			// orig.Fee = 0
 		}
 
 		// 如果是从数据库拿的，那么更新数据库里的数据
@@ -254,9 +269,10 @@ func AddTransFromOldDB(st, et string) error {
 	}
 
 	log.Infof("从老系统拿出%d条数据，成功处理%d条数据。正在导入数据库。。。", len(txns), len(reversalTrans))
-
+	// log.Infof("%+v", reversalTrans)
 	// 批量入库
 	return mongo.SpTransColl.BatchAdd(reversalTrans)
+	// return nil
 }
 
 func readTransFromOldDB(startTime, endTime string) ([]txn, error) {

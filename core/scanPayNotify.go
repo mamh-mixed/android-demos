@@ -16,7 +16,7 @@ import (
 // ProcessAlpNotify 支付宝异步通知处理
 // 该接口只接受预下单的异步通知
 // 支付宝的其它接口将不接受异步通知
-func ProcessAlpNotify(params url.Values) {
+func ProcessAlipayNotify(params url.Values) {
 
 	log.Infof("alp async notify: %+v", params)
 	// 通知动作类型

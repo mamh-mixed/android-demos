@@ -164,7 +164,7 @@
         <div id="qrcode" on-tap="handleQrcodeTapped"></div>
       </div>
     </div>
-    <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></iron-ajax>
+    <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/unified" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></iron-ajax>
   </template>
 </dom-module>
 <script src="../../bower_components/qrcode.js/qrcode.js"></script>

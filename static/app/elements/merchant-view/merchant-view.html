@@ -1,0 +1,287 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="merchant-view">
+
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 450px;
+        min-height: 100%;
+        font-size: 14px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+
+    paper-icon-button.red:hover {
+      background: #CD4F39;
+      border-radius: 0%;
+    }
+
+    .header {
+      padding: 0px;
+      margin: 0px;
+      background: red;
+      color: #ffffff;
+      heigth: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    td {
+      min-width: 70px;
+      vertical-align: top;
+    }
+
+    .key {
+      width: 70px;
+    }
+
+  </style>
+  <template>
+    <paper-dialog id="dialogView">
+        <h2>{{item.detail.merName}}</h2>
+      <paper-dialog-scrollable>
+        <table>
+          <tr>
+            <td class="key">商户编号:</td>
+            <td>{{item.merId}}</td>
+            <td class="key">商户名称:</td>
+            <td>{{item.detail.merName}}</td>
+          </tr>
+          <tr>
+            <td class="key">代理编号:</td>
+            <td>{{item.agentCode}}</td>
+            <td class="key">代理名称:</td>
+            <td>{{item.agentName}}</td>
+          </tr>
+          <tr>
+            <td class="key">集团编码:</td>
+            <td>{{item.groupCode}}</td>
+            <td class="key">集团名称:</td>
+            <td>{{item.groupName}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <paper-radio-button id="isNeedSignCheck" checked$="{{item.isNeedSign}}" disabled> 是否开启验签</paper-radio-button>
+            </td>
+          </tr>
+          <tr>
+            <td class="key">签名密钥:</td>
+            <td colspan="3" style="word-break:break-all;">{{item.signKey}}</td>
+          </tr>
+          <tr>
+            <td class="key">加密密钥:</td>
+            <td colspan="3" style="word-break:break-all;">{{item.encryptKey}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td class="key">开户账户:</td>
+            <td>{{item.detail.acctNum}}</td>
+            <td class="key">开户姓名:</td>
+            <td>{{item.detail.acctName}}</td>
+          </tr>
+          <tr>
+            <td>开户行号:</td>
+            <td>{{item.detail.bankId}}</td>
+            <td>支行名称:</td>
+            <td>{{item.detail.bankName}}</td>
+          </tr>
+          <tr>
+            <td>城市:</td>
+            <td>{{item.detail.city}}</td>
+            <td>交易币种:</td>
+            <td>{{item.transCurr}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>门店类型:</td>
+            <td>{{item.detail.shopType}}</td>
+            <td>门店 ID:</td>
+            <td>{{item.detail.shopID}}</td>
+          </tr>
+          <tr>
+            <td>商品标签:</td>
+            <td>{{item.detail.goodsTag}}</td>
+            <td>商品名称:</td>
+            <td>{{item.detail.commodityName}}</td>
+          </tr>
+          <tr>
+            <td>品牌编号:</td>
+            <td colspan="3">{{item.detail.brandNum}}</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+          </tr>
+          <tr>
+            <td>商户状态:</td>
+            <td>{{getMerStatus(item.merStatus)}}</td>
+          </tr>
+          <tr>
+            <td>备注:</td>
+            <td colspan="3" style="word-break:break-all;">{{item.remark}}</td>
+          </tr>
+          <tr>
+            <td>授权接口:</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
+                <paper-checkbox checked$="{{perm.isChecked}}" disabled>
+                  <span>{{perm.value}}</span>
+                </paper-checkbox>
+              </template>
+            </td>
+          </tr>
+        </table>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
+        <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button on-tap="handleViewRouteTapped">查看路由</paper-button>
+        <paper-button on-tap="handleClose">关闭</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>
+  </template>
+  <script>
+    Polymer({
+      is: 'merchant-view',
+      properties: {
+        permissionArray: {
+          type: Array,
+          value: [{
+            key: 'PURC',
+            value: '下单支付'
+          }, {
+            key: 'PAUT',
+            value: '预下单'
+          }, {
+            key: 'QYFK',
+            value: '企业付款'
+          }, {
+            key: 'JSZF',
+            value: '公众号支付'
+          }, {
+            key: 'INQY',
+            value: '查询订单'
+          }, {
+            key: 'VOID',
+            value: '撤销'
+          }, {
+            key: 'REFD',
+            value: '退款'
+          }, {
+            key: 'CANC',
+            value: '取消'
+          }]
+        },
+        item: Object,
+      },
+      observers: [
+        '_permissionChanged(item.permission)'
+      ],
+      _permissionChanged: function(value) {
+        this.deleteFlag = false;
+        for (var k = 0; k < this.permissionArray.length; k++) {
+          this.set('permissionArray.' + k + '.isChecked', false);
+        }
+        var permissions = value;
+        // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+        if (permissions) {
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
+            }
+          }
+        }
+      },
+      open: function() {
+        this.$.dialogView.open();
+      },
+      _computeYesOrNo: function(flag) {
+        if (flag) {
+          return '是';
+        }
+        return '否';
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      },
+      //   将商户状态转换为中文
+      getMerStatus: function(status) {
+        if (status === 'Normal') {
+          return '正常';
+        } else if (status === 'Test') {
+          return '测试商户';
+        } else if (status === 'Deleted') {
+          return '已删除商户';
+        } else {
+          return status;
+        }
+      },
+      // 编辑事件
+      handleItemEditedEvent: function() {
+        this.fire('editor');
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 查看路由
+      handleViewRouteTapped: function() {
+        page('/config/routes2/' + this.item.merId);
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          merId: this.item.merId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
+      },
+    });
+
+  </script>
+</dom-module>

@@ -58,8 +58,6 @@
           <img src="images/logo2.svg" alt="云收银" class="logo">
           <div class="app-name">快捷支付管理平台</div>
         </paper-toolbar>
-
-        <paper-menu attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <a data-route$="{{menu.route}}">
               <iron-icon icon$="{{menu.icon}}"></iron-icon>
@@ -164,6 +162,11 @@
                 <route-list is-deletable></route-list>
               </paper-material>
             </section>
+            <section data-route="config.routes2">
+              <paper-material elevation="1">
+                <route-list is-deletable mer-id="{{route.params.merId}}"></route-list>
+              </paper-material>
+            </section>
 
 
             <section data-route="config.agents">
@@ -193,6 +196,12 @@
             <section data-route="test.scanpay">
               <paper-material elevation="1">
                 <test-scanpay is-deletable></test-scanpay>
+              </paper-material>
+            </section>
+
+            <section data-route="test.bindingpay">
+              <paper-material elevation="1">
+                <test-bindingpay is-deletable></test-bindingpay>
               </paper-material>
             </section>
 

@@ -27,7 +27,7 @@ var (
 	settFlag         = "457"
 	cardBrand        = "ALP"
 	settRole         = "testRole"
-	checkSignCert    = "check"
+	publickKey       = "check"
 	chanBingingId    = "cf00fd61d5ef4d924485db88b584897e"
 	chanOrderNum     = "aaaaaaaaaaaaaaaaaabb"
 	chanOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
@@ -98,13 +98,13 @@ func TestChanMerFind(t *testing.T) {
 
 func TestChanMerAdd(t *testing.T) {
 	chanMer := &model.ChanMer{
-		ChanCode:      "TEST2",
-		ChanMerId:     "TEST0001",
-		ChanMerName:   "TEST",
-		SettFlag:      "TEST",
-		SettRole:      "TEST",
-		SignCert:      "TEST",
-		CheckSignCert: "TEST",
+		ChanCode:    "TEST2",
+		ChanMerId:   "TEST0001",
+		ChanMerName: "TEST",
+		SettFlag:    "TEST",
+		SettRole:    "TEST",
+		PrivateKey:  "TEST",
+		PublicKey:   "TEST",
 	}
 
 	err := ChanMerColl.Add(chanMer)

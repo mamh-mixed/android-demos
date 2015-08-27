@@ -40,143 +40,114 @@
       bottom: 100px;
       right: 10%;
     }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    tr > th,
+    tr > td {
+      text-align: left;
+      padding: 8px;
+    }
+
+    table > thead {}
+
+    thead > tr {}
+
+    thead > tr > th {
+      line-height: 1.42857143;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table > tbody {
+      min-height: 700px;
+    }
+
+    tbody>tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    table tr th:nth-last-of-type(2),
+    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/merchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <div class="condition">
-      <paper-input label="商户编号" value="{{cond.merId::input}}"></paper-input>
-      <x-select items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select>
+      <paper-input id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
+      <paper-input id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
+      <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
+      <paper-input id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+      <paper-input id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
+      <paper-input id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
+      <paper-input id="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
       <div class="buttons">
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button>
       </div>
     </div>
-
-    <template is="dom-repeat" items="{{merchants}}">
-      <card-item on-item-stared="handleItemStaredEvent" on-item-edited="handleItemEditedEvent" is-allow-stared$="{{isAllowSelected}}" item="{{item}}" is-editable="{{isEditable}}" is-deletable="{{isDeletable}}">
-        <dl>
-          <dt>商户编号</dt>
-          <dd>
-            <span>{{item.merId}}</span>
-          </dd>
-
-          <dt>商户名称</dt>
-          <dd>
-            <span>{{item.detail.merName}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">交易币种</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.transCurr}}</span>
-          </dd>
-
-          <dt>商户状态</dt>
-          <dd>
-            <span>{{item.merStatus}}</span>
-          </dd>
-
-          <dt>接口授权</dt>
-          <dd>
-            <span>{{_computePermissions(item.permission)}}</span>
-          </dd>
-          <dt hidden$="{{tiny}}">备注</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.remark}}</span>
-          </dd>
-
-          <dt>机构编号</dt>
-          <dd>
-            <span>{{item.agentCode}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">是否需要验签</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{_computeYesOrNo(item.isNeedSign)}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">签名密钥</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.signKey}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">加密密钥</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.encryptKey}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">品牌编号</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.detail.brandNum}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">门店ID</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.detail.shopID}}</span>
-          </dd>
-
-          <dt hidden$="{{tiny}}">门店类型</dt>
-          <dd hidden$="{{tiny}}">
-            <span>{{item.detail.shopType}}</span>
-          </dd>
-
-        </dl>
-      </card-item>
-    </template>
+    <div class="list">
+      <table style="width:100%;">
+        <thead>
+          <tr>
+            <th></th>
+            <th>商户编号</th>
+            <th>商户名称</th>
+            <th>代理代码</th>
+            <th>代理名称</th>
+            <th>集团商户代码</th>
+            <th>集团商户名称</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{merchants}}">
+            <tr on-click="viewMerchantTap">
+              <td class="center">
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.merId}}</span>
+              </td>
+              <td>
+                <span>{{item.detail.merName}}</span>
+              </td>
+              <td>
+                <span>{{item.agentCode}}</span>
+              </td>
+              <td>
+                <span>{{item.agentName}}</span>
+              </td>
+              <td>
+                <span>{{item.groupCode}}</span>
+              </td>
+              <td>
+                <span>{{item.groupName}}</span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
     <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
+    <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'merchant-list',
         properties: {
-          merStatusMap: {
-            type: Array,
-            value: [{
-              key: 'Normal',
-              value: '正常商户'
-            }, {
-              key: 'Test',
-              value: '测试商户'
-            }, {
-              key: 'Deleted',
-              value: '已删除商户'
-            }]
-          },
-          permissionArray: {
-            type: Array,
-            value: [{
-              key: 'PURC',
-              value: '下单支付'
-            }, {
-              key: 'PAUT',
-              value: '预下单'
-            }, {
-              key: 'QYFK',
-              value: '企业付款'
-            }, {
-              key: 'JSZF',
-              value: '公众号支付'
-            }, {
-              key: 'INQY',
-              value: '查询订单'
-            }, {
-              key: 'VOID',
-              value: '撤销'
-            }, {
-              key: 'REFD',
-              value: '退款'
-            }, {
-              key: 'CANC',
-              value: '关单'
-            }]
-          },
-          merStatus: {
-            type: Object
-          },
           tiny: {
             type: Boolean,
             value: false
@@ -185,20 +156,6 @@
             type: Boolean,
             value: false
           },
-          isAllowSelected: {
-            type: Boolean,
-            value: false
-          },
-          isEditable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          },
-          isDeletable: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true
-          }
         },
         ready: function() {
           this.merchants = [];
@@ -226,6 +183,25 @@
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
+          if (this.$.merId.value) {
+            this.cond.merId = this.$.merId.value;
+          }
+          if (this.$.merName.value) {
+            this.cond.merName = this.$.merName.value;
+          }
+          if (this.$.agentCode.value) {
+            this.cond.agentCode = this.$.agentCode.value;
+          }
+          if (this.$.agentName.value) {
+            this.cond.agentName = this.$.agentName.value;
+          }
+          if (this.$.groupCode.value) {
+            this.cond.groupCode = this.$.groupCode.value;
+          }
+          if (this.$.groupName.value) {
+            this.cond.groupName = this.$.groupName.value;
+          }
+
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
@@ -259,21 +235,6 @@
         handleMerchantSave: function() {
           this.handleQueryTapped();
         },
-        // 商户选中事件
-        handleItemStaredEvent: function(e) {
-          var staredItem = e.model.item;
-          this.fire('item-selected', staredItem);
-          if (!staredItem.stared) {
-            return;
-          }
-
-          for (var i = 0, l = this.merchants.length; i < l; i++) {
-            var item = this.merchants[i];
-            if (item.merId !== staredItem.merId) {
-              this.set('merchants.' + i + '.stared', false);
-            }
-          }
-        },
         // 清除商户选中的标志
         initialList: function() {
           for (var i = 0, l = this.merchants.length; i < l; i++) {
@@ -281,31 +242,38 @@
           }
         },
         // 编辑机构商户
-        handleItemEditedEvent: function(e, detail) {
-          page('/config/merchant/' + detail.merId);
+        handleItemEditedEvent: function() {
+          page('/config/merchant/' + this.merchant.merId);
         },
-        _computePermissions: function(permissions) {
-          var map = {};
-          for (var i = 0, l = this.permissionArray.length; i < l; i++) {
-            var item = this.permissionArray[i];
-            map[item.key] = item.value;
-          }
 
-          if (!permissions) {
-            return '';
-          }
-
-          var permissionCN = permissions.map(function(value) {
-            return map[value];
-          });
-          return permissionCN.join(',');
+        addOneFilter: function(index) {
+          return index + 1;
         },
-        _computeYesOrNo: function(flag) {
-          if (flag) {
-            return '是';
-          }
-          return '否';
-        }
+        // 查看商户详细信息
+        viewMerchantTap: function(event) {
+          this.merchant = event.model.item;
+          this.$.merchantView.open();
+        },
+        // 清除查询条件
+        handleClearTapped: function() {
+          this.$.merId.value = '';
+          this.cond.merId = '';
+          this.$.merName.value = '';
+          this.cond.merName = '';
+          this.$.agentCode.value = '';
+          this.cond.agentCode = '';
+          this.$.agentName.value = '';
+          this.cond.agentName = '';
+          this.$.groupCode.value = '';
+          this.cond.groupCode = '';
+          this.$.groupName.value = '';
+          this.cond.groupName = '';
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+        handleAfterDelete: function() {
+            this.handleQueryTapped();
+        },
       });
     })();
   </script>

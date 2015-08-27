@@ -8,6 +8,8 @@ import (
 	"github.com/omigo/log"
 )
 
+const NotifyURL = "/scanpay/upNotify/weixin"
+
 // BaseReq 只是为了注入签名方便
 type BaseReq interface {
 	SetSign(sign string) // 设置签名 setter

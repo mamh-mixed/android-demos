@@ -2,10 +2,10 @@ package cfca
 
 // BindingRequest 中金渠道请求报文
 type BindingRequest struct {
-	Version  string `xml:"version,attr,omitempty"`
-	Head     requestHead
-	Body     requestBody
-	SignCert string `xml:"-"`
+	Version    string `xml:"version,attr,omitempty"`
+	Head       requestHead
+	Body       requestBody
+	PrivateKey string `xml:"-"`
 }
 
 // BindingResponse 中金渠道返回报文
@@ -40,6 +40,7 @@ type requestBody struct {
 	TxSN                 string `xml:",omitempty"` //退款交易流水号
 	InstitutionID        string `xml:",omitempty"` //机构编号
 	Date                 string `xml:",omitempty"` //对账日期,格式:YYYY-MM-DD
+	SMSValidationCode    string `xml:",omitempty"` //短信验证码
 }
 
 // common resp head
@@ -52,7 +53,8 @@ type respHead struct {
 type respBody struct {
 	InstitutionID   string //机构编号
 	TxSNBinding     string //绑定流水号
-	Status          int8   //交易状态
+	Status          string //交易状态
+	VerifyStatus    string //验证码状态
 	ResponseCode    string //响应代码
 	ResponseMessage string //响应消息
 	IssInsCode      string //发卡机构代码

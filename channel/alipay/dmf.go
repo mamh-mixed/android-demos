@@ -2,14 +2,17 @@ package alipay
 
 import (
 	"errors"
+
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
 )
 
+const NotifyURL = "/scanpay/upNotify/alipay"
+
 var DefaultClient alp
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + "/qp/back/alipay"
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyURL
 
 // alp 当面付，扫码支付
 type alp struct{}
@@ -51,7 +54,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.SignCert)
+	alpResp, err := sendRequest(dict, req.SignKey)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, createAndPay)
 		return nil, err
@@ -81,7 +84,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.SignCert)
+	alpResp, err := sendRequest(dict, req.SignKey)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, preCreate)
 		return nil, err
@@ -105,7 +108,7 @@ func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.SignCert)
+	alpResp, err := sendRequest(dict, req.SignKey)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, refund)
 		return nil, err
@@ -125,7 +128,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.SignCert)
+	alpResp, err := sendRequest(dict, req.SignKey)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, query)
 		return nil, err
@@ -147,7 +150,7 @@ func (a *alp) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 	// req to map
 	dict := toMap(alpReq)
 
-	alpResp, err := sendRequest(dict, req.SignCert)
+	alpResp, err := sendRequest(dict, req.SignKey)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, cancel)
 		return nil, err
