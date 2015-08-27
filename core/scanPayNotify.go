@@ -167,7 +167,8 @@ func sendNotifyToMerchant(url string, ret *model.ScanPayResponse) {
 	log.Infof("send notify: %s", string(bs))
 
 	var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
-	for _, d := range interval {
+	for i, d := range interval {
+		log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
 		resp, err := http.Post(url, "application/json", bytes.NewReader(bs))
 		if err != nil {
 			time.Sleep(time.Second * d)
