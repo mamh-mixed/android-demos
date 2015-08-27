@@ -100,7 +100,7 @@ func ProcessAlipayNotify(params url.Values) {
 	// 可能需要通知接入方
 	if t.NotifyUrl != "" {
 		copyNotifyProperties(ret, t)
-		go sendNotifyToMerchant(t.NotifyUrl, ret)
+		go sendNotifyToMerchant(t.NotifyUrl, sysOrderNum, ret)
 	}
 }
 
@@ -141,12 +141,12 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) {
 	// 可能需要通知接入方
 	if t.NotifyUrl != "" {
 		copyNotifyProperties(ret, t)
-		go sendNotifyToMerchant(t.NotifyUrl, ret)
+		go sendNotifyToMerchant(t.NotifyUrl, sysOrderNum, ret)
 	}
 }
 
 // sendNotifyToMerchant 向接入方发送异步消息通知
-func sendNotifyToMerchant(url string, ret *model.ScanPayResponse) {
+func sendNotifyToMerchant(url, sysOrderNum string, ret *model.ScanPayResponse) {
 
 	mer, err := mongo.MerchantColl.Find(ret.Mchntid)
 	if err != nil {
@@ -166,8 +166,8 @@ func sendNotifyToMerchant(url string, ret *model.ScanPayResponse) {
 	}
 	log.Infof("send notify: %s", string(bs))
 
-	// var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
-	var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
+	var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
+	// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 	for i, d := range interval {
 		log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
 		resp, err := http.Post(url, "application/json", bytes.NewReader(bs))
@@ -196,7 +196,7 @@ func sendNotifyToMerchant(url string, ret *model.ScanPayResponse) {
 	}
 
 	// 异步通知失败，为该笔交易增加标签
-	mongo.SpTransColl.UpdateNotifyStatus(1, ret.SysOrderNum)
+	mongo.SpTransColl.UpdateNotifyStatus(1, sysOrderNum)
 }
 
 func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
@@ -210,5 +210,4 @@ func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
 	ret.MerDiscount = t.MerDiscount
 	ret.ChcdDiscount = t.ChanDiscount
 	ret.QrCode = t.QrCode
-	ret.SysOrderNum = t.SysOrderNum
 }
