@@ -11,16 +11,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script src="../../bower_components/page/page.js"></script>
 <script>
   window.addEventListener('WebComponentsReady', function() {
-
     // We use Page.js for routing. This is a Micro
     // client-side router inspired by the Express router
     // More info: https://visionmedia.github.io/page.js/
     page('/', function() {
       app.route = {
-        name: 'config.configMer',
-        path: '/config/configMer',
-        title: '配置扫码支付商户和渠道',
-        subtitle: '录入机构商户，配置渠道商户（微信、支付宝、QQ 钱包）'
+        name: 'dashboard',
+        path: '/',
+        title: '快捷支付管理平台',
+        subtitle: '上海讯联数据服务有限公司'
       };
     });
     //
@@ -194,11 +193,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       };
     });
 
+    page('/404', '/');
+
+    page('*', '/404');
+
     // add #! before urls
     page({
       hashbang: true
     });
 
   });
-
 </script>
