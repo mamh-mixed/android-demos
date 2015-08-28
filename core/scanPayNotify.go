@@ -214,13 +214,13 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 		return
 	}
 	nr.ToMerMsg = string(bs)
-	log.Infof("send notify: %s", string(bs))
+	// log.Infof("send notify: %s", string(bs))
 
 	go func() {
 		var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
 		// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 		for i, d := range interval {
-			log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
+			log.Infof("merId=%s,orderNum=%s,url=%s, send notify %d times", ret.Mchntid, ret.OrderNum, t.NotifyUrl, i+1)
 			resp, err := http.Post(t.NotifyUrl, "application/json", bytes.NewReader(bs))
 			if err != nil {
 				time.Sleep(time.Second * d)

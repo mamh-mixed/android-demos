@@ -157,11 +157,11 @@ func errorResp(req *model.ScanPayRequest, errorCode string) []byte {
 }
 
 // weixinNotifyCtrl 微信异步通知处理(预下单)
-func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) {
-	core.ProcessWeixinNotify(req)
+func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) error {
+	return core.ProcessWeixinNotify(req)
 }
 
 // alipayNotifyCtrl 支付宝异步通知处理(预下单)
-func alipayNotifyCtrl(v url.Values) {
-	core.ProcessAlipayNotify(v)
+func alipayNotifyCtrl(v url.Values) error {
+	return core.ProcessAlipayNotify(v)
 }

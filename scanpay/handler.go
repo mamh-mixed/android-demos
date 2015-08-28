@@ -46,9 +46,14 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 			ret.ReturnCode = "FAIL"
 			ret.ReturnMsg = "报文读取错误"
 		} else {
-			weixinNotifyCtrl(&req)
+			err = weixinNotifyCtrl(&req)
 		}
 	}
+	if err != nil {
+		ret.ReturnCode = "FAIL"
+		ret.ReturnMsg = "SYSTEM_ERROR"
+	}
+
 	retBytes, err := xml.Marshal(ret)
 
 	if err != nil {
@@ -68,10 +73,15 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Debugf("before decoder: %s", string(data))
+	// log.Debugf("before decoder: %s", string(data))
 	// gbk-utf8
+	unescape, err := url.QueryUnescape(string(data))
+	if err != nil {
+		log.Errorf("alp notify: %s, unescape error: %s ", string(data), err)
+	}
+
 	d := mahonia.NewDecoder("gbk")
-	utf8 := d.ConvertString(string(data))
+	utf8 := d.ConvertString(unescape)
 
 	vs, err := url.ParseQuery(utf8)
 	if err != nil {
@@ -80,7 +90,11 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 处理异步通知
-	alipayNotifyCtrl(vs)
+	err = alipayNotifyCtrl(vs)
+	if err != nil {
+		http.Error(w, "fail", http.StatusOK)
+		return
+	}
 
 	http.Error(w, "success", http.StatusOK)
 }
