@@ -35,13 +35,13 @@ type BindingReturn struct {
 	BindingStatus string `json:"bindingStatus,omitempty"` // 绑定状态 10=绑定处理中；20=绑定失败；30=绑定成功；40=已解绑（绑定成功过，后续解绑也成功）
 
 	// 卡片信息
-	AcctType    string `json:"acctType,omitempty"`
-	CardBrand   string `json:"cardBrand,omitempty"`
-	CardNum     string `json:"cardNum,omitempty"`
-	IssBankName string `json:"issBankName,omitempty"`
-	IssBankNum  string `json:"issBankNum,omitempty"`
-	BankCode    string `json:"bankCode,omitempty"`
-	IsSupport   string `json:"isSupport,omitempty"`
+	AcctType          string `json:"acctType,omitempty"`
+	CardBrand         string `json:"cardBrand,omitempty"`
+	CardNum           string `json:"cardNum,omitempty"`
+	IssBankName       string `json:"issBankName,omitempty"`
+	IssBankNum        string `json:"issBankNum,omitempty"`
+	BankCode          string `json:"bankCode,omitempty"`
+	BindingPaySupport string `json:"bindingPaySupport,omitempty"`
 }
 
 // NewBindingReturn 构造函数

@@ -13,6 +13,10 @@ import (
 
 // scanpayUnifiedHandle 扫码支付入口
 func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	log.Debugf("url = %s", r.URL.String())
 
 	bytes, err := ioutil.ReadAll(r.Body)
