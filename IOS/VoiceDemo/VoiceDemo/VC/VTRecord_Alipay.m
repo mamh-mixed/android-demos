@@ -34,10 +34,10 @@
     [self.view addSubview:lbl];
     
     CGFloat height=50.0f;
-    for (int i=0; i<3; i++) {//录音按钮的tag 值为 0 1 2
+    for (int i=1; i<4; i++) {//录音按钮的tag 值为 1 2 3
         UIButton *record=[UIButton buttonWithType:UIButtonTypeCustom];
         record.tag=i;
-        record.frame=CGRectMake(0, SCREENHEIGHT-4*height+i*height, SCREENWIDTH, height-1);
+        record.frame=CGRectMake(0, SCREENHEIGHT-4*height+(i-1)*height, SCREENWIDTH, height-1);
         record.backgroundColor=[UIColor blueColor];
         UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake((SCREENWIDTH-20)/2,(height-32)/2, 20, 32)];
         image.image=[UIImage imageNamed:@"microphone"];
@@ -51,6 +51,8 @@
     btn.frame=CGRectMake(0, SCREENHEIGHT-height, SCREENWIDTH, height-1);
     [btn setTitle:@"提交" forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(sumbit) forControlEvents:UIControlEventTouchUpInside];
+    btn.backgroundColor=[UIColor blueColor];
+    [self.view addSubview:btn];
 }
 #pragma mark -录音
 -(void)record:(UIButton *)sender
@@ -77,23 +79,41 @@
     sender.backgroundColor=[UIColor blueColor];
     sender.alpha=0;
     [recorder stop];
-    
+    //4 5 6
     UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
     btn.frame=CGRectMake(sender.frame.origin.x, sender.frame.origin.y, sender.frame.size.width-50, sender.frame.size.height);
     btn.backgroundColor=[UIColor blueColor];
-    btn.tag=sender.tag;
+    btn.tag=sender.tag+3;
     [btn addTarget:self action:@selector(play:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:btn];
     UIImageView *image=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"play"]];
-    image.frame=CGRectMake((btn.frame.size.width-20)/2,(btn.frame.size.height-20)/2, 20, 20);
+    image.frame=CGRectMake((btn.frame.size.width-30)/2,(btn.frame.size.height-30)/2, 30, 30);
     [btn addSubview:image];
+    //7 8 9
+    UIButton *cancel=[UIButton buttonWithType:UIButtonTypeCustom];
+    cancel.frame=CGRectMake(btn.frame.size.width+1, btn.frame.origin.y, SCREENWIDTH-btn.frame.size.width-1, btn.frame.size.height);
+    [cancel addTarget:self action:@selector(cancelClick:) forControlEvents:UIControlEventTouchUpInside];
+    cancel.tag=btn.tag+3;
+    UIImageView *ige=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"block"]];
+    ige.frame=CGRectMake((cancel.frame.size.width-20)/2, (cancel.frame.size.height-20)/2, 20, 20);
+    cancel.backgroundColor=[UIColor blueColor];
+    [cancel addSubview:ige];
+    [self.view addSubview:cancel];
+}
+-(void)cancelClick:(UIButton *)sender
+{
+    [sender removeFromSuperview];
+    UIButton *btn=(UIButton *)[self.view viewWithTag:sender.tag-3];
+    [btn removeFromSuperview];
+    UIButton *button=(UIButton *)[self.view viewWithTag:sender.tag-6];
+    button.alpha=1;
 }
 -(void)play:(UIButton *)sender
 {
-    NSURL *url=[NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",sender.tag]]];
-    NSLog(@"%@",url);
+    NSURL *url=[NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",sender.tag-3]]];
+    //NSLog(@"%@",[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",sender.tag]]);
     player=[[AVAudioPlayer alloc]initWithContentsOfURL:url error:nil];
-    player.volume=1.5f;
+    player.volume=10.0f;
     [player prepareToPlay];
     [player play];
 }

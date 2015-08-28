@@ -12,6 +12,7 @@
 		B0AEB0241B90022C00C80E02 /* VTRecord_Alipay.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0231B90022C00C80E02 /* VTRecord_Alipay.m */; };
 		B0AEB05B1B90122D00C80E02 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05A1B90122D00C80E02 /* play.png */; };
 		B0AEB05D1B90141500C80E02 /* microphone.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05C1B90141500C80E02 /* microphone.png */; };
+		B0AEB05F1B90402000C80E02 /* block.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05E1B90402000C80E02 /* block.png */; };
 		D6D66DFB1B8DA81300929852 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66DFA1B8DA81300929852 /* main.m */; };
 		D6D66DFE1B8DA81300929852 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66DFD1B8DA81300929852 /* AppDelegate.m */; };
 		D6D66E011B8DA81300929852 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66E001B8DA81300929852 /* ViewController.m */; };
@@ -64,6 +65,7 @@
 		B0AEB0251B90030400C80E02 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		B0AEB05A1B90122D00C80E02 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B0AEB05C1B90141500C80E02 /* microphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = microphone.png; sourceTree = "<group>"; };
+		B0AEB05E1B90402000C80E02 /* block.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block.png; sourceTree = "<group>"; };
 		D6D66DF51B8DA81300929852 /* VoiceDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6D66DF91B8DA81300929852 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6D66DFA1B8DA81300929852 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 		D6D66E281B8DAA3300929852 /* demoImg */ = {
 			isa = PBXGroup;
 			children = (
+				B0AEB05E1B90402000C80E02 /* block.png */,
 				B0AEB05A1B90122D00C80E02 /* play.png */,
 				B0AEB05C1B90141500C80E02 /* microphone.png */,
 				D6D66E291B8DAA3300929852 /* back.png */,
@@ -340,6 +343,7 @@
 				D6D66E491B8DAA3300929852 /* n7.jpg in Resources */,
 				D6D66E481B8DAA3300929852 /* n6.jpg in Resources */,
 				D6D66E091B8DA81400929852 /* LaunchScreen.xib in Resources */,
+				B0AEB05F1B90402000C80E02 /* block.png in Resources */,
 				D6D66E3F1B8DAA3300929852 /* buy@2x.png in Resources */,
 				B0AEB05D1B90141500C80E02 /* microphone.png in Resources */,
 				D6D66E061B8DA81400929852 /* Images.xcassets in Resources */,
