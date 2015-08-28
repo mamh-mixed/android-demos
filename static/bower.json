@@ -9,7 +9,6 @@
     "page": "visionmedia/page.js#~1.6.3",
     "iron-list": "PolymerElements/iron-list#~1.0.1",
     "iron-dropdown": "PolymerElements/iron-dropdown#~1.0.3",
-    "x-select": "wonsikin/x-select",
     "webcomponentsjs": "~0.7.7",
     "paper-date-picker": "omigo/paper-date-picker#master",
     "qrcode.js": "davidshimjs/qrcodejs",

@@ -1,90 +1,82 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 
 <dom-module id="trade-list">
-  <style>
-    :host {
-      display: block;
-      /*--paper-input-container: {
-          height: 10px;
-      }*/
-    }
-
-  </style>
   <template>
-    <iron-ajax id="queryAjax" method="POST" url="/master/trade/query" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <div class="condition">
-      <paper-input label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
-      <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-        <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
-        <div class="buttons">
-          <paper-button dialog-dismiss>Cancel</paper-button>
-          <paper-button dialog-confirm>OK</paper-button>
-        </div>
-      </paper-dialog>
+    <form is="iron-form" id="formQuery" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="query-condition">
+        <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+        <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
+          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm>OK</paper-button>
+          </div>
+        </paper-dialog>
 
-      <paper-input label="* 交易时间到" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}}"></paper-input>
-      <paper-dialog id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-        <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
-        <div class="buttons">
-          <paper-button dialog-dismiss>Cancel</paper-button>
-          <paper-button dialog-confirm>OK</paper-button>
-        </div>
-      </paper-dialog>
+        <paper-input name="endTime" label="* 交易时间到" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}}"></paper-input>
+        <paper-dialog id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
+          <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm>OK</paper-button>
+          </div>
+        </paper-dialog>
 
-      <paper-input label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-      <paper-input label="集团代码" value="{{cond.groupCode::input}}"></paper-input>
-      <paper-input label="商户代码" value="{{cond.mchntid::input}}"></paper-input>
-      <paper-input label="订单号" value="{{cond.orderNum::input}}"></paper-input>
-      <paper-input label="关联订单号" value="{{cond.origOrderNum::input}}"></paper-input>
-      <paper-input label="应答码" value="{{cond.respcd::input}}"></paper-input>
-      <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
-      <x-select items="[[transStatusMap]]" selected-item="{{transStatus}}" label="交易状态"></x-select>
+        <paper-input label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input label="商户代码" name="mchntid" value="{{cond.mchntid::input}}"></paper-input>
+        <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
+        <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
+        <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
+        <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型"></x-select>
+        <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
 
-      <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-      <paper-button class="colorful" raised>
-        <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
-      </paper-button>
-    </div>
-    <div class="divider blank"></div>
-    <div class="divider blank"></div>
-    <table class="data-grid">
-      <thead>
-        <tr>
-          <th>序号</th>
-          <th>应答码</th>
-          <th>订单号</th>
-          <th>金额(元)</th>
-          <th>交易时间</th>
-          <th>状态</th>
-          <th>商户号</th>
-          <th>商户名称</th>
-          <!-- <th>终端号</th> -->
-          <th>交易类型</th>
-          <th>渠道</th>
-        </tr>
-      </thead>
-      <tbody>
-        <template is="dom-repeat" items="{{trades}}">
+        <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
+        <paper-button class="colorful" raised>
+          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
+        </paper-button>
+      </div>
+      <div class="divider blank"></div>
+      <div class="divider blank"></div>
+      <table class="data-grid">
+        <thead>
           <tr>
-            <td align="right">{{addOneFilter(index)}}</td>
-            <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
-            <td>{{item.orderNum}}</td>
-            <td align="right">{{_currencyFilter(item.transAmt)}}</td>
-            <td align="center">{{item.transTime}}</td>
-            <td>{{transStatusFilter(item.transStatus)}}</td>
-            <td>{{item.merId}}</td>
-            <td>{{item.merName}}</td>
-            <!-- <td>{{item.terminalid}}</td> -->
-            <td>{{busicdFilter(item.busicd)}}</td>
-            <td>{{chanFilter(item.chanCode)}}</td>
+            <th>序号</th>
+            <th>应答码</th>
+            <th>订单号</th>
+            <th>金额(元)</th>
+            <th>交易时间</th>
+            <th>状态</th>
+            <th>商户号</th>
+            <th>商户名称</th>
+            <!-- <th>终端号</th> -->
+            <th>交易类型</th>
+            <th>渠道</th>
           </tr>
-        </template>
-      </tbody>
-
-    </table>
-    <div class="loading-more-wrapper">
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-    </div>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{trades}}">
+            <tr>
+              <td align="right">{{addOneFilter(index)}}</td>
+              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
+              <td>{{item.orderNum}}</td>
+              <td align="right">{{_currencyFilter(item.transAmt)}}</td>
+              <td align="center">{{item.transTime}}</td>
+              <td>{{transStatusFilter(item.transStatus)}}</td>
+              <td>{{item.merId}}</td>
+              <td>{{item.merName}}</td>
+              <!-- <td>{{item.terminalid}}</td> -->
+              <td>{{busicdFilter(item.busicd)}}</td>
+              <td>{{chanFilter(item.chanCode)}}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class="loading-more-wrapper">
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+      </div>
+    </form>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -179,7 +171,10 @@
       _watchBusicdChange: function(key) {
         this.cond.busicd = key;
       },
-      _watchCondChange: function() {
+      _watchCondChange: function(newValue) {
+        if (newValue.path !== 'cond.page') {
+          this.set('cond.page', 1);
+        }
         var t = new Date().format('yyyyMMdd-hhmmss');
         this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
       },
@@ -202,26 +197,28 @@
       showEndTimeDialog: function() {
         this.$.endTimeDailog.toggle();
       },
-      // 发送查询交易的ajax请求
-      handleQueryTapped: function() {
-        this.set('cond.page', 1);
-        this.generateAjaxRequest();
+      queryAction: function() {
+        this.$.formQuery.submit();
       },
-      generateAjaxRequest: function() {
+      // 发送查询交易的ajax请求
+      submitForm: function() {
         this.trades = [];
-        this.$.queryAjax.body = JSON.stringify(this.cond);
-        this.$.queryAjax.generateRequest();
+        this.set('cond.total', 0);
+        // console.log(e.detail);
       },
       // ajax请求响应处理
       handleQueryResponse: function(e) {
-        var response = e.detail.response;
-        if (response.respCode !== '000000') {
-          Util.toast(response.respMsg, 3000);
+        var response = e.detail;
+        if (!response.respCode || response.respCode !== '000000') {
+          Util.toast(response.respMsg || '系统错误', 3000);
+          return;
+        }
+        if (!response.rec || response.rec.length === 0) {
+          Util.toast('没有找到符合条件的数据', 3000);
+          return;
         }
 
-        if (response.rec) {
-          this.trades = response.rec.slice(0);
-        }
+        this.trades = response.rec.slice(0);
         this.set('cond.total', response.total);
         this.set('cond.page', response.page);
       },
