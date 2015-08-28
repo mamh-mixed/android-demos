@@ -171,8 +171,8 @@
       _watchBusicdChange: function(key) {
         this.cond.busicd = key;
       },
-      _watchCondChange: function(newValue, old) {
-        if (newValue.path != 'cond.page') {
+      _watchCondChange: function(newValue) {
+        if (newValue.path !== 'cond.page') {
           this.set('cond.page', 1);
         }
         var t = new Date().format('yyyyMMdd-hhmmss');
@@ -209,11 +209,11 @@
       handleQueryResponse: function(e) {
         var response = e.detail;
         if (!response.respCode || response.respCode !== '000000') {
-          Util.toast(response.respMsg || "系统错误", 3000);
+          Util.toast(response.respMsg || '系统错误', 3000);
           return;
         }
         if (!response.rec || response.rec.length === 0) {
-          Util.toast("没有找到符合条件的数据", 3000);
+          Util.toast('没有找到符合条件的数据', 3000);
           return;
         }
 
