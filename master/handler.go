@@ -31,6 +31,9 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 
 	cond := &model.QueryCondition{
 		MerId:        merId,
+		AgentCode:    params.Get("agentCode"),
+		GroupCode:    params.Get("groupCode"),
+		Respcd:       params.Get("respcd"),
 		Busicd:       params.Get("busicd"),
 		StartTime:    params.Get("startTime"),
 		EndTime:      params.Get("endTime"),
