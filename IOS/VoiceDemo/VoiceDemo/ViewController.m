@@ -68,8 +68,7 @@
 //导航头上的控件
 -(void)creatView
 {
-    
-    
+     
     UILabel * lbl = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, self.view.frame.size.width, 44)];
     lbl.backgroundColor = [UIColor whiteColor];
     lbl.text = @"精品特卖";
@@ -78,7 +77,7 @@
     [self.view addSubview:lbl];
     
     UIButton * logBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    logBtn.frame = CGRectMake(10, 20, 45, 30) ;
+    logBtn.frame = CGRectMake(10, 30, 45, 30) ;
     [logBtn setTitle:@"登录" forState:UIControlStateNormal];
     [logBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
     [logBtn addTarget:self action:@selector(goLoginView) forControlEvents:UIControlEventTouchUpInside];

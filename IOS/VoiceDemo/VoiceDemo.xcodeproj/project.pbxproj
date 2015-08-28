@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B0AEB01A1B8FF8D600C80E02 /* MyTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0191B8FF8D600C80E02 /* MyTextField.m */; };
+		B0AEB0211B8FFC5200C80E02 /* VTRegistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0201B8FFC5200C80E02 /* VTRegistViewController.m */; };
+		B0AEB0241B90022C00C80E02 /* VTRecord_Alipay.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0231B90022C00C80E02 /* VTRecord_Alipay.m */; };
+		B0AEB05B1B90122D00C80E02 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05A1B90122D00C80E02 /* play.png */; };
+		B0AEB05D1B90141500C80E02 /* microphone.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05C1B90141500C80E02 /* microphone.png */; };
 		D6D66DFB1B8DA81300929852 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66DFA1B8DA81300929852 /* main.m */; };
 		D6D66DFE1B8DA81300929852 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66DFD1B8DA81300929852 /* AppDelegate.m */; };
 		D6D66E011B8DA81300929852 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66E001B8DA81300929852 /* ViewController.m */; };
@@ -50,6 +55,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B0AEB0181B8FF8D600C80E02 /* MyTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTextField.h; sourceTree = "<group>"; };
+		B0AEB0191B8FF8D600C80E02 /* MyTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTextField.m; sourceTree = "<group>"; };
+		B0AEB01F1B8FFC5200C80E02 /* VTRegistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTRegistViewController.h; path = VC/VTRegistViewController.h; sourceTree = "<group>"; };
+		B0AEB0201B8FFC5200C80E02 /* VTRegistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VTRegistViewController.m; path = VC/VTRegistViewController.m; sourceTree = "<group>"; };
+		B0AEB0221B90022C00C80E02 /* VTRecord_Alipay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTRecord_Alipay.h; path = VC/VTRecord_Alipay.h; sourceTree = "<group>"; };
+		B0AEB0231B90022C00C80E02 /* VTRecord_Alipay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VTRecord_Alipay.m; path = VC/VTRecord_Alipay.m; sourceTree = "<group>"; };
+		B0AEB0251B90030400C80E02 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		B0AEB05A1B90122D00C80E02 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
+		B0AEB05C1B90141500C80E02 /* microphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = microphone.png; sourceTree = "<group>"; };
 		D6D66DF51B8DA81300929852 /* VoiceDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6D66DF91B8DA81300929852 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6D66DFA1B8DA81300929852 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -111,6 +125,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B0AEB01E1B8FFBB600C80E02 /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				B0AEB01F1B8FFC5200C80E02 /* VTRegistViewController.h */,
+				B0AEB0201B8FFC5200C80E02 /* VTRegistViewController.m */,
+				B0AEB0221B90022C00C80E02 /* VTRecord_Alipay.h */,
+				B0AEB0231B90022C00C80E02 /* VTRecord_Alipay.m */,
+			);
+			name = VC;
+			sourceTree = "<group>";
+		};
 		D6D66DEC1B8DA81300929852 = {
 			isa = PBXGroup;
 			children = (
@@ -133,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				D6D66E1E1B8DA8C100929852 /* TOOL */,
+				B0AEB01E1B8FFBB600C80E02 /* VC */,
 				D6D66DFC1B8DA81300929852 /* AppDelegate.h */,
 				D6D66DFD1B8DA81300929852 /* AppDelegate.m */,
 				D6D66DFF1B8DA81300929852 /* ViewController.h */,
@@ -165,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				D6D66E141B8DA81400929852 /* VoiceDemoTests.m */,
+				B0AEB0251B90030400C80E02 /* PrefixHeader.pch */,
 				D6D66E121B8DA81400929852 /* Supporting Files */,
 			);
 			path = VoiceDemoTests;
@@ -185,6 +212,8 @@
 				D6D66E201B8DA8D000929852 /* UICollectionViewWaterfallLayout.m */,
 				D6D66E251B8DA92500929852 /* ButtonPro.h */,
 				D6D66E261B8DA92500929852 /* ButtonPro.m */,
+				B0AEB0181B8FF8D600C80E02 /* MyTextField.h */,
+				B0AEB0191B8FF8D600C80E02 /* MyTextField.m */,
 			);
 			name = TOOL;
 			sourceTree = "<group>";
@@ -192,6 +221,8 @@
 		D6D66E281B8DAA3300929852 /* demoImg */ = {
 			isa = PBXGroup;
 			children = (
+				B0AEB05A1B90122D00C80E02 /* play.png */,
+				B0AEB05C1B90141500C80E02 /* microphone.png */,
 				D6D66E291B8DAA3300929852 /* back.png */,
 				D6D66E2A1B8DAA3300929852 /* bar_buy@2x.png */,
 				D6D66E2B1B8DAA3300929852 /* bg1.png */,
@@ -303,12 +334,14 @@
 				D6D66E4D1B8DAA3300929852 /* paybg@2x.png in Resources */,
 				D6D66E461B8DAA3300929852 /* n4.jpg in Resources */,
 				D6D66E3C1B8DAA3300929852 /* back.png in Resources */,
+				B0AEB05B1B90122D00C80E02 /* play.png in Resources */,
 				D6D66E041B8DA81400929852 /* Main.storyboard in Resources */,
 				D6D66E4B1B8DAA3300929852 /* n9.jpg in Resources */,
 				D6D66E491B8DAA3300929852 /* n7.jpg in Resources */,
 				D6D66E481B8DAA3300929852 /* n6.jpg in Resources */,
 				D6D66E091B8DA81400929852 /* LaunchScreen.xib in Resources */,
 				D6D66E3F1B8DAA3300929852 /* buy@2x.png in Resources */,
+				B0AEB05D1B90141500C80E02 /* microphone.png in Resources */,
 				D6D66E061B8DA81400929852 /* Images.xcassets in Resources */,
 				D6D66E4C1B8DAA3300929852 /* p2.jpg in Resources */,
 				D6D66E441B8DAA3300929852 /* n2.jpg in Resources */,
@@ -334,11 +367,14 @@
 			files = (
 				D6D66E011B8DA81300929852 /* ViewController.m in Sources */,
 				D6D66E271B8DA92500929852 /* ButtonPro.m in Sources */,
+				B0AEB0211B8FFC5200C80E02 /* VTRegistViewController.m in Sources */,
 				D6D66E241B8DA8EB00929852 /* CollectionViewCell.m in Sources */,
 				D6D66DFE1B8DA81300929852 /* AppDelegate.m in Sources */,
 				D6D66DFB1B8DA81300929852 /* main.m in Sources */,
+				B0AEB01A1B8FF8D600C80E02 /* MyTextField.m in Sources */,
 				D6D66E511B8DB47800929852 /* VTLoginViewController.m in Sources */,
 				D6D66E541B8DB49D00929852 /* VTListViewController.m in Sources */,
+				B0AEB0241B90022C00C80E02 /* VTRecord_Alipay.m in Sources */,
 				D6D66E211B8DA8D000929852 /* UICollectionViewWaterfallLayout.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -465,6 +501,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PREFIX_HEADER = "$(SCROOT)//Users/huangdaneng/work/工作/show-money-client/IOS/VoiceDemo/VoiceDemoTests/PrefixHeader.pch";
 				INFOPLIST_FILE = VoiceDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -475,6 +512,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_PREFIX_HEADER = "$(SCROOT)//Users/huangdaneng/work/工作/show-money-client/IOS/VoiceDemo/VoiceDemoTests/PrefixHeader.pch";
 				INFOPLIST_FILE = VoiceDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -534,6 +572,7 @@
 				D6D66E1A1B8DA81400929852 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D6D66E1B1B8DA81400929852 /* Build configuration list for PBXNativeTarget "VoiceDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -542,6 +581,7 @@
 				D6D66E1D1B8DA81400929852 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
