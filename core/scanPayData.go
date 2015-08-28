@@ -52,7 +52,7 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		log.Error("find mers error: %s", err)
 		goto RETURN
 	}
-	log.Debug("find %d records", len(mers))
+	log.Debugf("find %d records", len(mers))
 	mersMap = make(map[string]*model.Merchant)
 	for _, mer := range mers {
 		mersMap[mer.MerId] = mer
