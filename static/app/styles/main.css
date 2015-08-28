@@ -1,5 +1,4 @@
 body {
-  background: #fafafa;
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
@@ -8,4 +7,63 @@ paper-toast#toast {
 }
 * {
   font-size: 14px;
+}
+
+/* paper-input */
+
+paper-input {
+  width: 170px;
+  display: inline-block;
+  height: 48px;
+}
+paper-button {
+  display: inline-block;
+  background: #05B0CF;
+  color: #ffffff;
+  line-height: 12px;
+}
+
+div.divider.blank {
+    height: 9px;
+}
+div.divider.line {
+    border-top: 1px solid #eee;
+    margin: 9px 0;
+}
+/* 定义 data-grid 样式 */
+
+table.data-grid {
+  display: block;
+  overflow-x: auto;
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+}
+table.data-grid > thead > tr > th, table.data-grid > tbody > tr > td {
+  white-space: nowrap;
+  padding: 8px 8px;
+}
+table.data-grid > thead > tr th {
+  line-height: 1.42857143;
+  border-bottom: 1px solid #ddd;
+  width: 1%;
+}
+table.data-grid > tbody > tr:hover {
+  background-color: rgba(0, 188, 212, 0.17) !important;
+}
+table.data-grid > tbody > tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* colors */
+
+.red {
+  color: #D50000;
+}
+.green {
+  color: #00C853;
+}
+.blue {
+  color: #E65100;
 }

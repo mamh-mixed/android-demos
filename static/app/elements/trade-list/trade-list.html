@@ -4,81 +4,9 @@
   <style>
     :host {
       display: block;
-    }
-
-    * {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-
-    .condition {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .condition > paper-input,
-    .condition > x-select {
-      min-width: 170px;
-      margin-right: 20px;
-      font-size: 12px;
-    }
-
-    .condition > .buttons {
-      min-width: 170px;
-    }
-
-    .condition > .buttons > paper-button {
-      margin: 10px 0px 0px;
-    }
-
-    paper-button.colorful {
-      background: var(--dark-primary-color);
-      color: var(--text-primary-color);
-    }
-
-    .loading-more-wrapper {
-      text-align: center;
-    }
-
-    table {
-      width: 100%;
-      border-spacing: 0;
-      border-collapse: collapse;
-      margin-bottom: 10px;
-    }
-
-    table td {
-      text-align: center;
-    }
-
-    tr > th,
-    tr > td {
-      padding: 8px;
-    }
-
-    table > thead {}
-
-    thead > tr {}
-
-    thead > tr > th {
-      line-height: 1.42857143;
-      border-bottom: 1px solid #ddd;
-    }
-
-    table > tbody {
-      min-height: 700px;
-    }
-
-    tbody>tr:hover {
-      background-color: #f5f5f5;
-    }
-
-    table tr th:nth-of-type(4),
-    table tr td:nth-of-type(4) {
-      text-align: right;
+      /*--paper-input-container: {
+          height: 10px;
+      }*/
     }
 
   </style>
@@ -102,6 +30,7 @@
           <paper-button dialog-confirm>OK</paper-button>
         </div>
       </paper-dialog>
+
       <paper-input label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
       <paper-input label="集团代码" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input label="商户代码" value="{{cond.mchntid::input}}"></paper-input>
@@ -111,54 +40,50 @@
       <x-select items="[[busicds]]" selected-item="{{busicd}}" label="交易类型"></x-select>
       <x-select items="[[transStatusMap]]" selected-item="{{transStatus}}" label="交易状态"></x-select>
 
-      <div class="buttons">
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-        <paper-button class="colorful" raised>
-          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
-        </paper-button>
-      </div>
+      <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      <paper-button class="colorful" raised>
+        <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
+      </paper-button>
     </div>
-    <div class="list">
-      <table>
-        <thead>
+    <div class="divider blank"></div>
+    <div class="divider blank"></div>
+    <table class="data-grid">
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th>应答码</th>
+          <th>订单号</th>
+          <th>金额(元)</th>
+          <th>交易时间</th>
+          <th>状态</th>
+          <th>商户号</th>
+          <th>商户名称</th>
+          <!-- <th>终端号</th> -->
+          <th>交易类型</th>
+          <th>渠道</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="{{trades}}">
           <tr>
-            <th>序号</th>
-            <th>应答码</th>
-            <th>订单号</th>
-            <th>金额(元)</th>
-            <th>交易时间</th>
-            <th>状态</th>
-            <th>商户号</th>
-            <th>商户名称</th>
-            <!-- <th>终端号</th> -->
-            <th>交易类型</th>
-            <th>渠道</th>
+            <td align="right">{{addOneFilter(index)}}</td>
+            <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
+            <td>{{item.orderNum}}</td>
+            <td align="right">{{_currencyFilter(item.transAmt)}}</td>
+            <td align="center">{{item.transTime}}</td>
+            <td>{{transStatusFilter(item.transStatus)}}</td>
+            <td>{{item.merId}}</td>
+            <td>{{item.merName}}</td>
+            <!-- <td>{{item.terminalid}}</td> -->
+            <td>{{busicdFilter(item.busicd)}}</td>
+            <td>{{chanFilter(item.chanCode)}}</td>
           </tr>
-        </thead>
-        <tbody>
-          <template is="dom-repeat" items="{{trades}}">
-            <tr>
-              <td style="text-align:right;">{{addOneFilter(index)}}</td>
-              <td>
-                <span style$="{{getRespcdColor(item.respcd)}}">{{item.respcd}}</span>
-              </td>
-              <td style="text-align:left;">{{item.orderNum}}</td>
-              <td>{{_currencyFilter(item.transAmt)}}</td>
-              <td>{{item.transTime}}</td>
-              <td>{{transStatusFilter(item.transStatus)}}</td>
-              <td>{{item.merId}}</td>
-              <td>{{item.merName}}</td>
-              <!-- <td>{{item.terminalid}}</td> -->
-              <td>{{busicdFilter(item.busicd)}}</td>
-              <td>{{chanFilter(item.chanCode)}}</td>
-            </tr>
-          </template>
-        </tbody>
+        </template>
+      </tbody>
 
-      </table>
-      <div class="loading-more-wrapper">
-        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-      </div>
+    </table>
+    <div class="loading-more-wrapper">
+      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </div>
   </template>
   <script>
@@ -326,18 +251,15 @@
         return index + 1;
       },
       // 应答码着色
-      getRespcdColor: function(value) {
-        var map = {
-          '00': 'background:green;',
-          '96': 'background:#ff0000;',
-        };
-        var commonStyle = 'display:inline-block;color:#ffffff;border-radius:50%;width:30px;height:30px;line-height:30px;vertical-align:middle;text-align:center;';
-        if (value === '00' || value === '96') {
-          return map[value] + commonStyle;
-        } else {
-          return 'background:#FF7F24;' + commonStyle;
+      getRespCodeColor: function(value) {
+        if (value === '00') {
+          return 'green';
         }
-      }
+        if (value === '96') {
+          return 'red';
+        }
+        return 'blue';
+      },
     });
 
   </script>
