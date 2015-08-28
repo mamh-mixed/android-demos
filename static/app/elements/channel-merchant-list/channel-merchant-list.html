@@ -175,6 +175,7 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
+          this.set('cond.page', 1);
           this.merchants = [];
           this.generateAjaxRequest();
         },

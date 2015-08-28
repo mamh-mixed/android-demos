@@ -181,6 +181,9 @@
         <div class="row">
           <paper-input id="asignCert" label="*MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
         </div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -191,6 +194,7 @@
           <paper-input id="wchanMerId" label="*微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
           <paper-input id="bigChanMerId" label="*大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
@@ -205,9 +209,10 @@
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" required=false error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
-          <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+          <paper-input id="httpCert" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+          <paper-input id="httpKey" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
         </div>
+        <div class="divider blank"></div>
         <div class="row">
           <label id="httpCertL">HTTP 证书</label>
           <label id="httpKeyL">HTTP 密钥</label>
