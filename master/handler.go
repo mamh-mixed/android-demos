@@ -11,18 +11,73 @@ import (
 )
 
 func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadAll(r.Body)
+	params := r.URL.Query()
+
+	var merId = params.Get("merId")
+	size, err := strconv.Atoi(params.Get("size"))
 	if err != nil {
-		log.Errorf("Read all body error: %s", err)
-		w.WriteHeader(501)
-		return
+		http.Error(w, "参数 `size` 必须为整数", http.StatusBadRequest)
+	}
+	if size > 100 || size <= 0 {
+		size = 20
+	}
+	page, err := strconv.Atoi(params.Get("page"))
+	if err != nil {
+		http.Error(w, "参数 `page` 必须为整数", http.StatusBadRequest)
+	}
+	if page <= 0 {
+		page = 1
 	}
 
-	tradeQuery(w, data)
+	cond := &model.QueryCondition{
+		MerId:        merId,
+		Busicd:       params.Get("busicd"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		OrderNum:     params.Get("orderNum"),
+		OrigOrderNum: params.Get("origOrderNum"),
+		Size:         size,
+		IsForReport:  true,
+		Page:         page,
+		RefundStatus: model.TransRefunded,
+		TransStatus:  model.TransSuccess,
+	}
+
+	ret := tradeQuery(w, cond)
+
+	// // 允许跨域
+	// w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
 }
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
-	tradeReport(w, r)
+	params := r.URL.Query()
+	filename := params.Get("filename")
+
+	var merId = params.Get("merId")
+	cond := &model.QueryCondition{
+		MerId:        merId,
+		Busicd:       params.Get("busicd"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		OrderNum:     params.Get("orderNum"),
+		OrigOrderNum: params.Get("origOrderNum"),
+		Size:         maxReportRec,
+		IsForReport:  true,
+		Page:         1,
+		RefundStatus: model.TransRefunded,
+		TransStatus:  model.TransSuccess,
+	}
+
+	tradeReport(w, cond, filename)
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {

@@ -1,11 +1,12 @@
 package core
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
 // TransQuery 交易查询
@@ -51,7 +52,7 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		log.Error("find mers error: %s", err)
 		goto RETURN
 	}
-	log.Debug(len(mers))
+	log.Debug("find %d records", len(mers))
 	mersMap = make(map[string]*model.Merchant)
 	for _, mer := range mers {
 		mersMap[mer.MerId] = mer
