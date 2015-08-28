@@ -2,13 +2,13 @@ package model
 
 // NotifyRecord 存储异步消息通知记录
 type NotifyRecord struct {
-	MerId       string      `bson:"merId"`
-	OrderNum    string      `bson:"orderNum"`
-	FromChanMsg interface{} `bson:"fromChanMsg"` // 渠道异步消息内容
-	ToMerMsg    interface{} `bson:"toMerMsg"`    // 系统发给商户异步消息内容
-	IsToMerFail bool        `bson:"isToMerFail"` // 是否发送失败
-	CreateTime  string      `bson:"createTime"`
-	UpdateTime  string      `bson:"updateTime,omitempty"`
+	MerId       string `bson:"merId"`
+	OrderNum    string `bson:"orderNum"`
+	FromChanMsg string `bson:"fromChanMsg"`        // 渠道异步消息内容
+	ToMerMsg    string `bson:"toMerMsg,omitempty"` // 系统发给商户异步消息内容
+	IsToMerFail bool   `bson:"isToMerFail"`        // 是否发送失败
+	CreateTime  string `bson:"createTime"`
+	UpdateTime  string `bson:"updateTime,omitempty"`
 }
 
 // AlipayNotifyReq 预下单用户支付完成后，支付宝会把相关支付结果和用户信息发送给商户，商户需要接收处理，并返回应答

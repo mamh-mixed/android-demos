@@ -111,11 +111,12 @@ func ProcessAlipayNotify(params url.Values) error {
 		return err
 	}
 
+	reqBytes, _ := json.Marshal(params)
 	// 记录
 	nr := &model.NotifyRecord{
 		MerId:       t.MerId,
 		OrderNum:    t.OrderNum,
-		FromChanMsg: params,
+		FromChanMsg: string(reqBytes),
 	}
 	// 可能需要通知接入方
 	if t.NotifyUrl != "" {
@@ -173,11 +174,13 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 	if err != nil {
 		return err
 	}
+
+	reqBytes, _ := json.Marshal(req)
 	// 记录
 	nr := &model.NotifyRecord{
 		MerId:       t.MerId,
 		OrderNum:    t.OrderNum,
-		FromChanMsg: req,
+		FromChanMsg: string(reqBytes),
 	}
 	// 可能需要通知接入方
 	if t.NotifyUrl != "" {
@@ -204,13 +207,13 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 		log.Debug("send notify sign content to return : " + ret.SignMsg())
 		ret.Sign = security.SHA1WithKey(ret.SignMsg(), mer.SignKey)
 	}
-	nr.ToMerMsg = ret
 
 	bs, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("json marshal error: %s", err)
 		return
 	}
+	nr.ToMerMsg = string(bs)
 	log.Infof("send notify: %s", string(bs))
 
 	go func() {
