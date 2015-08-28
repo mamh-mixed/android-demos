@@ -100,6 +100,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '集团商户'
       };
     });
+    page('/config/users', function() {
+      app.route = {
+        name: 'config.users',
+        path: '/config/users',
+        title: '用户管理',
+        subtitle: '用户管理'
+      };
+    });
 
     // 商户，渠道商户,路由,代理商,集团商户 end
 
@@ -168,31 +176,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '测试 HTML5 读取文件内容'
       };
     });
-    page('/authManage/menu', function() {
-      app.route = {
-        name: 'authManage.menu',
-        path: '/authManage/menu',
-        title: '菜单',
-        subtitle: '菜单'
-      };
-    });
-    page('/authManage/role', function() {
-      app.route = {
-        name: 'authManage.role',
-        path: '/authManage/role',
-        title: '角色',
-        subtitle: '角色'
-      };
-    });
-    page('/authManage/user', function() {
-      app.route = {
-        name: 'authManage.user',
-        path: '/authManage/user',
-        title: '用户',
-        subtitle: '用户'
-      };
-    });
-
     page('/404', '/');
 
     page('*', '/404');

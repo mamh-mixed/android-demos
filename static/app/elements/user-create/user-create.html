@@ -1,0 +1,150 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="user-create">
+
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        min-width: 450px;
+        min-height: 500px;
+        font-size: 14px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    x-select {
+      margin-left: -38px;
+      width: 100%;
+    }
+
+    paper-input {}
+  </style>
+  <template>
+    <paper-dialog id="dialogView">
+      <h2>创建用户</h2>
+      <paper-dialog-scrollable>
+        <paper-input id="userName" label="*用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}" required error-message="必填项"></paper-input>
+        <!-- <paper-input id="userName" label="*密码" value="{{user.password::input}}"  required error-message="必填项"></paper-input>
+          <paper-input id="nickName" label="*重复密码" value="{{user.password::input}}"  required error-message="必填项"></paper-input> -->
+          <paper-input id="mail" label="邮箱" value="{{user.mail::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}" required error-message="必填项"></paper-input>
+        <x-select id="merStatus" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
+        <template is='dom-if' if="{{agentVisable}}">
+          <paper-input id="agentCode" label="*代理代码" value="{{user.agentCode::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="agentName" label="*代理名称" value="{{user.agentName::input}}" required error-message="必填项"></paper-input>
+        </template>
+        <template is='dom-if' if="{{groupVisable}}">
+          <paper-input id="groupCode" label="*集团代码" value="{{user.groupCode::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="groupName" label="*集团名称" value="{{user.groupName::input}}" required error-message="必填项"></paper-input>
+        </template>
+        <template is='dom-if' if="{{merchantVisable}}">
+          <paper-input id="merId" label="*商户代码" value="{{user.merId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="merName" label="*商户名称" value="{{user.merName::input}}" required error-message="必填项"></paper-input>
+        </template>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button dialog-confirm on-tap="handleSaveTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleResponse"></iron-ajax>
+  </template>
+  <script>
+    Polymer({
+      is: 'user-create',
+      properties: {
+        userType: {
+          type: Object,
+          value: {
+            key: '',
+            value: ''
+          }
+        },
+        userTypes: {
+          type: Array,
+          value: [{
+            key: 'admin',
+            value: '管理员'
+          }, {
+            key: 'agent',
+            value: '代理'
+          }, {
+            key: 'group',
+            value: '集团'
+          }, {
+            key: 'merchant',
+            value: '商户'
+          }, ]
+        }
+      },
+      observers: [
+        "_userTypesChange(userType)"
+      ],
+      _userTypesChange(value) {
+        if (value.key == "agent") {
+          this.agentVisable = true;
+          this.groupVisable = false;
+          this.merchantVisable = false;
+        } else if (value.key == "group") {
+          this.agentVisable = false;
+          this.groupVisable = true;
+          this.merchantVisable = false;
+        } else if (value.key == "merchant") {
+          this.agentVisable = false;
+          this.groupVisable = false;
+          this.merchantVisable = true;
+        } else {
+          this.agentVisable = false;
+          this.groupVisable = false;
+          this.merchantVisable = false;
+        }
+
+      },
+      ready: function() {
+        this.user = {};
+        this.agentVisable = false;
+        this.groupVisable = false;
+        this.merchantVisable = false;
+      },
+      open: function() {
+        debugger;
+        this.$.dialogView.toggle();
+      },
+      isUserParamsEmpty:function(){
+          if(this.$.userName.validate&&)
+      }
+      // 保存
+      handleSaveTapped: function() {
+
+
+      },
+      // 代理，集团，商户是否显示
+      isVisable: function(value) {
+        if (this.userType && value == this.userType.key) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+    });
+  </script>
+</dom-module>
