@@ -20,7 +20,7 @@ import (
 // ProcessAlpNotify 支付宝异步通知处理
 // 该接口只接受预下单的异步通知
 // 支付宝的其它接口将不接受异步通知
-func ProcessAlipayNotify(params url.Values) {
+func ProcessAlipayNotify(params url.Values) error {
 
 	log.Infof("alp async notify: %+v", params)
 	// 通知动作类型
@@ -34,13 +34,23 @@ func ProcessAlipayNotify(params url.Values) {
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
 		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
-		return
+		return err
+	}
+
+	count, err := mongo.NotifyRecColl.Count(t.MerId, t.OrderNum)
+	if err != nil {
+		return err
+	}
+
+	// 有此记录，表示已经处理过
+	if count > 0 {
+		return nil
 	}
 
 	// 判断是否是原订单
 	if t.OrderNum != orderNum {
 		log.Errorf("orderNum not match, expect %s, but get %s", t.OrderNum, orderNum)
-		return
+		return fmt.Errorf("%s", "orderNum error")
 	}
 
 	ret := &model.ScanPayResponse{}
@@ -86,26 +96,37 @@ func ProcessAlipayNotify(params url.Values) {
 			ret.Respcd = adaptor.SuccessCode
 			ret.ErrorDetail = adaptor.SuccessMsg
 			ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
-			updateTrans(t, ret)
+			err = updateTrans(t, ret)
 		case "WAIT_BUYER_PAY":
 			log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
 			ret.Respcd = adaptor.InprocessCode
 			ret.ErrorDetail = adaptor.InprocessMsg
 		default:
 			ret = returnWithErrorCode(tradeStatus)
-			updateTrans(t, ret)
+			err = updateTrans(t, ret)
 		}
 	}
+	// 如果更新失败，则认为没有处理过
+	if err != nil {
+		return err
+	}
 
+	// 记录
+	nr := &model.NotifyRecord{
+		MerId:       t.MerId,
+		OrderNum:    t.OrderNum,
+		FromChanMsg: params,
+	}
 	// 可能需要通知接入方
 	if t.NotifyUrl != "" {
-		copyNotifyProperties(ret, t)
-		go sendNotifyToMerchant(t.NotifyUrl, sysOrderNum, ret)
+		sendNotifyToMerchant(t, nr, ret)
 	}
+	mongo.NotifyRecColl.Add(nr)
+	return nil
 }
 
 // ProcessWeixinNotify 微信异步通知处理(预下单)
-func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) {
+func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 	log.Infof("weixin paut async request: %#v", req)
 
 	// 上送的订单号
@@ -114,13 +135,23 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) {
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
 		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
-		return
+		return err
+	}
+
+	count, err := mongo.NotifyRecColl.Count(t.MerId, t.OrderNum)
+	if err != nil {
+		return err
+	}
+
+	// 有此记录，表示已经处理过
+	if count > 0 {
+		return nil
 	}
 
 	// 判断是否是原订单
 	if t.OrderNum != req.OutTradeNo {
 		log.Errorf("orderNum not match, expect %s, but get %s", t.OrderNum, req.OutTradeNo)
-		return
+		return fmt.Errorf("%s", "orderNum error")
 	}
 
 	ret := &model.ScanPayResponse{}
@@ -132,21 +163,36 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) {
 		ret.ConsumerAccount = req.OpenID
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
-		updateTrans(t, ret)
+		err = updateTrans(t, ret)
 	default:
 		ret = returnWithErrorCode(req.ErrCode)
-		updateTrans(t, ret)
+		err = updateTrans(t, ret)
 	}
 
+	// 如果更新失败，则认为没有处理过
+	if err != nil {
+		return err
+	}
+	// 记录
+	nr := &model.NotifyRecord{
+		MerId:       t.MerId,
+		OrderNum:    t.OrderNum,
+		FromChanMsg: req,
+	}
 	// 可能需要通知接入方
 	if t.NotifyUrl != "" {
-		copyNotifyProperties(ret, t)
-		go sendNotifyToMerchant(t.NotifyUrl, sysOrderNum, ret)
+		sendNotifyToMerchant(t, nr, ret)
 	}
+	mongo.NotifyRecColl.Add(nr)
+
+	return nil
 }
 
 // sendNotifyToMerchant 向接入方发送异步消息通知
-func sendNotifyToMerchant(url, sysOrderNum string, ret *model.ScanPayResponse) {
+func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.ScanPayResponse) {
+
+	// 从交易中复制要发送给商户的数据
+	copyNotifyProperties(ret, t)
 
 	mer, err := mongo.MerchantColl.Find(ret.Mchntid)
 	if err != nil {
@@ -158,6 +204,7 @@ func sendNotifyToMerchant(url, sysOrderNum string, ret *model.ScanPayResponse) {
 		log.Debug("send notify sign content to return : " + ret.SignMsg())
 		ret.Sign = security.SHA1WithKey(ret.SignMsg(), mer.SignKey)
 	}
+	nr.ToMerMsg = ret
 
 	bs, err := json.Marshal(ret)
 	if err != nil {
@@ -166,37 +213,40 @@ func sendNotifyToMerchant(url, sysOrderNum string, ret *model.ScanPayResponse) {
 	}
 	log.Infof("send notify: %s", string(bs))
 
-	var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
-	// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
-	for i, d := range interval {
-		log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
-		resp, err := http.Post(url, "application/json", bytes.NewReader(bs))
-		if err != nil {
-			time.Sleep(time.Second * d)
-			continue
+	go func() {
+		var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
+		// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
+		for i, d := range interval {
+			log.Infof("merId=%s,orderNum=%s, send notify %d times", ret.Mchntid, ret.OrderNum, i+1)
+			resp, err := http.Post(t.NotifyUrl, "application/json", bytes.NewReader(bs))
+			if err != nil {
+				time.Sleep(time.Second * d)
+				continue
+			}
+			defer resp.Body.Close()
+			rs, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				time.Sleep(time.Second * d)
+				continue
+			}
+			clientResp := &model.ScanPayResponse{}
+			err = json.Unmarshal(rs, clientResp)
+			if err != nil {
+				time.Sleep(time.Second * d)
+				continue
+			}
+			if clientResp.Respcd != adaptor.SuccessCode {
+				time.Sleep(time.Second * d)
+				continue
+			}
+			// 异步通知成功，返回
+			return
 		}
-		defer resp.Body.Close()
-		rs, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			time.Sleep(time.Second * d)
-			continue
-		}
-		clientResp := &model.ScanPayResponse{}
-		err = json.Unmarshal(rs, clientResp)
-		if err != nil {
-			time.Sleep(time.Second * d)
-			continue
-		}
-		if clientResp.Respcd != adaptor.SuccessCode {
-			time.Sleep(time.Second * d)
-			continue
-		}
-		// 异步通知成功，返回
-		return
-	}
 
-	// 异步通知失败，为该笔交易增加标签
-	mongo.SpTransColl.UpdateNotifyStatus(1, sysOrderNum)
+		// 异步通知失败
+		nr.IsToMerFail = true
+		mongo.NotifyRecColl.Update(nr)
+	}()
 }
 
 func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
