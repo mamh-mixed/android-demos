@@ -10,6 +10,9 @@
 #import "VTRegistViewController.h"
 #import "MyTextField.h"
 
+#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
+#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
+
 @interface VTLoginViewController ()
 {
     MyTextField *login;

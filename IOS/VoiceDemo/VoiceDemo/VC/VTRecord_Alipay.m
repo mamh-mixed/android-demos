@@ -8,6 +8,9 @@
 
 #import "VTRecord_Alipay.h"
 
+#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
+#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
+
 @interface VTRecord_Alipay ()
 
 @end
@@ -37,8 +40,8 @@
     for (int i=0; i<3; i++) {//录音按钮的tag 值为 0 1 2
         UIButton *record=[UIButton buttonWithType:UIButtonTypeCustom];
         record.tag=i;
-        record.frame=CGRectMake(0, SCREENHEIGHT-4*height+i*height, SCREENWIDTH, height-1);
-        record.backgroundColor=[UIColor blueColor];
+        record.frame=CGRectMake(0, SCREENHEIGHT-4*height+i*(height + 10 )-70, SCREENWIDTH, height-1);
+        record.backgroundColor=[UIColor whiteColor];
         UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake((SCREENWIDTH-20)/2,(height-32)/2, 20, 32)];
         image.image=[UIImage imageNamed:@"microphone"];
         [record addSubview:image];
@@ -68,7 +71,7 @@
     //    [recordSettings setObject:[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsBigEndianKey];
     //    [recordSettings setObject:[NSNumber numberWithBool:NO] forKey:AVLinearPCMIsFloatKey];
     
-    NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",sender.tag,@"wav"]]];//默认acf格式 转成wav格式 方便后面的api解析
+    NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]]];//默认acf格式 转成wav格式 方便后面的api解析
     recorder=[[AVAudioRecorder alloc]initWithURL:url settings:recordSettings error:nil];
     [recorder record];//开始录音
 }
@@ -90,7 +93,7 @@
 }
 -(void)play:(UIButton *)sender
 {
-    NSURL *url=[NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",sender.tag]]];
+    NSURL *url=[NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",(long)sender.tag]]];
     NSLog(@"%@",url);
     player=[[AVAudioPlayer alloc]initWithContentsOfURL:url error:nil];
     player.volume=1.5f;

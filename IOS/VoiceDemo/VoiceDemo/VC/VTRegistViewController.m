@@ -9,7 +9,13 @@
 #import "VTRegistViewController.h"
 #import "VTRecord_Alipay.h"
 #import "MyTextField.h"
+#import "sqlite3.h"
+#import "RegisterTable.h"
 
+#define kDatabaseName @"database.sqlite3"
+
+#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
+#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
 
 @interface VTRegistViewController ()
 {
@@ -17,6 +23,7 @@
     MyTextField *password;
     MyTextField *passwordAgain;
 }
+@property (copy, nonatomic) NSString *databaseFilePath;
 @end
 
 @implementation VTRegistViewController
@@ -24,6 +31,25 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor=[UIColor lightGrayColor];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    self.databaseFilePath = [documentsDirectory stringByAppendingPathComponent:kDatabaseName];
+    NSLog(@"%@         _____________________ ",self.databaseFilePath);
+    
+    sqlite3 *database;
+    if (sqlite3_open([self.databaseFilePath UTF8String] , &database) != SQLITE_OK) {
+        sqlite3_close(database);
+        NSAssert(0, @"打开数据库失败！");
+    }
+    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS UserList (用户名 TEXT PRIMARY KEY, 密码 TEXT);";
+    char *errorMsg;
+    if (sqlite3_exec(database, [createSQL UTF8String], NULL, NULL, &errorMsg) != SQLITE_OK) {
+        sqlite3_close(database);
+        NSAssert(0, @"创建数据库表错误: %s", errorMsg);
+    }
+    //关闭数据库
+    sqlite3_close(database);
     
     CGFloat x=30;
     CGFloat space=20;
@@ -48,6 +74,30 @@
 {
     VTRecord_Alipay *alipay=[[VTRecord_Alipay alloc]init];
     [self presentViewController:alipay animated:YES completion:nil];
+//    if([password.text isEqualToString:passwordAgain.text])
+//    {
+//        RegisterTable * table = [[RegisterTable alloc]init];
+//        table.username = name.text;
+//        table.password = password.text;
+//        [RegisterTableDAO insertObject:table complete:^(NSString *isExists) {
+//            if ([isExists isEqualToString:@"exists"])
+//            {
+//                [self alertWithMessage:@"用户已存在"];
+//            }else if ([isExists isEqualToString:@"success"])
+//            {
+//                
+//            }
+//        }];
+// 
+//    }else
+//    {
+//        [self alertWithMessage:@"密码不一致"];
+//    }
+}
+-(void)alertWithMessage:(NSString *)message
+{
+    UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"温馨提示" message:message delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles:nil, nil];
+    [alert show];
 }
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {

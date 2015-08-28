@@ -118,7 +118,7 @@
     
     cell = (CollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     cell.titleLbl.text = [NSString stringWithFormat:@"%@",[[self creatArray]objectAtIndex:indexPath.row]];
-    cell.imgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"n%ld.jpg",indexPath.row+1]];
+    cell.imgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"n%d.jpg",indexPath.row+1]];
     [cell.buyBtn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
     cell.buyBtn.tag = indexPath.row;
     NSMutableString * str = [btnRecordArray objectAtIndex:indexPath.row];
