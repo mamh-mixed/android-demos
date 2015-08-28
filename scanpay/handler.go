@@ -68,6 +68,7 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Debugf("before decoder: %s", string(data))
 	// gbk-utf8
 	d := mahonia.NewDecoder("gbk")
 	utf8 := d.ConvertString(string(data))
