@@ -38,8 +38,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		OrigOrderNum: params.Get("origOrderNum"),
 		Size:         size,
 		Page:         page,
-		RefundStatus: model.TransRefunded,
-		TransStatus:  model.TransSuccess,
+		TransStatus:  params.Get("transStatus"),
 	}
 
 	ret := tradeQuery(w, cond)
