@@ -110,7 +110,7 @@ type ScanPayRequest struct {
 	OrigOrderNum string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty"` // 原订单号
 	ScanCodeId   string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty"`     // 扫码号
 	Sign         string `json:"sign,omitempty" url:"-"`                              // 签名
-	NotifyUrl    string `json:"notifyUrl,omitempty"url:"notifyUrl,omitempty" `       // 异步通知地址
+	NotifyUrl    string `json:"backUrl,omitempty"url:"backUrl,omitempty" `           // 异步通知地址
 	OpenId       string `json:"openid,omitempty" url:"openid,omitempty" `            // openid
 	CheckName    string `json:"checkName,omitempty" url:"checkName,omitempty"`       // 校验用户姓名选项
 	UserName     string `json:"userName,omitempty" url:"userName,omitempty"`         // 用户名
@@ -118,6 +118,7 @@ type ScanPayRequest struct {
 	Code         string `json:"code,omitempty" url:"code,omitempty"`                 // 认证码
 	NeedUserInfo string `json:"needUserInfo,omitempty" url:"needUserInfo,omitempty"` // 是否需要获取用户信息
 	VeriCode     string `json:"veriCode,omitempty" url:"veriCode,omitempty"`         // js支付用到的凭证
+	Attach       string `json:"attach,omitempty" url:"attach,omitempty"`
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-"` // 公众号ID
@@ -168,6 +169,7 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 	if ret.VeriCode == "" {
 		ret.VeriCode = req.VeriCode
 	}
+	ret.Attach = req.Attach
 }
 
 // ScanPayResponse 下单支付返回体
@@ -195,6 +197,7 @@ type ScanPayResponse struct {
 	PayJson         *PayJson `json:"payjson,omitempty" url:"-"`                                 // json字符串
 	PayJsonStr      string   `json:"-" url:"payjson,omitempty"`                                 // 签名时用
 	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty"`
+	Attach          string   `json:"attach,omitempty" url:"attach,omitempty"`
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-"`
