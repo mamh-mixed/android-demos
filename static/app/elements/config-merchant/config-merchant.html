@@ -54,9 +54,10 @@
       margin-right: 0;
     }
 
-    .row paper-checkbox,
-    .row paper-radio-button {
+     paper-checkbox,
+     paper-radio-button {
       padding-top: 20px;
+      margin-right: 20px;
     }
 
     .check-box-group > label {
@@ -101,17 +102,19 @@
           <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
-        <div class="row" style="margin-top:30px;">
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
           <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" required=false error-message="必填项"></paper-input>
         </div>
-        <div class="row">
-          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
-        </div>
 
-        <div class="row" style="margin-top:30px;">
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
           <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
           <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
         </div>
@@ -124,37 +127,43 @@
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
         </div>
 
-        <div class="row" style="margin-top:30px;">
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
+          <paper-input id="commodityName" label="*商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
+          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
           <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
-          <paper-input id="commodityName" label="*商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
         </div>
-        <div class="row" style="margin-top:30px;">
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
           <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="*商户状态"></x-select>
         </div>
         <div class="row">
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
-        <div class="row">
-          <label for="permissionGroup">接口权限</label>
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div>
+          <label for="permissionGroup">接口权限：</label>
+            <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
+              <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
+                <span>{{item.value}}</span>
+              </paper-checkbox>
+            </template>
         </div>
-        <div class="row" style="margin-top:15px;margin-bottom:20px;">
-          <div class="check-box-group">
-            <div id="permissionGroup" class="check-box-area">
-              <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
-                <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
-                  <span>{{item.value}}</span>
-                </paper-checkbox>
-              </template>
-            </div>
-          </div>
-        </div>
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
         </div>
@@ -172,6 +181,9 @@
         <div class="row">
           <paper-input id="asignCert" label="*MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
         </div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -182,6 +194,7 @@
           <paper-input id="wchanMerId" label="*微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
           <paper-input id="bigChanMerId" label="*大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
@@ -196,9 +209,10 @@
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" required=false error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
-          <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+          <paper-input id="httpCert" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+          <paper-input id="httpKey" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
         </div>
+        <div class="divider blank"></div>
         <div class="row">
           <label id="httpCertL">HTTP 证书</label>
           <label id="httpKeyL">HTTP 密钥</label>
@@ -270,16 +284,12 @@
             value: '预下单',
             isChecked: false
           }, {
-            key: 'QYFK',
-            value: '企业付款',
-            isChecked: false
-          }, {
-            key: 'JSZF',
-            value: '公众号支付',
-            isChecked: false
-          }, {
             key: 'INQY',
             value: '查询订单',
+            isChecked: false
+          }, {
+            key: 'CANC',
+            value: '取消',
             isChecked: false
           }, {
             key: 'VOID',
@@ -290,8 +300,12 @@
             value: '退款',
             isChecked: false
           }, {
-            key: 'CANC',
-            value: '取消',
+            key: 'QYFK',
+            value: '企业付款',
+            isChecked: false
+          }, {
+            key: 'JSZF',
+            value: '公众号支付',
             isChecked: false
           }]
         }
@@ -407,7 +421,7 @@
             shopId: '',
             shopType: ''
           },
-          merStatus: '',
+          merStatus: 'Normal',
           transCurr: '156',
           signKey: '',
           isNeedSign: false,

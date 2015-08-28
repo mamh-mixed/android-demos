@@ -61,9 +61,10 @@ type txn struct {
 		GoodsInfo    string `bson:"goodsInfo"`
 	} `bson:"m_request"`
 	Merchant struct {
-		MerId string `bson:"clientid"`
-		Inscd string `bson:"inscd"`
-		Wxp   struct {
+		MerId   string `bson:"clientid"`
+		Inscd   string `bson:"inscd"`
+		MerName string `bson:"clientidName"`
+		Wxp     struct {
 			MerFee   string `bson:"merfee"`
 			MerId    string `bson:"mch_id"`
 			SubMerId string `bson:"sub_mch_id"`
@@ -123,6 +124,9 @@ func AddTransFromOldDB(st, et string) error {
 		tran.TransCurr = t.Request.Currency
 		tran.ChanOrderNum = t.ChannelOrderNum
 		tran.RespCode = t.RespCode
+		tran.MerName = t.Merchant.MerName
+		tran.GroupCode = ""
+		tran.GroupName = ""
 		if tran.ChanCode == "ALP" {
 			tran.ChanMerId = t.Merchant.Alp.MerId
 		} else {

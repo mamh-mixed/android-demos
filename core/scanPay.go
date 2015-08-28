@@ -683,7 +683,7 @@ func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
 }
 
 // updateTrans 更新交易信息
-func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
+func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	// 根据请求结果更新
 	t.ChanRespCode = ret.ChanRespCode
 	t.ChanOrderNum = ret.ChannelOrderNum
@@ -703,7 +703,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 	default:
 		t.TransStatus = model.TransFail
 	}
-	mongo.SpTransColl.Update(t)
+	return mongo.SpTransColl.Update(t)
 }
 
 // copyProperties 从原交易拷贝属性

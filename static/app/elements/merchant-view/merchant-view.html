@@ -15,6 +15,7 @@
     paper-dialog {
       background-color: #ffffff;
     }
+
     .row {
       @apply(--layout-horizontal);
     }
@@ -48,10 +49,14 @@
       width: 70px;
     }
 
+    .divider {
+      height: 5px;
+    }
+
   </style>
   <template>
     <paper-dialog id="dialogView">
-        <h2>{{item.detail.merName}}</h2>
+      <h2>{{item.detail.merName}}</h2>
       <paper-dialog-scrollable>
         <table>
           <tr>
@@ -73,7 +78,7 @@
             <td>{{item.groupName}}</td>
           </tr>
           <tr>
-            <td>&nbsp;</td>
+            <td colspan="4" class="divider"></td>
           </tr>
           <tr>
             <td colspan="4">
@@ -89,7 +94,7 @@
             <td colspan="3" style="word-break:break-all;">{{item.encryptKey}}</td>
           </tr>
           <tr>
-            <td>&nbsp;</td>
+            <td colspan="4" class="divider"></td>
           </tr>
           <tr>
             <td class="key">开户账户:</td>
@@ -110,7 +115,7 @@
             <td>{{item.transCurr}}</td>
           </tr>
           <tr>
-            <td>&nbsp;</td>
+            <td colspan="4" class="divider"></td>
           </tr>
           <tr>
             <td>门店类型:</td>
@@ -129,7 +134,7 @@
             <td colspan="3">{{item.detail.brandNum}}</td>
           </tr>
           <tr>
-            <td>&nbsp;</td>
+            <td colspan="4" class="divider"></td>
           </tr>
           <tr>
             <td>商户状态:</td>
@@ -140,10 +145,11 @@
             <td colspan="3" style="word-break:break-all;">{{item.remark}}</td>
           </tr>
           <tr>
-            <td>授权接口:</td>
+            <td colspan="4" class="divider"></td>
           </tr>
           <tr>
-            <td colspan="4">
+            <td>授权接口:</td>
+            <td colspan="3">
               <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
                 <paper-checkbox checked$="{{perm.isChecked}}" disabled>
                   <span>{{perm.value}}</span>
