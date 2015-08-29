@@ -70,8 +70,6 @@
       background-color: #f5f5f5;
     }
 
-    table tr th:nth-last-of-type(2),
-    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
     <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>

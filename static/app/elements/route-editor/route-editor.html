@@ -5,9 +5,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 450px;
-        min-height: 400px;
-        font-size: 15px;
+        min-width: 300px;
+        min-height: 280px;
       }
     }
     .row {
@@ -51,10 +50,6 @@
         <div class="row">
           <paper-input id="rchanCode" label="*渠道代码" value="{{route.chanCode::input}}" class="routeAtt" required error-message="必填项"></paper-input>
           <paper-input id="rchanMerId" label="*渠道商户号" value="{{route.chanMerId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="子商户号" value="{{route.subMerId::input}}" class="routeAtt"></paper-input>
-          <paper-radio-button id="isAngentCheck" checked$="{{weixin.isAgent}}" class="routeAtt" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
         </div>
         <div class="row">
           <paper-input label="卡类型" value="{{route.cardType::input}}" class="routeAtt"></paper-input>
