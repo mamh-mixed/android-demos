@@ -79,6 +79,8 @@ type Summary struct {
 
 // TransGroup 按商户号和渠道号统计分组
 type TransGroup struct {
+	MerName   string    `bson:"merName"`
+	AgentName string    `bson:"agentName"`
 	TransAmt  int64     `bson:"transAmt"`
 	RefundAmt int64     `bson:"refundAmt"`
 	TransNum  int       `bson:"transNum"`
