@@ -21,10 +21,10 @@ const (
 	crypto = "cilxl123$"
 )
 
-func init() {
-	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-	connect()
-}
+// func init() {
+// 	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+// 	connect()
+// }
 
 func Import(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")

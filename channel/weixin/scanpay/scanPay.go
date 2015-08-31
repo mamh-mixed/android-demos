@@ -85,8 +85,8 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 	d := &PayQueryReq{
 		CommonParams: *getCommonParams(m),
 
-		TransactionId: "",         // 微信支付订单号
-		OutTradeNo:    m.OrderNum, // 商户订单号
+		TransactionId: "",             // 微信支付订单号
+		OutTradeNo:    m.OrigOrderNum, // 商户订单号
 	}
 
 	p := &PayQueryResp{}

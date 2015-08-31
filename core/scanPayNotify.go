@@ -1,7 +1,7 @@
 package core
 
 import (
-	"bytes"
+	// "bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/adaptor"
@@ -10,10 +10,11 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/omigo/log"
-	"io/ioutil"
+	// "io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -95,12 +96,14 @@ func ProcessAlipayNotify(params url.Values) error {
 			ret.ConsumerAccount = account
 			ret.Respcd = adaptor.SuccessCode
 			ret.ErrorDetail = adaptor.SuccessMsg
+			ret.ErrorCode = "SUCCESS"
 			ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
 			err = updateTrans(t, ret)
 		case "WAIT_BUYER_PAY":
 			log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
 			ret.Respcd = adaptor.InprocessCode
 			ret.ErrorDetail = adaptor.InprocessMsg
+			ret.ErrorCode = "INPROCESS"
 		default:
 			ret = adaptor.ReturnWithErrorCode(tradeStatus)
 			err = updateTrans(t, ret)
@@ -164,6 +167,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		ret.ConsumerAccount = req.OpenID
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
+		ret.ErrorCode = "SUCCESS"
 		err = updateTrans(t, ret)
 	default:
 		ret = adaptor.ReturnWithErrorCode(req.ErrCode)
@@ -202,46 +206,63 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 		log.Errorf("send notify error: %s", err)
 		return
 	}
-	// 签名
-	if mer.IsNeedSign {
-		log.Debug("send notify sign content to return : " + ret.SignMsg())
-		ret.Sign = security.SHA1WithKey(ret.SignMsg(), mer.SignKey)
-	}
+	// 发送异步消息采用英文描述
+	ret.ErrorDetail = ret.ErrorCode
+	ret.ErrorCode = ""
 
-	bs, err := json.Marshal(ret)
-	if err != nil {
-		log.Errorf("json marshal error: %s", err)
-		return
+	// 签名
+	signContent, sign := ret.SignMsg(), ""
+	if mer.IsNeedSign {
+		log.Debug("send notify sign content to return : " + signContent)
+		sign = security.SHA1WithKey(signContent, mer.SignKey)
 	}
-	nr.ToMerMsg = string(bs)
-	// log.Infof("send notify: %s", string(bs))
+	parms := signContent + "&sign=" + sign
+
+	// bs, err := json.Marshal(ret)
+	// if err != nil {
+	// 	log.Errorf("json marshal error: %s", err)
+	// 	return
+	// }
+	nr.ToMerMsg = parms
+	notifyUrl := t.NotifyUrl
+	if strings.Contains(notifyUrl, "?") {
+		notifyUrl += "&" + parms
+	} else {
+		notifyUrl += "?" + parms
+	}
+	log.Infof("send notify: %s", notifyUrl)
 
 	go func() {
 		var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
 		// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 		for i, d := range interval {
 			log.Infof("merId=%s,orderNum=%s,url=%s, send notify %d times", ret.Mchntid, ret.OrderNum, t.NotifyUrl, i+1)
-			resp, err := http.Post(t.NotifyUrl, "application/json", bytes.NewReader(bs))
+			// resp, err := http.Post(t.NotifyUrl, "application/json", strings.NewReader(parms))
+			resp, err := http.Get(notifyUrl)
 			if err != nil {
 				time.Sleep(time.Second * d)
 				continue
 			}
 			defer resp.Body.Close()
-			rs, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
+			if resp.StatusCode != http.StatusOK {
 				time.Sleep(time.Second * d)
 				continue
 			}
-			clientResp := &model.ScanPayResponse{}
-			err = json.Unmarshal(rs, clientResp)
-			if err != nil {
-				time.Sleep(time.Second * d)
-				continue
-			}
-			if clientResp.Respcd != adaptor.SuccessCode {
-				time.Sleep(time.Second * d)
-				continue
-			}
+			// rs, err := ioutil.ReadAll(resp.Body)
+			// if err != nil {
+			// 	time.Sleep(time.Second * d)
+			// 	continue
+			// }
+			// clientResp := &model.ScanPayResponse{}
+			// err = json.Unmarshal(rs, clientResp)
+			// if err != nil {
+			// 	time.Sleep(time.Second * d)
+			// 	continue
+			// }
+			// if clientResp.Respcd != adaptor.SuccessCode {
+			// 	time.Sleep(time.Second * d)
+			// 	continue
+			// }
 			// 异步通知成功，返回
 			return
 		}
@@ -253,14 +274,16 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 }
 
 func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
-	ret.Busicd = "NOTI"
+	// ret.Busicd = "NOTI"
+	ret.Txndir = "A"
+	ret.Busicd = model.Paut
 	ret.Mchntid = t.MerId
 	ret.AgentCode = t.AgentCode
 	ret.Terminalid = t.Terminalid
 	ret.OrderNum = t.OrderNum
 	ret.Chcd = t.ChanCode
 	ret.Txamt = fmt.Sprintf("%012d", t.TransAmt)
-	ret.MerDiscount = t.MerDiscount
-	ret.ChcdDiscount = t.ChanDiscount
-	ret.QrCode = t.QrCode
+	// ret.MerDiscount = t.MerDiscount
+	// ret.ChcdDiscount = t.ChanDiscount
+	// ret.QrCode = t.QrCode
 }

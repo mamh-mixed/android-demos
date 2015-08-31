@@ -123,7 +123,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 	alpReq := &alpRequest{
 		Partner:    req.ChanMerId,
 		Service:    query,
-		OutTradeNo: req.OrderNum, // 送的是原订单号，不转换
+		OutTradeNo: req.OrigOrderNum, // 送的是原订单号，不转换
 	}
 	// req to map
 	dict := toMap(alpReq)

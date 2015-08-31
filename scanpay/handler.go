@@ -108,13 +108,13 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 // testReceiveNotifyHandle 测试接受异步通知
 func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
-		return
-	}
+	// data, err := ioutil.ReadAll(r.Body)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusNotAcceptable)
+	// 	return
+	// }
 
-	log.Debugf("receive notify, data: %s", string(data))
+	log.Debugf("receive notify, data: %s", r.URL.RawQuery)
 
 	// response
 	respCode := ""
