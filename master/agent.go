@@ -12,7 +12,7 @@ type agent struct{}
 
 var Agent agent
 
-//// Find 根据条件分页查找代理商
+// Find 根据条件分页查找代理商
 func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
 	log.Debugf("agentCode is %s", agentCode)
 

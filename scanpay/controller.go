@@ -82,9 +82,10 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		// 7. 补充信息
 		ret.FillWithRequest(req)
 
-		// 8. 如果是gbk进来的
+		// 8. 如果是 gbk 进来的，兼容老插件和商户，不返回中文，不返回 errorCode
 		if req.IsGBK {
 			ret.ErrorDetail = ret.ErrorCode
+			ret.ErrorCode = ""
 		}
 
 		// 9. 对返回报文签名
