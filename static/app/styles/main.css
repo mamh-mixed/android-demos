@@ -61,7 +61,15 @@ table.data-grid > tbody > tr:hover {
 table.data-grid > tbody > tr:nth-child(even) {
   background-color: #f9f9f9;
 }
-
+td.left{
+    text-align: left;
+}
+td.right{
+    text-align: right;
+}
+td.center{
+    text-align: center;
+}
 /* colors */
 
 .red {
