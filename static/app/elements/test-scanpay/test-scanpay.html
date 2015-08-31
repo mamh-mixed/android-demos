@@ -142,7 +142,7 @@
         <paper-input required$="{{requiredDetector.code}}" class="col" id="code" name="code" label="授权码(code)" value="{{scanCode.code::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.notifyUrl}}" class="col" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.backUrl}}" class="col" id="backUrl" name="backUrl" label="异步通知地址(backUrl)" value="{{scanCode.backUrl::input}}"></paper-input>
       </div>
       <div class="divider"></div>
 
@@ -502,7 +502,7 @@
         origOrderNum: '',
         scanCodeId: '',
         sign: '',
-        notifyUrl: ''
+        backUrl: ''
       };
       this.responseJsonData = '';
     },

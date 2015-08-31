@@ -1,12 +1,15 @@
 package scanpay
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"net/url"
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
 )
@@ -101,4 +104,27 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Error(w, "success", http.StatusOK)
+}
+
+// testReceiveNotifyHandle 测试接受异步通知
+func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return
+	}
+	log.Infof("receive notify: %s", string(data))
+
+	// response
+	respCode := ""
+	if rand.Intn(5) == 0 { //  1/5 的概率失败，要求重发
+		respCode = "09"
+	} else {
+		respCode = "00"
+	}
+	ret := &model.ScanPayResponse{Respcd: respCode}
+
+	retBytes, _ := json.Marshal(ret)
+	log.Debug("return notify: %s", retBytes)
+	w.Write(retBytes)
 }
