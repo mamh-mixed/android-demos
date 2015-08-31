@@ -11,10 +11,12 @@
       -moz-box-sizing: border-box;
       box-sizing: border-box;
     }
+
     paper-button.colorful {
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
+
     paper-fab {
       position: fixed;
       bottom: 100px;
@@ -59,13 +61,13 @@
           </template>
         </tbody>
       </table>
-        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </form>
-      <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
-      </paper-fab>
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+    </paper-fab>
 
-      <agent-editor id="agentEditor" on-saved="handleAgentSave"></agent-editor>
-      <agent-delete id="agentDelete" on-saved="handleAgentSave"></agent-delete>
+    <agent-editor id="agentEditor" on-saved="handleAgentSave"></agent-editor>
+    <agent-delete id="agentDelete" on-saved="handleAgentSave"></agent-delete>
   </template>
   <script>
     (function() {
@@ -170,7 +172,12 @@
         },
         addOneFilter: function(index) {
           return index + 1;
-        }
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.agents = [];
+          this.set('cond.total', 0);
+        },
       });
     })();
   </script>
