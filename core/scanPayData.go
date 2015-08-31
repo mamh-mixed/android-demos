@@ -57,25 +57,25 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
 	// 先找商户所有商户号
-	mers, err := mongo.MerchantColl.FuzzyFind(q)
-	if err != nil {
-		log.Errorf("find merchant error: %s", err)
-		return errResult
-	}
+	// mers, err := mongo.MerchantColl.FuzzyFind(q)
+	// if err != nil {
+	// 	log.Errorf("find merchant error: %s", err)
+	// 	return errResult
+	// }
 
-	var merIds []string
-	m := make(map[string]*model.Merchant)
-	// 暂存商户信息
-	for _, mer := range mers {
-		merIds = append(merIds, mer.MerId)
-		m[mer.MerId] = mer
-	}
+	// var merIds []string
+	// m := make(map[string]*model.Merchant)
+	// // 暂存商户信息
+	// for _, mer := range mers {
+	// 	merIds = append(merIds, mer.MerId)
+	// 	m[mer.MerId] = mer
+	// }
 
 	// 设置条件过滤
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
 	q.RefundStatus = model.TransRefunded
-	q.MerIds = merIds
+	// q.MerIds = merIds
 	q.StartTime += " 00:00:00"
 	q.EndTime += " 23:59:59"
 
@@ -92,16 +92,16 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	// 将数据合并
 	for _, d := range group {
-		if mer, ok := m[d.MerId]; ok {
-			s := model.Summary{
-				MerId:     d.MerId,
-				AgentName: mer.AgentName,
-				MerName:   mer.Detail.MerName,
-			}
-			// 遍历渠道，合并数据
-			combine(&s, d.Detail)
-			data = append(data, s)
+		// if mer, ok := m[d.MerId]; ok {
+		s := model.Summary{
+			MerId:     d.MerId,
+			AgentName: d.AgentName,
+			MerName:   d.MerName,
 		}
+		// 遍历渠道，合并数据
+		combine(&s, d.Detail)
+		data = append(data, s)
+		// }
 	}
 
 	// 汇总数据

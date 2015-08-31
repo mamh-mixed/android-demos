@@ -102,7 +102,7 @@ func ProcessAlipayNotify(params url.Values) error {
 			ret.Respcd = adaptor.InprocessCode
 			ret.ErrorDetail = adaptor.InprocessMsg
 		default:
-			ret = returnWithErrorCode(tradeStatus)
+			ret = adaptor.ReturnWithErrorCode(tradeStatus)
 			err = updateTrans(t, ret)
 		}
 	}
@@ -166,7 +166,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		ret.ErrorDetail = adaptor.SuccessMsg
 		err = updateTrans(t, ret)
 	default:
-		ret = returnWithErrorCode(req.ErrCode)
+		ret = adaptor.ReturnWithErrorCode(req.ErrCode)
 		err = updateTrans(t, ret)
 	}
 

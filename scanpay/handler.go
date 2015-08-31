@@ -27,7 +27,7 @@ func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 请求扫码支付
-	retBytes := ScanPayHandle(bytes)
+	retBytes := ScanPayHandle(bytes, false)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(retBytes)

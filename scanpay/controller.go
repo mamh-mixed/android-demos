@@ -15,11 +15,14 @@ import (
 )
 
 // ScanPayHandle 执行扫码支付逻辑
-func ScanPayHandle(reqBytes []byte) []byte {
+func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 	log.Infof("from merchant message: %s", string(reqBytes))
 
 	// 解析请求内容
 	req := new(model.ScanPayRequest)
+	// 设置请求方式
+	req.IsGBK = isGBK
+	// 解析json
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal json(%s): %s", reqBytes, err)
@@ -79,10 +82,12 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		// 7. 补充信息
 		ret.FillWithRequest(req)
 
-		// ret.ErrorDetail = "ok" // 联机测试
-		// ret.Terminalid = ""
+		// 8. 如果是gbk进来的
+		if req.IsGBK {
+			ret.ErrorDetail = ret.ErrorCode
+		}
 
-		// 8. 对返回报文签名
+		// 9. 对返回报文签名
 		if signKey != "" {
 			log.Debug("sign content to return : " + ret.SignMsg())
 			ret.Sign = security.SHA1WithKey(ret.SignMsg(), signKey)
@@ -147,6 +152,12 @@ func errorResp(req *model.ScanPayRequest, errorCode string) []byte {
 		Respcd:      spResp.ISO8583Code,
 		ErrorDetail: spResp.ISO8583Msg,
 	}
+
+	// 如果是gbk端口，采用英文描述应答
+	if req.IsGBK {
+		ret.ErrorDetail = errorCode
+	}
+
 	ret.FillWithRequest(req)
 
 	retBytes, err := json.Marshal(ret)
