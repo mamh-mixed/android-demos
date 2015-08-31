@@ -86,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>{{item.chanCode}}</span>
             </dd>
 
-            <dt>商户编号:</dt>
+            <dt>商户代码:</dt>
             <dd>
               <span>{{item.chanMerId}}</span>
             </dd>
@@ -118,7 +118,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>{{item.chanCode}}</span>
             </dd>
 
-            <dt>商户编号:</dt>
+            <dt>商户代码:</dt>
             <dd>
               <span>{{item.chanMerId}}</span>
             </dd>
@@ -169,7 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>{{item.chanCode}}</span>
             </dd>
 
-            <dt>商户编号:</dt>
+            <dt>商户代码:</dt>
             <dd>
               <span>{{item.chanMerId}}</span>
             </dd>
@@ -214,7 +214,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>{{item.chanCode}}</span>
             </dd>
 
-            <dt>商户编号:</dt>
+            <dt>商户代码:</dt>
             <dd>
               <span>{{item.chanMerId}}</span>
             </dd>
@@ -280,11 +280,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
         <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
         <paper-button on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
       </div>
     </paper-dialog>
-
+    <iron-ajax id="deleteMerAjax" method="GET" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>
   </template>
   <script>
     Polymer({
@@ -300,6 +304,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       open: function() {
         this.$.dialogView.open();
+        this.deleteFlag = false;
         if (this.item.chanCode === 'ALP') {
           this.$.alp.hidden = false;
           this.$.wxp.hidden = true;
@@ -330,6 +335,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       handleItemEditedEvent: function() {
         this.fire('editor');
         this.handleClose();
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          chanCode: this.item.chanCode,
+          chanMerId: this.item.chanMerId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
       },
     });
   </script>
