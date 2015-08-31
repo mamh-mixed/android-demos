@@ -14,13 +14,11 @@ paper-toast#toast {
 div.search-condition paper-input {
   width: 170px;
   display: inline-block;
-  height: 48px;
 }
 div.search-condition paper-button {
   display: inline-block;
   background: #05B0CF;
   color: #ffffff;
-  line-height: 12px;
 }
 
 div.divider.blank {
