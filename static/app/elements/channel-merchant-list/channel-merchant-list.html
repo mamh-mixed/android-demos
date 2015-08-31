@@ -164,7 +164,7 @@
         },
         // 如何渠道名称为空，则返回---
         getChanMerName:function(value){
-            if (value==''){
+            if (!value||value===''){
                 return '---';
             }else{
                 return value;

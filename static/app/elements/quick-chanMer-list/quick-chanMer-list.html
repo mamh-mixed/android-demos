@@ -142,7 +142,7 @@
       },
       // 新增机构商户事件
       handleCreateFabTapped: function() {
-        this.pageType = "create";
+        this.pageType = 'create';
         this.$.merchantEditor.open();
 
       },
@@ -159,14 +159,13 @@
         this.$.merchantView.open();
       },
       handleEditor: function() {
-        this.pageType = "editor";
+        this.pageType = 'editor';
         this.$.merchantEditor.open();
 
       },
       // 如何渠道名称为空，则返回---
       getChanMerName:function(value){
-          debugger;
-          if (!value||value==''){
+          if (!value||value===''){
               return '---';
           }else{
               return value;
