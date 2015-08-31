@@ -37,8 +37,6 @@
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
         </paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <table class="data-grid">
         <thead>
           <tr>
@@ -72,8 +70,14 @@
             </tr>
           </template>
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="255" align="right">
+                    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+                </td>
+            </tr>
+        </tfoot>
       </table>
-        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
     </form>
   </template>
   <script>
@@ -201,7 +205,7 @@
       // 发送查询交易的ajax请求
       submitForm: function() {
         this.trades = [];
-        this.set('cond.total', 0);
+        // this.set('cond.total', 0);
         // console.log(e.detail);
       },
       // ajax请求响应处理

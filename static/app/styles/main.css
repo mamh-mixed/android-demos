@@ -11,6 +11,9 @@ paper-toast#toast {
 
 /* paper-input */
 
+div.search-condition {
+  margin: 10px auto;
+}
 div.search-condition paper-input {
   width: 170px;
   display: inline-block;
@@ -20,14 +23,14 @@ div.search-condition paper-button {
   background: #05B0CF;
   color: #ffffff;
 }
-
 div.divider.blank {
-    height: 9px;
+  height: 9px;
 }
 div.divider.line {
-    border-top: 1px solid #eee;
-    margin: 9px 0;
+  border-top: 1px solid #eee;
+  margin: 9px 0;
 }
+
 /* 定义 data-grid 样式 */
 
 table.data-grid {
@@ -36,14 +39,20 @@ table.data-grid {
   border-spacing: 0;
   border-collapse: collapse;
   border: 1px solid #ddd;
+  margin: 10px auto;
 }
-table.data-grid > thead > tr > th, table.data-grid > tbody > tr > td {
+table.data-grid th, table.data-grid td {
   white-space: nowrap;
   padding: 8px 8px;
 }
-table.data-grid > thead > tr th {
+table.data-grid > thead > tr > th {
   line-height: 1.42857143;
   border-bottom: 1px solid #ddd;
+  width: 1%;
+}
+table.data-grid > tfoot > tr > td {
+  line-height: 1.42857143;
+  border-top: 1px solid #ddd;
   width: 1%;
 }
 table.data-grid > tbody > tr:hover {
