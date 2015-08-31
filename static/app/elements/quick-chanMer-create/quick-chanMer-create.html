@@ -328,8 +328,6 @@
           if (this.weixin.isAgentMode) {
             this.set('weixin.agentMer', this.bigMerchant);
             this.$.wbigChanMerId.required = true;
-            // this.$.wxpAppId.required = false;
-            // this.$.wsignCert.required = false;
             this.$.wxpAppId.removeAttribute('required');
             this.$.wsignCert.removeAttribute('required');
             this.$.httpCert.removeAttribute('required');
@@ -339,8 +337,6 @@
           } else {
             this.set('weixin.agentMer', {});
             this.$.wbigChanMerId.required = false;
-            // this.$.wxpAppId.required = true;
-            // this.$.wsignCert.required = true;
             this.$.wbigChanMerId.validate();
             this.$.wxpAppId.setAttribute('required', true);
             this.$.wsignCert.setAttribute('required', true);

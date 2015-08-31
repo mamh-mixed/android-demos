@@ -71,10 +71,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       left: -10px;
       top: 50%;
     }
+
     paper-button.colorful {
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
-      height:30px;
+      height: 30px;
       /*line-height: 30px;*/
       vertical-align: bottom;
       margin-top: 15px;
@@ -102,11 +103,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
-          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}"  class="validate-container" error-message="必填项"></paper-input>
+          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" class="validate-container" error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input id="encryptKey" label="商户加密密钥" class="validate-container" required value="{{merchant.encryptKey::input}}"></paper-input>
-          <paper-button  class="colorful"  on-tap="refreshEncryptKeyHandle">刷新</paper-button>
+          <paper-button class="colorful" on-tap="refreshEncryptKeyHandle">刷新</paper-button>
         </div>
 
         <div class="row" style="margin-top:30px;">
@@ -149,6 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
   <script>
     var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
     function generateMixed(n) {
       var res = '';
       for (var i = 0; i < n; i++) {
@@ -189,7 +191,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (this.pageType === 'create') {
             this.$.header.textContent = '创建机构商户';
             this.$.merId.disabled = false;
-            this.set('merchant.encryptKey', generateMixed(43)+'=');
+            this.set('merchant.encryptKey', generateMixed(43) + '=');
           } else {
             this.$.header.textContent = '编辑机构商户';
             this.$.merId.disabled = true;
@@ -230,15 +232,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         handleIsNeedSignChangeEvent: function() {
           this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
           if (this.$.isNeedSignCheck.checked) {
-              this.$.signKey.setAttribute('required',true);
+            this.$.signKey.setAttribute('required', true);
           } else {
-              this.$.signKey.removeAttribute('required');
+            this.$.signKey.removeAttribute('required');
             this.$.signKey.validate();
           }
         },
         // 刷新生成商户加密密钥
         refreshEncryptKeyHandle: function() {
-          this.set('merchant.encryptKey', generateMixed(43)+'=');
+          this.set('merchant.encryptKey', generateMixed(43) + '=');
         },
       });
     })();
