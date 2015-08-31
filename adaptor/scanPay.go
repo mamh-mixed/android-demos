@@ -28,7 +28,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	// 记录交易
 	err := mongo.SpTransColl.Add(t)
 	if err != nil {
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 不同渠道参数转换
@@ -48,7 +48,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	ret, err = ep.ProcessPay(req)
 	if err != nil {
 		log.Errorf("process BarcodePay error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -86,7 +86,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	// 记录交易
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 不同渠道参数转换
@@ -107,12 +107,12 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	if sp == nil {
-		return returnWithErrorCode("NO_CHANNEL")
+		return ReturnWithErrorCode("NO_CHANNEL")
 	}
 	ret, err = sp.ProcessBarcodePay(req)
 	if err != nil {
 		log.Errorf("process BarcodePay error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -165,18 +165,18 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	// 记录交易
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
 	if sp == nil {
-		return returnWithErrorCode("NO_CHANNEL")
+		return ReturnWithErrorCode("NO_CHANNEL")
 	}
 	ret, err = sp.ProcessQrCodeOfflinePay(req)
 	if err != nil {
 		log.Errorf("process QrCodeOfflinePay error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -222,19 +222,19 @@ func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 	// 记录交易
 	err := mongo.SpTransColl.Add(current)
 	if err != nil {
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 请求退款
 	sp := channel.GetScanPayChan(orig.ChanCode)
 	if sp == nil {
-		return returnWithErrorCode("NO_CHANNEL")
+		return ReturnWithErrorCode("NO_CHANNEL")
 	}
 
 	ret, err = sp.ProcessRefund(req)
 	if err != nil {
 		log.Errorf("process refund error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -248,7 +248,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
 			log.Error("use agentMode but not supply agentMer,please check.")
-			return returnWithErrorCode("SYSTEM_ERROR")
+			return ReturnWithErrorCode("SYSTEM_ERROR")
 		}
 		subMchId = c.ChanMerId
 		c = c.AgentMer
@@ -274,13 +274,13 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	// 向渠道查询
 	sp := channel.GetScanPayChan(t.ChanCode)
 	if sp == nil {
-		return returnWithErrorCode("NO_CHANNEL")
+		return ReturnWithErrorCode("NO_CHANNEL")
 	}
 
 	ret, err := sp.ProcessEnquiry(req)
 	if err != nil {
 		log.Errorf("process enquiry error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 特殊处理
@@ -320,7 +320,7 @@ func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 	// 记录交易
 	err := mongo.SpTransColl.Add(current)
 	if err != nil {
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 请求撤销
@@ -344,7 +344,7 @@ func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 
 	if err != nil {
 		log.Errorf("process cancel error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -437,7 +437,7 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
 			log.Error("use agentMode but not supply agentMer,please check.")
-			return returnWithErrorCode("SYSTEM_ERROR")
+			return ReturnWithErrorCode("SYSTEM_ERROR")
 		}
 		subMchId = c.ChanMerId
 		c = c.AgentMer
@@ -457,7 +457,7 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 	ret, err := sp.ProcessRefundQuery(req)
 	if err != nil {
 		log.Errorf("process weixin refundQuery error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -477,7 +477,7 @@ func ProcessWxpCancel(orig, current *model.Trans, c *model.ChanMer, req *model.S
 	ret, err = sp.ProcessCancel(req)
 	if err != nil {
 		log.Errorf("process weixin cancel error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -497,7 +497,7 @@ func ProcessWxpClose(orig, current *model.Trans, c *model.ChanMer, req *model.Sc
 	ret, err = sp.ProcessClose(req)
 	if err != nil {
 		log.Errorf("process weixin Close error:%s", err)
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	return ret
@@ -531,7 +531,7 @@ func prepareWxpReqData(orig, current *model.Trans, c *model.ChanMer, req *model.
 	// 记录交易
 	err := mongo.SpTransColl.Add(current)
 	if err != nil {
-		return returnWithErrorCode("SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 	return nil
 }

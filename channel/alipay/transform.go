@@ -61,6 +61,7 @@ func errorCodeMapping(errorCode, errorDetail, service string) (ret *model.ScanPa
 	spCode := mongo.ScanPayRespCol.GetByAlp(errorCode, service)
 	ret = &model.ScanPayResponse{}
 	ret.Respcd = spCode.ISO8583Code
+	ret.ErrorCode = spCode.ErrorCode
 
 	if spCode.IsUseISO || errorDetail == "" {
 		ret.ErrorDetail = spCode.ISO8583Msg
@@ -92,11 +93,12 @@ func createAndPayHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ChanRespCode = alipay.ResultCode
 		ret.Respcd = success.ISO8583Code
 		ret.ErrorDetail = success.ISO8583Msg
-
+		ret.ErrorCode = success.ErrorCode
 	case "ORDER_SUCCESS_PAY_INPROCESS":
 		ret.ChanRespCode = alipay.ResultCode
 		ret.Respcd = inprocess.ISO8583Code
 		ret.ErrorDetail = inprocess.ISO8583Msg
+		ret.ErrorCode = inprocess.ErrorCode
 	// 下单失败
 	case "ORDER_FAIL", "UNKNOWN", "ORDER_SUCCESS_PAY_FAIL":
 		ret.ChanRespCode = alipay.DetailErrorCode
@@ -116,6 +118,7 @@ func preCreateHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		// 预下单为支付中
 		ret.Respcd = inprocess.ISO8583Code
 		ret.ErrorDetail = inprocess.ISO8583Msg
+		ret.ErrorCode = inprocess.ErrorCode
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
@@ -151,6 +154,7 @@ func refundHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ChanRespCode = alipay.ResultCode
 		ret.Respcd = success.ISO8583Code
 		ret.ErrorDetail = success.ISO8583Msg
+		ret.ErrorCode = success.ErrorCode
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
@@ -167,6 +171,7 @@ func cancelHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		ret.ChannelOrderNum = alipay.TradeNo
 		ret.Respcd = success.ISO8583Code
 		ret.ErrorDetail = success.ISO8583Msg
+		ret.ErrorCode = success.ErrorCode
 	case "FAIL", "UNKNOWN":
 		ret.ChanRespCode = alipay.DetailErrorCode
 	default:
