@@ -177,3 +177,18 @@ func (col *chanMerCollection) FuzzyFind(chanCode, chanMerId, chanMerName string,
 
 	return results, err
 }
+
+// Remove 删除渠道商户
+func (col *chanMerCollection) Remove(chanCode, chanMerId string) error {
+
+	q := bson.M{}
+	if chanCode != "" {
+		q["chanCode"] = chanCode
+	}
+	if chanMerId != "" {
+		q["chanMerId"] = chanMerId
+	}
+	err := database.C(col.name).Remove(q)
+
+	return err
+}

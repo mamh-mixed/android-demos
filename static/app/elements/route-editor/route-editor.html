@@ -44,7 +44,7 @@
         <h2>创建路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input id="rmerId" label="*商户编号" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <paper-input id="rmerId" label="*商户代码" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
           <x-select id="rcardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="*卡品牌" class="routeAtt"></x-select>
         </div>
         <div class="row">

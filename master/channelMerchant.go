@@ -125,3 +125,23 @@ func (i *chanMer) Match(chanCode, chanMerId, chanMerName string, maxSize int) (r
 
 	return result
 }
+
+// Match 删除渠道商户
+func (i *chanMer) Delete(chanCode, chanMerId string) (result *model.ResultBody) {
+	if chanCode == "" || chanMerId == "" {
+		return model.NewResultBody(2, "chanCode和chanMerId不能为空")
+	}
+	err := mongo.ChanMerColl.Remove(chanCode, chanMerId)
+
+	if err != nil {
+		log.Errorf("删除渠道商户失败: %s", err)
+		return model.NewResultBody(1, "删除渠道商户失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "删除成功",
+	}
+
+	return result
+}

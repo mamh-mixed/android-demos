@@ -54,7 +54,7 @@
           <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
         </div>
         <div id="wxp">
-          <paper-input id="wchanMerId" label="商户代码" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
           <paper-input id="wbigChanMerId" label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
@@ -70,7 +70,7 @@
           <pre>{{weixin.httpKey}}</pre>
         </div>
         <div id="cfca">
-          <paper-input id="cfchanMerId" label="商户代码" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cfchanMerId" label="渠道商户号" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="cfchanMerName" label="商户名称" value="{{cfca.chanMerName::input}}"></paper-input>
           <paper-input id="cfsettFlag" label="清算标识" value="{{cfca.settFlag::input}}" required error-message="必填项"></paper-input>
           <paper-input id="cfsettRole" label="清算角色" value="{{cfca.settRole::input}}"></paper-input>
@@ -271,7 +271,6 @@
             return;
           }
           this.$.dialogAdd.close();
-          this.$.dialogEdit.close();
           this.fire('saved');
           this.set('chanMer', {});
         },
