@@ -125,6 +125,6 @@ func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	ret := &model.ScanPayResponse{Respcd: respCode}
 
 	retBytes, _ := json.Marshal(ret)
-	log.Debug("return notify: %s", retBytes)
+	log.Infof("return notify: %s", retBytes)
 	w.Write(retBytes)
 }
