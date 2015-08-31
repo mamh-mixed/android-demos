@@ -106,13 +106,33 @@
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>
               </a>
+              <a data-route="config.chanMers" href="/config/chanMers">
+                <iron-icon icon="account-balance"></iron-icon>
+                <span>渠道商户</span>
+              </a>
               <a data-route="config.routes" href="/config/routes">
                 <iron-icon icon="settings-input-component"></iron-icon>
                 <span>路由策略</span>
               </a>
-              <a data-route="config.chanMers" href="/config/chanMers">
+            </paper-menu>
+          </iron-collapse>
+          <a data-route="quickPay">
+            <iron-icon icon="home"></iron-icon>
+            <span>快捷支付</span>
+          </a>
+          <iron-collapse opened="{{ startWith(route.name, 'quickPay') }}">
+            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
+              <a data-route="quickPay.merchants" href="/quickPay/merchants">
+                <iron-icon icon="store"></iron-icon>
+                <span>机构商户</span>
+              </a>
+              <a data-route="quickPay.chanMers" href="/quickPay/chanMers">
                 <iron-icon icon="account-balance"></iron-icon>
                 <span>渠道商户</span>
+              </a>
+              <a data-route="quickPay.routes" href="/quickPay/routes">
+                <iron-icon icon="settings-input-component"></iron-icon>
+                <span>路由策略</span>
               </a>
             </paper-menu>
           </iron-collapse>
@@ -263,6 +283,18 @@
 
             <section data-route="test.filereader">
               <test-filereader is-deletable></test-filereader>
+            </section>
+
+            <section data-route="quickPay.merchants">
+              <quick-merchant-list></quick-merchant-list>
+            </section>
+
+            <section data-route="quickPay.chanMers">
+              <quick-chanMer-list></quick-chanMer-list>
+            </section>
+
+            <section data-route="quickPay.routes">
+              <quick-route-list></quick-route-list>
             </section>
 
           </iron-pages>

@@ -1,0 +1,177 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="quick-chanMer-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
+  </style>
+  <template>
+    <form is="iron-form" id="formQuery" method="GET" action="/master/channelMerchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="query-condition">
+        <paper-input name="chanCode" label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
+        <paper-input name="chanMerId" label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
+        <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      </div>
+      <div class="divider blank"></div>
+      <div class="divider blank"></div>
+      <table class="data-grid">
+        <thead>
+          <tr>
+            <th></th>
+            <th>商户编号</th>
+            <th>商户名称</th>
+            <th>渠道代码</th>
+            <th>渠道费率</th>
+            <th>商户费率</th>
+
+            <th>清算标识</th>
+            <th>清算角色</th>
+            <!-- <th>签名证书</th> -->
+            <!-- <th class="center">操作</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{merchants}}">
+            <tr>
+              <td class="center">
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.chanMerId}}</span>
+              </td>
+              <td on-click="viewMerchantTap">
+                <span style="text-decoration:underline;cursor:pointer">{{getChanMerName(item.chanMerName)}}</span>
+              </td>
+              <td>
+                <span>{{item.chanCode}}</span>
+              </td>
+              <td>
+                <span>{{item.acqFee}}</span>
+              </td>
+              <td>
+                <span>{{item.merFee}}</span>
+              </td>
+              <td>
+                <span>{{item.settFlag}}</span>
+              </td>
+              <td>
+                <span>{{item.settRole}}</span>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+    </form>
+
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
+    <quick-chanMer-create id="merchantEditor" on-saved="handleMerchantSave" page-type="{{pageType}}" chan-mer="{{channelMer}}"></quick-chanMer-create>
+    <quick-chanMer-view id="merchantView" item="{{channelMer}}" on-editor="handleEditor"></quick-chanMer-view>
+  </template>
+  <script>
+    Polymer({
+      is: 'quick-chanMer-list',
+      properties: {
+        tiny: {
+          type: Boolean,
+          value: false
+        },
+        autoLoading: {
+          type: Boolean,
+          value: false
+        },
+      },
+      ready: function() {
+        this.merchants = [];
+        this.cond = {
+          page: 1,
+          size: 10,
+          total: 0
+        };
+      },
+      attached: function() {
+        if (this.autoLoading) {
+          this.handleQueryTapped();
+        }
+      },
+      // 发送查询交易的ajax请求
+      handleQueryTapped: function() {
+        this.merchants = [];
+        this.generateAjaxRequest();
+      },
+      generateAjaxRequest: function() {
+        this.merchants = [];
+        this.$.formQuery.submit();
+      },
+      // ajax请求响应处理
+      handleQueryResponse: function(e) {
+        var response = e.detail;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        this.merchants = pagination.data.slice(0);
+
+        this.set('cond.total', pagination.total);
+        this.set('cond.page', pagination.page);
+
+        if (this.merchants.length === 0) {
+          Util.toast('没有数据', 2000);
+        }
+      },
+      // 清除商户选中的标志
+      initialList: function() {
+        for (var i = 0, l = this.merchants.length; i < l; i++) {
+          this.set('merchants.' + i + '.stared', false);
+        }
+      },
+      // 编辑机构商户
+      handleItemEditedEvent: function(e) {
+        this.$.merchantEditor.chanMer = e.model.item;
+        this.$.merchantEditor.open2();
+      },
+      // 新增机构商户事件
+      handleCreateFabTapped: function() {
+        this.pageType = "create";
+        this.$.merchantEditor.open();
+
+      },
+      // 新机构商户保存成功事件，刷新列表
+      handleMerchantSave: function() {
+        this.handleQueryTapped();
+      },
+      addOneFilter: function(index) {
+        return index + 1;
+      },
+      // 查看渠道商户详情
+      viewMerchantTap: function(e) {
+        this.channelMer = e.model.item;
+        this.$.merchantView.open();
+      },
+      handleEditor: function() {
+        this.pageType = "editor";
+        this.$.merchantEditor.open();
+
+      },
+      // 如何渠道名称为空，则返回---
+      getChanMerName:function(value){
+          debugger;
+          if (!value||value==''){
+              return '---';
+          }else{
+              return value;
+          }
+      }
+    });
+  </script>
+</dom-module>

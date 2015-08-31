@@ -5,32 +5,6 @@
     :host {
       display: block;
     }
-
-    .condition {
-      @apply(--layout-horizontal);
-      @apply(--layout-wrap);
-      margin-bottom: 15px;
-    }
-
-    .condition > paper-input,
-    .condition > x-select {
-      min-width: 170px;
-      margin-right: 20px;
-    }
-
-    .condition > .buttons {
-      min-width: 170px;
-    }
-
-    .condition > .buttons > paper-button {
-      margin: 10px 0px 0px;
-    }
-
-    paper-button.colorful {
-      background: var(--dark-primary-color);
-      color: var(--text-primary-color);
-    }
-
     card-item {
       margin-bottom: 20px;
     }
@@ -40,106 +14,66 @@
       bottom: 100px;
       right: 10%;
     }
-
-    table {
-      width: 100%;
-      border-spacing: 0;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-    }
-
-    .center {
-      text-align: center;
-    }
-
-    tr > th,
-    tr > td {
-      text-align: left;
-      padding: 8px;
-    }
-
-    table > thead {}
-
-    thead > tr {}
-
-    thead > tr > th {
-      line-height: 1.42857143;
-      border-bottom: 1px solid #ddd;
-    }
-
-    table > tbody {
-      min-height: 700px;
-    }
-
-    tbody>tr:hover {
-      background-color: #f5f5f5;
-    }
-
-    table tr th:nth-last-of-type(2),
-    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <div class="condition">
-      <paper-input label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
-      <paper-input label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
-      <paper-input label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
-      <div class="buttons">
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-      </div>
-    </div>
-    <div class="list">
-      <table style="width:100%;">
-        <thead>
-          <tr>
-            <th></th>
-            <th>渠道代码</th>
-            <th>商户编号</th>
-            <th>渠道费率</th>
-            <th>商户费率</th>
-            <th>商户名称</th>
-            <th>清算标识</th>
-            <th>清算角色</th>
-            <!-- <th>签名证书</th> -->
-            <!-- <th class="center">操作</th> -->
-          </tr>
-        </thead>
-        <tbody>
-          <template is="dom-repeat" items="{{merchants}}">
-            <tr on-click="viewMerchantTap">
-              <td class="center">
-                <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td>
-                <span>{{item.chanCode}}</span>
-              </td>
-              <td>
-                <span>{{item.chanMerId}}</span>
-              </td>
-              <td>
-                <span>{{item.acqFee}}</span>
-              </td>
-              <td>
-                <span>{{item.merFee}}</span>
-              </td>
-              <td>
-                <span>{{item.chanMerName}}</span>
-              </td>
-              <td>
-                <span>{{item.settFlag}}</span>
-              </td>
-              <td>
-                <span>{{item.settRole}}</span>
-              </td>
-              <!-- <td class="center">
-                <iron-icon icon="create" on-click="handleItemEditedEvent"></iron-icon>
-              </td> -->
+      <form is="iron-form" id="formQuery" method="GET" action="/master/channelMerchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+        <div class="query-condition">
+          <paper-input name="chanCode" label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
+          <paper-input name="chanMerId" label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
+          <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
+          <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        </div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <table class="data-grid">
+          <thead>
+            <tr>
+              <th></th>
+              <th>商户编号</th>
+              <th>商户名称</th>
+              <th>渠道代码</th>
+              <th>渠道费率</th>
+              <th>商户费率</th>
+
+              <th>清算标识</th>
+              <th>清算角色</th>
+              <!-- <th>签名证书</th> -->
+              <!-- <th class="center">操作</th> -->
             </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
-    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+          </thead>
+          <tbody>
+            <template is="dom-repeat" items="{{merchants}}">
+              <tr>
+                <td class="center">
+                  <span>{{addOneFilter(index)}}</span>
+                </td>
+                <td>
+                  <span>{{item.chanMerId}}</span>
+                </td>
+                <td on-click="viewMerchantTap">
+                  <span style="text-decoration:underline;cursor:pointer">{{getChanMerName(item.chanMerName)}}</span>
+                </td>
+                <td>
+                  <span>{{item.chanCode}}</span>
+                </td>
+                <td>
+                  <span>{{item.acqFee}}</span>
+                </td>
+                <td>
+                  <span>{{item.merFee}}</span>
+                </td>
+                <td>
+                  <span>{{item.settFlag}}</span>
+                </td>
+                <td>
+                  <span>{{item.settRole}}</span>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+      </form>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
@@ -181,12 +115,11 @@
         },
         generateAjaxRequest: function() {
           this.merchants = [];
-          this.$.queryAjax.params = this.cond;
-          this.$.queryAjax.generateRequest();
+          this.$.formQuery.submit();
         },
         // ajax请求响应处理
         handleQueryResponse: function(e) {
-          var response = e.detail.response;
+          var response = e.detail;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
             return;
@@ -228,6 +161,14 @@
         viewMerchantTap: function(e) {
             this.channelMer=e.model.item;
             this.$.merchantView.open();
+        },
+        // 如何渠道名称为空，则返回---
+        getChanMerName:function(value){
+            if (value==''){
+                return '---';
+            }else{
+                return value;
+            }
         }
       });
   </script>
