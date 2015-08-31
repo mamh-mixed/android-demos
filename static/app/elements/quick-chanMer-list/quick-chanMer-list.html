@@ -164,13 +164,18 @@
 
       },
       // 如何渠道名称为空，则返回---
-      getChanMerName:function(value){
-          if (!value||value===''){
-              return '---';
-          }else{
-              return value;
-          }
-      }
+      getChanMerName: function(value) {
+        if (!value || value === '') {
+          return '---';
+        } else {
+          return value;
+        }
+      },
+      // 发送查询交易的ajax请求
+      submitForm: function() {
+        this.merchants = [];
+        this.set('cond.total', 0);
+      },
     });
   </script>
 </dom-module>

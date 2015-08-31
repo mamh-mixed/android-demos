@@ -181,7 +181,12 @@
           } else {
             return value;
           }
-        }
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.routes = [];
+          this.set('cond.total', 0);
+        },
       });
     })();
   </script>

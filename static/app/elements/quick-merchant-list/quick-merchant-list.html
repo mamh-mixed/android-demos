@@ -236,6 +236,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         handleAfterDelete: function() {
           this.handleQueryTapped();
         },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.merchants = [];
+          this.set('cond.total', 0);
+        },
       });
     })();
   </script>
