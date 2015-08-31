@@ -18,7 +18,7 @@
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
-      <div class="query-condition">
+      <div class="search-condition">
         <paper-input id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
         <paper-input id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
         <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->

@@ -19,7 +19,7 @@
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
-      <div class="query-condition">
+      <div class="search-condition">
         <paper-input name="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
         <paper-input name="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-input name="agentCode" label="代理代码/机构代码" value="{{cond.agentCode::input}}"></paper-input>

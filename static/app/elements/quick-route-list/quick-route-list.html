@@ -14,7 +14,7 @@
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
-      <div class="query-condition">
+      <div class="search-condition">
         <paper-input name="merId" id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>

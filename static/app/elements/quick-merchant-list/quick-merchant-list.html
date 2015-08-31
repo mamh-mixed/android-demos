@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
-      <div class="query-condition">
+      <div class="search-condition">
         <paper-input id="merId" name="merId"  label="商户编号" value="{{cond.merId::input}}"></paper-input>
         <paper-input id="merName" name="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
         <paper-input id="agentCode" name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
