@@ -79,14 +79,97 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-dialog id="dialogView">
       <h2>查看渠道商户信息</h2>
       <paper-dialog-scrollable>
-        <div>
+        <div id="alp" hidden>
           <dl>
             <dt>渠道代码:</dt>
             <dd>
               <span>{{item.chanCode}}</span>
             </dd>
 
-            <dt>商户编号:</dt>
+            <dt>商户代码:</dt>
+            <dd>
+              <span>{{item.chanMerId}}</span>
+            </dd>
+
+            <dt>商户名称:</dt>
+            <dd>
+              <span>{{item.chanMerName}}</span>
+            </dd>
+            <dt>渠道费率:</dt>
+            <dd>
+              <span>{{item.acqFee}}</span>
+            </dd>
+            <dt>商户费率:</dt>
+            <dd>
+              <span>{{item.merFee}}</span>
+            </dd>
+            <dt>MD5 KEY:</dt>
+            <dd>
+              <p>
+                <pre>{{item.signCert}}</pre>
+              </p>
+            </dd>
+          </dl>
+        </div>
+        <div id="wxp" hidden>
+          <dl>
+            <dt>渠道代码:</dt>
+            <dd>
+              <span>{{item.chanCode}}</span>
+            </dd>
+
+            <dt>商户代码:</dt>
+            <dd>
+              <span>{{item.chanMerId}}</span>
+            </dd>
+
+            <dt>商户名称:</dt>
+            <dd>
+              <span>{{item.chanMerName}}</span>
+            </dd>
+            <dd>
+              <paper-radio-button checked$="{{item.isAgentMode}}" disabled> 是否代理商模式</paper-radio-button>
+            </dd>
+            <dt>大商户号:</dt>
+            <dd>
+              <span>{{item.agentMer.chanMerId}}</span>
+            </dd>
+            <dt>渠道费率:</dt>
+            <dd>
+              <span>{{item.acqFee}}</span>
+            </dd>
+            <dt>商户费率:</dt>
+            <dd>
+              <span>{{item.merFee}}</span>
+            </dd>
+            <dt>微信支付APPID:</dt>
+            <dd>
+              <span>{{item.wxpAppId}}</span>
+            </dd>
+            <dt>签名证书:</dt>
+            <dd>
+              <p>
+                <pre>{{item.signCert}}</pre>
+              </p>
+            </dd>
+            <dt>HTTP Cert:</dt>
+            <dd>
+              <span>{{item.httpCert}}</span>
+            </dd>
+            <dt>HTTP Key:</dt>
+            <dd>
+              <span>{{item.httpKey}}</span>
+            </dd>
+          </dl>
+        </div>
+        <div id="cfca" hidden>
+          <dl>
+            <dt>渠道代码:</dt>
+            <dd>
+              <span>{{item.chanCode}}</span>
+            </dd>
+
+            <dt>商户代码:</dt>
             <dd>
               <span>{{item.chanMerId}}</span>
             </dd>
@@ -96,25 +179,70 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>{{item.chanMerName}}</span>
             </dd>
 
-            <dt hidden$="{{tiny}}">清算标识:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>清算标识:</dt>
+            <dd>
               <span>{{item.settFlag}}</span>
             </dd>
 
-            <dt hidden$="{{tiny}}">清算角色:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>清算角色:</dt>
+            <dd>
+              <span>{{item.settRole}}</span>
+            </dd>
+            <dt>CFCA 商户私钥:</dt>
+            <dd>
+              <span>{{item.privateKey}}</span>
+            </dd>
+            <dt>CFCA 商户公钥:</dt>
+            <dd>
+              <span>{{item.publicKey}}</span>
+            </dd>
+            <dt>渠道费率:</dt>
+            <dd>
+              <span>{{item.acqFee}}</span>
+            </dd>
+            <dt>商户费率:</dt>
+            <dd>
+              <span>{{item.merFee}}</span>
+            </dd>
+          </dl>
+
+        </div>
+        <div id="cil" hidden>
+          <dl>
+            <dt>渠道代码:</dt>
+            <dd>
+              <span>{{item.chanCode}}</span>
+            </dd>
+
+            <dt>商户代码:</dt>
+            <dd>
+              <span>{{item.chanMerId}}</span>
+            </dd>
+
+            <dt>商户名称:</dt>
+            <dd>
+              <span>{{item.chanMerName}}</span>
+            </dd>
+
+            <dt>清算标识:</dt>
+            <dd>
+              <span>{{item.settFlag}}</span>
+            </dd>
+
+            <dt>清算角色:</dt>
+            <dd>
               <span>{{item.settRole}}</span>
             </dd>
 
-            <dt hidden$="{{tiny}}">签名证书:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>签名证书:</dt>
+            <dd>
               <p>
                 <pre>{{item.signCert}}</pre>
               </p>
             </dd>
 
-            <dt hidden$="{{tiny}}">验签证书:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>验签证书:</dt>
+            <dd>
               <span>{{item.checkSignCert}}</span>
             </dd>
 
@@ -132,32 +260,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <dd>
               <span>{{item.terminalId}}</span>
             </dd>
-            <dt hidden$="{{tiny}}">渠道费率:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>渠道费率:</dt>
+            <dd>
               <span>{{item.acqFee}}</span>
             </dd>
-            <dt hidden$="{{tiny}}">商户费率:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>商户费率:</dt>
+            <dd>
               <span>{{item.merFee}}</span>
             </dd>
-            <dt hidden$="{{tiny}}">HTTP Cert:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>HTTP Cert:</dt>
+            <dd>
               <span>{{item.httpCert}}</span>
             </dd>
-            <dt hidden$="{{tiny}}">HTTP Key:</dt>
-            <dd hidden$="{{tiny}}">
+            <dt>HTTP Key:</dt>
+            <dd>
               <span>{{item.httpKey}}</span>
             </dd>
           </dl>
-          </card-item>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
         <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
         <paper-button on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
       </div>
     </paper-dialog>
-
+    <iron-ajax id="deleteMerAjax" method="GET" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>
   </template>
   <script>
     Polymer({
@@ -173,6 +304,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       open: function() {
         this.$.dialogView.open();
+        this.deleteFlag = false;
+        if (this.item.chanCode === 'ALP') {
+          this.$.alp.hidden = false;
+          this.$.wxp.hidden = true;
+          this.$.cfca.hidden = true;
+          this.$.cil.hidden = true;
+        } else if (this.item.chanCode === 'WXP') {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = false;
+          this.$.cfca.hidden = true;
+          this.$.cil.hidden = true;
+        } else if (this.item.chanCode === 'CFCA') {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = true;
+          this.$.cfca.hidden = false;
+          this.$.cil.hidden = true;
+        } else {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = true;
+          this.$.cfca.hidden = true;
+          this.$.cil.hidden = false;
+        }
       },
       // 关闭事件
       handleClose: function() {
@@ -180,8 +333,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       // 编辑
       handleItemEditedEvent: function() {
-          this.fire('editor');
-          this.handleClose();
+        this.fire('editor');
+        this.handleClose();
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          chanCode: this.item.chanCode,
+          chanMerId: this.item.chanMerId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
       },
     });
   </script>

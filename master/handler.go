@@ -303,6 +303,20 @@ func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
+func channelMerchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	v := r.URL.Query()
+	chanCode := v.Get("chanCode")
+	chanMerId := v.Get("chanMerId")
+	ret := ChanMer.Delete(chanCode, chanMerId)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 func agentFindHandle(w http.ResponseWriter, r *http.Request) {
 	agentCode := r.FormValue("agentCode")
 	agentName := r.FormValue("agentName")

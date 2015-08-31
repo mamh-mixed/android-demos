@@ -16,7 +16,7 @@
     <form is="iron-form" id="formQuery" method="GET" action="/master/channelMerchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
         <paper-input name="chanCode" label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
-        <paper-input name="chanMerId" label="商户编号" value="{{cond.chanMerId::input}}"></paper-input>
+        <paper-input name="chanMerId" label="商户代码" value="{{cond.chanMerId::input}}"></paper-input>
         <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
@@ -25,8 +25,8 @@
       <table class="data-grid">
         <thead>
           <tr>
-            <th></th>
-            <th>商户编号</th>
+            <th>序号</th>
+            <th>商户代码</th>
             <th>商户名称</th>
             <th>渠道代码</th>
             <th>渠道费率</th>
@@ -74,7 +74,7 @@
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
     <quick-chanMer-create id="merchantEditor" on-saved="handleMerchantSave" page-type="{{pageType}}" chan-mer="{{channelMer}}"></quick-chanMer-create>
-    <quick-chanMer-view id="merchantView" item="{{channelMer}}" on-editor="handleEditor"></quick-chanMer-view>
+    <quick-chanMer-view id="merchantView" item="{{channelMer}}" on-editor="handleEditor" on-delete-ok="AfterDeleteHandle"></quick-chanMer-view>
   </template>
   <script>
     Polymer({
@@ -164,13 +164,22 @@
 
       },
       // 如何渠道名称为空，则返回---
-      getChanMerName:function(value){
-          if (!value||value===''){
-              return '---';
-          }else{
-              return value;
-          }
-      }
+      getChanMerName: function(value) {
+        if (!value || value === '') {
+          return '---';
+        } else {
+          return value;
+        }
+      },
+      // 发送查询交易的ajax请求
+      submitForm: function() {
+        this.merchants = [];
+        this.set('cond.total', 0);
+      },
+      // 删除成功后重新查询数据
+      AfterDeleteHandle:function(){
+          this.handleQueryTapped();
+      },
     });
   </script>
 </dom-module>

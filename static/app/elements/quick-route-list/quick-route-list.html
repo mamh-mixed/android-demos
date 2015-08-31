@@ -15,7 +15,7 @@
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="merId" id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
+        <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -23,8 +23,8 @@
       <table class="data-grid">
         <thead>
           <tr>
-            <th></th>
-            <th>商户编号</th>
+            <th>序号</th>
+            <th>商户代码</th>
             <th>卡品牌</th>
             <th>渠道代码</th>
             <th>渠道商户号</th>
@@ -39,7 +39,7 @@
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{routes}}">
-            <tr on-click="viewMerchantTap">
+            <tr>
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
@@ -119,7 +119,6 @@
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
-          this.merchants = [];
           this.$.formQuery.submit();
         },
         // ajax请求响应处理
@@ -181,7 +180,12 @@
           } else {
             return value;
           }
-        }
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.routes = [];
+          this.set('cond.total', 0);
+        },
       });
     })();
   </script>

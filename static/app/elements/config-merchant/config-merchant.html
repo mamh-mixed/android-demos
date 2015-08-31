@@ -91,7 +91,7 @@
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
         <div class="row">
-          <paper-input id="merId" label="*商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
+          <paper-input id="merId" label="*商户代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
           <paper-input id="merName" label="*商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
@@ -562,16 +562,15 @@
         }
         //   http证书与HTTP密钥文件格式必须为PEM格式的文件,后台还未
         if (!this.weixin.isAgentMode) {
-          if (!this.httpCertFlag) {
+          if (!this.weixin.httpCert||this.weixin.httpCert==='') {
             Util.toast('HTTP证书文件格式，必须为PEM格式的文件', 3000);
             return;
           }
-          if (!this.httpKeyFlag) {
+          if (!this.weixin.httpKey||this.weixin.httpKey==='') {
             Util.toast('HTTP密钥文件格式，必须为PEM格式的文件', 3000);
             return;
           }
         }
-
         var acqFee = parseFloat(this.weixin.acqFee),
           merFee = parseFloat(this.weixin.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
@@ -704,9 +703,7 @@
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
-            this.httpCertFlag = true;
           } else {
-            this.httpCertFlag = false;
             Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
           }
         }
@@ -726,9 +723,7 @@
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
-            this.httpKeyFlag = true;
           } else {
-            this.httpKeyFlag = false;
             Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
           }
         }

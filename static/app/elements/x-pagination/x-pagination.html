@@ -1,240 +1,123 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="x-pagination">
   <style>
     :host {
-      display: block;
-    }
-
-    .pagination {
       display: inline-block;
-      padding-left: 0;
-      border-radius: 4px;
+      line-height: 24px;
     }
 
-    .pagination>li {
-      display: inline;
+    :host > div {
+      display: inline-block;
+      margin: auto 12px;
     }
 
-    .pagination>li>a {
-      position: relative;
-      float: left;
-      padding: 6px 12px;
-      margin-left: -1px;
-      line-height: 1.42857143;
-      /*color: #337ab7;*/
-      color: #777;
-      text-decoration: none;
-      background-color: #fff;
-      /*border: 1px solid #ddd;*/
+    div.size > select {
+      border: none;
+      background: none;
+      outline: none;
       cursor: pointer;
     }
 
-    .pagination>.active>a,
-    .pagination>.active>a:focus,
-    .pagination>.active>a:hover {
-      z-index: 2;
-      /*color: #fff;*/
-      color: #3498db;
-      cursor: default;
-      /*background-color: #337ab7;
-      border-color: #337ab7;*/
-    }
-
-    .pagination>.disabled>a,
-    .pagination>.disabled>a:focus,
-    .pagination>.disabled>a:hover {
-      color: #777;
-      cursor: not-allowed;
-      background-color: #fff;
-      border-color: #ddd;
-      cursor: default;
-    }
-
-    .pagination>li:first-child>a {
-      margin-left: 0;
-      /*border-top-left-radius: 4px;*/
-      /*border-bottom-left-radius: 4px;*/
-    }
-
-    .pagination>li:last-child>a {
-      /*border-top-right-radius: 4px;*/
-      /*border-bottom-right-radius: 4px;*/
+    div.pre-next * {
+      margin: auto 4px;
+      cursor: pointer;
     }
 
   </style>
   <template>
-    <ul class="pagination">
-      <li id="firstPage">
-        <a on-tap="toFirstPage">
-          <span aria-hidden="true">&laquo;</span>
-        </a>
-      </li>
-      <li id="prevPage">
-        <a on-tap="toPrevPage">
-          <span aria-hidden="true">&lt;</span>
-        </a>
-      </li>
 
-      <template is="dom-if" if="{{isPreEllipsis}}">
-        <li><a>...</a></li>
-      </template>
+    <div class="size">
+      <span>每页显示</span>
+      <select id="size" name="size" value="{{size}}" on-change="changeSize">
+        <option>10</option>
+        <option selected>20</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
+      <span>条</span>
+    </div>
 
-      <template is="dom-repeat" items="{{pageArray}}">
-        <template is="dom-if" if="{{item.isActive}}">
-          <li class="active"><a>{{item.value}}</a></li>
-        </template>
-        <template is="dom-if" if="{{!item.isActive}}">
-          <li><a on-tap="goToPage">{{item.value}}</a></li>
-        </template>
-      </template>
+    <div class="offset">
+      <span>{{from}}</span>
+      <span>&nbsp;-&nbsp;</span>
+      <span>{{to}}</span>
+      <span>&nbsp;/&nbsp;</span>
+      <span>{{total}}</span>
+    </div>
 
-      <template is="dom-if" if="{{isAfterEllipsis}}">
-        <li><a>...</a></li>
-      </template>
+    <div class="pre-next">
+      <iron-icon icon="chevron-left" on-tap="prePage"></iron-icon>
+      <iron-icon icon="chevron-right" on-tap="nextPage"></iron-icon>
+    </div>
 
-      <li id="nextPage">
-        <a on-tap="toNextPage">
-          <span aria-hidden="true">&gt;</span>
-        </a>
-      </li>
-      <li id="lastPage">
-        <a on-tap="toLastPage">
-          <span aria-hidden="true">&raquo;</span>
-        </a>
-      </li>
-    </ul>
-    <input name="size" type="hidden" value="{{size}}" />
+    <!-- <input name="size" type="hidden" value="{{size}}" /> -->
     <input name="page" type="hidden" value="{{page}}" />
     <input type="submit" style="display: none" />
   </template>
   <script>
-    (function() {
-      Polymer({
-        is: 'x-pagination',
+    Polymer({
+      is: 'x-pagination',
 
-        properties: {
-          total: {
-            type: Number,
-            value: 0
-          },
-          size: {
-            type: Number,
-            value: 20
-          },
-          page: {
-            type: Number,
-            value: 1,
-            notify: true
-          },
-          pageArray: {
-            type: Array,
-            value: []
-          }
+      properties: {
+        total: {
+          type: Number,
+          value: 0,
+          notify: true
         },
-        observers: [
-          '_paginationChanged(total, page)'
-        ],
-        _paginationChanged: function() {
-          if (this.total === 0) {
-            this.toggleAttribute('hidden', true);
-            return;
-          }
-          this.toggleAttribute('hidden', false);
-          this.set('size', this.size || 20);
-          this.set('page', this.page || 0);
-
-          var maxPage = Math.ceil(this.total / this.size);
-          this.set('pageArray', []);
-
-          var i = this.page - 2;
-          if (maxPage - this.page < 3) {
-            i = maxPage - 4;
-          }
-          for (var l = 1; l <= Math.min(5, maxPage); i++) {
-            if (i > 0) {
-              this.push('pageArray', {
-                value: i,
-                isActive: i === this.page ? true : false
-              });
-              l++;
-            }
-          }
-
-          if (this.page > 3 && maxPage > 5) {
-            this.isPreEllipsis = true;
-          } else {
-            this.isPreEllipsis = false;
-          }
-
-          if (this.pageArray[this.pageArray.length - 1].value < maxPage) {
-            this.isAfterEllipsis = true;
-          } else {
-            this.isAfterEllipsis = false;
-          }
-
-          if (this.page === 1) {
-            this.toggleClass('disabled', true, this.$.firstPage);
-            this.toggleClass('disabled', true, this.$.prevPage);
-          } else {
-            this.toggleClass('disabled', false, this.$.firstPage);
-            this.toggleClass('disabled', false, this.$.prevPage);
-          }
-
-          if (this.page === maxPage) {
-            this.toggleClass('disabled', true, this.$.nextPage);
-            this.toggleClass('disabled', true, this.$.lastPage);
-          } else {
-            this.toggleClass('disabled', false, this.$.nextPage);
-            this.toggleClass('disabled', false, this.$.lastPage);
-          }
+        size: {
+          type: Number,
+          value: 20,
+          notify: true
         },
-        // 每一页跳转啊
-        goToPage: function(e) {
-          var page = e.model.item.value;
-          this.set('page', page);
-          this.fire('page-change', page);
-        },
-        // 到首页
-        toFirstPage: function() {
-          if (this.page <= 1) {
-            return;
-          }
-
-          this.set('page', 1);
-          this.fire('page-change', page);
-        },
-        // 到前一页
-        toPrevPage: function() {
-          if (this.page <= 1) {
-            return;
-          }
-
-          this.set('page', --this.page);
-          this.fire('page-change', page);
-        },
-        // 到下一页
-        toNextPage: function() {
-          var maxPage = Math.ceil(this.total / this.size);
-          if (this.page >= maxPage) {
-            return;
-          }
-
-          this.set('page', ++this.page);
-          this.fire('page-change', page);
-        },
-        // 到最后一页
-        toLastPage: function() {
-          var maxPage = Math.ceil(this.total / this.size);
-          if (this.page >= maxPage) {
-            return;
-          }
-
-          this.set('page', Math.ceil(this.total / this.size));
-          this.fire('page-change', page);
+        page: {
+          type: Number,
+          value: 1,
+          notify: true
         }
-      });
-    })();
+      },
+      ready: function() {
+        this._pageChange();
+      },
+      observers: [
+        '_pageChange(total, page, size)'
+      ],
+      _pageChange: function() {
+        if (!this.total || this.total === 0) {
+          this.total = 0;
+          this.from = 0;
+          this.to = 0;
+        } else {
+          this.from = (this.page - 1) * this.size + 1;
+          this.to = this.from + this.size;
+          if (this.to > this.total) {
+            this.to = this.total;
+          }
+        }
+      },
+      changeSize: function() {
+        this.set('size', +this.$.size.value);
+        this.fire('page-change');
+        this._pageChange();
+      },
+      prePage: function() {
+        if (this.page <= 1) {
+          return;
+        }
+        this.set('page', this.page - 1);
+        this.fire('page-change');
+      },
+      nextPage: function() {
+        if (this.to >= this.total) {
+          return;
+        }
+        this.set('page', this.page + 1);
+        this.fire('page-change');
+      }
+
+    });
 
   </script>
 </dom-module>

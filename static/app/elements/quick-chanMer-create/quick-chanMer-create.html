@@ -54,7 +54,7 @@
           <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
         </div>
         <div id="wxp">
-          <paper-input id="wchanMerId" label="商户代码" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
           <paper-input id="wbigChanMerId" label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
@@ -64,20 +64,20 @@
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" required error-message="必填项"></paper-input>
           <paper-input id="httpCert" label="HTTP 证书" type="file" required on-change="handleWeixinHttpCertFile"></paper-input>
           <label id="httpCertL">HTTP 证书</label>
+          <pre>{{weixin.httpCert}}</pre>
           <paper-input id="httpKey" label="HTTP 密钥" type="file" required on-change="handleWeixinHttpKeyFile"></paper-input>
           <label id="httpKeyL">HTTP 密钥</label>
-          <div class="row">
-            <pre>{{weixin.httpCert}}</pre>
-            <pre>{{weixin.httpKey}}</pre>
-          </div>
+          <pre>{{weixin.httpKey}}</pre>
         </div>
         <div id="cfca">
-          <paper-input id="cfchanMerId" label="商户代码" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cfchanMerId" label="渠道商户号" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="cfchanMerName" label="商户名称" value="{{cfca.chanMerName::input}}"></paper-input>
           <paper-input id="cfsettFlag" label="清算标识" value="{{cfca.settFlag::input}}" required error-message="必填项"></paper-input>
           <paper-input id="cfsettRole" label="清算角色" value="{{cfca.settRole::input}}"></paper-input>
           <paper-input id="cfprivateKey" label="CFCA 商户私钥" value="{{cfca.privateKey::input}}" required error-message="必填项"></paper-input>
           <paper-input id="cfpublicKey" label="CFCA 商户公钥" value="{{cfca.publicKey::input}}"></paper-input>
+          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{cfca.acqFee::input}}"></paper-input>
+          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{cfca.merFee::input}}"></paper-input>
         </div>
         <div id="cil"></div>
       </paper-dialog-scrollable>
@@ -153,8 +153,6 @@
             this.alp = {};
             this.weixin = {};
             this.cfca = {};
-            this.httpCertFlag = false;
-            this.httpKeyFlag = false;
             this.$.chanCode.childNodes[1].children[1].disabled = false;
             this.$.achanMerId.disabled = false;
             this.$.wchanMerId.disabled = false;
@@ -223,13 +221,13 @@
               this.set('alp.chanCode', 'ALP');
               this.chanMer = this.alp;
             } else if (this.channel.key === 'WXP' && !this.isWXPConfigEmpty()) {
-              //   http证书与HTTP密钥文件格式必须为PEM格式的文件,后台还未
+              //   http证书与HTTP密钥文件格式必须为PEM格式的文件
               if (!this.weixin.isAgentMode) {
-                if (!this.httpCertFlag) {
+                if (!this.weixin.httpCert || this.weixin.httpCert === '') {
                   Util.toast('HTTP证书文件格式，必须为PEM格式的文件', 3000);
                   return;
                 }
-                if (!this.httpKeyFlag) {
+                if (!this.weixin.httpKey || this.weixin.httpKey === '') {
                   Util.toast('HTTP密钥文件格式，必须为PEM格式的文件', 3000);
                   return;
                 }
@@ -273,7 +271,6 @@
             return;
           }
           this.$.dialogAdd.close();
-          this.$.dialogEdit.close();
           this.fire('saved');
           this.set('chanMer', {});
         },
@@ -293,9 +290,7 @@
                 _this.set('weixin.httpCert', this.result);
               };
               reader.readAsText(file);
-              this.httpCertFlag = true;
             } else {
-              this.httpCertFlag = false;
               Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
             }
           }
@@ -315,9 +310,7 @@
                 _this.set('weixin.httpKey', this.result);
               };
               reader.readAsText(file);
-              this.httpKeyFlag = true;
             } else {
-              this.httpKeyFlag = false;
               Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
             }
           }

@@ -22,6 +22,7 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/master/channelMerchant/match", channelMerchantMatchHandle)
 	mux.HandleFunc("/master/channelMerchant/findByMerIdAndCardBrand", channelFindByMerIdAndCardBrandHandle)
 	mux.HandleFunc("/master/channelMerchant/save", channelMerchantSaveHandle)
+	mux.HandleFunc("/master/channelMerchant/delete", channelMerchantDeleteHandle)
 	mux.HandleFunc("/master/agent/find", agentFindHandle)
 	mux.HandleFunc("/master/agent/delete", agentDeleteHandle)
 	mux.HandleFunc("/master/agent/save", agentSaveHandle)
