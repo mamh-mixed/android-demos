@@ -11,141 +11,68 @@
       -moz-box-sizing: border-box;
       box-sizing: border-box;
     }
-
-    .condition {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .condition > paper-input,
-    .condition > x-select {
-      min-width: 170px;
-      margin-right: 20px;
-    }
-
-    .condition > .buttons {
-      min-width: 170px;
-    }
-
-    .condition > .buttons > paper-button {
-      margin: 10px 0px 0px;
-    }
-
-    paper-button.colorful {
-      background: var(--dark-primary-color);
-      color: var(--text-primary-color);
-    }
-
-    .loading-more-wrapper {
-      text-align: center;
-    }
-
     paper-fab {
       position: fixed;
       bottom: 100px;
       right: 10%;
     }
-
-    table {
-      width: 100%;
-      border-spacing: 0;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-    }
-
-    .center {
-      text-align: center;
-    }
-
-    tr > th,
-    tr > td {
-      text-align: left;
-      padding: 8px;
-    }
-
-    table > thead {}
-
-    thead > tr {}
-
-    thead > tr > th {
-      line-height: 1.42857143;
-      border-bottom: 1px solid #ddd;
-    }
-
-    table > tbody {
-      min-height: 700px;
-    }
-
-    tbody>tr:hover {
-      background-color: #f5f5f5;
-    }
-
-    table tr th:nth-last-of-type(2),
-    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <!-- <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax> -->
-    <div class="condition">
-      <paper-input label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
-      <paper-input label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
-      <paper-input label="代理代码/机构代码" value="{{cond.agentCode::input}}"></paper-input>
-      <paper-input label="代理名称/机构名称" value="{{cond.agentName::input}}"></paper-input>
-      <div class="buttons">
+    <form is="iron-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="search-condition">
+        <paper-input name="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input name="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-input name="agentCode" label="代理代码/机构代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="agentName" label="代理名称/机构名称" value="{{cond.agentName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-    </div>
-
-    <div class="list">
-      <table style="width:100%;">
-        <thead>
-          <tr>
-            <th></th>
-            <th>集团商户代码</th>
-            <th>集团商户名称</th>
-            <th>代理代码/机构代码</th>
-            <th>代理名称/机构名称</th>
-            <th class="center">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template is="dom-repeat" items="{{groups}}">
+      <div class="divider blank"></div>
+      <div class="divider blank"></div>
+      <table class="data-grid">
+          <thead>
             <tr>
-              <td class="center">
-                <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td>
-                <span>{{item.groupCode}}</span>
-              </td>
-              <td>
-                <span>{{item.groupName}}</span>
-              </td>
-              <td>
-                <span>{{item.agentCode}}</span>
-              </td>
-              <td>
-                <span>{{item.agentName}}</span>
-              </td>
-              <td class="center">
-                <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
-                <iron-icon icon="delete" on-tap="handleDeleteEvent"></iron-icon>
-              </td>
+              <th></th>
+              <th>集团商户代码</th>
+              <th>集团商户名称</th>
+              <th>代理代码/机构代码</th>
+              <th>代理名称/机构名称</th>
+              <th class="center">操作</th>
             </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
-    <div class="loading-more-wrapper">
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-    </div>
+          </thead>
+          <tbody>
+            <template is="dom-repeat" items="{{groups}}">
+              <tr>
+                <td class="center">
+                  <span>{{addOneFilter(index)}}</span>
+                </td>
+                <td>
+                  <span>{{item.groupCode}}</span>
+                </td>
+                <td>
+                  <span>{{item.groupName}}</span>
+                </td>
+                <td>
+                  <span>{{item.agentCode}}</span>
+                </td>
+                <td>
+                  <span>{{item.agentName}}</span>
+                </td>
+                <td class="center">
+                  <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
+                  <iron-icon icon="delete" on-tap="handleDeleteEvent"></iron-icon>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+</form>
+      <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+      </paper-fab>
 
-    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
-    </paper-fab>
-
-    <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
-    <group-delete id="groupDelete" on-saved="handleGroupSave"></group-delete>
+      <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
+      <group-delete id="groupDelete" on-saved="handleGroupSave"></group-delete>
   </template>
   <script>
     (function() {
@@ -192,12 +119,11 @@
 
         generateAjaxRequest: function() {
           this.groups = [];
-          this.$.queryAjax.params = this.cond;
-          this.$.queryAjax.generateRequest();
+          this.$.formQuery.submit();
         },
         // ajax请求响应处理
         handleQueryResponse: function(e) {
-          var response = e.detail.response;
+          var response = e.detail;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
             return;
