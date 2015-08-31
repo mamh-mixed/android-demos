@@ -126,7 +126,7 @@ func (i *chanMer) Match(chanCode, chanMerId, chanMerName string, maxSize int) (r
 	return result
 }
 
-// Match 删除渠道商户
+// Delete 删除渠道商户
 func (i *chanMer) Delete(chanCode, chanMerId string) (result *model.ResultBody) {
 	if chanCode == "" || chanMerId == "" {
 		return model.NewResultBody(2, "chanCode和chanMerId不能为空")
