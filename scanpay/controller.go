@@ -112,11 +112,11 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 3. 检查机构号
-	ac := strings.Trim(req.AgentCode, " ")
-	if mer.AgentCode != ac {
-		ret = fieldContentError(agentCode)
-		return
-	}
+	// ac := strings.Trim(req.AgentCode, " ")
+	// if mer.AgentCode != ac {
+	// 	ret = fieldContentError(agentCode)
+	// 	return
+	// }
 
 	// 4. 商户、机构号都通过后，验证接口权限
 	if !util.StringInSlice(req.Busicd, mer.Permission) {
@@ -138,7 +138,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 	// 过滤包含空格字符串
 	req.Chcd = strings.TrimSpace(req.Chcd)
-	req.AgentCode = ac
+	req.AgentCode = strings.TrimSpace(req.AgentCode)
 
 	// 6. 开始业务处理
 	ret = processFunc(req)

@@ -75,6 +75,15 @@ type txn struct {
 func AddTransFromOldDB(st, et string) error {
 	// TODO 判断新系统是否包含该天的数据，如果包含，那么报错，避免数据紊乱
 
+	agents, err := readAgentFromOldDB()
+	if err != nil {
+		return err
+	}
+	agentsMap := make(map[string]string)
+	for _, a := range agents {
+		agentsMap[a.AgentCode] = a.AgentName
+	}
+
 	txns, err := readTransFromOldDB(st, et)
 	if err != nil {
 		return err
@@ -112,13 +121,13 @@ func AddTransFromOldDB(st, et string) error {
 		tran.ChanOrderNum = t.ChannelOrderNum
 		tran.RespCode = t.RespCode
 		tran.MerName = t.Merchant.ClientidName
-		tran.AgentName = ""
+		tran.AgentName = agentsMap[tran.AgentCode]
 		tran.GroupCode = t.Merchant.Group.GroupCode
 		tran.GroupName = t.Merchant.Group.GroupName
 		if tran.ChanCode == "ALP" {
 			tran.ChanMerId = t.Merchant.Alp.MchId
 		} else {
-			if t.Merchant.Wxp.SubMerId != "" {
+			if t.Merchant.Wxp.SubMchId != "" {
 				tran.ChanMerId = t.Merchant.Wxp.SubMchId
 			} else {
 				tran.ChanMerId = t.Merchant.Wxp.MchId
