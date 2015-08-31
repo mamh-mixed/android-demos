@@ -138,6 +138,9 @@ type ScanPayRequest struct {
 	ExtendParams     string `json:"-" url:"-"` // 业务扩展参数
 	WeixinClientCert []byte `json:"-" url:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
 	WeixinClientKey  []byte `json:"-" url:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
+
+	// 访问方式
+	IsGBK bool `json:"-" url:"-"`
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -203,6 +206,7 @@ type ScanPayResponse struct {
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-"`
+	ErrorCode    string `json:"-" url:"-"`
 }
 
 // PayJson 公众号支付字段

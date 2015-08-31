@@ -398,7 +398,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	t, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return returnWithErrorCode("TRADE_NOT_EXIST")
+		return adaptor.ReturnWithErrorCode("TRADE_NOT_EXIST")
 	}
 
 	// 判断订单的状态
@@ -424,7 +424,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 先拿到原交易
 		orig, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
 		if err != nil {
-			return returnWithErrorCode("TRADE_NOT_EXIST")
+			return adaptor.ReturnWithErrorCode("TRADE_NOT_EXIST")
 		}
 
 		// 查看原交易的状态
@@ -664,22 +664,13 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 	count, err := mongo.SpTransColl.Count(mchId, orderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR"), true
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR"), true
 	}
 	if count > 0 {
 		// 订单号重复
-		return returnWithErrorCode("ORDER_DUPLICATE"), true
+		return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE"), true
 	}
 	return nil, false
-}
-
-// returnWithErrorCode 使用错误码直接返回
-func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
-	spResp := mongo.ScanPayRespCol.Get(errorCode)
-	return &model.ScanPayResponse{
-		Respcd:      spResp.ISO8583Code,
-		ErrorDetail: spResp.ISO8583Msg,
-	}
 }
 
 // updateTrans 更新交易信息

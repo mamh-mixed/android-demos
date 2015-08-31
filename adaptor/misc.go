@@ -14,12 +14,13 @@ var (
 	UnKnownCode, UnKnownMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
 )
 
-// returnWithErrorCode 使用错误码直接返回
-func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
+// ReturnWithErrorCode 使用错误码直接返回
+func ReturnWithErrorCode(errorCode string) *model.ScanPayResponse {
 	spResp := mongo.ScanPayRespCol.Get(errorCode)
 	return &model.ScanPayResponse{
 		Respcd:      spResp.ISO8583Code,
 		ErrorDetail: spResp.ISO8583Msg,
+		ErrorCode:   errorCode,
 	}
 }
 
@@ -37,5 +38,6 @@ func LogicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse 
 	return &model.ScanPayResponse{
 		Respcd:      code,
 		ErrorDetail: msg,
+		ErrorCode:   errorCode,
 	}
 }
