@@ -102,7 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
-          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" required=false class="validate-container" error-message="必填项"></paper-input>
+          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}"  class="validate-container" error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input id="encryptKey" label="商户加密密钥" class="validate-container" required value="{{merchant.encryptKey::input}}"></paper-input>
@@ -230,9 +230,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         handleIsNeedSignChangeEvent: function() {
           this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
           if (this.$.isNeedSignCheck.checked) {
-            this.$.signKey.required = true;
+              this.$.signKey.setAttribute('required',true);
           } else {
-            this.$.signKey.required = false;
+              this.$.signKey.removeAttribute('required');
             this.$.signKey.validate();
           }
         },

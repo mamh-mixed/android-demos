@@ -250,7 +250,7 @@
                 this.set('weixin.agentMer', {});
               }
               this.chanMer = this.weixin;
-          } else if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
+            } else if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
               this.set('cfca.chanCode', 'CFCA');
               this.chanMer = this.cfca;
             } else {
@@ -328,24 +328,24 @@
           if (this.weixin.isAgentMode) {
             this.set('weixin.agentMer', this.bigMerchant);
             this.$.wbigChanMerId.required = true;
-            this.$.wxpAppId.required = false;
-            this.$.wsignCert.required = false;
-            //   this.$.wxpAppId.label = '微信支付App Id';
-            //   this.$.wsignCert.label = '签名证书';
-            //   this.$.httpCertL.textContent = 'HTTP 证书';
-            //   this.$.httpKeyL.textContent = 'HTTP 密钥';
+            // this.$.wxpAppId.required = false;
+            // this.$.wsignCert.required = false;
+            this.$.wxpAppId.removeAttribute('required');
+            this.$.wsignCert.removeAttribute('required');
+            this.$.httpCert.removeAttribute('required');
+            this.$.httpKey.removeAttribute('required');
             this.$.wxpAppId.validate();
             this.$.wsignCert.validate();
           } else {
             this.set('weixin.agentMer', {});
             this.$.wbigChanMerId.required = false;
-            this.$.wxpAppId.required = true;
-            this.$.wsignCert.required = true;
+            // this.$.wxpAppId.required = true;
+            // this.$.wsignCert.required = true;
             this.$.wbigChanMerId.validate();
-            //   this.$.wxpAppId.label = '*微信支付App Id';
-            //   this.$.wsignCert.label = '*签名证书';
-            //   this.$.httpCertL.textContent = '*HTTP 证书';
-            //   this.$.httpKeyL.textContent = '*HTTP 密钥';
+            this.$.wxpAppId.setAttribute('required', true);
+            this.$.wsignCert.setAttribute('required', true);
+            this.$.httpCert.setAttribute('required', true);
+            this.$.httpKey.setAttribute('required', true);
           }
         },
       });
