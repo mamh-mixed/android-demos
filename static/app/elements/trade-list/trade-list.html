@@ -3,8 +3,8 @@
 
 <dom-module id="trade-list">
   <template>
-    <form is="iron-form" id="formQuery" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
-      <div class="query-condition">
+    <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
+      <div class="search-condition">
         <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
         <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
           <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
@@ -73,9 +73,7 @@
           </template>
         </tbody>
       </table>
-      <div class="loading-more-wrapper">
         <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-      </div>
     </form>
   </template>
   <script>
@@ -198,7 +196,7 @@
         this.$.endTimeDailog.toggle();
       },
       queryAction: function() {
-        this.$.formQuery.submit();
+        this.$.formSearch.submit();
       },
       // 发送查询交易的ajax请求
       submitForm: function() {
@@ -207,7 +205,7 @@
         // console.log(e.detail);
       },
       // ajax请求响应处理
-      handleQueryResponse: function(e) {
+      handleSearchResponse: function(e) {
         var response = e.detail;
         if (!response.respCode || response.respCode !== '000000') {
           Util.toast(response.respMsg || '系统错误', 3000);

@@ -37,7 +37,6 @@ table.data-grid {
   overflow-x: auto;
   border-spacing: 0;
   border-collapse: collapse;
-  margin-bottom: 10px;
   border: 1px solid #ddd;
 }
 table.data-grid > thead > tr > th, table.data-grid > tbody > tr > td {
