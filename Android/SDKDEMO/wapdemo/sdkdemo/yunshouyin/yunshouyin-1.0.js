@@ -8,7 +8,7 @@ var yunshouyin = function() {
 
   var startWPay = function(orderData, debug) {
     if (debug) {
-      redirect_uri = "http://qrcode.cardinfolink.net/sdk/payment.html";
+      redirect_uri = "http://qrcode.cardinfolink.net/sdk/wxpayment.html";
     } else {
       redirect_uri = "http://qrcode.cardinfolink.net/jssdk/payment.html";
     }

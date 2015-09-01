@@ -92,8 +92,8 @@
                 merID: "100000000000013",
                 inscd:"10134001",           
                 secretKey: "1dgvvzp4jahxjmwtbavxurx2pxkiykwb",
-                goodsInfo:"讯联测试商品",
-                attach:"测试 "
+                goodsInfo:"江西福彩",
+                attach:""
 
         };
 
@@ -111,19 +111,21 @@ $('#wPayBtn').click(function() {
         }
 
        
-          var orderData = {
-                orderNumber: orderNum,
-                orderAmount: "0.01",
-                orderCurrency: "CNY",
-                backUrl: "status.html",
-                frontUrl: "http://qrcode.cardinfolink.net/sdkdemo/status.html",
-                merID: "100000000000013",
-                inscd:"10134001",           
-                secretKey: "1dgvvzp4jahxjmwtbavxurx2pxkiykwb",
-                goodsInfo:"讯联测试商品",
-                attach:"测试 "
+       var orderData = {
+  orderNumber:orderNum,
+  orderAmount: "0.01",
+  orderCurrency: "CNY",
+  backUrl:"http://jxfc.1wwz.com/caiwu/paynotice_weixin3.php",
+  frontUrl: "http://jxfc.1wwz.com/bank.php?act=success",
+  merID: "991421073920001",
+  inscd:"99911888",           
+  secretKey: "330265e59426d9723f87d0a5b86bb97d",
+  goodsInfo:"江西福彩",
+  attach:'{"chk":"c29a4f57a914229d14fcc8c4c81719f0","zhushu":"1","zhuma":"1001*031719232733~09^","vmoney":0.01,"playname":"B001","mobile":null,"idcard":null,"siteID":0,"caiminID":null,"buydate":1439951710}'  //透传数据
+  };
+  
+  //yunshouyin.startWxPay(orderData,false);//为true时为调用测试环境，为false时，调用生产环境
 
-        };
 
  // var orderData = {
  //       orderNumber: orderNum,
@@ -139,7 +141,7 @@ $('#wPayBtn').click(function() {
  //     };
 
 
-         yunshouyin.startWPay(orderData,true);
+         yunshouyin.startWPay(orderData,false);
             });
 
 

@@ -11,7 +11,7 @@
 <body>
   <span id="result"></span>
  <script  type="text/javascript">
-   document.write("支付结果"+location.search.substring(1));
+   document.write("支付结果:"+decodeURI(location.search.substring(1)));
  </script>
 
 </body>

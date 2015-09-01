@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /opt/yunshouyin/ysy/yunshouyin/FrameLib/src/android/os/IHardwareService.aidl
+ * Original file: /Users/bensonzhang/Desktop/workspace/yunshouyin/show-money-client/Android/app/FrameLib/src/android/os/IHardwareService.aidl
  */
 package android.os;
 /** {@hide} */

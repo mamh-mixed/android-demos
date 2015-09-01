@@ -42,12 +42,17 @@ var pay=function(){
     var code=Util._getUrlParam("code");
     var orderdata=Util._getUrlParam("data");
     orderdata=utf8to16(base64decode(orderdata));
-    orderdata=replaceParamVal(orderdata,"goodsInfo",utf8to16(base64decode(getQueryString(orderdata,"goodsInfo"))));
-    orderdata=replaceParamVal(orderdata,"attach",utf8to16(base64decode(getQueryString(orderdata,"attach"))));
+     if(getQueryString(orderdata,"goodsInfo")){
+       orderdata=replaceParamVal(orderdata,"goodsInfo",utf8to16(base64decode(getQueryString(orderdata,"goodsInfo"))));
+    }
+
+    if(getQueryString(orderdata,"attach")){
+      orderdata=replaceParamVal(orderdata,"attach",utf8to16(base64decode(getQueryString(orderdata,"attach"))));
+    }
     
     var errorData=
      "attach="+getQueryString(orderdata,"attach")+                    
-    "&goodsinfo="+getQueryString(orderdata,"goodsinfo")+
+    "&goodsInfo="+getQueryString(orderdata,"goodsInfo")+
     "&orderAmount="+Util.getNormalTxamt(getQueryString(orderdata,"txamt"))+
     "&orderCurrency="+getQueryString(orderdata,"orderCurrency")+
     "&orderNum="+getQueryString(orderdata,"orderNum")+
@@ -190,8 +195,13 @@ var pay=function(){
 var initPayOrder=function(){
     var orderdata=Util._getUrlParam("data");
     orderdata=utf8to16(base64decode(orderdata));
-    orderdata=replaceParamVal(orderdata,"goodsInfo",utf8to16(base64decode(getQueryString(orderdata,"goodsInfo"))));
-    orderdata=replaceParamVal(orderdata,"attach",utf8to16(base64decode(getQueryString(orderdata,"attach"))));
+    if(getQueryString(orderdata,"goodsInfo")){
+       orderdata=replaceParamVal(orderdata,"goodsInfo",utf8to16(base64decode(getQueryString(orderdata,"goodsInfo"))));
+    }
+
+    if(getQueryString(orderdata,"attach")){
+      orderdata=replaceParamVal(orderdata,"attach",utf8to16(base64decode(getQueryString(orderdata,"attach"))));
+    }
 
 var moneytype;
 var orderCurrency=getQueryString(orderdata,"orderCurrency");
