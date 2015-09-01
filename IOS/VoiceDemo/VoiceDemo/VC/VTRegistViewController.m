@@ -31,6 +31,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor=[UIColor lightGrayColor];
+    UIButton *back=[UIButton buttonWithType:UIButtonTypeCustom];
+    back.frame=CGRectMake(10, 30, 12, 21);
+    [back setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [back addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:back];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -68,6 +73,10 @@
     [resgist setTitle:@"注册" forState:UIControlStateNormal];
     [resgist addTarget:self action:@selector(register) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:resgist];
+}
+-(void)back
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 #pragma mark- 注册
 -(void)register

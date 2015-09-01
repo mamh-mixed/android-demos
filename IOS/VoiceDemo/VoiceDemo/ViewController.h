@@ -13,6 +13,6 @@
     int clickNum;
 }
 
-
+@property(nonatomic,strong)   NSMutableArray    *dataArray; //传入listViewController
 @end
 

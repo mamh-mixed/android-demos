@@ -14,5 +14,6 @@
 @property(nonatomic,assign)int                         countNum;
 @property(nonatomic,strong)NSMutableArray              * cellContentArray;
 
+@property(nonatomic,strong)NSMutableArray              * dataArray;//存放cell的数据
 
 @end

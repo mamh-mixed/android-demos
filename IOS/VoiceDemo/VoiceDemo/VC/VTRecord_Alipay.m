@@ -25,6 +25,12 @@
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image=[UIImage imageNamed:@"paybg"];
     [self.view addSubview:imageView];
+    UIButton *back=[UIButton buttonWithType:UIButtonTypeCustom];
+    back.frame=CGRectMake(10, 30, 12, 21);
+    [back setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [back addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:back];
+    
     UILabel *label=[[UILabel alloc]initWithFrame:CGRectMake(0, 40, SCREENWIDTH, 30)];
     label.textAlignment=NSTextAlignmentCenter;
     label.text=@"按住话筒录音，读出下述文字:";
@@ -57,6 +63,10 @@
     [btn addTarget:self action:@selector(sumbit) forControlEvents:UIControlEventTouchUpInside];
     btn.backgroundColor=[UIColor blueColor];
     [self.view addSubview:btn];
+}
+-(void)back
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 #pragma mark -录音
 -(void)record:(UIButton *)sender

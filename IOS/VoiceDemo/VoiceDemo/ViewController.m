@@ -12,6 +12,7 @@
 #import "ButtonPro.h"
 #import "VTListViewController.h"
 #import "VTLoginViewController.h"
+#import "Model.h"
 
 #define KCellIdentifier         @"identifier"
 #define CELL_WIDTH              self.view.frame.size.width/2
@@ -34,7 +35,7 @@
     [super viewDidLoad];
     clickNum = 0;
     countMoney = 0;
-    
+    _dataArray=[[NSMutableArray alloc]initWithCapacity:0];
     [self createRecordeClickString];
     
     self.view.backgroundColor = [UIColor colorWithRed:247/255.0 green:246/255.0 blue:241/255.0 alpha:1];
@@ -58,6 +59,7 @@
     vc.countMoney = countMoney;
     vc.countNum = clickNum;
     vc.cellContentArray = [NSMutableArray arrayWithArray:btnRecordArray];
+    vc.dataArray=_dataArray;
     [self presentViewController:vc animated:YES completion:nil];
 }
 -(void)goLoginView
@@ -149,6 +151,24 @@
     
     [self creatView];
     //NSLog(@"djfksfjksl点我啦 %d  ----%ld ---------array  %@",clickNum,(long)btn.tag,btnRecordArray);
+    
+    BOOL isExist=0;
+    for (int i=0; i<_dataArray.count; i++) {
+        Model *model=_dataArray[i];
+        if ([model.tag isEqualToString:[NSString stringWithFormat:@"%ld",btn.tag]]) {//model已存在
+            model.clickNum=[NSString stringWithFormat:@"%ld",btn.btnClickNum];
+            [_dataArray replaceObjectAtIndex:i withObject:model];
+            isExist=1;
+        }
+    }
+    if (!isExist) {
+        Model *model=[[Model alloc]init];
+        model.tag=[NSString stringWithFormat:@"%ld",btn.tag];
+        model.price=[self creatArray][btn.tag];
+        model.image=[NSString stringWithFormat:@"n%ld.jpg",btn.tag+1];
+        model.clickNum=[NSString stringWithFormat:@"%ld",btn.btnClickNum];
+        [_dataArray addObject:model];
+    }
 }
 //两个array 分别放了每个item上的图片名称以及价格
 -(NSArray *)creatArray
