@@ -47,7 +47,7 @@
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
               <td class="center">
-                <span >{{addOneFilter(index)}}</span>
+                <span>{{addOneFilter(index)}}</span>
               </td>
               <td>
                 <span>{{item.merId}}</span>
@@ -215,12 +215,12 @@
           this.set('cond.total', 0);
         },
         // merchantName为空，则返回---
-        getMerchantName:function(value){
-            if(!value||value==''){
-                return '---';
-            }else{
-                return value;
-            }
+        getMerchantName: function(value) {
+          if (!value || value === '') {
+            return '---';
+          } else {
+            return value;
+          }
         },
       });
     })();
