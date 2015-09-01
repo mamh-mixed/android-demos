@@ -255,7 +255,6 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	}
 
 	// 上送参数
-	req.OrderNum = t.OrderNum
 	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
@@ -383,7 +382,7 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 			case model.TransHandling:
 				// 发起查询请求，确认订单状态
 				log.Info("query order status before close ...")
-				orderStatus := ProcessEnquiry(orig, c, &model.ScanPayRequest{OrderNum: orig.OrderNum})
+				orderStatus := ProcessEnquiry(orig, c, &model.ScanPayRequest{OrigOrderNum: orig.OrderNum})
 				if orderStatus.Respcd == SuccessCode {
 					orig.TransStatus = model.TransSuccess
 					goto Tag
