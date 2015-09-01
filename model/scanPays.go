@@ -206,7 +206,7 @@ type ScanPayResponse struct {
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-"`
-	ErrorCode    string `json:"errorCode,omitempty" url:"errorCode,omitempty"`
+	ErrorCode    string `json:"-" url:"-"`
 }
 
 // PayJson 公众号支付字段

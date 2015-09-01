@@ -61,6 +61,9 @@ table.data-grid > tbody > tr:hover {
 table.data-grid > tbody > tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+table.data-grid iron-icon {
+  height: 1.2em !important;
+}
 td.left{
     text-align: left;
 }
