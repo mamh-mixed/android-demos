@@ -129,12 +129,13 @@ func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName st
 	cond := []bson.M{
 		{"$match": match},
 	}
+	sort := bson.M{"$sort": bson.M{"chanMerId": 1}}
 
 	skip := bson.M{"$skip": (page - 1) * size}
 
 	limit := bson.M{"$limit": size}
 
-	cond = append(cond, skip, limit)
+	cond = append(cond, sort, skip, limit)
 
 	err = database.C(col.name).Pipe(cond).All(&results)
 
