@@ -30,6 +30,7 @@ type merchant struct {
 	BankId        string  `bson:"bankNum"`
 	OpenBank      string  `bson:"openBank"`
 	SignKey       string  `bson:"merchantMd5"`
+	SignRule      string  `bson:"signRule"`
 	Group         struct {
 		GroupCode string `bson:"merId"`
 		GroupName string `bson:"commodityName"`
@@ -183,9 +184,11 @@ func AddMerchantFromOldDB(path string) error {
 				}
 			}
 		}
-
 		if m.SignKey != "" {
 			m.IsNeedSign = true
+		}
+		if mer.SignRule != "" && mer.SignRule == "0" {
+			m.IsNeedSign = false
 		}
 		err = mongo.MerchantColl.Insert(m)
 		if err != nil {

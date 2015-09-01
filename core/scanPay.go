@@ -373,7 +373,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 	orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
 	// }
 	// 退款算退款部分的手续费，出报表时，将原订单的跟退款的相减
-	refund.Fee = int64(math.Floor(float64(refund.TransAmt))*float64(c.MerFee) + 0.5)
+	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*float64(c.MerFee) + 0.5))
 	orig.NetFee = orig.NetFee - refund.Fee // 重新计算原订单的手续费
 
 	ret = adaptor.ProcessRefund(orig, refund, c, req)
@@ -559,7 +559,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 对这笔撤销计算手续费，不然会对应不上，出现多扣少退。
-	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt))*float64(c.MerFee) + 0.5)
+	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*float64(c.MerFee) + 0.5))
 	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
 
 	ret = adaptor.ProcessCancel(orig, cancel, c, req)
@@ -627,7 +627,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 原交易成功，那么计算这笔取消的手续费
 	if orig.TransStatus == model.TransSuccess {
-		closed.Fee = int64(math.Floor(float64(closed.TransAmt))*float64(c.MerFee) + 0.5)
+		closed.Fee = int64(math.Floor(float64(closed.TransAmt)*float64(c.MerFee) + 0.5))
 		orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
 	}
 
