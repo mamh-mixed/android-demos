@@ -30,7 +30,7 @@
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
     <paper-dialog id="dialog">
-      <h2>编辑机构商户</h2>
+      <h2>创建机构商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input label="商户代码" value="{{merchant.merId::input}}"></paper-input>

@@ -29,7 +29,7 @@
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></iron-ajax>
     <paper-dialog id="dialogAdd">
-      <h2>添加代理</h2>
+      <h2>创建代理</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input label="代理代码" value="{{agent.agentCode::input}}"></paper-input>
