@@ -54,7 +54,6 @@
     <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="submit"></paper-fab>
 
     <paper-textarea label="响应" value="{{rcvd}}"></paper-textarea>
-    <paper-toast id="toast" text="{{rcvd}}"></paper-toast>
 
   </template>
 
@@ -116,8 +115,8 @@
             try {
               value = JSON.parse(value);
             } catch (e) {
-              this.$.ret.toggle();
               this.rcvd = 'JSON 格式有误: ' + e;
+              Util.toast(this.rcvd,3000);
               return;
             }
           }
@@ -131,8 +130,8 @@
         this.$.postAjax.generateRequest();
       },
       handleResponse: function(e) {
-        this.$.toast.toggle();
         this.rcvd = JSON.stringify(e.detail.response);
+        Util.toast(this.rcvd,3000);
       }
     });
 
