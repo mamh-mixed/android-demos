@@ -23,11 +23,13 @@
       width: 100%;
     }
 
+    paper-textarea,
     paper-input,
     .validate-container {
       position: relative;
     }
 
+    paper-textarea[required]::after,
     paper-input[required]::after,
     .validate-container[required]::after {
       content: "*";
@@ -37,9 +39,22 @@
       left: -10px;
       top: 50%;
     }
+
+    .row {
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
+    }
+
+    .row paper-input,
+    .row label {
+      @apply(--layout-flex-6);
+      margin-right: 35px;
+      margin-left: -35px;
+    }
   </style>
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
+    <iron-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></iron-ajax>
     <paper-dialog id="dialogAdd">
       <h2 id="header"></h2>
       <paper-dialog-scrollable>
@@ -60,14 +75,18 @@
           <paper-input id="wbigChanMerId" label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
           <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="httpCert" label="HTTP 证书" type="file" required on-change="handleWeixinHttpCertFile"></paper-input>
-          <label id="httpCertL">HTTP 证书</label>
-          <pre>{{weixin.httpCert}}</pre>
-          <paper-input id="httpKey" label="HTTP 密钥" type="file" required on-change="handleWeixinHttpKeyFile"></paper-input>
-          <label id="httpKeyL">HTTP 密钥</label>
-          <pre>{{weixin.httpKey}}</pre>
+          <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
+          <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
+          <div class="row">
+            <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+            <label id="httpCertL" style="margin-top:20px;">请选择.pem文件的HTTP证书</label>
+          </div>
+          <paper-textarea id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项"></paper-textarea>
+          <div class="row">
+            <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+            <label id="httpKeyL" style="margin-top:20px;">请选择.pem文件的HTTP密钥</label>
+          </div>
+          <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
         </div>
         <div id="cfca">
           <paper-input id="cfchanMerId" label="渠道商户号" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
@@ -76,8 +95,8 @@
           <paper-input id="cfsettRole" label="清算角色" value="{{cfca.settRole::input}}"></paper-input>
           <paper-input id="cfprivateKey" label="CFCA 商户私钥" value="{{cfca.privateKey::input}}" required error-message="必填项"></paper-input>
           <paper-input id="cfpublicKey" label="CFCA 商户公钥" value="{{cfca.publicKey::input}}"></paper-input>
-          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{cfca.acqFee::input}}"></paper-input>
-          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{cfca.merFee::input}}"></paper-input>
+          <paper-input id="cfacqFee" label="讯联跟渠道费率" value="{{cfca.acqFee::input}}"></paper-input>
+          <paper-input id="cfmerFee" label="商户跟讯联费率" value="{{cfca.merFee::input}}"></paper-input>
         </div>
         <div id="cil"></div>
       </paper-dialog-scrollable>
@@ -112,7 +131,10 @@
               value: 'CIL 线下'
 
             }]
-          }
+          },
+          bigMerchant: {
+            type: Object
+          },
         },
         observers: [
           '_channelChange(channel)'
@@ -151,12 +173,24 @@
               value: '支付宝'
             };
             this.alp = {};
-            this.weixin = {};
+            this.weixin = {
+              chanCode: 'WXP',
+              isAgentMode: true,
+              agentMer: {
+                chanMerId: '1236593202'
+              },
+            };
             this.cfca = {};
             this.$.chanCode.childNodes[1].children[1].disabled = false;
             this.$.achanMerId.disabled = false;
             this.$.wchanMerId.disabled = false;
             this.$.cfchanMerId.disabled = false;
+            // 大商户
+            this.$.findChanMerAjax.params = {
+              page: 1,
+              chanMerId: '1236593202'
+            };
+            this.$.findChanMerAjax.generateRequest();
           } else {
             this.$.header.textContent = '编辑渠道商户';
             var map = {
@@ -178,6 +212,19 @@
             this.$.cfchanMerId.disabled = true;
           }
         },
+        // 查询渠道商户的响应事件，这里是查找大商户
+        handleFindChanMerResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            return;
+          }
+
+          var pagination = response.data;
+          if (!pagination.data || pagination.data.length === 0) {
+            return;
+          }
+          this.set('bigMerchant', pagination.data[0]);
+        },
         // 支付宝必填项是否为空
         isALPConfigEmpty: function() {
           if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignKey.validate()) {
@@ -192,7 +239,7 @@
               return false;
             }
           } else {
-            if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() && this.$.wsignCert.validate()) {
+            if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() && this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
               return false;
             }
           }
@@ -221,17 +268,6 @@
               this.set('alp.chanCode', 'ALP');
               this.chanMer = this.alp;
             } else if (this.channel.key === 'WXP' && !this.isWXPConfigEmpty()) {
-              //   http证书与HTTP密钥文件格式必须为PEM格式的文件
-              if (!this.weixin.isAgentMode) {
-                if (!this.weixin.httpCert || this.weixin.httpCert === '') {
-                  Util.toast('HTTP证书文件格式，必须为PEM格式的文件', 3000);
-                  return;
-                }
-                if (!this.weixin.httpKey || this.weixin.httpKey === '') {
-                  Util.toast('HTTP密钥文件格式，必须为PEM格式的文件', 3000);
-                  return;
-                }
-              }
               var wacqFee = parseFloat(this.weixin.acqFee),
                 wmerFee = parseFloat(this.weixin.merFee);
               if (isNaN(wacqFee) || isNaN(wmerFee)) {
@@ -271,6 +307,7 @@
             return;
           }
           this.$.dialogAdd.close();
+          Util.toast(response.message, 1000);
           this.fire('saved');
           this.set('chanMer', {});
         },
@@ -320,21 +357,21 @@
           this.set('weixin.isAgentMode', this.$.wisAgentMode.checked);
           if (this.weixin.isAgentMode) {
             this.set('weixin.agentMer', this.bigMerchant);
-            this.$.wbigChanMerId.required = true;
+            this.$.wbigChanMerId.setAttribute('required', true);
             this.$.wxpAppId.removeAttribute('required');
             this.$.wsignCert.removeAttribute('required');
-            this.$.httpCert.removeAttribute('required');
-            this.$.httpKey.removeAttribute('required');
+            this.$.httpCertTArea.removeAttribute('required');
+            this.$.httpKeyTArea.removeAttribute('required');
             this.$.wxpAppId.validate();
             this.$.wsignCert.validate();
           } else {
             this.set('weixin.agentMer', {});
-            this.$.wbigChanMerId.required = false;
+            this.$.wbigChanMerId.removeAttribute('required');
             this.$.wbigChanMerId.validate();
             this.$.wxpAppId.setAttribute('required', true);
             this.$.wsignCert.setAttribute('required', true);
-            this.$.httpCert.setAttribute('required', true);
-            this.$.httpKey.setAttribute('required', true);
+            this.$.httpCertTArea.setAttribute('required', true);
+            this.$.httpKeyTArea.setAttribute('required', true);
           }
         },
       });

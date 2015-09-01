@@ -37,6 +37,22 @@
       width: 250px;
       margin-right: 50px;
     }
+    paper-textarea,
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
+
+    paper-textarea[required]::after,
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
   </style>
   <!-- 使用分步骤方法创建路由策略 -->
 <template>
@@ -44,12 +60,12 @@
         <h2>创建路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input id="rmerId" label="*商户代码" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
-          <x-select id="rcardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="*卡品牌" class="routeAtt"></x-select>
+          <paper-input id="rmerId" label="商户代码" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <x-select id="rcardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌" class="routeAtt validate-container" required></x-select>
         </div>
         <div class="row">
-          <paper-input id="rchanCode" label="*渠道代码" value="{{route.chanCode::input}}" class="routeAtt" required error-message="必填项"></paper-input>
-          <paper-input id="rchanMerId" label="*渠道商户号" value="{{route.chanMerId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <paper-input id="rchanCode" label="渠道代码" value="{{route.chanCode::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <paper-input id="rchanMerId" label="渠道商户号" value="{{route.chanMerId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input label="卡类型" value="{{route.cardType::input}}" class="routeAtt"></paper-input>
