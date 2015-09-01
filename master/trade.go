@@ -219,7 +219,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"支付宝交易金额：", float64(alpTransAmt) / 100,
 		"支付宝退款金额：", -float64(alpRefundAmt) / 100,
 		"支付宝手续费：", float64(alpFee) / 100,
-		"支付宝清算金额：", float64(alpTransAmt-alpFee) / 100,
+		"支付宝清算金额：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
@@ -227,7 +227,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"微信交易金额：", float64(wxpTransAmt) / 100,
 		"微信退款金额：", -float64(wxpRefundAmt) / 100,
 		"微信手续费：", float64(wxpFee) / 100,
-		"微信清算金额：", float64(wxpTransAmt-wxpFee) / 100,
+		"微信清算金额：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
@@ -235,7 +235,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"交易总额：", float64(transAmt) / 100,
 		"退款总额：", -float64(refundAmt) / 100,
 		"手续费总额：", float64(fee) / 100,
-		"清算总额：", float64(transAmt-fee) / 100,
+		"清算总额：", float64(transAmt-refundAmt-fee) / 100,
 	}, -1)
 }
 
