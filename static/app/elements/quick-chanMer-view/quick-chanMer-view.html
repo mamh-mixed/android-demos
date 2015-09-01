@@ -52,7 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     dl dt {
       float: left;
-      width: 100px;
+      width: 120px;
       overflow: hidden;
       clear: left;
       text-align: right;
@@ -62,7 +62,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     dl dd {
-      margin-left: 120px;
+      margin-left: 150px;
       word-break: break-all;
     }
 
@@ -128,9 +128,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <dd>
               <span>{{item.chanMerName}}</span>
             </dd>
+
+            <dt>是否代理商模式:</dt>
             <dd>
-              <paper-radio-button checked$="{{item.isAgentMode}}" disabled> 是否代理商模式</paper-radio-button>
+              <paper-checkbox checked$="{{item.isAgentMode}}" disabled></paper-checkbox>
             </dd>
+
             <dt>大商户号:</dt>
             <dd>
               <span>{{item.agentMer.chanMerId}}</span>
@@ -143,23 +146,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <dd>
               <span>{{item.merFee}}</span>
             </dd>
-            <dt>微信支付APPID:</dt>
+            <dt>微信 APPID:</dt>
             <dd>
               <span>{{item.wxpAppId}}</span>
             </dd>
             <dt>签名证书:</dt>
             <dd>
-              <p>
-                <pre>{{item.signCert}}</pre>
-              </p>
+              <span>{{item.signCert}}</span>
             </dd>
             <dt>HTTP Cert:</dt>
             <dd>
-              <span>{{item.httpCert}}</span>
+              <pre>{{item.httpCert}}</pre>
             </dd>
             <dt>HTTP Key:</dt>
             <dd>
-              <span>{{item.httpKey}}</span>
+              <pre>{{item.httpKey}}</pre>
             </dd>
           </dl>
         </div>
@@ -247,7 +248,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <span>{{item.checkSignCert}}</span>
             </dd>
 
-            <dt>微信支付APPID:</dt>
+            <dt>微信 APPID:</dt>
             <dd>
               <span>{{item.wxpAppId}}</span>
             </dd>
