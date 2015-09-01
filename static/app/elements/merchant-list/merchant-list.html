@@ -73,8 +73,8 @@
       </table>
       <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </form>
-    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
-    </paper-fab>
+    <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+    </paper-fab> -->
 
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
     <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>
