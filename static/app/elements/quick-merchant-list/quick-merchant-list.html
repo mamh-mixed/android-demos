@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
     }
+
     paper-fab {
       position: fixed;
       bottom: 100px;
@@ -24,15 +25,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-          <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
-          <paper-input name="merName" id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
-          <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
-          <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-          <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
-          <paper-input name="groupCode" id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
-          <paper-input name="groupName" id="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
-          <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-          <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button>
+        <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
+        <paper-input name="merName" id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
+        <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
+        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
+        <paper-input name="groupCode" id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input name="groupName" id="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button>
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
@@ -58,7 +59,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <span>{{item.merId}}</span>
               </td>
               <td on-click="viewMerchantTap">
-                <span style="text-decoration:underline;cursor:pointer">{{item.detail.merName}}</span>
+                <span style="text-decoration:underline;cursor:pointer">{{getMerchantName(item.detail.merName)}}</span>
               </td>
               <td>
                 <span>{{item.agentCode}}</span>
@@ -241,6 +242,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         submitForm: function() {
           this.merchants = [];
           this.set('cond.total', 0);
+        },
+        // merchantName为空，则返回---
+        getMerchantName: function(value) {
+          if (!value || value == '') {
+            return '---';
+          } else {
+            return value;
+          }
         },
       });
     })();
