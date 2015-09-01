@@ -9,6 +9,7 @@
         min-height: 500px;
       }
     }
+
     .row {
       @apply(--layout-horizontal);
     }
@@ -37,6 +38,7 @@
       width: 250px;
       margin-right: 50px;
     }
+
     paper-textarea,
     paper-input,
     .validate-container {
@@ -55,9 +57,9 @@
     }
   </style>
   <!-- 使用分步骤方法创建路由策略 -->
-<template>
+  <template>
     <paper-dialog id="dialogView">
-        <h2>创建路由策略</h2>
+      <h2>创建路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input id="rmerId" label="商户代码" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
@@ -81,7 +83,7 @@
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-         <paper-button on-tap="handleClose">取消</paper-button>
+        <paper-button on-tap="handleClose">取消</paper-button>
         <paper-button on-tap="handleSaveTapped" style="margin-right:50px;">保存</paper-button>
       </div>
     </paper-dialog>
@@ -126,11 +128,9 @@
       _watchCardBrandChange: function(key) {
         this.set('route.cardBrand', key);
       },
-      ready: function() {
-        this.route = {};
-      },
       open: function() {
         this.$.dialogView.open();
+        this.route = {};
       },
       // 关闭事件
       handleClose: function() {
@@ -153,11 +153,8 @@
           return;
         }
         Util.toast(response.message, 1000);
-        this.$.dialog.close();
-
         this.fire('saved');
-
-        this.handleDialogCloseEvent();
+        this.$.dialogView.close();
       },
       // 判断路由必填项是否为空
       isRouteConfigEmpty: function() {
