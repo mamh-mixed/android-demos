@@ -43,13 +43,13 @@
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.merId}}</span>
               </td>
               <td>
                 <span>{{tansCardBrands(item.cardBrand)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.chanCode}}</span>
               </td>
               <td>
@@ -79,8 +79,14 @@
             </tr>
           </template>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
 
