@@ -16,6 +16,10 @@ import (
 
 // scanpayUnifiedHandle 扫码支付入口
 func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.Write([]byte("only `POST` method allowed"))
+		return
+	}
 
 	// 可跨域
 	w.Header().Set("Access-Control-Allow-Origin", "*")
