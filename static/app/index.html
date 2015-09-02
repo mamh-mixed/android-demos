@@ -86,13 +86,13 @@
 
           <a data-route="config">
             <iron-icon icon="build"></iron-icon>
-            <span>配置管理</span>
+            <span>扫码支付商户配置</span>
           </a>
           <iron-collapse opened="{{ startWith(route.name, 'config') }}">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="config.agents" href="/config/agents">
                 <iron-icon icon="assignment-ind"></iron-icon>
-                <span>代理/机构</span>
+                <span>代理</span>
               </a>
               <a data-route="config.groups" href="/config/groups">
                 <iron-icon icon="home"></iron-icon>
@@ -118,7 +118,7 @@
           </iron-collapse>
           <a data-route="quickPay">
             <iron-icon icon="home"></iron-icon>
-            <span>快捷支付</span>
+            <span>快捷支付商户配置</span>
           </a>
           <iron-collapse opened="{{ startWith(route.name, 'quickPay') }}">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
@@ -153,7 +153,7 @@
               </a>
               <a data-route="trade.old.reports" href="/trade/old/reports">
                 <iron-icon icon="cloud-download"></iron-icon>
-                <span>旧系统报表下载</span>
+                <span>旧系统交易统计</span>
               </a>
             </paper-menu>
           </iron-collapse>

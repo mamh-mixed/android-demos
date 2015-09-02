@@ -17,14 +17,15 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
         <paper-input name="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
         <paper-input name="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
-        <paper-input name="agentCode" label="代理代码/机构代码" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input name="agentName" label="代理名称/机构名称" value="{{cond.agentName::input}}"></paper-input>
+        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -35,8 +36,8 @@
             <th>序号</th>
             <th>集团商户代码</th>
             <th>集团商户名称</th>
-            <th>代理代码/机构代码</th>
-            <th>代理名称/机构名称</th>
+            <th class="center">代理代码</th>
+            <th>代理名称</th>
             <th class="center">操作</th>
           </tr>
         </thead>
@@ -52,7 +53,7 @@
               <td>
                 <span>{{item.groupName}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.agentCode}}</span>
               </td>
               <td>
@@ -65,9 +66,15 @@
             </tr>
           </template>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
       </table>
       </div>
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
@@ -103,7 +110,7 @@
           this.groups = [];
           this.cond = {
             page: 1,
-            size: 10,
+            size: 20,
             total: 0
           };
         },
@@ -198,5 +205,6 @@
         },
       });
     })();
+
   </script>
 </dom-module>

@@ -77,6 +77,7 @@ func (c *routerPolicyCollection) PaginationFind(merId string, size, page int) (r
 	if err != nil {
 		return nil, 0, err
 	}
+	sort := bson.M{"$sort": bson.M{"merId": 1}}
 
 	cond := []bson.M{
 		{"$match": match},
@@ -90,7 +91,7 @@ func (c *routerPolicyCollection) PaginationFind(merId string, size, page int) (r
 		"$limit": size,
 	}
 
-	cond = append(cond, skip, limit)
+	cond = append(cond, sort, skip, limit)
 
 	err = database.C(c.name).Pipe(cond).All(&results)
 

@@ -20,7 +20,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	log.SetOutputLevel(goconf.Config.App.LogLevel)
-	log.SetFlags(log.Ldate | log.Ltime | log.Llevel | log.Llongfile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llevel | log.Llongfile)
 
 	startScanpay()    // 扫码支付
 	startBindingpay() // 绑定支付

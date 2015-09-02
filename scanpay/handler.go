@@ -16,6 +16,10 @@ import (
 
 // scanpayUnifiedHandle 扫码支付入口
 func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.Write([]byte("only `POST` method allowed"))
+		return
+	}
 
 	// 可跨域
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -46,6 +50,8 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
 	} else {
+		log.Infof("weixin notify: %s", data)
+
 		var req weixin.WeixinNotifyReq
 		err = xml.Unmarshal(data, &req)
 		if err != nil {
@@ -69,6 +75,7 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Infof("return weixin: %s", retBytes)
 	w.Write(retBytes)
 }
 
@@ -79,6 +86,7 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
+	log.Infof("alipay notify(GBK): %s", data)
 
 	// log.Debugf("before decoder: %s", string(data))
 	// gbk-utf8
@@ -92,6 +100,7 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 
 	vs, err := url.ParseQuery(utf8)
 	if err != nil {
+		log.Infof("return weixin: %s", err)
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
@@ -99,10 +108,12 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	// 处理异步通知
 	err = alipayNotifyCtrl(vs)
 	if err != nil {
+		log.Info("return weixin: fail")
 		http.Error(w, "fail", http.StatusOK)
 		return
 	}
 
+	log.Info("return weixin: success")
 	http.Error(w, "success", http.StatusOK)
 }
 
@@ -114,7 +125,7 @@ func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	// 	http.Error(w, err.Error(), http.StatusNotAcceptable)
 	// 	return
 	// }
-	log.Debugf("receive notify, data: %s", r.URL.RawQuery)
+	log.Infof("receive notify, data: %s", r.URL.RawQuery)
 
 	// response
 	respCode := ""
@@ -126,6 +137,7 @@ func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	ret := &model.ScanPayResponse{Respcd: respCode}
 
 	retBytes, _ := json.Marshal(ret)
+
 	log.Infof("return notify: %s", retBytes)
 	w.Write(retBytes)
 }

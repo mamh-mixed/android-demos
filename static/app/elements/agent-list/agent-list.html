@@ -22,6 +22,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/agent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -36,7 +37,7 @@
         <thead>
           <tr>
             <th class="center">序号</th>
-            <th>代理代码</th>
+            <th class="center">代理代码</th>
             <th>代理名称</th>
             <th class="center">操作</th>
           </tr>
@@ -47,7 +48,7 @@
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.agentCode}}</span>
               </td>
               <td>
@@ -60,8 +61,14 @@
             </tr>
           </template>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
@@ -97,7 +104,7 @@
           this.agents = [];
           this.cond = {
             page: 1,
-            size: 10,
+            size: 20,
             total: 0
           };
         },
@@ -180,5 +187,6 @@
         },
       });
     })();
+
   </script>
 </dom-module>

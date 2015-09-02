@@ -49,7 +49,7 @@ func (c *CommonParams) GetSignKey() string {
 // GetHTTPClient 如果组合结构体不重写这个方法，表示不使用双向 HTTPS 认证，
 // 如果使用双向 HTTPS 认证，重写此方法`return GetHTTPSClient()` 即可
 func (c *CommonParams) GetHTTPClient() *http.Client {
-	// return GetHTTPSClient()
+	// return c.GetHTTPSClient()
 	return http.DefaultClient
 }
 

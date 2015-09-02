@@ -54,13 +54,13 @@
               <td on-click="viewMerchantTap">
                 <span style="text-decoration:underline;cursor:pointer">{{getChanMerName(item.chanMerName)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.chanCode}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.acqFee}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.merFee}}</span>
               </td>
               <td>
@@ -72,8 +72,14 @@
             </tr>
           </template>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
     </form>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
@@ -99,7 +105,7 @@
         this.merchants = [];
         this.cond = {
           page: 1,
-          size: 10,
+          size: 20,
           total: 0
         };
       },

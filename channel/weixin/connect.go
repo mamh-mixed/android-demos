@@ -67,7 +67,10 @@ func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 
 	// 如果连接失败，重试 3 次，休眠 3s、6s
 	for i := 1; i <= 3; i++ {
+		start := time.Now()
 		resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
+		end := time.Now()
+		log.Debugf("=== %s === %s%s", end.Sub(start), url, uri)
 		if err == nil {
 			break
 		}

@@ -225,7 +225,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Util.toast(response.message, 3000);
             return;
           }
+          this.$.dialogView.close();
           Util.toast(response.message, 1000);
+          this.fire('saved');
         },
         // 是否需要验签的改变事件
         handleIsNeedSignChangeEvent: function() {

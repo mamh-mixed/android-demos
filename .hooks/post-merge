@@ -14,4 +14,7 @@ cd $path
 # auto update
 cp .hooks/* .git/hooks/
 
+# rm -r static/bower_components/
+# ./publish.sh dev
+
 exit 0

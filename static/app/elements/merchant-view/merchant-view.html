@@ -6,8 +6,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 450px;
-        min-height: 100%;
+        width: 600px;
+        min-height: 500px;
         font-size: 14px;
       }
     }
@@ -52,7 +52,6 @@
     .divider {
       height: 5px;
     }
-
   </style>
   <template>
     <paper-dialog id="dialogView">
@@ -72,7 +71,7 @@
             <td>{{item.agentName}}</td>
           </tr>
           <tr>
-            <td class="key">集团编码:</td>
+            <td class="key">集团代码:</td>
             <td>{{item.groupCode}}</td>
             <td class="key">集团名称:</td>
             <td>{{item.groupName}}</td>
@@ -81,8 +80,9 @@
             <td colspan="4" class="divider"></td>
           </tr>
           <tr>
-            <td colspan="4">
-              <paper-radio-button id="isNeedSignCheck" checked$="{{item.isNeedSign}}" disabled> 是否开启验签</paper-radio-button>
+            <td> 开启验签:</td>
+            <td>
+              <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
             </td>
           </tr>
           <tr>
@@ -288,6 +288,5 @@
         this.fire('delete-ok');
       },
     });
-
   </script>
 </dom-module>
