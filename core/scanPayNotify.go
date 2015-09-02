@@ -4,6 +4,7 @@ import (
 	// "bytes"
 	"encoding/json"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
@@ -18,12 +19,10 @@ import (
 	"time"
 )
 
-// ProcessAlpNotify 支付宝异步通知处理
+// ProcessAlipayNotify 支付宝异步通知处理
 // 该接口只接受预下单的异步通知
 // 支付宝的其它接口将不接受异步通知
 func ProcessAlipayNotify(params url.Values) error {
-
-	log.Infof("alp async notify: %+v", params)
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
 	// 交易订单号
@@ -131,8 +130,6 @@ func ProcessAlipayNotify(params url.Values) error {
 
 // ProcessWeixinNotify 微信异步通知处理(预下单)
 func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
-	log.Infof("weixin paut async request: %#v", req)
-
 	// 上送的订单号
 	sysOrderNum := req.Attach
 	// 系统订单号是全局唯一
