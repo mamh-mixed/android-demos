@@ -103,11 +103,16 @@ func AddScanPayFromCSV(path string) error {
 	}
 
 	for _, v := range data {
-		_, err := mongo.ScanPayRespCol.FindOne(v.ISO8583Code)
+		sp, err := mongo.ScanPayRespCol.FindOne(v.ISO8583Code)
 		if err != nil {
 			// fmt.Printf("New Add: %+v \n", v)
 			mongo.ScanPayRespCol.Add(v)
+			continue
 		}
+		// update
+		v.Alp = sp.Alp
+		v.Wxp = sp.Wxp
+		mongo.ScanPayRespCol.Update(v)
 	}
 	fmt.Printf("\nImported ScanPayRespCode %d records\n", len(data))
 	return nil

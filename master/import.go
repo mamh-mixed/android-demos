@@ -4,17 +4,16 @@ import (
 	"archive/zip"
 	"bytes"
 	"errors"
-	"io/ioutil"
-	"net/http"
-	"strings"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"github.com/omigo/validator"
 	"github.com/tealeg/xlsx"
+	"io/ioutil"
+	"net/http"
 	"qiniupkg.com/api.v7/conf"
 	"qiniupkg.com/api.v7/kodo"
+	"strings"
 )
 
 const (
@@ -86,7 +85,8 @@ type importer struct {
 	ChanMers              []model.ChanMer
 	RouterPolicys         []model.RouterPolicy
 	Sheets                []*xlsx.Sheet
-	rowData               []rowData
+	rowData               []*rowData
+	chanMerCache          map[string]*model.ChanMer
 	IsSaveMersSuccess     bool
 	IsSaveChanMersSuccess bool
 	IsSaveRouterSuccess   bool
@@ -97,6 +97,8 @@ func (i *importer) DoImport() error {
 	if len(i.Sheets) == 0 {
 		return errors.New("上传表格为空，请检查。")
 	}
+	// 初始化
+	i.chanMerCache = make(map[string]*model.ChanMer)
 
 	if err := i.read(); err != nil {
 		return err
@@ -133,18 +135,6 @@ func (i *importer) dataHandle() error {
 
 	// 数据合法性验证
 	for _, r := range i.rowData {
-		if err := validator.Validate(r); err != nil {
-			// TODO: 自定义错误消息
-			return err
-		}
-
-		if r.IsNeedSignStr != "是" && r.IsNeedSignStr != "否" {
-			return errors.New("是否开启验签：" + r.IsNeedSignStr + " 取值错误，应为【是】或【否】")
-		}
-
-		if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
-			return errors.New("是否代理商模式：" + r.IsAgentStr + " 取值错误，应为【是】或【否】")
-		}
 
 		// 商户号去重
 		count, err := mongo.MerchantColl.CountById(r.MerId)
@@ -152,32 +142,33 @@ func (i *importer) dataHandle() error {
 			return sysErr
 		}
 		if count > 0 {
-			return errors.New("商户ID：" + r.MerId + " 已存在。")
+			return fmt.Errorf("商户(%s)已存在。", r.MerId)
 		}
 
 		// 验证代理、集团信息
-		g, err := mongo.GroupColl.Find(r.GroupCode)
-		if err != nil {
-			return errors.New("集团编号错误：" + r.GroupCode)
-		}
-		if g.AgentCode != r.AgentCode {
-			return errors.New("代理编号错误：" + r.AgentCode)
-		}
+		// g, err := mongo.GroupColl.Find(r.GroupCode)
+		// if err != nil {
+		// 	return errors.New("集团编号错误：" + r.GroupCode)
+		// }
+		// if g.AgentCode != r.AgentCode {
+		// 	return errors.New("代理编号错误：" + r.AgentCode)
+		// }
 
 		// 验证支付宝渠道商户是否已存在
-		count, err = mongo.ChanMerColl.CountByKey("ALP", r.AlpMerId)
+		alpMer, err := mongo.ChanMerColl.Find("ALP", r.AlpMerId)
 		if err != nil {
 			return sysErr
 		}
-		if count > 0 {
-			return errors.New("支付宝商户号（PID）：" + r.AlpMerId + " 已存在。")
-		}
+		log.Debugf("%v", alpMer)
 
 		wxpChanMerId := ""
 		if r.IsAgentStr == "是" {
-			if r.WxpMerId != "1236593202" {
-				return errors.New("微信商户号：" + r.WxpMerId + " 错误。")
+			// 验证受理商商户号是否存在
+			agent, err := mongo.ChanMerColl.Find("WXP", r.WxpMerId)
+			if err != nil {
+				return fmt.Errorf("没有找到配置的受理商商户号(%s)，如果是新增的受理商，请前往页面配置。", r.WxpMerId)
 			}
+			log.Debugf("%v", agent)
 			r.IsAgent = true
 			wxpChanMerId = r.WxpSubMerId
 		} else {
@@ -185,10 +176,11 @@ func (i *importer) dataHandle() error {
 		}
 
 		// 验证微信渠道商户是否已存在
-		count, err = mongo.ChanMerColl.CountByKey("ALP", wxpChanMerId)
+		wxpMer, err := mongo.ChanMerColl.Find("ALP", wxpChanMerId)
 		if err != nil {
 			return sysErr
 		}
+		log.Debugf("%v", wxpMer)
 		if count > 0 {
 			return errors.New("微信子商户号错误：" + r.WxpSubMerId + " 已存在。")
 		}
@@ -197,17 +189,37 @@ func (i *importer) dataHandle() error {
 		if r.IsNeedSignStr == "是" {
 			r.IsNeedSign = true
 		}
-
 		// 空则说明需要所有权限
 		if r.PermissionStr == "" {
 			r.Permission = []string{model.Paut, model.Purc, model.Canc, model.Inqy, model.Jszf, model.Qyfk, model.Refd, model.Void}
 		} else {
 			// TODO: 确认格式
 		}
+
 	}
 
 	i.doDataMapping()
 
+	return nil
+}
+
+// formatValidate 格式验证
+func formatValidate(r *rowData) error {
+
+	if r.Operator != "A" {
+		return fmt.Errorf("暂不支持除A以外的操作。操作符 %s", r.Operator)
+	}
+
+	if r.IsNeedSignStr != "是" && r.IsNeedSignStr != "否" {
+		return fmt.Errorf("是否开启验签：%s 取值错误，应为【是】或【否】", r.IsNeedSignStr)
+	}
+
+	if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
+		return fmt.Errorf("是否代理商模式：%s 取值错误，应为【是】或【否】", r.IsAgentStr)
+	}
+
+	// TODO:权限格式验证
+	// 费率格式验证
 	return nil
 }
 
@@ -327,7 +339,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if len(cells) == 0 {
 		return nil
 	}
-	r := rowData{}
+	r := &rowData{}
 	var cell *xlsx.Cell
 	if cell = cells[0]; cell != nil {
 		r.Operator = strings.Trim(cell.Value, " ")
@@ -418,28 +430,28 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 }
 
 type rowData struct {
-	Operator  string `validate:"regexp=^[A|U|D]$"` // A/U/D
+	Operator  string // A/U/D
 	AgentCode string // 机构/代理编号
 	AgentName string // 机构/代理名称
 	// 机构/代理支付宝成本
 	// 机构/代理微信成本
-	GroupCode     string `validate:"nonzero"` // 集团商户编号
-	GroupName     string `validate:"nonzero"` // 集团商户名称
-	MerId         string `validate:"nonzero"` // 商户编号
-	MerName       string `validate:"nonzero"` // 商户名称
+	GroupCode     string // 集团商户编号
+	GroupName     string // 集团商户名称
+	MerId         string // 商户编号
+	MerName       string // 商户名称
 	PermissionStr string // 权限（空即默认全部开放）
-	IsNeedSignStr string `validate:"nonzero"` // 是否开启验签
+	IsNeedSignStr string // 是否开启验签
 	SignKey       string // 签名密钥
-	CommodityName string `validate:"nonzero"` // 商户商品名称
-	AlpMerId      string `validate:"nonzero"` // 支付宝商户号（PID）
-	AlpMd5        string `validate:"nonzero"` // 支付宝密钥
-	AlpAcqFee     string `validate:"nonzero"` // 讯联跟支付宝费率
-	AlpMerFee     string `validate:"nonzero"` // 商户跟讯联费率
+	CommodityName string // 商户商品名称
+	AlpMerId      string // 支付宝商户号（PID）
+	AlpMd5        string // 支付宝密钥
+	AlpAcqFee     string // 讯联跟支付宝费率
+	AlpMerFee     string // 商户跟讯联费率
 	WxpAppId      string // 商户appId
-	WxpMd5        string `validate:"nonzero"` // 微信密钥
-	WxpMerId      string `validate:"nonzero"` // 微信商户号
+	WxpMd5        string // 微信密钥
+	WxpMerId      string // 微信商户号
 	WxpSubMerId   string // 微信子商户号
-	IsAgentStr    string `validate:"nonzero"` // 是否代理商模式
+	IsAgentStr    string // 是否代理商模式
 	WxpSubAppId   string // 子商户AppId
 	WxpAcqFee     string // 讯联跟微信费率
 	WxpMerFee     string // 商户跟讯联费率(微信)
