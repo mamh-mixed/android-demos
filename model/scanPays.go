@@ -292,6 +292,7 @@ func NewScanPayResponse(s ScanPayRespCode) *ScanPayResponse {
 	return &ScanPayResponse{
 		Respcd:      s.ISO8583Code,
 		ErrorDetail: s.ISO8583Msg,
+		ErrorCode:   s.ErrorCode,
 	}
 }
 

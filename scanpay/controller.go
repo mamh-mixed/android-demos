@@ -84,6 +84,10 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 		// 8. 如果是 gbk 进来的，兼容老插件和商户，不返回中文，不返回 errorCode
 		if req.IsGBK {
+			// TODO: 后面优化
+			if ret.Respcd == "09" {
+				ret.ErrorCode = "ORDER_SUCCESS_PAY_INPROCESS"
+			}
 			ret.ErrorDetail = ret.ErrorCode
 			ret.ErrorCode = ""
 		}
