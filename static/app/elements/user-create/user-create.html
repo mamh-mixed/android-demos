@@ -16,20 +16,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 450px;
+        width: 450px;
         min-height: 500px;
-        font-size: 14px;
+        max-height: 500px;
       }
     }
-
-    paper-dialog {
-      background-color: #ffffff;
-    }
-
-    .row {
-      @apply(--layout-horizontal);
-    }
-
     x-select {
       margin-left: -38px;
       width: 100%;
@@ -53,7 +44,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     paper-input {}
   </style>
   <template>
-    <paper-dialog id="dialogView">
+    <paper-dialog id="dialogAdd">
       <h2>创建用户</h2>
       <paper-dialog-scrollable>
         <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
@@ -81,18 +72,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button on-tap="handleSaveTapped">保存</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleResponse"></iron-ajax>
+    <iron-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></iron-ajax>
   </template>
   <script>
     Polymer({
       is: 'user-create',
       properties: {
         userType: {
-          type: Object,
-          value: {
-            key: '',
-            value: ''
-          }
+          type: Object
         },
         userTypes: {
           type: Array,
@@ -112,36 +99,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       observers: [
-        "_userTypesChange(userType)"
+        '_userTypesChange(userType)'
       ],
       _userTypesChange(value) {
         if (value.key === 'agent') {
           this.$.agent.removeAttribute('hidden');
           this.$.group.setAttribute('hidden', true);
           this.$.merchant.setAttribute('hidden', true);
+          this.set('user.groupCode','');
+          this.set('user.groupName','');
+          this.set('user.merId','');
+          this.set('user.merName','');
         } else if (value.key === 'group') {
           this.$.agent.setAttribute('hidden', true);
           this.$.group.removeAttribute('hidden');
           this.$.merchant.setAttribute('hidden', true);
+          this.set('user.agentCode','');
+          this.set('user.agentName','');
+          this.set('user.merId','');
+          this.set('user.merName','');
         } else if (value.key === 'merchant') {
           this.$.agent.setAttribute('hidden', true);
           this.$.group.setAttribute('hidden', true);
           this.$.merchant.removeAttribute('hidden');
+          this.set('user.agentCode','');
+          this.set('user.agentName','');
+          this.set('user.groupCode','');
+          this.set('user.groupName','');
         } else {
           this.$.agent.setAttribute('hidden', true);
           this.$.group.setAttribute('hidden', true);
           this.$.merchant.setAttribute('hidden', true);
+          this.set('user.agentCode','');
+          this.set('user.agentName','');
+          this.set('user.groupCode','');
+          this.set('user.groupName','');
+          this.set('user.merId','');
+          this.set('user.merName','');
         }
-
-      },
-      ready: function() {
-        this.user = {};
-        this.agentVisable = false;
-        this.groupVisable = false;
-        this.merchantVisable = false;
       },
       open: function() {
-        this.$.dialogView.open();
+        this.$.dialogAdd.open();
+        this.user = {};
         this.userType = {
           key: 'admin',
           value: '管理员'
@@ -161,6 +160,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             if (this.$.merId.validate() && this.$.merName.validate()) {
               return false;
             }
+          } else {
+              return false;
           }
         }
         return true;
@@ -168,18 +169,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // 保存
       handleSaveTapped: function() {
         if (this.isUserConfigEmpty()) {
-          Util.toast("必填项不能为空", 1000);
+          Util.toast('必填项不能为空', 1000);
           return;
         }
-
+        this.$.saveAjax.body = JSON.stringify(this.user);
+        this.$.saveAjax.generateRequest();
       },
-      // 代理，集团，商户是否显示
-      isVisable: function(value) {
-        if (this.userType && value === this.userType.key) {
-          return true;
-        } else {
-          return false;
+      // 保存的响应事件
+      handleSaveResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
         }
+        this.$.dialogAdd.close();
+        Util.toast(response.message, 1000);
+        this.fire('saved');
+        this.set('user', {});
       },
     });
   </script>
