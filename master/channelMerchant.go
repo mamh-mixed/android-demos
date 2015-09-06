@@ -14,7 +14,7 @@ var ChanMer chanMer
 
 // Find 根据条件查找商户。
 func (c *chanMer) Find(chanCode, chanMerId, chanMerName string, size, page int) (result *model.ResultBody) {
-	log.Debugf("chanCode is %s; chanMerId is %s; chanMerName is %s", chanCode, chanMerId, chanMerName)
+	log.Debugf("chanCode=%s; chanMerId=%s; chanMerName=%s", chanCode, chanMerId, chanMerName)
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")

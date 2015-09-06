@@ -11,12 +11,14 @@
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
+        <paper-input name="merId" id="merId" label="机构商户代码" value="{{cond.merId::input}}"></paper-input>
+        <x-select name="cardBrand" id="cardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌"></x-select>
+        <paper-input name="chanMerId" id="chanMerId" label="渠道商户代码" value="{{cond.chanMerId::input}}"></paper-input>
+        <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -25,10 +27,10 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th>商户代码</th>
+            <th>机构商户代码</th>
             <th align="left">卡品牌</th>
-            <th>渠道代码</th>
             <th align="left">渠道商户代码</th>
+            <th>渠道代码</th>
             <th>卡Bin组</th>
             <th>卡类型</th>
             <th>交易类型</th>
@@ -44,17 +46,17 @@
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.merId}}</span>
               </td>
               <td>
                 <span>{{tansCardBrands(item.cardBrand)}}</span>
               </td>
-              <td class="center">
-                <span>{{item.chanCode}}</span>
-              </td>
               <td>
                 <span>{{item.chanMerId}}</span>
+              </td>
+              <td class="center">
+                <span>{{item.chanCode}}</span>
               </td>
               <td>
                 <span>{{item.binGroup}}</span>
@@ -103,6 +105,47 @@
             type: String,
             reflectToAttribute: true,
             observer: '_merIdChandged'
+          },
+          cardBrands: {
+            type: Array,
+            value: [{
+              key: 'CUP',
+              value: '银联国内卡'
+            }, {
+              key: 'UPI',
+              value: '银联国际卡'
+            }, {
+              key: 'VIS',
+              value: 'VISA 卡'
+            }, {
+              key: 'MCC',
+              value: '万事达卡'
+            }, {
+              key: 'JCB',
+              value: 'JCB 卡'
+            }, {
+              key: 'ALP',
+              value: '支付宝'
+            }, {
+              key: 'WXP',
+              value: '微信'
+            }]
+          },
+          chanCodes: {
+            type: Array,
+            value: [{
+              key: 'ALP',
+              value: 'ALP'
+            }, {
+              key: 'WXP',
+              value: 'WXP'
+            }, {
+              key: 'CFCA',
+              value: 'CFCA'
+            }, {
+              key: 'CIL',
+              value: 'CIL'
+            }]
           },
         },
         _merIdChandged: function(value) {
@@ -195,6 +238,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>
