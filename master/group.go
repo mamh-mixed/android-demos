@@ -14,7 +14,7 @@ var Group group
 
 // Find 根据条件分页查找集团商户
 func (g *group) FindOne(groupCode string) (result *model.ResultBody) {
-	log.Debugf("groupCode is %s", groupCode)
+	log.Debugf("groupCode=%s", groupCode)
 
 	group, err := mongo.GroupColl.Find(groupCode)
 
@@ -34,7 +34,7 @@ func (g *group) FindOne(groupCode string) (result *model.ResultBody) {
 
 // Find 根据条件分页查找商户。
 func (g *group) Find(groupCode, groupName, agentCode, agentName string, size, page int) (result *model.ResultBody) {
-	log.Debugf("groupCode is %s; groupName is %s;agentCode is %s;agentName is %s", groupCode, groupName, agentCode, agentName)
+	log.Debugf("groupCode=%s; groupName=%s;agentCode=%s;agentName=%s", groupCode, groupName, agentCode, agentName)
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")

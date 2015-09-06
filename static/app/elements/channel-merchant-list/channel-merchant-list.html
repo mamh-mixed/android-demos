@@ -19,9 +19,10 @@
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/channelMerchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="chanCode" label="渠道代码" value="{{cond.chanCode::input}}"></paper-input>
+        <!-- <paper-input name="chanCode" label="渠道代码" value="{{cond.chanCode::input}}"></paper-input> -->
         <paper-input name="chanMerId" label="商户代码" value="{{cond.chanMerId::input}}"></paper-input>
         <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}"></paper-input>
+        <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -33,9 +34,9 @@
             <th align="left">商户代码</th>
             <th align="left">商户名称</th>
             <th>渠道代码</th>
-            <th>渠道费率</th>
-            <th>商户费率</th>
-            <th align="left">清算标识</th>
+            <th align="right">渠道费率</th>
+            <th align="right">商户费率</th>
+            <th align="right">清算标识</th>
             <th align="left">清算角色</th>
             <!-- <th>签名证书</th> -->
             <!-- <th class="center">操作</th> -->
@@ -56,13 +57,13 @@
               <td class="center">
                 <span>{{item.chanCode}}</span>
               </td>
-              <td class="center">
+              <td class="right">
                 <span>{{item.acqFee}}</span>
               </td>
-              <td class="center">
+              <td class="right">
                 <span>{{item.merFee}}</span>
               </td>
-              <td>
+              <td class="right">
                 <span>{{item.settFlag}}</span>
               </td>
               <td>
@@ -98,6 +99,22 @@
         autoLoading: {
           type: Boolean,
           value: false
+        },
+        chanCodes: {
+          type: Array,
+          value: [{
+            key: 'ALP',
+            value: 'ALP'
+          }, {
+            key: 'WXP',
+            value: 'WXP'
+          }, {
+            key: 'CFCA',
+            value: 'CFCA'
+          }, {
+            key: 'CIL',
+            value: 'CIL'
+          }]
         },
       },
       ready: function() {

@@ -65,11 +65,21 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 }
 
 // PaginationFind 分页查找
-func (c *routerPolicyCollection) PaginationFind(merId string, size, page int) (results []model.RouterPolicy, total int, err error) {
+func (c *routerPolicyCollection) PaginationFind(merId string, cardBrand string, chanCode string, chanMerId string, size, page int) (results []model.RouterPolicy, total int, err error) {
 	results = make([]model.RouterPolicy, 0)
+
 	match := bson.M{}
 	if merId != "" {
 		match["merId"] = merId
+	}
+	if cardBrand != "" {
+		match["cardBrand"] = cardBrand
+	}
+	if chanCode != "" {
+		match["chanCode"] = chanCode
+	}
+	if chanMerId != "" {
+		match["chanMerId"] = chanMerId
 	}
 
 	// 计算总数
