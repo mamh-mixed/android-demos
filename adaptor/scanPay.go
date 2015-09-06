@@ -84,6 +84,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	t.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
+	t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -163,6 +164,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	t.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
+	t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return ReturnWithErrorCode("SYSTEM_ERROR")

@@ -7,8 +7,9 @@ import (
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	. "github.com/smartystreets/goconvey/convey"
+	"sync"
 	"testing"
+	"time"
 )
 
 var (
@@ -17,7 +18,7 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "130271057733106881",
+		ScanCodeId: "130039663149119746",
 		AgentCode:  "99911888",
 		Txamt:      "000000000001",
 		Chcd:       "WXP",
@@ -63,10 +64,10 @@ var (
 	// 关单
 	scanPayClose = &model.ScanPayRequest{
 		Busicd:       "CANC",
-		Mchntid:      "100000000000210",
-		OrderNum:     util.Millisecond(),
+		Mchntid:      "999118880000312",
+		OrderNum:     util.Millisecond() + "1",
 		OrigOrderNum: "1439886859870",
-		AgentCode:    "CIL00002",
+		AgentCode:    "99911888",
 	}
 	// 企业支付
 	scanPayEnterprise = &model.ScanPayRequest{
@@ -93,58 +94,50 @@ var (
 		Code:         "001fbfbe9b2a351311e4212dd30c6f83",
 		NeedUserInfo: "YES",
 	}
-
-	scanPay = scanPayBarcodePay
 )
 
-func TestScanPay(t *testing.T) {
-
-	log.SetOutputLevel(log.Ldebug)
-	// sign
+func doOneScanPay(scanPay *model.ScanPayRequest) error {
 	mer, err := mongo.MerchantColl.Find(scanPay.Mchntid)
 	if err != nil {
-		t.Log(err)
-		t.FailNow()
+		return err
 	}
 	scanPay.Sign = security.SHA1WithKey(scanPay.SignMsg(), mer.SignKey)
 	reqBytes, _ := json.Marshal(scanPay)
-	respBytes := ScanPayHandle(reqBytes)
-	log.Debug(string(respBytes))
+	respBytes := ScanPayHandle(reqBytes, false)
 	resp := new(model.ScanPayResponse)
 	err = json.Unmarshal(respBytes, resp)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		return err
 	}
+	log.Debug(string(respBytes))
+	return nil
+}
 
-	// 预期结果
-	switch scanPay.Busicd {
-	case "purc":
-		Convey("下单", t, func() {
-			So(resp.Respcd, ShouldEqual, "00")
-		})
-	case "paut":
-		Convey("预下单", t, func() {
-			So(resp.Respcd, ShouldEqual, "09")
-		})
-	case "inqy":
-		Convey("查询", t, func() {
-			So(resp.Respcd, ShouldNotEqual, "")
-		})
-	case "refd":
-		Convey("退款", t, func() {
-			So(resp.Respcd, ShouldEqual, "00")
-		})
-	case "void":
-		Convey("撤销", t, func() {
-			So(resp.Respcd, ShouldEqual, "00")
-		})
-	case "canc":
-		Convey("关单", t, func() {
-			So(resp.Respcd, ShouldEqual, "00")
-		})
+func TestConcurrentScanPay(t *testing.T) {
+	log.SetOutputLevel(log.Ldebug)
+	var wg sync.WaitGroup
+	n := util.Millisecond()
+	scanPayBarcodePay.OrderNum = n
+	scanPayClose.OrigOrderNum = n
+	wg.Add(2)
+	go func() {
+		doOneScanPay(scanPayBarcodePay)
+		wg.Done()
+	}()
+
+	go func() {
+		time.Sleep(500 * time.Millisecond)
+		doOneScanPay(scanPayClose)
+		wg.Done()
+	}()
+	wg.Wait()
+}
+
+func TestScanPay(t *testing.T) {
+	err := doOneScanPay(scanPayBarcodePay)
+	if err != nil {
+		t.Error(err)
 	}
-	t.Logf("%+v", resp)
 }
 
 func TestSignMsg(t *testing.T) {
