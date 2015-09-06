@@ -55,7 +55,7 @@ function main() {
     workdir="/opt/$prog"
 
     if [ "$input" == "app2" ]; then
-        sed -i '' 's/port=4160/port=4161/' distrib/config/config_product.ini
+        sed -i '' 's/"Port": 4160,/"Port": 4161,/' distrib/config/config_product.js
     fi
 
     # 发布
