@@ -4,9 +4,9 @@ set -e
 
 prog="quickpay"
 
-shortcut=("dev" "test" "app1" "app2")
+shortcut=("dev" "test" "app1" "app2" "app3")
 hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" \
-    "quick@app1.set.shou.money" "quick@app2.set.shou.money" )
+    "quick@app1.set.shou.money" "quick@app2.set.shou.money" "quick@112.74.207.207")
 
 input=$1
 
@@ -114,6 +114,7 @@ ps -ef | grep "$prog" | awk '{print \$2}' | xargs kill -9
 pwd
 echo "Starting $prog process ..."
 mkdir -p logs
+export QUICKPAY_ENV=develop
 nohup ./$prog >> logs/$prog.log 2>&1 &
 ps -ef | grep $prog
 
