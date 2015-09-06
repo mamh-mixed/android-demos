@@ -27,7 +27,7 @@
         <paper-input name="groupCode" id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
         <paper-input name="groupName" id="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-        <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button>
+        <!-- <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button> -->
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
@@ -49,7 +49,7 @@
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.merId}}</span>
               </td>
               <td on-click="viewMerchantTap">
@@ -196,22 +196,22 @@
           this.$.merchantView.open();
         },
         // 清除查询条件
-        handleClearTapped: function() {
-          this.$.merId.value = '';
-          this.cond.merId = '';
-          this.$.merName.value = '';
-          this.cond.merName = '';
-          this.$.agentCode.value = '';
-          this.cond.agentCode = '';
-          this.$.agentName.value = '';
-          this.cond.agentName = '';
-          this.$.groupCode.value = '';
-          this.cond.groupCode = '';
-          this.$.groupName.value = '';
-          this.cond.groupName = '';
-          this.set('cond.page', 1);
-          this.generateAjaxRequest();
-        },
+        // handleClearTapped: function() {
+        //   this.$.merId.value = '';
+        //   this.cond.merId = '';
+        //   this.$.merName.value = '';
+        //   this.cond.merName = '';
+        //   this.$.agentCode.value = '';
+        //   this.cond.agentCode = '';
+        //   this.$.agentName.value = '';
+        //   this.cond.agentName = '';
+        //   this.$.groupCode.value = '';
+        //   this.cond.groupCode = '';
+        //   this.$.groupName.value = '';
+        //   this.cond.groupName = '';
+        //   this.set('cond.page', 1);
+        //   this.generateAjaxRequest();
+        // },
         handleAfterDelete: function() {
           this.handleQueryTapped();
         },

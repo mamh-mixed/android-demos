@@ -58,7 +58,7 @@
     <paper-dialog id="dialogAdd">
       <h2 id="header"></h2>
       <paper-dialog-scrollable>
-        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道" class="validate-container" required style="width:100%;"></x-select>
+        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道代码" class="validate-container" required style="width:100%;"></x-select>
         <!-- <paper-input label="机构代码" value="{{chanMer.agentCode::input}}"></paper-input>
           <paper-input label="终端代码" value="{{chanMer.terminalId::input}}"></paper-input> -->
         <div id="alp">
@@ -170,7 +170,7 @@
             this.$.header.textContent = '创建渠道商户';
             this.channel = {
               key: 'ALP',
-              value: '支付宝'
+              value: 'ALP 支付宝'
             };
             this.alp = {};
             this.weixin = {
