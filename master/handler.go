@@ -194,9 +194,12 @@ func routerSaveHandle(w http.ResponseWriter, r *http.Request) {
 
 func routerFindHandle(w http.ResponseWriter, r *http.Request) {
 	merId := r.FormValue("merId")
+	cardBrand := r.FormValue("cardBrand")
+	chanCode := r.FormValue("chanCode")
+	chanMerId := r.FormValue("chanMerId")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := RouterPolicy.Find(merId, size, page)
+	ret := RouterPolicy.Find(merId, cardBrand, chanCode, chanMerId, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
