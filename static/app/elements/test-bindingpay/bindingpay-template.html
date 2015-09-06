@@ -40,7 +40,7 @@
     <iron-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-response="handleResponse"></iron-ajax>
 
     <div class="merchant">
-      <paper-input label="商户 ID" value="{{merchant.merId::input}}"></paper-input>
+      <paper-input label="商户代码" value="{{merchant.merId::input}}"></paper-input>
       <paper-input label="签名密钥" value="{{merchant.signKey::input}}"></paper-input>
       <paper-input label="加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
     </div>
