@@ -70,7 +70,7 @@ func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 		start := time.Now()
 		resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
 		end := time.Now()
-		log.Debugf("=== %s === %s%s", end.Sub(start), url, uri)
+		log.Infof("=== %s === %s%s", end.Sub(start), url, uri)
 		if err == nil {
 			break
 		}
