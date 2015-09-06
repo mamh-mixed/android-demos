@@ -7,12 +7,14 @@ pkg="github.com/CardInfoLink/quickpay"
 path=$GOPATH/src/$pkg
 
 cd $path
-pwd
+#pwd
 
-echo post-merge
+#echo post-merge
 
 # auto update
 cp .hooks/* .git/hooks/
 
-cd -
+# rm -r static/bower_components/
+# ./publish.sh dev
+
 exit 0

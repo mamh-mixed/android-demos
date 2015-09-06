@@ -115,7 +115,7 @@ type Merchant struct {
 	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
 	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
 	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
-	IsNeedSign bool      `bson:"isNeedSign,omitempty" json:"isNeedSign,omitempty"` // 是否开启验签
+	IsNeedSign bool      `bson:"isNeedSign" json:"isNeedSign"`                     // 是否开启验签
 	EncryptKey string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` // 商户加密密钥
 	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         // 备注信息
 	Permission []string  `bson:"permission,omitempty" json:"permission,omitempty"` // 接口权限
@@ -223,7 +223,6 @@ type Trans struct {
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
-	NotifyStatus int8          `bson:"notifyStatus,omitempty" json:"-"`                      // 异步通知状态
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户

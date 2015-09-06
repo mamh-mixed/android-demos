@@ -5,10 +5,8 @@ set -e
 prog="quickpay"
 
 shortcut=("dev" "test" "app1" "app2")
-hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" "quick@app1.set.shou.money" "quick@app2.set.shou.money")
-
-# sed -i '' 's/port=4160/port=4161/' distrib/config/config_product.ini
-# host="quick@app2.set.shou.money"
+hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" \
+    "quick@app1.set.shou.money" "quick@app2.set.shou.money" )
 
 input=$1
 
@@ -39,7 +37,7 @@ function main() {
 
     host=${hosts[$idx]}
     echo -e "You selected host:\033[1;31m $input => $host \033[0m"
-    if [ "$idx" != "0" ]; then
+    if [ "$input" != "dev" ]; then
         read -t 30 -p "Press any key to continue..."
     fi
     echo
@@ -55,6 +53,10 @@ function main() {
     echo
 
     workdir="/opt/$prog"
+
+    if [ "$input" == "app2" ]; then
+        sed -i '' 's/port=4160/port=4161/' distrib/config/config_product.ini
+    fi
 
     # 发布
     echo ">>> Rsync executable program..."
@@ -115,9 +117,9 @@ mkdir -p logs
 nohup ./$prog >> logs/$prog.log 2>&1 &
 ps -ef | grep $prog
 
-echo "Sleep 2 seconds..."
-sleep 2
-tail -n 50 logs/$prog.log
+echo "Sleep 5 seconds..."
+sleep 5
+tail -n 60 logs/$prog.log
 
 exit
 EOF

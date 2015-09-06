@@ -14,7 +14,7 @@ var Merchant merchant
 
 // Find 根据条件分页查找商户。
 func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
-	log.Debugf("merId is %s", merId)
+	log.Debugf("merId=%s", merId)
 
 	merchant, err := mongo.MerchantColl.Find(merId)
 	if err != nil {
@@ -33,7 +33,7 @@ func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
 
 // Find 根据条件分页查找商户。
 func (m *merchant) Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName string, size, page int) (result *model.ResultBody) {
-	log.Debugf("merId is %s; merName is %s;groupCode is %s, groupName is %s, agentCode is %s, agentName is %s",
+	log.Debugf("merId=%s,merStatus=%s, merName=%s, groupCode=%s, groupName=%s, agentCode=%s, agentName=%s",
 		merId, merStatus, merName, groupCode, groupName, agentCode, agentName)
 
 	if page <= 0 {

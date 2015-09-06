@@ -1,18 +1,29 @@
 package scanpay
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"net/url"
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
 )
 
 // scanpayUnifiedHandle 扫码支付入口
 func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.Write([]byte("only `POST` method allowed"))
+		return
+	}
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	log.Debugf("url = %s", r.URL.String())
 
 	bytes, err := ioutil.ReadAll(r.Body)
@@ -23,7 +34,7 @@ func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 请求扫码支付
-	retBytes := ScanPayHandle(bytes)
+	retBytes := ScanPayHandle(bytes, false)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(retBytes)
@@ -39,6 +50,8 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		ret.ReturnCode = "FAIL"
 		ret.ReturnMsg = "报文读取错误"
 	} else {
+		log.Infof("weixin notify: %s", data)
+
 		var req weixin.WeixinNotifyReq
 		err = xml.Unmarshal(data, &req)
 		if err != nil {
@@ -46,9 +59,14 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 			ret.ReturnCode = "FAIL"
 			ret.ReturnMsg = "报文读取错误"
 		} else {
-			weixinNotifyCtrl(&req)
+			err = weixinNotifyCtrl(&req)
 		}
 	}
+	if err != nil {
+		ret.ReturnCode = "FAIL"
+		ret.ReturnMsg = "SYSTEM_ERROR"
+	}
+
 	retBytes, err := xml.Marshal(ret)
 
 	if err != nil {
@@ -57,6 +75,7 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Infof("return weixin: %s", retBytes)
 	w.Write(retBytes)
 }
 
@@ -67,19 +86,58 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
+	log.Infof("alipay notify(GBK): %s", data)
 
+	// log.Debugf("before decoder: %s", string(data))
 	// gbk-utf8
+	unescape, err := url.QueryUnescape(string(data))
+	if err != nil {
+		log.Errorf("alp notify: %s, unescape error: %s ", string(data), err)
+	}
+
 	d := mahonia.NewDecoder("gbk")
-	utf8 := d.ConvertString(string(data))
+	utf8 := d.ConvertString(unescape)
 
 	vs, err := url.ParseQuery(utf8)
 	if err != nil {
+		log.Infof("return weixin: %s", err)
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 
 	// 处理异步通知
-	alipayNotifyCtrl(vs)
+	err = alipayNotifyCtrl(vs)
+	if err != nil {
+		log.Info("return weixin: fail")
+		http.Error(w, "fail", http.StatusOK)
+		return
+	}
 
+	log.Info("return weixin: success")
 	http.Error(w, "success", http.StatusOK)
+}
+
+// testReceiveNotifyHandle 测试接受异步通知
+func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
+
+	// data, err := ioutil.ReadAll(r.Body)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusNotAcceptable)
+	// 	return
+	// }
+	log.Infof("receive notify, data: %s", r.URL.RawQuery)
+
+	// response
+	respCode := ""
+	if rand.Intn(5) == 0 { //  1/5 的概率失败，要求重发
+		respCode = "09"
+	} else {
+		respCode = "00"
+	}
+	ret := &model.ScanPayResponse{Respcd: respCode}
+
+	retBytes, _ := json.Marshal(ret)
+
+	log.Infof("return notify: %s", retBytes)
+	w.Write(retBytes)
 }

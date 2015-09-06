@@ -1,11 +1,12 @@
 package core
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
 // TransQuery 交易查询
@@ -30,40 +31,12 @@ func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
 	}
-	var mers []*model.Merchant
-	var mersMap map[string]*model.Merchant
-	var merIds []string
 
 	// 没有数组的话返回空数据
 	if len(trans) == 0 {
 		trans = make([]*model.Trans, 0, 0)
-		goto RETURN
 	}
 
-	for _, tran := range trans {
-		merIds = append(merIds, tran.MerId)
-	}
-
-	// 关联商户名称 TODO 后期优化
-	q.MerIds = merIds
-	mers, err = mongo.MerchantColl.FuzzyFind(q)
-	if err != nil {
-		log.Error("find mers error: %s", err)
-		goto RETURN
-	}
-	log.Debug(len(mers))
-	mersMap = make(map[string]*model.Merchant)
-	for _, mer := range mers {
-		mersMap[mer.MerId] = mer
-	}
-
-	for _, tran := range trans {
-		if mer, ok := mersMap[tran.MerId]; ok {
-			tran.MerName = mer.Detail.MerName
-		}
-	}
-
-RETURN:
 	count := len(trans)
 	ret = &model.QueryResult{
 		Page:     q.Page,
@@ -84,25 +57,25 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
 	// 先找商户所有商户号
-	mers, err := mongo.MerchantColl.FuzzyFind(q)
-	if err != nil {
-		log.Errorf("find merchant error: %s", err)
-		return errResult
-	}
+	// mers, err := mongo.MerchantColl.FuzzyFind(q)
+	// if err != nil {
+	// 	log.Errorf("find merchant error: %s", err)
+	// 	return errResult
+	// }
 
-	var merIds []string
-	m := make(map[string]*model.Merchant)
-	// 暂存商户信息
-	for _, mer := range mers {
-		merIds = append(merIds, mer.MerId)
-		m[mer.MerId] = mer
-	}
+	// var merIds []string
+	// m := make(map[string]*model.Merchant)
+	// // 暂存商户信息
+	// for _, mer := range mers {
+	// 	merIds = append(merIds, mer.MerId)
+	// 	m[mer.MerId] = mer
+	// }
 
 	// 设置条件过滤
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
 	q.RefundStatus = model.TransRefunded
-	q.MerIds = merIds
+	// q.MerIds = merIds
 	q.StartTime += " 00:00:00"
 	q.EndTime += " 23:59:59"
 
@@ -119,16 +92,16 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	// 将数据合并
 	for _, d := range group {
-		if mer, ok := m[d.MerId]; ok {
-			s := model.Summary{
-				MerId:     d.MerId,
-				AgentName: mer.AgentName,
-				MerName:   mer.Detail.MerName,
-			}
-			// 遍历渠道，合并数据
-			combine(&s, d.Detail)
-			data = append(data, s)
+		// if mer, ok := m[d.MerId]; ok {
+		s := model.Summary{
+			MerId:     d.MerId,
+			AgentName: d.AgentName,
+			MerName:   d.MerName,
 		}
+		// 遍历渠道，合并数据
+		combine(&s, d.Detail)
+		data = append(data, s)
+		// }
 	}
 
 	// 汇总数据

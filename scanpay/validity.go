@@ -32,6 +32,7 @@ const (
 )
 
 var (
+	success      = mongo.ScanPayRespCol.Get("SUCCESS")
 	emptyError   = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
 	formatError  = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
 	contentError = mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR")
@@ -398,6 +399,7 @@ func fieldContentError(f string) *model.ScanPayResponse {
 	return &model.ScanPayResponse{
 		Respcd:      contentError.ISO8583Code,
 		ErrorDetail: errMsg,
+		ErrorCode:   contentError.ErrorCode,
 	}
 }
 
@@ -408,6 +410,7 @@ func fieldEmptyError(f string) *model.ScanPayResponse {
 	return &model.ScanPayResponse{
 		Respcd:      emptyError.ISO8583Code,
 		ErrorDetail: errMsg,
+		ErrorCode:   emptyError.ErrorCode,
 	}
 }
 
@@ -418,5 +421,6 @@ func fieldFormatError(f string) *model.ScanPayResponse {
 	return &model.ScanPayResponse{
 		Respcd:      formatError.ISO8583Code,
 		ErrorDetail: errMsg,
+		ErrorCode:   formatError.ErrorCode,
 	}
 }

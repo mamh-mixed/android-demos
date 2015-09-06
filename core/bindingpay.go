@@ -43,11 +43,11 @@ func ProcessGetCardInfo(bc *model.CardInfo) (ret *model.BindingReturn) {
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
 		// 没找到说明不支持
-		ret.IsSupport = "0"
+		ret.BindingPaySupport = "0"
 		return ret
 	}
 
-	ret.IsSupport = "1"
+	ret.BindingPaySupport = "1"
 	ret.BankCode = cm.BankId
 	// ...图片地址
 

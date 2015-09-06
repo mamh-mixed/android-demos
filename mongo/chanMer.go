@@ -39,15 +39,6 @@ func (col *chanMerCollection) Add(c *model.ChanMer) error {
 	return err
 }
 
-// CountByKey 验证是否存在
-func (col *chanMerCollection) CountByKey(chanCode, chanMerId string) (int, error) {
-	bo := bson.M{
-		"chanCode":  chanCode,
-		"chanMerId": chanMerId,
-	}
-	return database.C(col.name).Find(bo).Count()
-}
-
 // BatchAdd 批量增加渠道商户
 func (col *chanMerCollection) BatchAdd(cms []model.ChanMer) error {
 
@@ -129,12 +120,13 @@ func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName st
 	cond := []bson.M{
 		{"$match": match},
 	}
+	sort := bson.M{"$sort": bson.M{"chanMerId": 1}}
 
 	skip := bson.M{"$skip": (page - 1) * size}
 
 	limit := bson.M{"$limit": size}
 
-	cond = append(cond, skip, limit)
+	cond = append(cond, sort, skip, limit)
 
 	err = database.C(col.name).Pipe(cond).All(&results)
 
@@ -176,4 +168,19 @@ func (col *chanMerCollection) FuzzyFind(chanCode, chanMerId, chanMerName string,
 	}
 
 	return results, err
+}
+
+// Remove 删除渠道商户
+func (col *chanMerCollection) Remove(chanCode, chanMerId string) error {
+
+	q := bson.M{}
+	if chanCode != "" {
+		q["chanCode"] = chanCode
+	}
+	if chanMerId != "" {
+		q["chanMerId"] = chanMerId
+	}
+	err := database.C(col.name).Remove(q)
+
+	return err
 }

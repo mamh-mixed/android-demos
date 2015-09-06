@@ -373,7 +373,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 	orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
 	// }
 	// 退款算退款部分的手续费，出报表时，将原订单的跟退款的相减
-	refund.Fee = int64(math.Floor(float64(refund.TransAmt))*float64(c.MerFee) + 0.5)
+	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*float64(c.MerFee) + 0.5))
 	orig.NetFee = orig.NetFee - refund.Fee // 重新计算原订单的手续费
 
 	ret = adaptor.ProcessRefund(orig, refund, c, req)
@@ -398,7 +398,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	t, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return returnWithErrorCode("TRADE_NOT_EXIST")
+		return adaptor.ReturnWithErrorCode("TRADE_NOT_EXIST")
 	}
 
 	// 判断订单的状态
@@ -424,7 +424,7 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 先拿到原交易
 		orig, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
 		if err != nil {
-			return returnWithErrorCode("TRADE_NOT_EXIST")
+			return adaptor.ReturnWithErrorCode("TRADE_NOT_EXIST")
 		}
 
 		// 查看原交易的状态
@@ -559,7 +559,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 对这笔撤销计算手续费，不然会对应不上，出现多扣少退。
-	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt))*float64(c.MerFee) + 0.5)
+	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*float64(c.MerFee) + 0.5))
 	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
 
 	ret = adaptor.ProcessCancel(orig, cancel, c, req)
@@ -627,7 +627,10 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 原交易成功，那么计算这笔取消的手续费
 	if orig.TransStatus == model.TransSuccess {
-		closed.Fee = int64(math.Floor(float64(closed.TransAmt))*float64(c.MerFee) + 0.5)
+		// 这样做方便于报表导出计算
+		closed.TransAmt = orig.TransAmt
+		orig.RefundAmt = orig.TransAmt
+		closed.Fee = int64(math.Floor(float64(closed.TransAmt)*float64(c.MerFee) + 0.5))
 		orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
 	}
 
@@ -635,19 +638,11 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 成功应答
 	if ret.Respcd == adaptor.SuccessCode {
-		// 如果原交易成功
-		if orig.TransStatus == model.TransSuccess {
-			// 这样做方便于报表导出计算
-			closed.TransAmt = orig.TransAmt
-			orig.RefundAmt = orig.TransAmt
-			// orig.Fee = 0
-		}
 		// 更新原交易信息
 		orig.TransStatus = model.TransClosed
 		mongo.SpTransColl.Update(orig)
 		// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		// orig.ErrorDetail = adaptor.CloseMsg
-
 	}
 
 	// 更新交易状态
@@ -664,26 +659,17 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 	count, err := mongo.SpTransColl.Count(mchId, orderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
-		return returnWithErrorCode("SYSTEM_ERROR"), true
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR"), true
 	}
 	if count > 0 {
 		// 订单号重复
-		return returnWithErrorCode("ORDER_DUPLICATE"), true
+		return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE"), true
 	}
 	return nil, false
 }
 
-// returnWithErrorCode 使用错误码直接返回
-func returnWithErrorCode(errorCode string) *model.ScanPayResponse {
-	spResp := mongo.ScanPayRespCol.Get(errorCode)
-	return &model.ScanPayResponse{
-		Respcd:      spResp.ISO8583Code,
-		ErrorDetail: spResp.ISO8583Msg,
-	}
-}
-
 // updateTrans 更新交易信息
-func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
+func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	// 根据请求结果更新
 	t.ChanRespCode = ret.ChanRespCode
 	t.ChanOrderNum = ret.ChannelOrderNum
@@ -703,7 +689,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) {
 	default:
 		t.TransStatus = model.TransFail
 	}
-	mongo.SpTransColl.Update(t)
+	return mongo.SpTransColl.Update(t)
 }
 
 // copyProperties 从原交易拷贝属性

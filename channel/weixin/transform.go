@@ -16,7 +16,7 @@ var (
 // returnCode: 通信标识
 // resultCode: 业务结果标识
 // errCode: 渠道返回的错误码
-func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (status, msg string) {
+func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (status, msg, errorCode string) {
 
 	// 成功直接返回
 	if returnCode == "SUCCESS" {
@@ -24,15 +24,15 @@ func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (stat
 		if resultCode == "SUCCESS" {
 			// 预下单时返回09
 			if busicd == "prePay" {
-				return inprocess.ISO8583Code, inprocess.ISO8583Msg
+				return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
 			}
-			return success.ISO8583Code, success.ISO8583Msg
+			return success.ISO8583Code, success.ISO8583Msg, success.ErrorCode
 		}
 	}
 
 	// 来到这一般是参数不完整，通讯失败
 	if errCode == "" {
-		return systemError.ISO8583Code, systemError.ISO8583Msg
+		return systemError.ISO8583Code, systemError.ISO8583Msg, systemError.ErrorCode
 	}
 	// if returnCode == "FAIL" {
 	// 	log.Error("weixin request fail, return code is FAIL")
@@ -53,7 +53,7 @@ func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (stat
 	log.Debugf("response code is %#v", respCode)
 
 	if respCode.IsUseISO {
-		return respCode.ISO8583Code, respCode.ISO8583Msg
+		return respCode.ISO8583Code, respCode.ISO8583Msg, respCode.ErrorCode
 	}
 
 	errCodeDesRune := []rune(errCodeDes)
@@ -61,5 +61,5 @@ func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (stat
 		errCodeDes = string(errCodeDesRune[:64])
 	}
 
-	return respCode.ISO8583Code, errCodeDes
+	return respCode.ISO8583Code, errCodeDes, respCode.ErrorCode
 }
