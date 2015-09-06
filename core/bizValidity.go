@@ -13,6 +13,7 @@ const (
 
 // UnionPayCardCommonValidity 银联卡必须验证证件和手机号
 func UnionPayCardCommonValidity(identType, identNum, phoneNum string) (ret *model.BindingReturn) {
+
 	if identType == "" {
 		return model.NewBindingReturn("200050", "银联卡 identType 不能为空")
 	}

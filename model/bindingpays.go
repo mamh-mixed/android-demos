@@ -162,27 +162,27 @@ type OrderEnquiry struct {
 
 // NoTrackPayment 无卡直接支付
 type NoTrackPayment struct {
-	MerId       string `json:"merId"`                // 商户ID
-	TransType   string `json:"transType"`            // 交易子类型 SALE:消费（直接扣款）AUTH:预授权
-	SubMerId    string `json:"subMerId"`             // 子商户号
-	MerOrderNum string `json:"merOrderNum"`          // 商户订单号
-	TransAmt    int64  `json:"transAmt"`             // 支付金额
-	CurrCode    string `json:"currCode"`             // 交易币种
-	AcctName    string `json:"acctName"`             // 账户名称
-	AcctNum     string `json:"acctNum"`              // 账户号码
-	IdentType   string `json:"identType"`            // 证件类型
-	IdentNum    string `json:"identNum"`             // 证件号码
-	PhoneNum    string `json:"phoneNum"`             // 手机号
-	AcctType    string `json:"acctType"`             // 账户类型
-	ValidDate   string `json:"validDate"`            // 信用卡有限期
-	Cvv2        string `json:"cvv2"`                 // CVV2
-	SendSmsId   string `json:"sendSmsId"`            // 发送短信验证码的交易流水
-	SmsCode     string `json:"smsCode"`              // 短信验证码
-	Chcd        string `json:"chcd,omitempty"`       //下游商户配置的渠道机构号
-	Mchntid     string `json:"mchntid,omitempty"`    //下游商户配置的渠道商户号
-	TerminalId  string `json:"terminalId,omitempty"` //下游商户配置的渠道商户的终端号
-	CliSN       string `json:"cliSN,omitempty"`      //商户的终端在当天对应的一个序列号
-	SysSN       string `json:"sysSN,omitempty"`      //系统序列号
+	MerId       string `json:"merId"`       // 商户ID
+	TransType   string `json:"transType"`   // 交易子类型 SALE:消费（直接扣款）AUTH:预授权
+	SubMerId    string `json:"subMerId"`    // 子商户号
+	MerOrderNum string `json:"merOrderNum"` // 商户订单号
+	TransAmt    int64  `json:"transAmt"`    // 支付金额
+	CurrCode    string `json:"currCode"`    // 交易币种
+	// AcctName    string `json:"acctName"`             // 账户名称
+	AcctNum    string `json:"acctNum"`              // 账户号码
+	IdentType  string `json:"identType"`            // 证件类型
+	IdentNum   string `json:"identNum"`             // 证件号码
+	PhoneNum   string `json:"phoneNum"`             // 手机号
+	AcctType   string `json:"acctType"`             // 账户类型
+	ValidDate  string `json:"validDate"`            // 信用卡有限期
+	Cvv2       string `json:"cvv2"`                 // CVV2
+	SendSmsId  string `json:"sendSmsId"`            // 发送短信验证码的交易流水
+	SmsCode    string `json:"smsCode"`              // 短信验证码
+	Chcd       string `json:"chcd,omitempty"`       //下游商户配置的渠道机构号
+	Mchntid    string `json:"mchntid,omitempty"`    //下游商户配置的渠道商户号
+	TerminalId string `json:"terminalId,omitempty"` //下游商户配置的渠道商户的终端号
+	CliSN      string `json:"cliSN,omitempty"`      //商户的终端在当天对应的一个序列号
+	SysSN      string `json:"sysSN,omitempty"`      //系统序列号
 	// 存储解密字段，辅助
 	AcctNumDecrypt   string `json:"-"`
 	AcctNameDecrypt  string `json:"-"`

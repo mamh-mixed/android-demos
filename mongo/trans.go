@@ -108,6 +108,7 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	}
 	t = new(model.Trans)
 	err = database.C(col.name).Find(q).One(t)
+
 	return
 }
 
