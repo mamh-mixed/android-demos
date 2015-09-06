@@ -33,8 +33,8 @@ func TestDailTcp(t *testing.T) {
 		log.Errorf("can't connect to cil-online tcp://%s: %s", addr, err)
 		return
 	}
-	req := new(model.ScanPay)
-	req.Busicd = "purc"
+	req := new(model.ScanPayRequest)
+	req.Busicd = "PURC"
 	encoded, _ := json.Marshal(req)
 	head := fmt.Sprintf("%04d", len(encoded))
 	io.WriteString(conn, head+string(encoded))

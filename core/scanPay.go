@@ -3,11 +3,8 @@ package core
 import (
 	"crypto/md5"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"math"
-	"strings"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
@@ -15,6 +12,9 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
+	"math"
+	"strings"
+	"time"
 )
 
 // PublicPay 公众号页面支付
@@ -313,9 +313,9 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 判断是否存在该订单
-	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
+	orig, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(refund, "TRADE_NOT_EXIST")
+		return adaptor.LogicErrorHandler(refund, err.Error())
 	}
 	copyProperties(refund, orig)
 	// refund.SubChanMerId = orig.SubChanMerId
@@ -396,20 +396,20 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret = new(model.ScanPayResponse)
 	// 判断是否存在该订单
-	t, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
+	t, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.ReturnWithErrorCode("TRADE_NOT_EXIST")
+		return adaptor.ReturnWithErrorCode(err.Error())
 	}
 
 	// 判断订单的状态
 	switch t.TransStatus {
 	// 如果是处理中或者得不到响应的向渠道发起查询
-	case model.TransHandling, "":
+	case model.TransHandling:
 
 		// 获取渠道商户
 		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 		if err != nil {
-			return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+			return adaptor.ReturnWithErrorCode("NO_CHANMER")
 		}
 
 		// 支付交易则向渠道查询
@@ -512,9 +512,9 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 判断是否存在该订单
-	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
+	orig, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(cancel, "TRADE_NOT_EXIST")
+		return adaptor.LogicErrorHandler(cancel, err.Error())
 	}
 	copyProperties(cancel, orig)
 	// 撤销交易，金额=原交易金额
@@ -597,10 +597,11 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 判断是否存在该订单
-	orig, err := mongo.SpTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
+	orig, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(closed, "TRADE_NOT_EXIST")
+		return adaptor.LogicErrorHandler(closed, err.Error())
 	}
+
 	copyProperties(closed, orig)
 	// closed.SubChanMerId = orig.SubChanMerId
 
@@ -690,6 +691,32 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 		t.TransStatus = model.TransFail
 	}
 	return mongo.SpTransColl.Update(t)
+}
+
+// findOneTrans 查找交易记录
+func findOneTrans(merId, orderNum string) (orig *model.Trans, err error) {
+	var retry int
+	for {
+		orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
+		if err != nil {
+			return nil, errors.New("TRADE_NOT_EXIST")
+		}
+		if orig.TransStatus == model.TransNotPay {
+			retry++
+			// 最多延迟5s，如果这笔交易还是没处理完，报系统错误
+			if retry == 5 {
+				log.Errorf("trans(%s,%s) spent long time to update.", merId, orderNum)
+				return nil, errors.New("SYSTEM_ERROR")
+			}
+			// 说明该笔交易在支付接口时还没完成更新，此时数据是脏数据
+			log.Info("find trans sleep 500ms ...")
+			time.Sleep(500 * time.Millisecond * time.Duration(retry))
+			// 等待500ms，继续循环
+			continue
+		}
+		break
+	}
+	return
 }
 
 // copyProperties 从原交易拷贝属性

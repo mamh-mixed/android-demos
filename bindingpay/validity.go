@@ -302,12 +302,12 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 	}
 
 	// AcctName
-	if in.AcctName == "" || in.AcctNameDecrypt == "" {
-		return model.NewBindingReturn("200050", "字段 acctName 不能为空")
-	}
-	if !isChineseOrJapaneseOrAlphanumeric(in.AcctNameDecrypt) {
-		return mongo.RespCodeColl.Get("200100")
-	}
+	// if in.AcctName == "" || in.AcctNameDecrypt == "" {
+	// 	return model.NewBindingReturn("200050", "字段 acctName 不能为空")
+	// }
+	// if !isChineseOrJapaneseOrAlphanumeric(in.AcctNameDecrypt) {
+	// 	return mongo.RespCodeColl.Get("200100")
+	// }
 
 	// AcctNum
 	if in.AcctNum == "" || in.AcctNumDecrypt == "" {

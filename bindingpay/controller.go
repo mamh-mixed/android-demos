@@ -277,9 +277,13 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 
 	aes := security.NewAESCBCEncrypt(m.EncryptKey)
 	b.AcctNumDecrypt, b.AcctNum = aes.DcyAndUseSysKeyEcy(b.AcctNum)
-	b.AcctNameDecrypt, b.AcctName = aes.DcyAndUseSysKeyEcy(b.AcctName)
-	b.IdentNumDecrypt, b.IdentNum = aes.DcyAndUseSysKeyEcy(b.IdentNum)
-	b.PhoneNumDecrypt, b.PhoneNum = aes.DcyAndUseSysKeyEcy(b.PhoneNum)
+	// b.AcctNameDecrypt, b.AcctName = aes.DcyAndUseSysKeyEcy(b.AcctName)
+	if b.IdentNum != "" {
+		b.IdentNumDecrypt, b.IdentNum = aes.DcyAndUseSysKeyEcy(b.IdentNum)
+	}
+	if b.PhoneNum != "" {
+		b.PhoneNumDecrypt, b.PhoneNum = aes.DcyAndUseSysKeyEcy(b.PhoneNum)
+	}
 
 	if b.AcctType == "20" {
 		b.ValidDateDecrypt, b.ValidDate = aes.DcyAndUseSysKeyEcy(b.ValidDate)

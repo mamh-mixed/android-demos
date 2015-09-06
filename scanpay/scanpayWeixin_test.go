@@ -177,7 +177,7 @@ func TestWXScanPay(t *testing.T) {
 
 	reqBytes, _ := json.Marshal(req)
 
-	respBytes := ScanPayHandle(reqBytes)
+	respBytes := ScanPayHandle(reqBytes, false)
 
 	var resp = model.ScanPayResponse{}
 
@@ -194,7 +194,7 @@ func TestWXScanPay(t *testing.T) {
 	// 条码已使用
 	req.OrderNum = util.Millisecond()
 	reqBytes, _ = json.Marshal(req)
-	respBytes = ScanPayHandle(reqBytes)
+	respBytes = ScanPayHandle(reqBytes, false)
 	_ = json.Unmarshal(respBytes, &resp)
 	Convey("微信下单支付条码已使用", t, func() {
 		So(resp.Respcd, ShouldEqual, "12")
@@ -213,7 +213,7 @@ func TestWXScanPay(t *testing.T) {
 	t.Logf("撤销：%#v", req)
 
 	reqBytes, _ = json.Marshal(req)
-	respBytes = ScanPayHandle(reqBytes)
+	respBytes = ScanPayHandle(reqBytes, false)
 
 	_ = json.Unmarshal(respBytes, &resp)
 	Convey("微信下单支付撤销", t, func() {
@@ -224,7 +224,7 @@ func TestWXScanPay(t *testing.T) {
 func doSendWXPayRequest(req *model.ScanPayRequest) (resp *model.ScanPayResponse) {
 	reqBytes, _ := json.Marshal(req)
 
-	respBytes := ScanPayHandle(reqBytes)
+	respBytes := ScanPayHandle(reqBytes, false)
 
 	resp = &model.ScanPayResponse{}
 
