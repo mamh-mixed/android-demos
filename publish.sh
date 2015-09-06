@@ -114,7 +114,6 @@ ps -ef | grep "$prog" | awk '{print \$2}' | xargs kill -9
 pwd
 echo "Starting $prog process ..."
 mkdir -p logs
-export QUICKPAY_ENV=develop
 nohup ./$prog >> logs/$prog.log 2>&1 &
 ps -ef | grep $prog
 
