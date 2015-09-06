@@ -54,9 +54,10 @@
       margin-right: 0;
     }
 
-    .row paper-checkbox,
-    .row paper-radio-button {
+    paper-checkbox,
+    paper-radio-button {
       padding-top: 20px;
+      margin-right: 20px;
     }
 
     .check-box-group > label {
@@ -77,7 +78,21 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
-
+    paper-textarea,
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
+    paper-textarea[required]::after,
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -90,8 +105,8 @@
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
         <div class="row">
-          <paper-input id="merId" label="*商户编号" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
-          <paper-input id="merName" label="*商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="merId" label="商户代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
+          <paper-input id="merName" label="商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
@@ -101,17 +116,19 @@
           <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
-        <div class="row" style="margin-top:30px;">
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
-          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" required=false error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="商户加密密钥" value="{{merchant.encryptKey::input}}"></paper-input>
+          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}"  error-message="必填项"></paper-input>
         </div>
 
-        <div class="row" style="margin-top:30px;">
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
           <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
           <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
         </div>
@@ -124,37 +141,43 @@
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
         </div>
 
-        <div class="row" style="margin-top:30px;">
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
+          <paper-input id="commodityName" label="商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
+          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
           <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
-          <paper-input id="commodityName" label="*商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
         </div>
-        <div class="row" style="margin-top:30px;">
-          <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="*商户状态"></x-select>
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="row">
+          <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" label="商户状态" required error-message="必填项"></x-select>
         </div>
         <div class="row">
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
-        <div class="row">
-          <label for="permissionGroup">接口权限</label>
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div>
+          <label for="permissionGroup">接口权限：</label>
+          <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
+            <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
+              <span>{{item.value}}</span>
+            </paper-checkbox>
+          </template>
         </div>
-        <div class="row" style="margin-top:15px;margin-bottom:20px;">
-          <div class="check-box-group">
-            <div id="permissionGroup" class="check-box-area">
-              <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
-                <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
-                  <span>{{item.value}}</span>
-                </paper-checkbox>
-              </template>
-            </div>
-          </div>
-        </div>
+
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
         </div>
@@ -162,16 +185,19 @@
 
       <section alias="alipay">
         <div class="row">
-          <paper-input id="achanMerId" label="*Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="achanMerId" label="Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input label="商户名称" value="{{alipay.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="aacqFee" label="*讯联跟渠道费率" value="{{alipay.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="amerFee" label="*商户跟讯联费率" value="{{alipay.merFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alipay.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="amerFee" label="商户跟讯联费率" value="{{alipay.merFee::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="asignCert" label="*MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
         </div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -179,33 +205,35 @@
 
       <section alias="tenpay">
         <div class="row">
-          <paper-input id="wchanMerId" label="*微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
+        <div class="divider blank"></div>
         <div class="row">
           <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
-          <paper-input id="bigChanMerId" label="*大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
-          <!-- <channel-merchant-typeahead label="大商户号"></channel-merchant-typeahead> -->
+          <paper-input id="bigChanMerId" label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="wacqFee" label="*讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wmerFee" label="*商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" required=false error-message="必填项"></paper-input>
-          <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" required=false error-message="必填项"></paper-input>
+          <paper-input id="wxpAppId" label="微信 AppId" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
+          <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
-          <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+          <label id="httpCertL">请选择.pem文件的HTTP证书</label>
+          <label id="httpKeyL">请选择.pem文件的HTTP密钥</label>
         </div>
         <div class="row">
-          <label id="httpCertL">HTTP 证书</label>
-          <label id="httpKeyL">HTTP 密钥</label>
+          <paper-input id="httpCert" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+          <paper-input id="httpKey" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
         </div>
+        <div class="divider blank"></div>
+
         <div class="row">
-          <pre>{{weixin.httpCert}}</pre>
-          <pre>{{weixin.httpKey}}</pre>
+          <paper-textarea id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}"  error-message="必填项"></paper-textarea>
+          <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}"  error-message="必填项"></paper-textarea>
         </div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
@@ -270,16 +298,12 @@
             value: '预下单',
             isChecked: false
           }, {
-            key: 'QYFK',
-            value: '企业付款',
-            isChecked: false
-          }, {
-            key: 'JSZF',
-            value: '公众号支付',
-            isChecked: false
-          }, {
             key: 'INQY',
             value: '查询订单',
+            isChecked: false
+          }, {
+            key: 'CANC',
+            value: '取消',
             isChecked: false
           }, {
             key: 'VOID',
@@ -290,8 +314,12 @@
             value: '退款',
             isChecked: false
           }, {
-            key: 'CANC',
-            value: '取消',
+            key: 'QYFK',
+            value: '企业付款',
+            isChecked: false
+          }, {
+            key: 'JSZF',
+            value: '公众号支付',
             isChecked: false
           }]
         }
@@ -407,7 +435,7 @@
             shopId: '',
             shopType: ''
           },
-          merStatus: '',
+          merStatus: 'Normal',
           transCurr: '156',
           signKey: '',
           isNeedSign: false,
@@ -534,7 +562,7 @@
           }
         } else {
           if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() &&
-            this.$.wsignCert.validate()) {
+            this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
             return false;
           }
         }
@@ -546,18 +574,6 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
-        //   http证书与HTTP密钥文件格式必须为PEM格式的文件,后台还未
-        if (!this.weixin.isAgentMode) {
-          if (!this.httpCertFlag) {
-            Util.toast('HTTP证书文件格式，必须为PEM格式的文件', 3000);
-            return;
-          }
-          if (!this.httpKeyFlag) {
-            Util.toast('HTTP密钥文件格式，必须为PEM格式的文件', 3000);
-            return;
-          }
-        }
-
         var acqFee = parseFloat(this.weixin.acqFee),
           merFee = parseFloat(this.weixin.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
@@ -585,6 +601,7 @@
         };
         this.$.saveRouterAjax.body = JSON.stringify(router);
         this.$.saveRouterAjax.generateRequest();
+
       },
       // 保存路由的ajax响应事件
       handleSaveRouterResponse: function(e) {
@@ -611,36 +628,32 @@
         this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
         if (this.weixin.isAgentMode) {
           this.set('weixin.agentMer', this.bigMerchant);
-          this.$.bigChanMerId.required = true;
-          this.$.wxpAppId.required = false;
-          this.$.wsignCert.required = false;
-          this.$.wxpAppId.label = '微信支付App Id';
-          this.$.wsignCert.label = '签名证书';
-          this.$.httpCertL.textContent = 'HTTP 证书';
-          this.$.httpKeyL.textContent = 'HTTP 密钥';
+          this.$.bigChanMerId.setAttribute('required',true);
+          this.$.wxpAppId.removeAttribute('required');
+          this.$.wsignCert.removeAttribute('required');
+          this.$.httpCertTArea.removeAttribute('required');
+          this.$.httpKeyTArea.removeAttribute('required');
           this.$.wxpAppId.validate();
           this.$.wsignCert.validate();
+          this.$.httpCertTArea.validate();
+          this.$.httpKeyLTArea.validate();
         } else {
           this.set('weixin.agentMer', {});
-          this.$.bigChanMerId.required = false;
-          this.$.wxpAppId.required = true;
-          this.$.wsignCert.required = true;
+          this.$.bigChanMerId.removeAttribute('required');
           this.$.bigChanMerId.validate();
-          this.$.wxpAppId.label = '*微信支付App Id';
-          this.$.wsignCert.label = '*签名证书';
-          this.$.httpCertL.textContent = '*HTTP 证书';
-          this.$.httpKeyL.textContent = '*HTTP 密钥';
+          this.$.wxpAppId.setAttribute('required',true);
+          this.$.wsignCert.setAttribute('required',true);
+          this.$.httpCertTArea.setAttribute('required',true);
+          this.$.httpKeyTArea.setAttribute('required',true);
         }
       },
       // 是否需要验签的改变事件
       handleIsNeedSignChangeEvent: function() {
         this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
         if (this.$.isNeedSignCheck.checked) {
-          this.$.signKey.label = '*商户签名密钥';
-          this.$.signKey.required = true;
+          this.$.signKey.setAttribute('required',true);
         } else {
-          this.$.signKey.label = '商户签名密钥';
-          this.$.signKey.required = false;
+          this.$.signKey.removeAttribute('required');
           this.$.signKey.validate();
         }
       },
@@ -690,9 +703,7 @@
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
-            this.httpCertFlag = true;
           } else {
-            this.httpCertFlag = false;
             Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
           }
         }
@@ -712,14 +723,11 @@
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
-            this.httpKeyFlag = true;
           } else {
-            this.httpKeyFlag = false;
             Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
           }
         }
       }
     });
-
   </script>
 </dom-module>

@@ -5,8 +5,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 320px;
-        min-height: 220px;
+        min-width: 300px;
+        min-height: 300px;
       }
     }
 
@@ -30,7 +30,7 @@
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></iron-ajax>
     <paper-dialog id="dialogAdd">
-      <h2>添加集团商户</h2>
+      <h2>创建集团商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <paper-input label="集团商户代码" value="{{group.groupCode::input}}" ></paper-input>

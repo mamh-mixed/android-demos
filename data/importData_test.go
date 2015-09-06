@@ -11,8 +11,8 @@ import (
 func TestAddMerFromNodejsDB(t *testing.T) {
 
 	// 不重写url就是导入测试环境的
-	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-	var path = "/Users/zhiruichen/Desktop/test_pem/"
+	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+	var path = "/Users/zhiruichen/Desktop/product_pem/"
 	err := AddMerchantFromOldDB(path)
 	if err != nil {
 		t.Error(err)
@@ -22,7 +22,7 @@ func TestAddMerFromNodejsDB(t *testing.T) {
 }
 
 // 导入扫码渠道应答码，同quickpay
-func TestAddSpChanFromCSV(t *testing.T) {
+func xTestAddSpChanFromCSV(t *testing.T) {
 
 	// 导入微信
 	err := AddSpChanCodeFromScv("wxp", "respCode_wxp.csv")
@@ -32,17 +32,17 @@ func TestAddSpChanFromCSV(t *testing.T) {
 	}
 
 	// 导入支付宝
-	// err := AddSpChanCodeFromScv("alp", "respCode_alp.csv")
-	// if err != nil {
-	// 	t.Error(err)
-	// 	t.FailNow()
-	// }
+	err = AddSpChanCodeFromScv("alp", "respCode_alp.csv")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 
 	t.Log("SUCCESS")
 }
 
 // 导入scanPay应答码，同quickpay
-func TestAddScanPayRespFromCSV(t *testing.T) {
+func xTestAddScanPayRespFromCSV(t *testing.T) {
 
 	err := AddScanPayFromCSV("respCode_scanpay.csv")
 	// data, err := readScanPayCSV("respCode_scanpay.csv")

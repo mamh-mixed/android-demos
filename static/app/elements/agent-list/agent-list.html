@@ -12,34 +12,9 @@
       box-sizing: border-box;
     }
 
-    .condition {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .condition > paper-input,
-    .condition > x-select {
-      min-width: 170px;
-      margin-right: 20px;
-    }
-
-    .condition > .buttons {
-      min-width: 170px;
-    }
-
-    .condition > .buttons > paper-button {
-      margin: 10px 0px 0px;
-    }
-
     paper-button.colorful {
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
-    }
-
-    .loading-more-wrapper {
-      text-align: center;
     }
 
     paper-fab {
@@ -82,28 +57,23 @@
       background-color: #f5f5f5;
     }
 
-    table tr th:nth-last-of-type(2),
-    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <!-- <iron-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax> -->
-    <div class="condition">
-      <paper-input label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-      <paper-input label="代理名称" value="{{cond.agentName::input}}"></paper-input>
-      <div class="buttons">
+    <form is="iron-form" id="formQuery" method="GET" action="/master/agent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="search-condition">
+        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-    </div>
-
-    <div class="list">
-      <table style="width:100%;">
+      <div class="divider blank"></div>
+      <div class="divider blank"></div>
+      <table class="data-grid">
         <thead>
           <tr>
-            <th></th>
+            <th>序号</th>
             <th>代理代码</th>
-            <th>代理名称</th>
-            <th class="center">操作</th>
+            <th align="left">代理名称</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -112,7 +82,7 @@
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.agentCode}}</span>
               </td>
               <td>
@@ -125,12 +95,15 @@
             </tr>
           </template>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-    </div>
-    <div class="loading-more-wrapper">
-      <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-    </div>
-
+    </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
@@ -165,7 +138,7 @@
           this.agents = [];
           this.cond = {
             page: 1,
-            size: 10,
+            size: 20,
             total: 0
           };
         },
@@ -182,12 +155,11 @@
 
         generateAjaxRequest: function() {
           this.agents = [];
-          this.$.queryAjax.params = this.cond;
-          this.$.queryAjax.generateRequest();
+          this.$.formQuery.submit();
         },
         // ajax请求响应处理
         handleQueryResponse: function(e) {
-          var response = e.detail.response;
+          var response = e.detail;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
             return;
@@ -241,8 +213,14 @@
         },
         addOneFilter: function(index) {
           return index + 1;
-        }
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.agents = [];
+          this.set('cond.total', 0);
+        },
       });
     })();
+
   </script>
 </dom-module>

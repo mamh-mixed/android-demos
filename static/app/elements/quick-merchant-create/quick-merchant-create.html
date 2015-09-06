@@ -1,0 +1,249 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="quick-merchant-create">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 600px;
+        min-height: 500px;
+        max-height: 500px;
+        font-size: 14px;
+      }
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
+    }
+
+    .row paper-input,
+    .row pre,
+    .row label,
+    .row paper-textarea,
+    .row paper-checkbox,
+    .row paper-radio-button,
+    .row .check-box-group,
+    .row channel-merchant-typeahead,
+    .row x-select {
+      @apply(--layout-flex-6);
+      margin-right: 20px;
+    }
+
+    .row paper-input:last-child,
+    .row pre:last-child,
+    .row label:last-child,
+    .row paper-textarea:last-child,
+    .row paper-checkbox:last-child,
+    .row paper-radio-button:last-child,
+    .row channel-merchant-typeahead:last-child,
+    .row .check-box-group:last-child,
+    .row x-select:last-child {
+      margin-right: 0;
+    }
+
+    .row paper-checkbox,
+    .row paper-radio-button {
+      padding-top: 20px;
+    }
+
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
+
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
+
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+      height: 40px;
+      vertical-align: middle;
+      /*margin-top: 15px;*/
+    }
+  </style>
+  <template>
+
+    <paper-dialog id="dialogView">
+      <h2 id="header"></h2>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <paper-input id="merId" label="商户代码" class="validate-container" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
+          <paper-input id="merName" label="商户名称" class="validate-container" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
+          <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
+        </div>
+        <div class="row">
+          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" class="validate-container" error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input id="encryptKey" label="商户加密密钥" class="validate-container" required value="{{merchant.encryptKey::input}}"></paper-input>
+          <paper-button class="colorful" on-tap="refreshEncryptKeyHandle">刷新</paper-button>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
+          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="开户行号" value="{{merchant.detail.bankId::input}}"></paper-input>
+          <paper-input label="支行名称" value="{{merchant.detail.bankName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
+          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+        </div>
+
+        <div class="row" style="margin-top:30px;">
+          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
+          <paper-input label="门店ID" value="{{merchant.detail.shopId::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
+          <paper-input id="commodityName" label="商品名称" value="{{merchant.detail.commodityName::input}}" error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
+        </div>
+        <div class="row" style="margin-top:30px;">
+          <x-select id="merStatus" items="[[merStatusMap]]" class="validate-container" required selected-item="{{merStatus}}" label="商户状态"></x-select>
+        </div>
+        <div class="row">
+          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button on-tap="handleSaveMerchantTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+  </template>
+  <script>
+    var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+    function generateMixed(n) {
+      var res = '';
+      for (var i = 0; i < n; i++) {
+        var id = Math.ceil(Math.random() * 35);
+        res += chars[id];
+      }
+      return res;
+    }
+    (function() {
+      Polymer({
+        is: 'quick-merchant-create',
+        properties: {
+          pageType: String,
+          merchant: Object,
+          merStatus: {
+            type: Object,
+            value: {
+              key: 'Normal',
+              value: '正常商户',
+            }
+          },
+          merStatusMap: {
+            type: Array,
+            value: [{
+              key: 'Normal',
+              value: '正常商户'
+            }, {
+              key: 'Test',
+              value: '测试商户'
+            }, {
+              key: 'Deleted',
+              value: '已删除商户'
+            }]
+          },
+        },
+        open: function() {
+          this.$.dialogView.open();
+          if (this.pageType === 'create') {
+            this.$.header.textContent = '创建机构商户';
+            this.$.merId.disabled = false;
+            this.set('merchant.encryptKey', generateMixed(43) + '=');
+          } else {
+            this.$.header.textContent = '编辑机构商户';
+            this.$.merId.disabled = true;
+          }
+        },
+        //判断商户录入必填项是否为空
+        isMerchantConfigEmpty: function() {
+          if (this.$.merId.validate() && this.$.merName.validate() && this.$.encryptKey.validate() && this.$.merStatus.selectedItem) {
+            if (this.$.isNeedSignCheck.checked) {
+              if (!this.$.signKey.validate()) {
+                return true;
+              }
+            }
+            return false;
+          } else {
+            return true;
+          }
+        },
+        // 保存商户的按钮事件
+        handleSaveMerchantTapped: function() {
+          if (this.isMerchantConfigEmpty()) {
+            Util.toast('必填项不能为空', 3000);
+            return;
+          }
+          this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+          this.$.saveMerchantAjax.generateRequest();
+        },
+        // 保存商户的ajax响应事件
+        handleSaveMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialogView.close();
+          Util.toast(response.message, 1000);
+          this.fire('saved');
+        },
+        // 是否需要验签的改变事件
+        handleIsNeedSignChangeEvent: function() {
+          this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
+          if (this.$.isNeedSignCheck.checked) {
+            this.$.signKey.setAttribute('required', true);
+          } else {
+            this.$.signKey.removeAttribute('required');
+            this.$.signKey.validate();
+          }
+        },
+        // 刷新生成商户加密密钥
+        refreshEncryptKeyHandle: function() {
+          this.set('merchant.encryptKey', generateMixed(43) + '=');
+        },
+      });
+    })();
+  </script>
+</dom-module>

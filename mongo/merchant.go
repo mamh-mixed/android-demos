@@ -147,11 +147,13 @@ func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode
 		{"$match": match},
 	}
 
+	sort := bson.M{"$sort": bson.M{"merId": 1}}
+
 	skip := bson.M{"$skip": (page - 1) * size}
 
 	limit := bson.M{"$limit": size}
 
-	cond = append(cond, skip, limit)
+	cond = append(cond, sort, skip, limit)
 
 	err = database.C(c.name).Pipe(cond).All(&results)
 

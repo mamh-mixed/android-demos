@@ -134,8 +134,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.route = {
         name: 'trade.old.reports',
         path: '/trade/old/reports',
-        title: '旧系统交易报表查询',
-        subtitle: '旧系统交易报表查询'
+        title: '旧系统交易统计',
+        subtitle: '旧系统交易统计'
       };
     });
     // 交易管理 end
@@ -176,9 +176,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '测试 HTML5 读取文件内容'
       };
     });
-    page('/404', '/');
-
     page('*', '/404');
+    page('/quickPay/merchants', function() {
+      app.route = {
+        name: 'quickPay.merchants',
+        path: '/quickPay/merchants',
+        title: '快捷支付机构商户',
+        subtitle: '快捷支付机构商户'
+      };
+    });
+    page('/quickPay/chanMers', function() {
+      app.route = {
+        name: 'quickPay.chanMers',
+        path: '/quickPay/chanMers',
+        title: '快捷支付渠道商户',
+        subtitle: '快捷支付渠道商户'
+      };
+    });
+    page('/quickPay/routes', function() {
+      app.route = {
+        name: 'quickPay.routes',
+        path: '/quickPay/routes',
+        title: '快捷支付路由策略',
+        subtitle: '快捷支付路由策略',
+      };
+    });
 
     // add #! before urls
     page({
@@ -186,4 +208,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
 
   });
+
 </script>

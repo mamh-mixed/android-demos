@@ -276,10 +276,18 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 
 	find := bson.M{
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
-		"merId":      bson.M{"$in": q.MerIds},
-		"transType":  q.TransType,
-		"$or":        []bson.M{bson.M{"transStatus": q.TransStatus}, bson.M{"refundStatus": q.RefundStatus}},
 	}
+	if q.MerId != "" {
+		find["merId"] = bson.RegEx{q.MerId, "."}
+	}
+	if q.AgentCode != "" {
+		find["agentCode"] = q.AgentCode
+	}
+	if q.MerName != "" {
+		find["merName"] = bson.RegEx{q.MerName, "."}
+	}
+	find["transType"] = q.TransType
+	find["$or"] = []bson.M{bson.M{"transStatus": q.TransStatus}, bson.M{"refundStatus": q.RefundStatus}}
 
 	// 计算total
 	var total = struct {
@@ -299,6 +307,8 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
+			"merName":   bson.M{"$last": "$merName"},
+			"agentName": bson.M{"$last": "$agentName"},
 			"netFee":    bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
 		}},
 		{"$group": bson.M{
@@ -306,6 +316,8 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"transNum":  bson.M{"$sum": "$transNum"},
+			"merName":   bson.M{"$first": "$merName"},
+			"agentName": bson.M{"$first": "$agentName"},
 			"detail": bson.M{"$push": bson.M{"chanCode": "$_id.chanCode",
 				"transNum":  "$transNum",
 				"transAmt":  "$transAmt",

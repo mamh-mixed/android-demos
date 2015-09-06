@@ -72,16 +72,16 @@ func TestFuzzyFind(t *testing.T) {
 	t.Log(mers)
 }
 
-func TestPaginationFind(t *testing.T) {
-	merId, merStatus := "", ""
-	page, size := 1, 10
+// func TestPaginationFind(t *testing.T) {
+// 	merId, merStatus := "", ""
+// 	page, size := 1, 10
 
-	results, total, err := MerchantColl.PaginationFind(merId, merStatus, size, page)
-	if err != nil {
-		t.Errorf("fail %s", err)
-	}
+// 	results, total, err := MerchantColl.PaginationFind(merId, merStatus, size, page)
+// 	if err != nil {
+// 		t.Errorf("fail %s", err)
+// 	}
 
-	t.Logf("total is %d; collections are %#v", total, results)
+// 	t.Logf("total is %d; collections are %#v", total, results)
 
-	t.Logf("collections' length is %d", len(results))
-}
+// 	t.Logf("collections' length is %d", len(results))
+// }
