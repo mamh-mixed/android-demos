@@ -25,7 +25,7 @@ func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
 		SubMchId:     m.SubMchId,     // 子商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
-		WeixinMD5Key: m.SignKey,     // md5key
+		WeixinMD5Key: m.SignKey,      // md5key
 		ClientCert:   m.WeixinClientCert,
 		ClientKey:    m.WeixinClientKey,
 	}
@@ -55,7 +55,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		return nil, err
 	}
 
-	status, msg := weixin.Transform("pay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("pay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
@@ -64,6 +64,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+		ErrorCode:       ec,
 	}
 	// 如果非大商户模式，用自己的 openid
 	if d.SubMchId == "" {
@@ -84,8 +85,8 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 	d := &PayQueryReq{
 		CommonParams: *getCommonParams(m),
 
-		TransactionId: "",         // 微信支付订单号
-		OutTradeNo:    m.OrderNum, // 商户订单号
+		TransactionId: "",             // 微信支付订单号
+		OutTradeNo:    m.OrigOrderNum, // 商户订单号
 	}
 
 	p := &PayQueryResp{}
@@ -95,14 +96,14 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 
 	log.Debugf("ProcessEnquiry response data is %#v", p)
 
-	status, msg := weixin.Transform("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	// 如果返回的是成功的，要对 trade_state 做判断
 	// SUCCESS—支付成功;REFUND—转入退款;NOTPAY—未支付;CLOSED—已关闭;REVOKED—已撤销;
 	// USERPAYING-用户支付中;PAYERROR-支付失败(其他原因，如银行返回失败)
 	if status == "00" {
 		respCode := mongo.ScanPayRespCol.GetByWxp(p.TradeState, "payQuery")
-		status, msg = respCode.ISO8583Code, respCode.ISO8583Msg
+		status, msg, ec = respCode.ISO8583Code, respCode.ISO8583Msg, respCode.ErrorCode
 	}
 
 	ret = &model.ScanPayResponse{
@@ -112,6 +113,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		ConsumerId:      "",              // 渠道账号ID   C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+		ErrorCode:       ec,
 	}
 	// 如果非大商户模式，用自己的 openid
 	if d.SubMchId == "" {
@@ -167,7 +169,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		return nil, err
 	}
 
-	status, msg := weixin.Transform("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
 		Respcd:       status,     // 交易结果  M
@@ -175,6 +177,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		QrCode:       p.CodeURL,  // 二维码 C
 		ChanRespCode: p.ErrCode,  // 渠道详细应答码
 		PrePayId:     p.PrepayID, // 预支付标识
+		ErrorCode:    ec,
 	}
 
 	return ret, err
@@ -201,7 +204,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		return nil, err
 	}
 
-	status, msg := weixin.Transform("refund", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("refund", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
@@ -210,6 +213,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		ErrorDetail:     msg,             // 错误信息   C
 		QrCode:          m.ScanCodeId,    // 二维码 C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+		ErrorCode:       ec,
 	}
 
 	return ret, err
@@ -231,13 +235,14 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 		return nil, err
 	}
 
-	status, msg := weixin.Transform("refundQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("refundQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Txndir:          "A",             // 交易方向 M M
 		Respcd:          status,          // 交易结果  M
 		ChannelOrderNum: p.TransactionId, // 渠道交易号 C
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
+		ErrorCode:       ec,
 	}
 
 	return ret, err
@@ -257,7 +262,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 		return nil, err
 	}
 
-	status, msg := weixin.Transform("reverse", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("reverse", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:          status,       // 交易结果  M
 		ChannelOrderNum: "",           // 渠道交易号 C
@@ -266,6 +271,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 		ErrorDetail:     msg,          // 错误信息   C
 		QrCode:          m.ScanCodeId, // 二维码 C
 		ChanRespCode:    p.ErrCode,    // 渠道详细应答码
+		ErrorCode:       ec,
 	}
 
 	return ret, err
@@ -285,11 +291,12 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 		return nil, err
 	}
 
-	status, msg := weixin.Transform("close", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("close", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
 		Respcd:       status,    // 交易结果  M
 		ErrorDetail:  msg,       // 错误信息   C
 		ChanRespCode: p.ErrCode, // 渠道详细应答码
+		ErrorCode:    ec,
 	}
 
 	return ret, err

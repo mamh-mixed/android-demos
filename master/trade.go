@@ -1,7 +1,6 @@
 package master
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -17,63 +16,29 @@ import (
 var maxReportRec = 10000
 
 // tradeQuery 交易查询
-func tradeQuery(w http.ResponseWriter, data []byte) {
-
-	// // 允许跨域
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
-	// w.Header().Set("Access-Control-Allow-Methods", "*")
-
+func tradeQuery(w http.ResponseWriter, q *model.QueryCondition) (ret *model.QueryResult) {
 	// 交易查询
-	q := &model.QueryCondition{}
-	err := json.Unmarshal(data, q)
-	if err != nil {
-		log.Errorf("unmarshal json(%s) error: %s", data, err)
-		http.Error(w, "json format error: "+err.Error(), http.StatusPreconditionFailed)
-		return
-	}
 	if q.EndTime != "" {
 		q.EndTime += " 23:59:59"
 	}
-	ret := core.TransQuery(q)
-	retBytes, err := json.Marshal(ret)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Write(retBytes)
+
+	ret = core.TransQuery(q)
+
+	return ret
 }
 
 // tradeReport 处理查找所有商户的请求
-func tradeReport(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	filename := params.Get("filename")
-
+func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
 	var file = xlsx.NewFile()
 
-	var merId = params.Get("merId")
-	req := &model.QueryCondition{
-		MerId:        merId,
-		Busicd:       params.Get("busicd"),
-		StartTime:    params.Get("startTime"),
-		EndTime:      params.Get("endTime"),
-		OrderNum:     params.Get("orderNum"),
-		OrigOrderNum: params.Get("origOrderNum"),
-		Size:         maxReportRec,
-		IsForReport:  true,
-		Page:         1,
-		RefundStatus: model.TransRefunded,
-		TransStatus:  model.TransSuccess,
-	}
-
 	// 查询
-	ret := core.TransQuery(req)
+	ret := core.TransQuery(cond)
 
 	// 类型转换
 	if trans, ok := ret.Rec.([]*model.Trans); ok {
 		// 生成报表
 		before := time.Now()
-		genReport(merId, file, trans)
+		genReport(cond.MerId, file, trans)
 		after := time.Now()
 		log.Debugf("gen trans report spent %s", after.Sub(before))
 	}
@@ -254,7 +219,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"支付宝交易金额：", float64(alpTransAmt) / 100,
 		"支付宝退款金额：", -float64(alpRefundAmt) / 100,
 		"支付宝手续费：", float64(alpFee) / 100,
-		"支付宝清算金额：", float64(alpTransAmt-alpFee) / 100,
+		"支付宝清算金额：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
@@ -262,7 +227,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"微信交易金额：", float64(wxpTransAmt) / 100,
 		"微信退款金额：", -float64(wxpRefundAmt) / 100,
 		"微信手续费：", float64(wxpFee) / 100,
-		"微信清算金额：", float64(wxpTransAmt-wxpFee) / 100,
+		"微信清算金额：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
@@ -270,7 +235,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		"交易总额：", float64(transAmt) / 100,
 		"退款总额：", -float64(refundAmt) / 100,
 		"手续费总额：", float64(fee) / 100,
-		"清算总额：", float64(transAmt-fee) / 100,
+		"清算总额：", float64(transAmt-refundAmt-fee) / 100,
 	}, -1)
 }
 

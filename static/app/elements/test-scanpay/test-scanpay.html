@@ -107,7 +107,7 @@
         <paper-input required$="{{requiredDetector.inscd}}" class="col" id="inscd" name="inscd" label="机构号(inscd)" value="{{scanCode.inscd::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.mchntid}}" class="col" id="mchntid" name="mchntid" label="商户号(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.mchntid}}" class="col" id="mchntid" name="mchntid" label="商户代码(mchntid)" value="{{scanCode.mchntid::input}}"></paper-input>
         <paper-input required$="{{requiredDetector.terminalid}}" class="col" id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
       </div>
       <div class="row">
@@ -142,7 +142,7 @@
         <paper-input required$="{{requiredDetector.code}}" class="col" id="code" name="code" label="授权码(code)" value="{{scanCode.code::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.notifyUrl}}" class="col" id="notifyUrl" name="notifyUrl" label="异步通知地址(notifyUrl)" value="{{scanCode.notifyUrl::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.backUrl}}" class="col" id="backUrl" name="backUrl" label="异步通知地址(backUrl)" value="{{scanCode.backUrl::input}}"></paper-input>
       </div>
       <div class="divider"></div>
 
@@ -360,7 +360,7 @@
       },
       key: {
         type: String,
-        value: 'dawdawdnjawdjwbdhabbdalsjdfaflas',
+        value: 'zsdfyreuoyamdphhaweyrjbvzkgfdycs',
         observer: '_convertToJSON'
       },
       isReady: {
@@ -493,16 +493,16 @@
         busicd: '',
         inscd: '10134001',
         chcd: '',
-        mchntid: '100000000000204',
-        terminalid: '000000000001',
+        mchntid: '100000000010001',
+        terminalid: '10000001',
         txamt: '000000000001',
         currency: '156',
-        goodsInfo: '鞋子,1000,2;衣服,1500,3',
+        goodsInfo: 'food,10.00,2;water,1.00,3',
         orderNum: '' + now.valueOf(),
         origOrderNum: '',
         scanCodeId: '',
         sign: '',
-        notifyUrl: ''
+        backUrl: 'http://dev.quick.ipay.so/scanpay/test/recNotify'
       };
       this.responseJsonData = '';
     },

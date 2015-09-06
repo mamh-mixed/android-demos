@@ -11,18 +11,74 @@ import (
 )
 
 func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadAll(r.Body)
+	params := r.URL.Query()
+
+	var merId = params.Get("merId")
+	size, err := strconv.Atoi(params.Get("size"))
 	if err != nil {
-		log.Errorf("Read all body error: %s", err)
-		w.WriteHeader(501)
-		return
+		http.Error(w, "参数 `size` 必须为整数", http.StatusBadRequest)
+	}
+	if size > 100 || size <= 0 {
+		size = 20
+	}
+	page, err := strconv.Atoi(params.Get("page"))
+	if err != nil {
+		http.Error(w, "参数 `page` 必须为整数", http.StatusBadRequest)
+	}
+	if page <= 0 {
+		page = 1
 	}
 
-	tradeQuery(w, data)
+	cond := &model.QueryCondition{
+		MerId:        merId,
+		AgentCode:    params.Get("agentCode"),
+		GroupCode:    params.Get("groupCode"),
+		Respcd:       params.Get("respcd"),
+		Busicd:       params.Get("busicd"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		OrderNum:     params.Get("orderNum"),
+		OrigOrderNum: params.Get("origOrderNum"),
+		Size:         size,
+		Page:         page,
+		TransStatus:  params.Get("transStatus"),
+	}
+
+	ret := tradeQuery(w, cond)
+
+	// // 允许跨域
+	// w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
 }
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
-	tradeReport(w, r)
+	params := r.URL.Query()
+	filename := params.Get("filename")
+
+	var merId = params.Get("merId")
+	cond := &model.QueryCondition{
+		MerId:        merId,
+		Busicd:       params.Get("busicd"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		OrderNum:     params.Get("orderNum"),
+		OrigOrderNum: params.Get("origOrderNum"),
+		Size:         maxReportRec,
+		IsForReport:  true,
+		Page:         1,
+		RefundStatus: model.TransRefunded,
+		TransStatus:  model.TransSuccess,
+	}
+
+	tradeReport(w, cond, filename)
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +109,6 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
-
 	merId := r.FormValue("merId")
 	merStatus := r.FormValue("merStatus")
 	merName := r.FormValue("merName")
@@ -63,6 +118,7 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 	agentName := r.FormValue("agentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
+
 	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
 
 	rdata, err := json.Marshal(ret)
@@ -104,8 +160,8 @@ func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
-func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
+func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	merId := r.FormValue("merId")
 	ret := Merchant.Delete(merId)
 	rdata, err := json.Marshal(ret)
@@ -238,6 +294,20 @@ func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ret := ChanMer.Save(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func channelMerchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	v := r.URL.Query()
+	chanCode := v.Get("chanCode")
+	chanMerId := v.Get("chanMerId")
+	ret := ChanMer.Delete(chanCode, chanMerId)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))

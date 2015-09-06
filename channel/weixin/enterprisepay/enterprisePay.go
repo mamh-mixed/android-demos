@@ -46,13 +46,14 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 	}
 	log.Debugf("%+v", p)
 
-	status, msg := weixin.Transform("enterprisePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+	status, msg, ec := weixin.Transform("enterprisePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{
 		Respcd:          status,    // 交易结果  M
 		ErrorDetail:     msg,       // 错误信息   C
 		ChanRespCode:    p.ErrCode, // 渠道详细应答码
 		ChannelOrderNum: p.PaymentNo,
+		ErrorCode:       ec,
 	}
 
 	return ret, nil

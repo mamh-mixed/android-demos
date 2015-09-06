@@ -69,7 +69,7 @@ func handleConnection(conn net.Conn, gbk bool) {
 		var ok bool
 		if !gbk {
 			// UTF-8 编码
-			msg = string(ScanPayHandle([]byte(reqBytes))) // 测试中文编码
+			msg = string(ScanPayHandle([]byte(reqBytes), false)) // 测试中文编码
 		} else {
 			// 数据是以 GBK 编码传输的，需要解码，把 GBK 转成 UTF-8
 			msg, ok = util.GBKTranscoder.Decode(string(reqBytes))
@@ -79,7 +79,7 @@ func handleConnection(conn net.Conn, gbk bool) {
 			}
 
 			// process scanpay
-			respBytes := ScanPayHandle([]byte(msg))
+			respBytes := ScanPayHandle([]byte(msg), true)
 
 			// 数据是以 GBK 编码传输的，发送时需要编码，把 UTF-8 转成 GBK
 			msg, ok = util.GBKTranscoder.Encode(string(respBytes))

@@ -91,6 +91,7 @@
       <paper-tab>查询订单</paper-tab>
       <paper-tab>直接支付</paper-tab>
       <paper-tab>Apple Pay</paper-tab>
+      <paper-tab>卡片信息</paper-tab>
     </paper-tabs>
 
     <iron-pages selected="{{idx}}">
@@ -712,6 +713,22 @@
               "autoValidate": true,
               "error": "必填，最长 4096 个字符",
               "object": true
+          }
+
+      ]'></bindingpay-template>
+      </section>
+      <section alias="getCardInfo">
+        <bindingpay-template url="/bindingpay/getCardInfo" elems='[
+          {
+              "id": "cardNum",
+              "name": "cardNum",
+              "label": "卡号",
+              "tooltip": "交易子类型： 所需查询的卡片号",
+              "value": "",
+              "required": true,
+              "maxlength": "32",
+              "autoValidate": true,
+              "error": "必填，最长 32 个字符"
           }
       ]'></bindingpay-template>
       </section>

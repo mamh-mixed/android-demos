@@ -15,11 +15,14 @@ import (
 )
 
 // ScanPayHandle 执行扫码支付逻辑
-func ScanPayHandle(reqBytes []byte) []byte {
+func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 	log.Infof("from merchant message: %s", string(reqBytes))
 
 	// 解析请求内容
 	req := new(model.ScanPayRequest)
+	// 设置请求方式
+	req.IsGBK = isGBK
+	// 解析json
 	err := json.Unmarshal(reqBytes, req)
 	if err != nil {
 		log.Errorf("fail to unmarshal json(%s): %s", reqBytes, err)
@@ -79,10 +82,17 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		// 7. 补充信息
 		ret.FillWithRequest(req)
 
-		// ret.ErrorDetail = "ok" // 联机测试
-		// ret.Terminalid = ""
+		// 8. 如果是 gbk 进来的，兼容老插件和商户，不返回中文，不返回 errorCode
+		if req.IsGBK {
+			// TODO: 后面优化
+			if ret.Respcd == "09" {
+				ret.ErrorCode = "ORDER_SUCCESS_PAY_INPROCESS"
+			}
+			ret.ErrorDetail = ret.ErrorCode
+			ret.ErrorCode = ""
+		}
 
-		// 8. 对返回报文签名
+		// 9. 对返回报文签名
 		if signKey != "" {
 			log.Debug("sign content to return : " + ret.SignMsg())
 			ret.Sign = security.SHA1WithKey(ret.SignMsg(), signKey)
@@ -106,11 +116,11 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 3. 检查机构号
-	ac := strings.Trim(req.AgentCode, " ")
-	if mer.AgentCode != ac {
-		ret = fieldContentError(agentCode)
-		return
-	}
+	// ac := strings.Trim(req.AgentCode, " ")
+	// if mer.AgentCode != ac {
+	// 	ret = fieldContentError(agentCode)
+	// 	return
+	// }
 
 	// 4. 商户、机构号都通过后，验证接口权限
 	if !util.StringInSlice(req.Busicd, mer.Permission) {
@@ -132,7 +142,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 	// 过滤包含空格字符串
 	req.Chcd = strings.TrimSpace(req.Chcd)
-	req.AgentCode = ac
+	req.AgentCode = strings.TrimSpace(req.AgentCode)
 
 	// 6. 开始业务处理
 	ret = processFunc(req)
@@ -147,6 +157,12 @@ func errorResp(req *model.ScanPayRequest, errorCode string) []byte {
 		Respcd:      spResp.ISO8583Code,
 		ErrorDetail: spResp.ISO8583Msg,
 	}
+
+	// 如果是gbk端口，采用英文描述应答
+	if req.IsGBK {
+		ret.ErrorDetail = errorCode
+	}
+
 	ret.FillWithRequest(req)
 
 	retBytes, err := json.Marshal(ret)
@@ -157,11 +173,11 @@ func errorResp(req *model.ScanPayRequest, errorCode string) []byte {
 }
 
 // weixinNotifyCtrl 微信异步通知处理(预下单)
-func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) {
-	core.ProcessWeixinNotify(req)
+func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) error {
+	return core.ProcessWeixinNotify(req)
 }
 
 // alipayNotifyCtrl 支付宝异步通知处理(预下单)
-func alipayNotifyCtrl(v url.Values) {
-	core.ProcessAlipayNotify(v)
+func alipayNotifyCtrl(v url.Values) error {
+	return core.ProcessAlipayNotify(v)
 }

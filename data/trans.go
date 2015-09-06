@@ -21,10 +21,10 @@ const (
 	crypto = "cilxl123$"
 )
 
-func init() {
-	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-	connect()
-}
+// func init() {
+// 	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+// 	connect()
+// }
 
 func Import(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
@@ -60,32 +60,29 @@ type txn struct {
 		Currency     string `bson:"currency"`
 		GoodsInfo    string `bson:"goodsInfo"`
 	} `bson:"m_request"`
-	Merchant struct {
-		MerId string `bson:"clientid"`
-		Inscd string `bson:"inscd"`
-		Wxp   struct {
-			MerFee   string `bson:"merfee"`
-			MerId    string `bson:"mch_id"`
-			SubMerId string `bson:"sub_mch_id"`
-		} `bson:"WXP"`
-		Alp struct {
-			MerFee string `bson:"merfee"`
-			MerId  string `bson:"partnerId"`
-		} `bson:"ALP"`
-	} `bson:"merchant"`
-	ChanRespCode    string `bson:"resposeDetail"`
-	RespCode        string `bson:"response"`
-	ChannelOrderNum string `bson:"channelOrderNum"`
-	Qrcode          string `bson:"qrcode"`
-	ChcdDiscount    string `bson:"chcdDiscount"`
-	MerDiscount     string `bson:"merDiscount"`
-	ConsumerAccount string `bson:"consumerAccount"`
-	ConsumerId      string `bson:"consumerId"`
-	Status          string `bson:"status"`
+	Merchant        merchant `bson:"merchant"`
+	ChanRespCode    string   `bson:"resposeDetail"`
+	RespCode        string   `bson:"response"`
+	ChannelOrderNum string   `bson:"channelOrderNum"`
+	Qrcode          string   `bson:"qrcode"`
+	ChcdDiscount    string   `bson:"chcdDiscount"`
+	MerDiscount     string   `bson:"merDiscount"`
+	ConsumerAccount string   `bson:"consumerAccount"`
+	ConsumerId      string   `bson:"consumerId"`
+	Status          string   `bson:"status"`
 }
 
 func AddTransFromOldDB(st, et string) error {
 	// TODO 判断新系统是否包含该天的数据，如果包含，那么报错，避免数据紊乱
+
+	agents, err := readAgentFromOldDB()
+	if err != nil {
+		return err
+	}
+	agentsMap := make(map[string]string)
+	for _, a := range agents {
+		agentsMap[a.AgentCode] = a.AgentName
+	}
 
 	txns, err := readTransFromOldDB(st, et)
 	if err != nil {
@@ -107,9 +104,9 @@ func AddTransFromOldDB(st, et string) error {
 	for _, t := range txns {
 		tran := &model.Trans{}
 		tran.Id = bson.NewObjectId()
-		tran.MerId = t.Merchant.MerId
+		tran.MerId = t.Merchant.Clientid
 		tran.Terminalid = t.Request.Terminalid
-		tran.AgentCode = t.Merchant.Inscd
+		tran.AgentCode = t.Merchant.AgentCode
 		tran.OrderNum = t.Request.OrderNum
 		tran.OrigOrderNum = t.Request.OrigOrderNum
 		tran.CreateTime = t.Date + " " + t.Time
@@ -123,13 +120,17 @@ func AddTransFromOldDB(st, et string) error {
 		tran.TransCurr = t.Request.Currency
 		tran.ChanOrderNum = t.ChannelOrderNum
 		tran.RespCode = t.RespCode
+		tran.MerName = t.Merchant.ClientidName
+		tran.AgentName = agentsMap[tran.AgentCode]
+		tran.GroupCode = t.Merchant.Group.GroupCode
+		tran.GroupName = t.Merchant.Group.GroupName
 		if tran.ChanCode == "ALP" {
-			tran.ChanMerId = t.Merchant.Alp.MerId
+			tran.ChanMerId = t.Merchant.Alp.MchId
 		} else {
-			if t.Merchant.Wxp.SubMerId != "" {
-				tran.ChanMerId = t.Merchant.Wxp.SubMerId
+			if t.Merchant.Wxp.SubMchId != "" {
+				tran.ChanMerId = t.Merchant.Wxp.SubMchId
 			} else {
-				tran.ChanMerId = t.Merchant.Wxp.MerId
+				tran.ChanMerId = t.Merchant.Wxp.MchId
 			}
 		}
 

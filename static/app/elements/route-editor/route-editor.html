@@ -5,11 +5,11 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 450px;
-        min-height: 400px;
-        font-size: 15px;
+        width: 600px;
+        min-height: 500px;
       }
     }
+
     .row {
       @apply(--layout-horizontal);
     }
@@ -38,23 +38,36 @@
       width: 250px;
       margin-right: 50px;
     }
+
+    paper-textarea,
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
+
+    paper-textarea[required]::after,
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
   </style>
   <!-- 使用分步骤方法创建路由策略 -->
-<template>
+  <template>
     <paper-dialog id="dialogView">
-        <h2>创建路由策略</h2>
+      <h2>创建路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input id="rmerId" label="*商户编号" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
-          <x-select id="rcardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="*卡品牌" class="routeAtt"></x-select>
+          <paper-input id="rmerId" label="商户代码" value="{{route.merId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <x-select id="rcardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌" class="routeAtt validate-container" required></x-select>
         </div>
         <div class="row">
-          <paper-input id="rchanCode" label="*渠道代码" value="{{route.chanCode::input}}" class="routeAtt" required error-message="必填项"></paper-input>
-          <paper-input id="rchanMerId" label="*渠道商户号" value="{{route.chanMerId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="子商户号" value="{{route.subMerId::input}}" class="routeAtt"></paper-input>
-          <paper-radio-button id="isAngentCheck" checked$="{{weixin.isAgent}}" class="routeAtt" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
+          <paper-input id="rchanCode" label="渠道代码" value="{{route.chanCode::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <paper-input id="rchanMerId" label="渠道商户号" value="{{route.chanMerId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input label="卡类型" value="{{route.cardType::input}}" class="routeAtt"></paper-input>
@@ -70,7 +83,7 @@
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-         <paper-button on-tap="handleClose">取消</paper-button>
+        <paper-button on-tap="handleClose">取消</paper-button>
         <paper-button on-tap="handleSaveTapped" style="margin-right:50px;">保存</paper-button>
       </div>
     </paper-dialog>
@@ -115,11 +128,9 @@
       _watchCardBrandChange: function(key) {
         this.set('route.cardBrand', key);
       },
-      ready: function() {
-        this.route = {};
-      },
       open: function() {
         this.$.dialogView.open();
+        this.route = {};
       },
       // 关闭事件
       handleClose: function() {
@@ -142,11 +153,8 @@
           return;
         }
         Util.toast(response.message, 1000);
-        this.$.dialog.close();
-
         this.fire('saved');
-
-        this.handleDialogCloseEvent();
+        this.$.dialogView.close();
       },
       // 判断路由必填项是否为空
       isRouteConfigEmpty: function() {

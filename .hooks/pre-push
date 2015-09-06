@@ -14,6 +14,4 @@ git pull cil develop
 
 ./publish.sh dev
 
-echo
-cd -
 exit 0

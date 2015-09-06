@@ -79,6 +79,8 @@ type Summary struct {
 
 // TransGroup 按商户号和渠道号统计分组
 type TransGroup struct {
+	MerName   string    `bson:"merName"`
+	AgentName string    `bson:"agentName"`
 	TransAmt  int64     `bson:"transAmt"`
 	RefundAmt int64     `bson:"refundAmt"`
 	TransNum  int       `bson:"transNum"`
@@ -110,7 +112,7 @@ type ScanPayRequest struct {
 	OrigOrderNum string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty"` // 原订单号
 	ScanCodeId   string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty"`     // 扫码号
 	Sign         string `json:"sign,omitempty" url:"-"`                              // 签名
-	NotifyUrl    string `json:"notifyUrl,omitempty"url:"notifyUrl,omitempty" `       // 异步通知地址
+	NotifyUrl    string `json:"backUrl,omitempty"url:"backUrl,omitempty" `           // 异步通知地址
 	OpenId       string `json:"openid,omitempty" url:"openid,omitempty" `            // openid
 	CheckName    string `json:"checkName,omitempty" url:"checkName,omitempty"`       // 校验用户姓名选项
 	UserName     string `json:"userName,omitempty" url:"userName,omitempty"`         // 用户名
@@ -118,6 +120,7 @@ type ScanPayRequest struct {
 	Code         string `json:"code,omitempty" url:"code,omitempty"`                 // 认证码
 	NeedUserInfo string `json:"needUserInfo,omitempty" url:"needUserInfo,omitempty"` // 是否需要获取用户信息
 	VeriCode     string `json:"veriCode,omitempty" url:"veriCode,omitempty"`         // js支付用到的凭证
+	Attach       string `json:"attach,omitempty" url:"attach,omitempty"`
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-"` // 公众号ID
@@ -135,6 +138,9 @@ type ScanPayRequest struct {
 	ExtendParams     string `json:"-" url:"-"` // 业务扩展参数
 	WeixinClientCert []byte `json:"-" url:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
 	WeixinClientKey  []byte `json:"-" url:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
+
+	// 访问方式
+	IsGBK bool `json:"-" url:"-"`
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -168,13 +174,14 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 	if ret.VeriCode == "" {
 		ret.VeriCode = req.VeriCode
 	}
+	ret.Attach = req.Attach
 }
 
 // ScanPayResponse 下单支付返回体
 // M:返回时必须带上
 // C:可选
 type ScanPayResponse struct {
-	Txndir          string   `json:"txndir" url:"txndir"`                                       // 交易方向 M M
+	Txndir          string   `json:"txndir,omitempty" url:"txndir,omitempty"`                   // 交易方向 M M
 	Busicd          string   `json:"busicd" url:"busicd"`                                       // 交易类型 M M
 	Respcd          string   `json:"respcd" url:"respcd"`                                       // 交易结果  M
 	AgentCode       string   `json:"inscd,omitempty" url:"inscd,omitempty"`                     // 代理/机构号 M M
@@ -195,9 +202,11 @@ type ScanPayResponse struct {
 	PayJson         *PayJson `json:"payjson,omitempty" url:"-"`                                 // json字符串
 	PayJsonStr      string   `json:"-" url:"payjson,omitempty"`                                 // 签名时用
 	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty"`
+	Attach          string   `json:"attach,omitempty" url:"attach,omitempty"`
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-"`
+	ErrorCode    string `json:"-" url:"-"`
 }
 
 // PayJson 公众号支付字段
@@ -283,6 +292,7 @@ func NewScanPayResponse(s ScanPayRespCode) *ScanPayResponse {
 	return &ScanPayResponse{
 		Respcd:      s.ISO8583Code,
 		ErrorDetail: s.ISO8583Msg,
+		ErrorCode:   s.ErrorCode,
 	}
 }
 

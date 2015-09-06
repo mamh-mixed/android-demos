@@ -35,11 +35,13 @@ type BindingReturn struct {
 	BindingStatus string `json:"bindingStatus,omitempty"` // 绑定状态 10=绑定处理中；20=绑定失败；30=绑定成功；40=已解绑（绑定成功过，后续解绑也成功）
 
 	// 卡片信息
-	AcctType    string `json:"acctType,omitempty"`
-	CardBrand   string `json:"cardBrand,omitempty"`
-	CardNum     string `json:"cardNum,omitempty"`
-	IssBankName string `json:"issBankName,omitempty"`
-	IssBankNum  string `json:"issBankNum,omitempty"`
+	AcctType          string `json:"acctType,omitempty"`
+	CardBrand         string `json:"cardBrand,omitempty"`
+	CardNum           string `json:"cardNum,omitempty"`
+	IssBankName       string `json:"issBankName,omitempty"`
+	IssBankNum        string `json:"issBankNum,omitempty"`
+	BankCode          string `json:"bankCode,omitempty"`
+	BindingPaySupport string `json:"bindingPaySupport,omitempty"`
 }
 
 // NewBindingReturn 构造函数
@@ -71,7 +73,7 @@ type BindingCreate struct {
 	Cvv2          string `json:"cvv2" bson:"cvv2,omitempty"`                   // CVV2
 	SendSmsId     string `json:"sendSmsId" bson:"sendSmsId,omitempty"`         // 发送短信验证码的交易流水
 	SmsCode       string `json:"smsCode" bson:"smsCode,omitempty"`             // 短信验证码
-	BankId        string `json:"bankId" bson:"bankId,omitempty"`               // 银行ID
+	BankCode      string `json:"bankCode" bson:"bankCode,omitempty"`           // 银行ID
 	ChanBindingId string `json:"chanBindingId" bson:"chanBindingId,omitempty"` // 渠道绑定ID
 	ChanMerId     string `json:"chanMerId" bson:"chanMerId,omitempty"`         // 渠道商户ID
 	PrivateKey    string `json:"-"`                                            // 签名密钥

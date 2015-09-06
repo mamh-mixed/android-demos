@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/CardInfoLink/quickpay/bindingpay"
+	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -20,7 +21,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	log.SetOutputLevel(goconf.Config.App.LogLevel)
-	log.SetFlags(log.Ldate | log.Ltime | log.Llevel | log.Llongfile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llevel | log.Llongfile)
 
 	startScanpay()    // 扫码支付
 	startBindingpay() // 绑定支付
@@ -52,7 +53,7 @@ func startBindingpay() {
 	// 检查数据配置是否有变化
 	check.DoCheck()
 	// 连接到 线下网关
-	// cil.Connect()
+	cil.Connect()
 
 	http.Handle("/bindingpay/", bindingpay.Route())
 }
@@ -64,6 +65,9 @@ func startSettle() {
 }
 
 func startMaster() {
+	// 静态文件
 	http.Handle("/", http.FileServer(http.Dir("static/app")))
+
+	// 动态请求
 	http.Handle("/master/", master.Route())
 }

@@ -6,101 +6,45 @@
       display: block;
     }
 
-    .condition {
-      @apply(--layout-horizontal);
-      margin-bottom: 15px;
-    }
-
-    .condition > paper-input,
-    .condition > x-select {
-      min-width: 170px;
-      margin-right: 20px;
-    }
-
-    .condition > .buttons {
-      min-width: 170px;
-    }
-
-    .condition > .buttons > paper-button {
-      margin: 10px 0px 0px;
-    }
-
-    paper-button.colorful {
-      background: var(--dark-primary-color);
-      color: var(--text-primary-color);
-    }
-
     paper-fab {
       position: fixed;
       bottom: 100px;
       right: 10%;
     }
 
-    table {
-      width: 100%;
-      border-spacing: 0;
-      border-collapse: collapse;
-      margin-bottom: 30px;
+    table.data-grid iron-icon {
+      height: 1.2em;
     }
 
-    .center {
-      text-align: center;
-    }
-
-    tr > th,
-    tr > td {
-      text-align: left;
-      padding: 8px;
-    }
-
-    table > thead {}
-
-    thead > tr {}
-
-    thead > tr > th {
-      line-height: 1.42857143;
-      border-bottom: 1px solid #ddd;
-    }
-
-    table > tbody {
-      min-height: 700px;
-    }
-
-    tbody>tr:hover {
-      background-color: #f5f5f5;
-    }
-
-    table tr th:nth-last-of-type(2),
-    table tr td:nth-last-of-type(2) {}
   </style>
   <template>
-    <iron-ajax id="queryAjax" method="GET" url="/master/router/find" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
-    <div class="condition">
-      <paper-input id="merId" label="商户编号" value="{{cond.merId::input}}"></paper-input>
-      <div class="buttons">
+    <form is="iron-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="search-condition">
+        <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-    </div>
-    <div class="list">
-      <table style="width:100%;">
+      <div class="divider blank"></div>
+      <div class="divider blank"></div>
+      <table class="data-grid">
         <thead>
           <tr>
-            <th></th>
-            <th>商户编号</th>
-            <th>卡品牌</th>
+            <th>序号</th>
+            <th>商户代码</th>
+            <th align="left">卡品牌</th>
             <th>渠道代码</th>
-            <th>渠道商户号</th>
+            <th align="left">渠道商户代码</th>
             <th>卡Bin组</th>
             <th>卡类型</th>
             <th>交易类型</th>
             <th>输入方式</th>
-            <th>起始金额</th>
-            <th>最大金额</th>
+            <th align="right">起始金额</th>
+            <th align="right">最大金额</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{routes}}">
-            <tr on-click="viewMerchantTap">
+            <tr>
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
@@ -110,7 +54,7 @@
               <td>
                 <span>{{tansCardBrands(item.cardBrand)}}</span>
               </td>
-              <td>
+              <td class="center">
                 <span>{{item.chanCode}}</span>
               </td>
               <td>
@@ -134,13 +78,21 @@
               <td>
                 <span>{{item.maxAmount}}</span>
               </td>
+              <td class="center">
+                <iron-icon icon="delete" on-tap="handleItemDeletedEvent"></iron-icon>
+              </td>
             </tr>
           </template>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
       </table>
-    </div>
-    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-
+    </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
 
     <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
@@ -151,17 +103,17 @@
       Polymer({
         is: 'route-list',
         properties: {
-            merId: {
-              type: String,
-              reflectToAttribute: true,
-              observer:'_merIdChandged'
-            },
+          merId: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_merIdChandged'
+          },
         },
-        _merIdChandged:function(value){
-            this.$.merId.value=value;
-            this.cond.merId=value;
-            this.routes = [];
-            this.generateAjaxRequest();
+        _merIdChandged: function(value) {
+          this.$.merId.value = value;
+          this.cond.merId = value;
+          this.routes = [];
+          this.generateAjaxRequest();
         },
         ready: function() {
           this.routes = [];
@@ -173,17 +125,17 @@
         },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
+          this.set('cond.page', 1);
           this.routes = [];
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
           this.merchants = [];
-          this.$.queryAjax.params = this.cond;
-          this.$.queryAjax.generateRequest();
+          this.$.formQuery.submit();
         },
         // ajax请求响应处理
         handleQueryResponse: function(e) {
-          var response = e.detail.response;
+          var response = e.detail;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
             return;
@@ -240,8 +192,14 @@
           } else {
             return value;
           }
-        }
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.routes = [];
+          this.set('cond.total', 0);
+        },
       });
     })();
+
   </script>
 </dom-module>

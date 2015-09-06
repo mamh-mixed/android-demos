@@ -28,6 +28,7 @@ const (
 	TransFail     = "20" // 交易失败
 	TransSuccess  = "30" // 交易成功
 	TransClosed   = "40" // 交易已关闭
+	TransNotPay   = "50" // 交易待支付
 
 	// bindingStatus
 	BindingHandling = "10" // 绑定处理中
@@ -114,7 +115,7 @@ type Merchant struct {
 	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
 	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
 	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
-	IsNeedSign bool      `bson:"isNeedSign,omitempty" json:"isNeedSign,omitempty"` // 是否开启验签
+	IsNeedSign bool      `bson:"isNeedSign" json:"isNeedSign"`                     // 是否开启验签
 	EncryptKey string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` // 商户加密密钥
 	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         // 备注信息
 	Permission []string  `bson:"permission,omitempty" json:"permission,omitempty"` // 接口权限
