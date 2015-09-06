@@ -177,6 +177,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       };
     });
     page('/404', '/');
+    page('*', '/404');
     page('/quickPay/merchants', function() {
       app.route = {
         name: 'quickPay.merchants',

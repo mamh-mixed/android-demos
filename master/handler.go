@@ -421,3 +421,67 @@ func uptokenHandle(w http.ResponseWriter, r *http.Request) {
 func downURLHandle(w http.ResponseWriter, r *http.Request) {
 	handleDownURL(w, r)
 }
+
+func userCreateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := User.CreateUser(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func userFindHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+
+	size, err := strconv.Atoi(params.Get("size"))
+	if err != nil {
+		http.Error(w, "参数 `size` 必须为整数", http.StatusBadRequest)
+	}
+	if size > 100 || size <= 0 {
+		size = 20
+	}
+	page, err := strconv.Atoi(params.Get("page"))
+	if err != nil {
+		http.Error(w, "参数 `page` 必须为整数", http.StatusBadRequest)
+	}
+	if page <= 0 {
+		page = 1
+	}
+
+	cond := &model.User{
+		UserName:  params.Get("userName"),
+		NickName:  params.Get("nickName"),
+		Mail:      params.Get("mail"),
+		PhoneNum:  params.Get("phoneNum"),
+		UserType:  params.Get("userType"),
+		AgentCode: params.Get("agentCode"),
+		AgentName: params.Get("agentName"),
+		GroupCode: params.Get("groupCode"),
+		GroupName: params.Get("groupName"),
+		MerId:     params.Get("merId"),
+		MerName:   params.Get("merName"),
+	}
+
+	ret := User.Find(cond, size, page)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
+}

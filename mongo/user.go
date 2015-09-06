@@ -13,11 +13,18 @@ type userCollection struct {
 // UserColl 用户 Collection
 var UserColl = userCollection{"user"}
 
-// FindByUserName 根据userName查找
-func (col *userCollection) FindByUserName(userName string) (u *model.User, err error) {
+// FindOneUser 根据userName,mail,phoneNum查找
+func (col *userCollection) FindOneUser(userName, mail, phoneNum string) (u *model.User, err error) {
 
-	bo := bson.M{
-		"userName": userName,
+	bo := bson.M{}
+	if userName != "" {
+		bo["userName"] = userName
+	}
+	if mail != "" {
+		bo["mail"] = mail
+	}
+	if phoneNum != "" {
+		bo["phoneNum"] = phoneNum
 	}
 	u = new(model.User)
 	err = database.C(col.name).Find(bo).One(u)
@@ -52,18 +59,42 @@ func (col *userCollection) Update(u *model.User) error {
 }
 
 // PaginationFind 分页查找user
-func (col *userCollection) PaginationFind(userName, nickName, roleName string, size, page int) (results []model.User, total int, err error) {
+func (col *userCollection) PaginationFind(user *model.User, size, page int) (results []model.User, total int, err error) {
 	results = make([]model.User, 1)
 
 	match := bson.M{}
-	if userName != "" {
-		match["userName"] = userName
+	if user.UserName != "" {
+		match["userName"] = user.UserName
 	}
-	if nickName != "" {
-		match["nickName"] = nickName
+	if user.NickName != "" {
+		match["nickName"] = user.NickName
 	}
-	if roleName != "" {
-		match["role.name"] = roleName
+	if user.Mail != "" {
+		match["mail"] = user.Mail
+	}
+	if user.PhoneNum != "" {
+		match["phoneNum"] = user.PhoneNum
+	}
+	if user.UserType != "" {
+		match["userType"] = user.UserType
+	}
+	if user.AgentCode != "" {
+		match["agentCode"] = user.AgentCode
+	}
+	if user.AgentName != "" {
+		match["agentName"] = user.AgentName
+	}
+	if user.GroupCode != "" {
+		match["groupCode"] = user.GroupCode
+	}
+	if user.GroupName != "" {
+		match["groupName"] = user.GroupName
+	}
+	if user.MerId != "" {
+		match["merId"] = user.MerId
+	}
+	if user.MerName != "" {
+		match["merName"] = user.MerName
 	}
 
 	// 计算总数
@@ -77,13 +108,13 @@ func (col *userCollection) PaginationFind(userName, nickName, roleName string, s
 		{"$match": match},
 	}
 
-	// sort := bson.M{"$sort": bson.M{"name": 1}}
+	sort := bson.M{"$sort": bson.M{"userName": 1}}
 
 	skip := bson.M{"$skip": (page - 1) * size}
 
 	limit := bson.M{"$limit": size}
 
-	cond = append(cond, skip, limit)
+	cond = append(cond, sort, skip, limit)
 
 	err = database.C(col.name).Pipe(cond).All(&results)
 	if err != nil {

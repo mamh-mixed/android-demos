@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
 )
 
 // Route 后台管理的请求统一入口
@@ -37,6 +36,8 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/group/save", groupSaveHandle)
 	mux.HandleFunc("/master/qiniu/uptoken", handleUptoken)
 	mux.HandleFunc("/master/qiniu/uploaded", handleDownURL)
+	mux.HandleFunc("/master/user/find", userFindHandle)
+	mux.HandleFunc("/master/user/create", userCreateHandle)
 
 	return mux
 }
@@ -62,21 +63,21 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := r.Cookie("QUICKMASTERID")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			// 未登录
-			// if uri == "login" { do login}
-			// else { error }
-			// return
-		}
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
-		return
-	}
-	if c != nil {
-		log.Debugf("url=%s, cookie: %s", r.URL, c.String())
-		// 验证是否有权限
-	}
+	// c, err := r.Cookie("QUICKMASTERID")
+	// if err != nil {
+	// 	if err == http.ErrNoCookie {
+	// 		// 未登录
+	// 		// if uri == "login" { do login}
+	// 		// else { error }
+	// 		// return
+	// 	}
+	// 	http.Error(w, err.Error(), http.StatusNotAcceptable)
+	// 	return
+	// }
+	// if c != nil {
+	// 	log.Debugf("url=%s, cookie: %s", r.URL, c.String())
+	// 	// 验证是否有权限
+	// }删除删除
 
 	h, _ := mux.Handler(r)
 
