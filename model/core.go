@@ -108,6 +108,7 @@ const MerStatusNormal = "Normal"
 // Merchant 商户基本信息
 type Merchant struct {
 	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
+	UniqueId   string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`     // 唯一标识
 	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
 	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
 	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
@@ -129,6 +130,8 @@ type MerDetail struct {
 	GoodsTag      string `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
 	CommodityName string `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
+	TitleOne      string `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
+	TitleTwo      string `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
 	City          string `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
 	Nation        string `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
 	MerType       string `bson:"merType,omitempty" json:"merType,omitempty"`             // 商户类型
@@ -223,6 +226,7 @@ type Trans struct {
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
+	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户

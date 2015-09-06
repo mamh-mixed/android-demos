@@ -1,13 +1,36 @@
-package core
+package query
 
 import (
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"time"
 )
+
+// GetMerInfo 获取用户信息
+func GetMerInfo(merId string) interface{} {
+
+	var response = struct {
+		Response    string `json:"response"`
+		MerID       string `json:"merID"`
+		TitleOne    string `json:"title_one"`
+		TitleTwo    string `json:"title_two"`
+		ErrorDetail string `json:"errorDetail,omitempty"`
+	}{Response: "00", MerID: merId}
+
+	m, err := mongo.MerchantColl.Find(merId)
+	if err != nil {
+		code, msg := mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+		response.Response = code
+		response.ErrorDetail = msg
+		response.MerID = ""
+		return response
+	}
+	response.TitleOne = m.Detail.TitleOne
+	response.TitleTwo = m.Detail.TitleTwo
+	return response
+}
 
 // TransQuery 交易查询
 func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
@@ -56,21 +79,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
-	// 先找商户所有商户号
-	// mers, err := mongo.MerchantColl.FuzzyFind(q)
-	// if err != nil {
-	// 	log.Errorf("find merchant error: %s", err)
-	// 	return errResult
-	// }
-
-	// var merIds []string
-	// m := make(map[string]*model.Merchant)
-	// // 暂存商户信息
-	// for _, mer := range mers {
-	// 	merIds = append(merIds, mer.MerId)
-	// 	m[mer.MerId] = mer
-	// }
-
 	// 设置条件过滤
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
@@ -92,7 +100,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	// 将数据合并
 	for _, d := range group {
-		// if mer, ok := m[d.MerId]; ok {
 		s := model.Summary{
 			MerId:     d.MerId,
 			AgentName: d.AgentName,
@@ -101,7 +108,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		// 遍历渠道，合并数据
 		combine(&s, d.Detail)
 		data = append(data, s)
-		// }
 	}
 
 	// 汇总数据

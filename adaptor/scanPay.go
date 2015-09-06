@@ -99,8 +99,9 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		// 支付不需要证书
+		// req.WeixinClientCert = []byte(c.HttpCert)
+		// req.WeixinClientKey = []byte(c.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -148,8 +149,9 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		// 支付不需要证书
+		// req.WeixinClientCert = []byte(c.HttpCert)
+		// req.WeixinClientKey = []byte(c.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}

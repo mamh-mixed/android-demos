@@ -140,7 +140,8 @@ type ScanPayRequest struct {
 	WeixinClientKey  []byte `json:"-" url:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
 
 	// 访问方式
-	IsGBK bool `json:"-" url:"-"`
+	IsGBK     bool   `json:"-" url:"-"`
+	TradeFrom string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty"` // 交易来源
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
