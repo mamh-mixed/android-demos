@@ -8,22 +8,67 @@ import (
 	"time"
 )
 
-// GetMerInfo 获取用户信息
-func GetMerInfo(merId string) interface{} {
+var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
 
-	var response = struct {
-		Response    string `json:"response"`
-		MerID       string `json:"merID"`
-		TitleOne    string `json:"title_one"`
-		TitleTwo    string `json:"title_two"`
-		ErrorDetail string `json:"errorDetail,omitempty"`
-	}{Response: "00", MerID: merId}
+// GetOrderInfo 扫固定码订单信息
+func GetOrderInfo(uniqueId string) scanFixedResponse {
+
+	var response = scanFixedResponse{Response: "00"}
+	m, err := mongo.MerchantColl.FindByUniqueId(uniqueId)
+	if err != nil {
+		response.Response, response.ErrorDetail = noMerCode, noMerMsg
+		return response
+	}
+
+	response.MerID = m.MerId
+	response.TitleOne = m.Detail.TitleOne
+	response.TitleTwo = m.Detail.TitleTwo
+
+	// find
+	trans, count, err := mongo.SpTransColl.Find(&model.QueryCondition{
+		TradeFrom:   "wap",
+		TransStatus: model.TransSuccess,
+		Busicd:      model.Jszf,
+		MerId:       m.MerId,
+		Size:        150,
+		Page:        1,
+	})
+
+	if err != nil {
+		response.Response = sysErrCode
+		response.ErrorDetail = sysErrMsg
+		return response
+	}
+
+	data := make([]scanFixedData, len(trans))
+	for _, t := range trans {
+		fd := scanFixedData{}
+		fd.Amount = ""
+		fd.Chcd = t.ChanCode
+		fd.Headimgurl = t.HeadImgUrl
+		fd.Nickname = t.NickName
+		fd.Transtime = t.CreateTime
+		fd.VeriCode = t.VeriCode
+		fd.OrderNum = t.OrderNum
+		data = append(data, fd)
+	}
+
+	response.Data = data
+	response.Count = count
+
+	return response
+}
+
+// GetMerInfo 扫固定码获取用户信息
+func GetMerInfo(merId string) scanFixedResponse {
+
+	var response = scanFixedResponse{Response: "00", MerID: merId}
 
 	m, err := mongo.MerchantColl.Find(merId)
 	if err != nil {
-		code, msg := mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
-		response.Response = code
-		response.ErrorDetail = msg
+		response.Response = noMerCode
+		response.ErrorDetail = noMerMsg
 		response.MerID = ""
 		return response
 	}
@@ -147,4 +192,24 @@ func combine(s *model.Summary, detail []model.Channel) {
 			s.TotalFee += s.Wxp.Fee
 		}
 	}
+}
+
+type scanFixedResponse struct {
+	Response    string          `json:"response"`
+	MerID       string          `json:"merID"`
+	TitleOne    string          `json:"title_one"`
+	TitleTwo    string          `json:"title_two"`
+	ErrorDetail string          `json:"errorDetail,omitempty"`
+	Data        []scanFixedData `json:"data"`
+	Count       int             `json:"count"`
+}
+
+type scanFixedData struct {
+	Transtime  string `json:"transtime,omitempty"`
+	VeriCode   string `json:"veriCode,omitempty"`
+	Nickname   string `json:"nickname,omitempty"`
+	Headimgurl string `json:"headimgurl,omitempty"`
+	Amount     string `json:"amount,omitempty"`
+	OrderNum   string `json:"orderNum,omitempty"`
+	Chcd       string `json:"chcd,omitempty"` //ALP,WXP
 }

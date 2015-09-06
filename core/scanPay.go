@@ -82,6 +82,10 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 				log.Errorf("unable to get userInfo by accessToken: %s", err)
 			}
 			jsPayInfo.UserInfo = userInfo
+			if userInfo != nil {
+				t.NickName = userInfo.Nickname
+				t.HeadImgUrl = userInfo.Headimgurl
+			}
 		}
 
 		// 包装返回值

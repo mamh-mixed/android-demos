@@ -43,6 +43,7 @@ type QueryCondition struct {
 	IsForReport  bool     `json:"-"`
 	GroupCode    string   `json:"groupCode,omitempty"`
 	Respcd       string   `json:"respcd" url:"respcd"`
+	TradeFrom    string   `json:"tradeFrom,omitempty"`
 }
 
 // QueryResult 查询结果值

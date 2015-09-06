@@ -148,16 +148,31 @@ func scanFixedMerInfoHandle(w http.ResponseWriter, r *http.Request) {
 
 	b64MerId := r.FormValue("merchantCode")
 	if b64MerId == "" {
-		http.Error(w, "params should not be null", http.StatusOK)
+		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
 		return
 	}
 	// 解b64
 	mbytes, err := base64.StdEncoding.DecodeString(b64MerId)
 	if err != nil {
-		http.Error(w, "params decode error", http.StatusOK)
+		http.Error(w, `{"response":"01","errorDetail":"params decode error"}`, http.StatusOK)
 		return
 	}
 	result := query.GetMerInfo(string(mbytes))
+	rbytes, err := json.Marshal(result)
+	if err != nil {
+		log.Errorf("json marshal error:%s", err)
+	}
+	w.Write(rbytes)
+}
+
+// scanFixedOrderInfoHandle 扫固定码获取用户订单信息
+func scanFixedOrderInfoHandle(w http.ResponseWriter, r *http.Request) {
+	uniqueId := r.FormValue("merchantCode")
+	if uniqueId == "" {
+		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
+		return
+	}
+	result := query.GetOrderInfo(uniqueId)
 	rbytes, err := json.Marshal(result)
 	if err != nil {
 		log.Errorf("json marshal error:%s", err)

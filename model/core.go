@@ -253,6 +253,8 @@ type Trans struct {
 	NotifyUrl       string `bson:"notifyUrl,omitempty" json:"-"`                               // 异步通知地址
 	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                // 交易凭证
 	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
+	NickName        string `bson:"nickName,omitempty" json:"-"`
+	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 
 	// 可用于关联查询字段
 	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
