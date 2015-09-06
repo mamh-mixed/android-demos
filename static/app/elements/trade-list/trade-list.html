@@ -46,7 +46,7 @@
             <th align="right">金额(元)</th>
             <th>交易时间</th>
             <th align="left">状态</th>
-            <th align="left">商户代码</th>
+            <th align="center">商户代码</th>
             <th align="left">商户名称</th>
             <!-- <th>终端号</th> -->
             <th align="left">交易类型</th>
@@ -62,7 +62,7 @@
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td align="center">{{item.transTime}}</td>
               <td>{{transStatusFilter(item.transStatus)}}</td>
-              <td>{{item.merId}}</td>
+              <td align="center">{{item.merId}}</td>
               <td>{{item.merName}}</td>
               <!-- <td>{{item.terminalid}}</td> -->
               <td>{{busicdFilter(item.busicd)}}</td>

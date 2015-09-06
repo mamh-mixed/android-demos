@@ -14,7 +14,7 @@ var Agent agent
 
 // Find 根据条件分页查找代理商
 func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
-	log.Debugf("agentCode is %s", agentCode)
+	log.Debugf("agentCode=%s", agentCode)
 
 	agent, err := mongo.AgentColl.Find(agentCode)
 	if err != nil {
@@ -33,7 +33,7 @@ func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
 
 // Find 根据条件分页查找商户。
 func (a *agent) Find(agentCode, agentName string, size, page int) (result *model.ResultBody) {
-	log.Debugf("agentCode is %s; agentName is %s", agentCode, agentName)
+	log.Debugf("agentCode=%s; agentName=%s", agentCode, agentName)
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
