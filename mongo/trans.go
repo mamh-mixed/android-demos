@@ -222,6 +222,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.Respcd != "" {
 		match["respCode"] = q.Respcd
 	}
+	if q.TradeFrom != "" {
+		match["tradeFrom"] = q.TradeFrom
+	}
 	// or 退款的和成功的
 	or := []bson.M{}
 	if q.TransStatus != "" {

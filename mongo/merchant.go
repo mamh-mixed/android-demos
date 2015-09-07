@@ -28,6 +28,14 @@ func (c *merchantCollection) Insert(m *model.Merchant) error {
 	return err
 }
 
+// FindByUniqueId 查找商户信息
+func (c *merchantCollection) FindByUniqueId(uniqueId string) (m *model.Merchant, err error) {
+	m = new(model.Merchant)
+	q := bson.M{"uniqueId": uniqueId}
+	err = database.C(c.name).Find(q).One(m)
+	return
+}
+
 // Find 查找商户信息
 // 先从缓存里取，没有再访问数据库
 func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {

@@ -15,6 +15,8 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc(weixin.NotifyURL, weixinNotifyHandle)
 	mux.HandleFunc(alipay.NotifyURL, alipayNotifyHandle)
 	mux.HandleFunc("/scanpay/test/recNotify", testReceiveNotifyHandle)
+	mux.HandleFunc("/scanpay/fixed/merInfo", scanFixedMerInfoHandle)
+	mux.HandleFunc("/scanpay/fixed/orderInfo", scanFixedOrderInfoHandle)
 
 	return mux
 }
