@@ -23,9 +23,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	// have resolved and content has been stamped to the page
 	app.addEventListener('dom-change', function() {
 		console.log('Our app is ready to rock!');
-		window.localStorage.setItem("userType","admin");
+		window.localStorage.setItem('userType','admin');
 		// 获取userType
-		var userType = window.localStorage.getItem("userType");
+		var userType = window.localStorage.getItem('userType');
 		// userType为空跳转至登陆页面
 		// if (!userType||userType===''){
 		// 	window.location.href='http://www.baidu.com';
