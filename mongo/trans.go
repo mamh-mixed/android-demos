@@ -236,7 +236,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if len(or) > 0 {
 		match["$or"] = or
 	}
-	match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
+	if q.StartTime != "" && q.EndTime != "" {
+		match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
+	}
 
 	// 将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
 	match["transAmt"] = bson.M{"$ne": 0}

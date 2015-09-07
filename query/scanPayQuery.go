@@ -1,6 +1,7 @@
 package query
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -41,10 +42,10 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 		return response
 	}
 
-	data := make([]scanFixedData, len(trans))
+	var data []scanFixedData
 	for _, t := range trans {
 		fd := scanFixedData{}
-		fd.Amount = ""
+		fd.Amount = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		fd.Chcd = t.ChanCode
 		fd.Headimgurl = t.HeadImgUrl
 		fd.Nickname = t.NickName
