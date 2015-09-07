@@ -16,11 +16,11 @@ func TestPay(t *testing.T) {
 		Detail:         "xxx",                // 商品详情
 		Attach:         "xxx",                // 附加数据
 		OutTradeNo:     util.SerialNumber(),  // 商户订单号
-		TotalFee:       "2",                  // 总金额
+		TotalFee:       "300",                // 总金额
 		FeeType:        "CNY",                // 货币类型
 		SpbillCreateIP: util.LocalIP,         // 终端IP
 		GoodsGag:       "xxx",                // 商品标记
-		AuthCode:       "130755126399220600", // 授权码
+		AuthCode:       "130348356547043598", // 授权码
 	}
 
 	r := &PayResp{}

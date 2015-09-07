@@ -1,35 +1,21 @@
 package cil
 
 import (
-	"strconv"
 	"testing"
-	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
-func xTestConnect(t *testing.T) {
-	time.Sleep(1 * time.Second)
-
+func TestConnect(t *testing.T) {
 	msg := newTestCilMsg()
 	// t.Logf("msg  = %#v", msg)
 
-	clisn := 115934
-	for i := 0; i < 1; i++ {
-		func(i int, msg model.CilMsg) {
-			msg.Clisn = strconv.Itoa(clisn + i)
+	back := send(msg, transTimeout) // 线下网关发送报文
 
-			back := send(&msg, transTimeout) // 线下网关发送报文
+	_ = back
+	log.Debug("--------------------------------------------")
 
-			_ = back
-			log.Debug("--------------------------------------------")
-		}(i, *msg)
-
-		time.Sleep(30 * time.Second)
-	}
-
-	// select {}
 }
 
 func newTestCilMsg() (m *model.CilMsg) {

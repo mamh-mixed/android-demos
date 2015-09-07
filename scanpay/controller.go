@@ -84,10 +84,6 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 		// 8. 如果是 gbk 进来的，兼容老插件和商户，不返回中文，不返回 errorCode
 		if req.IsGBK {
-			// TODO: 后面优化
-			if ret.Respcd == "09" {
-				ret.ErrorCode = "ORDER_SUCCESS_PAY_INPROCESS"
-			}
 			ret.ErrorDetail = ret.ErrorCode
 			ret.ErrorCode = ""
 		}
@@ -174,6 +170,23 @@ func errorResp(req *model.ScanPayRequest, errorCode string) []byte {
 
 // weixinNotifyCtrl 微信异步通知处理(预下单)
 func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) error {
+
+	// 验签, 如果验签失败，只打印日志，不中止逻辑
+	// buf, err := util.Query(req)
+	// if err != nil {
+	// 	log.Error(err)
+	// 	return err
+	// }
+	// buf.WriteString("&key=" + signKey)
+	// log.Debugf("%s", buf.String())
+	//
+	// sign := md5.Sum(buf.Bytes())
+	// actual := strings.ToUpper(hex.EncodeToString(sign[:]))
+	//
+	// if actual != req.GetSign() {
+	// 	log.Errorf("check sign error: query={%s}, expected=%s, actual=%s", buf.String(), req.GetSign(), actual)
+	// }
+
 	return core.ProcessWeixinNotify(req)
 }
 
