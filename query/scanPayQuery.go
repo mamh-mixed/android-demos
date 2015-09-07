@@ -74,6 +74,7 @@ func GetMerInfo(merId string) scanFixedResponse {
 	}
 	response.TitleOne = m.Detail.TitleOne
 	response.TitleTwo = m.Detail.TitleTwo
+	response.AgentCode = m.AgentCode
 	return response
 }
 
@@ -197,11 +198,12 @@ func combine(s *model.Summary, detail []model.Channel) {
 type scanFixedResponse struct {
 	Response    string          `json:"response"`
 	MerID       string          `json:"merID"`
+	AgentCode   string          `json:"inscd,omitempty"`
 	TitleOne    string          `json:"title_one"`
 	TitleTwo    string          `json:"title_two"`
 	ErrorDetail string          `json:"errorDetail,omitempty"`
-	Data        []scanFixedData `json:"data"`
-	Count       int             `json:"count"`
+	Data        []scanFixedData `json:"data,omitempty"`
+	Count       int             `json:"count,omitempty"`
 }
 
 type scanFixedData struct {
