@@ -12,7 +12,7 @@ func TestRefundQuery(t *testing.T) {
 
 		DeviceInfo:    "xxx",           // 设备号
 		TransactionId: "",              // 微信订单号
-		OutTradeNo:    "1438325771857", // 商户订单号
+		OutTradeNo:    "1441615439898", // 商户订单号
 		OutRefundNo:   "",              // 商户退款单号
 		RefundId:      "",              // 微信退款单号
 	}
