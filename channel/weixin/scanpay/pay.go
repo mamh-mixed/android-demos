@@ -23,6 +23,7 @@ type PayReq struct {
 	FeeType        string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`                // 货币类型
 	SpbillCreateIP string `xml:"spbill_create_ip" url:"spbill_create_ip" validate:"nonzero"` // 终端IP
 	GoodsGag       string `xml:"goods_tag,omitempty" url:"goods_tag,omitempty"`              // 商品标记
+	LimitPay       string `xml:"limit_pay,omitempty" url:"limit_pay,omitempty"`              // 指定支付方式
 	AuthCode       string `xml:"auth_code" url:"auth_code" validate:"nonzero"`               // 授权码
 	// AuthCode       string `xml:"auth_code" url:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }

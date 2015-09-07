@@ -38,6 +38,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:   req.IntTxamt,
 		ChanCode:   channel.ChanCodeWeixin,
 		VeriCode:   req.VeriCode,
+		TradeFrom:  req.TradeFrom,
 	}
 
 	// 网页授权获取token和openid
@@ -81,6 +82,10 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 				log.Errorf("unable to get userInfo by accessToken: %s", err)
 			}
 			jsPayInfo.UserInfo = userInfo
+			if userInfo != nil {
+				t.NickName = userInfo.Nickname
+				t.HeadImgUrl = userInfo.Headimgurl
+			}
 		}
 
 		// 包装返回值
@@ -142,6 +147,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		GatheringId:   req.OpenId,
 		GatheringName: req.UserName,
 		ChanCode:      req.Chcd,
+		TradeFrom:     req.TradeFrom,
 	}
 
 	// 渠道是否合法
@@ -193,6 +199,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
 		GoodsInfo:  req.GoodsInfo,
+		TradeFrom:  req.TradeFrom,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -262,6 +269,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:   req.IntTxamt,
 		GoodsInfo:  req.GoodsInfo,
 		NotifyUrl:  req.NotifyUrl,
+		TradeFrom:  req.TradeFrom,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -280,6 +288,9 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 计算费率 四舍五入
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
+
+	// 将openId参数设置为空，防止tradeType为JSAPI
+	req.OpenId = ""
 
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, c, req)
@@ -310,6 +321,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
 		TransAmt:     req.IntTxamt,
+		TradeFrom:    req.TradeFrom,
 	}
 
 	// 判断是否存在该订单
@@ -509,6 +521,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Busicd:       req.Busicd,
 		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
+		TradeFrom:    req.TradeFrom,
 	}
 
 	// 判断是否存在该订单
@@ -594,6 +607,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Busicd:       req.Busicd,
 		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
+		TradeFrom:    req.TradeFrom,
 	}
 
 	// 判断是否存在该订单

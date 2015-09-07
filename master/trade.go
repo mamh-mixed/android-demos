@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 )
@@ -22,7 +22,7 @@ func tradeQuery(w http.ResponseWriter, q *model.QueryCondition) (ret *model.Quer
 		q.EndTime += " 23:59:59"
 	}
 
-	ret = core.TransQuery(q)
+	ret = query.TransQuery(q)
 
 	return ret
 }
@@ -32,7 +32,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	var file = xlsx.NewFile()
 
 	// 查询
-	ret := core.TransQuery(cond)
+	ret := query.TransQuery(cond)
 
 	// 类型转换
 	if trans, ok := ret.Rec.([]*model.Trans); ok {

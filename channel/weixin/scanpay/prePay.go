@@ -32,6 +32,7 @@ type PrePayReq struct {
 	NotifyURL      string `xml:"notify_url" url:"notify_url" validate:"nonzero"`             // 通知地址
 	TradeType      string `xml:"trade_type" url:"trade_type" validate:"nonzero"`             // 交易类型
 	ProductID      string `xml:"product_id,omitempty" url:"product_id,omitempty"`            // 商品ID
+	LimitPay       string `xml:"limit_pay,omitempty" url:"limit_pay,omitempty"`              // 指定支付方式
 	Openid         string `xml:"openid,omitempty" url:"openid,omitempty"`                    // 用户标识
 	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`            // 子商户用户标识
 }

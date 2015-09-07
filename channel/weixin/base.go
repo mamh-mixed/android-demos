@@ -109,29 +109,29 @@ func (c *CommonBody) GetSign() string {
 type WeixinNotifyReq struct {
 	CommonBody
 
-	DeviceInfo     string `xml:"device_info,omitempty"`                             // 设备号
-	OpenID         string `xml:"openid"`                                            // 用户标识
-	IsSubscribe    string `xml:"is_subscribe"`                                      // 是否关注公众账号
-	TradeType      string `xml:"trade_type"`                                        // 交易类型
-	BankType       string `xml:"bank_type"`                                         // 付款银行
-	FeeType        string `xml:"fee_type"`                                          // 货币类型
-	TotalFee       string `xml:"total_fee"`                                         // 总金额
-	CashFeeType    string `xml:"cash_fee_type"`                                     // 现金支付货币类型
-	CashFee        string `xml:"cash_fee"`                                          // 现金支付金额
-	CouponFee      string `xml:"coupon_fee"`                                        // 代金券或立减优惠金额
-	CouponCount    string `xml:"coupon_count"`                                      // 代金券或立减优惠使用数量
-	TransactionId  string `xml:"transaction_id"`                                    // 微信支付订单号
-	OutTradeNo     string `xml:"out_trade_no"`                                      // 商户订单号
-	Attach         string `xml:"attach"`                                            // 商家数据包
-	TimeEnd        string `xml:"time_end"`                                          // 支付完成时间
-	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`   // 子商户 Open ID
-	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"` // 是否关注子商户公众账号
+	DeviceInfo     string `xml:"device_info,omitempty" url:"device_info,omitempty" ` // 设备号
+	OpenID         string `xml:"openid" url:"openid"`                                // 用户标识
+	IsSubscribe    string `xml:"is_subscribe" url:"is_subscribe"`                    // 是否关注公众账号
+	TradeType      string `xml:"trade_type" url:"trade_type"`                        // 交易类型
+	BankType       string `xml:"bank_type" url:"bank_type"`                          // 付款银行
+	FeeType        string `xml:"fee_type" url:"fee_type"`                            // 货币类型
+	TotalFee       string `xml:"total_fee" url:"total_fee"`                          // 总金额
+	CashFeeType    string `xml:"cash_fee_type" url:"cash_fee_type"`                  // 现金支付货币类型
+	CashFee        string `xml:"cash_fee" url:"cash_fee"`                            // 现金支付金额
+	CouponFee      string `xml:"coupon_fee" url:"coupon_fee"`                        // 代金券或立减优惠金额
+	CouponCount    string `xml:"coupon_count" url:"coupon_count"`                    // 代金券或立减优惠使用数量
+	TransactionId  string `xml:"transaction_id" url:"transaction_id"`                // 微信支付订单号
+	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no"`                    // 商户订单号
+	Attach         string `xml:"attach" url:"attach"`                                // 商家数据包
+	TimeEnd        string `xml:"time_end" url:"time_end"`                            // 支付完成时间
+	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`    // 子商户 Open ID
+	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"`  // 是否关注子商户公众账号
 }
 
 // WeixinNotifyResp 商户需要接收处理，并返回应答
 type WeixinNotifyResp struct {
 	XMLName xml.Name `xml:"xml"`
 
-	ReturnCode string `xml:"return_code"`          // 返回状态码
-	ReturnMsg  string `xml:"return_msg,omitempty"` // 返回信息
+	ReturnCode string `xml:"return_code" url:"return_code"`                   // 返回状态码
+	ReturnMsg  string `xml:"return_msg,omitempty" url:"return_msg,omitempty"` // 返回信息
 }

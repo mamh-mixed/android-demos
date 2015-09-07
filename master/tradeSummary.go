@@ -7,8 +7,8 @@ import (
 	// "time"
 
 	// "github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/query"
 	// "github.com/CardInfoLink/quickpay/mongo"
 	// "github.com/omigo/log"
 	"github.com/tealeg/xlsx"
@@ -18,7 +18,7 @@ import (
 func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 
 	// 调用core方法统计
-	qr := core.TransStatistics(q)
+	qr := query.TransStatistics(q)
 
 	// 分页信息
 	pagination := &model.Pagination{
@@ -55,7 +55,7 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 		Size:      maxReportRec,
 	}
 
-	qr := core.TransStatistics(q)
+	qr := query.TransStatistics(q)
 
 	if summarys, ok := qr.Rec.(model.Summary); ok {
 		genQueryStatReport(file, summarys, q)
