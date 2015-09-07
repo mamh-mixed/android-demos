@@ -51,6 +51,8 @@ type PayResp struct {
 	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no,omitempty"`             // 商户订单号
 	Attach         string `xml:"attach,omitempty" url:"attach,omitempty"`               // 商家数据包
 	TimeEnd        string `xml:"time_end" url:"time_end,omitempty"`                     // 支付完成时间
+	CouponId0      string `xml:"coupon_id_0,omitempty" url:"coupon_id_0,omitempty"`     // 代金券或立减优惠ID
+	CouponFee0     string `xml:"coupon_fee_0,omitempty" url:"coupon_fee_0,omitempty"`   // 代金券或立减优惠退款金额
 	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`       // 子商户 Open ID
 	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"`     // 是否关注子商户公众账号
 }
