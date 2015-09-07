@@ -13,10 +13,10 @@ func TestRefundPay(t *testing.T) {
 
 		DeviceInfo:    "xxx",               // 设备号
 		TransactionId: "",                  // 微信的订单号，优先使用
-		OutTradeNo:    "1438325425005",     // 商户系统内部的订单号，当没提供transaction_id时需要传这个
+		OutTradeNo:    "1441615439898",     // 商户系统内部的订单号，当没提供transaction_id时需要传这个
 		OutRefundNo:   util.SerialNumber(), // 商户退款单号
-		TotalFee:      "1",                 // 总金额
-		RefundFee:     "1",                 // 退款金额
+		TotalFee:      "300",               // 总金额
+		RefundFee:     "300",               // 退款金额
 		RefundFeeType: "CNY",               // 货币种类
 		OpUserId:      "migo",              // 操作员
 	}
