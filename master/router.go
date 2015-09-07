@@ -65,6 +65,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 处理登陆
 	if r.URL.Path == "/master/login" {
 		loginHandle(w, r)
+		return
 	}
 
 	// 查看请求中有没有cookie

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Polymer Starter Kit" />
+  <title>登录</title>
+  <!-- Place favicon.ico in the `app/` directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#303F9F">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PSK">
+  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild-->
+
+  <!-- xxxxxbuild:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="elements/elements.html">
+  <!-- xxxxxendbuild -->
+</head>
+
+<body unresolved style="width:100%;height:100%;background: #00BCD4;">
+  <script src="scripts/util.js"></script>
+  <style media="screen">
+    :host {
+      display: block;
+      background: #00BCD4;
+    }
+
+    .loginWrapper {
+      width: 300px;
+      height: 400px;
+      margin-top: 10%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: auto;
+      background: #ffffff;
+    }
+
+    .logo {
+      width: 30px;
+      height: 30px;
+      text-align: center;
+    }
+    .loginHeader {
+      text-align: center;
+      width: 100%;
+      height: 120px;
+      line-height: 120px;
+      vertical-align: middle;
+    }
+
+    paper-button {
+      width: 100%;
+      margin-top: 30px;
+      background: #ff4081;
+      color: #ffffff;
+    }
+
+    .loginInner {
+      width: 80%;
+      margin-left: 10%;
+      margin-right: 10%;
+    }
+  </style>
+  <dom-module id="login-element">
+    <template>
+      <div class="loginWrapper">
+        <div class="loginInner">
+          <!-- <img src="images/logo2.svg" alt="云收银" class="logo"> -->
+          <div class="loginHeader">用户登录</div>
+          <paper-input id="userName" label="用户名" value="{{userName:input}}" required error-message="必填项"></paper-input>
+          <paper-input id="pwd" label="密码" value="{{pwd:input}}" type="password" required error-message="必填项"></paper-input>
+          <paper-button raised on-tap="loginTapHandle">登录</paper-button>
+        </div>
+
+      </div>
+      <iron-ajax id="loginAjax" method="GET" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
+
+    </template>
+    <script>
+      HTMLImports.whenReady(function() {
+        Polymer({
+          is: 'login-element',
+          ready: function() {
+            this.userName = '';
+            this.pwd = '';
+          },
+          loginTapHandle: function() {
+            if (this.isloginConfigEmpty()) {
+              Util.toast('必填项不能为空', 3000);
+              return;
+            }
+            var loginAjax = this.$.loginAjax;
+            loginAjax.params = {
+              'userName': this.$.userName.value,
+              'pwd': this.$.pwd.value,
+            }
+            loginAjax.generateRequest();
+          },
+          isloginConfigEmpty: function() {
+            if (this.$.userName.validate() && this.$.pwd.validate()) {
+              return false;
+            } else {
+              return true;
+            }
+          },
+          handleLoginResponse: function(e) {
+            var response = e.detail.response;
+            if (response.status !== 0) {
+              Util.toast(response.message, 3000);
+              return;
+            }
+            var user = response.data;
+            window.localStorage.setItem('nickName', user.nickName);
+            window.localStorage.setItem('userType', user.userType);
+            window.location.href = 'index.html';
+          },
+        });
+      });
+    </script>
+  </dom-module>
+  <login-element></login-element>
+  <!-- endbuild-->
+</body>
+
+</html>
