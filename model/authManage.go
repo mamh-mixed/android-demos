@@ -15,3 +15,10 @@ type User struct {
 	MerId     string `json:"merId" bson:"merId"`
 	MerName   string `json:"merName" bson:"merName"`
 }
+
+// Session Session表
+type Session struct {
+	SessionID string `json:"sessionId" bson:"sessionId"`
+	User      *User  `json:"user" bson:"user"`
+	Expires   string `json:"expires" bson:"expires"`
+}

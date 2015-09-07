@@ -176,8 +176,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '测试 HTML5 读取文件内容'
       };
     });
-    page('/404', '/');
-    page('*', '/404');
+
     page('/quickPay/merchants', function() {
       app.route = {
         name: 'quickPay.merchants',
@@ -202,7 +201,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '快捷支付路由策略',
       };
     });
-
+    page('/404', '/');
+    page('*', '/404');
     // add #! before urls
     page({
       hashbang: true

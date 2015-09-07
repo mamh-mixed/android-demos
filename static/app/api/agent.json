@@ -1,0 +1,26 @@
+[{
+  "nameCN": "交易查询",
+  "nameEN": "",
+  "icon": "swap-horiz",
+  "url": "",
+  "route": "trade",
+  "children": [{
+    "nameCN": "扫码交易",
+    "nameEN": "",
+    "icon": "payment",
+    "url": "/trade/list",
+    "route": "trade.list"
+  }, {
+    "nameCN": "报表下载",
+    "nameEN": "",
+    "icon": "file-download",
+    "url": "/trade/reports",
+    "route": "trade.reports"
+  }, {
+    "nameCN": "旧系统报表下载",
+    "nameEN": "",
+    "icon": "cloud-download",
+    "url": "/trade/old/reports",
+    "route": "trade.old.reports"
+  }]
+}]

@@ -13,48 +13,29 @@ type user struct{}
 var User user
 
 // Login 登陆
-// func (u *user) Login(userName, password string) (ret *model.ResultBody) {
-// 	log.Debugf("userName:%s,password:%s", userName, password)
-// 	if userName == "" || password == "" {
-// 		log.Errorf("用户名或密码不能为空")
-// 		return model.NewResultBody(1, "用户名或密码不用为空")
-// 	}
-// 	user, err := mongo.UserColl.FindByUserName(userName)
-// 	if err != nil {
-// 		log.Errorf("查询用户(%s)出错:%s", userName, err)
-// 		return model.NewResultBody(2, "用户名错误")
-// 	}
-// 	if password != user.Password {
-// 		log.Errorf("密码错误")
-// 		return model.NewResultBody(3, "密码错误")
-// 	}
-// 	// 先每次登陆从数据中查找1级菜单
-// 	menusTemp, err := mongo.MenuColl.FindByLevel(1)
-// 	if err != nil {
-// 		log.Errorf("查找所有1级菜单失败")
-// 		return model.NewResultBody(4, "查找所有1级菜单失败")
-// 	}
-// 	// 传给前端的菜单
-// 	menus := make([]model.Menu, 1)
-// 	for _, menu1 := range menusTemp {
-// 		menu1.Children = make([]model.Menu, 1)
-// 		for _, menu2 := range user.Role.Menus {
-// 			if menu2.ParentRoute == menu1.Route {
-// 				menu1.Children = append(menu1.Children, menu2)
-// 			}
-// 		}
-// 		if len(menu1.Children) > 0 {
-// 			menus = append(menus, menu1)
-// 		}
-// 	}
-//
-// 	ret = &model.ResultBody{
-// 		Status:  0,
-// 		Message: "登陆成功",
-// 		Data:    menus,
-// 	}
-// 	return ret
-// }
+func (u *user) Login(userName, password string) (ret *model.ResultBody) {
+	log.Debugf("userName:%s,password:%s", userName, password)
+	if userName == "" || password == "" {
+		log.Errorf("用户名或密码不能为空")
+		return model.NewResultBody(1, "用户名或密码不用为空")
+	}
+	user, err := mongo.UserColl.FindOneUser(userName, "", "")
+	if err != nil {
+		log.Errorf("查询用户(%s)出错:%s", userName, err)
+		return model.NewResultBody(2, "无此用户名")
+	}
+	if password != user.Password {
+		log.Errorf("密码错误")
+		return model.NewResultBody(3, "密码错误")
+	}
+
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "登陆成功",
+		Data:    user,
+	}
+	return ret
+}
 
 // 新建用户
 func (u *user) CreateUser(data []byte) (ret *model.ResultBody) {

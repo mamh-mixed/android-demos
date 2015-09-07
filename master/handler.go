@@ -5,8 +5,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -482,8 +484,48 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
-		log.Error(err)
-		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+	w.Write(retBytes)
+}
+func loginHandle(w http.ResponseWriter, r *http.Request) {
+	log.Infof("user login begin")
+	params := r.URL.Query()
+	userName := params.Get("userName")
+	pwd := params.Get("pwd")
+
+	ret := User.Login(userName, pwd)
+
+	if ret.Status == 0 {
+		log.Infof("create session begin")
+		cValue := util.SerialNumber()
+		cExpires := time.Now().Add(20 * time.Minute)
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    "QUICKMASTERID",
+			Value:   cValue,
+			Path:    "/master/",
+			Expires: cExpires,
+		})
+
+		// 创建session
+		session := &model.Session{
+			SessionID: cValue,
+			User:      ret.Data.(*model.User),
+			Expires:   cExpires.Format("2006-01-02 15:04:05"),
+		}
+
+		ret = Session.Save(session)
+		log.Infof("create session end")
+	}
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
 		return
 	}
 	w.Write(retBytes)

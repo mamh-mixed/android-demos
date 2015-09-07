@@ -2,9 +2,9 @@ package master
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/CardInfoLink/quickpay/util"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/qiniu/log"
 )
 
 // Route 后台管理的请求统一入口
@@ -62,33 +62,43 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	// 处理登陆
+	if r.URL.Path == "/master/login" {
+		loginHandle(w, r)
+	}
 
-	// c, err := r.Cookie("QUICKMASTERID")
-	// if err != nil {
-	// 	if err == http.ErrNoCookie {
-	// 		// 未登录
-	// 		// if uri == "login" { do login}
-	// 		// else { error }
-	// 		// return
-	// 	}
-	// 	http.Error(w, err.Error(), http.StatusNotAcceptable)
-	// 	return
-	// }
-	// if c != nil {
-	// 	log.Debugf("url=%s, cookie: %s", r.URL, c.String())
-	// 	// 验证是否有权限
-	// }删除删除
+	// 查看请求中有没有cookie
+	c, err := r.Cookie("QUICKMASTERID")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+	}
+	// 验证是否有权限
+	if c != nil {
+		log.Infof("url=%s, cookie: %s", r.URL.Path, c.String())
+
+		session, err := mongo.SessionColl.Find(c.Value)
+		if err != nil {
+			http.Error(w, "查找session失败", http.StatusNotAcceptable)
+			return
+		}
+
+		user := session.User
+		if user.UserType == "agent" || user.UserType == "group" || user.UserType == "merchant" {
+			if r.URL.Path == "/master/trade/query" || r.URL.Path == "/master/trade/report" ||
+				r.URL.Path == "/master/trade/stat" || r.URL.Path == "/master/trade/stat/report" {
+
+			} else {
+				log.Errorf("agent permission denied,url=" + r.URL.Path)
+				http.Error(w, "agent permission denied", http.StatusNotAcceptable)
+				return
+			}
+
+		}
+	}
 
 	h, _ := mux.Handler(r)
-
-	// loginCtrl.login 里有如下代码，登录成功后写 Cookie
-	if r.URL.Path == "/master/agent/find" {
-		http.SetCookie(w, &http.Cookie{
-			Name:    "QUICKMASTERID",
-			Value:   util.SerialNumber(),
-			Path:    "/master/",
-			Expires: time.Now().Add(20 * time.Minute),
-		})
-	}
 	h.ServeHTTP(w, r)
 }

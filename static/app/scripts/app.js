@@ -23,12 +23,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	// have resolved and content has been stamped to the page
 	app.addEventListener('dom-change', function() {
 		console.log('Our app is ready to rock!');
+		window.localStorage.setItem("userType","admin");
+		// 获取userType
+		var userType = window.localStorage.getItem("userType");
+		// userType为空跳转至登陆页面
+		// if (!userType||userType===''){
+		// 	window.location.href='http://www.baidu.com';
+		// }
+		if (userType==='admin'){
+			document.querySelector('#menuAjax').generateRequest();
+		}else if(userType==='agent'||userType==='group'||userType==='merchant'){
+			document.querySelector('#agentAjax').generateRequest();
+		}
 	});
 
 
 	// See https://github.com/Polymer/polymer/issues/1381
 	window.addEventListener('WebComponentsReady', function() {
 		// imports are loaded and elements have been registered
+		console.log('ready');
 	});
 
 	// 主页面滚动的时候，顶部的title的动画效果
