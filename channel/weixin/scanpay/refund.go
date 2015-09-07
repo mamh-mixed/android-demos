@@ -57,5 +57,10 @@ type RefundResp struct {
 	CashRefundFee     string `xml:"cash_refund_fee,omitempty" url:"cash_refund_fee,omitempty"`         // 现金退款金额
 	CouponRefundFee   string `xml:"coupon_refund_fee,omitempty" url:"coupon_refund_fee,omitempty"`     // 代金券或立减优惠退款金额
 	CouponRefundCount string `xml:"coupon_refund_count,omitempty" url:"coupon_refund_count,omitempty"` // 代金券或立减优惠使用数量
-	CouponRefundId    string `xml:"coupon_refund_id,omitempty" url:"coupon_refund_id,omitempty"`       // 代金券或立减优惠ID
+	CouponRefundId0   string `xml:"coupon_refund_id_0,omitempty" url:"coupon_refund_id_0,omitempty"`   // 代金券或立减优惠ID
+	CouponRefundFee0  string `xml:"coupon_refund_fee_0,omitempty" url:"coupon_refund_fee_0,omitempty"` // 代金券或立减优惠退款金额
+	CouponRefundId1   string `xml:"coupon_refund_id_1,omitempty" url:"coupon_refund_id_1,omitempty"`   // 代金券或立减优惠ID
+	CouponRefundFee1  string `xml:"coupon_refund_fee_1,omitempty" url:"coupon_refund_fee_1,omitempty"` // 代金券或立减优惠退款金额
+	CouponRefundId2   string `xml:"coupon_refund_id_2,omitempty" url:"coupon_refund_id_2,omitempty"`   // 代金券或立减优惠ID
+	CouponRefundFee2  string `xml:"coupon_refund_fee_2,omitempty" url:"coupon_refund_fee_2,omitempty"` // 代金券或立减优惠退款金额
 }
