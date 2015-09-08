@@ -67,12 +67,13 @@
           <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alp.acqFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="amerFee" label="商户跟讯联费率" value="{{alp.merFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
+          <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
         <div id="wxp">
           <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
-          <paper-input id="wbigChanMerId" label="大商户号" value="{{weixin.agentMer.chanMerId::input}}" disabled$="{{!weixin.isAgentMode}}" required error-message="必填项"></paper-input>
+          <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项"></x-select>
           <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
@@ -135,6 +136,36 @@
           bigMerchant: {
             type: Object
           },
+          // 微信大商户集合，目前是2个
+          wbigchanMerIds: {
+            type: Array,
+            value: [{
+              key: '1236593202',
+              value: '讯联 1236593202'
+            }, {
+              key: '2236593202',
+              value: '测试 2236593202'
+            }]
+          },
+          wbigchanMerId: {
+            type: Object,
+            observer: '_wbigchanMerIdChanged'
+          },
+          // 支付宝代理
+          aagentCodes: {
+            type: Array,
+            value: [{
+              key: '12010128a1',
+              value: '讯联 12010128a1'
+            }, {
+              key: '22010128a1',
+              value: '测试 22010128a1'
+            }]
+          },
+          aagentCode: {
+            type: Object,
+            observer: '_aagentCodeChanged'
+          },
         },
         observers: [
           '_channelChange(channel)'
@@ -164,6 +195,26 @@
             }
           }
         },
+        // 选择大商户号
+        _wbigchanMerIdChanged: function(value) {
+          if (this.bigMerchantMap && value) {
+            this.set('bigMerchant', this.bigMerchantMap[value.key]);
+            if (!this.bigMerchant) {
+              this.$.findChanMerAjax.params = {
+                page: 1,
+                chanMerId: value.key
+              };
+              this.$.findChanMerAjax.generateRequest();
+            }
+          }
+
+        },
+        // 支付宝选择代理
+        _aagentCodeChanged: function(value) {
+          if (value) {
+            this.set('alp.agentId', value.key)
+          }
+        },
         open: function() {
           this.$.dialogAdd.open();
           if (this.pageType === 'create') {
@@ -176,21 +227,30 @@
             this.weixin = {
               chanCode: 'WXP',
               isAgentMode: true,
-              agentMer: {
-                chanMerId: '1236593202'
-              },
             };
             this.cfca = {};
             this.$.chanCode.childNodes[1].children[1].disabled = false;
             this.$.achanMerId.disabled = false;
             this.$.wchanMerId.disabled = false;
             this.$.cfchanMerId.disabled = false;
-            // 大商户
+            // 默认选择我们的代理
+            this.wbigchanMerId = {
+              key: '1236593202',
+              value: '讯联 1236593202'
+            };
+            // 存放微信大商户信息，现在有2个
+            this.bigMerchantMap = {};
+            // 微信大商户
             this.$.findChanMerAjax.params = {
               page: 1,
-              chanMerId: '1236593202'
+              chanMerId: this.wbigchanMerId.key
             };
             this.$.findChanMerAjax.generateRequest();
+            // 默认支付宝代理号为12010128a1
+            this.aagentCode = {
+              key: '12010128a1',
+              value: '讯联 12010128a1',
+            };
           } else {
             this.$.header.textContent = '编辑渠道商户';
             var map = {
@@ -210,6 +270,29 @@
             this.$.achanMerId.disabled = true;
             this.$.wchanMerId.disabled = true;
             this.$.cfchanMerId.disabled = true;
+            var aagentCodeMap = {
+              '12010128a1': '讯联 12010128a1',
+              '22010128a1': '测试 22010128a1'
+            }
+            if (this.alp.agentCode) {
+              this.aagentCode = {
+                key: this.alp.agentId,
+                value: aagentCodeMap[this.alp.agentCode],
+              };
+            }
+            var wbigchanMerIdMap = {
+                '1236593202': '讯联 1236593202',
+                '2236593202': '测试 2236593202'
+              }
+            // 存放微信大商户信息，现在有2个
+            this.bigMerchantMap = {};
+            if (this.weixin.isAgentMode) {
+              this.bigMerchantMap[this.weixin.agentMer.chanMerId] = this.weixin.agentMer;
+              this.wbigchanMerId = {
+                key: this.weixin.agentMer.chanMerId,
+                value: wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
+              };
+            }
           }
         },
         // 查询渠道商户的响应事件，这里是查找大商户
@@ -227,7 +310,7 @@
         },
         // 支付宝必填项是否为空
         isALPConfigEmpty: function() {
-          if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignKey.validate()) {
+          if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignKey.validate() && this.aagentCode) {
             return false;
           }
           return true;
@@ -235,7 +318,7 @@
         // 微信必填项是否为空
         isWXPConfigEmpty: function() {
           if (this.weixin.isAgentMode) {
-            if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wbigChanMerId.validate()) {
+            if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wbigchanMerId) {
               return false;
             }
           } else {
@@ -279,6 +362,10 @@
               this.set('weixin.chanCode', 'WXP');
               // 如果勾选了代理商模式，就直接填充上大商户的信息
               if (this.weixin.isAgentMode) {
+                if (!this.bigMerchant) {
+                  Util.toast(this.wbigchanMerId.key + '大商户信息为空', 3000);
+                  return;
+                }
                 this.set('weixin.agentMer', this.bigMerchant);
               } else {
                 this.set('weixin.agentMer', {});
@@ -358,6 +445,7 @@
           if (this.weixin.isAgentMode) {
             this.set('weixin.agentMer', this.bigMerchant);
             this.$.wbigChanMerId.setAttribute('required', true);
+            this.$.wbigChanMerId.childNodes[1].children[1].disabled = false;
             this.$.wxpAppId.removeAttribute('required');
             this.$.wsignCert.removeAttribute('required');
             this.$.httpCertTArea.removeAttribute('required');
@@ -367,7 +455,7 @@
           } else {
             this.set('weixin.agentMer', {});
             this.$.wbigChanMerId.removeAttribute('required');
-            this.$.wbigChanMerId.validate();
+            this.$.wbigChanMerId.childNodes[1].children[1].disabled = true;
             this.$.wxpAppId.setAttribute('required', true);
             this.$.wsignCert.setAttribute('required', true);
             this.$.httpCertTArea.setAttribute('required', true);
