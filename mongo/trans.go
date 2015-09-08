@@ -8,6 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -61,10 +62,51 @@ func (col *transCollection) BatchAdd(ts []*model.Trans) (err error) {
 	return nil
 }
 
+// FindAndLock
+// 该方法查找时交易将交易锁住
+// 如果锁住成功，将返回最新的交易
+func (col *transCollection) FindAndLock(merId, orderNum string) (*model.Trans, error) {
+
+	query := bson.M{
+		"merId":    merId,
+		"orderNum": orderNum,
+		"lockFlag": bson.M{"$ne": 1}, // 此处不直接写为 lockFlag=0是为了兼容以前数据
+	}
+
+	change := mgo.Change{}
+	change.Update = bson.M{
+		"$set": bson.M{"lockFlag": 1,
+			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+		},
+	}
+	change.ReturnNew = true
+	result := &model.Trans{}
+	_, err := database.C(col.name).Find(query).Apply(change, result)
+	if err != nil {
+		log.Error(err)
+	}
+	return result, err
+}
+
+// UpdateAndUnlock 更新并解锁
+func (col *transCollection) UpdateAndUnlock(t *model.Trans) error {
+	t.LockFlag = 0
+	return col.Update(t)
+}
+
+// Unlock 只做解锁操作
+func (col *transCollection) Unlock(merId, orderNum string) {
+	set := bson.M{"$set": bson.M{"lockFlag": 0}}
+	database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)
+}
+
 // Update 通过Add时生成的Id来修改
 func (col *transCollection) Update(t *model.Trans) error {
+
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
-	err := database.C(col.name).Update(bson.M{"_id": t.Id}, t)
+	// 查找条件
+	update := bson.M{"_id": t.Id}
+	err := database.C(col.name).Update(update, t)
 	if err != nil {
 		log.Errorf("update trans(%+v) fail: %s", t, err)
 	}

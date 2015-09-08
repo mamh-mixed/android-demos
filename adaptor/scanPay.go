@@ -57,15 +57,11 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 // ProcessBarcodePay 扫条码下单
 func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(t, "SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return LogicErrorHandler(t, "SYSTEM_ERROR")
 	}
 
 	mer, err := mongo.MerchantColl.Find(t.MerId)
@@ -77,8 +73,8 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
 	req.Subject = mer.Detail.CommodityName
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -94,14 +90,12 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.ExtendParams = genExtendParams(mer)
+		req.ExtendParams = genExtendParams(mer, chanMer)
+		req.SubMchId = chanMer.AgentCode // 支付宝受理商
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = c.WxpAppId
+		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
-		// 支付不需要证书
-		// req.WeixinClientCert = []byte(c.HttpCert)
-		// req.WeixinClientKey = []byte(c.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -123,15 +117,11 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 // ProcessQrCodeOfflinePay 二维码预下单
 func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(t, "SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return LogicErrorHandler(t, "SYSTEM_ERROR")
 	}
 
 	mer, err := mongo.MerchantColl.Find(t.MerId)
@@ -144,14 +134,11 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.ExtendParams = genExtendParams(mer)
+		req.ExtendParams = genExtendParams(mer, chanMer)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = c.WxpAppId
+		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
-		// 支付不需要证书
-		// req.WeixinClientCert = []byte(c.HttpCert)
-		// req.WeixinClientKey = []byte(c.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -159,8 +146,8 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	// 上送参数
 	req.SysOrderNum = util.SerialNumber()
 	req.Subject = mer.Detail.CommodityName
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -189,21 +176,17 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 // ProcessRefund 请求渠道退款，不做逻辑处理
 func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(current, "SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return LogicErrorHandler(current, "SYSTEM_ERROR")
 	}
 
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
 
 	// 交易参数
 	current.SysOrderNum = req.SysOrderNum
@@ -213,18 +196,18 @@ func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
 	case channel.ChanCodeWeixin:
-		req.AppID = c.WxpAppId
+		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		req.WeixinClientCert = []byte(chanMer.HttpCert)
+		req.WeixinClientKey = []byte(chanMer.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}
 
 	// 记录交易
-	err := mongo.SpTransColl.Add(current)
+	err = mongo.SpTransColl.Add(current)
 	if err != nil {
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
@@ -247,30 +230,26 @@ func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 // ProcessEnquiry 查询
 func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return ReturnWithErrorCode("SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 上送参数
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		// do nothing...
 	case channel.ChanCodeWeixin:
-		req.AppID = c.WxpAppId
+		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		req.WeixinClientCert = []byte(chanMer.HttpCert)
+		req.WeixinClientKey = []byte(chanMer.HttpKey)
 	default:
 	}
 
@@ -280,7 +259,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 		return ReturnWithErrorCode("NO_CHANNEL")
 	}
 
-	ret, err := sp.ProcessEnquiry(req)
+	ret, err = sp.ProcessEnquiry(req)
 	if err != nil {
 		log.Errorf("process enquiry error:%s", err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -301,27 +280,23 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 // ProcessCancel 请求渠道撤销，不做逻辑处理
 func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(current, "SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return LogicErrorHandler(current, "SYSTEM_ERROR")
 	}
 
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
 
 	// 交易参数
 	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err := mongo.SpTransColl.Add(current)
+	err = mongo.SpTransColl.Add(current)
 	if err != nil {
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
@@ -332,12 +307,12 @@ func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 	switch orig.ChanCode {
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
-		req.AppID = c.WxpAppId
+		req.AppID = chanMer.WxpAppId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		req.WeixinClientCert = []byte(chanMer.HttpCert)
+		req.WeixinClientKey = []byte(chanMer.HttpKey)
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)
@@ -389,11 +364,16 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 				orderStatus := ProcessEnquiry(orig, c, &model.ScanPayRequest{OrigOrderNum: orig.OrderNum})
 				if orderStatus.Respcd == SuccessCode {
 					orig.TransStatus = model.TransSuccess
+					orig.ChanRespCode = orderStatus.ChanRespCode
+					orig.ChanOrderNum = orderStatus.ChannelOrderNum
+					orig.ConsumerAccount = orderStatus.ConsumerAccount
 					goto Tag
 				}
 				fallthrough
 			default:
 				// 直接关单 不用判断时间
+				// 这里可能出现重新查询时状态为09，但是这时用户马上支付成功
+				// 那么实际上是对已支付的订单进行关单，会报错
 				return ProcessWxpClose(orig, closed, c, req)
 			}
 		}
@@ -435,29 +415,25 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 // ProcessWxpRefundQuery 微信查询退款接口
 func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return ReturnWithErrorCode("SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 上送参数
 	req.OrderNum = t.OrderNum
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
-	req.AppID = c.WxpAppId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 	req.SubMchId = subMchId
-	req.WeixinClientCert = []byte(c.HttpCert)
-	req.WeixinClientKey = []byte(c.HttpKey)
+	req.WeixinClientCert = []byte(chanMer.HttpCert)
+	req.WeixinClientKey = []byte(chanMer.HttpKey)
 
 	// 指定微信
 	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
-	ret, err := sp.ProcessRefundQuery(req)
+	ret, err = sp.ProcessRefundQuery(req)
 	if err != nil {
 		log.Errorf("process weixin refundQuery error:%s", err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -508,38 +484,53 @@ func ProcessWxpClose(orig, current *model.Trans, c *model.ChanMer, req *model.Sc
 
 func prepareWxpReqData(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	var subMchId string
-	// 代理商模式
-	if c.IsAgentMode {
-		if c.AgentMer == nil {
-			log.Error("use agentMode but not supply agentMer,please check.")
-			return LogicErrorHandler(current, "SYSTEM_ERROR")
-		}
-		subMchId = c.ChanMerId
-		c = c.AgentMer
+	// 选择送往渠道的商户
+	chanMer, subMchId, err := chooseChanMer(c)
+	if err != nil {
+		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
+		return LogicErrorHandler(current, "SYSTEM_ERROR")
 	}
 
 	// 渠道参数
 	req.SysOrderNum = util.SerialNumber()
-	req.SignKey = c.SignKey
-	req.ChanMerId = c.ChanMerId
-	req.AppID = c.WxpAppId
+	req.SignKey = chanMer.SignKey
+	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 	req.SubMchId = subMchId
-	req.WeixinClientCert = []byte(c.HttpCert)
-	req.WeixinClientKey = []byte(c.HttpKey)
+	req.WeixinClientCert = []byte(chanMer.HttpCert)
+	req.WeixinClientKey = []byte(chanMer.HttpKey)
 
 	// 系统订单号
 	current.SysOrderNum = req.SysOrderNum
 
 	// 记录交易
-	err := mongo.SpTransColl.Add(current)
+	err = mongo.SpTransColl.Add(current)
 	if err != nil {
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 	return nil
 }
 
-func genExtendParams(mer *model.Merchant) string {
+// chooseChanMer 选择往渠道送的商户
+func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, err error) {
+	// 受理商模式
+	if c.IsAgentMode {
+		if c.AgentMer == nil {
+			err = fmt.Errorf("%s", "use agentMode but not supply agentMer,please check.")
+			return
+		}
+		subMchId = c.ChanMerId
+		chanMer = c.AgentMer
+		return
+	}
+	chanMer = c
+	return
+}
+
+func genExtendParams(mer *model.Merchant, c *model.ChanMer) string {
+	if c.AgentCode != "" {
+		agentId = c.AgentCode
+	}
 	var shopInfo = &struct {
 		AGENT_ID   string `json:",omitempty"`
 		STORE_ID   string `json:",omitempty"`
