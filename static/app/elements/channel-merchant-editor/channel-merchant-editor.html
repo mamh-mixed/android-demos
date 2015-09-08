@@ -168,8 +168,28 @@
           },
         },
         observers: [
-          '_channelChange(channel)'
+          '_channelChange(channel)',
+          '_wisAgentModeChanged(weixin.isAgentMode)'
         ],
+        _wisAgentModeChanged: function(value) {
+          if (value) {
+            this.$.wbigChanMerId.setAttribute('required', true);
+            this.$.wbigChanMerId.childNodes[1].children[1].disabled = false;
+            this.$.wxpAppId.removeAttribute('required');
+            this.$.wsignCert.removeAttribute('required');
+            this.$.httpCertTArea.removeAttribute('required');
+            this.$.httpKeyTArea.removeAttribute('required');
+            this.$.wxpAppId.validate();
+            this.$.wsignCert.validate();
+          } else {
+            this.$.wbigChanMerId.removeAttribute('required');
+            this.$.wbigChanMerId.childNodes[1].children[1].disabled = true;
+            this.$.wxpAppId.setAttribute('required', true);
+            this.$.wsignCert.setAttribute('required', true);
+            this.$.httpCertTArea.setAttribute('required', true);
+            this.$.httpKeyTArea.setAttribute('required', true);
+          }
+        },
         _channelChange: function(channel) {
           if (channel) {
             if (channel.key === 'ALP') {
@@ -251,6 +271,7 @@
               key: '12010128a1',
               value: '讯联 12010128a1',
             };
+            // this.$.wbigChanMerId.childNodes[1].children[1].disabled = false;
           } else {
             this.$.header.textContent = '编辑渠道商户';
             var map = {
@@ -287,17 +308,12 @@
               // 存放微信大商户信息，现在有2个
             this.bigMerchantMap = {};
             if (this.weixin.isAgentMode) {
+              this.set('bigMerchant', this.weixin.agentMer);
               this.bigMerchantMap[this.weixin.agentMer.chanMerId] = this.weixin.agentMer;
               this.wbigchanMerId = {
                 key: this.weixin.agentMer.chanMerId,
                 value: wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
               };
-            } else {
-                this.$.wbigChanMerId.childNodes[1].children[1].disabled = true;
-                this.$.wxpAppId.setAttribute('required', true);
-                this.$.wsignCert.setAttribute('required', true);
-                this.$.httpCertTArea.setAttribute('required', true);
-                this.$.httpKeyTArea.setAttribute('required', true);
             }
           }
         },
@@ -448,25 +464,6 @@
         // 是否代理商模式的改变事件
         handleIsAgentChangeEvent: function() {
           this.set('weixin.isAgentMode', this.$.wisAgentMode.checked);
-          if (this.weixin.isAgentMode) {
-            this.set('weixin.agentMer', this.bigMerchant);
-            this.$.wbigChanMerId.setAttribute('required', true);
-            this.$.wbigChanMerId.childNodes[1].children[1].disabled = false;
-            this.$.wxpAppId.removeAttribute('required');
-            this.$.wsignCert.removeAttribute('required');
-            this.$.httpCertTArea.removeAttribute('required');
-            this.$.httpKeyTArea.removeAttribute('required');
-            this.$.wxpAppId.validate();
-            this.$.wsignCert.validate();
-          } else {
-            this.set('weixin.agentMer', {});
-            this.$.wbigChanMerId.removeAttribute('required');
-            this.$.wbigChanMerId.childNodes[1].children[1].disabled = true;
-            this.$.wxpAppId.setAttribute('required', true);
-            this.$.wsignCert.setAttribute('required', true);
-            this.$.httpCertTArea.setAttribute('required', true);
-            this.$.httpKeyTArea.setAttribute('required', true);
-          }
         },
       });
     })();
