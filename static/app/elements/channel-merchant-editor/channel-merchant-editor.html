@@ -232,7 +232,7 @@
         // 支付宝选择代理
         _aagentCodeChanged: function(value) {
           if (value) {
-            this.set('alp.agentId', value.key)
+            this.set('alp.agentId', value.key);
           }
         },
         open: function() {
@@ -294,7 +294,7 @@
             var aagentCodeMap = {
               '12010128a1': '讯联 12010128a1',
               '22010128a1': '测试 22010128a1'
-            }
+            };
             if (this.alp.agentCode) {
               this.aagentCode = {
                 key: this.alp.agentId,
@@ -302,10 +302,10 @@
               };
             }
             var wbigchanMerIdMap = {
-                '1236593202': '讯联 1236593202',
-                '2236593202': '测试 2236593202'
-              }
-              // 存放微信大商户信息，现在有2个
+              '1236593202': '讯联 1236593202',
+              '2236593202': '测试 2236593202'
+            };
+            // 存放微信大商户信息，现在有2个
             this.bigMerchantMap = {};
             if (this.weixin.isAgentMode) {
               this.set('bigMerchant', this.weixin.agentMer);
