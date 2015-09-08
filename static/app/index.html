@@ -94,6 +94,10 @@
                 <iron-icon icon="assignment-ind"></iron-icon>
                 <span>代理</span>
               </a>
+              <a data-route="config.subAgents" href="/config/subAgents">
+                <iron-icon icon="account-circle"></iron-icon>
+                <span>二级代理</span>
+              </a>
               <a data-route="config.groups" href="/config/groups">
                 <iron-icon icon="home"></iron-icon>
                 <span>集团商户</span>
@@ -255,6 +259,10 @@
 
             <section data-route="config.agents">
               <agent-list is-editable is-deletable></agent-list>
+            </section>
+
+            <section data-route="config.subAgents">
+              <sub-agent-list is-editable is-deletable></sub-agent-list>
             </section>
 
             <section data-route="config.groups">

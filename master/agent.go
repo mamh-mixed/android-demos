@@ -18,7 +18,7 @@ func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
 
 	agent, err := mongo.AgentColl.Find(agentCode)
 	if err != nil {
-		log.Errorf("查询代理商(%s)出错:%s", agentCode, err)
+		log.Errorf("查询代理(%s)出错:%s", agentCode, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 

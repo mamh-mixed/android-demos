@@ -180,8 +180,15 @@ type ChanMer struct {
 }
 
 type Agent struct {
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理商代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理商名称
+	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+}
+
+type SubAgent struct {
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 代理代码
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
 }
 
 type Group struct {
