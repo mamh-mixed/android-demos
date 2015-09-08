@@ -37,6 +37,7 @@
     .row paper-radio-button,
     .row .check-box-group,
     .row channel-merchant-typeahead,
+    .row section,
     .row x-select {
       @apply(--layout-flex-6);
       margin-right: 20px;
@@ -50,6 +51,7 @@
     .row paper-radio-button:last-child,
     .row channel-merchant-typeahead:last-child,
     .row .check-box-group:last-child,
+    .row section:last-child,
     .row x-select:last-child {
       margin-right: 0;
     }
@@ -95,6 +97,14 @@
       left: -10px;
       top: 50%;
     }
+
+    .monospace {
+      --paper-input-container-input: {
+        font-family: monospace;
+        font-size: 8px;
+      }
+    }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -119,8 +129,6 @@
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
@@ -128,8 +136,6 @@
           <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
           <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
@@ -143,8 +149,6 @@
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-input id="commodityName" label="商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
           <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
@@ -157,17 +161,11 @@
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" label="商户状态" required error-message="必填项"></x-select>
-        </div>
-        <div class="row">
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div>
           <label for="permissionGroup">接口权限：</label>
           <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
@@ -224,20 +222,20 @@
           <paper-input id="wxpAppId" label="微信 AppId" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
         </div>
-        <div class="row">
-          <label id="httpCertL">请选择.pem文件的HTTP证书</label>
-          <label id="httpKeyL">请选择.pem文件的HTTP密钥</label>
-        </div>
-        <div class="row">
-          <paper-input id="httpCert" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
-          <paper-input id="httpKey" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
-        </div>
-        <div class="divider blank"></div>
 
         <div class="row">
-          <paper-textarea id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项"></paper-textarea>
-          <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
+          <section>
+            <label id="httpCertL">请选择.pem文件的HTTP证书</label>
+            <paper-input id="httpCert" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+            <paper-textarea class="monospace" id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项"></paper-textarea>
+          </section>
+          <section>
+            <label id="httpKeyL">请选择.pem文件的HTTP密钥</label>
+            <paper-input id="httpKey" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+            <paper-textarea class="monospace" id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
+          </section>
         </div>
+
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
         </div>
@@ -465,6 +463,12 @@
           return;
         }
 
+        if (!response.data.httpCert) {
+          response.data.httpCert = '';
+        }
+        if (!response.data.httpKey) {
+          response.data.httpKey = '';
+        }
         this.set('weixin', response.data);
         this.set('weixin.chanCode', 'WXP');
         if (!this.weixin.agentMer) {
@@ -704,7 +708,7 @@
           this.$.wxpAppId.validate();
           this.$.wsignCert.validate();
           this.$.httpCertTArea.validate();
-          this.$.httpKeyLTArea.validate();
+          this.$.httpKeyTArea.validate();
         } else {
           this.$.bigChanMerId.childNodes[1].children[1].disabled = true;
           this.set('weixin.agentMer', {});
@@ -784,8 +788,8 @@
           if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
-              if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
-                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
+              if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
+                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
                 return;
               }
               _this.set('weixin.httpKey', this.result);
@@ -797,5 +801,6 @@
         }
       }
     });
+
   </script>
 </dom-module>
