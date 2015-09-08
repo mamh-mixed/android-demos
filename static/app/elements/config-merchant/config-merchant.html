@@ -6,10 +6,6 @@
       display: block;
       --paper-tab-ink: #eee;
       --paper-tabs-selection-bar-color: #eee;
-      --paper-input-container-input: {
-          font-family: monospace;
-          font-size: 8px;
-      }
     }
 
     paper-tabs {
@@ -103,8 +99,10 @@
     }
 
     .monospace {
-      font-size: 8px;
-      font-family: monospace;
+      --paper-input-container-input: {
+        font-family: monospace;
+        font-size: 8px;
+      }
     }
 
   </style>
@@ -412,6 +410,12 @@
           return;
         }
 
+        if (!response.data.httpCert) {
+          response.data.httpCert = '';
+        }
+        if (!response.data.httpKey) {
+          response.data.httpKey = '';
+        }
         this.set('weixin', response.data);
         this.set('weixin.chanCode', 'WXP');
         if (!this.weixin.agentMer) {
