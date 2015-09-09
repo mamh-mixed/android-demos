@@ -651,7 +651,6 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}()
 
 	copyProperties(closed, orig)
-	// closed.SubChanMerId = orig.SubChanMerId
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {
@@ -774,8 +773,9 @@ func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error)
 		// 如果此时交易被锁住
 		if orig.LockFlag == 1 {
 			now := time.Now()
-			lockTime, err := time.ParseInLocation("2006-01-02", orig.UpdateTime, time.Local)
+			lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
 			if err != nil {
+				log.Errorf("fail to parse time : %s", err)
 				return nil, errors.New("SYSTEM_ERROR")
 			}
 			// TODO:被锁时间 1分钟？
