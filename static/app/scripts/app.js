@@ -88,9 +88,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	};
 	// 查找session响应
 	app.handleFindSessionResponse = function(e) {
-		debugger;
 		var response = e.detail.response;
-		if(response.status!=0){
+		if(response.status!==0){
 			window.location.href='login.html';
 			return;
 		}
@@ -105,8 +104,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 	};
 	// 删除session响应
-	app.handleDeleteSessionResponse = function(e) {
-		var response = e.detail.response;
+	app.handleDeleteSessionResponse = function() {
+		// var response =e.detail.response;
 	};
 	// 退出
 	app.logoutHandle=function(){

@@ -129,7 +129,6 @@
             }
           },
           handleLoginResponse: function(e) {
-              debugger;
             var response = e.detail.response;
             if (response.status !== 0) {
               Util.toast(response.message, 3000);
