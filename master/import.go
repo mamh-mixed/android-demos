@@ -11,35 +11,21 @@ import (
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
 	"net/http"
-	"qiniupkg.com/api.v7/conf"
-	"qiniupkg.com/api.v7/kodo"
 	"strconv"
 	"strings"
 	"time"
 )
 
-const (
-	domain = "7xl02q.com1.z0.glb.clouddn.com"
-)
-
-var client = kodo.Client{}
 var sysErr = errors.New("系统错误，请重新上传。")
 var emptyErr = errors.New("上传表格为空，请检查。")
-
-func init() {
-	conf.ACCESS_KEY = "-OOrgfZJbxz29kiW6HQsJ_OQJcjX6gaPRDf6xOcc"
-	conf.SECRET_KEY = "rgBxbGeGJluv8ApEjY1RL2vq9IIfXcQAQqH4ttGo"
-}
+var maxFee = 0.03
 
 // importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
 
 	// 调用七牛api获取刚上传的图片
 	key := r.FormValue("key")
-	baseUrl := kodo.MakeBaseUrl(domain, key)
-	privateUrl := client.MakePrivateUrl(baseUrl, nil)
-
-	resp, err := http.Get(privateUrl)
+	resp, err := http.Get(makePrivateUrl(key))
 	if err != nil {
 		log.Error(err)
 		return
@@ -55,6 +41,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	contentType := resp.Header.Get("content-type")
 	if contentType == "application/json" {
 		log.Error(string(ebytes))
+		w.Write([]byte("无法获取文件，请重新上传。"))
 		return
 	}
 
@@ -63,6 +50,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	zipReader, err := zip.NewReader(reader, int64(len(ebytes)))
 	if err != nil {
 		log.Error(err)
+		w.Write([]byte("无法读取文件，请重新上传。"))
 		return
 	}
 
@@ -70,6 +58,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	file, err := xlsx.ReadZipReader(zipReader)
 	if err != nil {
 		log.Error(err)
+		w.Write([]byte("无法读取文件，请重新上传。"))
 		return
 	}
 
@@ -127,7 +116,7 @@ func (i *importer) DoImport() error {
 		return sysErr
 	}
 	after := time.Now()
-	log.Debugf("spent time %s", after.Sub(before))
+	log.Debugf("import spent time %s", after.Sub(before))
 	return nil
 }
 
@@ -249,26 +238,28 @@ func formatValidate(r *rowData) error {
 		return fmt.Errorf("商户：%s 商品名称为空", r.MerId)
 	}
 
-	if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
-		return fmt.Errorf("是否代理商模式：%s 取值错误，应为【是】或【否】", r.IsAgentStr)
-	}
-
-	if r.IsAgentStr == "是" {
-		if r.WxpMerId == "" {
-			return fmt.Errorf("商户：%s 代理商模式需要填写微信商户号", r.MerId)
+	if r.WxpSubMerId != "" {
+		if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
+			return fmt.Errorf("是否代理商模式：%s 取值错误，应为【是】或【否】", r.IsAgentStr)
 		}
-		if r.WxpSubMerId == "" {
-			return fmt.Errorf("商户：%s 代理商模式需要填写微信子商户号", r.MerId)
+		if r.IsAgentStr == "是" {
+			if r.WxpMerId == "" {
+				return fmt.Errorf("商户：%s 代理商模式需要填写微信商户号", r.MerId)
+			}
+			if r.WxpSubMerId == "" {
+				return fmt.Errorf("商户：%s 代理商模式需要填写微信子商户号", r.MerId)
+			}
+			r.IsAgent = true
 		}
-		r.IsAgent = true
+		if r.IsWxpCilSett != "是" && r.IsWxpCilSett != "否" {
+			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsWxpCilSett)
+		}
 	}
 
-	if r.IsAlpCilSett != "是" && r.IsAlpCilSett != "否" {
-		return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsAlpCilSett)
-	}
-
-	if r.IsWxpCilSett != "是" && r.IsWxpCilSett != "否" {
-		return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsWxpCilSett)
+	if r.AlpMerId != "" {
+		if r.IsAlpCilSett != "是" && r.IsAlpCilSett != "否" {
+			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsAlpCilSett)
+		}
 	}
 
 	// 空则说明需要所有权限
@@ -300,10 +291,16 @@ func validAlpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 				if err != nil {
 					return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率格式错误(%s)", r.AlpMerId, r.AlpAcqFee)
 				}
+				if f64 > maxFee {
+					return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpAcqFee)
+				}
 				r.AlpAcqFeeF = float32(f64)
 				f64, err = strconv.ParseFloat(r.AlpMerFee, 10)
 				if err != nil {
 					return fmt.Errorf("支付宝商户：%s 商户跟讯联费率格式错误(%s)", r.AlpMerId, r.AlpMerFee)
+				}
+				if f64 > maxFee {
+					return fmt.Errorf("支付宝商户：%s 商户跟讯联费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpMerFee)
 				}
 				r.AlpMerFeeF = float32(f64)
 			}
@@ -346,18 +343,28 @@ func validWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 					}
 					chanMerCache[r.WxpSubMerId] = agent
 				}
-				if r.WxpMd5 == "" {
-					return fmt.Errorf("微信商户：%s 密钥为空", r.WxpSubMerId)
+				// 不是受理商模式，那么密钥必须要
+				if !r.IsAgent {
+					if r.WxpMd5 == "" {
+						return fmt.Errorf("微信商户：%s 密钥为空", r.WxpSubMerId)
+					}
 				}
+
 				// 费率转换
 				f64, err := strconv.ParseFloat(r.WxpAcqFee, 10)
 				if err != nil {
 					return fmt.Errorf("微信商户：%s 讯联跟微信费率格式错误(%s)", r.WxpSubMerId, r.WxpAcqFee)
 				}
+				if f64 > maxFee {
+					return fmt.Errorf("微信商户：%s 讯联跟微信费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpAcqFee)
+				}
 				r.WxpAcqFeeF = float32(f64)
 				f64, err = strconv.ParseFloat(r.WxpMerFee, 10)
 				if err != nil {
 					return fmt.Errorf("微信商户：%s 商户跟讯联费率格式错误(%s)", r.WxpSubMerId, r.WxpMerFee)
+				}
+				if f64 > maxFee {
+					return fmt.Errorf("微信商户：%s 商户跟讯联费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpMerFee)
 				}
 				r.WxpMerFeeF = float32(f64)
 			}
