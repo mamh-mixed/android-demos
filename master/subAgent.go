@@ -12,7 +12,7 @@ type subAgent struct{}
 
 var SubAgent subAgent
 
-// Find 根据条件分页查找代理商
+// Find 根据条件分页查找二级代理
 func (s *subAgent) FindOne(subAgentCode string) (result *model.ResultBody) {
 	log.Debugf("subAgentCode=%s", subAgentCode)
 
@@ -31,7 +31,7 @@ func (s *subAgent) FindOne(subAgentCode string) (result *model.ResultBody) {
 	return result
 }
 
-// Find 根据条件分页查找商户。
+// Find 根据条件分页查找二级代理。
 func (s *subAgent) Find(subAgentCode, subAgentName, agentCode, agentName string, size, page int) (result *model.ResultBody) {
 	log.Debugf("subAgentCode=%s; subAgentName=%s,agentCode=%s,agentName=%s", subAgentCode, subAgentName, agentCode, agentName)
 
@@ -67,7 +67,7 @@ func (s *subAgent) Find(subAgentCode, subAgentName, agentCode, agentName string,
 	return result
 }
 
-// Save 保存代理商信息，能同时用于新增或者修改的时候
+// Save 保存二级代理信息，能同时用于新增或者修改的时候
 func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 	s := new(model.SubAgent)
 	err := json.Unmarshal(data, s)
@@ -111,7 +111,7 @@ func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 	return result
 }
 
-// Delete 删除代理商
+// Delete 删除二级代理
 func (s *subAgent) Delete(subAgentCode string) (result *model.ResultBody) {
 
 	err := mongo.SubAgentColl.Remove(subAgentCode)
