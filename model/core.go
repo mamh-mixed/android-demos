@@ -173,14 +173,22 @@ type ChanMer struct {
 	MerFee      float32  `bson:"merFee,omitempty" json:"merFee,omitempty"`           // 商户跟讯联费率
 	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
 	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
+	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	// ...
 }
 
 type Agent struct {
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理商代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理商名称
+	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+}
+
+type SubAgent struct {
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 代理代码
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
 }
 
 type Group struct {
@@ -227,6 +235,7 @@ type Trans struct {
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
+	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户

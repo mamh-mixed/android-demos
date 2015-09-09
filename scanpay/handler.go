@@ -146,6 +146,9 @@ func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 // scanFixedMerInfoHandle 扫固定码获取用户信息接口
 func scanFixedMerInfoHandle(w http.ResponseWriter, r *http.Request) {
 
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	b64MerId := r.FormValue("merchantCode")
 	if b64MerId == "" {
 		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
@@ -167,6 +170,10 @@ func scanFixedMerInfoHandle(w http.ResponseWriter, r *http.Request) {
 
 // scanFixedOrderInfoHandle 扫固定码获取用户订单信息
 func scanFixedOrderInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	uniqueId := r.FormValue("merchantCode")
 	if uniqueId == "" {
 		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)

@@ -369,6 +369,55 @@ func agentSaveHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
+func subAgentFindHandle(w http.ResponseWriter, r *http.Request) {
+	agentCode := r.FormValue("agentCode")
+	agentName := r.FormValue("agentName")
+	subAgentCode := r.FormValue("subAgentCode")
+	subAgentName := r.FormValue("subAgentName")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := SubAgent.Find(agentCode, agentName, subAgentCode, subAgentName, size, page)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func subAgentDeleteHandle(w http.ResponseWriter, r *http.Request) {
+
+	subAgentCode := r.FormValue("subAgentCode")
+	ret := SubAgent.Delete(subAgentCode)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func subAgentSaveHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := SubAgent.Save(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 func groupFindHandle(w http.ResponseWriter, r *http.Request) {
 	groupCode := r.FormValue("groupCode")
 	groupName := r.FormValue("groupName")

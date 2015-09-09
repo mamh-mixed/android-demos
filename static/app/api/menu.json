@@ -11,6 +11,12 @@
     "url": "/config/agents",
     "route": "config.agents"
   }, {
+    "nameCN": "二级代理",
+    "nameEN": "",
+    "icon": "account-circle",
+    "url": "/config/subAgents",
+    "route": "config.subAgents"
+  }, {
     "nameCN": "集团商户",
     "nameEN": "",
     "icon": "home",
@@ -47,32 +53,32 @@
     "url": "/config/users",
     "route": "config.users"
   }]
-},{
- "nameCN": "快捷支付商户配置",
- "nameEN": "",
- "icon": "swap-horiz",
- "url": "",
- "route": "quickPay",
- "children": [{
-   "nameCN": "机构商户",
-   "nameEN": "",
-   "icon": "store",
-   "url": "/quickPay/merchants",
-   "route": "quickPay.merchants"
- }, {
-   "nameCN": "渠道商户",
-   "nameEN": "",
-   "icon": "account-balance",
-   "url": "/quickPay/chanMers",
-   "route": "quickPay.chanMers"
- }, {
-   "nameCN": "路由策略",
-   "nameEN": "",
-   "icon": "settings-input-component",
-   "url": "/quickPay/routes",
-   "route": "quickPay.routes"
- }]
-},{
+}, {
+  "nameCN": "快捷支付商户配置",
+  "nameEN": "",
+  "icon": "swap-horiz",
+  "url": "",
+  "route": "quickPay",
+  "children": [{
+    "nameCN": "机构商户",
+    "nameEN": "",
+    "icon": "store",
+    "url": "/quickPay/merchants",
+    "route": "quickPay.merchants"
+  }, {
+    "nameCN": "渠道商户",
+    "nameEN": "",
+    "icon": "account-balance",
+    "url": "/quickPay/chanMers",
+    "route": "quickPay.chanMers"
+  }, {
+    "nameCN": "路由策略",
+    "nameEN": "",
+    "icon": "settings-input-component",
+    "url": "/quickPay/routes",
+    "route": "quickPay.routes"
+  }]
+}, {
   "nameCN": "交易查询",
   "nameEN": "",
   "icon": "swap-horiz",

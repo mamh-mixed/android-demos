@@ -1,37 +1,78 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="sub-agent-delete">
   <style>
     :host {
       display: block;
+      --paper-dialog-scrollable: {
+        min-width: 250px;
+        min-height: 50px;
+        font-size: 15px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
     }
   </style>
   <template>
-    <div>Hello from <span>{{foo}}</span></div>
+    <iron-ajax id="deleteAjax" method="GET" url="/master/subAgent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <paper-dialog id="dialogDelete">
+      <h2>删除【
+        <span>{{subAgent.subAgentName}}</span>】二级代理</h2>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <iron-icon icon="report-problem"></iron-icon>
+          &nbsp;&nbsp;&nbsp;
+          <span>是否删除此代理?</span>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>否</paper-button>
+        <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
+      </div>
+    </paper-dialog>
+
   </template>
   <script>
-  (function() {
-    Polymer({
-      is: 'sub-agent-delete',
+    (function() {
+      Polymer({
+        is: 'sub-agent-delete',
 
-      properties: {
-        foo: {
-          type: String,
-          value: 'bar',
-          notify: true
+        properties: {
+          subAgent: {
+            type: Object
+          }
+        },
+        open: function() {
+          this.$.dialogDelete.open();
+        },
+        // 点击确定删除事件
+        handleDeleteTapped: function() {
+          this.$.deleteAjax.params = {
+            subAgentCode: this.subAgent.subAgentCode
+          };
+          this.$.deleteAjax.generateRequest();
+        },
+        // 删除事件响应结果
+        handleDeleteResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialogDelete.close();
+          this.fire('saved');
         }
-      }
-    });
-  })();
+      });
+    })();
   </script>
 </dom-module>
