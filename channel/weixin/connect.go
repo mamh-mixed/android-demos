@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -104,12 +103,13 @@ func processRespBody(body []byte, signKey string, resp BaseResp) error {
 		return err
 	}
 
-	// 通讯失败或者没有返回签名时，不验签
+	// 没有返回签名时，不验签，只打印日志，不中止逻辑
 	if resp.GetSign() == "" {
+		log.Error("sign is blank, skip check sign")
 		return nil
 	}
 
-	// 验签
+	// 验签, 如果验签失败，只打印日志，不中止逻辑
 	buf, err := util.Query(resp)
 	if err != nil {
 		log.Error(err)
@@ -123,7 +123,7 @@ func processRespBody(body []byte, signKey string, resp BaseResp) error {
 
 	if actual != resp.GetSign() {
 		log.Errorf("check sign error: query={%s}, expected=%s, actual=%s", buf.String(), resp.GetSign(), actual)
-		return errors.New("check sign error")
+		return nil
 	}
 
 	return nil

@@ -60,7 +60,7 @@ var (
 
 func init() {
 	// mongo.Connect()
-	Connect()
+	// Connect()
 }
 
 // ConsumeByApplePay ApplePay消费
@@ -104,7 +104,6 @@ func TestConsumeNoTrack(t *testing.T) {
 		MerOrderNum:      strconv.FormatInt(time.Now().UnixNano(), 10),
 		TransAmt:         120,
 		CurrCode:         "156",
-		AcctName:         "Peter",
 		AcctNameDecrypt:  "Peter",
 		AcctNum:          testMSCCard,
 		AcctNumDecrypt:   testMSCCard,
@@ -146,7 +145,6 @@ func TestReversalHandle(t *testing.T) {
 		MerOrderNum: strconv.FormatInt(time.Now().UnixNano(), 10),
 		TransAmt:    10,
 		CurrCode:    "156",
-		AcctName:    "Peter",
 		AcctNum:     testCUPCard,
 		IdentType:   "0",
 		IdentNum:    testCUPIdentNum,

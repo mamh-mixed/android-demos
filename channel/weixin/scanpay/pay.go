@@ -23,6 +23,7 @@ type PayReq struct {
 	FeeType        string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`                // 货币类型
 	SpbillCreateIP string `xml:"spbill_create_ip" url:"spbill_create_ip" validate:"nonzero"` // 终端IP
 	GoodsGag       string `xml:"goods_tag,omitempty" url:"goods_tag,omitempty"`              // 商品标记
+	LimitPay       string `xml:"limit_pay,omitempty" url:"limit_pay,omitempty"`              // 指定支付方式
 	AuthCode       string `xml:"auth_code" url:"auth_code" validate:"nonzero"`               // 授权码
 	// AuthCode       string `xml:"auth_code" url:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
 }
@@ -50,6 +51,12 @@ type PayResp struct {
 	OutTradeNo     string `xml:"out_trade_no" url:"out_trade_no,omitempty"`             // 商户订单号
 	Attach         string `xml:"attach,omitempty" url:"attach,omitempty"`               // 商家数据包
 	TimeEnd        string `xml:"time_end" url:"time_end,omitempty"`                     // 支付完成时间
+	CouponId0      string `xml:"coupon_id_0,omitempty" url:"coupon_id_0,omitempty"`     // 代金券或立减优惠ID
+	CouponFee0     string `xml:"coupon_fee_0,omitempty" url:"coupon_fee_0,omitempty"`   // 代金券或立减优惠退款金额
+	CouponId1      string `xml:"coupon_id_1,omitempty" url:"coupon_id_1,omitempty"`     // 代金券或立减优惠ID
+	CouponFee1     string `xml:"coupon_fee_1,omitempty" url:"coupon_fee_1,omitempty"`   // 代金券或立减优惠退款金额
+	CouponId2      string `xml:"coupon_id_2,omitempty" url:"coupon_id_2,omitempty"`     // 代金券或立减优惠ID
+	CouponFee2     string `xml:"coupon_fee_2,omitempty" url:"coupon_fee_2,omitempty"`   // 代金券或立减优惠退款金额
 	SubOpenid      string `xml:"sub_openid,omitempty" url:"sub_openid,omitempty"`       // 子商户 Open ID
 	SubIsSubscribe string `xml:"sub_is_subscribe" url:"sub_is_subscribe,omitempty"`     // 是否关注子商户公众账号
 }

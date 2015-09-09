@@ -1,7 +1,6 @@
 package cil
 
 import (
-	"strconv"
 	"testing"
 	"time"
 
@@ -9,27 +8,19 @@ import (
 	"github.com/omigo/log"
 )
 
-func xTestConnect(t *testing.T) {
-	time.Sleep(1 * time.Second)
+func TestConnect(t *testing.T) {
+
+	Connect()
 
 	msg := newTestCilMsg()
 	// t.Logf("msg  = %#v", msg)
+	msg.Clisn = time.Now().Format("150405")
 
-	clisn := 115934
-	for i := 0; i < 1; i++ {
-		func(i int, msg model.CilMsg) {
-			msg.Clisn = strconv.Itoa(clisn + i)
+	back := send(msg, transTimeout) // 线下网关发送报文
 
-			back := send(&msg, transTimeout) // 线下网关发送报文
+	_ = back
+	log.Debug("--------------------------------------------")
 
-			_ = back
-			log.Debug("--------------------------------------------")
-		}(i, *msg)
-
-		time.Sleep(30 * time.Second)
-	}
-
-	// select {}
 }
 
 func newTestCilMsg() (m *model.CilMsg) {
@@ -37,7 +28,7 @@ func newTestCilMsg() (m *model.CilMsg) {
 		Busicd:          "500000",
 		Txndir:          "Q",
 		Posentrymode:    "022",
-		Chcd:            "00000050",
+		Chcd:            "00022900",
 		Txamt:           "000000001000",
 		Txdt:            "0926115934",
 		Localdt:         "0926115934",

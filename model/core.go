@@ -108,6 +108,7 @@ const MerStatusNormal = "Normal"
 // Merchant 商户基本信息
 type Merchant struct {
 	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
+	UniqueId   string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`     // 唯一标识
 	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
 	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
 	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
@@ -129,6 +130,8 @@ type MerDetail struct {
 	GoodsTag      string `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
 	CommodityName string `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
+	TitleOne      string `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
+	TitleTwo      string `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
 	City          string `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
 	Nation        string `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
 	MerType       string `bson:"merType,omitempty" json:"merType,omitempty"`             // 商户类型
@@ -170,14 +173,22 @@ type ChanMer struct {
 	MerFee      float32  `bson:"merFee,omitempty" json:"merFee,omitempty"`           // 商户跟讯联费率
 	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
 	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
+	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	// ...
 }
 
 type Agent struct {
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理商代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理商名称
+	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
+	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+}
+
+type SubAgent struct {
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 代理代码
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
 }
 
 type Group struct {
@@ -223,6 +234,8 @@ type Trans struct {
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
+	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
+	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户
@@ -249,6 +262,8 @@ type Trans struct {
 	NotifyUrl       string `bson:"notifyUrl,omitempty" json:"-"`                               // 异步通知地址
 	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                // 交易凭证
 	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
+	NickName        string `bson:"nickName,omitempty" json:"-"`
+	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 
 	// 可用于关联查询字段
 	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称

@@ -3,37 +3,41 @@ package data
 
 import (
 	"fmt"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
-	"gopkg.in/mgo.v2"
 )
 
 type merchant struct {
-	AgentCode     string  `bson:"inscd"`
-	Clientid      string  `bson:"clientid"`
-	CommodityName string  `bson:"commodityName"`
-	ClientidName  string  `bson:"clientidName"`
-	Alp           channel `bson:"ALP"`
-	Wxp           channel `bson:"WXP"`
-	City          string  `bson:"city"`
-	AcctNum       string  `bson:"account"`
-	AcctName      string  `bson:"accountName"`
-	BankName      string  `bson:"bankName"`
-	BankId        string  `bson:"bankNum"`
-	OpenBank      string  `bson:"openBank"`
-	SignKey       string  `bson:"merchantMd5"`
-	SignRule      string  `bson:"signRule"`
+	UniqueId      bson.ObjectId `bson:"_id"`
+	AgentCode     string        `bson:"inscd"`
+	Clientid      string        `bson:"clientid"`
+	CommodityName string        `bson:"commodityName"`
+	ClientidName  string        `bson:"clientidName"`
+	Alp           channel       `bson:"ALP"`
+	Wxp           channel       `bson:"WXP"`
+	City          string        `bson:"city"`
+	AcctNum       string        `bson:"account"`
+	AcctName      string        `bson:"accountName"`
+	BankName      string        `bson:"bankName"`
+	BankId        string        `bson:"bankNum"`
+	OpenBank      string        `bson:"openBank"`
+	SignKey       string        `bson:"merchantMd5"`
+	SignRule      string        `bson:"signRule"`
 	Group         struct {
 		GroupCode string `bson:"merId"`
 		GroupName string `bson:"commodityName"`
+		TitleOne  string `bson:"title_one"`
+		TitleTwo  string `bson:"title_two"`
 	} `bson:"headMerchant"`
 }
 
@@ -147,7 +151,7 @@ func AddMerchantFromOldDB(path string) error {
 	}
 	var count = 0
 	for _, mer := range mers {
-
+		mer.Clientid = strings.TrimSpace(mer.Clientid)
 		if mer.Clientid == "" {
 			continue
 		}
@@ -162,10 +166,13 @@ func AddMerchantFromOldDB(path string) error {
 		m.Detail.BankId = mer.BankId
 		m.Detail.BankName = mer.BankName
 		m.Detail.OpenBankName = mer.OpenBank
+		m.Detail.TitleOne = mer.Group.TitleOne
+		m.Detail.TitleTwo = mer.Group.TitleTwo
 		m.MerId = mer.Clientid
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
 		m.Remark = "old_system_data"
 		m.SignKey = mer.SignKey
+		m.UniqueId = mer.UniqueId.Hex()
 		// 代理代码
 		m.AgentCode = mer.AgentCode
 		m.AgentName = agentMap[m.AgentCode]

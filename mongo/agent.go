@@ -10,10 +10,10 @@ type agentCollection struct {
 	name string
 }
 
-// AgentColl 代理商 Collection
+// AgentColl 代理 Collection
 var AgentColl = agentCollection{"agent"}
 
-// Find 根据代理商代码查找
+// Find 根据代理代码查找
 func (col *agentCollection) Find(agentCode string) (a *model.Agent, err error) {
 
 	bo := bson.M{
@@ -27,7 +27,7 @@ func (col *agentCollection) Find(agentCode string) (a *model.Agent, err error) {
 	return
 }
 
-// Add 增加一个代理商
+// Add 增加一个代理
 func (col *agentCollection) Add(a *model.Agent) error {
 	bo := bson.M{
 		"agentCode": a.AgentCode,
@@ -37,7 +37,7 @@ func (col *agentCollection) Add(a *model.Agent) error {
 	return err
 }
 
-// Update 更新代理商信息
+// Update 更新代理信息
 func (col *agentCollection) Update(a *model.Agent) error {
 	bo := bson.M{
 		"agentCode": a.AgentCode,
@@ -54,14 +54,14 @@ func (col *agentCollection) Upsert(a *model.Agent) error {
 	return err
 }
 
-// FindByCode 得到某个代理商的名称
+// FindByCode 得到某个代理的名称
 func (col *agentCollection) FindByCode(agentCode string) ([]*model.Agent, error) {
 	var cs []*model.Agent
 	err := database.C(col.name).Find(bson.M{"agentCode": agentCode}).All(&cs)
 	return cs, err
 }
 
-// FindByCondition 根据代理商的条件查找代理商
+// FindByCondition 根据条件查找代理
 func (col *agentCollection) FindByCondition(cond *model.Agent) (results []model.Agent, err error) {
 	results = make([]model.Agent, 1)
 	err = database.C(col.name).Find(cond).All(&results)
@@ -73,7 +73,7 @@ func (col *agentCollection) FindByCondition(cond *model.Agent) (results []model.
 	return results, err
 }
 
-// Remove 删除代理商
+// Remove 删除代理
 func (col *agentCollection) Remove(agentCode string) (err error) {
 	bo := bson.M{}
 	if agentCode != "" {
@@ -83,7 +83,7 @@ func (col *agentCollection) Remove(agentCode string) (err error) {
 	return err
 }
 
-// PaginationFind 分页查找机构商户
+// PaginationFind 分页查找代理
 func (c *agentCollection) PaginationFind(agentCode, agentName string, size, page int) (results []model.Agent, total int, err error) {
 	results = make([]model.Agent, 1)
 

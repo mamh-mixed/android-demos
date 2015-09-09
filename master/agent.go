@@ -12,13 +12,13 @@ type agent struct{}
 
 var Agent agent
 
-// Find 根据条件分页查找代理商
+// Find 根据条件分页查找代理
 func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
 	log.Debugf("agentCode=%s", agentCode)
 
 	agent, err := mongo.AgentColl.Find(agentCode)
 	if err != nil {
-		log.Errorf("查询代理商(%s)出错:%s", agentCode, err)
+		log.Errorf("查询代理(%s)出错:%s", agentCode, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
@@ -31,7 +31,7 @@ func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
 	return result
 }
 
-// Find 根据条件分页查找商户。
+// Find 根据条件分页查找代理。
 func (a *agent) Find(agentCode, agentName string, size, page int) (result *model.ResultBody) {
 	log.Debugf("agentCode=%s; agentName=%s", agentCode, agentName)
 
@@ -45,7 +45,7 @@ func (a *agent) Find(agentCode, agentName string, size, page int) (result *model
 
 	agents, total, err := mongo.AgentColl.PaginationFind(agentCode, agentName, size, page)
 	if err != nil {
-		log.Errorf("查询所有代理商出错:%s", err)
+		log.Errorf("查询所有代理出错:%s", err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
@@ -67,7 +67,7 @@ func (a *agent) Find(agentCode, agentName string, size, page int) (result *model
 	return result
 }
 
-// Save 保存代理商信息，能同时用于新增或者修改的时候
+// Save 保存代理信息，能同时用于新增或者修改的时候
 func (i *agent) Save(data []byte) (result *model.ResultBody) {
 	a := new(model.Agent)
 	err := json.Unmarshal(data, a)
@@ -88,7 +88,7 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 
 	err = mongo.AgentColl.Add(a)
 	if err != nil {
-		log.Errorf("新增代理商失败:%s", err)
+		log.Errorf("新增代理失败:%s", err)
 		return model.NewResultBody(1, err.Error())
 	}
 
@@ -101,14 +101,14 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 	return result
 }
 
-// Delete 删除代理商
+// Delete 删除代理
 func (a *agent) Delete(agentCode string) (result *model.ResultBody) {
 
 	err := mongo.AgentColl.Remove(agentCode)
 
 	if err != nil {
-		log.Errorf("删除代理商失败: %s", err)
-		return model.NewResultBody(1, "删除代理商失败")
+		log.Errorf("删除代理失败: %s", err)
+		return model.NewResultBody(1, "删除代理失败")
 	}
 
 	result = &model.ResultBody{

@@ -38,6 +38,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:   req.IntTxamt,
 		ChanCode:   channel.ChanCodeWeixin,
 		VeriCode:   req.VeriCode,
+		TradeFrom:  req.TradeFrom,
 	}
 
 	// 网页授权获取token和openid
@@ -81,6 +82,10 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 				log.Errorf("unable to get userInfo by accessToken: %s", err)
 			}
 			jsPayInfo.UserInfo = userInfo
+			if userInfo != nil {
+				t.NickName = userInfo.Nickname
+				t.HeadImgUrl = userInfo.Headimgurl
+			}
 		}
 
 		// 包装返回值
@@ -142,6 +147,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		GatheringId:   req.OpenId,
 		GatheringName: req.UserName,
 		ChanCode:      req.Chcd,
+		TradeFrom:     req.TradeFrom,
 	}
 
 	// 渠道是否合法
@@ -193,6 +199,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
 		GoodsInfo:  req.GoodsInfo,
+		TradeFrom:  req.TradeFrom,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -262,6 +269,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:   req.IntTxamt,
 		GoodsInfo:  req.GoodsInfo,
 		NotifyUrl:  req.NotifyUrl,
+		TradeFrom:  req.TradeFrom,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -280,6 +288,9 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 计算费率 四舍五入
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
+
+	// 将openId参数设置为空，防止tradeType为JSAPI
+	req.OpenId = ""
 
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, c, req)
@@ -310,13 +321,23 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
 		TransAmt:     req.IntTxamt,
+		TradeFrom:    req.TradeFrom,
 	}
 
 	// 判断是否存在该订单
-	orig, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
+	orig, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return adaptor.LogicErrorHandler(refund, err.Error())
 	}
+
+	// 解锁
+	defer func() {
+		// 如果是逻辑错误等导致原交易没解锁
+		if orig.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(orig.MerId, orig.OrderNum)
+		}
+	}()
+
 	copyProperties(refund, orig)
 	// refund.SubChanMerId = orig.SubChanMerId
 
@@ -380,7 +401,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新原交易状态
 	if ret.Respcd == adaptor.SuccessCode {
-		mongo.SpTransColl.Update(orig)
+		mongo.SpTransColl.UpdateAndUnlock(orig)
 	}
 
 	// 更新这笔交易
@@ -396,10 +417,18 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret = new(model.ScanPayResponse)
 	// 判断是否存在该订单
-	t, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
+	t, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode(err.Error())
 	}
+
+	// 解锁
+	defer func() {
+		// 如果是逻辑错误等导致原交易没解锁
+		if t.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+		}
+	}()
 
 	// 判断订单的状态
 	switch t.TransStatus {
@@ -509,13 +538,23 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Busicd:       req.Busicd,
 		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
+		TradeFrom:    req.TradeFrom,
 	}
 
 	// 判断是否存在该订单
-	orig, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
+	orig, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return adaptor.LogicErrorHandler(cancel, err.Error())
 	}
+
+	// 解锁
+	defer func() {
+		// 如果是逻辑错误等导致原交易没解锁
+		if orig.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(orig.MerId, orig.OrderNum)
+		}
+	}()
+
 	copyProperties(cancel, orig)
 	// 撤销交易，金额=原交易金额
 	cancel.TransAmt = orig.TransAmt
@@ -566,7 +605,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 原交易状态更新
 	if ret.Respcd == adaptor.SuccessCode {
-		mongo.SpTransColl.Update(orig)
+		mongo.SpTransColl.UpdateAndUnlock(orig)
 	}
 
 	// 更新交易状态
@@ -594,16 +633,24 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Busicd:       req.Busicd,
 		AgentCode:    req.AgentCode,
 		Terminalid:   req.Terminalid,
+		TradeFrom:    req.TradeFrom,
 	}
 
 	// 判断是否存在该订单
-	orig, err := findOneTrans(req.Mchntid, req.OrigOrderNum)
+	orig, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
 		return adaptor.LogicErrorHandler(closed, err.Error())
 	}
 
+	// 解锁
+	defer func() {
+		// 如果是逻辑错误等导致原交易没解锁
+		if orig.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(orig.MerId, orig.OrderNum)
+		}
+	}()
+
 	copyProperties(closed, orig)
-	// closed.SubChanMerId = orig.SubChanMerId
 
 	// 不支持退款、撤销等其他类型交易
 	if orig.TransType != model.PayTrans {
@@ -626,22 +673,24 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(closed, "NO_CHANMER")
 	}
 
-	// 原交易成功，那么计算这笔取消的手续费
-	if orig.TransStatus == model.TransSuccess {
-		// 这样做方便于报表导出计算
-		closed.TransAmt = orig.TransAmt
-		orig.RefundAmt = orig.TransAmt
-		closed.Fee = int64(math.Floor(float64(closed.TransAmt)*float64(c.MerFee) + 0.5))
-		orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
-	}
-
 	ret = adaptor.ProcessClose(orig, closed, c, req)
 
 	// 成功应答
 	if ret.Respcd == adaptor.SuccessCode {
+		// 判断原交易是否成功必须在应答回来后判断
+		// 因为在执行关单时，还有可能查询订单以明确状态
+		// 原交易成功，那么计算这笔取消的手续费
+		if orig.TransStatus == model.TransSuccess {
+			// 这样做方便于报表导出计算
+			closed.TransAmt = orig.TransAmt
+			orig.RefundAmt = orig.TransAmt
+			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*float64(c.MerFee) + 0.5))
+			orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
+		}
+
 		// 更新原交易信息
 		orig.TransStatus = model.TransClosed
-		mongo.SpTransColl.Update(orig)
+		mongo.SpTransColl.UpdateAndUnlock(orig)
 		// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		// orig.ErrorDetail = adaptor.CloseMsg
 	}
@@ -690,28 +739,79 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	default:
 		t.TransStatus = model.TransFail
 	}
-	return mongo.SpTransColl.Update(t)
+	return mongo.SpTransColl.UpdateAndUnlock(t)
 }
 
-// findOneTrans 查找交易记录
-func findOneTrans(merId, orderNum string) (orig *model.Trans, err error) {
+// findAndLockOrigTrans 查找原交易记录
+// 如果找到原交易，那么对原交易加锁。
+func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error) {
 	var retry int
 	for {
+
+		// 判断是否有此订单
 		orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
 		if err != nil {
 			return nil, errors.New("TRADE_NOT_EXIST")
 		}
+		retry++
+		// 判断订单状态主要是保证下单、预下单新增、修改的事务完整性
 		if orig.TransStatus == model.TransNotPay {
-			retry++
-			// 最多延迟5s，如果这笔交易还是没处理完，报系统错误
+
+			// 最多延迟5s，如果这笔交易还是没处理完，报交易超时
+			// TODO:时间待商榷
 			if retry == 5 {
 				log.Errorf("trans(%s,%s) spent long time to update.", merId, orderNum)
-				return nil, errors.New("SYSTEM_ERROR")
+				return nil, errors.New("TRADE_OVERTIME")
 			}
 			// 说明该笔交易在支付接口时还没完成更新，此时数据是脏数据
 			log.Info("find trans sleep 500ms ...")
 			time.Sleep(500 * time.Millisecond * time.Duration(retry))
 			// 等待500ms，继续循环
+			continue
+		}
+
+		// 如果此时交易被锁住
+		if orig.LockFlag == 1 {
+			now := time.Now()
+			lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
+			if err != nil {
+				log.Errorf("fail to parse time : %s", err)
+				return nil, errors.New("SYSTEM_ERROR")
+			}
+			// TODO:被锁时间 1分钟？
+			if now.Sub(lockTime) > 1*time.Minute {
+				// 直接返回该原交易
+				return orig, err
+			}
+			// 休眠一段时间
+			time.Sleep(200 * time.Millisecond * time.Duration(retry))
+		}
+
+		// 锁住交易，并且此时交易是最新的
+		orig, err = findAndLockTrans(merId, orderNum)
+		if err != nil {
+			return nil, err
+		}
+		break
+	}
+	return
+}
+
+// findAndLockTrans
+func findAndLockTrans(merId, orderNum string) (orig *model.Trans, err error) {
+	var retry int
+	for {
+		// 锁住该原订单
+		orig, err = mongo.SpTransColl.FindAndLock(merId, orderNum)
+		if err != nil {
+			// 该订单已被读取
+			retry++
+			// TODO:时间待商榷
+			if retry == 10 {
+				log.Errorf("trans(%s,%s) waiting for long to lock.", merId, orderNum)
+				return nil, errors.New("TRADE_OVERTIME")
+			}
+			time.Sleep(500 * time.Millisecond * time.Duration(retry))
 			continue
 		}
 		break

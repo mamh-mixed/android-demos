@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="group-list">
+<dom-module id="sub-agent-list">
   <style>
     :host {
       display: block;
@@ -12,22 +12,24 @@
       box-sizing: border-box;
     }
 
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+    }
+
     paper-fab {
       position: fixed;
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
-    <form is="iron-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+    <form is="iron-form" id="formQuery" method="GET" action="/master/subAgent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input name="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-input name="subAgentCode" label="二级代理代码" value="{{cond.subAgenCode::input}}"></paper-input>
+        <paper-input name="subAgentName" label="二级代理名称" value="{{cond.subAgentName::input}}"></paper-input>
         <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-        <!-- <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input> -->
-        <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
-
+        <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -36,24 +38,25 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th align="left">集团商户代码</th>
-            <th align="left">集团商户名称</th>
+            <th>二级代理代码</th>
+            <th align="left">二级代理名称</th>
             <th>代理代码</th>
             <th align="left">代理名称</th>
+
             <th>操作</th>
           </tr>
         </thead>
         <tbody>
-          <template is="dom-repeat" items="{{groups}}">
+          <template is="dom-repeat" items="{{subAgents}}">
             <tr>
               <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td>
-                <span>{{item.groupCode}}</span>
+              <td class="center">
+                <span>{{item.subAgentCode}}</span>
               </td>
               <td>
-                <span>{{item.groupName}}</span>
+                <span>{{item.subAgentName}}</span>
               </td>
               <td class="center">
                 <span>{{item.agentCode}}</span>
@@ -61,6 +64,7 @@
               <td>
                 <span>{{item.agentName}}</span>
               </td>
+
               <td class="center">
                 <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
                 <iron-icon icon="delete" on-tap="handleDeleteEvent"></iron-icon>
@@ -76,20 +80,17 @@
           </tr>
         </tfoot>
       </table>
-      </div>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
-    <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
-    <group-delete id="groupDelete" on-saved="handleGroupSave"></group-delete>
-    <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
-
+    <sub-agent-editor id="subAgentEditor" on-saved="handleSubAgentSave"></sub-agent-editor>
+    <sub-agent-delete id="subAgentDelete" on-saved="handleSubAgentSave"></sub-agent-delete>
   </template>
   <script>
     (function() {
       Polymer({
-        is: 'group-list',
+        is: 'sub-agent-list',
         properties: {
           autoLoading: {
             type: Boolean,
@@ -111,14 +112,12 @@
           }
         },
         ready: function() {
-          this.groups = [];
+          this.subAgents = [];
           this.cond = {
             page: 1,
             size: 20,
             total: 0
           };
-          this.handleQueryAgentsEvent();
-
         },
         attached: function() {
           if (this.autoLoading) {
@@ -132,7 +131,7 @@
         },
 
         generateAjaxRequest: function() {
-          this.groups = [];
+          this.subAgents = [];
           this.$.formQuery.submit();
         },
         // ajax请求响应处理
@@ -144,59 +143,17 @@
           }
 
           var pagination = response.data;
-          this.groups = pagination.data.slice(0);
+          this.subAgents = pagination.data.slice(0);
 
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
 
-          if (this.groups.length === 0) {
+          if (this.subAgents.length === 0) {
             Util.toast('没有数据', 2000);
           }
         },
 
-        // 查询代理列表
-        handleQueryAgentsEvent: function() {
-          this.$.queryAgentAjax.params = {
-            page: 1,
-            size: 1000
-          };
-          this.$.queryAgentAjax.generateRequest();
-        },
-        // 代理列表响应
-        handleQueryAgentsResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
-            return;
-          }
-
-          var pagination = response.data;
-          if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
-            return;
-          }
-
-          var agents = response.data.data.slice(0);
-          this.set('agents', []);
-          for (var i = 0, l = agents.length; i < l; i++) {
-            this.push('agents', {
-              key: agents[i].agentCode,
-              value: agents[i].agentName
-            });
-          }
-        },
-        observers: [
-          '_watchAgentChange(agent.key)',
-        ],
-        _watchAgentChange: function(key) {
-          if (key) {
-            this.set('cond.agentCode', key);
-          } else {
-            delete this.cond.agentCode;
-          }
-        },
-
-        // 集团选中事件
+        // 代理选中事件
         handleItemStaredEvent: function(e) {
           var staredItem = e.model.item;
           this.fire('item-selected', staredItem);
@@ -204,55 +161,42 @@
             return;
           }
 
-          for (var i = 0, l = this.groups.length; i < l; i++) {
-            var item = this.groups[i];
-            if (item.groupCode !== staredItem.groupCode) {
-              this.set('groups.' + i + '.stared', false);
+          for (var i = 0, l = this.subAgents.length; i < l; i++) {
+            var item = this.subAgents[i];
+            if (item.subAgentCode !== staredItem.subAgentCode) {
+              this.set('subAgents.' + i + '.stared', false);
             }
           }
         },
-
-        // 编辑集团商户
+        // 编辑代理
         handleEditEvent: function(e) {
-          this.$.groupEditor.group = e.model.item;
-          this.$.groupEditor.open2();
+          this.$.subAgentEditor.subAgent = e.model.item;
+          this.$.subAgentEditor.open2();
         },
 
-        // 删除集团商户事件
+        // 删除代理事件
         handleDeleteEvent: function(e) {
-          this.$.groupDelete.group = e.model.item;
-          this.$.groupDelete.open();
+          this.$.subAgentDelete.subAgent = e.model.item;
+          this.$.subAgentDelete.open();
         },
 
-        // 删除集团商户响应事件,刷新列表
-        handleDeleteResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-          this.handleQueryTapped();
-        },
-
-        // 新增集团商户事件
+        // 新增代理事件
         handleCreateFabTapped: function() {
-          this.$.groupEditor.open1();
+          this.$.subAgentEditor.open1();
         },
-        // 新集团商户保存成功事件，刷新列表
-        handleGroupSave: function() {
+        // 新代理保存成功事件，刷新列表
+        handleSubAgentSave: function() {
           this.handleQueryTapped();
         },
-
         addOneFilter: function(index) {
           return index + 1;
         },
         // 发送查询交易的ajax请求
         submitForm: function() {
-          this.groups = [];
+          this.subAgents = [];
           this.set('cond.total', 0);
         },
       });
     })();
-
   </script>
 </dom-module>

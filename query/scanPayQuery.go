@@ -1,13 +1,83 @@
-package core
+package query
 
 import (
-	"time"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"time"
 )
+
+var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
+
+// GetOrderInfo 扫固定码订单信息
+func GetOrderInfo(uniqueId string) scanFixedResponse {
+
+	var response = scanFixedResponse{Response: "00"}
+	m, err := mongo.MerchantColl.FindByUniqueId(uniqueId)
+	if err != nil {
+		response.Response, response.ErrorDetail = noMerCode, noMerMsg
+		return response
+	}
+
+	response.MerID = m.MerId
+	response.TitleOne = m.Detail.TitleOne
+	response.TitleTwo = m.Detail.TitleTwo
+
+	// find
+	trans, count, err := mongo.SpTransColl.Find(&model.QueryCondition{
+		TradeFrom:   "wap",
+		TransStatus: model.TransSuccess,
+		Busicd:      model.Jszf,
+		MerId:       m.MerId,
+		Size:        150,
+		Page:        1,
+	})
+
+	if err != nil {
+		response.Response = sysErrCode
+		response.ErrorDetail = sysErrMsg
+		return response
+	}
+
+	var data []scanFixedData
+	for _, t := range trans {
+		fd := scanFixedData{}
+		fd.Amount = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		fd.Chcd = t.ChanCode
+		fd.Headimgurl = t.HeadImgUrl
+		fd.Nickname = t.NickName
+		fd.Transtime = t.CreateTime
+		fd.VeriCode = t.VeriCode
+		fd.OrderNum = t.OrderNum
+		data = append(data, fd)
+	}
+
+	response.Data = data
+	response.Count = count
+
+	return response
+}
+
+// GetMerInfo 扫固定码获取用户信息
+func GetMerInfo(merId string) scanFixedResponse {
+
+	var response = scanFixedResponse{Response: "00", MerID: merId}
+
+	m, err := mongo.MerchantColl.Find(merId)
+	if err != nil {
+		response.Response = noMerCode
+		response.ErrorDetail = noMerMsg
+		response.MerID = ""
+		return response
+	}
+	response.TitleOne = m.Detail.TitleOne
+	response.TitleTwo = m.Detail.TitleTwo
+	response.AgentCode = m.AgentCode
+	return response
+}
 
 // TransQuery 交易查询
 func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
@@ -56,21 +126,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
-	// 先找商户所有商户号
-	// mers, err := mongo.MerchantColl.FuzzyFind(q)
-	// if err != nil {
-	// 	log.Errorf("find merchant error: %s", err)
-	// 	return errResult
-	// }
-
-	// var merIds []string
-	// m := make(map[string]*model.Merchant)
-	// // 暂存商户信息
-	// for _, mer := range mers {
-	// 	merIds = append(merIds, mer.MerId)
-	// 	m[mer.MerId] = mer
-	// }
-
 	// 设置条件过滤
 	q.TransStatus = model.TransSuccess
 	q.TransType = model.PayTrans
@@ -92,7 +147,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	// 将数据合并
 	for _, d := range group {
-		// if mer, ok := m[d.MerId]; ok {
 		s := model.Summary{
 			MerId:     d.MerId,
 			AgentName: d.AgentName,
@@ -101,7 +155,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		// 遍历渠道，合并数据
 		combine(&s, d.Detail)
 		data = append(data, s)
-		// }
 	}
 
 	// 汇总数据
@@ -141,4 +194,25 @@ func combine(s *model.Summary, detail []model.Channel) {
 			s.TotalFee += s.Wxp.Fee
 		}
 	}
+}
+
+type scanFixedResponse struct {
+	Response    string          `json:"response"`
+	MerID       string          `json:"merID"`
+	AgentCode   string          `json:"inscd,omitempty"`
+	TitleOne    string          `json:"title_one"`
+	TitleTwo    string          `json:"title_two"`
+	ErrorDetail string          `json:"errorDetail,omitempty"`
+	Data        []scanFixedData `json:"data,omitempty"`
+	Count       int             `json:"count,omitempty"`
+}
+
+type scanFixedData struct {
+	Transtime  string `json:"transtime,omitempty"`
+	VeriCode   string `json:"veriCode,omitempty"`
+	Nickname   string `json:"nickname,omitempty"`
+	Headimgurl string `json:"headimgurl,omitempty"`
+	Amount     string `json:"amount,omitempty"`
+	OrderNum   string `json:"orderNum,omitempty"`
+	Chcd       string `json:"chcd,omitempty"` //ALP,WXP
 }

@@ -1,17 +1,18 @@
 package scanpay
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
+	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/query"
+	"github.com/omigo/log"
+	"github.com/omigo/mahonia"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
-
-	"github.com/CardInfoLink/quickpay/channel/weixin"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
 )
 
 // scanpayUnifiedHandle 扫码支付入口
@@ -100,7 +101,7 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 
 	vs, err := url.ParseQuery(utf8)
 	if err != nil {
-		log.Infof("return weixin: %s", err)
+		log.Infof("return alipay: %s", err)
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
@@ -108,12 +109,12 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	// 处理异步通知
 	err = alipayNotifyCtrl(vs)
 	if err != nil {
-		log.Info("return weixin: fail")
+		log.Info("return alipay: fail")
 		http.Error(w, "fail", http.StatusOK)
 		return
 	}
 
-	log.Info("return weixin: success")
+	log.Info("return alipay: success")
 	http.Error(w, "success", http.StatusOK)
 }
 
@@ -140,4 +141,48 @@ func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("return notify: %s", retBytes)
 	w.Write(retBytes)
+}
+
+// scanFixedMerInfoHandle 扫固定码获取用户信息接口
+func scanFixedMerInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	b64MerId := r.FormValue("merchantCode")
+	if b64MerId == "" {
+		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
+		return
+	}
+	// 解b64
+	mbytes, err := base64.StdEncoding.DecodeString(b64MerId)
+	if err != nil {
+		http.Error(w, `{"response":"01","errorDetail":"params decode error"}`, http.StatusOK)
+		return
+	}
+	result := query.GetMerInfo(string(mbytes))
+	rbytes, err := json.Marshal(result)
+	if err != nil {
+		log.Errorf("json marshal error:%s", err)
+	}
+	w.Write(rbytes)
+}
+
+// scanFixedOrderInfoHandle 扫固定码获取用户订单信息
+func scanFixedOrderInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	uniqueId := r.FormValue("merchantCode")
+	if uniqueId == "" {
+		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
+		return
+	}
+	result := query.GetOrderInfo(uniqueId)
+	rbytes, err := json.Marshal(result)
+	if err != nil {
+		log.Errorf("json marshal error:%s", err)
+	}
+	w.Write(rbytes)
 }
