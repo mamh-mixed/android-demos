@@ -2,14 +2,19 @@ package cil
 
 import (
 	"testing"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
 func TestConnect(t *testing.T) {
+
+	Connect()
+
 	msg := newTestCilMsg()
 	// t.Logf("msg  = %#v", msg)
+	msg.Clisn = time.Now().Format("150405")
 
 	back := send(msg, transTimeout) // 线下网关发送报文
 
@@ -23,7 +28,7 @@ func newTestCilMsg() (m *model.CilMsg) {
 		Busicd:          "500000",
 		Txndir:          "Q",
 		Posentrymode:    "022",
-		Chcd:            "00000050",
+		Chcd:            "00022900",
 		Txamt:           "000000001000",
 		Txdt:            "0926115934",
 		Localdt:         "0926115934",
