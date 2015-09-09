@@ -36,3 +36,13 @@ func (col *sessionCollection) Find(sessionID string) (s *model.Session, err erro
 	}
 	return
 }
+
+// Remove 删除代理商
+func (col *sessionCollection) Remove(sessionID string) (err error) {
+	bo := bson.M{}
+	if sessionID != "" {
+		bo["sessionId"] = sessionID
+	}
+	err = database.C(col.name).Remove(bo)
+	return err
+}

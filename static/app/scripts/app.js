@@ -23,17 +23,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	// have resolved and content has been stamped to the page
 	app.addEventListener('dom-change', function() {
 		console.log('Our app is ready to rock!');
-		// 获取userType
-		var userType = window.localStorage.getItem('userType');
-		// userType为空跳转至登陆页面
-		if (!userType||userType===''){
+		app.$.loginBtn.hidden=true;
+		var sessionId = window.localStorage.getItem('SESSIONID');
+		if (!sessionId||sessionId===''){
 			window.location.href='login.html';
 		}
-		if (userType==='admin'){
-			document.querySelector('#menuAjax').generateRequest();
-		}else if(userType==='agent'||userType==='group'||userType==='merchant'){
-			document.querySelector('#agentAjax').generateRequest();
-		}
+		app.$.findSessionAjax.params={
+			'sessionId':sessionId,
+		};
+		app.$.findSessionAjax.generateRequest();
+
 	});
 
 
@@ -86,6 +85,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	app.handleQueryResponse = function(e) {
 		var response = e.detail.response;
 		app.menus = response.slice(0);
+	};
+	// 查找session响应
+	app.handleFindSessionResponse = function(e) {
+		debugger;
+		var response = e.detail.response;
+		if(response.status!=0){
+			window.location.href='login.html';
+			return;
+		}
+		var user= response.data;
+		var userType = user.userType;
+		app.nickName= user.nickName;
+		if (userType==='admin'){
+			document.querySelector('#menuAjax').generateRequest();
+		}else if(userType==='agent'||userType==='group'||userType==='merchant'){
+			document.querySelector('#agentAjax').generateRequest();
+		}
+
+	};
+	// 删除session响应
+	app.handleDeleteSessionResponse = function(e) {
+		var response = e.detail.response;
+	};
+	// 退出
+	app.logoutHandle=function(){
+		var sessionId = window.localStorage.getItem('SESSIONID');
+		app.$.deleteSessionAjax.params={
+			'sessionId':sessionId,
+		};
+		app.$.deleteSessionAjax.generateRequest();
+		window.localStorage.setItem('SESSIONID','');
+		app.nickName= '';
+		app.$.loginBtn.hidden=false;
+		app.$.logoutBtn.hidden=true;
+	};
+	// 登录
+	app.logintHandle=function(){
+		window.location.href='login.html';
 	};
 
 })(document);

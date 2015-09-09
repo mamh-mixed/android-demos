@@ -530,3 +530,35 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(retBytes)
 }
+
+// 查找session
+func findSessionHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	sessionId := params.Get("sessionId")
+
+	ret := Session.FindOne(sessionId)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+	w.Write(retBytes)
+}
+
+// 删除session
+func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	sessionId := params.Get("sessionId")
+
+	ret := Session.Delete(sessionId)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}

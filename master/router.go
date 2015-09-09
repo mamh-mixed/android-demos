@@ -67,6 +67,16 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		loginHandle(w, r)
 		return
 	}
+	// 查找session
+	if r.URL.Path == "/master/session/find" {
+		findSessionHandle(w, r)
+		return
+	}
+	// 删除session
+	if r.URL.Path == "/master/session/delete" {
+		sessionDeleteHandle(w, r)
+		return
+	}
 
 	// 查看请求中有没有cookie
 	c, err := r.Cookie("QUICKMASTERID")

@@ -85,6 +85,9 @@
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
 
+          <div>欢迎您，<span>{{nickName}}</span></div>
+          <paper-button id="loginBtn" on-tap="logintHandle">登录</paper-button>
+          <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
           <!-- Toolbar icons -->
           <paper-icon-button icon="refresh"></paper-icon-button>
           <paper-icon-button icon="search"></paper-icon-button>
@@ -205,6 +208,8 @@
     <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
     <iron-ajax  id="menuAjax" method="GET" url="/api/menu.json" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <iron-ajax  id="agentAjax" method="GET" url="/api/agent.json" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
+    <iron-ajax  id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
+    <iron-ajax  id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
   </template>
   </template>
 

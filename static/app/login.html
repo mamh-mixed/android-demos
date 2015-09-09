@@ -129,14 +129,14 @@
             }
           },
           handleLoginResponse: function(e) {
+              debugger;
             var response = e.detail.response;
             if (response.status !== 0) {
               Util.toast(response.message, 3000);
               return;
             }
-            var user = response.data;
-            window.localStorage.setItem('nickName', user.nickName);
-            window.localStorage.setItem('userType', user.userType);
+            var sessionId = response.data;
+            window.localStorage.setItem('SESSIONID', sessionId);
             window.location.href = 'index.html';
           },
         });
