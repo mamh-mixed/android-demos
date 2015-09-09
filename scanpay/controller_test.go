@@ -9,7 +9,7 @@ import (
 	"github.com/omigo/log"
 	"sync"
 	"testing"
-	"time"
+	// "time"
 )
 
 var (
@@ -18,12 +18,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "130039663149119746",
-		AgentCode:  "99911888",
+		ScanCodeId: "130100780239237875",
+		AgentCode:  "19992900",
 		Txamt:      "000000000001",
 		Chcd:       "WXP",
 		Busicd:     "PURC",
-		Mchntid:    "999118880000312",
+		Mchntid:    "200000000010001",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -64,10 +64,10 @@ var (
 	// 关单
 	scanPayClose = &model.ScanPayRequest{
 		Busicd:       "CANC",
-		Mchntid:      "999118880000312",
+		Mchntid:      "200000000010001",
 		OrderNum:     util.Millisecond() + "1",
 		OrigOrderNum: "1439886859870",
-		AgentCode:    "99911888",
+		AgentCode:    "19992900",
 	}
 	// 企业支付
 	scanPayEnterprise = &model.ScanPayRequest{
@@ -116,17 +116,18 @@ func doOneScanPay(scanPay *model.ScanPayRequest) error {
 func TestConcurrentScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
 	var wg sync.WaitGroup
-	n := util.Millisecond()
-	scanPayBarcodePay.OrderNum = n
+	n := "1441764717955"
+	// scanPayBarcodePay.OrderNum = n
 	scanPayClose.OrigOrderNum = n
 	wg.Add(2)
 	go func() {
-		doOneScanPay(scanPayBarcodePay)
+		doOneScanPay(scanPayClose)
 		wg.Done()
 	}()
 
+	// scanPayClose.OrderNum += "2"
 	go func() {
-		time.Sleep(500 * time.Millisecond)
+		// time.Sleep(500 * time.Millisecond)
 		doOneScanPay(scanPayClose)
 		wg.Done()
 	}()
