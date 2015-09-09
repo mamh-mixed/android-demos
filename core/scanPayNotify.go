@@ -53,6 +53,19 @@ func ProcessAlipayNotify(params url.Values) error {
 		return fmt.Errorf("%s", "orderNum error")
 	}
 
+	// 锁住交易
+	t, err = findAndLockTrans(t.MerId, t.OrderNum)
+	if err != nil {
+		return err
+	}
+
+	// 解锁
+	defer func() {
+		if t.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+		}
+	}()
+
 	ret := &model.ScanPayResponse{}
 	switch notifyAction {
 	// 退款
@@ -97,20 +110,35 @@ func ProcessAlipayNotify(params url.Values) error {
 			ret.ErrorDetail = adaptor.SuccessMsg
 			ret.ErrorCode = "SUCCESS"
 			ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
-			err = updateTrans(t, ret)
+
 		case "WAIT_BUYER_PAY":
 			log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
-			ret.Respcd = adaptor.InprocessCode
-			ret.ErrorDetail = adaptor.InprocessMsg
-			ret.ErrorCode = "INPROCESS"
+			return fmt.Errorf("%s", "transStatus no change")
 		default:
-			ret = adaptor.ReturnWithErrorCode(tradeStatus)
-			err = updateTrans(t, ret)
+			ret = adaptor.ReturnWithErrorCode("FAIL")
+			ret.ChanRespCode = tradeStatus
 		}
 	}
-	// 如果更新失败，则认为没有处理过
-	if err != nil {
-		return err
+
+	if t.TransStatus != model.TransClosed {
+		if err = updateTrans(t, ret); err != nil {
+			// 如果更新失败，则认为没有处理过
+			return err
+		}
+	} else {
+		// 订单已关闭，但是又收到异步通知是成功
+		// 表明订单已被退款
+		if ret.Respcd == adaptor.SuccessCode {
+			t.RefundStatus = model.TransRefunded
+			t.Fee, t.NetFee = 0, 0
+			t.RespCode = adaptor.SuccessCode
+			t.ErrorDetail = adaptor.SuccessMsg
+			t.ConsumerAccount = ret.ConsumerAccount
+			t.ChanOrderNum = ret.ChannelOrderNum
+			if err = mongo.SpTransColl.UpdateAndUnlock(t); err != nil {
+				return err
+			}
+		}
 	}
 
 	reqBytes, _ := json.Marshal(params)
@@ -155,6 +183,19 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		return fmt.Errorf("%s", "orderNum error")
 	}
 
+	// 锁住交易
+	t, err = findAndLockTrans(t.MerId, t.OrderNum)
+	if err != nil {
+		return err
+	}
+
+	// 解锁
+	defer func() {
+		if t.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+		}
+	}()
+
 	ret := &model.ScanPayResponse{}
 	// 更新交易信息
 	switch req.ResultCode {
@@ -165,15 +206,18 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
 		ret.ErrorCode = "SUCCESS"
-		err = updateTrans(t, ret)
 	default:
-		ret = adaptor.ReturnWithErrorCode(req.ErrCode)
-		err = updateTrans(t, ret)
+		ret = adaptor.ReturnWithErrorCode("FAIL")
+		ret.ChanRespCode = req.ResultCode
 	}
 
-	// 如果更新失败，则认为没有处理过
-	if err != nil {
-		return err
+	// 如果交易状态不是关闭，才去更新，否则认为该笔交易已被正确关闭
+	// 该异步通知只送往商户，不做更新。
+	if t.TransStatus != model.TransClosed {
+		if err = updateTrans(t, ret); err != nil {
+			// 如果更新失败，则认为没有处理过
+			return err
+		}
 	}
 
 	reqBytes, _ := json.Marshal(req)
