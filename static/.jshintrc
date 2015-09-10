@@ -20,6 +20,7 @@
     "Platform": true,
     "page": true,
     "app": true,
+    "Qiniu": true,
     "Util": true
   }
 }
