@@ -121,7 +121,7 @@
                 //上传出错时,处理相关的事情
                 _this.$.responseMessageSpan.className = 'red';
                 _this.message = errTip;
-                Util.toast(errTip, '3000');
+                Util.toast(errTip, 3000);
               },
               'UploadComplete': function() {
                 //队列文件处理完毕后,处理相关的事情
@@ -132,10 +132,10 @@
         handleImportResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, '3000');
+            Util.toast(response.message, 3000);
             return;
           }
-          Util.toast('推送成功', '3000');
+          Util.toast('推送成功', 3000);
         },
       });
     })();
