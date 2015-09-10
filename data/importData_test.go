@@ -91,7 +91,7 @@ func xTestAddChanCodeFromCSV(t *testing.T) {
 func xTestAddCardBinFromCSV(t *testing.T) {
 	// false 时会更新数据，但不会删除
 	// true 时会丢掉集合，重新建立
-	err := AddCardBinFromCSV("cardBin.csv", true)
+	err := AddCardBinFromCSV("cardBin.csv", false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

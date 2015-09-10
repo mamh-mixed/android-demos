@@ -3,6 +3,7 @@ package master
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
@@ -28,12 +29,14 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Get(makePrivateUrl(key))
 	if err != nil {
 		log.Error(err)
+		w.Write(resultBody("无法获取文件，请重新上传。", 1))
 		return
 	}
 
 	ebytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
+		w.Write(resultBody("无法获取文件，请重新上传。", 1))
 		return
 	}
 
@@ -41,7 +44,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	contentType := resp.Header.Get("content-type")
 	if contentType == "application/json" {
 		log.Error(string(ebytes))
-		w.Write([]byte("无法获取文件，请重新上传。"))
+		w.Write(resultBody("无法获取文件，请重新上传。", 1))
 		return
 	}
 
@@ -50,7 +53,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	zipReader, err := zip.NewReader(reader, int64(len(ebytes)))
 	if err != nil {
 		log.Error(err)
-		w.Write([]byte("无法读取文件，请重新上传。"))
+		w.Write(resultBody("无法获取文件，请重新上传。", 1))
 		return
 	}
 
@@ -58,18 +61,18 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	file, err := xlsx.ReadZipReader(zipReader)
 	if err != nil {
 		log.Error(err)
-		w.Write([]byte("无法读取文件，请重新上传。"))
+		w.Write(resultBody("无法获取文件，请重新上传。", 1))
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, IsDebug: true, fileName: key}
+	ip := importer{Sheets: file.Sheets, IsDebug: false, fileName: key}
 	err = ip.DoImport()
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		w.Write(resultBody(err.Error(), 2))
 		return
 	}
 
-	w.Write([]byte("上传成功"))
+	w.Write(resultBody("处理成功。", 0))
 }
 
 type importer struct {
@@ -357,7 +360,7 @@ func handleWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 					if err != nil {
 						return fmt.Errorf("微信商户：%s 系统中没有代码为 %s 的代理商商户", r.WxpSubMerId, r.WxpMerId)
 					}
-					chanMerCache[r.WxpSubMerId] = agent
+					chanMerCache[agent.ChanMerId] = agent
 				}
 				// 不是受理商模式，那么密钥必须要
 				if !r.IsAgent {
@@ -693,4 +696,10 @@ type rowData struct {
 	AlpMerFeeF float32
 	WxpAcqFeeF float32
 	WxpMerFeeF float32
+}
+
+func resultBody(msg string, status int) []byte {
+	result := model.ResultBody{Status: status, Message: msg}
+	bs, _ := json.Marshal(result)
+	return bs
 }

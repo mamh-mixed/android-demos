@@ -250,6 +250,7 @@ type Trans struct {
 	BindingId     string `bson:"bindingId,omitempty" json:"-"`     // 商户绑定ID
 	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"` // 渠道绑定ID
 	TransCurr     string `bson:"transCurr,omitempty" json:"-"`     // 交易币种
+	SettOrderNum  string `bson:"settOrderNum,omitempty" json:"-"`  // 结算订单号
 
 	// 扫码交易字段
 	ChanDiscount    string `bson:"chanDiscount,omitempty" json:"chanDiscount,omitempty"`       // 渠道折扣 支付宝、微信

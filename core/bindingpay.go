@@ -248,197 +248,6 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 	}
 }
 
-// ProcessPaymentWithSMS 通过验证码完成交易
-func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
-
-	// 找到原订单
-	orig, err := mongo.TransColl.FindOne(be.MerId, be.MerOrderNum)
-	if err != nil {
-		return mongo.RespCodeColl.Get("200080")
-	}
-
-	// 订单状态是否是待支付
-	if orig.TransStatus != model.TransNotPay {
-		return mongo.RespCodeColl.Get("200081") // TODO:返回订单号重复。待确认
-	}
-
-	// 获取渠道接口
-	c := channel.GetChan(orig.ChanCode)
-	if c == nil {
-		// 来到这里必须是系统错误。
-		return mongo.RespCodeColl.Get("000001")
-	}
-
-	// 根据绑定关系得到渠道商户信息
-	chanMer, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
-	if err != nil {
-		// 来到这里必须是系统错误。
-		return mongo.RespCodeColl.Get("000001")
-	}
-
-	// 渠道需要参数
-	be.SysOrderNum = orig.SysOrderNum
-	be.ChanMerId = orig.ChanMerId
-	be.PrivateKey = chanMer.PrivateKey
-
-	// 请求支付
-	ret = c.ProcessPaymentWithSMS(be)
-
-	orig.RespCode = ret.RespCode
-	orig.RespCode = ret.ChanRespCode
-	switch ret.RespCode {
-	case successCode:
-		orig.TransStatus = model.TransSuccess
-	case handlingCode:
-		orig.TransStatus = model.TransHandling
-	default:
-		orig.TransStatus = model.TransFail
-	}
-
-	// 更新交易
-	mongo.TransColl.Update(orig)
-	return ret
-}
-
-// ProcessBindingPayment 绑定支付
-// isSendSMS:true 将调用支付前发短信接口;false 直接支付，中金暂不支持
-func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model.BindingReturn) {
-	// 默认返回
-	ret = mongo.RespCodeColl.Get("000001")
-
-	// 检查同一个商户的订单号是否重复
-	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
-	if err != nil {
-		return
-	}
-	if count > 0 {
-		return mongo.RespCodeColl.Get("200081")
-	}
-
-	//只要订单号不重复就记录这笔交易
-	trans := &model.Trans{
-		MerId:     be.MerId,
-		OrderNum:  be.MerOrderNum,
-		TransType: model.PayTrans,
-		BindingId: be.BindingId,
-		TransAmt:  be.TransAmt,
-		SendSmsId: be.SendSmsId,
-		SmsCode:   be.SmsCode,
-		Remark:    be.Remark,
-		SubMerId:  be.SubMerId,
-	}
-
-	// 本地查询绑定关系。查询绑定关系的状态是否成功
-	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
-	legal := true
-	// 如果绑定关系不是成功的状态，返回
-	switch {
-	case err != nil:
-		if err.Error() == "not found" {
-			trans.RespCode = "200070"
-		} else {
-			trans.RespCode = "000001"
-		}
-		legal = false
-	case bm.BindingStatus == model.BindingHandling:
-		trans.RespCode = "200075"
-		legal = false
-	case bm.BindingStatus == model.BindingFail,
-		bm.BindingStatus == model.BindingRemoved:
-		trans.RespCode = "200074"
-		legal = false
-	}
-	if !legal {
-		mongo.TransColl.Add(trans)
-		return mongo.RespCodeColl.Get(trans.RespCode)
-	}
-	trans.ChanCode = bm.ChanCode
-	trans.ChanMerId = bm.ChanMerId
-	trans.ChanBindingId = bm.ChanBindingId
-
-	// 查找商家的绑定信息
-	bi, err := mongo.BindingInfoColl.Find(be.MerId, be.BindingId)
-	if err != nil {
-		trans.RespCode = "200070"
-		mongo.TransColl.Add(trans)
-		return mongo.RespCodeColl.Get(trans.RespCode)
-	}
-	trans.AcctNum = bi.AcctNum
-
-	// TODO 金额是否超出最大可支付金额
-
-	// 根据绑定关系得到渠道商户信息
-	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
-	if err != nil {
-		trans.RespCode = "300030"
-		mongo.TransColl.Add(trans)
-		return mongo.RespCodeColl.Get(trans.RespCode)
-	}
-
-	switch chanMer.TransMode {
-	case model.MarketMode:
-		if be.OrderNo == "" {
-			return model.NewBindingReturn("200050", "字段 orderNo 不能为空")
-		}
-	case model.MerMode:
-		be.SettFlag = chanMer.SettFlag
-	default:
-		log.Errorf("Unsupport mode %s", chanMer.TransMode)
-		return
-	}
-
-	// 渠道请求参数
-	be.Mode = chanMer.TransMode
-	be.ChanBindingId = trans.ChanBindingId
-	be.ChanMerId = trans.ChanMerId
-	be.SysOrderNum = trans.SysOrderNum
-	be.PrivateKey = chanMer.PrivateKey
-
-	// 获取渠道接口
-	c := channel.GetChan(chanMer.ChanCode)
-	if c == nil {
-		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
-		trans.RespCode = "510010"
-		mongo.TransColl.Add(trans)
-		return mongo.RespCodeColl.Get("510010")
-	}
-
-	// 交易参数
-	trans.SysOrderNum = util.SerialNumber()
-	// 记录这笔交易
-	if err = mongo.TransColl.Add(trans); err != nil {
-		log.Errorf("add trans error: %s", err)
-		return
-	}
-
-	if isSendSMS {
-		// 发送支付验证码
-		ret = c.ProcessSendBindingPaySMS(be)
-		// 发送结果成功，交易待支付
-		if ret.RespCode == successCode {
-			trans.TransStatus = model.TransNotPay
-		}
-	} else {
-		// 直接支付
-		ret = c.ProcessBindingPayment(be)
-		// 处理结果
-		trans.ChanRespCode = ret.ChanRespCode
-		trans.RespCode = ret.RespCode
-		switch ret.RespCode {
-		case successCode:
-			trans.TransStatus = model.TransSuccess
-		case handlingCode:
-			trans.TransStatus = model.TransHandling
-		default:
-			trans.TransStatus = model.TransFail
-		}
-	}
-
-	// 更新交易
-	mongo.TransColl.Update(trans)
-	return ret
-}
-
 // ProcessBindingReomve 绑定解除
 func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	ret = mongo.RespCodeColl.Get("000001")
@@ -491,11 +300,201 @@ func ProcessBindingReomve(br *model.BindingRemove) (ret *model.BindingReturn) {
 	return ret
 }
 
+// ProcessPaymentWithSMS 通过验证码完成交易
+func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
+
+	// 找到原订单
+	orig, err := mongo.TransColl.FindOne(be.MerId, be.MerOrderNum)
+	if err != nil {
+		return mongo.RespCodeColl.Get("200080")
+	}
+
+	// 订单状态是否是待支付
+	if orig.TransStatus != model.TransNotPay {
+		return mongo.RespCodeColl.Get("200081") // TODO:返回订单号重复。待确认
+	}
+
+	// 获取渠道接口
+	c := channel.GetChan(orig.ChanCode)
+	if c == nil {
+		// 来到这里必须是系统错误。
+		return mongo.RespCodeColl.Get("000001")
+	}
+
+	// 根据绑定关系得到渠道商户信息
+	chanMer, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
+	if err != nil {
+		// 来到这里必须是系统错误。
+		return mongo.RespCodeColl.Get("000001")
+	}
+
+	switch chanMer.TransMode {
+	case model.MarketMode:
+		if be.SettOrderNum == "" {
+			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
+		}
+		if be.SettOrderNum != orig.SettOrderNum {
+			return mongo.RespCodeColl.Get("000001") // TODO:结算订单号不一致
+		}
+	case model.MerMode:
+	default:
+		log.Errorf("Unsupport mode %s", chanMer.TransMode)
+		return
+	}
+
+	// 渠道需要参数
+	be.Mode = chanMer.TransMode
+	be.SysOrderNum = orig.SysOrderNum
+	be.ChanMerId = orig.ChanMerId
+	be.PrivateKey = chanMer.PrivateKey
+
+	// 请求支付
+	ret = c.ProcessPaymentWithSMS(be)
+
+	orig.RespCode = ret.RespCode
+	orig.RespCode = ret.ChanRespCode
+	switch ret.RespCode {
+	case successCode:
+		orig.TransStatus = model.TransSuccess
+	case handlingCode:
+		orig.TransStatus = model.TransHandling
+	default:
+		orig.TransStatus = model.TransFail
+	}
+
+	// 更新交易
+	mongo.TransColl.Update(orig)
+	return ret
+}
+
+// ProcessBindingPayment 绑定支付
+// isSendSMS:true 将调用支付前发短信接口;false 直接支付，中金暂不支持
+func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model.BindingReturn) {
+	// 默认返回
+	ret = mongo.RespCodeColl.Get("000001")
+
+	// 检查同一个商户的订单号是否重复
+	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
+	if err != nil {
+		return
+	}
+	if count > 0 {
+		return mongo.RespCodeColl.Get("200081")
+	}
+
+	//只要订单号不重复就记录这笔交易
+	pay := &model.Trans{
+		MerId:        be.MerId,
+		OrderNum:     be.MerOrderNum,
+		TransType:    model.PayTrans,
+		BindingId:    be.BindingId,
+		TransAmt:     be.TransAmt,
+		SendSmsId:    be.SendSmsId,
+		SmsCode:      be.SmsCode,
+		Remark:       be.Remark,
+		SubMerId:     be.SubMerId,
+		SettOrderNum: be.SettOrderNum,
+	}
+
+	// 本地查询绑定关系。查询绑定关系的状态是否成功
+	bm, err := mongo.BindingMapColl.Find(be.MerId, be.BindingId)
+	if err != nil {
+		return logicErrorHandle(pay, "200070")
+	}
+	pay.ChanCode = bm.ChanCode
+	pay.ChanMerId = bm.ChanMerId
+	pay.ChanBindingId = bm.ChanBindingId
+
+	// 绑定状态处理中
+	if bm.BindingStatus == model.BindingHandling {
+		return logicErrorHandle(pay, "200075")
+	}
+
+	// 绑定状态失败
+	if bm.BindingStatus == model.BindingFail || bm.BindingStatus == model.BindingRemoved {
+		return logicErrorHandle(pay, "200074")
+	}
+
+	// 查找商家的绑定信息
+	bi, err := mongo.BindingInfoColl.Find(be.MerId, be.BindingId)
+	if err != nil {
+		return logicErrorHandle(pay, "200070")
+	}
+	pay.AcctNum = bi.AcctNum
+
+	// TODO 金额是否超出最大可支付金额
+
+	// 根据绑定关系得到渠道商户信息
+	chanMer, err := mongo.ChanMerColl.Find(bm.ChanCode, bm.ChanMerId)
+	if err != nil {
+		return logicErrorHandle(pay, "300030")
+	}
+
+	// 交易模式
+	switch chanMer.TransMode {
+	case model.MarketMode:
+		if be.SettOrderNum == "" {
+			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
+		}
+	case model.MerMode:
+		be.SettFlag = chanMer.SettFlag
+	default:
+		log.Errorf("Unsupport mode %s", chanMer.TransMode)
+		return
+	}
+
+	// 渠道请求参数
+	be.Mode = chanMer.TransMode
+	be.ChanBindingId = pay.ChanBindingId
+	be.ChanMerId = pay.ChanMerId
+	be.SysOrderNum = pay.SysOrderNum
+	be.PrivateKey = chanMer.PrivateKey
+
+	// 获取渠道接口
+	c := channel.GetChan(chanMer.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return logicErrorHandle(pay, "510010")
+	}
+
+	// 交易参数
+	pay.SysOrderNum = util.SerialNumber()
+	// 记录这笔交易
+	if err = mongo.TransColl.Add(pay); err != nil {
+		log.Errorf("add trans error: %s", err)
+		return
+	}
+
+	if isSendSMS {
+		// 发送支付验证码
+		ret = c.ProcessSendBindingPaySMS(be)
+		// 发送结果成功，交易待支付
+		if ret.RespCode == successCode {
+			pay.TransStatus = model.TransNotPay
+		}
+	} else {
+		// 直接支付
+		ret = c.ProcessBindingPayment(be)
+		// 处理结果
+		pay.ChanRespCode = ret.ChanRespCode
+		pay.RespCode = ret.RespCode
+		switch ret.RespCode {
+		case successCode:
+			pay.TransStatus = model.TransSuccess
+		case handlingCode:
+			pay.TransStatus = model.TransHandling
+		default:
+			pay.TransStatus = model.TransFail
+		}
+	}
+
+	// 更新交易
+	mongo.TransColl.Update(pay)
+	return ret
+}
+
 // ProcessBindingRefund 退款
 func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
-
-	// default
-	// ret = mongo.RespCodeColl.Get("000001")
 
 	// 检查同一个商户的订单号是否重复
 	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
@@ -513,15 +512,13 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		OrigOrderNum: be.OrigOrderNum,
 		TransAmt:     be.TransAmt,
 		TransType:    model.RefundTrans,
+		SettOrderNum: be.SettOrderNum,
 	}
 
 	// 是否有该源订单号
 	orign, err := mongo.TransColl.FindOne(be.MerId, be.OrigOrderNum)
-	log.Debugf("%+v", orign)
 	if err != nil {
-		refund.RespCode = "200082"
-		mongo.TransColl.Add(refund)
-		return mongo.RespCodeColl.Get(refund.RespCode)
+		return logicErrorHandle(refund, "200082")
 	}
 	refund.ChanBindingId = orign.ChanBindingId
 	refund.AcctNum = orign.AcctNum
@@ -572,26 +569,37 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		refundStatus = model.TransRefunded
 	}
 	if !legal {
-		mongo.TransColl.Add(refund)
-		return mongo.RespCodeColl.Get(refund.RespCode)
+		return logicErrorHandle(refund, refund.RespCode)
 	}
 
 	// 获得渠道商户
 	chanMer, err := mongo.ChanMerColl.Find(orign.ChanCode, orign.ChanMerId)
 	if err != nil {
 		log.Error("Find channel merchant error,error message is '%s'", err)
-		refund.RespCode = "300030"
-		mongo.TransColl.Add(refund)
-		return mongo.RespCodeColl.Get("300030")
+		return logicErrorHandle(refund, "300030")
+	}
+
+	// 交易模式
+	switch chanMer.TransMode {
+	case model.MarketMode:
+		if be.SettOrderNum == "" {
+			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
+		}
+		if be.SettOrderNum != refund.SettOrderNum {
+			return logicErrorHandle(refund, "000001") // TODO:结算订单号不一致
+		}
+	case model.MerMode:
+		// dothing
+	default:
+		log.Errorf("Unsupport mode %s", chanMer.TransMode)
+		return logicErrorHandle(refund, "000001")
 	}
 
 	// 获取渠道接口
 	c := channel.GetChan(chanMer.ChanCode)
 	if c == nil {
 		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
-		refund.RespCode = "510010"
-		mongo.TransColl.Add(refund)
-		return mongo.RespCodeColl.Get("510010")
+		return logicErrorHandle(refund, "510010")
 	}
 
 	// 请求信息
@@ -604,7 +612,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	// 记录这笔退款
 	if err = mongo.TransColl.Add(refund); err != nil {
-		return
+		return mongo.RespCodeColl.Get("000001")
 	}
 
 	// 退款
@@ -640,7 +648,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	if err != nil {
 		return mongo.RespCodeColl.Get("200080")
 	}
-	log.Debugf("trans:(%+v)", t)
+
 	// 如果交易状态不是在处理中
 	if t.TransStatus != model.TransHandling {
 		ret.TransStatus = t.TransStatus
@@ -658,6 +666,7 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	//赋值
+	be.Mode = chanMer.TransMode
 	be.PrivateKey = chanMer.PrivateKey
 	be.ChanMerId = chanMer.ChanMerId
 	be.SysOrderNum = t.SysOrderNum
@@ -902,4 +911,11 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 func validateSmsCode(sendSmsId, smsCode string) (ret *model.BindingReturn) {
 	log.Infof("SendSmsId is: %s;SmsCode is: %s", sendSmsId, smsCode)
 	return ret
+}
+
+// logicErrorHandle 逻辑错误错误，保存交易
+func logicErrorHandle(t *model.Trans, respCode string) (ret *model.BindingReturn) {
+	t.RespCode = respCode
+	mongo.TransColl.Add(t)
+	return mongo.RespCodeColl.Get(respCode)
 }

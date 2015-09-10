@@ -60,6 +60,7 @@ func (c *CFCABindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *m
 	switch be.Mode {
 	case model.MarketMode:
 		req.Head.TxCode = MarketModePayWithSMS
+		req.Body.OrderNo = be.SettOrderNum
 	case model.MerMode:
 		req.Head.TxCode = MerModePayWithSMS
 	default:
@@ -79,7 +80,7 @@ func (c *CFCABindingPay) ProcessSendBindingPaySMS(be *model.BindingPayment) (ret
 		be.SettFlag = ""
 		return quickPayment(be, MarketModeSendSMS)
 	case model.MerMode:
-		be.OrderNo = ""
+		be.SettOrderNum = ""
 		return quickPayment(be, MerModeSendSMS)
 	default:
 		log.Errorf("unsupport mode %s", be.Mode)
@@ -176,7 +177,7 @@ func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *m
 		be.SettFlag = ""
 		return quickPayment(be, MarketModePay)
 	case model.MerMode:
-		be.OrderNo = ""
+		be.SettOrderNum = ""
 		return quickPayment(be, MerModePay)
 	default:
 		log.Errorf("unsupport mode %s", be.Mode)
@@ -195,7 +196,7 @@ func quickPayment(be *model.BindingPayment, txCode string) (ret *model.BindingRe
 			TxCode:        txCode,
 		},
 		Body: requestBody{
-			OrderNo:        be.OrderNo,
+			OrderNo:        be.SettOrderNum,
 			PaymentNo:      be.SysOrderNum,
 			Amount:         be.TransAmt,
 			TxSNBinding:    be.ChanBindingId,
@@ -261,7 +262,7 @@ func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 	switch be.Mode {
 	case model.MarketMode:
 		req.Head.TxCode = MarketModeRefund
-		req.Body.OrderNo = be.OrderNo
+		req.Body.OrderNo = be.SettOrderNum
 	case model.MerMode:
 		req.Head.TxCode = MerModeRefund
 	default:

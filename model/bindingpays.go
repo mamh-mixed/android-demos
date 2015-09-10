@@ -108,17 +108,17 @@ type BindingEnquiry struct {
 
 // BindingPayment 绑定支付请求
 type BindingPayment struct {
-	MerId       string `json:"merId"`       // 商户ID
-	SubMerId    string `json:"subMerId"`    // 子商户号
-	MerOrderNum string `json:"merOrderNum"` // 商户订单号
-	TransAmt    int64  `json:"transAmt"`    // 支付金额
-	BindingId   string `json:"bindingId"`   // 银行卡绑定ID
-	SendSmsId   string `json:"sendSmsId"`   // 申请短信验证码的交易流水
-	SmsCode     string `json:"smsCode"`     // 短信验证码
-	SettFlag    string `json:"settFlag"`    // 清算标识
-	Remark      string `json:"remark"`      // 备注
-	TerminalId  string `json:"terminalId"`  // 终端Id
-	OrderNo     string `json:"orderNo"`     // 结算订单号
+	MerId        string `json:"merId"`        // 商户ID
+	SubMerId     string `json:"subMerId"`     // 子商户号
+	MerOrderNum  string `json:"merOrderNum"`  // 商户订单号
+	TransAmt     int64  `json:"transAmt"`     // 支付金额
+	BindingId    string `json:"bindingId"`    // 银行卡绑定ID
+	SendSmsId    string `json:"sendSmsId"`    // 申请短信验证码的交易流水
+	SmsCode      string `json:"smsCode"`      // 短信验证码
+	SettFlag     string `json:"settFlag"`     // 清算标识
+	Remark       string `json:"remark"`       // 备注
+	TerminalId   string `json:"terminalId"`   // 终端Id
+	SettOrderNum string `json:"settOrderNum"` // 结算订单号
 	// 辅助参数
 	SysOrderNum   string //系统订单号
 	ChanBindingId string //渠道绑定ID
@@ -134,7 +134,7 @@ type BindingRefund struct {
 	OrigOrderNum string `json:"origOrderNum"` // 原支付订单号
 	TransAmt     int64  `json:"transAmt"`     // 退款金额
 	Remark       string `json:"remark"`       //备注
-	OrderNo      string `json:"orderNo"`      // 结算订单号
+	SettOrderNum string `json:"settOrderNum"` // 结算订单号
 
 	SysOrderNum     string //系统订单号
 	SysOrigOrderNum string //系统原支付订单号
