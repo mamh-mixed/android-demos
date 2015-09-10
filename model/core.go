@@ -35,6 +35,10 @@ const (
 	BindingFail     = "20" // 绑定失败
 	BindingSuccess  = "30" // 绑定成功
 	BindingRemoved  = "40" // 已解绑（绑定成功过，后续解绑也成功）
+
+	// transMode
+	MarketMode = 2 // 市场模式
+	MerMode    = 1 // 商户模式
 )
 
 // cache name
@@ -176,6 +180,7 @@ type ChanMer struct {
 	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
+	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 交易模式 1-商户模式 2-市场模式
 	// ...
 }
 

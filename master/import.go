@@ -143,57 +143,45 @@ func (i *importer) dataHandle() error {
 	// 数据合法性验证
 	for _, r := range i.rowData {
 
-		// 非空验证
-		err := formatValidate(r)
-		if err != nil {
+		// 先看是否有填商户号
+		if r.MerId == "" {
+			return fmt.Errorf("%s", "商户代码为空")
+		}
+		// 字段内容合法验证
+		mer, err := mongo.MerchantColl.Find(r.MerId)
+		switch r.Operator {
+		case "A":
+			// 新增找到用户，报错
+			if err == nil {
+				return fmt.Errorf("商户：%s 已存在", r.MerId)
+			}
+			// 插入验证
+			if err = insertValidate(r); err != nil {
+				return err
+			}
+		case "U":
+			// 修改不存在用户，报错
+			if err != nil {
+				return fmt.Errorf("商户：%s 不存在", r.MerId)
+			}
+			log.Debug(mer)
+		default:
+			// D 先不做删除
+			return fmt.Errorf("暂不支持 %s 操作。", r.Operator)
+		}
+
+		// 处理代理、集团
+		if err = handleAgentAndGroup(r, i.agentCache, i.groupCache); err != nil {
 			return err
 		}
 
-		// 字段内容合法验证
-		// 商户号去重
-		count, err := mongo.MerchantColl.CountById(r.MerId)
-		if err != nil {
-			log.Errorf("find merchant error: %s", err)
-			return sysErr
-		}
-		if count > 0 {
-			return fmt.Errorf("商户：%s 已存在", r.MerId)
-		}
-
-		// 验证代理
-		if _, ok := i.agentCache[r.AgentCode]; !ok {
-			a, err := mongo.AgentColl.Find(r.AgentCode)
-			if err != nil {
-				return fmt.Errorf("商户：%s 代理代码(%s)不存在", r.MerId, r.AgentCode)
-			}
-			// 放入缓存
-			i.agentCache[r.AgentCode] = a
-			r.AgentName = a.AgentName
-		}
-
-		// 验证集团,非空时验证
-		if r.GroupCode != "" {
-			if _, ok := i.groupCache[r.GroupCode]; !ok {
-				g, err := mongo.GroupColl.Find(r.GroupCode)
-				if err != nil {
-					return fmt.Errorf("商户：%s 集团代码(%s)不存在", r.MerId, r.GroupCode)
-				}
-				if g.AgentCode != r.AgentCode {
-					return fmt.Errorf("商户：%s 集团代码不属于该代理", r.MerId)
-				}
-				i.groupCache[r.GroupCode] = g
-				r.GroupName = g.GroupName
-			}
-		}
-
-		// 渠道商户验证
 		// 支付宝
-		if err = validAlpMer(r, i.chanMerCache); err != nil {
+		if err = handleAlpMer(r, i.chanMerCache); err != nil {
 			return err
 		}
 
 		// 微信
-		if err = validWxpMer(r, i.chanMerCache); err != nil {
+		if err = handleWxpMer(r, i.chanMerCache); err != nil {
 			return err
 		}
 	}
@@ -204,16 +192,13 @@ func (i *importer) dataHandle() error {
 	return nil
 }
 
-// formatValidate 非空验证
-func formatValidate(r *rowData) error {
+// updateValidate 更新验证
+func updateValidate(r *rowData) error {
+	return nil
+}
 
-	if r.Operator != "A" {
-		return fmt.Errorf("暂不支持除A以外的操作。操作符 %s", r.Operator)
-	}
-
-	if r.MerId == "" {
-		return fmt.Errorf("%s", "商户代码为空")
-	}
+// insertValidate 插入验证
+func insertValidate(r *rowData) error {
 
 	if r.MerName == "" {
 		return fmt.Errorf("商户：%s 商户名称为空", r.MerId)
@@ -273,7 +258,38 @@ func formatValidate(r *rowData) error {
 	return nil
 }
 
-func validAlpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
+func handleAgentAndGroup(r *rowData, agentCache map[string]*model.Agent, groupCache map[string]*model.Group) error {
+	// 验证代理
+	if r.AgentCode != "" {
+		if _, ok := agentCache[r.AgentCode]; !ok {
+			a, err := mongo.AgentColl.Find(r.AgentCode)
+			if err != nil {
+				return fmt.Errorf("商户：%s 代理代码(%s)不存在", r.MerId, r.AgentCode)
+			}
+			// 放入缓存
+			agentCache[r.AgentCode] = a
+			r.AgentName = a.AgentName
+		}
+	}
+
+	// 验证集团,非空时验证
+	if r.GroupCode != "" {
+		if _, ok := groupCache[r.GroupCode]; !ok {
+			g, err := mongo.GroupColl.Find(r.GroupCode)
+			if err != nil {
+				return fmt.Errorf("商户：%s 集团代码(%s)不存在", r.MerId, r.GroupCode)
+			}
+			if g.AgentCode != r.AgentCode {
+				return fmt.Errorf("商户：%s 集团代码不属于该代理", r.MerId)
+			}
+			groupCache[r.GroupCode] = g
+			r.GroupName = g.GroupName
+		}
+	}
+	return nil
+}
+
+func handleAlpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 	// 支付宝渠道商户
 	if r.AlpMerId != "" {
 		if _, ok := chanMerCache[r.AlpMerId]; !ok {
@@ -309,7 +325,7 @@ func validAlpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 	return nil
 }
 
-func validWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
+func handleWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 	// 微信渠道商户
 	if r.WxpSubMerId != "" {
 		if _, ok := chanMerCache[r.WxpSubMerId]; !ok {

@@ -375,6 +375,25 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		return mongo.RespCodeColl.Get(trans.RespCode)
 	}
 
+	switch chanMer.TransMode {
+	case model.MarketMode:
+		if be.OrderNo == "" {
+			return model.NewBindingReturn("200050", "字段 orderNo 不能为空")
+		}
+	case model.MerMode:
+		be.SettFlag = chanMer.SettFlag
+	default:
+		log.Errorf("Unsupport mode %s", chanMer.TransMode)
+		return
+	}
+
+	// 渠道请求参数
+	be.Mode = chanMer.TransMode
+	be.ChanBindingId = trans.ChanBindingId
+	be.ChanMerId = trans.ChanMerId
+	be.SysOrderNum = trans.SysOrderNum
+	be.PrivateKey = chanMer.PrivateKey
+
 	// 获取渠道接口
 	c := channel.GetChan(chanMer.ChanCode)
 	if c == nil {
@@ -391,13 +410,6 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		log.Errorf("add trans error: %s", err)
 		return
 	}
-
-	// 渠道请求参数
-	be.SettFlag = chanMer.SettFlag
-	be.ChanBindingId = trans.ChanBindingId
-	be.ChanMerId = trans.ChanMerId
-	be.SysOrderNum = trans.SysOrderNum
-	be.PrivateKey = chanMer.PrivateKey
 
 	if isSendSMS {
 		// 发送支付验证码

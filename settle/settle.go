@@ -237,9 +237,9 @@ func doCFCATransCheck() {
 					}
 					// 判断交易类型
 					switch {
-					case tx.TxType == cfca.BindingPaymentTxCode:
+					case tx.TxType == cfca.MerModePay:
 						newTrans.TransType = model.PayTrans
-					case tx.TxType == cfca.BindingRefundTxCode:
+					case tx.TxType == cfca.MerModeRefund:
 						newTrans.TransType = model.RefundTrans
 					}
 					addTransSett(newTrans, model.SettChanRemain)

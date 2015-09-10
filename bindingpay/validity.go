@@ -145,6 +145,12 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 		return model.NewBindingReturn("200050", "字段 smsCode 不能为空")
 	}
 
+	if in.OrderNo != "" {
+		if !isAlphanumeric(in.OrderNo) {
+			return model.NewBindingReturn("200080", "结算订单号 orderNo 格式错误")
+		}
+	}
+
 	return nil
 }
 

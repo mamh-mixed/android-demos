@@ -31,7 +31,7 @@ func xTestAddSpChanFromCSV(t *testing.T) {
 		t.FailNow()
 	}
 
-	// 导入支付宝
+	// // 导入支付宝
 	err = AddSpChanCodeFromScv("alp", "respCode_alp.csv")
 	if err != nil {
 		t.Error(err)
