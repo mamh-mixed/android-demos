@@ -106,6 +106,10 @@
                 <iron-icon icon="create"></iron-icon>
                 <span>商户录入</span>
               </a>
+              <a data-route="config.upload" href="/config/upload">
+                <iron-icon icon="cloud-upload"></iron-icon>
+                <span>批量导入</span>
+              </a>
               <a data-route="config.merchants" href="/config/merchants">
                 <iron-icon icon="store"></iron-icon>
                 <span>机构商户</span>
@@ -303,6 +307,9 @@
 
             <section data-route="quickPay.routes">
               <quick-route-list></quick-route-list>
+            </section>
+            <section data-route="config.upload">
+              <file-upload></file-upload>
             </section>
 
           </iron-pages>
