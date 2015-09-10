@@ -42,7 +42,7 @@ func Connect() {
 // send 方法会同步返回线下处理结果，它最大的好处是把一个异步 TCP 请求响应变成同步的，无需回调。
 // 这对调用者来说是透明的，调用者无需关心与上游网关的通信方式和通信过程，按照正常的顺序流程编写代码，
 // 注意：如果上游请求延迟较大，这个方法会阻塞。
-func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
+func send0(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
 	return defualtClient.Send(msg, timeout)
 }
 

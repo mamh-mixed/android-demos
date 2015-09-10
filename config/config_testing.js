@@ -19,11 +19,7 @@
     },
     "CILOnline": {
         "Host": "140.207.50.238",
-        "Port": 7827,
-        "QueueSize": 1000, // 所有交易发送到线下前先排队，队列满后将阻塞
-        "InitWindowSize": 100, // 全双工 pipeline 方式，接收数据后，找到对应的请求者
-        "KeepaliveTime": "65s", // 每隔一段时间发送一个 keepalive 消息
-        "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
+        "Port": 7827
     },
     "CFCA": {
         "CFCAPublicKey": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
