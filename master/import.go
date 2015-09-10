@@ -163,6 +163,7 @@ func (i *importer) dataHandle() error {
 				return err
 			}
 		case "U":
+			return fmt.Errorf("%s", "暂不支持U操作，马上上线，敬请期待！")
 			// 修改不存在用户，报错
 			if err != nil {
 				return fmt.Errorf("商户：%s 不存在", r.MerId)
@@ -356,11 +357,13 @@ func handleWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 			} else {
 				// 系统中不存在渠道商户，那么校验必填的信息
 				if r.IsAgent {
-					agent, err := mongo.ChanMerColl.Find("WXP", r.WxpMerId)
-					if err != nil {
-						return fmt.Errorf("微信商户：%s 系统中没有代码为 %s 的代理商商户", r.WxpSubMerId, r.WxpMerId)
+					if _, ok := chanMerCache[r.WxpMerId]; !ok {
+						agent, err := mongo.ChanMerColl.Find("WXP", r.WxpMerId)
+						if err != nil {
+							return fmt.Errorf("微信商户：%s 系统中没有代码为 %s 的代理商商户", r.WxpSubMerId, r.WxpMerId)
+						}
+						chanMerCache[agent.ChanMerId] = agent
 					}
-					chanMerCache[agent.ChanMerId] = agent
 				}
 				// 不是受理商模式，那么密钥必须要
 				if !r.IsAgent {

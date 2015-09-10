@@ -603,6 +603,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	// 请求信息
+	be.Mode = chanMer.TransMode
 	be.ChanMerId = orign.ChanMerId
 	be.SysOrderNum = util.SerialNumber()
 	be.SysOrigOrderNum = orign.SysOrderNum

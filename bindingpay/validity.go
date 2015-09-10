@@ -147,7 +147,7 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 
 	if in.SettOrderNum != "" {
 		if !isAlphanumeric(in.SettOrderNum) {
-			return model.NewBindingReturn("200080", "结算订单号 orderNo 格式错误")
+			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
 		}
 	}
 
@@ -180,6 +180,12 @@ func validateSendBindingPaySMS(in *model.BindingPayment) (ret *model.BindingRetu
 		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
 	}
 
+	if in.SettOrderNum != "" {
+		if !isAlphanumeric(in.SettOrderNum) {
+			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		}
+	}
+
 	return nil
 }
 
@@ -193,6 +199,11 @@ func validateBindingPayWithSMS(in *model.BindingPayment) (ret *model.BindingRetu
 	}
 	if !isAlphanumeric(in.MerOrderNum) {
 		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+	if in.SettOrderNum != "" {
+		if !isAlphanumeric(in.SettOrderNum) {
+			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		}
 	}
 	// TODO:短信验证码格式验证
 	return nil
@@ -214,6 +225,12 @@ func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 
 	if !isAlphanumeric(in.MerOrderNum) {
 		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+
+	if in.SettOrderNum != "" {
+		if !isAlphanumeric(in.SettOrderNum) {
+			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		}
 	}
 
 	if in.TransAmt == 0 {
