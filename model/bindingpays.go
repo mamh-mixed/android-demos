@@ -103,38 +103,44 @@ type BindingEnquiry struct {
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
 	PrivateKey    string //签名密钥
+	Mode          int    //交易模式
 }
 
 // BindingPayment 绑定支付请求
 type BindingPayment struct {
-	MerId       string `json:"merId"`       //商户ID
-	SubMerId    string `json:"subMerId"`    // 子商户号
-	MerOrderNum string `json:"merOrderNum"` // 商户订单号
-	TransAmt    int64  `json:"transAmt"`    // 支付金额
-	BindingId   string `json:"bindingId"`   // 银行卡绑定ID
-	SendSmsId   string `json:"sendSmsId"`   // 申请短信验证码的交易流水
-	SmsCode     string `json:"smsCode"`     // 短信验证码
-	SettFlag    string `json:"settFlag"`    // 清算标识
-	Remark      string `json:"remark"`      // 备注
-	TerminalId  string `json:"terminalId"`  // 终端Id
+	MerId        string `json:"merId"`        // 商户ID
+	SubMerId     string `json:"subMerId"`     // 子商户号
+	MerOrderNum  string `json:"merOrderNum"`  // 商户订单号
+	TransAmt     int64  `json:"transAmt"`     // 支付金额
+	BindingId    string `json:"bindingId"`    // 银行卡绑定ID
+	SendSmsId    string `json:"sendSmsId"`    // 申请短信验证码的交易流水
+	SmsCode      string `json:"smsCode"`      // 短信验证码
+	SettFlag     string `json:"settFlag"`     // 清算标识
+	Remark       string `json:"remark"`       // 备注
+	TerminalId   string `json:"terminalId"`   // 终端Id
+	SettOrderNum string `json:"settOrderNum"` // 结算订单号
 	// 辅助参数
 	SysOrderNum   string //系统订单号
 	ChanBindingId string //渠道绑定ID
 	ChanMerId     string //渠道商户ID
 	PrivateKey    string //签名密钥
+	Mode          int    //交易模式
 }
 
 // BindingRefund 退款
 type BindingRefund struct {
-	MerId           string `json:"merId"`        //商户ID
-	MerOrderNum     string `json:"merOrderNum"`  // 商户订单号
-	OrigOrderNum    string `json:"origOrderNum"` // 原支付订单号
-	TransAmt        int64  `json:"transAmt"`     // 退款金额
-	Remark          string `json:"remark"`       //备注
+	MerId        string `json:"merId"`        //商户ID
+	MerOrderNum  string `json:"merOrderNum"`  // 商户订单号
+	OrigOrderNum string `json:"origOrderNum"` // 原支付订单号
+	TransAmt     int64  `json:"transAmt"`     // 退款金额
+	Remark       string `json:"remark"`       //备注
+	SettOrderNum string `json:"settOrderNum"` // 结算订单号
+
 	SysOrderNum     string //系统订单号
 	SysOrigOrderNum string //系统原支付订单号
 	ChanMerId       string //渠道商户ID
 	PrivateKey      string //签名密钥
+	Mode            int    //交易模式
 }
 
 // BillingSummary 交易对账汇总
@@ -158,6 +164,7 @@ type OrderEnquiry struct {
 	ShowOrigInfo string `json:"showOrigInfo"` //是否需要返回原交易详细信息;0:不需要，1:需要,不送默认为0
 	ChanMerId    string //渠道商户Id
 	PrivateKey   string //签名密钥
+	Mode         int    //交易模式
 }
 
 // NoTrackPayment 无卡直接支付
