@@ -8,7 +8,17 @@ import (
 	"github.com/omigo/log"
 )
 
-func TestConnect(t *testing.T) {
+func TestShortConnect(t *testing.T) {
+	msg := newTestCilMsg()
+	// t.Logf("msg  = %#v", msg)
+	msg.Clisn = time.Now().Format("150405")
+	back := send(msg, transTimeout) // 线下网关发送报文
+
+	_ = back
+	log.Debug("--------------------------------------------")
+}
+
+func TestLongConnect(t *testing.T) {
 
 	Connect()
 
@@ -16,7 +26,7 @@ func TestConnect(t *testing.T) {
 	// t.Logf("msg  = %#v", msg)
 	msg.Clisn = time.Now().Format("150405")
 
-	back := send(msg, transTimeout) // 线下网关发送报文
+	back := send0(msg, transTimeout) // 线下网关发送报文
 
 	_ = back
 	log.Debug("--------------------------------------------")
