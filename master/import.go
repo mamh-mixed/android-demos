@@ -130,9 +130,10 @@ func (i *importer) read() error {
 		if index < 2 {
 			continue
 		}
+
 		err := i.cellMapping(r.Cells)
 		if err != nil {
-			return err
+			return fmt.Errorf("%d 行：%s", index, err)
 		}
 	}
 	if len(i.rowData) == 0 {
@@ -554,6 +555,11 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if len(cells) == 0 {
 		return nil
 	}
+
+	if len(cells) != 34 {
+		return fmt.Errorf("%s", "列数可能有误，请检查。")
+	}
+
 	r := &rowData{}
 	var cell *xlsx.Cell
 	if cell = cells[0]; cell != nil {

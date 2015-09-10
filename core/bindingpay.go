@@ -443,6 +443,8 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		return
 	}
 
+	// 交易参数
+	pay.SysOrderNum = util.SerialNumber()
 	// 渠道请求参数
 	be.Mode = chanMer.TransMode
 	be.ChanBindingId = pay.ChanBindingId
@@ -457,8 +459,6 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		return logicErrorHandle(pay, "510010")
 	}
 
-	// 交易参数
-	pay.SysOrderNum = util.SerialNumber()
 	// 记录这笔交易
 	if err = mongo.TransColl.Add(pay); err != nil {
 		log.Errorf("add trans error: %s", err)
