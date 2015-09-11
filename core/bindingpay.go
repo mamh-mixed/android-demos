@@ -70,6 +70,7 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	be.SysOrderNum = sett.SysOrderNum
 	be.PrivateKey = chanMer.PrivateKey
 	be.BankCode = cm.BankId
+	be.SettOrderNum = be.MerId + be.SettOrderNum
 
 	// 获取渠道接口
 	c := channel.GetChan(sett.ChanCode)
@@ -414,6 +415,7 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 		if be.SettOrderNum != orig.SettOrderNum {
 			return mongo.RespCodeColl.Get("000001") // TODO:结算订单号不一致
 		}
+		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 	default:
 		log.Errorf("Unsupport mode %s", chanMer.TransMode)
@@ -504,6 +506,7 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		if be.SettOrderNum == "" {
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
+		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 		be.SettFlag = chanMer.SettFlag
 	default:
@@ -649,6 +652,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		if be.SettOrderNum != refund.SettOrderNum {
 			return logicErrorHandle(refund, "000001") // TODO:结算订单号不一致
 		}
+		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 		// dothing
 	default:
