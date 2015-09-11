@@ -57,12 +57,19 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 		return logicErrorHandle(sett, "300030")
 	}
 
+	// 暂时判断中金渠道是否支持该银行卡
+	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
+	if err != nil {
+		return logicErrorHandle(sett, "000001")
+	}
+
 	// 交易参数
 	sett.SysOrderNum = util.SerialNumber()
 	// 渠道请求参数
 	be.ChanMerId = sett.ChanMerId
 	be.SysOrderNum = sett.SysOrderNum
 	be.PrivateKey = chanMer.PrivateKey
+	be.BankCode = cm.BankId
 
 	// 获取渠道接口
 	c := channel.GetChan(sett.ChanCode)

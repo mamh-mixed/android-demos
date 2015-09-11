@@ -74,7 +74,7 @@ func route(uri string, data []byte, merId string, w http.ResponseWriter) (ret *m
 	case "/bindingpay/sendBindingPaySms":
 		ret = SendBindingPaySMS(data, merId)
 	case "/bindingpay/bindingPaymentSettlement":
-
+		ret = BindingPaymentSettlementHandle(data, merId)
 	case "/bindingpay/getCardInfo":
 		ret = GetCardInfoHandle(data, merId)
 	case "/bindingpay/noTrackPayment":

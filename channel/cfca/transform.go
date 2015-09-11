@@ -112,7 +112,7 @@ AGAIN:
 			ret.RespCode = "400001"
 		}
 
-	case MerModeSendSMS, MarketModeSendSMS:
+	case MerModeSendSMS, MarketModeSendSMS, MarketPaySettlement:
 		ret.RespCode = "000000"
 	case TransChecking:
 		ret.RespCode = "000000"
