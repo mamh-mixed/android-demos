@@ -82,11 +82,11 @@ func refreshDNS(host, port string) string {
 	ips, err := net.LookupIP(host)
 	if err != nil {
 		log.Errorf("lookupIP for server name %s error: %s", host, err)
-		return ""
+		return host + ":" + port
 	}
 
 	if len(ips) == 0 {
-		return ""
+		return host + ":" + port
 	}
 	idx := rand.Intn(len(ips)) // 随机取一个ip
 	ip := ips[idx].String()
