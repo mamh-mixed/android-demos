@@ -59,17 +59,20 @@ var (
 )
 
 func fetchDns(hostport string) string {
-
 	host, port, _ := net.SplitHostPort(hostport)
 
 	dnsLock.RLock()
 	ip := dnsCache[host]
 	dnsLock.RUnlock()
+
 	if ip != "" {
-		if time.Now().Sub(lastLookupTime) > 4*time.Hour {
-			go refreshDNS(host, port)
+		delta := time.Now().Sub(lastLookupTime)
+		if delta < 10*time.Minute {
+			if delta >= 5*time.Minute {
+				go refreshDNS(host, port)
+			}
+			return ip + ":" + port
 		}
-		return ip + ":" + port
 	}
 
 	return refreshDNS(host, port)
@@ -90,6 +93,7 @@ func refreshDNS(host, port string) string {
 
 	dnsLock.Lock()
 	dnsCache[host] = ip
+	lastLookupTime = time.Now()
 	dnsLock.Unlock()
 
 	log.Infof("lookupIP for server name %s => %s:%s, %s", host, ip, port, ips)
