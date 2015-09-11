@@ -17,6 +17,7 @@ const (
 	CancelTrans     = 4 // 撤销交易
 	CloseTrans      = 5 // 关单
 	EnterpriseTrans = 6 // 企业付款
+	SettTrans       = 7 // 结算交易
 
 	// settStatus
 	SettSuccess    = 1 // 勾兑成功

@@ -75,6 +75,42 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 	return nil
 }
 
+// validatePaySettlement 验证支付结算接口字段
+func validatePaySettlement(in *model.PaySettlement) (ret *model.BindingReturn) {
+
+	if !isAlphanumeric(in.MerOrderNum) {
+		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
+	}
+
+	if err := validateSettOrderNum(in.SettOrderNum); err != nil {
+		return err
+	}
+
+	if err := validateAmt(in.SettAmt); err != nil {
+		return err
+	}
+
+	if in.SettAccountName == "" {
+		return model.NewBindingReturn("200050", "字段 settAccountName 不能为空")
+	}
+
+	if in.SettAccountNum == "" {
+		return model.NewBindingReturn("200050", "字段 settAccountNum 不能为空")
+	}
+
+	switch in.SettAccountType {
+	case "11", "12":
+		if in.Province == "" || in.City == "" || in.SettBranchName == "" {
+			return model.NewBindingReturn("200050", "分支行信息不完整")
+		}
+	case "20":
+	default:
+		return model.NewBindingReturn("200050", "账户类型 settAccountType 取值错误")
+	}
+
+	return nil
+}
+
 // validateGetCardInfo 验证获取卡片接口字段
 func validateGetCardInfo(in *model.CardInfo) (ret *model.BindingReturn) {
 
@@ -462,6 +498,27 @@ func validateApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("200252")
 	}
 
+	return nil
+}
+
+func validateSettOrderNum(settOrderNum string) *model.BindingReturn {
+
+	if len(settOrderNum) > 16 {
+		return model.NewBindingReturn("200080", "结算订单号 settOrderNum 长度过长")
+	}
+	if !isAlphanumeric(settOrderNum) {
+		return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+	}
+	return nil
+}
+
+func validateAmt(amt int64) *model.BindingReturn {
+	if amt <= 0 {
+		return model.NewBindingReturn("200051", "金额过小")
+	}
+	if amt > 1000000000 {
+		return model.NewBindingReturn("200051", "金额过大")
+	}
 	return nil
 }
 
