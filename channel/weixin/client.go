@@ -2,11 +2,8 @@ package weixin
 
 import (
 	"crypto/tls"
-	"fmt"
-	"math/rand"
 	"net"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/omigo/log"
@@ -41,61 +38,16 @@ func tcpDail(network, addr string) (net.Conn, error) {
 		Timeout:   10 * time.Second,
 		KeepAlive: 60 * time.Second,
 	}
-	ipPort := fetchDns(addr)
-	fmt.Printf("%s: dail %s %s\n", time.Now(), network, ipPort)
+
+	ipPort := wxScanpayIP + ":" + wxScanpayPort
+
+	log.Debugf("%s: dail %s %s\n", time.Now(), network, ipPort)
 	conn, err := dial.Dial(network, ipPort)
 	if err != nil {
 		return conn, err
 	}
-	fmt.Printf("%s: connect done, local %s, remote %s\n", time.Now(),
+	log.Debugf("%s: connect done, local %s, remote %s\n", time.Now(),
 		conn.LocalAddr().String(), conn.RemoteAddr().String())
+
 	return conn, err
-}
-
-var (
-	dnsLock        = &sync.RWMutex{}
-	dnsCache       = map[string]string{}
-	lastLookupTime time.Time
-)
-
-func fetchDns(hostport string) string {
-	host, port, _ := net.SplitHostPort(hostport)
-
-	dnsLock.RLock()
-	ip := dnsCache[host]
-	dnsLock.RUnlock()
-
-	if ip != "" {
-		delta := time.Now().Sub(lastLookupTime)
-		if delta < 10*time.Minute {
-			if delta >= 5*time.Minute {
-				go refreshDNS(host, port)
-			}
-			return ip + ":" + port
-		}
-	}
-
-	return refreshDNS(host, port)
-}
-
-func refreshDNS(host, port string) string {
-	ips, err := net.LookupIP(host)
-	if err != nil {
-		log.Errorf("lookupIP for server name %s error: %s", host, err)
-		return host + ":" + port
-	}
-
-	if len(ips) == 0 {
-		return host + ":" + port
-	}
-	idx := rand.Intn(len(ips)) // 随机取一个ip
-	ip := ips[idx].String()
-
-	dnsLock.Lock()
-	dnsCache[host] = ip
-	lastLookupTime = time.Now()
-	dnsLock.Unlock()
-
-	log.Infof("lookupIP for server name %s => %s:%s, %s", host, ip, port, ips)
-	return ip + ":" + port
 }
