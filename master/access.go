@@ -34,12 +34,14 @@ func handleUptoken(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(ret))
 }
 
-func handleDownURL(w http.ResponseWriter, req *http.Request) {
-	baseUrl := kodo.MakeBaseUrl(DOMAIN, req.URL.Query().Get("key")) // 得到下载 url
-	img := cli.MakePrivateUrl(baseUrl, nil)                         // 用默认的下载策略去生成私有下载的 url
+func makePrivateUrl(key string) string {
+	baseUrl := kodo.MakeBaseUrl(DOMAIN, key) // 得到下载 url
+	return cli.MakePrivateUrl(baseUrl, nil)  // 用默认的下载策略去生成私有下载的 url
+}
 
+func handleDownURL(w http.ResponseWriter, req *http.Request) {
+	img := makePrivateUrl(req.URL.Query().Get("key"))
 	// 如果是资质文件，需要保存路径或 key 值
 	// 如果是 Excel/csv，需要下载并处理数据
-
 	w.Write([]byte(img))
 }

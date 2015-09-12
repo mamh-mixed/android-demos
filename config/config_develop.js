@@ -19,12 +19,13 @@
     },
     "CILOnline": {
         "Host": "192.168.1.102",
-        // "Port": 50011
-        "Port": 7823,
-        "QueueSize": 1000, // 所有交易发送到线下前先排队，队列满后将阻塞
-        "InitWindowSize": 100, // 全双工 pipeline 方式，接收数据后，找到对应的请求者
-        "KeepaliveTime": "65s", // 每隔一段时间发送一个 keepalive 消息
-        "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
+        "Port": 7823
+        // "Host": "192.168.1.102",
+        // "Port": 7823,
+        // "QueueSize": 1000, // 所有交易发送到线下前先排队，队列满后将阻塞
+        // "InitWindowSize": 100, // 全双工 pipeline 方式，接收数据后，找到对应的请求者
+        // "KeepaliveTime": "65s", // 每隔一段时间发送一个 keepalive 消息
+        // "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
     },
     "CFCA": {
         "CFCAPublicKey": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
@@ -34,7 +35,8 @@
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
-        "NotifyURL": "http://dev.quick.ipay.so" // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "http://dev.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "DNSCacheRefreshTime": "3m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥

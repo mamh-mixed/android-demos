@@ -15,11 +15,9 @@ import (
 	"github.com/omigo/log"
 )
 
-func send1(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
-	host := goconf.Config.CILOnline.Host
-	port := goconf.Config.CILOnline.Port
-	addr := host + ":" + strconv.Itoa(port)
+var addr = goconf.Config.CILOnline.Host + ":" + strconv.Itoa(goconf.Config.CILOnline.Port)
 
+func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		log.Errorf("can't connect to CIL-Online tcp://%s: %s", addr, err)
@@ -71,13 +69,13 @@ func sendOne(conn net.Conn, msg *model.CilMsg) (err error) {
 
 	w.Flush()
 
-	log.Infof("write message: %04x | %+02x | %s", mLen, tpduHeader, jsonBytes)
+	log.Infof("write message: %04x | %+x | %s", mLen, tpduHeader, jsonBytes)
 	return nil
 }
 
 func receiveOne(conn net.Conn) (back *model.CilMsg, err error) {
 	var mLen uint16
-	err = binary.Read(conn, binary.BigEndian, mLen)
+	err = binary.Read(conn, binary.BigEndian, &mLen)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +86,7 @@ func receiveOne(conn net.Conn) (back *model.CilMsg, err error) {
 
 	tpduHeader := make([]byte, 11)
 	_, err = io.ReadFull(conn, tpduHeader)
-	log.Debugf("tpdu and header: %s", tpduHeader)
+	// log.Debugf("tpdu and header: %s", tpduHeader)
 
 	msg := make([]byte, mLen-11)
 	_, err = io.ReadFull(conn, msg)
@@ -96,7 +94,7 @@ func receiveOne(conn net.Conn) (back *model.CilMsg, err error) {
 		return nil, err
 	}
 
-	log.Infof("recieve message: %04x | %s | %s", mLen, tpduHeader, msg)
+	log.Infof("recieve message: %04x | %+x | %s", mLen, tpduHeader, msg)
 
 	back = &model.CilMsg{}
 	err = json.Unmarshal(msg, back)

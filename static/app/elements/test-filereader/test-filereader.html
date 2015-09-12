@@ -1,16 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../layouts/drawer-layout.html">
 
 <dom-module id="test-filereader">
-  <style>
-    :host {
-      display: block;
-    }
-
-  </style>
   <template>
-    <paper-input type="file" id="file" on-change="handleFiles"></paper-input>
+    <drawer-layout>
 
-    <pre>{{fileContent}}</pre>
+      <paper-input type="file" id="file" on-change="handleFiles"></paper-input>
+
+      <pre>{{fileContent}}</pre>
+    </drawer-layout>
+
   </template>
   <script>
     (function() {

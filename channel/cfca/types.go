@@ -33,6 +33,7 @@ type requestBody struct {
 	ValidDate            string `xml:",omitempty"` //信用卡有效期
 	CVN2                 string `xml:",omitempty"` //信用卡背面的末 3 位数字
 	TxSNUnBinding        string `xml:",omitempty"` //解绑流水号
+	OrderNo              string `xml:",omitempty"` //市场订单号
 	PaymentNo            string `xml:",omitempty"` //支付交易流水号
 	Amount               int64  `xml:",omitempty"` //支付金额,单位:分
 	SettlementFlag       string `xml:",omitempty"` //结算标识
