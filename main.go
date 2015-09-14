@@ -5,7 +5,6 @@ import (
 	"runtime"
 
 	"github.com/CardInfoLink/quickpay/bindingpay"
-	"github.com/CardInfoLink/quickpay/channel/cil"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -52,8 +51,6 @@ func startBindingpay() {
 	core.BuildTree()
 	// 检查数据配置是否有变化
 	check.DoCheck()
-	// 连接到 线下网关
-	cil.Connect()
 
 	http.Handle("/bindingpay/", bindingpay.Route())
 }

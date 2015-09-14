@@ -1,6 +1,10 @@
 package cfca
 
-import "github.com/CardInfoLink/quickpay/model"
+import (
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
+)
 
 // DefaultClient 默认 CFCA 绑定支付客户端
 var DefaultClient CFCABindingPay
@@ -10,18 +14,31 @@ type CFCABindingPay struct{}
 
 // 中金交易类型
 const (
-	version                 = "2.0"
-	correctCode             = "2000"
-	BindingCreateTxCode     = "2501"
-	BindingEnquiryTxCode    = "2502"
-	BindingRemoveTxCode     = "2503"
-	BindingPaymentTxCode    = "2511"
-	BindingRefundTxCode     = "2521"
-	PaymentEnquiryTxCode    = "2512"
-	RefundEnquiryTxCode     = "2522"
-	TransCheckingTxCode     = "1810"
-	SendBindingPaySMSTxCode = "2541" // 快捷支付(发送验证短信)
-	PaymentWithSMSTxCode    = "2542" // 快捷支付(验证并绑定)
+	version     = "2.0"
+	correctCode = "2000"
+
+	BindingCreate  = "2501"
+	BindingEnquiry = "2502"
+	BindingRemove  = "2503"
+	TransChecking  = "1810"
+
+	MerModePay    = "2511" // 商户模式快捷支付
+	MarketModePay = "1371" // 市场模式快捷支付
+
+	MerModeRefund    = "2521" // 商户模式快捷支付退款
+	MarketModeRefund = "1373" // 市场模式快捷支付退款
+
+	MerModePayEnquiry    = "2512" // 商户模式快捷支付查询
+	MarketModePayEnquiry = "1372" // 市场模式快捷支付查询
+
+	MerModeRefundEnquiry    = "2522" // 商户模式退款查询
+	MarketModeRefundEnquiry = "1374" // 市场模式退款查询
+
+	MerModePayWithSMS    = "2542" // 商户模式短信支付
+	MarketModePayWithSMS = "1376" // 市场模式短信支付
+
+	MerModeSendSMS    = "2541" // 商户模式发送验证短信
+	MarketModeSendSMS = "1375" // 市场模式发送短信验证
 )
 
 // ProcessPaymentWithSMS 快捷支付(验证并绑定)
@@ -31,7 +48,6 @@ func (c *CFCABindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *m
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        PaymentWithSMSTxCode,
 		},
 		Body: requestBody{
 			PaymentNo:         be.SysOrderNum,
@@ -39,17 +55,37 @@ func (c *CFCABindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *m
 		},
 		PrivateKey: be.PrivateKey,
 	}
-	// 请求
-	resp := sendRequest(req)
-	// 应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-	return ret
+
+	// 判断交易模式
+	switch be.Mode {
+	case model.MarketMode:
+		req.Head.TxCode = MarketModePayWithSMS
+		req.Body.OrderNo = be.SettOrderNum
+	case model.MerMode:
+		req.Head.TxCode = MerModePayWithSMS
+	default:
+		log.Errorf("unsupport mode %s", be.Mode)
+		return mongo.RespCodeColl.Get("000001")
+	}
+
+	return transformResp(sendRequest(req), req.Head.TxCode)
 }
 
 // ProcessSendBindingPaySMS 快捷支付(发送验证短信)
 func (c *CFCABindingPay) ProcessSendBindingPaySMS(be *model.BindingPayment) (ret *model.BindingReturn) {
-	// 2541
-	return quickPayment(be, SendBindingPaySMSTxCode)
+
+	// 判断交易模式
+	switch be.Mode {
+	case model.MarketMode:
+		be.SettFlag = ""
+		return quickPayment(be, MarketModeSendSMS)
+	case model.MerMode:
+		be.SettOrderNum = ""
+		return quickPayment(be, MerModeSendSMS)
+	default:
+		log.Errorf("unsupport mode %s", be.Mode)
+		return mongo.RespCodeColl.Get("000001")
+	}
 }
 
 // ProcessBindingCreate 建立绑定关系
@@ -59,7 +95,7 @@ func (c *CFCABindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        BindingCreateTxCode,
+			TxCode:        BindingCreate,
 		},
 		Body: requestBody{
 			TxSNBinding:          be.ChanBindingId,
@@ -90,7 +126,7 @@ func (c *CFCABindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *m
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        BindingEnquiryTxCode,
+			TxCode:        BindingEnquiry,
 		},
 		Body: requestBody{
 			TxSNBinding: be.ChanBindingId,
@@ -114,7 +150,7 @@ func (c *CFCABindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        BindingRemoveTxCode,
+			TxCode:        BindingRemove,
 		},
 		Body: requestBody{
 			TxSNUnBinding: be.TxSNUnBinding,
@@ -134,8 +170,19 @@ func (c *CFCABindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 
 // ProcessBindingPayment 快捷支付
 func (c *CFCABindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
-	// 2511
-	return quickPayment(be, BindingPaymentTxCode)
+
+	// 判断交易模式
+	switch be.Mode {
+	case model.MarketMode:
+		be.SettFlag = ""
+		return quickPayment(be, MarketModePay)
+	case model.MerMode:
+		be.SettOrderNum = ""
+		return quickPayment(be, MerModePay)
+	default:
+		log.Errorf("unsupport mode %s", be.Mode)
+		return mongo.RespCodeColl.Get("000001")
+	}
 }
 
 // quickPayment 快捷支付，根据业务代码的不同，走不同接口
@@ -149,6 +196,7 @@ func quickPayment(be *model.BindingPayment, txCode string) (ret *model.BindingRe
 			TxCode:        txCode,
 		},
 		Body: requestBody{
+			OrderNo:        be.SettOrderNum,
 			PaymentNo:      be.SysOrderNum,
 			Amount:         be.TransAmt,
 			TxSNBinding:    be.ChanBindingId,
@@ -172,7 +220,6 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        PaymentEnquiryTxCode,
 		},
 		Body: requestBody{
 			PaymentNo: be.SysOrderNum,
@@ -180,13 +227,18 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 		PrivateKey: be.PrivateKey,
 	}
 
-	// 请求
-	resp := sendRequest(req)
+	// 判断交易模式
+	switch be.Mode {
+	case model.MarketMode:
+		req.Head.TxCode = MarketModePayEnquiry
+	case model.MerMode:
+		req.Head.TxCode = MerModePayEnquiry
+	default:
+		log.Errorf("unsupport mode %s", be.Mode)
+		return mongo.RespCodeColl.Get("000001")
+	}
 
-	// 应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-
-	return ret
+	return transformResp(sendRequest(req), req.Head.TxCode)
 }
 
 // ProcessBindingRefund 快捷支付退款
@@ -196,7 +248,6 @@ func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        BindingRefundTxCode,
 		},
 		Body: requestBody{
 			TxSN:      be.SysOrderNum,     //退款交易流水号
@@ -207,13 +258,20 @@ func (c *CFCABindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 		PrivateKey: be.PrivateKey,
 	}
 
-	// 请求
-	resp := sendRequest(req)
+	// 判断交易模式
+	switch be.Mode {
+	case model.MarketMode:
+		req.Head.TxCode = MarketModeRefund
+		req.Body.OrderNo = be.SettOrderNum
+	case model.MerMode:
+		req.Head.TxCode = MerModeRefund
+	default:
+		log.Errorf("unsupport mode %s", be.Mode)
+		return mongo.RespCodeColl.Get("000001")
+	}
 
 	// 应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-
-	return ret
+	return transformResp(sendRequest(req), req.Head.TxCode)
 }
 
 // ProcessRefundEnquiry 快捷支付退款查询
@@ -223,7 +281,6 @@ func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 		Version: version,
 		Head: requestHead{
 			InstitutionID: be.ChanMerId,
-			TxCode:        RefundEnquiryTxCode,
 		},
 		Body: requestBody{
 			TxSN: be.SysOrderNum, //退款交易流水号
@@ -231,13 +288,18 @@ func (c *CFCABindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 		PrivateKey: be.PrivateKey,
 	}
 
-	// 请求
-	resp := sendRequest(req)
+	// 判断交易模式
+	switch be.Mode {
+	case model.MarketMode:
+		req.Head.TxCode = MarketModeRefund
+	case model.MerMode:
+		req.Head.TxCode = MerModeRefund
+	default:
+		log.Errorf("unsupport mode %s", be.Mode)
+		return mongo.RespCodeColl.Get("000001")
+	}
 
-	// 应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-
-	return ret
+	return transformResp(sendRequest(req), req.Head.TxCode)
 }
 
 // ProcessTransChecking 交易对账，清算
@@ -246,7 +308,7 @@ func (c *CFCABindingPay) ProcessTransChecking(chanMerId, settDate, PrivateKey st
 	req := &BindingRequest{
 		Version: version,
 		Head: requestHead{
-			TxCode: TransCheckingTxCode,
+			TxCode: TransChecking,
 		},
 		Body: requestBody{
 			InstitutionID: chanMerId,

@@ -45,6 +45,9 @@ table.data-grid th, table.data-grid td {
   white-space: nowrap;
   padding: 8px 8px;
 }
+table.data-grid.low th, table.data-grid.low td {
+  padding: 3px 8px;
+}
 table.data-grid > thead > tr > th {
   line-height: 1.42857143;
   border-bottom: 1px solid #ddd;
@@ -64,15 +67,23 @@ table.data-grid > tbody > tr:nth-child(even) {
 table.data-grid iron-icon {
   height: 1.2em !important;
 }
-td.left{
-    text-align: left;
+td.left {
+  text-align: left;
 }
-td.right{
-    text-align: right;
+td.right {
+  text-align: right;
 }
-td.center{
-    text-align: center;
+td.center {
+  text-align: center;
 }
+table.data-grid tbody tr th {
+  text-align: left;
+}
+pre {
+  font-family: monospace;
+  font-size: 8px;
+}
+
 /* colors */
 
 .red {

@@ -39,7 +39,7 @@ AGAIN:
 	switch txCode {
 	//根据交易类型处理结果
 	//建立绑定关系、绑定关系查询
-	case BindingCreateTxCode, BindingEnquiryTxCode:
+	case BindingCreate, BindingEnquiry:
 		// ret.BindingId = resp.Body.TxSNBinding
 		//10=绑定处理中 20=绑定失败 30=绑定成功 40=解绑成功
 		switch resp.Body.Status {
@@ -56,7 +56,7 @@ AGAIN:
 			ret.RespCode = "000001"
 		}
 	//解除绑定关系
-	case BindingRemoveTxCode:
+	case BindingRemove:
 		//10=解绑处理中 20=解绑成功 30=解绑失败(等于已绑定)
 		switch resp.Body.Status {
 		case "10":
@@ -70,7 +70,7 @@ AGAIN:
 			ret.RespCode = "000001"
 		}
 	//快捷支付、快捷支付查询
-	case BindingPaymentTxCode, PaymentEnquiryTxCode:
+	case MerModePay, MarketModePay, MerModePayEnquiry, MarketModePayEnquiry:
 		//10=处理中 20=支付成功 30=支付失败
 		switch resp.Body.Status {
 		case "10":
@@ -83,10 +83,10 @@ AGAIN:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
-	case BindingRefundTxCode:
+	case MerModeRefund, MarketModeRefund:
 		//都是受理成功
 		ret.RespCode = "000000"
-	case RefundEnquiryTxCode:
+	case MerModeRefundEnquiry, MarketModeRefundEnquiry:
 		//10=已受理 20=正在退款 30=退款成功 40=退款失败
 		switch resp.Body.Status {
 		case "10", "20", "30":
@@ -97,12 +97,12 @@ AGAIN:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
 		}
-	case PaymentWithSMSTxCode:
+	case MerModePayWithSMS, MarketModePayWithSMS:
 		// 验证码状态
 		switch resp.Body.VerifyStatus {
 		case "40":
-			// 验证码通过，验证status
-			txCode = BindingPaymentTxCode
+			txCode = MerModePay
+			// 验证码通过，验证交易状态
 			goto AGAIN
 		case "20":
 			// TODO:验证码超时
@@ -112,11 +112,10 @@ AGAIN:
 			ret.RespCode = "400001"
 		}
 
-	case SendBindingPaySMSTxCode:
+	case MerModeSendSMS, MarketModeSendSMS:
 		ret.RespCode = "000000"
-	case TransCheckingTxCode:
+	case TransChecking:
 		ret.RespCode = "000000"
-
 	}
 
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)

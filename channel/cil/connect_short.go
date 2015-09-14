@@ -1,8 +1,10 @@
 package cil
 
 import (
+	"bufio"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"io"
 	"net"
 	"strconv"
@@ -13,18 +15,18 @@ import (
 	"github.com/omigo/log"
 )
 
-func send0(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
-	host := goconf.Config.CILOnline.Host
-	port := goconf.Config.CILOnline.Port
-	addr := host + ":" + strconv.Itoa(port)
+var addr = goconf.Config.CILOnline.Host + ":" + strconv.Itoa(goconf.Config.CILOnline.Port)
 
+func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		log.Errorf("can't connect to CIL-Online tcp://%s: %s", addr, err)
 		return nil
 	}
-	// defer conn.Close()
 	log.Infof("connected to CIL-Online %s", addr)
+	defer conn.Close()
+
+	conn.SetDeadline(time.Now().Add(30 * time.Second))
 
 	sendOne(conn, msg)
 
@@ -46,44 +48,53 @@ func sendOne(conn net.Conn, msg *model.CilMsg) (err error) {
 		return err
 	}
 
-	// xxxx | 60 0000 00 00 | 60 31 0 0 000000 | xxxxxxxx...
-	mLen := uint16(len(jsonBytes) + 10 + 12)
-	binary.Write(conn, binary.BigEndian, mLen)
-	binary.Write(conn, binary.BigEndian, byte(6))
-	binary.Write(conn, binary.BigEndian, byte(0))
-	binary.Write(conn, binary.BigEndian, uint64(0))
-	binary.Write(conn, binary.BigEndian, byte(6))
-	binary.Write(conn, binary.BigEndian, byte(0))
-	binary.Write(conn, binary.BigEndian, byte(3))
-	binary.Write(conn, binary.BigEndian, byte(1))
-	binary.Write(conn, binary.BigEndian, uint64(0))
+	w := bufio.NewWriter(conn)
 
-	_, err = conn.Write(jsonBytes)
+	// xxxx | 60 0000 0000 | 60 31 0 0 000000 | xxxxxxxx...
+	mLen := uint16(len(jsonBytes) + 11)
+	binary.Write(w, binary.BigEndian, mLen)
+
+	tpduHeader := []byte{0x60, 0x00, 0x00, 0x00, 0x00, 0x60, 0x31, 0x00, 0x00, 0x00, 0x00}
+	_, err = w.Write(tpduHeader)
 	if err != nil {
 		log.Error("write len error", err)
 		return err
 	}
 
-	log.Infof("write message: %04x | 60 0000 00 00 | 60 31 0 0 000000 | %s", mLen, jsonBytes)
+	_, err = w.Write(jsonBytes)
+	if err != nil {
+		log.Error("write len error", err)
+		return err
+	}
 
+	w.Flush()
+
+	log.Infof("write message: %04x | %+x | %s", mLen, tpduHeader, jsonBytes)
 	return nil
 }
 
 func receiveOne(conn net.Conn) (back *model.CilMsg, err error) {
 	var mLen uint16
-	binary.Read(conn, binary.BigEndian, mLen)
+	err = binary.Read(conn, binary.BigEndian, &mLen)
+	if err != nil {
+		return nil, err
+	}
+	log.Debugf("length: %d", mLen)
+	if mLen <= 0 {
+		return nil, errors.New("read nothing from CIL-Online")
+	}
 
-	tpduHeader := make([]byte, 22)
+	tpduHeader := make([]byte, 11)
 	_, err = io.ReadFull(conn, tpduHeader)
-	log.Debugf("tpdu header: %s", tpduHeader)
+	// log.Debugf("tpdu and header: %s", tpduHeader)
 
-	msg := make([]byte, mLen)
+	msg := make([]byte, mLen-11)
 	_, err = io.ReadFull(conn, msg)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Infof("recieve message: %04x | 60 0000 00 00 | 60 31 0 0 000000 | %s", mLen, msg)
+	log.Infof("recieve message: %04x | %+x | %s", mLen, tpduHeader, msg)
 
 	back = &model.CilMsg{}
 	err = json.Unmarshal(msg, back)

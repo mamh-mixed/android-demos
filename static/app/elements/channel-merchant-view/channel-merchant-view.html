@@ -8,7 +8,6 @@
         width: 600px;
         min-height: 500px;
         max-height: 500px;
-        font-size: 15px;
       }
     }
 
@@ -40,233 +39,197 @@
       font-size: 16px;
     }
 
-    dl dt {
-      float: left;
-      width: 120px;
-      overflow: hidden;
-      clear: left;
-      text-align: right;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      opacity: 0.5;
+    th,
+    td {
+      padding-top: 3px !important;
     }
 
-    dl dd {
-      margin-left: 150px;
-      word-break: break-all;
-    }
-
-    dd:after,
-    dd:before {
-      display: table;
-      content: " ";
-    }
-
-    dd:after {
-      clear: both;
-    }
   </style>
   <template>
     <paper-dialog id="dialogView">
       <h2>查看渠道商户信息</h2>
       <paper-dialog-scrollable>
         <div id="alp" hidden>
-          <dl>
-            <dt>渠道代码:</dt>
-            <dd>
-              <span>{{item.chanCode}}</span>
-            </dd>
-
-            <dt>商户代码:</dt>
-            <dd>
-              <span>{{item.chanMerId}}</span>
-            </dd>
-
-            <dt>商户名称:</dt>
-            <dd>
-              <span>{{item.chanMerName}}</span>
-            </dd>
-            <dt>渠道费率:</dt>
-            <dd>
-              <span>{{item.acqFee}}</span>
-            </dd>
-            <dt>商户费率:</dt>
-            <dd>
-              <span>{{item.merFee}}</span>
-            </dd>
-            <dt>MD5 KEY:</dt>
-            <dd>
-                <span>{{item.signCert}}</span>
-            </dd>
-          </dl>
+          <table class="data-grid low">
+            <tbody>
+              <tr>
+                <th>渠道代码:</th>
+                <td>{{item.chanCode}}</td>
+              </tr>
+              <tr>
+                <th>商户代码:</th>
+                <td>{{item.chanMerId}}</td>
+              </tr>
+              <tr>
+                <th>商户名称:</th>
+                <td>{{item.chanMerName}}</td>
+              </tr>
+              <tr>
+                <th>渠道费率:</th>
+                <td>{{item.acqFee}}</td>
+              </tr>
+              <tr>
+                <th>商户费率:</th>
+                <td>{{item.merFee}}</td>
+              </tr>
+              <tr>
+                <th>MD5 KEY:</th>
+                <td>{{item.signCert}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div id="wxp" hidden>
-          <dl>
-            <dt>渠道代码:</dt>
-            <dd>
-              <span>{{item.chanCode}}</span>
-            </dd>
-
-            <dt>商户代码:</dt>
-            <dd>
-              <span>{{item.chanMerId}}</span>
-            </dd>
-
-            <dt>商户名称:</dt>
-            <dd>
-              <span>{{item.chanMerName}}</span>
-            </dd>
-
-            <dt>是否代理商模式:</dt>
-            <dd>
-              <paper-checkbox checked$="{{item.isAgentMode}}" disabled></paper-checkbox>
-            </dd>
-
-            <dt>大商户号:</dt>
-            <dd>
-              <span>{{item.agentMer.chanMerId}}</span>
-            </dd>
-            <dt>渠道费率:</dt>
-            <dd>
-              <span>{{item.acqFee}}</span>
-            </dd>
-            <dt>商户费率:</dt>
-            <dd>
-              <span>{{item.merFee}}</span>
-            </dd>
-            <dt>微信 APPID:</dt>
-            <dd>
-              <span>{{item.wxpAppId}}</span>
-            </dd>
-            <dt>签名证书:</dt>
-            <dd>
-                <span>{{item.signCert}}</span>
-            </dd>
-            <dt>HTTP Cert:</dt>
-            <dd>
-              <pre>{{item.httpCert}}</pre>
-            </dd>
-            <dt>HTTP Key:</dt>
-            <dd>
-              <pre>{{item.httpKey}}</pre>
-            </dd>
-          </dl>
+          <table class="data-grid low">
+            <tbody>
+              <tr>
+                <th>渠道代码:</th>
+                <td>{{item.chanCode}}</td>
+              </tr>
+              <tr>
+                <th>商户代码:</th>
+                <td>{{item.chanMerId}}</td>
+              </tr>
+              <tr>
+                <th>商户名称:</th>
+                <td>{{item.chanMerName}}</td>
+              </tr>
+              <tr>
+                <th>是否代理商模式:</th>
+                <td>
+                  <paper-checkbox checked$="{{item.isAgentMode}}" disabled></paper-checkbox>
+                </td>
+              </tr>
+              <tr>
+                <th>大商户号:</th>
+                <td>{{item.agentMer.chanMerId}}</td>
+              </tr>
+              <tr>
+                <th>渠道费率:</th>
+                <td>{{item.acqFee}}</td>
+              </tr>
+              <tr>
+                <th>商户费率:</th>
+                <td>{{item.merFee}}</td>
+              </tr>
+              <tr>
+                <th>微信 APPID:</th>
+                <td>{{item.wxpAppId}}</td>
+              </tr>
+              <tr>
+                <th>签名证书:</th>
+                <td>{{item.signCert}}</td>
+              </tr>
+              <tr>
+                <th colspan="2">HTTP Cert:</th>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <pre>{{item.httpCert}}</pre>
+                </td>
+              </tr>
+              <tr>
+                <th colspan="2">HTTP Key:</th>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <pre>{{item.httpKey}}</pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div id="cfca" hidden>
-          <dl>
-            <dt>渠道代码:</dt>
-            <dd>
-              <span>{{item.chanCode}}</span>
-            </dd>
-
-            <dt>商户代码:</dt>
-            <dd>
-              <span>{{item.chanMerId}}</span>
-            </dd>
-
-            <dt>商户名称:</dt>
-            <dd>
-              <span>{{item.chanMerName}}</span>
-            </dd>
-
-            <dt>清算标识:</dt>
-            <dd>
-              <span>{{item.settFlag}}</span>
-            </dd>
-
-            <dt>清算角色:</dt>
-            <dd>
-              <span>{{item.settRole}}</span>
-            </dd>
-            <dt>CFCA 商户私钥:</dt>
-            <dd>
-              <span>{{item.privateKey}}</span>
-            </dd>
-            <dt>CFCA 商户公钥:</dt>
-            <dd>
-              <span>{{item.publicKey}}</span>
-            </dd>
-            <dt>渠道费率:</dt>
-            <dd>
-              <span>{{item.acqFee}}</span>
-            </dd>
-            <dt>商户费率:</dt>
-            <dd>
-              <span>{{item.merFee}}</span>
-            </dd>
-          </dl>
-
+          <table class="data-grid low">
+            <tbody>
+              <tr>
+                <th>渠道代码:</th>
+                <td>{{item.chanCode}}</td>
+              </tr>
+              <tr>
+                <th>商户代码:</th>
+                <td>{{item.chanMerId}}</td>
+              </tr>
+              <tr>
+                <th>商户名称:</th>
+                <td>{{item.chanMerName}}</td>
+              </tr>
+              <tr>
+                <th>清算标识:</th>
+                <td>{{item.settFlag}}</td>
+              </tr>
+              <tr>
+                <th>清算角色:</th>
+                <td>{{item.settRole}}</td>
+              </tr>
+              <tr>
+                <th>渠道费率:</th>
+                <td>{{item.acqFee}}</td>
+              </tr>
+              <tr>
+                <th>商户费率:</th>
+                <td>{{item.merFee}}</td>
+              </tr>
+              <tr>
+                <th colspan="2">CFCA 商户私钥:</th>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <pre>{{item.privateKey}}</pre>
+                </td>
+              </tr>
+              <tr>
+                <th colspan="2">CFCA 商户公钥:</th>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <pre>{{item.publicKey}}</pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div id="cil" hidden>
-          <dl>
-            <dt>渠道代码:</dt>
-            <dd>
-              <span>{{item.chanCode}}</span>
-            </dd>
-
-            <dt>商户代码:</dt>
-            <dd>
-              <span>{{item.chanMerId}}</span>
-            </dd>
-
-            <dt>商户名称:</dt>
-            <dd>
-              <span>{{item.chanMerName}}</span>
-            </dd>
-
-            <dt>清算标识:</dt>
-            <dd>
-              <span>{{item.settFlag}}</span>
-            </dd>
-
-            <dt>清算角色:</dt>
-            <dd>
-              <span>{{item.settRole}}</span>
-            </dd>
-
-            <dt>签名证书:</dt>
-            <dd>
-              <p>
-                <pre>{{item.signCert}}</pre>
-              </p>
-            </dd>
-
-            <dt>验签证书:</dt>
-            <dd>
-              <span>{{item.checkSignCert}}</span>
-            </dd>
-
-            <dt>微信 APPID:</dt>
-            <dd>
-              <span>{{item.wxpAppId}}</span>
-            </dd>
-
-            <dt>机构号:</dt>
-            <dd>
-              <span>{{item.agentCode}}</span>
-            </dd>
-
-            <dt>终端号:</dt>
-            <dd>
-              <span>{{item.terminalId}}</span>
-            </dd>
-            <dt>渠道费率:</dt>
-            <dd>
-              <span>{{item.acqFee}}</span>
-            </dd>
-            <dt>商户费率:</dt>
-            <dd>
-              <span>{{item.merFee}}</span>
-            </dd>
-            <dt>HTTP Cert:</dt>
-            <dd>
-              <span>{{item.httpCert}}</span>
-            </dd>
-            <dt>HTTP Key:</dt>
-            <dd>
-              <span>{{item.httpKey}}</span>
-            </dd>
-          </dl>
+          <table class="data-grid low">
+            <tbody>
+              <tr>
+                <th>渠道代码:</th>
+                <td>{{item.chanCode}}</td>
+              </tr>
+              <tr>
+                <th>商户代码:</th>
+                <td>{{item.chanMerId}}</td>
+              </tr>
+              <tr>
+                <th>商户名称:</th>
+                <td>{{item.chanMerName}}</td>
+              </tr>
+              <tr>
+                <th>清算标识:</th>
+                <td>{{item.settFlag}}</td>
+              </tr>
+              <tr>
+                <th>清算角色:</th>
+                <td>{{item.settRole}}</td>
+              </tr>
+              <tr>
+                <th>机构号:</th>
+                <td>{{item.agentCode}}</td>
+              </tr>
+              <tr>
+                <th>终端号:</th>
+                <td>{{item.terminalId}}</td>
+              </tr>
+              <tr>
+                <th>渠道费率:</th>
+                <td>{{item.acqFee}}</td>
+              </tr>
+              <tr>
+                <th>商户费率:</th>
+                <td>{{item.merFee}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -354,5 +317,6 @@
         this.fire('delete-ok');
       },
     });
+
   </script>
 </dom-module>

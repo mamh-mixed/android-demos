@@ -31,7 +31,7 @@ func xTestAddSpChanFromCSV(t *testing.T) {
 		t.FailNow()
 	}
 
-	// 导入支付宝
+	// // 导入支付宝
 	err = AddSpChanCodeFromScv("alp", "respCode_alp.csv")
 	if err != nil {
 		t.Error(err)
@@ -91,7 +91,7 @@ func xTestAddChanCodeFromCSV(t *testing.T) {
 func xTestAddCardBinFromCSV(t *testing.T) {
 	// false 时会更新数据，但不会删除
 	// true 时会丢掉集合，重新建立
-	err := AddCardBinFromCSV("cardBin.csv", true)
+	err := AddCardBinFromCSV("cardBin.csv", false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

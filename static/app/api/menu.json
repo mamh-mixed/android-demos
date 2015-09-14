@@ -28,6 +28,12 @@
     "icon": "create",
     "url": "/config/configMer",
     "route": "config.configMer"
+    }, {
+      "nameCN": "批量导入",
+      "nameEN": "",
+      "icon": "cloud-upload",
+      "url": "/config/upload",
+      "route": "config.upload"
   }, {
     "nameCN": "机构商户",
     "nameEN": "",

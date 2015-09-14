@@ -8,6 +8,7 @@ import (
 	"github.com/omigo/log"
 )
 
+// NotifyURL 微信异步通知
 const NotifyURL = "/scanpay/upNotify/weixin"
 
 // BaseReq 只是为了注入签名方便
@@ -50,30 +51,23 @@ func (c *CommonParams) GetSignKey() string {
 // 如果使用双向 HTTPS 认证，重写此方法`return GetHTTPSClient()` 即可
 func (c *CommonParams) GetHTTPClient() *http.Client {
 	// return c.GetHTTPSClient()
-	return http.DefaultClient
+	return getDefaultWeixinClient()
 }
 
 // GetHTTPSClient 使用双向 HTTPS 认证
 func (c *CommonParams) GetHTTPSClient() (cli *http.Client) {
 	if len(c.ClientCert) == 0 || len(c.ClientKey) == 0 {
 		log.Error("client cert and key must not blank")
-		return http.DefaultClient
+		return getDefaultWeixinClient()
 	}
 
 	cliCrt, err := tls.X509KeyPair(c.ClientCert, c.ClientKey)
 	if err != nil {
 		log.Errorf("X509KeyPair err: %s", err)
-		return http.DefaultClient
+		return getDefaultWeixinClient()
 	}
 
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			// InsecureSkipVerify: true, // only for testing
-			Certificates: []tls.Certificate{cliCrt}},
-	}
-	cli = &http.Client{Transport: tr}
-
-	return cli
+	return getPrivateWeixinClient(&cliCrt)
 }
 
 // BaseResp 只是为了传参方便

@@ -187,12 +187,7 @@
         },
         observers: [
           '_watchAgentChange(agent.key)',
-          '_watchCondChange(cond.*)'
         ],
-        _watchCondChange: function() {
-          var t = new Date().format('yyyyMMdd-hhmmss');
-          this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=汇总报表_' + t + '.xlsx';
-        },
         _watchAgentChange: function(key) {
           if (key) {
             this.set('cond.agentCode', key);

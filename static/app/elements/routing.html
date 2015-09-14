@@ -211,7 +211,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     });
     page('/404', '/');
     page('*', '/404');
-    // add #! before urls
+
+    page('/config/upload', function() {
+      app.route = {
+        name: 'config.upload',
+        path: '/config/upload',
+        title: '批量导入',
+        subtitle: '批量导入'
+      };
+    });
+
+
+
     page({
       hashbang: true
     });

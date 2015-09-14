@@ -367,6 +367,8 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 					orig.ChanRespCode = orderStatus.ChanRespCode
 					orig.ChanOrderNum = orderStatus.ChannelOrderNum
 					orig.ConsumerAccount = orderStatus.ConsumerAccount
+					orig.RespCode = SuccessCode
+					orig.ErrorDetail = SuccessMsg
 					goto Tag
 				}
 				fallthrough

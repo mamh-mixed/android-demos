@@ -10,10 +10,10 @@ type subAgentCollection struct {
 	name string
 }
 
-// SubAgentColl 代理商 Collection
+// SubAgentColl 二级代理 Collection
 var SubAgentColl = subAgentCollection{"subAgent"}
 
-// Find 根据代理商代码查找
+// Find 根据二级代理代码查找
 func (col *subAgentCollection) Find(subAgentCode string) (s *model.SubAgent, err error) {
 
 	bo := bson.M{
@@ -27,7 +27,7 @@ func (col *subAgentCollection) Find(subAgentCode string) (s *model.SubAgent, err
 	return
 }
 
-// Add 增加一个代理商
+// Add 增加一个二级代理
 func (col *subAgentCollection) Add(s *model.SubAgent) error {
 	bo := bson.M{
 		"subAgentCode": s.SubAgentCode,
@@ -37,7 +37,7 @@ func (col *subAgentCollection) Add(s *model.SubAgent) error {
 	return err
 }
 
-// Update 更新代理商信息
+// Update 更新二级代理信息
 func (col *subAgentCollection) Update(s *model.SubAgent) error {
 	bo := bson.M{
 		"subAgentCode": s.SubAgentCode,
@@ -54,14 +54,14 @@ func (col *subAgentCollection) Upsert(s *model.SubAgent) error {
 	return err
 }
 
-// FindByCode 得到某个代理商的名称
+// FindByCode 得到某个二级代理的名称
 func (col *subAgentCollection) FindByCode(subAgentCode string) ([]*model.SubAgent, error) {
 	var cs []*model.SubAgent
 	err := database.C(col.name).Find(bson.M{"subAgentCode": subAgentCode}).All(&cs)
 	return cs, err
 }
 
-// FindByCondition 根据代理商的条件查找代理商
+// FindByCondition 根据条件查找二级代理
 func (col *subAgentCollection) FindByCondition(cond *model.SubAgent) (results []model.SubAgent, err error) {
 	results = make([]model.SubAgent, 1)
 	err = database.C(col.name).Find(cond).All(&results)
@@ -73,7 +73,7 @@ func (col *subAgentCollection) FindByCondition(cond *model.SubAgent) (results []
 	return results, err
 }
 
-// Remove 删除代理商
+// Remove 删除二级代理
 func (col *subAgentCollection) Remove(subAgentCode string) (err error) {
 	bo := bson.M{}
 	if subAgentCode != "" {
@@ -83,7 +83,7 @@ func (col *subAgentCollection) Remove(subAgentCode string) (err error) {
 	return err
 }
 
-// PaginationFind 分页查找机构商户
+// PaginationFind 分页查找二级代理
 func (c *subAgentCollection) PaginationFind(subAgentCode, subAgentName, agentCode, agentName string, size, page int) (results []model.SubAgent, total int, err error) {
 	results = make([]model.SubAgent, 1)
 

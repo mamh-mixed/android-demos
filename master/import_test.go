@@ -13,7 +13,7 @@ func TestImportFromCsv(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { importMerchant(w, r) }))
 
 	params := url.Values{}
-	params.Add("key", "testAddMer.xlsx")
+	params.Add("key", "testAddMer5.xlsx")
 	resp, err := http.PostForm(ts.URL, params)
 	if err != nil {
 		t.Error(err)

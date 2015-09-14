@@ -67,7 +67,8 @@ gulp.task('jshint', function() {
       'app/elements/**/*.html',
       '!app/elements/test-scanpay/test-scanpay.html',
       '!app/elements/test-bindingpay/bindingpay-template.html',
-      '!app/elements/test-qiniu/test-qiniu.html'
+      '!app/elements/test-qiniu/test-qiniu.html',
+      '!app/elements/file-upload/file-upload.html'
     ])
     .pipe(reload({
       stream: true,
