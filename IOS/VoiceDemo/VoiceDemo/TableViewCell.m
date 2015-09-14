@@ -8,9 +8,6 @@
 
 #import "TableViewCell.h"
 
-#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
-#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
-
 @interface TableViewCell()
 
 @property (weak, nonatomic) IBOutlet UIImageView *image;
@@ -30,7 +27,6 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
 }
 -(void)configUI:(Model *)model
 {

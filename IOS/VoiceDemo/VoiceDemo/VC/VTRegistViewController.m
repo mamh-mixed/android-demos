@@ -14,16 +14,15 @@
 
 #define kDatabaseName @"database.sqlite3"
 
-#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
-#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
-
 @interface VTRegistViewController ()
 {
     MyTextField *name;
     MyTextField *password;
     MyTextField *passwordAgain;
 }
+
 @property (copy, nonatomic) NSString *databaseFilePath;
+
 @end
 
 @implementation VTRegistViewController
@@ -47,7 +46,7 @@
         sqlite3_close(database);
         NSAssert(0, @"打开数据库失败！");
     }
-    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS UserList (用户名 TEXT PRIMARY KEY, 密码 TEXT);";
+    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS UserList (username TEXT PRIMARY KEY, password TEXT ,isUsed TEXT , time TEXT);";
     char *errorMsg;
     if (sqlite3_exec(database, [createSQL UTF8String], NULL, NULL, &errorMsg) != SQLITE_OK) {
         sqlite3_close(database);
@@ -56,13 +55,22 @@
     //关闭数据库
     sqlite3_close(database);
     
-    CGFloat x=30;
+    CGFloat x;
+    CGFloat height;
+    if (SCREENHEIGHT<600) {
+        x=30;
+        height=50;
+    }
+    else{
+        x=40;
+        height=60;
+    }
     CGFloat space=20;
-    name=[[MyTextField alloc]initWithFrame:CGRectMake(x, 80,SCREENWIDTH-x*2, 50) withImageName:@"name" withPlaceHolder:@"请输入用户名"];
+    name=[[MyTextField alloc]initWithFrame:CGRectMake(x, 80,SCREENWIDTH-x*2, height) withImageName:@"name" withPlaceHolder:@"请输入用户名"];
     [self.view addSubview:name];
-    password=[[MyTextField alloc]initWithFrame:CGRectMake(x,name.frame.origin.y+name.frame.size.height+space,SCREENWIDTH-x*2, 50) withImageName:@"password" withPlaceHolder:@"请输入密码"];
+    password=[[MyTextField alloc]initWithFrame:CGRectMake(x,name.frame.origin.y+name.frame.size.height+space,SCREENWIDTH-x*2, height) withImageName:@"password" withPlaceHolder:@"请输入密码"];
     [self.view addSubview:password];
-    passwordAgain=[[MyTextField alloc]initWithFrame:CGRectMake(x,password.frame.origin.y+password.frame.size.height+space,SCREENWIDTH-x*2, 50) withImageName:@"password" withPlaceHolder:@"请再次输入密码"];
+    passwordAgain=[[MyTextField alloc]initWithFrame:CGRectMake(x,password.frame.origin.y+password.frame.size.height+space,SCREENWIDTH-x*2, height) withImageName:@"password" withPlaceHolder:@"请再次输入密码"];
     [self.view addSubview:passwordAgain];
     
     UIButton *resgist=[UIButton buttonWithType:UIButtonTypeCustom];
@@ -81,27 +89,51 @@
 #pragma mark- 注册
 -(void)register
 {
+#if 0
+    if([password.text isEqualToString:passwordAgain.text]&&password.text)
+    {
+        RegisterTable * table = [[RegisterTable alloc]init];
+        NSDateFormatter *formatter=[[NSDateFormatter alloc]init];
+        [formatter setDateFormat:@"yyyyMMddHHmmss"];
+        NSString *dateTime=[formatter stringFromDate:[NSDate date]];
+        if(![name.text isEqualToString:@""]){
+            table.username = name.text;
+            table.password = password.text;
+            table.isUsed = @"1";
+            table.time=dateTime;
+        }
+        else{
+            [self alertWithMessage:@"用户名不能为空"];
+            return;
+        }
+        [RegisterTableDAO insertObject:table complete:^(NSString *isExists) {
+            if ([isExists isEqualToString:@"exists"])
+            {
+                [self alertWithMessage:@"用户已存在"];
+                return ;
+            }
+            else if ([isExists isEqualToString:@"success"])
+            {
+                VTRecord_Alipay *alipay=[[VTRecord_Alipay alloc]init];
+                [self presentViewController:alipay animated:YES completion:nil];
+                [RegisterTableDAO changeisUsedByName:table.username];
+                return;
+            }
+        }];
+    }else
+    {
+        if(password.text){
+            [self alertWithMessage:@"两次密码不一致"];
+            return;
+        }
+        else{
+            [self alertWithMessage:@"密码不能为空"];
+            return;
+        }
+    }
+#endif
     VTRecord_Alipay *alipay=[[VTRecord_Alipay alloc]init];
     [self presentViewController:alipay animated:YES completion:nil];
-//    if([password.text isEqualToString:passwordAgain.text])
-//    {
-//        RegisterTable * table = [[RegisterTable alloc]init];
-//        table.username = name.text;
-//        table.password = password.text;
-//        [RegisterTableDAO insertObject:table complete:^(NSString *isExists) {
-//            if ([isExists isEqualToString:@"exists"])
-//            {
-//                [self alertWithMessage:@"用户已存在"];
-//            }else if ([isExists isEqualToString:@"success"])
-//            {
-//                
-//            }
-//        }];
-// 
-//    }else
-//    {
-//        [self alertWithMessage:@"密码不一致"];
-//    }
 }
 -(void)alertWithMessage:(NSString *)message
 {
@@ -116,9 +148,6 @@
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
-
-
 
 @end

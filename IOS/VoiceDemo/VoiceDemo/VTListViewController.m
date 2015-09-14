@@ -9,9 +9,7 @@
 #import "VTListViewController.h"
 #import "TableViewCell.h"
 #import "Model.h"
-
-#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
-#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
+#import "VTPayViewController.h"
 
 @interface VTListViewController ()<UITableViewDataSource,UITableViewDelegate>
 {
@@ -54,9 +52,14 @@
     [self.view addSubview:header];
     
     scrollView=[[UIScrollView alloc]initWithFrame:CGRectMake(0, 64, SCREENWIDTH, SCREENHEIGHT-64)];
-    UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0,scrollView.frame.size.width, scrollView.frame.size.height)];
+    UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
     image.image=[UIImage imageNamed:@"paybg"];
-    scrollView.contentSize=CGSizeMake(SCREENWIDTH, 50*GoodNum+120);
+    if (SCREENHEIGHT<600) {
+        scrollView.contentSize=CGSizeMake(SCREENWIDTH, 50*GoodNum+120);
+    }
+    else{
+        scrollView.contentSize=CGSizeMake(SCREENWIDTH, 60*GoodNum+120);
+    }
     scrollView.showsVerticalScrollIndicator=NO;
     [scrollView addSubview:image];
     [self.view addSubview:scrollView];
@@ -64,7 +67,14 @@
 -(void)createTableView
 {
     UITableView *table;
-    table=[[UITableView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, 50*GoodNum) style:UITableViewStylePlain];
+    CGFloat height;
+    if (SCREENHEIGHT<600) {
+        height=50;
+    }
+    else{
+        height=60;
+    }
+    table=[[UITableView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, height*GoodNum) style:UITableViewStylePlain];
     
     UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0,scrollView.frame.size.width, scrollView.frame.size.height)];
     image.image=[UIImage imageNamed:@"paybg"];
@@ -80,7 +90,7 @@
     [scrollView addSubview:countPrice];
     
     UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
-    btn.frame=CGRectMake(20, countPrice.frame.origin.y+60, SCREENWIDTH-20*2, 40);
+    btn.frame=CGRectMake(30, countPrice.frame.origin.y+60, SCREENWIDTH-30*2, height-10);
     btn.layer.cornerRadius=5;
     btn.layer.masksToBounds=YES;
     btn.backgroundColor=[UIColor whiteColor];
@@ -96,7 +106,10 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50;
+    if (SCREENHEIGHT<600) {
+        return 50;
+    }
+    return 60;
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -114,7 +127,8 @@
 #pragma mark- 一键支付
 -(void)pay
 {
-    
+    VTPayViewController *pay=[[VTPayViewController alloc]init];
+    [self presentViewController:pay animated:YES completion:nil];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

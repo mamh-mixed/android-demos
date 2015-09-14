@@ -1,17 +1,15 @@
 //
-//  VTRecord_Alipay.m
+//  VTRecord_Wxpay.m
 //  VoiceDemo
 //
-//  Created by 黄达能 on 15/8/28.
+//  Created by 黄达能 on 15/9/9.
 //  Copyright (c) 2015年 __VTPayment__. All rights reserved.
 //
 
-#import "VTRecord_Alipay.h"
-#import "RegisterTable.h"
+#import "VTRecord_Wxpay.h"
 #import "Request.h"
-#import "VTRecord_Uppay.h"
-
-@interface VTRecord_Alipay ()
+#import "RegisterTable.h"
+@interface VTRecord_Wxpay ()
 {
     NSString *path1;//音频存放的路径
     NSString *path2;
@@ -21,15 +19,14 @@
 }
 @end
 
-@implementation VTRecord_Alipay
+@implementation VTRecord_Wxpay
 
 @synthesize recorder;
+
 @synthesize player;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image=[UIImage imageNamed:@"paybg"];
     [self.view addSubview:imageView];
@@ -46,7 +43,7 @@
     
     UILabel *lbl=[[UILabel alloc]initWithFrame:CGRectMake(0, 80, SCREENWIDTH, 30)];
     lbl.textAlignment=NSTextAlignmentCenter;
-    lbl.text=@"支付宝";
+    lbl.text=@"微信";
     lbl.textColor=[UIColor redColor];
     [self.view addSubview:lbl];
     
@@ -57,7 +54,7 @@
         record.tag = i;
         record.frame=CGRectMake(0, SCREENHEIGHT-4*height-3*space+(i-1)*(space+height), SCREENWIDTH, height);
         record.backgroundColor=[UIColor whiteColor];
-
+        
         UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake((SCREENWIDTH-20)/2,(height-32)/2, 20, 32)];
         image.image=[UIImage imageNamed:@"microphone"];
         [record addSubview:image];
@@ -92,10 +89,8 @@
     [recordSettings setObject:[NSNumber numberWithInt:AVAudioQualityHigh] forKey:AVEncoderAudioQualityKey];
     
     NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]]];//默认acf格式 转成wav格式 方便后面的api解析
-    NSLog(@" url  -----%@",url);
     if (sender.tag==1) {
         path1=[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]];
-        NSLog(@"path1 --------%@",path1);
     }
     else if (sender.tag==2){
         path2=[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]];
@@ -128,8 +123,8 @@
         cancel.frame=CGRectMake(btn.frame.size.width+1, btn.frame.origin.y, SCREENWIDTH-btn.frame.size.width-1, btn.frame.size.height);
         [cancel addTarget:self action:@selector(cancelClick:) forControlEvents:UIControlEventTouchUpInside];
         cancel.tag=btn.tag+3;
-        UIImageView *ige=[[UIImageView alloc]initWithFrame:CGRectMake((cancel.frame.size.width-20)/2, (cancel.frame.size.height-20)/2, 20, 20)];
-        ige.image=[UIImage imageNamed:@"block"];
+        UIImageView *ige=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"block"]];
+        ige.frame=CGRectMake((cancel.frame.size.width-20)/2, (cancel.frame.size.height-20)/2, 20, 20);
         cancel.backgroundColor=[UIColor blueColor];
         [cancel addSubview:ige];
         [self.view addSubview:cancel];
@@ -144,11 +139,11 @@
     AVURLAsset *audioAsset;
     switch (tag) {
         case 1:audioAsset=[AVURLAsset URLAssetWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",path1]] options:nil];
-               break;
+            break;
         case 2:audioAsset=[AVURLAsset URLAssetWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",path2]] options:nil];
-               break;
+            break;
         case 3:audioAsset=[AVURLAsset URLAssetWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",path3]] options:nil];
-                break;
+            break;
         default:break;
     }
     CMTime audioDuration =audioAsset.duration;
@@ -170,10 +165,9 @@
 }
 -(void)play:(UIButton *)sender
 {
-    NSURL *url=[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",(long)sender.tag-3]]]];
-    NSLog(@"url -----%@",url);
+    NSURL *url=[NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",(long)sender.tag-3]]];
     player=[[AVAudioPlayer alloc]initWithContentsOfURL:url error:nil];
-    //player.volume=20.0f;
+    //player.volume=12.0f;
     [player prepareToPlay];
     [player play];
 }
@@ -196,7 +190,7 @@
     //训练模式分为两种模式，模式一，清空服务器之前训练过的缓存，调用start之后直接调用end，不发送音频。模式二，正常训练
     NSDictionary *dict =[RegisterTableDAO getObjectByName:[RegisterTableDAO getNameWhoIsUsing]];
     NSMutableString *userkey=[[NSMutableString alloc]initWithString:[RegisterTableDAO getNameWhoIsUsing]];
-    [userkey appendString:@"_alipay_"];
+    [userkey appendString:@"_wxpay_"];
     [userkey appendString:[dict objectForKey:@"time"]];
     NSArray *path_array=[NSArray arrayWithObjects:path1,path2,path3,nil];
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -204,6 +198,7 @@
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
     
@@ -226,11 +221,11 @@
 -(void)requestIsSuccess
 {
     [progressImage removeFromSuperview];
-    VTRecord_Uppay *uppay=[[VTRecord_Uppay alloc]init];
-    [self presentViewController:uppay animated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"ReturnToRoot" object:nil];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
+
 
 @end

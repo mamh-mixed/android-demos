@@ -9,9 +9,7 @@
 #import "VTLoginViewController.h"
 #import "VTRegistViewController.h"
 #import "MyTextField.h"
-
-#define SCREENWIDTH [UIScreen mainScreen].bounds.size.width
-#define SCREENHEIGHT [UIScreen mainScreen].bounds.size.height
+#import "RegisterTable.h"
 
 @interface VTLoginViewController ()
 {
@@ -38,12 +36,21 @@
 }
 -(void)createUI
 {
-    CGFloat x=30;
+    CGFloat x;
+    CGFloat height;
+    if (SCREENHEIGHT<600) {
+        x=30;
+        height=50;
+    }
+    else{
+        x=40;
+        height=60;
+    }
     
-    login=[[MyTextField alloc]initWithFrame:CGRectMake(x, 100,SCREENWIDTH-x*2, 50) withImageName:@"name" withPlaceHolder:@"请输入用户名"];
+    login=[[MyTextField alloc]initWithFrame:CGRectMake(x, 100,SCREENWIDTH-x*2, height) withImageName:@"name" withPlaceHolder:@"请输入用户名"];
     [self.view addSubview:login];
     
-    password=[[MyTextField alloc]initWithFrame:CGRectMake(x,170,SCREENWIDTH-x*2, 50) withImageName:@"password" withPlaceHolder:@"请输入密码"];
+    password=[[MyTextField alloc]initWithFrame:CGRectMake(x,login.frame.origin.y+login.frame.size.height+30,SCREENWIDTH-x*2, height) withImageName:@"password" withPlaceHolder:@"请输入密码"];
     [self.view addSubview:password];
     
     UIButton *loginBtn=[UIButton buttonWithType:UIButtonTypeCustom];
@@ -75,6 +82,45 @@
 #pragma mark-登入 注册
 -(void)login
 {
+    NSString *message;
+    if ([login.text isEqualToString:@""]) {
+        message=@"用户名不能为空";
+        [self alertWithMessage:message];
+        return;
+    }
+    else if([password.text isEqualToString:@""]){
+        message=@"密码不能为空";
+        [self alertWithMessage:message];
+        return;
+    }
+    if ([RegisterTableDAO isExistTheName:login.text]) {
+        NSMutableDictionary *dict=[RegisterTableDAO getObjectByName:login.text];
+        if ([[dict objectForKey:@"password"]isEqualToString:password.text]) {
+            //登入成功
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                [RegisterTableDAO changeisUsedByName:login.text];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                });
+            });
+            return;
+        }
+        else{
+            message=@"密码不正确";
+            [self alertWithMessage:message];
+            return;
+        }
+    }
+    else{
+        message=@"用户名不存在";
+        [self alertWithMessage:message];
+        return;
+    }
+}
+-(void)alertWithMessage:(NSString *)message
+{
+    UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"温馨提示" message:message delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles:nil, nil];
+    [alert show];
 }
 -(void)regist
 {
