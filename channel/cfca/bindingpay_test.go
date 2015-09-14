@@ -11,7 +11,8 @@ import (
 var (
 	// merId            = "1426727710113"
 	// bindingId        = "1000000000011"
-	chanMerId       = "001405"
+	// chanMerId       = "001405"
+	chanMerId       = "001583"
 	chanBingingId   = "e169a3bd64ab455045b0129e1a18d53d"
 	sysOrderNum     = util.SerialNumber()
 	sysOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
