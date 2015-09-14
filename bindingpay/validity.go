@@ -152,16 +152,12 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
 
-	if in.TransAmt == 0 {
-		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
+	if err := validateAmt(in.TransAmt); err != nil {
+		return err
 	}
 
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
-	}
-
-	if in.TransAmt < 0 {
-		return mongo.RespCodeColl.Get("200180")
 	}
 
 	if !isAlphanumeric(in.BindingId) {
@@ -196,16 +192,12 @@ func validateSendBindingPaySMS(in *model.BindingPayment) (ret *model.BindingRetu
 		return model.NewBindingReturn("200050", "字段 bindingId 不能为空")
 	}
 
-	if in.TransAmt == 0 {
-		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
+	if err := validateAmt(in.TransAmt); err != nil {
+		return err
 	}
 
 	if in.MerOrderNum == "" {
 		return model.NewBindingReturn("200050", "字段 merOrderNum 不能为空")
-	}
-
-	if in.TransAmt < 0 {
-		return mongo.RespCodeColl.Get("200180")
 	}
 
 	if !isAlphanumeric(in.BindingId) {
@@ -269,12 +261,8 @@ func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 		}
 	}
 
-	if in.TransAmt == 0 {
-		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
-	}
-
-	if in.TransAmt < 0 {
-		return mongo.RespCodeColl.Get("200180")
+	if err := validateAmt(in.TransAmt); err != nil {
+		return err
 	}
 
 	return nil
@@ -344,12 +332,8 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 		return model.NewBindingReturn("200051", "字段 merOrderNum 不符合要求")
 	}
 
-	// TransAmt
-	if in.TransAmt == 0 {
-		return model.NewBindingReturn("200050", "字段 transAmt 不能为空")
-	}
-	if in.TransAmt < 0 {
-		return mongo.RespCodeColl.Get("200180")
+	if err := validateAmt(in.TransAmt); err != nil {
+		return err
 	}
 
 	// CurrCode

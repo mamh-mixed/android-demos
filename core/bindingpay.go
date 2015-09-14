@@ -413,7 +413,7 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
 		if be.SettOrderNum != orig.SettOrderNum {
-			return mongo.RespCodeColl.Get("000001") // TODO:结算订单号不一致
+			return mongo.RespCodeColl.Get("200251")
 		}
 		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
@@ -454,16 +454,15 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 
 	//只要订单号不重复就记录这笔交易
 	pay := &model.Trans{
-		MerId:        be.MerId,
-		OrderNum:     be.MerOrderNum,
-		TransType:    model.PayTrans,
-		BindingId:    be.BindingId,
-		TransAmt:     be.TransAmt,
-		SendSmsId:    be.SendSmsId,
-		SmsCode:      be.SmsCode,
-		Remark:       be.Remark,
-		SubMerId:     be.SubMerId,
-		SettOrderNum: be.SettOrderNum,
+		MerId:     be.MerId,
+		OrderNum:  be.MerOrderNum,
+		TransType: model.PayTrans,
+		BindingId: be.BindingId,
+		TransAmt:  be.TransAmt,
+		SendSmsId: be.SendSmsId,
+		SmsCode:   be.SmsCode,
+		Remark:    be.Remark,
+		SubMerId:  be.SubMerId,
 	}
 
 	// 本地查询绑定关系。查询绑定关系的状态是否成功
@@ -506,6 +505,7 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		if be.SettOrderNum == "" {
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
+		pay.SettOrderNum = be.SettOrderNum
 		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 		be.SettFlag = chanMer.SettFlag
@@ -576,7 +576,6 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		OrigOrderNum: be.OrigOrderNum,
 		TransAmt:     be.TransAmt,
 		TransType:    model.RefundTrans,
-		SettOrderNum: be.SettOrderNum,
 	}
 
 	// 是否有该源订单号
@@ -616,21 +615,19 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 部分退款
 	case be.TransAmt < orign.TransAmt:
 		// 判断总退款金额
-		refunded, err := mongo.TransColl.FindTransRefundAmt(be.MerId, be.OrigOrderNum)
-		log.Debugf("refunded total : %d", refunded)
-		if err != nil {
-			refund.RespCode = "000001"
-			legal = false
-		} else if refunded+be.TransAmt > orign.TransAmt {
+		refunded := orign.RefundAmt + be.TransAmt
+		if refunded > orign.TransAmt {
 			refund.RespCode = "200191"
 			legal = false
-		} else if refunded+be.TransAmt == orign.TransAmt {
+		} else if refunded == orign.TransAmt {
 			refundStatus = model.TransRefunded
 		} else {
 			refundStatus = model.TransPartRefunded
 		}
+		orign.RefundAmt = refunded
 	case be.TransAmt == orign.TransAmt:
 		refundStatus = model.TransRefunded
+		orign.RefundAmt = be.TransAmt
 	}
 	if !legal {
 		return logicErrorHandle(refund, refund.RespCode)
@@ -649,9 +646,10 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		if be.SettOrderNum == "" {
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
-		if be.SettOrderNum != refund.SettOrderNum {
-			return logicErrorHandle(refund, "000001") // TODO:结算订单号不一致
+		if be.SettOrderNum != orign.SettOrderNum {
+			return logicErrorHandle(refund, "200251")
 		}
+		refund.SettOrderNum = be.SettOrderNum
 		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 		// dothing
