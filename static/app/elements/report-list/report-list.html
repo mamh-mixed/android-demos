@@ -299,7 +299,7 @@
                     };
                     this.$.agent.childNodes[1].children[1].disabled = true;
                 }else if(user.userType==='merchant'){
-                    this.set("cond.merId",user.merId)
+                    this.set('cond.merId',user.merId);
                     this.$.agent.childNodes[1].children[1].disabled = true;
                     this.$.merId.setAttribute('disabled',true);
                 }else if(user.userType==='admin'){
