@@ -35,10 +35,10 @@ func (s *session) FindOne(sessionID string) (ret *model.ResultBody) {
 		log.Errorf("查询session(%s)出错:%s", sessionID, err)
 		return model.NewResultBody(1, "查询失败")
 	}
-	user := &model.User{
-		NickName: session.User.NickName,
-		UserType: session.User.UserType,
-	}
+	user := session.User
+	user.UserName = ""
+	user.PhoneNum = ""
+	user.Mail = ""
 	ret = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",

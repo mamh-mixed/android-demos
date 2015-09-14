@@ -62,8 +62,8 @@
         </div>
       </paper-dialog>
 
-      <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
-      <paper-input label="商户代码" value="{{cond.merId::input}}"></paper-input>
+      <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
+      <paper-input id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <div class="buttons">
         <!-- <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button> -->
@@ -196,7 +196,8 @@
           agentsMap: {
             type: Object,
             value: {}
-          }
+          },
+          user: Object,
         },
         ready: function() {
           this.cond = {
@@ -278,13 +279,33 @@
           }
         },
         observers: [
-          '_watchAgentChange(agent.key)'
+          '_watchAgentChange(agent.key)',
+          '_watchUserChanged(user.*)',
         ],
         _watchAgentChange: function(key) {
           if (key) {
             this.set('cond.agentCode', key);
           } else {
             delete this.cond.agentCode;
+          }
+        },
+        _watchUserChanged: function(value) {
+          if (value) {
+            var user = value.base;
+            if (user.userType === 'agent') {
+              this.agent = {
+                key: user.agentCode,
+                value: user.agentName,
+              };
+              this.$.agent.childNodes[1].children[1].disabled = true;
+            } else if (user.userType === 'merchant') {
+              this.set("cond.merId", user.merId)
+              this.$.agent.childNodes[1].children[1].disabled = true;
+              this.$.merId.setAttribute('disabled', true);
+            } else if (user.userType === 'admin') {
+              this.$.agent.childNodes[1].children[1].disabled = false;
+              this.$.merId.removeAttribute('disabled');
+            }
           }
         },
         getYesterdayISODate: function() {

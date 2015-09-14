@@ -542,11 +542,21 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 func loginHandle(w http.ResponseWriter, r *http.Request) {
 	log.Infof("user login begin")
-	params := r.URL.Query()
-	userName := params.Get("userName")
-	pwd := params.Get("pwd")
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	user := &model.User{}
+	err = json.Unmarshal(data, user)
+	if err != nil {
+		log.Errorf("json unmarshal error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
 
-	ret := User.Login(userName, pwd)
+	ret := User.Login(user.UserName, user.Password)
 
 	if ret.Status == 0 {
 		log.Infof("create session begin")

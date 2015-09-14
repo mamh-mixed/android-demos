@@ -14,7 +14,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	// and give it some initial binding values
 	// Learn more about auto-binding templates at http://goo.gl/Dx1u2g
 	var app = document.querySelector('#app');
-
 	app.displayInstalledToast = function() {
 		document.querySelector('#caching-complete').show();
 	};
@@ -24,9 +23,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	app.addEventListener('dom-change', function() {
 		console.log('Our app is ready to rock!');
 		app.$.loginBtn.hidden=true;
-		var sessionId = window.localStorage.getItem('SESSIONID');
+		var sessionId = window.sessionStorage.getItem('SESSIONID');
 		if (!sessionId||sessionId===''){
 			window.location.href='login.html';
+			return;
 		}
 		app.$.findSessionAjax.params={
 			'sessionId':sessionId,
@@ -94,6 +94,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 			return;
 		}
 		var user= response.data;
+		window.sessionStorage.setItem('USER',user);
+		app.user=user;
 		var userType = user.userType;
 		app.nickName= user.nickName;
 		if (userType==='admin'){
@@ -105,16 +107,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	};
 	// 删除session响应
 	app.handleDeleteSessionResponse = function() {
-		// var response =e.detail.response;
 	};
 	// 退出
 	app.logoutHandle=function(){
-		var sessionId = window.localStorage.getItem('SESSIONID');
+		var sessionId = window.sessionStorage.getItem('SESSIONID');
+		// 删除后台sesseion信息
 		app.$.deleteSessionAjax.params={
 			'sessionId':sessionId,
 		};
 		app.$.deleteSessionAjax.generateRequest();
-		window.localStorage.setItem('SESSIONID','');
+		// 清楚sessionStorage中的信息
+		window.sessionStorage.removeItem('SESSIONID');
+		window.sessionStorage.removeItem('USER');
 		app.nickName= '';
 		app.$.loginBtn.hidden=false;
 		app.$.logoutBtn.hidden=true;

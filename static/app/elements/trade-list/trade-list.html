@@ -23,9 +23,9 @@
           </div>
         </paper-dialog>
 
-        <paper-input label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input label="商户代码" name="merId" value="{{cond.merId::input}}"></paper-input>
+        <paper-input id="agentCode" label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input id="groupCode" label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input id="merId" label="商户代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
@@ -71,11 +71,11 @@
           </template>
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="255" align="right">
-                    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-                </td>
-            </tr>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+            </td>
+          </tr>
         </tfoot>
       </table>
     </form>
@@ -151,7 +151,8 @@
             key: '40',
             value: '已关闭'
           }, ]
-        }
+        },
+        user: Object,
       },
       ready: function() {
         this.cond = {
@@ -168,7 +169,8 @@
       observers: [
         '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
-        '_watchTransStatusChange(transStatus.key)'
+        '_watchTransStatusChange(transStatus.key)',
+        '_watchUserChanged(user.*)',
       ],
       _watchBusicdChange: function(key) {
         this.cond.busicd = key;
@@ -183,6 +185,28 @@
       // 交易状态选择框改变
       _watchTransStatusChange: function(key) {
         this.cond.transStatus = key;
+      },
+      _watchUserChanged:function(value){
+          if (value){
+              var user = value.base;
+              if(user.userType==='agent'){
+                  this.$.agentCode.value=user.agentCode;
+                  this.$.agentCode.setAttribute('disabled',true);
+              }else if(user.userType==='group'){
+                  this.$.groupCode.value=user.groupCode;
+                  this.$.agentCode.setAttribute('disabled',true);
+                  this.$.groupCode.setAttribute('disabled',true);
+              }else if(user.userType==='merchant'){
+                  this.$.merId.value=user.merId;
+                  this.$.agentCode.setAttribute('disabled',true);
+                  this.$.groupCode.setAttribute('disabled',true);
+                  this.$.merId.setAttribute('disabled',true);
+              }else{
+                  this.$.agentCode.removeAttribute('disabled');
+                  this.$.groupCode.removeAttribute('disabled');
+                  this.$.merId.removeAttribute('disabled');
+              }
+          }
       },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
@@ -200,11 +224,33 @@
         this.$.endTimeDailog.toggle();
       },
       queryAction: function() {
+        this.$.agentCode.removeAttribute('disabled');
+        this.$.groupCode.removeAttribute('disabled');
+        this.$.merId.removeAttribute('disabled');
         this.$.formSearch.submit();
       },
       // 发送查询交易的ajax请求
-      submitForm: function() {
+      submitForm: function(e) {
         this.trades = [];
+        if(this.user){
+            if(this.user.userType==='agent'){
+                this.$.agentCode.value=this.user.agentCode;
+                this.$.agentCode.setAttribute('disabled',true);
+            }else if(this.user.userType==='group'){
+                this.$.groupCode.value=this.user.groupCode;
+                this.$.agentCode.setAttribute('disabled',true);
+                this.$.groupCode.setAttribute('disabled',true);
+            }else if(this.user.userType==='merchant'){
+                this.$.merId.value=this.user.merId;
+                this.$.agentCode.setAttribute('disabled',true);
+                this.$.groupCode.setAttribute('disabled',true);
+                this.$.merId.setAttribute('disabled',true);
+            }else{
+                this.$.agentCode.removeAttribute('disabled');
+                this.$.groupCode.removeAttribute('disabled');
+                this.$.merId.removeAttribute('disabled');
+            }
+        }
         // this.set('cond.total', 0);
         // console.log(e.detail);
       },
@@ -260,6 +306,5 @@
         return 'blue';
       },
     });
-
   </script>
 </dom-module>

@@ -1,8 +1,10 @@
 package master
 
 import (
+	"errors"
 	"net/http"
 
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/qiniu/log"
 )
@@ -93,27 +95,53 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 验证是否有权限
 	if c != nil {
 		log.Infof("url=%s, cookie: %s", r.URL.Path, c.String())
-
 		session, err := mongo.SessionColl.Find(c.Value)
 		if err != nil {
 			http.Error(w, "查找session失败", http.StatusNotAcceptable)
 			return
 		}
-
 		user := session.User
-		if user.UserType == "agent" || user.UserType == "group" || user.UserType == "merchant" {
-			if r.URL.Path == "/master/trade/query" || r.URL.Path == "/master/trade/report" ||
-				r.URL.Path == "/master/trade/stat" || r.URL.Path == "/master/trade/stat/report" {
-
-			} else {
-				log.Errorf("agent permission denied,url=" + r.URL.Path)
-				http.Error(w, "agent permission denied", http.StatusNotAcceptable)
-				return
-			}
-
+		err = authProcess(w, r, *user)
+		if err != nil {
+			log.Errorf("%s,url=%s", err, r.URL.Path)
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
 		}
+
 	}
 
 	h, _ := mux.Handler(r)
 	h.ServeHTTP(w, r)
+}
+
+// authProcess 权限处理
+func authProcess(w http.ResponseWriter, r *http.Request, user model.User) (err error) {
+	if user.UserType != "admin" {
+		if r.URL.Path == "/master/trade/query" || r.URL.Path == "/master/trade/report" ||
+			r.URL.Path == "/master/trade/stat" || r.URL.Path == "/master/trade/stat/report" {
+			log.Infof("agentCode=%s,groupCode=%s,merId=%s", user.AgentCode, user.GroupCode, user.MerId)
+			params := r.URL.Query()
+			log.Infof("agentCode1=%s,groupCode1=%s,merId1=%s", params.Get("agentCode"), params.Get("groupCode"), params.Get("merId"))
+			if user.UserType == "agent" && r.URL.Path != "/master/trade/report" {
+				agentCode := params.Get("agentCode")
+				if agentCode != user.AgentCode {
+					return errors.New("permission denied")
+				}
+			} else if user.UserType == "group" && r.URL.Path == "/master/trade/query" {
+				groupCode := params.Get("groupCode")
+				if groupCode != user.GroupCode {
+					return errors.New("permission denied")
+				}
+			} else if user.UserType == "merchant" {
+				merId := params.Get("merId")
+				if merId != user.MerId {
+					return errors.New("permission denied")
+				}
+			}
+		} else {
+			return errors.New("permission denied")
+		}
+
+	}
+	return nil
 }
