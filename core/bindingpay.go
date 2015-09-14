@@ -37,6 +37,17 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 		SettOrderNum: be.SettOrderNum,
 	}
 
+	// 判断是否是合法的结算订单号
+	found, err := mongo.TransColl.IsSuccessSettOrder(be.MerId, be.SettOrderNum)
+	if err != nil {
+		return logicErrorHandle(sett, "000001")
+	}
+
+	// 没找到有此结算订单号
+	if !found {
+		return logicErrorHandle(sett, "200252")
+	}
+
 	// 获取卡bin详情
 	cardBin, err := findCardBin(be.SettAccountNum)
 	if err != nil {
@@ -588,49 +599,42 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	refund.ChanCode = orign.ChanCode
 	refund.ChanMerId = orign.ChanMerId
 
-	// 退款逻辑
-	var refundStatus int8
-	legal := true
-	switch {
 	// 不能对退款的交易号进行退款
-	case orign.TransType == model.RefundTrans:
-		refund.RespCode = "200090"
-		legal = false
-	// 原交易不成功
-	case orign.TransStatus != model.TransSuccess:
-		refund.RespCode = "100020"
-		legal = false
-	// 已退款
-	case orign.RefundStatus == model.TransRefunded:
-		refund.RespCode = "100010"
-		legal = false
-	// 退款金额过大
-	case be.TransAmt > orign.TransAmt:
-		refund.RespCode = "200191"
-		legal = false
-	// 中金渠道全额退款
-	case orign.ChanCode == "CFCA" && be.TransAmt != orign.TransAmt:
-		refund.RespCode = "200190"
-		legal = false
-	// 部分退款
-	case be.TransAmt < orign.TransAmt:
-		// 判断总退款金额
-		refunded := orign.RefundAmt + be.TransAmt
-		if refunded > orign.TransAmt {
-			refund.RespCode = "200191"
-			legal = false
-		} else if refunded == orign.TransAmt {
-			refundStatus = model.TransRefunded
-		} else {
-			refundStatus = model.TransPartRefunded
-		}
-		orign.RefundAmt = refunded
-	case be.TransAmt == orign.TransAmt:
-		refundStatus = model.TransRefunded
-		orign.RefundAmt = be.TransAmt
+	if orign.TransType != model.PayTrans {
+		return logicErrorHandle(refund, "200090")
 	}
-	if !legal {
-		return logicErrorHandle(refund, refund.RespCode)
+
+	// 原交易不成功
+	if orign.TransStatus != model.TransSuccess {
+		return logicErrorHandle(refund, "100020")
+	}
+
+	// 中金不支持部分退款
+	if orign.ChanCode == "CFCA" && be.TransAmt != orign.TransAmt {
+		return logicErrorHandle(refund, "200190")
+	}
+
+	refundAmt := refund.TransAmt
+	// 退款状态是否可退
+	switch orign.RefundStatus {
+	// 已退款
+	case model.TransRefunded:
+		return logicErrorHandle(refund, "100010")
+	// 部分退款
+	case model.TransPartRefunded:
+		refundAmt += orign.RefundAmt
+		fallthrough
+	default:
+		// 金额过大
+		if refundAmt > orign.TransAmt {
+			return logicErrorHandle(refund, "200191")
+		} else if refundAmt == orign.TransAmt {
+			orign.RefundStatus = model.TransRefunded
+			orign.RefundAmt = refundAmt
+		} else {
+			orign.RefundStatus = model.TransPartRefunded
+			orign.RefundAmt = refundAmt
+		}
 	}
 
 	// 获得渠道商户
@@ -684,7 +688,6 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 
 	//更新原交易状态
 	if ret.RespCode == successCode {
-		orign.RefundStatus = refundStatus
 		mongo.TransColl.Update(orign)
 	}
 
