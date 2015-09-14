@@ -43,7 +43,11 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	log.Tracef("base64: %s", b64Str)
 
 	// 对 xml 签名
-	hexSign := signatureUseSha1WithRsa(xmlBytes, req.PrivateKey)
+	hexSign, err := signatureUseSha1WithRsa(xmlBytes, req.PrivateKey)
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
 	log.Tracef("signed: %s", hexSign)
 
 	// 准备参数
