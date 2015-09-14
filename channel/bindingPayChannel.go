@@ -34,6 +34,9 @@ type BindingPayChan interface {
 	// ProcessPaymentWithSMS 快捷支付短信验证支付
 	ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn)
 
+	// ProcessPaySettlement 支付结算
+	ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn)
+
 	// ProcessTransChecking 交易对账，清算
 	// ProcessTransChecking(chanMerId, settDate, signCert string) (resp *BindingResponse)
 }

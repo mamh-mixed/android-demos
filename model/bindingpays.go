@@ -106,6 +106,30 @@ type BindingEnquiry struct {
 	Mode          int    //交易模式
 }
 
+// PaySettlement 支付结算
+type PaySettlement struct {
+	MerId           string `json:"merId"`
+	SubMerId        string `json:"subMerId"` // 子商户号
+	TerminalId      string `json:"terminalId"`
+	MerOrderNum     string `json:"merOrderNum"`
+	SettOrderNum    string `json:"settOrderNum"`
+	SettAmt         int64  `json:"settAmt"`
+	SettAccountType string `json:"settAccountType"`
+	SettAccountName string `json:"settAccountName"`
+	SettAccountNum  string `json:"settAccountNum"`
+	SettBranchName  string `json:"settBranchName"`
+	Province        string `json:"province"`
+	City            string `json:"city"`
+
+	Mode            int
+	BankCode        string //银行ID
+	ChanMerId       string //渠道商户ID
+	PrivateKey      string //签名密钥
+	SysOrderNum     string //系统订单号
+	AcctNumDecrypt  string `json:"-"`
+	AcctNameDecrypt string `json:"-"`
+}
+
 // BindingPayment 绑定支付请求
 type BindingPayment struct {
 	MerId        string `json:"merId"`        // 商户ID

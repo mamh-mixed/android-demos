@@ -12,26 +12,17 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	// 打印渠道返回日志
 	log.Infof("CFCA %s: %+v", txCode, resp)
 
-	// default
-	ret = mongo.RespCodeColl.Get("000001")
 	if resp == nil {
-		return
+		return mongo.RespCodeColl.Get("000001")
 	}
 	ret = new(model.BindingReturn)
 	ret.ChanRespCode = resp.Head.Code
 	ret.ChanRespMsg = resp.Head.Message
 	// 不成功的受理
 	if flag := resp.Head.Code != correctCode; flag {
-		respObject := mongo.RespCodeColl.GetByCfca(resp.Head.Code)
-		ret.RespCode = respObject.RespCode
-		ret.RespMsg = respObject.RespMsg
-		if ret.RespCode == "" {
-			//系统外部错误
-			log.Errorf("找不到系统对应的中金应答码:(%s)", resp.Head.Code)
-			ret.RespCode = "000002"
-			ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
-		}
-		return
+		resp := mongo.RespCodeColl.GetByCfca(resp.Head.Code)
+		ret.RespCode, ret.RespMsg = resp.RespCode, resp.RespMsg
+		return ret
 	}
 
 AGAIN:
@@ -105,14 +96,12 @@ AGAIN:
 			// 验证码通过，验证交易状态
 			goto AGAIN
 		case "20":
-			// TODO:验证码超时
-			ret.RespCode = "400000"
+			ret.RespCode = "200171"
 		case "30":
-			// TODO:验证未通过
-			ret.RespCode = "400001"
+			ret.RespCode = "200172"
 		}
 
-	case MerModeSendSMS, MarketModeSendSMS:
+	case MerModeSendSMS, MarketModeSendSMS, MarketPaySettlement:
 		ret.RespCode = "000000"
 	case TransChecking:
 		ret.RespCode = "000000"
@@ -121,5 +110,5 @@ AGAIN:
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
 	log.Debugf("resp message %+v", ret)
 
-	return
+	return ret
 }

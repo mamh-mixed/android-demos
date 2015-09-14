@@ -17,6 +17,7 @@ const (
 	CancelTrans     = 4 // 撤销交易
 	CloseTrans      = 5 // 关单
 	EnterpriseTrans = 6 // 企业付款
+	SettTrans       = 7 // 结算交易
 
 	// settStatus
 	SettSuccess    = 1 // 勾兑成功
@@ -251,6 +252,10 @@ type Trans struct {
 	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"` // 渠道绑定ID
 	TransCurr     string `bson:"transCurr,omitempty" json:"-"`     // 交易币种
 	SettOrderNum  string `bson:"settOrderNum,omitempty" json:"-"`  // 结算订单号
+	AcctName      string `bson:"acctName,omitempty" json:"-"`
+	Province      string `bson:"province,omitempty" json:"-"`
+	City          string `bson:"city,omitempty" json:"-"`
+	BranchName    string `bson:"branchName,omitempty" json:"-"`
 
 	// 扫码交易字段
 	ChanDiscount    string `bson:"chanDiscount,omitempty" json:"chanDiscount,omitempty"`       // 渠道折扣 支付宝、微信

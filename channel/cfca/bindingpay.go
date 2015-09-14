@@ -17,10 +17,11 @@ const (
 	version     = "2.0"
 	correctCode = "2000"
 
-	BindingCreate  = "2501"
-	BindingEnquiry = "2502"
-	BindingRemove  = "2503"
-	TransChecking  = "1810"
+	BindingCreate       = "2501"
+	BindingEnquiry      = "2502"
+	BindingRemove       = "2503"
+	TransChecking       = "1810"
+	MarketPaySettlement = "1341"
 
 	MerModePay    = "2511" // 商户模式快捷支付
 	MarketModePay = "1371" // 市场模式快捷支付
@@ -40,6 +41,42 @@ const (
 	MerModeSendSMS    = "2541" // 商户模式发送验证短信
 	MarketModeSendSMS = "1375" // 市场模式发送短信验证
 )
+
+// ProcessPaySettlement 绑定支付结算
+func (c *CFCABindingPay) ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
+	// 组装参数
+	req := &BindingRequest{
+		Version: version,
+		Head: requestHead{
+			TxCode: MarketPaySettlement,
+		},
+		Body: requestBody{
+			InstitutionID: be.ChanMerId,
+			SerialNumber:  be.SysOrderNum,
+			OrderNo:       be.SettOrderNum,
+			Amount:        be.SettAmt,
+			AccountType:   be.SettAccountType,
+		},
+		PrivateKey: be.PrivateKey,
+	}
+
+	if be.SettAccountType != "20" {
+		bankInfo := &bankAccount{
+			BankID:        be.BankCode,
+			AccountName:   be.AcctNameDecrypt,
+			AccountNumber: be.AcctNumDecrypt,
+			BranchName:    be.SettBranchName,
+			Province:      be.Province,
+			City:          be.City,
+		}
+		req.Body.BankAccount = bankInfo
+	} else {
+		req.Body.PaymentAccountName = be.AcctNameDecrypt
+		req.Body.PaymentAccountNumber = be.AcctNumDecrypt
+	}
+
+	return transformResp(sendRequest(req), req.Head.TxCode)
+}
 
 // ProcessPaymentWithSMS 快捷支付(验证并绑定)
 func (c *CFCABindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
@@ -206,11 +243,7 @@ func quickPayment(be *model.BindingPayment, txCode string) (ret *model.BindingRe
 		PrivateKey: be.PrivateKey,
 	}
 
-	// 请求
-	resp := sendRequest(req)
-	// 应答码转换
-	ret = transformResp(resp, req.Head.TxCode)
-	return ret
+	return transformResp(sendRequest(req), req.Head.TxCode)
 }
 
 // ProcessPaymentEnquiry 快捷支付查询
@@ -234,7 +267,7 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 	case model.MerMode:
 		req.Head.TxCode = MerModePayEnquiry
 	default:
-		log.Errorf("unsupport mode %s", be.Mode)
+		log.Errorf("unsupport mode %d", be.Mode)
 		return mongo.RespCodeColl.Get("000001")
 	}
 

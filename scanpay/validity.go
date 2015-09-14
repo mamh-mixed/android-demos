@@ -333,31 +333,32 @@ func validateOrderNum(no string) (bool, *model.ScanPayResponse) {
 // validateGoodsInfo 验证商品格式
 func validateGoodsInfo(goods string) (bool, *model.ScanPayResponse) {
 
-	if goods != "" {
-		toRunes := []rune(goods)
-		if len(toRunes) > 120 {
-			return false, fieldFormatError(goodsInfo)
-		}
-		goodsArray := strings.Split(goods, ";")
-		for i, v := range goodsArray {
-			// 处理最后多送了;的情况
-			if i == len(goodsArray)-1 && v == "" {
-				continue
-			}
-			good := strings.Split(v, ",")
-			if len(good) != 3 {
-				return false, fieldFormatError(goodsInfo)
-			}
-			// 金额
-			if matched, _ := regexp.MatchString(`^(([1-9]\d*)|0)(\.(\d){1,2})?$`, good[1]); !matched {
-				return false, fieldFormatError(goodsInfo)
-			}
-			// 数量
-			if matched, _ := regexp.MatchString(`^\d+$`, good[2]); !matched {
-				return false, fieldFormatError(goodsInfo)
-			}
-		}
-	}
+	// 不校验，在送到渠道时解析，如果解析错误，那么不送
+	// if goods != "" {
+	// 	toRunes := []rune(goods)
+	// 	if len(toRunes) > 120 {
+	// 		return false, fieldFormatError(goodsInfo)
+	// 	}
+	// 	goodsArray := strings.Split(goods, ";")
+	// 	for i, v := range goodsArray {
+	// 		// 处理最后多送了;的情况
+	// 		if i == len(goodsArray)-1 && v == "" {
+	// 			continue
+	// 		}
+	// 		good := strings.Split(v, ",")
+	// 		if len(good) != 3 {
+	// 			return false, fieldFormatError(goodsInfo)
+	// 		}
+	// 		// 金额
+	// 		if matched, _ := regexp.MatchString(`^(([1-9]\d*)|0)(\.(\d){1,2})?$`, good[1]); !matched {
+	// 			return false, fieldFormatError(goodsInfo)
+	// 		}
+	// 		// 数量
+	// 		if matched, _ := regexp.MatchString(`^\d+$`, good[2]); !matched {
+	// 			return false, fieldFormatError(goodsInfo)
+	// 		}
+	// 	}
+	// }
 
 	return true, nil
 }

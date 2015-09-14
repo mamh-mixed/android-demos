@@ -28,10 +28,8 @@
         // "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
     },
     "CFCA": {
-        "CFCAPublicKey": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
-        "CPCNCert": "config/pem/cfca/test.cpcn.com.cn.pem", // HTTPS 证书
-        "RootCert": "config/pem/cfca/test.cpcn.com.cn_root.pem", // CFCA 根证书
-        "URL": "https://test.cpcn.com.cn/Gateway/InterfaceII" // API 地址
+        "URL": "https://test.cpcn.com.cn/Gateway/InterfaceII", // API 地址
+        "CheckSignPublicKey": "config/pem/cfca/checkSignPublicKey_testing.pem" // CFCA 验签公钥
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址

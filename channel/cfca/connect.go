@@ -1,15 +1,11 @@
 package cfca
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -17,38 +13,6 @@ import (
 )
 
 var requestURL = goconf.Config.CFCA.URL
-
-var cli *http.Client
-
-// 初始化中金 HTTPS 客户端
-func init() {
-	cpcnCertFile := goconf.Config.CFCA.CPCNCert
-	cpcnCert, err := ioutil.ReadFile(cpcnCertFile)
-	if err != nil {
-		fmt.Printf("read cfca cpcn cert error: %s", err)
-		os.Exit(3)
-	}
-
-	rootCertFile := goconf.Config.CFCA.RootCert
-	rootCert, err := ioutil.ReadFile(rootCertFile)
-	if err != nil {
-		fmt.Printf("read cfca root cert error: %s", err)
-		os.Exit(3)
-	}
-
-	certs := x509.NewCertPool()
-	certs.AppendCertsFromPEM(rootCert)
-	certs.AppendCertsFromPEM(cpcnCert)
-
-	// 发送请求
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			RootCAs: certs,
-			// InsecureSkipVerify: true, // only for testing
-		},
-	}
-	cli = &http.Client{Transport: tr}
-}
 
 // sendRequest 对中金接口访问的统一处理
 func sendRequest(req *BindingRequest) *BindingResponse {
@@ -79,7 +43,11 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	log.Tracef("base64: %s", b64Str)
 
 	// 对 xml 签名
-	hexSign := signatureUseSha1WithRsa(xmlBytes, req.PrivateKey)
+	hexSign, err := signatureUseSha1WithRsa(xmlBytes, req.PrivateKey)
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
 	log.Tracef("signed: %s", hexSign)
 
 	// 准备参数
@@ -91,8 +59,7 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 }
 
 func send(v *url.Values) (body []byte) {
-	resp, err := cli.PostForm(requestURL, *v) // 双向认证
-	// resp, err := http.PostForm(requestURL, *v)
+	resp, err := http.PostForm(requestURL, *v)
 	if err != nil {
 		log.Errorf("unable to connect Cfca gratway %s", err)
 		return nil

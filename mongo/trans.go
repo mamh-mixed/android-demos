@@ -168,6 +168,27 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 	return ts, err
 }
 
+// IsSuccessSettOrder 判断是否成功的结算订单号
+func (col *transCollection) IsSuccessSettOrder(merId, settOrderNum string) (bool, error) {
+	q := bson.M{
+		"merId":        merId,
+		"transType":    model.PayTrans,
+		"transStatus":  model.TransSuccess,
+		"settOrderNum": settOrderNum,
+	}
+
+	count, err := database.C(col.name).Find(q).Count()
+	if err != nil {
+		return false, err
+	}
+
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
 // FindRefundTrans 查找某个订单成功的退款
 func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int64, error) {
 

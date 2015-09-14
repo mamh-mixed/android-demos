@@ -11,6 +11,14 @@ var mockClient MockBindingPay
 type MockBindingPay struct {
 }
 
+// ProcessPaySettlement 支付结算
+func (m *MockBindingPay) ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
+	// TODO validate feilds
+	log.Infof("MOCK - %#v", be)
+
+	return model.NewBindingReturn("000000", "请求处理成功")
+}
+
 // ProcessBindingCreate 建立绑定关系
 func (m *MockBindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	// TODO validate feilds

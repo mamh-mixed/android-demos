@@ -86,6 +86,7 @@
       <paper-tab>支付(验证码)</paper-tab>
       <paper-tab>确认支付</paper-tab>
       <paper-tab>退款</paper-tab>
+      <paper-tab>支付结算</paper-tab>
       <paper-tab>交易汇总</paper-tab>
       <paper-tab>交易明细</paper-tab>
       <paper-tab>查询订单</paper-tab>
@@ -389,8 +390,98 @@
                 "maxlength": "10",
                 "autoValidate": true,
                 "error": "必填，最长 10 个字符"
+            },
+             {
+                "id": "settOrderNum",
+                "name": "settOrderNum",
+                "label": "结算订单号",
+                "tooltip": "结算订单号",
+                "value": "",
+                "required": false,
+                "maxlength": "16",
+                "autoValidate": true,
+                "error": "必填，最长 16 个字符"
             }
         ]'></bindingpay-template>
+      </section>
+      <section alias="paySettlement">
+        <bindingpay-template url="/bindingpay/bindingPaymentSettlement" elems='[
+            {
+                "id": "merOrderNum",
+                "name": "merOrderNum",
+                "label": "* 商户订单号",
+                "tooltip": "该笔交易在商户侧的流水号",
+                "value": "",
+                "required": true,
+                "maxlength": "32",
+                "autoValidate": true,
+                "error": "必填，最长 32 个字符"
+            },
+            {
+                "id": "settAmt",
+                "name": "settAmt",
+                "label": "* 结算金额",
+                "tooltip": "结算金额,单位分",
+                "numeric": true,
+                "required": true,
+                "maxlength": "10",
+                "autoValidate": true,
+                "error": "必填，最长 10 个字符"
+            },
+             {
+                "id": "settOrderNum",
+                "name": "settOrderNum",
+                "label": "* 结算订单号",
+                "tooltip": "结算订单号",
+                "value": "",
+                "required": true,
+                "maxlength": "16",
+                "autoValidate": true,
+                "error": "必填，最长 16 个字符"
+            },
+             {
+                "id": "settAccountName",
+                "name": "settAccountName",
+                "label": "* 结算账户名称",
+                "tooltip": "结算账户名称",
+                "value": "",
+                "required": true,
+                "encrypt": true
+            },
+            {
+                "id": "settAccountNum",
+                "name": "settAccountNum",
+                "label": "* 结算账户",
+                "tooltip": "结算账户",
+                "value": "",
+                "required": true,
+                "encrypt": true
+            },
+            {
+                "id": "settBranchName",
+                "name": "settBranchName",
+                "label": "分支行名称",
+                "tooltip": "分支行名称",
+                "value": "",
+                "required": false
+            },
+            {
+                "id": "province",
+                "name": "province",
+                "label": "分支行省份",
+                "tooltip": "分支行省份",
+                "value": "",
+                "required": false
+            },
+            {
+                "id": "city",
+                "name": "city",
+                "label": "分支行城市",
+                "tooltip": "分支行城市",
+                "value": "",
+                "required": false
+            }
+        ]' is-visable="true" ></bindingpay-template>
       </section>
       <section alias="billingSummary">
         <bindingpay-template url="/bindingpay/billingSummary" elems='[

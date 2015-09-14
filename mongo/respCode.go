@@ -15,6 +15,7 @@ type respCodeCollection struct {
 var RespCodeColl = respCodeCollection{"respCode"}
 
 var respCodeCache = cache.New(model.Cache_RespCode)
+var unKnown = &model.BindingReturn{RespCode: "000004", RespMsg: "未知应答，请联系系统管理员"}
 
 // Get 根据传入的code类型得到Resp对象
 func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {
@@ -41,7 +42,11 @@ func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {
 // GetByCfca 根据传入的cfca的code得到Resp对象
 func (c *respCodeCollection) GetByCfca(code string) (resp *model.BindingReturn) {
 	resp = &model.BindingReturn{}
-	database.C(c.name).Find(bson.M{"cfca.code": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)
+	err := database.C(c.name).Find(bson.M{"cfca.code": code}).Select(bson.M{"respCode": 1, "respMsg": 1}).One(resp)
+	if err != nil {
+		log.Errorf("find cfca code(%s) error: %s", code, err)
+		return unKnown
+	}
 	return resp
 }
 
