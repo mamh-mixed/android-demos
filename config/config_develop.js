@@ -35,7 +35,8 @@
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
-        "NotifyURL": "http://dev.quick.ipay.so" // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "http://dev.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "DNSCacheRefreshTime": "3m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥

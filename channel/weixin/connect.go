@@ -16,8 +16,6 @@ import (
 	"github.com/omigo/validator"
 )
 
-var url = goconf.Config.WeixinScanPay.URL
-
 // Execute 发送报文执行微信支付
 func Execute(req BaseReq, resp BaseResp) error {
 	if err := validator.Validate(req); err != nil {
@@ -67,9 +65,9 @@ func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 	// 如果连接失败，重试 3 次，休眠 3s、6s
 	for i := 1; i <= 3; i++ {
 		start := time.Now()
-		resp, err = cli.Post(url+uri, "text/xml", bytes.NewBuffer(body))
+		resp, err = cli.Post(goconf.Config.WeixinScanPay.URL+uri, "text/xml", bytes.NewBuffer(body))
 		end := time.Now()
-		log.Infof("=== %s === %s%s", end.Sub(start), url, uri)
+		log.Infof("=== %s === %s%s", end.Sub(start), goconf.Config.WeixinScanPay.URL, uri)
 		if err == nil {
 			break
 		}

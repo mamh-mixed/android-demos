@@ -41,8 +41,9 @@ type ConfigStruct struct {
 	}
 
 	WeixinScanPay struct {
-		URL       string
-		NotifyURL string
+		URL                 string
+		NotifyURL           string
+		DNSCacheRefreshTime Duration
 	}
 
 	AlipayScanPay struct {

@@ -19,7 +19,7 @@
     },
     "CILOnline": {
         "Host": "140.207.50.238",
-        "Port": 7827
+        "Port": 7823
     },
     "CFCA": {
         "CFCAPublicKey": "config/pem/cfca/sign_cert_testing.pem", // CFCA  验签公钥
@@ -29,7 +29,8 @@
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
-        "NotifyURL": "https://api.shou.money" // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "DNSCacheRefreshTime": "10m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥
