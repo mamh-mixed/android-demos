@@ -409,6 +409,8 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 返回真实渠道
 	req.Chcd = refund.ChanCode
+	ret.ChannelOrderNum = orig.ChanOrderNum
+	ret.ConsumerAccount = orig.ConsumerAccount
 
 	return
 }
@@ -612,7 +614,9 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	updateTrans(cancel, ret)
 
 	// 返回真实渠道
-	req.Chcd = cancel.ChanCode
+	ret.Chcd = cancel.ChanCode
+	ret.ChannelOrderNum = orig.ChanOrderNum
+	ret.ConsumerAccount = orig.ConsumerAccount
 
 	return ret
 }
@@ -699,7 +703,9 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	updateTrans(closed, ret)
 
 	// 返回真实渠道
-	req.Chcd = closed.ChanCode
+	ret.Chcd = closed.ChanCode
+	ret.ChannelOrderNum = orig.ChanOrderNum
+	ret.ConsumerAccount = orig.ConsumerAccount
 
 	return ret
 }
