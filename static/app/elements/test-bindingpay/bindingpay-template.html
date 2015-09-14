@@ -49,8 +49,11 @@
       <template is="dom-repeat" items="{{elems}}">
         <paper-input label="{{item.label}}" name="{{item.name}}" maxlength="{{item.maxlength}}" required="{{item.required}}" value="{{item.value}}"></paper-input>
       </template>
+      <template is="dom-if" if="{{isVisable}}">
+         <x-select items="[[accountTypeMap]]" name="settAccountType" selected-item="{{settAccountType}}" label="* 账户类型"></x-select>
+      </template>
     </div>
-
+    
     <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="submit"></paper-fab>
 
     <paper-textarea label="响应" value="{{rcvd}}"></paper-textarea>
@@ -67,8 +70,28 @@
         elems: {
           type: Array,
           value: []
-        }
+        },
+        settAccountType: {
+          type: Object
+        },
+        accountTypeMap: {
+          type: Array,
+          value: [{
+            key: '11',
+            value: '个人账户'
+          }, {
+            key: '12',
+            value: '企业账户'
+          }, {
+            key: '20',
+            value: '支付账户'
+          }, ]
+        },
+        isVisable:Boolean,
       },
+      // observers: [
+      //   '_watchAccountTypeChange(settAccountType.key)'
+      // ],
       encrypt: function(plaintext) {
         // var plaintext = '000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f'
         //
@@ -90,6 +113,10 @@
           // console.log(b64encrypted)
         return b64encrypted;
       },
+      //  // 交易状态选择框改变
+      // _watchAccountTypeChange: function(key) {
+      //   this.cond.settAccountType = key;
+      // },
 
       ready: function() {
         this.merchant = {
@@ -98,6 +125,7 @@
           encryptKey: 'AAECAwQFBgcICQoLDA0ODwABAgMEBQYHCAkKCwwNDg8='
         };
         this.rcvd = '';
+        this.settAccountType = {};
       },
       submit: function() {
         // postAjax.url = this.url + '?merId=012345678901234';
@@ -122,6 +150,12 @@
           }
           body[this.elems[i].name] = value;
         }
+
+        if (this.isVisable === true){
+          body["settAccountType"] = this.settAccountType.key;
+          debugger;
+        }
+
         this.$.postAjax.body = JSON.stringify(body);
         var hash = CryptoJS.SHA1(this.$.postAjax.body + this.merchant.signKey);
         this.$.postAjax.headers = {

@@ -15,6 +15,85 @@ var (
 	handlingCode = "000009"
 )
 
+// ProcessPaySettlement 支付结算
+func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
+
+	// 检查同一个商户的订单号是否重复
+	count, err := mongo.TransColl.Count(be.MerId, be.MerOrderNum)
+	if err != nil {
+		return mongo.RespCodeColl.Get("000001")
+	}
+	if count > 0 {
+		return mongo.RespCodeColl.Get("200081")
+	}
+
+	// 记录这笔结算
+	sett := &model.Trans{
+		MerId:        be.MerId,
+		OrderNum:     be.MerOrderNum,
+		TransType:    model.SettTrans,
+		SubMerId:     be.SubMerId,
+		TransAmt:     be.SettAmt,
+		SettOrderNum: be.SettOrderNum,
+	}
+
+	// 获取卡bin详情
+	cardBin, err := findCardBin(be.SettAccountNum)
+	if err != nil {
+		return logicErrorHandle(sett, "200110")
+	}
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(be.MerId, cardBin.CardBrand)
+	if rp == nil {
+		return logicErrorHandle(sett, "300030")
+	}
+	sett.ChanCode = rp.ChanCode
+	sett.ChanMerId = rp.ChanMerId
+
+	// 渠道商户信息
+	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
+	if err != nil {
+		return logicErrorHandle(sett, "300030")
+	}
+
+	// 暂时判断中金渠道是否支持该银行卡
+	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
+	if err != nil {
+		return logicErrorHandle(sett, "000001")
+	}
+
+	// 交易参数
+	sett.SysOrderNum = util.SerialNumber()
+	// 渠道请求参数
+	be.ChanMerId = sett.ChanMerId
+	be.SysOrderNum = sett.SysOrderNum
+	be.PrivateKey = chanMer.PrivateKey
+	be.BankCode = cm.BankId
+	be.SettOrderNum = be.MerId + be.SettOrderNum
+
+	// 获取渠道接口
+	c := channel.GetChan(sett.ChanCode)
+	if c == nil {
+		log.Error("Channel interface is unavailable,error message is 'get channel return nil'")
+		return logicErrorHandle(sett, "510010")
+	}
+
+	// 记录这笔交易
+	if err = mongo.TransColl.Add(sett); err != nil {
+		log.Errorf("add trans error: %s", err)
+		return mongo.RespCodeColl.Get("000001")
+	}
+
+	ret = c.ProcessPaySettlement(be)
+
+	// 更新
+	transStatusHandle(ret, sett)
+	mongo.TransColl.Update(sett)
+
+	return ret
+}
+
 // ProcessGetCardInfo 获取卡片信息
 func ProcessGetCardInfo(bc *model.CardInfo) (ret *model.BindingReturn) {
 
@@ -334,8 +413,9 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
 		if be.SettOrderNum != orig.SettOrderNum {
-			return mongo.RespCodeColl.Get("000001") // TODO:结算订单号不一致
+			return mongo.RespCodeColl.Get("200251")
 		}
+		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 	default:
 		log.Errorf("Unsupport mode %s", chanMer.TransMode)
@@ -351,18 +431,8 @@ func ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) 
 	// 请求支付
 	ret = c.ProcessPaymentWithSMS(be)
 
-	orig.RespCode = ret.RespCode
-	orig.RespCode = ret.ChanRespCode
-	switch ret.RespCode {
-	case successCode:
-		orig.TransStatus = model.TransSuccess
-	case handlingCode:
-		orig.TransStatus = model.TransHandling
-	default:
-		orig.TransStatus = model.TransFail
-	}
-
 	// 更新交易
+	transStatusHandle(ret, orig)
 	mongo.TransColl.Update(orig)
 	return ret
 }
@@ -384,16 +454,15 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 
 	//只要订单号不重复就记录这笔交易
 	pay := &model.Trans{
-		MerId:        be.MerId,
-		OrderNum:     be.MerOrderNum,
-		TransType:    model.PayTrans,
-		BindingId:    be.BindingId,
-		TransAmt:     be.TransAmt,
-		SendSmsId:    be.SendSmsId,
-		SmsCode:      be.SmsCode,
-		Remark:       be.Remark,
-		SubMerId:     be.SubMerId,
-		SettOrderNum: be.SettOrderNum,
+		MerId:     be.MerId,
+		OrderNum:  be.MerOrderNum,
+		TransType: model.PayTrans,
+		BindingId: be.BindingId,
+		TransAmt:  be.TransAmt,
+		SendSmsId: be.SendSmsId,
+		SmsCode:   be.SmsCode,
+		Remark:    be.Remark,
+		SubMerId:  be.SubMerId,
 	}
 
 	// 本地查询绑定关系。查询绑定关系的状态是否成功
@@ -436,6 +505,8 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		if be.SettOrderNum == "" {
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
+		pay.SettOrderNum = be.SettOrderNum
+		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 		be.SettFlag = chanMer.SettFlag
 	default:
@@ -469,6 +540,8 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		// 发送支付验证码
 		ret = c.ProcessSendBindingPaySMS(be)
 		// 发送结果成功，交易待支付
+		pay.RespCode = ret.RespCode
+		pay.ChanRespCode = ret.ChanRespCode
 		if ret.RespCode == successCode {
 			pay.TransStatus = model.TransNotPay
 		}
@@ -476,16 +549,7 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		// 直接支付
 		ret = c.ProcessBindingPayment(be)
 		// 处理结果
-		pay.ChanRespCode = ret.ChanRespCode
-		pay.RespCode = ret.RespCode
-		switch ret.RespCode {
-		case successCode:
-			pay.TransStatus = model.TransSuccess
-		case handlingCode:
-			pay.TransStatus = model.TransHandling
-		default:
-			pay.TransStatus = model.TransFail
-		}
+		transStatusHandle(ret, pay)
 	}
 
 	// 更新交易
@@ -512,7 +576,6 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		OrigOrderNum: be.OrigOrderNum,
 		TransAmt:     be.TransAmt,
 		TransType:    model.RefundTrans,
-		SettOrderNum: be.SettOrderNum,
 	}
 
 	// 是否有该源订单号
@@ -552,21 +615,19 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 部分退款
 	case be.TransAmt < orign.TransAmt:
 		// 判断总退款金额
-		refunded, err := mongo.TransColl.FindTransRefundAmt(be.MerId, be.OrigOrderNum)
-		log.Debugf("refunded total : %d", refunded)
-		if err != nil {
-			refund.RespCode = "000001"
-			legal = false
-		} else if refunded+be.TransAmt > orign.TransAmt {
+		refunded := orign.RefundAmt + be.TransAmt
+		if refunded > orign.TransAmt {
 			refund.RespCode = "200191"
 			legal = false
-		} else if refunded+be.TransAmt == orign.TransAmt {
+		} else if refunded == orign.TransAmt {
 			refundStatus = model.TransRefunded
 		} else {
 			refundStatus = model.TransPartRefunded
 		}
+		orign.RefundAmt = refunded
 	case be.TransAmt == orign.TransAmt:
 		refundStatus = model.TransRefunded
+		orign.RefundAmt = be.TransAmt
 	}
 	if !legal {
 		return logicErrorHandle(refund, refund.RespCode)
@@ -585,9 +646,11 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		if be.SettOrderNum == "" {
 			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
 		}
-		if be.SettOrderNum != refund.SettOrderNum {
-			return logicErrorHandle(refund, "000001") // TODO:结算订单号不一致
+		if be.SettOrderNum != orign.SettOrderNum {
+			return logicErrorHandle(refund, "200251")
 		}
+		refund.SettOrderNum = be.SettOrderNum
+		be.SettOrderNum = be.MerId + be.SettOrderNum
 	case model.MerMode:
 		// dothing
 	default:
@@ -619,21 +682,14 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 退款
 	ret = c.ProcessBindingRefund(be)
 
-	// 更新结果
-	refund.ChanRespCode = ret.ChanRespCode
-	refund.RespCode = ret.RespCode
-	switch ret.RespCode {
-	case successCode:
-		refund.TransStatus = model.TransSuccess
-		//更新原交易状态
+	//更新原交易状态
+	if ret.RespCode == successCode {
 		orign.RefundStatus = refundStatus
 		mongo.TransColl.Update(orign)
-	//只有超时才会出现000009
-	case handlingCode:
-		refund.TransStatus = model.TransHandling
-	default:
-		refund.TransStatus = model.TransFail
 	}
+
+	// 更新结果
+	transStatusHandle(ret, refund)
 	mongo.TransColl.Update(refund)
 	return
 }
@@ -690,17 +746,8 @@ func ProcessOrderEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	}
 
 	//更新交易状态
-	switch result.RespCode {
-	case successCode:
-		t.TransStatus = model.TransSuccess
-	case handlingCode:
-		t.TransStatus = model.TransHandling
-	default:
-		t.TransStatus = model.TransFail
-	}
-	if err = mongo.TransColl.Update(t); err != nil {
-		log.Errorf("Update trans error : %s", err)
-	}
+	transStatusHandle(result, t)
+	mongo.TransColl.Update(t)
 
 	//返回结果
 	ret.TransStatus = t.TransStatus
@@ -889,23 +936,27 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("510010")
 	}
 
+	// 消费
 	ret = c.Consume(be)
 
-	trans.ChanRespCode = ret.ChanRespCode
-	trans.RespCode = ret.RespCode
-	switch ret.RespCode {
-	case successCode:
-		trans.TransStatus = model.TransSuccess
-	case handlingCode:
-		trans.TransStatus = model.TransHandling
-	default:
-		trans.TransStatus = model.TransFail
-	}
-	if err = mongo.TransColl.Update(trans); err != nil {
-		log.Errorf("update trans status fail: %s", err)
-	}
+	// 更新结构
+	transStatusHandle(ret, trans)
+	mongo.TransColl.Update(trans)
 
 	return ret
+}
+
+func transStatusHandle(ret *model.BindingReturn, t *model.Trans) {
+	t.ChanRespCode = ret.ChanRespCode
+	t.RespCode = ret.RespCode
+	switch ret.RespCode {
+	case successCode:
+		t.TransStatus = model.TransSuccess
+	case handlingCode:
+		t.TransStatus = model.TransHandling
+	default:
+		t.TransStatus = model.TransFail
+	}
 }
 
 // todo 校验短信验证码，短信验证通过就返回nil

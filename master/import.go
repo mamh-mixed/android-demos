@@ -89,7 +89,19 @@ type importer struct {
 	IsSaveChanMersSuccess bool
 	IsSaveRouterSuccess   bool
 	IsDebug               bool // 是否调试模式，如果是，会打印结果，不会入库
+	// A                     *operation
+	// U                     *operation
 }
+
+// type operation struct {
+// 	Mers                  []model.Merchant
+// 	ChanMers              []model.ChanMer
+// 	RouterPolicys         []model.RouterPolicy
+// 	Data                  []*rowData
+// 	IsSaveMersSuccess     bool
+// 	IsSaveChanMersSuccess bool
+// 	IsSaveRouterSuccess   bool
+// }
 
 // DoImport 执行导入操作
 func (i *importer) DoImport() error {
@@ -97,15 +109,18 @@ func (i *importer) DoImport() error {
 	if len(i.Sheets) == 0 {
 		return emptyErr
 	}
-	// 初始化
-	i.chanMerCache = make(map[string]*model.ChanMer)
-	i.agentCache = make(map[string]*model.Agent)
-	i.groupCache = make(map[string]*model.Group)
 
 	if err := i.read(); err != nil {
 		return err
 	}
 	log.Debugf("read over, len(row)=%d", len(i.rowData))
+
+	// 成功读取，初始化
+	i.chanMerCache = make(map[string]*model.ChanMer)
+	i.agentCache = make(map[string]*model.Agent)
+	i.groupCache = make(map[string]*model.Group)
+	// i.A = new(operation)
+	// i.U = new(operation)
 
 	// 数据处理，验证等
 	if err := i.dataHandle(); err != nil {
@@ -163,6 +178,7 @@ func (i *importer) dataHandle() error {
 			if err = insertValidate(r); err != nil {
 				return err
 			}
+			// i.A.Data = append(i.A.Data, r)
 		case "U":
 			return fmt.Errorf("%s", "暂不支持U操作，马上上线，敬请期待！")
 			// 修改不存在用户，报错
@@ -170,6 +186,7 @@ func (i *importer) dataHandle() error {
 				return fmt.Errorf("商户：%s 不存在", r.MerId)
 			}
 			log.Debug(mer)
+			// i.U.Data = append(i.U.Data, r)
 		default:
 			// D 先不做删除
 			return fmt.Errorf("暂不支持 %s 操作。", r.Operator)

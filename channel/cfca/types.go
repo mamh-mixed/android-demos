@@ -22,26 +22,31 @@ type requestHead struct {
 
 // common request body
 type requestBody struct {
-	TxSNBinding          string `xml:",omitempty"` //绑定流水号
-	BankID               string `xml:",omitempty"` //银行 ID
-	AccountName          string `xml:",omitempty"` //账户名称
-	AccountNumber        string `xml:",omitempty"` //账户号码
-	IdentificationType   string `xml:",omitempty"` //开户证件类型
-	IdentificationNumber string `xml:",omitempty"` //证件号码
-	PhoneNumber          string `xml:",omitempty"` //手机号
-	CardType             string `xml:",omitempty"` //卡类型
-	ValidDate            string `xml:",omitempty"` //信用卡有效期
-	CVN2                 string `xml:",omitempty"` //信用卡背面的末 3 位数字
-	TxSNUnBinding        string `xml:",omitempty"` //解绑流水号
-	OrderNo              string `xml:",omitempty"` //市场订单号
-	PaymentNo            string `xml:",omitempty"` //支付交易流水号
-	Amount               int64  `xml:",omitempty"` //支付金额,单位:分
-	SettlementFlag       string `xml:",omitempty"` //结算标识
-	Remark               string `xml:",omitempty"` //备注
-	TxSN                 string `xml:",omitempty"` //退款交易流水号
-	InstitutionID        string `xml:",omitempty"` //机构编号
-	Date                 string `xml:",omitempty"` //对账日期,格式:YYYY-MM-DD
-	SMSValidationCode    string `xml:",omitempty"` //短信验证码
+	TxSNBinding          string       `xml:",omitempty"` //绑定流水号
+	BankID               string       `xml:",omitempty"` //银行 ID
+	AccountName          string       `xml:",omitempty"` //账户名称
+	AccountNumber        string       `xml:",omitempty"` //账户号码
+	IdentificationType   string       `xml:",omitempty"` //开户证件类型
+	IdentificationNumber string       `xml:",omitempty"` //证件号码
+	PhoneNumber          string       `xml:",omitempty"` //手机号
+	CardType             string       `xml:",omitempty"` //卡类型
+	ValidDate            string       `xml:",omitempty"` //信用卡有效期
+	CVN2                 string       `xml:",omitempty"` //信用卡背面的末 3 位数字
+	TxSNUnBinding        string       `xml:",omitempty"` //解绑流水号
+	OrderNo              string       `xml:",omitempty"` //市场订单号
+	PaymentNo            string       `xml:",omitempty"` //支付交易流水号
+	Amount               int64        `xml:",omitempty"` //支付金额,单位:分
+	SettlementFlag       string       `xml:",omitempty"` //结算标识
+	Remark               string       `xml:",omitempty"` //备注
+	TxSN                 string       `xml:",omitempty"` //退款交易流水号
+	InstitutionID        string       `xml:",omitempty"` //机构编号
+	Date                 string       `xml:",omitempty"` //对账日期,格式:YYYY-MM-DD
+	SMSValidationCode    string       `xml:",omitempty"` //短信验证码
+	SerialNumber         string       `xml:",omitempty"` //交易流水号
+	AccountType          string       `xml:",omitempty"` //账户类型
+	PaymentAccountName   string       `xml:",omitempty"` //支付平台账户名称
+	PaymentAccountNumber string       `xml:",omitempty"` //支付平台账户号码
+	BankAccount          *bankAccount `xml:",omitempty"`
 }
 
 // common resp head
@@ -81,4 +86,13 @@ type Tx struct {
 	Remark               string //备注
 	BankNotificationTime string //支付平台收到银行通知时间,格式: YYYYMMDDhhmmss
 	SettlementFlag       string //结算标识
+}
+
+type bankAccount struct {
+	BankID        string
+	AccountName   string
+	AccountNumber string
+	BranchName    string
+	Province      string
+	City          string
 }
