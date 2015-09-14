@@ -16,8 +16,7 @@
 
 @interface Request : NSObject  //训练模式下
 
-@property (nonatomic , assign) NSInteger                            times;//第几次发送Request请求
-
+@property (nonatomic , assign) NSInteger                          successTimes;//已经成功发送多少次Request请求（不同的界面时 需要先设置为0）
 +(Request *)sharedRequest;//单例
 
 -(void)connectionNet:(NSArray *)VoicePath andUserKey:(NSString *)UserKey;

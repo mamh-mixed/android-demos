@@ -41,7 +41,7 @@
     
     [sign setString:[self sha1:sign]];
     
-    NSString * string = [NSString stringWithFormat: @"{\"cmd\":\"start\",\"param\":{\"app\":{\"applicationId\":\"%@\",\"userId\":\"%@\",\"timestamp\":\"%@\",\"sig\":\"%@\"},\"audio\":{\"audioType\":\"wav\",\"channel\": 1,\"sampleBytes\":2,\"sampleRate\": 16000},\"request\": {\"coreType\":\"sv\",\"userid\":\"%@\",\"svMode\":2,\"threshold\":0.5}}}",appkey,userId,timeSp,sign,userid];
+    NSString * string = [NSString stringWithFormat: @"{\"cmd\":\"start\",\"param\":{\"app\":{\"applicationId\":\"%@\",\"userId\":\"%@\",\"timestamp\":\"%@\",\"sig\":\"%@\"},\"audio\":{\"audioType\":\"wav\",\"channel\": 1,\"sampleBytes\":2,\"sampleRate\": 16000},\"request\": {\"coreType\":\"sv\",\"userid\":\"%@\",\"svMode\":2,\"threshold\":1.0}}}",appkey,userId,timeSp,sign,userid];
     NSData * data = [string dataUsingEncoding:NSUTF8StringEncoding];
     
     NSLog(@"str = \n %@  \n 结束 ",string);

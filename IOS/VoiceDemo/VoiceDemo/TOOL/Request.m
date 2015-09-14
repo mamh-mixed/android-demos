@@ -18,11 +18,11 @@
 
 @interface Request()
 
-@property (strong, nonatomic) NSString           *UserKey;
+@property (strong, nonatomic) NSString           *UserKey;//保存connectionNet 传入的UserKey
 
 @property (strong, nonatomic) NSMutableData      *resultData;
 
-@property (strong, nonatomic) NSArray            *Voice_Array;
+@property (strong, nonatomic) NSArray            *Voice_Array;//保存connectionNet 传入的数组
 
 @end
 
@@ -36,7 +36,7 @@ static Request *request=nil;
     dispatch_once(&onceTocken, ^{
         if (request==nil) {
             request=[[Request alloc]init];
-            request.times=0;
+            request.successTimes=0;
         }
     });
     return request;
@@ -93,7 +93,7 @@ static Request *request=nil;
         {
             NSURL *url=[NSURL URLWithString:[NSString stringWithFormat:@"%@/api/v3.0/score",CONNECTION_URL]];
             //创建请求
-            NSString *path=[NSString stringWithString:_Voice_Array[_times]];
+            NSString *path=[NSString stringWithString:_Voice_Array[_successTimes]];
             NSData * data = [NSData dataWithContentsOfFile:path];
             NSMutableURLRequest *request=[NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:60];
             
@@ -149,21 +149,27 @@ static Request *request=nil;
         NSLog(@"-----%@",dict);
         NSDictionary *dic=[dict objectForKey:@"result"];
         if ([[dic objectForKey:@"svValue"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"RequestIsSuccess" object:nil];
+            _successTimes++;
+            if (_successTimes==1) {
+                [self connectionNet:_Voice_Array andUserKey:_UserKey];
+            }
+            else if(_successTimes==2){
+                [self connectionNet:_Voice_Array andUserKey:_UserKey];
+            }
+            else if (_successTimes==3) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"RequestIsSuccess" object:nil];
+                });
+                GenerateRequest *gRequest=[[GenerateRequest alloc]init];
+                [gRequest connectionNet:_UserKey];
+            }
         }
-        NSLog(@"~~~~~~~~~~~~~~~~~~~~~~~~~~~~第一次结束~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        if (_times == 2 ){//表示发送完了3次语音
-            NSLog(@"~~~~~~~~~~~~~~~~~~~~~~~~发送完了3次语音~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            GenerateRequest *gRequest=[[GenerateRequest alloc]init];
-            [gRequest connectionNet:_UserKey];
-        }
-        else if (_times == 0) {
-            [self connectionNet:_Voice_Array andUserKey:_UserKey];
-            _times=1;
-        }
-        else if (_times ==1){
-            [self connectionNet:_Voice_Array andUserKey:_UserKey];
-            _times=2;
+        else{
+            //语音发送失败
+            _successTimes=0;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter]postNotificationName:@"RequestIsDefault" object:nil];
+            });
         }
     }
 }

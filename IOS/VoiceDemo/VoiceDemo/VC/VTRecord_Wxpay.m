@@ -22,11 +22,14 @@
 @implementation VTRecord_Wxpay
 
 @synthesize recorder;
-
 @synthesize player;
+
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image=[UIImage imageNamed:@"paybg"];
     [self.view addSubview:imageView];
@@ -79,7 +82,7 @@
 {
     sender.backgroundColor=[UIColor orangeColor];
     AVAudioSession *session=[AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryRecord error:nil];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];//设置类别,表示该应用同时支持播放和录音
     
     NSMutableDictionary *recordSettings=[[NSMutableDictionary alloc]initWithCapacity:10];
     [recordSettings setObject:[NSNumber numberWithInt: kAudioFormatLinearPCM] forKey: AVFormatIDKey];
@@ -89,8 +92,10 @@
     [recordSettings setObject:[NSNumber numberWithInt:AVAudioQualityHigh] forKey:AVEncoderAudioQualityKey];
     
     NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]]];//默认acf格式 转成wav格式 方便后面的api解析
+    //NSLog(@" url  -----%@",url);
     if (sender.tag==1) {
         path1=[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]];
+        //NSLog(@"path1 --------%@",path1);
     }
     else if (sender.tag==2){
         path2=[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]];
@@ -107,31 +112,33 @@
     sender.alpha=0;
     [recorder stop];
     //判断录音的时长
-    if ([self testAudioDuration:sender.tag]) {
-        //4 5 6
-        UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
-        btn.frame=CGRectMake(sender.frame.origin.x, sender.frame.origin.y, sender.frame.size.width-50, sender.frame.size.height);
-        btn.backgroundColor=[UIColor blueColor];
-        btn.tag=sender.tag+3;
-        [btn addTarget:self action:@selector(play:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:btn];
-        UIImageView *image=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"play"]];
-        image.frame=CGRectMake((btn.frame.size.width-30)/2,(btn.frame.size.height-30)/2, 30, 30);
-        [btn addSubview:image];
-        //7 8 9
-        UIButton *cancel=[UIButton buttonWithType:UIButtonTypeCustom];
-        cancel.frame=CGRectMake(btn.frame.size.width+1, btn.frame.origin.y, SCREENWIDTH-btn.frame.size.width-1, btn.frame.size.height);
-        [cancel addTarget:self action:@selector(cancelClick:) forControlEvents:UIControlEventTouchUpInside];
-        cancel.tag=btn.tag+3;
-        UIImageView *ige=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"block"]];
-        ige.frame=CGRectMake((cancel.frame.size.width-20)/2, (cancel.frame.size.height-20)/2, 20, 20);
-        cancel.backgroundColor=[UIColor blueColor];
-        [cancel addSubview:ige];
-        [self.view addSubview:cancel];
-    }
-    else{
-        sender.alpha=1;
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self testAudioDuration:sender.tag]) {
+            //4 5 6
+            UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
+            btn.frame=CGRectMake(sender.frame.origin.x, sender.frame.origin.y, sender.frame.size.width-50, sender.frame.size.height);
+            btn.backgroundColor=[UIColor blueColor];
+            btn.tag=sender.tag+3;
+            [btn addTarget:self action:@selector(play:) forControlEvents:UIControlEventTouchUpInside];
+            [self.view addSubview:btn];
+            UIImageView *image=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"play"]];
+            image.frame=CGRectMake((btn.frame.size.width-30)/2,(btn.frame.size.height-30)/2, 30, 30);
+            [btn addSubview:image];
+            //7 8 9
+            UIButton *cancel=[UIButton buttonWithType:UIButtonTypeCustom];
+            cancel.frame=CGRectMake(btn.frame.size.width+1, btn.frame.origin.y, SCREENWIDTH-btn.frame.size.width-1, btn.frame.size.height);
+            [cancel addTarget:self action:@selector(cancelClick:) forControlEvents:UIControlEventTouchUpInside];
+            cancel.tag=btn.tag+3;
+            UIImageView *ige=[[UIImageView alloc]initWithFrame:CGRectMake((cancel.frame.size.width-20)/2, (cancel.frame.size.height-20)/2, 20, 20)];
+            ige.image=[UIImage imageNamed:@"block"];
+            cancel.backgroundColor=[UIColor blueColor];
+            [cancel addSubview:ige];
+            [self.view addSubview:cancel];
+        }
+        else{
+            sender.alpha=1;
+        }
+    });
 }
 //测试音频的时长
 -(BOOL)testAudioDuration:(NSUInteger )tag
@@ -149,8 +156,10 @@
     CMTime audioDuration =audioAsset.duration;
     float audioDurationSeconds=CMTimeGetSeconds(audioDuration);
     if (audioDurationSeconds<0.6) {
-        UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"录音时间过短请重录" delegate:self cancelButtonTitle:@"取消" otherButtonTitles: nil];
-        [alert show];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"录音时间过短" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
+            [alert show];
+        });
         return NO;
     }
     return YES;
@@ -165,9 +174,9 @@
 }
 -(void)play:(UIButton *)sender
 {
-    NSURL *url=[NSURL URLWithString:[NSTemporaryDirectory() stringByAppendingString:[NSString stringWithFormat:@"%ld.wav",(long)sender.tag-3]]];
-    player=[[AVAudioPlayer alloc]initWithContentsOfURL:url error:nil];
-    //player.volume=12.0f;
+    NSString *path=[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.wav",sender.tag-3]];
+    player=[[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
+    player.volume=20.0f;
     [player prepareToPlay];
     [player play];
 }
@@ -194,11 +203,10 @@
     [userkey appendString:[dict objectForKey:@"time"]];
     NSArray *path_array=[NSArray arrayWithObjects:path1,path2,path3,nil];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [Request sharedRequest].times=0;
+        [Request sharedRequest].successTimes=0;
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
     
@@ -217,6 +225,7 @@
     [progressImage removeFromSuperview];
     UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"语音发送失败 请将所有语音删除后 重试" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
     [alert show];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
 }
 -(void)requestIsSuccess
 {
@@ -226,6 +235,5 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
-
 
 @end

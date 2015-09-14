@@ -12,6 +12,9 @@
 #import "sqlite3.h"
 #import "RegisterTable.h"
 
+#import "VTRecord_Uppay.h"
+#import "VTRecord_Wxpay.h"
+
 #define kDatabaseName @"database.sqlite3"
 
 @interface VTRegistViewController ()
@@ -89,7 +92,7 @@
 #pragma mark- 注册
 -(void)register
 {
-#if 0
+#if 1
     if([password.text isEqualToString:passwordAgain.text]&&password.text)
     {
         RegisterTable * table = [[RegisterTable alloc]init];
@@ -132,8 +135,8 @@
         }
     }
 #endif
-    VTRecord_Alipay *alipay=[[VTRecord_Alipay alloc]init];
-    [self presentViewController:alipay animated:YES completion:nil];
+//    VTRecord_Alipay *alipay=[[VTRecord_Alipay alloc]init];
+//    [self presentViewController:alipay animated:YES completion:nil];
 }
 -(void)alertWithMessage:(NSString *)message
 {
