@@ -120,8 +120,10 @@ gulp.task('copy', function() {
   var vulcanized = gulp.src(['app/elements/elements.html'])
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
+  var menus = gulp.src(['app/api/*.json'])
+    .pipe(gulp.dest('dist/api'));
 
-  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
+  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox, menus)
     .pipe($.size({
       title: 'copy'
     }));
@@ -159,7 +161,10 @@ gulp.task('dev-copy', function() {
   var scripts = gulp.src(['app/scripts/*.js'])
     .pipe(gulp.dest('dist/scripts'));
 
-  return merge(app, bower, index, scripts, elements, vulcanized, swBootstrap, swToolbox)
+  var menus = gulp.src(['app/api/*.json'])
+    .pipe(gulp.dest('dist/api'));
+
+  return merge(app, bower, index, scripts, elements, vulcanized, swBootstrap, swToolbox,menus)
     .pipe($.size({
       title: 'copy'
     }));
