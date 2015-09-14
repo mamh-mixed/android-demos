@@ -90,11 +90,11 @@ func validatePaySettlement(in *model.PaySettlement) (ret *model.BindingReturn) {
 		return err
 	}
 
-	if in.SettAccountName == "" {
+	if in.AcctNameDecrypt == "" {
 		return model.NewBindingReturn("200050", "字段 settAccountName 不能为空")
 	}
 
-	if in.SettAccountNum == "" {
+	if in.AcctNumDecrypt == "" {
 		return model.NewBindingReturn("200050", "字段 settAccountNum 不能为空")
 	}
 

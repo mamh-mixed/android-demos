@@ -35,6 +35,11 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 		SubMerId:     be.SubMerId,
 		TransAmt:     be.SettAmt,
 		SettOrderNum: be.SettOrderNum,
+		AcctNum:      be.SettAccountNum,
+		AcctName:     be.SettAccountName,
+		Province:     be.Province,
+		City:         be.City,
+		BranchName:   be.SettBranchName,
 	}
 
 	// 判断是否是合法的结算订单号
@@ -49,7 +54,7 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	}
 
 	// 获取卡bin详情
-	cardBin, err := findCardBin(be.SettAccountNum)
+	cardBin, err := findCardBin(be.AcctNumDecrypt)
 	if err != nil {
 		return logicErrorHandle(sett, "200110")
 	}

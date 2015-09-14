@@ -96,11 +96,9 @@ AGAIN:
 			// 验证码通过，验证交易状态
 			goto AGAIN
 		case "20":
-			// TODO:验证码超时
-			ret.RespCode = "400000"
+			ret.RespCode = "200171"
 		case "30":
-			// TODO:验证未通过
-			ret.RespCode = "400001"
+			ret.RespCode = "200172"
 		}
 
 	case MerModeSendSMS, MarketModeSendSMS, MarketPaySettlement:

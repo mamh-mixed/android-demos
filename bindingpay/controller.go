@@ -64,6 +64,17 @@ func BindingPaymentSettlementHandle(data []byte, merId string) (ret *model.Bindi
 	}
 	r.MerId = merId
 
+	m, _ := mongo.MerchantColl.Find(merId)
+	aes := security.NewAESCBCEncrypt(m.EncryptKey)
+	r.AcctNameDecrypt, r.SettAccountName = aes.DcyAndUseSysKeyEcy(r.SettAccountName)
+	r.AcctNumDecrypt, r.SettAccountNum = aes.DcyAndUseSysKeyEcy(r.SettAccountNum)
+	if aes.Err != nil {
+		log.Errorf("decrypt fail : merId=%s, request=%+v, err=%s", merId, r, aes.Err)
+		return mongo.RespCodeColl.Get("200021")
+	}
+
+	log.Debugf("after decrypt: settAccountName=%s, settAccountNum=%s", r.AcctNameDecrypt, r.AcctNumDecrypt)
+
 	// 验证
 	ret = validatePaySettlement(r)
 	if ret != nil {
