@@ -63,16 +63,16 @@ func (c *CFCABindingPay) ProcessPaySettlement(be *model.PaySettlement) (ret *mod
 	if be.SettAccountType != "20" {
 		bankInfo := &bankAccount{
 			BankID:        be.BankCode,
-			AccountName:   be.SettAccountName,
-			AccountNumber: be.SettAccountNum,
+			AccountName:   be.AcctNameDecrypt,
+			AccountNumber: be.AcctNumDecrypt,
 			BranchName:    be.SettBranchName,
 			Province:      be.Province,
 			City:          be.City,
 		}
 		req.Body.BankAccount = bankInfo
 	} else {
-		req.Body.PaymentAccountName = be.SettAccountName
-		req.Body.PaymentAccountNumber = be.SettAccountNum
+		req.Body.PaymentAccountName = be.AcctNameDecrypt
+		req.Body.PaymentAccountNumber = be.AcctNumDecrypt
 	}
 
 	return transformResp(sendRequest(req), req.Head.TxCode)

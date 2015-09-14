@@ -121,11 +121,13 @@ type PaySettlement struct {
 	Province        string `json:"province"`
 	City            string `json:"city"`
 
-	Mode        int
-	BankCode    string //银行ID
-	ChanMerId   string //渠道商户ID
-	PrivateKey  string //签名密钥
-	SysOrderNum string //系统订单号
+	Mode            int
+	BankCode        string //银行ID
+	ChanMerId       string //渠道商户ID
+	PrivateKey      string //签名密钥
+	SysOrderNum     string //系统订单号
+	AcctNumDecrypt  string `json:"-"`
+	AcctNameDecrypt string `json:"-"`
 }
 
 // BindingPayment 绑定支付请求
