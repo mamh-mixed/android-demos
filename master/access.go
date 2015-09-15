@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	BUCKET     = "test"
-	DOMAIN     = "7xl02q.com1.z0.glb.clouddn.com"
+	BUCKET     = "yun-master"
+	DOMAIN     = "dn-yun-master.qbox.me"
 	ACCESS_KEY = "-OOrgfZJbxz29kiW6HQsJ_OQJcjX6gaPRDf6xOcc"
 	SECRET_KEY = "rgBxbGeGJluv8ApEjY1RL2vq9IIfXcQAQqH4ttGo"
 )

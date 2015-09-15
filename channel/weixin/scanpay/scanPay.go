@@ -67,7 +67,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		ErrorCode:       ec,
 	}
 	// 如果非大商户模式，用自己的 openid
-	if d.SubMchId == "" {
+	if d.SubMchId == "" || p.SubOpenid == "" {
 		ret.ConsumerAccount = p.Openid
 	}
 
@@ -116,7 +116,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		ErrorCode:       ec,
 	}
 	// 如果非大商户模式，用自己的 openid
-	if d.SubMchId == "" {
+	if d.SubMchId == "" || p.SubOpenid == "" {
 		ret.ConsumerAccount = p.Openid
 	}
 
