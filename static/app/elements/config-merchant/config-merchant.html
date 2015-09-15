@@ -160,12 +160,14 @@
         <div class="row">
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
         </div>
-
+        <div class="row">
+          <paper-input label="标题一" value="{{merchant.detail.titleOne::input}}"></paper-input>
+          <paper-input label="标题二" value="{{merchant.detail.titleTwo::input}}"></paper-input>
+        </div>
         <div class="row">
           <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" label="商户状态" required error-message="必填项"></x-select>
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
-
         <div>
           <label for="permissionGroup">接口权限：</label>
           <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">

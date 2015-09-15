@@ -1,7 +1,11 @@
 package master
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"math/rand"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -85,6 +89,14 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	if m.MerStatus == "" {
 		m.MerStatus = model.MerStatusNormal
 	}
+
+	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
+	b64 := base64.StdEncoding.EncodeToString([]byte(m.MerId))
+	billUrl := fmt.Sprintf("http://qrcode.cardinfolink.net/payment/trade.html?merchantCode=%s", b64)
+	userInfoUrl := fmt.Sprintf("http://qrcode.cardinfolink.net/payment/index.html?merchantCode=%s", uniqueId)
+	m.UniqueId = uniqueId
+	m.Detail.BillUrl = billUrl
+	m.Detail.UserInfoUrl = userInfoUrl
 
 	err = mongo.MerchantColl.Insert(m)
 	if err != nil {
