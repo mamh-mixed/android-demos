@@ -116,12 +116,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 			'sessionId':sessionId,
 		};
 		app.$.deleteSessionAjax.generateRequest();
+		
 		// 清楚sessionStorage中的信息
 		window.sessionStorage.removeItem('SESSIONID');
 		window.sessionStorage.removeItem('USER');
 		app.nickName= '';
 		app.$.loginBtn.hidden=false;
 		app.$.logoutBtn.hidden=true;
+
+		// 跳转至登录页面
+		window.location.href='login.html';
 	};
 	// 登录
 	app.logintHandle=function(){

@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -37,7 +39,7 @@ func (col *sessionCollection) Find(sessionID string) (s *model.Session, err erro
 	return
 }
 
-// Remove 删除代理商
+// Remove 删除session
 func (col *sessionCollection) Remove(sessionID string) (err error) {
 	bo := bson.M{}
 	if sessionID != "" {
@@ -45,4 +47,11 @@ func (col *sessionCollection) Remove(sessionID string) (err error) {
 	}
 	err = database.C(col.name).Remove(bo)
 	return err
+}
+
+// RemoveByTime 删除已经过期的session
+func (col *sessionCollection) RemoveByTime() (num int, err error) {
+	bo := bson.M{"expires": bson.M{"$lte": time.Now().Format("2006-01-02 15:04:05")}}
+	info, err := database.C(col.name).RemoveAll(bo)
+	return info.Removed, err
 }

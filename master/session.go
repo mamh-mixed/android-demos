@@ -1,6 +1,8 @@
 package master
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/qiniu/log"
@@ -9,6 +11,25 @@ import (
 type session struct{}
 
 var Session session
+
+func init() {
+	go func() {
+		timingClearSession()
+	}()
+}
+func timingClearSession() {
+	refetchTime := 2 * time.Hour
+	for {
+		select {
+		case <-time.After(refetchTime):
+			num, err := mongo.SessionColl.RemoveByTime()
+			if err != nil {
+				log.Errorf("clear session err,%s", err)
+			}
+			log.Infof("clear %d sessions", num)
+		}
+	}
+}
 
 // 新建用户
 func (s *session) Save(session *model.Session) (ret *model.ResultBody) {
