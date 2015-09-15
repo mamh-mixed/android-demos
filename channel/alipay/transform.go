@@ -143,7 +143,6 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
 		ret.ChanRespCode = alipay.ResultCode
 	}
-	log.Debugf("%+v", ret)
 }
 
 // refundHandle 退款处理
