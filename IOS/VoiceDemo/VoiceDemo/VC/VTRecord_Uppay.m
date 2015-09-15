@@ -31,6 +31,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault:) name:@"RequestIsDefault" object:nil];//监听是否失败
     
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image=[UIImage imageNamed:@"paybg"];
@@ -74,6 +76,7 @@
     [btn addTarget:self action:@selector(sumbit) forControlEvents:UIControlEventTouchUpInside];
     btn.backgroundColor=[UIColor blueColor];
     [self.view addSubview:btn];
+    
 }
 -(void)back
 {
@@ -113,8 +116,8 @@
     sender.backgroundColor=[UIColor whiteColor];
     sender.alpha=0;
     [recorder stop];
-    //判断录音的时长
     dispatch_async(dispatch_get_main_queue(), ^{
+        //判断录音的时长
         if ([self testAudioDuration:sender.tag]) {
             //4 5 6
             UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
@@ -209,9 +212,8 @@
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
-    
+#if 1
+    //缓冲界面
     progressImage=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, SCREENHEIGHT)];
     [self.view addSubview:progressImage];
     progressImage.backgroundColor=[UIColor blackColor];
@@ -221,19 +223,26 @@
     activity.center=progressImage.center;
     [progressImage addSubview:activity];
     [activity startAnimating];
+#endif
 }
--(void)requestIsDefault
+-(void)requestIsDefault:(NSNotification *)sender
 {
     [progressImage removeFromSuperview];
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"语音发送失败 请将所有语音删除后 重试" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
+    NSNumber *number=sender.object;
+    int i=[number intValue];
+    i++;
+    NSString *string=[NSString stringWithFormat:@"第%d段语音发送失败，请删除该语音后重试发送",i];
+    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:string delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
     [alert show];
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
+    
 }
 -(void)requestIsSuccess
 {
     [progressImage removeFromSuperview];
     VTRecord_Wxpay *wxpay=[[VTRecord_Wxpay alloc]init];
     [self presentViewController:wxpay animated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsSuccess" object:nil];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

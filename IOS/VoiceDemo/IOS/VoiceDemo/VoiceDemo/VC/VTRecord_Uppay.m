@@ -201,17 +201,17 @@
     //训练模式分为两种模式，模式一，清空服务器之前训练过的缓存，调用start之后直接调用end，不发送音频。模式二，正常训练
     NSDictionary *dict =[RegisterTableDAO getObjectByName:[RegisterTableDAO getNameWhoIsUsing]];
     NSMutableString *userkey=[[NSMutableString alloc]initWithString:[RegisterTableDAO getNameWhoIsUsing]];
-    [userkey appendString:@"_alipay_"];
+    [userkey appendString:@"_uppay_"];
     [userkey appendString:[dict objectForKey:@"time"]];
     NSArray *path_array=[NSArray arrayWithObjects:path1,path2,path3,nil];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [Request sharedRequest].times=0;
+        [Request sharedRequest].successTimes=0;
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault:) name:@"RequestIsDefault" object:nil];//监听是否失败
+    //缓冲界面
     progressImage=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, SCREENHEIGHT)];
     [self.view addSubview:progressImage];
     progressImage.backgroundColor=[UIColor blackColor];
@@ -222,11 +222,17 @@
     [progressImage addSubview:activity];
     [activity startAnimating];
 }
--(void)requestIsDefault
+-(void)requestIsDefault:(NSNotification *)sender
 {
     [progressImage removeFromSuperview];
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"语音发送失败 请将所有语音删除后 重试" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
+    NSNumber *number=sender.object;
+    int i=[number intValue];
+    i++;
+    NSString *string=[NSString stringWithFormat:@"第%d段语音发送失败，请删除该语音后重试发送",i];
+    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:string delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
     [alert show];
+    //移除检测失败的观察者
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"RequestIsDefault" object:nil];
 }
 -(void)requestIsSuccess
 {

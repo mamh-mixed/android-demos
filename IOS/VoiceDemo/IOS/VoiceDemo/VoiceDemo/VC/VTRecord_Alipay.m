@@ -63,6 +63,7 @@
         UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake((SCREENWIDTH-20)/2,(height-32)/2, 20, 32)];
         image.image=[UIImage imageNamed:@"microphone"];
         [record addSubview:image];
+        //1个按钮对应两个方法
         [record addTarget:self action:@selector(record:) forControlEvents:UIControlEventTouchDown];
         [record addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:record];
@@ -82,10 +83,12 @@
 #pragma mark -录音
 -(void)record:(UIButton *)sender
 {
-    sender.backgroundColor=[UIColor orangeColor];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        sender.backgroundColor=[UIColor orangeColor];
+    });
     AVAudioSession *session=[AVAudioSession sharedInstance];
     [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];//设置类别,表示该应用同时支持播放和录音
-    
+    //设置录音的必要参数 （从网上copy的）
     NSMutableDictionary *recordSettings=[[NSMutableDictionary alloc]initWithCapacity:10];
     [recordSettings setObject:[NSNumber numberWithInt: kAudioFormatLinearPCM] forKey: AVFormatIDKey];
     [recordSettings setObject:[NSNumber numberWithFloat:8000.0] forKey: AVSampleRateKey];
@@ -94,10 +97,10 @@
     [recordSettings setObject:[NSNumber numberWithInt:AVAudioQualityHigh] forKey:AVEncoderAudioQualityKey];
     
     NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]]];//默认acf格式 转成wav格式 方便后面的api解析
-    //NSLog(@" url  -----%@",url);
+    
+    //根据button的tag值存储不同的语音
     if (sender.tag==1) {
         path1=[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]];
-        //NSLog(@"path1 --------%@",path1);
     }
     else if (sender.tag==2){
         path2=[NSTemporaryDirectory() stringByAppendingPathComponent: [NSString stringWithFormat: @"%ld.%@",(long)sender.tag,@"wav"]];
@@ -110,12 +113,16 @@
 }
 -(void)touchUpInside:(UIButton *)sender
 {
-    sender.backgroundColor=[UIColor whiteColor];
-    sender.alpha=0;
+    //结束录音
     [recorder stop];
-    //判断录音的时长
+    
+    //在主线程中写有关UI界面的变化（ps：如果不在这里写 会有些bug）
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self testAudioDuration:sender.tag]) {
+        
+        sender.backgroundColor=[UIColor whiteColor];
+        sender.alpha=0;
+        
+        if ([self testAudioDuration:sender.tag]) {//判断录音的时长
             //4 5 6
             UIButton *btn=[UIButton buttonWithType:UIButtonTypeCustom];
             btn.frame=CGRectMake(sender.frame.origin.x, sender.frame.origin.y, sender.frame.size.width-50, sender.frame.size.height);
@@ -137,7 +144,7 @@
             [cancel addSubview:ige];
             [self.view addSubview:cancel];
         }
-        else{
+        else{//语音时长过短的
             sender.alpha=1;
         }
     });
@@ -157,7 +164,7 @@
     }
     CMTime audioDuration =audioAsset.duration;
     float audioDurationSeconds=CMTimeGetSeconds(audioDuration);
-    if (audioDurationSeconds<0.6) {
+    if (audioDurationSeconds<0.6) {//音频时长小于0.6s
         dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"录音时间过短" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
             [alert show];
@@ -166,6 +173,7 @@
     }
     return YES;
 }
+//点击了取消 就可以重新录制音频
 -(void)cancelClick:(UIButton *)sender
 {
     [sender removeFromSuperview];
@@ -174,6 +182,7 @@
     UIButton *button=(UIButton *)[self.view viewWithTag:sender.tag-6];
     button.alpha=1;
 }
+#pragma mark - 音频播放
 -(void)play:(UIButton *)sender
 {
     NSString *path=[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.wav",sender.tag-3]];
@@ -205,13 +214,15 @@
     [userkey appendString:[dict objectForKey:@"time"]];
     NSArray *path_array=[NSArray arrayWithObjects:path1,path2,path3,nil];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [Request sharedRequest].times=0;
+        [Request sharedRequest].successTimes=0;
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
+    //以下的两个通知 都是在 Request类里面发送的
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听请求是否成功
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault:) name:@"RequestIsDefault" object:nil];//监听请求是否失败
     
+    //缓冲界面  等待Request返回数据结果
     progressImage=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, SCREENHEIGHT)];
     [self.view addSubview:progressImage];
     progressImage.backgroundColor=[UIColor blackColor];
@@ -222,11 +233,18 @@
     [progressImage addSubview:activity];
     [activity startAnimating];
 }
--(void)requestIsDefault
+-(void)requestIsDefault:(NSNotification *)sender
 {
     [progressImage removeFromSuperview];
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"语音发送失败 请将所有语音删除后 重试" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
+    //判断是哪段语音传输失败
+    NSNumber *number=sender.object;
+    int i=[number intValue];
+    i++;
+    NSString *string=[NSString stringWithFormat:@"第%d段语音发送失败，请删除该语音后重试发送",i];
+    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:string delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
     [alert show];
+    //移除检测失败的观察者
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"RequestIsDefault" object:nil];
 }
 -(void)requestIsSuccess
 {

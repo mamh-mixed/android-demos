@@ -135,7 +135,8 @@
         }
     }
 #endif
-
+//    VTRecord_Alipay *alipay=[[VTRecord_Alipay alloc]init];
+//    [self presentViewController:alipay animated:YES completion:nil];
 }
 -(void)alertWithMessage:(NSString *)message
 {

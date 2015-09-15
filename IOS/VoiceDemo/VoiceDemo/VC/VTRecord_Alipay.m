@@ -27,19 +27,21 @@
 @synthesize player;
 
 
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault:) name:@"RequestIsDefault" object:nil];//监听是否失败
     
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image=[UIImage imageNamed:@"paybg"];
     [self.view addSubview:imageView];
-    UIButton *back=[UIButton buttonWithType:UIButtonTypeCustom];
-    back.frame=CGRectMake(10, 30, 12, 21);
-    [back setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
-    [back addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:back];
+    
+//    UIButton *back=[UIButton buttonWithType:UIButtonTypeCustom];
+//    back.frame=CGRectMake(10, 30, 12, 21);
+//    [back setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+//    [back addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:back];
     
     UILabel *label=[[UILabel alloc]initWithFrame:CGRectMake(0, 40, SCREENWIDTH, 30)];
     label.textAlignment=NSTextAlignmentCenter;
@@ -59,7 +61,7 @@
         record.tag = i;
         record.frame=CGRectMake(0, SCREENHEIGHT-4*height-3*space+(i-1)*(space+height), SCREENWIDTH, height);
         record.backgroundColor=[UIColor whiteColor];
-
+        
         UIImageView *image=[[UIImageView alloc]initWithFrame:CGRectMake((SCREENWIDTH-20)/2,(height-32)/2, 20, 32)];
         image.image=[UIImage imageNamed:@"microphone"];
         [record addSubview:image];
@@ -74,6 +76,7 @@
     [btn addTarget:self action:@selector(sumbit) forControlEvents:UIControlEventTouchUpInside];
     btn.backgroundColor=[UIColor blueColor];
     [self.view addSubview:btn];
+    
 }
 -(void)back
 {
@@ -82,7 +85,9 @@
 #pragma mark -录音
 -(void)record:(UIButton *)sender
 {
-    sender.backgroundColor=[UIColor orangeColor];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        sender.backgroundColor=[UIColor orangeColor];
+    });
     AVAudioSession *session=[AVAudioSession sharedInstance];
     [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];//设置类别,表示该应用同时支持播放和录音
     
@@ -110,8 +115,10 @@
 }
 -(void)touchUpInside:(UIButton *)sender
 {
-    sender.backgroundColor=[UIColor whiteColor];
-    sender.alpha=0;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        sender.backgroundColor=[UIColor whiteColor];
+        sender.alpha=0;
+    });
     [recorder stop];
     //判断录音的时长
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -148,11 +155,11 @@
     AVURLAsset *audioAsset;
     switch (tag) {
         case 1:audioAsset=[AVURLAsset URLAssetWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",path1]] options:nil];
-               break;
+            break;
         case 2:audioAsset=[AVURLAsset URLAssetWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",path2]] options:nil];
-               break;
+            break;
         case 3:audioAsset=[AVURLAsset URLAssetWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@",path3]] options:nil];
-                break;
+            break;
         default:break;
     }
     CMTime audioDuration =audioAsset.duration;
@@ -209,9 +216,8 @@
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
-    
+#if 1
+    //缓冲界面
     progressImage=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, SCREENHEIGHT)];
     [self.view addSubview:progressImage];
     progressImage.backgroundColor=[UIColor blackColor];
@@ -221,23 +227,27 @@
     activity.center=progressImage.center;
     [progressImage addSubview:activity];
     [activity startAnimating];
+#endif
 }
--(void)requestIsDefault
+-(void)requestIsDefault:(NSNotification *)sender
 {
     [progressImage removeFromSuperview];
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"语音发送失败 请将所有语音删除后 重试" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
+    NSNumber *number=sender.object;
+    int i=[number intValue];
+    i++;
+    NSString *string=[NSString stringWithFormat:@"第%d段语音发送失败，请删除该语音后重试发送",i];
+    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:string delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
     [alert show];
-    //移除检测失败的观察者
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
 }
 -(void)requestIsSuccess
 {
     [progressImage removeFromSuperview];
     VTRecord_Uppay *uppay=[[VTRecord_Uppay alloc]init];
     [self presentViewController:uppay animated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsSuccess" object:nil];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
-
 @end

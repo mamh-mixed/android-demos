@@ -391,6 +391,7 @@
 				TargetAttributes = {
 					D6D66DF41B8DA81300929852 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 2VKY6QPH98;
 					};
 					D6D66E0D1B8DA81400929852 = {
 						CreatedOnToolsVersion = 6.4;
@@ -618,6 +619,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Yin Qu (9H65BLS4K7)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Yin Qu (9H65BLS4K7)";
 				GCC_PREFIX_HEADER = "/Users/huangdaneng/work/工作/show-money-client/IOS/VoiceDemo/VoiceDemoTests/PrefixHeader.pch";
 				INFOPLIST_FILE = VoiceDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -632,6 +635,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Yin Qu (9H65BLS4K7)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Yin Qu (9H65BLS4K7)";
 				GCC_PREFIX_HEADER = "/Users/huangdaneng/work/工作/show-money-client/IOS/VoiceDemo/VoiceDemoTests/PrefixHeader.pch";
 				INFOPLIST_FILE = VoiceDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -645,6 +650,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Shanghai CardInfoLink Data Service Co., LTD (2VKY6QPH98)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -664,6 +670,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Shanghai CardInfoLink Data Service Co., LTD (2VKY6QPH98)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

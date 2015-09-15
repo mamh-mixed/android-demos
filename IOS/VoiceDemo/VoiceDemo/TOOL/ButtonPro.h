@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface ButtonPro : UIButton
+
 @property (nonatomic ,assign) NSInteger   btnClickNum;
 @property (nonatomic ,assign) NSInteger   btnRecord;
 @property (nonatomic ,assign) BOOL        isAdd;

@@ -66,11 +66,11 @@
         NSDictionary * dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
         //        NSString * str = [[NSString alloc]initWithData:self.resultData encoding:NSUTF8StringEncoding];
         NSLog(@"-----%@",dict);
-        NSDictionary *dic=[dict objectForKey:@"result"];
+       // NSDictionary *dic=[dict objectForKey:@"result"];
         //第二次请求失败
-        if (![[dic objectForKey:@"svValue"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
-            [[NSNotificationCenter defaultCenter]postNotificationName:@"RequestIsDefault" object:nil];
-        }
+//        if (![[dic objectForKey:@"svValue"] isEqualToNumber:[NSNumber numberWithInt:0]]) {
+//            [[NSNotificationCenter defaultCenter]postNotificationName:@"RequestIsDefault" object:nil];
+//        }
         NSLog(@"~~~~~~~~~~~~~~~~~~~~~~~~~~~~第二次结束~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 }

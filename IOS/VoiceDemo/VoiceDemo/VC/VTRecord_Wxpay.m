@@ -29,6 +29,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault:) name:@"RequestIsDefault" object:nil];//监听是否失败
     
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:[UIScreen mainScreen].bounds];
     imageView.image=[UIImage imageNamed:@"paybg"];
@@ -207,9 +209,7 @@
         [[Request sharedRequest] connectionNet:path_array andUserKey:userkey];
     });
 #endif
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsSuccess) name:@"RequestIsSuccess" object:nil];//监听是否成功
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestIsDefault) name:@"RequestIsDefault" object:nil];//监听是否失败
-    
+    //缓冲界面
     progressImage=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, SCREENWIDTH, SCREENHEIGHT)];
     [self.view addSubview:progressImage];
     progressImage.backgroundColor=[UIColor blackColor];
@@ -220,17 +220,24 @@
     [progressImage addSubview:activity];
     [activity startAnimating];
 }
--(void)requestIsDefault
+-(void)requestIsDefault:(NSNotification *)sender
 {
     [progressImage removeFromSuperview];
-    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:@"语音发送失败 请将所有语音删除后 重试" delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
+    NSNumber *number=sender.object;
+    int i=[number intValue];
+    i++;
+    NSString *string=[NSString stringWithFormat:@"第%d段语音发送失败，请删除该语音后重试发送",i];
+    UIAlertView *alert=[[UIAlertView alloc]initWithTitle:nil message:string delegate:self cancelButtonTitle:@"我知道了" otherButtonTitles: nil];
     [alert show];
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
 }
 -(void)requestIsSuccess
 {
     [progressImage removeFromSuperview];
+    //跳转回主页面
+    //发送一个通知 接受者在AppDelegate里面
     [[NSNotificationCenter defaultCenter]postNotificationName:@"ReturnToRoot" object:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsDefault" object:nil];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"RequestIsSuccess" object:nil];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
