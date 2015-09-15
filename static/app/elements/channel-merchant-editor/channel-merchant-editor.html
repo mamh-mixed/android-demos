@@ -58,7 +58,7 @@
     <paper-dialog id="dialogAdd">
       <h2 id="header"></h2>
       <paper-dialog-scrollable>
-        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道代码" class="validate-container" required style="width:100%;"></x-select>
+        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道代码" class="validate-container" required style="width:100%;" disabled="[[chanCodeDisabled]]"></x-select>
         <!-- <paper-input label="机构代码" value="{{chanMer.agentCode::input}}"></paper-input>
           <paper-input label="终端代码" value="{{chanMer.terminalId::input}}"></paper-input> -->
         <div id="alp">
@@ -73,7 +73,7 @@
           <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
-          <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项"></x-select>
+          <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
           <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
           <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
@@ -174,7 +174,7 @@
         _wisAgentModeChanged: function(value) {
           if (value) {
             this.$.wbigChanMerId.setAttribute('required', true);
-            this.$.wbigChanMerId.childNodes[1].children[1].disabled = false;
+            this.wbigchanMerIdDisabled=false;
             this.$.wxpAppId.removeAttribute('required');
             this.$.wsignCert.removeAttribute('required');
             this.$.httpCertTArea.removeAttribute('required');
@@ -183,7 +183,7 @@
             this.$.wsignCert.validate();
           } else {
             this.$.wbigChanMerId.removeAttribute('required');
-            this.$.wbigChanMerId.childNodes[1].children[1].disabled = true;
+            this.wbigchanMerIdDisabled=true;
             this.$.wxpAppId.setAttribute('required', true);
             this.$.wsignCert.setAttribute('required', true);
             this.$.httpCertTArea.setAttribute('required', true);
@@ -249,7 +249,7 @@
               isAgentMode: true,
             };
             this.cfca = {};
-            this.$.chanCode.childNodes[1].children[1].disabled = false;
+            this.chanCodeDisabled=false;
             this.$.achanMerId.disabled = false;
             this.$.wchanMerId.disabled = false;
             this.$.cfchanMerId.disabled = false;
@@ -271,7 +271,6 @@
               key: '12010128a1',
               value: '讯联 12010128a1',
             };
-            // this.$.wbigChanMerId.childNodes[1].children[1].disabled = false;
           } else {
             this.$.header.textContent = '编辑渠道商户';
             var map = {
@@ -284,7 +283,8 @@
               key: this.chanMer.chanCode,
               value: map[this.chanMer.chanCode]
             };
-            this.$.chanCode.childNodes[1].children[1].disabled = true;
+            // this.$.chanCode.childNodes[1].children[1].disab
+            this.chanCodeDisabled=true;
             this.alp = this.chanMer;
             this.weixin = this.chanMer;
             this.cfca = this.chanMer;

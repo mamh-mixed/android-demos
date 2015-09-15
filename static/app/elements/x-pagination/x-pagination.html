@@ -91,7 +91,7 @@
           this.to = 0;
         } else {
           this.from = (this.page - 1) * this.size + 1;
-          this.to = this.from + this.size;
+          this.to = this.from + this.size-1;
           if (this.to > this.total) {
             this.to = this.total;
           }

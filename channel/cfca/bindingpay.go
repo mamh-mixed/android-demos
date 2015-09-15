@@ -267,7 +267,7 @@ func (c *CFCABindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 	case model.MerMode:
 		req.Head.TxCode = MerModePayEnquiry
 	default:
-		log.Errorf("unsupport mode %s", be.Mode)
+		log.Errorf("unsupport mode %d", be.Mode)
 		return mongo.RespCodeColl.Get("000001")
 	}
 

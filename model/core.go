@@ -159,6 +159,8 @@ type MerDetail struct {
 	BankId        string `bson:"bankId,omitempty" json:"bankId,omitempty"`               // 行号
 	OpenBankName  string `bson:"openBankName,omitempty" json:"openBankName,omitempty"`   // 开户银行名称
 	BankName      string `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 银行名称
+	BillUrl       string `bson:"billUrl,omitempty" json:"billUrl,omitempty"`             // 扫固定码URL,获取账单
+	UserInfoUrl   string `bson:"userInfoUrl,omitempty" json:"userInfoUrl,omitempty"`     // 扫固定码URL,获取用户信息
 }
 
 // ChanMer 渠道商户

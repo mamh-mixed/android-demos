@@ -11,23 +11,8 @@ import (
 var (
 	// merId            = "1426727710113"
 	// bindingId        = "1000000000011"
-	// chanMerId       = "001405"
-	chanMerId       = "001583"
-	chanBingingId   = "e169a3bd64ab455045b0129e1a18d53d"
-	sysOrderNum     = util.SerialNumber()
-	sysOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
-	acctName        = "张三"
-	acctNum         = "6222020302062061908"
-	identType       = "0"
-	identNum        = "350583199009153732"
-	phoneNum        = "18205960039"
-	acctType        = "10"
-	validDate       = ""
-	cvv2            = ""
-	sendSmsId       = "1000000000009"
-	smsCode         = "12353"
-	bankId          = "102"
-	priKeyPem       = `-----BEGIN RSA PRIVATE KEY-----
+	chanMerId = "001405"
+	priKeyPem = `-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCvJC9MMGRKmxRBI0KMjDtz2KooIc6XOljHPWhTfAamhV3A5v5y
 PiZr4haMDpulU08Y0JxsegwDwfbscQrhG7nvilIqIa+HiI1xkfFxjtNUrMN5hpvO
 8HUUfwqzb5EdllQcv/C0xxBkeCECIb86JJry7ty4mNBkN2idbGxldMi90QIDAQAB
@@ -42,6 +27,52 @@ ml18VwMjHJtLGw3US6NXW/m4Fx+hpM5D2STRWyA+uIZbHpnOZlMJ0Gp4gQJBAK38
 fRtwnqPlqZaoJQcTUMECQQD1Dh+Mu3OMb5AHnrtbk9l1qjM3U81QBKdyF0RY+djo
 b3cR9I7+hurpqhJmQ7yuvAWe2xWc+YNTQ48FDJTogXlB
 -----END RSA PRIVATE KEY-----`
+
+	// 	chanMerId = "001583"
+	// 	priKeyPem = `-----BEGIN RSA PRIVATE KEY-----
+	// MIIEowIBAAKCAQEAs7qZX0NY89AbwbcX+rHNeI7BM5WQP4e284hQMPJe8Sf9h1Ln
+	// ALxa57Fa1+Jv15WUVsVhXWLuYDctN2GKw7WFDUsLZR9Kl9wGc2V6oe9lcYL3HBHr
+	// 4zidAZ0Ds9rJFQGNWvVlxT7Tbij520EpPbOobTycV/aMwakMys1X1teJofne1iTk
+	// bPKv9y/cjCmcSJylMlC4fOqUNywSMe7til1qFGXokhJPykiUKGmm7aij0LgIG+ja
+	// ljWiKKNhkyM+zXznuhPWC4n52UaT4ySNqQWG86yPHkTVmA16mDuDfdjGdefTCY3f
+	// 0CNiE2UTLYHnv/hcl6OcNRvHVGmAwiin5ZW7ZwIDAQABAoIBAA3AGvfU2TteEqGR
+	// dn4xmDy+/z0JFk4l/fNH3IrCIE1m99igmRfPUU0knoShyFjAEudIlphkd0RZNFZm
+	// Wg17F8DamvaTnEteBAhUHTvCawpyMKGvJVLvA+QZtSzPck7vHXd2CuE6W0a0T9lc
+	// dOFJm3swBe4c6MvwORBTAYNoXhlMOcs5nBdhLNOxC4pDDeDiXeO8bRQHG5xUxp7D
+	// A07RNJaFqa6uyRV3nSk218xAklAzUExwzn/LcY0H6v+nuXcq3Lz+MTWNfY8QhuBL
+	// umkcrKwlA3on8+ABmcdP9AMZv+4NoqiXfDA6hd+r1cNBl1BZJK2VrQlNyyNqe4Ps
+	// mRsFafECgYEA4G9Nsc1iQ+7fjNrnXSkqsT4ecXdV0RDTZm75MrLtqcZG02+8pX2T
+	// 71XmjdT3zmq7kxTa9qD7oAuRNjQcz18eKeGo6cM9zqaTyJmqdNj7F934HT3bDIS/
+	// /Gyh0OBkgJD9tqq6po19wJkJ9FIfe9RpRKvyCZloG/g06/kucr3B2wUCgYEAzQGt
+	// Dz3GvHRBPNYxmEWFas83CQPwEhzUfJvETZaRYIk7j9uLsgwiSEPBpG0eyBWKEFsJ
+	// p+JWojRHKkUNHhpQPwbvJoAeQ0TEqsXSL3BoFWMFcMu2ktrcQmMP4NGliqCFL45n
+	// JatHEWKUBugUYJatxwJYSxQNTY7FbvtqewVjgHsCgYEApBA5V5SwFMD2Il2TbAK/
+	// 9rlWP9Pgo+gM4YCWIn2yRr1u4Pl5ifB2yCqfU2cvj3FulWJVfpzH1IMgL+OAfAco
+	// Ya1YcSoMcJhMyAOtG6XSR+w3iAjDrC8OuVQgJjUiwuk6zuGXeFFOcBBvum6eHUN1
+	// gIHBeUrvVCLpbObHEZGtuJECgYBs1gvzgH+Gw01zJ9/ykE4Rc2srbRzB8O5aLTQd
+	// YOdTUef+KrdSUiDNLrOaQJhL7yt6HWrV51LJEGoLpdcd+ShLHbpPPUtTuSmT5Cv/
+	// JXUMjaJwzKXj9y9iS0c9uu9g1nF+2uIl3HWBZE1kEUfoM3aUpckMKtwZJcfpcK6K
+	// G0VFCwKBgG+FznQbNueYUtyJx/eD/gn3bBI9k55ra0DmBhgnorPzGdc+/LMr5CS+
+	// TK8p8uw4sJiIAWCbJV3+f4QJ/ZTpKj2QnrAXDWRwUFMzmPV0e+Cro/AEHvx6v1ck
+	// WTc7WnkJXcXk2xfJiKz+O4S23s55ULKLc/uWVisupBaM/hQWKOiM
+	// -----END RSA PRIVATE KEY-----
+	// `
+
+	chanBingingId   = "e169a3bd64ab455045b0129e1a18d53d"
+	sysOrderNum     = util.SerialNumber()
+	sysOrigOrderNum = "aaaaaaaaaaaaaaaaaabb"
+	acctName        = "张三"
+	acctNum         = "6222020302062061908"
+	identType       = "0"
+	identNum        = "350583199009153732"
+	phoneNum        = "18205960039"
+	acctType        = "10"
+	validDate       = ""
+	cvv2            = ""
+	sendSmsId       = "1000000000009"
+	smsCode         = "12353"
+	bankId          = "102"
+
 	txSNUnBinding = "cf00fd61d5ef4d924485db88b584897e"
 	settFlag      = "457"
 	merOrderNum   = ""

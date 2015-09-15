@@ -26,7 +26,6 @@ var keyCache = cache.New(model.Cache_CfcaMerRSAPrivKey)
 
 // 读私钥
 func initPrivKey(priKeyPem string) (*rsa.PrivateKey, error) {
-
 	// 从缓存中查询
 	mk, found := keyCache.Get(priKeyPem)
 
@@ -39,19 +38,19 @@ func initPrivKey(priKeyPem string) (*rsa.PrivateKey, error) {
 	// 没有则创建一个
 	PEMBlock, _ := pem.Decode([]byte(priKeyPem))
 	if PEMBlock == nil {
-		return nil, fmt.Errorf("for input privateKeyPem:%s, %s", priKeyPem, "Could not parse Rsa Private Key PEM")
+		return nil, fmt.Errorf("for input privateKeyPem:%s, %s", priKeyPem,
+			"Could not parse Rsa Private Key PEM")
 	}
 	if PEMBlock.Type != "RSA PRIVATE KEY" {
 		return nil, fmt.Errorf("Found wrong key type %s", PEMBlock.Type)
 	}
-	chinaPaymentPriKey, err := x509.ParsePKCS1PrivateKey(PEMBlock.Bytes)
+	insPriKey, err := x509.ParsePKCS1PrivateKey(PEMBlock.Bytes)
 	if err != nil {
 		return nil, err
 	}
-	keyCache.Set(priKeyPem, chinaPaymentPriKey, cache.NoExpiration)
-	// keyCache[priKeyPem] = chinaPaymentPriKey
+	keyCache.Set(priKeyPem, insPriKey, cache.NoExpiration)
 
-	return chinaPaymentPriKey, nil
+	return insPriKey, nil
 }
 
 // 读证书
@@ -81,12 +80,12 @@ func init() {
 }
 
 // SignatureUseSha1WithRsa 通过私钥用 SHA1WithRSA 签名，返回 hex 签名
-func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
+func signatureUseSha1WithRsa(origin []byte, priKeyPem string) (string, error) {
 	// gen privatekey
 	chinaPaymentPriKey, err := initPrivKey(priKeyPem)
 	if err != nil {
 		log.Error(err)
-		return ""
+		return "", err
 	}
 	hashed := sha1.Sum(origin)
 
@@ -95,7 +94,7 @@ func signatureUseSha1WithRsa(origin []byte, priKeyPem string) string {
 		log.Errorf("fail to sign with Sha1WithRsa %s", err)
 	}
 
-	return hex.EncodeToString(sign)
+	return hex.EncodeToString(sign), nil
 }
 
 // CheckSignatureUseSha1WithRsa 通过证书用 SHA1WithRSA 验签，如果验签通过，err 值为 nil
