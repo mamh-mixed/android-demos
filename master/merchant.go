@@ -97,7 +97,7 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	m.UniqueId = uniqueId
 	m.Detail.BillUrl = billUrl
 	m.Detail.UserInfoUrl = userInfoUrl
-	
+
 	err = mongo.MerchantColl.Insert(m)
 	if err != nil {
 		log.Errorf("新增商户失败:%s", err)
