@@ -735,7 +735,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.ConsumerId = ret.ConsumerId
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
-
+	log.Debugf("trans: %+v,response: %+v", t, ret)
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
 	case adaptor.SuccessCode:

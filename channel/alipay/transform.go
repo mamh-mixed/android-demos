@@ -24,11 +24,13 @@ func init() {
 // transform 支付宝返回报文处理
 func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, error) {
 
+	ret := new(model.ScanPayResponse)
 	if alpResp.IsSuccess != "T" {
-		return errorCodeMapping(alpResp.Error, "", buscMap[service])
+		ret.ChanRespCode = alpResp.Error
+		errorCodeMapping(ret, "", buscMap[service])
+		return ret, nil
 	}
 
-	ret := new(model.ScanPayResponse)
 	// 成功返回参数
 	alipay := alpResp.Response.Alipay
 	switch service {
@@ -49,7 +51,7 @@ func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, er
 
 	// 如果不成功
 	if ret.Respcd == "" {
-		return errorCodeMapping(ret.ChanRespCode, alipay.DetailErrorDes, buscMap[service])
+		errorCodeMapping(ret, alipay.DetailErrorDes, buscMap[service])
 	}
 
 	// 响应成功返回
@@ -57,9 +59,8 @@ func transform(service string, alpResp *alpResponse) (*model.ScanPayResponse, er
 }
 
 // errorCodeMapping 错误码映射
-func errorCodeMapping(errorCode, errorDetail, service string) (ret *model.ScanPayResponse, err error) {
-	spCode := mongo.ScanPayRespCol.GetByAlp(errorCode, service)
-	ret = &model.ScanPayResponse{}
+func errorCodeMapping(ret *model.ScanPayResponse, errorDetail, service string) {
+	spCode := mongo.ScanPayRespCol.GetByAlp(ret.ChanRespCode, service)
 	ret.Respcd = spCode.ISO8583Code
 	ret.ErrorCode = spCode.ErrorCode
 
@@ -77,8 +78,6 @@ func errorCodeMapping(errorCode, errorDetail, service string) (ret *model.ScanPa
 	// 使用渠道应答
 	log.Infof("use alipay errorDetail info: %s", errorDetail)
 	ret.ErrorDetail = errorDetail
-
-	return ret, err
 }
 
 // createAndPayHandle 下单处理
@@ -144,6 +143,7 @@ func queryHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 		log.Errorf("支付宝服务(%s),返回状态值(%s)错误，无法匹配。", query, alipay.ResultCode)
 		ret.ChanRespCode = alipay.ResultCode
 	}
+	log.Debugf("%+v", ret)
 }
 
 // refundHandle 退款处理
