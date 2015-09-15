@@ -86,13 +86,12 @@ Example:
       cursor: pointer;
       height: 1.2em;
     }
-
   </style>
 
   <template>
     <div class="input-group">
       <input type="hidden" name="[[name]]" value$="{{selectedItem.key}}"></input>
-      <paper-input id="input" readonly label="[[label]]" value$="{{selectedItem.value}}" on-tap="open"></paper-input>
+      <paper-input id="input" readonly label="[[label]]" value$="{{selectedItem.value}}" on-tap="open" disabled="[[disabled]]"></paper-input>
       <iron-icon icon="clear" on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
     </div>
     <iron-dropdown id="dropdown" vertical-align="[[verticalAlign]]" horizontal-align="[[horizontalAlign]]" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]">
@@ -184,9 +183,12 @@ Example:
      *
      */
     clear: function() {
-      this.$.input.value = '';
-      this.selectedItem = undefined;
-      this.$.dropdown.close();
+      if (!this.disabled) {
+        this.$.input.value = '';
+        this.selectedItem = undefined;
+        this.$.dropdown.close();
+      }
+
     },
     /**
      * list select event.
@@ -208,5 +210,4 @@ Example:
       this.set('isClearActive', !!value);
     }
   });
-
 </script>
