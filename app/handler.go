@@ -2,9 +2,9 @@ package app
 
 import (
 	"encoding/json"
-	"net/http"
-
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"net/http"
 )
 
 func registerHandle(w http.ResponseWriter, r *http.Request) {
@@ -12,24 +12,16 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	transtime := r.FormValue("transtime")
 	sign := r.FormValue("sign")
-
 	ret := User.register(userName, password, transtime, sign)
-
-	rdata, err := json.Marshal(ret)
-	if err != nil {
-		w.Write([]byte("mashal data error"))
-		return
-	}
-
-	log.Tracef("response message: %s", rdata)
-	w.Write(rdata)
+	w.Write(jsonMarshal(ret))
 }
 
 // loginHandle 登录
 func loginHandle(w http.ResponseWriter, r *http.Request) {}
 
 // reqActivateHandle 请求发送激活邮件
-func reqActivateHandle(w http.ResponseWriter, r *http.Request) {}
+func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
+}
 
 // activateHandle 激活
 func activateHandle(w http.ResponseWriter, r *http.Request) {}
@@ -60,3 +52,12 @@ func updateHandle(w http.ResponseWriter, r *http.Request) {}
 
 // getInfoHandle 获取清算帐号信息
 func getInfoHandle(w http.ResponseWriter, r *http.Request) {}
+
+func jsonMarshal(result *model.AppResult) []byte {
+	data, err := json.Marshal(result)
+	if err != nil {
+		log.Error("json marshal error: %s", err)
+		return []byte(model.JSON_ERROR)
+	}
+	return data
+}
