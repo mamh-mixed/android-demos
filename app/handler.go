@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
@@ -17,7 +18,9 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
-		w.Write([]byte("mashal data error"))
+		log.Errorf("json marshal err,%s", err)
+		w.Write([]byte(model.JSON_ERROR))
+		log.Debugf("response message: %s", model.JSON_ERROR)
 		return
 	}
 
@@ -26,7 +29,25 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 // loginHandle 登录
-func loginHandle(w http.ResponseWriter, r *http.Request) {}
+func loginHandle(w http.ResponseWriter, r *http.Request) {
+	userName := r.FormValue("username")
+	password := r.FormValue("password")
+	transtime := r.FormValue("transtime")
+	sign := r.FormValue("sign")
+
+	ret := User.login(userName, password, transtime, sign)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("json marshal err,%s", err)
+		w.Write([]byte(model.JSON_ERROR))
+		log.Debugf("response message: %s", model.JSON_ERROR)
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
 
 // reqActivateHandle 请求发送激活邮件
 func reqActivateHandle(w http.ResponseWriter, r *http.Request) {}
