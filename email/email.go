@@ -14,25 +14,11 @@ const (
 	HOST     = "smtp.qiye.163.com"
 	PASSWORD = "cil1009"
 	USER     = "it.support@cardinfolink.com"
+	AndyLi   = "andy.li@cardinfolink.com"
 )
 
 var auth = smtp.PlainAuth("", USER, PASSWORD, HOST)
 var b64Encoding = base64.StdEncoding
-
-var (
-	subject     = "云收银帐号激活"
-	contentType = "Content-Type: text/html; charset=UTF-8"
-	template    = `	
-	<html>
-		<body>
-			<h3>
-				点击以下链接以激活账户</br>
-				<a href="%s">%s</a>
-			</h3>
-		</body>
-	</html>
-	`
-)
 
 type Email struct {
 	To     string
@@ -57,3 +43,29 @@ func (e *Email) Send() error {
 	}
 	return err
 }
+
+var (
+	subject     = "云收银帐号激活"
+	contentType = "Content-Type: text/html; charset=UTF-8"
+
+	actTemplate = `	
+	<html>
+		<body>
+			<h3>
+				点击以下链接以激活账户</br>
+				<a href="%s">%s</a>
+			</h3>
+		</body>
+	</html>
+	`
+
+	promoteTemplate = `
+	<html>
+		<body>
+			<h3>
+				Hello,Andy.li:
+			</h3>
+		</body>
+	</html>
+	`
+)
