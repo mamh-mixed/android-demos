@@ -1,10 +1,7 @@
 package email
 
 import (
-	"crypto/rand"
-	"fmt"
 	"github.com/omigo/log"
-	"io"
 	"net/smtp"
 )
 
