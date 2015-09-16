@@ -2,9 +2,10 @@ package app
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"net/http"
 )
 
 func registerHandle(w http.ResponseWriter, r *http.Request) {
@@ -12,12 +13,23 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	transtime := r.FormValue("transtime")
 	sign := r.FormValue("sign")
+
 	ret := User.register(userName, password, transtime, sign)
+
 	w.Write(jsonMarshal(ret))
 }
 
 // loginHandle 登录
-func loginHandle(w http.ResponseWriter, r *http.Request) {}
+func loginHandle(w http.ResponseWriter, r *http.Request) {
+	userName := r.FormValue("username")
+	password := r.FormValue("password")
+	transtime := r.FormValue("transtime")
+	sign := r.FormValue("sign")
+
+	ret := User.login(userName, password, transtime, sign)
+
+	w.Write(jsonMarshal(ret))
+}
 
 // reqActivateHandle 请求发送激活邮件
 func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +69,9 @@ func jsonMarshal(result *model.AppResult) []byte {
 	data, err := json.Marshal(result)
 	if err != nil {
 		log.Error("json marshal error: %s", err)
+		log.Debugf("response message: %s", model.JSON_ERROR)
 		return []byte(model.JSON_ERROR)
 	}
+	log.Debugf("response message: %s", string(data))
 	return data
 }

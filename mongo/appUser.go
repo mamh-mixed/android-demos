@@ -25,6 +25,27 @@ func (col *appUserCollection) Upsert(user *model.AppUser) (err error) {
 	return nil
 }
 
-// func (col *appUserCollection) FindOne(userName string) (err error){
-//     bo:=bson.M
-// }
+func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err error) {
+	bo := bson.M{
+		"username": user.UserName,
+	}
+	user = new(model.AppUser)
+	err = database.C(col.name).Find(bo).One(user)
+	if err != nil {
+		log.Errorf("find user by userName err,userName=%s", err)
+		return nil, err
+	}
+	return user, nil
+}
+
+func (col *appUserCollection) FindCountByUserName(userName string) (num int, err error) {
+	bo := bson.M{
+		"username": userName,
+	}
+	num, err = database.C(col.name).Find(bo).Count()
+	if err != nil {
+		log.Errorf("find count by userName err,userName=%s", err)
+		return 0, err
+	}
+	return num, nil
+}
