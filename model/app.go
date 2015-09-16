@@ -11,11 +11,27 @@ const (
 	USERNAME_PASSWORD_ERROR = "username_password_error"
 	USERNAME_NO_EXIST       = "username_no_exist"
 	OLD_PASSWORD_ERROR      = "old_password_error"
+	PARAMS_EMPTY            = "params_empty"
+	JSON_ERROR              = `{"state":"fail","error","system_error"}`
 )
 
 type AppResult struct {
+	// 必填
 	State string `json:"state"` // 状态
 	Error string `json:"error"` // 错误消息
+
+	// 可选
+	User         *AppUser    `json:"user,omitempty"`
+	TotalAmt     int         `json:"total,omitempty"`
+	Count        int         `json:"count,omitempty"`
+	Size         int         `json:"size,omitempty"`
+	RefdCount    int         `json:"refdcount,omitempty"`
+	RefdTotalAmt int         `json:"refdtotal,omitempty"`
+	BankOpen     string      `json:"bank_open,omitempty"`
+	Payee        string      `json:"payee,omitempty"`
+	PayeeCard    string      `json:"payee_card,omitempty"`
+	PhoneNum     string      `json:"phone_num,omitempty"`
+	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
 }
 
 // NewAppResult NewAppResult
@@ -26,8 +42,32 @@ func NewAppResult(state, err string) (ret *AppResult) {
 	}
 }
 
+type AppTxn struct {
+	Response        string `json:"response" bson:"response"`
+	SystemDate      string `json:"system_date"`
+	ConsumerAccount string `json:"consumerAccount"`
+	ReqData         struct {
+		Busicd       string `json:"busicd"`
+		AgentCode    string `json:"inscd"`
+		Txndir       string `json:"txndir"`
+		Terminalid   string `json:"terminalid"`
+		OrigOrderNum string `json:"origOrderNum"`
+		OrderNum     string `json:"orderNum"`
+		MerId        string `json:"mchntid"`
+		TradeFrom    string `json:"tradeFrom"`
+		Txamt        string `json:"txamt"`
+		ChanCode     string `json:"chcd"`
+		Currency     string `json:"currency"`
+	} `json:"m_request"`
+}
+
 type AppUser struct {
-	UserName  string `json:"userName" bson:"userName,omitempty"`
-	Password  string `json:"password" bson:"password,omitempty"`
-	Transtime string `json:"transtime" bson:"transtime,omitempty"`
+	UserName  string `json:"userName,omitempty" bson:"userName,omitempty"`
+	Password  string `json:"-" bson:"password,omitempty"`
+	Activate  string `json:"activate,omitempty" bson:"activate,omitempty"`
+	MerId     string `json:"clientid,omitempty" bson:"merId,omitempty"`
+	Limit     string `json:"limit,omitempty"`
+	SignKey   string `json:"signKey,omitempty"`
+	AgentCode string `json:"inscd,omitempty"`
+	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
 }

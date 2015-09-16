@@ -16,16 +16,7 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 
 	ret := User.register(userName, password, transtime, sign)
 
-	rdata, err := json.Marshal(ret)
-	if err != nil {
-		log.Errorf("json marshal err,%s", err)
-		w.Write([]byte(model.JSON_ERROR))
-		log.Debugf("response message: %s", model.JSON_ERROR)
-		return
-	}
-
-	log.Tracef("response message: %s", rdata)
-	w.Write(rdata)
+	w.Write(jsonMarshal(ret))
 }
 
 // loginHandle 登录
@@ -37,20 +28,12 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 	ret := User.login(userName, password, transtime, sign)
 
-	rdata, err := json.Marshal(ret)
-	if err != nil {
-		log.Errorf("json marshal err,%s", err)
-		w.Write([]byte(model.JSON_ERROR))
-		log.Debugf("response message: %s", model.JSON_ERROR)
-		return
-	}
-
-	log.Tracef("response message: %s", rdata)
-	w.Write(rdata)
+	w.Write(jsonMarshal(ret))
 }
 
 // reqActivateHandle 请求发送激活邮件
-func reqActivateHandle(w http.ResponseWriter, r *http.Request) {}
+func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
+}
 
 // activateHandle 激活
 func activateHandle(w http.ResponseWriter, r *http.Request) {}
@@ -81,3 +64,14 @@ func updateHandle(w http.ResponseWriter, r *http.Request) {}
 
 // getInfoHandle 获取清算帐号信息
 func getInfoHandle(w http.ResponseWriter, r *http.Request) {}
+
+func jsonMarshal(result *model.AppResult) []byte {
+	data, err := json.Marshal(result)
+	if err != nil {
+		log.Error("json marshal error: %s", err)
+		log.Debugf("response message: %s", model.JSON_ERROR)
+		return []byte(model.JSON_ERROR)
+	}
+	log.Debugf("response message: %s", string(data))
+	return data
+}
