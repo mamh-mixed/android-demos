@@ -3,9 +3,11 @@ package channel
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"time"
 )
 
 var mockClient MockBindingPay
+var d = 500 * time.Millisecond
 
 // MockBindingPay 用于测试核心逻辑
 type MockBindingPay struct {
@@ -15,6 +17,7 @@ type MockBindingPay struct {
 func (m *MockBindingPay) ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -23,6 +26,7 @@ func (m *MockBindingPay) ProcessPaySettlement(be *model.PaySettlement) (ret *mod
 func (m *MockBindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -31,6 +35,7 @@ func (m *MockBindingPay) ProcessBindingCreate(be *model.BindingCreate) (ret *mod
 func (m *MockBindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -39,6 +44,7 @@ func (m *MockBindingPay) ProcessBindingRemove(be *model.BindingRemove) (ret *mod
 func (m *MockBindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -47,6 +53,7 @@ func (m *MockBindingPay) ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *m
 func (m *MockBindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -55,6 +62,7 @@ func (m *MockBindingPay) ProcessBindingPayment(be *model.BindingPayment) (ret *m
 func (m *MockBindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -63,6 +71,7 @@ func (m *MockBindingPay) ProcessPaymentEnquiry(be *model.OrderEnquiry) (ret *mod
 func (m *MockBindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -71,6 +80,7 @@ func (m *MockBindingPay) ProcessBindingRefund(be *model.BindingRefund) (ret *mod
 func (m *MockBindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -79,6 +89,7 @@ func (m *MockBindingPay) ProcessRefundEnquiry(be *model.OrderEnquiry) (ret *mode
 func (m *MockBindingPay) ProcessSendBindingPaySMS(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -87,6 +98,7 @@ func (m *MockBindingPay) ProcessSendBindingPaySMS(be *model.BindingPayment) (ret
 func (m *MockBindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -95,6 +107,7 @@ func (m *MockBindingPay) ProcessPaymentWithSMS(be *model.BindingPayment) (ret *m
 func (m *MockBindingPay) Consume(be *model.NoTrackPayment) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }
@@ -103,6 +116,7 @@ func (m *MockBindingPay) Consume(be *model.NoTrackPayment) (ret *model.BindingRe
 func (m *MockBindingPay) ConsumeByApplePay(be *model.ApplePay) (ret *model.BindingReturn) {
 	// TODO validate feilds
 	log.Infof("MOCK - %#v", be)
+	time.Sleep(d)
 
 	return model.NewBindingReturn("000000", "请求处理成功")
 }

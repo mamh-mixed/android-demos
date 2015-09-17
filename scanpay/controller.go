@@ -95,16 +95,16 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		}
 	}()
 
-	// 1. 开始处理逻辑前，验证字段
-	if ret = validateFunc(req); ret != nil {
-		return ret
-	}
-
-	// 2. 先检查商户代码，如果不存在，直接报错
+	// 1. 先检查商户代码，如果不存在，直接报错
 	mer, err := mongo.MerchantColl.Find(req.Mchntid)
 	if err != nil {
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
 		return
+	}
+
+	// 2. 开始处理逻辑前，验证字段
+	if ret = validateFunc(req); ret != nil {
+		return ret
 	}
 
 	if mer.IsNeedSign {

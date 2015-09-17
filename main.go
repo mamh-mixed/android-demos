@@ -8,6 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
+	// "github.com/CardInfoLink/quickpay/data"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"

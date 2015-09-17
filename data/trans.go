@@ -22,7 +22,7 @@ const (
 )
 
 // func init() {
-// 	// url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
 // 	connect()
 // }
 
@@ -190,6 +190,7 @@ func AddTransFromOldDB(st, et string) error {
 	}
 
 	// 对原交易处理，因为原交易没有退款等标识，所以得用逆向交易去实现逻辑
+	var effectTrans []*model.Trans
 	for _, t := range reversalTrans {
 		var orig *model.Trans
 		var isGetFromDB bool
@@ -198,10 +199,10 @@ func AddTransFromOldDB(st, et string) error {
 			orig = tran
 		} else {
 			// 从数据库获取
-			log.Infof("从数据库获取原订单，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
+			// log.Infof("从数据库获取原订单，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
 			tran, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
 			if err != nil {
-				log.Errorf("从内存和数据库里获取不到原交易，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
+				// log.Errorf("从内存和数据库里获取不到原交易，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
 				continue
 			}
 			isGetFromDB = true
@@ -210,7 +211,7 @@ func AddTransFromOldDB(st, et string) error {
 
 		// 计算手续费
 		if orig.TransStatus == model.TransSuccess {
-			t.Fee = int64(math.Floor(float64(t.TransAmt))*orig.MerFee + 0.5)
+			t.Fee = int64(math.Floor(float64(t.TransAmt)*orig.MerFee + 0.5))
 			orig.NetFee = orig.NetFee - t.Fee
 		}
 
@@ -261,24 +262,27 @@ func AddTransFromOldDB(st, et string) error {
 
 		// 如果是从数据库拿的，那么更新数据库里的数据
 		if isGetFromDB {
+			log.Infof("更新数据库原订单，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
 			mongo.SpTransColl.Update(orig)
 		}
+
+		effectTrans = append(effectTrans, t)
 	}
 	// 将map里的数据放到数组里
 	for _, v := range payTransMap {
-		reversalTrans = append(reversalTrans, v)
+		effectTrans = append(effectTrans, v)
 	}
 
-	log.Infof("从老系统拿出%d条数据，成功处理%d条数据。正在导入数据库。。。", len(txns), len(reversalTrans))
+	log.Infof("从老系统拿出%d条数据，成功处理%d条数据。正在导入数据库。。。", len(txns), len(effectTrans))
 	// log.Infof("%+v", reversalTrans)
 	// 批量入库
-	return mongo.SpTransColl.BatchAdd(reversalTrans)
+	return mongo.SpTransColl.BatchAdd(effectTrans)
 	// return nil
 }
 
 func readTransFromOldDB(startTime, endTime string) ([]txn, error) {
 
-	q := bson.M{"gw_date": bson.M{"$gte": startTime, "$lte": endTime}}
+	q := bson.M{"gw_date": bson.M{"$gte": startTime, "$lte": endTime}, "response": "00"}
 	var txns []txn
 	err := saomaDB.C("txn").Find(q).All(&txns)
 	return txns, err
