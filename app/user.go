@@ -2,14 +2,14 @@ package app
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"math/rand"
+	"strings"
+	"time"
 )
 
 type user struct{}
@@ -192,6 +192,80 @@ func (u *user) activate(userName, code string) (result *model.AppResult) {
 	return model.SUCCESS1
 }
 
+// getUserTrans 获取用户某笔交易信息
+func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	// 没有机构用户
+	if user.MerId == "" {
+		return model.NO_PAY_MER
+	}
+
+	// 查找交易
+	t, err := mongo.SpTransColl.FindOne(user.MerId, req.OrderNum)
+	if err != nil {
+		return model.NO_TRANS
+	}
+
+	result = model.NewAppResult(model.SUCCESS, "")
+	switch req.BusinessType {
+	case "getRefd":
+		result.RefdTotalAmt = fmt.Sprintf("%d", float32(t.RefundAmt)/100)
+	case "getOrder":
+		result.Txn = transToTxn(t)
+	}
+
+	return result
+}
+
+// passwordHandle 修改密码
+func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" || req.NewPassword == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.OldPassword != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	user.Password = req.NewPassword
+	if err = mongo.AppUserCol.Upsert(user); err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	return model.SUCCESS1
+}
+
 // promoteLimit 提升限额
 func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 	// 用户名不为空
@@ -215,7 +289,16 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 发送邮件通知Andy.Li
-	return
+	email := &email.Email{
+		To:    andyLi,
+		Title: promote.Title,
+		Body:  fmt.Sprintf(promote.Body, req.Payee, req.UserName, req.PhoneNum),
+	}
+	if err = email.Send(); err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	return model.SUCCESS1
 }
 
 // getSettInfo 获得清算信息
@@ -282,4 +365,33 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	}
 
 	return model.SUCCESS1
+}
+
+func transToTxn(t *model.Trans) *model.AppTxn {
+	txn := &model.AppTxn{
+		Response:        t.RespCode,
+		SystemDate:      timeFormat(t.CreateTime),
+		ConsumerAccount: t.ConsumerAccount,
+	}
+	txn.ReqData.Busicd = t.Busicd
+	txn.ReqData.AgentCode = t.AgentCode
+	txn.ReqData.Txndir = "Q"
+	txn.ReqData.Terminalid = t.Terminalid
+	txn.ReqData.OrigOrderNum = t.OrigOrderNum
+	txn.ReqData.OrderNum = t.OrderNum
+	txn.ReqData.MerId = t.MerId
+	txn.ReqData.TradeFrom = t.TradeFrom
+	txn.ReqData.Txamt = fmt.Sprintf("%012d", t.TransAmt)
+	txn.ReqData.ChanCode = t.ChanCode
+	txn.ReqData.Currency = t.TransCurr
+	return txn
+}
+
+// timeFormat 将2015-09-20 15:03:04 -> 20150920150304
+func timeFormat(timeStr string) string {
+	ss := strings.Split(" ", timeStr)
+	if len(ss) != 2 {
+		return ""
+	}
+	return strings.Replace("-", ss[0], "", -1) + strings.Replace(":", ss[1], "", -1)
 }

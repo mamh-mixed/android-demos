@@ -82,10 +82,23 @@ func improveInfoHandle(w http.ResponseWriter, r *http.Request) {
 
 // getOrderHandle 获得单个订单信息
 func getOrderHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.getUserTrans(&reqParams{
+		UserName:     r.FormValue("username"),
+		Password:     r.FormValue("password"),
+		OrderNum:     r.FormValue("orderNum"),
+		BusinessType: "getOrder",
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
 // billHandle 获取账单信息
@@ -110,6 +123,15 @@ func getRefdHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.getUserTrans(&reqParams{
+		UserName:     r.FormValue("username"),
+		Password:     r.FormValue("password"),
+		OrderNum:     r.FormValue("orderNum"),
+		BusinessType: "getRefd",
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
 // passwordHandle 密码修改
@@ -118,6 +140,14 @@ func passwordHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.passwordHandle(&reqParams{
+		UserName:    r.FormValue("username"),
+		OldPassword: r.FormValue("oldpassword"),
+		NewPassword: r.FormValue("newpassword"),
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
 // promoteLimitHandle 提升限额
@@ -128,7 +158,7 @@ func promoteLimitHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.promoteLimit(&reqParams{
-		UserName: r.FormValue("userName"),
+		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
 		Payee:    r.FormValue("payee"),
 		PhoneNum: r.FormValue("phone_num"),
@@ -146,7 +176,7 @@ func updateSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.updateSettInfo(&reqParams{
-		UserName:  r.FormValue("userName"),
+		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		BankOpen:  r.FormValue("bank_open"),
 		Payee:     r.FormValue("payee"),
@@ -165,7 +195,7 @@ func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.getSettInfo(&reqParams{
-		UserName: r.FormValue("userName"),
+		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
 	})
 
@@ -213,14 +243,18 @@ func jsonMarshal(result *model.AppResult) []byte {
 }
 
 type reqParams struct {
-	UserName  string
-	Password  string
-	Transtime string
-	Sign      string
-	Code      string
-	BankOpen  string
-	Payee     string
-	PayeeCard string
-	PhoneNum  string
-	Email     string
+	UserName     string
+	Password     string
+	Transtime    string
+	Sign         string
+	Code         string
+	BankOpen     string
+	Payee        string
+	PayeeCard    string
+	PhoneNum     string
+	Email        string
+	OldPassword  string
+	NewPassword  string
+	OrderNum     string
+	BusinessType string
 }
