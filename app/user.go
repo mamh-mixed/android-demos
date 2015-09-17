@@ -1,7 +1,6 @@
 package app
 
 import (
-	"crypto/sha1"
 	"fmt"
 	"math/rand"
 	"time"
@@ -23,16 +22,6 @@ func (u *user) register(userName, password, transtime, sign string) (result *mod
 	// 参数不能为空
 	if userName == "" || password == "" || transtime == "" || sign == "" {
 		return model.PARAMS_EMPTY
-	}
-
-	//验签
-	str := fmt.Sprintf("username=%s&password=%s&transtime=%s%s", userName, password, transtime, model.KEY)
-	value := sha1.Sum([]byte(str))
-	valueStr := fmt.Sprintf("%x", value)
-	log.Debugf("sign(%s)=%s", str, valueStr)
-	if sign != valueStr {
-		log.Errorf("check signature err")
-		return model.SIGN_FAIL
 	}
 
 	user := &model.AppUser{
@@ -66,16 +55,6 @@ func (u *user) login(userName, password, transtime, sign string) (result *model.
 	// 参数不能为空
 	if userName == "" || password == "" || transtime == "" || sign == "" {
 		return model.PARAMS_EMPTY
-	}
-
-	//验签
-	str := fmt.Sprintf("username=%s&password=%s&transtime=%s%s", userName, password, transtime, model.KEY)
-	value := sha1.Sum([]byte(str))
-	valueStr := fmt.Sprintf("%x", value)
-	log.Debugf("sign(%s)=%s", str, valueStr)
-	if sign != valueStr {
-		log.Warnf("check signature err")
-		return model.SIGN_FAIL
 	}
 
 	// 根据用户名查找用户
@@ -121,16 +100,6 @@ func (u *user) reqActivate(userName, password, transtime, sign string) (result *
 	// 参数不能为空
 	if userName == "" || password == "" || transtime == "" || sign == "" {
 		return model.PARAMS_EMPTY
-	}
-
-	//验签
-	str := fmt.Sprintf("username=%s&password=%s&transtime=%s%s", userName, password, transtime, model.KEY)
-	value := sha1.Sum([]byte(str))
-	valueStr := fmt.Sprintf("%x", value)
-	log.Debugf("sign(%s)=%s", str, valueStr)
-	if sign != valueStr {
-		log.Warnf("check signature err")
-		return model.SIGN_FAIL
 	}
 
 	// 根据用户名查找用户

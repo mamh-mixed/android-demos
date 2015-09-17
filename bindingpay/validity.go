@@ -98,6 +98,14 @@ func validatePaySettlement(in *model.PaySettlement) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200050", "字段 settAccountNum 不能为空")
 	}
 
+	if !isChineseOrJapaneseOrAlphanumeric(in.AcctNameDecrypt) {
+		return mongo.RespCodeColl.Get("200100")
+	}
+
+	if !isChineseOrJapaneseOrAlphanumeric(in.AcctNumDecrypt) {
+		return mongo.RespCodeColl.Get("200110")
+	}
+
 	switch in.SettAccountType {
 	case "11", "12":
 		if in.Province == "" || in.City == "" || in.SettBranchName == "" {
