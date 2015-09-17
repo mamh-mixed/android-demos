@@ -195,3 +195,95 @@ func (u *user) activate(userName, code string) (result *model.AppResult) {
 
 	return model.SUCCESS1
 }
+
+// promoteLimit 提升限额
+func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	// 发送邮件通知Andy.Li
+	return
+}
+
+// getSettInfo 获得清算信息
+func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	// 返回
+	result = model.NewAppResult(model.SUCCESS, "")
+	result.Payee = user.Payee
+	result.BankOpen = user.BankOpen
+	result.PayeeCard = user.PayeeCard
+	result.PhoneNum = user.PhoneNum
+	return
+}
+
+// updateSettInfo 更新清算信息
+func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	// 修改
+	user.Payee = req.Payee
+	user.BankOpen = req.BankOpen
+	user.PayeeCard = req.PayeeCard
+	user.PhoneNum = req.PhoneNum
+
+	if err = mongo.AppUserCol.Upsert(user); err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	return model.SUCCESS1
+}
