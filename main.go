@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"runtime"
 
+	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
+	// "github.com/CardInfoLink/quickpay/data"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
@@ -26,6 +28,7 @@ func main() {
 	startBindingpay() // 绑定支付
 	startSettle()     // 清分任务
 	startMaster()     // 管理平台
+	startApp()        // app
 
 	// http.HandleFunc("/import", data.Import)
 
@@ -64,4 +67,8 @@ func startSettle() {
 func startMaster() {
 	http.Handle("/", http.FileServer(http.Dir("static/app")))
 	http.Handle("/master/", master.Route())
+}
+
+func startApp() {
+	http.Handle("/app/", app.Route())
 }

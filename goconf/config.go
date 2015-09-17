@@ -17,6 +17,7 @@ type ConfigStruct struct {
 		TCPAddr          string
 		TCPGBKAddr       string
 		DefaultCacheTime Duration
+		NotifyURL        string
 	}
 
 	Mongo struct {
