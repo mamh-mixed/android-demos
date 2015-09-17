@@ -73,17 +73,23 @@ type AppTxn struct {
 	} `json:"m_request"`
 }
 
+// AppUser 云收银用户
 type AppUser struct {
 	UserName  string `json:"userName,omitempty" bson:"userName,omitempty"`
 	Password  string `json:"-" bson:"password,omitempty"`
 	Activate  string `json:"activate,omitempty" bson:"activate,omitempty"`
 	MerId     string `json:"clientid,omitempty" bson:"merId,omitempty"`
-	Limit     string `json:"limit,omitempty"`
-	SignKey   string `json:"signKey,omitempty"`
-	AgentCode string `json:"inscd,omitempty"`
+	Limit     string `json:"limit,omitempty" bson:"limit,omitempty"`
+	SignKey   string `json:"signKey,omitempty" bson:"signKey,omitempty"`
+	AgentCode string `json:"inscd,omitempty" bson:"inscd,omitempty"`
 	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
+	BankOpen  string `json:"bank_open,omitempty" bson:"bank_open,omitempty"`
+	Payee     string `json:"payee,omitempty" bson:"payee,omitempty"`
+	PayeeCard string `json:"payee_card,omitempty" bson:"payee_card,omitempty`
+	PhoneNum  string `json:"phone_num,omitempty" bson:"phone_num,omitempty"`
 }
 
+// Email 发送email记录
 type Email struct {
 	UserName  string `json:"username,omitempty" bson:"userName,omitempty"`
 	Code      string `json:"code,omitempty" bson:"code,omitempty"`
