@@ -126,22 +126,50 @@ func promoteLimitHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.promoteLimit(&reqParams{
+		UserName: r.FormValue("userName"),
+		Password: r.FormValue("password"),
+		Payee:    r.FormValue("payee"),
+		PhoneNum: r.FormValue("phone_num"),
+		Email:    r.FormValue("email"),
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
-// updateHandle 修改清算帐号信息
-func updateHandle(w http.ResponseWriter, r *http.Request) {
+// updateSettInfoHandle 修改清算帐号信息
+func updateSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.updateSettInfo(&reqParams{
+		UserName:  r.FormValue("userName"),
+		Password:  r.FormValue("password"),
+		BankOpen:  r.FormValue("bank_open"),
+		Payee:     r.FormValue("payee"),
+		PayeeCard: r.FormValue("payee_card"),
+		PhoneNum:  r.FormValue("phone_num"),
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
-// getInfoHandle 获取清算帐号信息
-func getInfoHandle(w http.ResponseWriter, r *http.Request) {
+// getSettInfoHandle 获取清算帐号信息
+func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.getSettInfo(&reqParams{
+		UserName: r.FormValue("userName"),
+		Password: r.FormValue("password"),
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
 func checkSign(r *http.Request) bool {
@@ -182,4 +210,17 @@ func jsonMarshal(result *model.AppResult) []byte {
 	}
 	log.Debugf("response message: %s", string(data))
 	return data
+}
+
+type reqParams struct {
+	UserName  string
+	Password  string
+	Transtime string
+	Sign      string
+	Code      string
+	BankOpen  string
+	Payee     string
+	PayeeCard string
+	PhoneNum  string
+	Email     string
 }
