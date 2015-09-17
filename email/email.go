@@ -1,8 +1,9 @@
 package email
 
 import (
-	"github.com/omigo/log"
 	"net/smtp"
+
+	"github.com/omigo/log"
 )
 
 const (
