@@ -176,7 +176,7 @@ func (u *user) reqActivate(userName, password, transtime, sign string) (result *
 	}
 
 	// 保存email信息
-	err = mongo.EmailColl.Upsert(e)
+	err = mongo.EmailCol.Upsert(e)
 	if err != nil {
 		log.Errorf("save email err")
 	}
@@ -203,7 +203,7 @@ func (u *user) activate(userName, code string) (result *model.AppResult) {
 	}
 
 	// 判断code是否正确
-	e, err := mongo.EmailColl.FindOne(userName)
+	e, err := mongo.EmailCol.FindOne(userName)
 	if err != nil {
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
