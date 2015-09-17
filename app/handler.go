@@ -33,10 +33,25 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 // reqActivateHandle 请求发送激活邮件
 func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
+	userName := r.FormValue("username")
+	password := r.FormValue("password")
+	transtime := r.FormValue("transtime")
+	sign := r.FormValue("sign")
+
+	ret := User.reqActivate(userName, password, transtime, sign)
+
+	w.Write(jsonMarshal(ret))
 }
 
 // activateHandle 激活
-func activateHandle(w http.ResponseWriter, r *http.Request) {}
+func activateHandle(w http.ResponseWriter, r *http.Request) {
+	userName := r.FormValue("username")
+	code := r.FormValue("code")
+
+	ret := User.activate(userName, code)
+
+	w.Write(jsonMarshal(ret))
+}
 
 // improveInfoHandle 补充清算信息
 func improveInfoHandle(w http.ResponseWriter, r *http.Request) {}

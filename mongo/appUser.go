@@ -15,7 +15,7 @@ var AppUserCol = appUserCollection{"appUser"}
 func (col *appUserCollection) Upsert(user *model.AppUser) (err error) {
 
 	bo := bson.M{
-		"username": user.UserName,
+		"userName": user.UserName,
 	}
 	_, err = database.C(col.name).Upsert(bo, user)
 	if err != nil {
@@ -27,7 +27,7 @@ func (col *appUserCollection) Upsert(user *model.AppUser) (err error) {
 
 func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err error) {
 	bo := bson.M{
-		"username": user.UserName,
+		"userName": userName,
 	}
 	user = new(model.AppUser)
 	err = database.C(col.name).Find(bo).One(user)
@@ -40,7 +40,7 @@ func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err
 
 func (col *appUserCollection) FindCountByUserName(userName string) (num int, err error) {
 	bo := bson.M{
-		"username": userName,
+		"userName": userName,
 	}
 	num, err = database.C(col.name).Find(bo).Count()
 	if err != nil {

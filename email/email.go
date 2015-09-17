@@ -1,11 +1,9 @@
 package email
 
 import (
-	"crypto/rand"
-	"fmt"
-	"github.com/omigo/log"
-	"io"
 	"net/smtp"
+
+	"github.com/omigo/log"
 )
 
 const (
