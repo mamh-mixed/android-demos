@@ -170,6 +170,10 @@ func (u *user) activate(userName, code string) (result *model.AppResult) {
 		}
 		return model.SYSTEM_ERROR
 	}
+	// 用户已激活
+	if user.Activate == "true" {
+		return model.SUCCESS1
+	}
 
 	// 判断code是否正确
 	e, err := mongo.EmailCol.FindOne(userName)
@@ -178,7 +182,7 @@ func (u *user) activate(userName, code string) (result *model.AppResult) {
 		return model.SYSTEM_ERROR
 	}
 	if code != e.Code {
-
+		return model.CODE_ERROR
 	}
 
 	// 更新activate为已激活

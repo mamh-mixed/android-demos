@@ -25,6 +25,7 @@ var (
 	USERNAME_NO_EXIST       = NewAppResult(FAIL, "username_no_exist")
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
+	CODE_ERROR              = NewAppResult(FAIL, "code_error")
 )
 
 type AppResult struct {
