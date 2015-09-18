@@ -19,6 +19,7 @@ var (
 			<h3>
 				Hello,Andy.li:
 			</h3>
+			%s，申请提升限额。邮箱：%s，手机：%s。
 		</body>
 	</html>
 	`

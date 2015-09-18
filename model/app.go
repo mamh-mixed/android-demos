@@ -25,20 +25,24 @@ var (
 	USERNAME_NO_EXIST       = NewAppResult(FAIL, "username_no_exist")
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
+	CODE_ERROR              = NewAppResult(FAIL, "code_error")
+	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
+	NO_TRANS                = NewAppResult(FAIL, "找不到交易")
+	TIME_ERROR              = NewAppResult(FAIL, "日期格式错误")
 )
 
 type AppResult struct {
 	// 必填
-	State string `json:"state"` // 状态
-	Error string `json:"error"` // 错误消息
+	State string `json:"state"`           // 状态
+	Error string `json:"error,omitempty"` // 错误消息
 
 	// 可选
 	User         *AppUser    `json:"user,omitempty"`
-	TotalAmt     int         `json:"total,omitempty"`
-	Count        int         `json:"count,omitempty"`
-	Size         int         `json:"size,omitempty"`
-	RefdCount    int         `json:"refdcount,omitempty"`
-	RefdTotalAmt int         `json:"refdtotal,omitempty"`
+	TotalAmt     string      `json:"total,omitempty"`
+	Count        int         `json:"count"`
+	Size         int         `json:"size"`
+	RefdCount    int         `json:"refdcount"`
+	RefdTotalAmt string      `json:"refdtotal,omitempty"`
 	BankOpen     string      `json:"bank_open,omitempty"`
 	Payee        string      `json:"payee,omitempty"`
 	PayeeCard    string      `json:"payee_card,omitempty"`
@@ -57,33 +61,39 @@ func NewAppResult(state, err string) (ret *AppResult) {
 type AppTxn struct {
 	Response        string `json:"response" bson:"response"`
 	SystemDate      string `json:"system_date"`
-	ConsumerAccount string `json:"consumerAccount"`
+	ConsumerAccount string `json:"consumerAccount,omitempty"`
 	ReqData         struct {
-		Busicd       string `json:"busicd"`
-		AgentCode    string `json:"inscd"`
-		Txndir       string `json:"txndir"`
-		Terminalid   string `json:"terminalid"`
-		OrigOrderNum string `json:"origOrderNum"`
-		OrderNum     string `json:"orderNum"`
-		MerId        string `json:"mchntid"`
-		TradeFrom    string `json:"tradeFrom"`
-		Txamt        string `json:"txamt"`
-		ChanCode     string `json:"chcd"`
-		Currency     string `json:"currency"`
+		Busicd       string `json:"busicd,omitempty"`
+		AgentCode    string `json:"inscd,omitempty"`
+		Txndir       string `json:"txndir,omitempty"`
+		Terminalid   string `json:"terminalid,omitempty"`
+		OrigOrderNum string `json:"origOrderNum,omitempty"`
+		OrderNum     string `json:"orderNum,omitempty"`
+		MerId        string `json:"mchntid,omitempty"`
+		TradeFrom    string `json:"tradeFrom,omitempty"`
+		Txamt        string `json:"txamt,omitempty"`
+		ChanCode     string `json:"chcd,omitempty"`
+		Currency     string `json:"currency,omitempty"`
 	} `json:"m_request"`
 }
 
+// AppUser 云收银用户
 type AppUser struct {
 	UserName  string `json:"userName,omitempty" bson:"userName,omitempty"`
 	Password  string `json:"-" bson:"password,omitempty"`
 	Activate  string `json:"activate,omitempty" bson:"activate,omitempty"`
 	MerId     string `json:"clientid,omitempty" bson:"merId,omitempty"`
-	Limit     string `json:"limit,omitempty"`
-	SignKey   string `json:"signKey,omitempty"`
-	AgentCode string `json:"inscd,omitempty"`
+	Limit     string `json:"limit,omitempty" bson:"limit,omitempty"`
+	SignKey   string `json:"signKey,omitempty" bson:"signKey,omitempty"`
+	AgentCode string `json:"inscd,omitempty" bson:"inscd,omitempty"`
 	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
+	BankOpen  string `json:"bank_open,omitempty" bson:"bankOpen,omitempty"`
+	Payee     string `json:"payee,omitempty" bson:"payee,omitempty"`
+	PayeeCard string `json:"payee_card,omitempty" bson:"payeeCard,omitempty`
+	PhoneNum  string `json:"phone_num,omitempty" bson:"phoneNum,omitempty"`
 }
 
+// Email 发送email记录
 type Email struct {
 	UserName  string `json:"username,omitempty" bson:"userName,omitempty"`
 	Code      string `json:"code,omitempty" bson:"code,omitempty"`

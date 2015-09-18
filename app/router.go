@@ -17,8 +17,8 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/getrefd", getRefdHandle)
 	mux.HandleFunc("/app/updatepassword", passwordHandle)
 	mux.HandleFunc("/app/limitincrease", promoteLimitHandle)
-	mux.HandleFunc("/app/updateinfo", updateHandle)
-	mux.HandleFunc("/app/getinfo", getInfoHandle)
+	mux.HandleFunc("/app/updateinfo", updateSettInfoHandle)
+	mux.HandleFunc("/app/getinfo", getSettInfoHandle)
 
 	return mux
 }
