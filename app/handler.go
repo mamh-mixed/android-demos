@@ -8,9 +8,12 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 )
+
+var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"
 
 func registerHandle(w http.ResponseWriter, r *http.Request) {
 	if !checkSign(r) {
@@ -19,7 +22,7 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.register(&reqParams{
-		UserName:  r.FormValue("userName"),
+		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
 	})
@@ -35,7 +38,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.login(&reqParams{
-		UserName:  r.FormValue("userName"),
+		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
 	})
@@ -51,7 +54,7 @@ func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.reqActivate(&reqParams{
-		UserName:  r.FormValue("userName"),
+		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
 	})
@@ -63,7 +66,7 @@ func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
 func activateHandle(w http.ResponseWriter, r *http.Request) {
 
 	result := User.activate(&reqParams{
-		UserName: r.FormValue("userName"),
+		UserName: r.FormValue("username"),
 		Code:     r.FormValue("code"),
 	})
 
@@ -86,7 +89,7 @@ func improveInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.improveInfo(&reqParams{
-		UserName:  r.FormValue("userName"),
+		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		BankOpen:  r.FormValue("bank_open"),
 		Payee:     r.FormValue("payee"),
@@ -242,33 +245,38 @@ func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkSign(r *http.Request) bool {
-	var keys []string
-	for k, _ := range r.Form {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
 
-	var buf bytes.Buffer
-	var sign string
-	for _, v := range keys {
-		// sign不参与签名
-		if v == "sign" {
-			sign = v
-			continue
-		}
-		value := r.FormValue(v)
-		if buf.Len() > 0 {
-			buf.WriteByte('&')
-		}
-		buf.WriteString(v + "=" + value)
-	}
-	content := buf.String()
-	valid := fmt.Sprintf("%x", sha1.Sum([]byte(content)))
+	sign := r.FormValue("sign")
+	content := signContent(r.Form)
+	log.Debugf("sign content: %s", content)
+	valid := fmt.Sprintf("%x", sha1.Sum([]byte(content+sha1Key)))
 	if sign != valid {
 		log.Warnf("check sign error, expect %s ,get %s", valid, sign)
 		return false
 	}
 	return true
+}
+
+func signContent(values url.Values) string {
+	var keys []string
+	for k, _ := range values {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var buf bytes.Buffer
+	for _, v := range keys {
+		// sign不参与签名
+		if v == "sign" {
+			continue
+		}
+		value := values.Get(v)
+		if buf.Len() > 0 {
+			buf.WriteByte('&')
+		}
+		buf.WriteString(v + "=" + value)
+	}
+	return buf.String()
 }
 
 func jsonMarshal(result *model.AppResult) []byte {
