@@ -26,6 +26,8 @@ var (
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
 	CODE_ERROR              = NewAppResult(FAIL, "code_error")
+	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
+	NO_TRANS                = NewAppResult(FAIL, "找不到交易")
 )
 
 type AppResult struct {
@@ -35,11 +37,11 @@ type AppResult struct {
 
 	// 可选
 	User         *AppUser    `json:"user,omitempty"`
-	TotalAmt     int         `json:"total,omitempty"`
+	TotalAmt     string      `json:"total,omitempty"`
 	Count        int         `json:"count,omitempty"`
 	Size         int         `json:"size,omitempty"`
 	RefdCount    int         `json:"refdcount,omitempty"`
-	RefdTotalAmt int         `json:"refdtotal,omitempty"`
+	RefdTotalAmt string      `json:"refdtotal,omitempty"`
 	BankOpen     string      `json:"bank_open,omitempty"`
 	Payee        string      `json:"payee,omitempty"`
 	PayeeCard    string      `json:"payee_card,omitempty"`
