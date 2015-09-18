@@ -2,11 +2,15 @@ package cil
 
 import (
 	"bufio"
+	"crypto/tls"
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
+	"os"
 	"strconv"
 	"time"
 
@@ -17,8 +21,27 @@ import (
 
 var addr = goconf.Config.CILOnline.Host + ":" + strconv.Itoa(goconf.Config.CILOnline.Port)
 
+var tlsConfig *tls.Config
+
+func init() {
+	file, err := ioutil.ReadFile(goconf.Config.CILOnline.ServerCert)
+	if err != nil {
+		fmt.Printf("read CIL Online file error: %s\n", err)
+		os.Exit(1)
+	}
+
+	cert := tls.Certificate{
+		Certificate: [][]byte{file},
+	}
+
+	tlsConfig = &tls.Config{
+		Certificates:       []tls.Certificate{cert},
+		InsecureSkipVerify: true,
+	}
+}
+
 func send(msg *model.CilMsg, timeout time.Duration) (back *model.CilMsg) {
-	conn, err := net.Dial("tcp", addr)
+	conn, err := tls.Dial("tcp", addr, tlsConfig)
 	if err != nil {
 		log.Errorf("can't connect to CIL-Online tcp://%s: %s", addr, err)
 		return nil

@@ -20,7 +20,8 @@
     },
     "CILOnline": {
         "Host": "140.207.50.238",
-        "Port": 7823
+        "Port": 7823,
+        "ServerCert": "config/pem/cil/server.cert" // SSL 证书
     },
     "CFCA": {
         "URL": "https://www.china-clearing.com/Gateway/InterfaceII", // API 地址
