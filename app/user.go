@@ -409,9 +409,10 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
 	q := &model.QueryCondition{
 		MerId:     user.MerId,
-		StartTime: date,
-		EndTime:   date,
+		StartTime: date + " 00:00:00",
+		EndTime:   date + " 23:59:59",
 		Size:      15,
+		Page:      1,
 		Skip:      req.Index,
 	}
 
@@ -425,6 +426,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
 	trans, total, err := mongo.SpTransColl.Find(q)
 	if err != nil {
+		log.Errorf("find user trans error: %s", err)
 		return model.SYSTEM_ERROR
 	}
 
@@ -456,7 +458,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 // getUserTrans 获取用户某笔交易信息
 func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 	// 用户名不为空
-	if req.UserName == "" || req.NewPassword == "" {
+	if req.UserName == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -471,7 +473,7 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 密码不对
-	if req.OldPassword != user.Password {
+	if req.Password != user.Password {
 		return model.USERNAME_PASSWORD_ERROR
 	}
 
@@ -547,6 +549,10 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 	// 密码不对
 	if req.Password != user.Password {
 		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	if user.Limit == "false" {
+		return model.SUCCESS1
 	}
 
 	// 发送邮件通知Andy.Li
