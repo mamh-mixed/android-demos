@@ -20,7 +20,8 @@
     },
     "CILOnline": {
         "Host": "140.207.50.238",
-        "Port": 7823
+        "Port": 7823,
+        "ServerCert": "config/pem/cil/server.cert" // SSL 证书
         // "Host": "192.168.1.102",
         // "Port": 7823,
         // "QueueSize": 1000, // 所有交易发送到线下前先排队，队列满后将阻塞
