@@ -8,13 +8,14 @@ import (
 	"strings"
 	"time"
 
+	"regexp"
+
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
-	"regexp"
 )
 
 type user struct{}
@@ -247,15 +248,22 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		// 设置merId
 		maxMerId, err := mongo.MerchantColl.FindMaxMerId()
 		if err != nil {
-			log.Errorf("find database  err,%s", err)
-			return model.SYSTEM_ERROR
+			if err.Error() == "not found" {
+				log.Infof(" set max merId is 999118880000001")
+				merchant.MerId = "999118880000001"
+			} else {
+				log.Errorf("find database  err,%s", err)
+				return model.SYSTEM_ERROR
+			}
+
+		} else {
+			maxMerIdNum, err := strconv.Atoi(maxMerId)
+			if err != nil {
+				log.Errorf("format maxMerId(%s) err", maxMerId)
+				return model.SYSTEM_ERROR
+			}
+			merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
 		}
-		maxMerIdNum, err := strconv.Atoi(maxMerId)
-		if err != nil {
-			log.Errorf("format maxMerId(%s) err", maxMerId)
-			return model.SYSTEM_ERROR
-		}
-		merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
 
 		err = mongo.MerchantColl.Insert2(merchant)
 		if err != nil {
