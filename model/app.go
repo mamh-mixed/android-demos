@@ -89,7 +89,7 @@ type AppUser struct {
 	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"bank_open,omitempty"`
 	Payee     string `json:"payee,omitempty" bson:"payee,omitempty"`
-	PayeeCard string `json:"payee_card,omitempty" bson:"payee_card,omitempty`
+	PayeeCard string `json:"payee_card,omitempty" bson:"payee_card,omitempty"`
 	PhoneNum  string `json:"phone_num,omitempty" bson:"phone_num,omitempty"`
 }
 

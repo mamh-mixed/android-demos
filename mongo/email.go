@@ -27,7 +27,7 @@ func (col *emailCollection) Upsert(e *model.Email) (err error) {
 
 func (col *emailCollection) FindOne(userName string) (e *model.Email, err error) {
 	bo := bson.M{
-		"username": userName,
+		"userName": userName,
 	}
 	e = new(model.Email)
 	err = database.C(col.name).Find(bo).One(e)
