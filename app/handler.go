@@ -150,7 +150,7 @@ func getTotalHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := User.getUserTrans(&reqParams{
+	result := User.getTotalTransAmt(&reqParams{
 		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
 		Date:     r.FormValue("date"),

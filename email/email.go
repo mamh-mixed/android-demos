@@ -31,7 +31,7 @@ func (e *Email) Send() error {
 	// }
 	// body := fmt.Sprintf(template, e.ActUrl, b64Encoding.EncodeToString(iv[:]))
 	msg := "To: " + e.To + "\r\nFrom: " + USER + ">\r\nSubject: " + e.Title + "\r\n" + contentType + "\r\n\r\n" + e.Body
-	log.Infof("SendBody: %s", msg)
+	log.Infof("SendBody: \n%s", msg)
 	// send
 	err := smtp.SendMail(ADDR, auth, USER, []string{e.To}, []byte(msg))
 	if err != nil {
