@@ -79,7 +79,7 @@ type AppTxn struct {
 
 // AppUser 云收银用户
 type AppUser struct {
-	UserName  string `json:"userName,omitempty" bson:"userName,omitempty"`
+	UserName  string `json:"username,omitempty" bson:"userName,omitempty"`
 	Password  string `json:"-" bson:"password,omitempty"`
 	Activate  string `json:"activate,omitempty" bson:"activate,omitempty"`
 	MerId     string `json:"clientid,omitempty" bson:"merId,omitempty"`

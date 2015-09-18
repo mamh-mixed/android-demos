@@ -90,6 +90,7 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 			return model.SYSTEM_ERROR
 		}
 		user.UniqueId = merchant.UniqueId
+		user.AgentCode = merchant.AgentCode
 	}
 
 	result = &model.AppResult{
