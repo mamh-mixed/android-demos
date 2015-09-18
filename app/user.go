@@ -12,12 +12,16 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
+	"regexp"
 )
 
 type user struct{}
 
 var User user
+var timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
+var dateRegexp = regexp.MustCompile(`^\d{8}$`)
 
 // register 注册
 func (u *user) register(req *reqParams) (result *model.AppResult) {
@@ -315,6 +319,132 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	return result
 }
 
+// getTotalTransAmt 查询某天交易总额
+func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
+
+	// 用户名不为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	if !dateRegexp.MatchString(req.Date) {
+		return model.TIME_ERROR
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	result = model.NewAppResult(model.SUCCESS, "")
+	month := req.Date
+	month = month[:4] + "-" + month[4:6] + "-" + month[6:8]
+
+	ret := query.TransStatistics(&model.QueryCondition{
+		MerId:     user.MerId,
+		StartTime: month,
+		EndTime:   month,
+		Size:      1,
+		Page:      1,
+	})
+
+	if summary, ok := ret.Rec.(model.Summary); ok {
+		result.Count = summary.TotalTransNum
+		result.TotalAmt = fmt.Sprintf("%0.2f", summary.TotalTransAmt)
+	} else {
+		return model.SYSTEM_ERROR
+	}
+
+	return result
+}
+
+// getUserBill 获取用户账单
+func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
+
+	// 用户名不为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	if !dateRegexp.MatchString(req.Date) {
+		return model.TIME_ERROR
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	result = model.NewAppResult(model.SUCCESS, "")
+	date := req.Date
+	date = date[:4] + "-" + date[4:6] + "-" + date[6:8]
+
+	q := &model.QueryCondition{
+		MerId:     user.MerId,
+		StartTime: date,
+		EndTime:   date,
+		Size:      15,
+		Skip:      req.Index,
+	}
+
+	switch req.Status {
+	case "all":
+	case "success":
+		q.TransStatus = model.TransSuccess
+	case "fail":
+		q.TransStatus = model.TransFail
+	}
+
+	trans, total, err := mongo.SpTransColl.Find(q)
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	var totalAmt, refunded int64
+	refundCount := 0
+	var txns []*model.AppTxn
+	for _, t := range trans {
+		switch t.TransType {
+		case model.PayTrans:
+			totalAmt += t.TransAmt
+		default:
+			if t.TransAmt != 0 {
+				refundCount++
+			}
+		}
+		refunded += t.RefundAmt
+		txns = append(txns, transToTxn(t))
+	}
+
+	result.Txn = txns
+	result.Size = len(trans)
+	result.TotalAmt = fmt.Sprintf("%0.2f", float32(totalAmt)/100)
+	result.RefdCount = refundCount
+	result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refunded)/100)
+	result.Count = total
+	return
+}
+
 // getUserTrans 获取用户某笔交易信息
 func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 	// 用户名不为空
@@ -351,7 +481,7 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 	result = model.NewAppResult(model.SUCCESS, "")
 	switch req.BusinessType {
 	case "getRefd":
-		result.RefdTotalAmt = fmt.Sprintf("%d", float32(t.RefundAmt)/100)
+		result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(t.RefundAmt)/100)
 	case "getOrder":
 		result.Txn = transToTxn(t)
 	}
@@ -493,7 +623,7 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 func transToTxn(t *model.Trans) *model.AppTxn {
 	txn := &model.AppTxn{
 		Response:        t.RespCode,
-		SystemDate:      timeFormat(t.CreateTime),
+		SystemDate:      timeReplacer.Replace(t.CreateTime),
 		ConsumerAccount: t.ConsumerAccount,
 	}
 	txn.ReqData.Busicd = t.Busicd
@@ -508,13 +638,4 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.ChanCode = t.ChanCode
 	txn.ReqData.Currency = t.TransCurr
 	return txn
-}
-
-// timeFormat 将2015-09-20 15:03:04 -> 20150920150304
-func timeFormat(timeStr string) string {
-	ss := strings.Split(" ", timeStr)
-	if len(ss) != 2 {
-		return ""
-	}
-	return strings.Replace("-", ss[0], "", -1) + strings.Replace(":", ss[1], "", -1)
 }

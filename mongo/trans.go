@@ -300,7 +300,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["$or"] = or
 	}
 	if q.StartTime != "" && q.EndTime != "" {
-		match["createTime"] = bson.M{"$gte": q.StartTime, "$lt": q.EndTime}
+		match["createTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
 
 	// 将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
@@ -317,7 +317,13 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 
 	// 分页
-	skip := bson.M{"$skip": (q.Page - 1) * q.Size}
+	skipRecord := 0
+	if q.Skip != 0 {
+		skipRecord = q.Skip
+	} else {
+		skipRecord = (q.Page - 1) * q.Size
+	}
+	skip := bson.M{"$skip": skipRecord}
 
 	// 不同类型排序
 	sort := bson.M{"$sort": bson.M{"createTime": -1}}

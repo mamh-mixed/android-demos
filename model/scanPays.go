@@ -44,6 +44,7 @@ type QueryCondition struct {
 	GroupCode    string   `json:"groupCode,omitempty"`
 	Respcd       string   `json:"respcd" url:"respcd"`
 	TradeFrom    string   `json:"tradeFrom,omitempty"`
+	Skip         int      `json:"skip,omitempty"`
 }
 
 // QueryResult 查询结果值

@@ -57,7 +57,9 @@ func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 
 	resp := send(m, transTimeout)
 	log.Debugf("直接消费（订购消费）的线下网关返回结果: %+v", resp)
-
+	if resp == nil {
+		return mongo.RespCodeColl.Get("000002")
+	}
 	// 如果超时，请冲正
 	if resp.Respcd == reversalFlag {
 		log.Warn("请求超时!!!")
