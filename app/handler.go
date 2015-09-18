@@ -5,10 +5,11 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"net/http"
 	"sort"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 )
 
 func registerHandle(w http.ResponseWriter, r *http.Request) {
@@ -16,14 +17,14 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
-	userName := r.FormValue("username")
-	password := r.FormValue("password")
-	transtime := r.FormValue("transtime")
-	sign := r.FormValue("sign")
 
-	ret := User.register(userName, password, transtime, sign)
+	result := User.register(&reqParams{
+		UserName:  r.FormValue("userName"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	})
 
-	w.Write(jsonMarshal(ret))
+	w.Write(jsonMarshal(result))
 }
 
 // loginHandle 登录
@@ -32,14 +33,14 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
-	userName := r.FormValue("username")
-	password := r.FormValue("password")
-	transtime := r.FormValue("transtime")
-	sign := r.FormValue("sign")
 
-	ret := User.login(userName, password, transtime, sign)
+	result := User.login(&reqParams{
+		UserName:  r.FormValue("userName"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	})
 
-	w.Write(jsonMarshal(ret))
+	w.Write(jsonMarshal(result))
 }
 
 // reqActivateHandle 请求发送激活邮件
@@ -48,28 +49,33 @@ func reqActivateHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
-	userName := r.FormValue("username")
-	password := r.FormValue("password")
-	transtime := r.FormValue("transtime")
-	sign := r.FormValue("sign")
 
-	ret := User.reqActivate(userName, password, transtime, sign)
+	result := User.reqActivate(&reqParams{
+		UserName:  r.FormValue("userName"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	})
 
-	w.Write(jsonMarshal(ret))
+	w.Write(jsonMarshal(result))
 }
 
 // activateHandle 激活
 func activateHandle(w http.ResponseWriter, r *http.Request) {
-	if !checkSign(r) {
-		w.Write(jsonMarshal(model.SIGN_FAIL))
-		return
+
+	result := User.activate(&reqParams{
+		UserName: r.FormValue("userName"),
+		Code:     r.FormValue("code"),
+	})
+
+	successPage := "<html><head><title>激活跳转页面</title></head><body>激活成功</body></html>"
+	failPage := "<html><head><title>激活跳转页面</title></head><body>激活失败，失败原因:%s</body></html>"
+
+	if result.State == "success" {
+		w.Write([]byte(successPage))
+	} else {
+		w.Write([]byte(fmt.Sprintf(failPage, result.Error)))
 	}
-	userName := r.FormValue("username")
-	code := r.FormValue("code")
 
-	ret := User.activate(userName, code)
-
-	w.Write(jsonMarshal(ret))
 }
 
 // improveInfoHandle 补充清算信息
@@ -78,6 +84,19 @@ func improveInfoHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.improveInfo(&reqParams{
+		UserName:  r.FormValue("userName"),
+		Password:  r.FormValue("password"),
+		BankOpen:  r.FormValue("bank_open"),
+		Payee:     r.FormValue("payee"),
+		PayeeCard: r.FormValue("payee_card"),
+		PhoneNum:  r.FormValue("phone_num"),
+		Transtime: r.FormValue("transtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+
 }
 
 // getOrderHandle 获得单个订单信息

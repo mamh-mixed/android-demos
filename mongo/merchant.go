@@ -201,3 +201,36 @@ func (col *merchantCollection) Remove(merId string) (err error) {
 	err = database.C(col.name).Remove(bo)
 	return err
 }
+
+// Insert2 创建一个机构商户
+func (c *merchantCollection) Insert2(m *model.Merchant) error {
+
+	err := database.C(c.name).Insert(m)
+	if err != nil {
+		log.Errorf("'Insert Merchant ERROR!' Merchant is (%+v); error is (%s)", m, err)
+		return err
+	}
+	return nil
+}
+
+// findMaxMerId 查询merId最大值
+func (c *merchantCollection) FindMaxMerId() (merId string, err error) {
+
+	match := bson.M{}
+	match["merId"] = bson.RegEx{"999118880.*", "."}
+	cond := []bson.M{
+		{"$match": match},
+	}
+	sort := bson.M{"$sort": bson.M{"merId": -1}}
+	limit := bson.M{"$limit": 1}
+
+	cond = append(cond, sort, limit)
+
+	m := new(model.Merchant)
+	err = database.C(c.name).Pipe(cond).One(m)
+	if err != nil {
+		log.Errorf("select maxMerId err,%s", err)
+		return "", err
+	}
+	return m.MerId, nil
+}
