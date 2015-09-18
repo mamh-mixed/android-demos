@@ -28,6 +28,7 @@ var (
 	CODE_ERROR              = NewAppResult(FAIL, "code_error")
 	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
 	NO_TRANS                = NewAppResult(FAIL, "找不到交易")
+	TIME_ERROR              = NewAppResult(FAIL, "日期格式错误")
 )
 
 type AppResult struct {

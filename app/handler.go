@@ -5,11 +5,11 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"sort"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"net/http"
+	"sort"
+	"strconv"
 )
 
 func registerHandle(w http.ResponseWriter, r *http.Request) {
@@ -126,6 +126,18 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+	index, _ := strconv.Atoi(r.FormValue("index"))
+
+	result := User.getUserBill(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Date:     r.FormValue("month"),
+		Status:   r.FormValue("status"),
+		Index:    index,
+	})
+
+	w.Write(jsonMarshal(result))
+
 }
 
 // getTotalHandle 获取某天总交易金额
@@ -134,6 +146,14 @@ func getTotalHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
+
+	result := User.getUserTrans(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Date:     r.FormValue("date"),
+	})
+
+	w.Write(jsonMarshal(result))
 }
 
 // getRefdHandle 获得某笔交易已退款金额
@@ -276,4 +296,7 @@ type reqParams struct {
 	NewPassword  string
 	OrderNum     string
 	BusinessType string
+	Status       string
+	Index        int
+	Date         string
 }
