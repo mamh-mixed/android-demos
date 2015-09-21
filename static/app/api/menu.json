@@ -5,6 +5,12 @@
   "url": "",
   "route": "config",
   "children": [{
+    "nameCN": "用户",
+    "nameEN": "",
+    "icon": "account-balance",
+    "url": "/config/users",
+    "route": "config.users"
+  }, {
     "nameCN": "代理",
     "nameEN": "",
     "icon": "assignment-ind",
@@ -52,17 +58,11 @@
     "icon": "account-balance",
     "url": "/config/chanMers",
     "route": "config.chanMers"
-  }, {
-    "nameCN": "用户",
-    "nameEN": "",
-    "icon": "account-balance",
-    "url": "/config/users",
-    "route": "config.users"
   }]
 }, {
   "nameCN": "快捷支付商户配置",
   "nameEN": "",
-  "icon": "swap-horiz",
+  "icon": "icons:credit-card",
   "url": "",
   "route": "quickPay",
   "children": [{

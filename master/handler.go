@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
@@ -540,6 +541,9 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(retBytes)
 }
+
+var sessionTimeout = time.Duration(goconf.Config.App.SessionTimeout)
+
 func loginHandle(w http.ResponseWriter, r *http.Request) {
 	log.Infof("user login begin")
 	data, err := ioutil.ReadAll(r.Body)
@@ -561,7 +565,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	if ret.Status == 0 {
 		log.Infof("create session begin")
 		cValue := util.SerialNumber()
-		cExpires := time.Now().Add(20 * time.Minute)
+		cExpires := time.Now().Add(sessionTimeout)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "QUICKMASTERID",

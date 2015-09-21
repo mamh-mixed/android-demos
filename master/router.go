@@ -6,7 +6,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/qiniu/log"
+	"github.com/omigo/log"
 )
 
 // Route 后台管理的请求统一入口

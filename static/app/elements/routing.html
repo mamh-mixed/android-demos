@@ -18,8 +18,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.route = {
         name: 'dashboard',
         path: '/',
-        title: '快捷支付管理平台',
-        subtitle: '上海讯联数据服务有限公司'
+        title: '云收银平台',
+        subtitle: '扫码支付，公众号支付，企业付款，云收银客户端（桌面版/iOS App/Andriod App/扫固定码），绑定支付（市场模式/商户模式），Apple Pay，直接支付'
       };
     });
     //
@@ -59,6 +59,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '机构商户'
       };
     });
+
+    page('/config/upload', function() {
+      app.route = {
+        name: 'config.upload',
+        path: '/config/upload',
+        title: '批量导入',
+        subtitle: '批量导入'
+      };
+    });
     page('/config/chanMers', function() {
       app.route = {
         name: 'config.chanMers',
@@ -67,6 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '渠道商户'
       };
     });
+    
     page('/config/routes2/:merId', function(data) {
       app.route = {
         name: 'config.routes2',
@@ -209,19 +219,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         subtitle: '快捷支付路由策略',
       };
     });
+
     page('/404', '/');
     page('*', '/404');
-
-    page('/config/upload', function() {
-      app.route = {
-        name: 'config.upload',
-        path: '/config/upload',
-        title: '批量导入',
-        subtitle: '批量导入'
-      };
-    });
-
-
 
     page({
       hashbang: true

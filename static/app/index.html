@@ -6,7 +6,7 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Polymer Starter Kit" />
-  <title>快捷支付管理平台</title>
+  <title>云收银平台</title>
   <!-- Place favicon.ico in the `app/` directory -->
 
   <!-- Chrome for Android theme color -->
@@ -56,7 +56,7 @@
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
           <img src="images/logo2.svg" alt="云收银" class="logo">
-          <div class="app-name">快捷支付管理平台</div>
+          <div class="app-name">云收银平台</div>
         </paper-toolbar>
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
           <template is="dom-repeat" items="{{menus}}" as="menu">
@@ -86,12 +86,10 @@
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
 
-          <div>欢迎您，<span>{{nickName}}</span></div>
-          <paper-button id="loginBtn" on-tap="logintHandle">登录</paper-button>
-          <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
           <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
+          <div>欢迎您，<span>{{nickName}}</span></div>
+          <paper-icon-button id="loginBtn"  icon="icons:account-box" on-tap="logoutHandle">登录</paper-icon-button>
+          <paper-icon-button id="logoutBtn"  icon="icons:exit-to-app" on-tap="logoutHandle">登录fff</paper-icon-button>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
@@ -218,7 +216,6 @@
     <iron-ajax  id="agentAjax" method="GET" url="/api/agent.json" handle-as="json" debounce-duration="1000" on-response="handleQueryResponse"></iron-ajax>
     <iron-ajax  id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax  id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
-  </template>
   </template>
 
   <!-- build:js scripts/app.js -->

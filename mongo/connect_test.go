@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"fmt"
+	"net/url"
 	"testing"
 	"time"
 
@@ -47,4 +48,18 @@ func TestConnect(t *testing.T) {
 
 		time.Sleep(time.Second)
 	}
+}
+
+func TestInsertURLValues(t *testing.T) {
+	c := database.C("test.urlValues")
+
+	v := &url.Values{}
+	v.Set("key", "Values2")
+	v.Set("timestamp", time.Now().String())
+
+	err := c.Insert(v)
+	if err != nil {
+		log.Errorf("insert error %s", err)
+	}
+
 }
