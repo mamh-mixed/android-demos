@@ -581,7 +581,7 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 	email := &email.Email{
 		To:    andyLi,
 		Title: promote.Title,
-		Body:  fmt.Sprintf(promote.Body, req.Payee, req.UserName, req.PhoneNum),
+		Body:  fmt.Sprintf(promote.Body, req.Payee, req.UserName, req.PhoneNum, user.MerId),
 	}
 	if err = email.Send(); err != nil {
 		return model.SYSTEM_ERROR
@@ -612,12 +612,17 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 		return model.USERNAME_PASSWORD_ERROR
 	}
 
+	log.Debugf("%+v", user)
 	// 返回
 	result = model.NewAppResult(model.SUCCESS, "")
-	result.Payee = user.Payee
-	result.BankOpen = user.BankOpen
-	result.PayeeCard = user.PayeeCard
-	result.PhoneNum = user.PhoneNum
+	settInfo := &model.SettInfo{
+		Payee:     user.Payee,
+		BankOpen:  user.BankOpen,
+		PayeeCard: user.PayeeCard,
+		PhoneNum:  user.PhoneNum,
+	}
+
+	result.SettInfo = settInfo
 	return
 }
 

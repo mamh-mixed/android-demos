@@ -17,14 +17,7 @@ var maxReportRec = 10000
 
 // tradeQuery 交易查询
 func tradeQuery(w http.ResponseWriter, q *model.QueryCondition) (ret *model.QueryResult) {
-	// 交易查询
-	if q.EndTime != "" {
-		q.EndTime += " 23:59:59"
-	}
-
-	ret = query.TransQuery(q)
-
-	return ret
+	return query.TransQuery(q)
 }
 
 // tradeReport 处理查找所有商户的请求

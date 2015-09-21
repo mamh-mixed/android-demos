@@ -41,7 +41,11 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		OrigOrderNum: params.Get("origOrderNum"),
 		Size:         size,
 		Page:         page,
-		TransStatus:  []string{params.Get("transStatus")},
+	}
+
+	transStatus := params.Get("transStatus")
+	if transStatus != "" {
+		cond.TransStatus = []string{transStatus}
 	}
 
 	ret := tradeQuery(w, cond)
