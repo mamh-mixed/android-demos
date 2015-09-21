@@ -168,8 +168,8 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 	return ts, err
 }
 
-// IsSuccessSettOrder 判断是否成功的结算订单号
-func (col *transCollection) IsSuccessSettOrder(merId, settOrderNum string) (bool, error) {
+// GetBySettOrder 由结算订单号随机获取一条交易信息
+func (col *transCollection) GetBySettOrder(merId, settOrderNum string) (*model.Trans, error) {
 	q := bson.M{
 		"merId":        merId,
 		"transType":    model.PayTrans,
@@ -177,16 +177,9 @@ func (col *transCollection) IsSuccessSettOrder(merId, settOrderNum string) (bool
 		"settOrderNum": settOrderNum,
 	}
 
-	count, err := database.C(col.name).Find(q).Count()
-	if err != nil {
-		return false, err
-	}
-
-	if count > 0 {
-		return true, nil
-	}
-
-	return false, nil
+	result := new(model.Trans)
+	err := database.C(col.name).Find(q).One(result)
+	return result, err
 }
 
 // FindRefundTrans 查找某个订单成功的退款
@@ -362,7 +355,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		find["merName"] = bson.RegEx{q.MerName, "."}
 	}
 	find["transType"] = q.TransType
-	find["$or"] = []bson.M{bson.M{"transStatus": q.TransStatus}, bson.M{"refundStatus": q.RefundStatus}}
+	find["$or"] = []bson.M{bson.M{"transStatus": bson.M{"$in": q.TransStatus}}, bson.M{"refundStatus": q.RefundStatus}}
 
 	// 计算total
 	var total = struct {

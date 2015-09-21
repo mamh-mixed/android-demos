@@ -272,18 +272,21 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 		var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
 		// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 		for i, d := range interval {
-			nowT, err := mongo.SpTransColl.FindOne(t.MerId, t.OrderNum)
-			if err != nil {
-				log.Errorf("find trans error: %s", err)
-				time.Sleep(time.Second * d)
-				continue
-			}
+			// 跳过第一次
+			if i != 0 {
+				nowT, err := mongo.SpTransColl.FindOne(t.MerId, t.OrderNum)
+				if err != nil {
+					log.Errorf("find trans error: %s", err)
+					time.Sleep(time.Second * d)
+					continue
+				}
 
-			// 假如在发送时，交易的状态改变了
-			if nowT.TransStatus != t.TransStatus {
-				log.Warn("merId=%s, orderNum=%s, trans status change from %s to %s", t.MerId, t.OrderNum, t.TransStatus, nowT.TransStatus)
-				nr.Remark = "transStatus_change"
-				break
+				// 假如在发送时，交易的状态改变了
+				if nowT.TransStatus != t.TransStatus {
+					log.Warnf("merId=%s, orderNum=%s, trans status change from %s to %s", t.MerId, t.OrderNum, t.TransStatus, nowT.TransStatus)
+					nr.Remark = "transStatus_change"
+					break
+				}
 			}
 
 			log.Infof("merId=%s,orderNum=%s,url=%s, send notify %d times", ret.Mchntid, ret.OrderNum, t.NotifyUrl, i+1)
