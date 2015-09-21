@@ -2,11 +2,11 @@ package model
 
 import (
 	"encoding/json"
-	"strings"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
+	"strings"
 )
 
 // busiType
@@ -246,37 +246,77 @@ func (ret *ScanPayResponse) SignMsg() string {
 	return genSignMsg(ret)
 }
 
-// MarshalGoods 将商品详情解析成字符json字符串
-// 格式: 商品名称,价格,数量;商品名称,价格,数量;...
-func (s *ScanPayRequest) MarshalGoods() string {
+func (s *ScanPayRequest) WxpMarshalGoods() string {
 
-	if s.GoodsInfo == "" {
-		return ""
+	goods, err := marshalGoods(s.GoodsInfo)
+	if err != nil {
+		return s.GoodsInfo // 假如格式错误，直接透传给微信
 	}
 
-	goods := strings.Split(s.GoodsInfo, ";")
-	gs := make([]interface{}, 0, len(goods))
-
-	for i, v := range goods {
-		good := strings.Split(v, ",")
-		if len(good) != 3 {
-			return ""
+	var goodsName []string
+	if len(goods) > 0 {
+		for _, v := range goods {
+			goodsName = append(goodsName, v.GoodsName)
 		}
-		g := &struct {
-			GoodsId   int    `json:"goodsId"`
-			GoodsName string `json:"goodsName"`
-			Price     string `json:"price"`
-			Quantity  string `json:"quantity"`
-		}{
-			i, good[0], good[1], good[2],
-		}
-		gs = append(gs, g)
+		return strings.Join(goodsName, ",")
 	}
-	formated, err := json.Marshal(gs)
+
+	// 假如商品详细为空，送配置的商品名称
+	return s.Subject
+}
+
+func (s *ScanPayRequest) AlpMarshalGoods() string {
+
+	goods, err := marshalGoods(s.GoodsInfo)
 	if err != nil {
 		return ""
 	}
-	return string(formated)
+
+	if len(goods) > 0 {
+		gbs, err := json.Marshal(goods)
+		if err != nil {
+			log.Errorf("goodsInfo marshal error:%s", err)
+			return ""
+		}
+		return string(gbs)
+	}
+
+	return ""
+}
+
+// marshalGoods 将商品详情解析
+// 格式: 商品名称,价格,数量;商品名称,价格,数量;...
+func marshalGoods(goodsInfo string) ([]goodsDetail, error) {
+
+	var gs []goodsDetail
+
+	if strings.TrimSpace(goodsInfo) == "" {
+		return gs, nil
+	}
+
+	goods := strings.Split(goodsInfo, ";")
+	for i, v := range goods {
+		if i == len(goods)-1 && v == "" {
+			continue
+		}
+		good := strings.Split(v, ",")
+		if len(good) != 3 {
+			return nil, fmt.Errorf("%s", "goodsInfo format error")
+		}
+		g := goodsDetail{
+			GoodsId: i, GoodsName: good[0], Price: good[1], Quantity: good[2],
+		}
+		gs = append(gs, g)
+	}
+
+	return gs, nil
+}
+
+type goodsDetail struct {
+	GoodsId   int    `json:"goodsId"`
+	GoodsName string `json:"goodsName"`
+	Price     string `json:"price"`
+	Quantity  string `json:"quantity"`
 }
 
 // genSignMsg 获取字符串签名字段
