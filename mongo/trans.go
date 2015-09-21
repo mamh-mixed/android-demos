@@ -290,8 +290,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 	// or 退款的和成功的
 	or := []bson.M{}
-	if q.TransStatus != "" {
-		or = append(or, bson.M{"transStatus": q.TransStatus})
+	if len(q.TransStatus) != 0 {
+		or = append(or, bson.M{"transStatus": bson.M{"$in": q.TransStatus}})
 	}
 	if q.RefundStatus != 0 {
 		or = append(or, bson.M{"refundStatus": q.RefundStatus})

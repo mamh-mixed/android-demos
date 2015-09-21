@@ -424,9 +424,9 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	switch req.Status {
 	case "all":
 	case "success":
-		q.TransStatus = model.TransSuccess
+		q.TransStatus = []string{model.TransSuccess}
 	case "fail":
-		q.TransStatus = model.TransFail
+		q.TransStatus = []string{model.TransFail, model.TransHandling}
 	}
 
 	trans, total, err := mongo.SpTransColl.Find(q)

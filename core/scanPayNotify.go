@@ -259,11 +259,6 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 	}
 	parms := signContent + "&sign=" + sign
 
-	// bs, err := json.Marshal(ret)
-	// if err != nil {
-	// 	log.Errorf("json marshal error: %s", err)
-	// 	return
-	// }
 	nr.ToMerMsg = parms
 	notifyUrl := t.NotifyUrl
 	if strings.Contains(notifyUrl, "?") {
