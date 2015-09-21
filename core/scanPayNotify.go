@@ -281,6 +281,7 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 
 			// 假如在发送时，交易的状态改变了
 			if nowT.TransStatus != t.TransStatus {
+				log.Warn("merId=%s, orderNum=%s, trans status change from %s to %s", t.MerId, t.OrderNum, t.TransStatus, nowT.TransStatus)
 				nr.Remark = "transStatus_change"
 				break
 			}
