@@ -40,6 +40,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		VeriCode:   req.VeriCode,
 		TradeFrom:  req.TradeFrom,
 		NotifyUrl:  req.NotifyUrl,
+		Attach:     req.Attach,
 	}
 
 	// 网页授权获取token和openid
@@ -271,6 +272,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		GoodsInfo:  req.GoodsInfo,
 		NotifyUrl:  req.NotifyUrl,
 		TradeFrom:  req.TradeFrom,
+		Attach:     req.Attach,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
