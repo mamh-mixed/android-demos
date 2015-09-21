@@ -5,12 +5,13 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"net/http"
 	"net/url"
 	"sort"
 	"strconv"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 )
 
 var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"
@@ -125,6 +126,10 @@ func getOrderHandle(w http.ResponseWriter, r *http.Request) {
 
 // billHandle 获取账单信息
 func billHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
@@ -231,6 +236,10 @@ func updateSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 
 // getSettInfoHandle 获取清算帐号信息
 func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
