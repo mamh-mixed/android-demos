@@ -23,6 +23,7 @@ type user struct{}
 var User user
 var timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
 var dateRegexp = regexp.MustCompile(`^\d{8}$`)
+var monthRegexp = regexp.MustCompile(`^\d{6}$`)
 
 // register 注册
 func (u *user) register(req *reqParams) (result *model.AppResult) {
@@ -389,7 +390,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 		return model.PARAMS_EMPTY
 	}
 
-	if !dateRegexp.MatchString(req.Date) {
+	if !monthRegexp.MatchString(req.Date) {
 		return model.TIME_ERROR
 	}
 
@@ -410,12 +411,28 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
 	result = model.NewAppResult(model.SUCCESS, "")
 	date := req.Date
-	date = date[:4] + "-" + date[4:6] + "-" + date[6:8]
+	yearNum, _ := strconv.Atoi(date[:4])
+	month := date[4:6]
+	day := ""
+	if month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12" {
+		day = "31"
+	} else if month == "02" {
+		if (yearNum%4 == 0 && yearNum%100 != 0) || yearNum%400 == 0 {
+			day = "29"
+		} else {
+			day = "28"
+		}
+	} else {
+		day = "30"
+	}
+
+	startDate := date[:4] + "-" + date[4:6] + "-" + "01"
+	endDate := date[:4] + "-" + date[4:6] + "-" + day
 
 	q := &model.QueryCondition{
 		MerId:     user.MerId,
-		StartTime: date + " 00:00:00",
-		EndTime:   date + " 23:59:59",
+		StartTime: startDate + " 00:00:00",
+		EndTime:   endDate + " 23:59:59",
 		Size:      15,
 		Page:      1,
 		Skip:      req.Index,
