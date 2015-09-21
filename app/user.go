@@ -583,9 +583,12 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 		Title: promote.Title,
 		Body:  fmt.Sprintf(promote.Body, req.Payee, req.Email, req.PhoneNum, user.MerId),
 	}
-	if err = email.Send(); err != nil {
-		return model.SYSTEM_ERROR
-	}
+
+	go func() {
+		if err = email.Send(); err != nil {
+			log.Errorf("send email error: %s", err)
+		}
+	}()
 
 	return model.SUCCESS1
 }

@@ -337,6 +337,9 @@ func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
 	ret.OrderNum = t.OrderNum
 	ret.Chcd = t.ChanCode
 	ret.Txamt = fmt.Sprintf("%012d", t.TransAmt)
+	ret.Attach = t.Attach
+	ret.GoodsInfo = t.GoodsInfo
+	// ret.Attach = t
 	// ret.MerDiscount = t.MerDiscount
 	// ret.ChcdDiscount = t.ChanDiscount
 	// ret.QrCode = t.QrCode

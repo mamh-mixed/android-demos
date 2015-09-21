@@ -40,6 +40,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		VeriCode:   req.VeriCode,
 		TradeFrom:  req.TradeFrom,
 		NotifyUrl:  req.NotifyUrl,
+		Attach:     req.Attach,
 	}
 
 	// 网页授权获取token和openid
