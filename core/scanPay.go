@@ -34,6 +34,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransType:  model.PayTrans,
 		Busicd:     req.Busicd,
 		AgentCode:  req.AgentCode,
+		GoodsInfo:  req.GoodsInfo,
 		Terminalid: req.Terminalid,
 		TransAmt:   req.IntTxamt,
 		ChanCode:   channel.ChanCodeWeixin,
@@ -837,6 +838,7 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.GroupCode = orig.GroupCode
 	current.GroupName = orig.GroupName
 	current.ShortName = orig.ShortName
+	current.ConsumerAccount = orig.ConsumerAccount
 }
 
 func signWithMD5(s interface{}, key string) string {
