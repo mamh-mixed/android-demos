@@ -581,7 +581,7 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 	email := &email.Email{
 		To:    andyLi,
 		Title: promote.Title,
-		Body:  fmt.Sprintf(promote.Body, req.Payee, req.UserName, req.PhoneNum, user.MerId),
+		Body:  fmt.Sprintf(promote.Body, req.Payee, req.Email, req.PhoneNum, user.MerId),
 	}
 	if err = email.Send(); err != nil {
 		return model.SYSTEM_ERROR
