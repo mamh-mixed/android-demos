@@ -65,7 +65,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, IsDebug: false, fileName: key}
+	ip := importer{Sheets: file.Sheets, fileName: key}
 	err = ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -76,32 +76,35 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 }
 
 type importer struct {
+	A        *operation
+	U        *operation
+	Sheets   []*xlsx.Sheet
+	rowData  []*rowData
+	cache    *cache
+	fileName string
+	IsDebug  bool // 是否调试模式，如果是，会打印结果，不会入库
+}
+
+type cache struct {
+	ChanMerCache map[string]*model.ChanMer
+	AgentCache   map[string]*model.Agent
+	GroupCache   map[string]*model.Group
+}
+
+func (c *cache) Init() {
+	c.ChanMerCache = make(map[string]*model.ChanMer)
+	c.AgentCache = make(map[string]*model.Agent)
+	c.GroupCache = make(map[string]*model.Group)
+}
+
+type operation struct {
 	Mers                  []model.Merchant
 	ChanMers              []model.ChanMer
 	RouterPolicys         []model.RouterPolicy
-	Sheets                []*xlsx.Sheet
-	rowData               []*rowData
-	chanMerCache          map[string]*model.ChanMer
-	agentCache            map[string]*model.Agent
-	groupCache            map[string]*model.Group
-	fileName              string
 	IsSaveMersSuccess     bool
 	IsSaveChanMersSuccess bool
 	IsSaveRouterSuccess   bool
-	IsDebug               bool // 是否调试模式，如果是，会打印结果，不会入库
-	// A                     *operation
-	// U                     *operation
 }
-
-// type operation struct {
-// 	Mers                  []model.Merchant
-// 	ChanMers              []model.ChanMer
-// 	RouterPolicys         []model.RouterPolicy
-// 	Data                  []*rowData
-// 	IsSaveMersSuccess     bool
-// 	IsSaveChanMersSuccess bool
-// 	IsSaveRouterSuccess   bool
-// }
 
 // DoImport 执行导入操作
 func (i *importer) DoImport() error {
@@ -116,11 +119,9 @@ func (i *importer) DoImport() error {
 	log.Debugf("read over, len(row)=%d", len(i.rowData))
 
 	// 成功读取，初始化
-	i.chanMerCache = make(map[string]*model.ChanMer)
-	i.agentCache = make(map[string]*model.Agent)
-	i.groupCache = make(map[string]*model.Group)
-	// i.A = new(operation)
-	// i.U = new(operation)
+	i.cache = new(cache)
+	i.cache.Init()
+	i.A, i.U = new(operation), new(operation)
 
 	// 数据处理，验证等
 	if err := i.dataHandle(); err != nil {
@@ -178,32 +179,33 @@ func (i *importer) dataHandle() error {
 			if err = insertValidate(r); err != nil {
 				return err
 			}
-			// i.A.Data = append(i.A.Data, r)
 		case "U":
-			return fmt.Errorf("%s", "暂不支持U操作，马上上线，敬请期待！")
+			// return fmt.Errorf("%s", "暂不支持U操作，马上上线，敬请期待！")
 			// 修改不存在用户，报错
 			if err != nil {
 				return fmt.Errorf("商户：%s 不存在", r.MerId)
 			}
-			log.Debug(mer)
-			// i.U.Data = append(i.U.Data, r)
+			if err = updateValidate(r); err != nil {
+				return err
+			}
+			r.Mer = mer
 		default:
 			// D 先不做删除
 			return fmt.Errorf("暂不支持 %s 操作。", r.Operator)
 		}
 
 		// 处理代理、集团
-		if err = handleAgentAndGroup(r, i.agentCache, i.groupCache); err != nil {
+		if err = handleAgentAndGroup(r, i.cache); err != nil {
 			return err
 		}
 
 		// 支付宝
-		if err = handleAlpMer(r, i.chanMerCache); err != nil {
+		if err = handleAlpMer(r, i.cache); err != nil {
 			return err
 		}
 
 		// 微信
-		if err = handleWxpMer(r, i.chanMerCache); err != nil {
+		if err = handleWxpMer(r, i.cache); err != nil {
 			return err
 		}
 	}
@@ -216,6 +218,40 @@ func (i *importer) dataHandle() error {
 
 // updateValidate 更新验证
 func updateValidate(r *rowData) error {
+
+	if r.IsNeedSignStr != "" {
+		if r.IsNeedSignStr != "是" && r.IsNeedSignStr != "否" {
+			return fmt.Errorf("是否开启验签：%s 取值错误，应为【是】或【否】", r.IsNeedSignStr)
+		}
+		if r.IsNeedSignStr == "是" {
+			if r.SignKey == "" {
+				return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+			}
+			r.IsNeedSign = true
+		}
+	}
+
+	if r.IsAgentStr != "" {
+		if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
+			return fmt.Errorf("是否代理商模式：%s 取值错误，应为【是】或【否】", r.IsAgentStr)
+		}
+		if r.IsAgentStr == "是" {
+			r.IsAgent = true
+		}
+
+	}
+	if r.IsWxpCilSett != "" {
+		if r.IsWxpCilSett != "是" && r.IsWxpCilSett != "否" {
+			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsWxpCilSett)
+		}
+	}
+
+	if r.IsAlpCilSett != "" {
+		if r.IsAlpCilSett != "是" && r.IsAlpCilSett != "否" {
+			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsAlpCilSett)
+		}
+	}
+
 	return nil
 }
 
@@ -280,44 +316,53 @@ func insertValidate(r *rowData) error {
 	return nil
 }
 
-func handleAgentAndGroup(r *rowData, agentCache map[string]*model.Agent, groupCache map[string]*model.Group) error {
+func handleAgentAndGroup(r *rowData, c *cache) error {
+
 	// 验证代理
 	if r.AgentCode != "" {
-		if _, ok := agentCache[r.AgentCode]; !ok {
+		if _, ok := c.AgentCache[r.AgentCode]; !ok {
 			a, err := mongo.AgentColl.Find(r.AgentCode)
 			if err != nil {
 				return fmt.Errorf("商户：%s 代理代码(%s)不存在", r.MerId, r.AgentCode)
 			}
 			// 放入缓存
-			agentCache[r.AgentCode] = a
+			c.AgentCache[r.AgentCode] = a
 			r.AgentName = a.AgentName
 		}
 	}
 
 	// 验证集团,非空时验证
 	if r.GroupCode != "" {
-		if _, ok := groupCache[r.GroupCode]; !ok {
+		if _, ok := c.GroupCache[r.GroupCode]; !ok {
 			g, err := mongo.GroupColl.Find(r.GroupCode)
 			if err != nil {
 				return fmt.Errorf("商户：%s 集团代码(%s)不存在", r.MerId, r.GroupCode)
 			}
-			if g.AgentCode != r.AgentCode {
-				return fmt.Errorf("商户：%s 集团代码不属于该代理", r.MerId)
+
+			switch r.Operator {
+			case "A":
+				if g.AgentCode != r.AgentCode {
+					return fmt.Errorf("商户：%s 集团代码不属于该代理", r.MerId)
+				}
+			case "U":
+				if r.Mer.AgentCode != g.AgentCode {
+					return fmt.Errorf("商户：%s 集团代码不属于该代理(%s)", r.MerId, r.Mer.AgentCode)
+				}
 			}
-			groupCache[r.GroupCode] = g
+			c.GroupCache[r.GroupCode] = g
 			r.GroupName = g.GroupName
 		}
 	}
 	return nil
 }
 
-func handleAlpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
+func handleAlpMer(r *rowData, c *cache) error {
 	// 支付宝渠道商户
 	if r.AlpMerId != "" {
-		if _, ok := chanMerCache[r.AlpMerId]; !ok {
+		if _, ok := c.ChanMerCache[r.AlpMerId]; !ok {
 			alpMer, err := mongo.ChanMerColl.Find("ALP", r.AlpMerId)
 			if err == nil {
-				chanMerCache[r.AlpMerId] = alpMer
+				c.ChanMerCache[r.AlpMerId] = alpMer
 			} else {
 				// 没找到，那么认为此次操作为新增渠道商户
 				// 验证必填的信息
@@ -347,10 +392,10 @@ func handleAlpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 	return nil
 }
 
-func handleWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
+func handleWxpMer(r *rowData, c *cache) error {
 	// 微信渠道商户
 	if r.WxpSubMerId != "" {
-		if _, ok := chanMerCache[r.WxpSubMerId]; !ok {
+		if _, ok := c.ChanMerCache[r.WxpSubMerId]; !ok {
 			wxpMer, err := mongo.ChanMerColl.Find("WXP", r.WxpSubMerId)
 			if err == nil {
 				// 系统中存在这个渠道商户，校验信息是否对称
@@ -371,16 +416,16 @@ func handleWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 						return fmt.Errorf("微信商户：%s 为受理商模式", r.WxpSubMerId)
 					}
 				}
-				chanMerCache[r.WxpSubMerId] = wxpMer
+				c.ChanMerCache[r.WxpSubMerId] = wxpMer
 			} else {
 				// 系统中不存在渠道商户，那么校验必填的信息
 				if r.IsAgent {
-					if _, ok := chanMerCache[r.WxpMerId]; !ok {
+					if _, ok := c.ChanMerCache[r.WxpMerId]; !ok {
 						agent, err := mongo.ChanMerColl.Find("WXP", r.WxpMerId)
 						if err != nil {
 							return fmt.Errorf("微信商户：%s 系统中没有代码为 %s 的代理商商户", r.WxpSubMerId, r.WxpMerId)
 						}
-						chanMerCache[agent.ChanMerId] = agent
+						c.ChanMerCache[agent.ChanMerId] = agent
 					}
 				}
 				// 不是受理商模式，那么密钥必须要
@@ -415,34 +460,86 @@ func handleWxpMer(r *rowData, chanMerCache map[string]*model.ChanMer) error {
 
 func (i *importer) doDataWrap() {
 	for _, r := range i.rowData {
-		// 集团商户
-		mer := model.Merchant{}
-		mer.MerId = r.MerId
-		mer.Detail.MerName = r.MerName
-		mer.Detail.CommodityName = r.CommodityName
-		mer.Detail.ShopID = r.ShopId
-		mer.Detail.GoodsTag = r.GoodsTag
-		mer.Detail.AcctNum = r.AcctNum
-		mer.Detail.AcctName = r.AcctName
-		mer.AgentCode = r.AgentCode
-		mer.AgentName = r.AgentName
-		mer.GroupCode = r.GroupCode
-		mer.GroupName = r.GroupName
-		mer.SignKey = r.SignKey
-		mer.IsNeedSign = r.IsNeedSign
-		mer.Permission = r.Permission
-		mer.Detail.BankId = r.BankId
-		mer.Detail.City = r.City
-		mer.Detail.OpenBankName = r.BankName
-		mer.Remark = "upload-" + i.fileName
-		mer.MerStatus = "Normal"
-		i.Mers = append(i.Mers, mer)
+		switch r.Operator {
+		case "A":
+			// 集团商户
+			mer := model.Merchant{}
+			mer.MerId = r.MerId
+			mer.Detail.MerName = r.MerName
+			mer.Detail.CommodityName = r.CommodityName
+			mer.Detail.ShopID = r.ShopId
+			mer.Detail.GoodsTag = r.GoodsTag
+			mer.Detail.AcctNum = r.AcctNum
+			mer.Detail.AcctName = r.AcctName
+			mer.AgentCode = r.AgentCode
+			mer.AgentName = r.AgentName
+			mer.GroupCode = r.GroupCode
+			mer.GroupName = r.GroupName
+			mer.SignKey = r.SignKey
+			mer.IsNeedSign = r.IsNeedSign
+			mer.Permission = r.Permission
+			mer.Detail.BankId = r.BankId
+			mer.Detail.City = r.City
+			mer.Detail.OpenBankName = r.BankName
+			mer.Remark = "add-upload-" + i.fileName
+			mer.MerStatus = "Normal"
+			i.A.Mers = append(i.A.Mers, mer)
+		case "U":
+			mer := r.Mer
+			if r.MerName != "" {
+				mer.Detail.MerName = r.MerName
+			}
+			if r.CommodityName != "" {
+				mer.Detail.CommodityName = r.CommodityName
+			}
+			if r.ShopId != "" {
+				mer.Detail.ShopID = r.ShopId
+			}
+			if r.GoodsTag != "" {
+				mer.Detail.GoodsTag = r.GoodsTag
+			}
+			if r.AcctNum != "" {
+				mer.Detail.AcctNum = r.AcctNum
+			}
+			if r.AcctName != "" {
+				mer.Detail.AcctName = r.AcctName
+			}
+			if r.AgentCode != "" {
+				mer.AgentCode = r.AgentCode
+			}
+			if r.AgentName != "" {
+				mer.AgentName = r.AgentName
+			}
+			if r.GroupCode != "" {
+				mer.GroupCode = r.GroupCode
+			}
+			if r.GroupName != "" {
+				mer.GroupName = r.GroupName
+			}
+			if r.SignKey != "" {
+				mer.SignKey = r.SignKey
+			}
+			if r.IsNeedSignStr != "" {
+				mer.IsNeedSign = r.IsNeedSign
+			}
+			if r.BankId != "" {
+				mer.Detail.BankId = r.BankId
+			}
+			if r.City != "" {
+				mer.Detail.City = r.City
+			}
+			if r.BankName != "" {
+				mer.Detail.OpenBankName = r.BankName
+			}
+			mer.Remark = "update-upload-" + i.fileName
+			i.U.Mers = append(i.U.Mers, *mer)
+		}
 
 		// 渠道商户
 		// 从缓存中查找支付宝渠道商户，如果没找到，那么增加一个渠道商户，并放到缓存里
 		// 如果找到，那么不做任何事
 		if r.AlpMerId != "" {
-			if _, ok := i.chanMerCache[r.AlpMerId]; !ok {
+			if _, ok := i.cache.ChanMerCache[r.AlpMerId]; !ok {
 				alpChanMer := model.ChanMer{}
 				alpChanMer.ChanMerId = r.AlpMerId
 				alpChanMer.ChanCode = "ALP"
@@ -453,8 +550,13 @@ func (i *importer) doDataWrap() {
 					alpChanMer.SettFlag = "1"
 					alpChanMer.SettRole = "99911888" // TODO:check
 				}
-				i.ChanMers = append(i.ChanMers, alpChanMer)
-				i.chanMerCache[r.AlpMerId] = &alpChanMer
+				switch r.Operator {
+				case "A":
+					i.A.ChanMers = append(i.A.ChanMers, alpChanMer)
+				case "U":
+					i.U.ChanMers = append(i.U.ChanMers, alpChanMer)
+				}
+				i.cache.ChanMerCache[r.AlpMerId] = &alpChanMer
 			}
 			// 路由
 			alpRoute := model.RouterPolicy{}
@@ -462,20 +564,25 @@ func (i *importer) doDataWrap() {
 			alpRoute.ChanCode = alpRoute.CardBrand
 			alpRoute.MerId = r.MerId
 			alpRoute.ChanMerId = r.AlpMerId
-			i.RouterPolicys = append(i.RouterPolicys, alpRoute)
+			switch r.Operator {
+			case "A":
+				i.A.RouterPolicys = append(i.A.RouterPolicys, alpRoute)
+			case "U":
+				i.U.RouterPolicys = append(i.U.RouterPolicys, alpRoute)
+			}
 		}
 
 		// 从缓存中查找微信渠道商户，如果没找到，那么增加一个渠道商户，并放到缓存里
 		// 如果找到，那么不做任何事
 		if r.WxpSubMerId != "" {
-			if _, ok := i.chanMerCache[r.WxpSubMerId]; !ok {
+			if _, ok := i.cache.ChanMerCache[r.WxpSubMerId]; !ok {
 				wxpChanMer := model.ChanMer{}
 				wxpChanMer.ChanMerId = r.WxpSubMerId
 				wxpChanMer.ChanCode = "WXP"
 				wxpChanMer.SignKey = r.WxpMd5
 				if r.IsAgent {
 					wxpChanMer.IsAgentMode = true
-					wxpChanMer.AgentMer = i.chanMerCache[r.WxpMerId]
+					wxpChanMer.AgentMer = i.cache.ChanMerCache[r.WxpMerId]
 				}
 				wxpChanMer.AcqFee = r.WxpAcqFeeF
 				wxpChanMer.MerFee = r.WxpMerFeeF
@@ -483,8 +590,13 @@ func (i *importer) doDataWrap() {
 					wxpChanMer.SettFlag = "1"
 					wxpChanMer.SettRole = "99911888" // TODO:check
 				}
-				i.ChanMers = append(i.ChanMers, wxpChanMer)
-				i.chanMerCache[r.WxpSubMerId] = &wxpChanMer
+				switch r.Operator {
+				case "A":
+					i.A.ChanMers = append(i.A.ChanMers, wxpChanMer)
+				case "U":
+					i.U.ChanMers = append(i.U.ChanMers, wxpChanMer)
+				}
+				i.cache.ChanMerCache[r.WxpSubMerId] = &wxpChanMer
 			}
 			// 路由
 			wxpRoute := model.RouterPolicy{}
@@ -492,60 +604,94 @@ func (i *importer) doDataWrap() {
 			wxpRoute.ChanCode = wxpRoute.CardBrand
 			wxpRoute.MerId = r.MerId
 			wxpRoute.ChanMerId = r.WxpSubMerId
-			i.RouterPolicys = append(i.RouterPolicys, wxpRoute)
+			switch r.Operator {
+			case "A":
+				i.A.RouterPolicys = append(i.A.RouterPolicys, wxpRoute)
+			case "U":
+				i.U.RouterPolicys = append(i.U.RouterPolicys, wxpRoute)
+			}
 		}
+	}
+}
+
+func (o *operation) print() {
+	for _, m := range o.Mers {
+		log.Debugf("%+v", m)
+	}
+	for _, c := range o.ChanMers {
+		log.Debugf("%+v", c)
+	}
+	for _, r := range o.RouterPolicys {
+		log.Debugf("%+v", r)
 	}
 }
 
 func (i *importer) persist() error {
 
 	if i.IsDebug {
-		for _, m := range i.Mers {
-			log.Debugf("%+v", m)
-		}
-		for _, c := range i.ChanMers {
-			log.Debugf("%+v", c)
-		}
-		for _, r := range i.RouterPolicys {
-			log.Debugf("%+v", r)
-		}
+		i.A.print()
+		i.U.print()
 		return nil
 	}
-
-	// save mers
-	err := mongo.MerchantColl.BatchAdd(i.Mers)
-	if err != nil {
-		return err
-	}
-	i.IsSaveMersSuccess = true
-
-	// save chanMers
-	// 数组长度可能为空
-	if len(i.ChanMers) > 0 {
-		err = mongo.ChanMerColl.BatchAdd(i.ChanMers)
+	var err error
+	// ===============ADD==============
+	if len(i.A.Mers) > 0 {
+		err = mongo.MerchantColl.BatchAdd(i.A.Mers)
 		if err != nil {
 			return err
 		}
-		i.IsSaveChanMersSuccess = true
+		i.A.IsSaveMersSuccess = true
 	}
 
-	// save routers
-	// 数组长度可能为空
-	if len(i.RouterPolicys) > 0 {
-		err = mongo.RouterPolicyColl.BatchAdd(i.RouterPolicys)
+	if len(i.A.ChanMers) > 0 {
+		err = mongo.ChanMerColl.BatchAdd(i.A.ChanMers)
 		if err != nil {
 			return err
 		}
-		i.IsSaveRouterSuccess = true
+		i.A.IsSaveChanMersSuccess = true
 	}
+
+	if len(i.A.RouterPolicys) > 0 {
+		err = mongo.RouterPolicyColl.BatchAdd(i.A.RouterPolicys)
+		if err != nil {
+			return err
+		}
+		i.A.IsSaveRouterSuccess = true
+	}
+
+	// ===============UPD==============
+	for _, m := range i.U.Mers {
+		err = mongo.MerchantColl.Update(&m)
+		if err != nil {
+			return err
+		}
+	}
+	i.U.IsSaveMersSuccess = true
+
+	for _, c := range i.U.ChanMers {
+		err = mongo.ChanMerColl.Upsert(&c)
+		if err != nil {
+			return err
+		}
+	}
+	i.U.IsSaveChanMersSuccess = true
+
+	for _, r := range i.U.RouterPolicys {
+		err = mongo.RouterPolicyColl.Insert(&r)
+		if err != nil {
+			return err
+		}
+	}
+	i.U.IsSaveRouterSuccess = true
 
 	return nil
 }
 
 func (i *importer) rollback() {
-	if i.IsSaveMersSuccess {
+	// ===============ADD==============
+	if i.A.IsSaveMersSuccess {
 		var merIds []string
-		for _, m := range i.Mers {
+		for _, m := range i.A.Mers {
 			merIds = append(merIds, m.MerId)
 		}
 		err := mongo.MerchantColl.BatchRemove(merIds)
@@ -553,18 +699,20 @@ func (i *importer) rollback() {
 			log.Errorf("rollback merchant error:%s", err)
 		}
 	}
-	if i.IsSaveChanMersSuccess {
-		err := mongo.ChanMerColl.BatchRemove(i.ChanMers)
+	if i.A.IsSaveChanMersSuccess {
+		err := mongo.ChanMerColl.BatchRemove(i.A.ChanMers)
 		if err != nil {
 			log.Errorf("rollback chanMer error:%s", err)
 		}
 	}
-	if i.IsSaveRouterSuccess {
-		err := mongo.RouterPolicyColl.BatchRemove(i.RouterPolicys)
+	if i.A.IsSaveRouterSuccess {
+		err := mongo.RouterPolicyColl.BatchRemove(i.A.RouterPolicys)
 		if err != nil {
 			log.Errorf("rollback routerPolicy error:%s", err)
 		}
 	}
+	// ===============UPD==============
+	// TODO: update的操作如何回滚
 }
 
 func (i *importer) cellMapping(cells []*xlsx.Cell) error {
@@ -722,6 +870,7 @@ type rowData struct {
 	AlpMerFeeF float32
 	WxpAcqFeeF float32
 	WxpMerFeeF float32
+	Mer        *model.Merchant
 }
 
 func resultBody(msg string, status int) []byte {

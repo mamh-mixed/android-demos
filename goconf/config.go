@@ -17,6 +17,7 @@ type ConfigStruct struct {
 		TCPAddr          string
 		TCPGBKAddr       string
 		DefaultCacheTime Duration
+		NotifyURL        string
 	}
 
 	Mongo struct {
@@ -25,8 +26,10 @@ type ConfigStruct struct {
 	}
 
 	CILOnline struct {
-		Host             string
-		Port             int
+		Host       string
+		Port       int
+		ServerCert string
+		// long connect
 		QueueSize        int
 		InitWindowSize   int // 全双工 pipeline 方式，接收数据后，找到对应的请求者
 		KeepaliveTime    Duration
@@ -55,6 +58,8 @@ type ConfigStruct struct {
 
 // postProcess 后续处理
 func (c *ConfigStruct) postProcess() {
+	Config.CILOnline.ServerCert = util.WorkDir + "/" + Config.CILOnline.ServerCert
+
 	Config.CFCA.CheckSignPublicKey = util.WorkDir + "/" + Config.CFCA.CheckSignPublicKey
 
 	Config.AlipayScanPay.AlipayPubKey = util.WorkDir + "/" + Config.AlipayScanPay.AlipayPubKey

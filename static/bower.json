@@ -12,7 +12,7 @@
     "paper-elements": "PolymerElements/paper-elements#1.0.1",
     "platinum-elements": "PolymerElements/platinum-elements#1.0.1",
     "plupload": "moxiecode/plupload#v2.1.8",
-    "qiniu-js-sdk": "qiniu/js-sdk#v1.0.7-beta",
+    "qiniu-js-sdk": "qiniu/js-sdk#master",
     "qrcode.js": "davidshimjs/qrcodejs",
     "webcomponentsjs": "~0.7.7",
     "wxy-router": "wxy-elements/wxy-router"

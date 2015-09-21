@@ -77,6 +77,16 @@ func (col *chanMerCollection) Update(c *model.ChanMer) error {
 	return database.C(col.name).Update(bo, c)
 }
 
+// Upsert
+func (col *chanMerCollection) Upsert(c *model.ChanMer) error {
+	bo := bson.M{
+		"chanCode":  c.ChanCode,
+		"chanMerId": c.ChanMerId,
+	}
+	_, err := database.C(col.name).Upsert(bo, c)
+	return err
+}
+
 // FindByCode 得到某个渠道所有商户
 func (col *chanMerCollection) FindByCode(chanCode string) ([]*model.ChanMer, error) {
 	var cs []*model.ChanMer
