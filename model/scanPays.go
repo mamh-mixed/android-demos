@@ -205,6 +205,7 @@ type ScanPayResponse struct {
 	PayJson         *PayJson `json:"payjson,omitempty" url:"-"`                                 // json字符串
 	PayJsonStr      string   `json:"-" url:"payjson,omitempty"`                                 // 签名时用
 	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty"`
+	GoodsInfo       string   `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty"`
 	Attach          string   `json:"attach,omitempty" url:"attach,omitempty"`
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-"` // 渠道详细应答码
