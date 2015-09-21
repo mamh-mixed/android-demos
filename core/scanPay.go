@@ -39,6 +39,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ChanCode:   channel.ChanCodeWeixin,
 		VeriCode:   req.VeriCode,
 		TradeFrom:  req.TradeFrom,
+		NotifyUrl:  req.NotifyUrl,
 	}
 
 	// 网页授权获取token和openid
