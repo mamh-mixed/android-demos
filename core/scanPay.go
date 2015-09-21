@@ -272,6 +272,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		GoodsInfo:  req.GoodsInfo,
 		NotifyUrl:  req.NotifyUrl,
 		TradeFrom:  req.TradeFrom,
+		Attach:     req.Attach,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
