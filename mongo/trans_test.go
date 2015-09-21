@@ -13,7 +13,7 @@ func TestTransFindAndGroupBy(t *testing.T) {
 	q := &model.QueryCondition{
 		StartTime:    "2015-08-27 00:00:00",
 		EndTime:      "2015-08-29 00:00:00",
-		TransStatus:  model.TransSuccess,
+		TransStatus:  []string{model.TransSuccess},
 		TransType:    model.PayTrans,
 		RefundStatus: model.TransRefunded,
 		// MerIds:       []string{"999118880000312"},
@@ -33,11 +33,12 @@ func TestTransFindAndGroupBy(t *testing.T) {
 func TestFindTransQuery(t *testing.T) {
 
 	q := &model.QueryCondition{
-		StartTime: "2015-07-01 00:00:00",
-		EndTime:   "2015-07-30 00:00:00",
-		MerId:     "100000000000203",
-		Page:      1,
-		Size:      10,
+		StartTime: "2015-09-01 00:00:00",
+		EndTime:   "2015-09-30 23:59:59",
+		// MerId:       "100000000000203",
+		Page: 1,
+		Size: 10,
+		// TransStatus: []string{model.TransSuccess},
 	}
 
 	transInfo, total, err := SpTransColl.Find(q)

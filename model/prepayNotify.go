@@ -9,6 +9,7 @@ type NotifyRecord struct {
 	IsToMerFail bool   `bson:"isToMerFail"`        // 是否发送失败
 	CreateTime  string `bson:"createTime"`
 	UpdateTime  string `bson:"updateTime,omitempty"`
+	Remark      string `bson:"remark,omitempty"`
 }
 
 // AlipayNotifyReq 预下单用户支付完成后，支付宝会把相关支付结果和用户信息发送给商户，商户需要接收处理，并返回应答

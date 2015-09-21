@@ -17,7 +17,7 @@ const (
 	Refd = "REFD"
 	Void = "VOID"
 	Canc = "CANC"
-	Qyfk = "QYFK" // 企业付款
+	Qyfk = "QYZF" // 企业付款
 	Jszf = "JSZF"
 )
 
@@ -27,7 +27,7 @@ type QueryCondition struct {
 	MerId        string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds       []string `json:"-"`
 	AgentCode    string   `json:"agentCode,omitempty"`
-	TransStatus  string   `json:"transStatus,omitempty"`
+	TransStatus  []string `json:"transStatus,omitempty"`
 	RefundStatus int      `json:"refundStatus,omitempty"`
 	TransType    int      `json:"transType,omitempty"`
 	StartTime    string   `json:"startTime,omitempty"`

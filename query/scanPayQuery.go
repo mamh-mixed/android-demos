@@ -29,7 +29,7 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 	// find
 	trans, count, err := mongo.SpTransColl.Find(&model.QueryCondition{
 		TradeFrom:   "wap",
-		TransStatus: model.TransSuccess,
+		TransStatus: []string{model.TransSuccess},
 		Busicd:      model.Jszf,
 		MerId:       m.MerId,
 		Size:        150,
@@ -127,7 +127,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
 	// 设置条件过滤
-	q.TransStatus = model.TransSuccess
+	q.TransStatus = []string{model.TransSuccess}
 	q.TransType = model.PayTrans
 	q.RefundStatus = model.TransRefunded
 	// q.MerIds = merIds

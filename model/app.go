@@ -43,11 +43,15 @@ type AppResult struct {
 	Size         int         `json:"size"`
 	RefdCount    int         `json:"refdcount"`
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`
-	BankOpen     string      `json:"bank_open,omitempty"`
-	Payee        string      `json:"payee,omitempty"`
-	PayeeCard    string      `json:"payee_card,omitempty"`
-	PhoneNum     string      `json:"phone_num,omitempty"`
+	SettInfo     *SettInfo   `json:"info,omitempty"`
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
+}
+
+type SettInfo struct {
+	BankOpen  string `json:"bank_open,omitempty"`
+	Payee     string `json:"payee,omitempty"`
+	PayeeCard string `json:"payee_card,omitempty"`
+	PhoneNum  string `json:"phone_num,omitempty"`
 }
 
 // NewAppResult NewAppResult
@@ -79,7 +83,7 @@ type AppTxn struct {
 
 // AppUser 云收银用户
 type AppUser struct {
-	UserName  string `json:"userName,omitempty" bson:"userName,omitempty"`
+	UserName  string `json:"username,omitempty" bson:"userName,omitempty"`
 	Password  string `json:"-" bson:"password,omitempty"`
 	Activate  string `json:"activate,omitempty" bson:"activate,omitempty"`
 	MerId     string `json:"clientid,omitempty" bson:"merId,omitempty"`
@@ -89,7 +93,7 @@ type AppUser struct {
 	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"bankOpen,omitempty"`
 	Payee     string `json:"payee,omitempty" bson:"payee,omitempty"`
-	PayeeCard string `json:"payee_card,omitempty" bson:"payeeCard,omitempty`
+	PayeeCard string `json:"payee_card,omitempty" bson:"payeeCard,omitempty"`
 	PhoneNum  string `json:"phone_num,omitempty" bson:"phoneNum,omitempty"`
 }
 

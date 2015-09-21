@@ -41,7 +41,11 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		OrigOrderNum: params.Get("origOrderNum"),
 		Size:         size,
 		Page:         page,
-		TransStatus:  params.Get("transStatus"),
+	}
+
+	transStatus := params.Get("transStatus")
+	if transStatus != "" {
+		cond.TransStatus = []string{transStatus}
 	}
 
 	ret := tradeQuery(w, cond)
@@ -75,7 +79,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		IsForReport:  true,
 		Page:         1,
 		RefundStatus: model.TransRefunded,
-		TransStatus:  model.TransSuccess,
+		TransStatus:  []string{model.TransSuccess},
 	}
 
 	tradeReport(w, cond, filename)

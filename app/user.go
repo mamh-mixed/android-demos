@@ -91,6 +91,7 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 			return model.SYSTEM_ERROR
 		}
 		user.UniqueId = merchant.UniqueId
+		user.AgentCode = merchant.AgentCode
 	}
 
 	result = &model.AppResult{
@@ -234,7 +235,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	// 创建商户
 	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
 	randStr := fmt.Sprintf("%d", rand.Int31())
-	permission := []string{"PAUT", "PURC", "CANC", "VOID", "INQY", "REFD", "JSZF", "QYFK"}
+	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
 	merchant := &model.Merchant{
 		AgentCode:  "99911888",
 		AgentName:  "讯联O2O机构",
@@ -440,9 +441,9 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	switch req.Status {
 	case "all":
 	case "success":
-		q.TransStatus = model.TransSuccess
+		q.TransStatus = []string{model.TransSuccess}
 	case "fail":
-		q.TransStatus = model.TransFail
+		q.TransStatus = []string{model.TransFail, model.TransHandling}
 	}
 
 	trans, total, err := mongo.SpTransColl.Find(q)
@@ -580,7 +581,7 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 	email := &email.Email{
 		To:    andyLi,
 		Title: promote.Title,
-		Body:  fmt.Sprintf(promote.Body, req.Payee, req.UserName, req.PhoneNum),
+		Body:  fmt.Sprintf(promote.Body, req.Payee, req.UserName, req.PhoneNum, user.MerId),
 	}
 	if err = email.Send(); err != nil {
 		return model.SYSTEM_ERROR
@@ -611,12 +612,17 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 		return model.USERNAME_PASSWORD_ERROR
 	}
 
+	log.Debugf("%+v", user)
 	// 返回
 	result = model.NewAppResult(model.SUCCESS, "")
-	result.Payee = user.Payee
-	result.BankOpen = user.BankOpen
-	result.PayeeCard = user.PayeeCard
-	result.PhoneNum = user.PhoneNum
+	settInfo := &model.SettInfo{
+		Payee:     user.Payee,
+		BankOpen:  user.BankOpen,
+		PayeeCard: user.PayeeCard,
+		PhoneNum:  user.PhoneNum,
+	}
+
+	result.SettInfo = settInfo
 	return
 }
 

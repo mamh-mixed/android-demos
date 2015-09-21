@@ -148,8 +148,8 @@ func ProcessAlipayNotify(params url.Values) error {
 		OrderNum:    t.OrderNum,
 		FromChanMsg: string(reqBytes),
 	}
-	// 可能需要通知接入方
-	if t.NotifyUrl != "" {
+	// 订单状态正常且有填写通知地址
+	if t.NotifyUrl != "" && t.TransStatus == model.TransSuccess {
 		sendNotifyToMerchant(t, nr, ret)
 	}
 	mongo.NotifyRecColl.Add(nr)
@@ -227,8 +227,8 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		OrderNum:    t.OrderNum,
 		FromChanMsg: string(reqBytes),
 	}
-	// 可能需要通知接入方
-	if t.NotifyUrl != "" {
+	// 订单状态正常且有填写通知地址
+	if t.NotifyUrl != "" && t.TransStatus == model.TransSuccess {
 		sendNotifyToMerchant(t, nr, ret)
 	}
 	mongo.NotifyRecColl.Add(nr)
@@ -259,11 +259,6 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 	}
 	parms := signContent + "&sign=" + sign
 
-	// bs, err := json.Marshal(ret)
-	// if err != nil {
-	// 	log.Errorf("json marshal error: %s", err)
-	// 	return
-	// }
 	nr.ToMerMsg = parms
 	notifyUrl := t.NotifyUrl
 	if strings.Contains(notifyUrl, "?") {
@@ -277,6 +272,19 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 		var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
 		// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 		for i, d := range interval {
+			nowT, err := mongo.SpTransColl.FindOne(t.MerId, t.OrderNum)
+			if err != nil {
+				log.Errorf("find trans error: %s", err)
+				time.Sleep(time.Second * d)
+				continue
+			}
+
+			// 假如在发送时，交易的状态改变了
+			if nowT.TransStatus != t.TransStatus {
+				nr.Remark = "transStatus_change"
+				break
+			}
+
 			log.Infof("merId=%s,orderNum=%s,url=%s, send notify %d times", ret.Mchntid, ret.OrderNum, t.NotifyUrl, i+1)
 			// resp, err := http.Post(t.NotifyUrl, "application/json", strings.NewReader(parms))
 			resp, err := http.Get(notifyUrl)

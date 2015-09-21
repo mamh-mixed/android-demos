@@ -183,7 +183,6 @@ func toMap(req *alpRequest) map[string]string {
 	dict["product_code"] = req.ProductCode
 	dict["out_trade_no"] = req.OutTradeNo
 	dict["total_fee"] = req.TotalFee
-	dict["extend_params"] = req.ExtendParams
 	dict["it_b_pay"] = req.ItBPay
 	dict["dynamic_id_type"] = req.DynamicIdType
 	dict["dynamic_id"] = req.DynamicId
@@ -198,6 +197,9 @@ func toMap(req *alpRequest) map[string]string {
 	}
 	if req.GoodsDetail != "" {
 		dict["goods_detail"] = e.ConvertString(req.GoodsDetail)
+	}
+	if req.ExtendParams != "" {
+		dict["extend_params"] = e.ConvertString(req.ExtendParams)
 	}
 
 	return dict
