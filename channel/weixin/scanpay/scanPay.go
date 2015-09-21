@@ -36,15 +36,15 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 	d := &PayReq{
 		CommonParams: *getCommonParams(m),
 
-		Body:           m.Subject,    // 商品描述
-		OutTradeNo:     m.OrderNum,   // 商户订单号
-		AuthCode:       m.ScanCodeId, // 授权码
-		TotalFee:       m.ActTxamt,   // 总金额
-		SpbillCreateIP: util.LocalIP, // 终端IP
+		Body:           m.WxpMarshalGoods(), // 商品描述
+		OutTradeNo:     m.OrderNum,          // 商户订单号
+		AuthCode:       m.ScanCodeId,        // 授权码
+		TotalFee:       m.ActTxamt,          // 总金额
+		SpbillCreateIP: util.LocalIP,        // 终端IP
 
 		// 非必填
-		DeviceInfo: m.DeviceInfo,     // 设备号
-		Detail:     m.MarshalGoods(), // 商品详情
+		DeviceInfo: m.DeviceInfo, // 设备号
+		// Detail:     m.WxpMarshalGoods(), // 商品详情
 		// Attach:     m.Attach,         // 附加数据
 		// FeeType:    m.CurrType,       // 货币类型
 		// GoodsGag:   m.GoodsGag,       // 商品标记
@@ -148,8 +148,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		CommonParams: *getCommonParams(m),
 
 		DeviceInfo:     m.DeviceInfo,                       // 设备号
-		Body:           m.Subject,                          // 商品描述
-		Detail:         m.MarshalGoods(),                   // 商品详情
+		Body:           m.WxpMarshalGoods(),                // 商品描述
 		Attach:         m.SysOrderNum,                      // 附加数据 这里送系统订单号
 		OutTradeNo:     m.OrderNum,                         // 商户订单号
 		TotalFee:       m.ActTxamt,                         // 总金额
@@ -162,6 +161,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		Openid:         m.OpenId,                           // 用户标识
 		// FeeType:        m.CurrType,                         // 货币类型
 		// GoodsGag:       m.GoodsGag,                         // 商品标记
+		// Detail:         m.WxpMarshalGoods(),                // 商品详情
 	}
 
 	p := &PrePayResp{}
