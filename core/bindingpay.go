@@ -43,13 +43,8 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	}
 
 	// 判断是否是合法的结算订单号
-	found, err := mongo.TransColl.IsSuccessSettOrder(be.MerId, be.SettOrderNum)
+	settOrder, err := mongo.TransColl.GetBySettOrder(be.MerId, be.SettOrderNum)
 	if err != nil {
-		return logicErrorHandle(sett, "000001")
-	}
-
-	// 没找到有此结算订单号
-	if !found {
 		return logicErrorHandle(sett, "200252")
 	}
 
@@ -58,17 +53,11 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	if err != nil {
 		return logicErrorHandle(sett, "200110")
 	}
-
-	// 通过路由策略找到渠道和渠道商户
-	rp := mongo.RouterPolicyColl.Find(be.MerId, cardBin.CardBrand)
-	if rp == nil {
-		return logicErrorHandle(sett, "300030")
-	}
-	sett.ChanCode = rp.ChanCode
-	sett.ChanMerId = rp.ChanMerId
+	sett.ChanCode = settOrder.ChanCode
+	sett.ChanMerId = settOrder.ChanMerId
 
 	// 渠道商户信息
-	chanMer, err := mongo.ChanMerColl.Find(rp.ChanCode, rp.ChanMerId)
+	chanMer, err := mongo.ChanMerColl.Find(sett.ChanCode, sett.ChanMerId)
 	if err != nil {
 		return logicErrorHandle(sett, "300030")
 	}
