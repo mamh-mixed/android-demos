@@ -25,6 +25,7 @@ var (
 	USERNAME_NO_EXIST       = NewAppResult(FAIL, "username_no_exist")
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
+	USER_ALREADY_IMPROVED   = NewAppResult(FAIL, "user_already_improved")
 	CODE_ERROR_CH           = NewAppResult(FAIL, "code码不存在")
 	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
 	NO_TRANS                = NewAppResult(FAIL, "找不到交易")

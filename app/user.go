@@ -241,6 +241,11 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		return model.USERNAME_PASSWORD_ERROR
 	}
 
+	// 用户信息是否已更新
+	if user.MerId != "" {
+		return model.USER_ALREADY_IMPROVED
+	}
+
 	// 创建商户
 	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
 	randStr := fmt.Sprintf("%d", rand.Int31())
