@@ -1,0 +1,159 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="trade-view">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 700px;
+        min-height: 500px;
+        max-height: 500px;
+        font-size: 14px;
+      }
+    }
+    td {
+      min-width: 100px;
+      vertical-align: top;
+    }
+    .key {
+      width: 60px;
+    }
+
+    .divider {
+      height: 15px;
+    }
+  </style>
+  <template>
+    <paper-dialog id="dialogView">
+      <h2>交易明细</h2>
+      <paper-dialog-scrollable>
+        <table>
+          <tr>
+            <td class="key">商户代码:</td>
+            <td>991653048160001</td>
+            <td class="key">商户名称:</td>
+            <td>云智汇（重庆）高新科技服务有限公司</td>
+          </tr>
+          <tr>
+            <td class="key">代理代码:</td>
+            <td>99911888</td>
+            <td class="key">代理名称:</td>
+            <td>讯联O2O机构</td>
+          </tr>
+          <tr>
+            <td class="key">终端代码:</td>
+            <td>802482</td>
+            <td class="key">商户订单:</td>
+            <td>802482150915170955953</td>
+          </tr>
+          <tr>
+            <td class="key">交易金额:</td>
+            <td>2.50</td>
+            <td class="key">商品明细:</td>
+            <td>百事可乐(听),2.5,1</td>
+          </tr>
+          <tr>
+            <td class="key">交易币种:</td>
+            <td>CNY－人民币</td>
+            <td class="key">交易类型:</td>
+            <td>PAUT－预下单</td>
+          </tr>
+          <tr>
+            <td class="key">交易渠道:</td>
+            <td>WXP－微信</td>
+            <td class="key">受理商:</td>
+            <td>12356903202</td>
+          </tr>
+          <tr>
+            <td class="key">渠道商户:</td>
+            <td>1244891002</td>
+            <td class="key">渠道订单:</td>
+            <td>1000630115201509150888343203</td>
+          </tr>
+          <tr>
+            <td class="key">渠道折扣:</td>
+            <td>0.00	</td>
+            <td class="key">商户折扣:</td>
+            <td>0.00	</td>
+          </tr>
+          <tr>
+            <td class="key">应答码:</td>
+            <td>00－成功</td>
+            <td class="key">交易状态:</td>
+            <td>30－成功</td>
+          </tr>
+          <tr>
+            <td class="key">创建时间:</td>
+            <td>2015-09-15 17:09:40</td>
+            <td class="key">修改时间:</td>
+            <td>2015-09-15 17:09:40</td>
+          </tr>
+          <tr>
+            <td colspan="4" class="divider"></td>
+          </tr>
+          <tr>
+            <td>请求报文:</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <pre>{{item.publicKey}}</pre>
+            </td>
+          </tr>
+          <tr>
+            <td>响应报文:</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <pre>{{item.publicKey}}</pre>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">渠道请求报文:</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <pre>{{item.publicKey}}</pre>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">渠道响应报文:</td>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <pre>{{item.publicKey}}</pre>
+            </td>
+          </tr>
+        </table>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <!-- <paper-button dialog-confirm>确定</paper-button> -->
+      </div>
+    </paper-dialog>
+
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'trade-view',
+
+        properties: {
+          item: Object,
+        },
+        open: function() {
+          this.$.dialogView.open();
+        }
+      });
+    })();
+  </script>
+</dom-module>
