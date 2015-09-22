@@ -95,7 +95,7 @@
       'refd': '退款',
       'veri': '卡券核销',
       'canc': '取消',
-      'QYFK': '企业付款',
+      'QYZF': '企业付款',
       'JSZF': '公众号支付'
     };
 
@@ -128,7 +128,7 @@
             Object.keys(map).forEach(function(v) {
               busicds.push({
                 key: v,
-                value: map[v]
+                value: (v+' '+map[v])
               });
             });
             return busicds;
@@ -214,10 +214,14 @@
         var response = e.detail;
         if (!response.respCode || response.respCode !== '000000') {
           Util.toast(response.respMsg || '系统错误', 3000);
+          this.set('cond.total',0);
+          this.set('cond.page',0);
           return;
         }
         if (!response.rec || response.rec.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
+          this.set('cond.total',0);
+          this.set('cond.page',0);
           return;
         }
 
