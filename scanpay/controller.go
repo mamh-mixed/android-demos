@@ -102,13 +102,14 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		return
 	}
 
+	// 需要验签
+	if mer.IsNeedSign {
+		signKey = mer.SignKey
+	}
+
 	// 2. 开始处理逻辑前，验证字段
 	if ret = validateFunc(req); ret != nil {
 		return ret
-	}
-
-	if mer.IsNeedSign {
-		signKey = mer.SignKey
 	}
 
 	// 3. 检查机构号

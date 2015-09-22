@@ -419,3 +419,42 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 
 	return group, all, total.Value, err
 }
+
+// MerBills 商户账单
+func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransTypeGroup, error) {
+	find := bson.M{
+		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+	}
+	find["merId"] = q.MerId
+
+	var or []bson.M
+	if len(q.TransStatus) != 0 {
+		or = append(or, bson.M{"transStatus": bson.M{"$in": q.TransStatus}})
+	}
+	if q.RefundStatus != 0 {
+		or = append(or, bson.M{"refundStatus": q.RefundStatus})
+	}
+	if len(or) > 0 {
+		find["$or"] = or
+	}
+
+	// 过滤掉取消不成功的订单
+	find["transAmt"] = bson.M{"$ne": 0}
+
+	var results []model.TransTypeGroup
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": "$transType",
+			"transAmt": bson.M{"$sum": "$transAmt"},
+			// "refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum": bson.M{"$sum": 1},
+		}},
+		{"$project": bson.M{
+			"transType": "$_id",
+			"transAmt":  1,
+			"transNum":  1,
+			// "refundAmt": 1,
+		}},
+	}).All(&results)
+	return results, err
+}

@@ -91,12 +91,20 @@ type TransGroup struct {
 	Fee       int64     `bson:"fee" json:"-"`
 }
 
+// Channel 按渠道类型分组
 type Channel struct {
 	ChanCode  string `bson:"chanCode"`
 	TransAmt  int64  `bson:"transAmt"`
 	RefundAmt int64  `bson:"refundAmt"`
 	TransNum  int    `bson:"transNum"`
 	Fee       int64  `bson:"fee" json:"-"`
+}
+
+// TransTypeGroup 按单个商户交易类型分组
+type TransTypeGroup struct {
+	TransType int   `bson:"transType"`
+	TransAmt  int64 `bson:"transAmt"`
+	TransNum  int   `bson:"transNum"`
 }
 
 // ScanPayRequest 扫码支付
