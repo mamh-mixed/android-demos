@@ -43,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-input label="订单号" name="orderNum"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum"></paper-input>
         <paper-input label="应答码" name="respcd"></paper-input>
-        <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型"></x-select>
+        <x-select items="[[busicds]]" name="transType" selected-item="{{busicd}}" label="交易类型"></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
         <paper-input label="绑定ID" name="bindingId"></paper-input>
         <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
@@ -76,12 +76,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <td align="center">{{item.merId}}</td>
               <td align="left">{{item.orderNum}}</td>
               <td align="center">{{item.bindingId}}</td>
-              <td align="center">{{busicdFilter(item.busicd)}}</td>
+              <td align="center">{{busicdFilter(item.transType)}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td align="center">{{chanFilter(item.chanCode)}}</td>
               <td align="center">{{transStatusFilter(item.transStatus)}}</td>
               <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
-              <td align="center">{{item.refundStatus}}</td>
+              <td align="center">{{refundStatusFilter(item.refundStatus)}}</td>
               <td align="center">{{item.transTime}}</td>
               <td align="center">{{item.updateTime}}</td>
             </tr>
@@ -99,9 +99,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
   <script>
     var TRANS_TYPE_MAP = {
-      '1': '支付交易',
-      '2': '退款交易',
-      '7': '结算交易',
+      1: '支付交易',
+      2: '退款交易',
+      7: '结算交易',
     };
 
     Polymer({
@@ -165,15 +165,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.busicd = {};
         this.trades = [];
         this.transStatus = {};
+        this.refundStatusMap = {
+          1:'已退款',
+          2:'部分退款',
+          0:'无退款'
+        };
+        this.tStatusMap = {
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭'
+        };
+        this.chanMap = {
+          'ALP': '支付宝',
+          'WXP': '微信',
+          'CFCA': '中金',
+          'Mock':'测试'
+        };
       },
       observers: [
-        // '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
-        // '_watchTransStatusChange(transStatus.key)'
       ],
-      //   _watchBusicdChange: function(key) {
-      //     this.cond.busicd = key;
-      //   },
       _watchCondChange: function(newValue) {
         if (newValue.path !== 'cond.page') {
           this.set('cond.page', 1);
@@ -181,10 +193,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var t = new Date().format('yyyyMMdd-hhmmss');
         this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
       },
-      // 交易状态选择框改变
-      //   _watchTransStatusChange: function(key) {
-      //     this.cond.transStatus = key;
-      //   },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
         var startTime = this.$.startTimePicker.date;
@@ -212,10 +220,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var response = e.detail;
         if (!response.respCode || response.respCode !== '000000') {
           Util.toast(response.respMsg || '系统错误', 3000);
+          this.set('cond.total', 0);
+          this.set('cond.page', 0);
           return;
         }
         if (!response.rec || response.rec.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
+          this.set('cond.total',0);
+          this.set('cond.page', 0);
           return;
         }
 
@@ -224,12 +236,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('cond.page', response.page);
       },
       chanFilter: function(chanCode) {
-        var map = {
-          'ALP': '支付宝',
-          'WXP': '微信',
-          'CFCA': '中金'
-        };
-        return map[chanCode];
+       
+        return this.chanMap[chanCode];
       },
       busicdFilter: function(busicd) {
         return TRANS_TYPE_MAP[busicd] || busicd;
@@ -238,13 +246,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return (money / 100).toFixed(2);
       },
       transStatusFilter: function(status) {
-        var map = {
-          '10': '处理中',
-          '20': '失败',
-          '30': '成功',
-          '40': '已关闭'
-        };
-        return map[status];
+       
+        return this.tStatusMap[status];
+      },
+      refundStatusFilter:function(status){
+        return this.refundStatusMap[status];
       },
       addOneFilter: function(index) {
         return index + 1;
