@@ -170,15 +170,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           2:"部分退款",
           0:"无退款"
         };
+        this.tStatusMap = {
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭'
+        };
+        this.chanMap = {
+          'ALP': '支付宝',
+          'WXP': '微信',
+          'CFCA': '中金',
+          'Mock':'测试'
+        };
       },
       observers: [
-        // '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
-        // '_watchTransStatusChange(transStatus.key)'
       ],
-      //   _watchBusicdChange: function(key) {
-      //     this.cond.busicd = key;
-      //   },
       _watchCondChange: function(newValue) {
         if (newValue.path !== 'cond.page') {
           this.set('cond.page', 1);
@@ -186,10 +193,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var t = new Date().format('yyyyMMdd-hhmmss');
         this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
       },
-      // 交易状态选择框改变
-      //   _watchTransStatusChange: function(key) {
-      //     this.cond.transStatus = key;
-      //   },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
         var startTime = this.$.startTimePicker.date;
@@ -217,10 +220,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var response = e.detail;
         if (!response.respCode || response.respCode !== '000000') {
           Util.toast(response.respMsg || '系统错误', 3000);
+          this.set('cond.total', 0);
+          this.set('cond.page', 0);
           return;
         }
         if (!response.rec || response.rec.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
+          this.set('cond.total',0);
+          this.set('cond.page', 0);
           return;
         }
 
@@ -229,13 +236,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('cond.page', response.page);
       },
       chanFilter: function(chanCode) {
-        var map = {
-          'ALP': '支付宝',
-          'WXP': '微信',
-          'CFCA': '中金',
-          'Mock':'测试'
-        };
-        return map[chanCode];
+       
+        return this.chanMap[chanCode];
       },
       busicdFilter: function(busicd) {
         return TRANS_TYPE_MAP[busicd] || busicd;
@@ -244,16 +246,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return (money / 100).toFixed(2);
       },
       transStatusFilter: function(status) {
-        var map = {
-          '10': '处理中',
-          '20': '失败',
-          '30': '成功',
-          '40': '已关闭'
-        };
-        return map[status];
+       
+        return this.tStatusMap[status];
       },
       refundStatusFilter:function(status){
-        debugger;
         return this.refundStatusMap[status]
       },
       addOneFilter: function(index) {
