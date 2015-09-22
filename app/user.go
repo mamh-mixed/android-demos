@@ -172,7 +172,26 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 	log.Debugf("userName=%s,code=%s", req.UserName, req.Code)
 	// 参数不能为空
 	if req.UserName == "" || req.Code == "" {
-		return model.PARAMS_EMPTY
+		return model.PARAMS_EMPTY_CH
+	}
+
+	// 判断code是否正确
+	e, err := mongo.EmailCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_NO_EXIST_CH
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR_CH
+	}
+	if req.Code != e.Code {
+		return model.CODE_ERROR_CH
+	}
+
+	// code有效期为2小时
+	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", e.Timestamp, time.Local)
+	if time.Now().Sub(timestamp) > 2*time.Hour {
+		return model.CODE_TIME_ERROR_CH
 	}
 
 	// 根据用户名查找用户
@@ -180,23 +199,13 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 	if err != nil {
 		log.Errorf("find database err,%s", err)
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_NO_EXIST_CH
 		}
-		return model.SYSTEM_ERROR
+		return model.SYSTEM_ERROR_CH
 	}
 	// 如果用户已激活，则返回成功
 	if user.Activate == "true" {
 		return model.SUCCESS1
-	}
-
-	// 判断code是否正确
-	e, err := mongo.EmailCol.FindOne(req.UserName)
-	if err != nil {
-		log.Errorf("find database err,%s", err)
-		return model.SYSTEM_ERROR
-	}
-	if req.Code != e.Code {
-		return model.CODE_ERROR
 	}
 
 	// 更新activate为已激活
@@ -204,7 +213,7 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
 		log.Errorf("save user err,%s", err)
-		return model.SYSTEM_ERROR
+		return model.SYSTEM_ERROR_CH
 	}
 
 	return model.SUCCESS1
