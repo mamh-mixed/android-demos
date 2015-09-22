@@ -58,7 +58,7 @@ func dispatch(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validateCancel, core.Cancel, req)
 	case model.Canc:
 		ret = doScanPay(validateClose, core.Close, req)
-	case model.Qyfk:
+	case model.Qyzf:
 		ret = doScanPay(validateEnterprisePay, core.EnterprisePay, req)
 	case model.Jszf:
 		ret = doScanPay(validatePublicPay, core.PublicPay, req)

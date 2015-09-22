@@ -17,7 +17,7 @@ const (
 	Refd = "REFD"
 	Void = "VOID"
 	Canc = "CANC"
-	Qyfk = "QYZF" // 企业付款
+	Qyzf = "QYZF" // 企业付款
 	Jszf = "JSZF"
 )
 

@@ -152,7 +152,7 @@ func AddTransFromOldDB(st, et string) error {
 
 		// 交易类型
 		switch tran.Busicd {
-		case model.Qyfk:
+		case model.Qyzf:
 			tran.TransType = model.EnterpriseTrans
 			payTransMap[tran.MerId+tran.OrderNum] = tran
 		case model.Purc, model.Paut, model.Jszf:

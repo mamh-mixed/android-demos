@@ -71,7 +71,7 @@ var (
 	}
 	// 企业支付
 	scanPayEnterprise = &model.ScanPayRequest{
-		Busicd:    "QYFK",
+		Busicd:    "QYZF",
 		Mchntid:   "888888888888888",
 		OrderNum:  util.Millisecond(),
 		AgentCode: "10134001",

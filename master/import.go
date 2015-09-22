@@ -307,7 +307,7 @@ func insertValidate(r *rowData) error {
 
 	// 空则说明需要所有权限
 	if r.PermissionStr == "" {
-		r.Permission = []string{model.Paut, model.Purc, model.Canc, model.Inqy, model.Jszf, model.Qyfk, model.Refd, model.Void}
+		r.Permission = []string{model.Paut, model.Purc, model.Canc, model.Inqy, model.Jszf, model.Qyzf, model.Refd, model.Void}
 	} else {
 		// TODO:权限格式验证
 	}

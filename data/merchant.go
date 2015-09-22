@@ -169,7 +169,7 @@ func AddMerchantFromOldDB(path string) error {
 		m.Detail.TitleOne = mer.Group.TitleOne
 		m.Detail.TitleTwo = mer.Group.TitleTwo
 		m.MerId = mer.Clientid
-		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
+		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 		m.Remark = "old_system_data"
 		m.SignKey = mer.SignKey
 		m.UniqueId = mer.UniqueId.Hex()
