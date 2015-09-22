@@ -142,5 +142,13 @@ func TestScanPay(t *testing.T) {
 }
 
 func TestSignMsg(t *testing.T) {
-	t.Log(scanPayBarcodePay.SignMsg())
+
+	str := `{"sign":"ed1838760bbde16ca708a49a4b5f5d3279374519","txndir":"Q","scanCodeId":"281223029725731233","mchntid":"991663048160001","orderNum":"2015092217294332704","busicd":"PURC","inscd":"99911888","txamt":"000000000001","terminalid":"00000379"}`
+
+	req := new(model.ScanPayRequest)
+	err := json.Unmarshal([]byte(str), req)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(req.SignMsg())
 }
