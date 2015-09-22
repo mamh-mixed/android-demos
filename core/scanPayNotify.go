@@ -202,7 +202,11 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 	case "SUCCESS":
 		ret.ChanRespCode = req.ResultCode
 		ret.ChannelOrderNum = req.TransactionId
-		ret.ConsumerAccount = req.OpenID
+		if req.SubOpenid != "" {
+			ret.ConsumerAccount = req.SubOpenid
+		} else {
+			ret.ConsumerAccount = req.OpenID
+		}
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
 		ret.ErrorCode = "SUCCESS"
