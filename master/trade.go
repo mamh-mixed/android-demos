@@ -16,8 +16,12 @@ import (
 var maxReportRec = 10000
 
 // tradeQuery 交易查询
-func tradeQuery(w http.ResponseWriter, q *model.QueryCondition) (ret *model.QueryResult) {
-	return query.TransQuery(q)
+func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
+
+	if q.Col == "bp" {
+		return query.BpTransQuery(q)
+	}
+	return query.SpTransQuery(q)
 }
 
 // tradeReport 处理查找所有商户的请求
@@ -25,7 +29,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	var file = xlsx.NewFile()
 
 	// 查询
-	ret := query.TransQuery(cond)
+	ret := query.SpTransQuery(cond)
 
 	// 类型转换
 	if trans, ok := ret.Rec.([]*model.Trans); ok {

@@ -29,16 +29,21 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
+	transType, _ := strconv.Atoi(params.Get("transType"))
+
 	cond := &model.QueryCondition{
 		MerId:        merId,
 		AgentCode:    params.Get("agentCode"),
 		GroupCode:    params.Get("groupCode"),
+		TransType:    transType,
 		Respcd:       params.Get("respcd"),
 		Busicd:       params.Get("busicd"),
 		StartTime:    params.Get("startTime"),
 		EndTime:      params.Get("endTime"),
 		OrderNum:     params.Get("orderNum"),
 		OrigOrderNum: params.Get("origOrderNum"),
+		Col:          params.Get("pay"),
+		BindingId:    params.Get("bindingId"),
 		Size:         size,
 		Page:         page,
 	}
@@ -48,7 +53,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		cond.TransStatus = []string{transStatus}
 	}
 
-	ret := tradeQuery(w, cond)
+	ret := tradeQuery(cond)
 
 	// // 允许跨域
 	// w.Header().Set("Access-Control-Allow-Origin", "*")

@@ -236,8 +236,8 @@ type Trans struct {
 	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   // 渠道代码
 	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      // 渠道应答码
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      // 交易创建时间 yyyy-mm-dd hh:mm:ss
-	UpdateTime   string        `bson:"updateTime,omitempty" json:"-"`                        // 交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus int8          `bson:"refundStatus,omitempty" json:"-"`                      // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	UpdateTime   string        `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 交易更新时间 yyyy-mm-dd hh:mm:ss
+	RefundStatus int8          `bson:"refundStatus,omitempty" json:"refundStatus"`           // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
 	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         // 已退款金额
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
@@ -246,14 +246,14 @@ type Trans struct {
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
 
 	// 快捷支付
-	AcctNum       string `bson:"acctNum,omitempty" json:"-"`       // 交易账户
-	SendSmsId     string `bson:"sendSmsId,omitempty" json:"-"`     // 短信流水号
-	SmsCode       string `bson:"smsCode,omitempty" json:"-"`       // 短信验证码
-	SubMerId      string `bson:"subMerId,omitempty" json:"-"`      // 子商户id
-	BindingId     string `bson:"bindingId,omitempty" json:"-"`     // 商户绑定ID
-	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"` // 渠道绑定ID
-	TransCurr     string `bson:"transCurr,omitempty" json:"-"`     // 交易币种
-	SettOrderNum  string `bson:"settOrderNum,omitempty" json:"-"`  // 结算订单号
+	AcctNum       string `bson:"acctNum,omitempty" json:"-"`                     // 交易账户
+	SendSmsId     string `bson:"sendSmsId,omitempty" json:"-"`                   // 短信流水号
+	SmsCode       string `bson:"smsCode,omitempty" json:"-"`                     // 短信验证码
+	SubMerId      string `bson:"subMerId,omitempty" json:"-"`                    // 子商户id
+	BindingId     string `bson:"bindingId,omitempty" json:"bindingId,omitempty"` // 商户绑定ID
+	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"`               // 渠道绑定ID
+	TransCurr     string `bson:"transCurr,omitempty" json:"-"`                   // 交易币种
+	SettOrderNum  string `bson:"settOrderNum,omitempty" json:"-"`                // 结算订单号
 	AcctName      string `bson:"acctName,omitempty" json:"-"`
 	Province      string `bson:"province,omitempty" json:"-"`
 	City          string `bson:"city,omitempty" json:"-"`

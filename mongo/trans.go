@@ -281,6 +281,12 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.TradeFrom != "" {
 		match["tradeFrom"] = q.TradeFrom
 	}
+	if q.TransType != 0 {
+		match["transType"] = q.TransType
+	}
+	if q.BindingId != "" {
+		match["bindingId"] = q.BindingId
+	}
 	// or 退款的和成功的
 	or := []bson.M{}
 	if len(q.TransStatus) != 0 {

@@ -79,8 +79,8 @@ func GetMerInfo(merId string) scanFixedResponse {
 	return response
 }
 
-// TransQuery 交易查询
-func TransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
+// SpTransQuery 交易查询
+func SpTransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 
 	now := time.Now().Format("2006-01-02")
 	// 默认当天开始
