@@ -102,13 +102,14 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		return
 	}
 
+	// 需要验签
+	if mer.IsNeedSign {
+		signKey = mer.SignKey
+	}
+
 	// 2. 开始处理逻辑前，验证字段
 	if ret = validateFunc(req); ret != nil {
 		return ret
-	}
-
-	if mer.IsNeedSign {
-		signKey = mer.SignKey
 	}
 
 	// 3. 检查机构号
@@ -127,10 +128,10 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 	// 5. 商户存在，则验签
 	if mer.IsNeedSign && req.Busicd != nonCheckSignBusicd {
-		log.Debug("sign msg : " + req.SignMsg())
-		sig := security.SHA1WithKey(req.SignMsg(), mer.SignKey)
+		content := req.SignMsg()
+		sig := security.SHA1WithKey(content, mer.SignKey)
 		if sig != req.Sign {
-			log.Errorf("mer(%s) sign failed: data=%v, sign=%s", req.Mchntid, req, sig)
+			log.Errorf("mer(%s) sign failed: data=%v, expect sign=%s, get sign=%s", req.Mchntid, content, sig, req.Sign)
 			ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("SIGN_AUTH_ERROR"))
 			return
 		}

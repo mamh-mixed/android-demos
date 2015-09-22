@@ -241,6 +241,11 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		return model.USERNAME_PASSWORD_ERROR
 	}
 
+	// 用户信息是否已更新
+	if user.MerId != "" {
+		return model.USER_ALREADY_IMPROVED
+	}
+
 	// 创建商户
 	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
 	randStr := fmt.Sprintf("%d", rand.Int31())
@@ -450,6 +455,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	switch req.Status {
 	case "all":
 	case "success":
+		q.RefundStatus = model.TransRefunded
 		q.TransStatus = []string{model.TransSuccess}
 	case "fail":
 		q.TransStatus = []string{model.TransFail, model.TransHandling}
@@ -461,28 +467,44 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 		return model.SYSTEM_ERROR
 	}
 
-	var totalAmt, refunded int64
-	refundCount := 0
 	var txns []*model.AppTxn
 	for _, t := range trans {
-		switch t.TransType {
-		case model.PayTrans:
-			totalAmt += t.TransAmt
-		default:
-			if t.TransAmt != 0 {
-				refundCount++
+		txns = append(txns, transToTxn(t))
+	}
+
+	var transAmt, refundAmt int64
+	var transCount, refundCount int
+	if total != 0 {
+		typeGroup, err := mongo.SpTransColl.MerBills(&model.QueryCondition{
+			MerId:        user.MerId,
+			StartTime:    q.StartTime,
+			EndTime:      q.EndTime,
+			RefundStatus: model.TransRefunded,
+			TransStatus:  []string{model.TransSuccess},
+		})
+		if err != nil {
+			return model.SYSTEM_ERROR
+		}
+
+		for _, v := range typeGroup {
+			switch v.TransType {
+			case model.PayTrans:
+				transAmt += v.TransAmt
+				transCount += v.TransNum
+			default:
+				refundAmt += v.TransAmt
+				transAmt -= v.TransAmt
+				refundCount += v.TransNum
 			}
 		}
-		refunded += t.RefundAmt
-		txns = append(txns, transToTxn(t))
 	}
 
 	result.Txn = txns
 	result.Size = len(trans)
-	result.TotalAmt = fmt.Sprintf("%0.2f", float32(totalAmt)/100)
+	result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
 	result.RefdCount = refundCount
-	result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refunded)/100)
-	result.Count = total
+	result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
+	result.Count = transCount
 	return
 }
 

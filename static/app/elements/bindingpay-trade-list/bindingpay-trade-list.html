@@ -1,7 +1,21 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
 
-<dom-module id="trade-list">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="bindingpay-trade-list">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
   <template>
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
@@ -23,15 +37,16 @@
           </div>
         </paper-dialog>
 
-        <paper-input label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input label="商户代码" name="merId" value="{{cond.merId::input}}"></paper-input>
-        <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
-        <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
-        <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
-        <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型"></x-select>
+        <paper-input label="代理代码" name="agentCode"></paper-input>
+        <paper-input label="集团代码" name="groupCode"></paper-input>
+        <paper-input label="商户代码" name="merId"></paper-input>
+        <paper-input label="订单号" name="orderNum"></paper-input>
+        <paper-input label="关联订单号" name="origOrderNum"></paper-input>
+        <paper-input label="应答码" name="respcd"></paper-input>
+        <x-select items="[[busicds]]" name="transType" selected-item="{{busicd}}" label="交易类型"></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
-
+        <paper-input label="绑定ID" name="bindingId"></paper-input>
+        <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
         <paper-button class="colorful" raised>
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
@@ -40,74 +55,59 @@
       <table class="data-grid">
         <thead>
           <tr>
-            <th>序号</th>
-            <th>应答码</th>
-            <th align="left">订单号</th>
-            <th align="right">金额(元)</th>
-            <th>交易时间</th>
-            <th align="left">状态</th>
+            <th align="center">序号</th>
             <th align="center">商户代码</th>
-            <th align="left">商户名称</th>
-            <!-- <th>终端号</th> -->
-            <th align="left">交易类型</th>
-            <th align="left">渠道</th>
+            <th align="left">订单号</th>
+            <th align="center">绑定ID</th>
+            <th align="center">交易类型</th>
+            <th align="right">交易金额(元)</th>
+            <th align="center">渠道</th>
+            <th align="center">交易状态</th>
+            <th align="center">应答码</th>
+            <th align="center">退款</th>
+            <th align="center">交易时间</th>
+            <th align="center">更新时间</th>
           </tr>
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr on-dblclick="showTradeViewHandler">
               <td align="center">{{addOneFilter(index)}}</td>
-              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
-              <td>{{item.orderNum}}</td>
-              <td align="right">{{_currencyFilter(item.transAmt)}}</td>
-              <td align="center">{{item.transTime}}</td>
-              <td>{{transStatusFilter(item.transStatus)}}</td>
               <td align="center">{{item.merId}}</td>
-              <td>{{item.merName}}</td>
-              <!-- <td>{{item.terminalid}}</td> -->
-              <td>{{busicdFilter(item.busicd)}}</td>
-              <td>{{chanFilter(item.chanCode)}}</td>
+              <td align="left">{{item.orderNum}}</td>
+              <td align="center">{{item.bindingId}}</td>
+              <td align="center">{{busicdFilter(item.transType)}}</td>
+              <td align="right">{{_currencyFilter(item.transAmt)}}</td>
+              <td align="center">{{chanFilter(item.chanCode)}}</td>
+              <td align="center">{{transStatusFilter(item.transStatus)}}</td>
+              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
+              <td align="center">{{refundStatusFilter(item.refundStatus)}}</td>
+              <td align="center">{{item.transTime}}</td>
+              <td align="center">{{item.updateTime}}</td>
             </tr>
           </template>
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="255" align="right">
-                    <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-                </td>
-            </tr>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+            </td>
+          </tr>
         </tfoot>
       </table>
     </form>
-    <trade-view id="tradeView"></trade-view>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
-      'PURC': '下单支付',
-      'PAUT': '预下单',
-      'VOID': '撤销',
-      'REFD': '退款',
-      'VERI': '卡券核销',
-      'CANC': '取消',
-      'purc': '下单支付',
-      'paut': '预下单',
-      'void': '撤销',
-      'refd': '退款',
-      'veri': '卡券核销',
-      'canc': '取消',
-      'QYZF': '企业付款',
-      'JSZF': '公众号支付'
+      1: '支付交易',
+      2: '退款交易',
+      7: '结算交易',
     };
 
     Polymer({
-      is: 'trade-list',
+      is: 'bindingpay-trade-list',
 
       properties: {
-        dataRoute: {
-          type: String,
-          value: 'trade.list',
-          notify: true
-        },
         trades: {
           type: Array,
           value: []
@@ -165,25 +165,33 @@
         this.busicd = {};
         this.trades = [];
         this.transStatus = {};
+        this.refundStatusMap = {
+          1:'已退款',
+          2:'部分退款',
+          0:'无退款'
+        };
+        this.tStatusMap = {
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭'
+        };
+        this.chanMap = {
+          'ALP': '支付宝',
+          'WXP': '微信',
+          'CFCA': '中金',
+          'Mock':'测试'
+        };
       },
       observers: [
-        '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
-        '_watchTransStatusChange(transStatus.key)'
       ],
-      _watchBusicdChange: function(key) {
-        this.cond.busicd = key;
-      },
       _watchCondChange: function(newValue) {
         if (newValue.path !== 'cond.page') {
           this.set('cond.page', 1);
         }
         var t = new Date().format('yyyyMMdd-hhmmss');
         this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
-      },
-      // 交易状态选择框改变
-      _watchTransStatusChange: function(key) {
-        this.cond.transStatus = key;
       },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
@@ -206,18 +214,20 @@
       // 发送查询交易的ajax请求
       submitForm: function() {
         this.trades = [];
-        // this.set('cond.total', 0);
-        // console.log(e.detail);
       },
       // ajax请求响应处理
       handleSearchResponse: function(e) {
         var response = e.detail;
         if (!response.respCode || response.respCode !== '000000') {
           Util.toast(response.respMsg || '系统错误', 3000);
+          this.set('cond.total', 0);
+          this.set('cond.page', 0);
           return;
         }
         if (!response.rec || response.rec.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
+          this.set('cond.total',0);
+          this.set('cond.page', 0);
           return;
         }
 
@@ -226,11 +236,8 @@
         this.set('cond.page', response.page);
       },
       chanFilter: function(chanCode) {
-        var map = {
-          'ALP': '支付宝',
-          'WXP': '微信'
-        };
-        return map[chanCode];
+       
+        return this.chanMap[chanCode];
       },
       busicdFilter: function(busicd) {
         return TRANS_TYPE_MAP[busicd] || busicd;
@@ -239,13 +246,11 @@
         return (money / 100).toFixed(2);
       },
       transStatusFilter: function(status) {
-        var map = {
-          '10': '处理中',
-          '20': '失败',
-          '30': '成功',
-          '40': '已关闭'
-        };
-        return map[status];
+       
+        return this.tStatusMap[status];
+      },
+      refundStatusFilter:function(status){
+        return this.refundStatusMap[status];
       },
       addOneFilter: function(index) {
         return index + 1;
@@ -260,10 +265,6 @@
         }
         return 'blue';
       },
-      showTradeViewHandler:function(){
-        this.$.tradeView.open();
-      },
     });
-
   </script>
 </dom-module>

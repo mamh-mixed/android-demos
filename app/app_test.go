@@ -126,12 +126,12 @@ func TestActivateHandle(t *testing.T) {
 }
 func TestBillHandle(t *testing.T) {
 	values := url.Values{}
-	values.Add("username", "379630413@qq.com")
-	values.Add("password", "awdwadsdasdawdwad")
+	values.Add("username", "330961193@qq.com")
+	values.Add("password", "670b14728ad9902aecba32e22fa4f6bd")
 	values.Add("transtime", time.Now().Format("20060102150405"))
-	values.Add("month", "20150918")
-	values.Add("status", "success")
-	values.Add("index", "3")
+	values.Add("month", "201509")
+	values.Add("status", "all")
+	values.Add("index", "1")
 	result, err := post(values, billHandle)
 	if err != nil {
 		t.Error(err)
