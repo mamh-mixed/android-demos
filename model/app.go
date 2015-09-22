@@ -25,10 +25,14 @@ var (
 	USERNAME_NO_EXIST       = NewAppResult(FAIL, "username_no_exist")
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
-	CODE_ERROR              = NewAppResult(FAIL, "code_error")
+	CODE_ERROR_CH           = NewAppResult(FAIL, "code码不存在")
 	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
 	NO_TRANS                = NewAppResult(FAIL, "找不到交易")
 	TIME_ERROR              = NewAppResult(FAIL, "日期格式错误")
+	CODE_TIME_ERROR_CH      = NewAppResult(FAIL, "code码已过期")
+	USERNAME_NO_EXIST_CH    = NewAppResult(FAIL, "用户名不存在")
+	PARAMS_EMPTY_CH         = NewAppResult(FAIL, "参数为空")
+	SYSTEM_ERROR_CH         = NewAppResult(FAIL, "系统错误")
 )
 
 type AppResult struct {
