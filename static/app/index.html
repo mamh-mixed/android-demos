@@ -155,6 +155,10 @@
                 <iron-icon icon="payment"></iron-icon>
                 <span>扫码交易</span>
               </a>
+              <a data-route="trade.bindingpay.list" href="/trade/bindingpay/list">
+                <iron-icon icon="payment"></iron-icon>
+                <span>绑定交易</span>
+              </a>
               <a data-route="trade.reports" href="/trade/reports">
                 <iron-icon icon="file-download"></iron-icon>
                 <span>报表下载</span>
@@ -310,6 +314,9 @@
             </section>
             <section data-route="config.upload">
               <file-upload></file-upload>
+            </section>
+            <section data-route="trade.bindingpay.list">
+                <bindingpay-trade-list></bindingpay-trade-list>
             </section>
 
           </iron-pages>
