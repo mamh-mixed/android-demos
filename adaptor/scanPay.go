@@ -25,8 +25,14 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
 
+	mer, err := mongo.MerchantColl.Find(t.MerId)
+	if err != nil {
+		return LogicErrorHandler(t, "NO_MERCHANT")
+	}
+	addRelatedProperties(t, mer)
+
 	// 记录交易
-	err := mongo.SpTransColl.Add(t)
+	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
