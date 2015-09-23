@@ -249,7 +249,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	// 创建商户
 	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
 	randStr := fmt.Sprintf("%d", rand.Int31())
-	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyfk}
+	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
 		AgentCode:  "99911888",
 		AgentName:  "讯联O2O机构",

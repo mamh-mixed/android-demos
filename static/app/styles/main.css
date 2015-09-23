@@ -53,6 +53,9 @@ table.data-grid > thead > tr > th {
   border-bottom: 1px solid #ddd;
   width: 1%;
 }
+table.data-grid > tbody > tr > th, table.data-grid > tbody > tr > td {
+    width: 1%;
+}
 table.data-grid > tfoot > tr > td {
   line-height: 1.42857143;
   border-top: 1px solid #ddd;

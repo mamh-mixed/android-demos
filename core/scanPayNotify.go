@@ -270,13 +270,11 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 	} else {
 		notifyUrl += "?" + parms
 	}
-	log.Infof("send notify: %s", notifyUrl)
 
 	go func() {
 		var interval = []time.Duration{15, 15, 30, 180, 1800, 1800, 1800, 1800, 3600, 0}
 		// var interval = []time.Duration{1, 1, 1, 1, 1, 1, 1, 1, 1, 0} // for test
 		for i, d := range interval {
-
 			// 跳过第一次
 			if i != 0 {
 				nowT, err := mongo.SpTransColl.FindOne(t.MerId, t.OrderNum)
@@ -294,14 +292,18 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 				}
 			}
 
-			log.Infof("merId=%s,orderNum=%s,url=%s, send notify %d times", ret.Mchntid, ret.OrderNum, t.NotifyUrl, i+1)
 			// resp, err := http.Post(t.NotifyUrl, "application/json", strings.NewReader(parms))
 			resp, err := http.Get(notifyUrl)
 			if err != nil {
+				log.Warnf("send notify %d times fail, merId=%s, orderNum=%s, channelOrderNum=%s, notifyUrl=%s: %s",
+					i+1, ret.Mchntid, ret.OrderNum, ret.ChannelOrderNum, notifyUrl, err)
 				time.Sleep(time.Second * d)
 				continue
 			}
+			log.Infof("send notify %d times successfully, merId=%s, orderNum=%s, channelOrderNum=%s, notifyUrl=%s",
+				i+1, ret.Mchntid, ret.OrderNum, ret.ChannelOrderNum, notifyUrl)
 			defer resp.Body.Close()
+
 			if resp.StatusCode != http.StatusOK {
 				time.Sleep(time.Second * d)
 				continue

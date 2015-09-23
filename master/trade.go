@@ -180,7 +180,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 			cell.Value = "撤销"
 		case model.Canc:
 			cell.Value = "取消"
-		case model.Qyfk:
+		case model.Qyzf:
 			cell.Value = "企业付款"
 		case model.Jszf:
 			cell.Value = "公众号支付"

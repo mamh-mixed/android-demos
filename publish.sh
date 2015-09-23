@@ -4,9 +4,9 @@ set -e
 
 prog="quickpay"
 
-shortcut=("dev" "test" "app1" "app2" "app3")
+shortcut=("dev" "test" "app1" "app2")
 hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" \
-    "quick@app1.set.shou.money" "quick@app2.set.shou.money" "quick@112.74.207.207")
+    "quick@app1.set.shou.money" "quick@app2.set.shou.money")
 
 input=$1
 
