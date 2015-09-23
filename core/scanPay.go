@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
+	w "github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
@@ -169,6 +170,22 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
+
+	// 修复bug==============
+	subTrans, err := mongo.SpTransColl.FindByAccount(req.OpenId)
+	if err == nil {
+		notify, err := mongo.NotifyRecColl.FindOne(subTrans.MerId, subTrans.OrderNum)
+		if err == nil {
+			v := &w.WeixinNotifyReq{}
+			err = json.Unmarshal([]byte(notify.FromChanMsg), v)
+			if err == nil {
+				if v.SubOpenid != "" {
+					t.GatheringId = v.SubOpenid
+					req.OpenId = v.SubOpenid
+				}
+			}
+		}
+	}
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -728,30 +745,6 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 	return nil, false
 }
 
-// updateTrans 更新交易信息
-func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
-	// 根据请求结果更新
-	t.ChanRespCode = ret.ChanRespCode
-	t.ChanOrderNum = ret.ChannelOrderNum
-	t.ChanDiscount = ret.ChcdDiscount
-	t.MerDiscount = ret.MerDiscount
-	t.ConsumerAccount = ret.ConsumerAccount
-	t.ConsumerId = ret.ConsumerId
-	t.RespCode = ret.Respcd
-	t.ErrorDetail = ret.ErrorDetail
-
-	// 根据应答码判断交易状态
-	switch ret.Respcd {
-	case adaptor.SuccessCode:
-		t.TransStatus = model.TransSuccess
-	case adaptor.InprocessCode:
-		t.TransStatus = model.TransHandling
-	default:
-		t.TransStatus = model.TransFail
-	}
-	return mongo.SpTransColl.UpdateAndUnlock(t)
-}
-
 // findAndLockOrigTrans 查找原交易记录
 // 如果找到原交易，那么对原交易加锁。
 func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error) {
@@ -827,6 +820,30 @@ func findAndLockTrans(merId, orderNum string) (orig *model.Trans, err error) {
 		break
 	}
 	return
+}
+
+// updateTrans 更新交易信息
+func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
+	// 根据请求结果更新
+	t.ChanRespCode = ret.ChanRespCode
+	t.ChanOrderNum = ret.ChannelOrderNum
+	t.ChanDiscount = ret.ChcdDiscount
+	t.MerDiscount = ret.MerDiscount
+	t.ConsumerAccount = ret.ConsumerAccount
+	t.ConsumerId = ret.ConsumerId
+	t.RespCode = ret.Respcd
+	t.ErrorDetail = ret.ErrorDetail
+
+	// 根据应答码判断交易状态
+	switch ret.Respcd {
+	case adaptor.SuccessCode:
+		t.TransStatus = model.TransSuccess
+	case adaptor.InprocessCode:
+		t.TransStatus = model.TransHandling
+	default:
+		t.TransStatus = model.TransFail
+	}
+	return mongo.SpTransColl.UpdateAndUnlock(t)
 }
 
 // copyProperties 从原交易拷贝属性

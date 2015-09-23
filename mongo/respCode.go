@@ -15,7 +15,7 @@ type respCodeCollection struct {
 var RespCodeColl = respCodeCollection{"respCode"}
 
 var respCodeCache = cache.New(model.Cache_RespCode)
-var unKnown = &model.BindingReturn{RespCode: "000004", RespMsg: "未知应答，请联系系统管理员"}
+var unKnown = &model.BindingReturn{RespCode: "000004", RespMsg: "未知应答，请联系系统管理员", IsRetChanRespMsg: true}
 
 // Get 根据传入的code类型得到Resp对象
 func (c *respCodeCollection) Get(code string) (resp *model.BindingReturn) {

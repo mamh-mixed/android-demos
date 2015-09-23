@@ -154,6 +154,20 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	return
 }
 
+// FindByAccount 通过订单号、商户号查找一条交易记录
+func (col *transCollection) FindByAccount(account string) (t *model.Trans, err error) {
+
+	q := bson.M{
+		"consumerAccount": account,
+		// "transType": transType,
+		"busicd":      model.Jszf,
+		"transStatus": model.TransSuccess,
+	}
+	t = new(model.Trans)
+	err = database.C(col.name).Find(q).One(t)
+	return
+}
+
 // FindByTime 查找某天的交易记录
 func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 

@@ -42,6 +42,9 @@ type BindingReturn struct {
 	IssBankNum        string `json:"issBankNum,omitempty"`
 	BankCode          string `json:"bankCode,omitempty"`
 	BindingPaySupport string `json:"bindingPaySupport,omitempty"`
+
+	// 是否返回渠道应答
+	IsRetChanRespMsg bool `json:"-"`
 }
 
 // NewBindingReturn 构造函数
