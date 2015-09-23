@@ -98,7 +98,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </form>
   </template>
   <script>
-    var TRANS_TYPE_MAP = {
+    var TRANSTYPE_MAP = {
       1: '支付交易',
       2: '退款交易',
       7: '结算交易',
@@ -120,9 +120,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: (function() {
             var busicds = [],
               map = {};
-            for (var k in TRANS_TYPE_MAP) {
+            for (var k in TRANSTYPE_MAP) {
               if (!map[k.toUpperCase()]) {
-                map[k.toUpperCase()] = TRANS_TYPE_MAP[k];
+                map[k.toUpperCase()] = TRANSTYPE_MAP[k];
               }
             }
             Object.keys(map).forEach(function(v) {
@@ -236,17 +236,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('cond.page', response.page);
       },
       chanFilter: function(chanCode) {
-       
+
         return this.chanMap[chanCode];
       },
       busicdFilter: function(busicd) {
-        return TRANS_TYPE_MAP[busicd] || busicd;
+        return TRANSTYPE_MAP[busicd] || busicd;
       },
       _currencyFilter: function(money) {
         return (money / 100).toFixed(2);
       },
       transStatusFilter: function(status) {
-       
+
         return this.tStatusMap[status];
       },
       refundStatusFilter:function(status){

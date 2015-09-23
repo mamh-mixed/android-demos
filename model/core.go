@@ -225,14 +225,14 @@ type Trans struct {
 	Id           bson.ObjectId `bson:"_id" json:"-"`
 	OrderNum     string        `bson:"orderNum,omitempty" json:"orderNum"`                   // 商户订单流水号、退款流水号
 	SysOrderNum  string        `bson:"sysOrderNum,omitempty" json:"-"`                       // 系统订单流水号、退款流水号
-	ChanOrderNum string        `bson:"chanOrderNum,omitempty" json:"-"`                      // 渠道返回订单流水号
+	ChanOrderNum string        `bson:"chanOrderNum,omitempty" json:"chanOrderNum,omitempty"` // 渠道返回订单流水号
 	OrigOrderNum string        `bson:"origOrderNum,omitempty" json:"origOrderNum,omitempty"` // 源订单号 当交易类型为退款/撤销/关单时
 	RespCode     string        `bson:"respCode,omitempty" json:"respcd,omitempty"`           // 网关应答码
 	MerId        string        `bson:"merId,omitempty" json:"merId"`                         // 商户号
 	TransAmt     int64         `bson:"transAmt" json:"transAmt"`                             // 交易金额 没有即为0
 	TransStatus  string        `bson:"transStatus,omitempty" json:"transStatus"`             // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
 	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
-	ChanMerId    string        `bson:"chanMerId,omitempty" json:"-"`                         // 渠道商户号
+	ChanMerId    string        `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`       // 渠道商户号
 	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   // 渠道代码
 	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      // 渠道应答码
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      // 交易创建时间 yyyy-mm-dd hh:mm:ss
@@ -252,7 +252,7 @@ type Trans struct {
 	SubMerId      string `bson:"subMerId,omitempty" json:"-"`                    // 子商户id
 	BindingId     string `bson:"bindingId,omitempty" json:"bindingId,omitempty"` // 商户绑定ID
 	ChanBindingId string `bson:"chanBindingId,omitempty" json:"-"`               // 渠道绑定ID
-	TransCurr     string `bson:"transCurr,omitempty" json:"-"`                   // 交易币种
+	TransCurr     string `bson:"transCurr,omitempty" json:"transCurr,omitempty"` // 交易币种
 	SettOrderNum  string `bson:"settOrderNum,omitempty" json:"-"`                // 结算订单号
 	AcctName      string `bson:"acctName,omitempty" json:"-"`
 	Province      string `bson:"province,omitempty" json:"-"`
@@ -274,7 +274,7 @@ type Trans struct {
 	GatheringName   string `bson:"gatheringName,omitempty" json:"-"`                           // 收款人
 	NotifyUrl       string `bson:"notifyUrl,omitempty" json:"-"`                               // 异步通知地址
 	VeriCode        string `bson:"veriCode,omitempty" json:"-"`                                // 交易凭证
-	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"-"`                               // 商品详情
+	GoodsInfo       string `bson:"goodsInfo,omitempty" json:"goodsInfo,omitempty"`             // 商品详情
 	NickName        string `bson:"nickName,omitempty" json:"-"`
 	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 	Attach          string `bson:"attach,omitempty" json:"-"`
