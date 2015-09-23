@@ -79,7 +79,7 @@
         </tfoot>
       </table>
     </form>
-    <trade-view id="tradeView"></trade-view>
+    <trade-view id="tradeView" item="{{transItem}}"></trade-view>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -264,7 +264,8 @@
         }
         return 'blue';
       },
-      showTradeViewHandler:function(){
+      showTradeViewHandler:function(e){
+        this.transItem=e.model.item;
         this.$.tradeView.open();
       },
     });
