@@ -27,13 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="search-condition">
         <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
         <paper-input name="merName" id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
-        <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
-        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
-        <paper-input name="groupCode" id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input name="groupName" id="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-        <!-- <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button> -->
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
@@ -43,10 +37,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <th>序号</th>
             <th>商户代码</th>
             <th align="left">商户名称</th>
-            <th>代理代码</th>
-            <th align="left">代理名称</th>
-            <th align="left">集团商户代码</th>
-            <th align="left">集团商户名称</th>
+            <th>计费方案代码</th>
+            <th align="left">交易币种</th>
+            <th align="left">是否开启验签</th>
           </tr>
         </thead>
         <tbody>
@@ -61,17 +54,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <td on-click="viewMerchantTap">
                 <span style="text-decoration:underline;cursor:pointer">{{getMerchantName(item.detail.merName)}}</span>
               </td>
-              <td  class="center">
-                <span>{{item.agentCode}}</span>
+              <td class="center">
+                <span>{{item.detail.billingScheme}}</span>
               </td>
               <td>
-                <span>{{item.agentName}}</span>
+                <span>{{item.transCurr}}</span>
               </td>
               <td>
-                <span>{{item.groupCode}}</span>
-              </td>
-              <td>
-                <span>{{item.groupName}}</span>
+                <span>{{isNeedSignFilter(item.isNeedSign)}}</span>
               </td>
             </tr>
           </template>
@@ -132,25 +122,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
-          if (this.$.merId.value) {
-            this.cond.merId = this.$.merId.value;
-          }
-          if (this.$.merName.value) {
-            this.cond.merName = this.$.merName.value;
-          }
-          if (this.$.agentCode.value) {
-            this.cond.agentCode = this.$.agentCode.value;
-          }
-          if (this.$.agentName.value) {
-            this.cond.agentName = this.$.agentName.value;
-          }
-          if (this.$.groupCode.value) {
-            this.cond.groupCode = this.$.groupCode.value;
-          }
-          if (this.$.groupName.value) {
-            this.cond.groupName = this.$.groupName.value;
-          }
-
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
@@ -224,23 +195,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.merchant = event.model.item;
           this.$.merchantView.open();
         },
-        // 清除查询条件
-        // handleClearTapped: function() {
-        //   this.$.merId.value = '';
-        //   this.cond.merId = '';
-        //   this.$.merName.value = '';
-        //   this.cond.merName = '';
-        //   this.$.agentCode.value = '';
-        //   this.cond.agentCode = '';
-        //   this.$.agentName.value = '';
-        //   this.cond.agentName = '';
-        //   this.$.groupCode.value = '';
-        //   this.cond.groupCode = '';
-        //   this.$.groupName.value = '';
-        //   this.cond.groupName = '';
-        //   this.set('cond.page', 1);
-        //   this.generateAjaxRequest();
-        // },
         handleAfterDelete: function() {
           this.handleQueryTapped();
         },
@@ -255,6 +209,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             return '---';
           } else {
             return value;
+          }
+        },
+        isNeedSignFilter: function(value) {
+            debugger;
+          if (value) {
+            return '是';
+          } else {
+            return '否';
           }
         },
       });
