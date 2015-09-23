@@ -90,13 +90,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-input id="merName" label="商户名称" class="validate-container" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
+          <paper-input id="billingScheme" label="商户计费方案代码" value="{{merchant.detail.billingScheme::input}}" required error-message="必填项"></paper-input>
+          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+        </div>
+        <!-- <div class="row">
           <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
           <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
-        </div>
+        </div> -->
 
         <div class="row" style="margin-top:30px;">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
@@ -109,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-button class="colorful" on-tap="refreshEncryptKeyHandle">刷新</paper-button>
         </div>
 
-        <div class="row" style="margin-top:30px;">
+        <!-- <div class="row" style="margin-top:30px;">
           <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
           <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
         </div>
@@ -120,9 +124,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="row">
           <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
-        </div>
+        </div> -->
 
-        <div class="row" style="margin-top:30px;">
+        <!-- <div class="row" style="margin-top:30px;">
           <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
           <paper-input label="门店ID" value="{{merchant.detail.shopId::input}}"></paper-input>
         </div>
@@ -132,7 +136,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <div class="row">
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-        </div>
+        </div> -->
         <div class="row" style="margin-top:30px;">
           <x-select id="merStatus" items="[[merStatusMap]]" class="validate-container" required selected-item="{{merStatus}}" label="商户状态"></x-select>
         </div>
@@ -198,7 +202,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         //判断商户录入必填项是否为空
         isMerchantConfigEmpty: function() {
-          if (this.$.merId.validate() && this.$.merName.validate() && this.$.encryptKey.validate() && this.$.merStatus.selectedItem) {
+          if (this.$.merId.validate() && this.$.merName.validate() && this.$.billingScheme.validate()&&this.$.encryptKey.validate() && this.$.merStatus.selectedItem) {
             if (this.$.isNeedSignCheck.checked) {
               if (!this.$.signKey.validate()) {
                 return true;
