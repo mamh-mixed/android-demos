@@ -250,9 +250,6 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, error) {
-
-	log.Debugf("condition is %+v", q)
-
 	var trans []*model.Trans
 
 	// 根据条件查找
@@ -309,6 +306,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
+	log.Debugf("find condition: %#v", match)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
