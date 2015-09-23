@@ -128,7 +128,8 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 	agentName := r.FormValue("agentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
+	pay := r.FormValue("pay")
+	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -208,7 +209,8 @@ func routerFindHandle(w http.ResponseWriter, r *http.Request) {
 	chanMerId := r.FormValue("chanMerId")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := RouterPolicy.Find(merId, cardBrand, chanCode, chanMerId, size, page)
+	pay := r.FormValue("pay")
+	ret := RouterPolicy.Find(merId, cardBrand, chanCode, chanMerId, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -255,7 +257,8 @@ func channelMerchantFindHandle(w http.ResponseWriter, r *http.Request) {
 	chanMerName := r.FormValue("chanMerName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := ChanMer.Find(chanCode, chanMerId, chanMerName, size, page)
+	pay := r.FormValue("pay")
+	ret := ChanMer.Find(chanCode, chanMerId, chanMerName, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {

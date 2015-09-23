@@ -13,7 +13,7 @@ type routerPolicy struct{}
 var RouterPolicy routerPolicy
 
 // Find 查找路由列表，参数是 merId。
-func (i *routerPolicy) Find(merId string, cardBrand string, chanCode string, chanMerId string, size, page int) (result *model.ResultBody) {
+func (i *routerPolicy) Find(merId string, cardBrand string, chanCode string, chanMerId string, pay string, size, page int) (result *model.ResultBody) {
 	log.Debugf("merId=%s; cardBrand=%s; chanCode=%s;chanMerId=%s", merId, cardBrand, chanCode, chanMerId)
 
 	if page <= 0 {
@@ -24,7 +24,7 @@ func (i *routerPolicy) Find(merId string, cardBrand string, chanCode string, cha
 		size = 10
 	}
 
-	routers, total, err := mongo.RouterPolicyColl.PaginationFind(merId, cardBrand, chanCode, chanMerId, size, page)
+	routers, total, err := mongo.RouterPolicyColl.PaginationFind(merId, cardBrand, chanCode, chanMerId, pay, size, page)
 	if err != nil {
 		log.Errorf("查询商户(%s)的所有路由失败: %s", merId, err)
 		return model.NewResultBody(1, "查询失败")

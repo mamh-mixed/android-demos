@@ -19,6 +19,7 @@
         <paper-input name="chanMerId" label="商户代码" value="{{cond.chanMerId::input}}"></paper-input>
         <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
         <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
+        <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
