@@ -29,3 +29,10 @@ func (n *notifyRecCollection) Update(r *model.NotifyRecord) error {
 	r.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	return database.C(n.Name).Update(bson.M{"merId": r.MerId, "orderNum": r.OrderNum}, r)
 }
+
+// FindOne
+func (n *notifyRecCollection) FindOne(merId, orderNum string) (*model.NotifyRecord, error) {
+	result := new(model.NotifyRecord)
+	err := database.C(n.Name).Find(bson.M{"merId": merId, "orderNum": orderNum}).One(result)
+	return result, err
+}

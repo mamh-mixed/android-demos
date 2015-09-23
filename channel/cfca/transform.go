@@ -18,10 +18,17 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 	ret = new(model.BindingReturn)
 	ret.ChanRespCode = resp.Head.Code
 	ret.ChanRespMsg = resp.Head.Message
+
 	// 不成功的受理
 	if flag := resp.Head.Code != correctCode; flag {
-		resp := mongo.RespCodeColl.GetByCfca(resp.Head.Code)
-		ret.RespCode, ret.RespMsg = resp.RespCode, resp.RespMsg
+		m := mongo.RespCodeColl.GetByCfca(resp.Head.Code)
+		ret.RespCode = m.RespCode
+		// 需要返回渠道详细应答
+		if m.IsRetChanRespMsg {
+			ret.RespMsg = resp.Body.ResponseMessage
+		} else {
+			ret.RespMsg = m.RespMsg
+		}
 		return ret
 	}
 
