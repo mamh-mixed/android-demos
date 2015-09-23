@@ -13,7 +13,7 @@ type chanMer struct{}
 var ChanMer chanMer
 
 // Find 根据条件查找商户。
-func (c *chanMer) Find(chanCode, chanMerId, chanMerName string, size, page int) (result *model.ResultBody) {
+func (c *chanMer) Find(chanCode, chanMerId, chanMerName, pay string, size, page int) (result *model.ResultBody) {
 	log.Debugf("chanCode=%s; chanMerId=%s; chanMerName=%s", chanCode, chanMerId, chanMerName)
 
 	if page <= 0 {
@@ -24,7 +24,7 @@ func (c *chanMer) Find(chanCode, chanMerId, chanMerName string, size, page int) 
 		size = 10
 	}
 
-	chanMers, total, err := mongo.ChanMerColl.PaginationFind(chanCode, chanMerId, chanMerName, size, page)
+	chanMers, total, err := mongo.ChanMerColl.PaginationFind(chanCode, chanMerId, chanMerName, pay, size, page)
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
 		return model.NewResultBody(1, "查询失败")

@@ -19,6 +19,7 @@
         <x-select name="cardBrand" id="cardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌"></x-select>
         <paper-input name="chanMerId" id="chanMerId" label="渠道商户代码" value="{{cond.chanMerId::input}}"></paper-input>
         <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
+        <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -134,18 +135,15 @@
           chanCodes: {
             type: Array,
             value: [{
-              key: 'ALP',
-              value: 'ALP'
-            }, {
-              key: 'WXP',
-              value: 'WXP'
-            }, {
               key: 'CFCA',
               value: 'CFCA'
             }, {
               key: 'CIL',
               value: 'CIL'
-            }]
+          },{
+            key: 'Mock',
+            value: 'Mock'
+          }]
           },
         },
         _merIdChandged: function(value) {

@@ -120,7 +120,7 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 }
 
 // PaginationFind 分页查找机构商户
-func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName string, size, page int) (results []model.Merchant, total int, err error) {
+func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay string, size, page int) (results []model.Merchant, total int, err error) {
 	results = make([]model.Merchant, 1)
 
 	match := bson.M{}
@@ -144,6 +144,11 @@ func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode
 	}
 	if agentName != "" {
 		match["agentName"] = agentName
+	}
+	if pay == "bp" {
+		match["encryptKey"] = bson.M{"$exists": true}
+	} else {
+		match["encryptKey"] = bson.M{"$exists": false}
 	}
 	// 计算总数
 	total, err = database.C(c.name).Find(match).Count()

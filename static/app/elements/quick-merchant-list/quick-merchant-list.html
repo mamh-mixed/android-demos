@@ -27,6 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div class="search-condition">
         <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
         <paper-input name="merName" id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
+        <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
