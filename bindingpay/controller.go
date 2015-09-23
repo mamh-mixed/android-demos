@@ -2,11 +2,11 @@ package bindingpay
 
 import (
 	"encoding/json"
-
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
+	"time"
 
 	"github.com/omigo/log"
 )
@@ -56,6 +56,7 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 // BindingPaymentSettlementHandle 支付结算
 func BindingPaymentSettlementHandle(data []byte, merId string) (ret *model.BindingReturn) {
 
+	before := time.Now()
 	r := new(model.PaySettlement)
 	err := json.Unmarshal(data, r)
 	if err != nil {
@@ -81,7 +82,12 @@ func BindingPaymentSettlementHandle(data []byte, merId string) (ret *model.Bindi
 		return ret
 	}
 
-	return core.ProcessPaySettlement(r)
+	coret := time.Now()
+	ret = core.ProcessPaySettlement(r)
+
+	after := time.Now()
+	log.Debugf("total spent time %s, core spent: %s", after.Sub(before), after.Sub(coret))
+	return
 }
 
 // GetCardInfoHandle 获取卡片信息

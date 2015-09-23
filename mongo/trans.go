@@ -154,6 +154,20 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	return
 }
 
+// FindByAccount 通过订单号、商户号查找一条交易记录
+func (col *transCollection) FindByAccount(account string) (t *model.Trans, err error) {
+
+	q := bson.M{
+		"consumerAccount": account,
+		// "transType": transType,
+		"busicd":      model.Jszf,
+		"transStatus": model.TransSuccess,
+	}
+	t = new(model.Trans)
+	err = database.C(col.name).Find(q).One(t)
+	return
+}
+
 // FindByTime 查找某天的交易记录
 func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 
@@ -250,9 +264,6 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, error) {
-
-	log.Debugf("condition is %+v", q)
-
 	var trans []*model.Trans
 
 	// 根据条件查找
@@ -309,6 +320,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
+	log.Debugf("find condition: %#v", match)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {

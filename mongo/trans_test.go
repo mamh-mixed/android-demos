@@ -93,6 +93,24 @@ func TestTransUpdate(t *testing.T) {
 
 }
 
+func TestFindByAccount(t *testing.T) {
+	trans, err := SpTransColl.FindByAccount("obFqRjp1bVfXrDYWT1JLf-k2vAek")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Logf("%s %s", trans.MerId, trans.OrderNum)
+	n, err := NotifyRecColl.FindOne(trans.MerId, trans.OrderNum)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Logf("%+v", trans)
+	t.Logf("%+v", n.FromChanMsg)
+}
+
 func TestCountTrans(t *testing.T) {
 
 	c, err := TransColl.Count(merId, orderNum)

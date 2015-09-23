@@ -1,4 +1,4 @@
-package test
+package bindingpay
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/security"
@@ -39,7 +38,7 @@ const (
 )
 
 var (
-	bindingId string = "1440641997359"
+	bindingId string = "012345678901234"
 	orderNum  string
 )
 
@@ -117,6 +116,23 @@ func TestBindingCreate(t *testing.T) {
 	b.Cvv2 = aes.Encrypt(b.Cvv2)
 	if aes.Err != nil {
 		panic(aes.Err)
+	}
+	doPost(url, b, t)
+}
+
+func TestPaySettlement(t *testing.T) {
+	url := "http://quick.ipay.so/bindingpay/bindingPaymentSettlement?merId=" + "000000001406"
+	b := model.PaySettlement{
+		TerminalId:      "00001000",
+		MerOrderNum:     util.Millisecond(),
+		SettOrderNum:    "Iris20150917",
+		SettAmt:         10,
+		SettAccountType: "11",
+		SettAccountName: "yYllsyq9k5dCqLJNn/LE1gCKixdiKrrZ49CWVoMg9cY=",
+		SettAccountNum:  "goP5u0z9B02CHTCoYt07GKALiW2xKtgTcsuimcA643jNzl3DE7T2omY8cqYffjXF",
+		SettBranchName:  "中国工商银行",
+		Province:        "上海市",
+		City:            "上海市",
 	}
 	doPost(url, b, t)
 }

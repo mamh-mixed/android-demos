@@ -9,7 +9,8 @@ import (
 
 var ScanPayRespCol = &scanPayRespCollection{"respCode.sp"}
 
-var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答,请联系管理员", true, "UNKNOWN"}
+// 未知应答码时，使用渠道应答
+var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答,请联系管理员", false, "UNKNOWN"}
 
 type scanPayRespCollection struct {
 	name string

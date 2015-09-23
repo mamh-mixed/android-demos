@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
     }
+
   </style>
   <template>
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
@@ -37,15 +38,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </paper-dialog>
 
-        <paper-input label="代理代码" name="agentCode"></paper-input>
-        <paper-input label="集团代码" name="groupCode"></paper-input>
         <paper-input label="商户代码" name="merId"></paper-input>
         <paper-input label="订单号" name="orderNum"></paper-input>
+        <paper-input label="绑定 ID" name="bindingId"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum"></paper-input>
         <paper-input label="应答码" name="respcd"></paper-input>
         <x-select items="[[busicds]]" name="transType" selected-item="{{busicd}}" label="交易类型"></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
-        <paper-input label="绑定ID" name="bindingId"></paper-input>
         <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
         <paper-button class="colorful" raised>
@@ -56,14 +55,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <thead>
           <tr>
             <th align="center">序号</th>
+            <th align="center">应答码</th>
             <th align="center">商户代码</th>
             <th align="left">订单号</th>
             <th align="center">绑定ID</th>
             <th align="center">交易类型</th>
-            <th align="right">交易金额(元)</th>
+            <th align="right">金额(元)</th>
             <th align="center">渠道</th>
             <th align="center">交易状态</th>
-            <th align="center">应答码</th>
             <th align="center">退款</th>
             <th align="center">交易时间</th>
             <th align="center">更新时间</th>
@@ -73,14 +72,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <template is="dom-repeat" items="{{trades}}">
             <tr on-dblclick="showTradeViewHandler">
               <td align="center">{{addOneFilter(index)}}</td>
+              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
               <td align="center">{{item.merId}}</td>
               <td align="left">{{item.orderNum}}</td>
-              <td align="center">{{item.bindingId}}</td>
+              <td align="left">{{item.bindingId}}</td>
               <td align="center">{{busicdFilter(item.transType)}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td align="center">{{chanFilter(item.chanCode)}}</td>
               <td align="center">{{transStatusFilter(item.transStatus)}}</td>
-              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
               <td align="center">{{refundStatusFilter(item.refundStatus)}}</td>
               <td align="center">{{item.transTime}}</td>
               <td align="center">{{item.updateTime}}</td>
@@ -166,9 +165,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.trades = [];
         this.transStatus = {};
         this.refundStatusMap = {
-          1:'已退款',
-          2:'部分退款',
-          0:'无退款'
+          1: '已退款',
+          2: '部分退款',
+          0: '无退款'
         };
         this.tStatusMap = {
           '10': '处理中',
@@ -180,7 +179,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'ALP': '支付宝',
           'WXP': '微信',
           'CFCA': '中金',
-          'Mock':'测试'
+          'Mock': '测试'
         };
       },
       observers: [
@@ -226,7 +225,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         if (!response.rec || response.rec.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
-          this.set('cond.total',0);
+          this.set('cond.total', 0);
           this.set('cond.page', 0);
           return;
         }
@@ -249,7 +248,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         return this.tStatusMap[status];
       },
-      refundStatusFilter:function(status){
+      refundStatusFilter: function(status) {
         return this.refundStatusMap[status];
       },
       addOneFilter: function(index) {
@@ -257,14 +256,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       // 应答码着色
       getRespCodeColor: function(value) {
-        if (value === '00') {
+        if (value === '000000') {
           return 'green';
         }
-        if (value === '96') {
+        if (value === '0000001') {
           return 'red';
         }
         return 'blue';
       },
     });
+
   </script>
 </dom-module>

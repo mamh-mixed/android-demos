@@ -26,12 +26,12 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		return model.NewBindingReturn("200051", "字段 bindingId 格式错误")
 	}
 
-	if !isChineseOrJapaneseOrAlphanumeric(request.AcctNameDecrypt) {
-		return mongo.RespCodeColl.Get("200100")
+	if err := validateAcctName(request.AcctNameDecrypt); err != nil {
+		return err
 	}
 
-	if !isAlphanumericOrSpecial(request.AcctNumDecrypt) {
-		return mongo.RespCodeColl.Get("200110")
+	if err := validateAcctNum(request.AcctNumDecrypt); err != nil {
+		return err
 	}
 
 	// IdentType
@@ -98,12 +98,12 @@ func validatePaySettlement(in *model.PaySettlement) (ret *model.BindingReturn) {
 		return model.NewBindingReturn("200050", "字段 settAccountNum 不能为空")
 	}
 
-	if !isChineseOrJapaneseOrAlphanumeric(in.AcctNameDecrypt) {
-		return mongo.RespCodeColl.Get("200100")
+	if err := validateAcctName(in.AcctNameDecrypt); err != nil {
+		return err
 	}
 
-	if !isChineseOrJapaneseOrAlphanumeric(in.AcctNumDecrypt) {
-		return mongo.RespCodeColl.Get("200110")
+	if err := validateAcctNum(in.AcctNumDecrypt); err != nil {
+		return err
 	}
 
 	switch in.SettAccountType {
@@ -490,6 +490,28 @@ func validateApplePay(ap *model.ApplePay) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("200252")
 	}
 
+	return nil
+}
+
+func validateAcctNum(acctNum string) *model.BindingReturn {
+	if len(acctNum) > 32 {
+		return mongo.RespCodeColl.Get("200110")
+	}
+	if !isAlphanumericOrSpecial(acctNum) {
+		return mongo.RespCodeColl.Get("200110")
+	}
+	return nil
+}
+
+func validateAcctName(acctName string) *model.BindingReturn {
+
+	runeAcctName := []rune(acctName)
+	if len(runeAcctName) > 64 {
+		return mongo.RespCodeColl.Get("200100")
+	}
+	if !isChineseOrJapaneseOrAlphanumeric(acctName) {
+		return mongo.RespCodeColl.Get("200100")
+	}
 	return nil
 }
 

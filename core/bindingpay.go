@@ -1,13 +1,13 @@
 package core
 
 import (
-	"strings"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"strings"
+	"time"
 )
 
 var (
@@ -65,7 +65,7 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	// 暂时判断中金渠道是否支持该银行卡
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
-		return logicErrorHandle(sett, "000001")
+		return logicErrorHandle(sett, "400020")
 	}
 
 	// 交易参数
@@ -90,7 +90,9 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("000001")
 	}
 
+	chant := time.Now()
 	ret = c.ProcessPaySettlement(be)
+	log.Debugf("chan spent %s", time.Now().Sub(chant))
 
 	// 更新
 	transStatusHandle(ret, sett)
