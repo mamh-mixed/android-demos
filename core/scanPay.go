@@ -8,6 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	w "github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/crontab"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
@@ -17,6 +18,10 @@ import (
 	"strings"
 	"time"
 )
+
+func init() {
+	crontab.RegisterTask(20*time.Minute, "closeOrder", true, CloseOrderTicker)
+}
 
 // PublicPay 公众号页面支付
 func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -743,6 +748,11 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 		return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE"), true
 	}
 	return nil, false
+}
+
+// CloseOrderTicker
+func CloseOrderTicker() {
+	log.Debug("process close order task")
 }
 
 // findAndLockOrigTrans 查找原交易记录

@@ -401,7 +401,7 @@ func validateNoTrackPayment(in *model.NoTrackPayment) (ret *model.BindingReturn)
 		if in.ValidDate == "" || in.ValidDateDecrypt == "" {
 			return model.NewBindingReturn("200050", "字段 validDate 不能为空")
 		}
-		if matched, _ := regexp.MatchString(`^(0[1-9]|1[1-2])\d{2}$`, in.ValidDateDecrypt); !matched {
+		if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])$`, in.ValidDateDecrypt); !matched {
 			return mongo.RespCodeColl.Get("200140")
 		}
 
