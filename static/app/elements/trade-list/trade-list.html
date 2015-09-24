@@ -55,8 +55,8 @@
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
-            <tr on-dblclick="showTradeViewHandler">
-              <td align="center">{{addOneFilter(index)}}</td>
+            <tr>
+              <td align="center" on-click="showTradeViewHandler">{{addOneFilter(index)}}</td>
               <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
               <td>{{item.orderNum}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>

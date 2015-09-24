@@ -46,14 +46,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center">
+              <td class="center" on-click="viewMerchantTap">
                 <span>{{addOneFilter(index)}}</span>
               </td>
               <td class="center">
                 <span>{{item.merId}}</span>
               </td>
-              <td on-click="viewMerchantTap">
-                <span style="text-decoration:underline;cursor:pointer">{{getMerchantName(item.detail.merName)}}</span>
+              <td>
+                <span>{{item.detail.merName)}</span>
               </td>
               <td class="center">
                 <span>{{item.detail.billingScheme}}</span>
@@ -203,14 +203,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         submitForm: function() {
           this.merchants = [];
           this.set('cond.total', 0);
-        },
-        // merchantName为空，则返回---
-        getMerchantName: function(value) {
-          if (!value || value === '') {
-            return '---';
-          } else {
-            return value;
-          }
         },
         isNeedSignFilter: function(value) {
           if (value) {
