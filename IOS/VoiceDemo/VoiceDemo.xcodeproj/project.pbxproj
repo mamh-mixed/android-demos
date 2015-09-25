@@ -7,11 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B0AEB01A1B8FF8D600C80E02 /* MyTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0191B8FF8D600C80E02 /* MyTextField.m */; };
+		B02E438A1BA011E50023AD8F /* VTRecord_Uppay.m in Sources */ = {isa = PBXBuildFile; fileRef = B02E43891BA011E50023AD8F /* VTRecord_Uppay.m */; };
+		B02E43901BA012220023AD8F /* VTRecord_Wxpay.m in Sources */ = {isa = PBXBuildFile; fileRef = B02E438F1BA012220023AD8F /* VTRecord_Wxpay.m */; };
+		B02E43931BA02C8E0023AD8F /* VTPayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B02E43921BA02C8E0023AD8F /* VTPayViewController.m */; };
+		B0664FFA1B9D2B7100DC0A9D /* ButtonPro.m in Sources */ = {isa = PBXBuildFile; fileRef = B0664FEF1B9D2B7100DC0A9D /* ButtonPro.m */; };
+		B0664FFB1B9D2B7100DC0A9D /* GenerateRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B0664FF11B9D2B7100DC0A9D /* GenerateRequest.m */; };
+		B0664FFC1B9D2B7100DC0A9D /* MyTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B0664FF31B9D2B7100DC0A9D /* MyTextField.m */; };
+		B0664FFD1B9D2B7100DC0A9D /* RegisterTable.m in Sources */ = {isa = PBXBuildFile; fileRef = B0664FF51B9D2B7100DC0A9D /* RegisterTable.m */; };
+		B0664FFE1B9D2B7100DC0A9D /* Request.m in Sources */ = {isa = PBXBuildFile; fileRef = B0664FF71B9D2B7100DC0A9D /* Request.m */; };
+		B0664FFF1B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = B0664FF91B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.m */; };
+		B06650021B9D3DBE00DC0A9D /* DetectRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B06650011B9D3DBE00DC0A9D /* DetectRequest.m */; };
+		B06650051B9D756900DC0A9D /* ExpandRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B06650041B9D756900DC0A9D /* ExpandRequest.m */; };
 		B0AEB0211B8FFC5200C80E02 /* VTRegistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0201B8FFC5200C80E02 /* VTRegistViewController.m */; };
 		B0AEB0241B90022C00C80E02 /* VTRecord_Alipay.m in Sources */ = {isa = PBXBuildFile; fileRef = B0AEB0231B90022C00C80E02 /* VTRecord_Alipay.m */; };
 		B0AEB05B1B90122D00C80E02 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05A1B90122D00C80E02 /* play.png */; };
 		B0AEB05D1B90141500C80E02 /* microphone.png in Resources */ = {isa = PBXBuildFile; fileRef = B0AEB05C1B90141500C80E02 /* microphone.png */; };
+		B0C857E51BA65E94008F9ECA /* block.png in Resources */ = {isa = PBXBuildFile; fileRef = B0C857E41BA65E94008F9ECA /* block.png */; };
 		B0F857B31B952F87006CC28F /* name.png in Resources */ = {isa = PBXBuildFile; fileRef = B0F857B11B952F87006CC28F /* name.png */; };
 		B0F857B41B952F87006CC28F /* password.png in Resources */ = {isa = PBXBuildFile; fileRef = B0F857B21B952F87006CC28F /* password.png */; };
 		B0F857BA1B9531BB006CC28F /* Model.m in Sources */ = {isa = PBXBuildFile; fileRef = B0F857B61B9531BB006CC28F /* Model.m */; };
@@ -22,7 +33,6 @@
 		D6D4F17C1B90474200FC8987 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D4F1761B90474200FC8987 /* FMDatabaseAdditions.m */; };
 		D6D4F17D1B90474200FC8987 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D4F1781B90474200FC8987 /* FMResultSet.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		D6D4F17E1B90474200FC8987 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = D6D4F1791B90474200FC8987 /* LICENSE.txt */; };
-		D6D4F1811B90475E00FC8987 /* RegisterTable.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D4F1801B90475E00FC8987 /* RegisterTable.m */; };
 		D6D4F1831B90477800FC8987 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D6D4F1821B90477800FC8987 /* libsqlite3.dylib */; };
 		D6D66DFB1B8DA81300929852 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66DFA1B8DA81300929852 /* main.m */; };
 		D6D66DFE1B8DA81300929852 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66DFD1B8DA81300929852 /* AppDelegate.m */; };
@@ -31,9 +41,7 @@
 		D6D66E061B8DA81400929852 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6D66E051B8DA81400929852 /* Images.xcassets */; };
 		D6D66E091B8DA81400929852 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6D66E071B8DA81400929852 /* LaunchScreen.xib */; };
 		D6D66E151B8DA81400929852 /* VoiceDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66E141B8DA81400929852 /* VoiceDemoTests.m */; };
-		D6D66E211B8DA8D000929852 /* UICollectionViewWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66E201B8DA8D000929852 /* UICollectionViewWaterfallLayout.m */; };
 		D6D66E241B8DA8EB00929852 /* CollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66E231B8DA8EB00929852 /* CollectionViewCell.m */; };
-		D6D66E271B8DA92500929852 /* ButtonPro.m in Sources */ = {isa = PBXBuildFile; fileRef = D6D66E261B8DA92500929852 /* ButtonPro.m */; };
 		D6D66E3C1B8DAA3300929852 /* back.png in Resources */ = {isa = PBXBuildFile; fileRef = D6D66E291B8DAA3300929852 /* back.png */; };
 		D6D66E3D1B8DAA3300929852 /* bar_buy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6D66E2A1B8DAA3300929852 /* bar_buy@2x.png */; };
 		D6D66E3E1B8DAA3300929852 /* bg1.png in Resources */ = {isa = PBXBuildFile; fileRef = D6D66E2B1B8DAA3300929852 /* bg1.png */; };
@@ -67,8 +75,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B0AEB0181B8FF8D600C80E02 /* MyTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTextField.h; sourceTree = "<group>"; };
-		B0AEB0191B8FF8D600C80E02 /* MyTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTextField.m; sourceTree = "<group>"; };
+		B02E43881BA011E50023AD8F /* VTRecord_Uppay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTRecord_Uppay.h; path = VC/VTRecord_Uppay.h; sourceTree = "<group>"; };
+		B02E43891BA011E50023AD8F /* VTRecord_Uppay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VTRecord_Uppay.m; path = VC/VTRecord_Uppay.m; sourceTree = "<group>"; };
+		B02E438E1BA012220023AD8F /* VTRecord_Wxpay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTRecord_Wxpay.h; path = VC/VTRecord_Wxpay.h; sourceTree = "<group>"; };
+		B02E438F1BA012220023AD8F /* VTRecord_Wxpay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VTRecord_Wxpay.m; path = VC/VTRecord_Wxpay.m; sourceTree = "<group>"; };
+		B02E43911BA02C8E0023AD8F /* VTPayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTPayViewController.h; path = VC/VTPayViewController.h; sourceTree = "<group>"; };
+		B02E43921BA02C8E0023AD8F /* VTPayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VTPayViewController.m; path = VC/VTPayViewController.m; sourceTree = "<group>"; };
+		B0664FEE1B9D2B7100DC0A9D /* ButtonPro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonPro.h; sourceTree = "<group>"; };
+		B0664FEF1B9D2B7100DC0A9D /* ButtonPro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonPro.m; sourceTree = "<group>"; };
+		B0664FF01B9D2B7100DC0A9D /* GenerateRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenerateRequest.h; sourceTree = "<group>"; };
+		B0664FF11B9D2B7100DC0A9D /* GenerateRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenerateRequest.m; sourceTree = "<group>"; };
+		B0664FF21B9D2B7100DC0A9D /* MyTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTextField.h; sourceTree = "<group>"; };
+		B0664FF31B9D2B7100DC0A9D /* MyTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTextField.m; sourceTree = "<group>"; };
+		B0664FF41B9D2B7100DC0A9D /* RegisterTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterTable.h; sourceTree = "<group>"; };
+		B0664FF51B9D2B7100DC0A9D /* RegisterTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterTable.m; sourceTree = "<group>"; };
+		B0664FF61B9D2B7100DC0A9D /* Request.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Request.h; sourceTree = "<group>"; };
+		B0664FF71B9D2B7100DC0A9D /* Request.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Request.m; sourceTree = "<group>"; };
+		B0664FF81B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICollectionViewWaterfallLayout.h; sourceTree = "<group>"; };
+		B0664FF91B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICollectionViewWaterfallLayout.m; sourceTree = "<group>"; };
+		B06650001B9D3DBE00DC0A9D /* DetectRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetectRequest.h; sourceTree = "<group>"; };
+		B06650011B9D3DBE00DC0A9D /* DetectRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetectRequest.m; sourceTree = "<group>"; };
+		B06650031B9D756900DC0A9D /* ExpandRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpandRequest.h; sourceTree = "<group>"; };
+		B06650041B9D756900DC0A9D /* ExpandRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpandRequest.m; sourceTree = "<group>"; };
 		B0AEB01F1B8FFC5200C80E02 /* VTRegistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTRegistViewController.h; path = VC/VTRegistViewController.h; sourceTree = "<group>"; };
 		B0AEB0201B8FFC5200C80E02 /* VTRegistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VTRegistViewController.m; path = VC/VTRegistViewController.m; sourceTree = "<group>"; };
 		B0AEB0221B90022C00C80E02 /* VTRecord_Alipay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VTRecord_Alipay.h; path = VC/VTRecord_Alipay.h; sourceTree = "<group>"; };
@@ -76,7 +104,7 @@
 		B0AEB0251B90030400C80E02 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		B0AEB05A1B90122D00C80E02 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B0AEB05C1B90141500C80E02 /* microphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = microphone.png; sourceTree = "<group>"; };
-		B0AEB05E1B90402000C80E02 /* block.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block.png; sourceTree = "<group>"; };
+		B0C857E41BA65E94008F9ECA /* block.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = block.png; sourceTree = "<group>"; };
 		B0F857B11B952F87006CC28F /* name.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = name.png; sourceTree = "<group>"; };
 		B0F857B21B952F87006CC28F /* password.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = password.png; sourceTree = "<group>"; };
 		B0F857B51B9531BB006CC28F /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
@@ -93,8 +121,6 @@
 		D6D4F1771B90474200FC8987 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
 		D6D4F1781B90474200FC8987 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		D6D4F1791B90474200FC8987 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		D6D4F17F1B90475E00FC8987 /* RegisterTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterTable.h; sourceTree = "<group>"; };
-		D6D4F1801B90475E00FC8987 /* RegisterTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterTable.m; sourceTree = "<group>"; };
 		D6D4F1821B90477800FC8987 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		D6D66DF51B8DA81300929852 /* VoiceDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoiceDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6D66DF91B8DA81300929852 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -109,12 +135,8 @@
 		D6D66E0E1B8DA81400929852 /* VoiceDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VoiceDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6D66E131B8DA81400929852 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6D66E141B8DA81400929852 /* VoiceDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VoiceDemoTests.m; sourceTree = "<group>"; };
-		D6D66E1F1B8DA8D000929852 /* UICollectionViewWaterfallLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICollectionViewWaterfallLayout.h; sourceTree = "<group>"; };
-		D6D66E201B8DA8D000929852 /* UICollectionViewWaterfallLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICollectionViewWaterfallLayout.m; sourceTree = "<group>"; };
 		D6D66E221B8DA8EB00929852 /* CollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewCell.h; sourceTree = "<group>"; };
 		D6D66E231B8DA8EB00929852 /* CollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewCell.m; sourceTree = "<group>"; };
-		D6D66E251B8DA92500929852 /* ButtonPro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonPro.h; sourceTree = "<group>"; };
-		D6D66E261B8DA92500929852 /* ButtonPro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonPro.m; sourceTree = "<group>"; };
 		D6D66E291B8DAA3300929852 /* back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = back.png; sourceTree = "<group>"; };
 		D6D66E2A1B8DAA3300929852 /* bar_buy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bar_buy@2x.png"; sourceTree = "<group>"; };
 		D6D66E2B1B8DAA3300929852 /* bg1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg1.png; sourceTree = "<group>"; };
@@ -158,6 +180,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B0664FED1B9D2B7100DC0A9D /* TOOL */ = {
+			isa = PBXGroup;
+			children = (
+				B0664FF81B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.h */,
+				B0664FF91B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.m */,
+				B0664FEE1B9D2B7100DC0A9D /* ButtonPro.h */,
+				B0664FEF1B9D2B7100DC0A9D /* ButtonPro.m */,
+				B0664FF21B9D2B7100DC0A9D /* MyTextField.h */,
+				B0664FF31B9D2B7100DC0A9D /* MyTextField.m */,
+				B0664FF41B9D2B7100DC0A9D /* RegisterTable.h */,
+				B0664FF51B9D2B7100DC0A9D /* RegisterTable.m */,
+				B0664FF61B9D2B7100DC0A9D /* Request.h */,
+				B0664FF71B9D2B7100DC0A9D /* Request.m */,
+				B0664FF01B9D2B7100DC0A9D /* GenerateRequest.h */,
+				B0664FF11B9D2B7100DC0A9D /* GenerateRequest.m */,
+				B06650001B9D3DBE00DC0A9D /* DetectRequest.h */,
+				B06650011B9D3DBE00DC0A9D /* DetectRequest.m */,
+				B06650031B9D756900DC0A9D /* ExpandRequest.h */,
+				B06650041B9D756900DC0A9D /* ExpandRequest.m */,
+			);
+			path = TOOL;
+			sourceTree = "<group>";
+		};
 		B0AEB01E1B8FFBB600C80E02 /* VC */ = {
 			isa = PBXGroup;
 			children = (
@@ -165,6 +210,12 @@
 				B0AEB0201B8FFC5200C80E02 /* VTRegistViewController.m */,
 				B0AEB0221B90022C00C80E02 /* VTRecord_Alipay.h */,
 				B0AEB0231B90022C00C80E02 /* VTRecord_Alipay.m */,
+				B02E43881BA011E50023AD8F /* VTRecord_Uppay.h */,
+				B02E43891BA011E50023AD8F /* VTRecord_Uppay.m */,
+				B02E438E1BA012220023AD8F /* VTRecord_Wxpay.h */,
+				B02E438F1BA012220023AD8F /* VTRecord_Wxpay.m */,
+				B02E43911BA02C8E0023AD8F /* VTPayViewController.h */,
+				B02E43921BA02C8E0023AD8F /* VTPayViewController.m */,
 			);
 			name = VC;
 			sourceTree = "<group>";
@@ -207,8 +258,8 @@
 		D6D66DF71B8DA81300929852 /* VoiceDemo */ = {
 			isa = PBXGroup;
 			children = (
+				B0664FED1B9D2B7100DC0A9D /* TOOL */,
 				D6D4F1701B90474200FC8987 /* FMDB */,
-				D6D66E1E1B8DA8C100929852 /* TOOL */,
 				B0AEB01E1B8FFBB600C80E02 /* VC */,
 				D6D66DFC1B8DA81300929852 /* AppDelegate.h */,
 				D6D66DFD1B8DA81300929852 /* AppDelegate.m */,
@@ -261,25 +312,10 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		D6D66E1E1B8DA8C100929852 /* TOOL */ = {
-			isa = PBXGroup;
-			children = (
-				D6D66E1F1B8DA8D000929852 /* UICollectionViewWaterfallLayout.h */,
-				D6D66E201B8DA8D000929852 /* UICollectionViewWaterfallLayout.m */,
-				D6D66E251B8DA92500929852 /* ButtonPro.h */,
-				D6D66E261B8DA92500929852 /* ButtonPro.m */,
-				B0AEB0181B8FF8D600C80E02 /* MyTextField.h */,
-				B0AEB0191B8FF8D600C80E02 /* MyTextField.m */,
-				D6D4F17F1B90475E00FC8987 /* RegisterTable.h */,
-				D6D4F1801B90475E00FC8987 /* RegisterTable.m */,
-			);
-			name = TOOL;
-			sourceTree = "<group>";
-		};
 		D6D66E281B8DAA3300929852 /* demoImg */ = {
 			isa = PBXGroup;
 			children = (
-				B0AEB05E1B90402000C80E02 /* block.png */,
+				B0C857E41BA65E94008F9ECA /* block.png */,
 				B0F857B11B952F87006CC28F /* name.png */,
 				B0F857B21B952F87006CC28F /* password.png */,
 				B0AEB05A1B90122D00C80E02 /* play.png */,
@@ -355,6 +391,7 @@
 				TargetAttributes = {
 					D6D66DF41B8DA81300929852 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 2VKY6QPH98;
 					};
 					D6D66E0D1B8DA81400929852 = {
 						CreatedOnToolsVersion = 6.4;
@@ -401,6 +438,7 @@
 				B0F857B31B952F87006CC28F /* name.png in Resources */,
 				B0F857BC1B9531BB006CC28F /* TableViewCell.xib in Resources */,
 				D6D66E4B1B8DAA3300929852 /* n9.jpg in Resources */,
+				B0C857E51BA65E94008F9ECA /* block.png in Resources */,
 				D6D4F17E1B90474200FC8987 /* LICENSE.txt in Resources */,
 				D6D66E491B8DAA3300929852 /* n7.jpg in Resources */,
 				D6D66E481B8DAA3300929852 /* n6.jpg in Resources */,
@@ -430,24 +468,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0664FFB1B9D2B7100DC0A9D /* GenerateRequest.m in Sources */,
+				B06650021B9D3DBE00DC0A9D /* DetectRequest.m in Sources */,
+				B02E438A1BA011E50023AD8F /* VTRecord_Uppay.m in Sources */,
 				D6D66E011B8DA81300929852 /* ViewController.m in Sources */,
 				D6D4F17A1B90474200FC8987 /* DataBaseUtility.m in Sources */,
+				B0664FFF1B9D2B7100DC0A9D /* UICollectionViewWaterfallLayout.m in Sources */,
 				D6D4F17B1B90474200FC8987 /* FMDatabase.m in Sources */,
 				B0F857BA1B9531BB006CC28F /* Model.m in Sources */,
-				D6D66E271B8DA92500929852 /* ButtonPro.m in Sources */,
+				B0664FFD1B9D2B7100DC0A9D /* RegisterTable.m in Sources */,
+				B0664FFA1B9D2B7100DC0A9D /* ButtonPro.m in Sources */,
 				B0AEB0211B8FFC5200C80E02 /* VTRegistViewController.m in Sources */,
 				D6D4F17C1B90474200FC8987 /* FMDatabaseAdditions.m in Sources */,
+				B02E43901BA012220023AD8F /* VTRecord_Wxpay.m in Sources */,
+				B06650051B9D756900DC0A9D /* ExpandRequest.m in Sources */,
 				D6D66E241B8DA8EB00929852 /* CollectionViewCell.m in Sources */,
-				D6D4F1811B90475E00FC8987 /* RegisterTable.m in Sources */,
 				D6D66DFE1B8DA81300929852 /* AppDelegate.m in Sources */,
 				D6D66DFB1B8DA81300929852 /* main.m in Sources */,
 				D6D4F17D1B90474200FC8987 /* FMResultSet.m in Sources */,
-				B0AEB01A1B8FF8D600C80E02 /* MyTextField.m in Sources */,
 				B0F857BB1B9531BB006CC28F /* TableViewCell.m in Sources */,
 				D6D66E511B8DB47800929852 /* VTLoginViewController.m in Sources */,
+				B0664FFE1B9D2B7100DC0A9D /* Request.m in Sources */,
+				B02E43931BA02C8E0023AD8F /* VTPayViewController.m in Sources */,
+				B0664FFC1B9D2B7100DC0A9D /* MyTextField.m in Sources */,
 				D6D66E541B8DB49D00929852 /* VTListViewController.m in Sources */,
 				B0AEB0241B90022C00C80E02 /* VTRecord_Alipay.m in Sources */,
-				D6D66E211B8DA8D000929852 /* UICollectionViewWaterfallLayout.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,10 +618,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GCC_PREFIX_HEADER = "";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Yin Qu (9H65BLS4K7)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Yin Qu (9H65BLS4K7)";
+				GCC_PREFIX_HEADER = "/Users/huangdaneng/work/工作/show-money-client/IOS/VoiceDemo/VoiceDemoTests/PrefixHeader.pch";
 				INFOPLIST_FILE = VoiceDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "938965b2-7351-4422-9a8d-2958a9eb3887";
 			};
 			name = Debug;
 		};
@@ -584,10 +634,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GCC_PREFIX_HEADER = "";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Yin Qu (9H65BLS4K7)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Yin Qu (9H65BLS4K7)";
+				GCC_PREFIX_HEADER = "/Users/huangdaneng/work/工作/show-money-client/IOS/VoiceDemo/VoiceDemoTests/PrefixHeader.pch";
 				INFOPLIST_FILE = VoiceDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "938965b2-7351-4422-9a8d-2958a9eb3887";
 			};
 			name = Release;
 		};
@@ -595,6 +650,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Shanghai CardInfoLink Data Service Co., LTD (2VKY6QPH98)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -614,6 +670,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Shanghai CardInfoLink Data Service Co., LTD (2VKY6QPH98)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
