@@ -11,7 +11,8 @@
         "TCPAddr": ":6600", // 扫码 TCP 接口，UTF-8 编码传输，UTF-8 签名
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "5m", // 缓存有效时间
-        "NotifyURL": "https://api.shou.money" // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "OrderCloseTime":"20m"
     },
     "Mongo": {
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
