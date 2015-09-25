@@ -70,21 +70,18 @@ table.data-grid > tbody > tr:nth-child(even) {
 table.data-grid iron-icon {
   height: 1.2em !important;
 }
-td.left {
-  text-align: left;
-}
-td.right {
-  text-align: right;
-}
-td.center {
-  text-align: center;
-}
 table.data-grid tbody tr th {
   text-align: left;
 }
+
 pre {
   font-family: monospace;
   font-size: 8px;
+}
+
+/* mouse */
+.hand {
+    cursor: pointer;
 }
 
 /* colors */
@@ -97,4 +94,14 @@ pre {
 }
 .blue {
   color: #E65100;
+}
+/* align */
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.center {
+  text-align: center;
 }

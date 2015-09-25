@@ -1,14 +1,5 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
 
 <dom-module id="quick-merchant-list">
   <style>
@@ -30,14 +21,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <table class="data-grid">
         <thead>
           <tr>
             <th>序号</th>
             <th>商户代码</th>
-            <th align="left">商户名称</th>
+            <th class="left">商户名称</th>
             <th>计费方案代码</th>
             <th align="left">交易币种</th>
             <th align="left">是否开启验签</th>
@@ -46,24 +35,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center" on-click="viewMerchantTap">
-                <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td class="center">
-                <span>{{item.merId}}</span>
-              </td>
-              <td>
-                <span>{{item.detail.merName)}</span>
-              </td>
-              <td class="center">
-                <span>{{item.detail.billingScheme}}</span>
-              </td>
-              <td>
-                <span>{{item.transCurr}}</span>
-              </td>
-              <td>
-                <span>{{isNeedSignFilter(item.isNeedSign)}}</span>
-              </td>
+              <td class="center hand" on-click="viewMerchantTap"><iron-icon icon="editor:attach-file"></iron-icon><span>{{addOneFilter(index)}}</span></td>
+              <td class="center">{{item.merId}}</td>
+              <td>{{item.detail.merName}}</td>
+              <td class="center">{{item.detail.billingScheme}}</td>
+              <td>{{item.transCurr}}</td>
+              <td>{{isNeedSignFilter(item.isNeedSign)}}</td>
             </tr>
           </template>
         </tbody>
