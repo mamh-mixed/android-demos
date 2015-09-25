@@ -25,7 +25,7 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		ret.RespCode = m.RespCode
 		// 需要返回渠道详细应答
 		if m.IsRetChanRespMsg {
-			ret.RespMsg = resp.Body.ResponseMessage
+			ret.RespMsg = resp.Head.Message
 		} else {
 			ret.RespMsg = m.RespMsg
 		}

@@ -8,7 +8,6 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -18,7 +17,7 @@ var agentId = goconf.Config.AlipayScanPay.AgentId
 func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 上送参数
-	req.SysOrderNum = util.SerialNumber()
+	req.SysOrderNum = t.SysOrderNum
 	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 
@@ -30,12 +29,6 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 		return LogicErrorHandler(t, "NO_MERCHANT")
 	}
 	addRelatedProperties(t, mer)
-
-	// 记录交易
-	err = mongo.SpTransColl.Add(t)
-	if err != nil {
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
@@ -77,20 +70,10 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	addRelatedProperties(t, mer)
 
 	// 上送参数
-	req.SysOrderNum = util.SerialNumber()
+	req.SysOrderNum = t.SysOrderNum
 	req.Subject = mer.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
-
-	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
-
-	// 记录交易
-	t.TransStatus = model.TransNotPay
-	err = mongo.SpTransColl.Add(t)
-	if err != nil {
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
@@ -127,12 +110,12 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	chanMer, subMchId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
-		return LogicErrorHandler(t, "SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	mer, err := mongo.MerchantColl.Find(t.MerId)
 	if err != nil {
-		return LogicErrorHandler(t, "NO_MERCHANT")
+		return ReturnWithErrorCode("NO_MERCHANT")
 	}
 	addRelatedProperties(t, mer)
 
@@ -150,20 +133,10 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	}
 
 	// 上送参数
-	req.SysOrderNum = util.SerialNumber()
+	req.SysOrderNum = t.SysOrderNum
 	req.Subject = mer.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
-
-	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
-
-	// 记录交易
-	t.TransStatus = model.TransNotPay
-	err = mongo.SpTransColl.Add(t)
-	if err != nil {
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd)
@@ -180,42 +153,32 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 }
 
 // ProcessRefund 请求渠道退款，不做逻辑处理
-func ProcessRefund(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
 	chanMer, subMchId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
-		return LogicErrorHandler(current, "SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 渠道参数
-	req.SysOrderNum = util.SerialNumber()
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
-
-	// 交易参数
-	current.SysOrderNum = req.SysOrderNum
 
 	// 不同渠道参数转换
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
-		req.ActTxamt = fmt.Sprintf("%0.2f", float64(current.TransAmt)/100)
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
 	case channel.ChanCodeWeixin:
 		req.AppID = chanMer.WxpAppId
-		req.ActTxamt = fmt.Sprintf("%d", current.TransAmt)
+		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
 		req.WeixinClientKey = []byte(chanMer.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
-	}
-
-	// 记录交易
-	err = mongo.SpTransColl.Add(current)
-	if err != nil {
-		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 请求退款
@@ -284,28 +247,18 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 }
 
 // ProcessCancel 请求渠道撤销，不做逻辑处理
-func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
 	chanMer, subMchId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
-		return LogicErrorHandler(current, "SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 渠道参数
-	req.SysOrderNum = util.SerialNumber()
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
-
-	// 交易参数
-	current.SysOrderNum = req.SysOrderNum
-
-	// 记录交易
-	err = mongo.SpTransColl.Add(current)
-	if err != nil {
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
 
 	// 请求撤销
 	sp := channel.GetScanPayChan(orig.ChanCode)
@@ -335,7 +288,7 @@ func ProcessCancel(orig, current *model.Trans, c *model.ChanMer, req *model.Scan
 }
 
 // ProcessClose 关闭订单
-func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 支付交易（下单、预下单）
 	if orig.ChanCode == channel.ChanCodeAlipay {
 		// 成功支付的交易标记已退款
@@ -343,7 +296,7 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 			orig.RefundStatus = model.TransRefunded
 		}
 		// 执行撤销流程
-		return ProcessCancel(orig, closed, c, req)
+		return ProcessCancel(orig, c, req)
 	}
 
 	if orig.ChanCode == channel.ChanCodeWeixin {
@@ -351,7 +304,7 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 		if orig.Busicd == model.Purc {
 
 			// 走微信撤销接口
-			return ProcessWxpCancel(orig, closed, c, req)
+			return ProcessWxpCancel(orig, c, req)
 		}
 
 		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
@@ -361,9 +314,8 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 			switch orig.TransStatus {
 			case model.TransSuccess:
 				// 预下单全额退款
-				closed.TransAmt = orig.TransAmt
-				orig.RefundStatus = model.TransRefunded
-				return ProcessRefund(orig, closed, c, req)
+				req.IntTxamt = orig.TransAmt
+				return ProcessRefund(orig, c, req)
 			case model.TransHandling:
 				// 发起查询请求，确认订单状态
 				log.Info("query order status before close ...")
@@ -382,12 +334,12 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 				// 直接关单 不用判断时间
 				// 这里可能出现重新查询时状态为09，但是这时用户马上支付成功
 				// 那么实际上是对已支付的订单进行关单，会报错
-				return ProcessWxpClose(orig, closed, c, req)
+				return ProcessWxpClose(orig, c, req)
 			}
 		}
-		return LogicErrorHandler(closed, "NOT_SUPPORT_TYPE")
+		return ReturnWithErrorCode("NOT_SUPPORT_TYPE")
 	}
-	return LogicErrorHandler(closed, "NO_CHANNEL")
+	return ReturnWithErrorCode("NO_CHANNEL")
 }
 
 // func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -423,21 +375,11 @@ func ProcessClose(orig, closed *model.Trans, c *model.ChanMer, req *model.ScanPa
 // ProcessWxpRefundQuery 微信查询退款接口
 func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
-	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
-	if err != nil {
-		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
-		return ReturnWithErrorCode("SYSTEM_ERROR")
+	var err error
+	errResp := prepareWxpReqData(t, c, req)
+	if errResp != nil {
+		return errResp
 	}
-
-	// 上送参数
-	req.OrderNum = t.OrderNum
-	req.SignKey = chanMer.SignKey
-	req.ChanMerId = chanMer.ChanMerId
-	req.AppID = chanMer.WxpAppId
-	req.SubMchId = subMchId
-	req.WeixinClientCert = []byte(chanMer.HttpCert)
-	req.WeixinClientKey = []byte(chanMer.HttpKey)
 
 	// 指定微信
 	sp := channel.GetScanPayChan(channel.ChanCodeWeixin)
@@ -451,10 +393,10 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 }
 
 // ProcessWxpCancel 微信撤销接口
-func ProcessWxpCancel(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessWxpCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, current, c, req)
+	errResp := prepareWxpReqData(orig, c, req)
 	if errResp != nil {
 		return errResp
 	}
@@ -471,10 +413,10 @@ func ProcessWxpCancel(orig, current *model.Trans, c *model.ChanMer, req *model.S
 }
 
 // ProcessWxpClose 微信关闭接口
-func ProcessWxpClose(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func ProcessWxpClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, current, c, req)
+	errResp := prepareWxpReqData(orig, c, req)
 	if errResp != nil {
 		return errResp
 	}
@@ -490,17 +432,16 @@ func ProcessWxpClose(orig, current *model.Trans, c *model.ChanMer, req *model.Sc
 	return ret
 }
 
-func prepareWxpReqData(orig, current *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
 	chanMer, subMchId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
-		return LogicErrorHandler(current, "SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 渠道参数
-	req.SysOrderNum = util.SerialNumber()
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
 	req.AppID = chanMer.WxpAppId
@@ -508,14 +449,6 @@ func prepareWxpReqData(orig, current *model.Trans, c *model.ChanMer, req *model.
 	req.WeixinClientCert = []byte(chanMer.HttpCert)
 	req.WeixinClientKey = []byte(chanMer.HttpKey)
 
-	// 系统订单号
-	current.SysOrderNum = req.SysOrderNum
-
-	// 记录交易
-	err = mongo.SpTransColl.Add(current)
-	if err != nil {
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
 	return nil
 }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"strings"
-	"time"
 )
 
 var (
@@ -90,9 +89,7 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 		return mongo.RespCodeColl.Get("000001")
 	}
 
-	chant := time.Now()
 	ret = c.ProcessPaySettlement(be)
-	log.Debugf("chan spent %s", time.Now().Sub(chant))
 
 	// 更新
 	transStatusHandle(ret, sett)

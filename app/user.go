@@ -141,30 +141,35 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 		Title: activation.Title,
 		Body:  fmt.Sprintf(activation.Body, activateUrl, "点我激活"),
 	}
-	err = email.Send()
 
 	e := &model.Email{
 		UserName:  req.UserName,
 		Code:      code,
-		Success:   true,
+		Success:   false,
 		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
-	}
-	if err != nil {
-		e.Success = false
 	}
 
 	// 保存email信息
 	err = mongo.EmailCol.Upsert(e)
 	if err != nil {
-		log.Errorf("save email err")
+		log.Errorf("save email err: %s", err)
 		return model.SYSTEM_ERROR
 	}
 
-	if e.Success {
-		return model.SUCCESS1
-	} else {
-		return model.SYSTEM_ERROR
-	}
+	// 异步发送邮件
+	go func() {
+		err := email.Send()
+		if err != nil {
+			log.Errorf("send email fail: %s", err)
+			return
+		}
+
+		// update
+		e.Success = true
+		mongo.EmailCol.Upsert(e)
+	}()
+
+	return model.SUCCESS1
 }
 
 // activate 激活

@@ -7,8 +7,10 @@ import (
 // status
 const (
 	// refundStatus
-	TransRefunded     = 1 // 已退款
-	TransPartRefunded = 2 // 部分退款
+	TransRefunded       = 1 // 已退款
+	TransPartRefunded   = 2 // 部分退款
+	TransMerClosed      = 3 // 商户发起关闭
+	TransOverTimeClosed = 4 // 交易超时系统关闭
 
 	// transType
 	PayTrans    = 1 // 支付交易
