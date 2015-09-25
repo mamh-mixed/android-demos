@@ -15,9 +15,9 @@ type task struct {
 	IsSingleProcess bool
 }
 
-func RegisterTask(d time.Duration, taskName string, IsSingleProcess bool, taskFunc func()) {
+func RegisterTask(d time.Duration, taskName string, flag bool, taskFunc func()) {
 	t := task{
-		D: d, Name: taskName, F: taskFunc,
+		D: d, Name: taskName, F: taskFunc, IsSingleProcess: flag,
 	}
 	tasks[taskName] = t
 }
@@ -39,25 +39,20 @@ func doTick(t task) {
 
 	ticker := time.NewTicker(t.D)
 
-	var index int
 	for {
 		<-ticker.C
+
 		// 取任务
-		if index == 0 {
-			v, err := mongo.TaskCol.Pop(t.Name)
-			if err != nil {
-				log.Errorf("task pop error: %s", err)
-				continue
-			}
-			// 拿不到任务
-			if v == 0 {
-				log.Warn("no task getted. quit!")
-				ticker.Stop()
-				return
-			}
+		err := mongo.TaskCol.Pop(t.Name)
+		if err != nil {
+			log.Debug("get no task .. continue")
+			continue
 		}
+
 		// 执行任务
 		t.F()
-		index++
+
+		// 完成任务
+		mongo.TaskCol.Finish(t.Name)
 	}
 }

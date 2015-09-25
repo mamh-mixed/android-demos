@@ -3,6 +3,7 @@ package mongo
 import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 var TaskCol = taskCollection{"task"}
@@ -11,42 +12,61 @@ type taskCollection struct {
 	name string
 }
 
-// Add 往队列里增加一个任务
-func (t *taskCollection) Add(taskName string, isUnique bool) error {
+type task struct {
+	Name            string `bson:"name"`
+	IsSingleProcess bool   `bson:"isSignleProcess"`
+	// IsProcessSuccess bool   `bson:"isProcessSuccess"`
+	IsDoing    bool   `bson:"isDoing"`
+	UpdateTime string `bson:"updateTime"`
+}
 
-	selector := bson.M{
-		"name": taskName,
+// Add 增加一个任务
+func (t *taskCollection) Add(taskName string, isSingleProcess bool) error {
+
+	if isSingleProcess {
+		_, err := database.C(t.name).Upsert(bson.M{"name": taskName}, bson.M{
+			"$set": bson.M{"name": taskName},
+		})
+		return err
 	}
-	update := bson.M{}
-	if isUnique {
-		update["$addToSet"] = bson.M{
-			"queue": 1,
-		}
-	} else {
-		update["$push"] = bson.M{
-			"queue": 1,
-		}
-	}
-	return database.C(t.name).Update(selector, update)
+
+	return database.C(t.name).Insert(&task{
+		Name: taskName,
+	})
 }
 
 // Pop 推出一个任务
-func (t *taskCollection) Pop(taskName string) (int, error) {
+func (t *taskCollection) Pop(taskName string) error {
 	query := bson.M{
-		"name": taskName,
+		"name":    taskName,
+		"isDoing": bson.M{"$ne": true},
 	}
 
 	change := mgo.Change{}
 	change.Update = bson.M{
-		"$pop": bson.M{"queue": 1},
+		"$set": bson.M{"isDoing": true,
+			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+		},
 	}
 
-	var result = &struct {
-		Name  string `bson:"name"`
-		Queue []int  `bson:"queue"`
-	}{}
+	_, err := database.C(t.name).Find(query).Apply(change, &task{})
 
-	_, err := database.C(t.name).Find(query).Apply(change, result)
+	return err
+}
 
-	return len(result.Queue), err
+// Finish 完成一个任务
+func (t *taskCollection) Finish(taskName string) error {
+	query := bson.M{
+		"name":    taskName,
+		"isDoing": true,
+	}
+
+	change := mgo.Change{}
+	change.Update = bson.M{
+		"$set": bson.M{"isDoing": false},
+	}
+
+	_, err := database.C(t.name).Find(query).Apply(change, &task{})
+
+	return err
 }

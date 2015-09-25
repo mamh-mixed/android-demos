@@ -14,9 +14,8 @@ func TestAddTask(t *testing.T) {
 
 func TestPopTask(t *testing.T) {
 
-	integer, err := TaskCol.Pop("test")
+	err := TaskCol.Pop("test")
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(integer)
 }

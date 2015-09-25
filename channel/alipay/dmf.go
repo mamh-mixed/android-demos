@@ -130,7 +130,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 
 	alpResp, err := sendRequest(dict, req.SignKey)
 	if err != nil {
-		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, query)
+		log.Errorf("sendRequest fail, origOrderNum=%s, service=%s, channel=alp", req.OrigOrderNum, query)
 		return nil, err
 	}
 
