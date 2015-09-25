@@ -38,7 +38,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     .content {
-      min-height: 300px;
       margin-top: 15px;
     }
 
@@ -79,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <!-- 撤销订单 -->
         <div id="voidOrder" class="order">
-          <paper-tabs selected="{{voidIdx}}" on-click="selectVoidOrderHandle">
+          <paper-tabs selected="{{voidIdx}}">
             <paper-tab>撤销订单</paper-tab>
             <paper-tab>商户报文</paper-tab>
             <paper-tab>渠道报文</paper-tab>
@@ -94,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <!-- 取消订单 -->
         <div id="cancOrder" class="order">
-          <paper-tabs selected="{{cancIdx}}" on-click="selectCancOrderHandle">
+          <paper-tabs selected="{{cancIdx}}">
             <paper-tab>取消订单</paper-tab>
             <paper-tab>商户报文</paper-tab>
             <paper-tab>渠道报文</paper-tab>
@@ -139,34 +138,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       open: function() {
         this.$.dialogView.open();
         this.idx = 0;
+        this.voidIdx = 0;
+        this.cancIdx = 0;
+        this.refdIdx = 0;
+        this.voidOrderItem = {};
+        this.cancOrderItem = {};
+        this.refdOrderItem = {};
+        // 初始化时查询关联订单
+        this.$.tradeQueryAjax.params = {
+          'busicd': 'VOID',
+          'origOrderNum': this.item.orderNum,
+        };
+        this.$.tradeQueryAjax.generateRequest();
+
+        this.$.tradeQueryAjax.params = {
+          'busicd': 'CANC',
+          'origOrderNum': this.item.orderNum,
+        };
+        this.$.tradeQueryAjax.generateRequest();
+
+        this.$.tradeQueryAjax.params = {
+          'busicd': 'REFD',
+          'origOrderNum': this.item.orderNum,
+        };
+        this.$.tradeQueryAjax.generateRequest();
+
       },
-      selectVoidOrderHandle: function() {
-        if (!this.voidOrderItem) {
-          this.$.tradeQueryAjax.params = {
-            'busicd': 'VOID',
-            'origOrderNum': this.item.orderNum,
-          };
-          this.$.tradeQueryAjax.generateRequest();
-        }
-      },
-      selectCancOrderHandle: function() {
-        if (!this.cancOrderItem) {
-          this.$.tradeQueryAjax.params = {
-            'busicd': 'CANC',
-            'origOrderNum': this.item.orderNum,
-          };
-          this.$.tradeQueryAjax.generateRequest();
-        }
-      },
-      selectRefdOrderHandle: function() {
-        if (!this.refdOrderItem) {
-          this.$.tradeQueryAjax.params = {
-            'busicd': 'REFD',
-            'origOrderNum': this.item.orderNum,
-          };
-          this.$.tradeQueryAjax.generateRequest();
-        }
-      },
+      // 查询订单响应
       handleResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
@@ -178,7 +176,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.voidOrderItem = order;
         } else if (order.busicd === 'CANC') {
           this.cancOrderItem = order;
-      } else if (order.busicd === 'REFD') {
+        } else if (order.busicd === 'REFD') {
           this.refdOrderItem = order;
         }
       },

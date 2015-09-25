@@ -24,6 +24,12 @@ func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 	return query.SpTransQuery(q)
 }
 
+// tradeQuery 交易查询
+func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
+
+	return query.SpTransFindOne(q)
+}
+
 // tradeReport 处理查找所有商户的请求
 func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
 	var file = xlsx.NewFile()

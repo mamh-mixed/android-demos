@@ -120,8 +120,8 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 }
 
 // PaginationFind 分页查找机构商户
-func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay string, size, page int) (results []model.Merchant, total int, err error) {
-	results = make([]model.Merchant, 1)
+func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay string, size, page int) (results []*model.Merchant, total int, err error) {
+	results = make([]*model.Merchant, 1)
 
 	match := bson.M{}
 	if merId != "" {
@@ -238,4 +238,16 @@ func (c *merchantCollection) FindMaxMerId() (merId string, err error) {
 		return "", err
 	}
 	return m.MerId, nil
+}
+
+func (col *merchantCollection) FindCountByMerId(merId string) (num int, err error) {
+	bo := bson.M{
+		"merId": merId,
+	}
+	num, err = database.C(col.name).Find(bo).Count()
+	if err != nil {
+		log.Errorf("find count by merId err,merId=%s", err)
+		return 0, err
+	}
+	return num, nil
 }

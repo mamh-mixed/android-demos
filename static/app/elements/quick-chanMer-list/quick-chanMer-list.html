@@ -80,7 +80,7 @@
     </form>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
-    <quick-chanMer-create id="merchantEditor" on-saved="handleMerchantSave" page-type="{{pageType}}" chan-mer="{{channelMer}}"></quick-chanMer-create>
+    <quick-chanMer-create id="merchantEditor" on-saved="handleMerchantSave" page-type="{{pageType}}" chan-mer="[[channelMer]]"></quick-chanMer-create>
     <quick-chanMer-view id="merchantView" item="{{channelMer}}" on-editor="handleEditor" on-delete-ok="AfterDeleteHandle"></quick-chanMer-view>
   </template>
   <script>
