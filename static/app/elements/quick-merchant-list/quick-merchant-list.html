@@ -35,7 +35,7 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center hand" on-click="viewMerchantTap"><iron-icon icon="editor:attach-file"></iron-icon><span>{{addOneFilter(index)}}</span></td>
+              <td class="center hand" on-tap="viewMerchantTap"><iron-icon icon="editor:attach-file"></iron-icon><span>{{addOneFilter(index)}}</span></td>
               <td class="center">{{item.merId}}</td>
               <td>{{item.detail.merName}}</td>
               <td class="center">{{item.detail.billingScheme}}</td>
