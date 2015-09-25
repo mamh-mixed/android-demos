@@ -7,6 +7,7 @@ func Route() (mux *http.ServeMux) {
 	mux = http.NewServeMux()
 
 	mux.HandleFunc("/master/trade/query", tradeQueryHandle)
+	mux.HandleFunc("/master/trade/findOne", tradeFindOneHandle)
 	mux.HandleFunc("/master/trade/report", tradeReportHandle)
 	mux.HandleFunc("/master/trade/stat", tradeQueryStatsHandle)
 	mux.HandleFunc("/master/trade/stat/report", tradeQueryStatsReportHandle)

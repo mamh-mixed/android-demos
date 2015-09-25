@@ -67,6 +67,22 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(retBytes)
 }
+func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	cond := &model.QueryCondition{
+		Busicd:       params.Get("busicd"),
+		OrigOrderNum: params.Get("origOrderNum"),
+	}
+	ret := tradeFindOne(cond)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
+}
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
