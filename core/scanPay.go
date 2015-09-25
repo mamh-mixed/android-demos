@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/channel"
 	w "github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/crontab"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
@@ -19,7 +20,7 @@ import (
 	"time"
 )
 
-var interval = 1 * time.Minute
+var interval = time.Duration(goconf.Config.App.OrderCloseTime)
 
 func init() {
 	crontab.RegisterTask(interval, "closeOrder", true, CloseOrder)
