@@ -8,6 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	w "github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/crontab"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
@@ -17,6 +18,12 @@ import (
 	"strings"
 	"time"
 )
+
+var interval = 1 * time.Minute
+
+func init() {
+	crontab.RegisterTask(interval, "closeOrder", true, CloseOrder)
+}
 
 // PublicPay 公众号页面支付
 func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -30,19 +37,20 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:      req.Mchntid,
-		OrderNum:   req.OrderNum,
-		TransType:  model.PayTrans,
-		Busicd:     req.Busicd,
-		AgentCode:  req.AgentCode,
-		GoodsInfo:  req.GoodsInfo,
-		Terminalid: req.Terminalid,
-		TransAmt:   req.IntTxamt,
-		ChanCode:   channel.ChanCodeWeixin,
-		VeriCode:   req.VeriCode,
-		TradeFrom:  req.TradeFrom,
-		NotifyUrl:  req.NotifyUrl,
-		Attach:     req.Attach,
+		MerId:       req.Mchntid,
+		SysOrderNum: util.SerialNumber(),
+		OrderNum:    req.OrderNum,
+		TransType:   model.PayTrans,
+		Busicd:      req.Busicd,
+		AgentCode:   req.AgentCode,
+		GoodsInfo:   req.GoodsInfo,
+		Terminalid:  req.Terminalid,
+		TransAmt:    req.IntTxamt,
+		ChanCode:    channel.ChanCodeWeixin,
+		VeriCode:    req.VeriCode,
+		TradeFrom:   req.TradeFrom,
+		NotifyUrl:   req.NotifyUrl,
+		Attach:      req.Attach,
 	}
 
 	// 网页授权获取token和openid
@@ -72,6 +80,13 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 计算费率 四舍五入
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
+
+	// 记录交易
+	t.TransStatus = model.TransNotPay
+	err = mongo.SpTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
 
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, c, req)
@@ -141,6 +156,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录该笔交易
 	t := &model.Trans{
 		MerId:         req.Mchntid,
+		SysOrderNum:   util.SerialNumber(),
 		OrderNum:      req.OrderNum,
 		TransType:     model.EnterpriseTrans,
 		Busicd:        req.Busicd,
@@ -193,6 +209,12 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
 
+	// 记录交易
+	err = mongo.SpTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
 	ret = adaptor.ProcessEnterprisePay(t, c, req)
 
 	// 更新交易信息
@@ -211,15 +233,16 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:      req.Mchntid,
-		OrderNum:   req.OrderNum,
-		TransType:  model.PayTrans,
-		Busicd:     req.Busicd,
-		AgentCode:  req.AgentCode,
-		Terminalid: req.Terminalid,
-		TransAmt:   req.IntTxamt,
-		GoodsInfo:  req.GoodsInfo,
-		TradeFrom:  req.TradeFrom,
+		MerId:       req.Mchntid,
+		SysOrderNum: util.SerialNumber(),
+		OrderNum:    req.OrderNum,
+		TransType:   model.PayTrans,
+		Busicd:      req.Busicd,
+		AgentCode:   req.AgentCode,
+		Terminalid:  req.Terminalid,
+		TransAmt:    req.IntTxamt,
+		GoodsInfo:   req.GoodsInfo,
+		TradeFrom:   req.TradeFrom,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -258,6 +281,13 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
+	// 记录交易
+	t.TransStatus = model.TransNotPay
+	err = mongo.SpTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
 	ret = adaptor.ProcessBarcodePay(t, c, req)
 
 	// 渠道
@@ -279,18 +309,19 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:      req.Mchntid,
-		OrderNum:   req.OrderNum,
-		TransType:  model.PayTrans,
-		Busicd:     req.Busicd,
-		AgentCode:  req.AgentCode,
-		ChanCode:   req.Chcd,
-		Terminalid: req.Terminalid,
-		TransAmt:   req.IntTxamt,
-		GoodsInfo:  req.GoodsInfo,
-		NotifyUrl:  req.NotifyUrl,
-		TradeFrom:  req.TradeFrom,
-		Attach:     req.Attach,
+		MerId:       req.Mchntid,
+		SysOrderNum: util.SerialNumber(),
+		OrderNum:    req.OrderNum,
+		TransType:   model.PayTrans,
+		Busicd:      req.Busicd,
+		AgentCode:   req.AgentCode,
+		ChanCode:    req.Chcd,
+		Terminalid:  req.Terminalid,
+		TransAmt:    req.IntTxamt,
+		GoodsInfo:   req.GoodsInfo,
+		NotifyUrl:   req.NotifyUrl,
+		TradeFrom:   req.TradeFrom,
+		Attach:      req.Attach,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -312,6 +343,13 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 将openId参数设置为空，防止tradeType为JSAPI
 	req.OpenId = ""
+
+	// 记录交易
+	t.TransStatus = model.TransNotPay
+	err = mongo.SpTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
 
 	// 请求渠道
 	ret = adaptor.ProcessQrCodeOfflinePay(t, c, req)
@@ -335,6 +373,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔退款
 	refund := &model.Trans{
 		MerId:        req.Mchntid,
+		SysOrderNum:  util.SerialNumber(),
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.RefundTrans,
@@ -418,7 +457,13 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*float64(c.MerFee) + 0.5))
 	orig.NetFee = orig.NetFee - refund.Fee // 重新计算原订单的手续费
 
-	ret = adaptor.ProcessRefund(orig, refund, c, req)
+	// 记录交易
+	err = mongo.SpTransColl.Add(refund)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	ret = adaptor.ProcessRefund(orig, c, req)
 
 	// 更新原交易状态
 	if ret.Respcd == adaptor.SuccessCode {
@@ -555,6 +600,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔撤销
 	cancel := &model.Trans{
 		MerId:        req.Mchntid,
+		SysOrderNum:  util.SerialNumber(),
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CancelTrans,
@@ -624,7 +670,13 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*float64(c.MerFee) + 0.5))
 	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
 
-	ret = adaptor.ProcessCancel(orig, cancel, c, req)
+	// 记录交易
+	err = mongo.SpTransColl.Add(cancel)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	ret = adaptor.ProcessCancel(orig, c, req)
 
 	// 原交易状态更新
 	if ret.Respcd == adaptor.SuccessCode {
@@ -652,6 +704,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔关单
 	closed := &model.Trans{
 		MerId:        req.Mchntid,
+		SysOrderNum:  util.SerialNumber(),
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CloseTrans,
@@ -698,7 +751,13 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(closed, "NO_CHANMER")
 	}
 
-	ret = adaptor.ProcessClose(orig, closed, c, req)
+	// 保存交易
+	err = mongo.SpTransColl.Add(closed)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	ret = adaptor.ProcessClose(orig, c, req)
 
 	// 成功应答
 	if ret.Respcd == adaptor.SuccessCode {
@@ -711,6 +770,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			orig.RefundAmt = orig.TransAmt
 			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*float64(c.MerFee) + 0.5))
 			orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
+			orig.RefundStatus = model.TransRefunded
 		}
 
 		// 更新原交易信息
@@ -743,6 +803,74 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 		return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE"), true
 	}
 	return nil, false
+}
+
+// CloseOrder
+func CloseOrder() {
+	timer := time.NewTimer(interval)
+	ts, err := mongo.SpTransColl.FindHandingTrans()
+	if err != nil {
+		log.Warn("no handing trans found")
+		return
+	}
+
+	for _, t := range ts {
+		select {
+		case <-timer.C:
+			return
+		default:
+			// 锁住该交易
+			_, err = mongo.SpTransColl.FindAndLock(t.MerId, t.OrderNum)
+			if err != nil {
+				continue
+			}
+
+			// 获得渠道商户
+			c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+			if err != nil {
+				log.Errorf("find chanMer error:%s", err)
+				mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+				continue
+			}
+
+			req := &model.ScanPayRequest{OrigOrderNum: t.OrderNum}
+			var closedResult *model.ScanPayResponse
+			ret := adaptor.ProcessEnquiry(&t, c, req)
+
+			// 还是处理中
+			if ret.Respcd == adaptor.InprocessCode {
+				switch t.ChanCode {
+				case channel.ChanCodeAlipay:
+					if ret.ChanRespCode == "TRADE_NOT_EXIST" {
+						// 该订单还没被扫，直接取消
+						closedResult = adaptor.ProcessClose(&t, c, req)
+					}
+					// 假如该ret.ChanRespCode == "WAIT_BUYER_PAY",那么不处理
+				case channel.ChanCodeWeixin:
+					closedResult = adaptor.ProcessWxpClose(&t, c, req)
+				}
+			}
+
+			// 已被关闭
+			if ret.Respcd == adaptor.CloseCode {
+				closedResult = &model.ScanPayResponse{Respcd: adaptor.SuccessCode}
+			}
+
+			// 对结果处理
+			if closedResult != nil {
+				if closedResult.Respcd == adaptor.SuccessCode {
+					// 关闭成功
+					t.TransStatus = model.TransClosed
+					t.RefundStatus = model.TransOverTimeClosed
+					mongo.SpTransColl.UpdateAndUnlock(&t)
+					continue
+				}
+			}
+
+			// 其他情况
+			updateTrans(&t, ret)
+		}
+	}
 }
 
 // findAndLockOrigTrans 查找原交易记录

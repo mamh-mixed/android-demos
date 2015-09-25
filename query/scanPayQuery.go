@@ -29,12 +29,13 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 
 	// find
 	trans, count, err := mongo.SpTransColl.Find(&model.QueryCondition{
-		TradeFrom:   "wap",
-		TransStatus: []string{model.TransSuccess},
-		Busicd:      model.Jszf,
-		MerId:       m.MerId,
-		Size:        150,
-		Page:        1,
+		TradeFrom:    "wap",
+		TransStatus:  []string{model.TransSuccess},
+		Busicd:       model.Jszf,
+		MerId:        m.MerId,
+		RefundStatus: model.TransRefunded,
+		Size:         150,
+		Page:         1,
 	})
 
 	if err != nil {

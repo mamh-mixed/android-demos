@@ -154,7 +154,7 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	return
 }
 
-// FindPay 通过订单号、商户号查找一条交易记录
+// FindOneByOrigOrderNum 通过订单号、商户号查找一条交易记录
 func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (t *model.Trans, err error) {
 	match := bson.M{
 		"busicd":       q.Busicd,
@@ -164,7 +164,22 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (t *m
 	t = new(model.Trans)
 	err = database.C(col.name).Find(match).One(t)
 
-	return
+	return t, err
+}
+
+// FindHandingTrans 找到三十分钟前的处理中的交易
+func (col *transCollection) FindHandingTrans() ([]model.Trans, error) {
+	q := bson.M{
+		"updateTime":  bson.M{"$lte": time.Now().Add(-30 * time.Minute).Format("2006-01-02 15:04:05")},
+		"lockFlag":    0,
+		"transStatus": model.TransHandling,
+		"transType":   model.PayTrans,
+	}
+
+	var ts []model.Trans
+	err := database.C(col.name).Find(q).Limit(1000).All(&ts)
+
+	return ts, err
 }
 
 // FindByAccount 通过订单号、商户号查找一条交易记录
