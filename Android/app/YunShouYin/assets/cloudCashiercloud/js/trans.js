@@ -170,7 +170,6 @@ var TransManage = function() {
             data: requestData,
             dataType: 'json',
             success: function(data) {
-
                 var now = new Date(),
                     count = data.count,
                     total = data.total,

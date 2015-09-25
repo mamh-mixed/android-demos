@@ -588,6 +588,12 @@ public class MainActivity extends BaseHtml5Activity {
 			   alert_Dialog.show();
 			
 			break;
+		}case Msg.MSG_FROM_SERVER_LIMIT_BEYOND: {
+			 Alert_Dialog alert_Dialog=new Alert_Dialog(mContext, mHandler, findViewById(R.id.alert_dialog), 
+					  "今日交易额度已超过限制,请申请限额提升!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+			   alert_Dialog.show();
+			
+			break;
 		}
 		default:
 			break;

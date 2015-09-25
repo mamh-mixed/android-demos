@@ -187,8 +187,8 @@ var SDK = function() {
     var code = Util._getUrlParam("code");
     var orderdata = Util._getUrlParam("data");
     orderdata = utf8to16(base64decode(orderdata));
-    alert(orderdata);
     orderdata = eval('(' + orderdata + ')');
+    console.log('pay1', orderdata);
     var errorData =
       "attach=" + orderdata.attach +
       "&txamt=" + orderdata.txamt +
@@ -196,11 +196,11 @@ var SDK = function() {
       "&orderCurrency=" + orderdata.orderCurrency +
       "&orderNum=" + orderdata.orderNum +
       "&state=1";
- 
+
     var frontUrl = orderdata.frontUrl;
 
     if (!code) {
-      errorData=errorData+"&errorDetail=URL拼接错误"
+      errorData = errorData + "&errorDetail=URL拼接错误"
       window.location.replace(frontUrl + "?" + errorData);
     }
 
@@ -231,11 +231,10 @@ var SDK = function() {
       data: JSON.stringify(postData),
       dataType: 'json',
       success: function(data) {
-
         var json = data;
         var jsonobj = json.payjson;
         if (!jsonobj) {
-          errorData=errorData+"&errorDetail="+json.errorDetail;
+          errorData = errorData + "&errorDetail=" + json.errorDetail;
           window.location.replace(frontUrl + "?" + errorData);
           return;
 
@@ -279,6 +278,7 @@ var SDK = function() {
             ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2           
         });
 
+       
         wx.ready(function() {
           wx.chooseWXPay({
             timestamp: chooseWXPay_timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符

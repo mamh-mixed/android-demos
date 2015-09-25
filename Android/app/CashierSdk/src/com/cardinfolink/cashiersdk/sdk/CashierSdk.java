@@ -19,7 +19,7 @@ import com.cardinfolink.cashiersdk.util.TxamtUtil;
 public class CashierSdk {
 	
 	private static final String mProduceHost="211.147.72.70" ;
-	private static final String mProducePort="10007" ;
+	private static final String mProducePort="10009" ;
 	private static final String mTestHost="211.147.72.70" ;
 	private static final String mTestPort="10008" ;
 	private static InitData  mInitData;

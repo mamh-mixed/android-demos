@@ -4,13 +4,13 @@
 'use strict';
 var yunshouyin = function() {
 
-  var redirect_uri = "http://qrcode.cardinfolink.net/sdk/payment.html";
+  var redirect_uri = "http://qrcode.cardinfolink.net/sdk/sdkpayment.html";
 
   var startWPay = function(orderData, debug) {
     if (debug) {
-      redirect_uri = "http://qrcode.cardinfolink.net/sdk/wxpayment.html";
+      redirect_uri = "http://qrcode.cardinfolink.net/sdk/sdkpayment.html";
     } else {
-      redirect_uri = "http://qrcode.cardinfolink.net/jssdk/payment.html";
+      redirect_uri = "http://qrcode.cardinfolink.net/jssdk/sdkpayment.html";
     }
 
     pay(orderData);
