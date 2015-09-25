@@ -150,6 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </paper-dialog>
     <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></iron-ajax>
   </template>
   <script>
     var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -202,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         //判断商户录入必填项是否为空
         isMerchantConfigEmpty: function() {
-          if (this.$.merId.validate() && this.$.merName.validate() && this.$.billingScheme.validate()&&this.$.encryptKey.validate() && this.$.merStatus.selectedItem) {
+          if (this.$.merId.validate() && this.$.merName.validate() && this.$.billingScheme.validate() && this.$.encryptKey.validate() && this.$.merStatus.selectedItem) {
             if (this.$.isNeedSignCheck.checked) {
               if (!this.$.signKey.validate()) {
                 return true;
@@ -219,11 +220,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Util.toast('必填项不能为空', 3000);
             return;
           }
-          this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
-          this.$.saveMerchantAjax.generateRequest();
+          if (this.pageType === 'create') {
+            this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+            this.$.saveMerchantAjax.generateRequest();
+          } else {
+            this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
+            this.$.updateMerchantAjax.generateRequest();
+          }
         },
         // 保存商户的ajax响应事件
         handleSaveMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialogView.close();
+          Util.toast(response.message, 1000);
+          this.fire('saved');
+        },
+        // 保存商户的ajax响应事件
+        handleUpdateMerchantResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);

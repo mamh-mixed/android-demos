@@ -80,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
-    <quick-merchant-create id="merchantCreate" on-saved="handleMerchantSave" page-type="{{pageType}}" merchant="{{merchant}}"></quick-merchant-create>
+    <quick-merchant-create id="merchantCreate" on-saved="handleMerchantSave" page-type="{{pageType}}" merchant="[[merchant]]"></quick-merchant-create>
     <quick-merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></quick-merchant-view>
   </template>
   <script>

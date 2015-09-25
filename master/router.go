@@ -14,6 +14,7 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/master/merchant/find", merchantFindHandle)
 	mux.HandleFunc("/master/merchant/one", merchantFindOneHandle)
 	mux.HandleFunc("/master/merchant/save", merchantSaveHandle)
+	mux.HandleFunc("/master/merchant/update", merchantUpdateHandle)
 	mux.HandleFunc("/master/merchant/import", importMerchant)
 	mux.HandleFunc("/master/merchant/delete", merchantDeleteHandle)
 	mux.HandleFunc("/master/router/save", routerSaveHandle)
