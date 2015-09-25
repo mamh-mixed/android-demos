@@ -45,14 +45,14 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center">
+              <td class="center" on-click="viewMerchantTap">
                 <span>{{addOneFilter(index)}}</span>
               </td>
               <td>
                 <span>{{item.chanMerId}}</span>
               </td>
-              <td on-click="viewMerchantTap">
-                <span style="text-decoration:underline;cursor:pointer">{{getChanMerName(item.chanMerName)}}</span>
+              <td>
+                <span>{{item.chanMerName}}</span>
               </td>
               <td class="center">
                 <span>{{item.chanCode}}</span>
@@ -108,12 +108,6 @@
           }, {
             key: 'WXP',
             value: 'WXP'
-          }, {
-            key: 'CFCA',
-            value: 'CFCA'
-          }, {
-            key: 'CIL',
-            value: 'CIL'
           }]
         },
       },
@@ -180,14 +174,6 @@
       viewMerchantTap: function(e) {
         this.channelMer = e.model.item;
         this.$.merchantView.open();
-      },
-      // 如何渠道名称为空，则返回---
-      getChanMerName: function(value) {
-        if (!value || value === '') {
-          return '---';
-        } else {
-          return value;
-        }
       },
       // 发送查询交易的ajax请求
       submitForm: function() {

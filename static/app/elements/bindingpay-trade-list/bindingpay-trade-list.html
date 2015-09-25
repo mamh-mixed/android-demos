@@ -40,16 +40,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <paper-input label="商户代码" name="merId"></paper-input>
         <paper-input label="订单号" name="orderNum"></paper-input>
-        <paper-input label="绑定 ID" name="bindingId"></paper-input>
+        <!-- <paper-input label="绑定 ID" name="bindingId"></paper-input> -->
         <paper-input label="关联订单号" name="origOrderNum"></paper-input>
         <paper-input label="应答码" name="respcd"></paper-input>
         <x-select items="[[busicds]]" name="transType" selected-item="{{busicd}}" label="交易类型"></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
         <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
-        <paper-button class="colorful" raised>
+        <!-- <paper-button class="colorful" raised>
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
-        </paper-button>
+        </paper-button> -->
       </div>
       <table class="data-grid">
         <thead>
@@ -57,8 +57,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <th align="center">序号</th>
             <th align="center">应答码</th>
             <th align="center">商户代码</th>
-            <th align="left">订单号</th>
-            <th align="center">绑定ID</th>
+            <th align="left">商户订单</th>
+            <!-- <th align="left">绑定 ID</th>
+            <th align="left">用户账号</th>
+            <th align="left">用户名</th> -->
             <th align="center">交易类型</th>
             <th align="right">金额(元)</th>
             <th align="center">渠道</th>
@@ -75,7 +77,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
               <td align="center">{{item.merId}}</td>
               <td align="left">{{item.orderNum}}</td>
-              <td align="left">{{item.bindingId}}</td>
+              <!-- <td align="left">{{item.bindingId}}</td>
+              <td align="left">{{item.acctNum}}</td>
+              <td align="left">{{item.acctName}}</td> -->
               <td align="center">{{busicdFilter(item.transType)}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td align="center">{{chanFilter(item.chanCode)}}</td>
@@ -176,10 +180,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           '40': '已关闭'
         };
         this.chanMap = {
-          'ALP': '支付宝',
-          'WXP': '微信',
+          'CIL': '讯联',
           'CFCA': '中金',
-          'Mock': '测试'
+          'Mock': 'Mock'
         };
       },
       observers: [

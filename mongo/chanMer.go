@@ -107,12 +107,19 @@ func (col *chanMerCollection) FindByCondition(cond *model.ChanMer) (results []mo
 }
 
 // PaginationFind 分页查找渠道商户的信息
-func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName string, size, page int) (results []model.ChanMer, total int, err error) {
+func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName, pay string, size, page int) (results []model.ChanMer, total int, err error) {
 	results = make([]model.ChanMer, 0)
 
 	match := bson.M{}
+
+	if pay == "bp" {
+		match["chanCode"] = bson.M{"$in": []string{"CFCA", "CIL", "Mock"}}
+	} else {
+		match["chanCode"] = bson.M{"$in": []string{"ALP", "WXP"}}
+	}
+
 	if chanCode != "" {
-		match["chanCode"] = chanCode
+		match["$and"] = []interface{}{bson.M{"chanCode": chanCode}}
 	}
 	if chanMerId != "" {
 		match["chanMerId"] = chanMerId

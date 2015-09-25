@@ -74,6 +74,7 @@
       <table class="data-grid">
         <thead>
           <tr>
+            <th rowspan="2">序号</th>
             <th rowspan="2">
               商户代码
             </th>
@@ -108,6 +109,9 @@
         <tbody>
           <template is="dom-repeat" items="{{records}}">
             <tr>
+                <td class="center">
+                  <span>{{addOneFilter(index)}}</span>
+                </td>
               <td class="center">
                 <span>{{item.merId}}</span>
               </td>
@@ -332,6 +336,9 @@
           obj.merId = item.merId;
           obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
           return '/master/trade/report?' + Util.query(obj);
+        },
+        addOneFilter: function(index) {
+          return index + 1;
         },
       });
     })();

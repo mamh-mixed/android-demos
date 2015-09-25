@@ -12,6 +12,12 @@ cd $path
 
 git pull cil develop
 
+if [ $? -ne 0 ]; then
+    echo 'use "git status && git add <file> && git commit -m <message>" before push'
+    exit 1
+fi
+
+rm -rf static/bower_components
 ./publish.sh dev
 
 exit 0
