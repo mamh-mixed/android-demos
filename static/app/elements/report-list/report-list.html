@@ -39,7 +39,7 @@
     }
 
     table.data-grid > thead > tr > th {
-        border-right: 1px solid #ddd;
+      border-right: 1px solid #ddd;
     }
 
   </style>
@@ -71,117 +71,116 @@
       </div>
     </div>
 
-      <table class="data-grid">
-        <thead>
+    <table class="data-grid">
+      <thead>
+        <tr>
+          <th rowspan="2">序号</th>
+          <th rowspan="2">
+            商户代码
+          </th>
+          <th rowspan="2">
+            商户名称
+          </th>
+          <th colspan="2">
+            汇总
+          </th>
+          <th colspan="2">
+            支付宝
+          </th>
+          <th colspan="2">
+            微信
+          </th>
+          <th rowspan="2">
+            代理名称
+          </th>
+          <th rowspan="2">
+            下载
+          </th>
+        </tr>
+        <tr>
+          <th>总笔数</th>
+          <th>总金额(元)</th>
+          <th>笔数</th>
+          <th>金额(元)</th>
+          <th>笔数</th>
+          <th>金额(元)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="{{records}}">
           <tr>
-            <th rowspan="2">序号</th>
-            <th rowspan="2">
-              商户代码
-            </th>
-            <th rowspan="2">
-              商户名称
-            </th>
-            <th colspan="2">
-              汇总
-            </th>
-            <th colspan="2">
-              支付宝
-            </th>
-            <th colspan="2">
-              微信
-            </th>
-            <th rowspan="2">
-              代理名称
-            </th>
-            <th rowspan="2">
-              下载
-            </th>
-          </tr>
-          <tr>
-            <th>总笔数</th>
-            <th>总金额(元)</th>
-            <th>笔数</th>
-            <th>金额(元)</th>
-            <th>笔数</th>
-            <th>金额(元)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template is="dom-repeat" items="{{records}}">
-            <tr>
-                <td class="center">
-                  <span>{{addOneFilter(index)}}</span>
-                </td>
-              <td class="center">
-                <span>{{item.merId}}</span>
-              </td>
-              <td>
-                <span>{{item.merName}}</span>
-              </td>
-              <td class="right">
-                <span>{{item.totalTransNum}}</span>
-              </td>
-              <td class="right">
-                <span>{{_computeAmount(item.totalTransAmt)}}</span>
-              </td>
-              <td class="right">
-                <span>{{item.alp.transNum}}</span>
-              </td>
-              <td class="right">
-                <span>{{_computeAmount(item.alp.transAmt)}}</span>
-              </td>
-              <td class="right">
-                <span>{{item.wxp.transNum}}</span>
-              </td>
-              <td class="right">
-                <span>{{_computeAmount(item.wxp.transAmt)}}</span>
-              </td>
-              <td>
-                <span>{{item.agentName}}</span>
-              </td>
-              <td class="center">
-                <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-          <tr>
-            <td class="right">
-              <span>汇总:</span>
-            </td>
-            <td></td>
-            <td class="right">
-              <span>{{summary.totalTransNum}}</span>
-            </td>
-            <td class="right" >
-              <span>{{_computeAmount(summary.totalTransAmt)}}</span>
-            </td>
-            <td class="right">
-              <span>{{summary.alp.transNum}}</span>
-            </td>
-            <td class="right">
-              <span>{{_computeAmount(summary.alp.transAmt)}}</span>
-            </td>
-            <td class="right">
-              <span>{{summary.wxp.transNum}}</span>
-            </td>
-            <td class="right">
-              <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
-            </td>
-            <td></td>
             <td class="center">
-              <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
+              <span>{{addOneFilter(index)}}</span>
+            </td>
+            <td class="center">
+              <span>{{item.merId}}</span>
+            </td>
+            <td>
+              <span>{{item.merName}}</span>
+            </td>
+            <td class="right">
+              <span>{{item.totalTransNum}}</span>
+            </td>
+            <td class="right">
+              <span>{{_computeAmount(item.totalTransAmt)}}</span>
+            </td>
+            <td class="right">
+              <span>{{item.alp.transNum}}</span>
+            </td>
+            <td class="right">
+              <span>{{_computeAmount(item.alp.transAmt)}}</span>
+            </td>
+            <td class="right">
+              <span>{{item.wxp.transNum}}</span>
+            </td>
+            <td class="right">
+              <span>{{_computeAmount(item.wxp.transAmt)}}</span>
+            </td>
+            <td>
+              <span>{{item.agentName}}</span>
+            </td>
+            <td class="center">
+              <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
             </td>
           </tr>
-        </tfoot>
+        </template>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="255" align="right">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+          </td>
+        </tr>
+        <tr>
+          <td class="right" colspan="3">
+            <span>汇总:</span>
+          </td>
+          <td class="right">
+            <span>{{summary.totalTransNum}}</span>
+          </td>
+          <td class="right">
+            <span>{{_computeAmount(summary.totalTransAmt)}}</span>
+          </td>
+          <td class="right">
+            <span>{{summary.alp.transNum}}</span>
+          </td>
+          <td class="right">
+            <span>{{_computeAmount(summary.alp.transAmt)}}</span>
+          </td>
+          <td class="right">
+            <span>{{summary.wxp.transNum}}</span>
+          </td>
+          <td class="right">
+            <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
+          </td>
+          <td></td>
+          <td class="center">
+            <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
+          </td>
+        </tr>
+      </tfoot>
 
-      </table>
+    </table>
     <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
     <!--
         测试环境的链接为 211.147.72.70:10003
@@ -342,5 +341,6 @@
         },
       });
     })();
+
   </script>
 </dom-module>
