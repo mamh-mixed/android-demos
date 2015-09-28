@@ -576,7 +576,7 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 
 	// 密码不对
 	if req.OldPassword != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+		return model.OLD_PASSWORD_ERROR
 	}
 
 	user.Password = req.NewPassword

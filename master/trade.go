@@ -15,6 +15,17 @@ import (
 
 var maxReportRec = 10000
 
+func getTradeMsg(merId, orderNum string, msgType int) (ret *model.ResultBody) {
+	ls, err := query.GetSpTransLogs(merId, orderNum, msgType)
+	if err != nil {
+		return model.NewResultBody(1, "查询数据库失败")
+	}
+	return &model.ResultBody{
+		Status: 0,
+		Data:   ls,
+	}
+}
+
 // tradeQuery 交易查询
 func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 
@@ -26,7 +37,6 @@ func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 
 // tradeQuery 交易查询
 func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
-
 	return query.SpTransFindOne(q)
 }
 

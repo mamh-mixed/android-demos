@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -50,10 +50,16 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		// GoodsGag:   m.GoodsGag,       // 商品标记
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &PayResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
+
+	// 记录渠道返回日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("pay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
@@ -89,12 +95,16 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &PayQueryResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
 
-	log.Debugf("ProcessEnquiry response data is %#v", p)
+	// 记录渠道返回日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
@@ -164,10 +174,16 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		// Detail:         m.WxpMarshalGoods(),                // 商品详情
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &PrePayResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
+
+	// 记录渠道日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("prePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
@@ -199,10 +215,16 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		// RefundFeeType: m.CurrType,     // 货币种类
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &RefundResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
+
+	// 记录渠道日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("refund", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
@@ -230,10 +252,16 @@ func (sp *WeixinScanPay) ProcessRefundQuery(m *model.ScanPayRequest) (ret *model
 		RefundId:      "",             // 操作员
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &RefundQueryResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
+
+	// 记录渠道日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("refundQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
@@ -257,10 +285,16 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &ReverseResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
+
+	// 记录渠道日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("reverse", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{
@@ -286,10 +320,16 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
 	}
 
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanLogs(d)
+
 	p := &CloseResp{}
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
+
+	// 记录渠道日志
+	logs.SpLogs <- m.GetChanLogs(p)
 
 	status, msg, ec := weixin.Transform("close", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 	ret = &model.ScanPayResponse{

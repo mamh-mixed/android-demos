@@ -256,6 +256,42 @@ func (ret *ScanPayResponse) SignMsg() string {
 	return genSignMsg(ret)
 }
 
+// GetMerReqLogs 商户请求日志体
+func (s *ScanPayRequest) GetMerLogs() *SpTransLogs {
+	return &SpTransLogs{
+		MerId:        s.Mchntid,
+		OrderNum:     s.OrderNum,
+		OrigOrderNum: s.OrigOrderNum,
+		TransType:    s.Busicd,
+		MsgType:      1,
+		Msg:          s,
+	}
+}
+
+// GetChanLogs 请求渠道日志体
+func (s *ScanPayRequest) GetChanLogs(reqData interface{}) *SpTransLogs {
+	return &SpTransLogs{
+		MerId:        s.Mchntid,
+		OrderNum:     s.OrderNum,
+		OrigOrderNum: s.OrigOrderNum,
+		TransType:    s.Busicd,
+		MsgType:      2,
+		Msg:          reqData,
+	}
+}
+
+// GetMerLogs 返回商户报文体
+func (ret *ScanPayResponse) GetMerLogs() *SpTransLogs {
+	return &SpTransLogs{
+		MerId:        ret.Mchntid,
+		OrderNum:     ret.OrderNum,
+		OrigOrderNum: ret.OrigOrderNum,
+		TransType:    ret.Busicd,
+		MsgType:      1,
+		Msg:          ret,
+	}
+}
+
 func (s *ScanPayRequest) WxpMarshalGoods() string {
 
 	goods, err := marshalGoods(s.GoodsInfo)

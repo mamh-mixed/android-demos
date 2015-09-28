@@ -21,7 +21,7 @@ type BaseReq interface {
 
 // CommonParams 微信接口请求公共参数
 type CommonParams struct {
-	XMLName xml.Name `xml:"xml" url:"-"`
+	XMLName xml.Name `xml:"xml" url:"-" json:"-"`
 
 	// 公共字段
 	Appid    string `xml:"appid,omitempty" url:"appid,omitempty"`           // 微信分配的公众账号ID validate:"len=18
@@ -33,8 +33,8 @@ type CommonParams struct {
 
 	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero"`
 
-	ClientCert []byte `xml:"-" url:"-"` // HTTPS 双向认证证书
-	ClientKey  []byte `xml:"-" url:"-"` // HTTPS 双向认证密钥
+	ClientCert []byte `xml:"-" url:"-" json:"-"` // HTTPS 双向认证证书
+	ClientKey  []byte `xml:"-" url:"-" json:"-"` // HTTPS 双向认证密钥
 }
 
 // SetSign sign setter
@@ -77,7 +77,7 @@ type BaseResp interface {
 
 // CommonBody 微信接口返回公共字段
 type CommonBody struct {
-	XMLName xml.Name `xml:"xml" url:"-"`
+	XMLName xml.Name `xml:"xml" url:"-" json:"-"`
 
 	ReturnCode string `xml:"return_code" url:"return_code"`                   // 返回状态码
 	ReturnMsg  string `xml:"return_msg,omitempty" url:"return_msg,omitempty"` // 返回信息

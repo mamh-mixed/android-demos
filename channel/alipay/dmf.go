@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
@@ -51,6 +52,9 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		DynamicId:     req.ScanCodeId,
 	}
 
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpReq)
+
 	// req to map
 	dict := toMap(alpReq)
 
@@ -59,6 +63,9 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, createAndPay)
 		return nil, err
 	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpResp)
 
 	// 处理结果返回
 	return transform(alpReq.Service, alpResp)
@@ -81,6 +88,9 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		ItBPay:         "1m", // 超时时间
 	}
 
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpReq)
+
 	// req to map
 	dict := toMap(alpReq)
 
@@ -89,6 +99,9 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, preCreate)
 		return nil, err
 	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpResp)
 
 	return transform(alpReq.Service, alpResp)
 }
@@ -105,6 +118,9 @@ func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 		OutRequestNo: req.OrderNum, //该字段上送才能部分退款，如果不送则只能全额退款
 	}
 
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpReq)
+
 	// req to map
 	dict := toMap(alpReq)
 
@@ -113,6 +129,9 @@ func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, refund)
 		return nil, err
 	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpResp)
 
 	return transform(alpReq.Service, alpResp)
 }
@@ -125,6 +144,10 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 		Service:    query,
 		OutTradeNo: req.OrigOrderNum, // 送的是原订单号，不转换
 	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpReq)
+
 	// req to map
 	dict := toMap(alpReq)
 
@@ -133,6 +156,9 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 		log.Errorf("sendRequest fail, origOrderNum=%s, service=%s, channel=alp", req.OrigOrderNum, query)
 		return nil, err
 	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpResp)
 
 	return transform(alpReq.Service, alpResp)
 }
@@ -147,6 +173,9 @@ func (a *alp) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 		OutTradeNo: req.OrigOrderNum,
 	}
 
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpReq)
+
 	// req to map
 	dict := toMap(alpReq)
 
@@ -155,6 +184,9 @@ func (a *alp) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 		log.Errorf("sendRequest fail, orderNum=%s, service=%s, channel=alp", req.OrderNum, cancel)
 		return nil, err
 	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpResp)
 
 	return transform(alpReq.Service, alpResp)
 }

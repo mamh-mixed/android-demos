@@ -7,6 +7,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
+	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
@@ -29,8 +30,14 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 		return errorResp(req, "DATA_ERROR")
 	}
 
+	// 记录请求时日志
+	logs.SpLogs <- req.GetMerLogs()
+
 	// 具体业务
 	ret := dispatch(req)
+
+	// 记录返回时日志
+	logs.SpLogs <- ret.GetMerLogs()
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
