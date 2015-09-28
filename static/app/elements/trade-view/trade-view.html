@@ -69,8 +69,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="content">
               <trade-detail item="{{item}}"></trade-detail>
             </div>
-            <div class="content">商户报文</div>
-            <div class="content">渠道报文</div>
+            <div class="content">{{merMessage}}</div>
+            <div class="content">{{chanMessage}}</div>
             <div class="content">商户查询</div>
             <div class="content">渠道查询</div>
             <div class="content">异步通知</div>
@@ -87,8 +87,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="content">
               <trade-detail item="{{voidOrderItem}}"></trade-detail>
             </div>
-            <div class="content">商户报文</div>
-            <div class="content">渠道报文</div>
+            <div class="content">{{voidMerMessage}}</div>
+            <div class="content">{{voidChanMessage}}</div>
           </iron-pages>
         </div>
         <!-- 取消订单 -->
@@ -102,8 +102,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="content">
               <trade-detail item="{{cancOrderItem}}"></trade-detail>
             </div>
-            <div class="content">商户报文</div>
-            <div class="content">渠道报文</div>
+            <div class="content">{{cancMerMessage}}</div>
+            <div class="content">{{cancChanMessage}}</div>
           </iron-pages>
         </div>
         <!-- 退款订单 -->
@@ -117,8 +117,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="content">
               <trade-detail item="{{refdOrderItem}}"></trade-detail>
             </div>
-            <div class="content">商户报文</div>
-            <div class="content">渠道报文</div>
+            <div class="content">{{refdMerMessage}}</div>
+            <div class="content">{{refdChanMessage}}</div>
           </iron-pages>
         </div>
       </paper-dialog-scrollable>
@@ -127,6 +127,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </paper-dialog>
     <iron-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></iron-ajax>
+    <iron-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></iron-ajax>
+    <iron-ajax id="chanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleChanMessageResponse"></iron-ajax>
+    <iron-ajax id="voidMerMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleVoidMerMessageResponse"></iron-ajax>
+    <iron-ajax id="voidChanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleVoidChanMessageResponse"></iron-ajax>
+    <iron-ajax id="cancMerMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleCancMerMessageResponse"></iron-ajax>
+    <iron-ajax id="cancChanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleCancChanMessageResponse"></iron-ajax>
+    <iron-ajax id="refdMerMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleRefdMerMessageResponse"></iron-ajax>
+    <iron-ajax id="refdChanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleRefdChanMessageResponse"></iron-ajax>
   </template>
   <script>
     Polymer({
@@ -135,15 +143,128 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       properties: {
         item: Object,
       },
+      observers: [
+        '_idxChange(idx)',
+        '_voidIdxChange(voidIdx)',
+        '_cancIdxChange(cancIdx)',
+        '_refdIdxChange(refdIdx)',
+      ],
+      _idxChange: function(idx) {
+        if (idx === 1) {
+          if (this.merMessage === '') {
+            this.$.merMessageQueryAjax.params = {
+              "merId": this.item.merId,
+              "orderNum": this.item.orderNum,
+              "busicd": this.item.busicd,
+              "messageType": "1",
+            };
+            this.$.merMessageQueryAjax.generateRequest();
+          }
+        } else if (idx === 2) {
+          if (this.chanMessage === '') {
+            this.$.chanMessageQueryAjax.params = {
+              "merId": this.item.merId,
+              "orderNum": this.item.orderNum,
+              "busicd": this.item.busicd,
+              "messageType": "2",
+            };
+            this.$.chanMessageQueryAjax.generateRequest();
+          }
+        }
+      },
+      _voidIdxChange: function(voidIdx) {
+        if (voidIdx === 1) {
+          if (this.voidMerMessage === '') {
+            this.$.voidMerMessageQueryAjax.params = {
+              "merId": this.voidOrderItem.merId,
+              "orderNum": this.voidOrderItem.orderNum,
+              "busicd": this.voidOrderItem.busicd,
+              "messageType": "1",
+            };
+            this.$.voidMerMessageQueryAjax.generateRequest();
+          }
+
+        } else if (voidIdx === 2) {
+          if (this.voidChanMessage === '') {
+            this.$.voidChanMessageQueryAjax.params = {
+              "merId": this.voidOrderItem.merId,
+              "orderNum": this.voidOrderItem.orderNum,
+              "busicd": this.voidOrderItem.busicd,
+              "messageType": "2",
+            };
+            this.$.voidChanMessageQueryAjax.generateRequest();
+          }
+        }
+      },
+      _cancIdxChange: function(cancIdx) {
+        if (cancIdx === 1) {
+          if (this.cancMerMessage === '') {
+            this.$.cancMerMessageQueryAjax.params = {
+              "merId": this.cancOrderItem.merId,
+              "orderNum": this.cancOrderItem.orderNum,
+              "busicd": this.cancOrderItem.busicd,
+              "messageType": "1",
+            };
+            this.$.cancMerMessageQueryAjax.generateRequest();
+          }
+
+        } else if (cancIdx === 2) {
+          if (this.cancChanMessage === '') {
+            this.$.cancChanMessageQueryAjax.params = {
+              "merId": this.cancOrderItem.merId,
+              "orderNum": this.cancOrderItem.orderNum,
+              "busicd": this.cancOrderItem.busicd,
+              "messageType": "2",
+            };
+            this.$.cancChanMessageQueryAjax.generateRequest();
+          }
+        }
+      },
+      _refdIdxChange: function(refdIdx) {
+        if (refdIdx === 1) {
+          if (this.refdMerMessage === '') {
+            this.$.refdMerMessageQueryAjax.params = {
+              "merId": this.refdOrderItem.merId,
+              "orderNum": this.refdOrderItem.orderNum,
+              "busicd": this.refdOrderItem.busicd,
+              "messageType": "1",
+            };
+            this.$.refdMerMessageQueryAjax.generateRequest();
+          }
+
+        } else if (refdIdx === 2) {
+          if (this.refdChanMessage === '') {
+            this.$.refdChanMessageQueryAjax.params = {
+              "merId": this.refdOrderItem.merId,
+              "orderNum": this.refdOrderItem.orderNum,
+              "busicd": this.refdOrderItem.busicd,
+              "messageType": "2",
+            };
+            this.$.refdChanMessageQueryAjax.generateRequest();
+          }
+        }
+      },
       open: function() {
         this.$.dialogView.open();
         this.idx = 0;
         this.voidIdx = 0;
         this.cancIdx = 0;
         this.refdIdx = 0;
-        this.voidOrderItem = {};
-        this.cancOrderItem = {};
-        this.refdOrderItem = {};
+        // this.voidOrderItem = {};
+        // this.cancOrderItem = {};
+        // this.refdOrderItem = {};
+        this.$.voidOrder.hidden = true;
+        this.$.cancOrder.hidden = true;
+        this.$.refdOrder.hidden = true;
+        this.merMessage = '';
+        this.chanMessage = '';
+        this.voidMerMessage = '';
+        this.voidChanMessage = '';
+        this.cancMerMessage = '';
+        this.cancChanMessage = '';
+        this.refdMerMessage = '';
+        this.refdChanMessage = '';
+
         // 初始化时查询关联订单
         this.$.tradeQueryAjax.params = {
           'busicd': 'VOID',
@@ -173,12 +294,87 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         var order = response.data;
         if (order.busicd === 'VOID') {
+          this.$.voidOrder.hidden = false;
           this.voidOrderItem = order;
         } else if (order.busicd === 'CANC') {
+          this.$.cancOrder.hidden = false;
           this.cancOrderItem = order;
         } else if (order.busicd === 'REFD') {
+          this.$.refdOrder.hidden = false;
           this.refdOrderItem = order;
         }
+      },
+      // 订单 商户报文
+      handleMerMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.merMessage = response.data;
+      },
+      // 订单渠道报文
+      handleChanMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.chanMessage = response.data;
+      },
+      // 撤销 商户报文
+      handleVoidMerMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.voidMerMessage = response.data;
+      },
+      // 撤销 渠道报文
+      handleVoidChanMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.voidChanMessage = response.data;
+      },
+      // 取消 商户报文
+      handleCancMerMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.cancMerMessage = response.data;
+      },
+      // 取消 取代报文
+      handleCancChanMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.cancChanMessage = response.data;
+      },
+      // 退款 商户报文
+      handleRefdMerMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.refdMerMessage = response.data;
+      },
+      // 退款 渠道报文
+      handleRefdChanMessageResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.refdChanMessage = response.data;
       },
     });
   </script>
