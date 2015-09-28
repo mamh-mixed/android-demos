@@ -35,7 +35,7 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center hand" on-click="viewMerchantTap"><iron-icon icon="editor:attach-file"></iron-icon><span>{{addOneFilter(index)}}</span></td>
+              <td class="center hand" on-tap="viewMerchantTap"><iron-icon icon="editor:attach-file"></iron-icon><span>{{addOneFilter(index)}}</span></td>
               <td class="center">{{item.merId}}</td>
               <td>{{item.detail.merName}}</td>
               <td class="center">{{item.detail.billingScheme}}</td>
@@ -57,7 +57,7 @@
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
-    <quick-merchant-create id="merchantCreate" on-saved="handleMerchantSave" page-type="{{pageType}}" merchant="{{merchant}}"></quick-merchant-create>
+    <quick-merchant-create id="merchantCreate" on-saved="handleMerchantSave" page-type="{{pageType}}" merchant="[[merchant]]"></quick-merchant-create>
     <quick-merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></quick-merchant-view>
   </template>
   <script>

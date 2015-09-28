@@ -5,6 +5,7 @@ set -e
 prog="quickpay"
 
 shortcut=("dev" "test" "app1" "app2")
+envs=("develop" "testing" "product" "product")
 hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" \
     "quick@app1.set.shou.money" "quick@app2.set.shou.money")
 
@@ -44,7 +45,7 @@ function main() {
 
     # Golang 跨平台编译
     echo ">>> Compile backend golang code..."
-    goBuild $prog
+    goBuild $prog ${envs[$idx]}
     echo
 
     # 前端打包
@@ -69,9 +70,20 @@ function main() {
 
 function goBuild() {
     prog=$1
+    env=$2
     echo "Building $prog..."
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o distrib/"$prog" main.go
     cp -r config distrib/
+    if [ "$env" == "develop" ]; then
+        rm distrib/config/*testing*
+        rm distrib/config/*product*
+    elif [ "$env" == "testing" ]; then
+        rm distrib/config/*develop*
+        rm distrib/config/*product*
+    elif [ "$env" == "product" ]; then
+        rm distrib/config/*testing*
+        rm distrib/config/*develop*
+    fi
 }
 
 function gulpPackage() {

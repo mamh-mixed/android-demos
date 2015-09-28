@@ -57,7 +57,7 @@
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr>
-              <td align="center" on-click="showTradeViewHandler">{{addOneFilter(index)}}</td>
+              <td class="center hand" on-tap="showTradeViewHandler">{{addOneFilter(index)}}</td>
               <td align="center" class$="{{getRespCodeColor(item.respcd)}}">
                 <div style="display: inline-block;">
                   <span>{{item.respcd}}</span>
@@ -96,12 +96,12 @@
       'REFD': '退款',
       'VERI': '卡券核销',
       'CANC': '取消',
-      'purc': '下单支付',
-      'paut': '预下单',
-      'void': '撤销',
-      'refd': '退款',
-      'veri': '卡券核销',
-      'canc': '取消',
+    //   'purc': '下单支付',
+    //   'paut': '预下单',
+    //   'void': '撤销',
+    //   'refd': '退款',
+    //   'veri': '卡券核销',
+    //   'canc': '取消',
       'QYZF': '企业付款',
       'JSZF': '公众号支付'
     };

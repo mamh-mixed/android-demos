@@ -2,11 +2,12 @@ package query
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
 var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
@@ -119,6 +120,24 @@ func SpTransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		Count:    count,
 	}
 
+	return ret
+}
+
+// SpTransFindOne 交易查询
+func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
+
+	// mongo统计
+	trans, err := mongo.SpTransColl.FindOneByOrigOrderNum(q)
+	if err != nil {
+		log.Errorf("find trans error: %s", err)
+		ret = model.NewResultBody(1, "查询数据库失败")
+	}
+
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "",
+		Data:    trans,
+	}
 	return ret
 }
 
