@@ -16,7 +16,7 @@
     }
   </style>
   <template>
-    <table id="orderDetail" hidden>
+    <table id="orderDetail">
       <tr>
         <td class="key">商户代码:</td>
         <td>{{item.merId}}</td>
@@ -105,16 +105,6 @@
 
       properties: {
         item: Object,
-      },
-      observers:[
-          '_itemChange(item)',
-      ],
-      _itemChange:function(item){
-          if (!item||!item.orderNum||item.orderNum===''){
-              this.$.orderDetail.hidden=true;
-          }else{
-              this.$.orderDetail.hidden=false;
-          }
       },
       _currencyFilter: function(money) {
         return (money / 100).toFixed(2);

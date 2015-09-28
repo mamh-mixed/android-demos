@@ -366,7 +366,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 
 	// 不同类型排序
 	sort := bson.M{"$sort": bson.M{"createTime": -1}}
-	// sort := bson.M{"$sort": bson.M{"updateTime": -1}}
 
 	// 商户实际拉取为Size+1
 	limit := bson.M{"$limit": q.Size}
