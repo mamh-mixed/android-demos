@@ -45,7 +45,7 @@
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-input label="日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
@@ -54,14 +54,14 @@
         </div>
       </paper-dialog>
 
-      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}}"></paper-input>
+      <!-- <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}}"></paper-input>
       <paper-dialog id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
         <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
           <paper-button dialog-dismiss>Cancel</paper-button>
           <paper-button dialog-confirm>OK</paper-button>
         </div>
-      </paper-dialog>
+      </paper-dialog> -->
 
       <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
       <paper-input label="商户代码" value="{{cond.merId::input}}"></paper-input>
@@ -300,17 +300,18 @@
         dismissStartTimeDialog: function() {
           var startTime = this.$.startTimePicker.date;
           this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
+          this.set('cond.endTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
         },
         showStartTimeDialog: function() {
           this.$.startTimeDailog.toggle();
         },
-        dismissEndTimeDialog: function() {
-          var endTime = this.$.endTimePicker.date;
-          this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
-        },
-        showEndTimeDialog: function() {
-          this.$.endTimeDailog.toggle();
-        },
+        // dismissEndTimeDialog: function() {
+        //   var endTime = this.$.endTimePicker.date;
+        //   this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
+        // },
+        // showEndTimeDialog: function() {
+        //   this.$.endTimeDailog.toggle();
+        // },
         // 修饰金额的方法
         _computeAmount: function(amount) {
           amount = amount.toFixed(2);
