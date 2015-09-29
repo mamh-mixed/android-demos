@@ -63,28 +63,18 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 	return response
 }
 
-func GetSpTransLogs(merId, orderNum string, msgType int) ([]string, error) {
+func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, error) {
 
 	var spLogs []model.SpTransLogs
 	var err error
 
 	switch msgType {
 	case 1:
-		spLogs, err = mongo.SpMerLogsCol.Find(merId, orderNum)
+		spLogs, err = mongo.SpMerLogsCol.Find(q.MerId, q.OrderNum)
 	case 2:
-		spLogs, err = mongo.SpChanLogsCol.Find(merId, orderNum)
+		spLogs, err = mongo.SpChanLogsCol.Find(q.MerId, q.OrderNum)
 	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	var result []string
-	for _, l := range spLogs {
-		result = append(result, l.MsgStr)
-	}
-
-	return result, nil
+	return spLogs, err
 }
 
 // GetMerInfo 扫固定码获取用户信息

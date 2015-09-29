@@ -14,16 +14,17 @@ func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
 	msgType, _ := strconv.Atoi(params.Get("msgType"))
-	ret := getTradeMsg(params.Get("merId"), params.Get("orderNum"), msgType)
-
+	ret := getTradeMsg(&model.QueryCondition{
+		MerId:    params.Get("merId"),
+		OrderNum: params.Get("orderNum"),
+		Busicd:   params.Get("busicd"),
+	}, msgType)
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// retBytes = bytes.Replace(retBytes, []byte(`\`), []byte(""), -1)
 
 	w.Write(retBytes)
 }

@@ -1,7 +1,6 @@
 package logs
 
 import (
-	"encoding/xml"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -19,13 +18,6 @@ func persistSpLogs() {
 	for {
 		select {
 		case l := <-SpLogs:
-			msgBytes, err := xml.Marshal(l.Msg)
-			if err != nil {
-				log.Errorf("marshal logs error:%s", err)
-				continue
-			}
-
-			l.MsgStr = string(msgBytes)
 			switch l.MsgType {
 			case 1:
 				mongo.SpMerLogsCol.Add(l)

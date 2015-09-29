@@ -7,6 +7,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
 	"io"
@@ -18,11 +19,20 @@ import (
 var requestURL = goconf.Config.AlipayScanPay.URL
 
 // sendRequest 发送请求
-func sendRequest(params map[string]string, key string) (*alpResponse, error) {
+func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 
+	req := alpReq.SpReq
+	if req == nil {
+		return nil, fmt.Errorf("%s", "no params spReq found")
+	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpReq)
+
+	params := toMap(alpReq)
 	toSign := preContent(params)
 
-	toSign += key
+	toSign += req.SignKey
 	signed := md5.Sum([]byte(toSign))
 	params["sign"] = hex.EncodeToString(signed[:])
 	params["sign_type"] = "MD5"
@@ -53,7 +63,15 @@ func sendRequest(params map[string]string, key string) (*alpResponse, error) {
 
 	defer res.Body.Close()
 
-	return handleResponseBody(res.Body)
+	alpResp, err := handleResponseBody(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// 记录日志
+	logs.SpLogs <- req.GetChanLogs(alpResp)
+
+	return alpResp, nil
 }
 
 // handleResponseBody 处理结果集

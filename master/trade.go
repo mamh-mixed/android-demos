@@ -15,8 +15,8 @@ import (
 
 var maxReportRec = 10000
 
-func getTradeMsg(merId, orderNum string, msgType int) (ret *model.ResultBody) {
-	ls, err := query.GetSpTransLogs(merId, orderNum, msgType)
+func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
+	ls, err := query.GetSpTransLogs(q, msgType)
 	if err != nil {
 		return model.NewResultBody(1, "查询数据库失败")
 	}

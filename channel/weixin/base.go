@@ -3,9 +3,9 @@ package weixin
 import (
 	"crypto/tls"
 	"encoding/xml"
-	"net/http"
-
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"net/http"
 )
 
 // NotifyURL 微信异步通知
@@ -17,11 +17,12 @@ type BaseReq interface {
 	GetSignKey() string  // 取商户（可能是大商户）签名密钥
 	GetURI() string      // GetURI 取接口地址
 	GetHTTPClient() *http.Client
+	GetSpReq() *model.ScanPayRequest
 }
 
 // CommonParams 微信接口请求公共参数
 type CommonParams struct {
-	XMLName xml.Name `xml:"xml" url:"-" json:"-"`
+	XMLName xml.Name `xml:"xml" url:"-" bson:"-"`
 
 	// 公共字段
 	Appid    string `xml:"appid,omitempty" url:"appid,omitempty"`           // 微信分配的公众账号ID validate:"len=18
@@ -33,8 +34,9 @@ type CommonParams struct {
 
 	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero"`
 
-	ClientCert []byte `xml:"-" url:"-" json:"-"` // HTTPS 双向认证证书
-	ClientKey  []byte `xml:"-" url:"-" json:"-"` // HTTPS 双向认证密钥
+	ClientCert []byte                `xml:"-" url:"-" bson:"-"` // HTTPS 双向认证证书
+	ClientKey  []byte                `xml:"-" url:"-" bson:"-"` // HTTPS 双向认证密钥
+	Req        *model.ScanPayRequest `xml:"-" url:"-" bson:"-"`
 }
 
 // SetSign sign setter
@@ -45,6 +47,11 @@ func (c *CommonParams) SetSign(sign string) {
 // GetSignKey signKey getter
 func (c *CommonParams) GetSignKey() string {
 	return c.WeixinMD5Key
+}
+
+// GetSpReq 请求对象
+func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
+	return c.Req
 }
 
 // GetHTTPClient 如果组合结构体不重写这个方法，表示不使用双向 HTTPS 认证，
@@ -77,7 +84,7 @@ type BaseResp interface {
 
 // CommonBody 微信接口返回公共字段
 type CommonBody struct {
-	XMLName xml.Name `xml:"xml" url:"-" json:"-"`
+	XMLName xml.Name `xml:"xml" url:"-" bson:"-"`
 
 	ReturnCode string `xml:"return_code" url:"return_code"`                   // 返回状态码
 	ReturnMsg  string `xml:"return_msg,omitempty" url:"return_msg,omitempty"` // 返回信息

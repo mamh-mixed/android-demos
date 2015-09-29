@@ -20,7 +20,7 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 	log.Infof("from merchant message: %s", string(reqBytes))
 
 	// 解析请求内容
-	req := new(model.ScanPayRequest)
+	req := model.NewScanPayRequest()
 	// 设置请求方式
 	req.IsGBK = isGBK
 	// 解析json
@@ -31,13 +31,13 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 	}
 
 	// 记录请求时日志
-	logs.SpLogs <- req.GetMerLogs()
+	logs.SpLogs <- req.GetMerReqLogs()
 
 	// 具体业务
 	ret := dispatch(req)
 
 	// 记录返回时日志
-	logs.SpLogs <- ret.GetMerLogs()
+	logs.SpLogs <- req.GetMerRetLogs(ret)
 
 	// 应答
 	retBytes, err := json.Marshal(ret)

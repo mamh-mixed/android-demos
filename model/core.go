@@ -413,11 +413,12 @@ type CheckAndNotify struct {
 
 // SpTransLogs 扫码交易日志
 type SpTransLogs struct {
-	MerId        string      `bson:"merId"`
-	OrderNum     string      `bson:"orderNum,omitempty"`
-	OrigOrderNum string      `bson:"origOrderNum,omitempty"`
-	TransType    string      `bson:"transType"`
-	MsgType      int         `bson:"msgType"`
-	Msg          interface{} `bson:"-"`
-	MsgStr       string      `bson:"msg"`
+	ReqId        string      `bson:"reqId" json:"reqId"`
+	MerId        string      `bson:"merId" json:"merId"`
+	OrderNum     string      `bson:"orderNum,omitempty" json:"orderNum"`
+	OrigOrderNum string      `bson:"origOrderNum,omitempty" json:"origOrderNum"`
+	TransTime    string      `bson:"transTime" json:"transTime"`
+	TransType    string      `bson:"transType" json:"transType"`
+	MsgType      int         `bson:"msgType" json:"msgType"`
+	Msg          interface{} `bson:"msg" json:"-"`
 }
