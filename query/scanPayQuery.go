@@ -65,7 +65,6 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 
 func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, int, error) {
 
-	log.Debugf("query condition: %v", q)
 	var spLogs []model.SpTransLogs
 	var err error
 	var total int
@@ -102,9 +101,7 @@ func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, 
 		}
 
 	case 2:
-		log.Debugf("%v", q)
 		spLogs, err = mongo.SpChanLogsCol.Find(q)
-		log.Debugf("%d", len(spLogs))
 		total = len(spLogs)
 	}
 	return spLogs, total, err

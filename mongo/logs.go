@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -22,10 +21,9 @@ func (lc *logsCollection) Add(l *model.SpTransLogs) error {
 
 // Find 查找莫个订单的日志
 func (lc *logsCollection) Find(q *model.QueryCondition) ([]model.SpTransLogs, error) {
-	log.Debugf("%v", q)
+
 	var result []model.SpTransLogs
 	var err error
-	log.Debugf("%v", lc.query(q))
 	if len(q.ReqIds) > 0 {
 		err = database.C(lc.name).Find(lc.query(q)).All(&result)
 	} else {
