@@ -45,8 +45,11 @@ type QueryCondition struct {
 	IsForReport  bool     `json:"-"`
 	GroupCode    string   `json:"groupCode,omitempty"`
 	Respcd       string   `json:"respcd" url:"respcd"`
+	RespcdNotIn  string   `json:"respcdNotIn"`
 	TradeFrom    string   `json:"tradeFrom,omitempty"`
 	Skip         int      `json:"skip,omitempty"`
+	Direction    string
+	ReqIds       []string
 }
 
 // QueryResult 查询结果值
@@ -269,6 +272,7 @@ func (s *ScanPayRequest) GetMerReqLogs() *SpTransLogs {
 	return &SpTransLogs{
 		ReqId:        s.ReqId,
 		MerId:        s.Mchntid,
+		Direction:    "in",
 		OrderNum:     s.OrderNum,
 		OrigOrderNum: s.OrigOrderNum,
 		TransType:    s.Busicd,
@@ -294,6 +298,7 @@ func (s *ScanPayRequest) GetChanLogs(reqData interface{}) *SpTransLogs {
 func (s *ScanPayRequest) GetMerRetLogs(ret interface{}) *SpTransLogs {
 	return &SpTransLogs{
 		ReqId:        s.ReqId,
+		Direction:    "out",
 		MerId:        s.Mchntid,
 		OrderNum:     s.OrderNum,
 		OrigOrderNum: s.OrigOrderNum,

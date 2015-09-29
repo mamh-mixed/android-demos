@@ -1,29 +1,32 @@
 package app
 
 import (
+	cr "crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"math/rand"
-	"strconv"
-	"strings"
-	"time"
-
-	"regexp"
-
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
+	"io"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type user struct{}
 
-var User user
-var timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
-var dateRegexp = regexp.MustCompile(`^\d{8}$`)
-var monthRegexp = regexp.MustCompile(`^\d{6}$`)
+var (
+	User         user
+	timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
+	dateRegexp   = regexp.MustCompile(`^\d{8}$`)
+	monthRegexp  = regexp.MustCompile(`^\d{6}$`)
+	b64Encoding  = base64.StdEncoding
+)
 
 // register 注册
 func (u *user) register(req *reqParams) (result *model.AppResult) {
@@ -136,10 +139,17 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 	hostAddress := goconf.Config.App.NotifyURL
 	activateUrl := fmt.Sprintf("%s/app/activate?username=%s&code=%s", hostAddress, req.UserName, code)
 
+	var iv [32]byte
+
+	if _, err := io.ReadFull(cr.Reader, iv[:]); err != nil {
+		log.Errorf("io.ReadFull error: %s", err)
+	}
+	click := b64Encoding.EncodeToString(iv[:])
+
 	email := &email.Email{
 		To:    req.UserName,
 		Title: activation.Title,
-		Body:  fmt.Sprintf(activation.Body, activateUrl, "点我激活"),
+		Body:  fmt.Sprintf(activation.Body, activateUrl, click),
 	}
 
 	e := &model.Email{
@@ -460,10 +470,9 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	switch req.Status {
 	case "all":
 	case "success":
-		q.RefundStatus = model.TransRefunded
-		q.TransStatus = []string{model.TransSuccess}
+		q.Respcd = "00"
 	case "fail":
-		q.TransStatus = []string{model.TransFail, model.TransHandling}
+		q.RespcdNotIn = "00"
 	}
 
 	trans, total, err := mongo.SpTransColl.Find(q)
