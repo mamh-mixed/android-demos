@@ -1,14 +1,37 @@
 package master
 
 import (
+	// "bytes"
 	"encoding/json"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 )
+
+func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+
+	msgType, _ := strconv.Atoi(params.Get("msgType"))
+	size, _ := strconv.Atoi(params.Get("size"))
+	page, _ := strconv.Atoi(params.Get("page"))
+	ret := getTradeMsg(&model.QueryCondition{
+		MerId:    params.Get("merId"),
+		OrderNum: params.Get("orderNum"),
+		Page:     page,
+		Size:     size,
+	}, msgType)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(retBytes)
+}
 
 func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
