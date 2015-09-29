@@ -317,6 +317,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.Respcd != "" {
 		match["respCode"] = q.Respcd
 	}
+	if q.RespcdNotIn != "" {
+		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}
+	}
 	if q.TradeFrom != "" {
 		match["tradeFrom"] = q.TradeFrom
 	}

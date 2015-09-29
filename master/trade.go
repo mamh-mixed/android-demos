@@ -16,14 +16,23 @@ import (
 var maxReportRec = 10000
 
 func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
-	ls, err := query.GetSpTransLogs(q, msgType)
+	ls, total, err := query.GetSpTransLogs(q, msgType)
 	if err != nil {
 		return model.NewResultBody(1, "查询数据库失败")
 	}
+
+	paging := model.Pagination{
+		Page:  q.Page,
+		Total: total,
+		Size:  q.Size,
+		Data:  ls,
+	}
+
 	return &model.ResultBody{
 		Status: 0,
-		Data:   ls,
+		Data:   paging,
 	}
+
 }
 
 // tradeQuery 交易查询

@@ -19,6 +19,7 @@ func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
 	ret := getTradeMsg(&model.QueryCondition{
 		MerId:    params.Get("merId"),
 		OrderNum: params.Get("orderNum"),
+		ReqIds:   params["reqIds"],
 		Page:     page,
 		Size:     size,
 	}, msgType)
