@@ -420,5 +420,5 @@ type SpTransLogs struct {
 	TransTime    string      `bson:"transTime" json:"transTime"`
 	TransType    string      `bson:"transType" json:"transType"`
 	MsgType      int         `bson:"msgType" json:"msgType"`
-	Msg          interface{} `bson:"msg" json:"-"`
+	Msg          interface{} `bson:"msg" json:"msg"`
 }

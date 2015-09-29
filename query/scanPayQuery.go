@@ -70,9 +70,9 @@ func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, 
 
 	switch msgType {
 	case 1:
-		spLogs, err = mongo.SpMerLogsCol.Find(q.MerId, q.OrderNum)
+		spLogs, err = mongo.SpMerLogsCol.Find(q)
 	case 2:
-		spLogs, err = mongo.SpChanLogsCol.Find(q.MerId, q.OrderNum)
+		spLogs, err = mongo.SpChanLogsCol.Find(q)
 	}
 	return spLogs, err
 }
