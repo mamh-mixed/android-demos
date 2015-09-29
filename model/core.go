@@ -410,3 +410,15 @@ type CheckAndNotify struct {
 	App3Tag string `bson:"app3Tag"`
 	App4Tag string `bson:"app4Tag"`
 }
+
+// SpTransLogs 扫码交易日志
+type SpTransLogs struct {
+	ReqId        string      `bson:"reqId" json:"reqId"`
+	MerId        string      `bson:"merId" json:"merId"`
+	OrderNum     string      `bson:"orderNum,omitempty" json:"orderNum"`
+	OrigOrderNum string      `bson:"origOrderNum,omitempty" json:"origOrderNum"`
+	TransTime    string      `bson:"transTime" json:"transTime"`
+	TransType    string      `bson:"transType" json:"transType"`
+	MsgType      int         `bson:"msgType" json:"msgType"`
+	Msg          interface{} `bson:"msg" json:"msg"`
+}

@@ -74,18 +74,18 @@ func TestFuzzyFindChanMer(t *testing.T) {
 	t.Logf("the length of the results is %d; result is %#v", len(results), results)
 }
 
-func TestPaginationFindChanMer(t *testing.T) {
-	chanCode, chanMerId, chanMerName := "", "", ""
-	size, page := 10, 1
-	results, total, err := ChanMerColl.PaginationFind(chanCode, chanMerId, chanMerName, size, page)
-	if err != nil {
-		log.Errorf("fail: %s", err)
-	}
+// func TestPaginationFindChanMer(t *testing.T) {
+// 	chanCode, chanMerId, chanMerName := "", "", ""
+// 	size, page := 10, 1
+// 	results, total, err := ChanMerColl.PaginationFind(chanCode, chanMerId, chanMerName, size, page)
+// 	if err != nil {
+// 		log.Errorf("fail: %s", err)
+// 	}
 
-	t.Logf("total is %d; collections are %#v", total, results)
+// 	t.Logf("total is %d; collections are %#v", total, results)
 
-	t.Logf("current count is %d", len(results))
-}
+// 	t.Logf("current count is %d", len(results))
+// }
 
 func TestChanMerFind(t *testing.T) {
 	chanMer, err := ChanMerColl.Find(chanCode, chanMerId)

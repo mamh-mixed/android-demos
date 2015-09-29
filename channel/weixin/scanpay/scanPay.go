@@ -9,7 +9,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -28,6 +27,7 @@ func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
 		WeixinMD5Key: m.SignKey,      // md5key
 		ClientCert:   m.WeixinClientCert,
 		ClientKey:    m.WeixinClientKey,
+		Req:          m,
 	}
 }
 
@@ -93,8 +93,6 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 	if err = weixin.Execute(d, p); err != nil {
 		return nil, err
 	}
-
-	log.Debugf("ProcessEnquiry response data is %#v", p)
 
 	status, msg, ec := weixin.Transform("payQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 

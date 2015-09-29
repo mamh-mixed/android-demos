@@ -63,6 +63,20 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 	return response
 }
 
+func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, error) {
+
+	var spLogs []model.SpTransLogs
+	var err error
+
+	switch msgType {
+	case 1:
+		spLogs, err = mongo.SpMerLogsCol.Find(q)
+	case 2:
+		spLogs, err = mongo.SpChanLogsCol.Find(q)
+	}
+	return spLogs, err
+}
+
 // GetMerInfo 扫固定码获取用户信息
 func GetMerInfo(merId string) scanFixedResponse {
 
@@ -131,6 +145,7 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
 		ret = model.NewResultBody(1, "查询数据库失败")
+		return ret
 	}
 
 	ret = &model.ResultBody{
