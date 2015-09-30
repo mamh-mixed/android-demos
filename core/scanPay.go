@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
-	w "github.com/CardInfoLink/quickpay/channel/weixin"
+	// w "github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/crontab"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -189,20 +189,20 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	t.ChanMerId = rp.ChanMerId
 
 	// 修复bug==============
-	subTrans, err := mongo.SpTransColl.FindByAccount(req.OpenId)
-	if err == nil {
-		notify, err := mongo.NotifyRecColl.FindOne(subTrans.MerId, subTrans.OrderNum)
-		if err == nil {
-			v := &w.WeixinNotifyReq{}
-			err = json.Unmarshal([]byte(notify.FromChanMsg), v)
-			if err == nil {
-				if v.SubOpenid != "" {
-					t.GatheringId = v.SubOpenid
-					req.OpenId = v.SubOpenid
-				}
-			}
-		}
-	}
+	// subTrans, err := mongo.SpTransColl.FindByAccount(req.OpenId)
+	// if err == nil {
+	// 	notify, err := mongo.NotifyRecColl.FindOne(subTrans.MerId, subTrans.OrderNum)
+	// 	if err == nil {
+	// 		v := &w.WeixinNotifyReq{}
+	// 		err = json.Unmarshal([]byte(notify.FromChanMsg), v)
+	// 		if err == nil {
+	// 			if v.SubOpenid != "" {
+	// 				t.GatheringId = v.SubOpenid
+	// 				req.OpenId = v.SubOpenid
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -808,8 +808,9 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 
 // CloseOrder
 func CloseOrder() {
+
 	timer := time.NewTimer(interval)
-	ts, err := mongo.SpTransColl.FindHandingTrans()
+	ts, err := mongo.SpTransColl.FindHandingTrans(interval)
 	if err != nil {
 		log.Warn("no handing trans found")
 		return
