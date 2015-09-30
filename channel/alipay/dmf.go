@@ -78,7 +78,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
 		ExtendParams:   req.ExtendParams,
-		ItBPay:         "1m", // 超时时间
+		ItBPay:         "40m", // 超时时间
 	}
 
 	// req to map

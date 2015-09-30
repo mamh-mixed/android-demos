@@ -134,7 +134,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 
 	// 设置失效时间
 	startTime := time.Now()
-	endTime := startTime.Add(5 * time.Minute)
+	endTime := startTime.Add(40 * time.Minute)
 
 	// 判断tradeType
 	tradeType := ""

@@ -10,7 +10,7 @@ cd $path
 
 #cp .hooks/* .git/hooks/
 
-git pull cil develop
+#git pull cil develop
 
 ./publish.sh dev
 
