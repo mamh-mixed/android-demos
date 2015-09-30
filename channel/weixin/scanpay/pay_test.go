@@ -2,12 +2,18 @@ package scanpay
 
 import (
 	"testing"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/util"
 )
 
 func TestPay(t *testing.T) {
+
+	// 设置失效时间
+	startTime := time.Now()
+	endTime := startTime.Add(24 * time.Hour)
+
 	d := &PayReq{
 		CommonParams: testCommonParams,
 
@@ -20,7 +26,10 @@ func TestPay(t *testing.T) {
 		FeeType:        "CNY",                // 货币类型
 		SpbillCreateIP: util.LocalIP,         // 终端IP
 		GoodsGag:       "xxx",                // 商品标记
-		AuthCode:       "130348356547043598", // 授权码
+		AuthCode:       "130470441880647678", // 授权码
+
+		TimeStart:  startTime.Format("20060102150405"), // 交易起始时间
+		TimeExpire: endTime.Format("20060102150405"),   // 交易结束时间
 	}
 
 	r := &PayResp{}
