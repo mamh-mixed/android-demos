@@ -469,15 +469,17 @@ func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, e
 }
 
 func genExtendParams(mer *model.Merchant, c *model.ChanMer) string {
+	var agentCode = agentId
 	if c.AgentCode != "" {
-		agentId = c.AgentCode
+		agentCode = c.AgentCode
 	}
 	var shopInfo = &struct {
 		AGENT_ID   string `json:",omitempty"`
 		STORE_ID   string `json:",omitempty"`
 		STORE_TYPE string `json:",omitempty"`
 		SHOP_ID    string `json:",omitempty"`
-	}{agentId, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
+	}{agentCode, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
+
 	bytes, _ := json.Marshal(shopInfo)
 	return string(bytes)
 }
