@@ -47,7 +47,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		ProductCode:   "BARCODE_PAY_OFFLINE",
 		TotalFee:      req.ActTxamt,
 		ExtendParams:  req.ExtendParams, //...
-		ItBPay:        "1m",             // 超时时间
+		ItBPay:        "40m",            // 超时时间
 		DynamicIdType: "bar_code",
 		DynamicId:     req.ScanCodeId,
 		SpReq:         req,
