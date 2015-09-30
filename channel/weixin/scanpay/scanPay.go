@@ -33,6 +33,11 @@ func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
 
 // ProcessBarcodePay 扫条码下单
 func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
+
+	// 设置失效时间
+	startTime := time.Now()
+	endTime := startTime.Add(24 * time.Hour)
+
 	d := &PayReq{
 		CommonParams: *getCommonParams(m),
 
@@ -41,6 +46,9 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		AuthCode:       m.ScanCodeId,        // 授权码
 		TotalFee:       m.ActTxamt,          // 总金额
 		SpbillCreateIP: util.LocalIP,        // 终端IP
+
+		TimeStart:  startTime.Format("20060102150405"), // 交易起始时间
+		TimeExpire: endTime.Format("20060102150405"),   // 交易结束时间
 
 		// 非必填
 		DeviceInfo: m.DeviceInfo, // 设备号
@@ -132,7 +140,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 
 	// 设置失效时间
 	startTime := time.Now()
-	endTime := startTime.Add(40 * time.Minute)
+	endTime := startTime.Add(24 * time.Hour)
 
 	// 判断tradeType
 	tradeType := ""

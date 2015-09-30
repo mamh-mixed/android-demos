@@ -26,6 +26,9 @@ type PayReq struct {
 	LimitPay       string `xml:"limit_pay,omitempty" url:"limit_pay,omitempty"`              // 指定支付方式
 	AuthCode       string `xml:"auth_code" url:"auth_code" validate:"nonzero"`               // 授权码
 	// AuthCode       string `xml:"auth_code" url:"auth_code" validate:"regexp=^1\\d{17}$"` // 授权码
+
+	TimeStart  string `xml:"time_start,omitempty" url:"time_start,omitempty"`   // 交易起始时间
+	TimeExpire string `xml:"time_expire,omitempty" url:"time_expire,omitempty"` // 交易结束时间
 }
 
 // GetURI 取接口地址
