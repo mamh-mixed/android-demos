@@ -155,16 +155,20 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 }
 
 // FindOneByOrigOrderNum 通过订单号、商户号查找一条交易记录
-func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (t *model.Trans, err error) {
+func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts []model.Trans, err error) {
 	match := bson.M{
 		"busicd":       q.Busicd,
 		"origOrderNum": q.OrigOrderNum,
 		"transStatus":  "30",
 	}
-	t = new(model.Trans)
-	err = database.C(col.name).Find(match).One(t)
+	cond := []bson.M{
+		{"$match": match},
+	}
+	sort := bson.M{"$sort": bson.M{"createTime": -1}}
+	cond = append(cond, sort)
+	err = database.C(col.name).Pipe(cond).All(&ts)
 
-	return t, err
+	return ts, err
 }
 
 // FindHandingTrans 找到三十分钟前的处理中的交易
@@ -316,6 +320,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 	if q.Respcd != "" {
 		match["respCode"] = q.Respcd
+	}
+	if q.RespcdNotIn != "" {
+		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}
 	}
 	if q.TradeFrom != "" {
 		match["tradeFrom"] = q.TradeFrom

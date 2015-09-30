@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
@@ -16,12 +17,20 @@ func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
 	msgType, _ := strconv.Atoi(params.Get("msgType"))
 	size, _ := strconv.Atoi(params.Get("size"))
 	page, _ := strconv.Atoi(params.Get("page"))
-	ret := getTradeMsg(&model.QueryCondition{
+
+	q := &model.QueryCondition{
 		MerId:    params.Get("merId"),
 		OrderNum: params.Get("orderNum"),
 		Page:     page,
 		Size:     size,
-	}, msgType)
+	}
+
+	reqIds := params.Get("reqIds")
+	if strings.Contains(reqIds, ",") {
+		q.ReqIds = strings.Split(reqIds, ",")
+	}
+
+	ret := getTradeMsg(q, msgType)
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
