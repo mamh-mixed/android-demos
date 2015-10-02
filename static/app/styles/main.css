@@ -2,6 +2,10 @@ body {
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
+
+#mainContainer > .content{
+  padding: 20px;
+}
 paper-toast#toast {
   z-index: 10;
 }
