@@ -6,7 +6,7 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Polymer Starter Kit" />
-  <title>快捷支付管理平台</title>
+  <title>云收银管理平台</title>
   <!-- Place favicon.ico in the `app/` directory -->
 
   <!-- Chrome for Android theme color -->
@@ -56,7 +56,7 @@
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
           <img src="images/logo2.svg" alt="云收银" class="logo">
-          <div class="app-name">快捷支付管理平台</div>
+          <div class="app-name">云收银管理平台</div>
         </paper-toolbar>
 
         <!-- 菜单列表 -->
@@ -153,11 +153,11 @@
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="trade.list" href="/trade/list">
                 <iron-icon icon="payment"></iron-icon>
-                <span>扫码交易</span>
+                <span>扫码支付</span>
               </a>
               <a data-route="trade.bindingpay.list" href="/trade/bindingpay/list">
                 <iron-icon icon="payment"></iron-icon>
-                <span>绑定交易</span>
+                <span>快捷支付</span>
               </a>
               <a data-route="trade.reports" href="/trade/reports">
                 <iron-icon icon="file-download"></iron-icon>
