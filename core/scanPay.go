@@ -400,12 +400,18 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}()
 
 	copyProperties(refund, orig)
-	// refund.SubChanMerId = orig.SubChanMerId
 
-	// TODO 退款只能隔天退，按需求投产后先缓冲一段时间再开启。
-	// if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
-	// 	return adaptor.LogicErrorHandler(refund, "REFUND_TIME_ERROR")
-	// }
+	mer, err := mongo.MerchantColl.Find(orig.MerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(refund, "NO_MERCHANT")
+	}
+
+	// 是否隔天退款
+	if mer.RefundNextDay {
+		if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+			return adaptor.LogicErrorHandler(refund, "REFUND_TIME_ERROR")
+		}
+	}
 
 	// 是否是支付交易
 	if orig.TransType != model.PayTrans {

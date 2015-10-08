@@ -52,10 +52,10 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 
 		// 非必填
 		DeviceInfo: m.DeviceInfo, // 设备号
+		GoodsGag:   m.GoodsTag,   // 商品标记
 		// Detail:     m.WxpMarshalGoods(), // 商品详情
 		// Attach:     m.Attach,         // 附加数据
 		// FeeType:    m.CurrType,       // 货币类型
-		// GoodsGag:   m.GoodsGag,       // 商品标记
 	}
 
 	p := &PayResp{}
@@ -165,8 +165,8 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		TradeType:      tradeType,                          // 交易类型
 		ProductID:      "",                                 // 商品ID
 		Openid:         m.OpenId,                           // 用户标识
+		GoodsGag:       m.GoodsTag,                         // 商品标记
 		// FeeType:        m.CurrType,                         // 货币类型
-		// GoodsGag:       m.GoodsGag,                         // 商品标记
 		// Detail:         m.WxpMarshalGoods(),                // 商品详情
 	}
 
