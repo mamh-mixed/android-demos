@@ -27,7 +27,7 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	}
 
 	// 记录日志
-	logs.SpLogs <- req.GetChanLogs(alpReq)
+	logs.SpLogs <- req.GetChanReqLogs(alpReq)
 
 	params := toMap(alpReq)
 	toSign := preContent(params)
@@ -69,7 +69,7 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	}
 
 	// 记录日志
-	logs.SpLogs <- req.GetChanLogs(alpResp)
+	logs.SpLogs <- req.GetChanRetLogs(alpResp)
 
 	return alpResp, nil
 }

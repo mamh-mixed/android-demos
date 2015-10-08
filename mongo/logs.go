@@ -19,6 +19,13 @@ func (lc *logsCollection) Add(l *model.SpTransLogs) error {
 	return database.C(lc.name).Insert(l)
 }
 
+// FindOne 查找一条记录
+func (lc *logsCollection) FindOne(q *model.QueryCondition) (*model.SpTransLogs, error) {
+	var result = new(model.SpTransLogs)
+	err := database.C(lc.name).Find(lc.query(q)).One(result)
+	return result, err
+}
+
 // Find 查找莫个订单的日志
 func (lc *logsCollection) Find(q *model.QueryCondition) ([]model.SpTransLogs, error) {
 
@@ -59,6 +66,10 @@ func (lc *logsCollection) query(q *model.QueryCondition) bson.M {
 
 	if q.MerId != "" {
 		query["merId"] = q.MerId
+	}
+
+	if q.Busicd != "" {
+		query["transType"] = q.Busicd
 	}
 
 	if q.OrderNum != "" {
