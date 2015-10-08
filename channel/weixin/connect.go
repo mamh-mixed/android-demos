@@ -26,7 +26,7 @@ func Execute(req BaseReq, resp BaseResp) error {
 	}
 
 	// 记录请求渠道日志
-	logs.SpLogs <- m.GetChanLogs(req)
+	logs.SpLogs <- m.GetChanReqLogs(req)
 
 	if err := validator.Validate(req); err != nil {
 		log.Errorf("validate error, %s", err)
@@ -48,7 +48,7 @@ func Execute(req BaseReq, resp BaseResp) error {
 	err = processRespBody(ret, req.GetSignKey(), resp)
 
 	// 记录渠道返回日志
-	logs.SpLogs <- m.GetChanLogs(resp)
+	logs.SpLogs <- m.GetChanRetLogs(resp)
 
 	return err
 }

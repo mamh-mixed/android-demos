@@ -270,42 +270,29 @@ func (ret *ScanPayResponse) SignMsg() string {
 
 // GetMerReqLogs 商户请求日志体
 func (s *ScanPayRequest) GetMerReqLogs() *SpTransLogs {
-	return &SpTransLogs{
-		ReqId:        s.ReqId,
-		MerId:        s.Mchntid,
-		Direction:    "in",
-		OrderNum:     s.OrderNum,
-		OrigOrderNum: s.OrigOrderNum,
-		TransType:    s.Busicd,
-		MsgType:      1,
-		Msg:          s,
-	}
-}
-
-// GetChanLogs 请求渠道日志体
-func (s *ScanPayRequest) GetChanLogs(reqData interface{}) *SpTransLogs {
-	return &SpTransLogs{
-		ReqId:        s.ReqId,
-		MerId:        s.Mchntid,
-		OrderNum:     s.OrderNum,
-		OrigOrderNum: s.OrigOrderNum,
-		TransType:    s.Busicd,
-		MsgType:      2,
-		Msg:          reqData,
-	}
+	return s.newTransLogs("in", 1, s)
 }
 
 // GetMerRetLogs 返回商户报文体
 func (s *ScanPayRequest) GetMerRetLogs(ret interface{}) *SpTransLogs {
+	return s.newTransLogs("out", 1, ret)
+}
+
+// GetChanReqLogs 请求渠道日志体
+func (s *ScanPayRequest) GetChanReqLogs(reqData interface{}) *SpTransLogs {
+	return s.newTransLogs("out", 2, reqData)
+}
+
+// GetChanRetLogs 请求渠道日志体
+func (s *ScanPayRequest) GetChanRetLogs(reqData interface{}) *SpTransLogs {
+	return s.newTransLogs("in", 2, reqData)
+}
+
+func (s *ScanPayRequest) newTransLogs(direct string, mt int, data interface{}) *SpTransLogs {
 	return &SpTransLogs{
-		ReqId:        s.ReqId,
-		Direction:    "out",
-		MerId:        s.Mchntid,
-		OrderNum:     s.OrderNum,
-		OrigOrderNum: s.OrigOrderNum,
-		TransType:    s.Busicd,
-		MsgType:      1,
-		Msg:          ret,
+		Direction: direct, MsgType: mt, Msg: data,
+		ReqId: s.ReqId, MerId: s.Mchntid, OrderNum: s.OrderNum,
+		OrigOrderNum: s.OrigOrderNum, TransType: s.Busicd,
 	}
 }
 

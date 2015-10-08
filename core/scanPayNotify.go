@@ -62,6 +62,7 @@ func ProcessAlipayNotify(params url.Values) error {
 
 	// 异步通知数据进入日志
 	logs.SpLogs <- &model.SpTransLogs{
+		Direction:    "in",
 		MerId:        t.MerId,
 		OrderNum:     t.OrderNum,
 		OrigOrderNum: t.OrigOrderNum,
@@ -201,6 +202,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 
 	// 异步通知数据进入日志
 	logs.SpLogs <- &model.SpTransLogs{
+		Direction:    "in",
 		MerId:        t.MerId,
 		OrderNum:     t.OrderNum,
 		OrigOrderNum: t.OrigOrderNum,
