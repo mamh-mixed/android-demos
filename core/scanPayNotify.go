@@ -7,11 +7,11 @@ import (
 
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/omigo/log"
-	// "io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -23,6 +23,7 @@ import (
 // 该接口只接受预下单的异步通知
 // 支付宝的其它接口将不接受异步通知
 func ProcessAlipayNotify(params url.Values) error {
+
 	// 通知动作类型
 	notifyAction := params.Get("notify_action_type")
 	// 交易订单号
@@ -58,6 +59,15 @@ func ProcessAlipayNotify(params url.Values) error {
 	if err != nil {
 		return err
 	}
+
+	// 异步通知数据进入日志
+	logs.SpLogs <- &model.SpTransLogs{
+		MerId:        t.MerId,
+		OrderNum:     t.OrderNum,
+		OrigOrderNum: t.OrigOrderNum,
+		TransType:    t.Busicd,
+		MsgType:      3,
+		Msg:          params}
 
 	// 解锁
 	defer func() {
@@ -189,6 +199,15 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		return err
 	}
 
+	// 异步通知数据进入日志
+	logs.SpLogs <- &model.SpTransLogs{
+		MerId:        t.MerId,
+		OrderNum:     t.OrderNum,
+		OrigOrderNum: t.OrigOrderNum,
+		TransType:    t.Busicd,
+		MsgType:      3,
+		Msg:          req}
+
 	// 解锁
 	defer func() {
 		if t.LockFlag == 1 {
@@ -308,21 +327,7 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 				time.Sleep(time.Second * d)
 				continue
 			}
-			// rs, err := ioutil.ReadAll(resp.Body)
-			// if err != nil {
-			// 	time.Sleep(time.Second * d)
-			// 	continue
-			// }
-			// clientResp := &model.ScanPayResponse{}
-			// err = json.Unmarshal(rs, clientResp)
-			// if err != nil {
-			// 	time.Sleep(time.Second * d)
-			// 	continue
-			// }
-			// if clientResp.Respcd != adaptor.SuccessCode {
-			// 	time.Sleep(time.Second * d)
-			// 	continue
-			// }
+
 			// 异步通知成功，返回
 			return
 		}
@@ -334,7 +339,6 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 }
 
 func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
-	// ret.Busicd = "NOTI"
 	ret.Txndir = "A"
 	ret.Busicd = model.Paut
 	ret.Mchntid = t.MerId
@@ -345,8 +349,4 @@ func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
 	ret.Txamt = fmt.Sprintf("%012d", t.TransAmt)
 	ret.Attach = t.Attach
 	ret.GoodsInfo = t.GoodsInfo
-	// ret.Attach = t
-	// ret.MerDiscount = t.MerDiscount
-	// ret.ChcdDiscount = t.ChanDiscount
-	// ret.QrCode = t.QrCode
 }
