@@ -1,7 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <script src="../../bower_components/cryptojslib/rollups/sha1.js"></script>
 <script src="../../bower_components/cryptojslib/rollups/aes.js"></script>
-
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../x-select/x-select.html">
 <dom-module id="bindingpay-template">
   <style>
     paper-toast {
@@ -34,7 +37,6 @@
       width: 49.5%;
       display: inline-block;
     }
-
   </style>
   <template>
     <iron-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-response="handleResponse"></iron-ajax>
@@ -50,10 +52,10 @@
         <paper-input label="{{item.label}}" name="{{item.name}}" maxlength="{{item.maxlength}}" required="{{item.required}}" value="{{item.value}}"></paper-input>
       </template>
       <template is="dom-if" if="{{isVisable}}">
-         <x-select items="[[accountTypeMap]]" name="settAccountType" selected-item="{{settAccountType}}" label="* 账户类型"></x-select>
+        <x-select items="[[accountTypeMap]]" name="settAccountType" selected-item="{{settAccountType}}" label="* 账户类型"></x-select>
       </template>
     </div>
-    
+
     <paper-fab mini id="submitForm" icon="arrow-forward" class="colored" raised title="arrow-forward" on-tap="submit"></paper-fab>
 
     <paper-textarea label="响应" value="{{rcvd}}"></paper-textarea>
@@ -87,7 +89,7 @@
             value: '支付账户'
           }, ]
         },
-        isVisable:Boolean,
+        isVisable: Boolean,
       },
       // observers: [
       //   '_watchAccountTypeChange(settAccountType.key)'
@@ -144,14 +146,14 @@
               value = JSON.parse(value);
             } catch (e) {
               this.rcvd = 'JSON 格式有误: ' + e;
-              Util.toast(this.rcvd,3000);
+              Util.toast(this.rcvd, 3000);
               return;
             }
           }
           body[this.elems[i].name] = value;
         }
 
-        if (this.isVisable === true){
+        if (this.isVisable === true) {
           body["settAccountType"] = this.settAccountType.key;
           debugger;
         }
@@ -165,9 +167,8 @@
       },
       handleResponse: function(e) {
         this.rcvd = JSON.stringify(e.detail.response);
-        Util.toast(this.rcvd,3000);
+        Util.toast(this.rcvd, 3000);
       }
     });
-
   </script>
 </dom-module>
