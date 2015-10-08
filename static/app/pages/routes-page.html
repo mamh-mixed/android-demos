@@ -1,0 +1,34 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../layouts/scaffold-layout.html">
+<link rel="import" href="../elements/route-list/route-list.html">
+
+<dom-module id="routes-page">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <template>
+    <scaffold-layout route$="[[route]]">
+      <route-list class="content"></route-list>
+    </scaffold-layout>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'routes-page',
+        properties: {
+          route: {
+            type: Object,
+            value: {
+              name: 'config.routes',
+              path: '/config/routes',
+              title: '路由策略',
+              subtitle: '路由策略',
+            }
+          }
+        },
+      });
+    })();
+  </script>
+</dom-module>
