@@ -9,6 +9,11 @@
 <link rel="import" href="../trade-view/trade-view.html">
 <link rel="import" href="../trade-message/trade-message.html">
 <dom-module id="trade-list">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
   <template>
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
@@ -83,7 +88,7 @@
               <td align="center">{{item.transTime}}</td>
               <!-- <td align="center">{{item.updateTime}}</td> -->
               <td class="center">
-                  <iron-icon icon="pageview" on-tap="showTradeMessageEvent"></iron-icon>
+                <iron-icon icon="pageview" on-tap="showTradeMessageEvent"></iron-icon>
               </td>
             </tr>
           </template>
@@ -108,12 +113,12 @@
       'REFD': '退款',
       'VERI': '卡券核销',
       'CANC': '取消',
-    //   'purc': '下单支付',
-    //   'paut': '预下单',
-    //   'void': '撤销',
-    //   'refd': '退款',
-    //   'veri': '卡券核销',
-    //   'canc': '取消',
+      //   'purc': '下单支付',
+      //   'paut': '预下单',
+      //   'void': '撤销',
+      //   'refd': '退款',
+      //   'veri': '卡券核销',
+      //   'canc': '取消',
       'QYZF': '企业付款',
       'JSZF': '公众号支付'
     };
@@ -302,9 +307,9 @@
           return false;
         }
       },
-      showTradeMessageEvent:function(e){
-          this.transItem = e.model.item;
-          this.$.tradeMessage.open();
+      showTradeMessageEvent: function(e) {
+        this.transItem = e.model.item;
+        this.$.tradeMessage.open();
       },
     });
   </script>
