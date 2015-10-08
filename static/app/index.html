@@ -41,13 +41,42 @@
   <!-- xxxxxendbuild -->
 
   <link rel="import" href="styles/app-theme.html">
-  <link rel="import" href="elements/quickpay-app.html">
+  <link rel="import" href="bower_components/app-router/app-router.html">
+  <link rel="import" href="layouts/scaffold-layout.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
-  <quickpay-app></quickpay-app>
+  <app-router id="appRouter" init="manual">
+    <app-route path="/" name="homePage" import="pages/test-scanpay-page.html"></app-route>
+
+    <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
+    <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
+    <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
+    <app-route path="/config/configMer" name="config-merchant" import="pages/config-merchant-page.html"></app-route>
+
+    <app-route path="/config/groups" name="group-list" import="elements/group-list/group-list.html"></app-route>
+    <app-route path="/config/upload" name="group-list" import="elements/file-upload/file-upload.html"></app-route>
+    <app-route path="/config/merchants" name="merchant-list" import="elements/merchant-list/merchant-list.html"></app-route>
+    <app-route path="/config/routes" name="route-list" import="elements/route-list/route-list.html"></app-route>
+
+    <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="elements/quick-chanMer-list/quick-chanMer-list.html"></app-route>
+    <app-route path="/quickPay/merchants" name="quick-merchant-list" import="elements/quick-merchant-list/quick-merchant-list.html"></app-route>
+    <app-route path="/quickPay/routes" name="quick-route-list" import="elements/quick-route-list/quick-route-list.html"></app-route>
+
+    <app-route path="/trade/list" name="trade-list" import="elements/trade-list/trade-list.html"></app-route>
+    <app-route path="/trade/reports" name="report-list" import="elements/report-list/report-list.html"></app-route>
+    <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="elements/bindingpay-trade-list/bindingpay-trade-list.html"></app-route>
+    <app-route path="/trade/old/reports" name="report-list-old" import="elements/report-list-old/report-list-old.html"></app-route>
+
+    <app-route path="/test/bindingpay" name="test-bindingpay" import="elements/test-bindingpay/test-bindingpay.html"></app-route>
+    <app-route path="/test/filereader" name="test-filereader" import="elements/test-filereader/test-filereader.html"></app-route>
+    <app-route path="/test/qiniu" name="test-qiniu" import="elements/test-qiniu/test-qiniu.html"></app-route>
+    <app-route path="/test/scanpay" name="test-scanpay" import="pages/test-scanpay-page.html"></app-route>
+  </app-router>
+  <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
   <!-- build:js scripts/app.js -->
+  <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
   <!-- endbuild-->
   <iframe style="display:none" name="iframeForDownload"></iframe>
