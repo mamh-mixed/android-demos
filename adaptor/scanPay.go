@@ -85,6 +85,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
+		req.GoodsTag = mer.Detail.GoodsTag
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -128,6 +129,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
+		req.GoodsTag = mer.Detail.GoodsTag
 	default:
 		req.ActTxamt = req.Txamt
 	}
