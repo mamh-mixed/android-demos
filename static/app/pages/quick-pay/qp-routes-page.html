@@ -1,8 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../layouts/scaffold-layout.html">
-<link rel="import" href="../../elements/quick-chanMer-list/quick-chanMer-list.html">
+<link rel="import" href="../../elements/quick-route-list/quick-route-list.html">
 
-<dom-module id="channel-merchants-page">
+<dom-module id="qp-routes-page">
   <style>
     :host {
       display: block;
@@ -10,21 +10,21 @@
   </style>
   <template>
     <scaffold-layout route$="[[route]]">
-      <quick-chanMer-list class="content"></quick-chanMer-list>
+      <quick-route-list class="content"></quick-route-list>
     </scaffold-layout>
   </template>
   <script>
     (function() {
       Polymer({
-        is: 'channel-merchants-page',
+        is: 'qp-routes-page',
         properties: {
           route: {
             type: Object,
             value: {
-              name: 'quickPay.chanMers',
-              path: '/quickPay/chanMers',
-              title: '快捷支付渠道商户',
-              subtitle: '快捷支付渠道商户'
+              name: 'quickPay.routes',
+              path: '/quickPay/routes',
+              title: '快捷支付路由策略',
+              subtitle: '快捷支付路由策略',
             }
           }
         },
