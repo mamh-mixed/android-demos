@@ -20,9 +20,9 @@
         "DB": "quickpay"
     },
     "CILOnline": {
-        "Host": "140.207.50.238",
-        "Port": 7823,
-        "ServerCert": "config/pem/cil/server.cert" // SSL 证书
+        "Host": "211.147.72.70",
+        "Port": 10010,
+        "ServerCert": "config/pem/cil/server_product.cert" // SSL 证书
     },
     "CFCA": {
         "URL": "https://www.china-clearing.com/Gateway/InterfaceII", // API 地址

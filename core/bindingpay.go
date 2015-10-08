@@ -1,12 +1,13 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"strings"
 )
 
 var (
@@ -651,7 +652,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	case model.MerMode:
 		// dothing
 	default:
-		log.Errorf("Unsupport mode %s", chanMer.TransMode)
+		log.Errorf("Unsupport mode %d", chanMer.TransMode)
 		return logicErrorHandle(refund, "000001")
 	}
 
