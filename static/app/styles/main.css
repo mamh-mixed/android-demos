@@ -109,3 +109,24 @@ pre {
 .center {
   text-align: center;
 }
+
+.paper-button-1 {
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  min-width: 5.14em;
+  margin: 0 0.29em;
+  background: #05B0CF;
+  text-align: center;
+  font: inherit;
+  text-transform: uppercase;
+  outline-width: 0;
+  border-radius: 3px;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  z-index: 0;
+  padding: 0.7em 0.57em;
+}
