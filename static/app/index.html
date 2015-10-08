@@ -33,230 +33,23 @@
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
   <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="../styles/main.css">
   <!-- endbuild-->
 
   <!-- xxxxxbuild:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <!-- xxxxxendbuild -->
 
-  <!-- will be replaced with elements/elements.vulcanized.html -->
-  <!-- <link rel="import" href="elements/elements.html"> -->
-  <!-- <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html"> -->
-  <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-  <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
-  <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-  <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
-  <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
-  <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-  <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-  <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
-  <link rel="import" href="../bower_components/app-router/app-router.html">
-  <link rel="import" href="elements/x-pagination/x-pagination.html">
-  <!-- <link rel="import" href="elements/routing.html"> -->
   <link rel="import" href="styles/app-theme.html">
-  <!-- endreplace-->
+  <link rel="import" href="elements/quickpay-app.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
-  <template is="dom-bind" id="app">
-
-    <paper-drawer-panel id="paperDrawerPanel">
-      <!-- Drawer Scroll Header Panel -->
-      <paper-scroll-header-panel drawer fixed>
-
-        <!-- Drawer Toolbar -->
-        <paper-toolbar id="drawerToolbar">
-          <img src="images/logo2.svg" alt="云收银" class="logo">
-          <div class="app-name">快捷支付管理平台</div>
-        </paper-toolbar>
-
-        <!-- 菜单列表 -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}" on-iron-select="onMenuSelect">
-
-          <a data-route="config">
-            <iron-icon icon="build"></iron-icon>
-            <span>扫码支付商户配置</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'config') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="config.agents" href="#/config/agents">
-                <iron-icon icon="assignment-ind"></iron-icon>
-                <span>代理</span>
-              </a>
-              <a data-route="config.subAgents" href="#/config/subAgents">
-                <iron-icon icon="account-circle"></iron-icon>
-                <span>二级代理</span>
-              </a>
-              <a data-route="config.groups" href="#/config/groups">
-                <iron-icon icon="home"></iron-icon>
-                <span>集团商户</span>
-              </a>
-              <a data-route="config.configMer" href="#/config/configMer">
-                <iron-icon icon="create"></iron-icon>
-                <span>商户录入</span>
-              </a>
-              <a data-route="config.upload" href="#/config/upload">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>批量导入</span>
-              </a>
-              <a data-route="config.merchants" href="#/config/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
-              </a>
-              <a data-route="config.chanMers" href="#/config/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-              <a data-route="config.routes" href="#/config/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-          <a data-route="quickPay">
-            <iron-icon icon="home"></iron-icon>
-            <span>快捷支付商户配置</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'quickPay') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="quickPay.merchants" href="#/quickPay/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
-              </a>
-              <a data-route="quickPay.chanMers" href="#/quickPay/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-              <a data-route="quickPay.routes" href="#/quickPay/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
-          <a data-route="trade">
-            <iron-icon icon="swap-horiz"></iron-icon>
-            <span>交易查询</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'trade') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="trade.list" href="#/trade/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>扫码交易</span>
-              </a>
-              <a data-route="trade.bindingpay.list" href="#/trade/bindingpay/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>绑定交易</span>
-              </a>
-              <a data-route="trade.reports" href="#/trade/reports">
-                <iron-icon icon="file-download"></iron-icon>
-                <span>报表下载</span>
-              </a>
-              <a data-route="trade.old.reports" href="#/trade/old/reports">
-                <iron-icon icon="cloud-download"></iron-icon>
-                <span>旧系统交易统计</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
-          <a data-route="test">
-            <iron-icon icon="bug-report"></iron-icon>
-            <span>内部测试</span>
-          </a>
-          <iron-collapse opened="{{ startWith(route.name, 'test') }}">
-            <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="test.scanpay" href="#/test/scanpay">
-                <iron-icon icon="pageview"></iron-icon>
-                <span>扫码支付</span>
-              </a>
-              <a data-route="test.bindingpay" href="#/test/bindingpay">
-                <iron-icon icon="icons:speaker-notes"></iron-icon>
-                <span>绑定支付</span>
-              </a>
-              <a data-route="test.qiniu" href="#/test/qiniu">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>七牛 Ajax 上传文件</span>
-              </a>
-              <a data-route="test.filereader" href="#/test/filereader">
-                <iron-icon icon="get-app"></iron-icon>
-                <span>HTML5 读取文件内容</span>
-              </a>
-            </paper-menu>
-          </iron-collapse>
-
-        </paper-menu>
-      </paper-scroll-header-panel>
-
-      <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
-
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
-          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-          <span class="flex"></span>
-
-          <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
-
-          <!-- Application name -->
-          <div class="middle middle-container center horizontal layout">
-            <div class="app-name">{{route.title}}</div>
-          </div>
-
-          <!-- Application sub title -->
-          <div class="bottom bottom-container center horizontal layout">
-            <div class="bottom-title paper-font-subhead">{{route.subtitle}}</div>
-          </div>
-
-        </paper-toolbar>
-
-        <!-- Main Content -->
-        <div class="content">
-          <app-router key="main" main>
-            <app-route path="/" name="homePage" import="elements/test-scanpay/test-scanpay.html"></app-route>
-
-            <app-route path="/config/agents" name="agentList" import="elements/agent-list/agent-list.html"></app-route>
-            <app-route path="/config/subAgents" name="subAgentList" import="elements/sub-agent-list/sub-agent-list.html"></app-route>
-            <app-route path="/config/chanMers" name="channel-merchant-list" import="elements/channel-merchant-list/channel-merchant-list.html"></app-route>
-            <app-route path="/config/configMer" name="config-merchant" import="elements/config-merchant/config-merchant.html"></app-route>
-            <app-route path="/config/groups" name="group-list" import="elements/group-list/group-list.html"></app-route>
-            <app-route path="/config/upload" name="group-list" import="elements/file-upload/file-upload.html"></app-route>
-            <app-route path="/config/merchants" name="merchant-list" import="elements/merchant-list/merchant-list.html"></app-route>
-            <app-route path="/config/routes" name="route-list" import="elements/route-list/route-list.html"></app-route>
-
-            <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="elements/quick-chanMer-list/quick-chanMer-list.html"></app-route>
-            <app-route path="/quickPay/merchants" name="quick-merchant-list" import="elements/quick-merchant-list/quick-merchant-list.html"></app-route>
-            <app-route path="/quickPay/routes" name="quick-route-list" import="elements/quick-route-list/quick-route-list.html"></app-route>
-
-            <app-route path="/trade/list" name="trade-list" import="elements/trade-list/trade-list.html"></app-route>
-            <app-route path="/trade/reports" name="report-list" import="elements/report-list/report-list.html"></app-route>
-            <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="elements/bindingpay-trade-list/bindingpay-trade-list.html"></app-route>
-            <app-route path="/trade/old/reports" name="report-list-old" import="elements/report-list-old/report-list-old.html"></app-route>
-
-            <app-route path="/test/bindingpay" name="test-bindingpay" import="elements/test-bindingpay/test-bindingpay.html"></app-route>
-            <app-route path="/test/filereader" name="test-filereader" import="elements/test-filereader/test-filereader.html"></app-route>
-            <app-route path="/test/qiniu" name="test-qiniu" import="elements/test-qiniu/test-qiniu.html"></app-route>
-            <app-route path="/test/scanpay" name="test-scanpay" import="elements/test-scanpay/test-scanpay.html"></app-route>
-          </app-router>
-        </div>
-      </paper-scroll-header-panel>
-    </paper-drawer-panel>
-
-    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
-
-  </template>
-
+  <quickpay-app></quickpay-app>
   <!-- build:js scripts/app.js -->
-  <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
   <!-- endbuild-->
-
   <iframe style="display:none" name="iframeForDownload"></iframe>
 </body>
 
