@@ -10,7 +10,7 @@ paper-toast#toast {
   z-index: 10;
 }
 * {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* paper-input */
@@ -47,7 +47,7 @@ table.data-grid {
 }
 table.data-grid th, table.data-grid td {
   white-space: nowrap;
-  padding: 8px 8px;
+  padding: 6px;
 }
 table.data-grid.low th, table.data-grid.low td {
   padding: 3px 8px;
