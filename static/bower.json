@@ -16,7 +16,8 @@
     "qrcode.js": "davidshimjs/qrcodejs",
     "webcomponentsjs": "~0.7.7",
     "wxy-router": "wxy-elements/wxy-router",
-    "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.0"
+    "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.0",
+    "app-router": "~2.6.1"
   },
   "devDependencies": {
     "web-component-tester": "*",
