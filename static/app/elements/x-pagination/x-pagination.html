@@ -25,7 +25,6 @@
       margin: auto 4px;
       cursor: pointer;
     }
-
   </style>
   <template>
 
@@ -49,8 +48,10 @@
     </div>
 
     <div class="pre-next">
+      <iron-icon icon="av:skip-previous" on-tap="firstPage"></iron-icon>
       <iron-icon icon="chevron-left" on-tap="prePage"></iron-icon>
       <iron-icon icon="chevron-right" on-tap="nextPage"></iron-icon>
+      <iron-icon icon="av:skip-next" on-tap="lastPage"></iron-icon>
     </div>
 
     <!-- <input name="size" type="hidden" value="{{size}}" /> -->
@@ -82,7 +83,8 @@
         this._pageChange();
       },
       observers: [
-        '_pageChange(total, page, size)'
+        '_pageChange(total, page, size)',
+        '_pageNumChange(total,size)'
       ],
       _pageChange: function() {
         if (!this.total || this.total === 0) {
@@ -91,10 +93,17 @@
           this.to = 0;
         } else {
           this.from = (this.page - 1) * this.size + 1;
-          this.to = this.from + this.size-1;
+          this.to = this.from + this.size - 1;
           if (this.to > this.total) {
             this.to = this.total;
           }
+        }
+      },
+      _pageNumChange: function() {
+        if (!this.total || this.total === 0) {
+          this.pageNum = 0;
+        } else {
+          this.pageNum = Math.ceil(this.total / this.size);
         }
       },
       changeSize: function() {
@@ -115,9 +124,22 @@
         }
         this.set('page', this.page + 1);
         this.fire('page-change');
+      },
+      firstPage: function() {
+        if (this.page <= 1) {
+          return;
+        }
+        this.set('page', 1);
+        this.fire('page-change');
+      },
+      lastPage: function() {
+        if (this.page >= this.pageNum) {
+          return;
+        }
+        this.set('page', this.pageNum);
+        this.fire('page-change');
       }
 
     });
-
   </script>
 </dom-module>
