@@ -149,6 +149,7 @@ type ScanPayRequest struct {
 	DeviceInfo string `json:"-" url:"-" bson:"-"` // 设备号
 	SubMchId   string `json:"-" url:"-" bson:"-"` // 子商户
 	TotalTxamt string `json:"-" url:"-" bson:"-"` // 订单总金额
+	GoodsTag   string `json:"-" url:"-" bson:"-"` // 商品标识
 
 	// 辅助字段
 	Subject          string `json:"-" url:"-" bson:"-"` // 商品名称
