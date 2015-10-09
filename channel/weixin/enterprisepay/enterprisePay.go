@@ -5,6 +5,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"time"
 )
 
 // 微信企业支付
@@ -56,6 +57,7 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 				log.Error("enterprisepay retry 3 times, break.")
 				break
 			}
+			time.Sleep(1 * time.Second)
 			continue
 		}
 		break
