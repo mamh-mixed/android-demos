@@ -55,6 +55,7 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 			retry++
 			if retry == 3 {
 				log.Error("enterprisepay retry 3 times, break.")
+				p.ReturnCode, p.ResultCode = "SUCCESS", "SUCCESS"
 				break
 			}
 			time.Sleep(1 * time.Second)
