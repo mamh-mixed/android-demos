@@ -23,13 +23,13 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	log.SetOutputLevel(goconf.Config.App.LogLevel)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llevel | log.Llongfile)
+	// log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llevel | log.Lprojectfile)
 
 	startScanpay()    // 扫码支付
 	startBindingpay() // 绑定支付
 	startSettle()     // 清分任务
 	startMaster()     // 管理平台
-	startApp()        // app
+	startApp()        // 云收银APP用户、交易查询等
 
 	crontab.Start() // 定时任务
 	// http.HandleFunc("/import", data.Import)
