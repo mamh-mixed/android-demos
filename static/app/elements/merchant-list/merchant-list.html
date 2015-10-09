@@ -169,7 +169,7 @@
         },
         // 编辑机构商户
         handleItemEditedEvent: function() {
-          page('/config/merchant/' + this.merchant.merId);
+          document.querySelector('#appRouter').go('/config/merchant/' + this.merchant.merId);
         },
 
         addOneFilter: function(index) {
