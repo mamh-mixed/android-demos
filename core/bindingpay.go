@@ -1,12 +1,13 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"strings"
 )
 
 var (

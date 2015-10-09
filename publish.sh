@@ -91,9 +91,10 @@ function gulpPackage() {
     cd static
     bower install
     cp -r app/fonts/font-roboto bower_components/
-    gulp
+    # gulp
     cd ..
-    cp -r static/dist/ distrib/static/app/
+    # cp -r static/dist/ distrib/static/app/
+    cp -r static/app/ distrib/static/app
 }
 
 function deploy() {

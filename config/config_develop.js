@@ -22,13 +22,7 @@
     "CILOnline": {
         "Host": "140.207.50.238",
         "Port": 7823,
-        "ServerCert": "config/pem/cil/server.cert" // SSL 证书
-        // "Host": "192.168.1.102",
-        // "Port": 7823,
-        // "QueueSize": 1000, // 所有交易发送到线下前先排队，队列满后将阻塞
-        // "InitWindowSize": 100, // 全双工 pipeline 方式，接收数据后，找到对应的请求者
-        // "KeepaliveTime": "65s", // 每隔一段时间发送一个 keepalive 消息
-        // "ReconnectTimeout": "5s" // 连接断开后过一会儿再重新连接
+        "ServerCert": "config/pem/cil/server_testing.cert" // TLS 证书
     },
     "CFCA": {
         "URL": "https://test.cpcn.com.cn/Gateway/InterfaceII", // API 地址
