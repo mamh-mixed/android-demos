@@ -36,7 +36,7 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 		log.Errorf("unable to marshal xml: %s", err)
 		return nil
 	}
-	log.Debugf("to send: %s", xmlBytes)
+	log.Infof("to send cfca: %s", xmlBytes)
 
 	// 对 xml 作 base64 编码
 	b64Str := base64.StdEncoding.EncodeToString(xmlBytes)
@@ -72,7 +72,7 @@ func send(v *url.Values) (body []byte) {
 		log.Errorf("unable to read from resp %s", err)
 		return nil
 	}
-	log.Debugf("resp: [%s]", body)
+	log.Infof("resp from cfca: [%s]", body)
 
 	return body
 }
