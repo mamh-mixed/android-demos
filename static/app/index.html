@@ -57,12 +57,15 @@
     <app-route path="/config/configMer" name="config-merchant" import="pages/config-merchant-page.html"></app-route>
     <app-route path="/config/upload" name="upload-page" import="pages/file-upload-page.html"></app-route>
     <app-route path="/config/merchants" name="merchant-list" import="pages/merchants-page.html"></app-route>
+    <app-route path="/config/merchant/:merId" name="merchant-edit" import="pages/config-merchant-page.html"></app-route>
     <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
     <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
+    <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
 
     <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
     <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>
     <app-route path="/quickPay/routes" name="quick-route-list" import="pages/quick-pay/qp-routes-page.html"></app-route>
+    <app-route path="/quickPay/route/:merId" name="quickRouteListOfMerchant" import="pages/quick-pay/qp-routes-page.html"></app-route>
 
     <app-route path="/trade/list" name="trade-list" import="pages/trade/scan-pay-page.html"></app-route>
     <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="pages/trade/binding-pay-page.html"></app-route>

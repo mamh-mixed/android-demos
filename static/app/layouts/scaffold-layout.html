@@ -129,7 +129,7 @@
       transform-origin: left center;
     }
 
-    #mainContainer > .content{
+    #mainContainer > .content {
       padding: 20px;
     }
 
@@ -183,11 +183,11 @@
 
         <!-- 菜单列表 -->
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
-          <a data-route="config">
+          <a data-route="config" on-tap="toggleCollapse" data-target="collapse1">
             <iron-icon icon="build"></iron-icon>
             <span>扫码支付商户配置</span>
           </a>
-          <iron-collapse opened="{{ startWith(route.name, 'config') }}">
+          <iron-collapse opened="{{ startWith(route.path, 'config') }}" id="collapse1">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="config.agents" href="#/config/agents">
                 <iron-icon icon="assignment-ind"></iron-icon>
@@ -224,11 +224,11 @@
             </paper-menu>
           </iron-collapse>
 
-          <a data-route="quickPay">
+          <a data-route="quickPay" on-tap="toggleCollapse" data-target="collapse2">
             <iron-icon icon="home"></iron-icon>
             <span>快捷支付商户配置</span>
           </a>
-          <iron-collapse opened="{{ startWith(route.name, 'quickPay') }}">
+          <iron-collapse opened="{{ startWith(route.path, 'quickPay') }}" id="collapse2">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="quickPay.merchants" href="#/quickPay/merchants">
                 <iron-icon icon="store"></iron-icon>
@@ -245,11 +245,11 @@
             </paper-menu>
           </iron-collapse>
 
-          <a data-route="trade">
+          <a data-route="trade" on-tap="toggleCollapse" data-target="collapse3">
             <iron-icon icon="swap-horiz"></iron-icon>
             <span>交易查询</span>
           </a>
-          <iron-collapse opened="{{ startWith(route.name, 'trade') }}">
+          <iron-collapse opened="{{ startWith(route.path, 'trade') }}" id="collapse3">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="trade.list" href="#/trade/list">
                 <iron-icon icon="payment"></iron-icon>
@@ -270,11 +270,11 @@
             </paper-menu>
           </iron-collapse>
 
-          <a data-route="test">
+          <a data-route="test" on-tap="toggleCollapse" data-target="collapse4">
             <iron-icon icon="bug-report"></iron-icon>
             <span>内部测试</span>
           </a>
-          <iron-collapse opened="{{ startWith(route.name, 'test') }}">
+          <iron-collapse opened="{{ startWith(route.path, 'test') }}" id="collapse4">
             <paper-menu class="list" attr-for-selected="data-route" selected="{{route.name}}">
               <a data-route="test.scanpay" href="#/test/scanpay">
                 <iron-icon icon="pageview"></iron-icon>
@@ -358,10 +358,18 @@
           Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
         },
         startWith: function(name, prefix) {
+          console.log(name, prefix);
           if (!name || !prefix) {
             return false;
           }
-          return name.substring(0, prefix.length) === prefix;
+          return name.substr(1, prefix.length) === prefix;
+        },
+        toggleCollapse: function(e) {
+          var all = document.querySelectorAll('iron-collapse');
+          for (var i = 0, l = all.length; i < l; i++) {
+            all[i].hide();
+          }
+          this.$[e.target.getAttribute('data-target')].toggle();
         }
       });
     })();
