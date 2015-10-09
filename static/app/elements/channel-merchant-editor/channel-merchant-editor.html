@@ -236,13 +236,11 @@
         },
         // 支付宝选择代理
         _aagentCodeChanged: function(value) {
-            debugger;
           if (value) {
             this.set('alp.agentCode', value.key);
           }
         },
         open: function() {
-            debugger;
           this.$.dialogAdd.open();
           if (this.pageType === 'create') {
             this.$.header.textContent = '创建渠道商户';
@@ -366,7 +364,6 @@
         },
         // 点击保存事件
         handleSaveTapped: function() {
-            debugger;
           if (this.channel) {
             if (this.channel.key === 'ALP' && !this.isALPConfigEmpty()) {
               var acqFee = parseFloat(this.alp.acqFee),
