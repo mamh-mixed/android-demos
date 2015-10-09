@@ -72,7 +72,7 @@ func send(v *url.Values) (body []byte) {
 		log.Errorf("unable to read from resp %s", err)
 		return nil
 	}
-	log.Infof("resp from cfca: [%s]", body)
+	log.Debugf("resp from cfca: [%s]", body)
 
 	return body
 }
@@ -86,7 +86,7 @@ func processResponseBody(body []byte) (resp *BindingResponse) {
 	if err != nil {
 		log.Errorf("unable to decode base64 content %s", err)
 	}
-	log.Debugf("received: %s", rxmlBytes)
+	log.Infof("received from cfca: %s", rxmlBytes)
 
 	// 返回消息验签失败的可能性极小，所以异步验签，提高效率
 	// go func() {
