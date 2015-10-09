@@ -63,7 +63,7 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		}
 
 		// 判断格式，需要使用解密后的参数
-		if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])$`, request.ValidDateDecrypt); !matched {
+		if matched, _ := regexp.MatchString(`^(0[1-9]|1[1-2])\d{2}$`, request.ValidDateDecrypt); !matched {
 			return mongo.RespCodeColl.Get("200140")
 		}
 
@@ -186,8 +186,8 @@ func validateBindingPayment(in *model.BindingPayment) (ret *model.BindingReturn)
 	}
 
 	if in.SettOrderNum != "" {
-		if !isAlphanumeric(in.SettOrderNum) {
-			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		if err := validateSettOrderNum(in.SettOrderNum); err != nil {
+			return err
 		}
 	}
 
@@ -217,8 +217,8 @@ func validateSendBindingPaySMS(in *model.BindingPayment) (ret *model.BindingRetu
 	}
 
 	if in.SettOrderNum != "" {
-		if !isAlphanumeric(in.SettOrderNum) {
-			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		if err := validateSettOrderNum(in.SettOrderNum); err != nil {
+			return err
 		}
 	}
 
@@ -237,8 +237,8 @@ func validateBindingPayWithSMS(in *model.BindingPayment) (ret *model.BindingRetu
 		return model.NewBindingReturn("200080", "订单号 merOrderNum 格式错误")
 	}
 	if in.SettOrderNum != "" {
-		if !isAlphanumeric(in.SettOrderNum) {
-			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		if err := validateSettOrderNum(in.SettOrderNum); err != nil {
+			return err
 		}
 	}
 	// TODO:短信验证码格式验证
@@ -264,8 +264,8 @@ func validateBindingRefund(in *model.BindingRefund) (ret *model.BindingReturn) {
 	}
 
 	if in.SettOrderNum != "" {
-		if !isAlphanumeric(in.SettOrderNum) {
-			return model.NewBindingReturn("200080", "结算订单号 settOrderNum 格式错误")
+		if err := validateSettOrderNum(in.SettOrderNum); err != nil {
+			return err
 		}
 	}
 
