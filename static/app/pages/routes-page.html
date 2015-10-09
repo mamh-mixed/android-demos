@@ -10,7 +10,7 @@
   </style>
   <template>
     <scaffold-layout route$="[[route]]">
-      <route-list class="content"></route-list>
+      <route-list class="content" mer-id="[[merId]]"></route-list>
     </scaffold-layout>
   </template>
   <script>
@@ -18,6 +18,9 @@
       Polymer({
         is: 'routes-page',
         properties: {
+          merId: {
+            type: String
+          },
           route: {
             type: Object,
             value: {
@@ -28,6 +31,18 @@
             }
           }
         },
+        observers: [
+          'watchMerId(merId)'
+        ],
+        watchMerId: function(merId) {
+          console.log(merId);
+          this.set('route', {
+            name: 'config.routes',
+            path: '/config/routes',
+            title: '路由策略',
+            subtitle: '路由策略',
+          });
+        }
       });
     })();
   </script>

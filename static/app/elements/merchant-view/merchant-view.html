@@ -293,7 +293,7 @@
       },
       // 查看路由
       handleViewRouteTapped: function() {
-        page('/config/routes2/' + this.item.merId);
+        document.querySelector('#appRouter').go('/config/route/' + this.item.merId);
       },
       // 确认删除
       confirmDeleteTap: function() {
