@@ -359,7 +359,7 @@
         },
         startWith: function(name, prefix) {
           if (!name || !prefix) {
-            return true;
+            return false;
           }
           return name.substring(0, prefix.length) === prefix;
         }
