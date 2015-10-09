@@ -40,13 +40,14 @@
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <!-- xxxxxendbuild -->
 
-  <link rel="import" href="styles/app-theme.html">
   <link rel="import" href="bower_components/app-router/app-router.html">
   <link rel="import" href="layouts/scaffold-layout.html">
+
 </head>
 
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
+
   <app-router id="appRouter" init="manual">
     <app-route path="/" name="homePage" import="pages/trade/scan-pay-page.html"></app-route>
 
@@ -73,6 +74,7 @@
     <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
     <app-route path="/test/filereader" name="test-filereader" import="pages/test/file-reader-page.html"></app-route>
   </app-router>
+
   <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
   <!-- build:js scripts/app.js -->
   <script src="scripts/app.js"></script>
