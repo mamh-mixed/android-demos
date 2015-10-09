@@ -162,6 +162,14 @@
         handleSaveTapped: function() {
           if (this.channel) {
             if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
+              var wacqFee = parseFloat(this.cfca.acqFee),
+                wmerFee = parseFloat(this.cfca.merFee);
+              // if (isNaN(wacqFee) || isNaN(wmerFee)) {
+              //   Util.toast('中金渠道的费率必须是数字', 3000);
+              //   return;
+              // }
+              this.set('cfca.acqFee', wacqFee);
+              this.set('cfca.merFee', wmerFee);
               this.set('cfca.chanCode', 'CFCA');
               this.chanMer = this.cfca;
             } else {
