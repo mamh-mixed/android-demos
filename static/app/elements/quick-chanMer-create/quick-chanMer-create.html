@@ -77,7 +77,12 @@
           <paper-input id="cfacqFee" label="讯联跟渠道费率" value="{{cfca.acqFee::input}}"></paper-input>
           <paper-input id="cfmerFee" label="商户跟讯联费率" value="{{cfca.merFee::input}}"></paper-input>
         </div>
-        <div id="cil"></div>
+        <div id="cil">
+          <paper-input id="cilchanMerId" label="渠道商户号" value="{{cil.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cilchanMerName" label="商户名称" value="{{cil.chanMerName::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cilinsCode" label="机构号" value="{{cil.insCode::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cilterminalId" label="终端号" value="{{cil.terminalId::input}}" required error-message="必填项"></paper-input>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
@@ -135,6 +140,9 @@
             this.set('cfca.privateKey', '');
             this.chanCodeDisabled = false;
             this.$.cfchanMerId.disabled = false;
+
+            this.cil = {};
+            this.$.cilchanMerId.disabled = false;
           } else {
             this.$.header.textContent = '编辑渠道商户';
             var map = {
@@ -148,6 +156,9 @@
             this.chanCodeDisabled = true;
             this.cfca = this.chanMer;
             this.$.cfchanMerId.disabled = true;
+
+            this.cil = this.chanMer;
+            this.$.cilchanMerId.disabled = true;
           }
         },
         // 中金必填项是否为空
@@ -158,12 +169,31 @@
             return true;
           }
         },
+        // CIL必填项是否为空
+        isCILConfigEmpty: function() {
+          if (this.$.cilchanMerId.validate() && this.$.cilchanMerName.validate() && this.$.cilinsCode.validate() && this.$.cilterminalId.validate()) {
+            return false;
+          } else {
+            return true;
+          }
+        },
         // 点击保存事件
         handleSaveTapped: function() {
           if (this.channel) {
             if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
+              var wacqFee = parseFloat(this.cfca.acqFee),
+                wmerFee = parseFloat(this.cfca.merFee);
+              // if (isNaN(wacqFee) || isNaN(wmerFee)) {
+              //   Util.toast('中金渠道的费率必须是数字', 3000);
+              //   return;
+              // }
+              this.set('cfca.acqFee', wacqFee);
+              this.set('cfca.merFee', wmerFee);
               this.set('cfca.chanCode', 'CFCA');
               this.chanMer = this.cfca;
+            } else if (this.channel.key === 'CIL' && !this.isCILConfigEmpty()) {
+              this.set('cil.chanCode', 'CIL');
+              this.chanMer = this.cil;
             } else {
               Util.toast('必填项不能为空', 3000);
               return;
