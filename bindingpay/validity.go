@@ -63,7 +63,7 @@ func validateBindingCreate(request *model.BindingCreate) (ret *model.BindingRetu
 		}
 
 		// 判断格式，需要使用解密后的参数
-		if matched, _ := regexp.MatchString(`^(0[1-9]|1[1-2])\d{2}$`, request.ValidDateDecrypt); !matched {
+		if matched, _ := regexp.MatchString(`^\d{2}(0[1-9]|1[1-2])$`, request.ValidDateDecrypt); !matched {
 			return mongo.RespCodeColl.Get("200140")
 		}
 
