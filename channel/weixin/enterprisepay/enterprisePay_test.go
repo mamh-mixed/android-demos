@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/util"
+	// "github.com/CardInfoLink/quickpay/util"
 )
 
 var clientCert = []byte(`-----BEGIN CERTIFICATE-----
@@ -65,19 +65,21 @@ rwERwybTKRoGin2PuStBdbibuXt0sf8JrTCBkFPzJI/BL15ORnbG/rYe35gQrNhd
 
 func TestEnterprisePay(t *testing.T) {
 
+	clientCert = []byte(`-----BEGIN CERTIFICATE-----\nMIIEazCCA9SgAwIBAgIDBPUGMA0GCSqGSIb3DQEBBQUAMIGKMQswCQYDVQQGEwJD\nTjESMBAGA1UECBMJR3Vhbmdkb25nMREwDwYDVQQHEwhTaGVuemhlbjEQMA4GA1UE\nChMHVGVuY2VudDEMMAoGA1UECxMDV1hHMRMwEQYDVQQDEwpNbXBheW1jaENBMR8w\nHQYJKoZIhvcNAQkBFhBtbXBheW1jaEB0ZW5jZW50MB4XDTE1MDgxMzA4NDAwMVoX\nDTI1MDgxMDA4NDAwMVowgZsxCzAJBgNVBAYTAkNOMRIwEAYDVQQIEwlHdWFuZ2Rv\nbmcxETAPBgNVBAcTCFNoZW56aGVuMRAwDgYDVQQKEwdUZW5jZW50MQ4wDAYDVQQL\nEwVNTVBheTEwMC4GA1UEAxQn5rGf6KW/5b2p5aW9576O5oqV6LWE566h55CG5pyJ\n6ZmQ5YWs5Y+4MREwDwYDVQQEEwgxMDQ0MzEzODCCASIwDQYJKoZIhvcNAQEBBQAD\nggEPADCCAQoCggEBALzyFI3D9IF/5ZHJEEqA4BfnKCFoJReGi0C/sAwT/6EAu4l3\n7vihL63J9+0fj2qkZX3gQWyP8A/YM/8XQm6igKaWTKYCcwwzJh6XKOQEyd/ITTRg\nTGL/LAY1a7ckdmE835yDCvq7r8OR9/3s8vxtGwVIT8oEmqS9o05Z+YNyfirFmYA9\nyvSSxJNcKlpZ6GT72JeR8KV/6kPb67ypH5fEPVhg+fOnw/WzM5VZOMox1weNdNUF\nJ47fAtIs9P6GbluUuf0FELva53+8PxxqTBC3Gf2ypyh7HINb/03oo3pgGak+1alC\nG17//nNFLCeFRWPEuU2zIiZpOD19emFebum54wcCAwEAAaOCAUYwggFCMAkGA1Ud\nEwQCMAAwLAYJYIZIAYb4QgENBB8WHSJDRVMtQ0EgR2VuZXJhdGUgQ2VydGlmaWNh\ndGUiMB0GA1UdDgQWBBS4nUW48Uiw9tPxlfUEdx0jEDAgRTCBvwYDVR0jBIG3MIG0\ngBQ+BSb2ImK0FVuIzWR+sNRip+WGdKGBkKSBjTCBijELMAkGA1UEBhMCQ04xEjAQ\nBgNVBAgTCUd1YW5nZG9uZzERMA8GA1UEBxMIU2hlbnpoZW4xEDAOBgNVBAoTB1Rl\nbmNlbnQxDDAKBgNVBAsTA1dYRzETMBEGA1UEAxMKTW1wYXltY2hDQTEfMB0GCSqG\nSIb3DQEJARYQbW1wYXltY2hAdGVuY2VudIIJALtUlyu8AOhXMA4GA1UdDwEB/wQE\nAwIGwDAWBgNVHSUBAf8EDDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQUFAAOBgQCp\nupR3B2GwQMcwAbS9WzppsKYr/Ovd3rVkqS3uXkA8VRI99oBFdBKkhzlTYeIYt174\nvHeeO2v0oe8ZKelQLERWgshNCVXTV8T+tyap900ISVdBdbwz9eC5lv/fmnY0Z1cy\nWVsQrZWoemNxZ+elmeDNC/rTdktaXrdBXr5AR2FV2g==\n-----END CERTIFICATE-----\n`)
+	clientKey = []byte(`-----BEGIN PRIVATE KEY-----\nMIIEugIBADANBgkqhkiG9w0BAQEFAASCBKQwggSgAgEAAoIBAQC88hSNw/SBf+WR\nyRBKgOAX5yghaCUXhotAv7AME/+hALuJd+74oS+tyfftH49qpGV94EFsj/AP2DP/\nF0JuooCmlkymAnMMMyYelyjkBMnfyE00YExi/ywGNWu3JHZhPN+cgwr6u6/Dkff9\n7PL8bRsFSE/KBJqkvaNOWfmDcn4qxZmAPcr0ksSTXCpaWehk+9iXkfClf+pD2+u8\nqR+XxD1YYPnzp8P1szOVWTjKMdcHjXTVBSeO3wLSLPT+hm5blLn9BRC72ud/vD8c\nakwQtxn9sqcoexyDW/9N6KN6YBmpPtWpQhte//5zRSwnhUVjxLlNsyImaTg9fXph\nXm7pueMHAgMBAAECggEAKNCuafVTgwnqwHRLhZyTS/aOL7E8mflhaWo/EEzdopzy\n5f43bBP9pbAEU3/GzkWW+vsPhvEM7Y9JpCgVHKsT2WiMRCwxSAhgiqkilycFqMav\nDspildwDWY/+pcBFpjmtIDUakREsJbYJeRvPXYIAHUMCoWQfN8kTVuCOyrtXz8si\nfKaR/2DIof6WT2pZQhbJoYKo4262gqM4yrtgnsV2XymSRMTyDHnkTxoddzdcD5e+\nmYh3tXuFAOXIzXNyuIA9jVnqpzSupWJrVVz72+Nb75hloHgvxH2Iqx5QSxrW4MuZ\nM7Mf6DUObO26dSY5Pahd1CV9wBj2ilBDAc3h8bvneQKBgQDm9YRQWsxRs1ZZmMBS\nE9EPPWBQ1rCaYwH7hOE2MEJvCMGJmKbqidx3++vM8xlg9VtWvXJSPR5C0fvpGTby\nfRgtU0gmguSLHGtfBWlq8O1MnFS+5s2A45c63Nk95d6ngG7qRNhJGapTZd6wyos2\n7nPxBZN/kp9iYJZtpz+nYRlHAwKBgQDRbnEZbIkhG6yf/I50OQsuwYhTHdJCtSZU\nuUBo9Wb8gGlc9uRxvoPYNOWScPdh7XRslcXpxaRsYLQ5trArkFCSIafLQyexnJC2\nk0y7toFrY8iu090pZmwV9zxckTZPylaeiM7yveTo4M4XDzU3fZYoYhpbUeZADxYT\n3lxEE+eirQKBgBi+Ir+tCoiSKuUMXUYtw07bp27hoSfZBYRZlvsELonQqVNBXFhy\nDoF4JqndPVHK108ymoW+8Hf+IPu27NELn8RzUJ53lV5l3AbhAIspZnK3qMiO12NA\nfpoawNdFwhW1x6wnVfh23G1002ejO0jWQOuISmX3YkXazSLQMRyQZXHbAn9w5RgS\nnG9PaZukooAoJpfgnHLgWzL8wqnnAfW2npLlilNBydVbe1eXNOyMBFlWcKpR3mrR\nmbkIsxh0BAbzdNf57iqFZ63+EGfyA3VZuwgI28FSfOK7bnrVXHEtdRnR6UDINPdZ\n4wOChaySwZ/uScSoADo0//EelwNPso4KJLC5AoGAKqVVrxfAtWs57ciF8zPZsh1+\ne+KfGbEkj8I4YppJcjw9d8UeAltFnZSATjkPiiO6F5JBDNrBwBFYs94/xnL4GUzx\njLQXop3yte0Tr3nfN2vb+/pPLVHP9FQH7WQ9DBZ2t9Mvie05X4OwSTGRaEpUU0ts\niuhniRoP1U9oFA5xmKo=\n-----END PRIVATE KEY-----\n`)
 	req := &model.ScanPayRequest{}
-	req.ActTxamt = "100"
-	req.AppID = "wxaa785395d3d09403"
-	req.ChanMerId = "1228767002"
+	req.ActTxamt = "500"
+	req.AppID = "wx889539c239f029ee"
+	req.ChanMerId = "1261318101"
 	req.CheckName = "NO_CHECK"
-	req.Desc = "ipad mini 16G"
-	req.OpenId = "omYJssw14onUqv2tocdt0EID3dIc"
-	req.OrderNum = util.Millisecond()
-	req.SignKey = "dskskfasfsdsjdjqisi343sd99f9djfj"
+	req.Desc = "您的中奖金额已成功兑付！"
+	req.OpenId = "opM-kwBHOXEqdwTY9S9lHtXjgevo"
+	req.OrderNum = "14433639524984836448"
+	req.SignKey = "b0f05a24dd405df9c4a82dd2cbac697a"
 
 	req.WeixinClientCert = clientCert
 	req.WeixinClientKey = clientKey
 
-	DefaultClient.ProcessPay(req)
-
+	ret, _ := DefaultClient.ProcessPay(req)
+	t.Logf("%+v", ret)
 }
