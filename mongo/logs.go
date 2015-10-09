@@ -1,9 +1,10 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 var SpChanLogsCol = logsCollection{"logs.chan.sp"}
@@ -34,7 +35,7 @@ func (lc *logsCollection) Find(q *model.QueryCondition) ([]model.SpTransLogs, er
 	if len(q.ReqIds) > 0 {
 		err = database.C(lc.name).Find(lc.query(q)).All(&result)
 	} else {
-		err = database.C(lc.name).Find(lc.query(q)).Sort("-transTime").Skip((q.Page - 1) * q.Size).Limit(q.Size).All(&result)
+		err = database.C(lc.name).Find(lc.query(q)).Sort("transTime").Skip((q.Page - 1) * q.Size).Limit(q.Size).All(&result)
 	}
 
 	return result, err

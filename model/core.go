@@ -415,7 +415,7 @@ type CheckAndNotify struct {
 // SpTransLogs 扫码交易日志
 type SpTransLogs struct {
 	ReqId        string      `bson:"reqId" json:"reqId"`
-	Direction    string      `bson:"direction,omitempty" json:"-"`
+	Direction    string      `bson:"direction" json:"direction"`
 	MerId        string      `bson:"merId" json:"merId"`
 	OrderNum     string      `bson:"orderNum,omitempty" json:"orderNum"`
 	OrigOrderNum string      `bson:"origOrderNum,omitempty" json:"origOrderNum"`

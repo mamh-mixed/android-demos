@@ -8,7 +8,7 @@
       :host {
         display: block;
         --paper-dialog-scrollable: {
-          width: 1000px;
+          width: 1030px;
           min-height: 500px;
           max-height: 600px;
           font-size: 14px;
@@ -32,12 +32,13 @@
           </thead>
           <tbody>
             <template is="dom-repeat" items="{{messageArray}}" as="messageList">
-              <tr>
+              <tr style="border-bottom:1px solid #ddd;">
                 <td class="center">{{addOneFilter(index)}}</td>
                 <td>
                   <template is="dom-repeat" items="{{messageList}}" as="message">
-                    <div class="message">
-                      <span>{{formatMsg(message.msg)}}</span>
+                    <div class="message" style$="{{getMessageStyle(message)}}">
+                      <div>{{getMsgTitle(message)}}</div>
+                      <pre style="min-width:800px;max-width:850px;word-break:break-all;word-wrap: break-word;font-size:10px;">{{formatMsg(message.msg)}}</pre>
                     </div>
                   </template>
                 </td>
@@ -46,7 +47,7 @@
           </tbody>
           <tfoot>
             <tr>
-              <td colspan="255" align="left">
+              <td colspan="255" align="right">
                 <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
               </td>
             </tr>
@@ -70,6 +71,19 @@
         },
         open: function() {
           this.$.dialogView.open();
+          this.msgTitleMap = {
+            1: {
+              'in': '商户请求报文:',
+              'out': '商户响应报文:',
+            },
+            2: {
+              'out': '渠道请求报文:',
+              'in': '渠道响应报文:',
+            },
+            3: {
+              'in': '异步通知报文:',
+            },
+          };
           this.cond = {};
           this.set('cond.size', 10);
           this.set('cond.page', 1);
@@ -100,7 +114,7 @@
             this.set('cond.page', 0);
             return;
           }
-          if (!response.data||!response.data.data) {
+          if (!response.data || !response.data.data) {
             return;
           }
           var merMessages = response.data.data.slice(0);
@@ -128,7 +142,7 @@
             'merId': this.item.merId,
             'orderNum': this.item.orderNum,
             'msgType': '2',
-            'reqIds':this.reqArray,
+            'reqIds': this.reqArray,
           };
           this.$.chanMessageQueryAjax.generateRequest();
 
@@ -141,7 +155,7 @@
             Util.toast(response.message, 3000);
             return;
           }
-          if (!response.data||!response.data.data) {
+          if (!response.data || !response.data.data) {
             return;
           }
           var chanMessages = response.data.data.slice(0);
@@ -182,6 +196,24 @@
         formatMsg: function(msg) {
           return JSON.stringify(msg);
         },
+        getMsgTitle: function(message) {
+          return this.msgTitleMap[message.msgType][message.direction];
+        },
+        getMessageStyle: function(message) {
+          if (message.msgType === 1 || message.msgType === 3) {
+            if (message.direction === 'in') {
+              return 'margin-left:0px;';
+            } else {
+              return 'margin-left:50px;';
+            }
+          } else if (message.msgType === 2) {
+            if (message.direction === 'in') {
+              return 'margin-left:50px;';
+            } else {
+              return 'margin-left:0px;';
+            }
+          }
+        }
       });
     })();
   </script>
