@@ -80,17 +80,30 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 // ProcessEnquiry 支付
 func (w *WeixinEnterprisePay) ProcessEnquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 
-	query := &EnterprisePayReq{
-		CommonParams: *getCommonParams(req),
+	q := &EnterpriseQueryReq{
+		CommonParams:   *getCommonParams(req),
+		AppId:          req.AppID,
+		MchId:          req.ChanMerId,
+		PartnerTradeNo: req.OrigOrderNum,
 	}
-	resp := &EnterprisePayResp{}
+	p := &EnterpriseQueryResp{}
 
-	err = weixin.Execute(query, resp)
+	err = weixin.Execute(q, p)
 	if err != nil {
 		return nil, err
 	}
 
-	ret = &model.ScanPayResponse{}
+	log.Debugf("%+v", p)
+
+	status, msg, ec := weixin.Transform("enterpriseQuery", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
+
+	ret = &model.ScanPayResponse{
+		Respcd:          status,    // 交易结果  M
+		ErrorDetail:     msg,       // 错误信息   C
+		ChanRespCode:    p.ErrCode, // 渠道详细应答码
+		ChannelOrderNum: p.DetailId,
+		ErrorCode:       ec,
+	}
 
 	return ret, nil
 }
