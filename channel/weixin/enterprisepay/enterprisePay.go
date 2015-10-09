@@ -5,6 +5,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"time"
 )
 
 // 微信企业支付
@@ -20,6 +21,7 @@ func getCommonParams(req *model.ScanPayRequest) *weixin.CommonParams {
 		WeixinMD5Key: req.SignKey,    // md5key
 		ClientCert:   req.WeixinClientCert,
 		ClientKey:    req.WeixinClientKey,
+		Req:          req,
 	}
 }
 
@@ -38,13 +40,29 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 		PartnerTradeNo: req.OrderNum,
 		Amount:         req.ActTxamt,
 	}
-	p := &EnterprisePayResp{}
 
-	err = weixin.Execute(q, p)
-	if err != nil {
-		return nil, err
+	p := &EnterprisePayResp{}
+	var retry int
+	for {
+		err = weixin.Execute(q, p)
+		if err != nil {
+			return nil, err
+		}
+
+		// 如果是系统错误，重试
+		if p.ErrCode == "SYSTEMERROR" {
+			log.Warnf("enterprisepay weixin return SYSTEMERROR , retry ..., orderNum=%s,merId=%s", req.OrderNum, req.Mchntid)
+			retry++
+			if retry == 3 {
+				log.Error("enterprisepay retry 3 times, break.")
+				p.ReturnCode, p.ResultCode = "SUCCESS", "SUCCESS"
+				break
+			}
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		break
 	}
-	log.Debugf("%+v", p)
 
 	status, msg, ec := weixin.Transform("enterprisePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
