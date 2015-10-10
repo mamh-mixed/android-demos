@@ -1,5 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-select/x-select.html">
 <dom-module id="report-list-old">
   <style>
     :host {
@@ -41,10 +46,11 @@
     table.data-grid > thead > tr > th {
       border-right: 1px solid #ddd;
     }
+
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-input label="日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
@@ -74,6 +80,9 @@
     <table class="data-grid">
       <thead>
         <tr>
+          <th rowspan="2">
+            序号
+          </th>
           <th rowspan="2">
             商户代码
           </th>
@@ -108,6 +117,9 @@
       <tbody>
         <template is="dom-repeat" items="{{records}}">
           <tr>
+            <td class="center">
+              <span>{{addOneFilter(index)}}</span>
+            </td>
             <td class="center">
               <span>{{item.merId}}</span>
             </td>
@@ -148,10 +160,9 @@
           </td>
         </tr>
         <tr>
-          <td class="right">
+          <td class="right" colspan="3">
             <span>汇总:</span>
           </td>
-          <td></td>
           <td class="right">
             <span>{{summary.totalTransNum}}</span>
           </td>
@@ -335,7 +346,11 @@
           obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
           return '/master/trade/report?' + Util.query(obj);
         },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
       });
     })();
+
   </script>
 </dom-module>

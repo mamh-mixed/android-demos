@@ -72,7 +72,7 @@ var (
 	// 企业支付
 	scanPayEnterprise = &model.ScanPayRequest{
 		Busicd:    "QYZF",
-		Mchntid:   "888888888888888",
+		Mchntid:   "200000000010001",
 		OrderNum:  util.Millisecond(),
 		AgentCode: "10134001",
 		Chcd:      "WXP",
@@ -135,7 +135,7 @@ func TestConcurrentScanPay(t *testing.T) {
 }
 
 func TestScanPay(t *testing.T) {
-	err := doOneScanPay(scanPayBarcodePay)
+	err := doOneScanPay(scanPayEnterprise)
 	if err != nil {
 		t.Error(err)
 	}

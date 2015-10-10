@@ -1,29 +1,32 @@
 package app
 
 import (
+	cr "crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"math/rand"
-	"strconv"
-	"strings"
-	"time"
-
-	"regexp"
-
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
+	"io"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type user struct{}
 
-var User user
-var timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
-var dateRegexp = regexp.MustCompile(`^\d{8}$`)
-var monthRegexp = regexp.MustCompile(`^\d{6}$`)
+var (
+	User         user
+	timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
+	dateRegexp   = regexp.MustCompile(`^\d{8}$`)
+	monthRegexp  = regexp.MustCompile(`^\d{6}$`)
+	b64Encoding  = base64.StdEncoding
+)
 
 // register 注册
 func (u *user) register(req *reqParams) (result *model.AppResult) {
@@ -136,35 +139,47 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 	hostAddress := goconf.Config.App.NotifyURL
 	activateUrl := fmt.Sprintf("%s/app/activate?username=%s&code=%s", hostAddress, req.UserName, code)
 
+	var iv [32]byte
+
+	if _, err := io.ReadFull(cr.Reader, iv[:]); err != nil {
+		log.Errorf("io.ReadFull error: %s", err)
+	}
+	click := b64Encoding.EncodeToString(iv[:])
+
 	email := &email.Email{
 		To:    req.UserName,
 		Title: activation.Title,
-		Body:  fmt.Sprintf(activation.Body, activateUrl, "点我激活"),
+		Body:  fmt.Sprintf(activation.Body, activateUrl, click),
 	}
-	err = email.Send()
 
 	e := &model.Email{
 		UserName:  req.UserName,
 		Code:      code,
-		Success:   true,
+		Success:   false,
 		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
-	}
-	if err != nil {
-		e.Success = false
 	}
 
 	// 保存email信息
 	err = mongo.EmailCol.Upsert(e)
 	if err != nil {
-		log.Errorf("save email err")
+		log.Errorf("save email err: %s", err)
 		return model.SYSTEM_ERROR
 	}
 
-	if e.Success {
-		return model.SUCCESS1
-	} else {
-		return model.SYSTEM_ERROR
-	}
+	// 异步发送邮件
+	go func() {
+		err := email.Send()
+		if err != nil {
+			log.Errorf("send email fail: %s", err)
+			return
+		}
+
+		// update
+		e.Success = true
+		mongo.EmailCol.Upsert(e)
+	}()
+
+	return model.SUCCESS1
 }
 
 // activate 激活
@@ -251,14 +266,15 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	randStr := fmt.Sprintf("%d", rand.Int31())
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
-		AgentCode:  "99911888",
-		AgentName:  "讯联O2O机构",
-		Permission: permission,
-		MerStatus:  model.MerStatusNormal,
-		TransCurr:  "156",
-		UniqueId:   uniqueId,
-		IsNeedSign: true,
-		SignKey:    fmt.Sprintf("%x", base64.StdEncoding.EncodeToString([]byte(randStr))),
+		AgentCode:     "99911888",
+		AgentName:     "讯联O2O机构",
+		Permission:    permission,
+		MerStatus:     model.MerStatusNormal,
+		TransCurr:     "156",
+		UniqueId:      uniqueId,
+		RefundNextDay: true, // 只能隔天退款
+		IsNeedSign:    true,
+		SignKey:       fmt.Sprintf("%x", base64.StdEncoding.EncodeToString([]byte(randStr))),
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",
@@ -455,10 +471,9 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	switch req.Status {
 	case "all":
 	case "success":
-		q.RefundStatus = model.TransRefunded
-		q.TransStatus = []string{model.TransSuccess}
+		q.Respcd = "00"
 	case "fail":
-		q.TransStatus = []string{model.TransFail, model.TransHandling}
+		q.RespcdNotIn = "00"
 	}
 
 	trans, total, err := mongo.SpTransColl.Find(q)
@@ -571,7 +586,7 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 
 	// 密码不对
 	if req.OldPassword != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+		return model.OLD_PASSWORD_ERROR
 	}
 
 	user.Password = req.NewPassword

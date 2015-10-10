@@ -18,6 +18,7 @@ type ConfigStruct struct {
 		TCPGBKAddr       string
 		DefaultCacheTime Duration
 		NotifyURL        string
+		OrderCloseTime   Duration
 	}
 
 	Mongo struct {

@@ -65,19 +65,27 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 }
 
 // PaginationFind 分页查找
-func (c *routerPolicyCollection) PaginationFind(merId string, cardBrand string, chanCode string, chanMerId string, size, page int) (results []model.RouterPolicy, total int, err error) {
+func (c *routerPolicyCollection) PaginationFind(merId string, cardBrand string, chanCode string, chanMerId string, pay string, size, page int) (results []model.RouterPolicy, total int, err error) {
 	results = make([]model.RouterPolicy, 0)
 
 	match := bson.M{}
+	if pay == "bp" {
+		match["chanCode"] = bson.M{"$in": []string{"CFCA", "CIL", "Mock"}}
+	} else {
+		match["chanCode"] = bson.M{"$in": []string{"ALP", "WXP"}}
+	}
+
+	if chanCode != "" {
+		match["$and"] = []interface{}{bson.M{"chanCode": chanCode}}
+	}
+
 	if merId != "" {
 		match["merId"] = merId
 	}
 	if cardBrand != "" {
 		match["cardBrand"] = cardBrand
 	}
-	if chanCode != "" {
-		match["chanCode"] = chanCode
-	}
+
 	if chanMerId != "" {
 		match["chanMerId"] = chanMerId
 	}

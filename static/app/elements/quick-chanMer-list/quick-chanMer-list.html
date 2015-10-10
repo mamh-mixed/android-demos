@@ -1,5 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-select/x-select.html">
+<link rel="import" href="../quick-chanMer-create/quick-chanMer-create.html">
+<link rel="import" href="../quick-chanMer-view/quick-chanMer-view.html">
 <dom-module id="quick-chanMer-list">
   <style>
     :host {
@@ -19,6 +26,7 @@
         <paper-input name="chanMerId" label="商户代码" value="{{cond.chanMerId::input}}"></paper-input>
         <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}" hidden$="{{tiny}}"></paper-input>
         <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
+        <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -41,14 +49,14 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center">
+              <td class="center hand" on-tap="viewMerchantTap">
                 <span>{{addOneFilter(index)}}</span>
               </td>
               <td>
                 <span>{{item.chanMerId}}</span>
               </td>
-              <td on-click="viewMerchantTap">
-                <span style="text-decoration:underline;cursor:pointer">{{getChanMerName(item.chanMerName)}}</span>
+              <td>
+                <span>{{item.chanMerName}}</span>
               </td>
               <td class="center">
                 <span>{{item.chanCode}}</span>
@@ -79,7 +87,7 @@
     </form>
 
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
-    <quick-chanMer-create id="merchantEditor" on-saved="handleMerchantSave" page-type="{{pageType}}" chan-mer="{{channelMer}}"></quick-chanMer-create>
+    <quick-chanMer-create id="merchantEditor" on-saved="handleMerchantSave" page-type="{{pageType}}" chan-mer="[[channelMer]]"></quick-chanMer-create>
     <quick-chanMer-view id="merchantView" item="{{channelMer}}" on-editor="handleEditor" on-delete-ok="AfterDeleteHandle"></quick-chanMer-view>
   </template>
   <script>
@@ -97,18 +105,15 @@
         chanCodes: {
           type: Array,
           value: [{
-            key: 'ALP',
-            value: 'ALP'
-          }, {
-            key: 'WXP',
-            value: 'WXP'
-          }, {
             key: 'CFCA',
             value: 'CFCA'
           }, {
             key: 'CIL',
             value: 'CIL'
-          }]
+        },{
+          key: 'Mock',
+          value: 'Mock'
+        }]
         },
       },
       ready: function() {
@@ -184,14 +189,6 @@
         this.pageType = 'editor';
         this.$.merchantEditor.open();
 
-      },
-      // 如何渠道名称为空，则返回---
-      getChanMerName: function(value) {
-        if (!value || value === '') {
-          return '---';
-        } else {
-          return value;
-        }
       },
       // 发送查询交易的ajax请求
       submitForm: function() {

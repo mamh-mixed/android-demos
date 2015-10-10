@@ -1,20 +1,17 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="bindingpay-trade-list">
   <style>
     :host {
       display: block;
     }
+
   </style>
   <template>
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
@@ -37,53 +34,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </paper-dialog>
 
-        <paper-input label="代理代码" name="agentCode"></paper-input>
-        <paper-input label="集团代码" name="groupCode"></paper-input>
         <paper-input label="商户代码" name="merId"></paper-input>
         <paper-input label="订单号" name="orderNum"></paper-input>
+        <!-- <paper-input label="绑定 ID" name="bindingId"></paper-input> -->
         <paper-input label="关联订单号" name="origOrderNum"></paper-input>
         <paper-input label="应答码" name="respcd"></paper-input>
         <x-select items="[[busicds]]" name="transType" selected-item="{{busicd}}" label="交易类型"></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
-        <paper-input label="绑定ID" name="bindingId"></paper-input>
         <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
-        <paper-button class="colorful" raised>
+        <!-- <paper-button class="colorful" raised>
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
-        </paper-button>
+        </paper-button> -->
       </div>
       <table class="data-grid">
         <thead>
           <tr>
             <th align="center">序号</th>
+            <th align="center">应答码</th>
             <th align="center">商户代码</th>
-            <th align="left">订单号</th>
-            <th align="center">绑定ID</th>
+            <th align="left">商户订单</th>
+            <!-- <th align="left">绑定 ID</th>
+            <th align="left">用户账号</th>
+            <th align="left">用户名</th> -->
             <th align="center">交易类型</th>
-            <th align="right">交易金额(元)</th>
+            <th align="right">金额(元)</th>
             <th align="center">渠道</th>
             <th align="center">交易状态</th>
-            <th align="center">应答码</th>
             <th align="center">退款</th>
             <th align="center">交易时间</th>
-            <th align="center">更新时间</th>
+            <!-- <th align="center">更新时间</th> -->
           </tr>
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr on-dblclick="showTradeViewHandler">
               <td align="center">{{addOneFilter(index)}}</td>
+              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
               <td align="center">{{item.merId}}</td>
               <td align="left">{{item.orderNum}}</td>
-              <td align="center">{{item.bindingId}}</td>
+              <!-- <td align="left">{{item.bindingId}}</td>
+              <td align="left">{{item.acctNum}}</td>
+              <td align="left">{{item.acctName}}</td> -->
               <td align="center">{{busicdFilter(item.transType)}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td align="center">{{chanFilter(item.chanCode)}}</td>
               <td align="center">{{transStatusFilter(item.transStatus)}}</td>
-              <td align="center" class$="{{getRespCodeColor(item.respcd)}}">{{item.respcd}}</td>
               <td align="center">{{refundStatusFilter(item.refundStatus)}}</td>
               <td align="center">{{item.transTime}}</td>
-              <td align="center">{{item.updateTime}}</td>
+              <!-- <td align="center">{{item.updateTime}}</td> -->
             </tr>
           </template>
         </tbody>
@@ -98,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </form>
   </template>
   <script>
-    var TRANS_TYPE_MAP = {
+    var TRANSTYPE_MAP = {
       1: '支付交易',
       2: '退款交易',
       7: '结算交易',
@@ -120,9 +119,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: (function() {
             var busicds = [],
               map = {};
-            for (var k in TRANS_TYPE_MAP) {
+            for (var k in TRANSTYPE_MAP) {
               if (!map[k.toUpperCase()]) {
-                map[k.toUpperCase()] = TRANS_TYPE_MAP[k];
+                map[k.toUpperCase()] = TRANSTYPE_MAP[k];
               }
             }
             Object.keys(map).forEach(function(v) {
@@ -166,9 +165,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.trades = [];
         this.transStatus = {};
         this.refundStatusMap = {
-          1:'已退款',
-          2:'部分退款',
-          0:'无退款'
+          1: '已退款',
+          2: '部分退款',
+          0: '无退款'
         };
         this.tStatusMap = {
           '10': '处理中',
@@ -177,10 +176,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           '40': '已关闭'
         };
         this.chanMap = {
-          'ALP': '支付宝',
-          'WXP': '微信',
+          'CIL': '讯联',
           'CFCA': '中金',
-          'Mock':'测试'
+          'Mock': 'Mock'
         };
       },
       observers: [
@@ -226,7 +224,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         if (!response.rec || response.rec.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
-          this.set('cond.total',0);
+          this.set('cond.total', 0);
           this.set('cond.page', 0);
           return;
         }
@@ -236,20 +234,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('cond.page', response.page);
       },
       chanFilter: function(chanCode) {
-       
+
         return this.chanMap[chanCode];
       },
       busicdFilter: function(busicd) {
-        return TRANS_TYPE_MAP[busicd] || busicd;
+        return TRANSTYPE_MAP[busicd] || busicd;
       },
       _currencyFilter: function(money) {
         return (money / 100).toFixed(2);
       },
       transStatusFilter: function(status) {
-       
+
         return this.tStatusMap[status];
       },
-      refundStatusFilter:function(status){
+      refundStatusFilter: function(status) {
         return this.refundStatusMap[status];
       },
       addOneFilter: function(index) {
@@ -257,14 +255,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       // 应答码着色
       getRespCodeColor: function(value) {
-        if (value === '00') {
+        if (value === '000000') {
           return 'green';
         }
-        if (value === '96') {
+        if (value === '0000001') {
           return 'red';
         }
         return 'blue';
       },
     });
+
   </script>
 </dom-module>

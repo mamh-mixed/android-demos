@@ -2,12 +2,10 @@ package bindingpay
 
 import (
 	"encoding/json"
-
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
-
 	"github.com/omigo/log"
 )
 

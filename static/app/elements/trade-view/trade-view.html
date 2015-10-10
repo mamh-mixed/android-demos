@@ -1,159 +1,128 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../trade-detail/trade-detail.html">
 <dom-module id="trade-view">
   <style>
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        width: 700px;
+        width: 600px;
         min-height: 500px;
         max-height: 500px;
         font-size: 14px;
       }
     }
-    td {
-      min-width: 100px;
-      vertical-align: top;
-    }
-    .key {
-      width: 60px;
+    .content {
+      margin-top: 20px;
+      background: #F4F4F4;
     }
 
-    .divider {
-      height: 15px;
+    .header{
+        color:#05B0CF;
+    }
+
+    .order {
+      margin-top: 10px;
     }
   </style>
   <template>
     <paper-dialog id="dialogView">
       <h2>交易明细</h2>
       <paper-dialog-scrollable>
-        <table>
-          <tr>
-            <td class="key">商户代码:</td>
-            <td>991653048160001</td>
-            <td class="key">商户名称:</td>
-            <td>云智汇（重庆）高新科技服务有限公司</td>
-          </tr>
-          <tr>
-            <td class="key">代理代码:</td>
-            <td>99911888</td>
-            <td class="key">代理名称:</td>
-            <td>讯联O2O机构</td>
-          </tr>
-          <tr>
-            <td class="key">终端代码:</td>
-            <td>802482</td>
-            <td class="key">商户订单:</td>
-            <td>802482150915170955953</td>
-          </tr>
-          <tr>
-            <td class="key">交易金额:</td>
-            <td>2.50</td>
-            <td class="key">商品明细:</td>
-            <td>百事可乐(听),2.5,1</td>
-          </tr>
-          <tr>
-            <td class="key">交易币种:</td>
-            <td>CNY－人民币</td>
-            <td class="key">交易类型:</td>
-            <td>PAUT－预下单</td>
-          </tr>
-          <tr>
-            <td class="key">交易渠道:</td>
-            <td>WXP－微信</td>
-            <td class="key">受理商:</td>
-            <td>12356903202</td>
-          </tr>
-          <tr>
-            <td class="key">渠道商户:</td>
-            <td>1244891002</td>
-            <td class="key">渠道订单:</td>
-            <td>1000630115201509150888343203</td>
-          </tr>
-          <tr>
-            <td class="key">渠道折扣:</td>
-            <td>0.00	</td>
-            <td class="key">商户折扣:</td>
-            <td>0.00	</td>
-          </tr>
-          <tr>
-            <td class="key">应答码:</td>
-            <td>00－成功</td>
-            <td class="key">交易状态:</td>
-            <td>30－成功</td>
-          </tr>
-          <tr>
-            <td class="key">创建时间:</td>
-            <td>2015-09-15 17:09:40</td>
-            <td class="key">修改时间:</td>
-            <td>2015-09-15 17:09:40</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td>请求报文:</td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <pre>{{item.publicKey}}</pre>
-            </td>
-          </tr>
-          <tr>
-            <td>响应报文:</td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <pre>{{item.publicKey}}</pre>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">渠道请求报文:</td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <pre>{{item.publicKey}}</pre>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">渠道响应报文:</td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <pre>{{item.publicKey}}</pre>
-            </td>
-          </tr>
-        </table>
+        <!-- 订单明细 -->
+        <div id="order">
+          <div class="header">订单明细</div>
+          <div class="content">
+            <trade-detail item="{{item}}"></trade-detail>
+          </div>
+        </div>
+        <!-- 撤销订单 -->
+        <div id="voidOrder" class="order">
+          <div class="header">撤销订单</div>
+          <div class="content">
+            <trade-detail item="{{voidOrderItem}}"></trade-detail>
+          </div>
+        </div>
+        <!-- 取消订单 -->
+        <div id="cancOrder" class="order">
+          <div class="header">取消订单</div>
+          <div class="content">
+            <trade-detail item="{{cancOrderItem}}"></trade-detail>
+          </div>
+        </div>
+        <!-- 退款订单 -->
+        <div id="refdOrder" class="order">
+          <div class="header">退款订单</div>
+          <template is="dom-repeat" items="{{refdOrderItems}}" as="refdOrderItem">
+              <div class="content">
+                <trade-detail item="{{refdOrderItem}}"></trade-detail>
+              </div>
+          </template>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <!-- <paper-button dialog-confirm>确定</paper-button> -->
+        <paper-button dialog-dismiss style="margin-right:50px;">取消</paper-button>
       </div>
     </paper-dialog>
-
+    <iron-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></iron-ajax>
   </template>
   <script>
-    (function() {
-      Polymer({
-        is: 'trade-view',
+    Polymer({
+      is: 'trade-view',
 
-        properties: {
-          item: Object,
-        },
-        open: function() {
-          this.$.dialogView.open();
+      properties: {
+        item: Object,
+      },
+      open: function() {
+        this.$.dialogView.open();
+        this.$.voidOrder.hidden = true;
+        this.$.cancOrder.hidden = true;
+        this.$.refdOrder.hidden = true;
+
+        // 初始化时查询关联订单
+        this.$.tradeQueryAjax.params = {
+          'busicd': 'VOID',
+          'origOrderNum': this.item.orderNum,
+        };
+        this.$.tradeQueryAjax.generateRequest();
+
+        this.$.tradeQueryAjax.params = {
+          'busicd': 'CANC',
+          'origOrderNum': this.item.orderNum,
+        };
+        this.$.tradeQueryAjax.generateRequest();
+
+        this.$.tradeQueryAjax.params = {
+          'busicd': 'REFD',
+          'origOrderNum': this.item.orderNum,
+        };
+        this.$.tradeQueryAjax.generateRequest();
+
+      },
+      // 查询订单响应
+      handleResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
         }
-      });
-    })();
+        if (!response.data || response.data.length === 0) {
+            return;
+        }
+        var order = response.data[0];
+        if (order.busicd === 'VOID') {
+          this.$.voidOrder.hidden = false;
+          this.voidOrderItem = order;
+        } else if (order.busicd === 'CANC') {
+          this.$.cancOrder.hidden = false;
+          this.cancOrderItem = order;
+        } else if (order.busicd === 'REFD') {
+          this.$.refdOrder.hidden = false;
+          this.refdOrderItems = response.data;
+        }
+      },
+    });
   </script>
 </dom-module>

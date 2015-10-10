@@ -1,5 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-select/x-select.html">
+<link rel="import" href="../route-editor/route-editor.html">
+<link rel="import" href="../route-delete/route-delete.html">
 <dom-module id="quick-route-list">
   <style>
     :host {
@@ -19,6 +25,7 @@
         <x-select name="cardBrand" id="cardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌"></x-select>
         <paper-input name="chanMerId" id="chanMerId" label="渠道商户代码" value="{{cond.chanMerId::input}}"></paper-input>
         <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
+        <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="divider blank"></div>
@@ -134,18 +141,15 @@
           chanCodes: {
             type: Array,
             value: [{
-              key: 'ALP',
-              value: 'ALP'
-            }, {
-              key: 'WXP',
-              value: 'WXP'
-            }, {
               key: 'CFCA',
               value: 'CFCA'
             }, {
               key: 'CIL',
               value: 'CIL'
-            }]
+          },{
+            key: 'Mock',
+            value: 'Mock'
+          }]
           },
         },
         _merIdChandged: function(value) {

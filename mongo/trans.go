@@ -154,6 +154,52 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	return
 }
 
+// FindOneByOrigOrderNum 通过订单号、商户号查找一条交易记录
+func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts []model.Trans, err error) {
+	match := bson.M{
+		"busicd":       q.Busicd,
+		"origOrderNum": q.OrigOrderNum,
+		"transStatus":  "30",
+	}
+	cond := []bson.M{
+		{"$match": match},
+	}
+	sort := bson.M{"$sort": bson.M{"createTime": -1}}
+	cond = append(cond, sort)
+	err = database.C(col.name).Pipe(cond).All(&ts)
+
+	return ts, err
+}
+
+// FindHandingTrans 找到三十分钟前的处理中的交易
+func (col *transCollection) FindHandingTrans(d time.Duration) ([]model.Trans, error) {
+	q := bson.M{
+		"updateTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
+		"lockFlag":    0,
+		"transStatus": model.TransHandling,
+		"transType":   model.PayTrans,
+	}
+
+	var ts []model.Trans
+	err := database.C(col.name).Find(q).Limit(1000).All(&ts)
+
+	return ts, err
+}
+
+// FindByAccount 通过订单号、商户号查找一条交易记录
+func (col *transCollection) FindByAccount(account string) (t *model.Trans, err error) {
+
+	q := bson.M{
+		"consumerAccount": account,
+		// "transType": transType,
+		"busicd":      model.Jszf,
+		"transStatus": model.TransSuccess,
+	}
+	t = new(model.Trans)
+	err = database.C(col.name).Find(q).One(t)
+	return
+}
+
 // FindByTime 查找某天的交易记录
 func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 
@@ -250,9 +296,6 @@ func (col *transCollection) UpdateFields(t *model.Trans) error {
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, error) {
-
-	log.Debugf("condition is %+v", q)
-
 	var trans []*model.Trans
 
 	// 根据条件查找
@@ -277,6 +320,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 	if q.Respcd != "" {
 		match["respCode"] = q.Respcd
+	}
+	if q.RespcdNotIn != "" {
+		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}
 	}
 	if q.TradeFrom != "" {
 		match["tradeFrom"] = q.TradeFrom
@@ -309,6 +355,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
+	log.Debugf("find condition: %#v", match)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {

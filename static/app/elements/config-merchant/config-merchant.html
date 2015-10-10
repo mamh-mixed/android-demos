@@ -1,4 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="config-merchant">
   <style>
@@ -6,6 +16,8 @@
       display: block;
       --paper-tab-ink: #eee;
       --paper-tabs-selection-bar-color: #eee;
+      --default-primary-color: #00BCD4;
+      --text-primary-color: #ffffff;
     }
 
     paper-tabs {
@@ -249,6 +261,7 @@
       </section>
     </iron-pages>
     <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <iron-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></iron-ajax>
     <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
     <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
 
@@ -570,12 +583,26 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
-
-        this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
-        this.$.saveMerchantAjax.generateRequest();
+        if(this.update){
+            this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
+            this.$.updateMerchantAjax.generateRequest();
+        }else{
+            this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+            this.$.saveMerchantAjax.generateRequest();
+        }
       },
       // 保存商户的ajax响应事件
       handleSaveMerchantResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+
+        Util.toast(response.message, 1000);
+      },
+      // 更新商户的ajax响应事件
+      handleUpdateMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
           Util.toast(response.message, 3000);

@@ -1,4 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+
+<link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="channel-merchant-editor">
   <style>
@@ -79,12 +87,12 @@
           <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
           <div class="row">
-            <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
+            <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile" style="margin-left:0px;"></paper-input>
             <label id="httpCertL" style="margin-top:20px;">请选择.pem文件的HTTP证书</label>
           </div>
           <paper-textarea id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项"></paper-textarea>
           <div class="row">
-            <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
+            <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile" style="margin-left:0px;"></paper-input>
             <label id="httpKeyL" style="margin-top:20px;">请选择.pem文件的HTTP密钥</label>
           </div>
           <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
@@ -229,7 +237,7 @@
         // 支付宝选择代理
         _aagentCodeChanged: function(value) {
           if (value) {
-            this.set('alp.agentId', value.key);
+            this.set('alp.agentCode', value.key);
           }
         },
         open: function() {
@@ -294,7 +302,7 @@
             };
             if (this.alp.agentCode) {
               this.aagentCode = {
-                key: this.alp.agentId,
+                key: this.alp.agentCode,
                 value: aagentCodeMap[this.alp.agentCode],
               };
             }

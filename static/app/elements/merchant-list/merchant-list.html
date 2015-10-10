@@ -1,5 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../merchant-editor/merchant-editor.html">
+<link rel="import" href="../merchant-view/merchant-view.html">
 <dom-module id="merchant-list">
   <style>
     :host {
@@ -46,14 +50,14 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center">
+              <td class="center hand" on-tap="viewMerchantTap">
                 <span>{{addOneFilter(index)}}</span>
               </td>
               <td class="center">
                 <span>{{item.merId}}</span>
               </td>
-              <td on-click="viewMerchantTap">
-                <span style="text-decoration:underline;cursor:pointer">{{getMerchantName(item.detail.merName)}}</span>
+              <td>
+                <span>{{item.detail.merName}}</span>
               </td>
               <td class="center">
                 <span>{{item.agentCode}}</span>
@@ -125,25 +129,6 @@
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
-          if (this.$.merId.value) {
-            this.cond.merId = this.$.merId.value;
-          }
-          if (this.$.merName.value) {
-            this.cond.merName = this.$.merName.value;
-          }
-          if (this.$.agentCode.value) {
-            this.cond.agentCode = this.$.agentCode.value;
-          }
-          if (this.$.agentName.value) {
-            this.cond.agentName = this.$.agentName.value;
-          }
-          if (this.$.groupCode.value) {
-            this.cond.groupCode = this.$.groupCode.value;
-          }
-          if (this.$.groupName.value) {
-            this.cond.groupName = this.$.groupName.value;
-          }
-
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
@@ -184,7 +169,7 @@
         },
         // 编辑机构商户
         handleItemEditedEvent: function() {
-          page('/config/merchant/' + this.merchant.merId);
+          document.querySelector('#appRouter').go('/config/merchant/' + this.merchant.merId);
         },
 
         addOneFilter: function(index) {
@@ -195,23 +180,6 @@
           this.merchant = event.model.item;
           this.$.merchantView.open();
         },
-        // 清除查询条件
-        // handleClearTapped: function() {
-        //   this.$.merId.value = '';
-        //   this.cond.merId = '';
-        //   this.$.merName.value = '';
-        //   this.cond.merName = '';
-        //   this.$.agentCode.value = '';
-        //   this.cond.agentCode = '';
-        //   this.$.agentName.value = '';
-        //   this.cond.agentName = '';
-        //   this.$.groupCode.value = '';
-        //   this.cond.groupCode = '';
-        //   this.$.groupName.value = '';
-        //   this.cond.groupName = '';
-        //   this.set('cond.page', 1);
-        //   this.generateAjaxRequest();
-        // },
         handleAfterDelete: function() {
           this.handleQueryTapped();
         },
@@ -219,14 +187,6 @@
         submitForm: function() {
           this.merchants = [];
           this.set('cond.total', 0);
-        },
-        // merchantName为空，则返回---
-        getMerchantName: function(value) {
-          if (!value || value === '') {
-            return '---';
-          } else {
-            return value;
-          }
         },
       });
     })();

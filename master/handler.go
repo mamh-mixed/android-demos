@@ -1,14 +1,46 @@
 package master
 
 import (
+	// "bytes"
 	"encoding/json"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"strings"
 )
+
+func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+
+	msgType, _ := strconv.Atoi(params.Get("msgType"))
+	size, _ := strconv.Atoi(params.Get("size"))
+	page, _ := strconv.Atoi(params.Get("page"))
+
+	q := &model.QueryCondition{
+		MerId:    params.Get("merId"),
+		OrderNum: params.Get("orderNum"),
+		Page:     page,
+		Size:     size,
+	}
+
+	reqIds := params.Get("reqIds")
+	if strings.Contains(reqIds, ",") {
+		q.ReqIds = strings.Split(reqIds, ",")
+	}
+
+	ret := getTradeMsg(q, msgType)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(retBytes)
+}
 
 func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
@@ -58,6 +90,22 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	// // 允许跨域
 	// w.Header().Set("Access-Control-Allow-Origin", "*")
 	// w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "system error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(retBytes)
+}
+func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	cond := &model.QueryCondition{
+		Busicd:       params.Get("busicd"),
+		OrigOrderNum: params.Get("origOrderNum"),
+	}
+	ret := tradeFindOne(cond)
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
@@ -128,7 +176,8 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 	agentName := r.FormValue("agentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, size, page)
+	pay := r.FormValue("pay")
+	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -169,6 +218,25 @@ func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+func merchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Merchant.Update(data)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 	merId := r.FormValue("merId")
@@ -208,7 +276,8 @@ func routerFindHandle(w http.ResponseWriter, r *http.Request) {
 	chanMerId := r.FormValue("chanMerId")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := RouterPolicy.Find(merId, cardBrand, chanCode, chanMerId, size, page)
+	pay := r.FormValue("pay")
+	ret := RouterPolicy.Find(merId, cardBrand, chanCode, chanMerId, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -255,7 +324,8 @@ func channelMerchantFindHandle(w http.ResponseWriter, r *http.Request) {
 	chanMerName := r.FormValue("chanMerName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := ChanMer.Find(chanCode, chanMerId, chanMerName, size, page)
+	pay := r.FormValue("pay")
+	ret := ChanMer.Find(chanCode, chanMerId, chanMerName, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {

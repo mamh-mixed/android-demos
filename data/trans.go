@@ -125,7 +125,7 @@ func AddTransFromOldDB(st, et string) error {
 		tran.GroupCode = t.Merchant.Group.GroupCode
 		tran.GroupName = t.Merchant.Group.GroupName
 		if tran.ChanCode == "ALP" {
-			tran.ChanMerId = t.Merchant.Alp.MchId
+			tran.ChanMerId = t.Merchant.Alp.PartnerId
 		} else {
 			if t.Merchant.Wxp.SubMchId != "" {
 				tran.ChanMerId = t.Merchant.Wxp.SubMchId

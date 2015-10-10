@@ -1,10 +1,9 @@
 package mongo
 
 import (
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"testing"
 )
 
 func TestVersionAdd(t *testing.T) {

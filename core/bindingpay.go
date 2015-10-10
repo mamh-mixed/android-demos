@@ -65,7 +65,7 @@ func ProcessPaySettlement(be *model.PaySettlement) (ret *model.BindingReturn) {
 	// 暂时判断中金渠道是否支持该银行卡
 	cm, err := mongo.CfcaBankMapColl.Find(cardBin.InsCode)
 	if err != nil {
-		return logicErrorHandle(sett, "000001")
+		return logicErrorHandle(sett, "400020")
 	}
 
 	// 交易参数
@@ -638,22 +638,25 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 		return logicErrorHandle(refund, "300030")
 	}
 
-	// 交易模式
-	switch chanMer.TransMode {
-	case model.MarketMode:
-		if be.SettOrderNum == "" {
-			return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
+	// 是中金退款的话
+	if orign.ChanCode == "CFCA" {
+		// 交易模式
+		switch chanMer.TransMode {
+		case model.MarketMode:
+			if be.SettOrderNum == "" {
+				return model.NewBindingReturn("200050", "字段 SettOrderNum 不能为空")
+			}
+			if be.SettOrderNum != orign.SettOrderNum {
+				return logicErrorHandle(refund, "200251")
+			}
+			refund.SettOrderNum = be.SettOrderNum
+			be.SettOrderNum = be.MerId + be.SettOrderNum
+		case model.MerMode:
+			// dothing
+		default:
+			log.Errorf("Unsupport mode %d", chanMer.TransMode)
+			return logicErrorHandle(refund, "000001")
 		}
-		if be.SettOrderNum != orign.SettOrderNum {
-			return logicErrorHandle(refund, "200251")
-		}
-		refund.SettOrderNum = be.SettOrderNum
-		be.SettOrderNum = be.MerId + be.SettOrderNum
-	case model.MerMode:
-		// dothing
-	default:
-		log.Errorf("Unsupport mode %s", chanMer.TransMode)
-		return logicErrorHandle(refund, "000001")
 	}
 
 	// 获取渠道接口
@@ -680,7 +683,7 @@ func ProcessBindingRefund(be *model.BindingRefund) (ret *model.BindingReturn) {
 	// 退款
 	ret = c.ProcessBindingRefund(be)
 
-	//更新原交易状态
+	// 更新原交易状态
 	if ret.RespCode == successCode {
 		mongo.TransColl.Update(orign)
 	}

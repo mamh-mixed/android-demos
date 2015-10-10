@@ -5,19 +5,29 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
+	"fmt"
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/logs"
+	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
+	"github.com/omigo/validator"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
-	"github.com/omigo/validator"
 )
 
 // Execute 发送报文执行微信支付
 func Execute(req BaseReq, resp BaseResp) error {
+
+	m := req.GetSpReq()
+	if m == nil {
+		return fmt.Errorf("%s", "no params spReq found")
+	}
+
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanReqLogs(req)
+
 	if err := validator.Validate(req); err != nil {
 		log.Errorf("validate error, %s", err)
 		return err
@@ -35,7 +45,12 @@ func Execute(req BaseReq, resp BaseResp) error {
 	}
 	log.Infof("<<< return from weixin: %s", string(ret))
 
-	return processRespBody(ret, req.GetSignKey(), resp)
+	err = processRespBody(ret, req.GetSignKey(), resp)
+
+	// 记录渠道返回日志
+	logs.SpLogs <- m.GetChanRetLogs(resp)
+
+	return err
 }
 
 func prepareData(d BaseReq) (xmlBytes []byte, err error) {

@@ -1,5 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <dom-module id="quick-merchant-view">
 
   <style>
@@ -16,6 +19,7 @@
     paper-dialog {
       background-color: #ffffff;
     }
+
     .row {
       @apply(--layout-horizontal);
     }
@@ -52,7 +56,7 @@
   </style>
   <template>
     <paper-dialog id="dialogView">
-        <h2>{{item.detail.merName}}</h2>
+      <h2>{{item.detail.merName}}</h2>
       <paper-dialog-scrollable>
         <table>
           <tr>
@@ -62,19 +66,10 @@
             <td>{{item.detail.merName}}</td>
           </tr>
           <tr>
-            <td class="key">代理代码:</td>
-            <td>{{item.agentCode}}</td>
-            <td class="key">代理名称:</td>
-            <td>{{item.agentName}}</td>
-          </tr>
-          <tr>
-            <td class="key">集团代码:</td>
-            <td>{{item.groupCode}}</td>
-            <td class="key">集团名称:</td>
-            <td>{{item.groupName}}</td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
+            <td>计费代码:</td>
+            <td>{{item.detail.billingScheme}}</td>
+            <td>交易币种:</td>
+            <td>{{item.transCurr}}</td>
           </tr>
           <tr>
             <td> 开启验签:</td>
@@ -92,43 +87,6 @@
           </tr>
           <tr>
             <td>&nbsp;</td>
-          </tr>
-          <tr>
-            <td class="key">开户账户:</td>
-            <td>{{item.detail.acctNum}}</td>
-            <td class="key">开户姓名:</td>
-            <td>{{item.detail.acctName}}</td>
-          </tr>
-          <tr>
-            <td>开户行号:</td>
-            <td>{{item.detail.bankId}}</td>
-            <td>支行名称:</td>
-            <td>{{item.detail.bankName}}</td>
-          </tr>
-          <tr>
-            <td>城市:</td>
-            <td>{{item.detail.city}}</td>
-            <td>交易币种:</td>
-            <td>{{item.transCurr}}</td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-          </tr>
-          <tr>
-            <td>门店类型:</td>
-            <td>{{item.detail.shopType}}</td>
-            <td>门店 ID:</td>
-            <td>{{item.detail.shopID}}</td>
-          </tr>
-          <tr>
-            <td>商品标签:</td>
-            <td>{{item.detail.goodsTag}}</td>
-            <td>商品名称:</td>
-            <td>{{item.detail.commodityName}}</td>
-          </tr>
-          <tr>
-            <td>品牌编号:</td>
-            <td colspan="3">{{item.detail.brandNum}}</td>
           </tr>
           <tr>
             <td>&nbsp;</td>
@@ -202,7 +160,7 @@
       },
       // 查看路由
       handleViewRouteTapped: function() {
-        page('/config/routes2/' + this.item.merId);
+        document.querySelector('#appRouter').go('/quickPay/route/' + this.item.merId);
       },
       // 确认删除
       confirmDeleteTap: function() {

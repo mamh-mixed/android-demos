@@ -15,6 +15,26 @@ import (
 
 var maxReportRec = 10000
 
+func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
+	ls, total, err := query.GetSpTransLogs(q, msgType)
+	if err != nil {
+		return model.NewResultBody(1, "查询数据库失败")
+	}
+
+	paging := model.Pagination{
+		Page:  q.Page,
+		Total: total,
+		Size:  q.Size,
+		Data:  ls,
+	}
+
+	return &model.ResultBody{
+		Status: 0,
+		Data:   paging,
+	}
+
+}
+
 // tradeQuery 交易查询
 func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 
@@ -22,6 +42,11 @@ func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		return query.BpTransQuery(q)
 	}
 	return query.SpTransQuery(q)
+}
+
+// tradeQuery 交易查询
+func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
+	return query.SpTransFindOne(q)
 }
 
 // tradeReport 处理查找所有商户的请求

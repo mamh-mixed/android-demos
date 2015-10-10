@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <dom-module id="file-upload">
   <style>
     :host {
@@ -63,7 +64,8 @@
     <iron-ajax id="importAjax" url="/master/merchant/import" handle-as="json" on-response="handleImportResponse"></iron-ajax>
 
   </template>
-
+  <script src="../../bower_components/plupload/js/plupload.full.min.js"></script>
+  <script src="../../bower_components/qiniu-js-sdk/src/qiniu.js"></script>
   <script>
     (function() {
 

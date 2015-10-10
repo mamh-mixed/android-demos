@@ -1,0 +1,220 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<dom-module id="trade-message">
+  <template>
+    <style>
+      :host {
+        display: block;
+        --paper-dialog-scrollable: {
+          width: 1030px;
+          min-height: 500px;
+          max-height: 600px;
+          font-size: 14px;
+        }
+      }
+
+      .message {
+        margin-top: 10px;
+        /*background: #F4F4F4;*/
+      }
+    </style>
+    <paper-dialog id="dialogView">
+      <h2>交易报文</h2>
+      <paper-dialog-scrollable>
+        <table class="data-grid">
+          <thead>
+            <tr>
+              <th>序号</th>
+              <th class="left">报文</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template is="dom-repeat" items="{{messageArray}}" as="messageList">
+              <tr style="border-bottom:1px solid #ddd;">
+                <td class="center">{{addOneFilter(index)}}</td>
+                <td>
+                  <template is="dom-repeat" items="{{messageList}}" as="message">
+                    <div class="message" style$="{{getMessageStyle(message)}}">
+                      <div>{{getMsgTitle(message)}}</div>
+                      <pre style="min-width:800px;max-width:850px;word-break:break-all;word-wrap: break-word;font-size:10px;">{{formatMsg(message.msg)}}</pre>
+                    </div>
+                  </template>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="255" align="right">
+                <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></iron-ajax>
+    <iron-ajax id="chanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleChanMessageResponse"></iron-ajax>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'trade-message',
+
+        properties: {
+          item: Object,
+        },
+        open: function() {
+          this.$.dialogView.open();
+          this.msgTitleMap = {
+            1: {
+              'in': '商户请求报文:',
+              'out': '商户响应报文:',
+            },
+            2: {
+              'out': '渠道请求报文:',
+              'in': '渠道响应报文:',
+            },
+            3: {
+              'in': '异步通知报文:',
+            },
+          };
+          this.cond = {};
+          this.set('cond.size', 10);
+          this.set('cond.page', 1);
+          // reqId数组
+          this.reqArray = [];
+          //{'reqId1':['msg1','msg2'],'reqId2':['msg3','msg4']}
+          this.messageMap = {};
+          //[['msg1','msg2'],['msg3','msg4']
+          this.messageArray = [];
+
+          this.$.merMessageQueryAjax.params = {
+            'merId': this.item.merId,
+            'orderNum': this.item.orderNum,
+            'msgType': '1',
+            'size': this.cond.size,
+            'page': this.cond.page,
+          };
+          this.$.merMessageQueryAjax.generateRequest();
+        },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        handleMerMessageResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            this.set('cond.total', 0);
+            this.set('cond.page', 0);
+            return;
+          }
+          if (!response.data || !response.data.data) {
+            return;
+          }
+          var merMessages = response.data.data.slice(0);
+
+          // 将返回json数组循环放入messageMap
+          var reqId = '';
+          for (var i = 0; i < merMessages.length; i++) {
+            reqId = merMessages[i].reqId;
+            if (!this.contains(this.reqArray, reqId)) {
+              this.push('reqArray', reqId);
+            }
+            if (!this.messageMap[reqId]) {
+              this.messageMap[reqId] = [];
+            }
+            this.push('messageMap.' + reqId, merMessages[i]);
+          }
+
+          // 将messageMap中数据放入messageArray中
+          for (var j = 0; j < this.reqArray.length; j++) {
+            this.push('messageArray', this.messageMap[this.reqArray[j]]);
+          }
+
+          // 查询渠道报文
+          this.$.chanMessageQueryAjax.params = {
+            'merId': this.item.merId,
+            'orderNum': this.item.orderNum,
+            'msgType': '2',
+            'reqIds': this.reqArray,
+          };
+          this.$.chanMessageQueryAjax.generateRequest();
+
+          this.set('cond.total', response.data.total);
+          this.set('cond.page', response.data.page);
+        },
+        handleChanMessageResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          if (!response.data || !response.data.data) {
+            return;
+          }
+          var chanMessages = response.data.data.slice(0);
+
+          //将返回json数组循环放入messageArray
+          for (var i = 0; i < chanMessages.length; i++) {
+            for (var j = 0; j < this.messageArray.length; j++) {
+              if (chanMessages[i].reqId === this.messageArray[j][0].reqId) {
+                this.push('messageArray.' + [j], chanMessages[i]);
+                break;
+              }
+            }
+          }
+
+        },
+        // 数据中是否包含重复元素
+        contains: function(array, newValue) {
+          for (var i = 0; i < array.length; i++) {
+            if (array[i] === newValue) {
+              return true;
+            }
+          }
+          return false;
+        },
+        queryAction: function() {
+          this.$.merMessageQueryAjax.params = {
+            'merId': this.item.merId,
+            'orderNum': this.item.orderNum,
+            'msgType': '1',
+            'size': this.cond.size,
+            'page': this.cond.page,
+          };
+          this.$.merMessageQueryAjax.generateRequest();
+          this.reqArray = [];
+          this.messageMap = {};
+          this.messageArray = [];
+        },
+        formatMsg: function(msg) {
+          return JSON.stringify(msg);
+        },
+        getMsgTitle: function(message) {
+          return this.msgTitleMap[message.msgType][message.direction];
+        },
+        getMessageStyle: function(message) {
+          if (message.msgType === 1 || message.msgType === 3) {
+            if (message.direction === 'in') {
+              return 'margin-left:0px;';
+            } else {
+              return 'margin-left:50px;';
+            }
+          } else if (message.msgType === 2) {
+            if (message.direction === 'in') {
+              return 'margin-left:50px;';
+            } else {
+              return 'margin-left:0px;';
+            }
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>

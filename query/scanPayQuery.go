@@ -2,11 +2,12 @@ package query
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
 var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
@@ -28,12 +29,13 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 
 	// find
 	trans, count, err := mongo.SpTransColl.Find(&model.QueryCondition{
-		TradeFrom:   "wap",
-		TransStatus: []string{model.TransSuccess},
-		Busicd:      model.Jszf,
-		MerId:       m.MerId,
-		Size:        150,
-		Page:        1,
+		TradeFrom:    "wap",
+		TransStatus:  []string{model.TransSuccess},
+		Busicd:       model.Jszf,
+		MerId:        m.MerId,
+		RefundStatus: model.TransRefunded,
+		Size:         150,
+		Page:         1,
 	})
 
 	if err != nil {
@@ -59,6 +61,50 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 	response.Count = count
 
 	return response
+}
+
+func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, int, error) {
+
+	var spLogs []model.SpTransLogs
+	var err error
+	var total int
+
+	switch msgType {
+	case 1:
+		// total
+		total, err = mongo.SpMerLogsCol.Count(q)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		// 先查来的报文
+		q.Direction = "in"
+		inSpLogs, err := mongo.SpMerLogsCol.Find(q)
+		if err != nil {
+			return nil, 0, err
+		}
+		spLogs = append(spLogs, inSpLogs...)
+
+		// 再查返回的报文
+		if len(inSpLogs) > 0 {
+			q.Direction = "out"
+			var reqIds []string
+			for _, l := range inSpLogs {
+				reqIds = append(reqIds, l.ReqId)
+			}
+			q.ReqIds = reqIds
+			outSpLogs, err := mongo.SpMerLogsCol.Find(q)
+			if err != nil {
+				return nil, 0, err
+			}
+			spLogs = append(spLogs, outSpLogs...)
+		}
+
+	case 2:
+		spLogs, err = mongo.SpChanLogsCol.Find(q)
+		total = len(spLogs)
+	}
+	return spLogs, total, err
 }
 
 // GetMerInfo 扫固定码获取用户信息
@@ -118,6 +164,25 @@ func SpTransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 		Count:    count,
 	}
 
+	return ret
+}
+
+// SpTransFindOne 交易查询
+func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
+
+	// mongo统计
+	trans, err := mongo.SpTransColl.FindOneByOrigOrderNum(q)
+	if err != nil {
+		log.Errorf("find trans error: %s", err)
+		ret = model.NewResultBody(1, "查询数据库失败")
+		return ret
+	}
+
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "",
+		Data:    trans,
+	}
 	return ret
 }
 
