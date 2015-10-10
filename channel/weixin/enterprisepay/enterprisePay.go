@@ -60,7 +60,7 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 			PartnerTradeNo: req.OrderNum,
 		}
 		resp := &EnterpriseQueryResp{}
-		var queryDuration = []time.Duration{5 * time.Second, 10 * time.Second, 15 * time.Second}
+		var queryDuration = []time.Duration{3 * time.Second, 6 * time.Second, 9 * time.Second, 12 * time.Second}
 		for i, d := range queryDuration {
 			time.Sleep(d)
 			// query
