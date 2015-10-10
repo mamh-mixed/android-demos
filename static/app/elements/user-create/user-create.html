@@ -1,0 +1,203 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-select/x-select.html">
+
+<dom-module id="user-create">
+
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 450px;
+        min-height: 500px;
+        max-height: 500px;
+      }
+    }
+
+    x-select {
+      margin-left: -38px;
+      width: 100%;
+    }
+
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
+
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
+
+    paper-input {}
+
+    x-select {
+      margin-left: 0px;
+    }
+  </style>
+  <template>
+    <paper-dialog id="dialogAdd">
+      <h2>创建用户</h2>
+      <paper-dialog-scrollable>
+        <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}"></paper-input>
+        <!-- <paper-input id="userName" label="*密码" value="{{user.password::input}}"  required error-message="必填项"></paper-input>
+          <paper-input id="nickName" label="*重复密码" value="{{user.password::input}}"  required error-message="必填项"></paper-input> -->
+        <paper-input id="mail" label="邮箱" value="{{user.mail::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}" required error-message="必填项"></paper-input>
+        <x-select id="merStatus" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
+        <div id="agent" hidden>
+          <paper-input id="agentCode" label="代理代码" value="{{user.agentCode::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="agentName" label="代理名称" value="{{user.agentName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div id="group" hidden>
+          <paper-input id="groupCode" label="集团代码" value="{{user.groupCode::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="groupName" label="集团名称" value="{{user.groupName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div id="merchant" hidden>
+          <paper-input id="merId" label="商户代码" value="{{user.merId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="merName" label="商户名称" value="{{user.merName::input}}" required error-message="必填项"></paper-input>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button on-tap="handleSaveTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
+    <iron-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></iron-ajax>
+  </template>
+  <script>
+    Polymer({
+      is: 'user-create',
+      properties: {
+        userType: {
+          type: Object
+        },
+        userTypes: {
+          type: Array,
+          value: [{
+            key: 'admin',
+            value: '管理员'
+          }, {
+            key: 'agent',
+            value: '代理'
+          }, {
+            key: 'group',
+            value: '集团'
+          }, {
+            key: 'merchant',
+            value: '商户'
+          }, ]
+        }
+      },
+      observers: [
+        '_userTypesChange(userType)'
+      ],
+      _userTypesChange(value) {
+        this.set('user.userType', value.key);
+        if (value.key === 'agent') {
+          this.$.agent.removeAttribute('hidden');
+          this.$.group.setAttribute('hidden', true);
+          this.$.merchant.setAttribute('hidden', true);
+          this.set('user.groupCode', '');
+          this.set('user.groupName', '');
+          this.set('user.merId', '');
+          this.set('user.merName', '');
+        } else if (value.key === 'group') {
+          this.$.agent.setAttribute('hidden', true);
+          this.$.group.removeAttribute('hidden');
+          this.$.merchant.setAttribute('hidden', true);
+          this.set('user.agentCode', '');
+          this.set('user.agentName', '');
+          this.set('user.merId', '');
+          this.set('user.merName', '');
+        } else if (value.key === 'merchant') {
+          this.$.agent.setAttribute('hidden', true);
+          this.$.group.setAttribute('hidden', true);
+          this.$.merchant.removeAttribute('hidden');
+          this.set('user.agentCode', '');
+          this.set('user.agentName', '');
+          this.set('user.groupCode', '');
+          this.set('user.groupName', '');
+        } else {
+          this.$.agent.setAttribute('hidden', true);
+          this.$.group.setAttribute('hidden', true);
+          this.$.merchant.setAttribute('hidden', true);
+          this.set('user.agentCode', '');
+          this.set('user.agentName', '');
+          this.set('user.groupCode', '');
+          this.set('user.groupName', '');
+          this.set('user.merId', '');
+          this.set('user.merName', '');
+        }
+      },
+      open: function() {
+        this.$.dialogAdd.open();
+        this.user = {};
+        this.userType = {
+          key: 'admin',
+          value: '管理员'
+        };
+      },
+      isUserConfigEmpty: function() {
+        if (this.$.userName.validate() && this.$.mail.validate() && this.$.phoneNum.validate()) {
+          if (this.userType.key === 'agent') {
+            if (this.$.agentCode.validate() && this.$.agentName.validate()) {
+              return false;
+            }
+          } else if (this.userType.key === 'group') {
+            if (this.$.groupCode.validate() && this.$.groupName.validate()) {
+              return false;
+            }
+          } else if (this.userType.key === 'merchant') {
+            if (this.$.merId.validate() && this.$.merName.validate()) {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+        return true;
+      },
+      // 保存
+      handleSaveTapped: function() {
+        if (this.isUserConfigEmpty()) {
+          Util.toast('必填项不能为空', 1000);
+          return;
+        }
+        this.$.saveAjax.body = JSON.stringify(this.user);
+        this.$.saveAjax.generateRequest();
+      },
+      // 保存的响应事件
+      handleSaveResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.$.dialogAdd.close();
+        Util.toast(response.message, 1000);
+        this.fire('saved');
+        this.set('user', {});
+      },
+    });
+  </script>
+</dom-module>

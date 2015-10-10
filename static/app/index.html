@@ -61,6 +61,7 @@
     <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
     <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
     <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
+    <app-route path="/config/users" name="user-list" import="pages/users-page.html"></app-route>
 
     <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
     <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>
@@ -79,7 +80,6 @@
   </app-router>
 
   <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
-  <!-- build:js scripts/app.js -->
   <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
   <!-- endbuild-->

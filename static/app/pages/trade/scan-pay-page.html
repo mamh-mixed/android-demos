@@ -9,8 +9,8 @@
     }
   </style>
   <template>
-    <scaffold-layout route$="[[route]]">
-      <trade-list class="content"></trade-list>
+    <scaffold-layout route$="[[route]]" user="{{user}}">
+      <trade-list class="content" user="{{user}}"></trade-list>
     </scaffold-layout>
   </template>
   <script>
@@ -26,6 +26,10 @@
               title: '扫码支付交易查询',
               subtitle: '查询下单、预下单、支付、查询、退款、关闭订单、企业支付、公众号支付的交易'
             }
+          },
+          user: {
+            type: Object,
+            notify: true
           }
         },
       });

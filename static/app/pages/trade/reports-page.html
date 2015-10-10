@@ -9,8 +9,8 @@
     }
   </style>
   <template>
-    <scaffold-layout route$="[[route]]">
-      <report-list class="content"></report-list>
+    <scaffold-layout route$="[[route]]" user="{{user}}">
+      <report-list class="content" user="{{user}}"></report-list>
     </scaffold-layout>
   </template>
   <script>
@@ -26,6 +26,10 @@
               title: '交易报表下载',
               subtitle: '交易报表下载'
             }
+          },
+          user: {
+            type: Object,
+            notify: true
           }
         },
       });

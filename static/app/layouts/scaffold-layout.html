@@ -194,7 +194,7 @@
 
         <!-- 菜单列表 -->
         <paper-menu>
-          <paper-submenu opened="{{ startWith(route.path, 'config') }}">
+          <!-- <paper-submenu opened="{{ startWith(route.path, 'config') }}">
             <paper-item class="menu-trigger">
               <iron-icon icon="build"></iron-icon>
               <span>扫码支付商户配置</span>
@@ -304,7 +304,23 @@
                 <span>HTML5 读取文件内容</span>
               </a>
             </paper-menu>
-          </paper-submenu>
+          </paper-submenu> -->
+          <template is="dom-repeat" items="{{menus}}" as="menu">
+            <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
+              <paper-item class="menu-trigger">
+                <iron-icon icon$="{{menu.icon}}"></iron-icon>
+                <span>{{menu.nameCN}}</span>
+              </paper-item>
+              <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
+                <template is="dom-repeat" items="{{menu.children}}" as="subMenu">
+                  <a data-route$="{{subMenu.route}}" href$="{{subMenu.url}}">
+                    <iron-icon icon$="{{subMenu.icon}}"></iron-icon>
+                    <span>{{subMenu.nameCN}}</span>
+                  </a>
+                </template>
+              </paper-menu>
+            </paper-submenu>
+          </template>
         </paper-menu>
 
       </paper-scroll-header-panel>
@@ -316,7 +332,10 @@
         <paper-toolbar id="mainToolbar" class="tall">
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
-
+          <div>欢迎您，
+            <span>{{user.nickName}}</span>
+          </div>
+          <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
           <!-- Toolbar icons -->
           <paper-icon-button icon="refresh"></paper-icon-button>
           <paper-icon-button icon="search"></paper-icon-button>
@@ -337,6 +356,8 @@
         <content select=".content"></content>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
+    <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
+    <iron-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -346,7 +367,206 @@
         properties: {
           route: {
             type: Object,
+          },
+          user: {
+            type: Object,
+            notify: true
           }
+        },
+        ready: function() {
+          //  进去页面之前先判断用户是否已登录
+          var sessionId = window.sessionStorage.getItem('SESSIONID');
+          if (!sessionId || sessionId === '') {
+            window.location.href = 'login.html';
+            return;
+          }
+          this.$.findSessionAjax.params = {
+            'sessionId': sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+          // 初始化菜单
+          this.adminMenus = [{
+            "nameCN": "扫码支付商户配置",
+            "nameEN": "",
+            "icon": "build",
+            "url": "",
+            "route": "config",
+            "children": [{
+              "nameCN": "代理",
+              "nameEN": "",
+              "icon": "assignment-ind",
+              "url": "#/config/agents",
+              "route": "config.agents"
+            }, {
+              "nameCN": "二级代理",
+              "nameEN": "",
+              "icon": "account-circle",
+              "url": "#/config/subAgents",
+              "route": "config.subAgents"
+            }, {
+              "nameCN": "集团商户",
+              "nameEN": "",
+              "icon": "home",
+              "url": "#/config/groups",
+              "route": "config.groups"
+            }, {
+              "nameCN": "商户录入",
+              "nameEN": "",
+              "icon": "create",
+              "url": "#/config/configMer",
+              "route": "config.configMer"
+            }, {
+              "nameCN": "批量导入",
+              "nameEN": "",
+              "icon": "cloud-upload",
+              "url": "#/config/upload",
+              "route": "config.upload"
+            }, {
+              "nameCN": "机构商户",
+              "nameEN": "",
+              "icon": "store",
+              "url": "#/config/merchants",
+              "route": "config.merchants"
+            }, {
+              "nameCN": "渠道商户",
+              "nameEN": "",
+              "icon": "account-balance",
+              "url": "#/config/chanMers",
+              "route": "config.chanMers"
+            }, {
+              "nameCN": "路由策略",
+              "nameEN": "",
+              "icon": "settings-input-component",
+              "url": "#/config/routes",
+              "route": "config.routes"
+            }, {
+              "nameCN": "用户",
+              "nameEN": "",
+              "icon": "account-box",
+              "url": "#/config/users",
+              "route": "config.users"
+            }]
+          }, {
+            "nameCN": "快捷支付商户配置",
+            "nameEN": "",
+            "icon": "swap-horiz",
+            "url": "",
+            "route": "quickPay",
+            "children": [{
+              "nameCN": "机构商户",
+              "nameEN": "",
+              "icon": "store",
+              "url": "#/quickPay/merchants",
+              "route": "quickPay.merchants"
+            }, {
+              "nameCN": "渠道商户",
+              "nameEN": "",
+              "icon": "account-balance",
+              "url": "#/quickPay/chanMers",
+              "route": "quickPay.chanMers"
+            }, {
+              "nameCN": "路由策略",
+              "nameEN": "",
+              "icon": "settings-input-component",
+              "url": "#/quickPay/routes",
+              "route": "quickPay.routes"
+            }]
+          }, {
+            "nameCN": "交易查询",
+            "nameEN": "",
+            "icon": "swap-horiz",
+            "url": "",
+            "route": "trade",
+            "children": [{
+              "nameCN": "扫码交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/list",
+              "route": "trade.list"
+            }, {
+              "nameCN": "绑定交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/bindingpay/list",
+              "route": "trade.bindingpay.list"
+            }, {
+              "nameCN": "报表下载",
+              "nameEN": "",
+              "icon": "file-download",
+              "url": "#/trade/reports",
+              "route": "trade.reports"
+            }, {
+              "nameCN": "旧系统报表下载",
+              "nameEN": "",
+              "icon": "cloud-download",
+              "url": "#/trade/old/reports",
+              "route": "trade.old.reports"
+            }]
+          }, {
+            "nameCN": "内部测试",
+            "nameEN": "",
+            "icon": "bug-report",
+            "url": "",
+            "route": "test",
+            "children": [{
+              "nameCN": "扫码支付",
+              "nameEN": "",
+              "icon": "pageview",
+              "url": "#/test/scanpay",
+              "route": "test.scanpay"
+            }, {
+              "nameCN": "绑定支付",
+              "nameEN": "",
+              "icon": "icons:speaker-notes",
+              "url": "#/test/bindingpay",
+              "route": "test.bindingpay"
+            }, {
+              "nameCN": "七牛 Ajax 上传文件",
+              "nameEN": "",
+              "icon": "cloud-upload",
+              "url": "#/test/qiniu",
+              "route": "test.qiniu"
+            }, {
+              "nameCN": "HTML5读取文件内容",
+              "nameEN": "",
+              "icon": "get-app",
+              "url": "#/test/filereader",
+              "route": "test.filereader"
+            }]
+          }];
+          this.agentMenus = [{
+            "nameCN": "交易查询",
+            "nameEN": "",
+            "icon": "swap-horiz",
+            "url": "",
+            "route": "trade",
+            "children": [{
+              "nameCN": "扫码交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/list",
+              "route": "trade.list"
+            }, {
+              "nameCN": "绑定交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/bindingpay/list",
+              "route": "trade.bindingpay.list"
+            }, {
+              "nameCN": "报表下载",
+              "nameEN": "",
+              "icon": "file-download",
+              "url": "#/trade/reports",
+              "route": "trade.reports"
+            }, {
+              "nameCN": "旧系统报表下载",
+              "nameEN": "",
+              "icon": "cloud-download",
+              "url": "#/trade/old/reports",
+              "route": "trade.old.reports"
+            }]
+          }];
+
         },
         paperHeaderTransform: function(e) {
           var appName = this.$.appName;
@@ -374,6 +594,42 @@
             return false;
           }
           return name.substr(1, prefix.length) === prefix;
+        },
+        handleFindSessionResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            window.location.href = 'login.html';
+            return;
+          }
+          this.user = response.data;
+          var userType = this.user.userType;
+          window.sessionStorage.setItem('USERTYPE', userType);
+          if (userType === 'admin') {
+            this.menus = this.adminMenus;
+          } else if (userType === 'agent' || userType === 'group' || userType === 'merchant') {
+            this.menus = this.agentMenus;
+          }
+        },
+        handleDeleteSessionResponse: function() {
+
+        },
+        // 退出
+        logoutHandle: function() {
+          var sessionId = window.sessionStorage.getItem('SESSIONID');
+          // 删除后台sesseion信息
+          this.$.deleteSessionAjax.params = {
+            'sessionId': sessionId,
+          };
+          this.$.deleteSessionAjax.generateRequest();
+
+          // 清楚sessionStorage中的信息
+          window.sessionStorage.removeItem('SESSIONID');
+          window.sessionStorage.removeItem('USERTYPE');
+          this.user = {};
+          this.$.logoutBtn.hidden = true;
+
+          // 跳转至登录页面
+          window.location.href = 'login.html';
         },
       });
     })();

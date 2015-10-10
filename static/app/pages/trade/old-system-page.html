@@ -9,8 +9,8 @@
     }
   </style>
   <template>
-    <scaffold-layout route$="[[route]]">
-      <report-list-old class="content"></report-list-old>
+    <scaffold-layout route$="[[route]]" user="{{user}}">
+      <report-list-old class="content" user="{{user}}"></report-list-old>
     </scaffold-layout>
   </template>
   <script>
@@ -26,6 +26,10 @@
               title: '旧系统交易统计',
               subtitle: '旧系统交易统计'
             }
+          },
+          user: {
+            type: Object,
+            notify: true
           }
         },
       });
