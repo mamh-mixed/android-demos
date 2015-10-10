@@ -511,3 +511,25 @@ func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransType
 	}).All(&results)
 	return results, err
 }
+
+// FindByNextRecord 使用商户号拉取下一条记录
+func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.Trans, error) {
+
+	find := bson.M{
+		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+	}
+	find["merId"] = q.MerId
+	find["busicd"] = q.Busicd
+	find["$or"] = []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}}
+
+	// 过滤掉取消不成功的订单
+	find["transAmt"] = bson.M{"$ne": 0}
+
+	if q.NextOrderNum != "" {
+		find["orderNum"] = bson.M{"$lte": q.NextOrderNum}
+	}
+
+	var result []model.Trans
+	err := database.C(col.name).Find(find).Sort("-orderNum").Limit(q.Size).All(&result)
+	return result, err
+}
