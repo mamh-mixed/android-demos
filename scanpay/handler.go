@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
@@ -39,6 +40,53 @@ func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Write(retBytes)
+}
+
+// scanpayBillsHandle 清算对账
+func scanpayBillsHandle(w http.ResponseWriter, r *http.Request) {
+
+	var errorResp = `{"respcd":"%s","errorDetail":"%s"}`
+
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "read body error", http.StatusNotAcceptable)
+		return
+	}
+
+	var billsReq = &struct {
+		MerId        string `json:"mchntid"`
+		Busicd       string `json:"busicd"`
+		SettDate     string `json:"settDate"`
+		NextOrderNum string `json:"nextOrderNum"`
+		Sign         string `json:"sign"`
+	}{}
+
+	err = json.Unmarshal(bytes, billsReq)
+	if err != nil {
+		w.Write([]byte(fmt.Sprintf(errorResp, "30", "报文错误")))
+		return
+	}
+
+	// TODO:验签
+
+	// 获取对账单
+	result := query.GetBills(&model.QueryCondition{
+		MerId:        billsReq.MerId,
+		Busicd:       billsReq.Busicd,
+		StartTime:    billsReq.SettDate + " 00:00:00",
+		EndTime:      billsReq.SettDate + " 23:59:59",
+		NextOrderNum: billsReq.NextOrderNum,
+	})
+
+	retBytes, err := json.Marshal(result)
+	if err != nil {
+		w.Write([]byte(fmt.Sprintf(errorResp, "01", "系统错误，请重试。")))
+		return
+	}
+
+	w.Write(retBytes)
+
 }
 
 // weixinNotifyHandle 接受微信异步通知

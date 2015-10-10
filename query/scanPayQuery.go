@@ -12,6 +12,75 @@ import (
 
 var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
 var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
+var sucCode, sucMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
+
+func GetBills(q *model.QueryCondition) interface{} {
+
+	// 限制最大1000条
+	var maxRec = 1000
+
+	// 默认返回
+	var result = &struct {
+		Respcd       string      `json:"respcd,omitempty"`
+		ErrorDetail  string      `json:"errorDetail,omitempty"`
+		Count        int         `json:"count"`
+		Rec          interface{} `json:"rec,omitempty"`
+		NextOrderNum string      `json:"nextOrderNum,omitempty"`
+	}{Respcd: sucCode, ErrorDetail: sucMsg}
+
+	// 拉取1000+1条用于返回最后记录订单号
+	q.Size = maxRec + 1
+
+	trans, err := mongo.SpTransColl.FindByNextRecord(q)
+	if err != nil {
+		result.Respcd, result.ErrorDetail = sysErrCode, sysErrMsg
+		return result
+	}
+
+	type rec struct {
+		OrderNum  string `json:"orderNum"`
+		TransType int8   `json:"transType"`
+		TransTime string `json:"transTime"`
+		TransAmt  int64  `json:"transAmt"`
+	}
+
+	tSize := len(trans)
+	var recs []rec
+	if tSize > 0 {
+		result.Count = tSize
+		// 取满一页
+		if tSize == q.Size {
+			result.Count = maxRec
+			result.NextOrderNum = trans[maxRec].OrderNum
+			trans = trans[:maxRec]
+		}
+		for _, t := range trans {
+
+			// 交易类型
+			var transType int8
+			switch t.Busicd {
+			case model.Purc:
+				transType = 1
+			case model.Paut:
+				transType = 2
+			case model.Jszf:
+				transType = 3
+			case model.Refd:
+				transType = 5
+			case model.Void:
+				transType = 6
+			case model.Qyzf:
+				transType = 7
+			}
+
+			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt}
+			recs = append(recs, r)
+		}
+		result.Rec = recs
+	}
+
+	return result
+}
 
 // GetOrderInfo 扫固定码订单信息
 func GetOrderInfo(uniqueId string) scanFixedResponse {
