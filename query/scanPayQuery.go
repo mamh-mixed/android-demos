@@ -2,38 +2,29 @@ package query
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"time"
 )
 
 var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
 var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
 var sucCode, sucMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
 
-func GetBills(q *model.QueryCondition) interface{} {
+func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 
+	result = &model.QueryResult{RespCode: sucCode, RespMsg: sucMsg}
 	// 限制最大1000条
 	var maxRec = 1000
-
-	// 默认返回
-	var result = &struct {
-		Respcd       string      `json:"respcd,omitempty"`
-		ErrorDetail  string      `json:"errorDetail,omitempty"`
-		Count        int         `json:"count"`
-		Rec          interface{} `json:"rec,omitempty"`
-		NextOrderNum string      `json:"nextOrderNum,omitempty"`
-	}{Respcd: sucCode, ErrorDetail: sucMsg}
 
 	// 拉取1000+1条用于返回最后记录订单号
 	q.Size = maxRec + 1
 
 	trans, err := mongo.SpTransColl.FindByNextRecord(q)
 	if err != nil {
-		result.Respcd, result.ErrorDetail = sysErrCode, sysErrMsg
+		result.RespCode, result.RespMsg = sysErrCode, sysErrMsg
 		return result
 	}
 
@@ -71,6 +62,8 @@ func GetBills(q *model.QueryCondition) interface{} {
 				transType = 6
 			case model.Qyzf:
 				transType = 7
+			case model.Canc:
+				transType = 8
 			}
 
 			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt}
