@@ -1,16 +1,6 @@
 package model
 
-/*
-机构：00000050
-
-商户 050310058120002
-终端：00000001
-
-IP：192.168.1.102
-端口：端口7823（长连接端口）
-*/
 type CilMsg struct {
-	UUID             string `json:"uuid,omitempty" bson:"uuid,omitempty"`                         // 存储到数据库中的主键
 	Busicd           string `json:"busicd" bson:"busicd,omitempty"`                               //  6  业务代码
 	Txndir           string `json:"txndir" bson:"txndir,omitempty"`                               //  6  交易方向
 	Routchnl         string `json:"routchnl,omitempty" bson:"routchnl,omitempty"`                 //  8  支付路由渠道

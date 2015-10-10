@@ -6,7 +6,6 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -49,10 +48,15 @@ func (c *CILPay) Consume(p *model.NoTrackPayment) (ret *model.BindingReturn) {
 		Expiredate:   p.ValidDateDecrypt,
 		Cvv2:         p.Cvv2Decrypt,
 	}
+	if len(p.MerOrderNum) > 20 {
+		m.Transactionid = p.MerOrderNum[len(p.MerOrderNum)-20:]
+	} else {
+		m.Transactionid = p.MerOrderNum
+	}
 
 	// 报文入库
-	m.UUID = util.SerialNumber()
-	log.Debugf("直接消费（订购消费）向线下网关发送报文内容: %+v", m)
+	// m.UUID = util.SerialNumber()
+	// log.Debugf("直接消费（订购消费）向线下网关发送报文内容: %+v", m)
 	// mongo.CilMsgColl.Upsert(m)
 
 	resp := send(m, transTimeout)
@@ -110,11 +114,6 @@ func (c *CILPay) ConsumeByApplePay(ap *model.ApplePay) (ret *model.BindingReturn
 		m.Onlinesecuredata = ap.ApplePayData.PaymentData.OnlinePaymentCryptogram
 	}
 
-	// 报文入库
-	m.UUID = util.SerialNumber()
-	log.Debugf("ApplePay 消费向线下网关发送报文内容: %+v", m)
-	// mongo.CilMsgColl.Upsert(m)
-
 	resp := send(m, transTimeout)
 	log.Debugf("ApplePay 消费的线下网关返回结果: %+v", resp)
 
@@ -161,11 +160,6 @@ func reversalHandle(om *model.CilMsg) {
 		Origclisn:    om.Clisn,
 		Localdt:      time.Now().Format("0102150405"),
 	}
-
-	// 报文入库
-	rm.UUID = util.SerialNumber()
-	log.Debugf("冲正请求向线下网关发送报文内容: %+v", rm)
-	// mongo.CilMsgColl.Upsert(rm)
 
 	for _, i := range reversalTimeouts {
 		log.Debugf("Send reversal request, overtime is %s", i)

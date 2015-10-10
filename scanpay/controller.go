@@ -2,17 +2,18 @@ package scanpay
 
 import (
 	"encoding/json"
-	"net/url"
-	"strings"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"net/url"
+	"strings"
 )
 
 // ScanPayHandle 执行扫码支付逻辑
@@ -201,4 +202,81 @@ func weixinNotifyCtrl(req *weixin.WeixinNotifyReq) error {
 // alipayNotifyCtrl 支付宝异步通知处理(预下单)
 func alipayNotifyCtrl(v url.Values) error {
 	return core.ProcessAlipayNotify(v)
+}
+
+var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+var dataErrCode, dataErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("DATA_ERROR")
+var signErrCode, signErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SIGN_AUTH_ERROR")
+var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
+
+// getBillsCtrl 获取商户对账单
+func getBillsCtrl(reqBytes []byte) []byte {
+
+	var errorResp = `{"respcd":"%s","errorDetail":"%s"}`
+
+	var q = &struct {
+		MerId        string `json:"mchntid" url:"mchntid,omitempty"`
+		Busicd       string `json:"busicd" url:"busicd,omitempty"`
+		SettDate     string `json:"settDate" url:"settDate,omitempty"`
+		NextOrderNum string `json:"nextOrderNum" url:"nextOrderNum,omitempty"`
+		Sign         string `json:"sign" url:"-"`
+	}{}
+
+	err := json.Unmarshal(reqBytes, q)
+	if err != nil {
+		return []byte(fmt.Sprintf(errorResp, dataErrCode, dataErrMsg))
+
+	}
+
+	// 查找商户
+	m, err := mongo.MerchantColl.Find(q.MerId)
+	if err != nil {
+		return []byte(fmt.Sprintf(errorResp, noMerCode, noMerMsg))
+	}
+
+	// 验签
+	if m.IsNeedSign {
+		rbuf, _ := util.Query(q)
+		rsign := security.SHA1WithKey(rbuf.String(), m.SignKey)
+		if rsign != q.Sign {
+			log.Warnf("check sign error, expect=%s,get=%s", rsign, q.Sign)
+			return []byte(fmt.Sprintf(errorResp, signErrCode, signErrMsg))
+		}
+	}
+
+	// 获取对账单
+	p := query.GetBills(&model.QueryCondition{
+		MerId:        q.MerId,
+		Busicd:       q.Busicd,
+		StartTime:    q.SettDate + " 00:00:00",
+		EndTime:      q.SettDate + " 23:59:59",
+		NextOrderNum: q.NextOrderNum,
+	})
+
+	// 默认返回
+	var result = &struct {
+		Respcd       string      `json:"respcd,omitempty" url:"respcd,omitempty"`
+		ErrorDetail  string      `json:"errorDetail,omitempty" url:"errorDetail,omitempty"`
+		Count        int         `json:"count" url:"count"`
+		Rec          interface{} `json:"rec,omitempty" url:"-"`
+		RecStr       string      `json:"-" url:"rec,omitempty"`
+		NextOrderNum string      `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty"`
+		Sign         string      `json:"sign" url:"-"`
+	}{}
+
+	recBytes, _ := json.Marshal(p.Rec)
+	result.RecStr = string(recBytes)
+	result.Rec = p.Rec
+	result.Respcd = p.RespCode
+	result.ErrorDetail = p.RespMsg
+	result.Count = p.Count
+	result.NextOrderNum = p.NextOrderNum
+
+	// 签名
+	bbuf, _ := util.Query(result)
+	result.Sign = security.SHA1WithKey(bbuf.String(), m.SignKey)
+
+	retBytes, _ := json.Marshal(result)
+
+	return retBytes
 }

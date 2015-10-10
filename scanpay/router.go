@@ -17,6 +17,7 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/scanpay/test/recNotify", testReceiveNotifyHandle)
 	mux.HandleFunc("/scanpay/fixed/merInfo", scanFixedMerInfoHandle)
 	mux.HandleFunc("/scanpay/fixed/orderInfo", scanFixedOrderInfoHandle)
+	mux.HandleFunc("/scanpay/sett/getBills", scanpayBillsHandle)
 
 	return mux
 }

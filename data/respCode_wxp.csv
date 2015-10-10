@@ -86,5 +86,6 @@ SYSTEMERROR,系统繁忙，请稍后再试。,enterprisePay,91
 NAME_MISMATCH,姓名校验出错,enterprisePay,S5
 SIGN_ERROR,签名错误,enterprisePay,96
 XML_ERROR,Post内容出错,enterprisePay,96
+FREQ_LIMIT,对同一用户转账操作过于频繁，请稍候重试。,enterprisePay,S6
 FATAL_ERROR,两次请求参数不一致,enterprisePay,19
 CA_ERROR,证书出错,enterprisePay,96

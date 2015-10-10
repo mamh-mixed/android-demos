@@ -145,7 +145,7 @@ iuhniRoP1U9oFA5xmKo=
 	req.AppID = "wx889539c239f029ee"
 	req.ChanMerId = "1261318101"
 	req.SignKey = "b0f05a24dd405df9c4a82dd2cbac697a"
-	req.OrigOrderNum = "14437097311218481822"
+	req.OrigOrderNum = "14444006699636753717"
 	req.WeixinClientCert = clientCert
 	req.WeixinClientKey = clientKey
 
