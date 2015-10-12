@@ -29,12 +29,12 @@
     <iron-ajax id="deleteAjax" method="GET" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <paper-dialog id="dialogDelete">
       <h2>删除【
-        <span>{{group.groupName}}</span>】集团商户</h2>
+        <span>{{group.groupName}}</span>】商户</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <iron-icon icon="report-problem"></iron-icon>
           &nbsp;&nbsp;&nbsp;
-          <span>是否删除此集团商户?</span>
+          <span>是否删除此商户?</span>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
