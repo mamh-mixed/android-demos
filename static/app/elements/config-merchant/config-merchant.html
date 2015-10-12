@@ -116,6 +116,7 @@
         font-size: 8px;
       }
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -390,6 +391,7 @@
         if (!this.merId) {
           return;
         }
+        this.update = true;
         this.set('merchant', {});
         this.set('alipay', {});
         this.set('weixin', {});
@@ -488,6 +490,7 @@
       },
       ready: function() {
         this.idx = 0;
+        this.update = false;
         this.merchant = {
           agentCode: '',
           agentName: '',
@@ -583,12 +586,12 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
-        if(this.update){
-            this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
-            this.$.updateMerchantAjax.generateRequest();
-        }else{
-            this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
-            this.$.saveMerchantAjax.generateRequest();
+        if (this.update) {
+          this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
+          this.$.updateMerchantAjax.generateRequest();
+        } else {
+          this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+          this.$.saveMerchantAjax.generateRequest();
         }
       },
       // 保存商户的ajax响应事件
@@ -826,5 +829,6 @@
         }
       }
     });
+
   </script>
 </dom-module>

@@ -13,6 +13,7 @@
     :host {
       display: block;
     }
+
   </style>
   <template>
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
@@ -207,8 +208,10 @@
         if (newValue.path !== 'cond.page') {
           this.set('cond.page', 1);
         }
-        var t = new Date().format('yyyyMMdd-hhmmss');
-        this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=报表_' + t + '.xlsx';
+
+        var filename = "Trans_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
+        filename = filename.replace(/-/g, '');
+        this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=' + filename;
       },
       // 交易状态选择框改变
       _watchTransStatusChange: function(key) {
@@ -312,5 +315,6 @@
         this.$.tradeMessage.open();
       },
     });
+
   </script>
 </dom-module>
