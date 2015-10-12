@@ -150,25 +150,46 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 判断订单是否存在
-	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
-		return err
+	// if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+	// 	return err
+	// }
+
+	var isNewReq bool // 可重试
+	// 判断是否存在该订单
+	t, err := findAndLockOrigTrans(req.Mchntid, req.OrderNum)
+	if err != nil {
+		// 没找到原订单
+		isNewReq = true
 	}
 
 	// 记录该笔交易
-	t := &model.Trans{
-		MerId:         req.Mchntid,
-		SysOrderNum:   util.SerialNumber(),
-		OrderNum:      req.OrderNum,
-		TransType:     model.EnterpriseTrans,
-		Busicd:        req.Busicd,
-		AgentCode:     req.AgentCode,
-		Terminalid:    req.Terminalid,
-		TransAmt:      req.IntTxamt,
-		Remark:        req.Desc,
-		GatheringId:   req.OpenId,
-		GatheringName: req.UserName,
-		ChanCode:      req.Chcd,
-		TradeFrom:     req.TradeFrom,
+	if isNewReq {
+		t = &model.Trans{
+			MerId:         req.Mchntid,
+			SysOrderNum:   util.SerialNumber(),
+			OrderNum:      req.OrderNum,
+			TransType:     model.EnterpriseTrans,
+			Busicd:        req.Busicd,
+			AgentCode:     req.AgentCode,
+			Terminalid:    req.Terminalid,
+			TransAmt:      req.IntTxamt,
+			Remark:        req.Desc,
+			GatheringId:   req.OpenId,
+			GatheringName: req.UserName,
+			ChanCode:      req.Chcd,
+			TradeFrom:     req.TradeFrom,
+		}
+	} else {
+		// 比较数据是否一致
+		if t.Remark != req.Desc || t.GatheringId != req.OpenId || t.GatheringName != req.UserName ||
+			t.TransAmt != req.IntTxamt || t.ChanCode != req.Chcd {
+			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR") // TODO:应答码
+		}
+
+		// 如果之前是成功的
+		if t.TransStatus == model.TransSuccess {
+			return adaptor.ReturnWithErrorCode("SUCCESS")
+		}
 	}
 
 	// 渠道是否合法
@@ -188,22 +209,6 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	t.ChanMerId = rp.ChanMerId
 
-	// 修复bug==============
-	// subTrans, err := mongo.SpTransColl.FindByAccount(req.OpenId)
-	// if err == nil {
-	// 	notify, err := mongo.NotifyRecColl.FindOne(subTrans.MerId, subTrans.OrderNum)
-	// 	if err == nil {
-	// 		v := &w.WeixinNotifyReq{}
-	// 		err = json.Unmarshal([]byte(notify.FromChanMsg), v)
-	// 		if err == nil {
-	// 			if v.SubOpenid != "" {
-	// 				t.GatheringId = v.SubOpenid
-	// 				req.OpenId = v.SubOpenid
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
@@ -211,9 +216,11 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 记录交易
-	err = mongo.SpTransColl.Add(t)
-	if err != nil {
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	if isNewReq {
+		err = mongo.SpTransColl.Add(t)
+		if err != nil {
+			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		}
 	}
 
 	ret = adaptor.ProcessEnterprisePay(t, c, req)
