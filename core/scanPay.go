@@ -183,7 +183,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 比较数据是否一致
 		if t.Remark != req.Desc || t.GatheringId != req.OpenId || t.GatheringName != req.UserName ||
 			t.TransAmt != req.IntTxamt || t.ChanCode != req.Chcd {
-			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR") // TODO:应答码
+			return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE") // 不一致时认为两笔交易
 		}
 
 		// 如果之前是成功的
