@@ -87,8 +87,8 @@
       </table>
     </form>
 
-    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
-    </paper-fab>
+    <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
+    </paper-fab> -->
 
     <channel-merchant-editor id="merchantEditor" chan-mer="{{channelMer}}" page-type="{{pageType}}" on-saved="handleMerchantSave"></channel-merchant-editor>
     <channel-merchant-view id="merchantView" item="{{channelMer}}" on-editor="handleEditor" on-delete-ok="AfterDeleteHandle"></channel-merchant-view>
@@ -164,10 +164,10 @@
         }
       },
       // 新增机构商户事件
-      handleCreateFabTapped: function() {
-        this.pageType = 'create';
-        this.$.merchantEditor.open();
-      },
+    //   handleCreateFabTapped: function() {
+    //     this.pageType = 'create';
+    //     this.$.merchantEditor.open();
+    //   },
       // 新机构商户保存成功事件，刷新列表
       handleMerchantSave: function() {
         this.handleQueryTapped();
