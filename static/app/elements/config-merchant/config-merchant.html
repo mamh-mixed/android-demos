@@ -445,6 +445,7 @@
         if (!this.merId) {
           return;
         }
+        this.update=true;
         this.set('merchant', {});
         this.set('alipay', {});
         this.set('weixin', {});
@@ -591,7 +592,7 @@
       handleFindRouterWeixinResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('查询支付宝路由信息失败', 3000);
+          Util.toast('查询微信路由信息失败', 3000);
           return;
         }
         this.set('weixinRoute', response.data);
@@ -666,6 +667,7 @@
         this.weixinRoute = {
           cardBrand: 'WXP',
         };
+        this.update=false;
 
       },
       // 查询渠道商户的响应事件，这里是查找大商户
@@ -704,6 +706,9 @@
             value: aagentCodeMap[this.alipay.agentCode],
           };
         }
+        this.set('alipayRoute.acqFee','');
+        this.set('alipayRoute.merFee','');
+        this.set('alipayRoute.settFlag','');
       },
       // 微信id变化后，会查询出该微信渠道信息。
       handleFindChanMerWeixinResponse: function(e) {
@@ -730,6 +735,10 @@
             value: wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
           };
         }
+
+        this.set('weixinRoute.acqFee','');
+        this.set('weixinRoute.merFee','');
+        this.set('weixinRoute.settFlag','');
       },
       //判断商户录入必填项是否为空
       isMerchantConfigEmpty: function() {

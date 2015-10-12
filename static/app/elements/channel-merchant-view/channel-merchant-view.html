@@ -45,7 +45,6 @@
     td {
       padding-top: 3px !important;
     }
-
   </style>
   <template>
     <paper-dialog id="dialogView">
@@ -65,14 +64,14 @@
               <th>商户名称:</th>
               <td>{{item.chanMerName}}</td>
             </tr>
-            <tr>
+            <!-- <tr>
               <th>渠道费率:</th>
               <td>{{item.acqFee}}</td>
             </tr>
             <tr>
               <th>商户费率:</th>
               <td>{{item.merFee}}</td>
-            </tr>
+            </tr> -->
             <tr>
               <th>MD5 KEY:</th>
               <td>{{item.signCert}}</td>
@@ -107,14 +106,14 @@
               <th>大商户号:</th>
               <td>{{item.agentMer.chanMerId}}</td>
             </tr>
-            <tr>
+            <!-- <tr>
               <th>渠道费率:</th>
               <td>{{item.acqFee}}</td>
             </tr>
             <tr>
               <th>商户费率:</th>
               <td>{{item.merFee}}</td>
-            </tr>
+            </tr> -->
             <tr>
               <th>微信 APPID:</th>
               <td>{{item.wxpAppId}}</td>
@@ -138,94 +137,6 @@
               <td colspan="2">
                 <pre>{{item.httpKey}}</pre>
               </td>
-            </tr>
-          </tbody>
-        </table>
-        <table id="cfca" hidden class="data-grid low">
-          <tbody>
-            <tr>
-              <th>渠道代码:</th>
-              <td>{{item.chanCode}}</td>
-            </tr>
-            <tr>
-              <th>商户代码:</th>
-              <td>{{item.chanMerId}}</td>
-            </tr>
-            <tr>
-              <th>商户名称:</th>
-              <td>{{item.chanMerName}}</td>
-            </tr>
-            <tr>
-              <th>清算标识:</th>
-              <td>{{item.settFlag}}</td>
-            </tr>
-            <tr>
-              <th>清算角色:</th>
-              <td>{{item.settRole}}</td>
-            </tr>
-            <tr>
-              <th>渠道费率:</th>
-              <td>{{item.acqFee}}</td>
-            </tr>
-            <tr>
-              <th>商户费率:</th>
-              <td>{{item.merFee}}</td>
-            </tr>
-            <tr>
-              <th colspan="2">CFCA 商户私钥:</th>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <pre>{{item.privateKey}}</pre>
-              </td>
-            </tr>
-            <tr>
-              <th colspan="2">CFCA 商户公钥:</th>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <pre>{{item.publicKey}}</pre>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table id="cil" hidden class="data-grid low">
-          <tbody>
-            <tr>
-              <th>渠道代码:</th>
-              <td>{{item.chanCode}}</td>
-            </tr>
-            <tr>
-              <th>商户代码:</th>
-              <td>{{item.chanMerId}}</td>
-            </tr>
-            <tr>
-              <th>商户名称:</th>
-              <td>{{item.chanMerName}}</td>
-            </tr>
-            <tr>
-              <th>清算标识:</th>
-              <td>{{item.settFlag}}</td>
-            </tr>
-            <tr>
-              <th>清算角色:</th>
-              <td>{{item.settRole}}</td>
-            </tr>
-            <tr>
-              <th>机构号:</th>
-              <td>{{item.agentCode}}</td>
-            </tr>
-            <tr>
-              <th>终端号:</th>
-              <td>{{item.terminalId}}</td>
-            </tr>
-            <tr>
-              <th>渠道费率:</th>
-              <td>{{item.acqFee}}</td>
-            </tr>
-            <tr>
-              <th>商户费率:</th>
-              <td>{{item.merFee}}</td>
             </tr>
           </tbody>
         </table>
@@ -259,23 +170,9 @@
         if (this.item.chanCode === 'ALP') {
           this.$.alp.hidden = false;
           this.$.wxp.hidden = true;
-          this.$.cfca.hidden = true;
-          this.$.cil.hidden = true;
         } else if (this.item.chanCode === 'WXP') {
           this.$.alp.hidden = true;
           this.$.wxp.hidden = false;
-          this.$.cfca.hidden = true;
-          this.$.cil.hidden = true;
-        } else if (this.item.chanCode === 'CFCA') {
-          this.$.alp.hidden = true;
-          this.$.wxp.hidden = true;
-          this.$.cfca.hidden = false;
-          this.$.cil.hidden = true;
-        } else {
-          this.$.alp.hidden = true;
-          this.$.wxp.hidden = true;
-          this.$.cfca.hidden = true;
-          this.$.cil.hidden = false;
         }
       },
       // 关闭事件
@@ -315,6 +212,5 @@
         this.fire('delete-ok');
       },
     });
-
   </script>
 </dom-module>
