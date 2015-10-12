@@ -48,6 +48,8 @@
             <th>序号</th>
             <th>代理代码</th>
             <th align="left">代理名称</th>
+            <th align="right">微信成本</th>
+            <th align="right">支付宝成本</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -63,6 +65,8 @@
               <td>
                 <span>{{item.agentName}}</span>
               </td>
+              <td align="right">{{item.wxpCost}}</td>
+              <td align="right">{{item.alpCost}}</td>
               <td class="center">
                 <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
                 <iron-icon icon="delete" on-tap="handleDeleteEvent"></iron-icon>
