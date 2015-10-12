@@ -58,18 +58,20 @@ const (
 
 // RouterPolicy 路由策略
 type RouterPolicy struct {
-	MerId     string `json:"merId" bson:"merId,omitempty"`         // 商户号
-	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
-	CardType  string `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
-	TransType string `json:"transType" bson:"transType,omitempty"` // 交易类型
-	BinGroup  string `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
-	InputWay  string `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
-	MinAmount string `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
-	MaxAmount string `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
-	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
-	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
-	// SubMerId  string `json:"subMerId" bson:"subMerId,omitempty"`   // 子商户id，代理商模式下该字段不为空
-	// IsAgent   bool   `json:"isAgent" bson:"isAgent"`               // 是否是代理商模式
+	MerId     string  `json:"merId" bson:"merId,omitempty"`         // 商户号
+	CardBrand string  `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+	CardType  string  `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
+	TransType string  `json:"transType" bson:"transType,omitempty"` // 交易类型
+	BinGroup  string  `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
+	InputWay  string  `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
+	MinAmount string  `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
+	MaxAmount string  `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
+	ChanCode  string  `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
+	ChanMerId string  `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
+	SettFlag  string  `json:"settFlag" bson:"settFlag,omitempty"`
+	SettRole  string  `json:"settRole" bson:"settRole,omitempty"`
+	MerFee    float32 `json:"merFee" bson:"merFee,omitempty"`
+	AcqFee    float32 `json:"acqFee" bson:"acqFee,omitempty"`
 }
 
 // BindingInfo 商家绑定信息
@@ -247,6 +249,7 @@ type Trans struct {
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
+	SettRole     string        `bson:"settRole,omitempty" json:"-"`
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`                     // 交易账户

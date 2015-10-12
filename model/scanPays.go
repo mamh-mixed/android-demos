@@ -106,11 +106,26 @@ type Channel struct {
 	Fee       int64  `bson:"fee" json:"-"`
 }
 
+// Mer 按商户分组
+type Mer struct {
+	MerId     string `bson:"merId"`
+	TransAmt  int64  `bson:"transAmt"`
+	RefundAmt int64  `bson:"refundAmt"`
+	Fee       int64  `bson:"fee"`
+}
+
 // TransTypeGroup 按单个商户交易类型分组
 type TransTypeGroup struct {
 	TransType int   `bson:"transType"`
 	TransAmt  int64 `bson:"transAmt"`
 	TransNum  int   `bson:"transNum"`
+}
+
+// SettRoleGroup 按清算角色分组
+type SettRoleGroup struct {
+	SettDate string
+	SettRole string `bson:"settRole"`
+	Mers     []Mer  `bson:"mers"`
 }
 
 // NewScanPayRequest 带请求id的request对象
