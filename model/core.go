@@ -70,6 +70,9 @@ type RouterPolicy struct {
 	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
 	// SubMerId  string `json:"subMerId" bson:"subMerId,omitempty"`   // 子商户id，代理商模式下该字段不为空
 	// IsAgent   bool   `json:"isAgent" bson:"isAgent"`               // 是否是代理商模式
+	SettFlag string  `bson:"settFlag,omitempty" json:"settFlag,omitempty"` // 清算标识
+	AcqFee   float32 `bson:"acqFee" json:"acqFee"`                         // 讯联跟渠道费率
+	MerFee   float32 `bson:"merFee" json:"merFee"`                         // 商户跟讯联费率
 }
 
 // BindingInfo 商家绑定信息
