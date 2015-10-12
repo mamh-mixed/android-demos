@@ -103,7 +103,7 @@
         </tfoot>
       </table>
     </form>
-    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
+    <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab> -->
 
     <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
     <route-delete id="routeDelete" on-saved="handleMerchantSave"></route-delete>
@@ -196,9 +196,9 @@
           }
         },
         // 新增路由策略事件
-        handleCreateFabTapped: function() {
-          this.$.editor.open();
-        },
+        // handleCreateFabTapped: function() {
+        //   this.$.editor.open();
+        // },
         // 删除路由事件
         handleItemDeletedEvent: function(e) {
           this.$.routeDelete.route = e.model.item;

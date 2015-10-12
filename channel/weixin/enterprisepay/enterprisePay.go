@@ -80,6 +80,10 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 		p.ReturnCode, p.ResultCode = "SUCCESS", "SUCCESS"
 	}
 
+	// p.ResultCode = "FAIL"
+	// p.ErrCode = "DEBUG_ERROR"
+	// p.ErrCodeDes = "企业付款调试错误"
+
 	status, msg, ec := weixin.Transform("enterprisePay", p.ReturnCode, p.ResultCode, p.ErrCode, p.ErrCodeDes)
 
 	ret = &model.ScanPayResponse{

@@ -26,7 +26,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 
 	mer, err := mongo.MerchantColl.Find(t.MerId)
 	if err != nil {
-		return LogicErrorHandler(t, "NO_MERCHANT")
+		return ReturnWithErrorCode("NO_MERCHANT")
 	}
 	addRelatedProperties(t, mer)
 
@@ -60,12 +60,12 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	chanMer, subMchId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
-		return LogicErrorHandler(t, "SYSTEM_ERROR")
+		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	mer, err := mongo.MerchantColl.Find(t.MerId)
 	if err != nil {
-		return LogicErrorHandler(t, "NO_MERCHANT")
+		return ReturnWithErrorCode("NO_MERCHANT")
 	}
 	addRelatedProperties(t, mer)
 

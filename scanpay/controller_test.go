@@ -135,6 +135,7 @@ func TestConcurrentScanPay(t *testing.T) {
 }
 
 func TestScanPay(t *testing.T) {
+	scanPayEnterprise.OrderNum = "1444639800979"
 	err := doOneScanPay(scanPayEnterprise)
 	if err != nil {
 		t.Error(err)
