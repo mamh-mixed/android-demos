@@ -4,6 +4,7 @@ import (
 	// "bytes"
 	"encoding/json"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
@@ -546,9 +547,9 @@ func groupSaveHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func uptokenHandle(w http.ResponseWriter, r *http.Request) {
-	handleUptoken(w, r)
+	qiniu.HandleUptoken(w, r)
 }
 
 func downURLHandle(w http.ResponseWriter, r *http.Request) {
-	handleDownURL(w, r)
+	qiniu.HandleDownURL(w, r)
 }

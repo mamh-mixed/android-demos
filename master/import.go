@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
@@ -26,7 +27,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 
 	// 调用七牛api获取刚上传的图片
 	key := r.FormValue("key")
-	resp, err := http.Get(makePrivateUrl(key))
+	resp, err := http.Get(qiniu.MakePrivateUrl(key))
 	if err != nil {
 		log.Error(err)
 		w.Write(resultBody("无法获取文件，请重新上传。", 1))
@@ -194,6 +195,22 @@ func (i *importer) dataHandle() error {
 			return fmt.Errorf("暂不支持 %s 操作。", r.Operator)
 		}
 
+		// 处理费率
+		if r.AlpAcqFee != "" && r.AlpMerFee != "" {
+			var errStr string
+			r.AlpMerFeeF, r.AlpAcqFeeF, errStr = feeParse(r.AlpMerFee, r.AlpAcqFee)
+			if errStr != "" {
+				return fmt.Errorf("支付宝商户(%s): %s", r.AlpMerId, errStr)
+			}
+		}
+		if r.WxpAcqFee != "" && r.WxpMerFee != "" {
+			var errStr string
+			r.WxpMerFeeF, r.WxpAcqFeeF, errStr = feeParse(r.WxpMerFee, r.WxpAcqFee)
+			if errStr != "" {
+				return fmt.Errorf("微信商户(%s): %s", r.WxpMerId, errStr)
+			}
+		}
+
 		// 处理代理、集团
 		if err = handleAgentAndGroup(r, i.cache); err != nil {
 			return err
@@ -208,6 +225,7 @@ func (i *importer) dataHandle() error {
 		if err = handleWxpMer(r, i.cache); err != nil {
 			return err
 		}
+
 	}
 
 	// 包装成入库的结构体
@@ -370,22 +388,22 @@ func handleAlpMer(r *rowData, c *cache) error {
 					return fmt.Errorf("支付宝商户：%s 密钥为空", r.AlpMerId)
 				}
 				// 费率转换
-				f64, err := strconv.ParseFloat(r.AlpAcqFee, 10)
-				if err != nil {
-					return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率格式错误(%s)", r.AlpMerId, r.AlpAcqFee)
-				}
-				if f64 > maxFee {
-					return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpAcqFee)
-				}
-				r.AlpAcqFeeF = float32(f64)
-				f64, err = strconv.ParseFloat(r.AlpMerFee, 10)
-				if err != nil {
-					return fmt.Errorf("支付宝商户：%s 商户跟讯联费率格式错误(%s)", r.AlpMerId, r.AlpMerFee)
-				}
-				if f64 > maxFee {
-					return fmt.Errorf("支付宝商户：%s 商户跟讯联费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpMerFee)
-				}
-				r.AlpMerFeeF = float32(f64)
+				// f64, err := strconv.ParseFloat(r.AlpAcqFee, 10)
+				// if err != nil {
+				// 	return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率格式错误(%s)", r.AlpMerId, r.AlpAcqFee)
+				// }
+				// if f64 > maxFee {
+				// 	return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpAcqFee)
+				// }
+				// r.AlpAcqFeeF = float32(f64)
+				// f64, err = strconv.ParseFloat(r.AlpMerFee, 10)
+				// if err != nil {
+				// 	return fmt.Errorf("支付宝商户：%s 商户跟讯联费率格式错误(%s)", r.AlpMerId, r.AlpMerFee)
+				// }
+				// if f64 > maxFee {
+				// 	return fmt.Errorf("支付宝商户：%s 商户跟讯联费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpMerFee)
+				// }
+				// r.AlpMerFeeF = float32(f64)
 			}
 		}
 	}
@@ -436,26 +454,53 @@ func handleWxpMer(r *rowData, c *cache) error {
 				}
 
 				// 费率转换
-				f64, err := strconv.ParseFloat(r.WxpAcqFee, 10)
-				if err != nil {
-					return fmt.Errorf("微信商户：%s 讯联跟微信费率格式错误(%s)", r.WxpSubMerId, r.WxpAcqFee)
-				}
-				if f64 > maxFee {
-					return fmt.Errorf("微信商户：%s 讯联跟微信费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpAcqFee)
-				}
-				r.WxpAcqFeeF = float32(f64)
-				f64, err = strconv.ParseFloat(r.WxpMerFee, 10)
-				if err != nil {
-					return fmt.Errorf("微信商户：%s 商户跟讯联费率格式错误(%s)", r.WxpSubMerId, r.WxpMerFee)
-				}
-				if f64 > maxFee {
-					return fmt.Errorf("微信商户：%s 商户跟讯联费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpMerFee)
-				}
-				r.WxpMerFeeF = float32(f64)
+				// f64, err := strconv.ParseFloat(r.WxpAcqFee, 10)
+				// if err != nil {
+				// 	return fmt.Errorf("微信商户：%s 讯联跟微信费率格式错误(%s)", r.WxpSubMerId, r.WxpAcqFee)
+				// }
+				// if f64 > maxFee {
+				// 	return fmt.Errorf("微信商户：%s 讯联跟微信费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpAcqFee)
+				// }
+				// r.WxpAcqFeeF = float32(f64)
+				// f64, err = strconv.ParseFloat(r.WxpMerFee, 10)
+				// if err != nil {
+				// 	return fmt.Errorf("微信商户：%s 商户跟讯联费率格式错误(%s)", r.WxpSubMerId, r.WxpMerFee)
+				// }
+				// if f64 > maxFee {
+				// 	return fmt.Errorf("微信商户：%s 商户跟讯联费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpMerFee)
+				// }
+				// r.WxpMerFeeF = float32(f64)
 			}
 		}
 	}
 	return nil
+}
+
+// feeParse 费率转换
+func feeParse(merFee, acqFee string) (mf, af float32, errStr string) {
+
+	// acqFee
+	af64, err := strconv.ParseFloat(acqFee, 10)
+	if err != nil {
+		errStr = fmt.Sprintf("讯联跟渠道费率格式错误(%s)", acqFee)
+		return
+	}
+	if af64 > maxFee {
+		errStr = fmt.Sprintf("讯联跟渠道费率超过最大值 3% (%s)", acqFee)
+		return
+	}
+
+	// merFee
+	mf64, err := strconv.ParseFloat(merFee, 10)
+	if err != nil {
+		errStr = fmt.Sprintf("商户跟讯联费率格式错误(%s)", merFee)
+		return
+	}
+	if mf64 > maxFee {
+		errStr = fmt.Sprintf("商户跟讯联费率超过最大值 3% (%s)", merFee)
+	}
+
+	return float32(mf64), float32(af64), errStr
 }
 
 func (i *importer) doDataWrap() {
@@ -531,6 +576,7 @@ func (i *importer) doDataWrap() {
 			if r.BankName != "" {
 				mer.Detail.OpenBankName = r.BankName
 			}
+
 			mer.Remark = "update-upload-" + i.fileName
 			i.U.Mers = append(i.U.Mers, *mer)
 		}
@@ -544,12 +590,12 @@ func (i *importer) doDataWrap() {
 				alpChanMer.ChanMerId = r.AlpMerId
 				alpChanMer.ChanCode = "ALP"
 				alpChanMer.SignKey = r.AlpMd5
+				alpChanMer.AgentCode = r.AlpAgentCode
+
+				// TODO:DELETE
 				alpChanMer.AcqFee = r.AlpAcqFeeF
 				alpChanMer.MerFee = r.AlpMerFeeF
-				if r.IsAlpCilSett == "是" {
-					alpChanMer.SettFlag = "1"
-					alpChanMer.SettRole = "99911888" // TODO:check
-				}
+
 				switch r.Operator {
 				case "A":
 					i.A.ChanMers = append(i.A.ChanMers, alpChanMer)
@@ -564,6 +610,16 @@ func (i *importer) doDataWrap() {
 			alpRoute.ChanCode = alpRoute.CardBrand
 			alpRoute.MerId = r.MerId
 			alpRoute.ChanMerId = r.AlpMerId
+
+			// ADDBY:RUI,DATE:20151012
+			// ------------
+			alpRoute.MerFee, alpRoute.AcqFee = r.AlpMerFeeF, r.AlpAcqFeeF
+			if r.IsAlpCilSett == "是" {
+				alpRoute.SettFlag = "CIL"
+				alpRoute.SettRole = "CIL"
+			}
+			// ------------
+
 			switch r.Operator {
 			case "A":
 				i.A.RouterPolicys = append(i.A.RouterPolicys, alpRoute)
@@ -584,12 +640,11 @@ func (i *importer) doDataWrap() {
 					wxpChanMer.IsAgentMode = true
 					wxpChanMer.AgentMer = i.cache.ChanMerCache[r.WxpMerId]
 				}
+
+				//TODO:DELETE
 				wxpChanMer.AcqFee = r.WxpAcqFeeF
 				wxpChanMer.MerFee = r.WxpMerFeeF
-				if r.IsWxpCilSett == "是" {
-					wxpChanMer.SettFlag = "1"
-					wxpChanMer.SettRole = "99911888" // TODO:check
-				}
+
 				switch r.Operator {
 				case "A":
 					i.A.ChanMers = append(i.A.ChanMers, wxpChanMer)
@@ -604,6 +659,16 @@ func (i *importer) doDataWrap() {
 			wxpRoute.ChanCode = wxpRoute.CardBrand
 			wxpRoute.MerId = r.MerId
 			wxpRoute.ChanMerId = r.WxpSubMerId
+
+			// ADDBY:RUI,DATE:20151012
+			// --------
+			wxpRoute.MerFee, wxpRoute.AcqFee = r.WxpMerFeeF, r.WxpAcqFeeF
+			if r.IsWxpCilSett == "是" {
+				wxpRoute.SettFlag = "CIL"
+				wxpRoute.SettRole = "CIL"
+			}
+			// --------
+
 			switch r.Operator {
 			case "A":
 				i.A.RouterPolicys = append(i.A.RouterPolicys, wxpRoute)
@@ -721,7 +786,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
-	if len(cells) != 34 {
+	if len(cells) != 35 {
 		return fmt.Errorf("%s", "列数可能有误，请检查。")
 	}
 
@@ -767,60 +832,63 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		r.AlpMd5 = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[15]; cell != nil {
-		r.AlpAcqFee = strings.Trim(cell.Value, " ")
+		r.AlpAgentCode = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[16]; cell != nil {
-		r.AlpMerFee = strings.Trim(cell.Value, " ")
+		r.AlpAcqFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[17]; cell != nil {
-		r.IsAlpCilSett = strings.TrimSpace(cell.Value)
+		r.AlpMerFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[18]; cell != nil {
-		r.WxpMerId = strings.Trim(cell.Value, " ")
+		r.IsAlpCilSett = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[19]; cell != nil {
-		r.WxpSubMerId = strings.Trim(cell.Value, " ")
+		r.WxpMerId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[20]; cell != nil {
-		r.IsAgentStr = strings.Trim(cell.Value, " ")
+		r.WxpSubMerId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[21]; cell != nil {
-		r.WxpAppId = strings.Trim(cell.Value, " ")
+		r.IsAgentStr = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[22]; cell != nil {
-		r.WxpSubAppId = strings.Trim(cell.Value, " ")
+		r.WxpAppId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[23]; cell != nil {
-		r.WxpMd5 = strings.Trim(cell.Value, " ")
+		r.WxpSubAppId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[24]; cell != nil {
-		r.WxpAcqFee = strings.Trim(cell.Value, " ")
+		r.WxpMd5 = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[25]; cell != nil {
-		r.WxpMerFee = strings.Trim(cell.Value, " ")
+		r.WxpAcqFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[26]; cell != nil {
-		r.IsWxpCilSett = strings.TrimSpace(cell.Value)
+		r.WxpMerFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[27]; cell != nil {
-		r.ShopId = strings.Trim(cell.Value, " ")
+		r.IsWxpCilSett = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[28]; cell != nil {
-		r.GoodsTag = strings.Trim(cell.Value, " ")
+		r.ShopId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[29]; cell != nil {
-		r.AcctNum = strings.Trim(cell.Value, " ")
+		r.GoodsTag = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[30]; cell != nil {
-		r.AcctName = strings.Trim(cell.Value, " ")
+		r.AcctNum = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[31]; cell != nil {
-		r.BankId = strings.Trim(cell.Value, " ")
+		r.AcctName = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[32]; cell != nil {
-		r.BankName = strings.Trim(cell.Value, " ")
+		r.BankId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[33]; cell != nil {
+		r.BankName = strings.Trim(cell.Value, " ")
+	}
+	if cell = cells[34]; cell != nil {
 		r.City = strings.Trim(cell.Value, " ")
 	}
 	i.rowData = append(i.rowData, r)
@@ -843,6 +911,7 @@ type rowData struct {
 	CommodityName string // 商户商品名称
 	AlpMerId      string // 支付宝商户号（PID）
 	AlpMd5        string // 支付宝密钥
+	AlpAgentCode  string // 支付宝代理代码
 	AlpAcqFee     string // 讯联跟支付宝费率
 	AlpMerFee     string // 商户跟讯联费率
 	IsAlpCilSett  string // 是否讯联清算

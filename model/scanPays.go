@@ -54,13 +54,14 @@ type QueryCondition struct {
 
 // QueryResult 查询结果值
 type QueryResult struct {
-	Rec      interface{} `json:"rec,omitempty"` // 交易明细
-	Page     int         `json:"page,omitempty"`
-	Total    int         `json:"total,omitempty"`
-	Size     int         `json:"size,omitempty"`
-	Count    int         `json:"count,omitempty"`
-	RespCode string      `json:"respCode,omitempty"`
-	RespMsg  string      `json:"respMsg,omitempty"`
+	Rec          interface{} `json:"rec,omitempty"` // 交易明细
+	Page         int         `json:"page,omitempty"`
+	Total        int         `json:"total,omitempty"`
+	Size         int         `json:"size,omitempty"`
+	Count        int         `json:"count,omitempty"`
+	RespCode     string      `json:"respCode,omitempty"`
+	RespMsg      string      `json:"respMsg,omitempty"`
+	NextOrderNum string      `json:"-"`
 }
 
 // Summary 商户交易汇总
@@ -105,11 +106,26 @@ type Channel struct {
 	Fee       int64  `bson:"fee" json:"-"`
 }
 
+// Mer 按商户分组
+type Mer struct {
+	MerId     string `bson:"merId"`
+	TransAmt  int64  `bson:"transAmt"`
+	RefundAmt int64  `bson:"refundAmt"`
+	Fee       int64  `bson:"fee"`
+}
+
 // TransTypeGroup 按单个商户交易类型分组
 type TransTypeGroup struct {
 	TransType int   `bson:"transType"`
 	TransAmt  int64 `bson:"transAmt"`
 	TransNum  int   `bson:"transNum"`
+}
+
+// SettRoleGroup 按清算角色分组
+type SettRoleGroup struct {
+	SettDate string
+	SettRole string `bson:"settRole"`
+	Mers     []Mer  `bson:"mers"`
 }
 
 // NewScanPayRequest 带请求id的request对象
