@@ -33,8 +33,8 @@
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/subAgent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="subAgentCode" label="二级代理代码" value="{{cond.subAgenCode::input}}"></paper-input>
-        <paper-input name="subAgentName" label="二级代理名称" value="{{cond.subAgentName::input}}"></paper-input>
+        <paper-input name="subAgentCode" label="公司代码" value="{{cond.subAgenCode::input}}"></paper-input>
+        <paper-input name="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}"></paper-input>
         <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
         <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
@@ -45,8 +45,8 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th>二级代理代码</th>
-            <th align="left">二级代理名称</th>
+            <th>公司代码</th>
+            <th align="left">公司名称</th>
             <th>代理代码</th>
             <th align="left">代理名称</th>
 
