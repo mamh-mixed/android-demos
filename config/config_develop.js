@@ -7,9 +7,9 @@
         "LogLevel": "debug", // 日志级别
         // 加密存储密钥 44 位，加密密钥由两部分组成，后 22 位在程序中写死，前 22 位在这里配置
         "EncryptKey": "Ky3ETaC0WjgGTQQtFVfl0",
-        "HTTPAddr": ":6800", // HTTP 接口
-        "TCPAddr": ":6600", // 扫码 TCP 接口，UTF-8 编码传输，UTF-8 签名
-        "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
+        "HTTPAddr": ":5800", // HTTP 接口
+        "TCPAddr": ":5600", // 扫码 TCP 接口，UTF-8 编码传输，UTF-8 签名
+        "TCPGBKAddr": ":5601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "1s", // 缓存有效时间，0 表示永不过期（慎用），比如 "1h2m3s"
         "NotifyURL": "http://dev.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime":"40m"

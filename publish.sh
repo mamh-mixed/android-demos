@@ -2,7 +2,7 @@
 
 set -e
 
-prog="quickpay"
+prog="quickpay_demo"
 
 shortcut=("dev" "test" "app1" "app2")
 envs=("develop" "testing" "product" "product")
