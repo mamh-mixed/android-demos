@@ -5,10 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 import java.util.Vector;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -21,14 +17,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
-
 import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
 import com.cardinfolink.cashiersdk.model.ResultData;

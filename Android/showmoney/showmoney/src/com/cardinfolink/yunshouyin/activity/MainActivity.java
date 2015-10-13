@@ -11,8 +11,7 @@ import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import android.app.Activity;
-import android.content.Context;
+import com.umeng.update.UmengUpdateAgent;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.HeterogeneousExpandableList;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.LinearLayout.LayoutParams;
@@ -43,7 +41,9 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
 		initLayout();
-		
+		UmengUpdateAgent.setUpdateOnlyWifi(true);
+		UmengUpdateAgent.setUpdateCheckConfig(false);
+		UmengUpdateAgent.update(this);	
 	}
 
 	private void initLayout() {

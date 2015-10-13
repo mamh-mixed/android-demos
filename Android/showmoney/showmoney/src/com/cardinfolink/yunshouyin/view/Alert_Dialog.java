@@ -5,7 +5,6 @@ import com.cardinfolink.yunshouyin.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,6 +62,9 @@ public class Alert_Dialog {
 	public void show(String message,Bitmap bitmap) {
 	
 		TextView textView=(TextView) dialogView.findViewById(R.id.alert_message);
+		if(message.length()==0){
+			message="网关错误!";
+		}
 		textView.setText(message);
 		ImageView imageView=(ImageView) dialogView.findViewById(R.id.alert_img);
 		if(bitmap!=null){

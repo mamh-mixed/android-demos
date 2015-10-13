@@ -10,29 +10,20 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.BaseActivity;
-import com.cardinfolink.yunshouyin.activity.RegisterActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.util.DeviceManageUtil;
-
-
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 public class Refd_Dialog {
 	private Context mContext;

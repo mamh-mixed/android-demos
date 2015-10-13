@@ -1,8 +1,6 @@
 package com.cardinfolink.yunshouyin.constant;
 
 public class Msg {
-public static final int MSG_FROM_JS=100;
-
 
 public static final int MSG_FROM_FLASHLIGHT_CLOSE=120;
 public static final int MSG_FROM_FLASHLIGHT_OPEN=121;

@@ -4,26 +4,19 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.view.Alert_Dialog;
 import com.cardinfolink.yunshouyin.view.Loading_Dialog;
 import com.umeng.analytics.MobclickAgent;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
-
 
 public class BaseActivity extends Activity {
 	
-	protected Loading_Dialog mLoading_Dialog;	
-	protected Alert_Dialog mAlert_Dialog;
-	protected Context mContext;
+	protected Loading_Dialog mLoading_Dialog;	//显示loading
+	protected Alert_Dialog mAlert_Dialog;       // 提示消息对话框
+	protected Context mContext;                
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-	}
 	
+	//重载 setContentView 初始化 mLoading_Dialog,mAlert_Dialog
 	@Override
 	public void setContentView(int layoutResID) {		
 		super.setContentView(layoutResID);
@@ -49,12 +42,14 @@ public class BaseActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		//友盟统计
 		MobclickAgent.onResume(this);
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
+		//友盟统计
 		MobclickAgent.onPause(this);
 	}
 }

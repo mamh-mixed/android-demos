@@ -2,23 +2,20 @@ package com.cardinfolink.yunshouyin.constant;
 
 public class SystemConfig {
 
-  public static final String HTML_HEAD_ADDRESS="file:///android_asset/cloudCashiercloud";
-	//public static final String HTML_HEAD_ADDRESS="http:///192.168.199.174:8000";
-	//public static final String HTML_HEAD_ADDRESS="/opt/yunshouyin";
+  
 	  
    public static final String APP_KEY="eu1dr0c8znpa43blzy1wirzmk8jqdaon";
    
- //  public static final String Server="http://211.144.213.118";
- // public static final String Server="http://211.147.72.70:10003";
+   //用户系统服务器地址  
    public static final String Server="http://test.quick.ipay.so/app";
-  
-//  public static final String WEB_BILL_URL="http://qrcode.cardinfolink.net/payment/trade.html?merchantCode=";
+   
+  //扫固定码支付网页订单支付
    public static final String WEB_BILL_URL="http://qrcode.cardinfolink.net/agent/trade1.html";
  
-  // public static final boolean IS_PRODUCE =true;
+  // SDK 环境
    public static final boolean IS_PRODUCE =false;
    
- // public static final String appserverurl="http://qrcode.cardinfolink.net/app/version/version.xml";
-   public static final String appserverurl="http://qrcode.cardinfolink.net/app/version/testversion.xml";
+   public static final String bankbase_key="366d15cf10874e2288a6d6c54405715d";
+   public static final String bankbase_url="http://192.168.1.166:8080/bdp";
    
 }

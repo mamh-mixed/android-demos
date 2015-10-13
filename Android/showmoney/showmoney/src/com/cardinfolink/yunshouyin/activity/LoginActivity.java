@@ -15,16 +15,11 @@ import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.Activate_dialog;
-import com.cardinfolink.yunshouyin.view.Alert_Dialog;
-import com.cardinfolink.yunshouyin.view.Loading_Dialog;
-import com.umeng.update.UmengUpdateAgent;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -37,10 +32,7 @@ public class LoginActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.login_activity);
-		UmengUpdateAgent.setUpdateOnlyWifi(true);
-		UmengUpdateAgent.setUpdateCheckConfig(false);
-		UmengUpdateAgent.update(this);	
+		setContentView(R.layout.login_activity);		
 		mUsernameEdit=(EditText) findViewById(R.id.login_username);
 		VerifyUtil.addEmialLimit(mUsernameEdit);
 		mPasswordEdit=(EditText) findViewById(R.id.login_password);
@@ -56,11 +48,6 @@ public class LoginActivity extends BaseActivity {
 		
 	}
 
-	
-	
-	
-	
-	
 	
 	 public void BtnLoginOnClick(View view){ 
 		 
@@ -94,8 +81,10 @@ public class LoginActivity extends BaseActivity {
 			 HttpCommunicationUtil.sendDataToServer(ParamsUtil.getLogin(username, password), new CommunicationListener() {
 				
 				@SuppressLint("NewApi") @Override
-				public void onResult(final String result) {
+				public void onResult(final String result) {					
 					String state = JsonUtil.getParam(result,"state");
+					
+					
 					if(state.equals("success")){
 						User  user =new User();
 						user.setUsername(username);
@@ -158,13 +147,14 @@ public class LoginActivity extends BaseActivity {
 						
 						
 					}else{
+						
 						User user =new User();
 						user.setUsername(username);
 						user.setPassword(password);
 						SaveData.setUser(mContext, user);
 						SessonData.loginUser.setUsername(username);
 					    SessonData.loginUser.setPassword(password);
-						final String error=JsonUtil.getParam(result,"error");
+						final String error=JsonUtil.getParam(result,"error");				
 						if(error.equals("user_no_activate")){
 							runOnUiThread(new Runnable(){  
 								  
@@ -205,6 +195,7 @@ public class LoginActivity extends BaseActivity {
 		                    @Override  
 		                    public void run() {  
 		                        //更新UI  
+		                    	Log.i("opp", "error:"+error);
 		                    	 mLoading_Dialog.endLoading();	
 		                    	 mAlert_Dialog.show(error,  BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
 		                    }  
