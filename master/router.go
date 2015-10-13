@@ -38,6 +38,7 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/master/group/save", groupSaveHandle)
 	mux.HandleFunc("/master/qiniu/uptoken", uptokenHandle)
 	mux.HandleFunc("/master/qiniu/uploaded", downURLHandle)
+	mux.HandleFunc("/master/respCode/match", respCodeMatchHandle)
 
 	return mux
 }

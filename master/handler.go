@@ -12,6 +12,19 @@ import (
 	"strings"
 )
 
+// respCodeMatchHandle 查找应答码处理器
+func respCodeMatchHandle(w http.ResponseWriter, r *http.Request) {
+	code := r.FormValue("code")
+	ret := RespCode.FindOne(code)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
