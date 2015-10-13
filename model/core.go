@@ -12,6 +12,11 @@ const (
 	TransMerClosed      = 3 // 商户发起关闭
 	TransOverTimeClosed = 4 // 交易超时系统关闭
 
+	// refundType
+	CurrentDayRefund = 1
+	OtherDayRefund   = 2
+	NoLimitRefund    = 0
+
 	// transType
 	PayTrans    = 1 // 支付交易
 	RefundTrans = 2 // 退款交易
@@ -58,18 +63,20 @@ const (
 
 // RouterPolicy 路由策略
 type RouterPolicy struct {
-	MerId     string `json:"merId" bson:"merId,omitempty"`         // 商户号
-	CardBrand string `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
-	CardType  string `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
-	TransType string `json:"transType" bson:"transType,omitempty"` // 交易类型
-	BinGroup  string `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
-	InputWay  string `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
-	MinAmount string `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
-	MaxAmount string `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
-	ChanCode  string `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
-	ChanMerId string `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
-	// SubMerId  string `json:"subMerId" bson:"subMerId,omitempty"`   // 子商户id，代理商模式下该字段不为空
-	// IsAgent   bool   `json:"isAgent" bson:"isAgent"`               // 是否是代理商模式
+	MerId     string  `json:"merId" bson:"merId,omitempty"`         // 商户号
+	CardBrand string  `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+	CardType  string  `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
+	TransType string  `json:"transType" bson:"transType,omitempty"` // 交易类型
+	BinGroup  string  `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
+	InputWay  string  `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
+	MinAmount string  `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
+	MaxAmount string  `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
+	ChanCode  string  `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
+	ChanMerId string  `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
+	SettFlag  string  `json:"settFlag" bson:"settFlag,omitempty"`
+	SettRole  string  `json:"settRole" bson:"settRole,omitempty"`
+	MerFee    float32 `json:"merFee" bson:"merFee,omitempty"`
+	AcqFee    float32 `json:"acqFee" bson:"acqFee,omitempty"`
 }
 
 // BindingInfo 商家绑定信息
@@ -114,21 +121,21 @@ const MerStatusNormal = "Normal"
 
 // Merchant 商户基本信息
 type Merchant struct {
-	MerId         string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
-	UniqueId      string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`     // 唯一标识
-	AgentCode     string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
-	GroupCode     string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
-	MerStatus     string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
-	AgentName     string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理/机构名称
-	GroupName     string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
-	TransCurr     string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
-	SignKey       string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
-	IsNeedSign    bool      `bson:"isNeedSign" json:"isNeedSign"`                     // 是否开启验签
-	EncryptKey    string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` // 商户加密密钥
-	Remark        string    `bson:"remark,omitempty" json:"remark,omitempty"`         // 备注信息
-	Permission    []string  `bson:"permission,omitempty" json:"permission,omitempty"` // 接口权限
-	RefundNextDay bool      `bson:"refundNextDay" json:"refundNextDay"`               // 是否隔天退款
-	Detail        MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      // 商户详细信息
+	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
+	UniqueId   string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`     // 唯一标识
+	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
+	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
+	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
+	AgentName  string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理/机构名称
+	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
+	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
+	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
+	IsNeedSign bool      `bson:"isNeedSign" json:"isNeedSign"`                     // 是否开启验签
+	EncryptKey string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` // 商户加密密钥
+	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         // 备注信息
+	Permission []string  `bson:"permission,omitempty" json:"permission,omitempty"` // 接口权限
+	RefundType int       `bson:"refundType" json:"refundType"`                     // 0-无限制 1-只能当日退 2-只能隔日退
+	Detail     MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      // 商户详细信息
 }
 
 // MerDetail 商户详细信息
@@ -191,8 +198,10 @@ type ChanMer struct {
 }
 
 type Agent struct {
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+	AgentCode string  `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
+	AgentName string  `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+	WxpCost   float64 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`     // 微信成本
+	AlpCost   float64 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`     // 支付宝成本
 }
 
 type SubAgent struct {
@@ -247,6 +256,7 @@ type Trans struct {
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
+	SettRole     string        `bson:"settRole,omitempty" json:"-"`
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`                     // 交易账户

@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../layouts/scaffold-layout.html">
-<link rel="import" href="../elements/agent-list/agent-list.html">
+<link rel="import" href="../elements/sub-agent-list/sub-agent-list.html">
 
 <dom-module id="sub-agents-page">
   <style>
@@ -10,7 +10,7 @@
   </style>
   <template>
     <scaffold-layout route$="[[route]]">
-      <agent-list class="content"></agent-list>
+      <sub-agent-list class="content"></sub-agent-list>
     </scaffold-layout>
   </template>
   <script>
@@ -23,8 +23,8 @@
             value: {
               name: 'config.subAgents',
               path: '/config/subAgents',
-              title: '二级代理/机构',
-              subtitle: '二级代理/机构'
+              title: '公司',
+              subtitle: '公司'
             }
           }
         },

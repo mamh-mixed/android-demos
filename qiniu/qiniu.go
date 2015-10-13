@@ -1,10 +1,11 @@
-package master
+package qiniu
 
 import (
 	"fmt"
+	"golang.org/x/net/context"
+	"io"
 	"log"
 	"net/http"
-
 	"qiniupkg.com/api.v7/kodo"
 )
 
@@ -23,7 +24,7 @@ func init() {
 	cli = kodo.New(zone, nil) // 用默认配置创建 Client
 }
 
-func handleUptoken(w http.ResponseWriter, req *http.Request) {
+func HandleUptoken(w http.ResponseWriter, req *http.Request) {
 	policy := &kodo.PutPolicy{
 		Scope:   BUCKET,
 		EndUser: "userId",
@@ -34,13 +35,24 @@ func handleUptoken(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(ret))
 }
 
-func makePrivateUrl(key string) string {
+// List 列举资源
+func List(prefix, marker string, limit int) ([]kodo.ListItem, string, error) {
+	return cli.Bucket(BUCKET).List(context.Background(), prefix, marker, limit)
+}
+
+// Upload 上传文件
+func Upload(key string, size int64, reader io.Reader) error {
+	ctx := context.Background()
+	return cli.Bucket(BUCKET).Put(ctx, nil, key, reader, size, &kodo.PutExtra{})
+}
+
+func MakePrivateUrl(key string) string {
 	baseUrl := kodo.MakeBaseUrl(DOMAIN, key) // 得到下载 url
 	return cli.MakePrivateUrl(baseUrl, nil)  // 用默认的下载策略去生成私有下载的 url
 }
 
-func handleDownURL(w http.ResponseWriter, req *http.Request) {
-	img := makePrivateUrl(req.URL.Query().Get("key"))
+func HandleDownURL(w http.ResponseWriter, req *http.Request) {
+	img := MakePrivateUrl(req.URL.Query().Get("key"))
 	// 如果是资质文件，需要保存路径或 key 值
 	// 如果是 Excel/csv，需要下载并处理数据
 	w.Write([]byte(img))

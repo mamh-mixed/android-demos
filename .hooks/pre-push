@@ -8,8 +8,6 @@ path=$GOPATH/src/$pkg
 
 cd $path
 
-#cp .hooks/* .git/hooks/
-
 # git pull cil develop
 #
 # if [ $? -ne 0 ]; then
@@ -17,7 +15,7 @@ cd $path
 #     exit 1
 # fi
 
-#rm -rf static/bower_components
-# ./publish.sh dev
+rm -r static/app/bower_components/
+./publish.sh dev
 
 exit 0

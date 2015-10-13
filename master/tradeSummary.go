@@ -62,8 +62,7 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`,
-		fmt.Sprintf(`attachment; filename="%s";  filename*=utf-8''%s`, filename, filename))
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 	file.Write(w)
 }
 
@@ -74,7 +73,7 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
-	sheet = file.AddSheet("商户交易报表汇总")
+	sheet, _ = file.AddSheet("商户交易报表汇总")
 
 	// 表头样式
 	genHead(sheet, row, cell, cond)

@@ -38,35 +38,27 @@ func processTransSettle() {
 
 	// 凌晨10分时将交易数据copy到清分表
 	// 距离指定的时间
-	dis, err := util.TimeToGiven("00:10:00")
-	if err != nil {
-		log.Errorf("fail to get time second by given %s", err)
-		return
-	}
-	log.Debugf("prepare to process transSett method after %s ", dis*time.Second)
+	dis, _ := util.TimeToGiven("00:10:00")
 	afterFunc(dis*time.Second, "doTransSett")
 
 	// 中金渠道
-	disCfca, _ := util.TimeToGiven("08:00:00")
-	log.Debugf("prepare to process doCFCATransCheck method after %s ", disCfca*time.Second)
-	afterFunc(disCfca*time.Second, "doCFCATransCheck")
+	// disCfca, _ := util.TimeToGiven("08:00:00")
+	// afterFunc(disCfca*time.Second, "doCFCATransCheck")
 
 	// 讯联线下渠道
 	// disCil, _ := util.TimeToGiven("01:00:00")
-	// log.Debugf("prepare to process doCFCATransCheck method after %s ", disCil*time.Second)
 	// afterFunc(disCfca*time.Second, "doCILTransCheck")
 
-	// 其他渠道...
-
-	// test
-	// disTest, _ := util.TimeToGiven("11:35:00")
-	// afterFunc(disTest*time.Second, "doTest")
+	// 扫码每天出报表
+	disReport, _ := util.TimeToGiven("00:05:00")
+	afterFunc(disReport*time.Second, "doScanpaySettReport")
 
 	// 主线程阻塞
 	select {}
 }
 
 func afterFunc(d time.Duration, method string) {
+	log.Infof("prepare to process %s method after %s ", method, d)
 	time.AfterFunc(d, func() {
 		// 到点时先执行一次
 		do(method)
@@ -108,8 +100,8 @@ func do(method string) {
 	}
 
 	defer func() {
-		if err := recover(); err != nil {
-			log.Error(err)
+		if err != nil {
+			log.Errorf("process %s fail: %s", method, err)
 			l.Status = 2
 		} else {
 			l.Status = 1
@@ -124,12 +116,10 @@ func do(method string) {
 		doTransSett()
 	case "doCFCATransCheck":
 		doCFCATransCheck()
-	case "doTest":
-		func() {
-			log.Debug("just for test")
-		}()
 	case "doCILTransCheck":
 		doCilTransCheck()
+	case "doScanpaySettReport":
+		err = doScanpaySettReport(yesterday)
 	default:
 		//..
 	}

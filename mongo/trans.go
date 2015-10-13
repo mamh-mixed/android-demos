@@ -83,7 +83,7 @@ func (col *transCollection) FindAndLock(merId, orderNum string) (*model.Trans, e
 	result := &model.Trans{}
 	_, err := database.C(col.name).Find(query).Apply(change, result)
 	if err != nil {
-		log.Error(err)
+		log.Debug(err)
 	}
 	return result, err
 }
@@ -414,6 +414,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 	var total = struct {
 		Value int `bson:"total"`
 	}{}
+
 	database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": "$merId"}},
@@ -421,7 +422,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 	}).One(&total)
 
 	//使用pipe统计
-	err := database.C(col.name).Pipe([]bson.M{
+	pipeline := []bson.M{
 		{"$match": find},
 		{"$group": bson.M{
 			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode"},
@@ -448,8 +449,15 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		}},
 		{"$sort": bson.M{"transNum": -1}},
 		{"$skip": (q.Page - 1) * q.Size},
-		{"$limit": q.Size},
-	}).All(&group)
+		// {"$limit": q.Size},
+	}
+
+	// 不限制
+	if q.Size != 0 {
+		pipeline = append(pipeline, bson.M{"$limit": q.Size})
+	}
+
+	err := database.C(col.name).Pipe(pipeline).All(&group)
 
 	// 按渠道汇总所有符合条件数据
 	var all []model.Channel
@@ -531,5 +539,38 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 
 	var result []model.Trans
 	err := database.C(col.name).Find(find).Sort("-orderNum").Limit(q.Size).All(&result)
+	return result, err
+}
+
+// GroupBySettRole 根据清算角色出报表
+func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
+
+	find := bson.M{
+		"createTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
+		"transStatus": model.TransSuccess,
+		"transType":   model.PayTrans,
+	}
+
+	var result []model.SettRoleGroup
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": bson.M{"merId": "$merId", "settRole": "$settRole"},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"netFee":    bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
+		}},
+		{"$group": bson.M{
+			"_id": "$_id.settRole",
+			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
+				"transAmt":  "$transAmt",
+				"refundAmt": "$refundAmt",
+				"fee":       "$netFee",
+			}},
+		}},
+		{"$project": bson.M{
+			"settRole": "$_id",
+			"mers":     "$detail",
+		}},
+	}).All(&result)
 	return result, err
 }

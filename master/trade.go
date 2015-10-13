@@ -66,8 +66,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	}
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`,
-		fmt.Sprintf(`attachment; filename="%s";  filename*=utf-8''%s`, filename, filename))
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 	file.Write(w)
 }
 
@@ -79,7 +78,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	var cell *xlsx.Cell
 
 	// 可能有多个sheet
-	sheet = file.AddSheet("商户交易报表")
+	sheet, _ = file.AddSheet("商户交易报表")
 
 	// 先空3行，最后写入汇总数据
 	for i := 0; i < 3; i++ {

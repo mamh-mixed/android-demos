@@ -38,15 +38,19 @@
       /* paper-menu */
       --paper-menu-background-color: #fff;
       --menu-link-color: #111111;
+      
       --paper-input-container-input: {
-        font-size: 14px;
+        font-size: 12px;
       }
+      ; /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-input-container-label: {
-        font-size: 14px;
+        font-size: 12px;
       }
+      ; /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-menu-selected-item: {
         background-color: rgb(226, 240, 249);
       }
+      ; /* 必须有分号，否则压缩后，无法正常渲染 */
     }
 
     #drawerToolbar * {
@@ -206,15 +210,15 @@
               </a>
               <a data-route="config.subAgents" href="#/config/subAgents">
                 <iron-icon icon="account-circle"></iron-icon>
-                <span>二级代理</span>
+                <span>公司</span>
               </a>
               <a data-route="config.groups" href="#/config/groups">
                 <iron-icon icon="home"></iron-icon>
-                <span>集团商户</span>
+                <span>商户</span>
               </a>
               <a data-route="config.configMer" href="#/config/configMer">
                 <iron-icon icon="create"></iron-icon>
-                <span>商户录入</span>
+                <span>门店录入</span>
               </a>
               <a data-route="config.upload" href="#/config/upload">
                 <iron-icon icon="cloud-upload"></iron-icon>
@@ -222,7 +226,7 @@
               </a>
               <a data-route="config.merchants" href="#/config/merchants">
                 <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
+                <span>门店</span>
               </a>
               <a data-route="config.chanMers" href="#/config/chanMers">
                 <iron-icon icon="account-balance"></iron-icon>
@@ -369,7 +373,6 @@
           Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
         },
         startWith: function(name, prefix) {
-          console.log(name, prefix);
           if (!name || !prefix) {
             return false;
           }
