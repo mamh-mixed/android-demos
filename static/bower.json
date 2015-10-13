@@ -1,26 +1,21 @@
 {
-  "name": "quickpay-master",
+  "name": "quickpay",
   "private": true,
   "dependencies": {
-    "cryptojslib": "~3.1.2",
-    "iron-dropdown": "PolymerElements/iron-dropdown#~1.0.3",
+    "webcomponentsjs": "~0.7.7",
+    "app-router": "~2.6.1",
     "iron-elements": "PolymerElements/iron-elements#1.0.0",
+    "iron-dropdown": "PolymerElements/iron-dropdown#~1.0.3",
     "iron-list": "PolymerElements/iron-list#~1.0.1",
-    "neon-elements": "PolymerElements/neon-elements#1.0.0",
-    "page": "visionmedia/page.js#~1.6.3",
+    "paper-behaviors": "PolymerElements/paper-behaviors#1.0.4",
     "paper-date-picker": "omigo/paper-date-picker#1.0.3.1",
     "paper-elements": "PolymerElements/paper-elements#1.0.1",
+    "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.0",
+    "neon-elements": "PolymerElements/neon-elements#1.0.0",
     "platinum-elements": "PolymerElements/platinum-elements#1.0.1",
     "plupload": "moxiecode/plupload#v2.1.8",
     "qiniu-js-sdk": "qiniu/js-sdk#master",
     "qrcode.js": "davidshimjs/qrcodejs",
-    "webcomponentsjs": "~0.7.7",
-    "wxy-router": "wxy-elements/wxy-router",
-    "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.0",
-    "app-router": "~2.6.1"
-  },
-  "devDependencies": {
-    "web-component-tester": "*",
-    "test-fixture": "PolymerElements/test-fixture#^1.0.0"
+    "cryptojslib": "~3.1.2"
   }
 }

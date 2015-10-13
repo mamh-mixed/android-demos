@@ -38,15 +38,19 @@
       /* paper-menu */
       --paper-menu-background-color: #fff;
       --menu-link-color: #111111;
+      
       --paper-input-container-input: {
-        font-size: 14px;
+        font-size: 12px;
       }
+      ; /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-input-container-label: {
-        font-size: 14px;
+        font-size: 12px;
       }
+      ; /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-menu-selected-item: {
         background-color: rgb(226, 240, 249);
       }
+      ; /* 必须有分号，否则压缩后，无法正常渲染 */
     }
 
     #drawerToolbar * {
@@ -369,7 +373,6 @@
           Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
         },
         startWith: function(name, prefix) {
-          console.log(name, prefix);
           if (!name || !prefix) {
             return false;
           }

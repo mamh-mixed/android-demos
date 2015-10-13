@@ -286,8 +286,9 @@
           '_watchCondChange(cond.*)'
         ],
         _watchCondChange: function() {
-          var t = new Date().format('yyyyMMdd-hhmmss');
-          this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=汇总报表_' + t + '.xlsx';
+          var filename = "Summary_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
+          filename = filename.replace(/-/g, '');
+          this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=' + filename;
         },
         _watchAgentChange: function(key) {
           if (key) {
@@ -331,14 +332,15 @@
         },
         // 整理下载报表的url
         _computeDownLoadUrl: function(item) {
-          var t = new Date().format('yyyyMMdd-hhmmss'),
-            obj = {};
+          var filename = "Detail_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
+          filename = filename.replace(/-/g, '');
+          var obj = {};
           for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
             var v = arr[i];
             obj[v] = this.cond[v];
           }
           obj.merId = item.merId;
-          obj.filename = '报表_' + t + '_' + item.merName + '.xlsx';
+          obj.filename = filename;
           return '/master/trade/report?' + Util.query(obj);
         },
         addOneFilter: function(index) {
