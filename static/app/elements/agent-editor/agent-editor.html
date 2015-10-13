@@ -8,8 +8,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-          min-width: 300px;
-          min-height: 300px;
+        min-width: 300px;
+        min-height: 300px;
       }
     }
 
@@ -40,6 +40,12 @@
         <div class="row">
           <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
         </div>
+        <div class="row">
+          <paper-input label="微信成本" value="{{agent.wxpCost::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="支付宝成本" value="{{agent.alpCost::input}}"></paper-input>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
@@ -56,6 +62,12 @@
         <div class="row">
           <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
         </div>
+        <div class="row">
+          <paper-input label="微信成本" value="{{agent.wxpCost::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="支付宝成本" value="{{agent.alpCost::input}}"></paper-input>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
@@ -71,11 +83,11 @@
 
         properties: {
           agent: {
-            type:Object
+            type: Object
           }
         },
-        ready: function(){
-          this.agent={};
+        ready: function() {
+          this.agent = {};
         },
         open1: function() {
           this.$.dialogAdd.open();
@@ -86,6 +98,8 @@
         },
         // 点击保存事件
         handleSaveTapped: function() {
+          this.set('agent.wxpCost', parseFloat(this.agent.wxpCost));
+          this.set('agent.alpCost', parseFloat(this.agent.alpCost));
           this.$.saveAjax.body = JSON.stringify(this.agent);
           this.$.saveAjax.generateRequest();
         },

@@ -29,8 +29,8 @@
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input name="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-input name="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input name="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
         <!-- <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input> -->
         <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
@@ -43,8 +43,8 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th align="left">集团商户代码</th>
-            <th align="left">集团商户名称</th>
+            <th align="left">商户代码</th>
+            <th align="left">商户名称</th>
             <th>代理代码</th>
             <th align="left">代理名称</th>
             <th>操作</th>
@@ -219,19 +219,19 @@
           }
         },
 
-        // 编辑集团商户
+        // 编辑商户
         handleEditEvent: function(e) {
           this.$.groupEditor.group = e.model.item;
           this.$.groupEditor.open2();
         },
 
-        // 删除集团商户事件
+        // 删除商户事件
         handleDeleteEvent: function(e) {
           this.$.groupDelete.group = e.model.item;
           this.$.groupDelete.open();
         },
 
-        // 删除集团商户响应事件,刷新列表
+        // 删除商户响应事件,刷新列表
         handleDeleteResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
@@ -241,11 +241,11 @@
           this.handleQueryTapped();
         },
 
-        // 新增集团商户事件
+        // 新增商户事件
         handleCreateFabTapped: function() {
           this.$.groupEditor.open1();
         },
-        // 新集团商户保存成功事件，刷新列表
+        // 新商户保存成功事件，刷新列表
         handleGroupSave: function() {
           this.handleQueryTapped();
         },

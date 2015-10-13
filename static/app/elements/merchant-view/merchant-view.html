@@ -63,9 +63,9 @@
       <paper-dialog-scrollable>
         <table>
           <tr>
-            <td class="key">商户代码:</td>
+            <td class="key">门店代码:</td>
             <td>{{item.merId}}</td>
-            <td class="key">商户名称:</td>
+            <td class="key">门店名称:</td>
             <td>{{item.detail.merName}}</td>
           </tr>
           <tr>
@@ -163,7 +163,7 @@
             <td colspan="4" class="divider"></td>
           </tr>
           <tr>
-            <td>商户状态:</td>
+            <td>门店状态:</td>
             <td>{{getMerStatus(item.merStatus)}}</td>
           </tr>
           <tr>
@@ -186,7 +186,7 @@
         </table>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个门店吗?</label>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
