@@ -266,15 +266,15 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	randStr := fmt.Sprintf("%d", rand.Int31())
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
-		AgentCode:     "99911888",
-		AgentName:     "讯联O2O机构",
-		Permission:    permission,
-		MerStatus:     model.MerStatusNormal,
-		TransCurr:     "156",
-		UniqueId:      uniqueId,
-		RefundNextDay: true, // 只能隔天退款
-		IsNeedSign:    true,
-		SignKey:       fmt.Sprintf("%x", base64.StdEncoding.EncodeToString([]byte(randStr))),
+		AgentCode:  "99911888",
+		AgentName:  "讯联O2O机构",
+		Permission: permission,
+		MerStatus:  model.MerStatusNormal,
+		TransCurr:  "156",
+		UniqueId:   uniqueId,
+		RefundType: model.CurrentDayRefund, // 只能当天退
+		IsNeedSign: true,
+		SignKey:    fmt.Sprintf("%x", base64.StdEncoding.EncodeToString([]byte(randStr))),
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",

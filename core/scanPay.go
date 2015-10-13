@@ -421,9 +421,18 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(refund, "NO_MERCHANT")
 	}
 
-	// 是否隔天退款
-	if mer.RefundNextDay {
-		if strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
+	// 退款类型
+	nowStr := time.Now().Format("2006-01-02")
+	switch mer.RefundType {
+	case model.NoLimitRefund:
+	case model.CurrentDayRefund:
+		// 隔天不能退
+		if !strings.HasPrefix(orig.CreateTime, nowStr) {
+			return adaptor.LogicErrorHandler(refund, "CANCEL_TIME_ERROR")
+		}
+	case model.OtherDayRefund:
+		// 隔天才能退
+		if strings.HasPrefix(orig.CreateTime, nowStr) {
 			return adaptor.LogicErrorHandler(refund, "REFUND_TIME_ERROR")
 		}
 	}
