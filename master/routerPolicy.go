@@ -100,6 +100,8 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 	if err != nil {
 		if err.Error() == "not found" {
 			return model.NewResultBody(4, "merId不存在")
+		} else {
+			return model.NewResultBody(1, "查询数据库失败")
 		}
 	}
 
