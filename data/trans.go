@@ -126,11 +126,22 @@ func AddTransFromOldDB(st, et string) error {
 		tran.GroupName = t.Merchant.Group.GroupName
 		if tran.ChanCode == "ALP" {
 			tran.ChanMerId = t.Merchant.Alp.PartnerId
+			// 讯联清算
+			if t.Merchant.Alp.Type == "1" {
+				tran.SettRole = "CIL"
+			} else {
+				tran.SettRole = "ALP"
+			}
 		} else {
 			if t.Merchant.Wxp.SubMchId != "" {
 				tran.ChanMerId = t.Merchant.Wxp.SubMchId
 			} else {
 				tran.ChanMerId = t.Merchant.Wxp.MchId
+			}
+			if t.Merchant.Wxp.Type == "1" {
+				tran.SettRole = "CIL"
+			} else {
+				tran.SettRole = "WXP"
 			}
 		}
 

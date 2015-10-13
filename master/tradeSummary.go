@@ -74,7 +74,7 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
-	sheet = file.AddSheet("商户交易报表汇总")
+	sheet, _ = file.AddSheet("商户交易报表汇总")
 
 	// 表头样式
 	genHead(sheet, row, cell, cond)
