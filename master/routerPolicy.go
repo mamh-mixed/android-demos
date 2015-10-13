@@ -95,6 +95,14 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素 cardBrand")
 	}
 
+	_, err = mongo.MerchantColl.Find(r.MerId)
+
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewResultBody(4, "merId不存在")
+		}
+	}
+
 	err = mongo.RouterPolicyColl.Insert(r)
 	if err != nil {
 		log.Errorf("保存路由信息失败:%s", err)

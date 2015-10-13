@@ -882,7 +882,7 @@
       handleSaveRouterResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('保存路由信息失败', 3000);
+          Util.toast('保存路由信息失败:'+response.message, 3000);
           return;
         }
 
