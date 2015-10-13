@@ -89,10 +89,10 @@ function goBuild() {
 function gulpPackage() {
     mkdir -p distrib/static/app
     cd static
-    bower install
-    # gulp clean copy html js css
+    bower install # 安装前端依赖
+    gulp # 压缩文件
     cd ..
-    cp -r static/app/ distrib/static/app/
+    cp -r static/dist/ distrib/static/app/
 }
 
 function deploy() {
