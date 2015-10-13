@@ -13,7 +13,6 @@ cd $path
 # auto update
 cp .hooks/* .git/hooks/
 
-# 依赖更新，重新拉取
 # rm -r static/app/bower_components/
 # ./publish.sh dev
 
