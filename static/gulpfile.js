@@ -5,8 +5,10 @@ var minify = require('gulp-minify');
 var minifyCSS = require('gulp-minify-css')
 var del = require('del');
 
+var dist = 'dist';
+
 gulp.task('clean', function() {
-  return del(['dist']);
+  return del([dist]);
 });
 
 gulp.task('vendor', ['clean'], function() {
@@ -16,7 +18,7 @@ gulp.task('vendor', ['clean'], function() {
     .pipe(debug({
       title: 'vendor:'
     }))
-    .pipe(gulp.dest("app"));
+    .pipe(gulp.dest('app'));
 });
 
 gulp.task('copy', ['vendor'], function() {
@@ -35,7 +37,7 @@ gulp.task('copy', ['vendor'], function() {
     .pipe(debug({
       title: 'copy:'
     }))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest(dist));
 });
 
 
@@ -50,7 +52,7 @@ gulp.task('minifyHTML', ['copy'], function() {
       '!app/bower_components/**/examples/**'
     ])
     .pipe(debug({
-      title: 'html:'
+      title: 'minifyHTML:'
     }))
     .pipe(htmlminify())
     .pipe(gulp.dest("dist"))
@@ -65,10 +67,10 @@ gulp.task('minifyJS', ['minifyHTML'], function() {
       '!app/**/sw-toolbox/sw-toolbox.js'
     ])
     .pipe(debug({
-      title: 'js:'
+      title: 'minifyJS:'
     }))
     .pipe(minify())
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(dist))
 });
 
 gulp.task('minifyCSS', ['minifyHTML'], function() {
@@ -77,12 +79,12 @@ gulp.task('minifyCSS', ['minifyHTML'], function() {
       'app/**/*.css',
     ])
     .pipe(debug({
-      title: 'css:'
+      title: 'minifyCSS:'
     }))
     // 2. 压缩文件
     .pipe(minifyCSS())
     // 3. 另存为压缩文件
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(dist))
 });
 
 gulp.task('default', ['clean', 'vendor', 'copy', 'minifyHTML', 'minifyJS', 'minifyCSS']);
