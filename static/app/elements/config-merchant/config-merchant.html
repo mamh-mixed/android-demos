@@ -391,6 +391,8 @@
           this.$.httpKeyTArea.removeAttribute('required');
           this.$.wxpAppId.validate();
           this.$.wsignCert.validate();
+          this.$.httpCertTArea.validate();
+          this.$.httpKeyTArea.validate();
         } else {
           this.$.bigChanMerId.removeAttribute('required');
           this.wbigchanMerIdDisabled = true;
@@ -536,14 +538,10 @@
         }
 
         this.set('alipay', response.data);
-        var aagentCodeMap = {
-          '12010128a1': '讯联 12010128a1',
-          '11719712a1': '天奕通 11719712a1'
-        };
         if (this.alipay.agentCode) {
           this.aagentCode = {
             key: this.alipay.agentCode,
-            value: aagentCodeMap[this.alipay.agentCode],
+            value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
       },
@@ -569,13 +567,10 @@
         if (!this.weixin.agentMer) {
           this.set('weixin.agentMer', {});
         } else {
-          var wbigchanMerIdMap = {
-            '1236593202': '讯联 1236593202'
-          };
           this.bigMerchantMap[this.weixin.agentMer.chanMerId] = this.weixin.agentMer;
           this.wbigchanMerId = {
             key: this.weixin.agentMer.chanMerId,
-            value: wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
+            value: this.wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
           };
         }
       },
@@ -643,6 +638,14 @@
           httpCert: '',
           httpKey: ''
         };
+        this.wbigchanMerIdMap = {
+          '1236593202': '讯联 1236593202'
+        };
+        this.aagentCodeMap = {
+          '12010128a1': '讯联 12010128a1',
+          '11719712a1': '天奕通 11719712a1'
+        };
+
         // 默认选择我们的代理
         this.wbigchanMerId = {
           key: '1236593202',
@@ -671,6 +674,7 @@
         };
         this.update = false;
 
+
       },
       // 查询渠道商户的响应事件，这里是查找大商户
       handleFindChanMerResponse: function(e) {
@@ -698,14 +702,10 @@
           return;
         }
         this.set('alipay', pagination.data[0]);
-        var aagentCodeMap = {
-          '12010128a1': '讯联 12010128a1',
-          '11719712a1': '天奕通 11719712a1'
-        };
         if (this.alipay.agentCode) {
           this.aagentCode = {
             key: this.alipay.agentCode,
-            value: aagentCodeMap[this.alipay.agentCode],
+            value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
         this.set('alipayRoute.acqFee', '');
@@ -728,13 +728,10 @@
         if (!this.weixin.agentMer) {
           this.set('weixin.agentMer', {});
         } else {
-          var wbigchanMerIdMap = {
-            '1236593202': '讯联 1236593202'
-          };
           this.bigMerchantMap[this.weixin.agentMer.chanMerId] = this.weixin.agentMer;
           this.wbigchanMerId = {
             key: this.weixin.agentMer.chanMerId,
-            value: wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
+            value: this.wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
           };
         }
 
@@ -887,7 +884,7 @@
       handleSaveRouterResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('保存路由信息失败', 3000);
+          Util.toast('保存路由信息失败:'+response.message, 3000);
           return;
         }
 
@@ -906,27 +903,6 @@
       // 是否代理商模式的改变事件
       handleIsAgentChangeEvent: function() {
         this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
-        if (this.weixin.isAgentMode) {
-          this.wbigchanMerIdDisabled = false;
-          this.set('weixin.agentMer', this.bigMerchant);
-          this.$.bigChanMerId.setAttribute('required', true);
-          this.$.wxpAppId.removeAttribute('required');
-          this.$.wsignCert.removeAttribute('required');
-          this.$.httpCertTArea.removeAttribute('required');
-          this.$.httpKeyTArea.removeAttribute('required');
-          this.$.wxpAppId.validate();
-          this.$.wsignCert.validate();
-          this.$.httpCertTArea.validate();
-          this.$.httpKeyTArea.validate();
-        } else {
-          this.wbigchanMerIdDisabled = true;
-          this.set('weixin.agentMer', {});
-          this.$.bigChanMerId.removeAttribute('required');
-          this.$.wxpAppId.setAttribute('required', true);
-          this.$.wsignCert.setAttribute('required', true);
-          this.$.httpCertTArea.setAttribute('required', true);
-          this.$.httpKeyTArea.setAttribute('required', true);
-        }
       },
       // 是否需要验签的改变事件
       handleIsNeedSignChangeEvent: function() {
