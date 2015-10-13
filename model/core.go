@@ -195,8 +195,8 @@ type ChanMer struct {
 type Agent struct {
 	AgentCode string  `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
 	AgentName string  `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
-	WxpCost   float32 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`     // 微信成本
-	AlpCost   float32 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`     // 支付宝成本
+	WxpCost   float64 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`     // 微信成本
+	AlpCost   float64 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`     // 支付宝成本
 }
 
 type SubAgent struct {
