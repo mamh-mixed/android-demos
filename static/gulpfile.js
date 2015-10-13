@@ -49,7 +49,7 @@ gulp.task('minifyHTML', ['copy'], function() {
       '!app/bower_components/web-component-tester/data/index.html',
       '!app/**/demo/**',
       '!app/**/test/**',
-      '!app/bower_components/**/examples/**'
+      '!app/**/examples/**'
     ])
     .pipe(debug({
       title: 'minifyHTML:'
@@ -64,7 +64,10 @@ gulp.task('minifyJS', ['minifyHTML'], function() {
       '!app/**/platinum-push-messaging/service-worker.js',
       '!app/bower_components/async/support/sync-package-managers.js',
       '!app/bower_components/sw-toolbox/demo/service-worker.js',
-      '!app/**/sw-toolbox/sw-toolbox.js'
+      '!app/**/sw-toolbox/sw-toolbox.js',
+      '!app/**/demo/**',
+      '!app/**/test/**',
+      '!app/**/examples/**'
     ])
     .pipe(debug({
       title: 'minifyJS:'
