@@ -10,46 +10,39 @@
     :host {
       display: block;
     }
-
     * {
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box;
     }
-
     .condition {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       margin-bottom: 15px;
     }
-
     .condition > paper-input,
     .condition > x-select {
       min-width: 170px;
       margin-right: 20px;
     }
-
     .condition > .buttons {
       min-width: 170px;
     }
-
     .condition > .buttons > paper-button {
       margin: 10px 0px 0px;
     }
-
     paper-button.colorful {
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
-
     table.data-grid > thead > tr > th {
       border-right: 1px solid #ddd;
     }
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
@@ -67,8 +60,8 @@
         </div>
       </paper-dialog>
 
-      <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
-      <paper-input id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
+      <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
+      <paper-input label="商户代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <div class="buttons">
         <!-- <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button> -->
@@ -206,8 +199,7 @@
           agentsMap: {
             type: Object,
             value: {}
-          },
-          user: Object,
+          }
         },
         ready: function() {
           this.cond = {
@@ -239,16 +231,13 @@
             Util.toast(response.message, 3000);
             return;
           }
-
           var pagination = response.data;
           this.set('summary', pagination.data);
-
           if (pagination.count <= 0) {
             Util.toast('没有数据', 1000);
             return;
           }
           this.records = pagination.data.data.slice(0);
-
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
           if (this.records.length === 0) {
@@ -270,13 +259,11 @@
             Util.toast('加载代理列表失败', 3000);
             return;
           }
-
           var pagination = response.data;
           if (pagination.count <= 0) {
             Util.toast('没有代理数据', 2000);
             return;
           }
-
           var agents = response.data.data.slice(0);
           this.set('agents', []);
           this.set('agentsMap', {});
@@ -289,33 +276,13 @@
           }
         },
         observers: [
-          '_watchAgentChange(agent.key)',
-          '_watchUserChanged(user.*)',
+          '_watchAgentChange(agent.key)'
         ],
         _watchAgentChange: function(key) {
           if (key) {
             this.set('cond.agentCode', key);
           } else {
             delete this.cond.agentCode;
-          }
-        },
-        _watchUserChanged: function(value) {
-          if (value) {
-            var user = value.base;
-            if (user.userType === 'agent') {
-              this.agent = {
-                key: user.agentCode,
-                value: user.agentName,
-              };
-              this.agentDisabled = true;
-            } else if (user.userType === 'merchant') {
-              this.set('cond.merId', user.merId);
-              this.agentDisabled = true;
-              this.$.merId.setAttribute('disabled', true);
-            } else if (user.userType === 'admin') {
-              this.agentDisabled = true;
-              this.$.merId.removeAttribute('disabled');
-            }
           }
         },
         getYesterdayISODate: function() {

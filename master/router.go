@@ -9,6 +9,9 @@ import (
 	"github.com/qiniu/log"
 )
 
+var agentURLArr = []string{"/master/trade/query", "/master/trade/report", "/master/trade/stat", "/master/trade/stat/report",
+	"/master/trade/findOne", "/master/trade/message"}
+
 // Route 后台管理的请求统一入口
 func Route() (mux *MyServeMux) {
 	mux = NewMyServeMux()
@@ -97,7 +100,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// 验证是否有权限
 	if c != nil {
-		log.Infof("url=%s, cookie: %s", r.URL.Path, c.String())
+		log.Debugf("url=%s, cookie: %s", r.URL.Path, c.String())
 		session, err := mongo.SessionColl.Find(c.Value)
 		if err != nil {
 			http.Error(w, "查找session失败", http.StatusNotAcceptable)
@@ -106,7 +109,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		user := session.User
 		err = authProcess(w, r, *user)
 		if err != nil {
-			log.Errorf("%s,url=%s", err, r.URL.Path)
+			log.Debugf("%s,url=%s", err, r.URL.Path)
 			http.Error(w, err.Error(), http.StatusNotAcceptable)
 			return
 		}
@@ -120,24 +123,27 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // authProcess 权限处理
 func authProcess(w http.ResponseWriter, r *http.Request, user model.User) (err error) {
 	if user.UserType != "admin" {
-		if r.URL.Path == "/master/trade/query" || r.URL.Path == "/master/trade/report" ||
-			r.URL.Path == "/master/trade/stat" || r.URL.Path == "/master/trade/stat/report" ||
-			r.URL.Path == "/master/merchant/find" || r.URL.Path == "/master/trade/message" ||
-			r.URL.Path == "/master/trade/findOne" {
-			log.Infof("agentCode=%s,groupCode=%s,merId=%s", user.AgentCode, user.GroupCode, user.MerId)
+		perFlag := false
+		for _, url := range agentURLArr {
+			if url == r.URL.Path {
+				perFlag = true
+				break
+			}
+		}
+		if perFlag {
 			params := r.URL.Query()
-			log.Infof("agentCode1=%s,groupCode1=%s,merId1=%s", params.Get("agentCode"), params.Get("groupCode"), params.Get("merId"))
-			if user.UserType == "agent" && r.URL.Path != "/master/trade/report" {
+			log.Debugf("agentCode=%s,groupCode=%s,merId=%s", params.Get("agentCode"), params.Get("groupCode"), params.Get("merId"))
+			if user.UserType == "agent" {
 				agentCode := params.Get("agentCode")
 				if agentCode != user.AgentCode {
 					return errors.New("permission denied")
 				}
-			} else if user.UserType == "group" && r.URL.Path == "/master/trade/query" {
+			} else if user.UserType == "group" {
 				groupCode := params.Get("groupCode")
 				if groupCode != user.GroupCode {
 					return errors.New("permission denied")
 				}
-			} else if user.UserType == "merchant" && r.URL.Path != "/master/trade/findOne" {
+			} else if user.UserType == "merchant" {
 				merId := params.Get("merId")
 				if merId != user.MerId {
 					return errors.New("permission denied")

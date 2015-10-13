@@ -194,117 +194,6 @@
 
         <!-- 菜单列表 -->
         <paper-menu>
-          <!-- <paper-submenu opened="{{ startWith(route.path, 'config') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="build"></iron-icon>
-              <span>扫码支付商户配置</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="config.agents" href="#/config/agents">
-                <iron-icon icon="assignment-ind"></iron-icon>
-                <span>代理</span>
-              </a>
-              <a data-route="config.subAgents" href="#/config/subAgents">
-                <iron-icon icon="account-circle"></iron-icon>
-                <span>二级代理</span>
-              </a>
-              <a data-route="config.groups" href="#/config/groups">
-                <iron-icon icon="home"></iron-icon>
-                <span>集团商户</span>
-              </a>
-              <a data-route="config.configMer" href="#/config/configMer">
-                <iron-icon icon="create"></iron-icon>
-                <span>商户录入</span>
-              </a>
-              <a data-route="config.upload" href="#/config/upload">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>批量导入</span>
-              </a>
-              <a data-route="config.merchants" href="#/config/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
-              </a>
-              <a data-route="config.chanMers" href="#/config/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-              <a data-route="config.routes" href="#/config/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
-
-          <paper-submenu opened="{{ startWith(route.path, 'quickPay') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="home"></iron-icon>
-              <span>快捷支付商户配置</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="quickPay.merchants" href="#/quickPay/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
-              </a>
-              <a data-route="quickPay.chanMers" href="#/quickPay/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-              <a data-route="quickPay.routes" href="#/quickPay/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
-
-          <paper-submenu opened="{{ startWith(route.path, 'trade') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="swap-horiz"></iron-icon>
-              <span>交易查询</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="trade.list" href="#/trade/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>扫码交易</span>
-              </a>
-              <a data-route="trade.bindingpay.list" href="#/trade/bindingpay/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>绑定交易</span>
-              </a>
-              <a data-route="trade.reports" href="#/trade/reports">
-                <iron-icon icon="file-download"></iron-icon>
-                <span>报表下载</span>
-              </a>
-              <a data-route="trade.old.reports" href="#/trade/old/reports">
-                <iron-icon icon="cloud-download"></iron-icon>
-                <span>旧系统交易统计</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
-
-          <paper-submenu opened="{{ startWith(route.path, 'test') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="bug-report"></iron-icon>
-              <span>内部测试</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="test.scanpay" href="#/test/scanpay">
-                <iron-icon icon="pageview"></iron-icon>
-                <span>扫码支付</span>
-              </a>
-              <a data-route="test.bindingpay" href="#/test/bindingpay">
-                <iron-icon icon="icons:speaker-notes"></iron-icon>
-                <span>绑定支付</span>
-              </a>
-              <a data-route="test.qiniu" href="#/test/qiniu">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>七牛 Ajax 上传文件</span>
-              </a>
-              <a data-route="test.filereader" href="#/test/filereader">
-                <iron-icon icon="get-app"></iron-icon>
-                <span>HTML5 读取文件内容</span>
-              </a>
-            </paper-menu>
-          </paper-submenu> -->
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
               <paper-item class="menu-trigger">
@@ -546,24 +435,12 @@
               "icon": "payment",
               "url": "#/trade/list",
               "route": "trade.list"
-            }, {
-              "nameCN": "绑定交易",
-              "nameEN": "",
-              "icon": "payment",
-              "url": "#/trade/bindingpay/list",
-              "route": "trade.bindingpay.list"
-            }, {
+            },{
               "nameCN": "报表下载",
               "nameEN": "",
               "icon": "file-download",
               "url": "#/trade/reports",
               "route": "trade.reports"
-            }, {
-              "nameCN": "旧系统报表下载",
-              "nameEN": "",
-              "icon": "cloud-download",
-              "url": "#/trade/old/reports",
-              "route": "trade.old.reports"
             }]
           }];
 

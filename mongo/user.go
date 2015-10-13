@@ -29,7 +29,6 @@ func (col *userCollection) FindOneUser(userName, mail, phoneNum string) (u *mode
 	u = new(model.User)
 	err = database.C(col.name).Find(bo).One(u)
 	if err != nil {
-		log.Errorf("Find User condition is: %+v;error is %s", bo, err)
 		return nil, err
 	}
 	return u, nil
@@ -39,7 +38,6 @@ func (col *userCollection) FindOneUser(userName, mail, phoneNum string) (u *mode
 func (col *userCollection) Add(u *model.User) error {
 	err := database.C(col.name).Insert(u)
 	if err != nil {
-		log.Debugf("Add user err,%s", err)
 		return err
 	}
 	return nil
@@ -52,7 +50,6 @@ func (col *userCollection) Update(u *model.User) error {
 	}
 	err := database.C(col.name).Update(bo, u)
 	if err != nil {
-		log.Debugf("update user err,%s", err)
 		return err
 	}
 	return nil
@@ -118,7 +115,6 @@ func (col *userCollection) PaginationFind(user *model.User, size, page int) (res
 
 	err = database.C(col.name).Pipe(cond).All(&results)
 	if err != nil {
-		log.Errorf("find user paging err,%s", err)
 		return nil, 0, err
 	}
 

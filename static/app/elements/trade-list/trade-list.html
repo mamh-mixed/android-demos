@@ -102,8 +102,8 @@
         </tfoot>
       </table>
     </form>
-    <trade-view id="tradeView" item="{{transItem}}"></trade-view>
-    <trade-message id="tradeMessage" item="{{transItem}}"></trade-message>
+    <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
+    <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -193,7 +193,7 @@
         this.refundStatusMap = {
           1: '已退款',
           2: '部分退款',
-          0: '无退款'
+          0: ''
         };
       },
       observers: [
@@ -220,14 +220,14 @@
         if (value) {
           var user = value.base;
           if (user.userType === 'agent') {
-            this.$.agentCode.value = user.agentCode;
+            this.set('cond.agentCode',user.agentCode);
             this.$.agentCode.setAttribute('disabled', true);
           } else if (user.userType === 'group') {
-            this.$.groupCode.value = user.groupCode;
+            this.set('cond.groupCode',user.groupCode);
             this.$.agentCode.setAttribute('disabled', true);
             this.$.groupCode.setAttribute('disabled', true);
           } else if (user.userType === 'merchant') {
-            this.$.merId.value = user.merId;
+            this.set('cond.merId',user.merId);
             this.$.agentCode.setAttribute('disabled', true);
             this.$.groupCode.setAttribute('disabled', true);
             this.$.merId.setAttribute('disabled', true);

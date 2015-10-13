@@ -14,7 +14,6 @@ var User user
 
 // Login 登陆
 func (u *user) Login(userName, password string) (ret *model.ResultBody) {
-	log.Debugf("userName:%s,password:%s", userName, password)
 	if userName == "" || password == "" {
 		log.Errorf("用户名或密码不能为空")
 		return model.NewResultBody(1, "用户名或密码不用为空")
@@ -39,7 +38,6 @@ func (u *user) Login(userName, password string) (ret *model.ResultBody) {
 
 // 新建用户
 func (u *user) CreateUser(data []byte) (ret *model.ResultBody) {
-	log.Debugf("create user:%s", string(data))
 	user := &model.User{}
 	err := json.Unmarshal(data, user)
 	if err != nil {
@@ -164,7 +162,6 @@ func (u *user) Find(user *model.User, size, page int) (ret *model.ResultBody) {
 
 // 删除用户
 func (u *user) RemoveUser(userName string) (ret *model.ResultBody) {
-	log.Debugf("removeUser,userName=%s", userName)
 	if userName == "" {
 		log.Errorf("用户名不能为空")
 		return model.NewResultBody(1, "用户名不能为空")

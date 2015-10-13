@@ -83,7 +83,7 @@
           },
           loginTapHandle: function() {
             if (this.isloginConfigEmpty()) {
-              Util.toast('必填项不能为空', 3000);
+              Util.toast('用户名或密码不能为空', 3000);
               return;
             }
             var loginAjax = this.$.loginAjax;

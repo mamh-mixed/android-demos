@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -33,10 +32,7 @@ func (col *sessionCollection) Find(sessionID string) (s *model.Session, err erro
 	}
 	s = new(model.Session)
 	err = database.C(col.name).Find(bo).One(s)
-	if err != nil {
-		log.Errorf("Find Session condition is: %+v;error is %s", bo, err)
-	}
-	return
+	return s, err
 }
 
 // Remove 删除session

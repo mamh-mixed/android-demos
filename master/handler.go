@@ -622,7 +622,7 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandle(w http.ResponseWriter, r *http.Request) {
-	log.Infof("user login begin")
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -636,11 +636,11 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(501)
 		return
 	}
-
+	log.Infof("user login,username=%s", user.UserName)
 	ret := User.Login(user.UserName, user.Password)
 
 	if ret.Status == 0 {
-		log.Infof("create session begin")
+		log.Debugf("create session begin")
 		cValue := util.SerialNumber()
 		cExpires := time.Now().Add(20 * time.Minute)
 
@@ -659,7 +659,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		}
 
 		ret = Session.Save(session)
-		log.Infof("create session end")
+		log.Debugf("create session end")
 	}
 	retBytes, err := json.Marshal(ret)
 	if err != nil {

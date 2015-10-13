@@ -49,7 +49,7 @@
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
@@ -213,8 +213,8 @@
             size: 20,
             total: 0
           };
-          // 加载代理列表
-          this.handleQueryAgentsEvent();
+          //   // 加载代理列表
+          //   this.handleQueryAgentsEvent();
         },
         // 查询交易报表事件
         handleQueryTapped: function() {
@@ -311,8 +311,13 @@
               this.agentDisabled = true;
               this.$.merId.setAttribute('disabled', true);
             } else if (user.userType === 'admin') {
-              this.agentDisabled = true;
+              this.agentDisabled = false;
               this.$.merId.removeAttribute('disabled');
+              // 加载代理列表
+              this.handleQueryAgentsEvent();
+            } else if (user.userType === 'group') {
+                this.set('cond.groupCode', user.groupCode);
+                this.agentDisabled = true;
             }
           }
         },
