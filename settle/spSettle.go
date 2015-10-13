@@ -53,7 +53,7 @@ func genSpSettReportExcel(sr model.SettRoleGroup) *xlsx.File {
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
-	sheet = file.AddSheet("商户清算划款表")
+	sheet, _ = file.AddSheet("商户清算划款表")
 
 	// 第一行
 	row = sheet.AddRow()
@@ -94,7 +94,7 @@ func genSpSettReportExcel(sr model.SettRoleGroup) *xlsx.File {
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {
 			log.Errorf("find merchant error: %s, merId=%s", err, mg.MerId)
-			continue
+			m = &model.Merchant{MerId: mg.MerId}
 		}
 
 		row = sheet.AddRow()
