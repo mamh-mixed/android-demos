@@ -10,8 +10,10 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/util"
+	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
+
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
@@ -549,11 +551,11 @@ func groupSaveHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func uptokenHandle(w http.ResponseWriter, r *http.Request) {
-	handleUptoken(w, r)
+	qiniu.HandleUptoken(w, r)
 }
 
 func downURLHandle(w http.ResponseWriter, r *http.Request) {
-	handleDownURL(w, r)
+	qiniu.HandleDownURL(w, r)
 }
 
 func userCreateHandle(w http.ResponseWriter, r *http.Request) {

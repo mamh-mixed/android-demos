@@ -116,10 +116,11 @@
         font-size: 8px;
       }
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
-      <paper-tab>商户</paper-tab>
+      <paper-tab>门店信息</paper-tab>
       <paper-tab>支付宝</paper-tab>
       <paper-tab>微信</paper-tab>
       <paper-tab>QQ 钱包</paper-tab>
@@ -128,23 +129,23 @@
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
         <div class="row">
-          <paper-input id="merId" label="商户代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
-          <paper-input id="merName" label="商户名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
+          <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
           <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="集团商户代码" value="{{merchant.groupCode::input}}"></paper-input>
-          <paper-input label="集团商户名称" value="{{merchant.groupName::input}}"></paper-input>
+          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{merchant.groupName::input}}"></paper-input>
         </div>
 
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
-          <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
+          <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
         </div>
 
         <div class="row">
@@ -157,7 +158,7 @@
         </div>
         <div class="row">
           <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
-          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+          <paper-input label="门店交易币种" value="{{merchant.transCurr::input}}"></paper-input>
         </div>
 
         <div class="row">
@@ -176,7 +177,7 @@
           <paper-input label="标题二" value="{{merchant.detail.titleTwo::input}}"></paper-input>
         </div>
         <div class="row">
-          <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" label="商户状态" required error-message="必填项"></x-select>
+          <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required></x-select>
           <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
         </div>
         <div>
@@ -192,18 +193,21 @@
         <div class="divider blank"></div>
         <div class="divider blank"></div>
         <div class="row">
-          <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存商户信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存门店信息</paper-button>
         </div>
       </section>
 
       <section alias="alipay">
         <div class="row">
-          <paper-input id="achanMerId" label="Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项"></paper-input>
-          <paper-input label="商户名称" value="{{alipay.chanMerName::input}}"></paper-input>
+          <paper-input id="achanMerId" label="Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项" on-blur="_partnerIdChange"></paper-input>
+          <paper-input label="支付宝商户名称" value="{{alipay.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alipay.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="amerFee" label="商户跟讯联费率" value="{{alipay.merFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alipayRoute.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="amerFee" label="门店跟讯联费率" value="{{alipayRoute.merFee::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input id="asettFlag" label="清算标识" value="{{alipayRoute.settFlag::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
@@ -219,7 +223,7 @@
 
       <section alias="tenpay">
         <div class="row">
-          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项" on-blur="_wchanMerIdChange"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
         <div class="divider blank"></div>
@@ -228,8 +232,11 @@
           <x-select id="bigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
         </div>
         <div class="row">
-          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixinRoute.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wmerFee" label="门店跟讯联费率" value="{{weixinRoute.merFee::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input id="wsettFlag" label="清算标识" value="{{weixinRoute.settFlag::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input id="wxpAppId" label="微信 AppId" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
@@ -269,6 +276,10 @@
     <iron-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></iron-ajax>
     <iron-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></iron-ajax>
     <iron-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></iron-ajax>
+    <iron-ajax id="findChanMerAlpAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerAlpResponse"></iron-ajax>
+    <iron-ajax id="findChanMerWeixinAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerWeixinResponse"></iron-ajax>
+    <iron-ajax id="findRouterAlpAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterAlpResponse"></iron-ajax>
+    <iron-ajax id="findRouterWeixinAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterWeixinResponse"></iron-ajax>
   </template>
   <script>
     Polymer({
@@ -293,13 +304,13 @@
           type: Array,
           value: [{
             key: 'Normal',
-            value: '正常商户'
+            value: '正常门店'
           }, {
             key: 'Test',
-            value: '测试商户'
+            value: '测试门店'
           }, {
             key: 'Deleted',
-            value: '已删除商户'
+            value: '已删除门店'
           }]
         },
         permissionArray: {
@@ -366,6 +377,53 @@
           observer: '_aagentCodeChanged'
         },
       },
+      observers: [
+        '_watchMerStatusChange(merStatus.key)',
+        '_wisAgentModeChanged(weixin.isAgentMode)'
+      ],
+      _wisAgentModeChanged: function(value) {
+        if (value) {
+          this.$.bigChanMerId.setAttribute('required', true);
+          this.wbigchanMerIdDisabled = false;
+          this.$.wxpAppId.removeAttribute('required');
+          this.$.wsignCert.removeAttribute('required');
+          this.$.httpCertTArea.removeAttribute('required');
+          this.$.httpKeyTArea.removeAttribute('required');
+          this.$.wxpAppId.validate();
+          this.$.wsignCert.validate();
+          this.$.httpCertTArea.validate();
+          this.$.httpKeyTArea.validate();
+        } else {
+          this.$.bigChanMerId.removeAttribute('required');
+          this.wbigchanMerIdDisabled = true;
+          this.$.wxpAppId.setAttribute('required', true);
+          this.$.wsignCert.setAttribute('required', true);
+          this.$.httpCertTArea.setAttribute('required', true);
+          this.$.httpKeyTArea.setAttribute('required', true);
+        }
+      },
+      _partnerIdChange: function(e) {
+        if (!e.target.value) {
+          return;
+        }
+        this.$.findChanMerAlpAjax.params = {
+          page: 1,
+          chanMerId: e.target.value,
+          chanCode: 'ALP'
+        };
+        this.$.findChanMerAlpAjax.generateRequest();
+      },
+      _wchanMerIdChange: function(e) {
+        if (!e.target.value) {
+          return;
+        }
+        this.$.findChanMerWeixinAjax.params = {
+          page: 1,
+          chanMerId: e.target.value,
+          chanCode: 'WXP'
+        };
+        this.$.findChanMerWeixinAjax.generateRequest();
+      },
       // 选择大商户号
       _wbigchanMerIdChanged: function(value) {
         if (this.bigMerchantMap && value) {
@@ -390,6 +448,7 @@
         if (!this.merId) {
           return;
         }
+        this.update = true;
         this.set('merchant', {});
         this.set('alipay', {});
         this.set('weixin', {});
@@ -416,6 +475,22 @@
         };
         this.$.wxpChanMerAjax.params = wxpParams;
         this.$.wxpChanMerAjax.generateRequest();
+
+        // 根据merId查找支付宝路由信息
+        this.$.findRouterAlpAjax.params = {
+          merId: this.merId,
+          cardBrand: 'ALP'
+        };
+        this.$.findRouterAlpAjax.generateRequest();
+
+        // 根据merId查找渠道路由信息
+        this.$.findRouterWeixinAjax.params = {
+          merId: this.merId,
+          cardBrand: 'WXP'
+        };
+        this.$.findRouterWeixinAjax.generateRequest();
+
+
       },
       // 编辑的时候查询一个商户的响应事件
       handleQueryMerchantResponse: function(e) {
@@ -463,6 +538,12 @@
         }
 
         this.set('alipay', response.data);
+        if (this.alipay.agentCode) {
+          this.aagentCode = {
+            key: this.alipay.agentCode,
+            value: this.aagentCodeMap[this.alipay.agentCode],
+          };
+        }
       },
       // 编辑的时候查询微信路由渠道商户请求的响应事件
       handleWxpChanMerResponse: function(e) {
@@ -482,12 +563,39 @@
         }
         this.set('weixin', response.data);
         this.set('weixin.chanCode', 'WXP');
+        this.bigMerchantMap = {};
         if (!this.weixin.agentMer) {
           this.set('weixin.agentMer', {});
+        } else {
+          this.bigMerchantMap[this.weixin.agentMer.chanMerId] = this.weixin.agentMer;
+          this.wbigchanMerId = {
+            key: this.weixin.agentMer.chanMerId,
+            value: this.wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
+          };
         }
+      },
+      // 编辑的时候查找支付宝路由信息的响应事件
+      handleFindRouterAlpResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('查询支付宝路由信息失败', 3000);
+          return;
+        }
+        this.set('alipayRoute', response.data);
+
+      },
+      // 编辑的时候查找微信路由信息的响应事件
+      handleFindRouterWeixinResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('查询微信路由信息失败', 3000);
+          return;
+        }
+        this.set('weixinRoute', response.data);
       },
       ready: function() {
         this.idx = 0;
+        this.update = false;
         this.merchant = {
           agentCode: '',
           agentName: '',
@@ -530,6 +638,14 @@
           httpCert: '',
           httpKey: ''
         };
+        this.wbigchanMerIdMap = {
+          '1236593202': '讯联 1236593202'
+        };
+        this.aagentCodeMap = {
+          '12010128a1': '讯联 12010128a1',
+          '11719712a1': '天奕通 11719712a1'
+        };
+
         // 默认选择我们的代理
         this.wbigchanMerId = {
           key: '1236593202',
@@ -548,6 +664,16 @@
           key: '12010128a1',
           value: '讯联 12010128a1',
         };
+        // 支付宝路由
+        this.alipayRoute = {
+          cardBrand: 'ALP',
+        };
+        // 微信路由
+        this.weixinRoute = {
+          cardBrand: 'WXP',
+        };
+        this.update = false;
+
 
       },
       // 查询渠道商户的响应事件，这里是查找大商户
@@ -563,6 +689,55 @@
         }
         this.set('bigMerchant', pagination.data[0]);
         this.bigMerchantMap[this.wbigchanMerId.key] = pagination.data[0];
+      },
+      // 支付宝partnerId变化后，会查询出该支付宝渠道信息。
+      handleFindChanMerAlpResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          return;
+        }
+
+        var pagination = response.data;
+        if (!pagination.data || pagination.data.length === 0) {
+          return;
+        }
+        this.set('alipay', pagination.data[0]);
+        if (this.alipay.agentCode) {
+          this.aagentCode = {
+            key: this.alipay.agentCode,
+            value: this.aagentCodeMap[this.alipay.agentCode],
+          };
+        }
+        this.set('alipayRoute.acqFee', '');
+        this.set('alipayRoute.merFee', '');
+        this.set('alipayRoute.settFlag', '');
+      },
+      // 微信id变化后，会查询出该微信渠道信息。
+      handleFindChanMerWeixinResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          return;
+        }
+
+        var pagination = response.data;
+        if (!pagination.data || pagination.data.length === 0) {
+          return;
+        }
+        this.set('weixin', pagination.data[0]);
+        this.bigMerchantMap = {};
+        if (!this.weixin.agentMer) {
+          this.set('weixin.agentMer', {});
+        } else {
+          this.bigMerchantMap[this.weixin.agentMer.chanMerId] = this.weixin.agentMer;
+          this.wbigchanMerId = {
+            key: this.weixin.agentMer.chanMerId,
+            value: this.wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
+          };
+        }
+
+        this.set('weixinRoute.acqFee', '');
+        this.set('weixinRoute.merFee', '');
+        this.set('weixinRoute.settFlag', '');
       },
       //判断商户录入必填项是否为空
       isMerchantConfigEmpty: function() {
@@ -583,12 +758,12 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
-        if(this.update){
-            this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
-            this.$.updateMerchantAjax.generateRequest();
-        }else{
-            this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
-            this.$.saveMerchantAjax.generateRequest();
+        if (this.update) {
+          this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
+          this.$.updateMerchantAjax.generateRequest();
+        } else {
+          this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
+          this.$.saveMerchantAjax.generateRequest();
         }
       },
       // 保存商户的ajax响应事件
@@ -613,7 +788,7 @@
       },
       // 判断支付宝必填项是否为空
       isALPConfigEmpty: function() {
-        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignCert.validate() && this.aagentCode) {
+        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asettFlag.validate() && this.$.asignCert.validate() && this.aagentCode) {
           return false;
         }
         return true;
@@ -624,14 +799,14 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
-        var acqFee = parseFloat(this.alipay.acqFee),
-          merFee = parseFloat(this.alipay.merFee);
+        var acqFee = parseFloat(this.alipayRoute.acqFee),
+          merFee = parseFloat(this.alipayRoute.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
         }
-        this.set('alipay.acqFee', acqFee);
-        this.set('alipay.merFee', merFee);
+        // this.set('alipay.acqFee', acqFee);
+        // this.set('alipay.merFee', merFee);
         this.set('alipay.chanCode', 'ALP');
         this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
         this.$.saveChannelMerchantAjax.generateRequest();
@@ -641,7 +816,10 @@
           merId: this.merchant.merId,
           cardBrand: 'ALP',
           chanCode: this.alipay.chanCode,
-          chanMerId: this.alipay.chanMerId
+          chanMerId: this.alipay.chanMerId,
+          acqFee: acqFee,
+          merFee: merFee,
+          settFlag: this.alipayRoute.settFlag
         };
         this.$.saveRouterAjax.body = JSON.stringify(obj);
         this.$.saveRouterAjax.generateRequest();
@@ -649,11 +827,11 @@
       // 微信必填项是否为空
       isWXPConfigEmpty: function() {
         if (this.weixin.isAgentMode) {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wbigchanMerId) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wsettFlag.validate() && this.wbigchanMerId) {
             return false;
           }
         } else {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() &&
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wsettFlag.validate() && this.$.wxpAppId.validate() &&
             this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
             return false;
           }
@@ -666,14 +844,14 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
-        var acqFee = parseFloat(this.weixin.acqFee),
-          merFee = parseFloat(this.weixin.merFee);
+        var acqFee = parseFloat(this.weixinRoute.acqFee),
+          merFee = parseFloat(this.weixinRoute.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
         }
-        this.set('weixin.acqFee', acqFee);
-        this.set('weixin.merFee', merFee);
+        // this.set('weixin.acqFee', acqFee);
+        // this.set('weixin.merFee', merFee);
         this.set('weixin.chanCode', 'WXP');
         // 如果勾选了代理商模式，就直接填充上大商户的信息
         if (this.weixin.isAgentMode) {
@@ -693,7 +871,10 @@
           merId: this.merchant.merId,
           cardBrand: 'WXP',
           chanCode: this.weixin.chanCode,
-          chanMerId: this.weixin.chanMerId
+          chanMerId: this.weixin.chanMerId,
+          acqFee: acqFee,
+          merFee: merFee,
+          settFlag: this.weixinRoute.settFlag
         };
         this.$.saveRouterAjax.body = JSON.stringify(router);
         this.$.saveRouterAjax.generateRequest();
@@ -703,7 +884,7 @@
       handleSaveRouterResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('保存路由信息失败', 3000);
+          Util.toast('保存路由信息失败:'+response.message, 3000);
           return;
         }
 
@@ -722,27 +903,6 @@
       // 是否代理商模式的改变事件
       handleIsAgentChangeEvent: function() {
         this.set('weixin.isAgentMode', this.$.isAgentMode.checked);
-        if (this.weixin.isAgentMode) {
-          this.wbigchanMerIdDisabled = false;
-          this.set('weixin.agentMer', this.bigMerchant);
-          this.$.bigChanMerId.setAttribute('required', true);
-          this.$.wxpAppId.removeAttribute('required');
-          this.$.wsignCert.removeAttribute('required');
-          this.$.httpCertTArea.removeAttribute('required');
-          this.$.httpKeyTArea.removeAttribute('required');
-          this.$.wxpAppId.validate();
-          this.$.wsignCert.validate();
-          this.$.httpCertTArea.validate();
-          this.$.httpKeyTArea.validate();
-        } else {
-          this.wbigchanMerIdDisabled = true;
-          this.set('weixin.agentMer', {});
-          this.$.bigChanMerId.removeAttribute('required');
-          this.$.wxpAppId.setAttribute('required', true);
-          this.$.wsignCert.setAttribute('required', true);
-          this.$.httpCertTArea.setAttribute('required', true);
-          this.$.httpKeyTArea.setAttribute('required', true);
-        }
       },
       // 是否需要验签的改变事件
       handleIsNeedSignChangeEvent: function() {
@@ -774,9 +934,7 @@
           this.splice('merchant.permission', index, 1);
         }
       },
-      observers: [
-        '_watchMerStatusChange(merStatus.key)'
-      ],
+
       _watchMerStatusChange: function(key) {
         if (key) {
           this.set('merchant.merStatus', key);
@@ -826,5 +984,6 @@
         }
       }
     });
+
   </script>
 </dom-module>

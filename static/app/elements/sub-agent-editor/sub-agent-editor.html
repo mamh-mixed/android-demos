@@ -34,13 +34,13 @@
   <template>
     <iron-ajax id="saveAjax" method="POST" url="/master/subAgent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveSubAgentResponse"></iron-ajax>
     <paper-dialog id="dialogAdd">
-      <h2>创建二级代理</h2>
+      <h2>创建公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input label="二级代理代码" value="{{subAgent.subAgentCode::input}}"></paper-input>
+          <paper-input label="公司代码" value="{{subAgent.subAgentCode::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="二级代理名称" value="{{subAgent.subAgentName::input}}"></paper-input>
+          <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="代理代码" value="{{subAgent.agentCode::input}}"></paper-input>
@@ -56,13 +56,13 @@
     </paper-dialog>
 
     <paper-dialog id="dialogEdit">
-      <h2>编辑二级代理</h2>
+      <h2>编辑公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input label="二级代理代码" value="{{subAgent.subAgentCode::input}}" disabled></paper-input>
+          <paper-input label="公司代码" value="{{subAgent.subAgentCode::input}}" disabled></paper-input>
         </div>
         <div class="row">
-          <paper-input label="二级代理名称" value="{{subAgent.subAgentName::input}}"></paper-input>
+          <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="代理代码" value="{{subAgent.agentCode::input}}"></paper-input>

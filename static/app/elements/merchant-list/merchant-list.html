@@ -23,15 +23,13 @@
   <template>
     <form is="iron-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="merId" id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
-        <paper-input name="merName" id="merName" label="商户名称" value="{{cond.merName::input}}"></paper-input>
-        <!-- <x-select id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" label="商户状态"></x-select> -->
+        <paper-input name="merId" id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
+        <paper-input name="merName" id="merName" label="门店名称" value="{{cond.merName::input}}"></paper-input>
         <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
         <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
-        <paper-input name="groupCode" id="groupCode" label="集团商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input name="groupName" id="groupName" label="集团商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-input name="groupCode" id="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-        <!-- <paper-button class="colorful" raised on-tap="handleClearTapped">清除</paper-button> -->
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
@@ -39,12 +37,12 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th>商户代码</th>
-            <th align="left">商户名称</th>
+            <th>门店代码</th>
+            <th align="left">门店名称</th>
             <th>代理代码</th>
             <th align="left">代理名称</th>
-            <th align="left">集团商户代码</th>
-            <th align="left">集团商户名称</th>
+            <th align="left">商户代码</th>
+            <th align="left">商户名称</th>
           </tr>
         </thead>
         <tbody>
@@ -83,8 +81,6 @@
         </tfoot>
       </table>
     </form>
-    <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
-    </paper-fab> -->
 
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
     <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>

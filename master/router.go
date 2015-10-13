@@ -46,8 +46,8 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/group/find", groupFindHandle)
 	mux.HandleFunc("/master/group/delete", groupDeleteHandle)
 	mux.HandleFunc("/master/group/save", groupSaveHandle)
-	mux.HandleFunc("/master/qiniu/uptoken", handleUptoken)
-	mux.HandleFunc("/master/qiniu/uploaded", handleDownURL)
+	mux.HandleFunc("/master/qiniu/uptoken", uptokenHandle)
+	mux.HandleFunc("/master/qiniu/uploaded", downURLHandle)
 	mux.HandleFunc("/master/user/find", userFindHandle)
 	mux.HandleFunc("/master/user/create", userCreateHandle)
 

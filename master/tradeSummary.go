@@ -62,8 +62,7 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`,
-		fmt.Sprintf(`attachment; filename="%s";  filename*=utf-8''%s`, filename, filename))
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 	file.Write(w)
 }
 

@@ -4,15 +4,16 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"net/url"
+
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
-	"io/ioutil"
-	"math/rand"
-	"net/http"
-	"net/url"
 )
 
 // scanpayUnifiedHandle 扫码支付入口
@@ -41,6 +42,23 @@ func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
+// scanpayBillsHandle 清算对账
+func scanpayBillsHandle(w http.ResponseWriter, r *http.Request) {
+
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, "read body error", http.StatusNotAcceptable)
+		return
+	}
+
+	retBytes := getBillsCtrl(bytes)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Write(retBytes)
+
+}
+
 // weixinNotifyHandle 接受微信异步通知
 func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	ret := &weixin.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}
@@ -52,15 +70,22 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		ret.ReturnMsg = "报文读取错误"
 	} else {
 		log.Infof("weixin notify: %s", data)
-
-		var req weixin.WeixinNotifyReq
-		err = xml.Unmarshal(data, &req)
+		// 微信有时会返回转义后的 xml，json 解析前必须解转义
+		unescaped, err := url.QueryUnescape(string(data))
 		if err != nil {
-			log.Errorf("unmarshal body error: %s, body: %s", err, string(data))
+			log.Errorf("unescape xml error: %s", err)
 			ret.ReturnCode = "FAIL"
-			ret.ReturnMsg = "报文读取错误"
+			ret.ReturnMsg = "报文解转义错误"
 		} else {
-			err = weixinNotifyCtrl(&req)
+			var req weixin.WeixinNotifyReq
+			err = xml.Unmarshal([]byte(unescaped), &req)
+			if err != nil {
+				log.Errorf("unmarshal body error: %s, body: %s", err, string(data))
+				ret.ReturnCode = "FAIL"
+				ret.ReturnMsg = "报文读取错误"
+			} else {
+				err = weixinNotifyCtrl(&req)
+			}
 		}
 	}
 	if err != nil {

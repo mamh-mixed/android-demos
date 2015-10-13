@@ -20,7 +20,7 @@
         "DB": "quickpay"
     },
     "CILOnline": {
-        "Host": "140.207.50.238",
+        "Host": "192.168.1.102",
         "Port": 7823,
         "ServerCert": "config/pem/cil/server_testing.cert" // TLS 证书
     },

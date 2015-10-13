@@ -31,12 +31,12 @@
     <iron-ajax id="deleteAjax" method="GET" url="/master/subAgent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
     <paper-dialog id="dialogDelete">
       <h2>删除【
-        <span>{{subAgent.subAgentName}}</span>】二级代理</h2>
+        <span>{{subAgent.subAgentName}}</span>】公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
           <iron-icon icon="report-problem"></iron-icon>
           &nbsp;&nbsp;&nbsp;
-          <span>是否删除此代理?</span>
+          <span>是否删除此公司?</span>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">

@@ -3,7 +3,6 @@ package util
 import (
 	"crypto/rand"
 	"fmt"
-	"strings"
 	"time"
 
 	gouuid "github.com/nu7hatch/gouuid"
@@ -56,12 +55,8 @@ func NextDay(today string) string {
 // 格式 hh:mm:ss
 func TimeToGiven(point string) (time.Duration, error) {
 	layout := "2006-01-02 15:04:05"
-	//当前时间
-	nowStr := time.Now().Format(layout)
-	//TODO current不能直接跟given比较
-	now, err := time.Parse(layout, nowStr)
-	value := strings.Split(now.Format(layout), " ")[0] + " " + point
-	given, err := time.Parse(layout, value)
+	now := time.Now()
+	given, err := time.ParseInLocation(layout, now.Format("2006-01-02")+" "+point, time.Local)
 	if err != nil {
 		return 0, err
 	}

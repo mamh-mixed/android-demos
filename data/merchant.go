@@ -55,6 +55,7 @@ type channel struct {
 	Fee       string `bson:"fee"`
 	PartnerId string `bson:"partnerId"`
 	SubMchId  string `bson:"sub_mch_id"`
+	Type      string `bson:"type"`
 }
 
 type merCert struct {

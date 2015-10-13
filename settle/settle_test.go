@@ -31,3 +31,11 @@ func TestDoSettWork(t *testing.T) {
 	yesterday = "2015-05-22"
 	doTransSett()
 }
+
+func TestDoScanpaySettReport(t *testing.T) {
+	yesterday = "2015-10-11"
+	err := doScanpaySettReport(yesterday)
+	if err != nil {
+		t.Error(err)
+	}
+}

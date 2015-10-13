@@ -72,8 +72,8 @@
         <div id="alp">
           <paper-input id="achanMerId" label="Partner ID" value="{{alp.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="achanMerName" label="商户名称" value="{{alp.chanMerName::input}}" error-message="必填项"></paper-input>
-          <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alp.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="amerFee" label="商户跟讯联费率" value="{{alp.merFee::input}}" required error-message="必填项"></paper-input>
+          <!-- <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alp.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="amerFee" label="商户跟讯联费率" value="{{alp.merFee::input}}" required error-message="必填项"></paper-input> -->
           <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
@@ -82,8 +82,8 @@
           <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
           <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
-          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input>
+          <!-- <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input> -->
           <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
           <div class="row">
@@ -97,17 +97,6 @@
           </div>
           <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
         </div>
-        <div id="cfca">
-          <paper-input id="cfchanMerId" label="渠道商户号" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="cfchanMerName" label="商户名称" value="{{cfca.chanMerName::input}}"></paper-input>
-          <paper-input id="cfsettFlag" label="清算标识" value="{{cfca.settFlag::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="cfsettRole" label="清算角色" value="{{cfca.settRole::input}}"></paper-input>
-          <paper-input id="cfprivateKey" label="CFCA 商户私钥" value="{{cfca.privateKey::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="cfpublicKey" label="CFCA 商户公钥" value="{{cfca.publicKey::input}}"></paper-input>
-          <paper-input id="cfacqFee" label="讯联跟渠道费率" value="{{cfca.acqFee::input}}"></paper-input>
-          <paper-input id="cfmerFee" label="商户跟讯联费率" value="{{cfca.merFee::input}}"></paper-input>
-        </div>
-        <div id="cil"></div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
@@ -132,13 +121,6 @@
             }, {
               key: 'WXP',
               value: 'WXP 微信'
-            }, {
-              key: 'CFCA',
-              value: 'CFCA 中金'
-            }, {
-              key: 'CIL',
-              value: 'CIL 线下'
-
             }]
           },
           bigMerchant: {
@@ -179,7 +161,7 @@
         _wisAgentModeChanged: function(value) {
           if (value) {
             this.$.wbigChanMerId.setAttribute('required', true);
-            this.wbigchanMerIdDisabled=false;
+            this.wbigchanMerIdDisabled = false;
             this.$.wxpAppId.removeAttribute('required');
             this.$.wsignCert.removeAttribute('required');
             this.$.httpCertTArea.removeAttribute('required');
@@ -188,7 +170,7 @@
             this.$.wsignCert.validate();
           } else {
             this.$.wbigChanMerId.removeAttribute('required');
-            this.wbigchanMerIdDisabled=true;
+            this.wbigchanMerIdDisabled = true;
             this.$.wxpAppId.setAttribute('required', true);
             this.$.wsignCert.setAttribute('required', true);
             this.$.httpCertTArea.setAttribute('required', true);
@@ -200,23 +182,9 @@
             if (channel.key === 'ALP') {
               this.$.alp.hidden = false;
               this.$.wxp.hidden = true;
-              this.$.cfca.hidden = true;
-              this.$.cil.hidden = true;
             } else if (channel.key === 'WXP') {
               this.$.alp.hidden = true;
               this.$.wxp.hidden = false;
-              this.$.cfca.hidden = true;
-              this.$.cil.hidden = true;
-            } else if (channel.key === 'CFCA') {
-              this.$.alp.hidden = true;
-              this.$.wxp.hidden = true;
-              this.$.cfca.hidden = false;
-              this.$.cil.hidden = true;
-            } else {
-              this.$.alp.hidden = true;
-              this.$.wxp.hidden = true;
-              this.$.cfca.hidden = true;
-              this.$.cil.hidden = false;
             }
           }
         },
@@ -253,11 +221,9 @@
               chanCode: 'WXP',
               isAgentMode: true,
             };
-            this.cfca = {};
-            this.chanCodeDisabled=false;
+            this.chanCodeDisabled = false;
             this.$.achanMerId.disabled = false;
             this.$.wchanMerId.disabled = false;
-            this.$.cfchanMerId.disabled = false;
             // 默认选择我们的代理
             this.wbigchanMerId = {
               key: '1236593202',
@@ -280,22 +246,18 @@
             this.$.header.textContent = '编辑渠道商户';
             var map = {
               'ALP': 'ALP 支付宝',
-              'WXP': 'WXP 微信',
-              'CFCA': 'CFCA 中金',
-              'CIL': 'CIL 线下'
+              'WXP': 'WXP 微信'
             };
             this.channel = {
               key: this.chanMer.chanCode,
               value: map[this.chanMer.chanCode]
             };
             // this.$.chanCode.childNodes[1].children[1].disab
-            this.chanCodeDisabled=true;
+            this.chanCodeDisabled = true;
             this.alp = this.chanMer;
             this.weixin = this.chanMer;
-            this.cfca = this.chanMer;
             this.$.achanMerId.disabled = true;
             this.$.wchanMerId.disabled = true;
-            this.$.cfchanMerId.disabled = true;
             var aagentCodeMap = {
               '12010128a1': '讯联 12010128a1',
               '11719712a1': '天奕通 11719712a1'
@@ -336,7 +298,7 @@
         },
         // 支付宝必填项是否为空
         isALPConfigEmpty: function() {
-          if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asignKey.validate() && this.aagentCode) {
+          if (this.$.achanMerId.validate() && this.$.asignKey.validate() && this.aagentCode) {
             return false;
           }
           return true;
@@ -344,23 +306,15 @@
         // 微信必填项是否为空
         isWXPConfigEmpty: function() {
           if (this.weixin.isAgentMode) {
-            if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wbigchanMerId) {
+            if (this.$.wchanMerId.validate() && this.wbigchanMerId) {
               return false;
             }
           } else {
-            if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wxpAppId.validate() && this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
+            if (this.$.wchanMerId.validate() && this.$.wxpAppId.validate() && this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
               return false;
             }
           }
           return true;
-        },
-        // 中金必填项是否为空
-        isCFCAConfigEmpty: function() {
-          if (this.$.cfchanMerId.validate() && this.$.cfsettFlag.validate() && this.$.cfprivateKey.validate()) {
-            return false;
-          } else {
-            return true;
-          }
         },
         // 点击保存事件
         handleSaveTapped: function() {
@@ -397,9 +351,6 @@
                 this.set('weixin.agentMer', {});
               }
               this.chanMer = this.weixin;
-            } else if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
-              this.set('cfca.chanCode', 'CFCA');
-              this.chanMer = this.cfca;
             } else {
               Util.toast('必填项不能为空', 3000);
               return;
