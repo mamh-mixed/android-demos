@@ -41,9 +41,9 @@ func List(prefix, marker string, limit int) ([]kodo.ListItem, string, error) {
 }
 
 // Upload 上传文件
-func Upload(key string, size int64, data io.Reader) error {
+func Upload(key string, size int64, reader io.Reader) error {
 	ctx := context.Background()
-	return cli.Bucket(BUCKET).Put(ctx, nil, key, data, size, &kodo.PutExtra{})
+	return cli.Bucket(BUCKET).Put(ctx, nil, key, reader, size, &kodo.PutExtra{})
 }
 
 func MakePrivateUrl(key string) string {
