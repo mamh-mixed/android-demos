@@ -150,7 +150,7 @@ func (i *importer) read() error {
 
 		err := i.cellMapping(r.Cells)
 		if err != nil {
-			return fmt.Errorf("%d 行：%s", index, err)
+			return fmt.Errorf("%d 行：%s", index+1, err)
 		}
 	}
 	if len(i.rowData) == 0 {
@@ -613,7 +613,7 @@ func (i *importer) doDataWrap() {
 
 			// ADDBY:RUI,DATE:20151012
 			// ------------
-			alpRoute.MerFee, alpRoute.AcqFee = r.AlpMerFeeF, r.AlpAcqFeeF
+			alpRoute.MerFee, alpRoute.AcqFee = float64(r.AlpMerFeeF), float64(r.AlpAcqFeeF)
 			if r.IsAlpCilSett == "是" {
 				alpRoute.SettFlag = "CIL"
 				alpRoute.SettRole = "CIL"
@@ -662,7 +662,7 @@ func (i *importer) doDataWrap() {
 
 			// ADDBY:RUI,DATE:20151012
 			// --------
-			wxpRoute.MerFee, wxpRoute.AcqFee = r.WxpMerFeeF, r.WxpAcqFeeF
+			wxpRoute.MerFee, wxpRoute.AcqFee = float64(r.WxpMerFeeF), float64(r.WxpAcqFeeF)
 			if r.IsWxpCilSett == "是" {
 				wxpRoute.SettFlag = "CIL"
 				wxpRoute.SettRole = "CIL"
@@ -782,12 +782,25 @@ func (i *importer) rollback() {
 
 func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 
-	if len(cells) == 0 {
+	var col = len(cells)
+	if col == 0 {
 		return nil
 	}
 
-	if len(cells) != 35 {
-		return fmt.Errorf("%s", "列数可能有误，请检查。")
+	if col != 35 {
+		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		var errStr string
+		for k, v := range cells {
+			t := k / 26
+			var offset string
+			if t == 0 {
+				offset = string(order[k])
+			} else {
+				offset = string(order[t-1]) + string(order[k-26])
+			}
+			errStr += fmt.Sprintf("( %s=%s ), ", offset, v)
+		}
+		return fmt.Errorf("列数有误，实际应为 35 行，读取到 %d 行。具体信息为：%s", col, errStr)
 	}
 
 	r := &rowData{}

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
-	// w "github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/crontab"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -69,8 +68,8 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if rp == nil {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
-
 	t.ChanMerId = rp.ChanMerId
+	t.SettRole = rp.SettRole
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -79,7 +78,12 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 计算费率 四舍五入
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+	// 兼容以前数据
+	t.MerFee = rp.MerFee
+	if t.MerFee == 0 {
+		t.MerFee = float64(c.MerFee)
+	}
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*t.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
@@ -216,6 +220,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
+	t.SettRole = rp.SettRole
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -286,6 +291,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
+	t.SettRole = rp.SettRole
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -294,7 +300,12 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 计算费率 四舍五入
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+	// 兼容之前旧数据
+	t.MerFee = rp.MerFee
+	if t.MerFee == 0 {
+		t.MerFee = float64(c.MerFee)
+	}
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*t.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
@@ -346,6 +357,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
+	t.SettRole = rp.SettRole
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
@@ -354,7 +366,11 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 计算费率 四舍五入
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*float64(c.MerFee) + 0.5))
+	t.MerFee = rp.MerFee
+	if t.MerFee == 0 {
+		t.MerFee = float64(c.MerFee)
+	}
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*t.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 将openId参数设置为空，防止tradeType为JSAPI
@@ -485,7 +501,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 	orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
 	// }
 	// 退款算退款部分的手续费，出报表时，将原订单的跟退款的相减
-	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*float64(c.MerFee) + 0.5))
+	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*orig.MerFee + 0.5))
 	orig.NetFee = orig.NetFee - refund.Fee // 重新计算原订单的手续费
 
 	// 记录交易
@@ -698,7 +714,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 对这笔撤销计算手续费，不然会对应不上，出现多扣少退。
-	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*float64(c.MerFee) + 0.5))
+	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*orig.MerFee + 0.5))
 	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
 
 	// 记录交易
@@ -799,7 +815,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			// 这样做方便于报表导出计算
 			closed.TransAmt = orig.TransAmt
 			orig.RefundAmt = orig.TransAmt
-			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*float64(c.MerFee) + 0.5))
+			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*orig.MerFee + 0.5))
 			orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
 			orig.RefundStatus = model.TransRefunded
 		}
@@ -1016,6 +1032,7 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.GroupName = orig.GroupName
 	current.ShortName = orig.ShortName
 	current.ConsumerAccount = orig.ConsumerAccount
+	current.SettRole = orig.SettRole
 }
 
 func signWithMD5(s interface{}, key string) string {

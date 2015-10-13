@@ -75,8 +75,8 @@ type RouterPolicy struct {
 	ChanMerId string  `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
 	SettFlag  string  `json:"settFlag" bson:"settFlag,omitempty"`
 	SettRole  string  `json:"settRole" bson:"settRole,omitempty"`
-	MerFee    float32 `json:"merFee" bson:"merFee,omitempty"`
-	AcqFee    float32 `json:"acqFee" bson:"acqFee,omitempty"`
+	MerFee    float64 `json:"merFee" bson:"merFee,omitempty"`
+	AcqFee    float64 `json:"acqFee" bson:"acqFee,omitempty"`
 }
 
 // BindingInfo 商家绑定信息
@@ -300,7 +300,7 @@ type Trans struct {
 	ShortName string `bson:"shortName,omitempty" json:"shortName,omitempty"`
 
 	// 批导辅助字段
-	MerFee float64 `bson:"-" json:"-"` // 计算手续费字段 用于批导，待结束可删除
+	MerFee float64 `bson:"merFee,omitempty" json:"-"` // 商户费率，方便计算
 }
 
 // SummarySettData 交易汇总
