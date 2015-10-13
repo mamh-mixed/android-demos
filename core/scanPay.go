@@ -162,6 +162,14 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		isNewReq = true
 	}
 
+	// 解锁
+	defer func() {
+		// 如果是逻辑错误等导致原交易没解锁
+		if t.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+		}
+	}()
+
 	// 记录该笔交易
 	if isNewReq {
 		t = &model.Trans{
