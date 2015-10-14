@@ -107,7 +107,7 @@ type Channel struct {
 }
 
 // Mer 按商户分组
-type Mer struct {
+type MerGroup struct {
 	MerId     string `bson:"merId"`
 	TransAmt  int64  `bson:"transAmt"`
 	RefundAmt int64  `bson:"refundAmt"`
@@ -123,9 +123,8 @@ type TransTypeGroup struct {
 
 // SettRoleGroup 按清算角色分组
 type SettRoleGroup struct {
-	SettDate string
-	SettRole string `bson:"settRole"`
-	Mers     []Mer  `bson:"mers"`
+	SettRole  string     `bson:"settRole"`
+	MerGroups []MerGroup `bson:"mers"`
 }
 
 // NewScanPayRequest 带请求id的request对象
@@ -439,4 +438,20 @@ type ScanPayCSV struct {
 	Alp []*SpChanCSV `bson:"alp,omitempty"`
 	Wxp []*SpChanCSV `bson:"wxp,omitempty"`
 	//...
+}
+
+// MerSettStatus 商户清算状态
+type MerSettStatus struct {
+	MerId  string `bson:"merId"`
+	Status int    `bson:"status"`
+}
+
+// RoleSett 清算角色级别信息
+type RoleSett struct {
+	SettRole    string          `bson:"settRole"`
+	SettDate    string          `bson:"settDate"`
+	ReportName  string          `bson:"reportName"`
+	CreateTime  string          `bson:"createTime"`
+	UpdateTime  string          `bson:"updateTime"`
+	ContainMers []MerSettStatus `bson:"containMers"`
 }

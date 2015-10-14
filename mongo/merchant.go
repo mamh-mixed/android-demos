@@ -50,7 +50,6 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 	q := bson.M{"merId": merId}
 	err = database.C(c.name).Find(q).One(m)
 	if err != nil {
-		log.Errorf("'Find Merchant ERROR!' Condition is (%+v);error is(%s)", q, err)
 		return nil, err
 	}
 	// save

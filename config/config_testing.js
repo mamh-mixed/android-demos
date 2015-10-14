@@ -14,6 +14,10 @@
         "NotifyURL": "http://test.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime": "24h"
     },
+    "Qiniu":{
+        "Bucket":"test",
+        "Domain":"dn-yun-test.qbox.me"
+    },
     "Mongo": {
         "Encrypt": true, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
