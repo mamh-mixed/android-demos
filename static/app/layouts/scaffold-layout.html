@@ -1,8 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
@@ -251,6 +252,8 @@
     </paper-drawer-panel>
     <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
+    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
   </template>
   <script>
     (function() {
@@ -267,16 +270,6 @@
           }
         },
         ready: function() {
-          //  进去页面之前先判断用户是否已登录
-          var sessionId = window.sessionStorage.getItem('SESSIONID');
-          if (!sessionId || sessionId === '') {
-            window.location.href = 'login.html';
-            return;
-          }
-          this.$.findSessionAjax.params = {
-            'sessionId': sessionId,
-          };
-          this.$.findSessionAjax.generateRequest();
           // 初始化菜单
           this.adminMenus = [{
             "nameCN": "扫码支付商户配置",
@@ -449,6 +442,18 @@
           }];
 
         },
+        // 核对是否登入
+        checkIsLogin: function(){
+          this.$.findSessionAjax.params = {
+            'sessionId': this.sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+        },
+        // 当没有登入的时候，跳转到登入页面
+        handleNotLogin: function() {
+          window.location.href = 'login.html';
+          return;
+        },
         paperHeaderTransform: function(e) {
           var appName = this.$.appName;
           var middleContainer = this.$.middleContainer;
@@ -482,11 +487,10 @@
             return;
           }
           this.user = response.data;
-          var userType = this.user.userType;
-          window.sessionStorage.setItem('USERTYPE', userType);
-          if (userType === 'admin') {
+          this.userType = this.user.userType;
+          if (this.userType === 'admin') {
             this.menus = this.adminMenus;
-          } else if (userType === 'agent' || userType === 'group' || userType === 'merchant') {
+          } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
             this.menus = this.agentMenus;
           }
         },
@@ -495,16 +499,15 @@
         },
         // 退出
         logoutHandle: function() {
-          var sessionId = window.sessionStorage.getItem('SESSIONID');
           // 删除后台sesseion信息
           this.$.deleteSessionAjax.params = {
-            'sessionId': sessionId,
+            'sessionId': this.sessionId,
           };
           this.$.deleteSessionAjax.generateRequest();
 
-          // 清楚sessionStorage中的信息
-          window.sessionStorage.removeItem('SESSIONID');
-          window.sessionStorage.removeItem('USERTYPE');
+          // 清除localStorage中的信息
+          this.sessionId = '';
+          this.userType = '';
           this.user = {};
           this.$.logoutBtn.hidden = true;
 

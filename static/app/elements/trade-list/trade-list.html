@@ -16,7 +16,7 @@
 
   </style>
   <template>
-    <paper-button raised on-tap="showLoginDialogTap">showLoginDialog</paper-button>
+    <!-- <paper-button raised on-tap="showLoginDialogTap">showLoginDialog</paper-button> -->
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
         <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>

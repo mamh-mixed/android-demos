@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <dom-module id="login-form">
@@ -57,12 +58,14 @@
         <h1>用户登入</h1>
         <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
         <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
-        <paper-button raised on-tap="loginTapHandle">登录</paper-button>
+        <paper-button raised on-tap="loginTapHandle">登入</paper-button>
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="showLoginForm"></iron-localstorage>
     <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
   </template>
+  <script src="../../scripts/util.js"></script>
   <script>
     (function() {
       Polymer({
@@ -111,8 +114,7 @@
             password: ''
           };
 
-          var sessionId = response.data;
-          window.sessionStorage.setItem('SESSIONID', sessionId);
+          this.sessionId = response.data;
           if (this.redirect) {
             window.location.href = 'index.html';
           } else {
@@ -122,7 +124,8 @@
         // 表单内点击回车键事件
         handleEnterKeyPresse: function(e) {
           this.loginTapHandle();
-        }
+        },
+        showLoginForm: function() {}
       });
     })();
   </script>

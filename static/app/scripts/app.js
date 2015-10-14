@@ -10,7 +10,7 @@
     router.addEventListener('state-change', function(e) {
       // TODO 权限校验
       console.log(e.type, e.detail.path);
-      var userType = window.sessionStorage.getItem('USERTYPE');
+      var userType = window.localStorage.getItem('USERTYPE');
       var isAccess=false;
       if (userType === 'agent' || userType === 'group' || userType === 'merchant') {
         for (var i = 0; i < agentRoutes.length; i++) {

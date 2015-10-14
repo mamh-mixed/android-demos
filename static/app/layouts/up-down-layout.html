@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../styles/app-theme.html">
@@ -97,6 +98,8 @@
     <content select=".content"></content>
     <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
+    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
   </template>
   <script>
     (function() {
@@ -108,17 +111,16 @@
             notify: true
           }
         },
-        ready: function() {
-          //  进去页面之前先判断用户是否已登录
-          var sessionId = window.sessionStorage.getItem('SESSIONID');
-          if (!sessionId || sessionId === '') {
-            window.location.href = 'login.html';
-            return;
-          }
+        ready: function() {},
+        checkIsLogin: function() {
           this.$.findSessionAjax.params = {
-            'sessionId': sessionId,
+            'sessionId': this.sessionId,
           };
           this.$.findSessionAjax.generateRequest();
+        },
+        handleNotLogin: function() {
+          window.location.href = 'login.html';
+          return;
         },
         handleFindSessionResponse: function(e) {
           var response = e.detail.response;
@@ -127,26 +129,24 @@
             return;
           }
           this.user = response.data;
-          var userType = this.user.userType;
-          window.sessionStorage.setItem('USERTYPE', userType);
+          this.userType = this.user.userType;
           if (userType === 'admin') {
             this.menus = this.adminMenus;
-          } else if (userType === 'agent' || userType === 'group' || userType === 'merchant') {
+          } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
             this.menus = this.agentMenus;
           }
         },
         // 退出
         logoutHandle: function() {
-          var sessionId = window.sessionStorage.getItem('SESSIONID');
           // 删除后台sesseion信息
           this.$.deleteSessionAjax.params = {
-            'sessionId': sessionId,
+            'sessionId': this.sessionId,
           };
           this.$.deleteSessionAjax.generateRequest();
 
-          // 清楚sessionStorage中的信息
-          window.sessionStorage.removeItem('SESSIONID');
-          window.sessionStorage.removeItem('USERTYPE');
+          // 清除localStorage中的信息
+          this.sessionId = '';
+          this.userType = '';
           this.user = {};
           this.$.logoutBtn.hidden = true;
 
