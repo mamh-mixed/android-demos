@@ -5,7 +5,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/qiniu/log"
+	"github.com/omigo/log"
 )
 
 type session struct{}
