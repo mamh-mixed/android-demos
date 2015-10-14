@@ -130,7 +130,7 @@
           }
           this.user = response.data;
           this.userType = this.user.userType;
-          if (userType === 'admin') {
+          if (this.userType === 'admin') {
             this.menus = this.adminMenus;
           } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
             this.menus = this.agentMenus;
