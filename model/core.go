@@ -301,7 +301,7 @@ type Trans struct {
 	ShortName string `bson:"shortName,omitempty" json:"shortName,omitempty"`
 
 	// 批导辅助字段
-	MerFee float64 `bson:"merFee,omitempty" json:"-"` // 商户费率，方便计算
+	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
 }
 
 // SummarySettData 交易汇总

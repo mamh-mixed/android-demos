@@ -79,11 +79,11 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 计算费率 四舍五入
 	// 兼容以前数据
-	t.MerFee = rp.MerFee
-	if t.MerFee == 0 {
-		t.MerFee = float64(c.MerFee)
+	merFee := rp.MerFee
+	if merFee == 0 {
+		merFee = float64(c.MerFee)
 	}
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*t.MerFee + 0.5))
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*merFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
@@ -301,11 +301,11 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 计算费率 四舍五入
 	// 兼容之前旧数据
-	t.MerFee = rp.MerFee
-	if t.MerFee == 0 {
-		t.MerFee = float64(c.MerFee)
+	merFee := rp.MerFee
+	if merFee == 0 {
+		merFee = float64(c.MerFee)
 	}
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*t.MerFee + 0.5))
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*merFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
@@ -366,11 +366,11 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	// 计算费率 四舍五入
-	t.MerFee = rp.MerFee
-	if t.MerFee == 0 {
-		t.MerFee = float64(c.MerFee)
+	merFee := rp.MerFee
+	if merFee == 0 {
+		merFee = float64(c.MerFee)
 	}
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*t.MerFee + 0.5))
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*merFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 将openId参数设置为空，防止tradeType为JSAPI
@@ -431,6 +431,12 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}()
 
 	copyProperties(refund, orig)
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(orig.MerId, orig.ChanCode)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(refund, "NO_ROUTERPOLICY")
+	}
 
 	mer, err := mongo.MerchantColl.Find(orig.MerId)
 	if err != nil {
@@ -500,8 +506,14 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// if orig.RefundStatus == model.TransPartRefunded {
 	// 	orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
 	// }
+
+	// 兼容旧数据
+	if rp.MerFee == 0 {
+		rp.MerFee = float64(c.MerFee)
+	}
+
 	// 退款算退款部分的手续费，出报表时，将原订单的跟退款的相减
-	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*orig.MerFee + 0.5))
+	refund.Fee = int64(math.Floor(float64(refund.TransAmt)*rp.MerFee + 0.5))
 	orig.NetFee = orig.NetFee - refund.Fee // 重新计算原订单的手续费
 
 	// 记录交易
@@ -675,6 +687,11 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 撤销交易，金额=原交易金额
 	cancel.TransAmt = orig.TransAmt
 
+	rp := mongo.RouterPolicyColl.Find(orig.MerId, orig.ChanCode)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(cancel, "NO_ROUTERPOLICY")
+	}
+
 	// 撤销只能撤当天交易
 	if !strings.HasPrefix(orig.CreateTime, time.Now().Format("2006-01-02")) {
 		return adaptor.LogicErrorHandler(cancel, "CANCEL_TIME_ERROR")
@@ -713,8 +730,13 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(cancel, "NO_CHANMER")
 	}
 
+	// 兼容旧数据
+	if rp.MerFee == 0 {
+		rp.MerFee = float64(c.MerFee)
+	}
+
 	// 对这笔撤销计算手续费，不然会对应不上，出现多扣少退。
-	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*orig.MerFee + 0.5))
+	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*rp.MerFee + 0.5))
 	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
 
 	// 记录交易
@@ -792,6 +814,11 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(closed, "ORDER_CLOSED")
 	}
 
+	rp := mongo.RouterPolicyColl.Find(orig.MerId, orig.ChanCode)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(closed, "NO_ROUTERPOLICY")
+	}
+
 	// 获得渠道商户
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
@@ -812,10 +839,15 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 因为在执行关单时，还有可能查询订单以明确状态
 		// 原交易成功，那么计算这笔取消的手续费
 		if orig.TransStatus == model.TransSuccess {
+			// 兼容旧数据
+			if rp.MerFee == 0 {
+				rp.MerFee = float64(c.MerFee)
+			}
+
 			// 这样做方便于报表导出计算
 			closed.TransAmt = orig.TransAmt
 			orig.RefundAmt = orig.TransAmt
-			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*orig.MerFee + 0.5))
+			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*rp.MerFee + 0.5))
 			orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
 			orig.RefundStatus = model.TransRefunded
 		}
