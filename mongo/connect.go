@@ -7,7 +7,6 @@ import (
 	"gopkg.in/mgo.v2"
 
 	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
 )
 
 var database *mgo.Database
@@ -28,5 +27,7 @@ func init() {
 
 	database = session.DB(dbname)
 
-	log.Infof("connected to mongodb host `%s` and database `%s`", url, dbname)
+	// 不能在日志中出现数据库密码
+	// fmt.Println("connected to mongodb host `%s` and database `%s`", url, dbname)
+	fmt.Printf("connected to mongodb host `%s` and database `%s`\n", "***", dbname)
 }

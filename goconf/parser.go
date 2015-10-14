@@ -8,7 +8,6 @@ import (
 	"regexp"
 
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
 )
 
 func init() {
@@ -26,7 +25,7 @@ func init() {
 	// 2. 多行注释文本前后都必须加一个空格
 	re := regexp.MustCompile(`\s*//\s.+|\s*/\*\s[\S\s]+?\s\*/`)
 	content = re.ReplaceAll(content, []byte(""))
-	log.Debugf("config content: %s", content)
+	// fmt.Println("config content: %s\n", content)
 
 	err = json.Unmarshal(content, &Config)
 	if err != nil {
