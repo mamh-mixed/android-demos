@@ -42,7 +42,7 @@
 
   <link rel="import" href="bower_components/app-router/app-router.html">
   <link rel="import" href="layouts/scaffold-layout.html">
-
+  <link rel="import" href="elements/login-form/login-form.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
@@ -81,6 +81,9 @@
   </app-router>
 
   <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
+  <paper-dialog id="reloginDialog" hidden modal>
+    <login-form style="width:252px;"></login-form>
+  </paper-dialog>
   <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
   <!-- endbuild-->

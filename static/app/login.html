@@ -6,134 +6,45 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Polymer Starter Kit" />
-  <title>登录</title>
-  <!-- Place favicon.ico in the `app/` directory -->
-
-  <!-- Chrome for Android theme color -->
+  <title>登入-云收银管理平台</title>
   <meta name="theme-color" content="#303F9F">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <link rel="import" href="bower_components/polymer/polymer.html">
-  <link rel="import" href="bower_components/iron-a11y-keys/iron-a11y-keys.html">
-  <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
-  <link rel="import" href="bower_components/paper-button/paper-button.html">
-  <link rel="import" href="bower_components/paper-input/paper-input.html">
   <link rel="import" href="bower_components/paper-toast/paper-toast.html">
-  <!-- xxxxxendbuild -->
-</head>
-
-<body unresolved style="width:100%;height:100%;background: #00BCD4;">
-  <script src="scripts/util.js"></script>
+  <link rel="import" href="elements/login-form/login-form.html">
   <style media="screen">
-    :host {
-      display: block;
+    body {
+      width: 100%;
+      min-height: 100%;
       background: #00BCD4;
+    }
+
+    .container {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .loginWrapper {
       width: 300px;
-      height: 400px;
-      margin-top: 10%;
-      margin-left: auto;
-      margin-right: auto;
-      margin-bottom: auto;
       background: #ffffff;
     }
-
-    .logo {
-      width: 30px;
-      height: 30px;
-      text-align: center;
-    }
-
-    .loginHeader {
-      text-align: center;
-      width: 100%;
-      height: 120px;
-      line-height: 120px;
-      vertical-align: middle;
-    }
-
-    paper-button {
-      width: 100%;
-      margin-top: 30px;
-      background: #ff4081;
-      color: #ffffff;
-    }
-
-    .loginInner {
-      width: 80%;
-      margin-left: 10%;
-      margin-right: 10%;
-    }
   </style>
-  <dom-module id="login-element">
-    <template>
-      <div class="loginWrapper">
-        <div class="loginInner">
-          <form id="loginForm">
-            <div class="loginHeader">用户登录</div>
-            <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
-            <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
-            <paper-button raised on-tap="loginTapHandle">登录</paper-button>
-            <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
-          </form>
-        </div>
+</head>
 
-      </div>
-      <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
-      <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
-    </template>
-    <script>
-      HTMLImports.whenReady(function() {
-        Polymer({
-          properties: {
-            target: {
-              type: Object,
-              value: function() {
-                return this.$.loginForm;
-              }
-            }
-          },
-          is: 'login-element',
-          ready: function() {
-            this.user = {};
-          },
-          loginTapHandle: function() {
-            if (this.isloginConfigEmpty()) {
-              Util.toast('用户名或密码不能为空', 3000);
-              return;
-            }
-            var loginAjax = this.$.loginAjax;
-            loginAjax.body = JSON.stringify(this.user);
-            loginAjax.generateRequest();
-          },
-          isloginConfigEmpty: function() {
-            if (this.$.userName.validate() && this.$.pwd.validate()) {
-              return false;
-            } else {
-              return true;
-            }
-          },
-          handleLoginResponse: function(e) {
-            var response = e.detail.response;
-            if (response.status !== 0) {
-              Util.toast(response.message, 3000);
-              return;
-            }
-            var sessionId = response.data;
-            window.sessionStorage.setItem('SESSIONID', sessionId);
-            window.location.href = 'index.html';
-          },
-          // 表单内点击回车键事件
-          handleEnterKeyPresse: function(e) {
-            this.loginTapHandle();
-          }
-        });
-      });
-    </script>
-  </dom-module>
-  <login-element></login-element>
-  <!-- endbuild-->
+<body unresolved style="">
+  <div class="container">
+    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
+    <div class="loginWrapper">
+      <login-form></login-form>
+    </div>
+  </div>
+  <script src="scripts/util.js"></script>
 </body>
 
 </html>
