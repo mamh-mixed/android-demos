@@ -9,7 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/crontab"
-	"github.com/CardInfoLink/quickpay/data"
+	// "github.com/CardInfoLink/quickpay/data"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
@@ -32,7 +32,7 @@ func main() {
 	startApp()        // 云收银APP用户、交易查询等
 
 	crontab.Start() // 定时任务
-	http.HandleFunc("/import", data.Import)
+	// http.HandleFunc("/import", data.Import)
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))
