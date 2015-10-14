@@ -116,6 +116,7 @@
         font-size: 8px;
       }
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -447,7 +448,7 @@
         if (!this.merId) {
           return;
         }
-        this.update=true;
+        this.update = true;
         this.set('merchant', {});
         this.set('alipay', {});
         this.set('weixin', {});
@@ -594,6 +595,7 @@
       },
       ready: function() {
         this.idx = 0;
+        this.update = false;
         this.merchant = {
           agentCode: '',
           agentName: '',
@@ -670,7 +672,7 @@
         this.weixinRoute = {
           cardBrand: 'WXP',
         };
-        this.update=false;
+        this.update = false;
 
 
       },
@@ -706,9 +708,9 @@
             value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
-        this.set('alipayRoute.acqFee','');
-        this.set('alipayRoute.merFee','');
-        this.set('alipayRoute.settFlag','');
+        this.set('alipayRoute.acqFee', '');
+        this.set('alipayRoute.merFee', '');
+        this.set('alipayRoute.settFlag', '');
       },
       // 微信id变化后，会查询出该微信渠道信息。
       handleFindChanMerWeixinResponse: function(e) {
@@ -733,9 +735,9 @@
           };
         }
 
-        this.set('weixinRoute.acqFee','');
-        this.set('weixinRoute.merFee','');
-        this.set('weixinRoute.settFlag','');
+        this.set('weixinRoute.acqFee', '');
+        this.set('weixinRoute.merFee', '');
+        this.set('weixinRoute.settFlag', '');
       },
       //判断商户录入必填项是否为空
       isMerchantConfigEmpty: function() {
@@ -786,7 +788,7 @@
       },
       // 判断支付宝必填项是否为空
       isALPConfigEmpty: function() {
-        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() &&this.$.asettFlag.validate()&& this.$.asignCert.validate() && this.aagentCode) {
+        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asettFlag.validate() && this.$.asignCert.validate() && this.aagentCode) {
           return false;
         }
         return true;
@@ -825,11 +827,11 @@
       // 微信必填项是否为空
       isWXPConfigEmpty: function() {
         if (this.weixin.isAgentMode) {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() &&this.$.wsettFlag.validate()&& this.wbigchanMerId) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wsettFlag.validate() && this.wbigchanMerId) {
             return false;
           }
         } else {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() &&this.$.wsettFlag.validate()&& this.$.wxpAppId.validate() &&
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wsettFlag.validate() && this.$.wxpAppId.validate() &&
             this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
             return false;
           }
@@ -982,5 +984,6 @@
         }
       }
     });
+
   </script>
 </dom-module>

@@ -83,7 +83,7 @@ func (col *transCollection) FindAndLock(merId, orderNum string) (*model.Trans, e
 	result := &model.Trans{}
 	_, err := database.C(col.name).Find(query).Apply(change, result)
 	if err != nil {
-		log.Error(err)
+		log.Debug(err)
 	}
 	return result, err
 }

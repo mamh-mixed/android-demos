@@ -6,15 +6,16 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
-	"io/ioutil"
-	"net/http"
-	"strings"
-	"time"
 )
 
 // Execute 发送报文执行微信支付
@@ -79,10 +80,10 @@ func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 
 	// 如果连接失败，重试 3 次，休眠 3s、6s
 	for i := 1; i <= 3; i++ {
-		start := time.Now()
+		// start := time.Now()
 		resp, err = cli.Post(goconf.Config.WeixinScanPay.URL+uri, "text/xml", bytes.NewBuffer(body))
-		end := time.Now()
-		log.Infof("=== %s === %s%s", end.Sub(start), goconf.Config.WeixinScanPay.URL, uri)
+		// end := time.Now()
+		// log.Infof("=== %s === %s%s", end.Sub(start), goconf.Config.WeixinScanPay.URL, uri)
 		if err == nil {
 			break
 		}
