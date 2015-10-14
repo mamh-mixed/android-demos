@@ -208,7 +208,7 @@ func genSpSettReportExcel(data []reportData, date string) *xlsx.File {
 		cell.Value = d.m.Detail.AcctNum
 		cell = row.AddCell()
 		cell.SetStyle(twoStyle)
-		cell.Value = fmt.Sprintf("%0.2f", float32(d.mg.TransAmt-d.mg.RefundAmt)/100)
+		cell.Value = fmt.Sprintf("%0.2f", float32(d.mg.TransAmt-d.mg.RefundAmt-d.mg.Fee)/100)
 		cell = row.AddCell()
 		cell.SetStyle(twoStyle)
 		cell.Value = fmt.Sprintf("%s手续费%0.2f元", date, float32(d.mg.Fee)/100)
