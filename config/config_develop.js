@@ -15,8 +15,10 @@
         "OrderCloseTime":"40m"
     },
     "Mongo": {
+        "Encrypt": false, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
         "URL": "mongodb://quickpay:quickpay@dev.ipay.so:27017/quickpay",
+        "EncryptURL": "Wa2RB8RLYtRRliZ1g8b4ks6lXLd9lT8svlAXooEjUnjEQR0zzvNo6mqdo9STf1SBSBbJuPUxeusVgu6LB0zGenFFDnsT6azY8aMn++nMx7mw4gMHHUtnWc8KKrBaBwMOYXvxUmRDWJHFpE78gKS4spv3M1xuK5lTTZRoHz8TetScLJfk6lLz6EOU+866v4J0WFlGxhM9WuO+JWCp4meWGdgr7ANtXrgvwtB/ROrVK1dUQSV15EV4OM5eK6UKP2Svl3HELKbn24HuSgZ49gFH3K1t8/ra5gZvLOWJcsWQ8JtITF3QL84vShLm1lqzZ3wFRiJB9bBpean+KuQC9EnWSA==",
         "DB": "quickpay"
     },
     "CILOnline": {

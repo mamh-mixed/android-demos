@@ -69,7 +69,7 @@ func lookupIP(host string) string {
 
 	idx := rand.Intn(len(ips)) // 随机取一个ip
 	ip := ips[idx].String()
-	log.Infof("lookupIP for server name %s => %s, %s", host, ip, ips)
+	log.Infof("lookupIP for server name %s => %s", host, ip)
 
 	return ip
 }
