@@ -21,6 +21,11 @@ type ConfigStruct struct {
 		OrderCloseTime   Duration
 	}
 
+	Qiniu struct {
+		Bucket string
+		Domain string
+	}
+
 	Mongo struct {
 		URL string
 		DB  string

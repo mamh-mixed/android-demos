@@ -18,6 +18,16 @@ import (
 	"time"
 )
 
+// settRole
+const (
+	SR_CHANNEL     = "CHANNEL"
+	SR_CIL         = "CIL"
+	SR_COMPANY     = "COMPANY"
+	SR_INSTITUTION = "INSTITUTION"
+	SR_AGENT       = "AGENT"
+	SR_GROUP       = "GROUP"
+)
+
 var sysErr = errors.New("系统错误，请重新上传。")
 var emptyErr = errors.New("上传表格为空，请检查。")
 var maxFee = 0.03
@@ -66,14 +76,14 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key}
-	err = ip.DoImport()
+	ip := importer{Sheets: file.Sheets, fileName: key, IsDebug: true}
+	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
 		return
 	}
 
-	w.Write(resultBody("处理成功。", 0))
+	w.Write(resultBody(info, 0))
 }
 
 type importer struct {
@@ -108,14 +118,15 @@ type operation struct {
 }
 
 // DoImport 执行导入操作
-func (i *importer) DoImport() error {
+func (i *importer) DoImport() (string, error) {
 	before := time.Now()
 	if len(i.Sheets) == 0 {
-		return emptyErr
+		return "", emptyErr
 	}
 
+	// 读取数据
 	if err := i.read(); err != nil {
-		return err
+		return "", err
 	}
 	log.Debugf("read over, len(row)=%d", len(i.rowData))
 
@@ -126,18 +137,17 @@ func (i *importer) DoImport() error {
 
 	// 数据处理，验证等
 	if err := i.dataHandle(); err != nil {
-		return err
+		return "", err
 	}
 	log.Debug("data handle over")
 
 	// 数据入库
 	if err := i.persist(); err != nil {
 		i.rollback()
-		return sysErr
+		return "", sysErr
 	}
-	after := time.Now()
-	log.Debugf("import spent time %s", after.Sub(before))
-	return nil
+
+	return fmt.Sprintf("成功处理 %d 行数据，耗时 %s。", len(i.rowData), time.Since(before)), nil
 }
 
 func (i *importer) read() error {
@@ -387,23 +397,6 @@ func handleAlpMer(r *rowData, c *cache) error {
 				if r.AlpMd5 == "" {
 					return fmt.Errorf("支付宝商户：%s 密钥为空", r.AlpMerId)
 				}
-				// 费率转换
-				// f64, err := strconv.ParseFloat(r.AlpAcqFee, 10)
-				// if err != nil {
-				// 	return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率格式错误(%s)", r.AlpMerId, r.AlpAcqFee)
-				// }
-				// if f64 > maxFee {
-				// 	return fmt.Errorf("支付宝商户：%s 讯联跟支付宝费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpAcqFee)
-				// }
-				// r.AlpAcqFeeF = float32(f64)
-				// f64, err = strconv.ParseFloat(r.AlpMerFee, 10)
-				// if err != nil {
-				// 	return fmt.Errorf("支付宝商户：%s 商户跟讯联费率格式错误(%s)", r.AlpMerId, r.AlpMerFee)
-				// }
-				// if f64 > maxFee {
-				// 	return fmt.Errorf("支付宝商户：%s 商户跟讯联费率超过最大值 %0.2f (%s)", r.AlpMerId, maxFee, r.AlpMerFee)
-				// }
-				// r.AlpMerFeeF = float32(f64)
 			}
 		}
 	}
@@ -452,24 +445,6 @@ func handleWxpMer(r *rowData, c *cache) error {
 						return fmt.Errorf("微信商户：%s 密钥为空", r.WxpSubMerId)
 					}
 				}
-
-				// 费率转换
-				// f64, err := strconv.ParseFloat(r.WxpAcqFee, 10)
-				// if err != nil {
-				// 	return fmt.Errorf("微信商户：%s 讯联跟微信费率格式错误(%s)", r.WxpSubMerId, r.WxpAcqFee)
-				// }
-				// if f64 > maxFee {
-				// 	return fmt.Errorf("微信商户：%s 讯联跟微信费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpAcqFee)
-				// }
-				// r.WxpAcqFeeF = float32(f64)
-				// f64, err = strconv.ParseFloat(r.WxpMerFee, 10)
-				// if err != nil {
-				// 	return fmt.Errorf("微信商户：%s 商户跟讯联费率格式错误(%s)", r.WxpSubMerId, r.WxpMerFee)
-				// }
-				// if f64 > maxFee {
-				// 	return fmt.Errorf("微信商户：%s 商户跟讯联费率超过最大值 3% (%s)", r.WxpSubMerId, r.WxpMerFee)
-				// }
-				// r.WxpMerFeeF = float32(f64)
 			}
 		}
 	}
@@ -787,6 +762,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
+	// 返回某列完整错误信息
 	if col != 35 {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var errStr string

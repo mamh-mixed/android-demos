@@ -14,6 +14,10 @@
         "NotifyURL": "http://dev.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime":"40m"
     },
+    "Qiniu":{
+        "Bucket":"develop",
+        "Domain":"dn-yun-develop.qbox.me"
+    },
     "Mongo": {
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
         "URL": "mongodb://quickpay:quickpay@dev.ipay.so:27017/quickpay",

@@ -2,6 +2,7 @@ package qiniu
 
 import (
 	"fmt"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"golang.org/x/net/context"
 	"io"
 	"log"
@@ -10,13 +11,13 @@ import (
 )
 
 const (
-	BUCKET     = "yun-master"
-	DOMAIN     = "dn-yun-master.qbox.me"
 	ACCESS_KEY = "-OOrgfZJbxz29kiW6HQsJ_OQJcjX6gaPRDf6xOcc"
 	SECRET_KEY = "rgBxbGeGJluv8ApEjY1RL2vq9IIfXcQAQqH4ttGo"
 )
 
 var cli *kodo.Client
+var BUCKET = goconf.Config.Qiniu.Bucket
+var DOMAIN = goconf.Config.Qiniu.Domain
 
 func init() {
 	kodo.SetMac(ACCESS_KEY, SECRET_KEY)

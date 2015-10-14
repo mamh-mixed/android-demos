@@ -14,6 +14,10 @@
         "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime":"24h"
     },
+    "Qiniu":{
+        "Bucket":"yun-master",
+        "Domain":"dn-yun-master.qbox.me"
+    },
     "Mongo": {
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
         "URL": "mongodb://quickpay:dwLDq1OyiZVgY40Mt0SdOrADckJVJyyeNK1BuV1D0Iw@mgo2.set.shou.money:27017,mgo1.set.shou.money:27018,nsq1.set.shou.money:27017/quickpay",
