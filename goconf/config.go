@@ -22,19 +22,16 @@ type ConfigStruct struct {
 	}
 
 	Mongo struct {
-		URL string
-		DB  string
+		Encrypt    bool
+		URL        string
+		EncryptURL string
+		DB         string
 	}
 
 	CILOnline struct {
 		Host       string
 		Port       int
 		ServerCert string
-		// long connect
-		QueueSize        int
-		InitWindowSize   int // 全双工 pipeline 方式，接收数据后，找到对应的请求者
-		KeepaliveTime    Duration
-		ReconnectTimeout Duration
 	}
 
 	CFCA struct {

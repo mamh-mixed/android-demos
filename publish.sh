@@ -116,9 +116,9 @@ function restart() {
 cd $workdir
 
 echo "Killing $prog process..."
-ps -ef | grep "$prog"
-ps -ef | grep "$prog" | awk '{print \$2}' | xargs kill -9
-pwd
+ps -ef | grep $prog
+killall $prog
+
 echo "Starting $prog process ..."
 mkdir -p logs
 nohup ./$prog >> logs/$prog.log 2>&1 &
@@ -126,7 +126,7 @@ ps -ef | grep $prog
 
 echo "Sleep 5 seconds..."
 sleep 5
-tail -n 60 logs/$prog.log
+tail -n 30 logs/$prog.log
 
 exit
 EOF
