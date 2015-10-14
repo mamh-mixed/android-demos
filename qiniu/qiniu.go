@@ -41,8 +41,8 @@ func List(prefix, marker string, limit int) ([]kodo.ListItem, string, error) {
 	return cli.Bucket(BUCKET).List(context.Background(), prefix, marker, limit)
 }
 
-// Upload 上传文件
-func Upload(key string, size int64, reader io.Reader) error {
+// Put 上传文件
+func Put(key string, size int64, reader io.Reader) error {
 	ctx := context.Background()
 	return cli.Bucket(BUCKET).Put(ctx, nil, key, reader, size, &kodo.PutExtra{})
 }

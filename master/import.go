@@ -20,12 +20,11 @@ import (
 
 // settRole
 const (
-	SR_CHANNEL     = "CHANNEL"
-	SR_CIL         = "CIL"
-	SR_COMPANY     = "COMPANY"
-	SR_INSTITUTION = "INSTITUTION"
-	SR_AGENT       = "AGENT"
-	SR_GROUP       = "GROUP"
+	SR_CHANNEL = "CHANNEL"
+	SR_CIL     = "CIL"
+	SR_COMPANY = "COMPANY"
+	SR_AGENT   = "AGENT"
+	SR_GROUP   = "GROUP"
 )
 
 var sysErr = errors.New("系统错误，请重新上传。")
@@ -268,15 +267,17 @@ func updateValidate(r *rowData) error {
 		}
 
 	}
-	if r.IsWxpCilSett != "" {
-		if r.IsWxpCilSett != "是" && r.IsWxpCilSett != "否" {
-			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsWxpCilSett)
+	if r.WxpSettFlag != "" {
+		if r.WxpSettFlag != SR_AGENT && r.WxpSettFlag != SR_CHANNEL &&
+			r.WxpSettFlag != SR_CIL && r.WxpSettFlag != SR_COMPANY && r.WxpSettFlag != SR_GROUP {
+			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
 		}
 	}
 
-	if r.IsAlpCilSett != "" {
-		if r.IsAlpCilSett != "是" && r.IsAlpCilSett != "否" {
-			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsAlpCilSett)
+	if r.AlpSettFlag != "" {
+		if r.AlpSettFlag != SR_AGENT && r.AlpSettFlag != SR_CHANNEL &&
+			r.AlpSettFlag != SR_CIL && r.AlpSettFlag != SR_COMPANY && r.AlpSettFlag != SR_GROUP {
+			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
 		}
 	}
 
@@ -322,14 +323,16 @@ func insertValidate(r *rowData) error {
 			}
 			r.IsAgent = true
 		}
-		if r.IsWxpCilSett != "是" && r.IsWxpCilSett != "否" {
-			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsWxpCilSett)
+		if r.WxpSettFlag != SR_AGENT && r.WxpSettFlag != SR_CHANNEL &&
+			r.WxpSettFlag != SR_CIL && r.WxpSettFlag != SR_COMPANY && r.WxpSettFlag != SR_GROUP {
+			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpMerId != "" {
-		if r.IsAlpCilSett != "是" && r.IsAlpCilSett != "否" {
-			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为【是】或【否】", r.IsAlpCilSett)
+		if r.AlpSettFlag != SR_AGENT && r.AlpSettFlag != SR_CHANNEL &&
+			r.AlpSettFlag != SR_CIL && r.AlpSettFlag != SR_COMPANY && r.AlpSettFlag != SR_GROUP {
+			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
 		}
 	}
 
@@ -480,10 +483,11 @@ func feeParse(merFee, acqFee string) (mf, af float32, errStr string) {
 
 func (i *importer) doDataWrap() {
 	for _, r := range i.rowData {
+		var mer *model.Merchant
 		switch r.Operator {
 		case "A":
 			// 集团商户
-			mer := model.Merchant{}
+			mer = &model.Merchant{}
 			mer.MerId = r.MerId
 			mer.Detail.MerName = r.MerName
 			mer.Detail.CommodityName = r.CommodityName
@@ -503,9 +507,9 @@ func (i *importer) doDataWrap() {
 			mer.Detail.OpenBankName = r.BankName
 			mer.Remark = "add-upload-" + i.fileName
 			mer.MerStatus = "Normal"
-			i.A.Mers = append(i.A.Mers, mer)
+			i.A.Mers = append(i.A.Mers, *mer)
 		case "U":
-			mer := r.Mer
+			mer = r.Mer
 			if r.MerName != "" {
 				mer.Detail.MerName = r.MerName
 			}
@@ -589,9 +593,18 @@ func (i *importer) doDataWrap() {
 			// ADDBY:RUI,DATE:20151012
 			// ------------
 			alpRoute.MerFee, alpRoute.AcqFee = float64(r.AlpMerFeeF), float64(r.AlpAcqFeeF)
-			if r.IsAlpCilSett == "是" {
-				alpRoute.SettFlag = "CIL"
-				alpRoute.SettRole = "CIL"
+			alpRoute.SettFlag = r.AlpSettFlag
+			switch r.AlpSettFlag {
+			case SR_CIL:
+				alpRoute.SettRole = SR_CIL
+			case SR_CHANNEL:
+				alpRoute.SettRole = "ALP"
+			case SR_AGENT:
+				alpRoute.SettRole = mer.AgentCode
+			case SR_COMPANY:
+				// not support
+			case SR_GROUP:
+				alpRoute.SettRole = mer.GroupCode
 			}
 			// ------------
 
@@ -638,9 +651,18 @@ func (i *importer) doDataWrap() {
 			// ADDBY:RUI,DATE:20151012
 			// --------
 			wxpRoute.MerFee, wxpRoute.AcqFee = float64(r.WxpMerFeeF), float64(r.WxpAcqFeeF)
-			if r.IsWxpCilSett == "是" {
-				wxpRoute.SettFlag = "CIL"
-				wxpRoute.SettRole = "CIL"
+			wxpRoute.SettFlag = r.WxpSettFlag
+			switch r.WxpSettFlag {
+			case SR_CIL:
+				wxpRoute.SettRole = SR_CIL
+			case SR_CHANNEL:
+				wxpRoute.SettRole = "WXP"
+			case SR_AGENT:
+				wxpRoute.SettRole = mer.AgentCode
+			case SR_COMPANY:
+				// not support
+			case SR_GROUP:
+				wxpRoute.SettRole = mer.GroupCode
 			}
 			// --------
 
@@ -830,7 +852,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		r.AlpMerFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[18]; cell != nil {
-		r.IsAlpCilSett = strings.TrimSpace(cell.Value)
+		r.AlpSettFlag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[19]; cell != nil {
 		r.WxpMerId = strings.Trim(cell.Value, " ")
@@ -857,7 +879,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		r.WxpMerFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[27]; cell != nil {
-		r.IsWxpCilSett = strings.TrimSpace(cell.Value)
+		r.WxpSettFlag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[28]; cell != nil {
 		r.ShopId = strings.Trim(cell.Value, " ")
@@ -903,7 +925,7 @@ type rowData struct {
 	AlpAgentCode  string // 支付宝代理代码
 	AlpAcqFee     string // 讯联跟支付宝费率
 	AlpMerFee     string // 商户跟讯联费率
-	IsAlpCilSett  string // 是否讯联清算
+	AlpSettFlag   string // 是否讯联清算
 	WxpAppId      string // 商户appId
 	WxpMd5        string // 微信密钥
 	WxpMerId      string // 微信商户号
@@ -912,7 +934,7 @@ type rowData struct {
 	WxpSubAppId   string // 子商户AppId
 	WxpAcqFee     string // 讯联跟微信费率
 	WxpMerFee     string // 商户跟讯联费率(微信)
-	IsWxpCilSett  string // 是否讯联清算
+	WxpSettFlag   string // 是否讯联清算
 	ShopId        string // 门店标识
 	GoodsTag      string // 商品标识
 	AcctNum       string // 开户账户

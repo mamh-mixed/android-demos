@@ -145,6 +145,7 @@ type MerDetail struct {
 	GoodsTag      string `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
 	CommodityName string `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
+	Area          string `bson:"area,omitempty" json:"area,omitempty"`
 	TitleOne      string `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
 	TitleTwo      string `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
 	City          string `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
