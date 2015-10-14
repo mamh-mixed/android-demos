@@ -147,6 +147,7 @@ type MerDetail struct {
 	ShortName     string `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
 	TitleOne      string `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
 	TitleTwo      string `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
+	Province      string `bson:"province,omitempty" json:"province,omitempty"`           // 商户省份
 	City          string `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
 	Nation        string `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
 	MerType       string `bson:"merType,omitempty" json:"merType,omitempty"`             // 商户类型
