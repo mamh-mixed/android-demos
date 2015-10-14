@@ -87,7 +87,7 @@
       </div>
       <div class="user-title">
         <div>欢迎您，
-          <span>123</span>
+          <span>{{user.nickName}}</span>
         </div>
         <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
         <paper-icon-button icon="refresh"></paper-icon-button>
@@ -95,13 +95,64 @@
       </div>
     </div>
     <content select=".content"></content>
+    <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
+    <iron-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'up-down-layout',
-        properties: {},
-        ready: function() {},
+        properties: {
+          user: {
+            type: Object,
+            notify: true
+          }
+        },
+        ready: function() {
+          //  进去页面之前先判断用户是否已登录
+          var sessionId = window.sessionStorage.getItem('SESSIONID');
+          if (!sessionId || sessionId === '') {
+            window.location.href = 'login.html';
+            return;
+          }
+          this.$.findSessionAjax.params = {
+            'sessionId': sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+        },
+        handleFindSessionResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            window.location.href = 'login.html';
+            return;
+          }
+          this.user = response.data;
+          var userType = this.user.userType;
+          window.sessionStorage.setItem('USERTYPE', userType);
+          if (userType === 'admin') {
+            this.menus = this.adminMenus;
+          } else if (userType === 'agent' || userType === 'group' || userType === 'merchant') {
+            this.menus = this.agentMenus;
+          }
+        },
+        // 退出
+        logoutHandle: function() {
+          var sessionId = window.sessionStorage.getItem('SESSIONID');
+          // 删除后台sesseion信息
+          this.$.deleteSessionAjax.params = {
+            'sessionId': sessionId,
+          };
+          this.$.deleteSessionAjax.generateRequest();
+
+          // 清楚sessionStorage中的信息
+          window.sessionStorage.removeItem('SESSIONID');
+          window.sessionStorage.removeItem('USERTYPE');
+          this.user = {};
+          this.$.logoutBtn.hidden = true;
+
+          // 跳转至登录页面
+          window.location.href = 'login.html';
+        },
       });
     })();
   </script>
