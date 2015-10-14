@@ -12,15 +12,17 @@
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "1s", // 缓存有效时间
         "NotifyURL": "http://test.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
-        "OrderCloseTime":"24h"
+        "OrderCloseTime": "24h"
     },
     "Qiniu":{
         "Bucket":"test",
         "Domain":"dn-yun-test.qbox.me"
     },
     "Mongo": {
+        "Encrypt": true, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
-        "URL": "mongodb://quickpay:quickpay@test.ipay.so:27017,test.ipay.so:27018,test.ipay.so:27019/quickpay",
+        "URL": "mongodb://quickpay:******@test.ipay.so:27017,test.ipay.so:27018,test.ipay.so:27019/quickpay",
+        "EncryptURL": "GYeB1+/dUEg41y5AOjDWSCjJM7WyxQOazhHTikDZzQ61SzASrOZYyZ1FDLqc6rD4ByM1uY4bAFJGJglJqiGSPDEl73iBH3v9NbEHMDm61DBE+qp5AzD6tqIPDtCbMdjtGuEzMp5TUis1XHWKDuzhfrHGSKYWKBu13XftXFg7tutqTmdHLGbO1iM8C9Dk1b8zGnZCHLqBTJe9U/hoSQslCf8GZjUC5wJoTfD31KP0gL0kJQ8iLLzM4rLtonnDUwSIilHeHrh6Mx9q6Ia7IJveOIHYfQWu668vJyUNVvMoN9XOEVe3u0WUlxs/NvkkhLgNMKkuK00kZvyIkgoXsNbPZw==",
         "DB": "quickpay"
     },
     "CILOnline": {

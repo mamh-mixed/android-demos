@@ -12,15 +12,17 @@
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "5m", // 缓存有效时间
         "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
-        "OrderCloseTime":"24h"
+        "OrderCloseTime": "24h"
     },
     "Qiniu":{
         "Bucket":"yun-master",
         "Domain":"dn-yun-master.qbox.me"
     },
     "Mongo": {
+        "Encrypt": true, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
-        "URL": "mongodb://quickpay:dwLDq1OyiZVgY40Mt0SdOrADckJVJyyeNK1BuV1D0Iw@mgo2.set.shou.money:27017,mgo1.set.shou.money:27018,nsq1.set.shou.money:27017/quickpay",
+        "URL": "mongodb://quickpay:******@mgo2.set.shou.money:27017,mgo1.set.shou.money:27018,nsq1.set.shou.money:27017/quickpay",
+        "EncryptURL": "gVHAPh0W/zta5rtNsgiqFSUA4kexR0s2wfyu7bIocTGGZntW7oLlqILV2OFJAX3YQAWywM6JBZNEucWXERINsMQm1OoyXcukRwTxyl+i7B/aEWlA6mumm2iz1zdI+R/hYO5K/mJ8T4fp9qnorVkQixsUvXQuOs2+8S0He/2V8QmsnIjouZF8h7XvFM21yuelmPwKw1zoGRyvUNt2YjA9jAQ5J+YPzxJWkfyLBjoCaKWxVM4DgIOtBGMZQVYSedAWtCsAlrRw6GAEa4TD74vkpvKSX9LmGxtt9SeTj04cNpViqZDmPS4c9Jrl3J/G35cICfI3meSvq78XYjmYjnSohA==",
         "DB": "quickpay"
     },
     "CILOnline": {
