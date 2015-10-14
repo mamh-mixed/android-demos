@@ -86,7 +86,7 @@ func BuildTree() {
 			log.Panicf("fail to build cardBin tree with the given Bin(%s): %s", v.Bin, err)
 		}
 	}
-	log.Infof("cardBin trieTree init success %+v", tree)
+	log.Info("cardBin trieTree init success")
 }
 
 // build 建立树
