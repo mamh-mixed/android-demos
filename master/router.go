@@ -3,7 +3,9 @@ package master
 import (
 	"errors"
 	"net/http"
+	"time"
 
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/qiniu/log"
@@ -89,31 +91,20 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		sessionDeleteHandle(w, r)
 		return
 	}
-
-	// 查看请求中有没有cookie
-	c, err := r.Cookie("QUICKMASTERID")
+	// 验证session是否过期
+	session, err := sessionProcess(w, r)
 	if err != nil {
-		if err == http.ErrNoCookie {
-			http.Error(w, err.Error(), http.StatusNotAcceptable)
-			return
-		}
+		log.Infof("%s", err)
+		return
 	}
-	// 验证是否有权限
-	if c != nil {
-		log.Debugf("url=%s, cookie: %s", r.URL.Path, c.String())
-		session, err := mongo.SessionColl.Find(c.Value)
-		if err != nil {
-			http.Error(w, "查找session失败", http.StatusNotAcceptable)
-			return
-		}
-		user := session.User
-		err = authProcess(w, r, *user)
-		if err != nil {
-			log.Debugf("%s,url=%s", err, r.URL.Path)
-			http.Error(w, err.Error(), http.StatusNotAcceptable)
-			return
-		}
 
+	// 验证是否有权限
+	user := session.User
+	err = authProcess(w, r, *user)
+	if err != nil {
+		log.Debugf("%s,url=%s", err, r.URL.Path)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return
 	}
 
 	h, _ := mux.Handler(r)
@@ -155,4 +146,43 @@ func authProcess(w http.ResponseWriter, r *http.Request, user model.User) (err e
 
 	}
 	return nil
+}
+
+// sessionProcess 处理session
+func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Session, err error) {
+	// 查看请求中有没有cookie
+	c, err := r.Cookie("QUICKMASTERID")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return session, err
+		}
+	}
+	// 查询session是否过期，如果还剩最后5分钟则给此session延期，如果已经过期则返回失败
+	session, err = mongo.SessionColl.Find(c.Value)
+	if err != nil {
+		log.Debugf("查询session(%s)出错:%s", c.Value, err)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return session, err
+	}
+	expire, _ := time.ParseInLocation("2006-01-02 15:04:05", session.Expires, time.Local)
+	subTime := expire.Sub(time.Now())
+	log.Debugf("subTime:%d", subTime)
+	if subTime > 0 && subTime < goconf.Config.App.MinExpires*time.Minute {
+		newExpire := expire.Add(goconf.Config.App.Expires * time.Minute)
+		session.Expires = newExpire.Format("2006-01-02 15:04:05")
+		err = mongo.SessionColl.Add(session)
+		if err != nil {
+			log.Errorf("update session err,%s", err)
+		} else {
+			c.Expires = newExpire
+			http.SetCookie(w, c)
+		}
+
+	} else if subTime < 0 {
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return session, errors.New("session过期")
+	}
+	log.Debugf("url=%s, cookie: %s", r.URL.Path, c.String())
+	return session, nil
 }

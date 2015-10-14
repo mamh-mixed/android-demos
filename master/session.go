@@ -3,6 +3,7 @@ package master
 import (
 	"time"
 
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/qiniu/log"
@@ -18,7 +19,7 @@ func init() {
 	}()
 }
 func timingClearSession() {
-	refetchTime := 2 * time.Hour
+	refetchTime := goconf.Config.App.MinExpires * time.Minute
 	for {
 		select {
 		case <-time.After(refetchTime):
