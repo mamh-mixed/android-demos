@@ -17,10 +17,15 @@
 			if (notAuthPath.indexOf(e.detail.path) >= 0) {
 				return;
 			}
-      
+
 			var userType = window.localStorage.getItem('USERTYPE');
 			userType = userType.substr(1, userType.length - 2);
 			var isAccess = false;
+
+      if (userType === 'admin') {
+        return;
+      }
+
 			if (userType !== 'agent' && userType !== 'group' && userType !== 'merchant') {
 				window.location.href = 'login.html';
 				return;
