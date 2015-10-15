@@ -1,11 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
+<link rel="import" href="../x-select/x-select.html">
 <link rel="import" href="../group-editor/group-editor.html">
 <link rel="import" href="../group-delete/group-delete.html">
-<link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="group-list">
   <style>
@@ -27,7 +27,7 @@
 
   </style>
   <template>
-    <form is="iron-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+    <form is="x-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
         <paper-input name="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
         <paper-input name="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
