@@ -99,11 +99,20 @@ func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
 		}
 
 		if m.Detail.BankId == "" || m.Detail.AcctNum == "" || m.Detail.AcctName == "" ||
-			m.Detail.OpenBankName == "" || m.Detail.BankName == "" || m.Detail.City == "" {
+			(m.Detail.OpenBankName == "" && m.Detail.BankName == "") || m.Detail.City == "" {
 			log.Warnf("settinfo not found , gen report skip , merId=%s", mg.MerId)
 			// 清算信息缺一不可
 			cmMap[mg.MerId] = 0
 			continue
+		}
+
+		// 补充开户银行和支行
+		if m.Detail.OpenBankName == "" {
+			m.Detail.OpenBankName = m.Detail.BankName
+		}
+
+		if m.Detail.BankName == "" {
+			m.Detail.BankName = m.Detail.OpenBankName
 		}
 
 		cmMap[mg.MerId] = 1 // 清算成功

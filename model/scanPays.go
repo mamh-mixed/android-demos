@@ -315,7 +315,8 @@ func (s *ScanPayRequest) WxpMarshalGoods() string {
 
 	goods, err := marshalGoods(s.GoodsInfo)
 	if err != nil {
-		return s.GoodsInfo // 假如格式错误，直接透传给微信
+		// 格式不对，送配置的商品名称，防止商户送的内容过长
+		return s.Subject
 	}
 
 	var goodsName []string
@@ -323,7 +324,13 @@ func (s *ScanPayRequest) WxpMarshalGoods() string {
 		for _, v := range goods {
 			goodsName = append(goodsName, v.GoodsName)
 		}
-		return strings.Join(goodsName, ",")
+
+		body := strings.Join(goodsName, ",")
+		bodySizes := []rune(body)
+		if len(bodySizes) > 20 {
+			bodySizes = bodySizes[:20]
+		}
+		return string(bodySizes) + "..."
 	}
 
 	// 假如商品详细为空，送配置的商品名称
