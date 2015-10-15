@@ -8,7 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/qiniu/log"
+	"github.com/omigo/log"
 )
 
 var agentURLArr = []string{"/master/trade/query", "/master/trade/report", "/master/trade/stat", "/master/trade/stat/report",

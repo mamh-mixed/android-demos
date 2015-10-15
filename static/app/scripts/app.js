@@ -1,33 +1,53 @@
 (function(document) {
-  'use strict';
+	'use strict';
 
-  // See https://github.com/Polymer/polymer/issues/1381
-  window.addEventListener('WebComponentsReady', function() {
-    // imports are loaded and elements have been registered
-    var router = document.querySelector('#appRouter');
-    var agentRoutes = ['/trade/list','/trade/reports'];
+	var notAuthPath = [
+		'/404',
+    '/'
+	];
 
-    router.addEventListener('state-change', function(e) {
-      // TODO 权限校验
-      console.log(e.type, e.detail.path);
-      var userType = window.sessionStorage.getItem('USERTYPE');
-      var isAccess=false;
-      if (userType === 'agent' || userType === 'group' || userType === 'merchant') {
-        for (var i = 0; i < agentRoutes.length; i++) {
-           if(agentRoutes[i]===e.detail.path){
-               isAccess=true;
-               break;
-           }
-        }
-        if (!isAccess){
-            window.location.href = '#/trade/list';
-            e.preventDefault();
-        }
+	// See https://github.com/Polymer/polymer/issues/1381
+	window.addEventListener('WebComponentsReady', function() {
+		// imports are loaded and elements have been registered
+		var router = document.querySelector('#appRouter');
+		var agentRoutes = ['/trade/list', '/trade/reports'];
 
+		router.addEventListener('state-change', function(e) {
+			console.log(e.type, e.detail.path);
+			if (notAuthPath.indexOf(e.detail.path) >= 0) {
+				return;
+			}
+
+			var userType = window.localStorage.getItem('USERTYPE');
+			userType = userType.substr(1, userType.length - 2);
+			var isAccess = false;
+
+      if (userType === 'admin') {
+        return;
       }
-    });
 
-    router.init();
-  });
+			if (userType !== 'agent' && userType !== 'group' && userType !== 'merchant') {
+				window.location.href = 'login.html';
+				return;
+			}
+
+      // TODO 按照不同的用户类型给定不同的菜单权限
+			for (var i = 0; i < agentRoutes.length; i++) {
+				if (agentRoutes[i] === e.detail.path) {
+					isAccess = true;
+					break;
+				}
+			}
+			if (!isAccess) {
+				router.go('/404');
+				// window.location.href = '#/trade/list';
+				e.preventDefault();
+			}
+
+			// }
+		});
+
+		router.init();
+	});
 
 })(document);
