@@ -50,7 +50,7 @@ func processTransSettle() {
 	// afterFunc(disCfca*time.Second, "doCILTransCheck")
 
 	// 扫码每天出报表
-	disReport, _ := util.TimeToGiven("00:05:00")
+	disReport, _ := util.TimeToGiven("08:00:00")
 	afterFunc(disReport*time.Second, "doScanpaySettReport")
 
 	// 主线程阻塞

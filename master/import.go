@@ -75,7 +75,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key, IsDebug: true}
+	ip := importer{Sheets: file.Sheets, fileName: key}
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -99,12 +99,14 @@ type cache struct {
 	ChanMerCache map[string]*model.ChanMer
 	AgentCache   map[string]*model.Agent
 	GroupCache   map[string]*model.Group
+	RouterCache  map[string]*model.RouterPolicy
 }
 
 func (c *cache) Init() {
 	c.ChanMerCache = make(map[string]*model.ChanMer)
 	c.AgentCache = make(map[string]*model.Agent)
 	c.GroupCache = make(map[string]*model.Group)
+	c.RouterCache = make(map[string]*model.RouterPolicy)
 }
 
 type operation struct {
@@ -171,11 +173,11 @@ func (i *importer) read() error {
 func (i *importer) dataHandle() error {
 
 	// 数据合法性验证
-	for _, r := range i.rowData {
+	for index, r := range i.rowData {
 
 		// 先看是否有填商户号
 		if r.MerId == "" {
-			return fmt.Errorf("%s", "商户代码为空")
+			return fmt.Errorf("第 %d 行，商户代码为空", index+3)
 		}
 		// 字段内容合法验证
 		mer, err := mongo.MerchantColl.Find(r.MerId)
@@ -190,7 +192,6 @@ func (i *importer) dataHandle() error {
 				return err
 			}
 		case "U":
-			// return fmt.Errorf("%s", "暂不支持U操作，马上上线，敬请期待！")
 			// 修改不存在用户，报错
 			if err != nil {
 				return fmt.Errorf("商户：%s 不存在", r.MerId)
@@ -281,6 +282,12 @@ func updateValidate(r *rowData) error {
 		}
 	}
 
+	if r.SignKey != "" {
+		if len(r.SignKey) != 32 {
+			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+		}
+	}
+
 	return nil
 }
 
@@ -302,6 +309,9 @@ func insertValidate(r *rowData) error {
 	if r.IsNeedSignStr == "是" {
 		if r.SignKey == "" {
 			return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+		}
+		if len(r.SignKey) != 32 {
+			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
 		}
 		r.IsNeedSign = true
 	}
@@ -402,6 +412,20 @@ func handleAlpMer(r *rowData, c *cache) error {
 				}
 			}
 		}
+	} else {
+		// 可能需要修改路由策略信息
+		if r.Operator == "U" {
+			// 有填清算标识，那么需要处理
+			if r.AlpSettFlag != "" {
+				rp := mongo.RouterPolicyColl.Find(r.MerId, "ALP")
+				if rp == nil {
+					return fmt.Errorf("没找到商户：%s，对应的支付宝路由策略，无法变更清算标识。", r.MerId)
+				}
+				settFlagHandle(r.AlpSettFlag, rp, r.Mer)
+				// TODO:处理手续费变更
+				c.RouterCache[r.MerId+"ALP"] = rp
+			}
+		}
 	}
 	return nil
 }
@@ -450,12 +474,26 @@ func handleWxpMer(r *rowData, c *cache) error {
 				}
 			}
 		}
+	} else {
+		// 可能需要修改路由策略信息
+		if r.Operator == "U" {
+			// 有填清算标识，那么需要处理
+			if r.WxpSettFlag != "" {
+				rp := mongo.RouterPolicyColl.Find(r.MerId, "WXP")
+				if rp == nil {
+					return fmt.Errorf("没找到商户：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
+				}
+				settFlagHandle(r.WxpSettFlag, rp, r.Mer)
+				// TODO:处理手续费
+				c.RouterCache[r.MerId+"WXP"] = rp
+			}
+		}
 	}
 	return nil
 }
 
 // feeParse 费率转换
-func feeParse(merFee, acqFee string) (mf, af float32, errStr string) {
+func feeParse(merFee, acqFee string) (mf, af float64, errStr string) {
 
 	// acqFee
 	af64, err := strconv.ParseFloat(acqFee, 10)
@@ -478,7 +516,7 @@ func feeParse(merFee, acqFee string) (mf, af float32, errStr string) {
 		errStr = fmt.Sprintf("商户跟讯联费率超过最大值 3% (%s)", merFee)
 	}
 
-	return float32(mf64), float32(af64), errStr
+	return mf64, af64, errStr
 }
 
 func (i *importer) doDataWrap() {
@@ -572,8 +610,8 @@ func (i *importer) doDataWrap() {
 				alpChanMer.AgentCode = r.AlpAgentCode
 
 				// TODO:DELETE
-				alpChanMer.AcqFee = r.AlpAcqFeeF
-				alpChanMer.MerFee = r.AlpMerFeeF
+				// alpChanMer.AcqFee = r.AlpAcqFeeF
+				// alpChanMer.MerFee = r.AlpMerFeeF
 
 				switch r.Operator {
 				case "A":
@@ -592,20 +630,8 @@ func (i *importer) doDataWrap() {
 
 			// ADDBY:RUI,DATE:20151012
 			// ------------
-			alpRoute.MerFee, alpRoute.AcqFee = float64(r.AlpMerFeeF), float64(r.AlpAcqFeeF)
-			alpRoute.SettFlag = r.AlpSettFlag
-			switch r.AlpSettFlag {
-			case SR_CIL:
-				alpRoute.SettRole = SR_CIL
-			case SR_CHANNEL:
-				alpRoute.SettRole = "ALP"
-			case SR_AGENT:
-				alpRoute.SettRole = mer.AgentCode
-			case SR_COMPANY:
-				// not support
-			case SR_GROUP:
-				alpRoute.SettRole = mer.GroupCode
-			}
+			alpRoute.MerFee, alpRoute.AcqFee = r.AlpMerFeeF, r.AlpAcqFeeF
+			settFlagHandle(r.AlpSettFlag, &alpRoute, mer)
 			// ------------
 
 			switch r.Operator {
@@ -630,8 +656,8 @@ func (i *importer) doDataWrap() {
 				}
 
 				//TODO:DELETE
-				wxpChanMer.AcqFee = r.WxpAcqFeeF
-				wxpChanMer.MerFee = r.WxpMerFeeF
+				// wxpChanMer.AcqFee = r.WxpAcqFeeF
+				// wxpChanMer.MerFee = r.WxpMerFeeF
 
 				switch r.Operator {
 				case "A":
@@ -650,20 +676,8 @@ func (i *importer) doDataWrap() {
 
 			// ADDBY:RUI,DATE:20151012
 			// --------
-			wxpRoute.MerFee, wxpRoute.AcqFee = float64(r.WxpMerFeeF), float64(r.WxpAcqFeeF)
-			wxpRoute.SettFlag = r.WxpSettFlag
-			switch r.WxpSettFlag {
-			case SR_CIL:
-				wxpRoute.SettRole = SR_CIL
-			case SR_CHANNEL:
-				wxpRoute.SettRole = "WXP"
-			case SR_AGENT:
-				wxpRoute.SettRole = mer.AgentCode
-			case SR_COMPANY:
-				// not support
-			case SR_GROUP:
-				wxpRoute.SettRole = mer.GroupCode
-			}
+			wxpRoute.MerFee, wxpRoute.AcqFee = r.WxpMerFeeF, r.WxpAcqFeeF
+			settFlagHandle(r.WxpSettFlag, &wxpRoute, mer)
 			// --------
 
 			switch r.Operator {
@@ -673,6 +687,27 @@ func (i *importer) doDataWrap() {
 				i.U.RouterPolicys = append(i.U.RouterPolicys, wxpRoute)
 			}
 		}
+	}
+
+	// 更新缓存里的路由策略，如果有的话
+	for _, r := range i.cache.RouterCache {
+		i.U.RouterPolicys = append(i.U.RouterPolicys, *r)
+	}
+}
+
+func settFlagHandle(settFlag string, rp *model.RouterPolicy, mer *model.Merchant) {
+	rp.SettFlag = settFlag
+	switch settFlag {
+	case SR_CIL:
+		rp.SettRole = SR_CIL
+	case SR_CHANNEL:
+		rp.SettRole = rp.ChanCode
+	case SR_AGENT:
+		rp.SettRole = mer.AgentCode
+	case SR_COMPANY:
+		// not support
+	case SR_GROUP:
+		rp.SettRole = mer.GroupCode
 	}
 }
 
@@ -946,10 +981,10 @@ type rowData struct {
 	IsAgent    bool
 	IsNeedSign bool
 	Permission []string
-	AlpAcqFeeF float32
-	AlpMerFeeF float32
-	WxpAcqFeeF float32
-	WxpMerFeeF float32
+	AlpAcqFeeF float64
+	AlpMerFeeF float64
+	WxpAcqFeeF float64
+	WxpMerFeeF float64
 	Mer        *model.Merchant
 }
 
