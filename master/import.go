@@ -75,7 +75,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key, IsDebug: true}
+	ip := importer{Sheets: file.Sheets, fileName: key}
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -281,6 +281,12 @@ func updateValidate(r *rowData) error {
 		}
 	}
 
+	if r.SignKey != "" {
+		if len(r.SignKey) != 32 {
+			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+		}
+	}
+
 	return nil
 }
 
@@ -302,6 +308,9 @@ func insertValidate(r *rowData) error {
 	if r.IsNeedSignStr == "是" {
 		if r.SignKey == "" {
 			return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+		}
+		if len(r.SignKey) != 32 {
+			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
 		}
 		r.IsNeedSign = true
 	}
@@ -455,7 +464,7 @@ func handleWxpMer(r *rowData, c *cache) error {
 }
 
 // feeParse 费率转换
-func feeParse(merFee, acqFee string) (mf, af float32, errStr string) {
+func feeParse(merFee, acqFee string) (mf, af float64, errStr string) {
 
 	// acqFee
 	af64, err := strconv.ParseFloat(acqFee, 10)
@@ -478,7 +487,7 @@ func feeParse(merFee, acqFee string) (mf, af float32, errStr string) {
 		errStr = fmt.Sprintf("商户跟讯联费率超过最大值 3% (%s)", merFee)
 	}
 
-	return float32(mf64), float32(af64), errStr
+	return mf64, af64, errStr
 }
 
 func (i *importer) doDataWrap() {
@@ -572,8 +581,8 @@ func (i *importer) doDataWrap() {
 				alpChanMer.AgentCode = r.AlpAgentCode
 
 				// TODO:DELETE
-				alpChanMer.AcqFee = r.AlpAcqFeeF
-				alpChanMer.MerFee = r.AlpMerFeeF
+				// alpChanMer.AcqFee = r.AlpAcqFeeF
+				// alpChanMer.MerFee = r.AlpMerFeeF
 
 				switch r.Operator {
 				case "A":
@@ -592,7 +601,7 @@ func (i *importer) doDataWrap() {
 
 			// ADDBY:RUI,DATE:20151012
 			// ------------
-			alpRoute.MerFee, alpRoute.AcqFee = float64(r.AlpMerFeeF), float64(r.AlpAcqFeeF)
+			alpRoute.MerFee, alpRoute.AcqFee = r.AlpMerFeeF, r.AlpAcqFeeF
 			alpRoute.SettFlag = r.AlpSettFlag
 			switch r.AlpSettFlag {
 			case SR_CIL:
@@ -630,8 +639,8 @@ func (i *importer) doDataWrap() {
 				}
 
 				//TODO:DELETE
-				wxpChanMer.AcqFee = r.WxpAcqFeeF
-				wxpChanMer.MerFee = r.WxpMerFeeF
+				// wxpChanMer.AcqFee = r.WxpAcqFeeF
+				// wxpChanMer.MerFee = r.WxpMerFeeF
 
 				switch r.Operator {
 				case "A":
@@ -650,7 +659,7 @@ func (i *importer) doDataWrap() {
 
 			// ADDBY:RUI,DATE:20151012
 			// --------
-			wxpRoute.MerFee, wxpRoute.AcqFee = float64(r.WxpMerFeeF), float64(r.WxpAcqFeeF)
+			wxpRoute.MerFee, wxpRoute.AcqFee = r.WxpMerFeeF, r.WxpAcqFeeF
 			wxpRoute.SettFlag = r.WxpSettFlag
 			switch r.WxpSettFlag {
 			case SR_CIL:
@@ -946,10 +955,10 @@ type rowData struct {
 	IsAgent    bool
 	IsNeedSign bool
 	Permission []string
-	AlpAcqFeeF float32
-	AlpMerFeeF float32
-	WxpAcqFeeF float32
-	WxpMerFeeF float32
+	AlpAcqFeeF float64
+	AlpMerFeeF float64
+	WxpAcqFeeF float64
+	WxpMerFeeF float64
 	Mer        *model.Merchant
 }
 

@@ -21,10 +21,10 @@ const (
 	crypto = "cilxl123$"
 )
 
-// func init() {
-// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
-// 	connect()
-// }
+func init() {
+	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+	connect()
+}
 
 func Import(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
@@ -34,13 +34,27 @@ func Import(w http.ResponseWriter, r *http.Request) {
 
 	st := r.FormValue("st")
 	et := r.FormValue("et")
+	t := r.FormValue("type")
 
-	go func() {
-		err := AddTransFromOldDB(st, et)
-		log.Error(err)
-	}()
+	if t == "trans" {
+		go func() {
+			err := AddTransFromOldDB(st, et)
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	}
 
-	w.Write([]byte("已开始导入交易，请查看后台日志"))
+	if t == "merchant" {
+		go func() {
+			err := DoSyncMerchant("/Users/zhiruichen/Desktop/product_pem/")
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	}
+
+	w.Write([]byte("已开始导入，请查看后台日志"))
 }
 
 // txn 交易表数据
