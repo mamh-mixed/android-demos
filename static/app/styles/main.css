@@ -20,6 +20,7 @@ div.search-condition {
 }
 div.search-condition paper-input {
   width: 170px;
+  margin-right: 15px;
   display: inline-block;
 }
 div.search-condition paper-button {

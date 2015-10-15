@@ -43,12 +43,10 @@
             <th align="left">卡品牌</th>
             <th align="left">渠道商户代码</th>
             <th>渠道代码</th>
-            <th>卡Bin组</th>
-            <th>卡类型</th>
-            <th>交易类型</th>
-            <th>输入方式</th>
-            <th align="right">起始金额</th>
-            <th align="right">最大金额</th>
+            <th>讯联跟渠道费率</th>
+            <th>门店跟讯联费率</th>
+            <th>清算标识</th>
+            <th>清算角色</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -70,23 +68,17 @@
               <td class="center">
                 <span>{{item.chanCode}}</span>
               </td>
-              <td>
-                <span>{{item.binGroup}}</span>
+              <td class="center">
+                <span>{{item.acqFee}}</span>
               </td>
-              <td>
-                <span>{{item.cardType}}</span>
+              <td class="center">
+                <span>{{item.merFee}}</span>
               </td>
-              <td>
-                <span>{{item.transType}}</span>
+              <td class="center">
+                <span>{{item.settFlag}}</span>
               </td>
-              <td>
-                <span>{{item.inputWay}}</span>
-              </td>
-              <td>
-                <span>{{item.minAmount}}</span>
-              </td>
-              <td>
-                <span>{{item.maxAmount}}</span>
+              <td class="center">
+                <span>{{item.settRole}}</span>
               </td>
               <td class="center">
                 <iron-icon icon="delete" on-tap="handleItemDeletedEvent"></iron-icon>
