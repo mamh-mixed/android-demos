@@ -33,7 +33,7 @@ func TestDoSettWork(t *testing.T) {
 }
 
 func TestDoScanpaySettReport(t *testing.T) {
-	yesterday = "2015-10-11"
+	yesterday = "2015-10-14"
 	err := doScanpaySettReport(yesterday)
 	if err != nil {
 		t.Error(err)

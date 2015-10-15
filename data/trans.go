@@ -234,6 +234,11 @@ func AddTransFromOldDB(st, et string) error {
 			orig = tran
 		}
 
+		var handled bool
+		if orig.TransStatus == model.TransClosed || orig.RefundStatus != 0 {
+			handled = true
+		}
+
 		// 计算手续费
 		if orig.TransStatus == model.TransSuccess {
 			t.Fee = int64(math.Floor(float64(t.TransAmt)*orig.MerFee + 0.5))
@@ -287,8 +292,12 @@ func AddTransFromOldDB(st, et string) error {
 
 		// 如果是从数据库拿的，那么更新数据库里的数据
 		if isGetFromDB {
-			log.Infof("更新数据库原订单，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
-			mongo.SpTransColl.Update(orig)
+			if !handled {
+				log.Infof("更新数据库原订单，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
+				mongo.SpTransColl.Update(orig)
+			} else {
+				log.Infof("数据已被更新，商户号：%s，订单号：%s", t.MerId, t.OrigOrderNum)
+			}
 		}
 
 		effectTrans = append(effectTrans, t)
