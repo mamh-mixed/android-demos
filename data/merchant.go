@@ -57,6 +57,7 @@ type channel struct {
 	PartnerId string `bson:"partnerId"`
 	SubMchId  string `bson:"sub_mch_id"`
 	Type      string `bson:"type"`
+	GoodsTag  string `bson:"goods_tag"`
 }
 
 type merCert struct {
@@ -67,7 +68,7 @@ type merCert struct {
 
 // DoSyncMerchant 同步旧系统和新系统的商户
 func DoSyncMerchant(path string) error {
-	connect()
+	// connect()
 	mers, err := readMerFromOldDB()
 	if err != nil {
 		return err
@@ -93,9 +94,11 @@ func DoSyncMerchant(path string) error {
 	log.Infof("修改：成功更新 %d 调数据", updateCount)
 
 	// add
-	err = addMerchantFromOldDB(addMers, path)
-	if err != nil {
-		return err
+	if len(addMers) > 0 {
+		err = addMerchantFromOldDB(addMers, path)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -183,6 +186,8 @@ func updateMerchantFromOldDB(om merchant, nm *model.Merchant) error {
 	if om.Wxp.MchId != "" {
 		updWXPRouterPolicy(om)
 	}
+
+	mongo.MerchantColl.Update(nm)
 	return nil
 }
 
@@ -195,7 +200,7 @@ func updALPRouterPolicy(om merchant) {
 	}
 
 	if r.ChanMerId != om.Alp.PartnerId {
-		log.Errorf("商户对应的支付宝渠道商户号不一致，新=%s, 旧=%s", r.ChanMerId, om.Alp.PartnerId)
+		log.Errorf("商户(%s)对应的支付宝渠道商户号不一致，新=%s, 旧=%s", om.Clientid, r.ChanMerId, om.Alp.PartnerId)
 		return
 	}
 
@@ -231,7 +236,7 @@ func updWXPRouterPolicy(om merchant) {
 		chanMerId = om.Wxp.MchId
 	}
 	if r.ChanMerId != chanMerId {
-		log.Errorf("商户对应的微信渠道商户号不一致，新=%s, 旧=%s", r.ChanMerId, chanMerId)
+		log.Errorf("商户(%s)对应的微信渠道商户号不一致，新=%s, 旧=%s", om.Clientid, r.ChanMerId, chanMerId)
 		return
 	}
 
@@ -250,7 +255,7 @@ func updWXPRouterPolicy(om merchant) {
 		r.SettRole = "WXP"
 	}
 
-	return
+	mongo.RouterPolicyColl.Insert(r)
 }
 
 // addMerchantFromOldDB 导入商户
@@ -303,6 +308,7 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 		m.Detail.Area = mer.Area
 		m.Detail.TitleOne = mer.Group.TitleOne
 		m.Detail.TitleTwo = mer.Group.TitleTwo
+		m.Detail.GoodsTag = mer.Wxp.GoodsTag
 		m.MerId = mer.Clientid
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 		m.Remark = "old_system_data"
