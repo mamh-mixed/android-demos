@@ -1,9 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../elements/x-ajax/x-ajax.html">
 <link rel="import" href="../styles/app-theme.html">
 
 <dom-module id="up-down-layout">
@@ -96,8 +96,8 @@
       </div>
     </div>
     <content select=".content"></content>
-    <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
-    <iron-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
+    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
+    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
   </template>

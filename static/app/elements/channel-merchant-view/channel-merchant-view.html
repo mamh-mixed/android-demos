@@ -150,7 +150,7 @@
         <paper-button on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="deleteMerAjax" method="GET" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>
+    <x-ajax id="deleteMerAjax" method="GET" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
   </template>
   <script>
     Polymer({

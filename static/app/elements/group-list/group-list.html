@@ -90,7 +90,7 @@
 
     <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
     <group-delete id="groupDelete" on-saved="handleGroupSave"></group-delete>
-    <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
+    <x-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
 
   </template>
   <script>

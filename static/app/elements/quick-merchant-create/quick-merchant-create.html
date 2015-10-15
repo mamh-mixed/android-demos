@@ -144,8 +144,8 @@
         <paper-button on-tap="handleSaveMerchantTapped">保存</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
-    <iron-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></iron-ajax>
+    <x-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></x-ajax>
+    <x-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></x-ajax>
   </template>
   <script>
     var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
