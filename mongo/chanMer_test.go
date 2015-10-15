@@ -87,13 +87,13 @@ func TestFuzzyFindChanMer(t *testing.T) {
 // 	t.Logf("current count is %d", len(results))
 // }
 
-func TestChanMerFind(t *testing.T) {
-	chanMer, err := ChanMerColl.Find(chanCode, chanMerId)
+func TestChanMerFindOne(t *testing.T) {
+	chanMer, err := ChanMerColl.Find("ALP", "2088711559405531")
 	if err != nil {
 		t.Error("find chanMer unsuccessful ", err)
 		t.FailNow()
 	}
-	log.Debugf("find chanMer success %s", chanMer)
+	log.Debugf("find chanMer success %+v", chanMer)
 }
 
 func TestChanMerAdd(t *testing.T) {
