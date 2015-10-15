@@ -61,6 +61,7 @@ gulp.task('minifyHTML', ['copy'], function() {
 gulp.task('minifyJS', ['minifyHTML'], function() {
   return gulp.src([
       'app/**/*.js',
+      '!app/**/*.min.js',
       '!app/**/platinum-push-messaging/service-worker.js',
       '!app/bower_components/async/support/sync-package-managers.js',
       '!app/bower_components/sw-toolbox/demo/service-worker.js',
