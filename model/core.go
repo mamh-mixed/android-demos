@@ -47,6 +47,13 @@ const (
 	// transMode
 	MarketMode = 2 // 市场模式
 	MerMode    = 1 // 商户模式
+
+	// 清算标识
+	SR_CHANNEL = "CHANNEL"
+	SR_CIL     = "CIL"
+	SR_COMPANY = "COMPANY"
+	SR_AGENT   = "AGENT"
+	SR_GROUP   = "GROUP"
 )
 
 // cache name

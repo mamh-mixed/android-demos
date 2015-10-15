@@ -116,7 +116,6 @@
         font-size: 8px;
       }
     }
-
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -143,8 +142,6 @@
 
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
-        </div>
-        <div class="row">
           <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
         </div>
 
@@ -157,8 +154,12 @@
           <paper-input label="支行名称" value="{{merchant.detail.bankName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
+          <paper-input label="开户行名称" value="{{merchant.detail.openBankName::input}}"></paper-input>
           <paper-input label="门店交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="省份" value="{{merchant.detail.province::input}}"></paper-input>
+          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
         </div>
 
         <div class="row">
@@ -207,7 +208,8 @@
           <paper-input id="amerFee" label="门店跟讯联费率" value="{{alipayRoute.merFee::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="asettFlag" label="清算标识" value="{{alipayRoute.settFlag::input}}" required error-message="必填项"></paper-input>
+          <x-select id="asettFlag" items="[[settFlags]]" selected-item="{{asettFlag}}" class="validate-container" label="清算标识" required error-message="必填项"></x-select>
+          <paper-input id="asettRole" label="清算角色" value="{{alipayRoute.settRole::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
@@ -236,7 +238,8 @@
           <paper-input id="wmerFee" label="门店跟讯联费率" value="{{weixinRoute.merFee::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="wsettFlag" label="清算标识" value="{{weixinRoute.settFlag::input}}" required error-message="必填项"></paper-input>
+          <x-select id="wsettFlag" items="[[settFlags]]" selected-item="{{wsettFlag}}" class="validate-container" label="清算标识" required error-message="必填项"></x-select>
+          <paper-input id="wsettRole" label="清算角色" value="{{weixinRoute.settRole::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
           <paper-input id="wxpAppId" label="微信 AppId" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
@@ -376,10 +379,33 @@
           type: Object,
           observer: '_aagentCodeChanged'
         },
+        settFlags: {
+          type: Object,
+          value: [{
+            key: 'CHANNEL',
+            value: 'CHANNEL'
+          }, {
+            key: 'CIL',
+            value: 'CIL'
+          }, {
+            key: 'AGENT',
+            value: 'AGENT'
+          },{
+            key: 'COMPANY',
+            value: 'COMPANY'
+          }, {
+            key: 'GROUP',
+            value: 'GROUP'
+          }]
+        },
+        asettRole: Object,
+        wsettRole: Object
       },
       observers: [
         '_watchMerStatusChange(merStatus.key)',
-        '_wisAgentModeChanged(weixin.isAgentMode)'
+        '_wisAgentModeChanged(weixin.isAgentMode)',
+        '_asettFlagChange(asettFlag)',
+        '_wsettFlagChange(wsettFlag)'
       ],
       _wisAgentModeChanged: function(value) {
         if (value) {
@@ -442,6 +468,42 @@
       _aagentCodeChanged: function(value) {
         if (value) {
           this.set('alipay.agentCode', value.key);
+        }
+      },
+      // 支付宝清算标识改变
+      _asettFlagChange: function(value) {
+        if (value) {
+          if (value.key === 'CHANNEL') {
+            this.set('alipayRoute.settRole', 'ALP');
+          } else if (value.key === 'CIL') {
+            this.set('alipayRoute.settRole', 'CIL');
+          } else if (value.key === 'AGENT') {
+            this.set('alipayRoute.settRole', this.merchant.agentCode);
+          } else if (value.key === 'COMPANY') {
+            this.set('alipayRoute.settRole', this.merchant.subAgenCode);
+          } else if (value.key === 'GROUP') {
+            this.set('alipayRoute.settRole', this.merchant.groupCode);
+          }
+        } else {
+          this.set('alipayRoute.settRole', '');
+        }
+      },
+      // 微信清算标识改变
+      _wsettFlagChange: function(value) {
+        if (value) {
+          if (value.key === 'CHANNEL') {
+            this.set('weixinRoute.settRole', 'WXP');
+          } else if (value.key === 'CIL') {
+            this.set('weixinRoute.settRole', 'CIL');
+          } else if (value.key === 'AGENT') {
+            this.set('weixinRoute.settRole', this.merchant.agentCode);
+          } else if (value.key === 'COMPANY') {
+            this.set('weixinRoute.settRole', this.merchant.subAgenCode);
+          } else if (value.key === 'GROUP') {
+            this.set('weixinRoute.settRole', this.merchant.groupCode);
+          }
+        } else {
+          this.set('weixinRoute.settRole', '');
         }
       },
       attributeChanged: function() {
@@ -582,7 +644,12 @@
           return;
         }
         this.set('alipayRoute', response.data);
-
+        if (response.data) {
+          this.asettFlag = {
+            key: response.data.settFlag,
+            value: response.data.settFlag
+          }
+        }
       },
       // 编辑的时候查找微信路由信息的响应事件
       handleFindRouterWeixinResponse: function(e) {
@@ -592,6 +659,12 @@
           return;
         }
         this.set('weixinRoute', response.data);
+        if (response.data) {
+          this.wsettFlag = {
+            key: response.data.settFlag,
+            value: response.data.settFlag
+          }
+        }
       },
       ready: function() {
         this.idx = 0;
@@ -673,8 +746,6 @@
           cardBrand: 'WXP',
         };
         this.update = false;
-
-
       },
       // 查询渠道商户的响应事件，这里是查找大商户
       handleFindChanMerResponse: function(e) {
@@ -788,7 +859,7 @@
       },
       // 判断支付宝必填项是否为空
       isALPConfigEmpty: function() {
-        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.$.asettFlag.validate() && this.$.asignCert.validate() && this.aagentCode) {
+        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.asettFlag && this.$.asettRole.validate() && this.$.asignCert.validate() && this.aagentCode) {
           return false;
         }
         return true;
@@ -801,6 +872,7 @@
         }
         var acqFee = parseFloat(this.alipayRoute.acqFee),
           merFee = parseFloat(this.alipayRoute.merFee);
+          parseFloat
         if (isNaN(acqFee) || isNaN(merFee)) {
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
@@ -819,7 +891,8 @@
           chanMerId: this.alipay.chanMerId,
           acqFee: acqFee,
           merFee: merFee,
-          settFlag: this.alipayRoute.settFlag
+          settFlag: this.asettFlag.key,
+          settRole: this.alipayRoute.settRole
         };
         this.$.saveRouterAjax.body = JSON.stringify(obj);
         this.$.saveRouterAjax.generateRequest();
@@ -827,11 +900,11 @@
       // 微信必填项是否为空
       isWXPConfigEmpty: function() {
         if (this.weixin.isAgentMode) {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wsettFlag.validate() && this.wbigchanMerId) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.asettFlag && this.$.wsettRole.validate() && this.wbigchanMerId) {
             return false;
           }
         } else {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.$.wsettFlag.validate() && this.$.wxpAppId.validate() &&
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.asettFlag && this.$.wsettRole.validate() && this.$.wxpAppId.validate() &&
             this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
             return false;
           }
@@ -874,7 +947,8 @@
           chanMerId: this.weixin.chanMerId,
           acqFee: acqFee,
           merFee: merFee,
-          settFlag: this.weixinRoute.settFlag
+          settFlag: this.wsettFlag.key,
+          settRole: this.weixinRoute.settRole
         };
         this.$.saveRouterAjax.body = JSON.stringify(router);
         this.$.saveRouterAjax.generateRequest();
@@ -884,7 +958,7 @@
       handleSaveRouterResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('保存路由信息失败:'+response.message, 3000);
+          Util.toast('保存路由信息失败:' + response.message, 3000);
           return;
         }
 
@@ -984,6 +1058,5 @@
         }
       }
     });
-
   </script>
 </dom-module>
