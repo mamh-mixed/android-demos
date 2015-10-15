@@ -99,12 +99,14 @@ type cache struct {
 	ChanMerCache map[string]*model.ChanMer
 	AgentCache   map[string]*model.Agent
 	GroupCache   map[string]*model.Group
+	RouterCache  map[string]*model.RouterPolicy
 }
 
 func (c *cache) Init() {
 	c.ChanMerCache = make(map[string]*model.ChanMer)
 	c.AgentCache = make(map[string]*model.Agent)
 	c.GroupCache = make(map[string]*model.Group)
+	c.RouterCache = make(map[string]*model.RouterPolicy)
 }
 
 type operation struct {
@@ -171,11 +173,11 @@ func (i *importer) read() error {
 func (i *importer) dataHandle() error {
 
 	// 数据合法性验证
-	for _, r := range i.rowData {
+	for index, r := range i.rowData {
 
 		// 先看是否有填商户号
 		if r.MerId == "" {
-			return fmt.Errorf("%s", "商户代码为空")
+			return fmt.Errorf("第 %d 行，商户代码为空", index+3)
 		}
 		// 字段内容合法验证
 		mer, err := mongo.MerchantColl.Find(r.MerId)
@@ -190,7 +192,6 @@ func (i *importer) dataHandle() error {
 				return err
 			}
 		case "U":
-			// return fmt.Errorf("%s", "暂不支持U操作，马上上线，敬请期待！")
 			// 修改不存在用户，报错
 			if err != nil {
 				return fmt.Errorf("商户：%s 不存在", r.MerId)
@@ -411,6 +412,20 @@ func handleAlpMer(r *rowData, c *cache) error {
 				}
 			}
 		}
+	} else {
+		// 可能需要修改路由策略信息
+		if r.Operator == "U" {
+			// 有填清算标识，那么需要处理
+			if r.AlpSettFlag != "" {
+				rp := mongo.RouterPolicyColl.Find(r.MerId, "ALP")
+				if rp == nil {
+					return fmt.Errorf("没找到商户：%s，对应的支付宝路由策略，无法变更清算标识。", r.MerId)
+				}
+				settFlagHandle(r.AlpSettFlag, rp, r.Mer)
+				// TODO:处理手续费变更
+				c.RouterCache[r.MerId+"ALP"] = rp
+			}
+		}
 	}
 	return nil
 }
@@ -457,6 +472,20 @@ func handleWxpMer(r *rowData, c *cache) error {
 						return fmt.Errorf("微信商户：%s 密钥为空", r.WxpSubMerId)
 					}
 				}
+			}
+		}
+	} else {
+		// 可能需要修改路由策略信息
+		if r.Operator == "U" {
+			// 有填清算标识，那么需要处理
+			if r.WxpSettFlag != "" {
+				rp := mongo.RouterPolicyColl.Find(r.MerId, "WXP")
+				if rp == nil {
+					return fmt.Errorf("没找到商户：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
+				}
+				settFlagHandle(r.WxpSettFlag, rp, r.Mer)
+				// TODO:处理手续费
+				c.RouterCache[r.MerId+"WXP"] = rp
 			}
 		}
 	}
@@ -602,19 +631,7 @@ func (i *importer) doDataWrap() {
 			// ADDBY:RUI,DATE:20151012
 			// ------------
 			alpRoute.MerFee, alpRoute.AcqFee = r.AlpMerFeeF, r.AlpAcqFeeF
-			alpRoute.SettFlag = r.AlpSettFlag
-			switch r.AlpSettFlag {
-			case SR_CIL:
-				alpRoute.SettRole = SR_CIL
-			case SR_CHANNEL:
-				alpRoute.SettRole = "ALP"
-			case SR_AGENT:
-				alpRoute.SettRole = mer.AgentCode
-			case SR_COMPANY:
-				// not support
-			case SR_GROUP:
-				alpRoute.SettRole = mer.GroupCode
-			}
+			settFlagHandle(r.AlpSettFlag, &alpRoute, mer)
 			// ------------
 
 			switch r.Operator {
@@ -660,19 +677,7 @@ func (i *importer) doDataWrap() {
 			// ADDBY:RUI,DATE:20151012
 			// --------
 			wxpRoute.MerFee, wxpRoute.AcqFee = r.WxpMerFeeF, r.WxpAcqFeeF
-			wxpRoute.SettFlag = r.WxpSettFlag
-			switch r.WxpSettFlag {
-			case SR_CIL:
-				wxpRoute.SettRole = SR_CIL
-			case SR_CHANNEL:
-				wxpRoute.SettRole = "WXP"
-			case SR_AGENT:
-				wxpRoute.SettRole = mer.AgentCode
-			case SR_COMPANY:
-				// not support
-			case SR_GROUP:
-				wxpRoute.SettRole = mer.GroupCode
-			}
+			settFlagHandle(r.WxpSettFlag, &wxpRoute, mer)
 			// --------
 
 			switch r.Operator {
@@ -682,6 +687,27 @@ func (i *importer) doDataWrap() {
 				i.U.RouterPolicys = append(i.U.RouterPolicys, wxpRoute)
 			}
 		}
+	}
+
+	// 更新缓存里的路由策略，如果有的话
+	for _, r := range i.cache.RouterCache {
+		i.U.RouterPolicys = append(i.U.RouterPolicys, *r)
+	}
+}
+
+func settFlagHandle(settFlag string, rp *model.RouterPolicy, mer *model.Merchant) {
+	rp.SettFlag = settFlag
+	switch settFlag {
+	case SR_CIL:
+		rp.SettRole = SR_CIL
+	case SR_CHANNEL:
+		rp.SettRole = rp.ChanCode
+	case SR_AGENT:
+		rp.SettRole = mer.AgentCode
+	case SR_COMPANY:
+		// not support
+	case SR_GROUP:
+		rp.SettRole = mer.GroupCode
 	}
 }
 
