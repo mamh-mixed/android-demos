@@ -26,6 +26,7 @@ var (
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
 	USER_ALREADY_IMPROVED   = NewAppResult(FAIL, "user_already_improved")
+	MERID_NO_EXIST          = NewAppResult(FAIL, "merId_no_exist")
 	CODE_ERROR_CH           = NewAppResult(FAIL, "code码不存在")
 	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
 	NO_TRANS                = NewAppResult(FAIL, "找不到交易")
@@ -53,10 +54,14 @@ type AppResult struct {
 }
 
 type SettInfo struct {
-	BankOpen  string `json:"bank_open,omitempty"`
-	Payee     string `json:"payee,omitempty"`
-	PayeeCard string `json:"payee_card,omitempty"`
-	PhoneNum  string `json:"phone_num,omitempty"`
+	BankOpen   string `json:"bank_open,omitempty"`
+	Payee      string `json:"payee,omitempty"`
+	PayeeCard  string `json:"payee_card,omitempty"`
+	PhoneNum   string `json:"phone_num,omitempty"`
+	Province   string `json:"province,omitempty"`
+	City       string `json:"city,omitempty"`
+	BranchBank string `json:"branch_bank,omitempty"`
+	BankNo     string `json:"bankNo,omitempty"`
 }
 
 // NewAppResult NewAppResult

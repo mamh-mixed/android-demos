@@ -90,13 +90,17 @@ func improveInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.improveInfo(&reqParams{
-		UserName:  r.FormValue("username"),
-		Password:  r.FormValue("password"),
-		BankOpen:  r.FormValue("bank_open"),
-		Payee:     r.FormValue("payee"),
-		PayeeCard: r.FormValue("payee_card"),
-		PhoneNum:  r.FormValue("phone_num"),
-		Transtime: r.FormValue("transtime"),
+		UserName:   r.FormValue("username"),
+		Password:   r.FormValue("password"),
+		BankOpen:   r.FormValue("bank_open"),
+		Payee:      r.FormValue("payee"),
+		PayeeCard:  r.FormValue("payee_card"),
+		PhoneNum:   r.FormValue("phone_num"),
+		Transtime:  r.FormValue("transtime"),
+		Province:   r.FormValue("province"),
+		City:       r.FormValue("city"),
+		BranchBank: r.FormValue("branch_bank"),
+		BankNo:     r.FormValue("bankNo"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -316,4 +320,8 @@ type reqParams struct {
 	Status       string
 	Index        int
 	Date         string
+	Province     string
+	City         string
+	BranchBank   string
+	BankNo       string
 }
