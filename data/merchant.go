@@ -25,6 +25,7 @@ type merchant struct {
 	ClientidName  string        `bson:"clientidName"`
 	Alp           channel       `bson:"ALP"`
 	Wxp           channel       `bson:"WXP"`
+	Area          string        `bson:"area"`
 	City          string        `bson:"city"`
 	AcctNum       string        `bson:"account"`
 	AcctName      string        `bson:"accountName"`
@@ -62,6 +63,42 @@ type merCert struct {
 	MerId    string
 	HttpCert string
 	HttpKey  string
+}
+
+// DoSyncMerchant 同步旧系统和新系统的商户
+func DoSyncMerchant(path string) error {
+	connect()
+	mers, err := readMerFromOldDB()
+	if err != nil {
+		return err
+	}
+
+	var addMers []merchant
+	var updateCount int
+	for _, om := range mers {
+		nm, err := mongo.MerchantColl.Find(strings.TrimSpace(om.Clientid))
+		if err != nil {
+			// add
+			addMers = append(addMers, om)
+		} else {
+			// update
+			err = updateMerchantFromOldDB(om, nm)
+			if err != nil {
+				return err
+			}
+			updateCount++
+		}
+	}
+
+	log.Infof("修改：成功更新 %d 调数据", updateCount)
+
+	// add
+	err = addMerchantFromOldDB(addMers, path)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // AddHttpCertFromFile 导入文件
@@ -112,16 +149,117 @@ func AddHttpCertFromFile(root string) (map[string]merCert, error) {
 	return certsMap, nil
 }
 
-// AddMerchantFromOldDB 导入商户
-func AddMerchantFromOldDB(path string) error {
+func updateMerchantFromOldDB(om merchant, nm *model.Merchant) error {
+	// 商户更新字段
+	if nm.Detail.AcctName == "" {
+		nm.Detail.AcctName = strings.TrimSpace(om.AcctName)
+	}
+	if nm.Detail.AcctNum == "" {
+		nm.Detail.AcctNum = strings.TrimSpace(om.AcctNum)
+	}
+	if nm.Detail.BankId == "" {
+		nm.Detail.BankId = strings.TrimSpace(om.BankId)
+	}
+	if nm.Detail.BankName == "" {
+		nm.Detail.BankName = strings.TrimSpace(om.BankName)
+	}
+	if nm.Detail.OpenBankName == "" {
+		nm.Detail.OpenBankName = strings.TrimSpace(om.OpenBank)
+	}
+	if nm.Detail.City == "" {
+		nm.Detail.City = strings.TrimSpace(om.City)
+	}
+	if nm.Detail.Area == "" {
+		nm.Detail.Area = strings.TrimSpace(om.Area)
+	}
+	if nm.UniqueId == "" {
+		nm.UniqueId = om.UniqueId.Hex()
+	}
+
+	if om.Alp.PartnerId != "" {
+		updALPRouterPolicy(om)
+	}
+
+	if om.Wxp.MchId != "" {
+		updWXPRouterPolicy(om)
+	}
+	return nil
+}
+
+func updALPRouterPolicy(om merchant) {
+	// 更新路由策略，费率
+	r := mongo.RouterPolicyColl.Find(strings.TrimSpace(om.Clientid), "ALP")
+	if r == nil {
+		log.Errorf("找不到商户(%s)支付宝路由策略，请检查", om.Clientid)
+		return
+	}
+
+	if r.ChanMerId != om.Alp.PartnerId {
+		log.Errorf("商户对应的支付宝渠道商户号不一致，新=%s, 旧=%s", r.ChanMerId, om.Alp.PartnerId)
+		return
+	}
+
+	if r.MerFee == 0 {
+		r.MerFee, _ = strconv.ParseFloat(om.Alp.MerFee, 64)
+	}
+	if r.AcqFee == 0 {
+		r.AcqFee, _ = strconv.ParseFloat(om.Alp.AcqFee, 64)
+	}
+
+	if strings.TrimSpace(om.Alp.Type) == "1" {
+		r.SettFlag = "CIL"
+		r.SettRole = "CIL"
+	} else {
+		r.SettFlag = "CHANNEL"
+		r.SettRole = "ALP"
+	}
+}
+
+func updWXPRouterPolicy(om merchant) {
+	// 更新路由策略，费率
+	r := mongo.RouterPolicyColl.Find(strings.TrimSpace(om.Clientid), "WXP")
+	if r == nil {
+		log.Errorf("找不到商户(%s)微信路由策略，请检查", om.Clientid)
+		return
+	}
+
+	var chanMerId string
+	if om.Wxp.SubMchId != "" {
+		chanMerId = om.Wxp.SubMchId
+
+	} else {
+		chanMerId = om.Wxp.MchId
+	}
+	if r.ChanMerId != chanMerId {
+		log.Errorf("商户对应的微信渠道商户号不一致，新=%s, 旧=%s", r.ChanMerId, chanMerId)
+		return
+	}
+
+	if r.MerFee == 0 {
+		r.MerFee, _ = strconv.ParseFloat(om.Wxp.MerFee, 64)
+	}
+	if r.AcqFee == 0 {
+		r.AcqFee, _ = strconv.ParseFloat(om.Wxp.AcqFee, 64)
+	}
+
+	if strings.TrimSpace(om.Wxp.Type) == "1" {
+		r.SettFlag = "CIL"
+		r.SettRole = "CIL"
+	} else {
+		r.SettFlag = "CHANNEL"
+		r.SettRole = "WXP"
+	}
+
+	return
+}
+
+// addMerchantFromOldDB 导入商户
+func addMerchantFromOldDB(mers []merchant, path string) error {
 	// 从某个目录获取证书信息
 	merCerts, err := AddHttpCertFromFile(path)
 	if err != nil {
 		return err
 	}
-
-	// 建立连接
-	connect()
 
 	// 获取老系统代理信息
 	agents, err := readAgentFromOldDB()
@@ -145,11 +283,6 @@ func AddMerchantFromOldDB(path string) error {
 	// 集团信息
 	groupMap := make(map[string]*model.Group)
 
-	// 读取商户
-	mers, err := readMerFromOldDB()
-	if err != nil {
-		return err
-	}
 	var count = 0
 	for _, mer := range mers {
 		mer.Clientid = strings.TrimSpace(mer.Clientid)
@@ -167,6 +300,7 @@ func AddMerchantFromOldDB(path string) error {
 		m.Detail.BankId = mer.BankId
 		m.Detail.BankName = mer.BankName
 		m.Detail.OpenBankName = mer.OpenBank
+		m.Detail.Area = mer.Area
 		m.Detail.TitleOne = mer.Group.TitleOne
 		m.Detail.TitleTwo = mer.Group.TitleTwo
 		m.MerId = mer.Clientid
@@ -209,10 +343,10 @@ func AddMerchantFromOldDB(path string) error {
 			alp.ChanMerId = mer.Alp.PartnerId
 			alp.SignKey = mer.Alp.Md5
 			alp.ChanCode = "ALP"
-			acqFee, _ := strconv.ParseFloat(mer.Alp.AcqFee, 32)
-			merFee, _ := strconv.ParseFloat(mer.Alp.MerFee, 32)
-			alp.AcqFee = float32(acqFee)
-			alp.MerFee = float32(merFee)
+			// acqFee, _ := strconv.ParseFloat(mer.Alp.AcqFee, 32)
+			// merFee, _ := strconv.ParseFloat(mer.Alp.MerFee, 32)
+			// alp.AcqFee = float32(acqFee)
+			// alp.MerFee = float32(merFee)
 			err = mongo.ChanMerColl.Add(alp)
 			if err != nil {
 				return err
@@ -223,6 +357,15 @@ func AddMerchantFromOldDB(path string) error {
 			ralp.ChanCode = alp.ChanCode
 			ralp.CardBrand = alp.ChanCode
 			ralp.ChanMerId = alp.ChanMerId
+			ralp.MerFee, _ = strconv.ParseFloat(mer.Alp.MerFee, 64)
+			ralp.AcqFee, _ = strconv.ParseFloat(mer.Alp.AcqFee, 64)
+			if strings.TrimSpace(mer.Alp.Type) == "1" {
+				ralp.SettFlag = "CIL"
+				ralp.SettRole = "CIL"
+			} else {
+				ralp.SettFlag = "CHANNEL"
+				ralp.SettRole = "ALP"
+			}
 			err = mongo.RouterPolicyColl.Insert(ralp)
 			if err != nil {
 				return err
@@ -236,10 +379,10 @@ func AddMerchantFromOldDB(path string) error {
 			wxp.SignKey = mer.Wxp.Md5
 			wxp.ChanCode = "WXP"
 			wxp.WxpAppId = mer.Wxp.AppId
-			acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
-			merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
-			wxp.AcqFee = float32(acqFee)
-			wxp.MerFee = float32(merFee)
+			// acqFee, _ := strconv.ParseFloat(mer.Wxp.AcqFee, 32)
+			// merFee, _ := strconv.ParseFloat(mer.Wxp.MerFee, 32)
+			// wxp.AcqFee = float32(acqFee)
+			// wxp.MerFee = float32(merFee)
 			// 非受理商模式
 			wxpMerId := ""
 			if mer.Wxp.SubMchId != "" {
@@ -275,6 +418,15 @@ func AddMerchantFromOldDB(path string) error {
 			rwxp.ChanCode = wxp.ChanCode
 			rwxp.CardBrand = wxp.ChanCode
 			rwxp.ChanMerId = wxp.ChanMerId
+			rwxp.MerFee, _ = strconv.ParseFloat(mer.Wxp.MerFee, 64)
+			rwxp.AcqFee, _ = strconv.ParseFloat(mer.Wxp.AcqFee, 64)
+			if strings.TrimSpace(mer.Wxp.Type) == "1" {
+				rwxp.SettFlag = "CIL"
+				rwxp.SettRole = "CIL"
+			} else {
+				rwxp.SettFlag = "CHANNEL"
+				rwxp.SettRole = "WXP"
+			}
 			err = mongo.RouterPolicyColl.Insert(rwxp)
 			if err != nil {
 				return err
@@ -289,8 +441,8 @@ func AddMerchantFromOldDB(path string) error {
 			gRec++
 		}
 	}
-	log.Infof("在旧系统查找到 %d 条集团信息，成功插入新系统 %d 条。", len(groupMap), gRec)
-	log.Infof("在旧系统查找到 %d 条商户信息，成功插入新系统 %d 条。", len(mers), count)
+	log.Infof("新增：在旧系统查找到 %d 条集团信息，成功插入新系统 %d 条。", len(groupMap), gRec)
+	log.Infof("新增：在旧系统查找到 %d 条商户信息，成功插入新系统 %d 条。", len(mers), count)
 
 	return nil
 }
