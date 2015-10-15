@@ -39,19 +39,21 @@
       /* paper-menu */
       --paper-menu-background-color: #fff;
       --menu-link-color: #111111;
-
       --paper-input-container-input: {
         font-size: 12px;
       }
-      ; /* 必须有分号，否则压缩后，无法正常渲染 */
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-input-container-label: {
         font-size: 12px;
       }
-      ; /* 必须有分号，否则压缩后，无法正常渲染 */
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-menu-selected-item: {
         background-color: rgb(226, 240, 249);
       }
-      ; /* 必须有分号，否则压缩后，无法正常渲染 */
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
     }
 
     #drawerToolbar * {
@@ -187,7 +189,7 @@
     }
   </style>
   <template>
-    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform">
+    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
 
@@ -216,7 +218,6 @@
             </paper-submenu>
           </template>
         </paper-menu>
-
       </paper-scroll-header-panel>
 
       <!-- Main Area -->
@@ -229,10 +230,11 @@
           <div>欢迎您，
             <span>{{user.nickName}}</span>
           </div>
-          <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
+          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="logoutHandle"></paper-icon-button>
+          <!-- <paper-button id="logoutBtn">退出</paper-button> -->
           <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
+          <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
+          <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout" id="middleContainer">
@@ -254,6 +256,7 @@
     <iron-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></iron-ajax>
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
+    <iron-localstorage name="CIL.CONFIG.ISFULLSCREEN" value="{{isFullscreen}}"></iron-localstorage>
   </template>
   <script>
     (function() {
@@ -267,6 +270,10 @@
           user: {
             type: Object,
             notify: true
+          },
+          isFullscreen: {
+            type: Boolean,
+            value: false
           }
         },
         ready: function() {
@@ -432,7 +439,7 @@
               "icon": "payment",
               "url": "#/trade/list",
               "route": "trade.list"
-            },{
+            }, {
               "nameCN": "报表下载",
               "nameEN": "",
               "icon": "file-download",
@@ -443,7 +450,7 @@
 
         },
         // 核对是否登入
-        checkIsLogin: function(){
+        checkIsLogin: function() {
           this.$.findSessionAjax.params = {
             'sessionId': this.sessionId,
           };
@@ -494,9 +501,7 @@
             this.menus = this.agentMenus;
           }
         },
-        handleDeleteSessionResponse: function() {
-
-        },
+        handleDeleteSessionResponse: function() {},
         // 退出
         logoutHandle: function() {
           // 删除后台sesseion信息
@@ -514,6 +519,14 @@
           // 跳转至登录页面
           window.location.href = 'login.html';
         },
+        // 进入全屏模式
+        enterFullscreenMode: function() {
+          this.isFullscreen = true;
+        },
+        // 退出全屏模式
+        exitFullscreenMode: function() {
+          this.isFullscreen = false;
+        }
       });
     })();
   </script>
