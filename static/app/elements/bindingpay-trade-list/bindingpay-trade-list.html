@@ -68,7 +68,7 @@
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
-            <tr on-dblclick="showTradeViewHandler">
+            <tr>
               <td align="center">{{addOneFilter(index)}}</td>
               <td align="center" class$="{{getRespCodeColor(item.respcd)}}" style="position: relative;">
                 <span id="{{ _computeRespCodeTooltipId(index) }}" class="abbr">{{item.respcd}}</span>
