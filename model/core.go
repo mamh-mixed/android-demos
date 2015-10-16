@@ -396,18 +396,18 @@ type Version struct {
 
 // ChanCSV 渠道文件csv
 type ChanCSV struct {
-	Code     string `bson:"code"`
-	Msg      string `bson:"msg"`
-	RespCode string `bson:",omitempty"`
-	RespMsg  string `bson:",omitempty"`
+	Code     string `bson:"code" json:"code"`
+	Msg      string `bson:"msg" json:"msg"`
+	RespCode string `bson:",omitempty" json:"respCode"`
+	RespMsg  string `bson:",omitempty" json:"respMsg"`
 }
 
 // QuickpayCSV 系统应答码
 type QuickpayCSV struct {
-	RespCode string     `bson:"respCode"`
-	RespMsg  string     `bson:"respMsg"`
-	Cfca     []*ChanCSV `bson:"cfca,omitempty"`
-	Cil      []*ChanCSV `bson:"cil,omitempty"`
+	RespCode string     `bson:"respCode" json:"respCode"`
+	RespMsg  string     `bson:"respMsg" json:"respMsg"`
+	Cfca     []*ChanCSV `bson:"cfca,omitempty" json:"cfca"`
+	Cil      []*ChanCSV `bson:"cil,omitempty" json:"cil"`
 	// ...
 }
 
