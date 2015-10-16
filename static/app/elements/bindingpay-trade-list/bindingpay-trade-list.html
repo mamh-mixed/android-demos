@@ -12,7 +12,6 @@
     :host {
       display: block;
     }
-
   </style>
   <template>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
@@ -274,5 +273,6 @@
         return 'respCode' + i;
       }
     });
+
   </script>
 </dom-module>

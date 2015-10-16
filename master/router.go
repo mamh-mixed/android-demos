@@ -55,7 +55,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/create", userCreateHandle)
 	mux.HandleFunc("/master/user/update", userUpdateHandle)
 	mux.HandleFunc("/master/user/updatePwd", userUpdatePwdHandle)
-
+	mux.HandleFunc("/master/respCode/match", respCodeMatchHandle)
 	return mux
 }
 
