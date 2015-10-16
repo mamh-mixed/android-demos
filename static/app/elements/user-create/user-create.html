@@ -53,7 +53,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     x-select {
       margin-left: 0px;
     }
-
   </style>
   <template>
     <paper-dialog id="dialogAdd">
@@ -151,6 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       open: function() {
         this.$.dialogAdd.open();
         if (this.pageType === 'create') {
+          this.user = {};
           this.userType = {
             key: 'admin',
             value: '管理员'
@@ -236,6 +236,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('user', {});
       }
     });
-
   </script>
 </dom-module>
