@@ -78,20 +78,14 @@ func (col *userCollection) PaginationFind(user *model.User, size, page int) (res
 	if user.AgentCode != "" {
 		match["agentCode"] = user.AgentCode
 	}
-	if user.AgentName != "" {
-		match["agentName"] = user.AgentName
+	if user.AgentCode != "" {
+		match["subAgentCode"] = user.AgentCode
 	}
 	if user.GroupCode != "" {
 		match["groupCode"] = user.GroupCode
 	}
-	if user.GroupName != "" {
-		match["groupName"] = user.GroupName
-	}
 	if user.MerId != "" {
 		match["merId"] = user.MerId
-	}
-	if user.MerName != "" {
-		match["merName"] = user.MerName
 	}
 
 	// 计算总数
