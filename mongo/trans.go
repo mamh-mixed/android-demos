@@ -407,6 +407,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 	if q.AgentCode != "" {
 		find["agentCode"] = q.AgentCode
 	}
+	if q.GroupCode != "" {
+		find["groupCode"] = q.GroupCode
+	}
 	if q.MerName != "" {
 		find["merName"] = bson.RegEx{q.MerName, "."}
 	}
