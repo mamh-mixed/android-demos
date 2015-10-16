@@ -4,10 +4,13 @@
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
 <dom-module id="login-form">
   <style>
     :host {
       display: block;
+      text-align: left;
     }
 
     .logo {
@@ -25,14 +28,14 @@
     }
 
     paper-button {
-      width: 100%;
+      width: 80%;
       margin-top: 30px;
       background: #ff4081;
       color: #ffffff;
     }
 
     .login-inner {
-      width: 80%;
+      width: 70%;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -49,16 +52,32 @@
     }
 
     #loginForm > paper-button {
-      margin: 30px auto;
+      margin: 30px 12.5%;
     }
+
   </style>
   <template>
     <div class="login-inner">
       <form id="loginForm">
-        <h1>用户登入</h1>
-        <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
-        <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
-        <paper-button raised on-tap="loginTapHandle">登入</paper-button>
+        <table>
+          <tr>
+            <td>
+              <iron-icon icon="icons:perm-identity"></iron-icon>
+            </td>
+            <td>
+              <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <iron-icon icon="icons:lock-outline"></iron-icon>
+            </td>
+            <td>
+              <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
+            </td>
+          </tr>
+        </table>
+        <paper-button raised on-tap="loginTapHandle">登录</paper-button>
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
@@ -128,5 +147,6 @@
         showLoginForm: function() {}
       });
     })();
+
   </script>
 </dom-module>
