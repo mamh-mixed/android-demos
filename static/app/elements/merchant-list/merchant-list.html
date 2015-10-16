@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../merchant-editor/merchant-editor.html">
 <link rel="import" href="../merchant-view/merchant-view.html">
 <dom-module id="merchant-list">
@@ -21,7 +21,7 @@
     }
   </style>
   <template>
-    <form is="iron-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+    <form is="x-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
         <paper-input name="merId" id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
         <paper-input name="merName" id="merName" label="门店名称" value="{{cond.merName::input}}"></paper-input>

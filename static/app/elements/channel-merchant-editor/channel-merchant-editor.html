@@ -61,8 +61,8 @@
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
-    <iron-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></iron-ajax>
+    <x-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></x-ajax>
+    <x-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></x-ajax>
     <paper-dialog id="dialogAdd">
       <h2 id="header"></h2>
       <paper-dialog-scrollable>

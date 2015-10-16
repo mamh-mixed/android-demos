@@ -1,9 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="bindingpay-trade-list">
@@ -14,7 +14,7 @@
 
   </style>
   <template>
-    <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
+    <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
         <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
         <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">

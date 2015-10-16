@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../x-select/x-select.html">
 
 <dom-module id="user-view">
 
@@ -70,7 +71,7 @@
         <paper-button on-tap="handleClose">关闭</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="deleteMerAjax" method="GET" url="/master/user/delete" handle-as="json" on-response="handleDeleteResponse"></iron-ajax>
+    <x-ajax id="deleteMerAjax" method="GET" url="/master/user/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
   </template>
   <script>
     Polymer({

@@ -67,7 +67,7 @@
         <paper-button dialog-dismiss style="margin-right:50px;">取消</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></iron-ajax>
+    <x-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></x-ajax>
   </template>
   <script>
     Polymer({

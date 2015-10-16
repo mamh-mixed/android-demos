@@ -91,7 +91,7 @@
         <paper-button on-tap="handleSaveTapped" style="margin-right:50px;">保存</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="saveAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <x-ajax id="saveAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></x-ajax>
   </template>
   <script>
     Polymer({

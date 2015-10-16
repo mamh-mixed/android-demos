@@ -27,7 +27,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <x-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
     <paper-dialog id="dialogDelete">
       <h2>删除【
         <span>{{agent.agentName}}</span>】代理</h2>

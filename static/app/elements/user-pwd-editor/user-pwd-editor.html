@@ -40,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button on-tap="handleSaveTapped">保存</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="updatePwdAjax" method="POST" url="/master/user/updatePwd" handle-as="json" on-response="handleSaveResponse"></iron-ajax>
+    <x-ajax id="updatePwdAjax" method="POST" url="/master/user/updatePwd" handle-as="json" on-response="handleSaveResponse"></x-ajax>
   </template>
   <script>
     Polymer({

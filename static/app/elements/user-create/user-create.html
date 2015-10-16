@@ -72,9 +72,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-button on-tap="handleSaveTapped">保存</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></iron-ajax>
-    <iron-ajax id="updateAjax" method="POST" url="/master/user/update" handle-as="json" on-response="handleUpdateResponse"></iron-ajax>
-  </template>
+    <x-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></x-ajax>
+    <x-ajax id="updateAjax" method="POST" url="/master/user/update" handle-as="json" on-response="handleUpdateResponse"></x-ajax>
   <script>
     Polymer({
       is: 'user-create',
