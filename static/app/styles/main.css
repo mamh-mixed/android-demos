@@ -131,3 +131,8 @@ pre {
   z-index: 0;
   padding: 0.7em 0.57em;
 }
+
+.abbr{
+  cursor: help;
+  border-bottom: 1px dotted #777;
+}

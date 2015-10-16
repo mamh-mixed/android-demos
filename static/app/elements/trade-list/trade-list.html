@@ -13,7 +13,6 @@
     :host {
       display: block;
     }
-
   </style>
   <template>
     <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
@@ -84,7 +83,17 @@
               <td>{{busicdFilter(item.busicd)}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td>{{chanFilter(item.chanCode)}}</td>
-              <td>{{transStatusFilter(item.transStatus)}}</td>
+              <td>
+                <template is="dom-if" if="{{isCloseTrans(item.transStatus)}}">
+                  <div style="display: inline-block;position: relative;">
+                    <span class="abbr" data-title$="{{_computeTransCloseReason(item.refundStatus)}}">{{transStatusFilter(item.transStatus)}}</span>
+                    <paper-tooltip position="right">{{_computeTransCloseReason(item.refundStatus)}}</paper-tooltip>
+                  </div>
+                </template>
+                <template is="dom-if" if="{{!isCloseTrans(item.transStatus)}}">
+                  <span>{{transStatusFilter(item.transStatus)}}</span>
+                </template>
+              </td>
               <td align="center">{{refundStatusFilter(item.refundStatus)}}</td>
               <td align="center">{{item.transTime}}</td>
               <!-- <td align="center">{{item.updateTime}}</td> -->
@@ -191,9 +200,11 @@
         this.trades = [];
         this.transStatus = {};
         this.refundStatusMap = {
+          0: '无退款',
           1: '已退款',
           2: '部分退款',
-          0: '无退款'
+          3: '商户发起关闭',
+          4: '交易超时系统关闭'
         };
       },
       observers: [
@@ -301,6 +312,16 @@
         this.$.tradeView.open();
       },
       refundStatusFilter: function(status) {
+        var map = {
+          1: '已退款',
+          2: '部分退款'
+        };
+        return map[status];
+      },
+      isCloseTrans: function(status) {
+        return status === '40';
+      },
+      _computeTransCloseReason: function(status) {
         return this.refundStatusMap[status];
       },
       isShowTooltip: function(value) {
@@ -315,6 +336,5 @@
         this.$.tradeMessage.open();
       },
     });
-
   </script>
 </dom-module>
