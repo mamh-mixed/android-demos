@@ -17,7 +17,11 @@
 
       .message {
         margin-top: 10px;
-        /*background: #F4F4F4;*/
+        border-bottom: 1px dashed #ccc;
+      }
+
+      td > .message:last-of-type {
+        border-bottom: none;
       }
     </style>
     <paper-dialog id="dialogView">
@@ -26,14 +30,12 @@
         <table class="data-grid">
           <thead>
             <tr>
-              <th>序号</th>
               <th class="left">报文</th>
             </tr>
           </thead>
           <tbody>
             <template is="dom-repeat" items="{{messageArray}}" as="messageList">
               <tr style="border-bottom:1px solid #ddd;">
-                <td class="center">{{addOneFilter(index)}}</td>
                 <td>
                   <template is="dom-repeat" items="{{messageList}}" as="message">
                     <div class="message" style$="{{getMessageStyle(message)}}">
@@ -101,13 +103,10 @@
             'msgType': '1',
             'size': this.cond.size,
             'page': this.cond.page,
-            'agentCode':this.user.agentCode,
-            'groupCode':this.user.groupCode
+            'agentCode': this.user.agentCode,
+            'groupCode': this.user.groupCode
           };
           this.$.merMessageQueryAjax.generateRequest();
-        },
-        addOneFilter: function(index) {
-          return index + 1;
         },
         handleMerMessageResponse: function(e) {
           var response = e.detail.response;
@@ -146,8 +145,8 @@
             'orderNum': this.item.orderNum,
             'msgType': '2',
             'reqIds': this.reqArray,
-            'agentCode':this.user.agentCode,
-            'groupCode':this.user.groupCode
+            'agentCode': this.user.agentCode,
+            'groupCode': this.user.groupCode
           };
           this.$.chanMessageQueryAjax.generateRequest();
 
@@ -192,8 +191,8 @@
             'msgType': '1',
             'size': this.cond.size,
             'page': this.cond.page,
-            'agentCode':this.user.agentCode,
-            'groupCode':this.user.groupCode
+            'agentCode': this.user.agentCode,
+            'groupCode': this.user.groupCode
           };
           this.$.merMessageQueryAjax.generateRequest();
           this.reqArray = [];
@@ -201,7 +200,7 @@
           this.messageArray = [];
         },
         formatMsg: function(msg) {
-          return JSON.stringify(msg);
+          return JSON.stringify(msg, null, 4);
         },
         getMsgTitle: function(message) {
           return this.msgTitleMap[message.msgType][message.direction];
@@ -209,15 +208,15 @@
         getMessageStyle: function(message) {
           if (message.msgType === 1 || message.msgType === 3) {
             if (message.direction === 'in') {
-              return 'margin-left:0px;';
+              return 'padding-left:0px;';
             } else {
-              return 'margin-left:50px;';
+              return 'padding-left:50px;';
             }
           } else if (message.msgType === 2) {
             if (message.direction === 'in') {
-              return 'margin-left:50px;';
+              return 'padding-left:50px;';
             } else {
-              return 'margin-left:0px;';
+              return 'padding-left:0px;';
             }
           }
         }
