@@ -34,7 +34,7 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th>商户代码</th>
+            <th class="left">商户代码</th>
             <th class="left">商户名称</th>
             <th>计费方案代码</th>
             <th align="left">交易币种</th>
@@ -44,8 +44,10 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center hand" on-tap="viewMerchantTap"><iron-icon icon="editor:attach-file"></iron-icon><span>{{addOneFilter(index)}}</span></td>
-              <td class="center">{{item.merId}}</td>
+              <td class="center">{{addOneFilter(index)}}</td>
+              <td class="left">
+                <a on-tap="viewMerchantTap">{{item.merId}}</a>
+              </td>
               <td>{{item.detail.merName}}</td>
               <td class="center">{{item.detail.billingScheme}}</td>
               <td>{{item.transCurr}}</td>

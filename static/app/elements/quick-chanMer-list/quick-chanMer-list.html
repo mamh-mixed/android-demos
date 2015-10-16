@@ -40,7 +40,7 @@
             <th>渠道代码</th>
             <th align="right">渠道费率</th>
             <th align="right">商户费率</th>
-            <th align="right">清算标识</th>
+            <th align="left">清算标识</th>
             <th align="left">清算角色</th>
             <!-- <th>签名证书</th> -->
             <!-- <th class="center">操作</th> -->
@@ -49,11 +49,11 @@
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center hand" on-tap="viewMerchantTap">
+              <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
               <td>
-                <span>{{item.chanMerId}}</span>
+                <a on-tap="viewMerchantTap">{{item.chanMerId}}</a>
               </td>
               <td>
                 <span>{{item.chanMerName}}</span>
@@ -67,7 +67,7 @@
               <td class="right">
                 <span>{{item.merFee}}</span>
               </td>
-              <td class="right">
+              <td class="left">
                 <span>{{item.settFlag}}</span>
               </td>
               <td>

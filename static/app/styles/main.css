@@ -2,8 +2,7 @@ body {
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
-
-#mainContainer > .content{
+#mainContainer > .content {
   padding: 20px;
 }
 paper-toast#toast {
@@ -59,7 +58,7 @@ table.data-grid > thead > tr > th {
   width: 1%;
 }
 table.data-grid > tbody > tr > th, table.data-grid > tbody > tr > td {
-    width: 1%;
+  width: 1%;
 }
 table.data-grid > tfoot > tr > td {
   line-height: 1.42857143;
@@ -78,15 +77,15 @@ table.data-grid iron-icon {
 table.data-grid tbody tr th {
   text-align: left;
 }
-
 pre {
   font-family: monospace;
   font-size: 8px;
 }
 
 /* mouse */
+
 .hand {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 /* colors */
@@ -100,7 +99,9 @@ pre {
 .blue {
   color: #E65100;
 }
+
 /* align */
+
 .left {
   text-align: left;
 }
@@ -110,7 +111,6 @@ pre {
 .center {
   text-align: center;
 }
-
 .paper-button-1 {
   display: inline-block;
   position: relative;
@@ -130,4 +130,18 @@ pre {
   cursor: pointer;
   z-index: 0;
   padding: 0.7em 0.57em;
+}
+.abbr {
+  border-bottom: 1px dotted #777;
+}
+a {
+  color: #337ab7;
+  text-decoration: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+a:focus, a:hover {
+  color: #23527c;
+  text-decoration: underline;
+  outline: 0;
 }
