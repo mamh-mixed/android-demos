@@ -32,6 +32,7 @@
       </paper-dialog>
 
       <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
+      <paper-input id="groupCode" label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
@@ -268,15 +269,19 @@
             } else if (user.userType === 'merchant') {
               this.set('cond.merId', user.merId);
               this.agentDisabled = true;
+              this.$.groupCode.setAttribute('disabled', true);
               this.$.merId.setAttribute('disabled', true);
             } else if (user.userType === 'admin') {
               this.agentDisabled = false;
+              this.$.groupCode.removeAttribute('disabled');
               this.$.merId.removeAttribute('disabled');
               // 加载代理列表
               this.handleQueryAgentsEvent();
             } else if (user.userType === 'group') {
                 this.set('cond.groupCode', user.groupCode);
                 this.agentDisabled = true;
+                this.$.groupCode.setAttribute('disabled', true);
+                this.$.merId.removeAttribute('disabled');
             }
           }
         },
