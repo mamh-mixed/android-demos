@@ -18,7 +18,7 @@ paper-toast#toast {
 div.search-condition {
   margin: 10px auto;
 }
-div.search-condition paper-input {
+div.search-condition paper-input,div.search-condition x-select {
   width: 170px;
   display: inline-block;
 }

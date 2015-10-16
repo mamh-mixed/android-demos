@@ -59,23 +59,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-dialog-scrollable>
         <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
         <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}"></paper-input>
-        <!-- <paper-input id="userName" label="*密码" value="{{user.password::input}}"  required error-message="必填项"></paper-input>
-          <paper-input id="nickName" label="*重复密码" value="{{user.password::input}}"  required error-message="必填项"></paper-input> -->
-        <paper-input id="mail" label="邮箱" value="{{user.mail::input}}" required error-message="必填项"></paper-input>
-        <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="mail" label="邮箱" value="{{user.mail::input}}"></paper-input>
+        <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}"></paper-input>
         <x-select id="merStatus" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
-        <div id="agent" hidden>
-          <paper-input id="agentCode" label="代理代码" value="{{user.agentCode::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="agentName" label="代理名称" value="{{user.agentName::input}}" required error-message="必填项"></paper-input>
-        </div>
-        <div id="group" hidden>
-          <paper-input id="groupCode" label="集团代码" value="{{user.groupCode::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="groupName" label="集团名称" value="{{user.groupName::input}}" required error-message="必填项"></paper-input>
-        </div>
-        <div id="merchant" hidden>
-          <paper-input id="merId" label="商户代码" value="{{user.merId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="merName" label="商户名称" value="{{user.merName::input}}" required error-message="必填项"></paper-input>
-        </div>
+        <paper-input id="agentCode" label="代理代码" value="{{user.agentCode::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="subAgentCode" label="公司代码" value="{{user.subAgentCode::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="groupCode" label="商户代码" value="{{user.groupCode::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="merId" label="门店代码" value="{{user.merId::input}}" required error-message="必填项"></paper-input>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
@@ -83,6 +73,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </paper-dialog>
     <x-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></x-ajax>
+    <x-ajax id="updateAjax" method="POST" url="/master/user/update" handle-as="json" on-response="handleUpdateResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -95,18 +86,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: Array,
           value: [{
             key: 'admin',
-            value: '管理员'
+            value: '讯联'
           }, {
             key: 'agent',
             value: '代理'
           }, {
+            key: 'subAgent',
+            value: '公司'
+          }, {
             key: 'group',
-            value: '集团'
+            value: '商户'
           }, {
             key: 'merchant',
-            value: '商户'
+            value: '门店'
           }, ]
-        }
+        },
+        pageType: String,
+        user: Object
       },
       observers: [
         '_userTypesChange(userType)'
@@ -114,61 +110,83 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _userTypesChange(value) {
         this.set('user.userType', value.key);
         if (value.key === 'agent') {
-          this.$.agent.removeAttribute('hidden');
-          this.$.group.setAttribute('hidden', true);
-          this.$.merchant.setAttribute('hidden', true);
+          this.set('user.subAgentCode', '');
           this.set('user.groupCode', '');
-          this.set('user.groupName', '');
           this.set('user.merId', '');
-          this.set('user.merName', '');
+          this.$.agentCode.removeAttribute('hidden');
+          this.$.subAgentCode.setAttribute('hidden', true);
+          this.$.groupCode.setAttribute('hidden', true);
+          this.$.merId.setAttribute('hidden', true);
+        } else if (value.key === 'subAgent') {
+          this.set('user.groupCode', '');
+          this.set('user.merId', '');
+          this.$.agentCode.removeAttribute('hidden');
+          this.$.subAgentCode.removeAttribute('hidden');
+          this.$.groupCode.setAttribute('hidden', true);
+          this.$.merId.setAttribute('hidden', true);
         } else if (value.key === 'group') {
-          this.$.agent.setAttribute('hidden', true);
-          this.$.group.removeAttribute('hidden');
-          this.$.merchant.setAttribute('hidden', true);
-          this.set('user.agentCode', '');
-          this.set('user.agentName', '');
-          this.set('user.merId', '');
           this.set('user.merName', '');
+          this.$.agentCode.removeAttribute('hidden');
+          this.$.groupCode.removeAttribute('hidden');
+          this.$.subAgentCode.removeAttribute('hidden');
+          this.$.merId.setAttribute('hidden', true);
         } else if (value.key === 'merchant') {
-          this.$.agent.setAttribute('hidden', true);
-          this.$.group.setAttribute('hidden', true);
-          this.$.merchant.removeAttribute('hidden');
-          this.set('user.agentCode', '');
-          this.set('user.agentName', '');
-          this.set('user.groupCode', '');
-          this.set('user.groupName', '');
+          this.$.agentCode.removeAttribute('hidden');
+          this.$.groupCode.removeAttribute('hidden');
+          this.$.subAgentCode.removeAttribute('hidden');
+          this.$.merId.removeAttribute('hidden');
         } else {
-          this.$.agent.setAttribute('hidden', true);
-          this.$.group.setAttribute('hidden', true);
-          this.$.merchant.setAttribute('hidden', true);
           this.set('user.agentCode', '');
-          this.set('user.agentName', '');
+          this.set('user.subAgentCode', '');
           this.set('user.groupCode', '');
-          this.set('user.groupName', '');
           this.set('user.merId', '');
-          this.set('user.merName', '');
+          this.$.agentCode.setAttribute('hidden', true);
+          this.$.subAgentCode.setAttribute('hidden', true);
+          this.$.groupCode.setAttribute('hidden', true);
+          this.$.merId.setAttribute('hidden', true);
         }
       },
       open: function() {
         this.$.dialogAdd.open();
-        this.user = {};
-        this.userType = {
-          key: 'admin',
-          value: '管理员'
+        if (this.pageType === 'create') {
+          this.userType = {
+            key: 'admin',
+            value: '管理员'
+          };
+          this.$.userName.removeAttribute('disabled');
+        } else if (this.pageType === 'editor') {
+          this.$.userName.setAttribute('disabled', true);
+          this.userType = {
+            key: this.user.userType,
+            value: this.userTypeMap[this.user.userType]
+          };
+        }
+      },
+      ready: function() {
+        this.userTypeMap = {
+          admin: '讯联',
+          agent: '代理',
+          subAgent: '公司',
+          group: '商户',
+          merchant: '门店'
         };
       },
       isUserConfigEmpty: function() {
-        if (this.$.userName.validate() && this.$.mail.validate() && this.$.phoneNum.validate()) {
+        if (this.$.userName.validate()) {
           if (this.userType.key === 'agent') {
-            if (this.$.agentCode.validate() && this.$.agentName.validate()) {
+            if (this.$.agentCode.validate()) {
+              return false;
+            }
+          } else if (this.userType.key === 'subAgent') {
+            if (this.$.agentCode.validate() && this.$.subAgentCode.validate()) {
               return false;
             }
           } else if (this.userType.key === 'group') {
-            if (this.$.groupCode.validate() && this.$.groupName.validate()) {
+            if (this.$.agentCode.validate() && this.$.subAgentCode.validate() && this.$.groupCode.validate()) {
               return false;
             }
           } else if (this.userType.key === 'merchant') {
-            if (this.$.merId.validate() && this.$.merName.validate()) {
+            if (this.$.agentCode.validate() && this.$.subAgentCode.validate() && this.$.groupCode.validate() && this.$.merId.validate()) {
               return false;
             }
           } else {
@@ -183,10 +201,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Util.toast('必填项不能为空', 1000);
           return;
         }
-        this.$.saveAjax.body = JSON.stringify(this.user);
-        this.$.saveAjax.generateRequest();
+        if (this.pageType === 'create') {
+          this.$.saveAjax.body = JSON.stringify(this.user);
+          this.$.saveAjax.generateRequest();
+        } else if (this.pageType === 'editor') {
+          this.$.updateAjax.body = JSON.stringify(this.user);
+          this.$.updateAjax.generateRequest();
+        }
       },
-      // 保存的响应事件
+      // 创建用户信息的响应事件
       handleSaveResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
@@ -198,6 +221,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.fire('saved');
         this.set('user', {});
       },
+      // 修改用户信息的响应事件
+      handleUpdateResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.$.dialogAdd.close();
+        Util.toast(response.message, 1000);
+        this.fire('saved');
+        this.set('user', {});
+      }
     });
   </script>
 </dom-module>

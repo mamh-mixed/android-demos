@@ -599,17 +599,18 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cond := &model.User{
-		UserName:  params.Get("userName"),
-		NickName:  params.Get("nickName"),
-		Mail:      params.Get("mail"),
-		PhoneNum:  params.Get("phoneNum"),
-		UserType:  params.Get("userType"),
-		AgentCode: params.Get("agentCode"),
-		AgentName: params.Get("agentName"),
+		UserName:     params.Get("userName"),
+		NickName:     params.Get("nickName"),
+		Mail:         params.Get("mail"),
+		PhoneNum:     params.Get("phoneNum"),
+		UserType:     params.Get("userType"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		// AgentName: params.Get("agentName"),
 		GroupCode: params.Get("groupCode"),
-		GroupName: params.Get("groupName"),
-		MerId:     params.Get("merId"),
-		MerName:   params.Get("merName"),
+		// GroupName: params.Get("groupName"),
+		MerId: params.Get("merId"),
+		// MerName:   params.Get("merName"),
 	}
 
 	ret := User.Find(cond, size, page)
@@ -700,6 +701,48 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := User.UpdateUser(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	ret := User.UpdatePwd(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
 	}
 
 	log.Tracef("response message: %s", rdata)
