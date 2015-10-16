@@ -333,6 +333,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.BindingId != "" {
 		match["bindingId"] = q.BindingId
 	}
+	if q.ChanCode != "" {
+		match["chanCode"] = q.ChanCode
+	}
 	// or 退款的和成功的
 	or := []bson.M{}
 	if len(q.TransStatus) != 0 {
@@ -355,7 +358,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
-	log.Debugf("find condition: %#v", match)
+	// log.Debugf("find condition: %#v", match)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
@@ -573,4 +576,9 @@ func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGr
 		}},
 	}).All(&result)
 	return result, err
+}
+
+func (col *transCollection) AddSettRole(settRole, merId, orderNum string) error {
+	set := bson.M{"$set": bson.M{"settRole": settRole}}
+	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)
 }
