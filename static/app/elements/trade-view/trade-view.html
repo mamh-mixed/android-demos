@@ -14,13 +14,14 @@
         font-size: 14px;
       }
     }
+
     .content {
       margin-top: 20px;
       background: #F4F4F4;
     }
 
-    .header{
-        color:#05B0CF;
+    .header {
+      color: #05B0CF;
     }
 
     .order {
@@ -56,9 +57,9 @@
         <div id="refdOrder" class="order">
           <div class="header">退款订单</div>
           <template is="dom-repeat" items="{{refdOrderItems}}" as="refdOrderItem">
-              <div class="content">
-                <trade-detail item="{{refdOrderItem}}"></trade-detail>
-              </div>
+            <div class="content">
+              <trade-detail item="{{refdOrderItem}}"></trade-detail>
+            </div>
           </template>
         </div>
       </paper-dialog-scrollable>
@@ -66,7 +67,7 @@
         <paper-button dialog-dismiss style="margin-right:50px;">取消</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></iron-ajax>
+    <x-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -74,6 +75,7 @@
 
       properties: {
         item: Object,
+        user: Object,
       },
       open: function() {
         this.$.dialogView.open();
@@ -85,18 +87,27 @@
         this.$.tradeQueryAjax.params = {
           'busicd': 'VOID',
           'origOrderNum': this.item.orderNum,
+          'agentCode':this.user.agentCode,
+          'groupCode':this.user.groupCode,
+          'merId':this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'CANC',
           'origOrderNum': this.item.orderNum,
+          'agentCode':this.user.agentCode,
+          'groupCode':this.user.groupCode,
+          'merId':this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'REFD',
           'origOrderNum': this.item.orderNum,
+          'agentCode':this.user.agentCode,
+          'groupCode':this.user.groupCode,
+          'merId':this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
@@ -109,7 +120,7 @@
           return;
         }
         if (!response.data || response.data.length === 0) {
-            return;
+          return;
         }
         var order = response.data[0];
         if (order.busicd === 'VOID') {

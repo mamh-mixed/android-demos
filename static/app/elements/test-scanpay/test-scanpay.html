@@ -1,11 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
-<link rel="import" href="../x-select/x-select.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../x-select/x-select.html">
 <dom-module id="test-scanpay">
   <style>
     :host {
@@ -171,7 +170,7 @@
         <div id="qrcode" on-tap="handleQrcodeTapped"></div>
       </div>
     </div>
-    <iron-ajax id="sendPayAjax" method="POST" url="/scanpay/unified" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></iron-ajax>
+    <x-ajax id="sendPayAjax" method="POST" url="/scanpay/unified" handle-as="json" debounce-duration="1000" on-response="handleSendPayResponse"></x-ajax>
   </template>
 </dom-module>
 <script src="../../bower_components/qrcode.js/qrcode.js"></script>

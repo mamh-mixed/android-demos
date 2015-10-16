@@ -31,7 +31,7 @@
 
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></iron-ajax>
+    <x-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></x-ajax>
     <paper-dialog id="dialogAdd">
       <h2>创建商户</h2>
       <paper-dialog-scrollable>

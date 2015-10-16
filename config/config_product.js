@@ -12,11 +12,13 @@
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "5m", // 缓存有效时间
         "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
-        "OrderCloseTime": "24h"
+        "OrderCloseTime": "24h",
+        "Expires": 30,
+        "MinExpires": 5
     },
-    "Qiniu":{
-        "Bucket":"yun-master",
-        "Domain":"dn-yun-master.qbox.me"
+    "Qiniu": {
+        "Bucket": "yun-master",
+        "Domain": "dn-yun-master.qbox.me"
     },
     "Mongo": {
         "Encrypt": true, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段

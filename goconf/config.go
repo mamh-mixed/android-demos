@@ -1,6 +1,8 @@
 package goconf
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
@@ -19,6 +21,8 @@ type ConfigStruct struct {
 		DefaultCacheTime Duration
 		NotifyURL        string
 		OrderCloseTime   Duration
+		Expires          time.Duration
+		MinExpires       time.Duration
 	}
 
 	Qiniu struct {

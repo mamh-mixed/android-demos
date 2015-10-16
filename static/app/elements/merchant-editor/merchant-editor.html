@@ -32,7 +32,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
+    <x-ajax id="saveAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></x-ajax>
     <paper-dialog id="dialog">
       <h2>创建门店</h2>
       <paper-dialog-scrollable>

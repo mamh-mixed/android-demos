@@ -10,10 +10,47 @@
     :host {
       display: block;
     }
+
+    * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    .condition {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .condition > paper-input,
+    .condition > x-select {
+      min-width: 170px;
+      margin-right: 20px;
+    }
+
+    .condition > .buttons {
+      min-width: 170px;
+    }
+
+    .condition > .buttons > paper-button {
+      margin: 10px 0px 0px;
+    }
+
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+    }
+
+    table.data-grid > thead > tr > th {
+      border-right: 1px solid #ddd;
+    }
+
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
@@ -31,8 +68,8 @@
         </div>
       </paper-dialog>
 
-      <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
-      <paper-input label="商户代码" value="{{cond.merId::input}}"></paper-input>
+      <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
+      <paper-input id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
       <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
 
@@ -148,13 +185,8 @@
       </tfoot>
 
     </table>
-    <iron-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax>
-    <!--
-        测试环境的链接为 211.147.72.70:10003
-        生产环境的链接为 211.144.213.118
-    -->
-    <!-- <iron-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></iron-ajax> -->
-    <iron-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></iron-ajax>
+    <x-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax>
+    <x-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
   </template>
   <script>
     (function() {
@@ -165,7 +197,8 @@
           cond: {
             type: Object,
             value: {}
-          }
+          },
+          user: Object,
         },
         ready: function() {
           this.cond = {
@@ -175,8 +208,8 @@
             size: 20,
             total: 0
           };
-          // 加载代理列表
-          this.handleQueryAgentsEvent();
+          //   // 加载代理列表
+          //   this.handleQueryAgentsEvent();
         },
         // 查询交易报表事件
         handleQueryTapped: function() {
@@ -245,7 +278,8 @@
         },
         observers: [
           '_watchAgentChange(agent.key)',
-          '_watchCondChange(cond.*)'
+          '_watchCondChange(cond.*)',
+          '_watchUserChanged(user.*)',
         ],
         _watchCondChange: function() {
           var filename = "Summary_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
@@ -257,6 +291,30 @@
             this.set('cond.agentCode', key);
           } else {
             delete this.cond.agentCode;
+          }
+        },
+        _watchUserChanged: function(value) {
+          if (value) {
+            var user = value.base;
+            if (user.userType === 'agent') {
+              this.agent = {
+                key: user.agentCode,
+                value: user.agentName,
+              };
+              this.agentDisabled = true;
+            } else if (user.userType === 'merchant') {
+              this.set('cond.merId', user.merId);
+              this.agentDisabled = true;
+              this.$.merId.setAttribute('disabled', true);
+            } else if (user.userType === 'admin') {
+              this.agentDisabled = false;
+              this.$.merId.removeAttribute('disabled');
+              // 加载代理列表
+              this.handleQueryAgentsEvent();
+            } else if (user.userType === 'group') {
+                this.set('cond.groupCode', user.groupCode);
+                this.agentDisabled = true;
+            }
           }
         },
         getYesterdayISODate: function() {

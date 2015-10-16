@@ -3,13 +3,18 @@ package master
 import (
 	// "bytes"
 	"encoding/json"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/omigo/log"
+
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
@@ -552,4 +557,194 @@ func uptokenHandle(w http.ResponseWriter, r *http.Request) {
 
 func downURLHandle(w http.ResponseWriter, r *http.Request) {
 	qiniu.HandleDownURL(w, r)
+}
+
+func userCreateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := User.CreateUser(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func userFindHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+
+	size, err := strconv.Atoi(params.Get("size"))
+	if err != nil {
+		http.Error(w, "参数 `size` 必须为整数", http.StatusBadRequest)
+	}
+	if size > 100 || size <= 0 {
+		size = 20
+	}
+	page, err := strconv.Atoi(params.Get("page"))
+	if err != nil {
+		http.Error(w, "参数 `page` 必须为整数", http.StatusBadRequest)
+	}
+	if page <= 0 {
+		page = 1
+	}
+
+	cond := &model.User{
+		UserName:     params.Get("userName"),
+		NickName:     params.Get("nickName"),
+		Mail:         params.Get("mail"),
+		PhoneNum:     params.Get("phoneNum"),
+		UserType:     params.Get("userType"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		// AgentName: params.Get("agentName"),
+		GroupCode: params.Get("groupCode"),
+		// GroupName: params.Get("groupName"),
+		MerId: params.Get("merId"),
+		// MerName:   params.Get("merName"),
+	}
+
+	ret := User.Find(cond, size, page)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+	w.Write(retBytes)
+}
+
+func loginHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	user := &model.User{}
+	err = json.Unmarshal(data, user)
+	if err != nil {
+		log.Errorf("json unmarshal error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	log.Infof("user login,username=%s", user.UserName)
+	ret := User.Login(user.UserName, user.Password)
+
+	if ret.Status == 0 {
+		log.Debugf("create session begin")
+		cValue := util.SerialNumber()
+		cExpires := time.Now().Add(goconf.Config.App.Expires * time.Minute)
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    "QUICKMASTERID",
+			Value:   cValue,
+			Path:    "/master/",
+			Expires: cExpires,
+		})
+
+		// 创建session
+		session := &model.Session{
+			SessionID: cValue,
+			User:      ret.Data.(*model.User),
+			Expires:   cExpires.Format("2006-01-02 15:04:05"),
+		}
+
+		ret = Session.Save(session)
+		log.Debugf("create session end")
+	}
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+	w.Write(retBytes)
+}
+
+// 查找session
+func findSessionHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	sessionId := params.Get("sessionId")
+
+	ret := Session.FindOne(sessionId)
+
+	retBytes, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+	w.Write(retBytes)
+}
+
+// 删除session
+func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	sessionId := params.Get("sessionId")
+
+	ret := Session.Delete(sessionId)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := User.UpdateUser(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	ret := User.UpdatePwd(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }

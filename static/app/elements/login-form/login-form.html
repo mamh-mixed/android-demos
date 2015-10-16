@@ -1,0 +1,132 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<dom-module id="login-form">
+  <style>
+    :host {
+      display: block;
+    }
+
+    .logo {
+      width: 30px;
+      height: 30px;
+      text-align: center;
+    }
+
+    .loginHeader {
+      text-align: center;
+      width: 100%;
+      height: 120px;
+      line-height: 120px;
+      vertical-align: middle;
+    }
+
+    paper-button {
+      width: 100%;
+      margin-top: 30px;
+      background: #ff4081;
+      color: #ffffff;
+    }
+
+    .login-inner {
+      width: 80%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .login-inner > #loginForm {
+      width: 100%;
+    }
+
+    #loginForm > h1 {
+      font-size: 30px;
+    }
+
+    #loginForm > paper-button {
+      margin: 30px auto;
+    }
+  </style>
+  <template>
+    <div class="login-inner">
+      <form id="loginForm">
+        <h1>用户登入</h1>
+        <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
+        <paper-button raised on-tap="loginTapHandle">登入</paper-button>
+        <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
+      </form>
+    </div>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="showLoginForm"></iron-localstorage>
+    <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
+  </template>
+  <script src="../../scripts/util.js"></script>
+  <script>
+    (function() {
+      Polymer({
+        is: 'login-form',
+
+        properties: {
+          // isRedirect 如果为TRUE，登入成功后会跳转到首页
+          redirect: {
+            type: Boolean,
+            value: false
+          },
+          target: {
+            type: Object,
+            value: function() {
+              return this.$.loginForm;
+            }
+          }
+        },
+        ready: function() {
+          this.user = {};
+        },
+        loginTapHandle: function() {
+          if (this.isloginConfigEmpty()) {
+            Util.toast('用户名或密码不能为空', 3000);
+            return;
+          }
+          var loginAjax = this.$.loginAjax;
+          loginAjax.body = JSON.stringify(this.user);
+          loginAjax.generateRequest();
+        },
+        isloginConfigEmpty: function() {
+          if (this.$.userName.validate() && this.$.pwd.validate()) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        handleLoginResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.user = {
+            userName: '',
+            password: ''
+          };
+
+          this.sessionId = response.data;
+          if (this.redirect) {
+            window.location.href = 'index.html';
+          } else {
+            Util.hideLoginDialog();
+          }
+        },
+        // 表单内点击回车键事件
+        handleEnterKeyPresse: function(e) {
+          this.loginTapHandle();
+        },
+        showLoginForm: function() {}
+      });
+    })();
+  </script>
+</dom-module>

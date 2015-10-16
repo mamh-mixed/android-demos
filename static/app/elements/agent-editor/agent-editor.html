@@ -30,7 +30,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></iron-ajax>
+    <x-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></x-ajax>
     <paper-dialog id="dialogAdd">
       <h2>创建代理</h2>
       <paper-dialog-scrollable>
