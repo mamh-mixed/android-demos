@@ -32,9 +32,9 @@
       </paper-dialog>
 
       <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
-      <paper-input id="groupCode" label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
-      <paper-input id="merId" label="商户代码" value="{{cond.merId::input}}"></paper-input>
-      <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
+      <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
+      <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
+      <paper-input label="门店名称" value="{{cond.merName::input}}"></paper-input>
       <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
 
     </div>
