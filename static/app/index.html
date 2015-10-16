@@ -41,8 +41,9 @@
   <!-- xxxxxendbuild -->
 
   <link rel="import" href="bower_components/app-router/app-router.html">
+  <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
   <link rel="import" href="layouts/scaffold-layout.html">
-
+  <link rel="import" href="elements/login-form/login-form.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
@@ -61,6 +62,7 @@
     <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
     <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
     <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
+    <app-route path="/config/users" name="user-list" import="pages/users-page.html"></app-route>
 
     <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
     <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>
@@ -76,10 +78,14 @@
     <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
     <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
     <app-route path="/test/filereader" name="test-filereader" import="pages/test/file-reader-page.html"></app-route>
+    <app-route path="/404" name="not-found" import="pages/common/not-found-page.html"></app-route>
+    <app-route path="*" name="not-found" import="pages/common/not-found-page.html"></app-route>
   </app-router>
 
   <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
-  <!-- build:js scripts/app.js -->
+  <paper-dialog id="reloginDialog" hidden modal>
+    <login-form style="width:252px;"></login-form>
+  </paper-dialog>
   <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
   <!-- endbuild-->

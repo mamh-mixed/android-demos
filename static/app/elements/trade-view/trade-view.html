@@ -66,7 +66,7 @@
         <paper-button dialog-dismiss style="margin-right:50px;">取消</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></iron-ajax>
+    <x-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -74,6 +74,7 @@
 
       properties: {
         item: Object,
+        user: Object,
       },
       open: function() {
         this.$.dialogView.open();
@@ -85,18 +86,27 @@
         this.$.tradeQueryAjax.params = {
           'busicd': 'VOID',
           'origOrderNum': this.item.orderNum,
+          'agentCode':this.user.agentCode,
+          'groupCode':this.user.groupCode,
+          'merId':this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'CANC',
           'origOrderNum': this.item.orderNum,
+          'agentCode':this.user.agentCode,
+          'groupCode':this.user.groupCode,
+          'merId':this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'REFD',
           'origOrderNum': this.item.orderNum,
+          'agentCode':this.user.agentCode,
+          'groupCode':this.user.groupCode,
+          'merId':this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 

@@ -1,8 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
@@ -12,6 +12,7 @@
 <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../elements/x-ajax/x-ajax.html">
 <link rel="import" href="../elements/x-pagination/x-pagination.html">
 <link rel="import" href="../styles/app-theme.html">
 
@@ -38,19 +39,21 @@
       /* paper-menu */
       --paper-menu-background-color: #fff;
       --menu-link-color: #111111;
-
       --paper-input-container-input: {
         font-size: 12px;
       }
-      ; /* 必须有分号，否则压缩后，无法正常渲染 */
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-input-container-label: {
         font-size: 12px;
       }
-      ; /* 必须有分号，否则压缩后，无法正常渲染 */
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
       --paper-menu-selected-item: {
         background-color: rgb(226, 240, 249);
       }
-      ; /* 必须有分号，否则压缩后，无法正常渲染 */
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
     }
 
     #drawerToolbar * {
@@ -186,7 +189,7 @@
     }
   </style>
   <template>
-    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform">
+    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
 
@@ -198,119 +201,23 @@
 
         <!-- 菜单列表 -->
         <paper-menu>
-          <paper-submenu opened="{{ startWith(route.path, 'config') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="build"></iron-icon>
-              <span>扫码支付商户配置</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="config.agents" href="#/config/agents">
-                <iron-icon icon="assignment-ind"></iron-icon>
-                <span>代理</span>
-              </a>
-              <a data-route="config.subAgents" href="#/config/subAgents">
-                <iron-icon icon="account-circle"></iron-icon>
-                <span>公司</span>
-              </a>
-              <a data-route="config.groups" href="#/config/groups">
-                <iron-icon icon="home"></iron-icon>
-                <span>商户</span>
-              </a>
-              <a data-route="config.configMer" href="#/config/configMer">
-                <iron-icon icon="create"></iron-icon>
-                <span>门店录入</span>
-              </a>
-              <a data-route="config.upload" href="#/config/upload">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>批量导入</span>
-              </a>
-              <a data-route="config.merchants" href="#/config/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>门店</span>
-              </a>
-              <a data-route="config.chanMers" href="#/config/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-              <a data-route="config.routes" href="#/config/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
-
-          <paper-submenu opened="{{ startWith(route.path, 'quickPay') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="home"></iron-icon>
-              <span>快捷支付商户配置</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="quickPay.merchants" href="#/quickPay/merchants">
-                <iron-icon icon="store"></iron-icon>
-                <span>机构商户</span>
-              </a>
-              <a data-route="quickPay.chanMers" href="#/quickPay/chanMers">
-                <iron-icon icon="account-balance"></iron-icon>
-                <span>渠道商户</span>
-              </a>
-              <a data-route="quickPay.routes" href="#/quickPay/routes">
-                <iron-icon icon="settings-input-component"></iron-icon>
-                <span>路由策略</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
-
-          <paper-submenu opened="{{ startWith(route.path, 'trade') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="swap-horiz"></iron-icon>
-              <span>交易查询</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="trade.list" href="#/trade/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>扫码交易</span>
-              </a>
-              <a data-route="trade.bindingpay.list" href="#/trade/bindingpay/list">
-                <iron-icon icon="payment"></iron-icon>
-                <span>绑定交易</span>
-              </a>
-              <a data-route="trade.reports" href="#/trade/reports">
-                <iron-icon icon="file-download"></iron-icon>
-                <span>报表下载</span>
-              </a>
-              <a data-route="trade.old.reports" href="#/trade/old/reports">
-                <iron-icon icon="cloud-download"></iron-icon>
-                <span>旧系统交易统计</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
-
-          <paper-submenu opened="{{ startWith(route.path, 'test') }}">
-            <paper-item class="menu-trigger">
-              <iron-icon icon="bug-report"></iron-icon>
-              <span>内部测试</span>
-            </paper-item>
-            <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-              <a data-route="test.scanpay" href="#/test/scanpay">
-                <iron-icon icon="pageview"></iron-icon>
-                <span>扫码支付</span>
-              </a>
-              <a data-route="test.bindingpay" href="#/test/bindingpay">
-                <iron-icon icon="icons:speaker-notes"></iron-icon>
-                <span>绑定支付</span>
-              </a>
-              <a data-route="test.qiniu" href="#/test/qiniu">
-                <iron-icon icon="cloud-upload"></iron-icon>
-                <span>七牛 Ajax 上传文件</span>
-              </a>
-              <a data-route="test.filereader" href="#/test/filereader">
-                <iron-icon icon="get-app"></iron-icon>
-                <span>HTML5 读取文件内容</span>
-              </a>
-            </paper-menu>
-          </paper-submenu>
+          <template is="dom-repeat" items="{{menus}}" as="menu">
+            <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
+              <paper-item class="menu-trigger">
+                <iron-icon icon$="{{menu.icon}}"></iron-icon>
+                <span>{{menu.nameCN}}</span>
+              </paper-item>
+              <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
+                <template is="dom-repeat" items="{{menu.children}}" as="subMenu">
+                  <a data-route$="{{subMenu.route}}" href$="{{subMenu.url}}">
+                    <iron-icon icon$="{{subMenu.icon}}"></iron-icon>
+                    <span>{{subMenu.nameCN}}</span>
+                  </a>
+                </template>
+              </paper-menu>
+            </paper-submenu>
+          </template>
         </paper-menu>
-
       </paper-scroll-header-panel>
 
       <!-- Main Area -->
@@ -320,10 +227,14 @@
         <paper-toolbar id="mainToolbar" class="tall">
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
-
+          <div>欢迎您，
+            <span>{{user.nickName}}</span>
+          </div>
+          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="logoutHandle"></paper-icon-button>
+          <!-- <paper-button id="logoutBtn">退出</paper-button> -->
           <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
+          <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
+          <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout" id="middleContainer">
@@ -341,6 +252,11 @@
         <content select=".content"></content>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
+    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
+    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
+    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
+    <iron-localstorage name="CIL.CONFIG.ISFULLSCREEN" value="{{isFullscreen}}"></iron-localstorage>
   </template>
   <script>
     (function() {
@@ -350,7 +266,200 @@
         properties: {
           route: {
             type: Object,
+          },
+          user: {
+            type: Object,
+            notify: true
+          },
+          isFullscreen: {
+            type: Boolean,
+            value: false
           }
+        },
+        ready: function() {
+          // 初始化菜单
+          this.adminMenus = [{
+            "nameCN": "扫码支付商户配置",
+            "nameEN": "",
+            "icon": "build",
+            "url": "",
+            "route": "config",
+            "children": [{
+              "nameCN": "代理",
+              "nameEN": "",
+              "icon": "assignment-ind",
+              "url": "#/config/agents",
+              "route": "config.agents"
+            }, {
+              "nameCN": "公司",
+              "nameEN": "",
+              "icon": "account-circle",
+              "url": "#/config/subAgents",
+              "route": "config.subAgents"
+            }, {
+              "nameCN": "商户",
+              "nameEN": "",
+              "icon": "home",
+              "url": "#/config/groups",
+              "route": "config.groups"
+            }, {
+              "nameCN": "门店录入",
+              "nameEN": "",
+              "icon": "create",
+              "url": "#/config/configMer",
+              "route": "config.configMer"
+            }, {
+              "nameCN": "批量导入",
+              "nameEN": "",
+              "icon": "cloud-upload",
+              "url": "#/config/upload",
+              "route": "config.upload"
+            }, {
+              "nameCN": "门店",
+              "nameEN": "",
+              "icon": "store",
+              "url": "#/config/merchants",
+              "route": "config.merchants"
+            }, {
+              "nameCN": "渠道商户",
+              "nameEN": "",
+              "icon": "account-balance",
+              "url": "#/config/chanMers",
+              "route": "config.chanMers"
+            }, {
+              "nameCN": "路由策略",
+              "nameEN": "",
+              "icon": "settings-input-component",
+              "url": "#/config/routes",
+              "route": "config.routes"
+            }, {
+              "nameCN": "用户",
+              "nameEN": "",
+              "icon": "account-box",
+              "url": "#/config/users",
+              "route": "config.users"
+            }]
+          }, {
+            "nameCN": "快捷支付商户配置",
+            "nameEN": "",
+            "icon": "swap-horiz",
+            "url": "",
+            "route": "quickPay",
+            "children": [{
+              "nameCN": "机构商户",
+              "nameEN": "",
+              "icon": "store",
+              "url": "#/quickPay/merchants",
+              "route": "quickPay.merchants"
+            }, {
+              "nameCN": "渠道商户",
+              "nameEN": "",
+              "icon": "account-balance",
+              "url": "#/quickPay/chanMers",
+              "route": "quickPay.chanMers"
+            }, {
+              "nameCN": "路由策略",
+              "nameEN": "",
+              "icon": "settings-input-component",
+              "url": "#/quickPay/routes",
+              "route": "quickPay.routes"
+            }]
+          }, {
+            "nameCN": "交易查询",
+            "nameEN": "",
+            "icon": "swap-horiz",
+            "url": "",
+            "route": "trade",
+            "children": [{
+              "nameCN": "扫码交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/list",
+              "route": "trade.list"
+            }, {
+              "nameCN": "绑定交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/bindingpay/list",
+              "route": "trade.bindingpay.list"
+            }, {
+              "nameCN": "报表下载",
+              "nameEN": "",
+              "icon": "file-download",
+              "url": "#/trade/reports",
+              "route": "trade.reports"
+            }, {
+              "nameCN": "旧系统报表下载",
+              "nameEN": "",
+              "icon": "cloud-download",
+              "url": "#/trade/old/reports",
+              "route": "trade.old.reports"
+            }]
+          }, {
+            "nameCN": "内部测试",
+            "nameEN": "",
+            "icon": "bug-report",
+            "url": "",
+            "route": "test",
+            "children": [{
+              "nameCN": "扫码支付",
+              "nameEN": "",
+              "icon": "pageview",
+              "url": "#/test/scanpay",
+              "route": "test.scanpay"
+            }, {
+              "nameCN": "绑定支付",
+              "nameEN": "",
+              "icon": "icons:speaker-notes",
+              "url": "#/test/bindingpay",
+              "route": "test.bindingpay"
+            }, {
+              "nameCN": "七牛 Ajax 上传文件",
+              "nameEN": "",
+              "icon": "cloud-upload",
+              "url": "#/test/qiniu",
+              "route": "test.qiniu"
+            }, {
+              "nameCN": "HTML5读取文件内容",
+              "nameEN": "",
+              "icon": "get-app",
+              "url": "#/test/filereader",
+              "route": "test.filereader"
+            }]
+          }];
+          this.agentMenus = [{
+            "nameCN": "交易查询",
+            "nameEN": "",
+            "icon": "swap-horiz",
+            "url": "",
+            "route": "trade",
+            "children": [{
+              "nameCN": "扫码交易",
+              "nameEN": "",
+              "icon": "payment",
+              "url": "#/trade/list",
+              "route": "trade.list"
+            }, {
+              "nameCN": "报表下载",
+              "nameEN": "",
+              "icon": "file-download",
+              "url": "#/trade/reports",
+              "route": "trade.reports"
+            }]
+          }];
+
+        },
+        // 核对是否登入
+        checkIsLogin: function() {
+          this.$.findSessionAjax.params = {
+            'sessionId': this.sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+        },
+        // 当没有登入的时候，跳转到登入页面
+        handleNotLogin: function() {
+          window.location.href = 'login.html';
+          return;
         },
         paperHeaderTransform: function(e) {
           var appName = this.$.appName;
@@ -378,6 +487,46 @@
           }
           return name.substr(1, prefix.length) === prefix;
         },
+        handleFindSessionResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            window.location.href = 'login.html';
+            return;
+          }
+          this.user = response.data;
+          this.userType = this.user.userType;
+          if (this.userType === 'admin') {
+            this.menus = this.adminMenus;
+          } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
+            this.menus = this.agentMenus;
+          }
+        },
+        handleDeleteSessionResponse: function() {},
+        // 退出
+        logoutHandle: function() {
+          // 删除后台sesseion信息
+          this.$.deleteSessionAjax.params = {
+            'sessionId': this.sessionId,
+          };
+          this.$.deleteSessionAjax.generateRequest();
+
+          // 清除localStorage中的信息
+          this.sessionId = '';
+          this.userType = '';
+          this.user = {};
+          this.$.logoutBtn.hidden = true;
+
+          // 跳转至登录页面
+          window.location.href = 'login.html';
+        },
+        // 进入全屏模式
+        enterFullscreenMode: function() {
+          this.isFullscreen = true;
+        },
+        // 退出全屏模式
+        exitFullscreenMode: function() {
+          this.isFullscreen = false;
+        }
       });
     })();
   </script>

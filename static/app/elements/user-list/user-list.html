@@ -1,0 +1,209 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
+<link rel="import" href="../x-pagination/x-pagination.html">
+<link rel="import" href="../user-create/user-create.html">
+<link rel="import" href="../user-view/user-view.html">
+<link rel="import" href="../user-pwd-editor/user-pwd-editor.html">
+
+<dom-module id="user-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
+
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+    }
+  </style>
+  <template>
+    <form is="x-form" id="formQuery" method="GET" action="/master/user/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="search-condition">
+        <paper-input name="userName" label="用户名"></paper-input>
+        <paper-input name="mail" label="邮箱"></paper-input>
+        <paper-input name="phoneNum" label="手机号"></paper-input>
+        <x-select id="merStatus" name="userType" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
+        <paper-input name="agentCode" label="代理代码"></paper-input>
+        <!-- <paper-input name="subAgentCode" label="公司代码"></paper-input> -->
+        <!-- <paper-input name="agentName" label="代理名称"></paper-input> -->
+        <paper-input name="groupCode" label="商户代码"></paper-input>
+        <!-- <paper-input name="groupName" label="集团名称"></paper-input> -->
+        <paper-input name="merId" label="门店代码"></paper-input>
+        <!-- <paper-input name="merName" label="商户名称"></paper-input> -->
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      </div>
+      <div class="divider blank"></div>
+      <div class="divider blank"></div>
+      <table class="data-grid">
+        <thead>
+          <tr>
+            <th>序号</th>
+            <th class="left">用户名</th>
+            <th class="left">别名</th>
+            <th class="left">用户类型</th>
+            <th class="left">邮箱</th>
+            <th class="left">手机号</th>
+            <th class="left">代理代码</th>
+            <th class="left">公司代码</th>
+            <th class="left">商户代码</th>
+            <th class="left">门店代码</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template is="dom-repeat" items="{{users}}">
+            <tr>
+              <td class="center hand" on-click="viewUserTap">
+                <span>{{addOneFilter(index)}}</span>
+              </td>
+              <td>
+                <span>{{item.userName}}</span>
+              </td>
+              <td>
+                <span>{{item.nickName}}</span>
+              </td>
+              <td>
+                <span>{{getUserType(item.userType)}}</span>
+              </td>
+              <td>
+                <span>{{item.mail}}</span>
+              </td>
+              <td>
+                <span>{{item.phoneNum}}</span>
+              </td>
+              <td>
+                <span>{{item.agentCode}}</span>
+              </td>
+              <td>
+                <span>{{item.subAgentCode}}</span>
+              </td>
+              <td>
+                <span>{{item.groupCode}}</span>
+              </td>
+              <td>
+                <span>{{item.merId}}</span>
+              </td>
+
+            </tr>
+          </template>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="255" align="right">
+              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
+    <user-create id="userCreate" on-saved="afterSavedHandle" page-type="{{pageType}}" user="[[user]]"></user-create>
+    <user-view id="userView" on-editor="editorUserHandle" on-editor-pwd="editorPwdHandle" item="{{user}}"></user-view>
+    <user-pwd-editor id="editorPwd" on-saved="afterSavedHandle" user-name="[[userName]]"></user-pwd-editor>
+    </div>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'user-list',
+        properties: {
+          userTypes: {
+            type: Array,
+            value: [{
+              key: 'admin',
+              value: '讯联'
+            }, {
+              key: 'agent',
+              value: '代理'
+            }, {
+              key: 'subAgent',
+              value: '公司'
+            }, {
+              key: 'group',
+              value: '商户'
+            }, {
+              key: 'merchant',
+              value: '门店'
+            }, ]
+          }
+        },
+        ready: function() {
+          this.users = [];
+          this.userType = {};
+          this.userTypeMap = {
+            admin: '讯联',
+            agent: '代理',
+            subAgent: '公司',
+            group: '商户',
+            merchant: '门店'
+          };
+        },
+        // 根据条件查询用户
+        handleQueryTapped: function() {
+          this.users = [];
+          this.$.formQuery.submit();
+        },
+        // ajax请求响应处理
+        handleQueryResponse: function(e) {
+          var response = e.detail;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          var pagination = response.data;
+          this.users = pagination.data.slice(0);
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
+          if (this.users.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
+        },
+        // 创建用户
+        handleCreateFabTapped: function() {
+          this.pageType = 'create';
+          this.$.userCreate.open();
+        },
+        // 修改用户信息
+        editorUserHandle: function() {
+          this.pageType = 'editor';
+          this.$.userCreate.open();
+        },
+        // 修改密码
+        editorPwdHandle: function() {
+          this.userName = this.user.userName;
+          this.$.editorPwd.open();
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.users = [];
+          this.set('cond.total', 0);
+        },
+        // 保存后重新查询
+        afterSavedHandle: function() {
+          this.handleQueryTapped();
+        },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        getUserType: function(key) {
+          return this.userTypeMap[key];
+        },
+        // 查看用户详细信息
+        viewUserTap: function(event) {
+          this.user = event.model.item;
+          this.$.userView.open();
+        },
+
+      });
+    })();
+  </script>
+</dom-module>

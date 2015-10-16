@@ -328,9 +328,9 @@ func (s *ScanPayRequest) WxpMarshalGoods() string {
 		body := strings.Join(goodsName, ",")
 		bodySizes := []rune(body)
 		if len(bodySizes) > 20 {
-			bodySizes = bodySizes[:20]
+			body = string(bodySizes[:20]) + "..."
 		}
-		return string(bodySizes) + "..."
+		return body
 	}
 
 	// 假如商品详细为空，送配置的商品名称

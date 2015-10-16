@@ -1,11 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../x-select/x-select.html">
+<link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../trade-view/trade-view.html">
 <link rel="import" href="../trade-message/trade-message.html">
 <dom-module id="trade-list">
@@ -15,7 +16,8 @@
     }
   </style>
   <template>
-    <form is="iron-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
+    <!-- <paper-button raised on-tap="showLoginDialogTap">showLoginDialog</paper-button> -->
+    <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
         <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
         <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
@@ -35,9 +37,9 @@
           </div>
         </paper-dialog>
 
-        <paper-input label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input label="商户代码" name="merId" value="{{cond.merId::input}}"></paper-input>
+        <paper-input id="agentCode" label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input id="groupCode" label="集团代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input id="merId" label="商户代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
@@ -114,8 +116,8 @@
         </tfoot>
       </table>
     </form>
-    <trade-view id="tradeView" item="{{transItem}}"></trade-view>
-    <trade-message id="tradeMessage" item="{{transItem}}"></trade-message>
+    <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
+    <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -188,7 +190,8 @@
             key: '40',
             value: '已关闭'
           }, ]
-        }
+        },
+        user: Object,
       },
       ready: function() {
         this.cond = {
@@ -212,7 +215,8 @@
       observers: [
         '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
-        '_watchTransStatusChange(transStatus.key)'
+        '_watchTransStatusChange(transStatus.key)',
+        '_watchUserChanged(user.*)',
       ],
       _watchBusicdChange: function(key) {
         this.cond.busicd = key;
@@ -230,6 +234,28 @@
       _watchTransStatusChange: function(key) {
         this.cond.transStatus = key;
       },
+      _watchUserChanged: function(value) {
+        if (value) {
+          var user = value.base;
+          if (user.userType === 'agent') {
+            this.set('cond.agentCode',user.agentCode);
+            this.$.agentCode.setAttribute('disabled', true);
+          } else if (user.userType === 'group') {
+            this.set('cond.groupCode',user.groupCode);
+            this.$.agentCode.setAttribute('disabled', true);
+            this.$.groupCode.setAttribute('disabled', true);
+          } else if (user.userType === 'merchant') {
+            this.set('cond.merId',user.merId);
+            this.$.agentCode.setAttribute('disabled', true);
+            this.$.groupCode.setAttribute('disabled', true);
+            this.$.merId.setAttribute('disabled', true);
+          } else {
+            this.$.agentCode.removeAttribute('disabled');
+            this.$.groupCode.removeAttribute('disabled');
+            this.$.merId.removeAttribute('disabled');
+          }
+        }
+      },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
         var startTime = this.$.startTimePicker.date;
@@ -246,11 +272,33 @@
         this.$.endTimeDailog.toggle();
       },
       queryAction: function() {
-        this.$.formSearch.submit();
+          this.$.agentCode.removeAttribute('disabled');
+          this.$.groupCode.removeAttribute('disabled');
+          this.$.merId.removeAttribute('disabled');
+          this.$.formSearch.submit();
       },
       // 发送查询交易的ajax请求
       submitForm: function() {
         this.trades = [];
+        if(this.user){
+            if(this.user.userType==='agent'){
+                this.$.agentCode.value=this.user.agentCode;
+                this.$.agentCode.setAttribute('disabled',true);
+            }else if(this.user.userType==='group'){
+                this.$.groupCode.value=this.user.groupCode;
+                this.$.agentCode.setAttribute('disabled',true);
+                this.$.groupCode.setAttribute('disabled',true);
+            }else if(this.user.userType==='merchant'){
+                this.$.merId.value=this.user.merId;
+                this.$.agentCode.setAttribute('disabled',true);
+                this.$.groupCode.setAttribute('disabled',true);
+                this.$.merId.setAttribute('disabled',true);
+            }else{
+                this.$.agentCode.removeAttribute('disabled');
+                this.$.groupCode.removeAttribute('disabled');
+                this.$.merId.removeAttribute('disabled');
+            }
+        }
         // this.set('cond.total', 0);
         // console.log(e.detail);
       },
@@ -337,6 +385,9 @@
         this.transItem = e.model.item;
         this.$.tradeMessage.open();
       },
+      showLoginDialogTap: function(){
+        Util.showLoginDialog();
+      }
     });
   </script>
 </dom-module>

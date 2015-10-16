@@ -326,6 +326,7 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 			defer resp.Body.Close()
 
 			if resp.StatusCode != http.StatusOK {
+				log.Infof("remote service return http status: %d", resp.StatusCode)
 				time.Sleep(time.Second * d)
 				continue
 			}

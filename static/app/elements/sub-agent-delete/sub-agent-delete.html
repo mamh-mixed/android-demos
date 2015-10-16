@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
@@ -28,7 +27,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="deleteAjax" method="GET" url="/master/subAgent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></iron-ajax>
+    <x-ajax id="deleteAjax" method="GET" url="/master/subAgent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
     <paper-dialog id="dialogDelete">
       <h2>删除【
         <span>{{subAgent.subAgentName}}</span>】公司</h2>

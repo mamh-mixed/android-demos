@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -270,19 +269,19 @@
         </div>
       </section>
     </iron-pages>
-    <iron-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></iron-ajax>
-    <iron-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></iron-ajax>
-    <iron-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></iron-ajax>
-    <iron-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></iron-ajax>
+    <x-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></x-ajax>
+    <x-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></x-ajax>
+    <x-ajax id="saveChannelMerchantAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></x-ajax>
+    <x-ajax id="saveRouterAjax" method="POST" url="/master/router/save" handle-as="json" debounce-duration="1000" on-response="handleSaveRouterResponse"></x-ajax>
 
-    <iron-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></iron-ajax>
-    <iron-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></iron-ajax>
-    <iron-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></iron-ajax>
-    <iron-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></iron-ajax>
-    <iron-ajax id="findChanMerAlpAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerAlpResponse"></iron-ajax>
-    <iron-ajax id="findChanMerWeixinAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerWeixinResponse"></iron-ajax>
-    <iron-ajax id="findRouterAlpAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterAlpResponse"></iron-ajax>
-    <iron-ajax id="findRouterWeixinAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterWeixinResponse"></iron-ajax>
+    <x-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></x-ajax>
+    <x-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></x-ajax>
+    <x-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></x-ajax>
+    <x-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></x-ajax>
+    <x-ajax id="findChanMerAlpAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerAlpResponse"></x-ajax>
+    <x-ajax id="findChanMerWeixinAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerWeixinResponse"></x-ajax>
+    <x-ajax id="findRouterAlpAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterAlpResponse"></x-ajax>
+    <x-ajax id="findRouterWeixinAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterWeixinResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -895,11 +894,11 @@
       // 微信必填项是否为空
       isWXPConfigEmpty: function() {
         if (this.weixin.isAgentMode) {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.asettFlag && this.$.wsettRole.validate() && this.wbigchanMerId) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wsettFlag && this.$.wsettRole.validate() && this.wbigchanMerId) {
             return false;
           }
         } else {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.asettFlag && this.$.wsettRole.validate() && this.$.wxpAppId.validate() &&
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wsettFlag && this.$.wsettRole.validate() && this.$.wxpAppId.validate() &&
             this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
             return false;
           }
