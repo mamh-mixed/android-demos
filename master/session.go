@@ -12,6 +12,7 @@ import (
 type session struct{}
 
 var Session session
+var expiredTime = time.Duration(goconf.Config.App.SessionExpiredTime)
 
 func init() {
 	go func() {
@@ -19,7 +20,8 @@ func init() {
 	}()
 }
 func timingClearSession() {
-	refetchTime := goconf.Config.App.MinExpires * time.Minute
+	// 每段时间清理一次 Session
+	refetchTime := expiredTime / 5
 	for {
 		select {
 		case <-time.After(refetchTime):
