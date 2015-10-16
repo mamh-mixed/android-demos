@@ -14,13 +14,14 @@
         font-size: 14px;
       }
     }
+
     .content {
       margin-top: 20px;
       background: #F4F4F4;
     }
 
-    .header{
-        color:#05B0CF;
+    .header {
+      color: #05B0CF;
     }
 
     .order {
@@ -33,7 +34,6 @@
       <paper-dialog-scrollable>
         <!-- 订单明细 -->
         <div id="order">
-          <div class="header">订单明细</div>
           <div class="content">
             <trade-detail item="{{item}}"></trade-detail>
           </div>
@@ -56,9 +56,9 @@
         <div id="refdOrder" class="order">
           <div class="header">退款订单</div>
           <template is="dom-repeat" items="{{refdOrderItems}}" as="refdOrderItem">
-              <div class="content">
-                <trade-detail item="{{refdOrderItem}}"></trade-detail>
-              </div>
+            <div class="content">
+              <trade-detail item="{{refdOrderItem}}"></trade-detail>
+            </div>
           </template>
         </div>
       </paper-dialog-scrollable>
@@ -109,7 +109,7 @@
           return;
         }
         if (!response.data || response.data.length === 0) {
-            return;
+          return;
         }
         var order = response.data[0];
         if (order.busicd === 'VOID') {

@@ -70,14 +70,16 @@
         <tbody>
           <template is="dom-repeat" items="{{trades}}">
             <tr>
-              <td class="center hand" on-tap="showTradeViewHandler">{{addOneFilter(index)}}</td>
+              <td align="center">{{addOneFilter(index)}}</td>
               <td align="center" class$="{{getRespCodeColor(item.respcd)}}">
                 <div style="display: inline-block;position: relative;">
-                  <span>{{item.respcd}}</span>
+                  <span class="abbr">{{item.respcd}}</span>
                   <paper-tooltip position="right">{{item.errorDetail}}</paper-tooltip>
                 </div>
               </td>
-              <td align="center">{{item.merId}}</td>
+              <td align="center">
+                <a on-tap="showTradeViewHandler">{{item.merId}}</a>
+              </td>
               <td>{{item.merName}}</td>
               <td>{{item.orderNum}}</td>
               <td>{{busicdFilter(item.busicd)}}</td>
