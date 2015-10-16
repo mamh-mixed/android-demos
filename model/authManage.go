@@ -1,5 +1,11 @@
 package model
 
+const (
+	// 密码加密用到的随机字符串
+	RAND_PWD    = "cnIjnlJbXsN2WAdpjV6AZJKKSorRt23"
+	DEFAULT_PWD = "Yun#1016"
+)
+
 // User 用户表
 type User struct {
 	UserName     string `json:"userName" bson:"userName"`

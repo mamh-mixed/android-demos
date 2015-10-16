@@ -25,7 +25,7 @@ func (u *user) Login(userName, password string) (ret *model.ResultBody) {
 		log.Errorf("查询用户(%s)出错:%s", userName, err)
 		return model.NewResultBody(2, "无此用户名")
 	}
-	passSha1 := fmt.Sprintf("%x", sha1.Sum([]byte(password)))
+	passSha1 := fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userName + "}" + password))))
 	if passSha1 != user.Password {
 		log.Errorf("密码错误")
 		return model.NewResultBody(3, "密码错误")
@@ -48,7 +48,7 @@ func (u *user) CreateUser(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(1, "json失败")
 	}
 	// 设置默认密码
-	passData := []byte("12345678")
+	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
 	user.Password = fmt.Sprintf("%x", sha1.Sum(passData))
 
 	// 判断必填项是否为空
@@ -199,10 +199,10 @@ func (u *user) UpdatePwd(data []byte) (ret *model.ResultBody) {
 	if err != nil {
 		return model.NewResultBody(2, "查询数据库失败")
 	}
-	if user.Password != fmt.Sprintf("%x", sha1.Sum([]byte(userPwd.Password))) {
+	if user.Password != fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD+"{"+userPwd.UserName+"}"+userPwd.Password)))) {
 		return model.NewResultBody(3, "原密码错误")
 	}
-	user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(userPwd.NewPwd)))
+	user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+userPwd.NewPwd)))
 	err = mongo.UserColl.Update(user)
 	if err != nil {
 		log.Infof("修改密码失败,%s", err)
