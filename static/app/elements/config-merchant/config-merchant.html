@@ -895,11 +895,11 @@
       // 微信必填项是否为空
       isWXPConfigEmpty: function() {
         if (this.weixin.isAgentMode) {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.asettFlag && this.$.wsettRole.validate() && this.wbigchanMerId) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wsettFlag && this.$.wsettRole.validate() && this.wbigchanMerId) {
             return false;
           }
         } else {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.asettFlag && this.$.wsettRole.validate() && this.$.wxpAppId.validate() &&
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wsettFlag && this.$.wsettRole.validate() && this.$.wxpAppId.validate() &&
             this.$.wsignCert.validate() && this.$.httpCertTArea.validate() && this.$.httpKeyTArea.validate()) {
             return false;
           }
