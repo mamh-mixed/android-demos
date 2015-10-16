@@ -107,7 +107,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       observers: [
         '_userTypesChange(userType)'
       ],
-      _userTypesChange(value) {
+      _userTypesChange: function(value) {
         this.set('user.userType', value.key);
         if (value.key === 'agent') {
           this.set('user.subAgentCode', '');
