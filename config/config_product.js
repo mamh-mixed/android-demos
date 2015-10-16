@@ -12,9 +12,11 @@
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "5m", // 缓存有效时间
         "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
-        "OrderCloseTime": "24h",
-        "Expires": 30,
-        "MinExpires": 5
+        "OrderCloseTime": "24h", // 未支付订单关闭时间
+        // 平台用户登录后，一段时间内无操作失效时间，比如 30m， 表示 30m 无操作后会话失效，
+        // 同时，当会话接近失效时间（1/5）时，如果用户有操作，那么延长失效时间，
+        // 比如 用户在第 26 分钟有操作，那么失效时间再延长 30m
+        "SessionExpiredTime": "30m"
     },
     "Qiniu": {
         "Bucket": "yun-master",

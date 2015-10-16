@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
@@ -659,7 +658,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	if ret.Status == 0 {
 		log.Debugf("create session begin")
 		cValue := util.SerialNumber()
-		cExpires := time.Now().Add(goconf.Config.App.Expires * time.Minute)
+		cExpires := time.Now().Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "QUICKMASTERID",

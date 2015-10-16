@@ -389,7 +389,7 @@
           }, {
             key: 'AGENT',
             value: 'AGENT'
-          },{
+          }, {
             key: 'COMPANY',
             value: 'COMPANY'
           }, {
@@ -404,7 +404,8 @@
         '_watchMerStatusChange(merStatus.key)',
         '_wisAgentModeChanged(weixin.isAgentMode)',
         '_asettFlagChange(asettFlag)',
-        '_wsettFlagChange(wsettFlag)'
+        '_wsettFlagChange(wsettFlag)',
+        '_isNeedSignChange(merchant.isNeedSign)'
       ],
       _wisAgentModeChanged: function(value) {
         if (value) {
@@ -451,7 +452,7 @@
       },
       // 选择大商户号
       _wbigchanMerIdChanged: function(value) {
-        if (this.bigMerchantMap && value) {
+        if (this.bigMerchantMap && value && value.key) {
           this.set('bigMerchant', this.bigMerchantMap[value.key]);
           if (!this.bigMerchant) {
             this.$.findChanMerAjax.params = {
@@ -503,6 +504,15 @@
           }
         } else {
           this.set('weixinRoute.settRole', '');
+        }
+      },
+      // 是否需要验签改变事件
+      _isNeedSignChange: function(value) {
+        if (value) {
+          this.$.signKey.setAttribute('required', true);
+        } else {
+          this.$.signKey.removeAttribute('required');
+          this.$.signKey.validate();
         }
       },
       attributeChanged: function() {
@@ -894,7 +904,7 @@
       // 微信必填项是否为空
       isWXPConfigEmpty: function() {
         if (this.weixin.isAgentMode) {
-          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wsettFlag && this.$.wsettRole.validate() && this.wbigchanMerId) {
+          if (this.$.wchanMerId.validate() && this.$.wacqFee.validate() && this.$.wmerFee.validate() && this.wsettFlag && this.$.wsettRole.validate() && this.wbigchanMerId && this.wbigchanMerId.key) {
             return false;
           }
         } else {
@@ -975,12 +985,6 @@
       // 是否需要验签的改变事件
       handleIsNeedSignChangeEvent: function() {
         this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
-        if (this.$.isNeedSignCheck.checked) {
-          this.$.signKey.setAttribute('required', true);
-        } else {
-          this.$.signKey.removeAttribute('required');
-          this.$.signKey.validate();
-        }
       },
       // 接口权限中的复选框组的改变事件
       handlePermissionChangeEvent: function(e) {

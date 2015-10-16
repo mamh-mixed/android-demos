@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -55,7 +54,6 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/create", userCreateHandle)
 	mux.HandleFunc("/master/user/update", userUpdateHandle)
 	mux.HandleFunc("/master/user/updatePwd", userUpdatePwdHandle)
-	mux.HandleFunc("/master/respCode/match", respCodeMatchHandle)
 	return mux
 }
 
@@ -161,18 +159,30 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 			return session, err
 		}
 	}
-	// 查询session是否过期，如果还剩最后5分钟则给此session延期，如果已经过期则返回失败
+	// 查询 session 是否过期，如果接近失效则给此 session 延期，如果已经过期则返回失败
+
 	session, err = mongo.SessionColl.Find(c.Value)
 	if err != nil {
-		log.Debugf("查询session(%s)出错:%s", c.Value, err)
+		log.Debugf("session(%s) not exist: %s", c.Value, err)
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return session, err
 	}
+
+	// 计算现在到失效时间还有多久
 	expire, _ := time.ParseInLocation("2006-01-02 15:04:05", session.Expires, time.Local)
 	subTime := expire.Sub(time.Now())
-	log.Debugf("subTime:%d", subTime)
-	if subTime > 0 && subTime < goconf.Config.App.MinExpires*time.Minute {
-		newExpire := expire.Add(goconf.Config.App.Expires * time.Minute)
+	log.Debugf("session time remain: %s", subTime)
+
+	// 会话已过期
+	if subTime < 0 {
+		log.Infof("session(%s) expired", c.Value)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return session, errors.New("会话已过期")
+	}
+
+	// 会话接近失效，延长会话失效时间
+	if subTime < expiredTime/5 {
+		newExpire := expire.Add(expiredTime)
 		session.Expires = newExpire.Format("2006-01-02 15:04:05")
 		err = mongo.SessionColl.Add(session)
 		if err != nil {
@@ -181,11 +191,7 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 			c.Expires = newExpire
 			http.SetCookie(w, c)
 		}
-
-	} else if subTime < 0 {
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
-		return session, errors.New("session过期")
 	}
-	log.Debugf("url=%s, cookie: %s", r.URL.Path, c.String())
+
 	return session, nil
 }
