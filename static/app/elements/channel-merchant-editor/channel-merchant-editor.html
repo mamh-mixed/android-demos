@@ -186,7 +186,7 @@
         },
         // 选择大商户号
         _wbigchanMerIdChanged: function(value) {
-          if (this.bigMerchantMap && value) {
+          if (this.bigMerchantMap && value && value.key) {
             this.set('bigMerchant', this.bigMerchantMap[value.key]);
             if (!this.bigMerchant) {
               this.$.findChanMerAjax.params = {
@@ -302,7 +302,7 @@
         // 微信必填项是否为空
         isWXPConfigEmpty: function() {
           if (this.weixin.isAgentMode) {
-            if (this.$.wchanMerId.validate() && this.wbigchanMerId) {
+            if (this.$.wchanMerId.validate() && this.wbigchanMerId && this.wbigchanMerId.key) {
               return false;
             }
           } else {
@@ -319,7 +319,6 @@
               this.set('alp.chanCode', 'ALP');
               this.chanMer = this.alp;
             } else if (this.channel.key === 'WXP' && !this.isWXPConfigEmpty()) {
-              this.set('weixin.merFee', wmerFee);
               this.set('weixin.chanCode', 'WXP');
               // 如果勾选了代理商模式，就直接填充上大商户的信息
               if (this.weixin.isAgentMode) {
