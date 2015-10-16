@@ -26,6 +26,8 @@ gulp.task('copy', ['vendor'], function() {
       'app/**/*',
       '!app/bower_components/**/demo',
       '!app/bower_components/**/demo/**',
+      '!app/bower_components/**/tests',
+      '!app/bower_components/**/tests/**',
       '!app/bower_components/**/test',
       '!app/bower_components/**/test/**',
       '!app/bower_components/**/examples',
