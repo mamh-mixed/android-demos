@@ -25,6 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         min-height: 500px;
         max-height: 500px;
       }
+      ;
     }
 
     x-select {
@@ -52,6 +53,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     x-select {
       margin-left: 0px;
     }
+
   </style>
   <template>
     <paper-dialog id="dialogAdd">
@@ -107,7 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       observers: [
         '_userTypesChange(userType)'
       ],
-      _userTypesChange(value) {
+      _userTypesChange: function(value) {
         this.set('user.userType', value.key);
         if (value.key === 'agent') {
           this.set('user.subAgentCode', '');
@@ -234,5 +236,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('user', {});
       }
     });
+
   </script>
 </dom-module>
