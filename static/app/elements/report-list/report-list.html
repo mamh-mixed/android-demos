@@ -262,7 +262,7 @@
             if (user.userType === 'agent') {
               this.agent = {
                 key: user.agentCode,
-                value: user.agentName,
+                value: user.agentCode,
               };
               this.agentDisabled = true;
             } else if (user.userType === 'merchant') {
