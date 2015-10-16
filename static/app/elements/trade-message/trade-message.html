@@ -58,8 +58,8 @@
         <paper-button dialog-dismiss>取消</paper-button>
       </div>
     </paper-dialog>
-    <iron-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></iron-ajax>
-    <iron-ajax id="chanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleChanMessageResponse"></iron-ajax>
+    <x-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></x-ajax>
+    <x-ajax id="chanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleChanMessageResponse"></x-ajax>
   </template>
   <script>
     (function() {
@@ -68,6 +68,7 @@
 
         properties: {
           item: Object,
+          user: Object,
         },
         open: function() {
           this.$.dialogView.open();
@@ -100,6 +101,8 @@
             'msgType': '1',
             'size': this.cond.size,
             'page': this.cond.page,
+            'agentCode':this.user.agentCode,
+            'groupCode':this.user.groupCode
           };
           this.$.merMessageQueryAjax.generateRequest();
         },
@@ -143,6 +146,8 @@
             'orderNum': this.item.orderNum,
             'msgType': '2',
             'reqIds': this.reqArray,
+            'agentCode':this.user.agentCode,
+            'groupCode':this.user.groupCode
           };
           this.$.chanMessageQueryAjax.generateRequest();
 
@@ -187,6 +192,8 @@
             'msgType': '1',
             'size': this.cond.size,
             'page': this.cond.page,
+            'agentCode':this.user.agentCode,
+            'groupCode':this.user.groupCode
           };
           this.$.merMessageQueryAjax.generateRequest();
           this.reqArray = [];

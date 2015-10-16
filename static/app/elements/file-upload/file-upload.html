@@ -61,7 +61,7 @@
         <span id="responseMessageSpan">{{message}}</span>
       </div>
     </div>
-    <iron-ajax id="importAjax" url="/master/merchant/import" handle-as="json" on-response="handleImportResponse"></iron-ajax>
+    <x-ajax id="importAjax" url="/master/merchant/import" handle-as="json" on-response="handleImportResponse"></x-ajax>
 
   </template>
   <script src="../../bower_components/plupload/js/plupload.full.min.js"></script>

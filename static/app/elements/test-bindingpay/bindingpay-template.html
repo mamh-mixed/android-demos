@@ -39,7 +39,7 @@
     }
   </style>
   <template>
-    <iron-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-response="handleResponse"></iron-ajax>
+    <x-ajax id="postAjax" method="POST" contentType='application/json' handleAs="json" on-response="handleResponse"></x-ajax>
 
     <div class="merchant">
       <paper-input label="商户代码" value="{{merchant.merId::input}}"></paper-input>
