@@ -37,27 +37,27 @@
         <thead>
           <tr>
             <th>序号</th>
-            <th>门店代码</th>
-            <th align="left">门店名称</th>
-            <th>代理代码</th>
-            <th align="left">代理名称</th>
-            <th align="left">商户代码</th>
-            <th align="left">商户名称</th>
+            <th class="left">门店代码</th>
+            <th class="left">门店名称</th>
+            <th class="left">代理代码</th>
+            <th class="left">代理名称</th>
+            <th class="left">商户代码</th>
+            <th class="left">商户名称</th>
           </tr>
         </thead>
         <tbody>
           <template is="dom-repeat" items="{{merchants}}">
             <tr>
-              <td class="center hand" on-tap="viewMerchantTap">
+              <td class="center">
                 <span>{{addOneFilter(index)}}</span>
               </td>
-              <td class="center">
-                <span>{{item.merId}}</span>
+              <td>
+                <a on-tap="viewMerchantTap">{{item.merId}}</a>
               </td>
               <td>
                 <span>{{item.detail.merName}}</span>
               </td>
-              <td class="center">
+              <td>
                 <span>{{item.agentCode}}</span>
               </td>
               <td>
