@@ -74,6 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-dialog>
     <x-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></x-ajax>
     <x-ajax id="updateAjax" method="POST" url="/master/user/update" handle-as="json" on-response="handleUpdateResponse"></x-ajax>
+  </template>
   <script>
     Polymer({
       is: 'user-create',
@@ -101,7 +102,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }, ]
         },
         pageType: String,
-        user: Object,
+        user: Object
       },
       observers: [
         '_userTypesChange(userType)'
@@ -152,7 +153,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             key: 'admin',
             value: '管理员'
           };
-          this.$.userName.removeAttribute('disabled')
+          this.$.userName.removeAttribute('disabled');
         } else if (this.pageType === 'editor') {
           this.$.userName.setAttribute('disabled', true);
           this.userType = {
@@ -161,14 +162,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           };
         }
       },
-      ready:function(){
-          this.userTypeMap = {
-            admin: '讯联',
-            agent: '代理',
-            subAgent: '公司',
-            group: '商户',
-            merchant: '门店'
-          };
+      ready: function() {
+        this.userTypeMap = {
+          admin: '讯联',
+          agent: '代理',
+          subAgent: '公司',
+          group: '商户',
+          merchant: '门店'
+        };
       },
       isUserConfigEmpty: function() {
         if (this.$.userName.validate()) {
