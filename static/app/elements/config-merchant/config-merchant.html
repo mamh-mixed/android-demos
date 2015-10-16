@@ -404,7 +404,8 @@
         '_watchMerStatusChange(merStatus.key)',
         '_wisAgentModeChanged(weixin.isAgentMode)',
         '_asettFlagChange(asettFlag)',
-        '_wsettFlagChange(wsettFlag)'
+        '_wsettFlagChange(wsettFlag)',
+        '_isNeedSignChange(merchant.isNeedSign)'
       ],
       _wisAgentModeChanged: function(value) {
         if (value) {
@@ -504,6 +505,15 @@
         } else {
           this.set('weixinRoute.settRole', '');
         }
+      },
+      // 是否需要验签改变事件
+      _isNeedSignChange:function(value){
+          if (value) {
+            this.$.signKey.setAttribute('required', true);
+          } else {
+            this.$.signKey.removeAttribute('required');
+            this.$.signKey.validate();
+          }
       },
       attributeChanged: function() {
         if (!this.merId) {
@@ -975,12 +985,6 @@
       // 是否需要验签的改变事件
       handleIsNeedSignChangeEvent: function() {
         this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
-        if (this.$.isNeedSignCheck.checked) {
-          this.$.signKey.setAttribute('required', true);
-        } else {
-          this.$.signKey.removeAttribute('required');
-          this.$.signKey.validate();
-        }
       },
       // 接口权限中的复选框组的改变事件
       handlePermissionChangeEvent: function(e) {
