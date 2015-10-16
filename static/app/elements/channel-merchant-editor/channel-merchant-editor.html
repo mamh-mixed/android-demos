@@ -72,8 +72,6 @@
         <div id="alp">
           <paper-input id="achanMerId" label="Partner ID" value="{{alp.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="achanMerName" label="商户名称" value="{{alp.chanMerName::input}}" error-message="必填项"></paper-input>
-          <!-- <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alp.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="amerFee" label="商户跟讯联费率" value="{{alp.merFee::input}}" required error-message="必填项"></paper-input> -->
           <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
@@ -82,8 +80,6 @@
           <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
           <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
-          <!-- <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixin.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wmerFee" label="商户跟讯联费率" value="{{weixin.merFee::input}}" required error-message="必填项"></paper-input> -->
           <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
           <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
           <div class="row">
@@ -320,24 +316,9 @@
         handleSaveTapped: function() {
           if (this.channel) {
             if (this.channel.key === 'ALP' && !this.isALPConfigEmpty()) {
-              var acqFee = parseFloat(this.alp.acqFee),
-                merFee = parseFloat(this.alp.merFee);
-              if (isNaN(acqFee) || isNaN(merFee)) {
-                Util.toast('支付宝渠道的费率必须是数字', 3000);
-                return;
-              }
-              this.set('alp.acqFee', acqFee);
-              this.set('alp.merFee', merFee);
               this.set('alp.chanCode', 'ALP');
               this.chanMer = this.alp;
             } else if (this.channel.key === 'WXP' && !this.isWXPConfigEmpty()) {
-              var wacqFee = parseFloat(this.weixin.acqFee),
-                wmerFee = parseFloat(this.weixin.merFee);
-              if (isNaN(wacqFee) || isNaN(wmerFee)) {
-                Util.toast('支付宝渠道的费率必须是数字', 3000);
-                return;
-              }
-              this.set('weixin.acqFee', wacqFee);
               this.set('weixin.merFee', wmerFee);
               this.set('weixin.chanCode', 'WXP');
               // 如果勾选了代理商模式，就直接填充上大商户的信息

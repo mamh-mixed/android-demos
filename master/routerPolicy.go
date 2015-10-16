@@ -95,13 +95,32 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素 cardBrand")
 	}
 
-	_, err = mongo.MerchantColl.Find(r.MerId)
-
+	merchant, err := mongo.MerchantColl.Find(r.MerId)
 	if err != nil {
 		if err.Error() == "not found" {
 			return model.NewResultBody(4, "merId不存在")
 		} else {
 			return model.NewResultBody(1, "查询数据库失败")
+		}
+	}
+	// 对清算标识与清算角色做校验
+	if r.SettFlag == model.SR_AGENT {
+		if r.SettRole != merchant.AgentCode {
+			return model.NewResultBody(5, "agentCode错误")
+		}
+	} else if r.SettFlag == model.SR_GROUP {
+		if r.SettRole != merchant.GroupCode {
+			return model.NewResultBody(5, "groupCode错误")
+		}
+	} else if r.SettFlag == model.SR_CIL {
+		if r.SettRole != "CIL" {
+			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+		}
+	} else if r.SettFlag == model.SR_CHANNEL {
+		if r.SettFlag == "ALP" && r.SettRole != "ALP" {
+			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+		} else if r.SettFlag == "WXP" && r.SettRole != "WXP" {
+			return model.NewResultBody(5, "清算标识与清算角色不匹配")
 		}
 	}
 

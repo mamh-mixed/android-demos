@@ -4,18 +4,19 @@ import (
 	cr "crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/email"
-	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/query"
-	"github.com/omigo/log"
 	"io"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/email"
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/query"
+	"github.com/omigo/log"
 )
 
 type user struct{}
@@ -237,7 +238,8 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 // improveInfo 信息完善
 func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	if req.UserName == "" || req.Password == "" || req.BankOpen == "" || req.Payee == "" || req.PayeeCard == "" ||
-		req.PhoneNum == "" || req.Transtime == "" {
+		req.PhoneNum == "" || req.Transtime == "" || req.Province == "" || req.City == "" || req.BankNo == "" ||
+		req.BranchBank == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -278,6 +280,13 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",
+			Province:      req.Province,
+			City:          req.City,
+			OpenBankName:  req.BankOpen,
+			BankName:      req.BranchBank,
+			BankId:        req.BankNo,
+			AcctName:      req.Payee,
+			AcctNum:       req.PayeeCard,
 		},
 	}
 	for {
@@ -660,15 +669,27 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 	if req.Password != user.Password {
 		return model.USERNAME_PASSWORD_ERROR
 	}
+	mer, err := mongo.MerchantColl.Find(user.MerId)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.MERID_NO_EXIST
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
 
 	log.Debugf("%+v", user)
 	// 返回
 	result = model.NewAppResult(model.SUCCESS, "")
 	settInfo := &model.SettInfo{
-		Payee:     user.Payee,
-		BankOpen:  user.BankOpen,
-		PayeeCard: user.PayeeCard,
-		PhoneNum:  user.PhoneNum,
+		Payee:      mer.Detail.AcctName,
+		BankOpen:   mer.Detail.OpenBankName,
+		PayeeCard:  mer.Detail.AcctNum,
+		PhoneNum:   user.PhoneNum,
+		Province:   mer.Detail.Province,
+		City:       mer.Detail.City,
+		BranchBank: mer.Detail.BankName,
+		BankNo:     mer.Detail.BankId,
 	}
 
 	result.SettInfo = settInfo
