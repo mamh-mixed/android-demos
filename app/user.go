@@ -237,9 +237,7 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 
 // improveInfo 信息完善
 func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
-	if req.UserName == "" || req.Password == "" || req.BankOpen == "" || req.Payee == "" || req.PayeeCard == "" ||
-		req.PhoneNum == "" || req.Transtime == "" || req.Province == "" || req.City == "" || req.BankNo == "" ||
-		req.BranchBank == "" {
+	if req.UserName == "" || req.Password == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -718,13 +716,34 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 		return model.USERNAME_PASSWORD_ERROR
 	}
 
-	// 修改
-	user.Payee = req.Payee
-	user.BankOpen = req.BankOpen
-	user.PayeeCard = req.PayeeCard
-	user.PhoneNum = req.PhoneNum
+	m, err := mongo.MerchantColl.Find(user.MerId)
+	if err != nil {
+		return model.MERID_NO_EXIST
+	}
 
-	if err = mongo.AppUserCol.Upsert(user); err != nil {
+	if req.Province != "" {
+		m.Detail.Province = req.Province
+	}
+	if req.City != "" {
+		m.Detail.City = req.City
+	}
+	if req.BankOpen != "" {
+		m.Detail.OpenBankName = req.BankOpen
+	}
+	if req.BranchBank != "" {
+		m.Detail.BankName = req.BranchBank
+	}
+	if req.BankNo != "" {
+		m.Detail.BankId = req.BankNo
+	}
+	if req.Payee != "" {
+		m.Detail.AcctName = req.Payee
+	}
+	if req.PayeeCard != "" {
+		m.Detail.AcctNum = req.PayeeCard
+	}
+
+	if err = mongo.MerchantColl.Update(m); err != nil {
 		return model.SYSTEM_ERROR
 	}
 
