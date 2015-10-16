@@ -48,6 +48,7 @@ type QueryCondition struct {
 	RespcdNotIn  string   `json:"respcdNotIn"`
 	TradeFrom    string   `json:"tradeFrom,omitempty"`
 	Skip         int      `json:"skip,omitempty"`
+	ChanCode     string   `json:"chanCode,omitempty"`
 	Direction    string
 	ReqIds       []string
 }
