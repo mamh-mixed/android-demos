@@ -315,42 +315,6 @@
             value: '已删除门店'
           }]
         },
-        permissionArray: {
-          type: Array,
-          value: [{
-            key: 'PURC',
-            value: '下单支付',
-            isChecked: false
-          }, {
-            key: 'PAUT',
-            value: '预下单',
-            isChecked: false
-          }, {
-            key: 'INQY',
-            value: '查询订单',
-            isChecked: false
-          }, {
-            key: 'CANC',
-            value: '取消',
-            isChecked: false
-          }, {
-            key: 'VOID',
-            value: '撤销',
-            isChecked: false
-          }, {
-            key: 'REFD',
-            value: '退款',
-            isChecked: false
-          }, {
-            key: 'QYZF',
-            value: '企业付款',
-            isChecked: false
-          }, {
-            key: 'JSZF',
-            value: '公众号支付',
-            isChecked: false
-          }]
-        },
         // 微信大商户集合，目前是2个
         wbigchanMerIds: {
           type: Array,
@@ -751,6 +715,43 @@
           cardBrand: 'WXP',
         };
         this.update = false;
+        this.permissionArray = [{
+          key: 'PURC',
+          value: '下单支付',
+          isChecked: false
+        }, {
+          key: 'PAUT',
+          value: '预下单',
+          isChecked: false
+        }, {
+          key: 'INQY',
+          value: '查询订单',
+          isChecked: false
+        }, {
+          key: 'CANC',
+          value: '取消',
+          isChecked: false
+        }, {
+          key: 'VOID',
+          value: '撤销',
+          isChecked: false
+        }, {
+          key: 'REFD',
+          value: '退款',
+          isChecked: false
+        }, {
+          key: 'QYZF',
+          value: '企业付款',
+          isChecked: false
+        }, {
+          key: 'JSZF',
+          value: '公众号支付',
+          isChecked: false
+        }];
+        this.merStatus = {
+          key: 'Normal',
+          value: '正常门店'
+        };
       },
       // 查询渠道商户的响应事件，这里是查找大商户
       handleFindChanMerResponse: function(e) {
