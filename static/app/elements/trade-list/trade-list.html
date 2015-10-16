@@ -79,11 +79,11 @@
                   <paper-tooltip position="right">{{item.errorDetail}}</paper-tooltip>
                 </div>
               </td>
-              <td align="center">
-                <a on-tap="showTradeViewHandler">{{item.merId}}</a>
-              </td>
+              <td align="center">{{item.merId}}</td>
               <td>{{item.merName}}</td>
-              <td>{{item.orderNum}}</td>
+              <td>
+                  <a on-tap="showTradeViewHandler">{{item.orderNum}}</a>
+              </td>
               <td>{{busicdFilter(item.busicd)}}</td>
               <td align="right">{{_currencyFilter(item.transAmt)}}</td>
               <td>{{chanFilter(item.chanCode)}}</td>

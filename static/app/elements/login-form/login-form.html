@@ -1,10 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
 <dom-module id="login-form">
   <style>
@@ -55,28 +57,33 @@
       margin: 30px 12.5%;
     }
 
+    .row {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+
+    .row > iron-icon {
+      @apply(--layout-self-end);
+      padding: 8px 0;
+      margin-right: 10px;
+    }
+
+    .row > paper-input {
+      @apply(--layout-self-end);
+      @apply(--layout-flex);
+    }
   </style>
   <template>
     <div class="login-inner">
       <form id="loginForm">
-        <table>
-          <tr>
-            <td>
-              <iron-icon icon="icons:perm-identity"></iron-icon>
-            </td>
-            <td>
-              <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <iron-icon icon="icons:lock-outline"></iron-icon>
-            </td>
-            <td>
-              <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
-            </td>
-          </tr>
-        </table>
+        <div class="row">
+          <iron-icon icon="perm-identity"></iron-icon>
+          <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
+        </div>
+        <div class="row">
+          <iron-icon icon="lock-outline"></iron-icon>
+          <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
+        </div>
         <paper-button raised on-tap="loginTapHandle">登录</paper-button>
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
@@ -147,6 +154,5 @@
         showLoginForm: function() {}
       });
     })();
-
   </script>
 </dom-module>
