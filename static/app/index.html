@@ -82,7 +82,7 @@
     <app-route path="*" name="not-found" import="pages/common/not-found-page.html"></app-route>
   </app-router>
 
-  <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
+  <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline." style="z-index:1000;"></paper-toast>
   <paper-dialog id="reloginDialog" hidden modal>
     <login-form style="width:252px;"></login-form>
   </paper-dialog>
