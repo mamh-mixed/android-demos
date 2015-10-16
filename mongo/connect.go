@@ -20,7 +20,7 @@ func init() {
 	dbname := goconf.Config.Mongo.DB
 
 	if encrypt {
-		fmt.Printf("use encrypt url: %s\n", encryptURL)
+		// fmt.Printf("use encrypt url: %s\n", encryptURL)
 		url2, err := security.RSADecryptBase64(encryptURL, privateKey)
 		if err != nil {
 			fmt.Printf("unable connect to mongodb server %s\n", err)
