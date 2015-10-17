@@ -35,70 +35,65 @@
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th>机构商户代码</th>
-            <th align="left">卡品牌</th>
-            <th align="left">渠道商户代码</th>
-            <th>渠道代码</th>
-            <th>讯联跟渠道费率</th>
-            <th>门店跟讯联费率</th>
-            <th>清算标识</th>
-            <th>清算角色</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th">机构商户代码</div>
+            <div class="th" align="left">卡品牌</div>
+            <div class="th" align="left">渠道商户代码</div>
+            <div class="th">渠道代码</div>
+            <div class="th">讯联跟渠道费率</div>
+            <div class="th">门店跟讯联费率</div>
+            <div class="th">清算标识</div>
+            <div class="th">清算角色</div>
+            <div class="th">操作</div>
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{routes}}">
-            <tr>
-              <td class="center">
+            <div class="tr">
+              <div class="td center">
                 <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.merId}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{tansCardBrands(item.cardBrand)}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.chanMerId}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.chanCode}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.acqFee}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.merFee}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.settFlag}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.settRole}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <iron-icon icon="delete" on-tap="handleItemDeletedEvent"></iron-icon>
-              </td>
-            </tr>
+              </div>
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </form>
-    <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab> -->
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+      </div>
+      </div>
+      <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab> -->
 
-    <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
-    <route-delete id="routeDelete" on-saved="handleMerchantSave"></route-delete>
+      <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
+      <route-delete id="routeDelete" on-saved="handleMerchantSave"></route-delete>
   </template>
   <script>
     (function() {
@@ -110,7 +105,7 @@
             reflectToAttribute: true,
             observer: '_merIdChandged'
           },
-          cardBrands:{
+          cardBrands: {
             type: Array,
             value: [{
               key: 'CUP',

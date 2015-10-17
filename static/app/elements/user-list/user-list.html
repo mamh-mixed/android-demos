@@ -25,6 +25,7 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
+
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/user/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -44,66 +45,62 @@
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th class="left">用户名</th>
-            <th class="left">别名</th>
-            <th class="left">用户类型</th>
-            <th class="left">邮箱</th>
-            <th class="left">手机号</th>
-            <th class="left">代理代码</th>
-            <th class="left">公司代码</th>
-            <th class="left">商户代码</th>
-            <th class="left">门店代码</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th" class="left">用户名</div>
+            <div class="th" class="left">别名</div>
+            <div class="th" class="left">用户类型</div>
+            <div class="th" class="left">邮箱</div>
+            <div class="th" class="left">手机号</div>
+            <div class="th" class="left">代理代码</div>
+            <div class="th" class="left">公司代码</div>
+            <div class="th" class="left">商户代码</div>
+            <div class="th" class="left">门店代码</div>
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{users}}">
-            <tr>
-              <td class="center hand" on-click="viewUserTap">
+            <div class="tr">
+              <div class="td center hand" on-click="viewUserTap">
                 <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.userName}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.nickName}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{getUserType(item.userType)}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.mail}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.phoneNum}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.agentCode}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.subAgentCode}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.groupCode}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.merId}}</span>
-              </td>
+              </div>
 
-            </tr>
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        </div>
+      </div>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
     <user-create id="userCreate" on-saved="afterSavedHandle" page-type="{{pageType}}" user="[[user]]"></user-create>
@@ -205,5 +202,6 @@
 
       });
     })();
+
   </script>
 </dom-module>

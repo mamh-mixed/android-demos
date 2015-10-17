@@ -12,6 +12,7 @@
     :host {
       display: block;
     }
+
   </style>
   <template>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
@@ -47,57 +48,54 @@
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
         </paper-button> -->
       </div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th align="center">序号</th>
-            <th align="center">应答码</th>
-            <th align="center">商户代码</th>
-            <th align="left">商户订单</th>
-            <!-- <th align="left">绑定 ID</th>
-            <th align="left">用户账号</th>
-            <th align="left">用户名</th> -->
-            <th align="center">交易类型</th>
-            <th align="right">金额(元)</th>
-            <th align="center">渠道</th>
-            <th align="center">交易状态</th>
-            <th align="center">退款</th>
-            <th align="center">交易时间</th>
-            <!-- <th align="center">更新时间</th> -->
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th" align="center">序号</div>
+            <div class="th" align="center">应答码</div>
+            <div class="th" align="center">商户代码</div>
+            <div class="th" align="left">商户订单</div>
+            <!-- <div class="th" align="left">绑定 ID</div>
+            <div class="th" align="left">用户账号</div>
+            <div class="th" align="left">用户名</div> -->
+            <div class="th" align="center">交易类型</div>
+            <div class="th" align="right">金额(元)</div>
+            <div class="th" align="center">渠道</div>
+            <div class="th" align="center">交易状态</div>
+            <div class="th" align="center">退款</div>
+            <div class="th" align="center">交易时间</div>
+            <!-- <div class="th" align="center">更新时间</div> -->
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{trades}}">
-            <tr>
-              <td align="center">{{addOneFilter(index)}}</td>
-              <td align="center" class$="{{getRespCodeColor(item.respcd)}}" style="position: relative;">
+            <div class="tr">
+              <div class="td" align="center">{{addOneFilter(index)}}</div>
+              <div class="td" align="center" class$="{{getRespCodeColor(item.respcd)}}" style="position: relative;">
                 <span id="{{ _computeRespCodeTooltipId(index) }}" class="abbr">{{item.respcd}}</span>
                 <paper-tooltip for="{{ _computeRespCodeTooltipId(index) }}" position="right">{{item.errorDetail}}</paper-tooltip>
-              </td>
-              <td align="center">{{item.merId}}</td>
-              <td align="left">{{item.orderNum}}</td>
-              <!-- <td align="left">{{item.bindingId}}</td>
-              <td align="left">{{item.acctNum}}</td>
-              <td align="left">{{item.acctName}}</td> -->
-              <td align="center">{{busicdFilter(item.transType)}}</td>
-              <td align="right">{{_currencyFilter(item.transAmt)}}</td>
-              <td align="center">{{chanFilter(item.chanCode)}}</td>
-              <td align="center">{{transStatusFilter(item.transStatus)}}</td>
-              <td align="center">{{refundStatusFilter(item.refundStatus)}}</td>
-              <td align="center">{{item.transTime}}</td>
-              <!-- <td align="center">{{item.updateTime}}</td> -->
-            </tr>
+              </div>
+              <div class="td" align="center">{{item.merId}}</div>
+              <div class="td" align="left">{{item.orderNum}}</div>
+              <!-- <div class="td" align="left">{{item.bindingId}}</div>
+              <div class="td" align="left">{{item.acctNum}}</div>
+              <div class="td" align="left">{{item.acctName}}</div> -->
+              <div class="td" align="center">{{busicdFilter(item.transType)}}</div>
+              <div class="td" align="right">{{_currencyFilter(item.transAmt)}}</div>
+              <div class="td" align="center">{{chanFilter(item.chanCode)}}</div>
+              <div class="td" align="center">{{transStatusFilter(item.transStatus)}}</div>
+              <div class="td" align="center">{{refundStatusFilter(item.refundStatus)}}</div>
+              <div class="td" align="center">{{item.transTime}}</div>
+              <!-- <div class="td" align="center">{{item.updateTime}}</div> -->
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        </div>
+      </div>
     </form>
+
   </template>
   <script>
     var TRANSTYPE_MAP = {

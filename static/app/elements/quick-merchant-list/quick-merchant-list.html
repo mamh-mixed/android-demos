@@ -19,6 +19,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -30,41 +31,36 @@
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th class="left">商户代码</th>
-            <th class="left">商户名称</th>
-            <th>计费方案代码</th>
-            <th align="left">交易币种</th>
-            <th align="left">是否开启验签</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th" class="left">商户代码</div>
+            <div class="th" class="left">商户名称</div>
+            <div class="th">计费方案代码</div>
+            <div class="th" align="left">交易币种</div>
+            <div class="th" align="left">是否开启验签</div>
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{merchants}}">
-            <tr>
-              <td class="center">{{addOneFilter(index)}}</td>
-              <td class="left">
+            <div class="tr">
+              <div class="td center">{{addOneFilter(index)}}</div>
+              <div class="td left">
                 <a on-tap="viewMerchantTap">{{item.merId}}</a>
-              </td>
-              <td>{{item.detail.merName}}</td>
-              <td class="center">{{item.detail.billingScheme}}</td>
-              <td>{{item.transCurr}}</td>
-              <td>{{isNeedSignFilter(item.isNeedSign)}}</td>
-            </tr>
+              </div>
+              <div class="td">{{item.detail.merName}}</div>
+              <div class="td center">{{item.detail.billingScheme}}</div>
+              <div class="td">{{item.transCurr}}</div>
+              <div class="td">{{isNeedSignFilter(item.isNeedSign)}}</div>
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        </div>
+      </div>
     </form>
-
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
@@ -201,6 +197,7 @@
         },
       });
     })();
+
   </script>
 </dom-module>
 

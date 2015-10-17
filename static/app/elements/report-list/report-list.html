@@ -10,6 +10,7 @@
     :host {
       display: block;
     }
+
   </style>
   <template>
     <div class="condition search-condition">
@@ -39,116 +40,114 @@
 
     </div>
 
-    <table class="data-grid">
-      <thead>
-        <tr>
-          <th rowspan="2">序号</th>
-          <th rowspan="2">
+    <div class="data-grid table">
+      <div class="thead">
+        <div class="tr">
+          <div class="th" rowspan="2">序号</div>
+          <div class="th" rowspan="2">
             门店代码
-          </th>
-          <th rowspan="2">
+          </div>
+          <div class="th" rowspan="2">
             门店名称
-          </th>
-          <th colspan="2">
+          </div>
+          <div class="th" colspan="2">
             汇总
-          </th>
-          <th colspan="2">
+          </div>
+          <div class="th" colspan="2">
             支付宝
-          </th>
-          <th colspan="2">
+          </div>
+          <div class="th" colspan="2">
             微信
-          </th>
-          <th rowspan="2">
+          </div>
+          <div class="th" rowspan="2">
             代理名称
-          </th>
-          <th rowspan="2">
+          </div>
+          <div class="th" rowspan="2">
             下载
-          </th>
-        </tr>
-        <tr>
-          <th>总笔数</th>
-          <th>总金额(元)</th>
-          <th>笔数</th>
-          <th>金额(元)</th>
-          <th>笔数</th>
-          <th>金额(元)</th>
-        </tr>
-      </thead>
-      <tbody>
+          </div>
+        </div>
+        <div class="tr">
+          <div class="th">总笔数</div>
+          <div class="th">总金额(元)</div>
+          <div class="th">笔数</div>
+          <div class="th">金额(元)</div>
+          <div class="th">笔数</div>
+          <div class="th">金额(元)</div>
+        </div>
+      </div>
+      <div class="tbody">
         <template is="dom-repeat" items="{{records}}">
-          <tr>
-            <td class="center">
+          <div class="tr">
+            <div class="td center">
               <span>{{addOneFilter(index)}}</span>
-            </td>
-            <td class="center">
+            </div>
+            <div class="td center">
               <span>{{item.merId}}</span>
-            </td>
-            <td>
+            </div>
+            <div class="td">
               <span>{{item.merName}}</span>
-            </td>
-            <td class="right">
+            </div>
+            <div class="td right">
               <span>{{item.totalTransNum}}</span>
-            </td>
-            <td class="right">
+            </div>
+            <div class="td right">
               <span>{{_computeAmount(item.totalTransAmt)}}</span>
-            </td>
-            <td class="right">
+            </div>
+            <div class="td right">
               <span>{{item.alp.transNum}}</span>
-            </td>
-            <td class="right">
+            </div>
+            <div class="td right">
               <span>{{_computeAmount(item.alp.transAmt)}}</span>
-            </td>
-            <td class="right">
+            </div>
+            <div class="td right">
               <span>{{item.wxp.transNum}}</span>
-            </td>
-            <td class="right">
+            </div>
+            <div class="td right">
               <span>{{_computeAmount(item.wxp.transAmt)}}</span>
-            </td>
-            <td>
+            </div>
+            <div class="td">
               <span>{{item.agentName}}</span>
-            </td>
-            <td class="center">
+            </div>
+            <div class="td center">
               <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
-            </td>
-          </tr>
+            </div>
+          </div>
         </template>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="255" align="right">
-            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-          </td>
-        </tr>
-        <tr>
-          <td class="right" colspan="3">
-            <span>汇总:</span>
-          </td>
-          <td class="right">
-            <span>{{summary.totalTransNum}}</span>
-          </td>
-          <td class="right">
-            <span>{{_computeAmount(summary.totalTransAmt)}}</span>
-          </td>
-          <td class="right">
-            <span>{{summary.alp.transNum}}</span>
-          </td>
-          <td class="right">
-            <span>{{_computeAmount(summary.alp.transAmt)}}</span>
-          </td>
-          <td class="right">
-            <span>{{summary.wxp.transNum}}</span>
-          </td>
-          <td class="right">
-            <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
-          </td>
-          <td></td>
-          <td class="center">
-            <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
-          </td>
-        </tr>
-      </tfoot>
-
-    </table>
+      </div>
+      <div class="wedge">
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+      </div>
+      <div class="tfoot">
+        <div class="td ">
+        </div>
+        <div class="td ">
+        </div>
+        <div class="td ">
+        </div>
+        <div class="td right">
+          <span>{{summary.totalTransNum}}</span>
+        </div>
+        <div class="td right">
+          <span>{{_computeAmount(summary.totalTransAmt)}}</span>
+        </div>
+        <div class="td right">
+          <span>{{summary.alp.transNum}}</span>
+        </div>
+        <div class="td right">
+          <span>{{_computeAmount(summary.alp.transAmt)}}</span>
+        </div>
+        <div class="td right">
+          <span>{{summary.wxp.transNum}}</span>
+        </div>
+        <div class="td right">
+          <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
+        </div>
+        <div class="td"></div>
+        <div class="td center">
+          <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
+        </div>
+      </div>
+    </div>
     <x-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax>
     <x-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
   </template>
@@ -278,10 +277,10 @@
               // 加载代理列表
               this.handleQueryAgentsEvent();
             } else if (user.userType === 'group') {
-                this.set('cond.groupCode', user.groupCode);
-                this.agentDisabled = true;
-                this.$.groupCode.setAttribute('disabled', true);
-                this.$.merId.removeAttribute('disabled');
+              this.set('cond.groupCode', user.groupCode);
+              this.agentDisabled = true;
+              this.$.groupCode.setAttribute('disabled', true);
+              this.$.merId.removeAttribute('disabled');
             }
           }
         },
@@ -336,5 +335,6 @@
         },
       });
     })();
+
   </script>
 </dom-module>

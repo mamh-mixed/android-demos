@@ -19,6 +19,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -33,55 +34,50 @@
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th class="left">门店代码</th>
-            <th class="left">门店名称</th>
-            <th class="left">代理代码</th>
-            <th class="left">代理名称</th>
-            <th class="left">商户代码</th>
-            <th class="left">商户名称</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th" class="left">门店代码</div>
+            <div class="th" class="left">门店名称</div>
+            <div class="th" class="left">代理代码</div>
+            <div class="th" class="left">代理名称</div>
+            <div class="th" class="left">商户代码</div>
+            <div class="th" class="left">商户名称</div>
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{merchants}}">
-            <tr>
-              <td class="center">
+            <div class="tr">
+              <div class="td center">
                 <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <a on-tap="viewMerchantTap">{{item.merId}}</a>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.detail.merName}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.agentCode}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.agentName}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.groupCode}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.groupName}}</span>
-              </td>
-            </tr>
+              </div>
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        </div>
+      </div>
     </form>
-
     <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
     <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>
   </template>
@@ -186,5 +182,6 @@
         },
       });
     })();
+
   </script>
 </dom-module>

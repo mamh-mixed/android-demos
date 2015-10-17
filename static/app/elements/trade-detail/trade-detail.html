@@ -17,70 +17,70 @@
   </style>
   <template>
     <table id="orderDetail">
-      <tr>
-        <td class="key">商户代码:</td>
-        <td>{{item.merId}}</td>
-        <td class="key">商户名称:</td>
-        <td>{{item.merName}}</td>
-      </tr>
-      <tr>
-        <td class="key">代理代码:</td>
-        <td>{{item.agentCode}}</td>
-        <td class="key">代理名称:</td>
-        <td>{{item.agentName}}</td>
-      </tr>
-      <tr>
-        <td class="key">终端代码:</td>
-        <td>{{item.terminalid}}</td>
-        <td class="key">商户订单:</td>
-        <td>{{item.orderNum}}</td>
-      </tr>
-      <tr>
-        <td class="key">交易金额:</td>
-        <td>{{_currencyFilter(item.transAmt)}}</td>
-        <td class="key">商品明细:</td>
-        <td>{{item.goodsInfo}}</td>
-      </tr>
-      <tr>
-        <td class="key">交易币种:</td>
-        <td>{{item.transCurr}}</td>
-        <td class="key">交易类型:</td>
-        <td>{{busicdFilter(item.busicd)}}</td>
-      </tr>
-      <tr>
-        <td class="key">交易渠道:</td>
-        <td>{{chanFilter(item.chanCode)}}</td>
-        <td class="key">关联订单:</td>
-        <td>{{item.origOrderNum}}</td>
-      </tr>
-      <tr>
-        <td class="key">渠道商户:</td>
-        <td>{{item.chanMerId}}</td>
-        <td class="key">渠道订单:</td>
-        <td>{{item.chanOrderNum}}</td>
-      </tr>
-      <tr>
-        <td class="key">渠道折扣:</td>
-        <td>{{item.chanDiscount}}</td>
-        <td class="key">商户折扣:</td>
-        <td>{{item.merDiscount}}</td>
-      </tr>
-      <tr>
-        <td class="key">应答码:</td>
-        <td>{{item.respcd}}</td>
-        <td class="key">交易状态:</td>
-        <td>{{transStatusFilter(item.transStatus)}}</td>
-      </tr>
-      <tr>
-        <td class="key">创建时间:</td>
-        <td>{{item.transTime}}</td>
-        <td class="key">修改时间:</td>
-        <td>{{item.updateTime}}</td>
-      </tr>
-      <tr>
-        <td colspan="4" class="divider"></td>
-      </tr>
-    </table>
+      <div class="tr">
+        <div class="td key">商户代码:</div>
+        <div class="td">{{item.merId}}</div>
+        <div class="td key">商户名称:</div>
+        <div class="td">{{item.merName}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">代理代码:</div>
+        <div class="td">{{item.agentCode}}</div>
+        <div class="td key">代理名称:</div>
+        <div class="td">{{item.agentName}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">终端代码:</div>
+        <div class="td">{{item.terminalid}}</div>
+        <div class="td key">商户订单:</div>
+        <div class="td">{{item.orderNum}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">交易金额:</div>
+        <div class="td">{{_currencyFilter(item.transAmt)}}</div>
+        <div class="td key">商品明细:</div>
+        <div class="td">{{item.goodsInfo}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">交易币种:</div>
+        <div class="td">{{item.transCurr}}</div>
+        <div class="td key">交易类型:</div>
+        <div class="td">{{busicdFilter(item.busicd)}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">交易渠道:</div>
+        <div class="td">{{chanFilter(item.chanCode)}}</div>
+        <div class="td key">关联订单:</div>
+        <div class="td">{{item.origOrderNum}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">渠道商户:</div>
+        <div class="td">{{item.chanMerId}}</div>
+        <div class="td key">渠道订单:</div>
+        <div class="td">{{item.chanOrderNum}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">渠道折扣:</div>
+        <div class="td">{{item.chanDiscount}}</div>
+        <div class="td key">商户折扣:</div>
+        <div class="td">{{item.merDiscount}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">应答码:</div>
+        <div class="td">{{item.respcd}}</div>
+        <div class="td key">交易状态:</div>
+        <div class="td">{{transStatusFilter(item.transStatus)}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">创建时间:</div>
+        <div class="td">{{item.transTime}}</div>
+        <div class="td key">修改时间:</div>
+        <div class="td">{{item.updateTime}}</div>
+      </div>
+      <div class="tr">
+        <div class="td" colspan="4" class="divider"></div>
+      </div>
+    </div>
   </template>
 
   <script>
