@@ -189,9 +189,6 @@
           </template>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存门店信息</paper-button>
         </div>
@@ -214,9 +211,6 @@
           <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -227,7 +221,6 @@
           <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项" on-blur="_wchanMerIdChange"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
           <x-select id="bigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
