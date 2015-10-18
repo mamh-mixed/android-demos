@@ -11,9 +11,13 @@
       white-space: nowrap;
     }
 
-    :host > div {
+    div {
       display: inline-block;
       margin: auto 12px;
+    }
+    
+    iron-icon {
+      height: 1.2em !important;
     }
 
     div.size > select {
@@ -27,6 +31,7 @@
       margin: auto 4px;
       cursor: pointer;
     }
+
   </style>
   <template>
 
@@ -143,5 +148,6 @@
       }
 
     });
+
   </script>
 </dom-module>

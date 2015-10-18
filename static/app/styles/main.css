@@ -108,7 +108,6 @@ pre, code {
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 10px;
   margin: 0;
-  border: 1px solid #E7EEEB;
   padding: 3px;
 }
 
@@ -126,8 +125,14 @@ pre, code {
 .green {
   color: #00C853;
 }
-.blue {
+.yellow {
   color: #E65100;
+}
+.blue {
+  color: #0000FF;
+}
+.primary {
+  color: #00BCD4;
 }
 
 /* align */
