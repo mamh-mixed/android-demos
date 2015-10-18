@@ -39,6 +39,7 @@ div.divider.line {
 
 .table {
   display: table;
+  width: 100%;
 }
 .table .thead, .table .tbody, .table .tfoot {
   display: table-row-group;
@@ -47,10 +48,12 @@ div.divider.line {
   display: table-row;
 }
 .table .th {
+  font-weight: bold;
   text-align: center;
 }
 .table .th, .table .td {
   display: table-cell;
+  width: 1%;
 }
 .table.data-grid {
   width: 100%;
@@ -67,13 +70,13 @@ div.divider.line {
 .table.data-grid .th, .table.data-grid .td {
   width: 1%;
 }
-.table.data-grid .th, .table.data-grid .td{
+.table.data-grid .th, .table.data-grid .td {
   white-space: nowrap;
   padding: 6px;
 }
- .table.data-grid .wedge {
-     padding: 3px;
- }
+.table.data-grid .wedge {
+  padding: 3px;
+}
 .table.data-grid.low .th, .table.data-grid.low .td {
   padding: 3px 8px;
 }
