@@ -2,11 +2,6 @@
 
 <dom-module id="trade-detail">
   <style>
-    td {
-      min-width: 70px;
-      vertical-align: top;
-    }
-
     .key {
       width: 70px;
     }
@@ -16,7 +11,7 @@
     }
   </style>
   <template>
-    <table id="orderDetail">
+    <div class="table data-grid low" id="orderDetail">
       <div class="tr">
         <div class="td key">商户代码:</div>
         <div class="td">{{item.merId}}</div>
@@ -76,9 +71,6 @@
         <div class="td">{{item.transTime}}</div>
         <div class="td key">修改时间:</div>
         <div class="td">{{item.updateTime}}</div>
-      </div>
-      <div class="tr">
-        <div class="td" colspan="4" class="divider"></div>
       </div>
     </div>
   </template>

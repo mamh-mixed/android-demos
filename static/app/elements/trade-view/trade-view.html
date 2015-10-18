@@ -11,22 +11,18 @@
         width: 600px;
         min-height: 500px;
         max-height: 500px;
-        font-size: 14px;
       }
     }
 
-    .content {
-      margin-top: 20px;
-      background: #F4F4F4;
-    }
-
     .header {
+      font-weight: bold;
       color: #05B0CF;
     }
 
     .order {
       margin-top: 10px;
     }
+
   </style>
   <template>
     <paper-dialog id="dialogView">
@@ -62,9 +58,6 @@
           </template>
         </div>
       </paper-dialog-scrollable>
-      <div class="buttons">
-        <paper-button dialog-dismiss style="margin-right:50px;">取消</paper-button>
-      </div>
     </paper-dialog>
     <x-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></x-ajax>
   </template>
@@ -86,27 +79,27 @@
         this.$.tradeQueryAjax.params = {
           'busicd': 'VOID',
           'origOrderNum': this.item.orderNum,
-          'agentCode':this.user.agentCode,
-          'groupCode':this.user.groupCode,
-          'merId':this.user.merId
+          'agentCode': this.user.agentCode,
+          'groupCode': this.user.groupCode,
+          'merId': this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'CANC',
           'origOrderNum': this.item.orderNum,
-          'agentCode':this.user.agentCode,
-          'groupCode':this.user.groupCode,
-          'merId':this.user.merId
+          'agentCode': this.user.agentCode,
+          'groupCode': this.user.groupCode,
+          'merId': this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'REFD',
           'origOrderNum': this.item.orderNum,
-          'agentCode':this.user.agentCode,
-          'groupCode':this.user.groupCode,
-          'merId':this.user.merId
+          'agentCode': this.user.agentCode,
+          'groupCode': this.user.groupCode,
+          'merId': this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
@@ -134,5 +127,6 @@
         }
       },
     });
+
   </script>
 </dom-module>

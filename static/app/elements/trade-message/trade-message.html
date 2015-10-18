@@ -23,23 +23,21 @@
       td > .message:last-of-type {
         border-bottom: none;
       }
+
     </style>
     <paper-dialog id="dialogView">
       <h2>交易报文</h2>
       <paper-dialog-scrollable>
         <div class="data-grid table">
-          <div class="thead">
-            <div class="tr">
-              <div class="th" class="left">报文</div>
-            </div>
-          </div>
           <div class="tbody">
             <template is="dom-repeat" items="{{messageArray}}" as="messageList">
-              <tr style="border-bottom:1px solid #ddd;">
+              <div class="tr" style="border-bottom:1px solid #ddd;">
                 <div class="td">
                   <template is="dom-repeat" items="{{messageList}}" as="message">
                     <div class="message" style$="{{getMessageStyle(message)}}">
-                      <div>{{getMsgTitle(message)}}</div>
+                      <div>
+                        <span>{{message.transTime}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span>{{getMsgTitle(message)}}</span>：</div>
                       <pre style="min-width:800px;max-width:850px;word-break:break-all;word-wrap: break-word;font-size:10px;">{{formatMsg(message.msg)}}</pre>
                     </div>
                   </template>
@@ -48,12 +46,10 @@
             </template>
           </div>
           <div class="wedge">
-<x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-            </div>
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          </div>
         </div>
-      <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-      </div>
+      </paper-dialog-scrollable>
     </paper-dialog>
     <x-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></x-ajax>
     <x-ajax id="chanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleChanMessageResponse"></x-ajax>
@@ -71,15 +67,15 @@
           this.$.dialogView.open();
           this.msgTitleMap = {
             1: {
-              'in': '商户请求报文:',
-              'out': '商户响应报文:',
+              'in': '商户请求报文',
+              'out': '商户响应报文',
             },
             2: {
-              'out': '渠道请求报文:',
-              'in': '渠道响应报文:',
+              'out': '渠道请求报文',
+              'in': '渠道响应报文',
             },
             3: {
-              'in': '异步通知报文:',
+              'in': '异步通知报文',
             },
           };
           this.cond = {};
@@ -217,5 +213,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

@@ -104,9 +104,12 @@ div.divider.line {
 
 /* code 样式 */
 
-pre {
-  font-family: monospace;
+pre, code {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 10px;
+  margin: 0;
+  border: 1px solid #E7EEEB;
+  padding: 3px;
 }
 
 /* mouse */
