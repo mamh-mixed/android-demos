@@ -16,21 +16,17 @@ func transformResp(resp *BindingResponse, txCode string) (ret *model.BindingRetu
 		return mongo.RespCodeColl.Get("000001")
 	}
 	ret = new(model.BindingReturn)
-	ret.ChanRespCode = resp.Head.Code
-	ret.ChanRespMsg = resp.Head.Message
+	// ret.ChanRespCode = resp.Head.Code
+	// ret.ChanRespMsg = resp.Head.Message
 
 	// 不成功的受理
 	if flag := resp.Head.Code != correctCode; flag {
-		m := mongo.RespCodeColl.GetByCfca(resp.Head.Code)
-		ret.RespCode = m.RespCode
-		// 需要返回渠道详细应答
-		if m.IsRetChanRespMsg {
-			ret.RespMsg = resp.Head.Message
-		} else {
-			ret.RespMsg = m.RespMsg
-		}
+		ret.RespCode, ret.RespMsg = resp.Head.Code, resp.Head.Message
 		return ret
 	}
+
+	// 标识是否业务失败
+	var isFailed bool
 
 AGAIN:
 	// 成功受理的请求
@@ -44,7 +40,9 @@ AGAIN:
 		case "10":
 			ret.RespCode = "000009"
 		case "20":
+			// 失败
 			ret.RespCode = "100040"
+			isFailed = true
 		case "30":
 			ret.RespCode = "000000"
 		case "40":
@@ -62,7 +60,9 @@ AGAIN:
 		case "20":
 			ret.RespCode = "000000"
 		case "30":
+			// 解绑失败
 			ret.RespCode = "100060"
+			isFailed = true
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
@@ -76,7 +76,9 @@ AGAIN:
 		case "20":
 			ret.RespCode = "000000"
 		case "30":
+			// 支付失败
 			ret.RespCode = "100070"
+			isFailed = true
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
@@ -91,6 +93,7 @@ AGAIN:
 			ret.RespCode = "000000"
 		case "40":
 			ret.RespCode = "100080"
+			isFailed = true
 		default:
 			log.Errorf("渠道返回状态值(%d)错误，无法匹配。", resp.Body.Status)
 			ret.RespCode = "000001"
@@ -104,8 +107,10 @@ AGAIN:
 			goto AGAIN
 		case "20":
 			ret.RespCode = "200171"
+			isFailed = true
 		case "30":
 			ret.RespCode = "200172"
+			isFailed = true
 		}
 
 	case MerModeSendSMS, MarketModeSendSMS, MarketPaySettlement:
@@ -114,8 +119,15 @@ AGAIN:
 		ret.RespCode = "000000"
 	}
 
+	// 业务失败，在应答码前加44返回
+	if isFailed {
+		if resp.Body.ResponseCode != "" && resp.Body.ResponseMessage != "" {
+			ret.RespCode, ret.RespMsg = "44"+resp.Body.ResponseCode, resp.Body.ResponseMessage
+			return ret
+		}
+	}
+
 	ret.RespMsg = mongo.RespCodeColl.GetMsg(ret.RespCode)
-	log.Debugf("resp message %+v", ret)
 
 	return ret
 }

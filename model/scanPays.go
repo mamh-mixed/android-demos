@@ -249,6 +249,7 @@ type ScanPayResponse struct {
 	ChanRespCode string `json:"-" url:"-" bson:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-" bson:"-"`
 	ErrorCode    string `json:"-" url:"-" bson:"-"`
+	PayTime      string `json:"-" url:"-" bson:"-"`
 }
 
 // PayJson 公众号支付字段

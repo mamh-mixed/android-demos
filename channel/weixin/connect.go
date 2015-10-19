@@ -18,6 +18,21 @@ import (
 	"github.com/omigo/validator"
 )
 
+// DownloadBill 下载对账单
+func DownloadBill(req BaseReq) ([]byte, error) {
+	xmlBytes, err := prepareData(req)
+	if err != nil {
+		return nil, err
+	}
+
+	ret, err := send(req.GetHTTPClient(), req.GetURI(), xmlBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // Execute 发送报文执行微信支付
 func Execute(req BaseReq, resp BaseResp) error {
 
@@ -106,6 +121,8 @@ func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 		log.Errorf("unable to read from resp %s", err)
 		return nil, err
 	}
+
+	log.Debugf("content Type : %s", resp.Header.Get("Content-Type")) // application/octet-stream
 
 	return ret, nil
 }

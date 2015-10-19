@@ -538,7 +538,7 @@ func validateAmt(amt int64) *model.BindingReturn {
 
 // isAlphabeticOrNumeric 用来判断一个字符串是否是字母或者数字
 func isAlphanumeric(str string) (result bool) {
-	matched, _ := regexp.MatchString(`^[A-Za-z0-9]+$`, str)
+	matched, _ := regexp.MatchString(`^[A-Za-z0-9-]{0,32}$`, str)
 	if matched {
 		return true
 	}
