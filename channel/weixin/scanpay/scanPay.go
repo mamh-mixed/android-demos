@@ -73,6 +73,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 		ErrorCode:       ec,
+		PayTime:         p.TimeEnd,
 	}
 	// 如果非大商户模式，用自己的 openid
 	if d.SubMchId == "" || p.SubOpenid == "" {
@@ -120,6 +121,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 		ErrorCode:       ec,
+		PayTime:         p.TimeEnd,
 	}
 	// 如果非大商户模式，用自己的 openid
 	if d.SubMchId == "" || p.SubOpenid == "" {
