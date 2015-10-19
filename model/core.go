@@ -2,6 +2,7 @@ package model
 
 import (
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 // status
@@ -444,4 +445,14 @@ type SpTransLogs struct {
 	TransType    string      `bson:"transType" json:"transType"`
 	MsgType      int         `bson:"msgType" json:"msgType"`
 	Msg          interface{} `bson:"msg" json:"msg"`
+}
+
+// Task 任务
+type Task struct {
+	D          time.Duration `bson:"d"`
+	Name       string        `bson:"name"`
+	IsDoing    bool          `bson:"isDoing"`
+	F          func()        `bson:"-"`
+	CreateTime string        `bson:"createTime"`
+	UpdateTime string        `bson:"updateTime"`
 }
