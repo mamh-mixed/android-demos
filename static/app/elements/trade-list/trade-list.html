@@ -102,7 +102,7 @@
               <div class="td center">{{item.transTime}}</div>
               <!-- <div class="td" align="center">{{item.updateTime}}</div> -->
               <div class="td center">
-                <iron-icon icon="receipt" on-tap="showTradeMessageEvent"></iron-icon>
+                <iron-icon icon="receipt" on-tap="showTradeMessageEvent" hidden$="{{!isDatagramAccessible}}"></iron-icon>
               </div>
             </div>
           </template>
@@ -115,6 +115,7 @@
     <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
     <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
     <x-ajax id="queryAgentAjax" auto params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -138,6 +139,10 @@
       is: 'trade-list',
 
       properties: {
+        isDatagramAccessible: {
+          type: Boolean,
+          value: false
+        },
         dataRoute: {
           type: String,
           value: 'trade.list',
@@ -208,6 +213,7 @@
           3: '商户发起关闭',
           4: '交易超时系统关闭'
         };
+
       },
       observers: [
         '_watchAgentChange(agent.key)',
@@ -256,6 +262,16 @@
             this.$.merId.removeAttribute('disabled');
           }
         }
+      },
+      handleUserType: function() {
+        if (this.userType === 'admin') {
+          this.isDatagramAccessible = true;
+          return;
+        }
+        this.isDatagramAccessible = false;
+      },
+      handleNoUserType: function() {
+        this.isDatagramAccessible = false;
       },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
