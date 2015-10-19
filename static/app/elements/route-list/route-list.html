@@ -22,7 +22,6 @@
     table.data-grid iron-icon {
       height: 1.2em;
     }
-
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -38,11 +37,11 @@
           <div class="tr">
             <div class="th">序号</div>
             <div class="th">机构商户代码</div>
-            <div class="th" align="left">卡品牌</div>
-            <div class="th" align="left">渠道商户代码</div>
+            <div class="th left">卡品牌</div>
+            <div class="th left">渠道商户代码</div>
             <div class="th">渠道代码</div>
-            <div class="th">讯联跟渠道费率</div>
-            <div class="th">门店跟讯联费率</div>
+            <div class="th right">讯联跟渠道费率</div>
+            <div class="th right">门店跟讯联费率</div>
             <div class="th">清算标识</div>
             <div class="th">清算角色</div>
             <div class="th">操作</div>
@@ -66,10 +65,10 @@
               <div class="td center">
                 <span>{{item.chanCode}}</span>
               </div>
-              <div class="td center">
+              <div class="td right">
                 <span>{{item.acqFee}}</span>
               </div>
-              <div class="td center">
+              <div class="td right">
                 <span>{{item.merFee}}</span>
               </div>
               <div class="td center">
@@ -86,12 +85,13 @@
         </div>
         <div class="wedge">
           <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-      </div>
+        </div>
       </div>
       <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab> -->
 
-      <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
-      <route-delete id="routeDelete" on-saved="handleMerchantSave"></route-delete>
+    </form>
+    <route-editor id="editor" on-saved="handleMerchantSave"></route-editor>
+    <route-delete id="routeDelete" on-saved="handleMerchantSave"></route-delete>
   </template>
   <script>
     (function() {
@@ -230,6 +230,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>

@@ -33,11 +33,11 @@
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
-            <div class="th" class="left">商户代码</div>
-            <div class="th" class="left">商户名称</div>
+            <div class="th left">商户代码</div>
+            <div class="th left">商户名称</div>
             <div class="th">计费方案代码</div>
-            <div class="th" align="left">交易币种</div>
-            <div class="th" align="left">是否开启验签</div>
+            <div class="th">交易币种</div>
+            <div class="th">是否开启验签</div>
           </div>
         </div>
         <div class="tbody">
@@ -49,8 +49,8 @@
               </div>
               <div class="td">{{item.detail.merName}}</div>
               <div class="td center">{{item.detail.billingScheme}}</div>
-              <div class="td">{{item.transCurr}}</div>
-              <div class="td">{{isNeedSignFilter(item.isNeedSign)}}</div>
+              <div class="td center">{{item.transCurr}}</div>
+              <div class="td center">{{isNeedSignFilter(item.isNeedSign)}}</div>
             </div>
           </template>
         </div>
