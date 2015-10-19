@@ -19,6 +19,7 @@ type configStruct struct {
 		DefaultCacheTime   Duration
 		NotifyURL          string
 		OrderCloseTime     Duration
+		OrderRefreshTime   Duration
 		SessionExpiredTime Duration
 	}
 
