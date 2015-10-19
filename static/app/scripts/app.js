@@ -3,7 +3,7 @@
 
 	var notAuthPath = [
 		'/404',
-    '/'
+		'/'
 	];
 
 	// See https://github.com/Polymer/polymer/issues/1381
@@ -19,19 +19,21 @@
 			}
 
 			var userType = window.localStorage.getItem('USERTYPE');
-			userType = userType.substr(1, userType.length - 2);
+			if (userType && userType !== '') {
+				userType = userType.substr(1, userType.length - 2);
+			}
 			var isAccess = false;
 
-      if (userType === 'admin') {
-        return;
-      }
+			if (userType === 'admin') {
+				return;
+			}
 
 			if (userType !== 'agent' && userType !== 'group' && userType !== 'merchant') {
 				window.location.href = 'login.html';
 				return;
 			}
 
-      // TODO 按照不同的用户类型给定不同的菜单权限
+			// TODO 按照不同的用户类型给定不同的菜单权限
 			for (var i = 0; i < agentRoutes.length; i++) {
 				if (agentRoutes[i] === e.detail.path) {
 					isAccess = true;

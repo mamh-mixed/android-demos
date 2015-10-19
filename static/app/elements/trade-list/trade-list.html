@@ -14,7 +14,6 @@
     :host {
       display: block;
     }
-
   </style>
   <template>
     <!-- <paper-button raised on-tap="showLoginDialogTap">showLoginDialog</paper-button> -->
@@ -38,7 +37,7 @@
           </div>
         </paper-dialog>
 
-        <paper-input id="agentCode" label="代理代码" name="agentCode" value="{{cond.agentCode::input}}"></paper-input>
+        <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" id="agentCode"></x-select>
         <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
         <paper-input id="merId" label="门户代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
@@ -103,18 +102,20 @@
               <div class="td center">{{item.transTime}}</div>
               <!-- <div class="td" align="center">{{item.updateTime}}</div> -->
               <div class="td center">
-                <iron-icon icon="receipt" on-tap="showTradeMessageEvent"></iron-icon>
+                <iron-icon icon="receipt" on-tap="showTradeMessageEvent" hidden$="{{!isDatagramAccessible}}"></iron-icon>
               </div>
             </div>
           </template>
         </div>
         <div class="wedge">
           <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-      </div>
+        </div>
       </div>
     </form>
     <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
     <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
+    <x-ajax id="queryAgentAjax" auto params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -138,6 +139,10 @@
       is: 'trade-list',
 
       properties: {
+        isDatagramAccessible: {
+          type: Boolean,
+          value: false
+        },
         dataRoute: {
           type: String,
           value: 'trade.list',
@@ -208,13 +213,18 @@
           3: '商户发起关闭',
           4: '交易超时系统关闭'
         };
+
       },
       observers: [
+        '_watchAgentChange(agent.key)',
         '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
         '_watchTransStatusChange(transStatus.key)',
         '_watchUserChanged(user.*)',
       ],
+      _watchAgentChange: function(key) {
+        this.cond.agentCode = key;
+      },
       _watchBusicdChange: function(key) {
         this.cond.busicd = key;
       },
@@ -252,6 +262,16 @@
             this.$.merId.removeAttribute('disabled');
           }
         }
+      },
+      handleUserType: function() {
+        if (this.userType === 'admin') {
+          this.isDatagramAccessible = true;
+          return;
+        }
+        this.isDatagramAccessible = false;
+      },
+      handleNoUserType: function() {
+        this.isDatagramAccessible = false;
       },
       // 日期、时间控件
       dismissStartTimeDialog: function() {
@@ -296,8 +316,28 @@
             this.$.merId.removeAttribute('disabled');
           }
         }
-        // this.set('cond.total', 0);
-        // console.log(e.detail);
+      },
+      // 代理列表响应
+      handleQueryAgentsResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载代理列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          Util.toast('没有代理数据', 2000);
+          return;
+        }
+
+        var agents = response.data.data.slice(0);
+        this.set('agents', agents.map(function(item) {
+          return {
+            key: item.agentCode,
+            value: item.agentName
+          };
+        }));
       },
       // ajax请求响应处理
       handleSearchResponse: function(e) {
@@ -386,6 +426,5 @@
         Util.showLoginDialog();
       }
     });
-
   </script>
 </dom-module>
