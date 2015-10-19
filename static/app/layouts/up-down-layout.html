@@ -79,6 +79,7 @@
     .app-title > .app-name {
       font-size: 20px;
     }
+
   </style>
   <template>
     <div id="banner">
@@ -119,13 +120,13 @@
           this.$.findSessionAjax.generateRequest();
         },
         handleNotLogin: function() {
-          window.location.href = 'login.html';
+          document.querySelector('#appRouter').go('/');
           return;
         },
         handleFindSessionResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            window.location.href = 'login.html';
+            document.querySelector('#appRouter').go('/');
             return;
           }
           this.user = response.data;
@@ -151,9 +152,10 @@
           this.$.logoutBtn.hidden = true;
 
           // 跳转至登录页面
-          window.location.href = 'login.html';
+          document.querySelector('#appRouter').go('/');
         },
       });
     })();
+
   </script>
 </dom-module>

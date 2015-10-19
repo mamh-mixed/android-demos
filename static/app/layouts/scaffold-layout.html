@@ -148,7 +148,7 @@
     }
 
     #mainContainer > .content {
-      padding: 20px;
+      padding: 0 20px 20px 20px;
     }
 
     @media (max-width: 600px) {
@@ -187,6 +187,7 @@
         padding: 15px 20px;
       }
     }
+
   </style>
   <template>
     <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}" on-paper-responsive-change="paperResponsiveChange">
@@ -254,7 +255,7 @@
         <content select=".content"></content>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
-    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
+    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse" ></x-ajax>
     <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
@@ -285,11 +286,23 @@
         ready: function() {
           // 初始化菜单
           this.adminMenus = [{
-            "nameCN": "扫码支付商户配置",
+            "nameCN": "系统管理",
+            "nameEN": "",
+            "icon": "bug-report",
+            "url": "",
+            "route": "/system",
+            "children": [{
+              "nameCN": "用户",
+              "nameEN": "",
+              "icon": "account-box",
+              "url": "#/system/users",
+            }]
+          }, {
+            "nameCN": "扫码支付",
             "nameEN": "",
             "icon": "build",
             "url": "",
-            "route": "config",
+            "route": "/config",
             "children": [{
               "nameCN": "代理",
               "nameEN": "",
@@ -338,19 +351,13 @@
               "icon": "settings-input-component",
               "url": "#/config/routes",
               "route": "config.routes"
-            }, {
-              "nameCN": "用户",
-              "nameEN": "",
-              "icon": "account-box",
-              "url": "#/config/users",
-              "route": "config.users"
             }]
           }, {
-            "nameCN": "快捷支付商户配置",
+            "nameCN": "快捷支付",
             "nameEN": "",
             "icon": "swap-horiz",
             "url": "",
-            "route": "quickPay",
+            "route": "/quickPay",
             "children": [{
               "nameCN": "机构商户",
               "nameEN": "",
@@ -375,7 +382,7 @@
             "nameEN": "",
             "icon": "swap-horiz",
             "url": "",
-            "route": "trade",
+            "route": "/trade",
             "children": [{
               "nameCN": "扫码交易",
               "nameEN": "",
@@ -406,7 +413,7 @@
             "nameEN": "",
             "icon": "bug-report",
             "url": "",
-            "route": "test",
+            "route": "/test",
             "children": [{
               "nameCN": "扫码支付",
               "nameEN": "",
@@ -464,7 +471,7 @@
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
-          window.location.href = 'login.html';
+          document.querySelector('#appRouter').go('/');
           return;
         },
         paperHeaderTransform: function(e) {
@@ -487,18 +494,32 @@
           // Scale middleContainer appName
           Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
         },
-        startWith: function(name, prefix) {
-          if (!name || !prefix) {
+        startWith: function(path, prefix) {
+          if (!path || !prefix) {
             return false;
           }
-          return name.substr(1, prefix.length) === prefix;
+          return path.substr(0, prefix.length) === prefix;
         },
         handleFindSessionResponse: function(e) {
           var response = e.detail.response;
+          // 如果没有登录
           if (response.status !== 0) {
-            window.location.href = 'login.html';
+              // 当前页面就是登录页
+            if (this.route.path === "/") {
+              return
+            }
+            // 当前页面不是登录页，则跳转到登录页
+            document.querySelector('#appRouter').go('/');
             return;
           }
+
+          // 登录了，但当前页是登录页，不必再登录了，跳走
+          if (this.route.path === "/") {
+            document.querySelector('#appRouter').go('/trade/list');
+            return
+          }
+
+          // 登录了，但当前页不是登录页，渲染菜单
           this.user = response.data;
           this.userType = this.user.userType;
           if (this.userType === 'admin') {
@@ -523,7 +544,7 @@
           this.$.logoutBtn.hidden = true;
 
           // 跳转至登录页面
-          window.location.href = 'login.html';
+          document.querySelector('#appRouter').go('/');
         },
         // 进入全屏模式
         enterFullscreenMode: function() {
@@ -534,11 +555,12 @@
           this.isFullscreen = false;
         },
         paperResponsiveChange: function(e, detail) {
-          if (!this.isFullscreen){
+          if (!this.isFullscreen) {
             this.isNarrow = detail.narrow;
           }
         }
       });
     })();
+
   </script>
 </dom-module>

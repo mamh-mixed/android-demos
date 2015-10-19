@@ -32,13 +32,9 @@
   <!-- Tile icon for Win8 (144x144) -->
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
-  <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="../styles/main.css">
-  <!-- endbuild-->
 
-  <!-- xxxxxbuild:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-  <!-- xxxxxendbuild -->
 
   <link rel="import" href="bower_components/app-router/app-router.html">
   <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
@@ -50,7 +46,9 @@
   <span id="browser-sync-binding"></span>
 
   <app-router id="appRouter" init="manual">
-    <app-route path="/" name="homePage" import="pages/trade/scan-pay-page.html"></app-route>
+    <app-route path="/" import="pages/user-login.html"></app-route>
+
+    <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
 
     <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
     <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
@@ -62,7 +60,6 @@
     <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
     <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
     <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
-    <app-route path="/config/users" name="user-list" import="pages/users-page.html"></app-route>
 
     <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
     <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>

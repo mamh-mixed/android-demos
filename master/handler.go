@@ -662,8 +662,10 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 	if ret.Status == 0 {
 		log.Debugf("create session begin")
+
+		now := time.Now()
 		cValue := util.SerialNumber()
-		cExpires := time.Now().Add(expiredTime)
+		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "QUICKMASTERID",
@@ -674,9 +676,11 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 		// 创建session
 		session := &model.Session{
-			SessionID: cValue,
-			User:      ret.Data.(*model.User),
-			Expires:   cExpires.Format("2006-01-02 15:04:05"),
+			SessionID:  cValue,
+			User:       ret.Data.(*model.User),
+			CreateTime: now,
+			UpdateTime: now,
+			Expires:    cExpires,
 		}
 
 		ret = Session.Save(session)

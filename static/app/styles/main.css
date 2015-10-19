@@ -3,7 +3,7 @@ body {
   color: #333;
 }
 #mainContainer > .content {
-  padding: 20px;
+  padding: 0 20px 20px 20px;
 }
 paper-toast#toast {
   z-index: 10;
@@ -124,6 +124,9 @@ pre, code {
 
 .hand {
   cursor: pointer;
+}
+.nowrap {
+  white-space: nowrap;
 }
 
 /* colors */

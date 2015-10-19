@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 // 密码加密用到的随机字符串
 const RAND_PWD = "cnIjnlJbXsN2WAdpjV6AZJKKSorRt23"
 
@@ -34,9 +36,11 @@ type User struct {
 
 // Session Session表
 type Session struct {
-	SessionID string `json:"sessionId" bson:"sessionId"`
-	User      *User  `json:"user" bson:"user"`
-	Expires   string `json:"expires" bson:"expires"`
+	SessionID  string    `json:"sessionId" bson:"sessionId"`
+	User       *User     `json:"user" bson:"user"`
+	CreateTime time.Time `json:"createTime" bson:"createTime"`
+	UpdateTime time.Time `json:"updateTime" bson:"updateTime"`
+	Expires    time.Time `json:"expires" bson:"expires"`
 }
 
 type UserPwd struct {

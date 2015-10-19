@@ -29,7 +29,7 @@
 			}
 
 			if (userType !== 'agent' && userType !== 'group' && userType !== 'merchant') {
-				window.location.href = 'login.html';
+				document.querySelector('#appRouter').go('/');
 				return;
 			}
 

@@ -160,6 +160,8 @@ func authProcess(user *model.User, url string) (err error) {
 	return nil
 }
 
+var refreshTime = expiredTime / 2
+
 // sessionProcess 处理session
 func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Session, err error) {
 	// 查看请求中有没有cookie
@@ -180,8 +182,8 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	}
 
 	// 计算现在到失效时间还有多久
-	expire, _ := time.ParseInLocation("2006-01-02 15:04:05", session.Expires, time.Local)
-	subTime := expire.Sub(time.Now())
+	now := time.Now()
+	subTime := session.Expires.Sub(now)
 	log.Debugf("session time remain: %s", subTime)
 
 	// 会话已过期
@@ -192,16 +194,17 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	}
 
 	// 会话接近失效，延长会话失效时间
-	if subTime < expiredTime/5 {
-		newExpire := expire.Add(expiredTime)
-		session.Expires = newExpire.Format("2006-01-02 15:04:05")
+	if subTime < refreshTime {
+		session.Expires = session.Expires.Add(expiredTime)
+		session.UpdateTime = now
 		err = mongo.SessionColl.Add(session)
 		if err != nil {
 			log.Errorf("update session err,%s", err)
 		} else {
-			c.Expires = newExpire
+			c.Expires = session.Expires
 			http.SetCookie(w, c)
 		}
+		log.Infof("prolong session(%s) to %s", c.Value, session.Expires)
 	}
 
 	return session, nil

@@ -11,9 +11,9 @@ import (
 
 const SessionKey = "QUICKMASTERID"
 
-type session struct{}
+type sessionService struct{}
 
-var Session session
+var Session sessionService
 var expiredTime = time.Duration(goconf.Config.App.SessionExpiredTime)
 
 func init() {
@@ -36,8 +36,8 @@ func timingClearSession() {
 	}
 }
 
-// 新建用户
-func (s *session) Save(session *model.Session) (ret *model.ResultBody) {
+// 新建会话
+func (s *sessionService) Save(session *model.Session) (ret *model.ResultBody) {
 
 	err := mongo.SessionColl.Add(session)
 	if err != nil {
@@ -53,7 +53,7 @@ func (s *session) Save(session *model.Session) (ret *model.ResultBody) {
 }
 
 // FindOne 根据sessionID查找session
-func (s *session) FindOne(sessionID string) (ret *model.ResultBody) {
+func (s *sessionService) FindOne(sessionID string) (ret *model.ResultBody) {
 	log.Debugf("sessionID=%s", sessionID)
 
 	session, err := mongo.SessionColl.Find(sessionID)
@@ -75,7 +75,7 @@ func (s *session) FindOne(sessionID string) (ret *model.ResultBody) {
 }
 
 // Delete 根据sessionID删除session
-func (s *session) Delete(sessionID string) (ret *model.ResultBody) {
+func (s *sessionService) Delete(sessionID string) (ret *model.ResultBody) {
 	log.Debugf("sessionID=%s", sessionID)
 
 	err := mongo.SessionColl.Remove(sessionID)
