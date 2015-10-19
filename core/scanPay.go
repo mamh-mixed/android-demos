@@ -918,7 +918,12 @@ func CloseOrder() {
 			continue
 		}
 
-		req := &model.ScanPayRequest{OrigOrderNum: t.OrderNum}
+		// 记录请求日志的request
+		req := model.NewScanPayRequest()
+		req.OrigOrderNum = t.OrderNum
+		req.Mchntid = t.MerId
+		req.Busicd = model.Inqy
+
 		var closedResult *model.ScanPayResponse
 		ret := adaptor.ProcessEnquiry(t, c, req)
 
@@ -928,10 +933,12 @@ func CloseOrder() {
 			case channel.ChanCodeAlipay:
 				if ret.ChanRespCode == "TRADE_NOT_EXIST" {
 					// 该订单还没被扫，直接取消
+					req.Busicd = model.Canc
 					closedResult = adaptor.ProcessClose(t, c, req)
 				}
 				// 假如该ret.ChanRespCode == "WAIT_BUYER_PAY",那么不处理
 			case channel.ChanCodeWeixin:
+				req.Busicd = model.Canc
 				closedResult = adaptor.ProcessWxpClose(t, c, req)
 			}
 		}
@@ -986,7 +993,12 @@ func RefreshOrder() {
 			continue
 		}
 
-		req := &model.ScanPayRequest{OrigOrderNum: t.OrderNum}
+		// 记录请求日志的request
+		req := model.NewScanPayRequest()
+		req.OrigOrderNum = t.OrderNum
+		req.Mchntid = t.MerId
+		req.Busicd = model.Inqy
+
 		ret := adaptor.ProcessEnquiry(t, c, req)
 
 		// 更新
@@ -1078,11 +1090,15 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.ChanOrderNum = ret.ChannelOrderNum
 	t.ChanDiscount = ret.ChcdDiscount
 	t.MerDiscount = ret.MerDiscount
-	t.ConsumerAccount = ret.ConsumerAccount
-	t.ConsumerId = ret.ConsumerId
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
 	t.PayTime = dateFormat(ret.PayTime)
+	if ret.ConsumerAccount != "" {
+		t.ConsumerAccount = ret.ConsumerAccount
+	}
+	if ret.ConsumerId != "" {
+		t.ConsumerId = ret.ConsumerId
+	}
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
