@@ -32,7 +32,7 @@ type CommonParams struct {
 	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`    // 随机字符串
 	Sign     string `xml:"sign" url:"-"`                                    // 签名
 
-	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero"`
+	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero" bson:"-"`
 
 	ClientCert []byte                `xml:"-" url:"-" bson:"-"` // HTTPS 双向认证证书
 	ClientKey  []byte                `xml:"-" url:"-" bson:"-"` // HTTPS 双向认证密钥

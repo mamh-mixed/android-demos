@@ -1041,6 +1041,7 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.ConsumerId = ret.ConsumerId
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
+	t.PayTime = dateFormat(ret.PayTime)
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
@@ -1076,4 +1077,17 @@ func signWithMD5(s interface{}, key string) string {
 	sign := buf.String() + "&key=" + key
 	md5Bytes := md5.Sum([]byte(sign))
 	return fmt.Sprintf("%X", md5Bytes[:])
+}
+
+func dateFormat(payTime string) string {
+	if payTime == "" {
+		return ""
+	}
+
+	if len(payTime) == 14 {
+		return payTime[0:4] + "-" + payTime[5:6] + "-" + payTime[7:8] + " " + payTime[9:10] + ":" + payTime[11:12] + ":" + payTime[13:14]
+	} else {
+		log.Errorf("payTime format error, expect length=14, but get length=%d, patTime=%s", len(payTime), payTime)
+		return ""
+	}
 }

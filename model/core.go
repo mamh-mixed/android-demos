@@ -266,7 +266,8 @@ type Trans struct {
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
-	SettRole     string        `bson:"settRole,omitempty" json:"-"`
+	SettRole     string        `bson:"settRole,omitempty" json:"-"`                          // 清算角色
+	PayTime      string        `bson:"payTime,omitempty" json:"-"`                           // 支付时间
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`                     // 交易账户

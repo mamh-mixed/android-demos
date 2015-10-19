@@ -321,7 +321,7 @@ func ProcessBindingEnquiry(be *model.BindingEnquiry) (ret *model.BindingReturn) 
 
 	// 更新绑定关系的状态
 	if err = mongo.BindingMapColl.Update(bm); err != nil {
-		log.Infof("'UpdateBindingMap' is: %+v", bm)
+		// log.Infof("'UpdateBindingMap' is: %+v", bm)
 		log.Error("'UpdateBindingRelation' error: ", err)
 	}
 
@@ -547,6 +547,7 @@ func ProcessBindingPayment(be *model.BindingPayment, isSendSMS bool) (ret *model
 		// 发送结果成功，交易待支付
 		pay.RespCode = ret.RespCode
 		pay.ChanRespCode = ret.ChanRespCode
+		pay.ErrorDetail = ret.RespMsg
 		if ret.RespCode == successCode {
 			pay.TransStatus = model.TransNotPay
 		}
@@ -949,6 +950,7 @@ func ProcessNoTrackPayment(be *model.NoTrackPayment) (ret *model.BindingReturn) 
 func transStatusHandle(ret *model.BindingReturn, t *model.Trans) {
 	t.ChanRespCode = ret.ChanRespCode
 	t.RespCode = ret.RespCode
+	t.ErrorDetail = ret.RespMsg
 	switch ret.RespCode {
 	case successCode:
 		t.TransStatus = model.TransSuccess

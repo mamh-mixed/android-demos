@@ -230,6 +230,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		}
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
+		ret.PayTime = req.TimeEnd
 		ret.ErrorCode = "SUCCESS"
 	default:
 		ret = adaptor.ReturnWithErrorCode("FAIL")

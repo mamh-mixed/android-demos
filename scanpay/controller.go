@@ -147,10 +147,13 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 
 	// 过滤包含空格字符串
 	req.Chcd = strings.TrimSpace(req.Chcd)
-	req.AgentCode = strings.TrimSpace(req.AgentCode)
+	var reqAgentCode = req.AgentCode
+	req.AgentCode = mer.AgentCode // 以我们系统的代理代码为准
 
 	// 6. 开始业务处理
 	ret = processFunc(req)
+
+	ret.AgentCode = strings.TrimSpace(reqAgentCode) // 返回时送回原代理代码
 
 	return ret
 }
