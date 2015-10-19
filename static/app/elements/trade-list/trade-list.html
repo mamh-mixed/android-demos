@@ -107,8 +107,10 @@
             </div>
           </template>
         </div>
-        <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        <div class="tfoot">
+          <div class="tr pagination">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          </div>
         </div>
       </div>
     </form>
@@ -392,7 +394,7 @@
         if (value === '96') {
           return 'red';
         }
-        return 'blue';
+        return 'primary';
       },
       showTradeViewHandler: function(e) {
         this.transItem = e.model.item;

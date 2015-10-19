@@ -1,9 +1,18 @@
 package model
 
+// 密码加密用到的随机字符串
+const RAND_PWD = "cnIjnlJbXsN2WAdpjV6AZJKKSorRt23"
+
+// 云收银平台默认密码
+const DEFAULT_PWD = "Yun#1016"
+
+// 用户类型
 const (
-	// 密码加密用到的随机字符串
-	RAND_PWD    = "cnIjnlJbXsN2WAdpjV6AZJKKSorRt23"
-	DEFAULT_PWD = "Yun#1016"
+	UserTypeCIL      = "admin"
+	UserTypeAgent    = "agent"
+	UserTypeCompany  = "subAgent"
+	UserTypeMerchant = "group"
+	UserTypeShop     = "merchant"
 )
 
 // User 用户表

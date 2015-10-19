@@ -64,11 +64,12 @@ div.divider.line {
   border: 1px solid #ddd;
   margin: 10px auto;
 }
-.table.data-grid > .thead, .table.data-grid > .tfoot, .table.data-grid > .wedge {
+.table.data-grid tr {
   line-height: 1.42857143;
 }
 .table.data-grid .th, .table.data-grid .td {
   width: 1%;
+  vertical-align: middle;
 }
 .table.data-grid .th, .table.data-grid .td {
   white-space: nowrap;
@@ -89,7 +90,7 @@ div.divider.line {
 .table.data-grid > .wedge {
   text-align: right;
 }
-.table.data-grid > .tbody > .tr:hover {
+.table.data-grid > .tbody > .tr:hover, .table.data-grid .tr.hover:hover {
   background-color: rgba(0, 188, 212, 0.17) !important;
 }
 .table.data-grid > .tbody > .tr:nth-child(even) {
@@ -100,6 +101,14 @@ div.divider.line {
 }
 .table.data-grid > .tbody > .tr > .th {
   text-align: left;
+}
+.table.data-grid .tr.pagination {
+  height: 30px;
+}
+.table.data-grid .tr.pagination > * {
+  position: absolute;
+  right: 24px;
+  line-height: 30px;
 }
 
 /* code 样式 */

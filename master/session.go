@@ -9,6 +9,8 @@ import (
 	"github.com/omigo/log"
 )
 
+const SessionKey = "QUICKMASTERID"
+
 type session struct{}
 
 var Session session
@@ -56,7 +58,7 @@ func (s *session) FindOne(sessionID string) (ret *model.ResultBody) {
 
 	session, err := mongo.SessionColl.Find(sessionID)
 	if err != nil {
-		log.Errorf("查询session(%s)出错:%s", sessionID, err)
+		log.Errorf("find session(%s) err: %s", sessionID, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 	user := session.User

@@ -10,12 +10,12 @@ import (
 	"github.com/omigo/log"
 )
 
-type user struct{}
+type userController struct{}
 
-var User user
+var User userController
 
 // Login 登陆
-func (u *user) Login(userName, password string) (ret *model.ResultBody) {
+func (u *userController) Login(userName, password string) (ret *model.ResultBody) {
 	if userName == "" || password == "" {
 		log.Errorf("用户名或密码不能为空")
 		return model.NewResultBody(1, "用户名或密码不用为空")
@@ -40,7 +40,7 @@ func (u *user) Login(userName, password string) (ret *model.ResultBody) {
 }
 
 // 新建用户
-func (u *user) CreateUser(data []byte) (ret *model.ResultBody) {
+func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 	user := &model.User{}
 	err := json.Unmarshal(data, user)
 	if err != nil {
@@ -56,22 +56,22 @@ func (u *user) CreateUser(data []byte) (ret *model.ResultBody) {
 		log.Errorf("必填项不能为空")
 		return model.NewResultBody(2, "必填项不能为空")
 	}
-	if user.UserType == "agent" {
+	if user.UserType == model.UserTypeAgent {
 		if user.AgentCode == "" {
 			log.Errorf("必填项不能为空")
 			return model.NewResultBody(2, "必填项不能为空")
 		}
-	} else if user.UserType == "subAgent" {
+	} else if user.UserType == model.UserTypeCompany {
 		if user.AgentCode == "" || user.SubAgentCode == "" {
 			log.Errorf("必填项不能为空")
 			return model.NewResultBody(2, "必填项不能为空")
 		}
-	} else if user.UserType == "group" {
+	} else if user.UserType == model.UserTypeMerchant {
 		if user.AgentCode == "" || user.SubAgentCode == "" || user.GroupCode == "" {
 			log.Errorf("必填项不能为空")
 			return model.NewResultBody(2, "必填项不能为空")
 		}
-	} else if user.UserType == "merchant" {
+	} else if user.UserType == model.UserTypeShop {
 		if user.AgentCode == "" || user.SubAgentCode == "" || user.GroupCode == "" || user.MerId == "" {
 			log.Errorf("必填项不能为空")
 			return model.NewResultBody(2, "必填项不能为空")
@@ -110,7 +110,7 @@ func (u *user) CreateUser(data []byte) (ret *model.ResultBody) {
 }
 
 // 修改用户信息
-func (u *user) UpdateUser(data []byte) (ret *model.ResultBody) {
+func (u *userController) UpdateUser(data []byte) (ret *model.ResultBody) {
 	log.Debugf("update user:%s", string(data))
 	user := &model.User{}
 	err := json.Unmarshal(data, user)
@@ -135,7 +135,7 @@ func (u *user) UpdateUser(data []byte) (ret *model.ResultBody) {
 }
 
 // 分页查找用户
-func (u *user) Find(user *model.User, size, page int) (ret *model.ResultBody) {
+func (u *userController) Find(user *model.User, size, page int) (ret *model.ResultBody) {
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
@@ -170,7 +170,7 @@ func (u *user) Find(user *model.User, size, page int) (ret *model.ResultBody) {
 }
 
 // 删除用户
-func (u *user) RemoveUser(userName string) (ret *model.ResultBody) {
+func (u *userController) RemoveUser(userName string) (ret *model.ResultBody) {
 	if userName == "" {
 		log.Errorf("用户名不能为空")
 		return model.NewResultBody(1, "用户名不能为空")
@@ -187,7 +187,7 @@ func (u *user) RemoveUser(userName string) (ret *model.ResultBody) {
 	return ret
 }
 
-func (u *user) UpdatePwd(data []byte) (ret *model.ResultBody) {
+func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 	log.Debugf("data:%s", string(data))
 	userPwd := &model.UserPwd{}
 	err := json.Unmarshal(data, userPwd)

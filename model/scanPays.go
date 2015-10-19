@@ -3,10 +3,11 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
-	"strings"
 )
 
 // busiType
@@ -29,6 +30,8 @@ type QueryCondition struct {
 	Col          string   `json:"-"`
 	BindingId    string   `json:"bindingId"`
 	AgentCode    string   `json:"agentCode,omitempty"`
+	SubAgentCode string   `json:"subAgentCode,omitempty"`
+	GroupCode    string   `json:"groupCode,omitempty"`
 	TransStatus  []string `json:"transStatus,omitempty"`
 	RefundStatus int      `json:"refundStatus,omitempty"`
 	TransType    int      `json:"transType,omitempty"`
@@ -43,7 +46,6 @@ type QueryCondition struct {
 	Total        int      `json:"total,omitempty"`
 	Size         int      `json:"size,omitempty"`
 	IsForReport  bool     `json:"-"`
-	GroupCode    string   `json:"groupCode,omitempty"`
 	Respcd       string   `json:"respcd" url:"respcd"`
 	RespcdNotIn  string   `json:"respcdNotIn"`
 	TradeFrom    string   `json:"tradeFrom,omitempty"`

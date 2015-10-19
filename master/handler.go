@@ -161,14 +161,15 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	q := &model.QueryCondition{
-		MerId:     r.FormValue("merId"),
-		AgentCode: r.FormValue("agentCode"),
-		Page:      page,
-		Size:      size,
-		MerName:   r.FormValue("merName"),
-		StartTime: r.FormValue("startTime"),
-		EndTime:   r.FormValue("endTime"),
-		GroupCode: r.FormValue("groupCode"),
+		AgentCode:    r.FormValue("agentCode"),
+		SubAgentCode: r.FormValue("subAgentCode"),
+		GroupCode:    r.FormValue("groupCode"),
+		MerId:        r.FormValue("merId"),
+		Page:         page,
+		Size:         size,
+		MerName:      r.FormValue("merName"),
+		StartTime:    r.FormValue("startTime"),
+		EndTime:      r.FormValue("endTime"),
 	}
 
 	log.Debugf("GROUP CODE is %s", r.FormValue("groupCode"))
