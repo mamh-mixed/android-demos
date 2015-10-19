@@ -189,7 +189,7 @@
     }
   </style>
   <template>
-    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}">
+    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}" on-paper-responsive-change="paperResponsiveChange">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
 
@@ -233,8 +233,10 @@
           <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="logoutHandle"></paper-icon-button>
           <!-- <paper-button id="logoutBtn">退出</paper-button> -->
           <!-- Toolbar icons -->
-          <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
-          <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
+          <div hidden$="{{isNarrow}}">
+            <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
+            <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
+          </div>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout" id="middleContainer">
@@ -272,6 +274,10 @@
             notify: true
           },
           isFullscreen: {
+            type: Boolean,
+            value: false
+          },
+          isNarrow: {
             type: Boolean,
             value: false
           }
@@ -526,6 +532,11 @@
         // 退出全屏模式
         exitFullscreenMode: function() {
           this.isFullscreen = false;
+        },
+        paperResponsiveChange: function(e, detail) {
+          if (!this.isFullscreen){
+            this.isNarrow = detail.narrow;
+          }
         }
       });
     })();
