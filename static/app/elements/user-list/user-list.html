@@ -96,7 +96,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="handleQueryTapped"></x-pagination>
         </div>
       </div>
     </form>
@@ -132,6 +132,11 @@
           }
         },
         ready: function() {
+          this.cond = {
+            page: 1,
+            size: 20,
+            total: 0
+          };
           this.users = [];
           this.userType = {};
           this.userTypeMap = {

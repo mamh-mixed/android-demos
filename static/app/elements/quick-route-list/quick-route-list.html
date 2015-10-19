@@ -89,7 +89,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
       </div>
     </form>
@@ -164,10 +164,10 @@
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
-          this.routes = [];
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
+          this.routes = [];
           this.$.formQuery.submit();
         },
         // ajax请求响应处理
