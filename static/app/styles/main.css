@@ -138,13 +138,13 @@ pre, code {
 /* align */
 
 .left {
-  text-align: left;
+  text-align: left!important;
 }
 .right {
-  text-align: right;
+  text-align: right!important;
 }
 .center {
-  text-align: center;
+  text-align: center!important;
 }
 .paper-button-1 {
   display: inline-block;

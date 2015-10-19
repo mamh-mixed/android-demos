@@ -57,15 +57,15 @@
           <div class="tr">
             <div class="th">序号</div>
             <div class="th">应答码</div>
-            <div class="th" align="center">门店代码</div>
-            <div class="th" align="left">门店名称</div>
-            <div class="th" align="left">订单号</div>
-            <div class="th" align="left">交易类型</div>
-            <div class="th" align="right">金额(元)</div>
-            <div class="th" align="left">渠道</div>
-            <div class="th" align="left">交易状态</div>
-            <div class="th" align="center">退款</div>
-            <div class="th" align="center">交易时间</div>
+            <div class="th left">门店代码</div>
+            <div class="th left">门店名称</div>
+            <div class="th left">订单号</div>
+            <div class="th left">交易类型</div>
+            <div class="th right">金额(元)</div>
+            <div class="th left">渠道</div>
+            <div class="th left">交易状态</div>
+            <div class="th left">退款</div>
+            <div class="th">交易时间</div>
             <!-- <div class="th" id="test" align="center">更新时间</div> -->
             <div class="th">报文</div>
           </div>
@@ -73,20 +73,20 @@
         <div class='tbody'>
           <template is="dom-repeat" items="{{trades}}">
             <div class="tr">
-              <div class="td" align="center">{{addOneFilter(index)}}</div>
+              <div class="td center">{{addOneFilter(index)}}</div>
               <div class="td" align="center" class$="{{getRespCodeColor(item.respcd)}}">
                 <div style="display: inline-block;position: relative;">
                   <span class="abbr">{{item.respcd}}</span>
                   <paper-tooltip position="right">{{item.errorDetail}}</paper-tooltip>
                 </div>
               </div>
-              <div class="td" align="center">{{item.merId}}</div>
+              <div class="td">{{item.merId}}</div>
               <div class="td">{{item.merName}}</div>
-              <div class="td">
+              <div class="td left">
                 <a on-tap="showTradeViewHandler">{{item.orderNum}}</a>
               </div>
-              <div class="td">{{busicdFilter(item.busicd)}}</div>
-              <div class="td" align="right">{{_currencyFilter(item.transAmt)}}</div>
+              <div class="td left">{{busicdFilter(item.busicd)}}</div>
+              <div class="td right">{{_currencyFilter(item.transAmt)}}</div>
               <div class="td">{{chanFilter(item.chanCode)}}</div>
               <div class="td">
                 <template is="dom-if" if="{{isCloseTrans(item.transStatus)}}">
@@ -99,10 +99,10 @@
                   <span>{{transStatusFilter(item.transStatus)}}</span>
                 </template>
               </div>
-              <div class="td" align="center">{{refundStatusFilter(item.refundStatus)}}</div>
-              <div class="td" align="center">{{item.transTime}}</div>
+              <div class="td">{{refundStatusFilter(item.refundStatus)}}</div>
+              <div class="td center">{{item.transTime}}</div>
               <!-- <div class="td" align="center">{{item.updateTime}}</div> -->
-              <div class="td" class="center">
+              <div class="td center">
                 <iron-icon icon="receipt" on-tap="showTradeMessageEvent"></iron-icon>
               </div>
             </div>
