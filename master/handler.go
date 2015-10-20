@@ -476,7 +476,7 @@ func subAgentFindHandle(w http.ResponseWriter, r *http.Request) {
 	subAgentName := r.FormValue("subAgentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := SubAgent.Find(agentCode, agentName, subAgentCode, subAgentName, size, page)
+	ret := SubAgent.Find(subAgentCode, subAgentName, agentCode, agentName, size, page)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
