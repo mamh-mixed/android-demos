@@ -2,11 +2,12 @@ package util
 
 import (
 	"crypto/rand"
+	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
-	"time"
-
 	gouuid "github.com/nu7hatch/gouuid"
 	"github.com/omigo/log"
+	"time"
 )
 
 const localDateTimeLayout = "0102150405" // MMDDHHMMSS
@@ -31,6 +32,21 @@ func Nonce(n int) string {
 		bytes[i] = alphanum[b&63]
 	}
 	return string(bytes)
+}
+
+// Confuse 混淆一个唯一码
+func Confuse(uniqueId string) string {
+
+	var sum = make([]byte, 24)
+	s := sha1.Sum([]byte(uniqueId))
+
+	for i, b := range s {
+		sum[i+2] = b
+	}
+
+	rand.Read(sum[0:2])
+	rand.Read(sum[22:24])
+	return base64.StdEncoding.EncodeToString(sum)
 }
 
 // Millisecond 获取新世纪以来到目前为止的毫秒数
