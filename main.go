@@ -43,9 +43,9 @@ func init() {
                          $=---=$
 
 
-~~~~~~~Powered by https://github.com/CardInfoLink/quickpay~~~~~~~
+~~~Powered by https://github.com/CardInfoLink/quickpay~~~
 
-                 佛祖保佑         永无bug
+              佛祖保佑         永无bug
 `
 	fmt.Println(strings.Replace(fo, "$", "`", -1))
 }

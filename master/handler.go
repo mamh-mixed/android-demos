@@ -698,12 +698,16 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 查找session
+// 查找
 func findSessionHandle(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	sessionId := params.Get("sessionId")
+	sid, err := r.Cookie(SessionKey)
+	if err != nil {
+		log.Errorf("user not login: %s", err)
+		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		return
+	}
 
-	ret := Session.FindOne(sessionId)
+	ret := Session.FindOne(sid.Value)
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
