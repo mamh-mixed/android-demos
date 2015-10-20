@@ -101,10 +101,12 @@ type AppUser struct {
 	SignKey   string `json:"signKey,omitempty" bson:"signKey,omitempty"`
 	AgentCode string `json:"inscd,omitempty" bson:"inscd,omitempty"`
 	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
-	BankOpen  string `json:"bank_open,omitempty" bson:"bankOpen,omitempty"`
-	Payee     string `json:"payee,omitempty" bson:"payee,omitempty"`
-	PayeeCard string `json:"payee_card,omitempty" bson:"payeeCard,omitempty"`
-	PhoneNum  string `json:"phone_num,omitempty" bson:"phoneNum,omitempty"`
+
+	// 清算相关信息不存
+	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
+	Payee     string `json:"payee,omitempty" bson:"-"`
+	PayeeCard string `json:"payee_card,omitempty" bson:"-"`
+	PhoneNum  string `json:"phone_num,omitempty" bson:"-"`
 }
 
 // Email 发送email记录

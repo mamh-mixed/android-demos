@@ -143,7 +143,7 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 	result := User.getUserBill(&reqParams{
 		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
-		Date:     r.FormValue("month"),
+		Month:    r.FormValue("month"),
 		Status:   r.FormValue("status"),
 		Index:    index,
 	})
@@ -325,6 +325,7 @@ type reqParams struct {
 	Status       string
 	Index        int
 	Date         string
+	Month        string
 	Province     string
 	City         string
 	BranchBank   string
