@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"runtime"
-	"strings"
 
 	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/bindingpay"
@@ -20,35 +18,6 @@ import (
 
 	// _ "net/http/pprof"
 )
-
-func init() {
-	fo := `
-                         _oo8oo_
-                        o8888888o
-                        88" . "88
-                        (| -_- |)
-                        0\  =  /0
-                      ___/'==='\___
-                    .' \\|     |// '.
-                   / \\|||  :  |||// \
-                  / _||||| -:- |||||_ \
-                 |   | \\\  -  /// |   |
-                 | \_|  ''\---/''  |_/ |
-                 \  .-\__  '-'  __/-.  /
-               ___'. .'  /--.--\  '. .'___
-            ."" '<  '.___\_<|>_/___.'  >' "".
-           | | :  $- \$.:$\ _ /$:.$/ -$  : | |
-           \  \ $-.   \_ __\ /__ _/   .-$ /  /
-       =====$-.____$.___ \_____/ ___.$____.-$=====
-                         $=---=$
-
-
-~~~Powered by https://github.com/CardInfoLink/quickpay~~~
-
-              佛祖保佑         永无bug
-`
-	fmt.Println(strings.Replace(fo, "$", "`", -1))
-}
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())

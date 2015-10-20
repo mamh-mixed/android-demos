@@ -32,7 +32,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 	}
 
 	// 隐藏密码
-	user.Password = "******"
+	user.Password = ""
 
 	ret = &model.ResultBody{
 		Status:  0,

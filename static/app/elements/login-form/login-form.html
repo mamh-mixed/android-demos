@@ -107,6 +107,7 @@
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin"></iron-localstorage>
     <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
   </template>
@@ -131,6 +132,7 @@
         },
         ready: function() {
           this.user = {};
+          this.checkIsLogin();
         },
         loginTapHandle: function() {
           if (this.isloginConfigEmpty()) {
@@ -159,18 +161,44 @@
             password: ''
           };
 
-          Util.hideLoginDialog();
-
+          this.sessionId = response.data;
           if (this.redirect) {
-            window.location.reload();
+            document.querySelector('#appRouter').go('/trade/list');
           } else {
+            Util.hideLoginDialog();
           }
         },
         // 表单内点击回车键事件
         handleEnterKeyPresse: function(e) {
           this.loginTapHandle();
         },
+        // 核对是否登入
+        checkIsLogin: function() {
+          this.$.findSessionAjax.params = {
+            'sessionId': this.sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+        },
+        handleFindSessionResponse: function(e) {
+          var response = e.detail.response;
+          // 如果没有登录
+          if (response.status !== 0) {
+            // 当前页面就是登录页
+            if (this.redirect) {
+              return
+            }
+            // 当前页面不是登录页，则跳转到登录页
+            document.querySelector('#appRouter').go('/');
+            return;
+          }
 
+          // 登录了，但当前页是登录页，不必再登录了，跳走
+          if (this.redirect) {
+            document.querySelector('#appRouter').go('/trade/list');
+            return
+          }
+
+        }
       });
     })();
 

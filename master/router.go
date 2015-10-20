@@ -89,7 +89,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	session, err := sessionProcess(w, r)
 	if err != nil {
 		log.Infof("%s", err)
-		w.Write(model.AuthRelogin)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	user := session.User
 	err = authProcess(user, r.URL.Path)
 	if err != nil {
-		w.Write(model.AuthFailed)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 
@@ -169,8 +169,6 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	c, err := r.Cookie(SessionKey)
 	if err != nil {
 		if err == http.ErrNoCookie {
-			// http.Error(w, err.Error(), http.StatusNotAcceptable)
-			log.Debugf("sessionId(%s) not in cookie", SessionKey)
 			return nil, err
 		}
 	}
