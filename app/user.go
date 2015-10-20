@@ -47,11 +47,6 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 		return model.PARAMS_EMPTY
 	}
 
-	user := &model.AppUser{
-		UserName: req.UserName,
-		Password: req.Password,
-		Activate: "false",
-	}
 	// 用户是否存在
 	num, err := mongo.AppUserCol.FindCountByUserName(req.UserName)
 	if err != nil {
@@ -61,6 +56,17 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 	if num != 0 {
 		return model.USERNAME_EXIST
 	}
+
+	user := &model.AppUser{
+		UserName:   req.UserName,
+		Password:   req.Password,
+		Activate:   "false",
+		Limit:      "true",
+		Remark:     "register",
+		CreateTime: time.Now().Format("2006-01-02 15:04:05"),
+	}
+	user.UpdateTime = user.CreateTime
+
 	// 保存用户信息
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
@@ -110,6 +116,7 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 			log.Errorf("find database err,%s", err)
 			return model.SYSTEM_ERROR
 		}
+		user.SignKey = merchant.SignKey
 		user.UniqueId = merchant.UniqueId
 		user.AgentCode = merchant.AgentCode
 	}
@@ -258,6 +265,7 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 
 	// 更新activate为已激活
 	user.Activate = "true"
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
 		log.Errorf("save user err,%s", err)
@@ -399,6 +407,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	user.SignKey = merchant.SignKey
 	user.AgentCode = merchant.AgentCode
 	user.UniqueId = merchant.UniqueId
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
@@ -662,6 +671,7 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 	}
 
 	user.Password = req.NewPassword
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	if err = mongo.AppUserCol.Upsert(user); err != nil {
 		return model.SYSTEM_ERROR
 	}
