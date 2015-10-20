@@ -198,6 +198,7 @@ Example:
       this.selectedItem = e.model.item;
       this.$.input.value = e.model.item.value;
       this.$.dropdown.close();
+      this.fire('item-selected', this.selectedItem);
     },
     observers: [
       '_watchValueChange(selectedItem.value)'

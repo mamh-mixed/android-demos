@@ -226,10 +226,12 @@ type SubAgent struct {
 }
 
 type Group struct {
-	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"` // 集团代码
-	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"` // 集团名称
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+	GroupCode    string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`       // 集团代码
+	GroupName    string `bson:"groupName,omitempty" json:"groupName,omitempty"`       // 集团名称
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 代理代码
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
 }
 
 // SettSchemeCd 计费方案代码
