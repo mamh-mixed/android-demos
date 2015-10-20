@@ -12,8 +12,8 @@
     }
 
     .thead .th.rowspan-cell {
-        padding: 0 !important;
-        position: relative;
+      padding: 0 !important;
+      position: relative;
     }
 
     .rowspan-top {
@@ -21,11 +21,11 @@
       left: -50%;
       line-height: 30px;
     }
-    .rowspan-bottom {
-        border-top: 1px solid #ddd;
-        line-height: 30px;
-    }
 
+    .rowspan-bottom {
+      border-top: 1px solid #ddd;
+      line-height: 30px;
+    }
   </style>
   <template>
     <div class="condition search-condition">
@@ -271,6 +271,7 @@
           if (value) {
             var user = value.base;
             if (user.userType === 'agent') {
+              this.set('cond.agentCode', user.agentCode);
               this.agent = {
                 key: user.agentCode,
                 value: user.agentCode,
@@ -346,6 +347,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>
