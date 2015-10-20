@@ -1,5 +1,11 @@
 package model
 
+var (
+	AuthNotLogin = []byte(`{"status":1,"message":"not login"}`)
+	AuthFailed   = []byte(`{"status":2,"message":"auth fialed"}`)
+	AuthRelogin  = []byte(`{"status":3,"message":"relogin"}`)
+)
+
 type ResultBody struct {
 	Status  int         `json:"status"`  // 状态码
 	Message string      `json:"message"` // 消息

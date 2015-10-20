@@ -17,19 +17,22 @@ var User userController
 // Login 登陆
 func (u *userController) Login(userName, password string) (ret *model.ResultBody) {
 	if userName == "" || password == "" {
-		log.Errorf("用户名或密码不能为空")
+		log.Errorf("username or passwod must not blank")
 		return model.NewResultBody(1, "用户名或密码不用为空")
 	}
 	user, err := mongo.UserColl.FindOneUser(userName, "", "")
 	if err != nil {
-		log.Errorf("查询用户(%s)出错:%s", userName, err)
+		log.Errorf("find user(%s) error: %s", userName, err)
 		return model.NewResultBody(2, "无此用户名")
 	}
 	passSha1 := fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userName + "}" + password))))
 	if passSha1 != user.Password {
-		log.Errorf("密码错误")
+		log.Errorf("wrong password")
 		return model.NewResultBody(3, "密码错误")
 	}
+
+	// 隐藏密码
+	user.Password = "******"
 
 	ret = &model.ResultBody{
 		Status:  0,

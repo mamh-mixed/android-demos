@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Polymer Starter Kit" />
+  <title>云收银管理平台</title>
+  <!-- Place favicon.ico in the `app/` directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#303F9F">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#3372DF">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PSK">
+  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+  <link rel="stylesheet" href="../styles/main.css">
+
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+  <link rel="import" href="bower_components/app-router/app-router.html">
+  <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+  <link rel="import" href="layouts/scaffold-layout.html">
+  <link rel="import" href="elements/login-form/login-form.html">
+</head>
+
+<body unresolved class="fullbleed layout vertical">
+  <span id="browser-sync-binding"></span>
+
+  <app-router id="appRouter" init="manual">
+    <app-route path="/" import="pages/user-login.html"></app-route>
+
+    <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
+
+    <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
+    <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
+    <app-route path="/config/groups" name="group-list" import="pages/groups-page.html"></app-route>
+    <app-route path="/config/configMer" name="config-merchant" import="pages/config-merchant-page.html"></app-route>
+    <app-route path="/config/upload" name="upload-page" import="pages/file-upload-page.html"></app-route>
+    <app-route path="/config/merchants" name="merchant-list" import="pages/merchants-page.html"></app-route>
+    <app-route path="/config/merchant/:merId" name="merchant-edit" import="pages/config-merchant-page.html"></app-route>
+    <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
+    <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
+    <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
+
+    <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
+    <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>
+    <app-route path="/quickPay/routes" name="quick-route-list" import="pages/quick-pay/qp-routes-page.html"></app-route>
+    <app-route path="/quickPay/route/:merId" name="quickRouteListOfMerchant" import="pages/quick-pay/qp-routes-page.html"></app-route>
+
+    <app-route path="/trade/list" name="trade-list" import="pages/trade/scan-pay-page.html"></app-route>
+    <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="pages/trade/binding-pay-page.html"></app-route>
+    <app-route path="/trade/reports" name="report-list" import="pages/trade/reports-page.html"></app-route>
+    <app-route path="/trade/old/reports" name="report-list-old" import="pages/trade/old-system-page.html"></app-route>
+
+    <app-route path="/test/scanpay" name="test-scanpay" import="pages/test/scanpay-page.html"></app-route>
+    <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
+    <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
+    <app-route path="/test/filereader" name="test-filereader" import="pages/test/file-reader-page.html"></app-route>
+    <app-route path="/404" name="not-found" import="pages/common/not-found-page.html"></app-route>
+    <app-route path="*" name="not-found" import="pages/common/not-found-page.html"></app-route>
+  </app-router>
+
+  <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline." style="z-index:1000;"></paper-toast>
+  <paper-dialog id="reloginDialog" hidden modal>
+    <login-form style="width:252px;"></login-form>
+  </paper-dialog>
+  <script src="scripts/app.js"></script>
+  <script src="scripts/util.js"></script>
+  <!-- endbuild-->
+  <iframe style="display:none" name="iframeForDownload"></iframe>
+</body>
+
+</html>
