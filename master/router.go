@@ -89,7 +89,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	session, err := sessionProcess(w, r)
 	if err != nil {
 		log.Infof("%s", err)
-		w.Write(model.AuthRelogin)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	user := session.User
 	err = authProcess(user, r.URL.Path)
 	if err != nil {
-		w.Write(model.AuthFailed)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 

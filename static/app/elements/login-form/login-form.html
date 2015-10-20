@@ -24,16 +24,13 @@
       ;
       /* 必须有分号，否则压缩后，无法正常渲染 */
     }
-
     .logo {
       text-align: center;
     }
-
     .circle {
       margin: 10px auto;
       border-radius: 48px;
     }
-
     .loginHeader {
       text-align: center;
       width: 100%;
@@ -41,14 +38,12 @@
       line-height: 120px;
       vertical-align: middle;
     }
-
     paper-button {
       width: 80%;
       margin-top: 30px;
       background: #ff4081;
       color: #ffffff;
     }
-
     .login-inner {
       width: 70%;
       margin: 0 auto;
@@ -57,35 +52,28 @@
       justify-content: center;
       height: 100%;
     }
-
     .login-inner > #loginForm {
       width: 100%;
     }
-
     #loginForm > h1 {
       font-size: 30px;
     }
-
     #loginForm > paper-button {
       margin: 30px 12.5%;
     }
-
     .row {
       @apply(--layout-horizontal);
       @apply(--layout-center);
     }
-
     .row > iron-icon {
       @apply(--layout-self-end);
       padding: 8px 0;
       margin-right: 10px;
     }
-
     .row > paper-input {
       @apply(--layout-self-end);
       @apply(--layout-flex);
     }
-
   </style>
   <template>
 
@@ -107,6 +95,7 @@
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin"></iron-localstorage>
     <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
   </template>
@@ -115,7 +104,6 @@
     (function() {
       Polymer({
         is: 'login-form',
-
         properties: {
           // isRedirect 如果为TRUE，登入成功后会跳转到首页
           redirect: {
@@ -131,6 +119,7 @@
         },
         ready: function() {
           this.user = {};
+          this.checkIsLogin();
         },
         loginTapHandle: function() {
           if (this.isloginConfigEmpty()) {
@@ -158,21 +147,43 @@
             userName: '',
             password: ''
           };
-
-          Util.hideLoginDialog();
-
+          this.sessionId = response.data;
           if (this.redirect) {
-            window.location.reload();
+            document.querySelector('#appRouter').go('/trade/list');
           } else {
+            Util.hideLoginDialog();
           }
         },
         // 表单内点击回车键事件
         handleEnterKeyPresse: function(e) {
           this.loginTapHandle();
         },
-
+        // 核对是否登入
+        checkIsLogin: function() {
+          this.$.findSessionAjax.params = {
+            'sessionId': this.sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+        },
+        handleFindSessionResponse: function(e) {
+          var response = e.detail.response;
+          // 如果没有登录
+          if (response.status !== 0) {
+            // 当前页面就是登录页
+            if (this.redirect) {
+              return
+            }
+            // 当前页面不是登录页，则跳转到登录页
+            document.querySelector('#appRouter').go('/');
+            return;
+          }
+          // 登录了，但当前页是登录页，不必再登录了，跳走
+          if (this.redirect) {
+            document.querySelector('#appRouter').go('/trade/list');
+            return
+          }
+        }
       });
     })();
-
   </script>
 </dom-module>

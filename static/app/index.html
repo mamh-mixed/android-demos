@@ -36,134 +36,56 @@
 
   <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-  <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+  <link rel="import" href="bower_components/app-router/app-router.html">
   <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+  <link rel="import" href="layouts/scaffold-layout.html">
   <link rel="import" href="elements/login-form/login-form.html">
-
-  <link rel="import" href="bower_components/wxy-router/wxy-router.html">
-
-  <link rel="import" href="bower_components/iron-flex-layout/classes/iron-flex-layout.html">
-  <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
-  <link rel="import" href="bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="bower_components/iron-localstorage/iron-localstorage.html">
-  <link rel="import" href="bower_components/iron-pages/iron-pages.html">
-  <link rel="import" href="bower_components/paper-drawer-panel/paper-drawer-panel.html">
-  <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="bower_components/paper-item/paper-item.html">
-  <link rel="import" href="bower_components/paper-menu/paper-menu.html">
-  <link rel="import" href="bower_components/paper-menu/paper-submenu.html">
-  <link rel="import" href="bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-  <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-  <link rel="import" href="elements/x-ajax/x-ajax.html">
-  <link rel="import" href="elements/x-pagination/x-pagination.html">
-  <link rel="import" href="styles/app-theme.html">
 </head>
 
 <body unresolved class="fullbleed layout vertical">
   <span id="browser-sync-binding"></span>
-  <template is="dom-bind" id="app">
-    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}" on-paper-responsive-change="paperResponsiveChange">
-      <!-- Drawer Scroll Header Panel -->
-      <paper-scroll-header-panel drawer fixed>
 
-        <!-- Drawer Toolbar -->
-        <paper-toolbar id="drawerToolbar">
-          <img src="images/logo2.svg" alt="云收银" class="logo">
-          <div class="app-name">云收银管理平台</div>
-        </paper-toolbar>
+  <app-router id="appRouter" init="manual">
+    <app-route path="/" import="pages/user-login.html"></app-route>
 
-        <!-- 菜单列表 -->
-        <paper-menu>
-          <template is="dom-repeat" items="{{menus}}" as="menu">
-            <paper-submenu path="{{menu.route}}">
-              <paper-item class="menu-trigger">
-                <iron-icon icon$="{{menu.icon}}"></iron-icon>
-                <span>{{menu.nameCN}}</span>
-              </paper-item>
-              <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
-                <template is="dom-repeat" items="{{menu.children}}" as="subMenu">
-                  <a data-route$="{{subMenu.route}}" href$="{{subMenu.url}}">
-                    <iron-icon icon$="{{subMenu.icon}}"></iron-icon>
-                    <span>{{subMenu.nameCN}}</span>
-                  </a>
-                </template>
-              </paper-menu>
-            </paper-submenu>
-          </template>
-        </paper-menu>
-      </paper-scroll-header-panel>
+    <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
 
-      <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+    <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
+    <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
+    <app-route path="/config/groups" name="group-list" import="pages/groups-page.html"></app-route>
+    <app-route path="/config/configMer" name="config-merchant" import="pages/config-merchant-page.html"></app-route>
+    <app-route path="/config/upload" name="upload-page" import="pages/file-upload-page.html"></app-route>
+    <app-route path="/config/merchants" name="merchant-list" import="pages/merchants-page.html"></app-route>
+    <app-route path="/config/merchant/:merId" name="merchant-edit" import="pages/config-merchant-page.html"></app-route>
+    <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
+    <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
+    <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
 
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" >
-          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-          <span class="flex"></span>
-          <div><span class="blue">{{user.nickName}}</span><span>，欢迎使用云收银管理平台！</span></div>
-          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="logoutHandle"></paper-icon-button>
-          <!-- <paper-button id="logoutBtn">退出</paper-button> -->
-          <!-- Toolbar icons -->
-          <div hidden$="{{isNarrow}}">
-            <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
-            <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
-          </div>
+    <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
+    <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>
+    <app-route path="/quickPay/routes" name="quick-route-list" import="pages/quick-pay/qp-routes-page.html"></app-route>
+    <app-route path="/quickPay/route/:merId" name="quickRouteListOfMerchant" import="pages/quick-pay/qp-routes-page.html"></app-route>
 
-        </paper-toolbar>
+    <app-route path="/trade/list" name="trade-list" import="pages/trade/scan-pay-page.html"></app-route>
+    <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="pages/trade/binding-pay-page.html"></app-route>
+    <app-route path="/trade/reports" name="report-list" import="pages/trade/reports-page.html"></app-route>
+    <app-route path="/trade/old/reports" name="report-list-old" import="pages/trade/old-system-page.html"></app-route>
 
-        <!-- Main Content -->
-        <div class="content">
-          <wxy-router id="wxyRouter" >
-            <wxy-route path="/" name="user-list" import="elements/user-list/user-list.html"></wxy-route>
+    <app-route path="/test/scanpay" name="test-scanpay" import="pages/test/scanpay-page.html"></app-route>
+    <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
+    <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
+    <app-route path="/test/filereader" name="test-filereader" import="pages/test/file-reader-page.html"></app-route>
+    <app-route path="/404" name="not-found" import="pages/common/not-found-page.html"></app-route>
+    <app-route path="*" name="not-found" import="pages/common/not-found-page.html"></app-route>
+  </app-router>
 
-            <wxy-route path="/system/users" name="user-list" import="elements/user-list/user-list.html"></wxy-route>
-
-            <wxy-route path="/config/agents" name="agent-list" import="elements/agent-list/agent-list.html"></wxy-route>
-            <wxy-route path="/config/subAgents" name="sub-agent-list" import="elements/sub-agent-list/sub-agent-list.html"></wxy-route>
-            <wxy-route path="/config/groups" name="group-list" import="elements/group-list/group-list.html"></wxy-route>
-            <wxy-route path="/config/configMer" name="config-merchant" import="elements/config-merchant/config-merchant.html"></wxy-route>
-            <wxy-route path="/config/upload" name="batch-import-merchant" import="elements/batch-import-merchant/batch-import-merchant.html"></wxy-route>
-            <wxy-route path="/config/merchants" name="merchant-list" import="elements/merchant-list/merchant-list.html"></wxy-route>
-            <wxy-route path="/config/merchant/:merId" name="merchant-edit" import="elements/merchant-list/merchant-list.html"></wxy-route>
-            <wxy-route path="/config/chanMers" name="channel-merchant-list" import="elements/channel-merchant-list/channel-merchant-list.html"></wxy-route>
-            <wxy-route path="/config/routes" name="route-list" import="elements/route-list/route-list.html"></wxy-route>
-            <wxy-route path="/config/route/:merId" name="routeListOfMerchant" import="elements/route-list/route-list.html"></wxy-route>
-
-            <wxy-route path="/quickPay/merchants" name="quick-merchant-list" import="elements/quick-merchant-list/quick-merchant-list.html"></wxy-route>
-            <wxy-route path="/quickPay/chanMers" name="quick-chanMer-list" import="elements/quick-chanMer-list/quick-chanMer-list.html"></wxy-route>
-            <wxy-route path="/quickPay/routes" name="quick-route-list" import="elements/quick-route-list/quick-route-list.html"></wxy-route>
-            <wxy-route path="/quickPay/route/:merId" name="quickRouteListOfMerchant" import="elements/quick-route-list/quick-route-list.html"></wxy-route>
-
-            <wxy-route path="/trade/list" name="trade-list" import="elements/trade-list/trade-list.html"></wxy-route>
-            <wxy-route path="/trade/bindingpay/list" name="bindingpay-trade-list" import="elements/bindingpay-trade-list/bindingpay-trade-list.html"></wxy-route>
-            <wxy-route path="/trade/reports" name="report-list" import="elements/report-list/report-list.html"></wxy-route>
-            <wxy-route path="/trade/old/reports" name="report-list-old" import="elements/report-list-old/report-list-old.html"></wxy-route>
-
-            <wxy-route path="/test/scanpay" name="test-scanpay" import="elements/test-scanpay/test-scanpay.html"></wxy-route>
-            <wxy-route path="/test/bindingpay" name="test-bindingpay" import="elements/test-bindingpay/test-bindingpay.html"></wxy-route>
-            <wxy-route path="/test/qiniu" name="test-qiniu" import="elements/test-qiniu/test-qiniu.html"></wxy-route>
-            <wxy-route path="/test/filereader" name="test-filereader" import="elements/test-filereader/test-filereader.html"></wxy-route>
-            <wxy-route path="/404" name="not-found" import="pages/common/not-found-page.html"></wxy-route>
-            <wxy-route path="*" name="not-found" import="pages/common/not-found-page.html"></wxy-route>
-          </wxy-router>
-        </div>
-      </paper-scroll-header-panel>
-    </paper-drawer-panel>
-
-    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse" on-error="handleFindSessionError"></x-ajax>
-    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
-    <!-- <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage> -->
-    <!-- <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
-      <iron-localstorage name="CIL.CONFIG.ISFULLSCREEN" value="{{isFullscreen}}"></iron-localstorage> -->
-
-    <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline." style="z-index:1000;"></paper-toast>
-    <paper-dialog id="reloginDialog" opened$="{{showLoginDialog}}" modal>
-      <login-form style="width:252px;" redirect$={{showMenu}}></login-form>
-    </paper-dialog>
-  </template>
+  <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline." style="z-index:1000;"></paper-toast>
+  <paper-dialog id="reloginDialog" hidden modal>
+    <login-form style="width:252px;"></login-form>
+  </paper-dialog>
   <script src="scripts/app.js"></script>
   <script src="scripts/util.js"></script>
-
+  <!-- endbuild-->
   <iframe style="display:none" name="iframeForDownload"></iframe>
 </body>
 

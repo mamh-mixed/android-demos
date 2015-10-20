@@ -658,9 +658,10 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Infof("user login,username=%s", user.UserName)
-	ret := User.Login(user.UserName, user.Password)
 
-	if ret.Status == 0 {
+	ret := User.Login(user.UserName, user.Password)
+	if ret.Status != 0 {
+
 		log.Debugf("create session begin")
 
 		now := time.Now()
@@ -670,7 +671,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:    "QUICKMASTERID",
 			Value:   cValue,
-			Path:    "/master/",
+			Path:    "/master",
 			Expires: cExpires,
 		})
 
@@ -686,6 +687,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		ret = Session.Save(session)
 		log.Debugf("create session end")
 	}
+
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("mashal data error: %s", err)
@@ -719,10 +721,14 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 
 // 删除session
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	sessionId := params.Get("sessionId")
+	sid, err := r.Cookie(SessionKey)
+	if err != nil {
+		log.Errorf("user not login: %s", err)
+		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		return
+	}
 
-	ret := Session.Delete(sessionId)
+	ret := Session.Delete(sid.Value)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
