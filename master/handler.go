@@ -658,10 +658,9 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Infof("user login,username=%s", user.UserName)
-
 	ret := User.Login(user.UserName, user.Password)
-	if ret.Status != 0 {
 
+	if ret.Status == 0 {
 		log.Debugf("create session begin")
 
 		now := time.Now()
@@ -687,7 +686,6 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		ret = Session.Save(session)
 		log.Debugf("create session end")
 	}
-
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("mashal data error: %s", err)

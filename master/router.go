@@ -169,8 +169,6 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	c, err := r.Cookie(SessionKey)
 	if err != nil {
 		if err == http.ErrNoCookie {
-			// http.Error(w, err.Error(), http.StatusNotAcceptable)
-			log.Debugf("sessionId(%s) not in cookie", SessionKey)
 			return nil, err
 		}
 	}
