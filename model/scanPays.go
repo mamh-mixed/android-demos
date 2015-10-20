@@ -161,6 +161,7 @@ type ScanPayRequest struct {
 	NeedUserInfo string `json:"needUserInfo,omitempty" url:"needUserInfo,omitempty" bson:"needUserInfo,omitempty"` // 是否需要获取用户信息
 	VeriCode     string `json:"veriCode,omitempty" url:"veriCode,omitempty" bson:"veriCode,omitempty"`             // js支付用到的凭证
 	Attach       string `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
+	TimeExpire   string `json:"timeExpire,omitempty" url:"timeExpire,omitempty" bson:"timeExpire,omitempty"` // 过期时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID

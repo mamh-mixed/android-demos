@@ -2,12 +2,12 @@ package alipay
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
+	"time"
 )
 
 const NotifyURL = "/scanpay/upNotify/alipay"
@@ -77,7 +77,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
 		ExtendParams:   req.ExtendParams,
-		ItBPay:         "1d", // 超时时间
+		ItBPay:         handleItBpay(req.TimeExpire), // 超时时间
 		SpReq:          req,
 	}
 
@@ -195,4 +195,29 @@ func toMap(req *alpRequest) map[string]string {
 	}
 
 	return dict
+}
+
+// handleItBpay 处理过期时间，默认为一天
+func handleItBpay(timeExpired string) string {
+
+	var defaultInterval = "1d"
+
+	if timeExpired == "" {
+		return defaultInterval
+	}
+	et, err := time.ParseInLocation("20060102150405", timeExpired, time.Local)
+	if err != nil {
+		log.Warnf("timeExpired(%s) format error:%s", timeExpired, err)
+		return defaultInterval
+	}
+
+	now := time.Now()
+	d := et.Sub(now)
+
+	// 如果小于5分钟，按5分钟的来
+	if d < 5*time.Minute {
+		return "5m"
+	}
+
+	return fmt.Sprintf("%0.fm", d.Minutes()+1)
 }

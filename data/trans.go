@@ -73,6 +73,7 @@ type txn struct {
 		OrigOrderNum string `bson:"origOrderNum"`
 		Currency     string `bson:"currency"`
 		GoodsInfo    string `bson:"goodsInfo"`
+		TradeFrom    string `bson:"tradeFrom"`
 	} `bson:"m_request"`
 	Merchant        merchant `bson:"merchant"`
 	ChanRespCode    string   `bson:"resposeDetail"`
@@ -118,6 +119,7 @@ func AddTransFromOldDB(st, et string) error {
 	for _, t := range txns {
 		tran := &model.Trans{}
 		tran.Id = bson.NewObjectId()
+		tran.TradeFrom = t.Request.TradeFrom
 		tran.MerId = t.Merchant.Clientid
 		tran.Terminalid = t.Request.Terminalid
 		tran.AgentCode = t.Merchant.AgentCode

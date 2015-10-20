@@ -33,6 +33,7 @@ func doTick(t *model.Task) {
 	ticker := time.NewTicker(t.D)
 	var doTask = t.F
 
+	time.Sleep(10 * time.Minute) // 休眠10分钟后开始
 	for {
 
 		// 取任务

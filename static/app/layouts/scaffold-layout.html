@@ -255,7 +255,7 @@
         <content select=".content"></content>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
-    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse" ></x-ajax>
+    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
     <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
@@ -504,7 +504,7 @@
           var response = e.detail.response;
           // 如果没有登录
           if (response.status !== 0) {
-              // 当前页面就是登录页
+            // 当前页面就是登录页
             if (this.route.path === "/") {
               return
             }
@@ -531,6 +531,9 @@
         handleDeleteSessionResponse: function() {},
         // 退出
         logoutHandle: function() {
+          // 清除客户端 SessionID
+          document.cookie = 'QUICKMASTERID=; path=/master/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
           // 删除后台sesseion信息
           this.$.deleteSessionAjax.params = {
             'sessionId': this.sessionId,

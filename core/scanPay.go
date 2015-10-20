@@ -1142,7 +1142,7 @@ func dateFormat(payTime string) string {
 	}
 
 	if len(payTime) == 14 {
-		return payTime[0:4] + "-" + payTime[5:6] + "-" + payTime[7:8] + " " + payTime[9:10] + ":" + payTime[11:12] + ":" + payTime[13:14]
+		return payTime[0:4] + "-" + payTime[4:6] + "-" + payTime[6:8] + " " + payTime[8:10] + ":" + payTime[10:12] + ":" + payTime[12:14]
 	} else {
 		log.Errorf("payTime format error, expect length=14, but get length=%d, patTime=%s", len(payTime), payTime)
 		return ""
