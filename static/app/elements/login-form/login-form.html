@@ -183,10 +183,21 @@
           var response = e.detail.response;
           // 如果没有登录
           if (response.status !== 0) {
+            // 当前页面就是登录页
+            if (this.redirect) {
+              return
+            }
+            // 当前页面不是登录页，则跳转到登录页
+            document.querySelector('#appRouter').go('/');
+            return;
+          }
+
+          // 登录了，但当前页是登录页，不必再登录了，跳走
+          if (this.redirect) {
+            document.querySelector('#appRouter').go('/trade/list');
             return
           }
 
-          document.querySelector('#appRouter').go('/trade/list');
         }
       });
     })();
