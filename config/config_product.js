@@ -50,5 +50,9 @@
         "URL": "https://mapi.alipay.com/gateway.do", // 支付宝扫码支付接口地址
         "NotifyUrl": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "AgentId": "12010128a1" // 标识讯联交易
+    },
+    "MobileApp":{
+        "WXPMerId":"1239305502",
+        "ALPMerId":"2088811767473826"
     }
 }

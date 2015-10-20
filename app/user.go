@@ -27,6 +27,9 @@ var (
 	dateRegexp   = regexp.MustCompile(`^\d{8}$`)
 	monthRegexp  = regexp.MustCompile(`^\d{6}$`)
 	b64Encoding  = base64.StdEncoding
+	hostAddress  = goconf.Config.App.NotifyURL
+	WXPMerId     = goconf.Config.MobileApp.WXPMerId
+	ALPMerId     = goconf.Config.MobileApp.ALPMerId
 )
 
 // register 注册
@@ -98,6 +101,10 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 		user.AgentCode = merchant.AgentCode
 	}
 
+	// 带上password
+	// FIXBY:RUI 20151020
+	user.Password = req.Password
+
 	result = &model.AppResult{
 		State: model.SUCCESS,
 		Error: "",
@@ -137,7 +144,7 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 
 	// 发送激活链接到注册时提供的邮箱
 	code := fmt.Sprintf("%d", rand.Int31())
-	hostAddress := goconf.Config.App.NotifyURL
+	// hostAddress := goconf.Config.App.NotifyURL
 	activateUrl := fmt.Sprintf("%s/app/activate?username=%s&code=%s", hostAddress, req.UserName, code)
 
 	var iv [32]byte
@@ -219,9 +226,9 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 		}
 		return model.SYSTEM_ERROR_CH
 	}
-	// 如果用户已激活，则返回成功
+	// 如果用户已激活，表示码已过期
 	if user.Activate == "true" {
-		return model.SUCCESS1
+		return model.CODE_TIME_ERROR_CH
 	}
 
 	// 更新activate为已激活
@@ -263,7 +270,13 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 
 	// 创建商户
 	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
-	randStr := fmt.Sprintf("%d", rand.Int31())
+
+	var randBytes [16]byte
+
+	if _, err := io.ReadFull(cr.Reader, randBytes[:]); err != nil {
+		log.Errorf("io.ReadFull error: %s", err)
+	}
+
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
 		AgentCode:  "99911888",
@@ -274,7 +287,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		UniqueId:   uniqueId,
 		RefundType: model.CurrentDayRefund, // 只能当天退
 		IsNeedSign: true,
-		SignKey:    fmt.Sprintf("%x", base64.StdEncoding.EncodeToString([]byte(randStr))),
+		SignKey:    fmt.Sprintf("%x", randBytes[:]),
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",
@@ -285,6 +298,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 			BankId:        req.BankNo,
 			AcctName:      req.Payee,
 			AcctNum:       req.PayeeCard,
+			ContactTel:    req.PhoneNum,
 		},
 	}
 	for {
@@ -326,7 +340,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		MerId:     merchant.MerId,
 		CardBrand: "ALP",
 		ChanCode:  "ALP",
-		ChanMerId: "2088811767473826",
+		ChanMerId: ALPMerId,
 	}
 	err = mongo.RouterPolicyColl.Insert(alpRoute)
 	if err != nil {
@@ -338,7 +352,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		MerId:     merchant.MerId,
 		CardBrand: "WXP",
 		ChanCode:  "WXP",
-		ChanMerId: "1239305502",
+		ChanMerId: WXPMerId,
 	}
 	err = mongo.RouterPolicyColl.Insert(wxpRoute)
 	if err != nil {
@@ -547,10 +561,10 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 		return model.SYSTEM_ERROR
 	}
 
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
-	}
+	// TODO:密码不对，兼容IOS客户端bug，暂时不验证密码
+	// if req.Password != user.Password {
+	// 	return model.USERNAME_PASSWORD_ERROR
+	// }
 
 	// 没有机构用户
 	if user.MerId == "" {
@@ -676,14 +690,14 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 		return model.SYSTEM_ERROR
 	}
 
-	log.Debugf("%+v", user)
+	// log.Debugf("%+v", user)
 	// 返回
 	result = model.NewAppResult(model.SUCCESS, "")
 	settInfo := &model.SettInfo{
 		Payee:      mer.Detail.AcctName,
 		BankOpen:   mer.Detail.OpenBankName,
 		PayeeCard:  mer.Detail.AcctNum,
-		PhoneNum:   user.PhoneNum,
+		PhoneNum:   mer.Detail.ContactTel,
 		Province:   mer.Detail.Province,
 		City:       mer.Detail.City,
 		BranchBank: mer.Detail.BankName,
@@ -741,6 +755,9 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	}
 	if req.PayeeCard != "" {
 		m.Detail.AcctNum = req.PayeeCard
+	}
+	if req.PhoneNum != "" {
+		m.Detail.ContactTel = req.PhoneNum
 	}
 
 	if err = mongo.MerchantColl.Update(m); err != nil {

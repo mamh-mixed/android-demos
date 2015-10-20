@@ -59,6 +59,11 @@ type configStruct struct {
 		NotifyUrl    string
 		AgentId      string
 	}
+
+	MobileApp struct {
+		WXPMerId string
+		ALPMerId string
+	}
 }
 
 // postProcess 后续处理
