@@ -130,15 +130,21 @@
           <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
           <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
           <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <paper-input label="商户名称" value="{{merchant.groupName::input}}"></paper-input>
+        </div> -->
+        <div class="row">
+          <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
+          <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
         </div>
-
+        <div class="row">
+          <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
+        </div>
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
           <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
@@ -275,6 +281,9 @@
     <x-ajax id="findChanMerWeixinAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerWeixinResponse"></x-ajax>
     <x-ajax id="findRouterAlpAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterAlpResponse"></x-ajax>
     <x-ajax id="findRouterWeixinAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterWeixinResponse"></x-ajax>
+    <x-ajax id="queryAgentAjax" auto params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <x-ajax id="querySubAgentAjax" method="GET" url="/master/subAgent/find" handle-as="json" debounce-duration="1000" on-response="handleQuerySubAgentsResponse"></x-ajax>
+    <x-ajax id="queryGroupAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryGroupsResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -355,15 +364,77 @@
           }]
         },
         asettRole: Object,
-        wsettRole: Object
+        wsettRole: Object,
+        agent: Object,
+        subAgent: Object,
+        group: Object
       },
       observers: [
         '_watchMerStatusChange(merStatus.key)',
         '_wisAgentModeChanged(weixin.isAgentMode)',
         '_asettFlagChange(asettFlag)',
         '_wsettFlagChange(wsettFlag)',
-        '_isNeedSignChange(merchant.isNeedSign)'
+        '_isNeedSignChange(merchant.isNeedSign)',
+        '_agentChange(agent)',
+        '_subAgentChange(subAgent)',
+        '_groupChange(group)'
       ],
+      _agentChange: function(value) {
+        if (value && value.key) {
+          this.set("merchant.agentCode", value.key);
+          this.set("merchant.agentName", value.value);
+          this.magentCode = value.key;
+          this.$.querySubAgentAjax.params = {
+            page: '1',
+            size: '1000',
+            agentCode: value.key,
+          };
+          this.$.querySubAgentAjax.generateRequest();
+        //   this.$.queryGroupAjax.params = {
+        //     page: '1',
+        //     size: '1000',
+        //     agentCode: value.key,
+        //   };
+        //   this.$.queryGroupAjax.generateRequest();
+        } else {
+          this.magentCode = '';
+        }
+        this.set('subAgents', []);
+        this.set('subAgent', {});
+        this.set('groups', []);
+        this.set('group', {});
+      },
+      _subAgentChange: function(value) {
+          debugger;
+        if (value && value.key) {
+          this.set("merchant.subAgentCode", value.key);
+          this.set("merchant.subAgentName", value.value);
+          this.$.queryGroupAjax.params = {
+            page: '1',
+            size: '1000',
+            agentCode: this.magentCode,
+            subAgentCode: value.key,
+          };
+          this.$.queryGroupAjax.generateRequest();
+        } else {
+          if (this.magentCode != '') {
+            this.$.queryGroupAjax.params = {
+              page: '1',
+              size: '1000',
+              agentCode: this.magentCode,
+            };
+            this.$.queryGroupAjax.generateRequest();
+          }
+        }
+        this.set('groups', []);
+        this.set('group', {});
+      },
+      _groupChange: function(value) {
+        if (value) {
+          this.set("merchant.groupCode", value.key);
+          this.set("merchant.groupName", value.value);
+        }
+      },
       _wisAgentModeChanged: function(value) {
         if (value) {
           this.$.bigChanMerId.setAttribute('required', true);
@@ -1048,7 +1119,73 @@
             Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
           }
         }
-      }
+      },
+      // 代理列表响应
+      handleQueryAgentsResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载代理列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          Util.toast('没有代理数据', 2000);
+          return;
+        }
+
+        var agents = response.data.data.slice(0);
+        this.set('agents', agents.map(function(item) {
+          return {
+            key: item.agentCode,
+            value: item.agentName
+          };
+        }));
+      },
+      // 公司列表响应
+      handleQuerySubAgentsResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载公司列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          Util.toast('没有公司数据', 2000);
+          return;
+        }
+
+        var subAgents = response.data.data.slice(0);
+        this.set('subAgents', subAgents.map(function(item) {
+          return {
+            key: item.subAgentCode,
+            value: item.subAgentName
+          };
+        }));
+      },
+      // 商户列表响应
+      handleQueryGroupsResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载商户列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          Util.toast('没有商户数据', 2000);
+          return;
+        }
+
+        var groups = response.data.data.slice(0);
+        this.set('groups', groups.map(function(item) {
+          return {
+            key: item.groupCode,
+            value: item.groupName
+          };
+        }));
+      },
     });
   </script>
 </dom-module>
