@@ -37,3 +37,9 @@ func TestNonce(t *testing.T) {
 	fmt.Println(Nonce(128))
 	fmt.Println(Nonce(256))
 }
+
+func TestConfuse(t *testing.T) {
+	fmt.Println(Confuse("991241058120194"))
+	fmt.Println(Confuse("991241058120195"))
+	fmt.Println(Confuse("991241058120196"))
+}

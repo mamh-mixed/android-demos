@@ -16,6 +16,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -299,8 +300,6 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 创建商户
-	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
-
 	var randBytes [16]byte
 
 	if _, err := io.ReadFull(cr.Reader, randBytes[:]); err != nil {
@@ -314,7 +313,6 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		Permission: permission,
 		MerStatus:  model.MerStatusNormal,
 		TransCurr:  "156",
-		UniqueId:   uniqueId,
 		RefundType: model.CurrentDayRefund, // 只能当天退
 		IsNeedSign: true,
 		SignKey:    fmt.Sprintf("%x", randBytes[:]),
@@ -352,6 +350,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 			merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
 		}
 
+		merchant.UniqueId = util.Confuse(merchant.MerId)
 		err = mongo.MerchantColl.Insert2(merchant)
 		if err != nil {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
