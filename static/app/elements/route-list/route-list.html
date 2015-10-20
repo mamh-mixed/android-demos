@@ -18,7 +18,6 @@
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -159,6 +158,8 @@
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
+          this.set('cond.page', 1);
+          this.routes = [];
           this.merchants = [];
           this.$.formQuery.submit();
         },
@@ -229,6 +230,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>
