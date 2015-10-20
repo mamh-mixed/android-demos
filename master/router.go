@@ -84,6 +84,15 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		loginHandle(w, r)
 		return
 	}
+
+	// 验证 session 是否过期
+	session, err := sessionProcess(w, r)
+	if err != nil {
+		log.Infof("%s", err)
+		w.Write(model.AuthRelogin)
+		return
+	}
+
 	// 查找session
 	if r.URL.Path == "/master/session/find" {
 		findSessionHandle(w, r)
@@ -96,19 +105,11 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 验证 session 是否过期
-	session, err := sessionProcess(w, r)
-	if err != nil {
-		log.Infof("%s", err)
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
-		return
-	}
-
 	// 验证是否有权限访问这个 URL
 	user := session.User
 	err = authProcess(user, r.URL.Path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		w.Write(model.AuthFailed)
 		return
 	}
 
@@ -168,16 +169,15 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	c, err := r.Cookie(SessionKey)
 	if err != nil {
 		if err == http.ErrNoCookie {
-			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			// http.Error(w, err.Error(), http.StatusNotAcceptable)
+			log.Debugf("sessionId(%s) not in cookie", SessionKey)
 			return nil, err
 		}
 	}
 	// 查询 session 是否过期，如果接近失效则给此 session 延期，如果已经过期则返回失败
-
 	session, err = mongo.SessionColl.Find(c.Value)
 	if err != nil {
 		log.Debugf("session(%s) not exist: %s", c.Value, err)
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return nil, err
 	}
 
@@ -189,7 +189,6 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	// 会话已过期
 	if subTime < 0 {
 		log.Infof("session(%s) expired", c.Value)
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return nil, errors.New("会话已过期")
 	}
 

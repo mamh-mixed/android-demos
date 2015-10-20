@@ -33,8 +33,8 @@ func (g *group) FindOne(groupCode string) (result *model.ResultBody) {
 }
 
 // Find 根据条件分页查找商户。
-func (g *group) Find(groupCode, groupName, agentCode, agentName string, size, page int) (result *model.ResultBody) {
-	log.Debugf("groupCode=%s; groupName=%s;agentCode=%s;agentName=%s", groupCode, groupName, agentCode, agentName)
+func (g *group) Find(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName string, size, page int) (result *model.ResultBody) {
+	log.Debugf("groupCode=%s; groupName=%s;agentCode=%s;agentName=%s;subAgentCode=%s;subAgentName=%s,", groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName)
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
@@ -44,7 +44,7 @@ func (g *group) Find(groupCode, groupName, agentCode, agentName string, size, pa
 		size = 10
 	}
 
-	groups, total, err := mongo.GroupColl.PaginationFind(groupCode, groupName, agentCode, agentName, size, page)
+	groups, total, err := mongo.GroupColl.PaginationFind(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName, size, page)
 	if err != nil {
 		log.Errorf("查询所有集团出错:%s", err)
 		return model.NewResultBody(1, "查询失败")

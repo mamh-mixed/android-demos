@@ -476,7 +476,7 @@ func subAgentFindHandle(w http.ResponseWriter, r *http.Request) {
 	subAgentName := r.FormValue("subAgentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := SubAgent.Find(agentCode, agentName, subAgentCode, subAgentName, size, page)
+	ret := SubAgent.Find(subAgentCode, subAgentName, agentCode, agentName, size, page)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
@@ -523,9 +523,11 @@ func groupFindHandle(w http.ResponseWriter, r *http.Request) {
 	groupName := r.FormValue("groupName")
 	agentCode := r.FormValue("agentCode")
 	agentName := r.FormValue("agentName")
+	subAgentCode := r.FormValue("subAgentCode")
+	subAgentName := r.FormValue("subAgentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := Group.Find(groupCode, groupName, agentCode, agentName, size, page)
+	ret := Group.Find(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName, size, page)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
@@ -696,12 +698,16 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 查找session
+// 查找
 func findSessionHandle(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	sessionId := params.Get("sessionId")
+	sid, err := r.Cookie(SessionKey)
+	if err != nil {
+		log.Errorf("user not login: %s", err)
+		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		return
+	}
 
-	ret := Session.FindOne(sessionId)
+	ret := Session.FindOne(sid.Value)
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {

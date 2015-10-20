@@ -84,7 +84,7 @@ func (col *groupCollection) Remove(groupCode string) (err error) {
 }
 
 // PaginationFind 分页查找机构商户
-func (c *groupCollection) PaginationFind(groupCode, groupName, agentCode, agentName string, size, page int) (results []model.Group, total int, err error) {
+func (c *groupCollection) PaginationFind(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName string, size, page int) (results []model.Group, total int, err error) {
 	results = make([]model.Group, 1)
 
 	match := bson.M{}
@@ -99,6 +99,13 @@ func (c *groupCollection) PaginationFind(groupCode, groupName, agentCode, agentN
 	}
 	if agentName != "" {
 		match["agentName"] = agentName
+	}
+
+	if subAgentCode != "" {
+		match["subAgentCode"] = subAgentCode
+	}
+	if subAgentName != "" {
+		match["subAgentName"] = subAgentName
 	}
 
 	// 计算总数
