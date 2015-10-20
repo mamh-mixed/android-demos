@@ -523,9 +523,11 @@ func groupFindHandle(w http.ResponseWriter, r *http.Request) {
 	groupName := r.FormValue("groupName")
 	agentCode := r.FormValue("agentCode")
 	agentName := r.FormValue("agentName")
+	subAgentCode := r.FormValue("subAgentCode")
+	subAgentName := r.FormValue("subAgentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := Group.Find(groupCode, groupName, agentCode, agentName, size, page)
+	ret := Group.Find(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName, size, page)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
