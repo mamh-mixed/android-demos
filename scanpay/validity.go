@@ -107,6 +107,12 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 		return err
 	}
 
+	if req.TimeExpire != "" {
+		if matched, err := validateTimeExpire(req.TimeExpire); !matched {
+			return err
+		}
+	}
+
 	return
 }
 
@@ -263,7 +269,7 @@ func validateEnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	return
 }
 
-// validatePublicPay 验证企业付款接口参数
+// validatePublicPay 验证公众号支付接口参数
 func validatePublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var needUserInfo = "needUserInfo"
@@ -298,7 +304,21 @@ func validatePublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return fieldContentError(needUserInfo)
 	}
 
+	if req.TimeExpire != "" {
+		if matched, err := validateTimeExpire(req.TimeExpire); !matched {
+			return err
+		}
+	}
+
 	return
+}
+
+// validateTimeExpire 验证失效时间
+func validateTimeExpire(timeExpire string) (bool, *model.ScanPayResponse) {
+	if mactch, _ := regexp.MatchString(`^\d{14}$`, timeExpire); !mactch {
+		return false, fieldFormatError("timeExpire")
+	}
+	return true, nil
 }
 
 // validateUserName 验证商户名称

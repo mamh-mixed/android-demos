@@ -49,7 +49,6 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 		return nil, err
 	}
 
-	var isPaySuccess bool
 	// 如果是系统错误，重试
 	if p.ErrCode == "SYSTEMERROR" {
 
@@ -61,23 +60,22 @@ func (w *WeixinEnterprisePay) ProcessPay(req *model.ScanPayRequest) (ret *model.
 		}
 		resp := &EnterpriseQueryResp{}
 		var queryDuration = []time.Duration{3 * time.Second, 6 * time.Second, 9 * time.Second, 12 * time.Second}
+	Tag:
 		for i, d := range queryDuration {
 			time.Sleep(d)
 			// query
 			weixin.Execute(query, resp)
-			if resp.Status != "SUCCESS" {
+			switch resp.Status {
+			case "PROCESSING":
 				log.Infof("enterprise query %d times:", i+1)
-				continue
+			case "SUCCESS":
+				p.ReturnCode, p.ResultCode = "SUCCESS", "SUCCESS"
+				break Tag
+			case "FAILED":
+				p.ReturnCode, p.ResultCode = "FAIL", "FAIL"
+				break Tag
 			}
-			// 付款成功
-			isPaySuccess = true
-			break
 		}
-		log.Info("enterprise query overtime,quit.")
-	}
-
-	if isPaySuccess {
-		p.ReturnCode, p.ResultCode = "SUCCESS", "SUCCESS"
 	}
 
 	// p.ResultCode = "FAIL"
