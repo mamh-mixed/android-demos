@@ -130,14 +130,6 @@
           <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
           <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
-        <!-- <div class="row">
-          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
-          <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
-          <paper-input label="商户名称" value="{{merchant.groupName::input}}"></paper-input>
-        </div> -->
         <div class="row">
           <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
           <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
@@ -390,12 +382,6 @@
             agentCode: value.key,
           };
           this.$.querySubAgentAjax.generateRequest();
-        //   this.$.queryGroupAjax.params = {
-        //     page: '1',
-        //     size: '1000',
-        //     agentCode: value.key,
-        //   };
-        //   this.$.queryGroupAjax.generateRequest();
         } else {
           this.magentCode = '';
         }
@@ -405,7 +391,6 @@
         this.set('group', {});
       },
       _subAgentChange: function(value) {
-          debugger;
         if (value && value.key) {
           this.set("merchant.subAgentCode", value.key);
           this.set("merchant.subAgentName", value.value);
