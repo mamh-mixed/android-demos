@@ -30,11 +30,12 @@ var (
 	scanPayQrCodeOfflinePay = &model.ScanPayRequest{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
-		AgentCode: "CIL00002",
-		Txamt:     "100000000000210",
+		AgentCode: "10134001",
+		Txamt:     "000000000001",
 		Busicd:    "PAUT",
-		Mchntid:   "100000000000021",
+		Mchntid:   "100000000010001",
 		Chcd:      "WXP",
+		// TimeExpire: "201510201050000",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPayRequest{
@@ -135,8 +136,8 @@ func TestConcurrentScanPay(t *testing.T) {
 }
 
 func TestScanPay(t *testing.T) {
-	scanPayEnterprise.OrderNum = "1444639800979"
-	err := doOneScanPay(scanPayEnterprise)
+	// scanPayEnterprise.OrderNum = "1444639800979"
+	err := doOneScanPay(scanPayQrCodeOfflinePay)
 	if err != nil {
 		t.Error(err)
 	}
