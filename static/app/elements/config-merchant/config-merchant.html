@@ -131,10 +131,15 @@
           <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
           <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
+        </div>
+        <div class="row">
+          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}"></paper-input>
           <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
         </div>
         <div class="row">
+          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
           <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
         </div>
         <div class="row">
@@ -369,7 +374,7 @@
         '_isNeedSignChange(merchant.isNeedSign)',
         '_agentChange(agent)',
         '_subAgentChange(subAgent)',
-        '_groupChange(group)'
+        '_groupChange(group)',
       ],
       _agentChange: function(value) {
         if (value && value.key) {
@@ -382,13 +387,21 @@
             agentCode: value.key,
           };
           this.$.querySubAgentAjax.generateRequest();
+          this.$.queryGroupAjax.params = {
+            page: '1',
+            size: '1000',
+            agentCode: this.magentCode,
+          };
+          this.$.queryGroupAjax.generateRequest();
         } else {
           this.magentCode = '';
+          this.set("merchant.agentCode", '');
+          this.set("merchant.agentName", '');
+          this.set('subAgents', []);
+          this.set('subAgent', {});
+          this.set('groups', []);
+          this.set('group', {});
         }
-        this.set('subAgents', []);
-        this.set('subAgent', {});
-        this.set('groups', []);
-        this.set('group', {});
       },
       _subAgentChange: function(value) {
         if (value && value.key) {
@@ -409,15 +422,23 @@
               agentCode: this.magentCode,
             };
             this.$.queryGroupAjax.generateRequest();
+          } else {
+            this.set('groups', []);
+            this.set('group', {});
           }
+          this.set("merchant.subAgentCode", '');
+          this.set("merchant.subAgentName", '');
+
         }
-        this.set('groups', []);
-        this.set('group', {});
+
       },
       _groupChange: function(value) {
-        if (value) {
+        if (value && value.key) {
           this.set("merchant.groupCode", value.key);
           this.set("merchant.groupName", value.value);
+        } else {
+          this.set("merchant.groupCode", '');
+          this.set("merchant.groupName", '');
         }
       },
       _wisAgentModeChanged: function(value) {
@@ -586,6 +607,18 @@
 
         var item = response.data;
         this.set('merchant', item);
+        this.agent = {
+          key: this.merchant.agentCode,
+          value: this.merchant.agentName,
+        };
+        this.subAgent = {
+          key: this.merchant.subAgentCode,
+          value: this.merchant.subAgentName,
+        };
+        this.group = {
+          key: this.merchant.groupCode,
+          value: this.merchant.groupName,
+        };
         if (item.permission) {
           var permissions = item.permission;
           // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
@@ -1170,6 +1203,17 @@
             value: item.groupName
           };
         }));
+        // groups改变时，是否改变group的值。
+        this.changeGroup = true;
+        for (var i = 0; i < this.groups.length; i++) {
+          if (this.group.key == this.groups[i].key) {
+            this.changeGroup = false;
+            break;
+          }
+        }
+        if (this.changeGroup) {
+          this.set('group', {});
+        }
       },
     });
   </script>
