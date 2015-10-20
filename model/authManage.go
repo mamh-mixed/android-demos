@@ -37,10 +37,11 @@ type User struct {
 // Session Session表
 type Session struct {
 	SessionID  string    `json:"sessionId" bson:"sessionId"`
-	User       *User     `json:"user" bson:"user"`
-	CreateTime time.Time `json:"createTime" bson:"createTime"`
-	UpdateTime time.Time `json:"updateTime" bson:"updateTime"`
-	Expires    time.Time `json:"expires" bson:"expires"`
+	User       *User     `json:"-" bson:"user"`
+	UserType   string    `json:"userType" bson:"userType"`
+	CreateTime time.Time `json:"-" bson:"createTime"`
+	UpdateTime time.Time `json:"-" bson:"updateTime"`
+	Expires    time.Time `json:"-" bson:"expires"`
 }
 
 type UserPwd struct {

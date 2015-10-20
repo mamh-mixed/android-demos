@@ -35,11 +35,9 @@
     paper-material {
       padding-top: 30px;
     }
-
   </style>
   <template>
     <div class="container">
-      <paper-toast id="toast" duration="5000" visible="true" text="Caching complete! This app will work offline."></paper-toast>
       <paper-material elevation="5" class="loginWrapper">
         <login-form redirect></login-form>
         <div class="user-alert">如果您还没有用户名、密码，请联系讯联数据运营中心为您分配。</div>
@@ -49,8 +47,6 @@
   <script>
     Polymer({
       is: "user-login",
-
     });
-
   </script>
 </dom-module>

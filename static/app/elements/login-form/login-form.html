@@ -107,7 +107,8 @@
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin"></iron-localstorage>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}"></iron-localstorage>
+    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
   </template>
@@ -132,7 +133,6 @@
         },
         ready: function() {
           this.user = {};
-          this.checkIsLogin();
         },
         loginTapHandle: function() {
           if (this.isloginConfigEmpty()) {
@@ -161,7 +161,8 @@
             password: ''
           };
 
-          this.sessionId = response.data;
+          this.set('sessionId', response.data.sessionId);
+          this.set('userType', response.data.userType);
           if (this.redirect) {
             document.querySelector('#appRouter').go('/trade/list');
           } else {
