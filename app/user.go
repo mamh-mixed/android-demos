@@ -34,6 +34,12 @@ var (
 
 // register 注册
 func (u *user) register(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,password=%s,transtime=%s", req.UserName, req.Password, req.Transtime)
 	// 参数不能为空
 	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
@@ -66,6 +72,12 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 
 // login 登录
 func (u *user) login(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,password=%s,transtime=%s", req.UserName, req.Password, req.Transtime)
 	// 参数不能为空
 	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
@@ -116,6 +128,12 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 
 // reqActivate 请求发送激活链接
 func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,password=%s,transtime=%s", req.UserName, req.Password, req.Transtime)
 	// 参数不能为空
 	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
@@ -192,6 +210,12 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 
 // activate 激活
 func (u *user) activate(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,code=%s", req.UserName, req.Code)
 	// 参数不能为空
 	if req.UserName == "" || req.Code == "" {
@@ -244,6 +268,12 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 
 // improveInfo 信息完善
 func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	if req.UserName == "" || req.Password == "" {
 		return model.PARAMS_EMPTY
 	}
@@ -387,6 +417,11 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 // getTotalTransAmt 查询某天交易总额
 func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
 
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -436,12 +471,17 @@ func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
 // getUserBill 获取用户账单
 func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
 	}
 
-	if !monthRegexp.MatchString(req.Date) {
+	if !monthRegexp.MatchString(req.Month) {
 		return model.TIME_ERROR
 	}
 
@@ -461,7 +501,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	}
 
 	result = model.NewAppResult(model.SUCCESS, "")
-	date := req.Date
+	date := req.Month
 	yearNum, _ := strconv.Atoi(date[:4])
 	month := date[4:6]
 	day := ""
@@ -546,6 +586,12 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
 // getUserTrans 获取用户某笔交易信息
 func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -590,6 +636,12 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 
 // passwordHandle 修改密码
 func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" || req.NewPassword == "" {
 		return model.PARAMS_EMPTY
@@ -620,6 +672,12 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 
 // promoteLimit 提升限额
 func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -662,6 +720,12 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 
 // getSettInfo 获得清算信息
 func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -710,6 +774,12 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 
 // updateSettInfo 更新清算信息
 func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
