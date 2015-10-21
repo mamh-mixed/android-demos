@@ -1159,9 +1159,11 @@
             value: item.agentName
           };
         }));
+
       },
       // 公司列表响应
       handleQuerySubAgentsResponse: function(e) {
+        this.set('subAgents', []);
         var response = e.detail.response;
         if (response.status !== 0) {
           Util.toast('加载公司列表失败', 3000);
@@ -1170,6 +1172,7 @@
 
         var pagination = response.data;
         if (pagination.count <= 0) {
+          this.set('subAgent', {});
           Util.toast('没有公司数据', 2000);
           return;
         }
@@ -1181,9 +1184,22 @@
             value: item.subAgentName
           };
         }));
+
+        // subAgents改变时，是否改变subAgent的值。
+        this.changeSubAgent = true;
+        for (var i = 0; i < this.subAgents.length; i++) {
+          if (this.subAgent.key == this.subAgents[i].key) {
+            this.changeSubAgent = false;
+            break;
+          }
+        }
+        if (this.changeSubAgent) {
+          this.set('subAgent', {});
+        }
       },
       // 商户列表响应
       handleQueryGroupsResponse: function(e) {
+        this.set('groups', []);
         var response = e.detail.response;
         if (response.status !== 0) {
           Util.toast('加载商户列表失败', 3000);
@@ -1192,10 +1208,10 @@
 
         var pagination = response.data;
         if (pagination.count <= 0) {
+          this.set('group', {});
           Util.toast('没有商户数据', 2000);
           return;
         }
-
         var groups = response.data.data.slice(0);
         this.set('groups', groups.map(function(item) {
           return {

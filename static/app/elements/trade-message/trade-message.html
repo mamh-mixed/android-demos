@@ -88,9 +88,7 @@
             'orderNum': this.item.orderNum,
             'msgType': '1',
             'size': this.cond.size,
-            'page': this.cond.page,
-            'agentCode': this.user.agentCode,
-            'groupCode': this.user.groupCode
+            'page': this.cond.page
           };
           this.$.merMessageQueryAjax.generateRequest();
         },
@@ -114,9 +112,7 @@
             'merId': this.item.merId,
             'orderNum': this.item.orderNum,
             'msgType': '2',
-            'reqIds': this.reqArray,
-            'agentCode': this.user.agentCode,
-            'groupCode': this.user.groupCode
+            'reqIds': this.reqArray
           };
           this.$.chanMessageQueryAjax.generateRequest();
 
@@ -184,9 +180,7 @@
             'orderNum': this.item.orderNum,
             'msgType': '1',
             'size': this.cond.size,
-            'page': this.cond.page,
-            'agentCode': this.user.agentCode,
-            'groupCode': this.user.groupCode
+            'page': this.cond.page
           };
           this.$.merMessageQueryAjax.generateRequest();
           this.reqArray = [];

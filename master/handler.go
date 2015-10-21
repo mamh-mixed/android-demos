@@ -84,6 +84,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		MerId:        merId,
 		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
 		GroupCode:    params.Get("groupCode"),
 		TransType:    transType,
 		Respcd:       params.Get("respcd"),
@@ -97,6 +98,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		Size:         size,
 		Page:         page,
 	}
+	log.Debugf("agentCode:%s,subagentCode:%s,groupCode:%s", params.Get("agentCode"), params.Get("subAgentCode"), params.Get("groupCode"))
 
 	transStatus := params.Get("transStatus")
 	if transStatus != "" {
@@ -142,6 +144,8 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		MerId:        merId,
 		Busicd:       params.Get("busicd"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
 		GroupCode:    params.Get("groupCode"),
 		StartTime:    params.Get("startTime"),
 		EndTime:      params.Get("endTime"),
@@ -172,7 +176,7 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		EndTime:      r.FormValue("endTime"),
 	}
 
-	log.Debugf("GROUP CODE is %s", r.FormValue("groupCode"))
+	log.Debugf("agentCode:%s,subagentCode:%s,groupCode:%s", r.FormValue("agentCode"), r.FormValue("subAgentCode"), r.FormValue("groupCode"))
 	ret := tradeQueryStats(q)
 
 	rdata, err := json.Marshal(ret)
@@ -622,7 +626,7 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 		NickName:     params.Get("nickName"),
 		Mail:         params.Get("mail"),
 		PhoneNum:     params.Get("phoneNum"),
-		UserType:     params.Get("userType"),
+		UserType:     params.Get("userRole"),
 		AgentCode:    params.Get("agentCode"),
 		SubAgentCode: params.Get("subAgentCode"),
 		// AgentName: params.Get("agentName"),

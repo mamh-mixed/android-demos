@@ -48,6 +48,7 @@
       </paper-dialog>
 
       <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
+      <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}"></paper-input>
       <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="门店名称" value="{{cond.merName::input}}"></paper-input>
@@ -128,7 +129,7 @@
       </div>
       <div class="tfoot">
         <div class="tr pagination">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
         <div class="tr hover">
           <div class="td "></div>
@@ -277,22 +278,28 @@
                 value: user.agentCode,
               };
               this.agentDisabled = true;
+            } else if (user.userType === 'subAgent') {
+              this.set('cond.subAgentCode', user.subAgentCode);
+              this.agentDisabled = true;
+              this.$.subAgentCode.setAttribute('disabled', true);
+            } else if (user.userType === 'group') {
+              this.set('cond.groupCode', user.groupCode);
+              this.agentDisabled = true;
+              this.$.subAgentCode.setAttribute('disabled', true);
+              this.$.groupCode.setAttribute('disabled', true);
             } else if (user.userType === 'merchant') {
               this.set('cond.merId', user.merId);
               this.agentDisabled = true;
+              this.$.subAgentCode.setAttribute('disabled', true);
               this.$.groupCode.setAttribute('disabled', true);
               this.$.merId.setAttribute('disabled', true);
             } else if (user.userType === 'admin') {
               this.agentDisabled = false;
+              this.$.subAgentCode.removeAttribute('disabled');
               this.$.groupCode.removeAttribute('disabled');
               this.$.merId.removeAttribute('disabled');
               // 加载代理列表
               this.handleQueryAgentsEvent();
-            } else if (user.userType === 'group') {
-              this.set('cond.groupCode', user.groupCode);
-              this.agentDisabled = true;
-              this.$.groupCode.setAttribute('disabled', true);
-              this.$.merId.removeAttribute('disabled');
             }
           }
         },

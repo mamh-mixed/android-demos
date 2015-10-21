@@ -318,6 +318,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.AgentCode != "" {
 		match["agentCode"] = q.AgentCode
 	}
+	if q.SubAgentCode != "" {
+		match["subAgentCode"] = q.SubAgentCode
+	}
 	if q.GroupCode != "" {
 		match["groupCode"] = q.GroupCode
 	}
@@ -409,6 +412,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 	}
 	if q.AgentCode != "" {
 		find["agentCode"] = q.AgentCode
+	}
+	if q.SubAgentCode != "" {
+		find["subAgentCode"] = q.SubAgentCode
 	}
 	if q.GroupCode != "" {
 		find["groupCode"] = q.GroupCode
