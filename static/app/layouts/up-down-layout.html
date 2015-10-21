@@ -89,7 +89,7 @@
       </div>
       <div class="user-title">
         <div>欢迎您，
-          <span>{{user.nickName}}</span>
+          <span>{{nickName}}</span>
         </div>
         <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
         <paper-icon-button icon="refresh"></paper-icon-button>
@@ -101,6 +101,7 @@
     <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
+    <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
   </template>
   <script>
     (function() {
@@ -154,6 +155,9 @@
           // 跳转至登录页面
           document.querySelector('#appRouter').go('/');
         },
+        handleDeleteSessionResponse: function(){
+
+        }
       });
     })();
 
