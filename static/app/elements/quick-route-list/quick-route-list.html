@@ -17,6 +17,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -30,73 +31,69 @@
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th class="left">机构商户代码</th>
-            <th class="left">卡品牌</th>
-            <th class="left">渠道商户代码</th>
-            <th>渠道代码</th>
-            <th>卡Bin组</th>
-            <th>卡类型</th>
-            <th>交易类型</th>
-            <th>输入方式</th>
-            <th class="right">起始金额</th>
-            <th class="right">最大金额</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th" class="left">机构商户代码</div>
+            <div class="th" class="left">卡品牌</div>
+            <div class="th" class="left">渠道商户代码</div>
+            <div class="th">渠道代码</div>
+            <div class="th">卡Bin组</div>
+            <div class="th">卡类型</div>
+            <div class="th">交易类型</div>
+            <div class="th">输入方式</div>
+            <div class="th" class="right">起始金额</div>
+            <div class="th" class="right">最大金额</div>
+            <div class="th">操作</div>
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{routes}}">
-            <tr>
-              <td class="center">
+            <div class="tr">
+              <div class="td center">
                 <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td class="left">
+              </div>
+              <div class="td left">
                 <span>{{item.merId}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{tansCardBrands(item.cardBrand)}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.chanMerId}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.chanCode}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.binGroup}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.cardType}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.transType}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.inputWay}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.minAmount}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.maxAmount}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <iron-icon icon="delete" on-tap="handleItemDeletedEvent"></iron-icon>
-              </td>
-            </tr>
+              </div>
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        </div>
+      </div>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
 
@@ -146,10 +143,10 @@
             }, {
               key: 'CIL',
               value: 'CIL'
-          },{
-            key: 'Mock',
-            value: 'Mock'
-          }]
+            }, {
+              key: 'Mock',
+              value: 'Mock'
+            }]
           },
         },
         _merIdChandged: function(value) {
@@ -242,5 +239,6 @@
         },
       });
     })();
+
   </script>
 </dom-module>

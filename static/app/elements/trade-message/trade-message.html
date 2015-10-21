@@ -27,35 +27,30 @@
     <paper-dialog id="dialogView">
       <h2>交易报文</h2>
       <paper-dialog-scrollable>
-        <table class="data-grid">
-          <thead>
-            <tr>
-              <th class="left">报文</th>
-            </tr>
-          </thead>
-          <tbody>
+        <div class="data-grid table">
+          <div class="thead">
+            <div class="tr">
+              <div class="th" class="left">报文</div>
+            </div>
+          </div>
+          <div class="tbody">
             <template is="dom-repeat" items="{{messageArray}}" as="messageList">
               <tr style="border-bottom:1px solid #ddd;">
-                <td>
+                <div class="td">
                   <template is="dom-repeat" items="{{messageList}}" as="message">
                     <div class="message" style$="{{getMessageStyle(message)}}">
                       <div>{{getMsgTitle(message)}}</div>
                       <pre style="min-width:800px;max-width:850px;word-break:break-all;word-wrap: break-word;font-size:10px;">{{formatMsg(message.msg)}}</pre>
                     </div>
                   </template>
-                </td>
-              </tr>
+                </div>
+              </div>
             </template>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="255" align="right">
-                <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </paper-dialog-scrollable>
+          </div>
+          <div class="wedge">
+<x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+            </div>
+        </div>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
       </div>

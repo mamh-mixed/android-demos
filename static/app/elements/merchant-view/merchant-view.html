@@ -61,135 +61,135 @@
     <paper-dialog id="dialogView">
       <h2>{{item.detail.merName}}</h2>
       <paper-dialog-scrollable>
-        <table>
-          <tr>
-            <td class="key">门店代码:</td>
-            <td>{{item.merId}}</td>
-            <td class="key">门店名称:</td>
-            <td>{{item.detail.merName}}</td>
-          </tr>
-          <tr>
-            <td class="key">代理代码:</td>
-            <td>{{item.agentCode}}</td>
-            <td class="key">代理名称:</td>
-            <td>{{item.agentName}}</td>
-          </tr>
-          <tr>
-            <td class="key">集团代码:</td>
-            <td>{{item.groupCode}}</td>
-            <td class="key">集团名称:</td>
-            <td>{{item.groupName}}</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td> 开启验签:</td>
-            <td>
+        <div>
+          <div class="tr">
+            <div class="td key">门店代码:</div>
+            <div class="td">{{item.merId}}</div>
+            <div class="td key">门店名称:</div>
+            <div class="td">{{item.detail.merName}}</div>
+          </div>
+          <div class="tr">
+            <div class="td key">代理代码:</div>
+            <div class="td">{{item.agentCode}}</div>
+            <div class="td key">代理名称:</div>
+            <div class="td">{{item.agentName}}</div>
+          </div>
+          <div class="tr">
+            <div class="td key">集团代码:</div>
+            <div class="td">{{item.groupCode}}</div>
+            <div class="td key">集团名称:</div>
+            <div class="td">{{item.groupName}}</div>
+          </div>
+          <div class="tr">
+            <div class="td" colspan="4" class="divider"></div>
+          </div>
+          <div class="tr">
+            <div class="td"> 开启验签:</div>
+            <div class="td">
               <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
-            </td>
-          </tr>
-          <tr>
-            <td class="key">签名密钥:</td>
-            <td colspan="3" style="word-break:break-all;">{{item.signKey}}</td>
-          </tr>
-          <tr>
-            <td class="key">加密密钥:</td>
-            <td colspan="3" style="word-break:break-all;">{{item.encryptKey}}</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td class="key">开户账户:</td>
-            <td>{{item.detail.acctNum}}</td>
-            <td class="key">开户姓名:</td>
-            <td>{{item.detail.acctName}}</td>
-          </tr>
-          <tr>
-            <td>开户行号:</td>
-            <td>{{item.detail.bankId}}</td>
-            <td>支行名称:</td>
-            <td>{{item.detail.bankName}}</td>
-          </tr>
-          <tr>
-            <td>开户行名称:</td>
-            <td>{{item.detail.openBankName}}</td>
-            <td>交易币种:</td>
-            <td>{{item.transCurr}}</td>
-          </tr>
-          <tr>
-            <td>省份:</td>
-            <td>{{item.detail.province}}</td>
-            <td>城市:</td>
-            <td>{{item.detail.city}}</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td>门店类型:</td>
-            <td>{{item.detail.shopType}}</td>
-            <td>门店 ID:</td>
-            <td>{{item.detail.shopID}}</td>
-          </tr>
-          <tr>
-            <td>商品标签:</td>
-            <td>{{item.detail.goodsTag}}</td>
-            <td>商品名称:</td>
-            <td>{{item.detail.commodityName}}</td>
-          </tr>
-          <tr>
-            <td>品牌编号:</td>
-            <td colspan="3">{{item.detail.brandNum}}</td>
-          </tr>
-          <tr>
-            <td>标题一:</td>
-            <td>{{item.detail.titleOne}}</td>
-            <td>标题二:</td>
-            <td>{{item.detail.titleTwo}}</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td>唯一码:</td>
-            <td colspan="3">{{item.uniqueId}}</td>
-          </tr>
-          <tr>
-            <td>账单URL:</td>
-            <td colspan="3">{{item.detail.billUrl}}</td>
-          </tr>
-          <tr>
-            <td>用户URL:</td>
-            <td colspan="3">{{item.detail.userInfoUrl}}</td>
-          </tr>
+            </div>
+          </div>
+          <div class="tr">
+            <div class="td key">签名密钥:</div>
+            <div class="td" colspan="3" style="word-break:break-all;">{{item.signKey}}</div>
+          </div>
+          <div class="tr">
+            <div class="td key">加密密钥:</div>
+            <div class="td" colspan="3" style="word-break:break-all;">{{item.encryptKey}}</div>
+          </div>
+          <div class="tr">
+            <div class="td" colspan="4" class="divider"></div>
+          </div>
+          <div class="tr">
+            <div class="td key">开户账户:</div>
+            <div class="td">{{item.detail.acctNum}}</div>
+            <div class="td key">开户姓名:</div>
+            <div class="td">{{item.detail.acctName}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">开户行号:</div>
+            <div class="td">{{item.detail.bankId}}</div>
+            <div class="td">支行名称:</div>
+            <div class="td">{{item.detail.bankName}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">开户行名称:</div>
+            <div class="td">{{item.detail.openBankName}}</div>
+            <div class="td">交易币种:</div>
+            <div class="td">{{item.transCurr}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">省份:</div>
+            <div class="td">{{item.detail.province}}</div>
+            <div class="td">城市:</div>
+            <div class="td">{{item.detail.city}}</div>
+          </div>
+          <div class="tr">
+            <div class="td" colspan="4" class="divider"></div>
+          </div>
+          <div class="tr">
+            <div class="td">门店类型:</div>
+            <div class="td">{{item.detail.shopType}}</div>
+            <div class="td">门店 ID:</div>
+            <div class="td">{{item.detail.shopID}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">商品标签:</div>
+            <div class="td">{{item.detail.goodsTag}}</div>
+            <div class="td">商品名称:</div>
+            <div class="td">{{item.detail.commodityName}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">品牌编号:</div>
+            <div class="td" colspan="3">{{item.detail.brandNum}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">标题一:</div>
+            <div class="td">{{item.detail.titleOne}}</div>
+            <div class="td">标题二:</div>
+            <div class="td">{{item.detail.titleTwo}}</div>
+          </div>
+          <div class="tr">
+            <div class="td" colspan="4" class="divider"></div>
+          </div>
+          <div class="tr">
+            <div class="td">唯一码:</div>
+            <div class="td" colspan="3">{{item.uniqueId}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">账单URL:</div>
+            <div class="td" colspan="3">{{item.detail.billUrl}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">用户URL:</div>
+            <div class="td" colspan="3">{{item.detail.userInfoUrl}}</div>
+          </div>
 
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td>门店状态:</td>
-            <td>{{getMerStatus(item.merStatus)}}</td>
-          </tr>
-          <tr>
-            <td>备注:</td>
-            <td colspan="3" style="word-break:break-all;">{{item.remark}}</td>
-          </tr>
-          <tr>
-            <td colspan="4" class="divider"></td>
-          </tr>
-          <tr>
-            <td>授权接口:</td>
-            <td colspan="3">
+          <div class="tr">
+            <div class="td" colspan="4" class="divider"></div>
+          </div>
+          <div class="tr">
+            <div class="td">门店状态:</div>
+            <div class="td">{{getMerStatus(item.merStatus)}}</div>
+          </div>
+          <div class="tr">
+            <div class="td">备注:</div>
+            <div class="td" colspan="3" style="word-break:break-all;">{{item.remark}}</div>
+          </div>
+          <div class="tr">
+            <div class="td" colspan="4" class="divider"></div>
+          </div>
+          <div class="tr">
+            <div class="td">授权接口:</div>
+            <div class="td" colspan="3">
               <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
                 <paper-checkbox checked$="{{perm.isChecked}}" disabled>
                   <span>{{perm.value}}</span>
                 </paper-checkbox>
               </template>
-            </td>
-          </tr>
-        </table>
+            </div>
+          </div>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个门店吗?</label>

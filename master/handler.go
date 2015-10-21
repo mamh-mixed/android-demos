@@ -142,6 +142,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		MerId:        merId,
 		Busicd:       params.Get("busicd"),
+		GroupCode:    params.Get("groupCode"),
 		StartTime:    params.Get("startTime"),
 		EndTime:      params.Get("endTime"),
 		OrderNum:     params.Get("orderNum"),
@@ -167,7 +168,10 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		MerName:   r.FormValue("merName"),
 		StartTime: r.FormValue("startTime"),
 		EndTime:   r.FormValue("endTime"),
+		GroupCode: r.FormValue("groupCode"),
 	}
+
+	log.Debugf("GROUP CODE is %s", r.FormValue("groupCode"))
 	ret := tradeQueryStats(q)
 
 	rdata, err := json.Marshal(ret)

@@ -17,7 +17,7 @@ paper-toast#toast {
 div.search-condition {
   margin: 10px auto;
 }
-div.search-condition paper-input,div.search-condition x-select {
+div.search-condition paper-input, div.search-condition x-select {
   width: 170px;
   margin-right: 15px;
   display: inline-block;
@@ -37,7 +37,23 @@ div.divider.line {
 
 /* 定义 data-grid 样式 */
 
-table.data-grid {
+.table {
+  display: table;
+}
+.table .thead, .table .tbody, .table .tfoot {
+  display: table-row-group;
+}
+.table .tr {
+  display: table-row;
+}
+.table .th {
+  text-align: center;
+}
+.table .th, .table .td {
+  display: table-cell;
+}
+.table.data-grid {
+  width: 100%;
   display: block;
   overflow-x: auto;
   border-spacing: 0;
@@ -45,41 +61,49 @@ table.data-grid {
   border: 1px solid #ddd;
   margin: 10px auto;
 }
-table.data-grid th, table.data-grid td {
+.table.data-grid > .thead, .table.data-grid > .tfoot, .table.data-grid > .wedge {
+  line-height: 1.42857143;
+}
+.table.data-grid .th, .table.data-grid .td {
+  width: 1%;
+}
+.table.data-grid .th, .table.data-grid .td{
   white-space: nowrap;
   padding: 6px;
 }
-table.data-grid.low th, table.data-grid.low td {
+ .table.data-grid .wedge {
+     padding: 3px;
+ }
+.table.data-grid.low .th, .table.data-grid.low .td {
   padding: 3px 8px;
 }
-table.data-grid > thead > tr > th {
-  line-height: 1.42857143;
+.table.data-grid > .thead > .tr, .table.data-grid > .tbody {
   border-bottom: 1px solid #ddd;
-  width: 1%;
 }
-table.data-grid > tbody > tr > th, table.data-grid > tbody > tr > td {
-  width: 1%;
-}
-table.data-grid > tfoot > tr > td {
-  line-height: 1.42857143;
+.table.data-grid > .tfoot > .tr, .table.data-grid > .tbody {
   border-top: 1px solid #ddd;
-  width: 1%;
 }
-table.data-grid > tbody > tr:hover {
+.table.data-grid > .wedge {
+  text-align: right;
+}
+.table.data-grid > .tbody > .tr:hover {
   background-color: rgba(0, 188, 212, 0.17) !important;
 }
-table.data-grid > tbody > tr:nth-child(even) {
+.table.data-grid > .tbody > .tr:nth-child(even) {
   background-color: #f9f9f9;
 }
-table.data-grid iron-icon {
+.table.data-grid iron-icon {
   height: 1.2em !important;
 }
-table.data-grid tbody tr th {
+.table.data-grid > .tbody > .tr > .th {
   text-align: left;
 }
+
+/* code 样式 */
+
 pre {
   font-family: monospace;
-  font-size: 8px;
+  font-size: 10px;
 }
 
 /* mouse */

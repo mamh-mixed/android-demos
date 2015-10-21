@@ -20,6 +20,7 @@
       bottom: 100px;
       right: 10%;
     }
+
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/channelMerchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -32,61 +33,56 @@
       </div>
       <div class="divider blank"></div>
       <div class="divider blank"></div>
-      <table class="data-grid">
-        <thead>
-          <tr>
-            <th>序号</th>
-            <th align="left">商户代码</th>
-            <th align="left">商户名称</th>
-            <th>渠道代码</th>
-            <th align="right">渠道费率</th>
-            <th align="right">商户费率</th>
-            <th align="right">清算标识</th>
-            <th align="left">清算角色</th>
-            <!-- <th>签名证书</th> -->
-            <!-- <th class="center">操作</th> -->
-          </tr>
-        </thead>
-        <tbody>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th" align="left">商户代码</div>
+            <div class="th" align="left">商户名称</div>
+            <div class="th">渠道代码</div>
+            <div class="th" align="right">渠道费率</div>
+            <div class="th" align="right">商户费率</div>
+            <div class="th" align="right">清算标识</div>
+            <div class="th" align="left">清算角色</div>
+            <!-- <div class="th">签名证书</div> -->
+            <!-- <div class="th" class="center">操作</div> -->
+          </div>
+        </div>
+        <div class="tbody">
           <template is="dom-repeat" items="{{merchants}}">
-            <tr>
-              <td class="center">
+            <div class="tr">
+              <div class="td center">
                 <span>{{addOneFilter(index)}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <a on-tap="viewMerchantTap">{{item.chanMerId}}</a>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.chanMerName}}</span>
-              </td>
-              <td class="center">
+              </div>
+              <div class="td center">
                 <span>{{item.chanCode}}</span>
-              </td>
-              <td class="right">
+              </div>
+              <div class="td right">
                 <span>{{item.acqFee}}</span>
-              </td>
-              <td class="right">
+              </div>
+              <div class="td right">
                 <span>{{item.merFee}}</span>
-              </td>
-              <td class="right">
+              </div>
+              <div class="td right">
                 <span>{{item.settFlag}}</span>
-              </td>
-              <td>
+              </div>
+              <div class="td">
                 <span>{{item.settRole}}</span>
-              </td>
-            </tr>
+              </div>
+            </div>
           </template>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="255" align="right">
-              <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+        </div>
+        <div class="wedge">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        </div>
+      </div>
     </form>
-
     <!-- <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab> -->
 
@@ -164,10 +160,10 @@
         }
       },
       // 新增机构商户事件
-    //   handleCreateFabTapped: function() {
-    //     this.pageType = 'create';
-    //     this.$.merchantEditor.open();
-    //   },
+      //   handleCreateFabTapped: function() {
+      //     this.pageType = 'create';
+      //     this.$.merchantEditor.open();
+      //   },
       // 新机构商户保存成功事件，刷新列表
       handleMerchantSave: function() {
         this.handleQueryTapped();
@@ -194,5 +190,6 @@
         this.$.merchantEditor.open();
       },
     });
+
   </script>
 </dom-module>

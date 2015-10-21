@@ -49,6 +49,7 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 		MerId:     params.Get("merId"),
 		AgentCode: params.Get("agentCode"),
 		MerName:   params.Get("merName"),
+		GroupCode: params.Get("groupCode"),
 		StartTime: params.Get("startTime"),
 		EndTime:   params.Get("endTime"),
 		Page:      1,
