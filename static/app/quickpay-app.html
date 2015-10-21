@@ -11,12 +11,8 @@
         display: block;
       }
     </style>
-    <app-router id="appRouter" init="manual"
-      on-state-change="handleStateChangeEvent"
-      on-activate-route-start="handleActivateRouteStartEvent"
-      on-logout="handleLogoutEvent"
-      on-toast-open="handleToastOpenEvent"
-      on-page-jump="handlePageJumpEvent">
+    <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-logout="handleLogoutEvent" on-toast-open="handleToastOpenEvent"
+    on-page-jump="handlePageJumpEvent">
       <app-route path="/" import="pages/user-login.html" bindRouter on-login-success="handleLoginSuccessEvent"></app-route>
 
       <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
@@ -83,42 +79,14 @@
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
-          // document.querySelector('#appRouter').go('/');
           this.$.appRouter.go('/')
           return;
         },
-        // // 查找session的响应事件
-        // handleFindSessionResponse: function(e) {
-        //   var response = e.detail.response;
-        //   // 如果没有登录
-        //   if (response.status !== 0) {
-        //     // 当前页面就是登录页
-        //     if (this.route.path === "/") {
-        //       return
-        //     }
-        //     // 当前页面不是登录页，则跳转到登录页
-        //     this.$.appRouter.go('/');
-        //     return;
-        //   }
-        //
-        //   // 登录了，但当前页是登录页，不必再登录了，跳走
-        //   if (this.route.path === "/") {
-        //     this.$.appRouter.go('/trade/list');
-        //     return
-        //   }
-        //
-        //   // 登录了，但当前页不是登录页，渲染菜单
-        //   this.set('user', response.data);
-        //   this.set('userType', response.data.userType);
-        //   if (this.userType === 'admin') {
-        //     this.menus = this.adminMenus;
-        //   } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
-        //     this.menus = this.agentMenus;
-        //   }
-        // },
         // 路由改变事件
         handleStateChangeEvent: function(e) {
+          debugger;
           console.log(e.type, e.detail.path);
+          this.set('route.path', e.detail.path);
           if (notAuthPath.indexOf(e.detail.path) >= 0) {
             return;
           }
@@ -146,18 +114,21 @@
           }
         },
         // 新路由进入前
-        handleActivateRouteStartEvent: function(e){
-          this.set('route.path', e.detail.path);
+        handleActivateRouteStartEvent: function(e) {
+          debugger;
+        },
+        handleActivateRouteEndEvent: function(e) {
+          debugger;
         },
         // 处理子孙元素冒泡的登录成功事件
-        handleLoginSuccessEvent: function(e){
+        handleLoginSuccessEvent: function(e) {
           console.log('login success', e.detail);
           this.set('sessionId', e.detail.sessionId);
           this.set('userType', e.detail.userType);
           this.set('nickName', e.detail.nickName);
         },
         // 处理子孙元素冒泡的登出事件
-        handleLogoutEvent: function(e){
+        handleLogoutEvent: function(e) {
           // 删除后台sesseion信息
           this.$.deleteSessionAjax.params = {
             'sessionId': this.sessionId,
@@ -165,22 +136,22 @@
           this.$.deleteSessionAjax.generateRequest();
         },
         handleDeleteSessionResponse: function(e) {
-          // 清除客户端 SessionID
-          document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
           // 清除localStorage中的信息
-          this.set('sessionId','');
-          this.set('userType','');
-          this.set('user', {});
+          this.set('sessionId', '');
+          this.set('userType', '');
+          this.set('nickName', '');
           // 跳转至登录页面
           this.$.appRouter.go('/');
+          // 清除客户端 SessionID
+          document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         },
         // 处理子孙元素冒泡的toast open事件
-        handleToastOpenEvent: function(e){
+        handleToastOpenEvent: function(e) {
           this.set('toastText', e.detail);
           this.$.toast.show();
         },
         // 处理子孙元素冒泡的页面跳转事件
-        handlePageJumpEvent: function(e){
+        handlePageJumpEvent: function(e) {
           this.$.appRouter.go(e.detail);
         }
       });
