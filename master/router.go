@@ -111,7 +111,6 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Debugf("query: %#v", r.URL.Query())
 	fillUserTypeParam(r, user)
 	log.Debugf("query: %#v", r.URL.Query())
 

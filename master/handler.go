@@ -98,7 +98,6 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		Size:         size,
 		Page:         page,
 	}
-	log.Debugf("agentCode:%s,subagentCode:%s,groupCode:%s", params.Get("agentCode"), params.Get("subAgentCode"), params.Get("groupCode"))
 
 	transStatus := params.Get("transStatus")
 	if transStatus != "" {
@@ -176,7 +175,6 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		EndTime:      r.FormValue("endTime"),
 	}
 
-	log.Debugf("agentCode:%s,subagentCode:%s,groupCode:%s", r.FormValue("agentCode"), r.FormValue("subAgentCode"), r.FormValue("groupCode"))
 	ret := tradeQueryStats(q)
 
 	rdata, err := json.Marshal(ret)
