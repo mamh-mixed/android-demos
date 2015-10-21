@@ -161,6 +161,20 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts [
 		"origOrderNum": q.OrigOrderNum,
 		"transStatus":  "30",
 	}
+
+	if q.AgentCode != "" {
+		match["agentCode"] = q.AgentCode
+	}
+	if q.SubAgentCode != "" {
+		match["subAgentCode"] = q.SubAgentCode
+	}
+	if q.GroupCode != "" {
+		match["groupCode"] = q.GroupCode
+	}
+	if q.MerId != "" {
+		match["merId"] = q.MerId
+	}
+
 	cond := []bson.M{
 		{"$match": match},
 	}
