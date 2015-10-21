@@ -78,9 +78,9 @@ func (col *userCollection) PaginationFind(user *model.User, size, page int) (res
 	if user.AgentCode != "" {
 		match["agentCode"] = user.AgentCode
 	}
-	// if user.AgentCode != "" {
-	// 	match["subAgentCode"] = user.SubAgentCode
-	// }
+	if user.SubAgentCode != "" {
+		match["subAgentCode"] = user.SubAgentCode
+	}
 	if user.GroupCode != "" {
 		match["groupCode"] = user.GroupCode
 	}

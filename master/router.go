@@ -18,7 +18,6 @@ var agentURLArr = []string{
 	"/master/trade/stat",
 	"/master/trade/stat/report",
 	"/master/trade/findOne",
-	"/master/trade/message",
 }
 
 // Route 后台管理的请求统一入口
@@ -129,13 +128,13 @@ func fillUserTypeParam(r *http.Request, user *model.User) {
 	case model.UserTypeCIL:
 	case model.UserTypeShop:
 		query.Set("merId", user.MerId)
-		fallthrough
+		// fallthrough
 	case model.UserTypeMerchant:
 		query.Set("groupCode", user.GroupCode)
-		fallthrough
+		// fallthrough
 	case model.UserTypeCompany:
 		query.Set("subAgentCode", user.SubAgentCode)
-		fallthrough
+		// fallthrough
 	case model.UserTypeAgent:
 		query.Set("agentCode", user.AgentCode)
 	default:

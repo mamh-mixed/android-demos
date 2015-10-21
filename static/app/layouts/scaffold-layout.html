@@ -187,7 +187,6 @@
         padding: 15px 20px;
       }
     }
-
   </style>
   <template>
     <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}" on-paper-responsive-change="paperResponsiveChange">
@@ -524,7 +523,7 @@
           this.userType = this.user.userType;
           if (this.userType === 'admin') {
             this.menus = this.adminMenus;
-          } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
+          } else if (this.userType === 'agent' || this.userType === 'subAgent' || this.userType === 'group' || this.userType === 'merchant') {
             this.menus = this.agentMenus;
           }
         },
@@ -564,6 +563,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>
