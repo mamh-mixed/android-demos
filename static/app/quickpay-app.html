@@ -59,9 +59,11 @@
   <script>
     (function() {
       'use strict';
+      var LOGIN_PATH = '/',
+        NOT_FOUNT_PATH = '/404';
       var notAuthPath = [
-        '/404',
-        '/'
+        NOT_FOUNT_PATH,
+        LOGIN_PATH
       ];
       var agentRoutes = ['/trade/list', '/trade/reports'];
 
@@ -72,7 +74,7 @@
           route: {
             type: Object,
             value: {},
-          }
+          },
         },
         attached: function() {
           this.$.appRouter.init();
@@ -101,7 +103,7 @@
             return;
           }
 
-          // TODO 按照不同的用户类型给定不同的菜单权限
+          // 按照不同的用户类型给定不同的菜单权限
           for (var i = 0; i < agentRoutes.length; i++) {
             if (agentRoutes[i] === e.detail.path) {
               isAccess = true;
@@ -117,12 +119,17 @@
         handleActivateRouteStartEvent: function(e) {
           // debugger;
         },
+        // DOM 已经变成新路由的时候触发的事件
         handleActivateRouteEndEvent: function(e) {
           // debugger;
+          if (e.detail.path === LOGIN_PATH || e.detail.path === NOT_FOUNT_PATH) {
+            return;
+          }
+          // 触发‘menu-render’的事件到菜单的容器，重新渲染菜单
+          Util.fire('menu-render', this.userType, document.getElementById('quickPayMenuContainer'));
         },
         // 处理子孙元素冒泡的登录成功事件
         handleLoginSuccessEvent: function(e) {
-          console.log('login success', e.detail);
           this.set('sessionId', e.detail.sessionId);
           this.set('userType', e.detail.userType);
           this.set('nickName', e.detail.nickName);

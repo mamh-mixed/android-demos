@@ -200,7 +200,7 @@
         </paper-toolbar>
 
         <!-- 菜单列表 -->
-        <paper-menu>
+        <paper-menu id="quickPayMenuContainer" on-menu-render="handleMenuRenderEvent">
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
               <paper-item class="menu-trigger">
@@ -231,7 +231,6 @@
             <span>{{nickName}}</span>
           </div>
           <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
-          <!-- <paper-button id="logoutBtn">退出</paper-button> -->
           <!-- Toolbar icons -->
           <div hidden$="{{isNarrow}}">
             <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
@@ -456,7 +455,7 @@
               "route": "trade.reports"
             }]
           }];
-          this.menus = this.adminMenus;
+          // this.menus = this.adminMenus;
         },
         paperHeaderTransform: function(e) {
           var appName = this.$.appName;
@@ -502,6 +501,14 @@
           if (!this.isFullscreen) {
             this.isNarrow = detail.narrow;
           }
+        },
+        // 监听菜单渲染的事件
+        handleMenuRenderEvent: function(e, detail) {
+          if (detail === 'admin') {
+            this.menus = this.adminMenus;
+            return;
+          }
+          this.menus = this.agentMenus;
         },
       });
     })();
