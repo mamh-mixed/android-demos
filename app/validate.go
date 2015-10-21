@@ -61,7 +61,7 @@ func requestDataValidate(req *reqParams) *model.AppResult {
 	}
 
 	if req.Transtime != "" {
-		if len(req.Password) > 30 {
+		if len(req.Transtime) > 30 {
 			return model.NewAppResult("FAIL", "transtime 长度过长")
 		}
 	}
@@ -124,7 +124,7 @@ func requestDataValidate(req *reqParams) *model.AppResult {
 	}
 
 	if req.Sign != "" {
-		if len(req.Email) > 32 {
+		if len(req.Sign) > 32 {
 			return model.NewAppResult("FAIL", "sign 长度过长")
 		}
 	}
