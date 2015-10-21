@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -113,25 +112,40 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fillUserTypeParam(r.URL.Query(), user)
+	fillUserTypeParam(r, user)
+	log.Debugf("query: %#v", r.URL.Query())
+
 	h, _ := mux.Handler(r)
 	h.ServeHTTP(w, r)
 }
 
-func fillUserTypeParam(qurey url.Values, user *model.User) {
+func fillUserTypeParam(r *http.Request, user *model.User) {
+	log.Debugf("user: %#v", user)
+
+	query := r.URL.Query()
+	query.Set("userType", user.UserType)
+
 	switch user.UserType {
 	case model.UserTypeCIL:
-	case model.UserTypeAgent:
-		qurey.Set("agentCode", user.AgentCode)
-	case model.UserTypeCompany:
-		qurey.Set("subAgentCode", user.SubAgentCode)
-	case model.UserTypeMerchant:
-		qurey.Set("groupCode", user.GroupCode)
 	case model.UserTypeShop:
-		qurey.Set("merId", user.MerId)
+		query.Set("merId", user.MerId)
+		fallthrough
+	case model.UserTypeMerchant:
+		query.Set("groupCode", user.GroupCode)
+		fallthrough
+	case model.UserTypeCompany:
+		query.Set("subAgentCode", user.SubAgentCode)
+		fallthrough
+	case model.UserTypeAgent:
+		query.Set("agentCode", user.AgentCode)
 	default:
 		log.Errorf("user type error: %s", user.UserType)
 	}
+
+	// log.Debugf("query: %#v", query)
+	r.URL.RawQuery = query.Encode()
+	// log.Debugf("query: %#v", r.URL.RawQuery)
+	// log.Debugf("query: %#v", r.URL.Query())
 }
 
 // authProcess 权限处理
