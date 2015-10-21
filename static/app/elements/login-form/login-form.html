@@ -99,8 +99,6 @@
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}"></iron-localstorage>
-    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
   </template>
@@ -153,9 +151,12 @@
             password: ''
           };
 
-          this.set('sessionId', response.data.sessionId);
-          this.set('userType', response.data.userType);
+          // 事件冒泡到顶层
+          this.fire('login-success', response.data);
+          // this.set('sessionId', response.data.sessionId);
+          // this.set('userType', response.data.userType);
           if (this.redirect) {
+            // TODO 路由跳转的也可以使用事件冒泡
             document.querySelector('#appRouter').go('/trade/list');
           } else {
             Util.hideLoginDialog();

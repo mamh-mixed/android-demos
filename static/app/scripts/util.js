@@ -22,12 +22,12 @@
 			toast.show();
 		};
 		var showLoginDialog = function() {
-			var dialog = Polymer.Base.$$('#reloginDialog');
+			var dialog = document.querySelector('#reloginDialog');
 			dialog.hidden = false;
 			dialog.open();
 		};
-    var hideLoginDialog = function() {
-			var dialog = Polymer.Base.$$('#reloginDialog');
+		var hideLoginDialog = function() {
+			var dialog = document.querySelector('#reloginDialog')
 			dialog.hidden = true;
 			dialog.close();
 		};
@@ -47,7 +47,7 @@
 			toast: toast,
 			query: query,
 			showLoginDialog: showLoginDialog,
-      hideLoginDialog: hideLoginDialog
+			hideLoginDialog: hideLoginDialog
 		};
 	}());
 
