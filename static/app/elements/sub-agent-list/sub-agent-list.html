@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../x-pagination/x-pagination.html">
+<link rel="import" href="../x-select/x-select.html">
 <link rel="import" href="../sub-agent-delete/sub-agent-delete.html">
 <link rel="import" href="../sub-agent-editor/sub-agent-editor.html">
 <dom-module id="sub-agent-list">
@@ -29,27 +30,23 @@
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/subAgent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
         <paper-input name="subAgentCode" label="公司代码" value="{{cond.subAgenCode::input}}"></paper-input>
         <paper-input name="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}"></paper-input>
-        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
+        <x-select items="[[agents]]" name="agentCode" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" id="agentCode"></x-select>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
             <div class="th">公司代码</div>
-            <div class="th" align="left">公司名称</div>
+            <div class="th left">公司名称</div>
             <div class="th">代理代码</div>
-            <div class="th" align="left">代理名称</div>
+            <div class="th left">代理名称</div>
             <div class="th">操作</div>
           </div>
         </div>
@@ -80,7 +77,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
       </div>
     </form>
@@ -88,8 +85,9 @@
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
-    <sub-agent-editor id="subAgentEditor" on-saved="handleSubAgentSave"></sub-agent-editor>
+    <sub-agent-editor id="subAgentEditor" on-saved="handleSubAgentSave" sub-agent$="{{editableSubAgent}}"></sub-agent-editor>
     <sub-agent-delete id="subAgentDelete" on-saved="handleSubAgentSave"></sub-agent-delete>
+    <x-ajax auto id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
   </template>
   <script>
     (function() {
@@ -113,27 +111,57 @@
             type: Boolean,
             value: false,
             reflectToAttribute: true
+          },
+          cond: {
+            type: Object,
+            value: {
+              page: 1,
+              size: 20,
+              total: 0
+            }
           }
         },
         ready: function() {
           this.subAgents = [];
-          this.cond = {
-            page: 1,
-            size: 20,
-            total: 0
-          };
         },
         attached: function() {
           if (this.autoLoading) {
             this.handleQueryTapped();
           }
         },
+        observers: [
+          '_watchAgentChange(agent.key)',
+        ],
+        _watchAgentChange: function(key) {
+          this.cond.agentCode = key;
+        },
+        // 代理列表响应
+        handleQueryAgentsResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast('加载代理列表失败', 3000);
+            return;
+          }
+
+          var pagination = response.data;
+          if (pagination.count <= 0) {
+            Util.toast('没有代理数据', 2000);
+            return;
+          }
+
+          var agents = response.data.data.slice(0);
+          this.set('agents', agents.map(function(item) {
+            return {
+              key: item.agentCode,
+              value: item.agentName
+            };
+          }));
+        },
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
           this.generateAjaxRequest();
         },
-
         generateAjaxRequest: function() {
           this.subAgents = [];
           this.$.formQuery.submit();
@@ -174,7 +202,7 @@
         },
         // 编辑代理
         handleEditEvent: function(e) {
-          this.$.subAgentEditor.subAgent = e.model.item;
+          this.editableSubAgent = e.model.item;
           this.$.subAgentEditor.open2();
         },
 
@@ -202,6 +230,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>

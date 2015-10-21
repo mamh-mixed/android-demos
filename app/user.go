@@ -16,6 +16,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 )
 
@@ -27,21 +28,25 @@ var (
 	dateRegexp   = regexp.MustCompile(`^\d{8}$`)
 	monthRegexp  = regexp.MustCompile(`^\d{6}$`)
 	b64Encoding  = base64.StdEncoding
+	hostAddress  = goconf.Config.App.NotifyURL
+	WXPMerId     = goconf.Config.MobileApp.WXPMerId
+	ALPMerId     = goconf.Config.MobileApp.ALPMerId
 )
 
 // register 注册
 func (u *user) register(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,password=%s,transtime=%s", req.UserName, req.Password, req.Transtime)
 	// 参数不能为空
 	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
 		return model.PARAMS_EMPTY
 	}
 
-	user := &model.AppUser{
-		UserName: req.UserName,
-		Password: req.Password,
-		Activate: "false",
-	}
 	// 用户是否存在
 	num, err := mongo.AppUserCol.FindCountByUserName(req.UserName)
 	if err != nil {
@@ -51,6 +56,17 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 	if num != 0 {
 		return model.USERNAME_EXIST
 	}
+
+	user := &model.AppUser{
+		UserName:   req.UserName,
+		Password:   req.Password,
+		Activate:   "false",
+		Limit:      "true",
+		Remark:     "register",
+		CreateTime: time.Now().Format("2006-01-02 15:04:05"),
+	}
+	user.UpdateTime = user.CreateTime
+
 	// 保存用户信息
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
@@ -63,6 +79,12 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 
 // login 登录
 func (u *user) login(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,password=%s,transtime=%s", req.UserName, req.Password, req.Transtime)
 	// 参数不能为空
 	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
@@ -94,9 +116,14 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 			log.Errorf("find database err,%s", err)
 			return model.SYSTEM_ERROR
 		}
+		user.SignKey = merchant.SignKey
 		user.UniqueId = merchant.UniqueId
 		user.AgentCode = merchant.AgentCode
 	}
+
+	// 带上password
+	// FIXBY:RUI 20151020
+	user.Password = req.Password
 
 	result = &model.AppResult{
 		State: model.SUCCESS,
@@ -109,6 +136,12 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 
 // reqActivate 请求发送激活链接
 func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,password=%s,transtime=%s", req.UserName, req.Password, req.Transtime)
 	// 参数不能为空
 	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
@@ -137,7 +170,7 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 
 	// 发送激活链接到注册时提供的邮箱
 	code := fmt.Sprintf("%d", rand.Int31())
-	hostAddress := goconf.Config.App.NotifyURL
+	// hostAddress := goconf.Config.App.NotifyURL
 	activateUrl := fmt.Sprintf("%s/app/activate?username=%s&code=%s", hostAddress, req.UserName, code)
 
 	var iv [32]byte
@@ -185,6 +218,12 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 
 // activate 激活
 func (u *user) activate(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	log.Debugf("userName=%s,code=%s", req.UserName, req.Code)
 	// 参数不能为空
 	if req.UserName == "" || req.Code == "" {
@@ -219,13 +258,14 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 		}
 		return model.SYSTEM_ERROR_CH
 	}
-	// 如果用户已激活，则返回成功
+	// 如果用户已激活，表示码已过期
 	if user.Activate == "true" {
-		return model.SUCCESS1
+		return model.CODE_TIME_ERROR_CH
 	}
 
 	// 更新activate为已激活
 	user.Activate = "true"
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
 		log.Errorf("save user err,%s", err)
@@ -237,6 +277,12 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 
 // improveInfo 信息完善
 func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	if req.UserName == "" || req.Password == "" {
 		return model.PARAMS_EMPTY
 	}
@@ -262,8 +308,12 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 创建商户
-	uniqueId := fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31())
-	randStr := fmt.Sprintf("%d", rand.Int31())
+	var randBytes [16]byte
+
+	if _, err := io.ReadFull(cr.Reader, randBytes[:]); err != nil {
+		log.Errorf("io.ReadFull error: %s", err)
+	}
+
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
 		AgentCode:  "99911888",
@@ -271,10 +321,9 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		Permission: permission,
 		MerStatus:  model.MerStatusNormal,
 		TransCurr:  "156",
-		UniqueId:   uniqueId,
 		RefundType: model.CurrentDayRefund, // 只能当天退
 		IsNeedSign: true,
-		SignKey:    fmt.Sprintf("%x", base64.StdEncoding.EncodeToString([]byte(randStr))),
+		SignKey:    fmt.Sprintf("%x", randBytes[:]),
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",
@@ -285,6 +334,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 			BankId:        req.BankNo,
 			AcctName:      req.Payee,
 			AcctNum:       req.PayeeCard,
+			ContactTel:    req.PhoneNum,
 		},
 	}
 	for {
@@ -308,6 +358,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 			merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
 		}
 
+		merchant.UniqueId = util.Confuse(merchant.MerId)
 		err = mongo.MerchantColl.Insert2(merchant)
 		if err != nil {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
@@ -326,7 +377,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		MerId:     merchant.MerId,
 		CardBrand: "ALP",
 		ChanCode:  "ALP",
-		ChanMerId: "2088811767473826",
+		ChanMerId: ALPMerId,
 	}
 	err = mongo.RouterPolicyColl.Insert(alpRoute)
 	if err != nil {
@@ -338,7 +389,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		MerId:     merchant.MerId,
 		CardBrand: "WXP",
 		ChanCode:  "WXP",
-		ChanMerId: "1239305502",
+		ChanMerId: WXPMerId,
 	}
 	err = mongo.RouterPolicyColl.Insert(wxpRoute)
 	if err != nil {
@@ -356,6 +407,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	user.SignKey = merchant.SignKey
 	user.AgentCode = merchant.AgentCode
 	user.UniqueId = merchant.UniqueId
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
@@ -372,6 +424,11 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 
 // getTotalTransAmt 查询某天交易总额
 func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
 
 	// 用户名不为空
 	if req.UserName == "" {
@@ -422,12 +479,17 @@ func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
 // getUserBill 获取用户账单
 func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
 	}
 
-	if !monthRegexp.MatchString(req.Date) {
+	if !monthRegexp.MatchString(req.Month) {
 		return model.TIME_ERROR
 	}
 
@@ -447,7 +509,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	}
 
 	result = model.NewAppResult(model.SUCCESS, "")
-	date := req.Date
+	date := req.Month
 	yearNum, _ := strconv.Atoi(date[:4])
 	month := date[4:6]
 	day := ""
@@ -532,6 +594,12 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
 // getUserTrans 获取用户某笔交易信息
 func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -547,10 +615,10 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 		return model.SYSTEM_ERROR
 	}
 
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
-	}
+	// TODO:密码不对，兼容IOS客户端bug，暂时不验证密码
+	// if req.Password != user.Password {
+	// 	return model.USERNAME_PASSWORD_ERROR
+	// }
 
 	// 没有机构用户
 	if user.MerId == "" {
@@ -576,6 +644,12 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 
 // passwordHandle 修改密码
 func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" || req.NewPassword == "" {
 		return model.PARAMS_EMPTY
@@ -597,6 +671,7 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 	}
 
 	user.Password = req.NewPassword
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	if err = mongo.AppUserCol.Upsert(user); err != nil {
 		return model.SYSTEM_ERROR
 	}
@@ -606,6 +681,12 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 
 // promoteLimit 提升限额
 func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -648,6 +729,12 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 
 // getSettInfo 获得清算信息
 func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -676,14 +763,14 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 		return model.SYSTEM_ERROR
 	}
 
-	log.Debugf("%+v", user)
+	// log.Debugf("%+v", user)
 	// 返回
 	result = model.NewAppResult(model.SUCCESS, "")
 	settInfo := &model.SettInfo{
 		Payee:      mer.Detail.AcctName,
 		BankOpen:   mer.Detail.OpenBankName,
 		PayeeCard:  mer.Detail.AcctNum,
-		PhoneNum:   user.PhoneNum,
+		PhoneNum:   mer.Detail.ContactTel,
 		Province:   mer.Detail.Province,
 		City:       mer.Detail.City,
 		BranchBank: mer.Detail.BankName,
@@ -696,6 +783,12 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 
 // updateSettInfo 更新清算信息
 func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
+
+	// 字段长度验证
+	if result = requestDataValidate(req); result != nil {
+		return result
+	}
+
 	// 用户名不为空
 	if req.UserName == "" {
 		return model.PARAMS_EMPTY
@@ -741,6 +834,9 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	}
 	if req.PayeeCard != "" {
 		m.Detail.AcctNum = req.PayeeCard
+	}
+	if req.PhoneNum != "" {
+		m.Detail.ContactTel = req.PhoneNum
 	}
 
 	if err = mongo.MerchantColl.Update(m); err != nil {

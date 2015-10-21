@@ -132,13 +132,16 @@
         </div>
         <div class="row">
           <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
-          <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
+          <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
+        </div>
+        <div class="row">
+          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}"></paper-input>
+          <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
         </div>
         <div class="row">
           <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
-          <paper-input label="商户名称" value="{{merchant.groupName::input}}"></paper-input>
+          <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
         </div>
-
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
           <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
@@ -189,9 +192,6 @@
           </template>
         </div>
 
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存门店信息</paper-button>
         </div>
@@ -214,9 +214,6 @@
           <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -227,7 +224,6 @@
           <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项" on-blur="_wchanMerIdChange"></paper-input>
           <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
         </div>
-        <div class="divider blank"></div>
         <div class="row">
           <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
           <x-select id="bigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
@@ -282,6 +278,9 @@
     <x-ajax id="findChanMerWeixinAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerWeixinResponse"></x-ajax>
     <x-ajax id="findRouterAlpAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterAlpResponse"></x-ajax>
     <x-ajax id="findRouterWeixinAjax" method="GET" url="/master/router/one" handle-as="json" debounce-duration="1000" on-response="handleFindRouterWeixinResponse"></x-ajax>
+    <x-ajax id="queryAgentAjax" auto params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <x-ajax id="querySubAgentAjax" method="GET" url="/master/subAgent/find" handle-as="json" debounce-duration="1000" on-response="handleQuerySubAgentsResponse"></x-ajax>
+    <x-ajax id="queryGroupAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryGroupsResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -362,15 +361,86 @@
           }]
         },
         asettRole: Object,
-        wsettRole: Object
+        wsettRole: Object,
+        agent: Object,
+        subAgent: Object,
+        group: Object
       },
       observers: [
         '_watchMerStatusChange(merStatus.key)',
         '_wisAgentModeChanged(weixin.isAgentMode)',
         '_asettFlagChange(asettFlag)',
         '_wsettFlagChange(wsettFlag)',
-        '_isNeedSignChange(merchant.isNeedSign)'
+        '_isNeedSignChange(merchant.isNeedSign)',
+        '_agentChange(agent)',
+        '_subAgentChange(subAgent)',
+        '_groupChange(group)',
       ],
+      _agentChange: function(value) {
+        if (value && value.key) {
+          this.set("merchant.agentCode", value.key);
+          this.set("merchant.agentName", value.value);
+          this.magentCode = value.key;
+          this.$.querySubAgentAjax.params = {
+            page: '1',
+            size: '1000',
+            agentCode: value.key,
+          };
+          this.$.querySubAgentAjax.generateRequest();
+          this.$.queryGroupAjax.params = {
+            page: '1',
+            size: '1000',
+            agentCode: this.magentCode,
+          };
+          this.$.queryGroupAjax.generateRequest();
+        } else {
+          this.magentCode = '';
+          this.set("merchant.agentCode", '');
+          this.set("merchant.agentName", '');
+          this.set('subAgents', []);
+          this.set('subAgent', {});
+          this.set('groups', []);
+          this.set('group', {});
+        }
+      },
+      _subAgentChange: function(value) {
+        if (value && value.key) {
+          this.set("merchant.subAgentCode", value.key);
+          this.set("merchant.subAgentName", value.value);
+          this.$.queryGroupAjax.params = {
+            page: '1',
+            size: '1000',
+            agentCode: this.magentCode,
+            subAgentCode: value.key,
+          };
+          this.$.queryGroupAjax.generateRequest();
+        } else {
+          if (this.magentCode != '') {
+            this.$.queryGroupAjax.params = {
+              page: '1',
+              size: '1000',
+              agentCode: this.magentCode,
+            };
+            this.$.queryGroupAjax.generateRequest();
+          } else {
+            this.set('groups', []);
+            this.set('group', {});
+          }
+          this.set("merchant.subAgentCode", '');
+          this.set("merchant.subAgentName", '');
+
+        }
+
+      },
+      _groupChange: function(value) {
+        if (value && value.key) {
+          this.set("merchant.groupCode", value.key);
+          this.set("merchant.groupName", value.value);
+        } else {
+          this.set("merchant.groupCode", '');
+          this.set("merchant.groupName", '');
+        }
+      },
       _wisAgentModeChanged: function(value) {
         if (value) {
           this.$.bigChanMerId.setAttribute('required', true);
@@ -537,6 +607,18 @@
 
         var item = response.data;
         this.set('merchant', item);
+        this.agent = {
+          key: this.merchant.agentCode,
+          value: this.merchant.agentName,
+        };
+        this.subAgent = {
+          key: this.merchant.subAgentCode,
+          value: this.merchant.subAgentName,
+        };
+        this.group = {
+          key: this.merchant.groupCode,
+          value: this.merchant.groupName,
+        };
         if (item.permission) {
           var permissions = item.permission;
           // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
@@ -1055,7 +1137,100 @@
             Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
           }
         }
-      }
+      },
+      // 代理列表响应
+      handleQueryAgentsResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载代理列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          Util.toast('没有代理数据', 2000);
+          return;
+        }
+
+        var agents = response.data.data.slice(0);
+        this.set('agents', agents.map(function(item) {
+          return {
+            key: item.agentCode,
+            value: item.agentName
+          };
+        }));
+
+      },
+      // 公司列表响应
+      handleQuerySubAgentsResponse: function(e) {
+        this.set('subAgents', []);
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载公司列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          this.set('subAgent', {});
+          Util.toast('没有公司数据', 2000);
+          return;
+        }
+
+        var subAgents = response.data.data.slice(0);
+        this.set('subAgents', subAgents.map(function(item) {
+          return {
+            key: item.subAgentCode,
+            value: item.subAgentName
+          };
+        }));
+
+        // subAgents改变时，是否改变subAgent的值。
+        this.changeSubAgent = true;
+        for (var i = 0; i < this.subAgents.length; i++) {
+          if (this.subAgent.key == this.subAgents[i].key) {
+            this.changeSubAgent = false;
+            break;
+          }
+        }
+        if (this.changeSubAgent) {
+          this.set('subAgent', {});
+        }
+      },
+      // 商户列表响应
+      handleQueryGroupsResponse: function(e) {
+        this.set('groups', []);
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('加载商户列表失败', 3000);
+          return;
+        }
+
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          this.set('group', {});
+          Util.toast('没有商户数据', 2000);
+          return;
+        }
+        var groups = response.data.data.slice(0);
+        this.set('groups', groups.map(function(item) {
+          return {
+            key: item.groupCode,
+            value: item.groupName
+          };
+        }));
+        // groups改变时，是否改变group的值。
+        this.changeGroup = true;
+        for (var i = 0; i < this.groups.length; i++) {
+          if (this.group.key == this.groups[i].key) {
+            this.changeGroup = false;
+            break;
+          }
+        }
+        if (this.changeGroup) {
+          this.set('group', {});
+        }
+      },
     });
   </script>
 </dom-module>

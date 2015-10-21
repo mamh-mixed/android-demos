@@ -8,51 +8,59 @@
       :host {
         display: block;
         --paper-dialog-scrollable: {
-          width: 1030px;
+          width: 920px;
           min-height: 500px;
           max-height: 600px;
-          font-size: 14px;
         }
       }
 
-      .message {
-        margin-top: 10px;
-        border-bottom: 1px dashed #ccc;
+      paper-dialog-scrollable {
+        margin-top: 10px !important;
+        padding-top: 0px !important;
+      }
+      dl {
+          margin-top: 0px;
       }
 
-      td > .message:last-of-type {
-        border-bottom: none;
+      dt {
+        line-height: 36px;
+        font-weight: bold;
       }
+
+      dd {
+        margin: 0;
+        border: 1px solid #e3e3e3;
+        padding: 6px;
+      }
+
+      dd:hover {
+        background-color: rgba(0, 188, 212, 0.17) !important;
+      }
+
+      div.buttons {
+        color: black;
+      }
+
     </style>
     <paper-dialog id="dialogView">
       <h2>交易报文</h2>
       <paper-dialog-scrollable>
-        <div class="data-grid table">
-          <div class="thead">
-            <div class="tr">
-              <div class="th" class="left">报文</div>
-            </div>
-          </div>
-          <div class="tbody">
-            <template is="dom-repeat" items="{{messageArray}}" as="messageList">
-              <tr style="border-bottom:1px solid #ddd;">
-                <div class="td">
-                  <template is="dom-repeat" items="{{messageList}}" as="message">
-                    <div class="message" style$="{{getMessageStyle(message)}}">
-                      <div>{{getMsgTitle(message)}}</div>
-                      <pre style="min-width:800px;max-width:850px;word-break:break-all;word-wrap: break-word;font-size:10px;">{{formatMsg(message.msg)}}</pre>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </template>
-          </div>
-          <div class="wedge">
-<x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-            </div>
-        </div>
+        <dl>
+          <template is="dom-repeat" items="{{messages}}" as="m">
+            <dt class$="{{getMsgTypeClass(m)}}">
+              <span>{{m.transTime}}</span>
+              <span>{{getMsgTypeName(m)}}</span>
+              <span>{{getDirectionName(m)}}</span>
+            </dt>
+            <dd>
+              <code>{{formatMsg(m.msg)}}</code>
+            </dd>
+          </template>
+        </dl>
+
+      </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
       </div>
     </paper-dialog>
     <x-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></x-ajax>
@@ -69,37 +77,18 @@
         },
         open: function() {
           this.$.dialogView.open();
-          this.msgTitleMap = {
-            1: {
-              'in': '商户请求报文:',
-              'out': '商户响应报文:',
-            },
-            2: {
-              'out': '渠道请求报文:',
-              'in': '渠道响应报文:',
-            },
-            3: {
-              'in': '异步通知报文:',
-            },
-          };
+          this.messages = [];
+
           this.cond = {};
           this.set('cond.size', 10);
           this.set('cond.page', 1);
-          // reqId数组
-          this.reqArray = [];
-          //{'reqId1':['msg1','msg2'],'reqId2':['msg3','msg4']}
-          this.messageMap = {};
-          //[['msg1','msg2'],['msg3','msg4']
-          this.messageArray = [];
 
           this.$.merMessageQueryAjax.params = {
             'merId': this.item.merId,
             'orderNum': this.item.orderNum,
             'msgType': '1',
             'size': this.cond.size,
-            'page': this.cond.page,
-            'agentCode': this.user.agentCode,
-            'groupCode': this.user.groupCode
+            'page': this.cond.page
           };
           this.$.merMessageQueryAjax.generateRequest();
         },
@@ -116,32 +105,14 @@
           }
           var merMessages = response.data.data.slice(0);
 
-          // 将返回json数组循环放入messageMap
-          var reqId = '';
-          for (var i = 0; i < merMessages.length; i++) {
-            reqId = merMessages[i].reqId;
-            if (!this.contains(this.reqArray, reqId)) {
-              this.push('reqArray', reqId);
-            }
-            if (!this.messageMap[reqId]) {
-              this.messageMap[reqId] = [];
-            }
-            this.push('messageMap.' + reqId, merMessages[i]);
-          }
-
-          // 将messageMap中数据放入messageArray中
-          for (var j = 0; j < this.reqArray.length; j++) {
-            this.push('messageArray', this.messageMap[this.reqArray[j]]);
-          }
+          this.messages = merMessages;
 
           // 查询渠道报文
           this.$.chanMessageQueryAjax.params = {
             'merId': this.item.merId,
             'orderNum': this.item.orderNum,
             'msgType': '2',
-            'reqIds': this.reqArray,
-            'agentCode': this.user.agentCode,
-            'groupCode': this.user.groupCode
+            'reqIds': this.reqArray
           };
           this.$.chanMessageQueryAjax.generateRequest();
 
@@ -159,25 +130,49 @@
           }
           var chanMessages = response.data.data.slice(0);
 
-          //将返回json数组循环放入messageArray
-          for (var i = 0; i < chanMessages.length; i++) {
-            for (var j = 0; j < this.messageArray.length; j++) {
-              if (chanMessages[i].reqId === this.messageArray[j][0].reqId) {
-                this.push('messageArray.' + [j], chanMessages[i]);
-                break;
+
+          // 把 c 归并到 m，条件是两个列表都有序递增
+          var m = 0,
+            c = 0;
+          while (true) {
+            // 如果 c 内没有元素了，归并完毕
+            if (c >= chanMessages.length) {
+              break;
+            }
+
+            // 如果 c 内还有元素，但 m 已经到结尾，把 c 内剩下的元素接到 m 的后面，归并完毕
+            if (m >= this.messages.length) {
+              for (; c < chanMessages.length; c++) {
+                this.push("messages", chanMessages[c]);
               }
+              break;
+            }
+
+            // 如果 m 内当前元素小于 c 内当前元素，那么 c 内当前元素不能放在 m 这个位置，m 要前移
+            if (this.messages[m].transTime < chanMessages[c].transTime) {
+              m++;
+            }
+            // 如果 m 内当前元素等于 c 内当前元素
+            else if (this.messages[m].transTime === chanMessages[c].transTime) {
+              // 如果是一次请求，并且渠道返回的报文先于返回给商户报文，所以要插在商户报文前
+              if (this.messages[m].reqId === chanMessages[c].reqId && this.messages[m].direction === "out") {
+                // c 插入到 m 这个位置
+                this.splice("messages", m, 0, chanMessages[c]);
+                m++; // m 内加入了 c 内的元素，所以 m 要前移一个，实际上下一次比较的还是 m 中原来那个元素
+                c++;
+              } else {
+                m++;
+              }
+            }
+            // 如果 m 内当前元素大于 c 内当前元素，那么 c 内当前元素应该放在 m 这个位置
+            else {
+              // c 插入到 m 这个位置
+              this.splice("messages", m, 0, chanMessages[c]);
+              //   m++; // m 内加入了 c 内的元素，所以 m 要前移一个，实际上下一次比较的还是 m 中原来那个元素
+              c++;
             }
           }
 
-        },
-        // 数据中是否包含重复元素
-        contains: function(array, newValue) {
-          for (var i = 0; i < array.length; i++) {
-            if (array[i] === newValue) {
-              return true;
-            }
-          }
-          return false;
         },
         queryAction: function() {
           this.$.merMessageQueryAjax.params = {
@@ -185,37 +180,66 @@
             'orderNum': this.item.orderNum,
             'msgType': '1',
             'size': this.cond.size,
-            'page': this.cond.page,
-            'agentCode': this.user.agentCode,
-            'groupCode': this.user.groupCode
+            'page': this.cond.page
           };
           this.$.merMessageQueryAjax.generateRequest();
           this.reqArray = [];
           this.messageMap = {};
           this.messageArray = [];
         },
-        formatMsg: function(msg) {
-          return JSON.stringify(msg, null, 4);
+        formatMsg: function(m) {
+          return JSON.stringify(m, null, 4);
         },
-        getMsgTitle: function(message) {
-          return this.msgTitleMap[message.msgType][message.direction];
-        },
-        getMessageStyle: function(message) {
-          if (message.msgType === 1 || message.msgType === 3) {
-            if (message.direction === 'in') {
-              return 'padding-left:0px;';
-            } else {
-              return 'padding-left:50px;';
-            }
-          } else if (message.msgType === 2) {
-            if (message.direction === 'in') {
-              return 'padding-left:50px;';
-            } else {
-              return 'padding-left:0px;';
-            }
+        getMsgTypeClass: function(m) {
+          if (m.msgType === 1) {
+            return 'green';
           }
+
+          if (m.msgType === 2) {
+            return 'primary';
+          }
+
+          if (m.msgType === 3) {
+            return 'blue';
+          }
+
+          console.log("未知 msgType（" + m.msgType + "）")
+          return "未知（" + m.msgType + "）";
+        },
+        getMsgTypeName: function(m) {
+          if (m.msgType === 1) {
+            return '商户';
+          }
+
+          if (m.msgType === 2) {
+            return '渠道';
+          }
+
+          if (m.msgType === 3) {
+            return '渠道';
+          }
+
+          console.log("未知 msgType（" + m.msgType + "）");
+          return "未知（" + m.msgType + "）";
+        },
+        getDirectionName: function(m) {
+          if ((m.msgType === 1 && m.direction === 'in') || (m.msgType === 2 && m.direction === 'out')) {
+            return '请求';
+          }
+
+          if ((m.msgType === 1 && m.direction === 'out') || (m.msgType === 2 && m.direction === 'in')) {
+            return '返回';
+          }
+
+          if (m.msgType === 3) {
+            return '异步通知';
+          }
+
+          console.log("未知 direction（" + m.direction + "）msgType（" + m.msgType + "）");
+          return "未知（" + m.direction + "）";
         }
       });
     })();
+
   </script>
 </dom-module>

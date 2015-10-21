@@ -84,6 +84,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		MerId:        merId,
 		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
 		GroupCode:    params.Get("groupCode"),
 		TransType:    transType,
 		Respcd:       params.Get("respcd"),
@@ -122,6 +123,10 @@ func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		Busicd:       params.Get("busicd"),
 		OrigOrderNum: params.Get("origOrderNum"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		GroupCode:    params.Get("groupCode"),
+		MerId:        params.Get("merId"),
 	}
 	ret := tradeFindOne(cond)
 
@@ -142,6 +147,8 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		MerId:        merId,
 		Busicd:       params.Get("busicd"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
 		GroupCode:    params.Get("groupCode"),
 		StartTime:    params.Get("startTime"),
 		EndTime:      params.Get("endTime"),
@@ -161,17 +168,17 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	q := &model.QueryCondition{
-		MerId:     r.FormValue("merId"),
-		AgentCode: r.FormValue("agentCode"),
-		Page:      page,
-		Size:      size,
-		MerName:   r.FormValue("merName"),
-		StartTime: r.FormValue("startTime"),
-		EndTime:   r.FormValue("endTime"),
-		GroupCode: r.FormValue("groupCode"),
+		AgentCode:    r.FormValue("agentCode"),
+		SubAgentCode: r.FormValue("subAgentCode"),
+		GroupCode:    r.FormValue("groupCode"),
+		MerId:        r.FormValue("merId"),
+		Page:         page,
+		Size:         size,
+		MerName:      r.FormValue("merName"),
+		StartTime:    r.FormValue("startTime"),
+		EndTime:      r.FormValue("endTime"),
 	}
 
-	log.Debugf("GROUP CODE is %s", r.FormValue("groupCode"))
 	ret := tradeQueryStats(q)
 
 	rdata, err := json.Marshal(ret)
@@ -475,7 +482,7 @@ func subAgentFindHandle(w http.ResponseWriter, r *http.Request) {
 	subAgentName := r.FormValue("subAgentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := SubAgent.Find(agentCode, agentName, subAgentCode, subAgentName, size, page)
+	ret := SubAgent.Find(subAgentCode, subAgentName, agentCode, agentName, size, page)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
@@ -522,9 +529,11 @@ func groupFindHandle(w http.ResponseWriter, r *http.Request) {
 	groupName := r.FormValue("groupName")
 	agentCode := r.FormValue("agentCode")
 	agentName := r.FormValue("agentName")
+	subAgentCode := r.FormValue("subAgentCode")
+	subAgentName := r.FormValue("subAgentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := Group.Find(groupCode, groupName, agentCode, agentName, size, page)
+	ret := Group.Find(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName, size, page)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
@@ -619,7 +628,7 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 		NickName:     params.Get("nickName"),
 		Mail:         params.Get("mail"),
 		PhoneNum:     params.Get("phoneNum"),
-		UserType:     params.Get("userType"),
+		UserType:     params.Get("userRole"),
 		AgentCode:    params.Get("agentCode"),
 		SubAgentCode: params.Get("subAgentCode"),
 		// AgentName: params.Get("agentName"),
@@ -661,21 +670,25 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 	if ret.Status == 0 {
 		log.Debugf("create session begin")
+
+		now := time.Now()
 		cValue := util.SerialNumber()
-		cExpires := time.Now().Add(expiredTime)
+		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "QUICKMASTERID",
 			Value:   cValue,
-			Path:    "/master/",
+			Path:    "/master",
 			Expires: cExpires,
 		})
 
 		// 创建session
 		session := &model.Session{
-			SessionID: cValue,
-			User:      ret.Data.(*model.User),
-			Expires:   cExpires.Format("2006-01-02 15:04:05"),
+			SessionID:  cValue,
+			User:       ret.Data.(*model.User),
+			CreateTime: now,
+			UpdateTime: now,
+			Expires:    cExpires,
 		}
 
 		ret = Session.Save(session)
@@ -691,12 +704,16 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 查找session
+// 查找
 func findSessionHandle(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	sessionId := params.Get("sessionId")
+	sid, err := r.Cookie(SessionKey)
+	if err != nil {
+		log.Errorf("user not login: %s", err)
+		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		return
+	}
 
-	ret := Session.FindOne(sessionId)
+	ret := Session.FindOne(sid.Value)
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
@@ -710,14 +727,25 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 
 // 删除session
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	sessionId := params.Get("sessionId")
+	sid, err := r.Cookie(SessionKey)
+	if err != nil {
+		log.Errorf("user not login: %s", err)
+		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		return
+	}
 
-	ret := Session.Delete(sessionId)
+	ret := Session.Delete(sid.Value)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:   "QUICKMASTERID",
+		Value:  "",
+		Path:   "/master",
+		MaxAge: -1,
+	})
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)

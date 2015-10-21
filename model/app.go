@@ -93,18 +93,24 @@ type AppTxn struct {
 
 // AppUser 云收银用户
 type AppUser struct {
-	UserName  string `json:"username,omitempty" bson:"userName,omitempty"`
-	Password  string `json:"-" bson:"password,omitempty"`
-	Activate  string `json:"activate,omitempty" bson:"activate,omitempty"`
-	MerId     string `json:"clientid,omitempty" bson:"merId,omitempty"`
-	Limit     string `json:"limit,omitempty" bson:"limit,omitempty"`
-	SignKey   string `json:"signKey,omitempty" bson:"signKey,omitempty"`
-	AgentCode string `json:"inscd,omitempty" bson:"inscd,omitempty"`
+	UserName   string `json:"username,omitempty" bson:"userName,omitempty"`
+	Password   string `json:"-" bson:"password,omitempty"`
+	Activate   string `json:"activate,omitempty" bson:"activate,omitempty"`
+	MerId      string `json:"clientid,omitempty" bson:"merId,omitempty"`
+	Limit      string `json:"limit,omitempty" bson:"limit,omitempty"`
+	CreateTime string `json:"-" bson:"createTime,omitempty"`
+	Remark     string `json:"-" bson:"remark,omitempty"`
+	UpdateTime string `json:"-" bson:"updateTime,omitempty"`
+
+	// 清算相关信息不存
+	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
+	Payee     string `json:"payee,omitempty" bson:"-"`
+	PayeeCard string `json:"payee_card,omitempty" bson:"-"`
+	PhoneNum  string `json:"phone_num,omitempty" bson:"-"`
+	// 商户里的不存
+	SignKey   string `json:"signKey,omitempty" bson:"-"`
+	AgentCode string `json:"inscd,omitempty" bson:"-"`
 	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
-	BankOpen  string `json:"bank_open,omitempty" bson:"bankOpen,omitempty"`
-	Payee     string `json:"payee,omitempty" bson:"payee,omitempty"`
-	PayeeCard string `json:"payee_card,omitempty" bson:"payeeCard,omitempty"`
-	PhoneNum  string `json:"phone_num,omitempty" bson:"phoneNum,omitempty"`
 }
 
 // Email 发送email记录

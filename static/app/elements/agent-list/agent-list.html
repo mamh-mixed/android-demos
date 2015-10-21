@@ -40,16 +40,14 @@
         <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
             <div class="th">代理代码</div>
-            <div class="th" align="left">代理名称</div>
-            <div class="th" align="right">微信成本</div>
-            <div class="th" align="right">支付宝成本</div>
+            <div class="th left">代理名称</div>
+            <div class="th right">微信成本</div>
+            <div class="th right">支付宝成本</div>
             <div class="th">操作</div>
           </div>
         </div>
@@ -75,7 +73,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
       </div>
     </form>
@@ -127,7 +125,6 @@
           this.set('cond.page', 1);
           this.generateAjaxRequest();
         },
-
         generateAjaxRequest: function() {
           this.agents = [];
           this.$.formQuery.submit();

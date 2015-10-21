@@ -13,20 +13,25 @@
     :host {
       display: block;
       text-align: left;
+      --paper-input-container-input: {
+        font-size: 16px;
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
+      --paper-input-container-label: {
+        font-size: 14px;
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
     }
 
     .logo {
-      width: 30px;
-      height: 30px;
       text-align: center;
     }
 
-    .loginHeader {
-      text-align: center;
-      width: 100%;
-      height: 120px;
-      line-height: 120px;
-      vertical-align: middle;
+    .circle {
+      margin: 10px auto;
+      border-radius: 48px;
     }
 
     paper-button {
@@ -39,9 +44,9 @@
     .login-inner {
       width: 70%;
       margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @apply(--layout-vertical);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
       height: 100%;
     }
 
@@ -72,8 +77,14 @@
       @apply(--layout-self-end);
       @apply(--layout-flex);
     }
+
   </style>
   <template>
+
+    <div class="logo">
+      <img src="../../images/touch/ms-touch-icon-144x144-precomposed.png" alt="" class="circle">
+      <div class="app-name">云收银管理平台</div>
+    </div>
     <div class="login-inner">
       <form id="loginForm">
         <div class="row">
@@ -88,7 +99,9 @@
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="showLoginForm"></iron-localstorage>
+    <iron-localstorage name="SESSIONID" value="{{sessionId}}"></iron-localstorage>
+    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
+    <iron-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></iron-ajax>
     <iron-ajax id="loginAjax" method="POST" url="/master/login" handle-as="json" debounce-duration="1000" on-response="handleLoginResponse"></iron-ajax>
   </template>
   <script src="../../scripts/util.js"></script>
@@ -140,9 +153,10 @@
             password: ''
           };
 
-          this.sessionId = response.data;
+          this.set('sessionId', response.data.sessionId);
+          this.set('userType', response.data.userType);
           if (this.redirect) {
-            window.location.href = 'index.html';
+            document.querySelector('#appRouter').go('/trade/list');
           } else {
             Util.hideLoginDialog();
           }
@@ -151,8 +165,35 @@
         handleEnterKeyPresse: function(e) {
           this.loginTapHandle();
         },
-        showLoginForm: function() {}
+        // 核对是否登入
+        checkIsLogin: function() {
+          this.$.findSessionAjax.params = {
+            'sessionId': this.sessionId,
+          };
+          this.$.findSessionAjax.generateRequest();
+        },
+        handleFindSessionResponse: function(e) {
+          var response = e.detail.response;
+          // 如果没有登录
+          if (response.status !== 0) {
+            // 当前页面就是登录页
+            if (this.redirect) {
+              return
+            }
+            // 当前页面不是登录页，则跳转到登录页
+            document.querySelector('#appRouter').go('/');
+            return;
+          }
+
+          // 登录了，但当前页是登录页，不必再登录了，跳走
+          if (this.redirect) {
+            document.querySelector('#appRouter').go('/trade/list');
+            return
+          }
+
+        }
       });
     })();
+
   </script>
 </dom-module>

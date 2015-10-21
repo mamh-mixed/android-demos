@@ -54,12 +54,12 @@
             <div class="th" align="center">序号</div>
             <div class="th" align="center">应答码</div>
             <div class="th" align="center">商户代码</div>
-            <div class="th" align="left">商户订单</div>
+            <div class="th left">商户订单</div>
             <!-- <div class="th" align="left">绑定 ID</div>
             <div class="th" align="left">用户账号</div>
             <div class="th" align="left">用户名</div> -->
             <div class="th" align="center">交易类型</div>
-            <div class="th" align="right">金额(元)</div>
+            <div class="th right">金额(元)</div>
             <div class="th" align="center">渠道</div>
             <div class="th" align="center">交易状态</div>
             <div class="th" align="center">退款</div>
@@ -71,9 +71,11 @@
           <template is="dom-repeat" items="{{trades}}">
             <div class="tr">
               <div class="td" align="center">{{addOneFilter(index)}}</div>
-              <div class="td" align="center" class$="{{getRespCodeColor(item.respcd)}}" style="position: relative;">
-                <span id="{{ _computeRespCodeTooltipId(index) }}" class="abbr">{{item.respcd}}</span>
-                <paper-tooltip for="{{ _computeRespCodeTooltipId(index) }}" position="right">{{item.errorDetail}}</paper-tooltip>
+              <div class="td" align="center">
+                <div class$="{{getRespCodeColor(item.respcd)}}" style="position: relative;">
+                  <span id="{{ _computeRespCodeTooltipId(index) }}" class="abbr">{{item.respcd}}</span>
+                  <paper-tooltip for="{{ _computeRespCodeTooltipId(index) }}" position="right">{{item.errorDetail}}</paper-tooltip>
+                </div>
               </div>
               <div class="td" align="center">{{item.merId}}</div>
               <div class="td" align="left">{{item.orderNum}}</div>
@@ -171,7 +173,7 @@
         this.refundStatusMap = {
           1: '已退款',
           2: '部分退款',
-          0: '无退款'
+          0: ''
         };
         this.tStatusMap = {
           '10': '处理中',

@@ -33,41 +33,36 @@
         <paper-input name="userName" label="用户名"></paper-input>
         <paper-input name="mail" label="邮箱"></paper-input>
         <paper-input name="phoneNum" label="手机号"></paper-input>
-        <x-select id="merStatus" name="userType" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
+        <x-select name="userRole" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
         <paper-input name="agentCode" label="代理代码"></paper-input>
-        <!-- <paper-input name="subAgentCode" label="公司代码"></paper-input> -->
-        <!-- <paper-input name="agentName" label="代理名称"></paper-input> -->
+        <paper-input name="subAgentCode" label="公司代码"></paper-input>
         <paper-input name="groupCode" label="商户代码"></paper-input>
-        <!-- <paper-input name="groupName" label="集团名称"></paper-input> -->
         <paper-input name="merId" label="门店代码"></paper-input>
-        <!-- <paper-input name="merName" label="商户名称"></paper-input> -->
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
-            <div class="th" class="left">用户名</div>
-            <div class="th" class="left">别名</div>
-            <div class="th" class="left">用户类型</div>
-            <div class="th" class="left">邮箱</div>
-            <div class="th" class="left">手机号</div>
-            <div class="th" class="left">代理代码</div>
-            <div class="th" class="left">公司代码</div>
-            <div class="th" class="left">商户代码</div>
-            <div class="th" class="left">门店代码</div>
+            <div class="th left">用户名</div>
+            <div class="th left">别名</div>
+            <div class="th left">用户类型</div>
+            <div class="th left">邮箱</div>
+            <div class="th left">手机号</div>
+            <div class="th left">代理代码</div>
+            <div class="th left">公司代码</div>
+            <div class="th left">商户代码</div>
+            <div class="th left">门店代码</div>
           </div>
         </div>
         <div class="tbody">
           <template is="dom-repeat" items="{{users}}">
             <div class="tr">
-              <div class="td center hand" on-click="viewUserTap">
+              <div class="td center">
                 <span>{{addOneFilter(index)}}</span>
               </div>
               <div class="td">
-                <span>{{item.userName}}</span>
+                <a on-tap="viewUserTap">{{item.userName}}</a>
               </div>
               <div class="td">
                 <span>{{item.nickName}}</span>
@@ -98,7 +93,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="handleQueryTapped"></x-pagination>
         </div>
       </div>
     </form>
@@ -134,6 +129,11 @@
           }
         },
         ready: function() {
+          this.cond = {
+            page: 1,
+            size: 20,
+            total: 0
+          };
           this.users = [];
           this.userType = {};
           this.userTypeMap = {

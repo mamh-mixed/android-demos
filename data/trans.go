@@ -36,18 +36,31 @@ func Import(w http.ResponseWriter, r *http.Request) {
 	et := r.FormValue("et")
 	t := r.FormValue("type")
 
-	if t == "trans" {
+	switch t {
+	case "trans":
 		go func() {
 			err := AddTransFromOldDB(st, et)
 			if err != nil {
 				log.Error(err)
 			}
 		}()
-	}
-
-	if t == "merchant" {
+	case "merchant":
 		go func() {
 			err := DoSyncMerchant("/Users/zhiruichen/Desktop/product_pem/")
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	case "app":
+		go func() {
+			err := AsyncAppUser()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	case "settInfo":
+		go func() {
+			err := AsyncSettInfo()
 			if err != nil {
 				log.Error(err)
 			}
@@ -62,6 +75,8 @@ type txn struct {
 	Date    string `bson:"gw_date"`
 	Time    string `bson:"gw_time"`
 	Request struct {
+		Attach       string `bson:"attach"`
+		BackUrl      string `bson:"backUrl"`
 		Busicd       string `bson:"busicd"`
 		Txndir       string `bson:"txndir"`
 		Inscd        string `bson:"inscd"`
@@ -73,6 +88,9 @@ type txn struct {
 		OrigOrderNum string `bson:"origOrderNum"`
 		Currency     string `bson:"currency"`
 		GoodsInfo    string `bson:"goodsInfo"`
+		TradeFrom    string `bson:"tradeFrom"`
+		Code         string `bson:"code"`
+		VeriCode     string `bson:"veriCode"`
 	} `bson:"m_request"`
 	Merchant        merchant `bson:"merchant"`
 	ChanRespCode    string   `bson:"resposeDetail"`
@@ -84,6 +102,18 @@ type txn struct {
 	ConsumerAccount string   `bson:"consumerAccount"`
 	ConsumerId      string   `bson:"consumerId"`
 	Status          string   `bson:"status"`
+	Payjson         struct {
+		UserInfo struct {
+			OpenID     string `bson:"openid"`
+			NickName   string `bson:"nickname"`
+			Sex        int    `bson:"sex"`
+			Language   string `bson:"language"`
+			City       string `bson:"city"`
+			Province   string `bson:"province"`
+			Country    string `bson:"country"`
+			Headimgurl string `bson:"headimgurl"`
+		} `bson:"userinfo"`
+	} `bson:"payjson"`
 }
 
 func AddTransFromOldDB(st, et string) error {
@@ -118,6 +148,9 @@ func AddTransFromOldDB(st, et string) error {
 	for _, t := range txns {
 		tran := &model.Trans{}
 		tran.Id = bson.NewObjectId()
+		tran.Attach = t.Request.Attach
+		tran.NotifyUrl = t.Request.BackUrl
+		tran.TradeFrom = t.Request.TradeFrom
 		tran.MerId = t.Merchant.Clientid
 		tran.Terminalid = t.Request.Terminalid
 		tran.AgentCode = t.Merchant.AgentCode
@@ -127,7 +160,6 @@ func AddTransFromOldDB(st, et string) error {
 		tran.UpdateTime = tran.CreateTime
 		tran.MerDiscount = t.MerDiscount
 		tran.ChanDiscount = t.ChcdDiscount
-		tran.Busicd = t.Request.Busicd
 		tran.ChanCode = t.Request.Chcd
 		tran.Remark = "old_system_trans"
 		tran.GoodsInfo = t.Request.GoodsInfo
@@ -138,6 +170,22 @@ func AddTransFromOldDB(st, et string) error {
 		tran.AgentName = agentsMap[tran.AgentCode]
 		tran.GroupCode = t.Merchant.Group.GroupCode
 		tran.GroupName = t.Merchant.Group.GroupName
+
+		// JSZF一些字段
+		tran.GatheringId = t.Payjson.UserInfo.OpenID
+		tran.NickName = t.Payjson.UserInfo.NickName
+		tran.HeadImgUrl = t.Payjson.UserInfo.Headimgurl
+		tran.VeriCode = t.Request.VeriCode
+
+		// 旧系统没有JSZF类型
+		tran.Busicd = t.Request.Busicd
+		if tran.Busicd == model.Purc {
+			// 如果是PURC类型，并且code不为空，那么就是JSZF
+			if t.Request.Code != "" {
+				tran.Busicd = model.Jszf
+			}
+		}
+
 		if tran.ChanCode == "ALP" {
 			tran.ChanMerId = t.Merchant.Alp.PartnerId
 			// 讯联清算

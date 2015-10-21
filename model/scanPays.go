@@ -3,10 +3,11 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
-	"strings"
 )
 
 // busiType
@@ -29,6 +30,8 @@ type QueryCondition struct {
 	Col          string   `json:"-"`
 	BindingId    string   `json:"bindingId"`
 	AgentCode    string   `json:"agentCode,omitempty"`
+	SubAgentCode string   `json:"subAgentCode,omitempty"`
+	GroupCode    string   `json:"groupCode,omitempty"`
 	TransStatus  []string `json:"transStatus,omitempty"`
 	RefundStatus int      `json:"refundStatus,omitempty"`
 	TransType    int      `json:"transType,omitempty"`
@@ -43,7 +46,6 @@ type QueryCondition struct {
 	Total        int      `json:"total,omitempty"`
 	Size         int      `json:"size,omitempty"`
 	IsForReport  bool     `json:"-"`
-	GroupCode    string   `json:"groupCode,omitempty"`
 	Respcd       string   `json:"respcd" url:"respcd"`
 	RespcdNotIn  string   `json:"respcdNotIn"`
 	TradeFrom    string   `json:"tradeFrom,omitempty"`
@@ -159,6 +161,7 @@ type ScanPayRequest struct {
 	NeedUserInfo string `json:"needUserInfo,omitempty" url:"needUserInfo,omitempty" bson:"needUserInfo,omitempty"` // 是否需要获取用户信息
 	VeriCode     string `json:"veriCode,omitempty" url:"veriCode,omitempty" bson:"veriCode,omitempty"`             // js支付用到的凭证
 	Attach       string `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
+	TimeExpire   string `json:"timeExpire,omitempty" url:"timeExpire,omitempty" bson:"timeExpire,omitempty"` // 过期时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
@@ -249,6 +252,7 @@ type ScanPayResponse struct {
 	ChanRespCode string `json:"-" url:"-" bson:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-" bson:"-"`
 	ErrorCode    string `json:"-" url:"-" bson:"-"`
+	PayTime      string `json:"-" url:"-" bson:"-"`
 }
 
 // PayJson 公众号支付字段

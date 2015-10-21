@@ -1,0 +1,51 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../elements/login-form/login-form.html">
+
+<dom-module id="user-login">
+  <style>
+    .container {
+      width: 100%;
+      min-height: 100%;
+      background: #00BCD4;
+      font-family: 'Roboto', 'Noto', sans-serif;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      @apply(--layout-vertical);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+    }
+
+    .loginWrapper {
+      width: 300px;
+      background: #ffffff;
+    }
+
+    .user-alert {
+      margin: 10px 20px 30px;
+      font-size: 10px;
+      color: blue;
+    }
+
+    paper-material {
+      padding-top: 30px;
+    }
+  </style>
+  <template>
+    <div class="container">
+      <paper-material elevation="5" class="loginWrapper">
+        <login-form redirect></login-form>
+        <div class="user-alert">如果您还没有用户名、密码，请联系讯联数据运营中心为您分配。</div>
+      </paper-material>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "user-login",
+    });
+  </script>
+</dom-module>

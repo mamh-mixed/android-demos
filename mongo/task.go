@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"github.com/CardInfoLink/quickpay/model"
+	// "github.com/omigo/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -12,33 +14,27 @@ type taskCollection struct {
 	name string
 }
 
-type task struct {
-	Name            string `bson:"name"`
-	IsSingleProcess bool   `bson:"isSignleProcess"`
-	// IsProcessSuccess bool   `bson:"isProcessSuccess"`
-	IsDoing    bool   `bson:"isDoing"`
-	UpdateTime string `bson:"updateTime"`
-}
-
 // Add 增加一个任务
-func (t *taskCollection) Add(taskName string, isSingleProcess bool) error {
+func (t *taskCollection) Add(task *model.Task) error {
 
-	if isSingleProcess {
-		_, err := database.C(t.name).Upsert(bson.M{"name": taskName}, bson.M{
-			"$set": bson.M{"name": taskName},
-		})
+	count, err := database.C(t.name).Find(bson.M{"name": task.Name}).Count()
+	if err != nil {
 		return err
 	}
 
-	return database.C(t.name).Insert(&task{
-		Name: taskName,
-	})
+	if count == 0 {
+		task.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+		task.UpdateTime = task.CreateTime
+		err = database.C(t.name).Insert(task)
+	}
+
+	return err
 }
 
 // Pop 推出一个任务
-func (t *taskCollection) Pop(taskName string) error {
+func (t *taskCollection) Pop(task *model.Task) error {
 	query := bson.M{
-		"name":    taskName,
+		"name":    task.Name,
 		"isDoing": bson.M{"$ne": true},
 	}
 
@@ -48,25 +44,29 @@ func (t *taskCollection) Pop(taskName string) error {
 			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
 		},
 	}
+	change.ReturnNew = true
 
-	_, err := database.C(t.name).Find(query).Apply(change, &task{})
+	_, err := database.C(t.name).Find(query).Apply(change, task)
 
 	return err
 }
 
 // Finish 完成一个任务
-func (t *taskCollection) Finish(taskName string) error {
+func (t *taskCollection) Finish(task *model.Task) error {
 	query := bson.M{
-		"name":    taskName,
+		"name":    task.Name,
 		"isDoing": true,
 	}
 
 	change := mgo.Change{}
 	change.Update = bson.M{
-		"$set": bson.M{"isDoing": false},
+		"$set": bson.M{"isDoing": false,
+			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+		},
 	}
+	change.ReturnNew = true
 
-	_, err := database.C(t.name).Find(query).Apply(change, &task{})
+	_, err := database.C(t.name).Find(query).Apply(change, task)
 
 	return err
 }

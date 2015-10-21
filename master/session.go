@@ -9,9 +9,11 @@ import (
 	"github.com/omigo/log"
 )
 
-type session struct{}
+const SessionKey = "QUICKMASTERID"
 
-var Session session
+type sessionService struct{}
+
+var Session sessionService
 var expiredTime = time.Duration(goconf.Config.App.SessionExpiredTime)
 
 func init() {
@@ -34,9 +36,9 @@ func timingClearSession() {
 	}
 }
 
-// 新建用户
-func (s *session) Save(session *model.Session) (ret *model.ResultBody) {
-
+// 新建会话
+func (s *sessionService) Save(session *model.Session) (ret *model.ResultBody) {
+	session.UserType = session.User.UserType
 	err := mongo.SessionColl.Add(session)
 	if err != nil {
 		log.Errorf("创建session失败,%s", err)
@@ -45,18 +47,18 @@ func (s *session) Save(session *model.Session) (ret *model.ResultBody) {
 	ret = &model.ResultBody{
 		Status:  0,
 		Message: "创建session成功",
-		Data:    session.SessionID,
+		Data:    session,
 	}
 	return ret
 }
 
 // FindOne 根据sessionID查找session
-func (s *session) FindOne(sessionID string) (ret *model.ResultBody) {
+func (s *sessionService) FindOne(sessionID string) (ret *model.ResultBody) {
 	log.Debugf("sessionID=%s", sessionID)
 
 	session, err := mongo.SessionColl.Find(sessionID)
 	if err != nil {
-		log.Errorf("查询session(%s)出错:%s", sessionID, err)
+		log.Errorf("find session(%s) err: %s", sessionID, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 	user := session.User
@@ -73,7 +75,7 @@ func (s *session) FindOne(sessionID string) (ret *model.ResultBody) {
 }
 
 // Delete 根据sessionID删除session
-func (s *session) Delete(sessionID string) (ret *model.ResultBody) {
+func (s *sessionService) Delete(sessionID string) (ret *model.ResultBody) {
 	log.Debugf("sessionID=%s", sessionID)
 
 	err := mongo.SessionColl.Remove(sessionID)

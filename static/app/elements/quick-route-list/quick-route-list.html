@@ -29,22 +29,20 @@
         <paper-input id="payType" name="pay" value="bp" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
-            <div class="th" class="left">机构商户代码</div>
-            <div class="th" class="left">卡品牌</div>
-            <div class="th" class="left">渠道商户代码</div>
+            <div class="th left">机构商户代码</div>
+            <div class="th left">卡品牌</div>
+            <div class="th left">渠道商户代码</div>
             <div class="th">渠道代码</div>
             <div class="th">卡Bin组</div>
             <div class="th">卡类型</div>
             <div class="th">交易类型</div>
             <div class="th">输入方式</div>
-            <div class="th" class="right">起始金额</div>
-            <div class="th" class="right">最大金额</div>
+            <div class="th right">起始金额</div>
+            <div class="th right">最大金额</div>
             <div class="th">操作</div>
           </div>
         </div>
@@ -66,22 +64,22 @@
               <div class="td center">
                 <span>{{item.chanCode}}</span>
               </div>
-              <div class="td">
+              <div class="td center">
                 <span>{{item.binGroup}}</span>
               </div>
-              <div class="td">
+              <div class="td center">
                 <span>{{item.cardType}}</span>
               </div>
-              <div class="td">
+              <div class="td center">
                 <span>{{item.transType}}</span>
               </div>
-              <div class="td">
+              <div class="td center">
                 <span>{{item.inputWay}}</span>
               </div>
-              <div class="td">
+              <div class="td right">
                 <span>{{item.minAmount}}</span>
               </div>
-              <div class="td">
+              <div class="td right">
                 <span>{{item.maxAmount}}</span>
               </div>
               <div class="td center">
@@ -91,7 +89,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
       </div>
     </form>
@@ -166,10 +164,10 @@
         // 发送查询交易的ajax请求
         handleQueryTapped: function() {
           this.set('cond.page', 1);
-          this.routes = [];
           this.generateAjaxRequest();
         },
         generateAjaxRequest: function() {
+          this.routes = [];
           this.$.formQuery.submit();
         },
         // ajax请求响应处理

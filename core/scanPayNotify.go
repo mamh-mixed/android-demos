@@ -5,6 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/logs"
@@ -12,11 +18,6 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/omigo/log"
-	"net/http"
-	"net/url"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // ProcessAlipayNotify 支付宝异步通知处理
@@ -208,7 +209,8 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		OrigOrderNum: t.OrigOrderNum,
 		TransType:    t.Busicd,
 		MsgType:      3,
-		Msg:          req}
+		Msg:          req,
+	}
 
 	// 解锁
 	defer func() {
@@ -230,6 +232,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		}
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
+		ret.PayTime = req.TimeEnd
 		ret.ErrorCode = "SUCCESS"
 	default:
 		ret = adaptor.ReturnWithErrorCode("FAIL")

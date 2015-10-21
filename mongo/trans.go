@@ -161,6 +161,20 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts [
 		"origOrderNum": q.OrigOrderNum,
 		"transStatus":  "30",
 	}
+
+	if q.AgentCode != "" {
+		match["agentCode"] = q.AgentCode
+	}
+	if q.SubAgentCode != "" {
+		match["subAgentCode"] = q.SubAgentCode
+	}
+	if q.GroupCode != "" {
+		match["groupCode"] = q.GroupCode
+	}
+	if q.MerId != "" {
+		match["merId"] = q.MerId
+	}
+
 	cond := []bson.M{
 		{"$match": match},
 	}
@@ -171,17 +185,20 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts [
 	return ts, err
 }
 
-// FindHandingTrans 找到三十分钟前的处理中的交易
-func (col *transCollection) FindHandingTrans(d time.Duration) ([]model.Trans, error) {
+// FindHandingTrans 找到处理中的交易
+func (col *transCollection) FindHandingTrans(d time.Duration, busicd ...string) ([]model.Trans, error) {
 	q := bson.M{
 		"updateTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
 		"lockFlag":    0,
 		"transStatus": model.TransHandling,
 		"transType":   model.PayTrans,
 	}
+	if len(busicd) > 0 {
+		q["busicd"] = bson.M{"$in": busicd}
+	}
 
 	var ts []model.Trans
-	err := database.C(col.name).Find(q).Limit(1000).All(&ts)
+	err := database.C(col.name).Find(q).Sort("-updateTime").Limit(1000).All(&ts)
 
 	return ts, err
 }
@@ -315,6 +332,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.AgentCode != "" {
 		match["agentCode"] = q.AgentCode
 	}
+	if q.SubAgentCode != "" {
+		match["subAgentCode"] = q.SubAgentCode
+	}
 	if q.GroupCode != "" {
 		match["groupCode"] = q.GroupCode
 	}
@@ -406,6 +426,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 	}
 	if q.AgentCode != "" {
 		find["agentCode"] = q.AgentCode
+	}
+	if q.SubAgentCode != "" {
+		find["subAgentCode"] = q.SubAgentCode
 	}
 	if q.GroupCode != "" {
 		find["groupCode"] = q.GroupCode

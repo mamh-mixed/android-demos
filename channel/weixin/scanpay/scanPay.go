@@ -73,6 +73,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 		ErrorCode:       ec,
+		PayTime:         p.TimeEnd,
 	}
 	// 如果非大商户模式，用自己的 openid
 	if d.SubMchId == "" || p.SubOpenid == "" {
@@ -120,6 +121,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 		ErrorDetail:     msg,             // 错误信息   C
 		ChanRespCode:    p.ErrCode,       // 渠道详细应答码
 		ErrorCode:       ec,
+		PayTime:         p.TimeEnd,
 	}
 	// 如果非大商户模式，用自己的 openid
 	if d.SubMchId == "" || p.SubOpenid == "" {
@@ -139,8 +141,7 @@ func (sp *WeixinScanPay) ProcessEnquiry(m *model.ScanPayRequest) (ret *model.Sca
 func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *model.ScanPayResponse, err error) {
 
 	// 设置失效时间
-	startTime := time.Now()
-	endTime := startTime.Add(24 * time.Hour)
+	startTime, endTime := handleExpireTime(m.TimeExpire)
 
 	// 判断tradeType
 	tradeType := ""
@@ -153,19 +154,19 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 	d := &PrePayReq{
 		CommonParams: *getCommonParams(m),
 
-		DeviceInfo:     m.DeviceInfo,                       // 设备号
-		Body:           m.WxpMarshalGoods(),                // 商品描述
-		Attach:         m.SysOrderNum,                      // 附加数据 这里送系统订单号
-		OutTradeNo:     m.OrderNum,                         // 商户订单号
-		TotalFee:       m.ActTxamt,                         // 总金额
-		SpbillCreateIP: util.LocalIP,                       // 终端IP
-		TimeStart:      startTime.Format("20060102150405"), // 交易起始时间
-		TimeExpire:     endTime.Format("20060102150405"),   // 交易结束时间
-		NotifyURL:      weixinNotifyURL,                    // 通知地址
-		TradeType:      tradeType,                          // 交易类型
-		ProductID:      "",                                 // 商品ID
-		Openid:         m.OpenId,                           // 用户标识
-		GoodsGag:       m.GoodsTag,                         // 商品标记
+		DeviceInfo:     m.DeviceInfo,        // 设备号
+		Body:           m.WxpMarshalGoods(), // 商品描述
+		Attach:         m.SysOrderNum,       // 附加数据 这里送系统订单号
+		OutTradeNo:     m.OrderNum,          // 商户订单号
+		TotalFee:       m.ActTxamt,          // 总金额
+		SpbillCreateIP: util.LocalIP,        // 终端IP
+		TimeStart:      startTime,           // 交易起始时间
+		TimeExpire:     endTime,             // 交易结束时间
+		NotifyURL:      weixinNotifyURL,     // 通知地址
+		TradeType:      tradeType,           // 交易类型
+		ProductID:      "",                  // 商品ID
+		Openid:         m.OpenId,            // 用户标识
+		GoodsGag:       m.GoodsTag,          // 商品标记
 		// FeeType:        m.CurrType,                         // 货币类型
 		// Detail:         m.WxpMarshalGoods(),                // 商品详情
 	}
@@ -306,4 +307,29 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 	}
 
 	return ret, err
+}
+
+func handleExpireTime(expirtTime string) (string, string) {
+
+	layout := "20060102150405"
+	startTime := time.Now()
+	defaultEntTime := startTime.Add(24 * time.Hour)
+
+	var stStr, etStr = startTime.Format(layout), defaultEntTime.Format(layout)
+
+	if expirtTime == "" {
+		return stStr, etStr
+	}
+
+	et, err := time.ParseInLocation(layout, expirtTime, time.Local)
+	if err != nil {
+		return stStr, etStr
+	}
+
+	d := et.Sub(startTime)
+	if d < 5*time.Minute {
+		return stStr, startTime.Add(5 * time.Minute).Format(layout)
+	}
+
+	return stStr, expirtTime
 }

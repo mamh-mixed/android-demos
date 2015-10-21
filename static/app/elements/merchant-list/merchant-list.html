@@ -32,18 +32,16 @@
         <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
-            <div class="th" class="left">门店代码</div>
-            <div class="th" class="left">门店名称</div>
-            <div class="th" class="left">代理代码</div>
-            <div class="th" class="left">代理名称</div>
-            <div class="th" class="left">商户代码</div>
-            <div class="th" class="left">商户名称</div>
+            <div class="th left">门店代码</div>
+            <div class="th left">门店名称</div>
+            <div class="th left">代理代码</div>
+            <div class="th left">代理名称</div>
+            <div class="th left">商户代码</div>
+            <div class="th left">商户名称</div>
           </div>
         </div>
         <div class="tbody">
@@ -74,7 +72,7 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
       </div>
     </form>

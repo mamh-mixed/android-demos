@@ -46,14 +46,15 @@ func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
 	var file = xlsx.NewFile()
 
 	q := &model.QueryCondition{
-		MerId:     params.Get("merId"),
-		AgentCode: params.Get("agentCode"),
-		MerName:   params.Get("merName"),
-		GroupCode: params.Get("groupCode"),
-		StartTime: params.Get("startTime"),
-		EndTime:   params.Get("endTime"),
-		Page:      1,
-		Size:      maxReportRec,
+		MerId:        params.Get("merId"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		MerName:      params.Get("merName"),
+		GroupCode:    params.Get("groupCode"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		Page:         1,
+		Size:         maxReportRec,
 	}
 
 	qr := query.TransStatistics(q)

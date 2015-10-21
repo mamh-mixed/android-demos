@@ -19,10 +19,14 @@ import (
 	"time"
 )
 
-var interval = time.Duration(goconf.Config.App.OrderCloseTime)
+var (
+	closeInterval   = time.Duration(goconf.Config.App.OrderCloseTime)
+	refreshInterval = time.Duration(goconf.Config.App.OrderRefreshTime)
+)
 
 func init() {
-	crontab.RegisterTask(interval, "closeOrder", true, CloseOrder)
+	crontab.RegisterTask(refreshInterval, "refreshOrder", RefreshOrder)
+	crontab.RegisterTask(closeInterval, "closeOrder", CloseOrder)
 }
 
 // PublicPay 公众号页面支付
@@ -886,70 +890,119 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 
 // CloseOrder
 func CloseOrder() {
-
-	timer := time.NewTimer(interval)
-	ts, err := mongo.SpTransColl.FindHandingTrans(interval)
+	log.Info("process closeOrder ...")
+	ts, err := mongo.SpTransColl.FindHandingTrans(closeInterval)
 	if err != nil {
-		log.Warn("no handing trans found")
+		log.Errorf("find handing trans error: %s", err)
 		return
 	}
 
-	for _, t := range ts {
-		select {
-		case <-timer.C:
-			return
-		default:
-			// 锁住该交易
-			_, err = mongo.SpTransColl.FindAndLock(t.MerId, t.OrderNum)
-			if err != nil {
-				continue
-			}
-
-			// 获得渠道商户
-			c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-			if err != nil {
-				log.Errorf("find chanMer error:%s", err)
-				mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
-				continue
-			}
-
-			req := &model.ScanPayRequest{OrigOrderNum: t.OrderNum}
-			var closedResult *model.ScanPayResponse
-			ret := adaptor.ProcessEnquiry(&t, c, req)
-
-			// 还是处理中
-			if ret.Respcd == adaptor.InprocessCode {
-				switch t.ChanCode {
-				case channel.ChanCodeAlipay:
-					if ret.ChanRespCode == "TRADE_NOT_EXIST" {
-						// 该订单还没被扫，直接取消
-						closedResult = adaptor.ProcessClose(&t, c, req)
-					}
-					// 假如该ret.ChanRespCode == "WAIT_BUYER_PAY",那么不处理
-				case channel.ChanCodeWeixin:
-					closedResult = adaptor.ProcessWxpClose(&t, c, req)
-				}
-			}
-
-			// 已被关闭
-			if ret.Respcd == adaptor.CloseCode {
-				closedResult = &model.ScanPayResponse{Respcd: adaptor.SuccessCode}
-			}
-
-			// 对结果处理
-			if closedResult != nil {
-				if closedResult.Respcd == adaptor.SuccessCode {
-					// 关闭成功
-					t.TransStatus = model.TransClosed
-					t.RefundStatus = model.TransOverTimeClosed
-					mongo.SpTransColl.UpdateAndUnlock(&t)
-					continue
-				}
-			}
-
-			// 其他情况
-			updateTrans(&t, ret)
+	for _, tran := range ts {
+		// 锁住该交易
+		t, err := mongo.SpTransColl.FindAndLock(tran.MerId, tran.OrderNum)
+		if err != nil {
+			continue
 		}
+
+		// 可能已被更新
+		if t.TransStatus != model.TransHandling {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+			continue
+		}
+
+		// 获得渠道商户
+		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+		if err != nil {
+			log.Errorf("find chanMer error:%s", err)
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+			continue
+		}
+
+		// 记录请求日志的request
+		req := model.NewScanPayRequest()
+		req.OrigOrderNum = t.OrderNum
+		req.Mchntid = t.MerId
+		req.Busicd = model.Inqy
+
+		var closedResult *model.ScanPayResponse
+		ret := adaptor.ProcessEnquiry(t, c, req)
+
+		// 还是处理中
+		if ret.Respcd == adaptor.InprocessCode {
+			switch t.ChanCode {
+			case channel.ChanCodeAlipay:
+				if ret.ChanRespCode == "TRADE_NOT_EXIST" {
+					// 该订单还没被扫，直接取消
+					req.Busicd = model.Canc
+					closedResult = adaptor.ProcessClose(t, c, req)
+				}
+				// 假如该ret.ChanRespCode == "WAIT_BUYER_PAY",那么不处理
+			case channel.ChanCodeWeixin:
+				req.Busicd = model.Canc
+				closedResult = adaptor.ProcessWxpClose(t, c, req)
+			}
+		}
+
+		// 已被关闭
+		if ret.Respcd == adaptor.CloseCode {
+			closedResult = &model.ScanPayResponse{Respcd: adaptor.SuccessCode}
+		}
+
+		// 对结果处理
+		if closedResult != nil {
+			if closedResult.Respcd == adaptor.SuccessCode {
+				// 关闭成功
+				t.TransStatus = model.TransClosed
+				t.RefundStatus = model.TransOverTimeClosed
+				mongo.SpTransColl.UpdateAndUnlock(t)
+				continue
+			}
+		}
+
+		// 其他情况
+		updateTrans(t, ret)
+	}
+}
+
+// RefreshOrder 刷新支付交易，针对下单需要输入密码的
+func RefreshOrder() {
+	log.Info("process refreshOrder ...")
+	ts, err := mongo.SpTransColl.FindHandingTrans(0, model.Purc)
+	if err != nil {
+		log.Errorf("find handing trans error: %s", err)
+		return
+	}
+	for _, tran := range ts {
+		// 锁住该交易
+		t, err := mongo.SpTransColl.FindAndLock(tran.MerId, tran.OrderNum)
+		if err != nil {
+			continue
+		}
+
+		// 可能已被更新
+		if t.TransStatus != model.TransHandling {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+			continue
+		}
+
+		// 获得渠道商户
+		c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+		if err != nil {
+			log.Errorf("find chanMer error:%s", err)
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+			continue
+		}
+
+		// 记录请求日志的request
+		req := model.NewScanPayRequest()
+		req.OrigOrderNum = t.OrderNum
+		req.Mchntid = t.MerId
+		req.Busicd = model.Inqy
+
+		ret := adaptor.ProcessEnquiry(t, c, req)
+
+		// 更新
+		updateTrans(t, ret)
 	}
 }
 
@@ -1037,10 +1090,15 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.ChanOrderNum = ret.ChannelOrderNum
 	t.ChanDiscount = ret.ChcdDiscount
 	t.MerDiscount = ret.MerDiscount
-	t.ConsumerAccount = ret.ConsumerAccount
-	t.ConsumerId = ret.ConsumerId
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
+	t.PayTime = dateFormat(ret.PayTime)
+	if ret.ConsumerAccount != "" {
+		t.ConsumerAccount = ret.ConsumerAccount
+	}
+	if ret.ConsumerId != "" {
+		t.ConsumerId = ret.ConsumerId
+	}
 
 	// 根据应答码判断交易状态
 	switch ret.Respcd {
@@ -1063,6 +1121,8 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.GroupCode = orig.GroupCode
 	current.GroupName = orig.GroupName
 	current.ShortName = orig.ShortName
+	current.SubAgentCode = orig.SubAgentCode
+	current.SubAgentName = orig.SubAgentName
 	current.ConsumerAccount = orig.ConsumerAccount
 	current.SettRole = orig.SettRole
 }
@@ -1076,4 +1136,17 @@ func signWithMD5(s interface{}, key string) string {
 	sign := buf.String() + "&key=" + key
 	md5Bytes := md5.Sum([]byte(sign))
 	return fmt.Sprintf("%X", md5Bytes[:])
+}
+
+func dateFormat(payTime string) string {
+	if payTime == "" {
+		return ""
+	}
+
+	if len(payTime) == 14 {
+		return payTime[0:4] + "-" + payTime[4:6] + "-" + payTime[6:8] + " " + payTime[8:10] + ":" + payTime[10:12] + ":" + payTime[12:14]
+	} else {
+		log.Errorf("payTime format error, expect length=14, but get length=%d, patTime=%s", len(payTime), payTime)
+		return ""
+	}
 }

@@ -9,8 +9,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-          min-width: 300px;
-          min-height: 300px;
+        min-width: 300px;
+        min-height: 300px;
       }
     }
 
@@ -22,7 +22,8 @@
       @apply(--layout-horizontal);
     }
 
-    .row paper-input {
+    .row paper-input,
+    .row x-select {
       min-width: 300px;
     }
 
@@ -36,16 +37,13 @@
       <h2>创建公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
+          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode1"></x-select>
+        </div>
+        <div class="row">
           <paper-input label="公司代码" value="{{subAgent.subAgentCode::input}}"></paper-input>
         </div>
         <div class="row">
           <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="代理代码" value="{{subAgent.agentCode::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="代理名称" value="{{subAgent.agentName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -58,16 +56,13 @@
       <h2>编辑公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
+          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode2"></x-select>
+        </div>
+        <div class="row">
           <paper-input label="公司代码" value="{{subAgent.subAgentCode::input}}" disabled></paper-input>
         </div>
         <div class="row">
           <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="代理代码" value="{{subAgent.agentCode::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="代理名称" value="{{subAgent.agentName::input}}"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -75,20 +70,58 @@
         <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
       </div>
     </paper-dialog>
-
+    <x-ajax auto id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'sub-agent-editor',
-
         properties: {
           subAgent: {
-            type:Object
+            type: Object
           }
         },
-        ready: function(){
-          this.subAgent={};
+        ready: function() {
+          this.subAgent = {};
+        },
+        attributeChanged: function(attribute) {
+          if (attribute === 'sub-agent') {
+            this.agent = {
+              key: this.subAgent.agentCode,
+              value: this.subAgent.agentName
+            };
+          }
+        },
+        observers: [
+          '_watchAgentChange(agent.*)',
+        ],
+        _watchAgentChange: function(target) {
+          if (target && target.path === 'agent') {
+            this.set('subAgent.agentCode', target.value.key);
+            this.set('subAgent.agentName', target.value.value);
+          }
+        },
+        // 代理列表响应
+        handleQueryAgentsResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast('加载代理列表失败', 3000);
+            return;
+          }
+
+          var pagination = response.data;
+          if (pagination.count <= 0) {
+            Util.toast('没有代理数据', 2000);
+            return;
+          }
+
+          var agents = response.data.data.slice(0);
+          this.set('agents', agents.map(function(item) {
+            return {
+              key: item.agentCode,
+              value: item.agentName
+            };
+          }));
         },
         open1: function() {
           this.$.dialogAdd.open();
@@ -109,11 +142,12 @@
             Util.toast(response.message, 3000);
             return;
           }
+          this.agent = {};
           this.$.dialogAdd.close();
           this.$.dialogEdit.close();
           this.fire('saved');
           this.set('subAgent', {});
-        }
+        },
       });
     })();
   </script>

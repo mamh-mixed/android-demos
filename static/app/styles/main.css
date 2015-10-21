@@ -3,7 +3,7 @@ body {
   color: #333;
 }
 #mainContainer > .content {
-  padding: 20px;
+  padding: 0 20px 20px 20px;
 }
 paper-toast#toast {
   z-index: 10;
@@ -39,6 +39,7 @@ div.divider.line {
 
 .table {
   display: table;
+  width: 100%;
 }
 .table .thead, .table .tbody, .table .tfoot {
   display: table-row-group;
@@ -47,10 +48,12 @@ div.divider.line {
   display: table-row;
 }
 .table .th {
+  font-weight: bold;
   text-align: center;
 }
 .table .th, .table .td {
   display: table-cell;
+  width: 1%;
 }
 .table.data-grid {
   width: 100%;
@@ -61,19 +64,20 @@ div.divider.line {
   border: 1px solid #ddd;
   margin: 10px auto;
 }
-.table.data-grid > .thead, .table.data-grid > .tfoot, .table.data-grid > .wedge {
+.table.data-grid tr {
   line-height: 1.42857143;
 }
 .table.data-grid .th, .table.data-grid .td {
   width: 1%;
+  vertical-align: middle;
 }
-.table.data-grid .th, .table.data-grid .td{
+.table.data-grid .th, .table.data-grid .td {
   white-space: nowrap;
   padding: 6px;
 }
- .table.data-grid .wedge {
-     padding: 3px;
- }
+.table.data-grid .wedge {
+  padding: 3px;
+}
 .table.data-grid.low .th, .table.data-grid.low .td {
   padding: 3px 8px;
 }
@@ -86,7 +90,7 @@ div.divider.line {
 .table.data-grid > .wedge {
   text-align: right;
 }
-.table.data-grid > .tbody > .tr:hover {
+.table.data-grid > .tbody > .tr:hover, .table.data-grid .tr.hover:hover {
   background-color: rgba(0, 188, 212, 0.17) !important;
 }
 .table.data-grid > .tbody > .tr:nth-child(even) {
@@ -98,18 +102,31 @@ div.divider.line {
 .table.data-grid > .tbody > .tr > .th {
   text-align: left;
 }
+.table.data-grid .tr.pagination {
+  height: 30px;
+}
+.table.data-grid .tr.pagination > * {
+  position: absolute;
+  right: 24px;
+  line-height: 30px;
+}
 
 /* code 样式 */
 
-pre {
-  font-family: monospace;
+pre, code {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 10px;
+  margin: 0;
+  padding: 3px;
 }
 
 /* mouse */
 
 .hand {
   cursor: pointer;
+}
+.nowrap {
+  white-space: nowrap;
 }
 
 /* colors */
@@ -120,20 +137,26 @@ pre {
 .green {
   color: #00C853;
 }
-.blue {
+.yellow {
   color: #E65100;
+}
+.blue {
+  color: #0000FF;
+}
+.primary {
+  color: #00BCD4;
 }
 
 /* align */
 
 .left {
-  text-align: left;
+  text-align: left!important;
 }
 .right {
-  text-align: right;
+  text-align: right!important;
 }
 .center {
-  text-align: center;
+  text-align: center!important;
 }
 .paper-button-1 {
   display: inline-block;

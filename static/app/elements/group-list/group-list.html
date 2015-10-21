@@ -37,16 +37,16 @@
 
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
-      <div class="divider blank"></div>
-      <div class="divider blank"></div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
             <div class="th">序号</div>
-            <div class="th" align="left">商户代码</div>
-            <div class="th" align="left">商户名称</div>
-            <div class="th">代理代码</div>
-            <div class="th" align="left">代理名称</div>
+            <div class="th left">商户代码</div>
+            <div class="th left">商户名称</div>
+            <div class="th left">代理代码</div>
+            <div class="th left">代理名称</div>
+            <div class="th left">公司代码</div>
+            <div class="th left">公司名称</div>
             <div class="th">操作</div>
           </div>
         </div>
@@ -62,11 +62,17 @@
               <div class="td">
                 <span>{{item.groupName}}</span>
               </div>
-              <div class="td center">
+              <div class="td">
                 <span>{{item.agentCode}}</span>
               </div>
               <div class="td">
                 <span>{{item.agentName}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.subAgentCode}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.subAgentName}}</span>
               </div>
               <div class="td center">
                 <iron-icon icon="create" on-tap="handleEditEvent"></iron-icon>
@@ -76,14 +82,14 @@
           </template>
         </div>
         <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
       </div>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
     </paper-fab>
 
-    <group-editor id="groupEditor" on-saved="handleGroupSave"></group-editor>
+    <group-editor id="groupEditor" on-saved="handleGroupSave" group$="{{editableGroup}}"></group-editor>
     <group-delete id="groupDelete" on-saved="handleGroupSave"></group-delete>
     <x-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
 
@@ -132,7 +138,6 @@
           this.set('cond.page', 1);
           this.generateAjaxRequest();
         },
-
         generateAjaxRequest: function() {
           this.groups = [];
           this.$.formQuery.submit();
@@ -216,7 +221,8 @@
 
         // 编辑商户
         handleEditEvent: function(e) {
-          this.$.groupEditor.group = e.model.item;
+          // this.$.groupEditor.group = e.model.item;
+          this.set('editableGroup', e.model.item);
           this.$.groupEditor.open2();
         },
 

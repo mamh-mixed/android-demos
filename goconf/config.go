@@ -19,6 +19,7 @@ type configStruct struct {
 		DefaultCacheTime   Duration
 		NotifyURL          string
 		OrderCloseTime     Duration
+		OrderRefreshTime   Duration
 		SessionExpiredTime Duration
 	}
 
@@ -57,6 +58,11 @@ type configStruct struct {
 		URL          string
 		NotifyUrl    string
 		AgentId      string
+	}
+
+	MobileApp struct {
+		WXPMerId string
+		ALPMerId string
 	}
 }
 

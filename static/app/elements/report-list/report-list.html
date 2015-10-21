@@ -11,6 +11,21 @@
       display: block;
     }
 
+    .thead .th.rowspan-cell {
+      padding: 0 !important;
+      position: relative;
+    }
+
+    .rowspan-top {
+      position: relative;
+      left: -50%;
+      line-height: 30px;
+    }
+
+    .rowspan-bottom {
+      border-top: 1px solid #ddd;
+      line-height: 30px;
+    }
   </style>
   <template>
     <div class="condition search-condition">
@@ -33,46 +48,44 @@
       </paper-dialog>
 
       <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
+      <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}"></paper-input>
       <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="门店名称" value="{{cond.merName::input}}"></paper-input>
       <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
-
     </div>
-
     <div class="data-grid table">
       <div class="thead">
         <div class="tr">
-          <div class="th" rowspan="2">序号</div>
-          <div class="th" rowspan="2">
-            门店代码
+          <div class="th">序号</div>
+          <div class="th">门店代码</div>
+          <div class="th">门店名称</div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom">笔数</div>
           </div>
-          <div class="th" rowspan="2">
-            门店名称
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">汇总</div>
+            <div class="rowspan-bottom">金额(元)</div>
           </div>
-          <div class="th" colspan="2">
-            汇总
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom">笔数</div>
           </div>
-          <div class="th" colspan="2">
-            支付宝
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">支付宝</div>
+            <div class="rowspan-bottom">金额(元)</div>
           </div>
-          <div class="th" colspan="2">
-            微信
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom">笔数</div>
           </div>
-          <div class="th" rowspan="2">
-            代理名称
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">微信</div>
+            <div class="rowspan-bottom">金额(元)</div>
           </div>
-          <div class="th" rowspan="2">
-            下载
-          </div>
-        </div>
-        <div class="tr">
-          <div class="th">总笔数</div>
-          <div class="th">总金额(元)</div>
-          <div class="th">笔数</div>
-          <div class="th">金额(元)</div>
-          <div class="th">笔数</div>
-          <div class="th">金额(元)</div>
+          <div class="th">代理名称</div>
+          <div class="th">下载</div>
         </div>
       </div>
       <div class="tbody">
@@ -114,37 +127,36 @@
           </div>
         </template>
       </div>
-      <div class="wedge">
-        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
-      </div>
       <div class="tfoot">
-        <div class="td ">
+        <div class="tr pagination">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
-        <div class="td ">
-        </div>
-        <div class="td ">
-        </div>
-        <div class="td right">
-          <span>{{summary.totalTransNum}}</span>
-        </div>
-        <div class="td right">
-          <span>{{_computeAmount(summary.totalTransAmt)}}</span>
-        </div>
-        <div class="td right">
-          <span>{{summary.alp.transNum}}</span>
-        </div>
-        <div class="td right">
-          <span>{{_computeAmount(summary.alp.transAmt)}}</span>
-        </div>
-        <div class="td right">
-          <span>{{summary.wxp.transNum}}</span>
-        </div>
-        <div class="td right">
-          <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
-        </div>
-        <div class="td"></div>
-        <div class="td center">
-          <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
+        <div class="tr hover">
+          <div class="td "></div>
+          <div class="td "></div>
+          <div class="td "></div>
+          <div class="td right">
+            <span>{{summary.totalTransNum}}</span>
+          </div>
+          <div class="td right">
+            <span>{{_computeAmount(summary.totalTransAmt)}}</span>
+          </div>
+          <div class="td right">
+            <span>{{summary.alp.transNum}}</span>
+          </div>
+          <div class="td right">
+            <span>{{_computeAmount(summary.alp.transAmt)}}</span>
+          </div>
+          <div class="td right">
+            <span>{{summary.wxp.transNum}}</span>
+          </div>
+          <div class="td right">
+            <span>{{_computeAmount(summary.wxp.transAmt)}}</span>
+          </div>
+          <div class="td"></div>
+          <div class="td center">
+            <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
+          </div>
         </div>
       </div>
     </div>
@@ -260,27 +272,34 @@
           if (value) {
             var user = value.base;
             if (user.userType === 'agent') {
+              this.set('cond.agentCode', user.agentCode);
               this.agent = {
                 key: user.agentCode,
                 value: user.agentCode,
               };
               this.agentDisabled = true;
+            } else if (user.userType === 'subAgent') {
+              this.set('cond.subAgentCode', user.subAgentCode);
+              this.agentDisabled = true;
+              this.$.subAgentCode.setAttribute('disabled', true);
+            } else if (user.userType === 'group') {
+              this.set('cond.groupCode', user.groupCode);
+              this.agentDisabled = true;
+              this.$.subAgentCode.setAttribute('disabled', true);
+              this.$.groupCode.setAttribute('disabled', true);
             } else if (user.userType === 'merchant') {
               this.set('cond.merId', user.merId);
               this.agentDisabled = true;
+              this.$.subAgentCode.setAttribute('disabled', true);
               this.$.groupCode.setAttribute('disabled', true);
               this.$.merId.setAttribute('disabled', true);
             } else if (user.userType === 'admin') {
               this.agentDisabled = false;
+              this.$.subAgentCode.removeAttribute('disabled');
               this.$.groupCode.removeAttribute('disabled');
               this.$.merId.removeAttribute('disabled');
               // 加载代理列表
               this.handleQueryAgentsEvent();
-            } else if (user.userType === 'group') {
-              this.set('cond.groupCode', user.groupCode);
-              this.agentDisabled = true;
-              this.$.groupCode.setAttribute('disabled', true);
-              this.$.merId.removeAttribute('disabled');
             }
           }
         },
@@ -335,6 +354,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>

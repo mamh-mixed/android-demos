@@ -13,6 +13,7 @@
         "DefaultCacheTime": "5m", // 缓存有效时间
         "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime": "24h", // 未支付订单关闭时间
+        "OrderRefreshTime":"10m",
         // 平台用户登录后，一段时间内无操作失效时间，比如 30m， 表示 30m 无操作后会话失效，
         // 同时，当会话接近失效时间（1/5）时，如果用户有操作，那么延长失效时间，
         // 比如 用户在第 26 分钟有操作，那么失效时间再延长 30m
@@ -49,5 +50,9 @@
         "URL": "https://mapi.alipay.com/gateway.do", // 支付宝扫码支付接口地址
         "NotifyUrl": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "AgentId": "12010128a1" // 标识讯联交易
+    },
+    "MobileApp":{
+        "WXPMerId":"1239305502",
+        "ALPMerId":"2088811767473826"
     }
 }

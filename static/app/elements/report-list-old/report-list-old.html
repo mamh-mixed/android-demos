@@ -10,7 +10,6 @@
     :host {
       display: block;
     }
-
   </style>
   <template>
     <div class="condition search-condition">
@@ -51,29 +50,18 @@
           <div class="th" rowspan="2">
             门店名称
           </div>
-          <div class="th" colspan="2">
-            汇总
-          </div>
-          <div class="th" colspan="2">
-            支付宝
-          </div>
-          <div class="th" colspan="2">
-            微信
-          </div>
+          <div class="th right">总笔数</div>
+          <div class="th right">总金额(元)</div>
+          <div class="th right">支付宝笔数</div>
+          <div class="th right">支付宝金额(元)</div>
+          <div class="th right">微信笔数</div>
+          <div class="th right">微信金额(元)</div>
           <div class="th" rowspan="2">
             代理名称
           </div>
           <!-- <div class="th" rowspan="2">
               下载
             </div> -->
-        </div>
-        <div class="tr">
-          <div class="th">总笔数</div>
-          <div class="th">总金额(元)</div>
-          <div class="th">笔数</div>
-          <div class="th">金额(元)</div>
-          <div class="th">笔数</div>
-          <div class="th">金额(元)</div>
         </div>
       </div>
       <div class="tbody">
@@ -116,7 +104,7 @@
         </template>
       </div>
       <div class="wedge">
-        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
       </div>
       <div class="tfoot">
         <div class="td right" colspan="3">
@@ -303,6 +291,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>

@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -128,21 +130,23 @@ const MerStatusNormal = "Normal"
 
 // Merchant 商户基本信息
 type Merchant struct {
-	MerId      string    `bson:"merId,omitempty" json:"merId,omitempty"`           // 商户号
-	UniqueId   string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`     // 唯一标识
-	AgentCode  string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构代码
-	GroupCode  string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`   // 集团商户代码
-	MerStatus  string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`   // 商户状态（Normal，Deleted，Test）
-	AgentName  string    `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理/机构名称
-	GroupName  string    `bson:"groupName,omitempty" json:"groupName,omitempty"`   // 集团/机构名称
-	TransCurr  string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`   // 商户交易币种
-	SignKey    string    `bson:"signKey,omitempty" json:"signKey,omitempty"`       // 商户签名密钥
-	IsNeedSign bool      `bson:"isNeedSign" json:"isNeedSign"`                     // 是否开启验签
-	EncryptKey string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"` // 商户加密密钥
-	Remark     string    `bson:"remark,omitempty" json:"remark,omitempty"`         // 备注信息
-	Permission []string  `bson:"permission,omitempty" json:"permission,omitempty"` // 接口权限
-	RefundType int       `bson:"refundType" json:"refundType"`                     // 0-无限制 1-只能当日退 2-只能隔日退
-	Detail     MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`      // 商户详细信息
+	MerId        string    `bson:"merId,omitempty" json:"merId,omitempty"`               // 商户号
+	UniqueId     string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`         // 唯一标识
+	AgentCode    string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 公司代码
+	SubAgentCode string    `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 代理/机构代码
+	GroupCode    string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`       // 集团商户代码
+	MerStatus    string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`       // 商户状态（Normal，Deleted，Test）
+	AgentName    string    `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理/机构名称
+	SubAgentName string    `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 公司名称
+	GroupName    string    `bson:"groupName,omitempty" json:"groupName,omitempty"`       // 集团/机构名称
+	TransCurr    string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`       // 商户交易币种
+	SignKey      string    `bson:"signKey,omitempty" json:"signKey,omitempty"`           // 商户签名密钥
+	IsNeedSign   bool      `bson:"isNeedSign" json:"isNeedSign"`                         // 是否开启验签
+	EncryptKey   string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"`     // 商户加密密钥
+	Remark       string    `bson:"remark,omitempty" json:"remark,omitempty"`             // 备注信息
+	Permission   []string  `bson:"permission,omitempty" json:"permission,omitempty"`     // 接口权限
+	RefundType   int       `bson:"refundType" json:"refundType"`                         // 0-无限制 1-只能当日退 2-只能隔日退
+	Detail       MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
 }
 
 // MerDetail 商户详细信息
@@ -222,10 +226,12 @@ type SubAgent struct {
 }
 
 type Group struct {
-	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"` // 集团代码
-	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"` // 集团名称
-	AgentCode string `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
+	GroupCode    string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`       // 集团代码
+	GroupName    string `bson:"groupName,omitempty" json:"groupName,omitempty"`       // 集团名称
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 代理代码
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
 }
 
 // SettSchemeCd 计费方案代码
@@ -266,7 +272,8 @@ type Trans struct {
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
-	SettRole     string        `bson:"settRole,omitempty" json:"-"`
+	SettRole     string        `bson:"settRole,omitempty" json:"-"`                          // 清算角色
+	PayTime      string        `bson:"payTime,omitempty" json:"-"`                           // 支付时间
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`                     // 交易账户
@@ -303,11 +310,13 @@ type Trans struct {
 	Attach          string `bson:"attach,omitempty" json:"-"`
 
 	// 可用于关联查询字段
-	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"`
-	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
-	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"`
-	ShortName string `bson:"shortName,omitempty" json:"shortName,omitempty"`
+	MerName      string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`
+	GroupCode    string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
+	GroupName    string `bson:"groupName,omitempty" json:"groupName,omitempty"`
+	ShortName    string `bson:"shortName,omitempty" json:"shortName,omitempty"`
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"`
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"`
 
 	// 批导辅助字段
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
@@ -443,4 +452,14 @@ type SpTransLogs struct {
 	TransType    string      `bson:"transType" json:"transType"`
 	MsgType      int         `bson:"msgType" json:"msgType"`
 	Msg          interface{} `bson:"msg" json:"msg"`
+}
+
+// Task 任务
+type Task struct {
+	D          time.Duration `bson:"d"`
+	Name       string        `bson:"name"`
+	IsDoing    bool          `bson:"isDoing"`
+	F          func()        `bson:"-"`
+	CreateTime string        `bson:"createTime"`
+	UpdateTime string        `bson:"updateTime"`
 }

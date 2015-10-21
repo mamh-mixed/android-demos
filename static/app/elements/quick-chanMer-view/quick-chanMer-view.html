@@ -68,12 +68,16 @@
       clear: both;
     }
 
+    div.th {
+        text-align: left !important;
+    }
+
   </style>
   <template>
     <paper-dialog id="dialogView">
       <h2>查看渠道商户信息</h2>
       <paper-dialog-scrollable>
-        <table id="alp" hidden class="data-grid low">
+        <div class="table" id="alp" hidden class="data-grid low">
           <div class="tbody">
             <div class="tr">
               <div class="th">渠道代码:</div>
@@ -105,7 +109,7 @@
             </div>
           </div>
         </div>
-        <table id="wxp" hidden class="data-grid low">
+        <div class="table" id="wxp" hidden class="data-grid low">
           <div class="tbody">
             <div class="tr">
               <div class="th">渠道代码:</div>
@@ -163,7 +167,7 @@
             </div>
           </div>
         </div>
-        <table id="cfca" hidden class="data-grid low">
+        <div class="table" id="cfca" hidden class="data-grid low">
           <div class="tbody">
             <div class="tr">
               <div class="th">渠道代码:</div>
@@ -211,7 +215,7 @@
             </div>
           </div>
         </div>
-        <table id="cil" hidden class="data-grid low">
+        <div class="table" id="cil" hidden class="data-grid low">
           <div class="tbody">
             <div class="tr">
               <div class="th">渠道代码:</div>
