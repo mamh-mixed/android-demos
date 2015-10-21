@@ -734,6 +734,13 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("mashal data error"))
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:   "QUICKMASTERID",
+		Value:  "",
+		Path:   "/master",
+		MaxAge: -1,
+	})
+
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
