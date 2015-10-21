@@ -79,27 +79,18 @@
         this.$.tradeQueryAjax.params = {
           'busicd': 'VOID',
           'origOrderNum': this.item.orderNum,
-          'agentCode': this.user.agentCode,
-          'groupCode': this.user.groupCode,
-          'merId': this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'CANC',
           'origOrderNum': this.item.orderNum,
-          'agentCode': this.user.agentCode,
-          'groupCode': this.user.groupCode,
-          'merId': this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
         this.$.tradeQueryAjax.params = {
           'busicd': 'REFD',
           'origOrderNum': this.item.orderNum,
-          'agentCode': this.user.agentCode,
-          'groupCode': this.user.groupCode,
-          'merId': this.user.merId
         };
         this.$.tradeQueryAjax.generateRequest();
 
