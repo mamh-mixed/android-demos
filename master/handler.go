@@ -123,6 +123,10 @@ func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
 	cond := &model.QueryCondition{
 		Busicd:       params.Get("busicd"),
 		OrigOrderNum: params.Get("origOrderNum"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		GroupCode:    params.Get("groupCode"),
+		MerId:        params.Get("merId"),
 	}
 	ret := tradeFindOne(cond)
 
