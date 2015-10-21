@@ -94,8 +94,9 @@ func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
 
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {
-			cmMap[mg.MerId] = 0 // 标识不成功
-			continue
+			// cmMap[mg.MerId] = 0 // 标识不成功
+			// continue
+			m = &model.Merchant{MerId: mg.MerId} // 兼容老系统数据，可能商户没同步到新系统
 		}
 
 		// if m.Detail.BankId == "" || m.Detail.AcctNum == "" || m.Detail.AcctName == "" ||
