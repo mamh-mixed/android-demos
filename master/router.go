@@ -83,14 +83,6 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 验证 session 是否过期
-	session, err := sessionProcess(w, r)
-	if err != nil {
-		log.Infof("%s", err)
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
-		return
-	}
-
 	// 查找session
 	if r.URL.Path == "/master/session/find" {
 		findSessionHandle(w, r)
@@ -100,6 +92,13 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 删除session
 	if r.URL.Path == "/master/session/delete" {
 		sessionDeleteHandle(w, r)
+		return
+	}
+	// 验证 session 是否过期
+	session, err := sessionProcess(w, r)
+	if err != nil {
+		log.Infof("%s", err)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 

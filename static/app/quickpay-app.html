@@ -84,7 +84,7 @@
         },
         // 路由改变事件
         handleStateChangeEvent: function(e) {
-          debugger;
+          // debugger;
           console.log(e.type, e.detail.path);
           this.set('route.path', e.detail.path);
           if (notAuthPath.indexOf(e.detail.path) >= 0) {
@@ -115,10 +115,10 @@
         },
         // 新路由进入前
         handleActivateRouteStartEvent: function(e) {
-          debugger;
+          // debugger;
         },
         handleActivateRouteEndEvent: function(e) {
-          debugger;
+          // debugger;
         },
         // 处理子孙元素冒泡的登录成功事件
         handleLoginSuccessEvent: function(e) {
