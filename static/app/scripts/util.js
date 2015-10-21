@@ -1,4 +1,5 @@
-;(function(window) {
+;
+(function(window) {
 	var Util = (function() {
 		var init = function() {};
 		var toast = function(text, duration) {
@@ -27,9 +28,17 @@
 			dialog.open();
 		};
 		var hideLoginDialog = function() {
-			var dialog = document.querySelector('#reloginDialog')
+			var dialog = document.querySelector('#reloginDialog');
 			dialog.hidden = true;
 			dialog.close();
+		};
+		var fire = function(type, detail, node) {
+			// create a CustomEvent the old way for IE9/10 support
+			var event = document.createEvent('CustomEvent');
+			// initCustomEvent(type, bubbles, cancelable, detail)
+			event.initCustomEvent(type, false, true, detail);
+			// returns false when event.preventDefault() is called, true otherwise
+			return node.dispatchEvent(event);
 		};
 		var query = function(obj) {
 			var q = '';
@@ -44,6 +53,7 @@
 		};
 		return {
 			init: init,
+			fire: fire,
 			toast: toast,
 			query: query,
 			showLoginDialog: showLoginDialog,
