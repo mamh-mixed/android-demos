@@ -310,11 +310,13 @@ type Trans struct {
 	Attach          string `bson:"attach,omitempty" json:"-"`
 
 	// 可用于关联查询字段
-	MerName   string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
-	AgentName string `bson:"agentName,omitempty" json:"agentName,omitempty"`
-	GroupCode string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
-	GroupName string `bson:"groupName,omitempty" json:"groupName,omitempty"`
-	ShortName string `bson:"shortName,omitempty" json:"shortName,omitempty"`
+	MerName      string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
+	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`
+	GroupCode    string `bson:"groupCode,omitempty" json:"groupCode,omitempty"`
+	GroupName    string `bson:"groupName,omitempty" json:"groupName,omitempty"`
+	ShortName    string `bson:"shortName,omitempty" json:"shortName,omitempty"`
+	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"`
+	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"`
 
 	// 批导辅助字段
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算

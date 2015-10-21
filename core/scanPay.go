@@ -1121,6 +1121,8 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.GroupCode = orig.GroupCode
 	current.GroupName = orig.GroupName
 	current.ShortName = orig.ShortName
+	current.SubAgentCode = orig.SubAgentCode
+	current.SubAgentName = orig.SubAgentName
 	current.ConsumerAccount = orig.ConsumerAccount
 	current.SettRole = orig.SettRole
 }

@@ -493,4 +493,6 @@ func addRelatedProperties(current *model.Trans, m *model.Merchant) {
 	current.GroupCode = m.GroupCode
 	current.GroupName = m.GroupName
 	current.ShortName = m.Detail.ShortName
+	current.SubAgentCode = m.SubAgentCode
+	current.SubAgentName = m.SubAgentName
 }
