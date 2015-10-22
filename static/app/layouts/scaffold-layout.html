@@ -253,7 +253,7 @@
         <content select=".content"></content>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
-    <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
+    <iron-localstorage id="cilUserLocalStorageInScaffoldLayout" name="CILUSER" value="{{nickName}}" on-nick-name-reload="handleReloadNickNameEvent"></iron-localstorage>
     <iron-localstorage name="CIL.CONFIG.ISFULLSCREEN" value="{{isFullscreen}}"></iron-localstorage>
   </template>
   <script>
@@ -276,7 +276,8 @@
           isNarrow: {
             type: Boolean,
             value: false
-          }
+          },
+          nickName: String
         },
         ready: function() {
           // 初始化菜单
@@ -510,6 +511,12 @@
           }
           this.menus = this.agentMenus;
         },
+        handleReloadNickNameEvent: function(e) {
+          this.set('nickName', e.detail);
+        },
+        testHandler: function() {
+          this.$.cilUserLocalStorageInScaffoldLayout.reload();
+        }
       });
     })();
   </script>

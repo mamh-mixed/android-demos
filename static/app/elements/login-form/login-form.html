@@ -155,16 +155,22 @@
             password: ''
           };
 
-          // 事件冒泡到顶层
-          this.fire('login-success', response.data);
           if (this.redirect) {
             // 路由跳转的也可以使用事件冒泡
             this.router.go('/trade/list');
           } else {
             // 重新渲染菜单
-            Util.fire('menu-render', this.userType, document.getElementById('quickPayMenuContainer'));
+            // Util.fire('menu-render', response.data.userType, document.getElementById('quickPayMenuContainer'));
+            Polymer.Base.fire('menu-render', response.data.userType, {
+              node: document.getElementById('quickPayMenuContainer')
+            });
+            Polymer.Base.fire('nick-name-reload', response.data.nickName, {
+              node: document.getElementById('cilUserLocalStorageInScaffoldLayout')
+            });
             Util.hideLoginDialog();
           }
+          // 事件冒泡到顶层
+          this.fire('login-success', response.data);
         },
         // 表单内点击回车键事件
         handleEnterKeyPresse: function(e) {
