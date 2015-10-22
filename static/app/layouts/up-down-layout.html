@@ -79,7 +79,6 @@
     .app-title > .app-name {
       font-size: 20px;
     }
-
   </style>
   <template>
     <div id="banner">
@@ -97,10 +96,6 @@
       </div>
     </div>
     <content select=".content"></content>
-    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
-    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
-    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
   </template>
   <script>
@@ -114,52 +109,11 @@
           }
         },
         ready: function() {},
-        checkIsLogin: function() {
-          this.$.findSessionAjax.params = {
-            'sessionId': this.sessionId,
-          };
-          this.$.findSessionAjax.generateRequest();
-        },
-        handleNotLogin: function() {
-          document.querySelector('#appRouter').go('/');
-          return;
-        },
-        handleFindSessionResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            document.querySelector('#appRouter').go('/');
-            return;
-          }
-          this.user = response.data;
-          this.userType = this.user.userType;
-          if (this.userType === 'admin') {
-            this.menus = this.adminMenus;
-          } else if (this.userType === 'agent' || this.userType === 'group' || this.userType === 'merchant') {
-            this.menus = this.agentMenus;
-          }
-        },
         // 退出
         logoutHandle: function() {
-          // 删除后台sesseion信息
-          this.$.deleteSessionAjax.params = {
-            'sessionId': this.sessionId,
-          };
-          this.$.deleteSessionAjax.generateRequest();
-
-          // 清除localStorage中的信息
-          this.sessionId = '';
-          this.userType = '';
-          this.user = {};
-          this.$.logoutBtn.hidden = true;
-
-          // 跳转至登录页面
-          document.querySelector('#appRouter').go('/');
+          this.fire('logout');
         },
-        handleDeleteSessionResponse: function(){
-
-        }
       });
     })();
-
   </script>
 </dom-module>
