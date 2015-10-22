@@ -264,7 +264,7 @@ func TestGetSettInfoHandle(t *testing.T) {
 }
 
 func TestMaxMerIdHandle(t *testing.T) {
-	maxMerId, err := mongo.MerchantColl.FindMaxMerId()
+	maxMerId, err := mongo.MerchantColl.FindMaxMerId("999118880")
 	if err != nil {
 		if err.Error() == "not found" {
 			t.Logf(" set mix merId is 999118880000001")

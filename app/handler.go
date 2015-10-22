@@ -26,6 +26,7 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
+		Remark:    "self_register",
 	})
 
 	w.Write(jsonMarshal(result))
@@ -283,16 +284,19 @@ func signContent(values url.Values) string {
 	sort.Strings(keys)
 
 	var buf bytes.Buffer
-	for _, v := range keys {
+	for _, k := range keys {
 		// sign不参与签名
-		if v == "sign" {
+		if k == "sign" {
 			continue
 		}
-		value := values.Get(v)
-		if buf.Len() > 0 {
-			buf.WriteByte('&')
+		// 支持多个同名参数
+		values := values[k]
+		for _, v := range values {
+			if buf.Len() > 0 {
+				buf.WriteByte('&')
+			}
+			buf.WriteString(k + "=" + v)
 		}
-		buf.WriteString(v + "=" + value)
 	}
 	return buf.String()
 }
@@ -330,4 +334,9 @@ type reqParams struct {
 	City         string
 	BranchBank   string
 	BankNo       string
+	Remark       string
+	SubAgentCode string
+	MerName      string
+	Images       []string
+	AppUser      *model.AppUser
 }

@@ -23,12 +23,31 @@ var (
 		</body>
 	</html>
 	`
+
+	openTemplate = `
+	<html>
+		<body>
+			您好，您申请的商户参数信息如下：
+			<h3>%s</h3>
+			<h4>app登录信息：</h4></br>
+			注册邮箱：%s</br>
+			<h4>桌面版信息：</h4></br>
+			商户号： 	%s
+			密钥：	%s
+			<h4>网页版信息：</h4></br>
+			<div id="code">
+			%s
+			</div>
+		</body>
+	</html>
+	`
 )
 
 // 邮件模板消息体
 var (
 	activation = emailTemplate{Title: "云收银帐号激活", Body: actTemplate}
 	promote    = emailTemplate{Title: "申请提升限额", Body: promoteTemplate}
+	open       = emailTemplate{Title: "【感谢您注册云收银】", Body: openTemplate}
 )
 
 type emailTemplate struct {

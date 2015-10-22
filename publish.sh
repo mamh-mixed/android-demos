@@ -126,7 +126,7 @@ ps -ef | grep $prog
 
 echo "Sleep 5 seconds..."
 sleep 5
-tail -n 50 logs/$prog.log
+tail -n 30 logs/$prog.log
 
 exit
 EOF

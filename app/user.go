@@ -58,14 +58,18 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 	}
 
 	user := &model.AppUser{
-		UserName:   req.UserName,
-		Password:   req.Password,
-		Activate:   "false",
-		Limit:      "true",
-		Remark:     "register",
-		CreateTime: time.Now().Format("2006-01-02 15:04:05"),
+		UserName:     req.UserName,
+		Password:     req.Password,
+		Activate:     "false",
+		Limit:        "true",
+		Remark:       req.Remark,
+		CreateTime:   time.Now().Format("2006-01-02 15:04:05"),
+		SubAgentCode: req.SubAgentCode,
 	}
 	user.UpdateTime = user.CreateTime
+
+	// 放进req里
+	req.AppUser = user
 
 	// 保存用户信息
 	err = mongo.AppUserCol.Upsert(user)
@@ -173,12 +177,7 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 	// hostAddress := goconf.Config.App.NotifyURL
 	activateUrl := fmt.Sprintf("%s/app/activate?username=%s&code=%s", hostAddress, req.UserName, code)
 
-	var iv [32]byte
-
-	if _, err := io.ReadFull(cr.Reader, iv[:]); err != nil {
-		log.Errorf("io.ReadFull error: %s", err)
-	}
-	click := b64Encoding.EncodeToString(iv[:])
+	click := b64Encoding.EncodeToString(randBytes(32))
 
 	email := &email.Email{
 		To:    req.UserName,
@@ -308,12 +307,6 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 创建商户
-	var randBytes [16]byte
-
-	if _, err := io.ReadFull(cr.Reader, randBytes[:]); err != nil {
-		log.Errorf("io.ReadFull error: %s", err)
-	}
-
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
 		AgentCode:  "99911888",
@@ -323,7 +316,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		TransCurr:  "156",
 		RefundType: model.CurrentDayRefund, // 只能当天退
 		IsNeedSign: true,
-		SignKey:    fmt.Sprintf("%x", randBytes[:]),
+		SignKey:    fmt.Sprintf("%x", randBytes(16)),
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",
@@ -337,64 +330,15 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 			ContactTel:    req.PhoneNum,
 		},
 	}
-	for {
-		// 设置merId
-		maxMerId, err := mongo.MerchantColl.FindMaxMerId()
-		if err != nil {
-			if err.Error() == "not found" {
-				log.Infof(" set max merId is 999118880000001")
-				merchant.MerId = "999118880000001"
-			} else {
-				log.Errorf("find database  err,%s", err)
-				return model.SYSTEM_ERROR
-			}
 
-		} else {
-			maxMerIdNum, err := strconv.Atoi(maxMerId)
-			if err != nil {
-				log.Errorf("format maxMerId(%s) err", maxMerId)
-				return model.SYSTEM_ERROR
-			}
-			merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
-		}
-
-		merchant.UniqueId = util.Confuse(merchant.MerId)
-		err = mongo.MerchantColl.Insert2(merchant)
-		if err != nil {
-			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
-			if !isDuplicateMerId {
-				log.Errorf("create merchant err,%s", err)
-				return model.SYSTEM_ERROR
-			}
-
-		} else {
-			break
-		}
+	// 生成商户号，并保存商户
+	if err := genMerId(merchant, "999118880"); err != nil {
+		return err
 	}
 
 	// 创建路由,支付宝，微信
-	alpRoute := &model.RouterPolicy{
-		MerId:     merchant.MerId,
-		CardBrand: "ALP",
-		ChanCode:  "ALP",
-		ChanMerId: ALPMerId,
-	}
-	err = mongo.RouterPolicyColl.Insert(alpRoute)
-	if err != nil {
-		log.Errorf("create routePolicy err,%s", err)
-		return model.SYSTEM_ERROR
-	}
-
-	wxpRoute := &model.RouterPolicy{
-		MerId:     merchant.MerId,
-		CardBrand: "WXP",
-		ChanCode:  "WXP",
-		ChanMerId: WXPMerId,
-	}
-	err = mongo.RouterPolicyColl.Insert(wxpRoute)
-	if err != nil {
-		log.Errorf("create routePolicy err,%s", err)
-		return model.SYSTEM_ERROR
+	if err := genRouter(merchant); err != nil {
+		return err
 	}
 
 	// 更新用户信息
@@ -789,24 +733,32 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 		return result
 	}
 
-	// 用户名不为空
-	if req.UserName == "" {
-		return model.PARAMS_EMPTY
-	}
+	var user *model.AppUser
+	var err error
 
-	// 根据用户名查找用户
-	user, err := mongo.AppUserCol.FindOne(req.UserName)
-	if err != nil {
-		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+	// 云收银app
+	if req.AppUser == nil {
+		// 用户名不为空
+		if req.UserName == "" {
+			return model.PARAMS_EMPTY
 		}
-		log.Errorf("find database err,%s", err)
-		return model.SYSTEM_ERROR
-	}
+		// 根据用户名查找用户
+		user, err = mongo.AppUserCol.FindOne(req.UserName)
+		if err != nil {
+			if err.Error() == "not found" {
+				return model.USERNAME_NO_EXIST
+			}
+			log.Errorf("find database err,%s", err)
+			return model.SYSTEM_ERROR
+		}
 
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+		// 密码不对
+		if req.Password != user.Password {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+	} else {
+		// 从销售工具接口过来的
+		user = req.AppUser
 	}
 
 	m, err := mongo.MerchantColl.Find(user.MerId)
@@ -814,6 +766,9 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 		return model.MERID_NO_EXIST
 	}
 
+	if req.MerName != "" {
+		m.Detail.MerName = req.MerName
+	}
 	if req.Province != "" {
 		m.Detail.Province = req.Province
 	}
@@ -837,6 +792,9 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	}
 	if req.PhoneNum != "" {
 		m.Detail.ContactTel = req.PhoneNum
+	}
+	if len(req.Images) > 0 {
+		m.Detail.Images = req.Images
 	}
 
 	if err = mongo.MerchantColl.Update(m); err != nil {
@@ -864,4 +822,80 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.ChanCode = t.ChanCode
 	txn.ReqData.Currency = t.TransCurr
 	return txn
+}
+
+func randBytes(length int) []byte {
+	var randBytes = make([]byte, 0, length)
+	if _, err := io.ReadFull(cr.Reader, randBytes[:]); err != nil {
+		log.Errorf("io.ReadFull error: %s", err)
+	}
+	return randBytes
+}
+
+func genRouter(merchant *model.Merchant) *model.AppResult {
+
+	// 创建路由,支付宝，微信
+	alpRoute := &model.RouterPolicy{
+		MerId:     merchant.MerId,
+		CardBrand: "ALP",
+		ChanCode:  "ALP",
+		ChanMerId: ALPMerId,
+	}
+	err := mongo.RouterPolicyColl.Insert(alpRoute)
+	if err != nil {
+		log.Errorf("create routePolicy err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	wxpRoute := &model.RouterPolicy{
+		MerId:     merchant.MerId,
+		CardBrand: "WXP",
+		ChanCode:  "WXP",
+		ChanMerId: WXPMerId,
+	}
+	err = mongo.RouterPolicyColl.Insert(wxpRoute)
+	if err != nil {
+		log.Errorf("create routePolicy err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	return nil
+}
+
+func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
+	for {
+		// 设置merId
+		maxMerId, err := mongo.MerchantColl.FindMaxMerId(prefix)
+		if err != nil {
+			if err.Error() == "not found" {
+				log.Infof(" set max merId is 999118880000001")
+				merchant.MerId = "999118880000001"
+			} else {
+				log.Errorf("find database  err,%s", err)
+				return model.SYSTEM_ERROR
+			}
+
+		} else {
+			maxMerIdNum, err := strconv.Atoi(maxMerId)
+			if err != nil {
+				log.Errorf("format maxMerId(%s) err", maxMerId)
+				return model.SYSTEM_ERROR
+			}
+			merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
+		}
+
+		merchant.UniqueId = util.Confuse(merchant.MerId)
+		err = mongo.MerchantColl.Insert2(merchant)
+		if err != nil {
+			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
+			if !isDuplicateMerId {
+				log.Errorf("create merchant err,%s", err)
+				return model.SYSTEM_ERROR
+			}
+
+		} else {
+			break
+		}
+	}
+	return nil
 }
