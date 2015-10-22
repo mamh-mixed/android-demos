@@ -314,7 +314,7 @@ func checkAccessToken(token string) (*model.User, bool) {
 	}
 
 	// 放到map里
-	token[token] = s.User
+	tokenMap[token] = s.User
 
 	return s.User, true
 }
