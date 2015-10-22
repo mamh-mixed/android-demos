@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
@@ -119,7 +120,7 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 		}
 	}
 
-	err = mongo.MerchantColl.Insert(m)
+	err = mongo.MerchantColl.Upsert(m)
 	if err != nil {
 		log.Errorf("新增商户失败:%s", err)
 		return model.NewResultBody(1, err.Error())
@@ -185,7 +186,7 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 		}
 	}
 
-	err = mongo.MerchantColl.Insert(m)
+	err = mongo.MerchantColl.Upsert(m)
 	if err != nil {
 		log.Errorf("更新商户失败:%s", err)
 		return model.NewResultBody(1, err.Error())
