@@ -63,7 +63,7 @@ func (s *sessionService) FindOne(sessionID string) (ret *model.ResultBody) {
 		return model.NewResultBody(1, "查询失败")
 	}
 	user := session.User
-	user.UserName = ""
+	// user.UserName = ""
 	user.PhoneNum = ""
 	user.Mail = ""
 	ret = &model.ResultBody{

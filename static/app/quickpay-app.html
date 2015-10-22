@@ -16,6 +16,7 @@
       <app-route path="/" import="pages/user-login.html" bindRouter on-login-success="handleLoginSuccessEvent"></app-route>
 
       <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
+      <app-route path="/system/password/editor" name="pwdEditor" import="pages/password-editor-page.html"></app-route>
 
       <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
       <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
@@ -65,7 +66,7 @@
         NOT_FOUNT_PATH,
         LOGIN_PATH
       ];
-      var agentRoutes = ['/trade/list', '/trade/reports'];
+      var agentRoutes = ['/trade/list', '/trade/reports','/system/password/editor'];
 
       Polymer({
         is: 'quickpay-app',
