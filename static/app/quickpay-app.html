@@ -46,10 +46,13 @@
       <app-route path="*" name="not-found" import="pages/common/not-found-page.html"></app-route>
     </app-router>
 
+    <!-- TOAST: 用来实现信息弹出的功能 -->
     <paper-toast id="toast" duration="5000" visible="true" text$="{{toastText}}" style="z-index:1000;"></paper-toast>
-    <paper-dialog id="reloginDialog" hidden modal>
+    <!-- PAPER-DIALOG: 用来重新登录的对话框 -->
+    <paper-dialog id="reloginDialog" modal on-open-dialog-please="handleOpenDialogPleaseEvent" on-close-dialog-please="handleCloseDialogPleaseEvent">
       <login-form style="width:252px;" on-login-success="handleLoginSuccessEvent"></login-form>
     </paper-dialog>
+
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
@@ -160,6 +163,12 @@
         // 处理子孙元素冒泡的页面跳转事件
         handlePageJumpEvent: function(e) {
           this.$.appRouter.go(e.detail);
+        },
+        handleOpenDialogPleaseEvent: function() {
+          this.$.reloginDialog.open();
+        },
+        handleCloseDialogPleaseEvent: function() {
+          this.$.reloginDialog.close();
         }
       });
     })();
