@@ -38,7 +38,7 @@
   <template>
     <div class="container">
       <paper-material elevation="5" class="loginWrapper">
-        <login-form redirect></login-form>
+        <login-form redirect on-login-success="handleLoginSuccessEvent" router="{{router}}"></login-form>
         <div class="user-alert">如果您还没有用户名、密码，请联系讯联数据运营中心为您分配。</div>
       </paper-material>
     </div>
@@ -46,6 +46,15 @@
   <script>
     Polymer({
       is: "user-login",
+      properties: {
+        router: {
+          type: Object,
+          notify: true
+        }
+      },
+      handleLoginSuccessEvent: function(e){
+        this.fire('login-success', e.detail);
+      }
     });
   </script>
 </dom-module>
