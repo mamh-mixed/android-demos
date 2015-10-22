@@ -117,6 +117,7 @@
     <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
     <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
     <x-ajax id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
     <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
   </template>
   <script>
@@ -244,7 +245,7 @@
         this.cond.transStatus = key;
       },
       _watchUserChanged: function(value) {
-         // 权限判断
+        // 权限判断
         if (value) {
           var user = value.base;
           if (user.userType === 'agent') {
@@ -331,6 +332,16 @@
             value: item.agentName
           };
         }));
+      },
+      // 当前用户查询的响应事件
+      handleQueryCurrentUserResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+
+        this.set('user', response.data);
       },
       // ajax请求响应处理
       handleSearchResponse: function(e) {
