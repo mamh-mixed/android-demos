@@ -842,7 +842,7 @@ func genRouter(merchant *model.Merchant) *model.AppResult {
 	}
 	err := mongo.RouterPolicyColl.Insert(alpRoute)
 	if err != nil {
-		log.Errorf("create routePolicy err,%s", err)
+		log.Errorf("create routePolicy err: %s", err)
 		return model.SYSTEM_ERROR
 	}
 
@@ -854,7 +854,7 @@ func genRouter(merchant *model.Merchant) *model.AppResult {
 	}
 	err = mongo.RouterPolicyColl.Insert(wxpRoute)
 	if err != nil {
-		log.Errorf("create routePolicy err,%s", err)
+		log.Errorf("create routePolicy err: %s", err)
 		return model.SYSTEM_ERROR
 	}
 
@@ -867,10 +867,10 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 		maxMerId, err := mongo.MerchantColl.FindMaxMerId(prefix)
 		if err != nil {
 			if err.Error() == "not found" {
-				log.Infof(" set max merId is 999118880000001")
+				// 从第一个开始编
 				merchant.MerId = prefix + "000001"
 			} else {
-				log.Errorf("find database  err,%s", err)
+				log.Errorf("find merchant err,%s", err)
 				return model.SYSTEM_ERROR
 			}
 
@@ -888,10 +888,9 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 		if err != nil {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
 			if !isDuplicateMerId {
-				log.Errorf("create merchant err,%s", err)
+				log.Errorf("add merchant err: %s, merId=%s", err, merchant.MerId)
 				return model.SYSTEM_ERROR
 			}
-
 		}
 
 		break
