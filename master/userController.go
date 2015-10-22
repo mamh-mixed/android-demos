@@ -175,12 +175,12 @@ func (u *userController) Find(user *model.User, size, page int) (ret *model.Resu
 // 删除用户
 func (u *userController) RemoveUser(userName string) (ret *model.ResultBody) {
 	if userName == "" {
-		log.Errorf("用户名不能为空")
+		log.Debugf("用户名不能为空")
 		return model.NewResultBody(1, "用户名不能为空")
 	}
 	err := mongo.UserColl.Remove(userName)
 	if err != nil {
-		log.Errorf("删除用户失败，%s", err)
+		log.Debugf("删除用户失败，%s", err)
 		return model.NewResultBody(2, "删除用户失败")
 	}
 	ret = &model.ResultBody{
@@ -214,6 +214,29 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 	ret = &model.ResultBody{
 		Status:  0,
 		Message: "修改密码成功",
+	}
+	return ret
+}
+
+func (u *userController) ResetPwd(userName string) (ret *model.ResultBody) {
+	user, err := mongo.UserColl.FindOneUser(userName, "", "")
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewResultBody(1, "无此用户名")
+		}
+		log.Errorf("select user by userName err,userName=%s,%s", userName, err)
+		return model.NewResultBody(2, "查询数据库失败")
+	}
+	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
+	user.Password = fmt.Sprintf("%x", sha1.Sum(passData))
+	err = mongo.UserColl.Update(user)
+	if err != nil {
+		log.Errorf("reset password err,userName=%s,%s", userName, err)
+		return model.NewResultBody(3, "重置密码失败")
+	}
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "重置密码成功",
 	}
 	return ret
 }

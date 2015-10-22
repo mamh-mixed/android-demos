@@ -7,7 +7,6 @@
 <link rel="import" href="../x-pagination/x-pagination.html">
 <link rel="import" href="../user-create/user-create.html">
 <link rel="import" href="../user-view/user-view.html">
-<link rel="import" href="../user-pwd-editor/user-pwd-editor.html">
 
 <dom-module id="user-list">
   <style>
@@ -25,7 +24,6 @@
       background: var(--dark-primary-color);
       color: var(--text-primary-color);
     }
-
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/user/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -99,8 +97,7 @@
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
     <user-create id="userCreate" on-saved="afterSavedHandle" page-type="{{pageType}}" user="[[user]]"></user-create>
-    <user-view id="userView" on-editor="editorUserHandle" on-editor-pwd="editorPwdHandle" item="{{user}}"></user-view>
-    <user-pwd-editor id="editorPwd" on-saved="afterSavedHandle" user-name="[[userName]]"></user-pwd-editor>
+    <user-view id="userView" on-editor="editorUserHandle"  on-delete="afterDeleteHandle" item="{{user}}"></user-view>
     </div>
   </template>
   <script>
@@ -174,11 +171,6 @@
           this.pageType = 'editor';
           this.$.userCreate.open();
         },
-        // 修改密码
-        editorPwdHandle: function() {
-          this.userName = this.user.userName;
-          this.$.editorPwd.open();
-        },
         // 发送查询交易的ajax请求
         submitForm: function() {
           this.users = [];
@@ -199,9 +191,12 @@
           this.user = event.model.item;
           this.$.userView.open();
         },
+        // 删除后重新查询
+        afterDeleteHandle: function() {
+          this.handleQueryTapped();
+        },
 
       });
     })();
-
   </script>
 </dom-module>

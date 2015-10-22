@@ -772,6 +772,8 @@ func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
+// userUpdatePwdHandle 修改密码
 func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadAll(r.Body)
@@ -781,6 +783,40 @@ func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ret := User.UpdatePwd(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+// userDeleteHandle 删除用户
+func userDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	userName := params.Get("userName")
+	ret := User.RemoveUser(userName)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+// userResetPwdHandle 重置密码
+func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	userName := params.Get("userName")
+	ret := User.ResetPwd(userName)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("mashal data error: %s", err)

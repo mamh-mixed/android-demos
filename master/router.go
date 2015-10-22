@@ -18,6 +18,7 @@ var agentURLArr = []string{
 	"/master/trade/stat",
 	"/master/trade/stat/report",
 	"/master/trade/findOne",
+	"/master/user/updatePwd",
 }
 
 // Route 后台管理的请求统一入口
@@ -61,6 +62,8 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/create", userCreateHandle)
 	mux.HandleFunc("/master/user/update", userUpdateHandle)
 	mux.HandleFunc("/master/user/updatePwd", userUpdatePwdHandle)
+	mux.HandleFunc("/master/user/delete", userDeleteHandle)
+	mux.HandleFunc("/master/user/resetPwd", userResetPwdHandle)
 	return mux
 }
 

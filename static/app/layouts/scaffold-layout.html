@@ -284,7 +284,7 @@
           this.adminMenus = [{
             "nameCN": "系统管理",
             "nameEN": "",
-            "icon": "bug-report",
+            "icon": "settings",
             "url": "",
             "route": "/system",
             "children": [{
@@ -292,6 +292,11 @@
               "nameEN": "",
               "icon": "account-box",
               "url": "#/system/users",
+            }, {
+              "nameCN": "密码修改",
+              "nameEN": "",
+              "icon": "lock-outline",
+              "url": "#/system/password/editor",
             }]
           }, {
             "nameCN": "扫码支付",
@@ -437,6 +442,18 @@
             }]
           }];
           this.agentMenus = [{
+            "nameCN": "系统管理",
+            "nameEN": "",
+            "icon": "settings",
+            "url": "",
+            "route": "/system",
+            "children": [{
+              "nameCN": "密码修改",
+              "nameEN": "",
+              "icon": "lock-outline",
+              "url": "#/system/password/editor",
+            }]
+          }, {
             "nameCN": "交易查询",
             "nameEN": "",
             "icon": "swap-horiz",
