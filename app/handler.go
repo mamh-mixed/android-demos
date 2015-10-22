@@ -123,6 +123,7 @@ func getOrderHandle(w http.ResponseWriter, r *http.Request) {
 		UserName:     r.FormValue("username"),
 		Password:     r.FormValue("password"),
 		OrderNum:     r.FormValue("orderNum"),
+		Transtime:    r.FormValue("transtime"),
 		BusinessType: "getOrder",
 	})
 
@@ -142,11 +143,12 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 	index, _ := strconv.Atoi(r.FormValue("index"))
 
 	result := User.getUserBill(&reqParams{
-		UserName: r.FormValue("username"),
-		Password: r.FormValue("password"),
-		Month:    r.FormValue("month"),
-		Status:   r.FormValue("status"),
-		Index:    index,
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Month:     r.FormValue("month"),
+		Status:    r.FormValue("status"),
+		Transtime: r.FormValue("transtime"),
+		Index:     index,
 	})
 
 	w.Write(jsonMarshal(result))
@@ -161,9 +163,10 @@ func getTotalHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.getTotalTransAmt(&reqParams{
-		UserName: r.FormValue("username"),
-		Password: r.FormValue("password"),
-		Date:     r.FormValue("date"),
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+		Date:      r.FormValue("date"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -180,6 +183,7 @@ func getRefdHandle(w http.ResponseWriter, r *http.Request) {
 		UserName:     r.FormValue("username"),
 		Password:     r.FormValue("password"),
 		OrderNum:     r.FormValue("orderNum"),
+		Transtime:    r.FormValue("transtime"),
 		BusinessType: "getRefd",
 	})
 
@@ -197,6 +201,7 @@ func passwordHandle(w http.ResponseWriter, r *http.Request) {
 		UserName:    r.FormValue("username"),
 		OldPassword: r.FormValue("oldpassword"),
 		NewPassword: r.FormValue("newpassword"),
+		Transtime:   r.FormValue("transtime"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -256,8 +261,9 @@ func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.getSettInfo(&reqParams{
-		UserName: r.FormValue("username"),
-		Password: r.FormValue("password"),
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
 	})
 
 	w.Write(jsonMarshal(result))

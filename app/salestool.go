@@ -27,6 +27,8 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	debugReqParams(r)
+
 	username := r.FormValue("username")
 	user, err := mongo.UserColl.FindOneUser(username, "", "")
 	if err != nil {
@@ -54,10 +56,7 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := model.SUCCESS1
-	result.AccessToken = genAccessToken()
-
-	// token是唯一的
-	tokenMap[result.AccessToken] = user
+	result.AccessToken = genAccessToken(user)
 
 	w.Write(jsonMarshal(result))
 }
@@ -67,6 +66,8 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 
 	var agentUser *model.User
 	var ok bool
+
+	debugReqParams(r)
 
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
@@ -123,6 +124,8 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 	var agentUser *model.User
 	var ok bool
 
+	debugReqParams(r)
+
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -159,7 +162,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 			merchant.SubAgentName = subAgent.SubAgentName
 		}
 
-		if err := genMerId(merchant, subAgent.AgentCode); err != nil {
+		if err := genMerId(merchant, subAgent.AgentCode+"0"); err != nil {
 			w.Write(jsonMarshal(err))
 			return
 		}
@@ -173,6 +176,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 			user.UniqueId = merchant.UniqueId
 			user.SignKey = merchant.SignKey
 			user.AgentCode = merchant.AgentCode
+			mongo.AppUserCol.Upsert(user)
 			result.User = user
 		}
 	}
@@ -182,6 +186,8 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 
 // GetQiniuToken
 func GetQiniuToken(w http.ResponseWriter, r *http.Request) {
+
+	debugReqParams(r)
 
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
@@ -198,6 +204,7 @@ func GetQiniuToken(w http.ResponseWriter, r *http.Request) {
 // UpdateUserInfo 更新用户信息
 func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
+	debugReqParams(r)
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -229,7 +236,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 // UserActivate 用户激活
 func UserActivate(w http.ResponseWriter, r *http.Request) {
-
+	debugReqParams(r)
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -299,11 +306,27 @@ func checkAccessToken(token string) (*model.User, bool) {
 		return user, true
 	}
 	// 向数据库里查找
-	// TODO
+	s, err := mongo.SessionColl.Find(token)
+	if err != nil {
+		return nil, false
+	}
 
-	return nil, false
+	return s.User, true
 }
 
-func genAccessToken() string {
-	return util.SerialNumber()
+func genAccessToken(user *model.User) string {
+	s := &model.Session{
+		SessionID:  util.SerialNumber(),
+		User:       user,
+		CreateTime: time.Now(),
+	}
+	s.UpdateTime = s.CreateTime
+	s.Expires = s.CreateTime.Add(24 * time.Hour)
+	mongo.SessionColl.Add(s)
+	tokenMap[s.SessionID] = user
+	return s.SessionID
+}
+
+func debugReqParams(r *http.Request) {
+	log.Debugf("app tools req: %v", r.Form)
 }
