@@ -11,9 +11,9 @@
         display: block;
       }
     </style>
-    <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-logout="handleLogoutEvent" on-toast-open="handleToastOpenEvent"
-    on-page-jump="handlePageJumpEvent">
-      <app-route path="/" import="pages/user-login.html" bindRouter on-login-success="handleLoginSuccessEvent"></app-route>
+    <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-login-success="handleLoginSuccessEvent" on-logout="handleLogoutEvent"
+    on-toast-open="handleToastOpenEvent" on-page-jump="handlePageJumpEvent">
+      <app-route path="/" import="pages/user-login.html" bindRouter></app-route>
 
       <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
 
@@ -43,7 +43,7 @@
       <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
       <app-route path="/test/filereader" name="test-filereader" import="pages/test/file-reader-page.html"></app-route>
       <app-route path="/404" name="not-found" import="pages/common/not-found-page.html"></app-route>
-      <app-route path="*" name="not-found" import="pages/common/not-found-page.html"></app-route>
+      <app-route path="*" name="not-found" redirect="/404"></app-route>
     </app-router>
 
     <!-- TOAST: 用来实现信息弹出的功能 -->
@@ -124,18 +124,37 @@
         },
         // DOM 已经变成新路由的时候触发的事件
         handleActivateRouteEndEvent: function(e) {
-          // debugger;
           if (e.detail.path === LOGIN_PATH || e.detail.path === NOT_FOUNT_PATH) {
             return;
           }
           // 触发‘menu-render’的事件到菜单的容器，重新渲染菜单
-          Util.fire('menu-render', this.userType, document.getElementById('quickPayMenuContainer'));
+          Polymer.Base.fire('menu-render', this.userType, {
+            node: document.getElementById('quickPayMenuContainer')
+          });
         },
         // 处理子孙元素冒泡的登录成功事件
         handleLoginSuccessEvent: function(e) {
-          this.set('sessionId', e.detail.sessionId);
-          this.set('userType', e.detail.userType);
-          this.set('nickName', e.detail.nickName);
+          var loginUser = e.detail.loginUser;
+          this.set('sessionId', loginUser.sessionId);
+          this.set('userType', loginUser.userType);
+          this.set('nickName', loginUser.nickName);
+
+          if (e.detail.jumpTo === null && this.route.path !== '/404') {
+            Polymer.Base.fire('menu-render', loginUser.userType, {
+              node: document.getElementById('quickPayMenuContainer')
+            });
+            Polymer.Base.fire('nick-name-reload', loginUser.nickName, {
+              node: document.getElementById('cilUserLocalStorageInScaffoldLayout')
+            });
+            this.$.reloginDialog.close();
+            return;
+          }
+
+          if (typeof e.detail.jumpTo === 'string') {
+            this.$.appRouter.go(e.detail.jumpTo);
+            return;
+          }
+
         },
         // 处理子孙元素冒泡的登出事件
         handleLogoutEvent: function(e) {
