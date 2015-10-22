@@ -162,6 +162,7 @@
     </div>
     <x-ajax id="queryAjax" method="GET" url="/master/trade/stat" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax>
     <x-ajax id="queryAgentAjax" method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
   </template>
   <script>
     (function() {
@@ -250,6 +251,16 @@
               value: agents[i].agentName
             });
           }
+        },
+        // 当前用户查询的响应事件
+        handleQueryCurrentUserResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          this.set('user', response.data);
         },
         observers: [
           '_watchAgentChange(agent.key)',

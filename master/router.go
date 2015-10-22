@@ -98,6 +98,15 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	session, err := sessionProcess(w, r)
 	if err != nil {
 		log.Infof("%s", err)
+
+		// 将QUICKMASTERID设成失效
+		http.SetCookie(w, &http.Cookie{
+			Name:   "QUICKMASTERID",
+			Value:  "",
+			Path:   "/master",
+			MaxAge: -1,
+		})
+
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
