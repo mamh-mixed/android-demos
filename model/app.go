@@ -35,6 +35,8 @@ var (
 	USERNAME_NO_EXIST_CH    = NewAppResult(FAIL, "用户名不存在")
 	PARAMS_EMPTY_CH         = NewAppResult(FAIL, "参数为空")
 	SYSTEM_ERROR_CH         = NewAppResult(FAIL, "系统错误")
+	TOKEN_ERROR             = NewAppResult(FAIL, "acessToken error")
+	USER_DATA_ERROR         = NewAppResult(FAIL, "user_data_error")
 )
 
 type AppResult struct {
@@ -44,6 +46,7 @@ type AppResult struct {
 
 	// 可选
 	User         *AppUser    `json:"user,omitempty"`
+	Users        []*AppUser  `json:"users,omitempty"`
 	TotalAmt     string      `json:"total,omitempty"`
 	Count        int         `json:"count"`
 	Size         int         `json:"size"`
@@ -51,6 +54,8 @@ type AppResult struct {
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`
 	SettInfo     *SettInfo   `json:"info,omitempty"`
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
+	UploadToken  string      `json:"uploadToken,omitempty"`
+	AccessToken  string      `json:"accessToken,omitempty"`
 }
 
 type SettInfo struct {
@@ -93,14 +98,16 @@ type AppTxn struct {
 
 // AppUser 云收银用户
 type AppUser struct {
-	UserName   string `json:"username,omitempty" bson:"userName,omitempty"`
-	Password   string `json:"-" bson:"password,omitempty"`
-	Activate   string `json:"activate,omitempty" bson:"activate,omitempty"`
-	MerId      string `json:"clientid,omitempty" bson:"merId,omitempty"`
-	Limit      string `json:"limit,omitempty" bson:"limit,omitempty"`
-	CreateTime string `json:"-" bson:"createTime,omitempty"`
-	Remark     string `json:"-" bson:"remark,omitempty"`
-	UpdateTime string `json:"-" bson:"updateTime,omitempty"`
+	UserName     string `json:"username,omitempty" bson:"userName,omitempty"`
+	Password     string `json:"-" bson:"password,omitempty"`
+	Activate     string `json:"activate,omitempty" bson:"activate,omitempty"`
+	MerId        string `json:"clientid,omitempty" bson:"merId,omitempty"`
+	Limit        string `json:"limit,omitempty" bson:"limit,omitempty"`
+	CreateTime   string `json:"createTime,omitempty" bson:"createTime,omitempty"`
+	Remark       string `json:"-" bson:"remark,omitempty"`
+	UpdateTime   string `json:"-" bson:"updateTime,omitempty"`
+	SubAgentCode string `json:"-" bson:"subAgentCode,omitempty"` // 隶属某个公司发展的
+	MerName      string `json:"merName,omitempty" bson:"merName,omitempty"`
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
@@ -108,9 +115,10 @@ type AppUser struct {
 	PayeeCard string `json:"payee_card,omitempty" bson:"-"`
 	PhoneNum  string `json:"phone_num,omitempty" bson:"-"`
 	// 商户里的不存
-	SignKey   string `json:"signKey,omitempty" bson:"-"`
-	AgentCode string `json:"inscd,omitempty" bson:"-"`
-	UniqueId  string `json:"objectId,omitempty" bson:"-"` // 不存
+	SignKey   string   `json:"signKey,omitempty" bson:"-"`
+	AgentCode string   `json:"inscd,omitempty" bson:"-"`
+	UniqueId  string   `json:"objectId,omitempty" bson:"-"` // 不存
+	Images    []string `json:"images,omitempty" bson:"-"`
 }
 
 // Email 发送email记录

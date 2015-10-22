@@ -38,6 +38,17 @@ func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err
 	return user, nil
 }
 
+// FindBySubAgentCode 查找某个公司发展的用户
+func (col *appUserCollection) FindBySubAgentCode(subAgentCode string) ([]*model.AppUser, error) {
+	bo := bson.M{
+		"subAgentCode": subAgentCode,
+	}
+
+	var users []*model.AppUser
+	err := database.C(col.name).Find(bo).All(&users)
+	return users, err
+}
+
 func (col *appUserCollection) FindCountByUserName(userName string) (num int, err error) {
 	bo := bson.M{
 		"userName": userName,
