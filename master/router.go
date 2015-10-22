@@ -118,7 +118,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	user := session.User
 	err = authProcess(user, r.URL.Path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
