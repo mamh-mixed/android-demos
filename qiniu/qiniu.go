@@ -25,6 +25,14 @@ func init() {
 	cli = kodo.New(zone, nil) // 用默认配置创建 Client
 }
 
+func GetUploadtoken() string {
+	policy := &kodo.PutPolicy{
+		Scope:   BUCKET,
+		EndUser: "userId",
+	}
+	return cli.MakeUptoken(policy)
+}
+
 func HandleUptoken(w http.ResponseWriter, req *http.Request) {
 	policy := &kodo.PutPolicy{
 		Scope:   BUCKET,

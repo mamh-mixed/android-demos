@@ -114,7 +114,7 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 	}
 
 	var mers []*model.Merchant
-	err := database.C(c.name).Find(q).Select(bson.M{"merId": 1, "merDetail.merName": 1, "agentName": 1}).All(&mers)
+	err := database.C(c.name).Find(q).All(&mers)
 	return mers, err
 }
 
@@ -218,10 +218,10 @@ func (c *merchantCollection) Insert2(m *model.Merchant) error {
 }
 
 // findMaxMerId 查询merId最大值
-func (c *merchantCollection) FindMaxMerId() (merId string, err error) {
+func (c *merchantCollection) FindMaxMerId(prefix string) (merId string, err error) {
 
 	match := bson.M{}
-	match["merId"] = bson.RegEx{"999118880.*", "."}
+	match["merId"] = bson.RegEx{prefix + ".*", "."}
 	cond := []bson.M{
 		{"$match": match},
 	}

@@ -365,6 +365,7 @@ func AddTransFromOldDB(st, et string) error {
 func readTransFromOldDB(startTime, endTime string) ([]txn, error) {
 
 	q := bson.M{"gw_date": bson.M{"$gte": startTime, "$lte": endTime}, "response": "00"}
+
 	var txns []txn
 	err := saomaDB.C("txn").Find(q).All(&txns)
 	return txns, err
