@@ -108,6 +108,7 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 			user.UniqueId = m.UniqueId
 			user.MerName = m.Detail.MerName
 			user.Images = m.Detail.Images
+			user.Password = "" // 不显示
 		}
 	}
 
@@ -178,6 +179,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 			user.AgentCode = merchant.AgentCode
 			mongo.AppUserCol.Upsert(user)
 			result.User = user
+			user.Password = "" //不显示
 		}
 	}
 
