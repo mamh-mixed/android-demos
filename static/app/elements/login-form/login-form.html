@@ -155,6 +155,9 @@
             password: ''
           };
 
+          // 事件冒泡到顶层
+          this.fire('login-success', response.data);
+
           if (this.redirect) {
             // 路由跳转的也可以使用事件冒泡
             this.router.go('/trade/list');
@@ -169,8 +172,6 @@
             });
             Util.hideLoginDialog();
           }
-          // 事件冒泡到顶层
-          this.fire('login-success', response.data);
         },
         // 表单内点击回车键事件
         handleEnterKeyPresse: function(e) {
