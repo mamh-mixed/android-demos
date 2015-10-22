@@ -125,10 +125,6 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 		user.AgentCode = merchant.AgentCode
 	}
 
-	// 带上password
-	// FIXBY:RUI 20151020
-	user.Password = req.Password
-
 	result = &model.AppResult{
 		State: model.SUCCESS,
 		Error: "",
@@ -796,6 +792,9 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	if len(req.Images) > 0 {
 		m.Detail.Images = req.Images
 	}
+	if m.Detail.CommodityName == "" {
+		m.Detail.CommodityName = m.Detail.MerName
+	}
 
 	if err = mongo.MerchantColl.Update(m); err != nil {
 		return model.SYSTEM_ERROR
@@ -869,7 +868,7 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 		if err != nil {
 			if err.Error() == "not found" {
 				log.Infof(" set max merId is 999118880000001")
-				merchant.MerId = "999118880000001"
+				merchant.MerId = prefix + "000001"
 			} else {
 				log.Errorf("find database  err,%s", err)
 				return model.SYSTEM_ERROR
@@ -893,9 +892,9 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 				return model.SYSTEM_ERROR
 			}
 
-		} else {
-			break
 		}
+
+		break
 	}
 	return nil
 }
