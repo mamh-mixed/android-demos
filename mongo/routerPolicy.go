@@ -58,7 +58,7 @@ func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterP
 	q := bson.M{"merId": merId, "cardBrand": cardBrand}
 	err := database.C(c.name).Find(q).One(r)
 	if err != nil {
-		log.Errorf("FindRouter Error message is: %s", err)
+		// log.Errorf("FindRouter Error message is: %s", err)
 		return nil
 	}
 	return r

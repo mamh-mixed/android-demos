@@ -23,9 +23,10 @@ func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer
 	c = new(model.ChanMer)
 	err = database.C(col.name).Find(bo).One(c)
 	if err != nil {
-		log.Errorf("Find ChanMer condition is: %+v;error is %s", bo, err)
+		// log.Errorf("Find ChanMer condition is: %+v;error is %s", bo, err)
+		return nil, err
 	}
-	return
+	return c, nil
 }
 
 // Add 增加一个渠道商户
