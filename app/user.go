@@ -34,10 +34,10 @@ var (
 )
 
 // register 注册
-func (u *user) register(req *reqParams) (result *model.AppResult) {
+func (u *user) register(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -68,9 +68,6 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 	}
 	user.UpdateTime = user.CreateTime
 
-	// 放进req里
-	req.AppUser = user
-
 	// 保存用户信息
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
@@ -82,10 +79,10 @@ func (u *user) register(req *reqParams) (result *model.AppResult) {
 }
 
 // login 登录
-func (u *user) login(req *reqParams) (result *model.AppResult) {
+func (u *user) login(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -125,7 +122,7 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 		user.AgentCode = merchant.AgentCode
 	}
 
-	result = &model.AppResult{
+	result = model.AppResult{
 		State: model.SUCCESS,
 		Error: "",
 		User:  user,
@@ -135,10 +132,10 @@ func (u *user) login(req *reqParams) (result *model.AppResult) {
 }
 
 // reqActivate 请求发送激活链接
-func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
+func (u *user) reqActivate(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -212,10 +209,10 @@ func (u *user) reqActivate(req *reqParams) (result *model.AppResult) {
 }
 
 // activate 激活
-func (u *user) activate(req *reqParams) (result *model.AppResult) {
+func (u *user) activate(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -271,10 +268,10 @@ func (u *user) activate(req *reqParams) (result *model.AppResult) {
 }
 
 // improveInfo 信息完善
-func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
+func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -329,12 +326,12 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 
 	// 生成商户号，并保存商户
 	if err := genMerId(merchant, "999118880"); err != nil {
-		return err
+		return model.SYSTEM_ERROR
 	}
 
 	// 创建路由,支付宝，微信
 	if err := genRouter(merchant); err != nil {
-		return err
+		return model.SYSTEM_ERROR
 	}
 
 	// 更新用户信息
@@ -354,7 +351,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		log.Errorf("save user err,%s", err)
 		return model.SYSTEM_ERROR
 	}
-	result = &model.AppResult{
+	result = model.AppResult{
 		State: model.SUCCESS,
 		Error: "",
 		User:  user,
@@ -363,10 +360,10 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 }
 
 // getTotalTransAmt 查询某天交易总额
-func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
+func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -417,10 +414,10 @@ func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
 }
 
 // getUserBill 获取用户账单
-func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
+func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -531,10 +528,10 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 }
 
 // getUserTrans 获取用户某笔交易信息
-func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
+func (u *user) getUserTrans(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -581,10 +578,10 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 }
 
 // passwordHandle 修改密码
-func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
+func (u *user) passwordHandle(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -618,10 +615,10 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 }
 
 // promoteLimit 提升限额
-func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
+func (u *user) promoteLimit(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -666,10 +663,10 @@ func (u *user) promoteLimit(req *reqParams) (result *model.AppResult) {
 }
 
 // getSettInfo 获得清算信息
-func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
+func (u *user) getSettInfo(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -720,10 +717,10 @@ func (u *user) getSettInfo(req *reqParams) (result *model.AppResult) {
 }
 
 // updateSettInfo 更新清算信息
-func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
+func (u *user) updateSettInfo(req *reqParams) (result model.AppResult) {
 
 	// 字段长度验证
-	if result = requestDataValidate(req); result != nil {
+	if result, ok := requestDataValidate(req); !ok {
 		return result
 	}
 
@@ -828,7 +825,7 @@ func randBytes(length int) []byte {
 	return randBytes
 }
 
-func genRouter(merchant *model.Merchant) *model.AppResult {
+func genRouter(merchant *model.Merchant) error {
 
 	// 创建路由,支付宝，微信
 	alpRoute := &model.RouterPolicy{
@@ -840,7 +837,7 @@ func genRouter(merchant *model.Merchant) *model.AppResult {
 	err := mongo.RouterPolicyColl.Insert(alpRoute)
 	if err != nil {
 		log.Errorf("create routePolicy err: %s", err)
-		return model.SYSTEM_ERROR
+		return err
 	}
 
 	wxpRoute := &model.RouterPolicy{
@@ -852,13 +849,13 @@ func genRouter(merchant *model.Merchant) *model.AppResult {
 	err = mongo.RouterPolicyColl.Insert(wxpRoute)
 	if err != nil {
 		log.Errorf("create routePolicy err: %s", err)
-		return model.SYSTEM_ERROR
+		return err
 	}
 
 	return nil
 }
 
-func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
+func genMerId(merchant *model.Merchant, prefix string) error {
 	for {
 		// 设置merId
 		maxMerId, err := mongo.MerchantColl.FindMaxMerId(prefix)
@@ -868,7 +865,7 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 				merchant.MerId = prefix + "000001"
 			} else {
 				log.Errorf("find merchant err,%s", err)
-				return model.SYSTEM_ERROR
+				return err
 			}
 
 		} else {
@@ -880,7 +877,7 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 				maxMerIdNum, err = strconv.Atoi(order)
 				if err != nil {
 					log.Errorf("format maxMerId(%s) err", maxMerId)
-					return model.SYSTEM_ERROR
+					return err
 				}
 				merchant.MerId = fmt.Sprintf("%s%0"+fmt.Sprintf("%d", len(order))+"d", prefix, maxMerIdNum+1)
 			} else if len(maxMerId) < 15 {
@@ -891,7 +888,7 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 			} else {
 				// TODO:
 				log.Errorf("format maxMerId(%s) err", maxMerId)
-				return model.SYSTEM_ERROR
+				return fmt.Errorf("%s", "merId too long")
 			}
 		}
 
@@ -901,10 +898,9 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
 			if !isDuplicateMerId {
 				log.Errorf("add merchant err: %s, merId=%s", err, merchant.MerId)
-				return model.SYSTEM_ERROR
+				return err
 			}
 		}
-
 		break
 	}
 	return nil

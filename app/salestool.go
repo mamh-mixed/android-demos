@@ -226,6 +226,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 				TitleOne:      "欢迎光临",
 				TitleTwo:      req.MerName,
 				Images:        req.Images,
+				// TODO URL
 			},
 		}
 
@@ -236,11 +237,11 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := genMerId(merchant, subAgent.AgentCode+"0"); err != nil {
-			w.Write(jsonMarshal(err))
+			w.Write(jsonMarshal(model.SYSTEM_ERROR))
 			return
 		}
 		if err := genRouter(merchant); err != nil {
-			w.Write(jsonMarshal(err))
+			w.Write(jsonMarshal(model.SYSTEM_ERROR))
 			return
 		}
 	} else {

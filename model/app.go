@@ -70,8 +70,8 @@ type SettInfo struct {
 }
 
 // NewAppResult NewAppResult
-func NewAppResult(state, err string) (ret *AppResult) {
-	return &AppResult{
+func NewAppResult(state, err string) (ret AppResult) {
+	return AppResult{
 		State: state,
 		Error: err,
 	}
