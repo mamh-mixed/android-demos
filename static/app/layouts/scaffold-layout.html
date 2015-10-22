@@ -200,7 +200,7 @@
         </paper-toolbar>
 
         <!-- 菜单列表 -->
-        <paper-menu>
+        <paper-menu id="quickPayMenuContainer" on-menu-render="handleMenuRenderEvent">
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
               <paper-item class="menu-trigger">
@@ -228,10 +228,9 @@
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
           <div>欢迎您，
-            <span>{{user.nickName}}</span>
+            <span>{{nickName}}</span>
           </div>
-          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="logoutHandle"></paper-icon-button>
-          <!-- <paper-button id="logoutBtn">退出</paper-button> -->
+          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
           <!-- Toolbar icons -->
           <div hidden$="{{isNarrow}}">
             <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
@@ -254,10 +253,7 @@
         <content select=".content"></content>
       </paper-scroll-header-panel>
     </paper-drawer-panel>
-    <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
-    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load="checkIsLogin" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
-    <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
+    <iron-localstorage id="cilUserLocalStorageInScaffoldLayout" name="CILUSER" value="{{nickName}}" on-nick-name-reload="handleReloadNickNameEvent"></iron-localstorage>
     <iron-localstorage name="CIL.CONFIG.ISFULLSCREEN" value="{{isFullscreen}}"></iron-localstorage>
   </template>
   <script>
@@ -280,7 +276,8 @@
           isNarrow: {
             type: Boolean,
             value: false
-          }
+          },
+          nickName: String
         },
         ready: function() {
           // 初始化菜单
@@ -459,19 +456,7 @@
               "route": "trade.reports"
             }]
           }];
-
-        },
-        // 核对是否登入
-        checkIsLogin: function() {
-          this.$.findSessionAjax.params = {
-            'sessionId': this.sessionId,
-          };
-          this.$.findSessionAjax.generateRequest();
-        },
-        // 当没有登入的时候，跳转到登入页面
-        handleNotLogin: function() {
-          document.querySelector('#appRouter').go('/');
-          return;
+          // this.menus = this.adminMenus;
         },
         paperHeaderTransform: function(e) {
           var appName = this.$.appName;
@@ -499,55 +484,11 @@
           }
           return path.substr(0, prefix.length) === prefix;
         },
-        handleFindSessionResponse: function(e) {
-          var response = e.detail.response;
-          // 如果没有登录
-          if (response.status !== 0) {
-            // 当前页面就是登录页
-            if (this.route.path === "/") {
-              return
-            }
-            // 当前页面不是登录页，则跳转到登录页
-            document.querySelector('#appRouter').go('/');
-            return;
-          }
-
-          // 登录了，但当前页是登录页，不必再登录了，跳走
-          if (this.route.path === "/") {
-            document.querySelector('#appRouter').go('/trade/list');
-            return
-          }
-
-          // 登录了，但当前页不是登录页，渲染菜单
-          this.user = response.data;
-          this.userType = this.user.userType;
-          if (this.userType === 'admin') {
-            this.menus = this.adminMenus;
-          } else if (this.userType === 'agent' || this.userType === 'subAgent' || this.userType === 'group' || this.userType === 'merchant') {
-            this.menus = this.agentMenus;
-          }
-        },
-        handleDeleteSessionResponse: function() {},
         // 退出
-        logoutHandle: function() {
-
-          // 删除后台sesseion信息
-          this.$.deleteSessionAjax.params = {
-            'sessionId': this.sessionId,
-          };
-          this.$.deleteSessionAjax.generateRequest();
-
-          // 清除localStorage中的信息
-          this.sessionId = '';
-          this.userType = '';
-          this.user = {};
+        handleLogoutTapped: function() {
           this.$.logoutBtn.hidden = true;
-
-          // 清除客户端 SessionID
-          document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-
-          // 跳转至登录页面
-          document.querySelector('#appRouter').go('/');
+          // 事件冒泡到顶层处理
+          this.fire('logout');
         },
         // 进入全屏模式
         enterFullscreenMode: function() {
@@ -561,6 +502,20 @@
           if (!this.isFullscreen) {
             this.isNarrow = detail.narrow;
           }
+        },
+        // 监听菜单渲染的事件
+        handleMenuRenderEvent: function(e, detail) {
+          if (detail === 'admin') {
+            this.menus = this.adminMenus;
+            return;
+          }
+          this.menus = this.agentMenus;
+        },
+        handleReloadNickNameEvent: function(e) {
+          this.set('nickName', e.detail);
+        },
+        testHandler: function() {
+          this.$.cilUserLocalStorageInScaffoldLayout.reload();
         }
       });
     })();

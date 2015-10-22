@@ -3,7 +3,7 @@
 set -e
 
 pkg="github.com/CardInfoLink/quickpay"
-
+pwd
 path=$GOPATH/src/$pkg
 
 cd $path

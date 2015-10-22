@@ -39,6 +39,7 @@ func timingClearSession() {
 // 新建会话
 func (s *sessionService) Save(session *model.Session) (ret *model.ResultBody) {
 	session.UserType = session.User.UserType
+	session.NickName = session.User.NickName
 	err := mongo.SessionColl.Add(session)
 	if err != nil {
 		log.Errorf("创建session失败,%s", err)
