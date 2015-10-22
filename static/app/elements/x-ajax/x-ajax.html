@@ -260,7 +260,7 @@
 
     observers: [
       '_requestOptionsChanged(url, method, params.*, headers,' +
-        'contentType, body, sync, handleAs, withCredentials, timeout, auto)'
+      'contentType, body, sync, handleAs, withCredentials, timeout, auto)'
     ],
 
     /**
@@ -269,7 +269,7 @@
      *
      * @return {string}
      */
-    get queryString () {
+    get queryString() {
       var queryParts = [];
       var param;
       var value;
@@ -389,7 +389,9 @@
       this.fire('request', {
         request: request,
         options: requestOptions
-      }, {bubbles: false});
+      }, {
+        bubbles: false
+      });
 
       return request;
     },
@@ -400,7 +402,9 @@
         this._setLastError(null);
         this._setLoading(false);
       }
-      this.fire('response', request, {bubbles: false});
+      this.fire('response', request, {
+        bubbles: false
+      });
     },
     // 出错处理
     _handleError: function(request, error) {
@@ -419,10 +423,12 @@
       this.fire('error', {
         request: request,
         error: error
-      }, {bubbles: false});
+      }, {
+        bubbles: false
+      });
 
       // 判断是否session失效导致的
-      if (error.message === 'The request failed with status code: 406'){
+      if (error.message === 'The request failed with status code: 406') {
         Util.showLoginDialog();
       }
     },
