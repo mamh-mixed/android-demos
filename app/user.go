@@ -278,7 +278,7 @@ func (u *user) improveInfo(req *reqParams) (result *model.AppResult) {
 		return result
 	}
 
-	if req.UserName == "" || req.Password == "" {
+	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -371,7 +371,7 @@ func (u *user) getTotalTransAmt(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 用户名不为空
-	if req.UserName == "" {
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -425,7 +425,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 用户名不为空
-	if req.UserName == "" {
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -541,7 +541,7 @@ func (u *user) getUserTrans(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 用户名不为空
-	if req.UserName == "" {
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -591,7 +591,7 @@ func (u *user) passwordHandle(req *reqParams) (result *model.AppResult) {
 	}
 
 	// 用户名不为空
-	if req.UserName == "" || req.NewPassword == "" {
+	if req.UserName == "" || req.NewPassword == "" || req.Transtime == "" || req.OldPassword == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -735,7 +735,7 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	// 云收银app
 	if req.AppUser == nil {
 		// 用户名不为空
-		if req.UserName == "" {
+		if req.UserName == "" || req.Transtime == "" || req.Password == "" {
 			return model.PARAMS_EMPTY
 		}
 		// 根据用户名查找用户
