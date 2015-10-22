@@ -18,8 +18,9 @@
         margin-top: 10px !important;
         padding-top: 0px !important;
       }
+
       dl {
-          margin-top: 0px;
+        margin-top: 0px;
       }
 
       dt {
@@ -48,9 +49,8 @@
         <dl>
           <template is="dom-repeat" items="{{messages}}" as="m">
             <dt class$="{{getMsgTypeClass(m)}}">
-              <span>{{m.transTime}}</span>
-              <span>{{getMsgTypeName(m)}}</span>
-              <span>{{getDirectionName(m)}}</span>
+              <span>{{m.transTime}}</span>&nbsp;&nbsp;&nbsp;
+              <span>{{getMessageDirection(m)}}</span>
             </dt>
             <dd>
               <code>{{formatMsg(m.msg)}}</code>
@@ -204,39 +204,31 @@
           }
 
           console.log("未知 msgType（" + m.msgType + "）")
-          return "未知（" + m.msgType + "）";
+          return "";
         },
-        getMsgTypeName: function(m) {
+        getMessageDirection: function(m) {
+          var dir = "";
           if (m.msgType === 1) {
-            return '商户';
+            dir = '商户';
+          } else if (m.msgType === 2) {
+            dir = '渠道';
+          } else if (m.msgType === 3) {
+            return '渠道 ==> 云收银 （异步通知）';
+          } else {
+            console.log("未知 msgType（" + m.msgType + "）");
+            return "";
           }
 
-          if (m.msgType === 2) {
-            return '渠道';
+          if (m.direction === 'in') {
+            dir += " ==> 云收银";
+          } else if (m.direction === 'out') {
+            dir = "云收银 ==> " + dir;
+          } else {
+            console.log("未知 direction（" + m.direction + "）");
+            return "";
           }
 
-          if (m.msgType === 3) {
-            return '渠道';
-          }
-
-          console.log("未知 msgType（" + m.msgType + "）");
-          return "未知（" + m.msgType + "）";
-        },
-        getDirectionName: function(m) {
-          if ((m.msgType === 1 && m.direction === 'in') || (m.msgType === 2 && m.direction === 'out')) {
-            return '请求';
-          }
-
-          if ((m.msgType === 1 && m.direction === 'out') || (m.msgType === 2 && m.direction === 'in')) {
-            return '返回';
-          }
-
-          if (m.msgType === 3) {
-            return '异步通知';
-          }
-
-          console.log("未知 direction（" + m.direction + "）msgType（" + m.msgType + "）");
-          return "未知（" + m.direction + "）";
+          return dir
         }
       });
     })();
