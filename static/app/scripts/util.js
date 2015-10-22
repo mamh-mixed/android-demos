@@ -23,14 +23,14 @@
 			toast.show();
 		};
 		var showLoginDialog = function() {
-			var dialog = document.querySelector('#reloginDialog');
-			dialog.hidden = false;
-			dialog.open();
+			Polymer.Base.fire('open-dialog-please', '', {
+				node: document.getElementById('reloginDialog')
+			});
 		};
 		var hideLoginDialog = function() {
-			var dialog = document.querySelector('#reloginDialog');
-			dialog.hidden = true;
-			dialog.close();
+			Polymer.Base.fire('close-dialog-please', '', {
+				node: document.getElementById('reloginDialog')
+			});
 		};
 		var fire = function(type, detail, node) {
 			// create a CustomEvent the old way for IE9/10 support
