@@ -88,50 +88,19 @@
           <paper-input id="billingScheme" label="商户计费方案代码" value="{{merchant.detail.billingScheme::input}}" required error-message="必填项"></paper-input>
           <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
         </div>
-        <!-- <div class="row">
-          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
-          <paper-input label="代理名称" value="{{merchant.agentName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
-          <paper-input label="商户名称" value="{{merchant.groupName::input}}"></paper-input>
-        </div> -->
 
         <div class="row" style="margin-top:30px;">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
         </div>
         <div class="row">
           <paper-input id="signKey" label="商户签名密钥" value="{{merchant.signKey::input}}" class="validate-container" error-message="必填项"></paper-input>
+          <paper-button class="colorful" on-tap="refreshSignKeyHandle">刷新</paper-button>
         </div>
         <div class="row">
           <paper-input id="encryptKey" label="商户加密密钥" class="validate-container" required value="{{merchant.encryptKey::input}}"></paper-input>
           <paper-button class="colorful" on-tap="refreshEncryptKeyHandle">刷新</paper-button>
         </div>
 
-        <!-- <div class="row" style="margin-top:30px;">
-          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
-          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="开户行号" value="{{merchant.detail.bankId::input}}"></paper-input>
-          <paper-input label="支行名称" value="{{merchant.detail.bankName::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
-          <paper-input label="商户交易币种" value="{{merchant.transCurr::input}}"></paper-input>
-        </div> -->
-
-        <!-- <div class="row" style="margin-top:30px;">
-          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
-          <paper-input label="门店ID" value="{{merchant.detail.shopId::input}}"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
-          <paper-input id="commodityName" label="商品名称" value="{{merchant.detail.commodityName::input}}" error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-        </div> -->
         <div class="row" style="margin-top:30px;">
           <x-select id="merStatus" items="[[merStatusMap]]" class="validate-container" required selected-item="{{merStatus}}" label="商户状态"></x-select>
         </div>
@@ -260,6 +229,10 @@
         // 刷新生成商户加密密钥
         refreshEncryptKeyHandle: function() {
           this.set('merchant.encryptKey', generateMixed(43) + '=');
+        },
+        // 刷新生成门店签名密钥
+        refreshSignKeyHandle:function(){
+            this.set('merchant.signKey', generateMixed(32));
         },
       });
     })();

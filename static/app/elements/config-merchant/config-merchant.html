@@ -40,6 +40,11 @@
       @apply(--layout-wrap);
     }
 
+    .row > .col {
+      @apply(--layout-flex-6);
+      margin: 0 20px;
+    }
+
     .row paper-input,
     .row pre,
     .row label,
@@ -115,6 +120,11 @@
         font-size: 8px;
       }
     }
+
+    paper-button.cycan {
+      background-color: #00bcd4 !important;
+      color: #fff;
+    }
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -143,8 +153,15 @@
           <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
         </div>
         <div class="row">
-          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent"> 是否开启验签</paper-radio-button>
-          <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
+          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent" style="width:800px;"> 是否开启验签</paper-radio-button>
+          <div class="col">
+            <div class="layout horizontal">
+              <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
+              <div class="flex-4">
+                <paper-button class="cycan" raised on-tap="handleRefreshSignKeyTapped">刷新</paper-button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="row">
@@ -283,6 +300,18 @@
     <x-ajax id="queryGroupAjax" method="GET" url="/master/group/find" handle-as="json" debounce-duration="1000" on-response="handleQueryGroupsResponse"></x-ajax>
   </template>
   <script>
+    var chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+      'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+    ];
+
+    function generateMixed(n) {
+      var res = '';
+      for (var i = 0; i < n; i++) {
+        var id = Math.ceil(Math.random() * 61);
+        res += chars[id];
+      }
+      return res;
+    }
     Polymer({
       is: 'config-merchant',
       properties: {
@@ -1188,6 +1217,9 @@
         // subAgents改变时，是否改变subAgent的值。
         this.changeSubAgent = true;
         for (var i = 0; i < this.subAgents.length; i++) {
+          if (!this.subAgent) {
+            return;
+          }
           if (this.subAgent.key == this.subAgents[i].key) {
             this.changeSubAgent = false;
             break;
@@ -1222,6 +1254,9 @@
         // groups改变时，是否改变group的值。
         this.changeGroup = true;
         for (var i = 0; i < this.groups.length; i++) {
+          if (!this.group) {
+            return;
+          }
           if (this.group.key == this.groups[i].key) {
             this.changeGroup = false;
             break;
@@ -1230,6 +1265,10 @@
         if (this.changeGroup) {
           this.set('group', {});
         }
+      },
+      // 刷新生成门店签名密钥
+      handleRefreshSignKeyTapped: function() {
+        this.set('merchant.signKey', generateMixed(32));
       },
     });
   </script>
