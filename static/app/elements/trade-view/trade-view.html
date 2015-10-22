@@ -23,6 +23,10 @@
       margin-top: 10px;
     }
 
+    paper-dialog-scrollable /deep/ #scrollable{
+      min-height: auto;
+    }
+
   </style>
   <template>
     <paper-dialog id="dialogView">
@@ -58,6 +62,9 @@
           </template>
         </div>
       </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button on-tap="handleClose">关闭</paper-button>
+      </div>
     </paper-dialog>
     <x-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></x-ajax>
   </template>
@@ -116,6 +123,10 @@
           this.$.refdOrder.hidden = false;
           this.refdOrderItems = response.data;
         }
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
       },
     });
 
