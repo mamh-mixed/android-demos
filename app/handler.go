@@ -307,7 +307,7 @@ func signContent(values url.Values) string {
 	return buf.String()
 }
 
-func jsonMarshal(result *model.AppResult) []byte {
+func jsonMarshal(result model.AppResult) []byte {
 	data, err := json.Marshal(result)
 	if err != nil {
 		log.Error("json marshal error: %s", err)
