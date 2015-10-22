@@ -282,7 +282,7 @@ func TestMaxMerIdHandle(t *testing.T) {
 	t.Logf("%s", maxMerId)
 }
 
-var token = "a462a98de8f847fe7f3c8357572df913"
+var token = "378c679dd6e240045674c396a5c33436"
 
 func TestAppToolsLogin(t *testing.T) {
 	values := url.Values{}
@@ -339,7 +339,7 @@ func TestAppToolsUpdateUserInfo(t *testing.T) {
 	values.Add("city", "汕头市")
 	values.Add("branch_bank", "中国工商")
 	values.Add("bankNo", "123312312313|123213131323")
-	values.Add("merName", "汕头牛肉丸")
+	values.Add("merName", "汕头牛肉丸1")
 	result, err := post(values, UpdateUserInfo)
 	if err != nil {
 		t.Error(err)
@@ -348,4 +348,9 @@ func TestAppToolsUpdateUserInfo(t *testing.T) {
 
 	bs, _ := json.Marshal(result)
 	t.Logf("%s", string(bs))
+}
+
+func TestRandBytes(t *testing.T) {
+	bs := randBytes(32)
+	t.Logf("%x", bs)
 }

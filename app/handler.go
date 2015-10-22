@@ -345,4 +345,5 @@ type reqParams struct {
 	MerName      string
 	Images       []string
 	AppUser      *model.AppUser
+	m            *model.Merchant
 }

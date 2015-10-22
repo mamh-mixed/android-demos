@@ -141,49 +141,8 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 		SubAgentCode: agentUser.SubAgentCode,
 	}
 	// 注册
-	result := User.register(req)
 
-	// 注册成功，创建商户
-	if result.State == model.SUCCESS {
-		merchant := &model.Merchant{
-			AgentCode:    agentUser.AgentCode,
-			SubAgentCode: agentUser.SubAgentCode,
-			Permission:   []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf},
-			MerStatus:    model.MerStatusNormal,
-			Remark:       "agent_register",
-			TransCurr:    "156",
-			RefundType:   model.CurrentDayRefund, // 只能当天退
-			IsNeedSign:   true,
-			SignKey:      fmt.Sprintf("%x", randBytes(16)),
-		}
-
-		subAgent, err := mongo.SubAgentColl.Find(agentUser.SubAgentCode)
-		if err == nil {
-			merchant.AgentName = subAgent.AgentName
-			merchant.SubAgentName = subAgent.SubAgentName
-		}
-
-		if err := genMerId(merchant, subAgent.AgentCode+"0"); err != nil {
-			w.Write(jsonMarshal(err))
-			return
-		}
-		if err := genRouter(merchant); err != nil {
-			w.Write(jsonMarshal(err))
-			return
-		}
-		user := req.AppUser
-		if user != nil {
-			user.MerId = merchant.MerId
-			user.UniqueId = merchant.UniqueId
-			user.SignKey = merchant.SignKey
-			user.AgentCode = merchant.AgentCode
-			mongo.AppUserCol.Upsert(user)
-			result.User = user
-			user.Password = "" //不显示
-		}
-	}
-
-	w.Write(jsonMarshal(result))
+	w.Write(jsonMarshal(User.register(req)))
 }
 
 // GetQiniuToken
@@ -206,9 +165,11 @@ func GetQiniuToken(w http.ResponseWriter, r *http.Request) {
 // UpdateUserInfo 更新用户信息
 func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
+	var agentUser *model.User
+	var ok bool
 	debugReqParams(r)
 	// 验证token
-	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
+	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
 		return
 	}
@@ -216,7 +177,9 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 	appUser, err := mongo.AppUserCol.FindOne(r.FormValue("username"))
 	if err != nil {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
+		return
 	}
+	log.Debug(appUser)
 
 	req := &reqParams{
 		BankOpen:   r.FormValue("bank_open"),
@@ -233,7 +196,72 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 		AppUser:    appUser, // 带上user
 	}
 
-	w.Write(jsonMarshal(User.updateSettInfo(req)))
+	// 默认返回
+	result := model.SUCCESS1
+
+	var merchant *model.Merchant
+	// 还没申请商户
+	if appUser.MerId == "" {
+		merchant = &model.Merchant{
+			AgentCode:    agentUser.AgentCode,
+			SubAgentCode: agentUser.SubAgentCode,
+			Permission:   []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf},
+			MerStatus:    model.MerStatusNormal,
+			Remark:       "agent_register",
+			TransCurr:    "156",
+			RefundType:   model.CurrentDayRefund, // 只能当天退
+			IsNeedSign:   true,
+			SignKey:      fmt.Sprintf("%x", randBytes(16)),
+			Detail: model.MerDetail{
+				MerName:       req.MerName,
+				CommodityName: req.MerName,
+				Province:      req.Province,
+				City:          req.City,
+				OpenBankName:  req.BankOpen,
+				BankName:      req.BranchBank,
+				BankId:        req.BankNo,
+				AcctName:      req.Payee,
+				AcctNum:       req.PayeeCard,
+				ContactTel:    req.PhoneNum,
+				TitleOne:      "欢迎光临",
+				TitleTwo:      req.MerName,
+				Images:        req.Images,
+			},
+		}
+
+		subAgent, err := mongo.SubAgentColl.Find(agentUser.SubAgentCode)
+		if err == nil {
+			merchant.AgentName = subAgent.AgentName
+			merchant.SubAgentName = subAgent.SubAgentName
+		}
+
+		if err := genMerId(merchant, subAgent.AgentCode+"0"); err != nil {
+			w.Write(jsonMarshal(err))
+			return
+		}
+		if err := genRouter(merchant); err != nil {
+			w.Write(jsonMarshal(err))
+			return
+		}
+	} else {
+		result = User.updateSettInfo(req)
+		if result.State != model.SUCCESS {
+			w.Write(jsonMarshal(result))
+			return
+		}
+		merchant = req.m
+	}
+
+	appUser.MerId = merchant.MerId
+	appUser.UniqueId = merchant.UniqueId
+	appUser.SignKey = merchant.SignKey
+	appUser.AgentCode = merchant.AgentCode
+	appUser.SubAgentCode = agentUser.SubAgentCode
+	mongo.AppUserCol.Upsert(appUser)
+	result.User = appUser
+	appUser.Password = "" //不显示
+
+	w.Write(jsonMarshal(result))
 }
 
 // UserActivate 用户激活

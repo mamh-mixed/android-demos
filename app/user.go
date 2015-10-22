@@ -485,7 +485,7 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 		q.RespcdNotIn = "00"
 	}
 
-	trans, total, err := mongo.SpTransColl.Find(q)
+	trans, _, err := mongo.SpTransColl.Find(q)
 	if err != nil {
 		log.Errorf("find user trans error: %s", err)
 		return model.SYSTEM_ERROR
@@ -498,28 +498,26 @@ func (u *user) getUserBill(req *reqParams) (result *model.AppResult) {
 
 	var transAmt, refundAmt int64
 	var transCount, refundCount int
-	if total != 0 {
-		typeGroup, err := mongo.SpTransColl.MerBills(&model.QueryCondition{
-			MerId:        user.MerId,
-			StartTime:    q.StartTime,
-			EndTime:      q.EndTime,
-			RefundStatus: model.TransRefunded,
-			TransStatus:  []string{model.TransSuccess},
-		})
-		if err != nil {
-			return model.SYSTEM_ERROR
-		}
+	typeGroup, err := mongo.SpTransColl.MerBills(&model.QueryCondition{
+		MerId:        user.MerId,
+		StartTime:    q.StartTime,
+		EndTime:      q.EndTime,
+		RefundStatus: model.TransRefunded,
+		TransStatus:  []string{model.TransSuccess},
+	})
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
 
-		for _, v := range typeGroup {
-			switch v.TransType {
-			case model.PayTrans:
-				transAmt += v.TransAmt
-				transCount += v.TransNum
-			default:
-				refundAmt += v.TransAmt
-				transAmt -= v.TransAmt
-				refundCount += v.TransNum
-			}
+	for _, v := range typeGroup {
+		switch v.TransType {
+		case model.PayTrans:
+			transAmt += v.TransAmt
+			transCount += v.TransNum
+		default:
+			refundAmt += v.TransAmt
+			transAmt -= v.TransAmt
+			refundCount += v.TransNum
 		}
 	}
 
@@ -792,13 +790,12 @@ func (u *user) updateSettInfo(req *reqParams) (result *model.AppResult) {
 	if len(req.Images) > 0 {
 		m.Detail.Images = req.Images
 	}
-	if m.Detail.CommodityName == "" {
-		m.Detail.CommodityName = m.Detail.MerName
-	}
 
 	if err = mongo.MerchantColl.Update(m); err != nil {
 		return model.SYSTEM_ERROR
 	}
+
+	req.m = m
 
 	return model.SUCCESS1
 }
@@ -824,7 +821,7 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 }
 
 func randBytes(length int) []byte {
-	var randBytes = make([]byte, 0, length)
+	var randBytes = make([]byte, length)
 	if _, err := io.ReadFull(cr.Reader, randBytes[:]); err != nil {
 		log.Errorf("io.ReadFull error: %s", err)
 	}
@@ -875,12 +872,27 @@ func genMerId(merchant *model.Merchant, prefix string) *model.AppResult {
 			}
 
 		} else {
-			maxMerIdNum, err := strconv.Atoi(maxMerId)
-			if err != nil {
+			log.Debugf("maxMerId: %s", maxMerId)
+			var maxMerIdNum int
+			if len(maxMerId) == 15 {
+				// TODO:
+				order := maxMerId[len(prefix):15]
+				maxMerIdNum, err = strconv.Atoi(order)
+				if err != nil {
+					log.Errorf("format maxMerId(%s) err", maxMerId)
+					return model.SYSTEM_ERROR
+				}
+				merchant.MerId = fmt.Sprintf("%s%0"+fmt.Sprintf("%d", len(order))+"d", prefix, maxMerIdNum+1)
+			} else if len(maxMerId) < 15 {
+				// TODO:
+				l := fmt.Sprintf("%d", 14-len(prefix))
+				rp := fmt.Sprintf("%0"+l+"d", 0)
+				merchant.MerId = fmt.Sprintf("%s%s%d", prefix, rp, 1)
+			} else {
+				// TODO:
 				log.Errorf("format maxMerId(%s) err", maxMerId)
 				return model.SYSTEM_ERROR
 			}
-			merchant.MerId = fmt.Sprintf("%d", maxMerIdNum+1)
 		}
 
 		merchant.UniqueId = util.Confuse(merchant.MerId)
