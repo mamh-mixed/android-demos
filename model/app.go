@@ -98,8 +98,8 @@ type AppTxn struct {
 
 // AppUser 云收银用户
 type AppUser struct {
-	UserName     string `json:"username,omitempty" bson:"userName,omitempty"`
-	Password     string `json:"-" bson:"password,omitempty"`
+	UserName     string `json:"username,omitempty" bson:"username,omitempty"`
+	Password     string `json:"password,omitempty" bson:"password,omitempty"`
 	Activate     string `json:"activate,omitempty" bson:"activate,omitempty"`
 	MerId        string `json:"clientid,omitempty" bson:"merId,omitempty"`
 	Limit        string `json:"limit,omitempty" bson:"limit,omitempty"`
@@ -123,7 +123,7 @@ type AppUser struct {
 
 // Email 发送email记录
 type Email struct {
-	UserName  string `json:"username,omitempty" bson:"userName,omitempty"`
+	UserName  string `json:"username,omitempty" bson:"username,omitempty"`
 	Code      string `json:"code,omitempty" bson:"code,omitempty"`
 	Success   bool   `json:"success,omitempty" bson:"success,omitempty"`
 	Timestamp string `json:"timestamp,omitempty" bson:"timestamp,omitempty"`

@@ -281,3 +281,71 @@ func TestMaxMerIdHandle(t *testing.T) {
 	maxMerId = fmt.Sprintf("%d", maxMerIdNum+1)
 	t.Logf("%s", maxMerId)
 }
+
+var token = "a462a98de8f847fe7f3c8357572df913"
+
+func TestAppToolsLogin(t *testing.T) {
+	values := url.Values{}
+	values.Add("username", "toolstest")
+	values.Add("password", "Yun#1016")
+	result, err := post(values, CompanyLogin)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestAppToolsUserList(t *testing.T) {
+	values := url.Values{}
+	values.Add("accessToken", token)
+	result, err := post(values, UserList)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestAppToolsRegister(t *testing.T) {
+	values := url.Values{}
+	values.Add("accessToken", token)
+	values.Add("username", "379630413@QQ.com")
+	values.Add("password", "12345678")
+
+	result, err := post(values, UserRegister)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestAppToolsUpdateUserInfo(t *testing.T) {
+	values := url.Values{}
+	values.Add("accessToken", token)
+	values.Add("username", "379630413@QQ.com")
+	values.Add("bank_open", "中国工商")
+	values.Add("payee", "陈芝锐")
+	values.Add("payee_card", "6222022003008481261")
+	values.Add("phone_num", "15618103236")
+	values.Add("province", "广东省")
+	values.Add("city", "汕头市")
+	values.Add("branch_bank", "中国工商")
+	values.Add("bankNo", "123312312313|123213131323")
+	values.Add("merName", "汕头牛肉丸")
+	result, err := post(values, UpdateUserInfo)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
