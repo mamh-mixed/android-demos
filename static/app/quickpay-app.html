@@ -69,7 +69,7 @@
         NOT_FOUNT_PATH,
         LOGIN_PATH
       ];
-      var agentRoutes = ['/trade/list', '/trade/reports','/system/password/editor'];
+      var agentRoutes = ['/trade/list', '/trade/reports', '/system/password/editor'];
 
       Polymer({
         is: 'quickpay-app',
@@ -140,6 +140,7 @@
           this.set('userType', loginUser.userType);
           this.set('nickName', loginUser.nickName);
 
+          // 当前页面弹窗登录
           if (e.detail.jumpTo === null && this.route.path !== '/404') {
             Polymer.Base.fire('menu-render', loginUser.userType, {
               node: document.getElementById('quickPayMenuContainer')
@@ -147,10 +148,16 @@
             Polymer.Base.fire('nick-name-reload', loginUser.nickName, {
               node: document.getElementById('cilUserLocalStorageInScaffoldLayout')
             });
+
             this.$.reloginDialog.close();
+            // 如果再次登录的人不是管理员，但是当前页面是管理员的页面，就跳转到普通用户的主页
+            if (this.userType !== 'admin' && agentRoutes.indexOf(this.route.path) < 0) {
+              this.$.appRouter.go('/trade/list');
+            }
             return;
           }
 
+          // 登录页面登录后跳转
           if (typeof e.detail.jumpTo === 'string') {
             this.$.appRouter.go(e.detail.jumpTo);
             return;

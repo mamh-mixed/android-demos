@@ -159,11 +159,9 @@
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent" style="width:800px;"> 是否开启验签</paper-radio-button>
           <div class="col">
-            <div class="layout horizontal">
-              <paper-input id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
-              <div class="flex-4">
-                <paper-button class="cycan" raised on-tap="handleRefreshSignKeyTapped">刷新</paper-button>
-              </div>
+            <div class="layout horizontal center">
+              <paper-input class="flex left" id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
+              <paper-button class="cycan" raised on-tap="handleRefreshSignKeyTapped">刷新</paper-button>
             </div>
           </div>
         </div>
