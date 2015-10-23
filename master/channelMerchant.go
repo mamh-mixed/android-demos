@@ -100,7 +100,7 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 
 	if c.SignKey != "" && len(c.SignKey) < 8 {
 		log.Debugf("签名密钥长度不能小于8，signKey=%s", c.SignKey)
-		return model.NewResultBody(3, "签名密钥长度不能小于")
+		return model.NewResultBody(3, "签名密钥长度不能小于8")
 	}
 	if c.SignKey != "" {
 		isCreate := false
