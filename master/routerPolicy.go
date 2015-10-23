@@ -95,7 +95,7 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素 cardBrand")
 	}
 
-	merchant, err := mongo.MerchantColl.Find(r.MerId)
+	merchant, err := mongo.MerchantColl.FindNotInCache(r.MerId)
 	if err != nil {
 		if err.Error() == "not found" {
 			return model.NewResultBody(4, "merId不存在")
@@ -107,6 +107,10 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 	if r.SettFlag == model.SR_AGENT {
 		if r.SettRole != merchant.AgentCode {
 			return model.NewResultBody(5, "agentCode错误")
+		}
+	} else if r.SettFlag == model.SR_COMPANY {
+		if r.SettRole != merchant.SubAgentCode {
+			return model.NewResultBody(5, "subAgentCode错误")
 		}
 	} else if r.SettFlag == model.SR_GROUP {
 		if r.SettRole != merchant.GroupCode {
