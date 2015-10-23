@@ -16,7 +16,6 @@ import (
 	"time"
 )
 
-// tokenMap TODO 将token存放到数据库
 var tokenMap = make(map[string]*model.User)
 
 // CompanyLogin 销售人员-公司级别登录
@@ -298,6 +297,7 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 	if key != "" {
 		resp, err := http.Get(qiniu.MakePrivateUrl(key))
 		if err == nil {
+			defer resp.Body.Close()
 			pngBytes, err = ioutil.ReadAll(resp.Body)
 			if err != nil {
 				log.Errorf("fail to read resp: %s", err)

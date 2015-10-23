@@ -145,6 +145,7 @@ func (i *importer) DoImport() (string, error) {
 	// 数据入库
 	if err := i.persist(); err != nil {
 		i.rollback()
+		log.Errorf("persist error: %s, rollback ...", err)
 		return "", sysErr
 	}
 

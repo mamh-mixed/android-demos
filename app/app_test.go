@@ -270,6 +270,7 @@ func TestMaxMerIdHandle(t *testing.T) {
 			t.Logf(" set mix merId is 999118880000001")
 			maxMerId = "999118880000001"
 		} else {
+			t.Log(err)
 			return
 		}
 	}

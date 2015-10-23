@@ -2,7 +2,11 @@ package app
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/util"
+	"regexp"
 )
+
+var regexDigit = regexp.MustCompile("\\d+")
 
 // requestDataValidate 请求数据验证
 func requestDataValidate(req *reqParams) (model.AppResult, bool) {
@@ -36,11 +40,17 @@ func requestDataValidate(req *reqParams) (model.AppResult, bool) {
 		}
 	}
 
-	// if req.Index != "" {
-	// 	if len(req.Index) > 10 {
-	// 		return model.NewAppResult("FAIL", "index 长度过长")
-	// 	}
-	// }
+	if req.Index != "" {
+		if !regexDigit.MatchString(req.Index) {
+			return model.NewAppResult("FAIL", "index 必须为数字"), false
+		}
+	}
+
+	if req.Status != "" {
+		if !util.StringInSlice(req.Status, []string{"success", "fail", "all"}) {
+			return model.NewAppResult("FAIL", "status 取值错误"), false
+		}
+	}
 
 	if req.Password != "" {
 		if len(req.Password) > 50 {

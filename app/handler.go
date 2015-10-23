@@ -5,13 +5,11 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 	"net/http"
 	"net/url"
 	"sort"
-	"strconv"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 )
 
 var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"
@@ -140,7 +138,6 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
-	index, _ := strconv.Atoi(r.FormValue("index"))
 
 	result := User.getUserBill(&reqParams{
 		UserName:  r.FormValue("username"),
@@ -148,7 +145,7 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		Month:     r.FormValue("month"),
 		Status:    r.FormValue("status"),
 		Transtime: r.FormValue("transtime"),
-		Index:     index,
+		Index:     r.FormValue("index"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -333,7 +330,7 @@ type reqParams struct {
 	OrderNum     string
 	BusinessType string
 	Status       string
-	Index        int
+	Index        string
 	Date         string
 	Month        string
 	Province     string

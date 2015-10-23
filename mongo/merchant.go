@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -220,23 +220,14 @@ func (c *merchantCollection) Insert2(m *model.Merchant) error {
 // findMaxMerId 查询merId最大值
 func (c *merchantCollection) FindMaxMerId(prefix string) (merId string, err error) {
 
-	// match := bson.M{}
-	// match["merId"] = bson.RegEx{prefix + ".", "\\d+"}
-	cond := []bson.M{
-		{"$match": bson.M{"merId": bson.M{"$regex": prefix + "\\d+"}}},
-	}
-	sort := bson.M{"$sort": bson.M{"merId": -1}}
-	limit := bson.M{"$limit": 1}
-
-	cond = append(cond, sort, limit)
-
 	m := new(model.Merchant)
-	err = database.C(c.name).Pipe(cond).One(m)
-	if err != nil {
-		log.Errorf("select maxMerId err,%s", err)
-		return "", err
-	}
-	return m.MerId, nil
+	length := fmt.Sprintf("%d", 15-len(prefix))
+	regex := bson.RegEx{"^" + prefix + "\\d{" + length + "}$", ""}
+	query := bson.M{"merId": regex}
+
+	err = database.C(c.name).Find(query).Sort("-merId").Select(bson.M{"merId": 1}).One(m)
+
+	return m.MerId, err
 }
 
 func (col *merchantCollection) FindCountByMerId(merId string) (num int, err error) {
