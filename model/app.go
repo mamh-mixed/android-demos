@@ -35,7 +35,7 @@ var (
 	USERNAME_NO_EXIST_CH    = NewAppResult(FAIL, "用户名不存在")
 	PARAMS_EMPTY_CH         = NewAppResult(FAIL, "参数为空")
 	SYSTEM_ERROR_CH         = NewAppResult(FAIL, "系统错误")
-	TOKEN_ERROR             = NewAppResult(FAIL, "acessToken error")
+	TOKEN_ERROR             = NewAppResult(FAIL, "accessToken_error")
 	USER_DATA_ERROR         = NewAppResult(FAIL, "user_data_error")
 )
 
