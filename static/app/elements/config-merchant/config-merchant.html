@@ -45,6 +45,10 @@
       margin: 0 20px;
     }
 
+    .row.button {
+      margin: 20px 0;
+    }
+
     .row paper-input,
     .row pre,
     .row label,
@@ -125,6 +129,7 @@
       background-color: #00bcd4 !important;
       color: #fff;
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -209,7 +214,7 @@
           </template>
         </div>
 
-        <div class="row">
+        <div class="row button">
           <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存门店信息</paper-button>
         </div>
       </section>
@@ -231,7 +236,7 @@
           <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
-        <div class="row">
+        <div class="row button">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
       </section>
@@ -271,7 +276,7 @@
           </section>
         </div>
 
-        <div class="row">
+        <div class="row button">
           <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
         </div>
       </section>
@@ -1271,5 +1276,6 @@
         this.set('merchant.signKey', generateMixed(32));
       },
     });
+
   </script>
 </dom-module>
