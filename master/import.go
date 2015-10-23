@@ -857,8 +857,9 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
+	correctCol := 37
 	// 返回某列完整错误信息
-	if col != 37 {
+	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var errStr string
 		for k, v := range cells {
@@ -871,7 +872,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 			}
 			errStr += fmt.Sprintf("( %s=%s ), ", offset, v)
 		}
-		return fmt.Errorf("列数有误，实际应为 35 行，读取到 %d 行。具体信息为：%s", col, errStr)
+		return fmt.Errorf("列数有误，实际应为 %d 行，读取到 %d 行。具体信息为：%s", correctCol, col, errStr)
 	}
 
 	r := &rowData{}

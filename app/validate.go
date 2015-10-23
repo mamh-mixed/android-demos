@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-var regexDigit = regexp.MustCompile("\\d+")
+var regexDigit = regexp.MustCompile("^\\d{1,10}$")
 
 // requestDataValidate 请求数据验证
 func requestDataValidate(req *reqParams) (model.AppResult, bool) {
