@@ -108,8 +108,8 @@ func (col *chanMerCollection) FindByCondition(cond *model.ChanMer) (results []mo
 }
 
 // PaginationFind 分页查找渠道商户的信息
-func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName, pay string, size, page int) (results []model.ChanMer, total int, err error) {
-	results = make([]model.ChanMer, 0)
+func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName, pay string, size, page int) (results []*model.ChanMer, total int, err error) {
+	results = make([]*model.ChanMer, 0)
 
 	match := bson.M{}
 
@@ -152,8 +152,8 @@ func (col *chanMerCollection) PaginationFind(chanCode, chanMerId, chanMerName, p
 }
 
 // FuzzyFind 模糊查找
-func (col *chanMerCollection) FuzzyFind(chanCode, chanMerId, chanMerName string, maxSize int) (results []model.ChanMer, err error) {
-	results = make([]model.ChanMer, 0)
+func (col *chanMerCollection) FuzzyFind(chanCode, chanMerId, chanMerName string, maxSize int) (results []*model.ChanMer, err error) {
+	results = make([]*model.ChanMer, 0)
 
 	q := bson.M{}
 

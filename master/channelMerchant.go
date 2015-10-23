@@ -2,6 +2,7 @@ package master
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -28,6 +29,10 @@ func (c *chanMer) Find(chanCode, chanMerId, chanMerName, pay string, size, page 
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
 		return model.NewResultBody(1, "查询失败")
+	}
+
+	for _, chanMer := range chanMers {
+		chanMer.SignKey = ProcessSensitiveInfo(chanMer.SignKey)
 	}
 
 	// 分页信息
@@ -63,6 +68,8 @@ func (i *chanMer) FindByMerIdAndCardBrand(merId, cardBrand string) (result *mode
 		return model.NewResultBody(1, "查询失败")
 	}
 
+	mer.SignKey = ProcessSensitiveInfo(mer.SignKey)
+
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "查询成功",
@@ -91,6 +98,41 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素chanMerId")
 	}
 
+	if c.SignKey != "" && len(c.SignKey) < 8 {
+		log.Debugf("签名密钥长度不能小于8，signKey=%s", c.SignKey)
+		return model.NewResultBody(3, "签名密钥长度不能小于")
+	}
+	if c.SignKey != "" {
+		isCreate := false
+		channel, err := mongo.ChanMerColl.Find(c.ChanCode, c.ChanMerId)
+		if err != nil {
+			if err.Error() == "not found" {
+				isCreate = true
+			} else {
+				log.Errorf("find database err,%s", err)
+				return model.NewResultBody(1, "查找数据库失败")
+			}
+		}
+		if !isCreate {
+			log.Debugf("newSignCert:%s,oldSignCert:%s", c.SignKey, channel.SignKey)
+		}
+
+		if !isCreate && strings.Contains(c.SignKey, "*") {
+			c.SignKey = channel.SignKey
+		}
+	}
+
+	// 将微信大商户的签名密钥带*号的改为不带*号的
+	if c.ChanCode == "WXP" && c.AgentMer != nil && c.AgentMer.SignKey != "" {
+		bigChannel, err := mongo.ChanMerColl.Find(c.AgentMer.ChanCode, c.AgentMer.ChanMerId)
+		if err != nil {
+			log.Errorf("find database err,%s", err)
+			return model.NewResultBody(1, "查找数据库失败")
+		}
+		c.AgentMer.SignKey = bigChannel.SignKey
+		log.Debugf("bigChannel signCert:%s", c.AgentMer.SignKey)
+	}
+
 	err = mongo.ChanMerColl.Add(c)
 	if err != nil {
 		log.Errorf("新增渠道商户失败:%s", err)
@@ -117,6 +159,10 @@ func (i *chanMer) Match(chanCode, chanMerId, chanMerName string, maxSize int) (r
 		log.Errorf("未找到渠道商户(chanCode: %s; chanMerId: %s; chanMerName: %s)失败：(%s)", chanCode, chanMerId, chanMerName, err)
 		return model.NewResultBody(1, "查询失败")
 	}
+	for _, chanMer := range chanMers {
+		chanMer.SignKey = ProcessSensitiveInfo(chanMer.SignKey)
+	}
+
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "操作成功",
