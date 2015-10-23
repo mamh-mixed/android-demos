@@ -22,7 +22,7 @@ var b64Encoding = base64.StdEncoding
 func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
 	log.Debugf("merId=%s", merId)
 
-	merchant, err := mongo.MerchantColl.Find(merId)
+	merchant, err := mongo.MerchantColl.FindNotInCache(merId)
 
 	if err != nil {
 		log.Errorf("查询一个商户(%s)出错: %s", merId, err)
@@ -168,7 +168,7 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 		m.MerStatus = model.MerStatusNormal
 	}
 
-	merchant, err := mongo.MerchantColl.Find(m.MerId)
+	merchant, err := mongo.MerchantColl.FindNotInCache(m.MerId)
 
 	if err != nil {
 		log.Errorf("查询一个商户(%s)出错: %s", m.MerId, err)
@@ -247,11 +247,8 @@ func ProcessSensitiveInfo(value string) string {
 	if value == "" || valueLen < 9 {
 		return value
 	} else {
-		startString := ""
-		for i := 0; i < valueLen-8; i++ {
-			startString += "*"
-		}
-		value = fmt.Sprintf("%s%s%s", value[:4], startString, value[valueLen-4:valueLen])
+		starString := strings.Repeat("*", valueLen-8)
+		value = fmt.Sprintf("%s%s%s", value[:4], starString, value[valueLen-4:valueLen])
 		return value
 	}
 }
