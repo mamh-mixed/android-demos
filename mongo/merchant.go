@@ -58,6 +58,19 @@ func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
 	return m, nil
 }
 
+// FindNotCache 根据merId查找商户信息，非缓存
+func (c *merchantCollection) FindNotInCache(merId string) (m *model.Merchant, err error) {
+
+	m = new(model.Merchant)
+	q := bson.M{"merId": merId}
+	err = database.C(c.name).Find(q).One(m)
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 // CountById 检查商户是否存在
 func (c *merchantCollection) CountById(merId string) (int, error) {
 	q := bson.M{"merId": merId}
