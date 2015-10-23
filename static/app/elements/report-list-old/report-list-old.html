@@ -10,6 +10,22 @@
     :host {
       display: block;
     }
+
+    .thead .th.rowspan-cell {
+      padding: 0 !important;
+      position: relative;
+    }
+
+    .rowspan-top {
+      position: relative;
+      left: -50%;
+      line-height: 30px;
+    }
+
+    .rowspan-bottom {
+      border-top: 1px solid #ddd;
+      line-height: 30px;
+    }
   </style>
   <template>
     <div class="condition search-condition">
@@ -32,8 +48,8 @@
       </paper-dialog>
 
       <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
-      <paper-input label="商户代码" value="{{cond.merId::input}}"></paper-input>
-      <paper-input label="商户名称" value="{{cond.merName::input}}"></paper-input>
+      <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
+      <paper-input label="门店名称" value="{{cond.merName::input}}"></paper-input>
       <paper-button class="colorful" raised on-tap="handleOldOldSysQueryTapped">查询</paper-button>
 
     </div>
@@ -41,24 +57,34 @@
     <div class="data-grid table">
       <div class="thead">
         <div class="tr">
-          <div class="th" rowspan="2">
-            序号
+          <div class="th">序号</div>
+          <div class="th">门店代码</div>
+          <div class="th">门店名称</div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom">笔数</div>
           </div>
-          <div class="th" rowspan="2">
-            门店代码
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">汇总</div>
+            <div class="rowspan-bottom">金额(元)</div>
           </div>
-          <div class="th" rowspan="2">
-            门店名称
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom">笔数</div>
           </div>
-          <div class="th right">总笔数</div>
-          <div class="th right">总金额(元)</div>
-          <div class="th right">支付宝笔数</div>
-          <div class="th right">支付宝金额(元)</div>
-          <div class="th right">微信笔数</div>
-          <div class="th right">微信金额(元)</div>
-          <div class="th" rowspan="2">
-            代理名称
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">支付宝</div>
+            <div class="rowspan-bottom">金额(元)</div>
           </div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom">笔数</div>
+          </div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">微信</div>
+            <div class="rowspan-bottom">金额(元)</div>
+          </div>
+          <div class="th">代理名称</div>
           <!-- <div class="th" rowspan="2">
               下载
             </div> -->
@@ -103,15 +129,17 @@
           </div>
         </template>
       </div>
-      <div class="wedge">
-        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
-      </div>
       <div class="tfoot">
-        <div class="td right" colspan="3">
+        <div class="tr pagination">
+          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
-        <div class="td right">
-          <span>{{summary.totalTransNum}}</span>
-        </div>
+        <div class="tr hover">
+          <div class="td "></div>
+          <div class="td "></div>
+          <div class="td "></div>
+          <div class="td right">
+            <span>{{summary.totalTransNum}}</span>
+          </div>
         <div class="td right">
           <span>{{_computeAmount(summary.totalTransAmt)}}</span>
         </div>
@@ -136,9 +164,11 @@
         生产环境的链接为 211.144.213.118
     -->
     <!-- <x-ajax id="oldQueryAjax" method="GET" url="http://211.147.72.70:10003/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax> -->
-    <x-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax>
+    <!-- <x-ajax id="oldQueryAjax" method="GET" url="http://211.144.213.118/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax> -->
+    <x-ajax id="oldQueryAjax" method="GET" url="/old/trade/reports" handle-as="json" debounce-duration="1000" on-response="handelQueryResponse"></x-ajax>
     <!-- <x-ajax id="queryAgentAjax" method="GET" url="http://211.147.72.70:10003/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax> -->
-    <x-ajax id="queryAgentAjax" method="GET" url="http://211.144.213.118/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
+    <!-- <x-ajax id="queryAgentAjax" method="GET" url="http://211.144.213.118/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax> -->
+    <x-ajax id="queryAgentAjax" method="GET" url="/old/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
   </template>
   <script>
     (function() {
