@@ -129,7 +129,6 @@
       background-color: #00bcd4 !important;
       color: #fff;
     }
-
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -641,6 +640,9 @@
 
         var item = response.data;
         this.set('merchant', item);
+        if (this.merchant) {
+          this.oldSignKey = this.merchant.signKey;
+        }
         this.agent = {
           key: this.merchant.agentCode,
           value: this.merchant.agentName,
@@ -689,6 +691,9 @@
         }
 
         this.set('alipay', response.data);
+        if (this.alipay) {
+          this.oldAlpSignCert = this.alipay.signCert;
+        }
         if (this.alipay.agentCode) {
           this.aagentCode = {
             key: this.alipay.agentCode,
@@ -723,6 +728,10 @@
             key: this.weixin.agentMer.chanMerId,
             value: this.wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
           };
+        }
+
+        if (this.weixin) {
+          this.oldWxpSignCert = this.weixin.signCert;
         }
       },
       // 编辑的时候查找支付宝路由信息的响应事件
@@ -904,6 +913,10 @@
         this.set('alipayRoute.acqFee', '');
         this.set('alipayRoute.merFee', '');
         this.set('alipayRoute.settFlag', '');
+
+        if (this.alipay) {
+          this.oldAlpSignCert = this.alipay.signCert;
+        }
       },
       // 微信id变化后，会查询出该微信渠道信息。
       handleFindChanMerWeixinResponse: function(e) {
@@ -931,6 +944,10 @@
         this.set('weixinRoute.acqFee', '');
         this.set('weixinRoute.merFee', '');
         this.set('weixinRoute.settFlag', '');
+
+        if (this.weixin) {
+          this.oldWxpSignCert = this.weixin.signCert;
+        }
       },
       //判断商户录入必填项是否为空
       isMerchantConfigEmpty: function() {
@@ -951,10 +968,23 @@
           Util.toast('必填项不能为空', 3000);
           return;
         }
+        if (this.merchant.signKey && this.merchant.signKey.length < 8) {
+          Util.toast('签名密钥长度不能小于8位', 3000);
+          return;
+        }
         if (this.update) {
+          if (this.merchant.signKey !== this.oldSignKey && this.merchant.signKey.indexOf('*') !== -1) {
+            Util.toast('门店签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+            this.set('merchant.signKey', this.oldSignKey)
+            return;
+          }
           this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
           this.$.updateMerchantAjax.generateRequest();
         } else {
+          if (this.merchant.signKey.indexOf('*') !== -1) {
+            Util.toast('门店签名密钥不能包含 *', 3000);
+            return;
+          }
           this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
           this.$.saveMerchantAjax.generateRequest();
         }
@@ -991,6 +1021,22 @@
         if (this.isALPConfigEmpty()) {
           Util.toast('必填项不能为空', 3000);
           return;
+        }
+        if (this.alipay.signCert && this.alipay.signCert.length < 8) {
+          Util.toast('MD5 KEY长度不能小于8位', 3000);
+          return;
+        }
+        if (this.update) {
+          if (this.alipay.signCert !== this.oldAlpSignCert && this.alipay.signCert.indexOf('*') !== -1) {
+            Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
+            this.set('alipay.signCert', this.oldAlpSignCert)
+            return;
+          }
+        } else {
+          if (this.alipay.signCert.indexOf('*') !== -1) {
+            Util.toast('MD5 KEY不能包含 *', 3000);
+            return;
+          }
         }
         var acqFee = parseFloat(this.alipayRoute.acqFee),
           merFee = parseFloat(this.alipayRoute.merFee);
@@ -1037,6 +1083,22 @@
         if (this.isWXPConfigEmpty()) {
           Util.toast('必填项不能为空', 3000);
           return;
+        }
+        if (this.weixin.signCert && this.weixin.signCert.length < 8) {
+          Util.toast('签名密钥长度不能小于8位', 3000);
+          return;
+        }
+        if (this.update) {
+          if (this.weixin.signCert !== this.oldWxpSignCert && this.weixin.signCert.indexOf('*') !== -1) {
+            Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+            this.set('weixin.signCert', this.oldWxpSignCert)
+            return;
+          }
+        } else {
+          if (this.weixin.signCert.indexOf('*') !== -1) {
+            Util.toast('签名密钥不能包含 *', 3000);
+            return;
+          }
         }
         var acqFee = parseFloat(this.weixinRoute.acqFee),
           merFee = parseFloat(this.weixinRoute.merFee);
@@ -1276,6 +1338,5 @@
         this.set('merchant.signKey', generateMixed(32));
       },
     });
-
   </script>
 </dom-module>

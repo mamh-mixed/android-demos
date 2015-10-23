@@ -81,7 +81,7 @@
           <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
           <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
           <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
-          <paper-input id="wsignCert" label="签名证书" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
+          <paper-input id="wsignCert" label="签名密钥" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
           <div class="row">
             <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile" style="margin-left:0px;"></paper-input>
             <label id="httpCertL" style="margin-top:20px;">请选择.pem文件的HTTP证书</label>
@@ -277,6 +277,8 @@
                 value: wbigchanMerIdMap[this.weixin.agentMer.chanMerId],
               };
             }
+            this.oldAlpSignCert = this.alp.signCert;
+            this.oldWxpSignCert = this.weixin.signCert;
           }
         },
         // 查询渠道商户的响应事件，这里是查找大商户
@@ -316,9 +318,27 @@
         handleSaveTapped: function() {
           if (this.channel) {
             if (this.channel.key === 'ALP' && !this.isALPConfigEmpty()) {
+              if (this.alp.signCert && this.alp.signCert.length < 8) {
+                Util.toast('MD5 KEY长度不能小于8位', 3000);
+                return;
+              }
+              if (this.alp.signCert !== this.oldAlpSignCert && this.alp.signCert.indexOf('*') !== -1) {
+                Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
+                this.set('alp.signCert', this.oldAlpSignCert)
+                return;
+              }
               this.set('alp.chanCode', 'ALP');
               this.chanMer = this.alp;
             } else if (this.channel.key === 'WXP' && !this.isWXPConfigEmpty()) {
+              if (this.weixin.signCert && this.weixin.signCert.length < 8) {
+                Util.toast('签名密钥长度不能小于8位', 3000);
+                return;
+              }
+              if (this.weixin.signCert !== this.oldWxpSignCert && this.weixin.signCert.indexOf('*') !== -1) {
+                Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+                this.set('weixin.signCert', this.oldWxpSignCert)
+                return;
+              }
               this.set('weixin.chanCode', 'WXP');
               // 如果勾选了代理商模式，就直接填充上大商户的信息
               if (this.weixin.isAgentMode) {
