@@ -31,6 +31,7 @@ var (
 	hostAddress  = goconf.Config.App.NotifyURL
 	WXPMerId     = goconf.Config.MobileApp.WXPMerId
 	ALPMerId     = goconf.Config.MobileApp.ALPMerId
+	webAppUrl    = goconf.Config.MobileApp.WebAppUrl
 )
 
 // register 注册
@@ -887,6 +888,10 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 		}
 
 		merchant.UniqueId = util.Confuse(merchant.MerId)
+		if merchant.Detail.TitleOne != "" && merchant.Detail.TitleTwo != "" {
+			merchant.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(merchant.MerId)))
+			merchant.Detail.UserInfoUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, merchant.UniqueId)
+		}
 		err = mongo.MerchantColl.Insert2(merchant)
 		if err != nil {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")

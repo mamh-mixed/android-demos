@@ -61,8 +61,9 @@ type configStruct struct {
 	}
 
 	MobileApp struct {
-		WXPMerId string
-		ALPMerId string
+		WXPMerId  string
+		ALPMerId  string
+		WebAppUrl string
 	}
 }
 

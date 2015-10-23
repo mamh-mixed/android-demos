@@ -225,7 +225,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 				TitleOne:      "欢迎光临",
 				TitleTwo:      req.MerName,
 				Images:        req.Images,
-				// TODO URL
 			},
 		}
 
