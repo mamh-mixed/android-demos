@@ -1,5 +1,5 @@
 body {
-  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Menlo', '微软雅黑', 'monospace', '黑体', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
 }
 #mainContainer > .content {

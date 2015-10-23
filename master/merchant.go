@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -30,8 +31,8 @@ func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
 		return model.NewResultBody(1, "查询失败")
 	}
 
-	merchant.SignKey = processSensitiveInfo(merchant.SignKey)
-	merchant.EncryptKey = processSensitiveInfo(merchant.EncryptKey)
+	merchant.SignKey = ProcessSensitiveInfo(merchant.SignKey)
+	merchant.EncryptKey = ProcessSensitiveInfo(merchant.EncryptKey)
 
 	result = &model.ResultBody{
 		Status:  0,
@@ -62,8 +63,8 @@ func (m *merchant) Find(merId, merStatus, merName, groupCode, groupName, agentCo
 	}
 
 	for _, merchant := range merchants {
-		merchant.SignKey = processSensitiveInfo(merchant.SignKey)
-		merchant.EncryptKey = processSensitiveInfo(merchant.EncryptKey)
+		merchant.SignKey = ProcessSensitiveInfo(merchant.SignKey)
+		merchant.EncryptKey = ProcessSensitiveInfo(merchant.EncryptKey)
 	}
 
 	// 分页信息
@@ -96,6 +97,14 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	if m.MerId == "" {
 		log.Error("没有MerId")
 		return model.NewResultBody(3, "缺失必要元素merId")
+	}
+
+	// 签名密钥和加密密钥长度不能小于8
+	if m.SignKey != "" && len(m.SignKey) < 8 {
+		return model.NewResultBody(3, "签名密钥长度不能小于8")
+	}
+	if m.EncryptKey != "" && len(m.EncryptKey) < 8 {
+		return model.NewResultBody(3, "加密密钥长度不能小于8")
 	}
 
 	if m.MerStatus == "" {
@@ -149,6 +158,13 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 		log.Error("没有MerId")
 		return model.NewResultBody(3, "缺失必要元素merId")
 	}
+	// 签名密钥和加密密钥长度不能小于8
+	if m.SignKey != "" && len(m.SignKey) < 8 {
+		return model.NewResultBody(3, "签名密钥长度不能小于8")
+	}
+	if m.EncryptKey != "" && len(m.EncryptKey) < 8 {
+		return model.NewResultBody(3, "加密密钥长度不能小于8")
+	}
 
 	if m.MerStatus == "" {
 		m.MerStatus = model.MerStatusNormal
@@ -161,14 +177,15 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(1, "查询失败")
 	}
 
-	signKeyPro := processSensitiveInfo(merchant.SignKey)
-	encryptKeyPro := processSensitiveInfo(merchant.EncryptKey)
+	log.Debugf("newSignKey:%s,oldSignKey:%s", m.SignKey, merchant.SignKey)
+	log.Debugf("newEncryptKey:%s,oldEncryptKey:%s", m.EncryptKey, merchant.EncryptKey)
 
-	if m.SignKey == signKeyPro {
+	// 修改签名密钥和加密密钥
+	if strings.Contains(m.SignKey, "*") {
 		m.SignKey = merchant.SignKey
 	}
 
-	if m.EncryptKey == encryptKeyPro {
+	if strings.Contains(m.EncryptKey, "*") {
 		m.EncryptKey = merchant.EncryptKey
 	}
 
@@ -226,13 +243,17 @@ func (i *merchant) Delete(merId string) (result *model.ResultBody) {
 	return result
 }
 
-// processSensitiveInfo 处理敏感信息
-func processSensitiveInfo(value string) string {
+// ProcessSensitiveInfo 处理敏感信息
+func ProcessSensitiveInfo(value string) string {
 	valueLen := len(value)
 	if value == "" || valueLen < 9 {
 		return value
 	} else {
-		value = fmt.Sprintf("%s************************%s", value[:4], value[valueLen-4:valueLen])
+		startString := ""
+		for i := 0; i < valueLen-8; i++ {
+			startString += "*"
+		}
+		value = fmt.Sprintf("%s%s%s", value[:4], startString, value[valueLen-4:valueLen])
 		return value
 	}
 }

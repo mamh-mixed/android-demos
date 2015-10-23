@@ -165,6 +165,8 @@
           } else {
             this.$.header.textContent = '编辑机构商户';
             this.$.merId.disabled = true;
+            this.oldSignKey = this.merchant.signKey;
+            this.oldEncryptKey = this.merchant.encryptKey;
           }
         },
         //判断商户录入必填项是否为空
@@ -186,10 +188,36 @@
             Util.toast('必填项不能为空', 3000);
             return;
           }
+          if(this.merchant.signKey&&this.merchant.signKey.length<8){
+              Util.toast('签名密钥长度不能小于8位', 3000);
+              return;
+          }
+          if(this.merchant.encryptKey&&this.merchant.encryptKey.length<8){
+              Util.toast('加密密钥长度不能小于8位', 3000);
+              return;
+          }
           if (this.pageType === 'create') {
+            if (this.merchant.signKey.indexOf('*')!==-1) {
+              Util.toast('签名密钥不能包含 *', 3000);
+              return;
+            }
+            if (this.merchant.encryptKey.indexOf('*')!==-1) {
+              Util.toast('加密密钥不能包含 *', 3000);
+              return;
+            }
             this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
             this.$.saveMerchantAjax.generateRequest();
           } else {
+            if (this.merchant.signKey !== this.oldSignKey && this.merchant.signKey.indexOf('*')!==-1) {
+              Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+              this.set('merchant.signKey', this.oldSignKey)
+              return;
+            }
+            if (this.merchant.encryptKey !== this.oldEncryptKey && this.merchant.encryptKey.indexOf('*')!==-1) {
+              Util.toast('加密密钥不能包含 *,已恢复为原加密密钥', 3000);
+              this.set('merchant.encryptKey', this.oldEncryptKey)
+              return;
+            }
             this.$.updateMerchantAjax.body = JSON.stringify(this.merchant);
             this.$.updateMerchantAjax.generateRequest();
           }
@@ -231,8 +259,8 @@
           this.set('merchant.encryptKey', generateMixed(43) + '=');
         },
         // 刷新生成门店签名密钥
-        refreshSignKeyHandle:function(){
-            this.set('merchant.signKey', generateMixed(32));
+        refreshSignKeyHandle: function() {
+          this.set('merchant.signKey', generateMixed(32));
         },
       });
     })();
