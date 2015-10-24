@@ -17,13 +17,14 @@ func init() {
 		fmt.Println(`
 You append 'version' argument, but something must done to show version:
 
-1. env $GOBIN must be set, and must append it to $PATH.
+1. env $GOBIN must be set, and must append it to $PATH;
    example:
     export GOPATH=/opt/gowork
     export GOBIN=$GOPATH/bin
     export PATH=$PATH:$GOBIN
-2. run 'go generate' before build.
-3. run '<appname> -version', application version and build info will printed.
+2. run 'go install github.com/CardInfoLink/quickpay/version/version.go';
+3. run 'go generate', then 'go build .....';
+4. run '<appname> -version', application version and build info will printed.
         `)
 	}
 }
