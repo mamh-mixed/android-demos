@@ -1,6 +1,7 @@
 /temp/
 /distrib/
-/quickpay*
+/flags/version.go
+
 admin/bower_components
 
 static/dist

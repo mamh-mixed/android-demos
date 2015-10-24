@@ -71,6 +71,8 @@ function main() {
 function goBuild() {
     prog=$1
     env=$2
+    echo "Running go generate..."
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go generate
     echo "Building $prog..."
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o distrib/"$prog" main.go
     cp -r config distrib/
