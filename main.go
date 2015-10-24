@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"runtime"
 
+	_ "github.com/CardInfoLink/quickpay/flags"
+
 	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/check"
@@ -18,6 +20,9 @@ import (
 
 	// _ "net/http/pprof"
 )
+
+// 生成版本文件
+//go:generate version
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
