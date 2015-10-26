@@ -53,6 +53,7 @@
     },
     "MobileApp":{
         "WXPMerId":"1247075201",
-        "ALPMerId":"2088811767473826"
+        "ALPMerId":"2088811767473826",
+        "WebAppUrl":"http://qrcode.cardinfolink.net/agent"
     }
 }
