@@ -132,31 +132,45 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 }
 
 // PaginationFind 分页查找机构商户
-func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay string, size, page int) (results []*model.Merchant, total int, err error) {
+func (c *merchantCollection) PaginationFind(merchant model.Merchant, pay string, size, page int) (results []*model.Merchant, total int, err error) {
 	results = make([]*model.Merchant, 1)
 
 	match := bson.M{}
-	if merId != "" {
-		match["merId"] = merId
+	if merchant.MerId != "" {
+		match["merId"] = bson.RegEx{merchant.MerId, "i"}
 	}
-	if merStatus != "" {
-		match["merStatus"] = merStatus
+	if merchant.MerStatus != "" {
+		match["merStatus"] = merchant.MerStatus
 	}
-	if merName != "" {
-		match["merDetail.merName"] = merName
+	if merchant.Detail.MerName != "" {
+		match["merDetail.merName"] = bson.RegEx{merchant.Detail.MerName, "i"}
 	}
-	if groupCode != "" {
-		match["groupCode"] = groupCode
+	if merchant.AgentCode != "" {
+		match["agentCode"] = bson.RegEx{merchant.AgentCode, "i"}
 	}
-	if groupName != "" {
-		match["groupName"] = groupName
+	if merchant.AgentName != "" {
+		match["agentName"] = bson.RegEx{merchant.AgentName, "i"}
 	}
-	if agentCode != "" {
-		match["agentCode"] = agentCode
+	if merchant.SubAgentCode != "" {
+		match["subAgentCode"] = bson.RegEx{merchant.SubAgentCode, "i"}
 	}
-	if agentName != "" {
-		match["agentName"] = agentName
+	if merchant.GroupCode != "" {
+		match["groupCode"] = bson.RegEx{merchant.GroupCode, "i"}
 	}
+	if merchant.GroupName != "" {
+		match["groupName"] = bson.RegEx{merchant.GroupName, "i"}
+	}
+	if merchant.IsNeedSign == true {
+		match["isNeedSign"] = merchant.IsNeedSign
+	}
+
+	if merchant.Detail.AcctNum != "" {
+		match["merDetail.acctNum"] = bson.RegEx{merchant.Detail.AcctNum, "i"}
+	}
+	if merchant.Detail.GoodsTag != "" {
+		match["merDetail.goodsTag"] = bson.RegEx{merchant.Detail.GoodsTag, "i"}
+	}
+
 	if pay == "bp" {
 		match["encryptKey"] = bson.M{"$exists": true}
 	} else {
