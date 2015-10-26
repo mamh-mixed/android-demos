@@ -2,6 +2,8 @@
 <link rel="import" href="../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
@@ -290,7 +292,7 @@
             "children": [{
               "nameCN": "用户",
               "nameEN": "",
-              "icon": "account-box",
+              "icon": "account-circle",
               "url": "#/system/users",
             }, {
               "nameCN": "密码修改",
@@ -301,7 +303,7 @@
           }, {
             "nameCN": "扫码支付",
             "nameEN": "",
-            "icon": "build",
+            "icon": "image:crop-free",
             "url": "",
             "route": "/config",
             "children": [{
@@ -313,7 +315,7 @@
             }, {
               "nameCN": "公司",
               "nameEN": "",
-              "icon": "account-circle",
+              "icon": "account-box",
               "url": "#/config/subAgents",
               "route": "config.subAgents"
             }, {
@@ -349,14 +351,14 @@
             }, {
               "nameCN": "路由策略",
               "nameEN": "",
-              "icon": "settings-input-component",
+              "icon": "hardware:device-hub",
               "url": "#/config/routes",
               "route": "config.routes"
             }]
           }, {
             "nameCN": "快捷支付",
             "nameEN": "",
-            "icon": "swap-horiz",
+            "icon": "hardware:phonelink",
             "url": "",
             "route": "/quickPay",
             "children": [{
@@ -374,32 +376,32 @@
             }, {
               "nameCN": "路由策略",
               "nameEN": "",
-              "icon": "settings-input-component",
+              "icon": "hardware:device-hub",
               "url": "#/quickPay/routes",
               "route": "quickPay.routes"
             }]
           }, {
             "nameCN": "交易查询",
             "nameEN": "",
-            "icon": "swap-horiz",
+            "icon": "payment",
             "url": "",
             "route": "/trade",
             "children": [{
               "nameCN": "扫码交易",
               "nameEN": "",
-              "icon": "payment",
+              "icon": "image:crop-free",
               "url": "#/trade/list",
               "route": "trade.list"
             }, {
               "nameCN": "绑定交易",
               "nameEN": "",
-              "icon": "payment",
+              "icon": "hardware:phonelink",
               "url": "#/trade/bindingpay/list",
               "route": "trade.bindingpay.list"
             }, {
               "nameCN": "报表下载",
               "nameEN": "",
-              "icon": "file-download",
+              "icon": "print",
               "url": "#/trade/reports",
               "route": "trade.reports"
             }, {
@@ -418,13 +420,13 @@
             "children": [{
               "nameCN": "扫码支付",
               "nameEN": "",
-              "icon": "pageview",
+              "icon": "image:center-focus-strong",
               "url": "#/test/scanpay",
               "route": "test.scanpay"
             }, {
               "nameCN": "绑定支付",
               "nameEN": "",
-              "icon": "icons:speaker-notes",
+              "icon": "image:style",
               "url": "#/test/bindingpay",
               "route": "test.bindingpay"
             }, {
@@ -436,7 +438,7 @@
             }, {
               "nameCN": "HTML5读取文件内容",
               "nameEN": "",
-              "icon": "get-app",
+              "icon": "hardware:scanner",
               "url": "#/test/filereader",
               "route": "test.filereader"
             }]
@@ -456,19 +458,19 @@
           }, {
             "nameCN": "交易查询",
             "nameEN": "",
-            "icon": "swap-horiz",
+            "icon": "payment",
             "url": "",
             "route": "/trade",
             "children": [{
               "nameCN": "扫码交易",
               "nameEN": "",
-              "icon": "payment",
+              "icon": "image:crop-free",
               "url": "#/trade/list",
               "route": "trade.list"
             }, {
               "nameCN": "报表下载",
               "nameEN": "",
-              "icon": "file-download",
+              "icon": "print",
               "url": "#/trade/reports",
               "route": "trade.reports"
             }]
