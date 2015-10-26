@@ -95,8 +95,12 @@ func genImageWithQrCode(template image.Image, text, shopName string) image.Image
 	}
 
 	// 生成二维码
-	qrCode, _ := qr.New(text, qr.Highest) // 高容错等级
-	codeImage := qrCode.Image(1000)       // 1000像素
+	qrCode, err := qr.New(text, qr.Highest) // 高容错等级
+	if err != nil {
+		log.Errorf("fail to generate qrCode image: %s", err)
+		return dst
+	}
+	codeImage := qrCode.Image(1000) // 1000像素
 
 	draw.Draw(dst, image.Rect(437-36, 420-36, 1387-36, 1370-36), codeImage, image.ZP, draw.Src)
 	draw.Draw(dst, image.Rect(437+355, 420+355, 437+355+240, 420+355+240), logo, image.ZP, draw.Src)

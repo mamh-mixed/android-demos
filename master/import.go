@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
@@ -30,7 +31,7 @@ const (
 var sysErr = errors.New("系统错误，请重新上传。")
 var emptyErr = errors.New("上传表格为空，请检查。")
 var maxFee = 0.03
-var settFlagArray = []string{}
+var settFlagArray = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
 
 // importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
@@ -43,6 +44,8 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		w.Write(resultBody("无法获取文件，请重新上传。", 1))
 		return
 	}
+
+	defer resp.Body.Close()
 
 	ebytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -274,15 +277,13 @@ func updateValidate(r *rowData) error {
 
 	}
 	if r.WxpSettFlag != "" {
-		if r.WxpSettFlag != SR_AGENT && r.WxpSettFlag != SR_CHANNEL &&
-			r.WxpSettFlag != SR_CIL && r.WxpSettFlag != SR_COMPANY && r.WxpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.WxpSettFlag, settFlagArray) {
 			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpSettFlag != "" {
-		if r.AlpSettFlag != SR_AGENT && r.AlpSettFlag != SR_CHANNEL &&
-			r.AlpSettFlag != SR_CIL && r.AlpSettFlag != SR_COMPANY && r.AlpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
 		}
 	}
@@ -312,11 +313,13 @@ func insertValidate(r *rowData) error {
 	}
 
 	if r.IsNeedSignStr == "是" {
-		if r.SignKey == "" {
-			return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
-		}
-		if len(r.SignKey) != 32 {
-			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+		// if r.SignKey == "" {
+		// 	return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+		// }
+		if r.SignKey != "" {
+			if len(r.SignKey) != 32 {
+				return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+			}
 		}
 		r.IsNeedSign = true
 	}
@@ -338,15 +341,13 @@ func insertValidate(r *rowData) error {
 			}
 			r.IsAgent = true
 		}
-		if r.WxpSettFlag != SR_AGENT && r.WxpSettFlag != SR_CHANNEL &&
-			r.WxpSettFlag != SR_CIL && r.WxpSettFlag != SR_COMPANY && r.WxpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.WxpSettFlag, settFlagArray) {
 			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpMerId != "" {
-		if r.AlpSettFlag != SR_AGENT && r.AlpSettFlag != SR_CHANNEL &&
-			r.AlpSettFlag != SR_CIL && r.AlpSettFlag != SR_COMPANY && r.AlpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
 		}
 	}
@@ -577,6 +578,10 @@ func (i *importer) doDataWrap() {
 			mer.Detail.OpenBankName = r.BankName
 			mer.Remark = "add-upload-" + i.fileName
 			mer.MerStatus = "Normal"
+			// 随机生成密钥
+			if mer.IsNeedSign && mer.SignKey == "" {
+				mer.SignKey = util.SignKey()
+			}
 			i.A.Mers = append(i.A.Mers, *mer)
 		case "U":
 			mer = r.Mer
@@ -743,7 +748,7 @@ func settFlagHandle(settFlag string, rp *model.RouterPolicy, mer *model.Merchant
 	case SR_AGENT:
 		rp.SettRole = mer.AgentCode
 	case SR_COMPANY:
-		// not support
+		rp.SettRole = mer.SubAgentCode
 	case SR_GROUP:
 		rp.SettRole = mer.GroupCode
 	}
@@ -761,6 +766,7 @@ func (o *operation) print() {
 	}
 }
 
+// TODO: fix bug mongo批量操作不是原子性的
 func (i *importer) persist() error {
 
 	if i.IsDebug {

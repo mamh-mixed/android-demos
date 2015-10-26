@@ -18,7 +18,7 @@ import (
 )
 
 var tokenMap = make(map[string]*model.User)
-var qrImage = "salestools/qr/image/%s/%s.jpg"
+var qrImage = "tools/qr/image/%s/%s.jpg"
 
 // CompanyLogin 销售人员-公司级别登录
 func CompanyLogin(w http.ResponseWriter, r *http.Request) {
@@ -27,8 +27,6 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
-
-	debugReqParams(r)
 
 	username := r.FormValue("username")
 	user, err := mongo.UserColl.FindOneUser(username, "", "")
@@ -67,8 +65,6 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 
 	var agentUser *model.User
 	var ok bool
-
-	debugReqParams(r)
 
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
@@ -126,8 +122,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 	var agentUser *model.User
 	var ok bool
 
-	debugReqParams(r)
-
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -151,8 +145,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 // GetQiniuToken
 func GetQiniuToken(w http.ResponseWriter, r *http.Request) {
 
-	debugReqParams(r)
-
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -170,7 +162,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	var agentUser *model.User
 	var ok bool
-	debugReqParams(r)
+
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -182,7 +174,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
 		return
 	}
-	log.Debug(appUser)
+	// log.Debug(appUser)
 
 	req := &reqParams{
 		BankOpen:   r.FormValue("bank_open"),
@@ -269,7 +261,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 // UserActivate 用户激活
 func UserActivate(w http.ResponseWriter, r *http.Request) {
-	debugReqParams(r)
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -308,7 +299,7 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 		email := &email.Email{To: username, Title: open.Title}
 		if isEnocdeSuccess {
 			jpg64 := base64.StdEncoding.EncodeToString(payBuf.Bytes())
-			image := fmt.Sprintf(`<img src="data:image/jpeg;base64,%s"/>`, jpg64)
+			image := fmt.Sprintf(`<img src="data:image/jpeg;base64,%s" style=width:213px;height:300px;/>`, jpg64)
 			email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, image)
 		} else {
 			email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, "")
@@ -401,10 +392,6 @@ func genAccessToken(user *model.User) string {
 	mongo.SessionColl.Add(s)
 	tokenMap[s.SessionID] = user
 	return s.SessionID
-}
-
-func debugReqParams(r *http.Request) {
-	log.Debugf("app tools req: %v", r.Form)
 }
 
 // NotifySalesman 每天汇总当天用户数据给业务人员

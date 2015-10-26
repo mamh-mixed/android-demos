@@ -119,7 +119,7 @@ type AppUser struct {
 	MerId        string `json:"clientid,omitempty" bson:"merId,omitempty"`
 	Limit        string `json:"limit,omitempty" bson:"limit,omitempty"`
 	CreateTime   string `json:"createTime,omitempty" bson:"createTime,omitempty"`
-	RegisterFrom int    `josn:"-" bson:"registerFrom"` // 0-自行注册 1-预先分配 2-公司地推
+	RegisterFrom int    `json:"-" bson:"registerFrom"` // 0-自行注册 1-预先分配 2-公司地推
 	Remark       string `json:"-" bson:"remark,omitempty"`
 	UpdateTime   string `json:"-" bson:"updateTime,omitempty"`
 	SubAgentCode string `json:"-" bson:"subAgentCode,omitempty"` // 隶属某个公司发展的
