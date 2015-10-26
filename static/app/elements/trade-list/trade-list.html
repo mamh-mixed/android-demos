@@ -9,6 +9,7 @@
 <link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../trade-view/trade-view.html">
 <link rel="import" href="../trade-message/trade-message.html">
+<link rel="import" href="../merchant-view/merchant-view.html">
 <dom-module id="trade-list">
   <style>
     :host {
@@ -79,7 +80,10 @@
                   <paper-tooltip class="nowrap" position="right">{{item.errorDetail}}</paper-tooltip>
                 </div>
               </div>
-              <div class="td">{{item.merId}}</div>
+              <div class="td">
+                <span hidden$="{{isAdmin}}">{{item.merId}}</span>
+                <a on-tap="showMerchantViewHandler" hidden$="{{!isAdmin}}">{{item.merId}}</a>
+              </div>
               <div class="td">{{item.merName}}</div>
               <div class="td left">
                 <a on-tap="showTradeViewHandler">{{item.orderNum}}</a>
@@ -116,6 +120,7 @@
     </form>
     <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
     <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
+    <merchant-view id="merchantView" mer-id="{{merId}}" on-editor="handleItemEditedEvent"></merchant-view>
     <x-ajax id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
     <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
     <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
@@ -216,7 +221,7 @@
           3: '商户发起关闭',
           4: '交易超时系统关闭'
         };
-
+        this.isAdmin=false;
       },
       observers: [
         '_watchAgentChange(agent.key)',
@@ -271,6 +276,7 @@
             this.$.groupCode.setAttribute('disabled', true);
             this.$.merId.setAttribute('disabled', true);
           } else if (user.userType === 'admin') {
+            this.isAdmin=true;
             this.agentDisabled = false;
             this.$.subAgentCode.removeAttribute('disabled');
             this.$.groupCode.removeAttribute('disabled');
@@ -428,7 +434,17 @@
       },
       showLoginDialogTap: function() {
         Util.showLoginDialog();
-      }
+      },
+      // 弹框显示门店详情
+      showMerchantViewHandler: function(e) {
+        if (this.user.userType === 'admin') {
+          this.merId = event.model.item.merId;
+          this.$.merchantView.open();
+        }
+      },
+      handleItemEditedEvent: function() {
+        document.querySelector('#appRouter').go('/config/merchant/' + this.merId);
+      },
     });
   </script>
 </dom-module>
