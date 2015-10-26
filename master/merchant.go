@@ -44,9 +44,7 @@ func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
 }
 
 // Find 根据条件分页查找商户。
-func (m *merchant) Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay string, size, page int) (result *model.ResultBody) {
-	log.Debugf("merId=%s,merStatus=%s, merName=%s, groupCode=%s, groupName=%s, agentCode=%s, agentName=%s",
-		merId, merStatus, merName, groupCode, groupName, agentCode, agentName)
+func (m *merchant) Find(merchant model.Merchant, pay string, size, page int) (result *model.ResultBody) {
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
@@ -56,7 +54,7 @@ func (m *merchant) Find(merId, merStatus, merName, groupCode, groupName, agentCo
 		size = 10
 	}
 
-	merchants, total, err := mongo.MerchantColl.PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay, size, page)
+	merchants, total, err := mongo.MerchantColl.PaginationFind(merchant, pay, size, page)
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
 		return model.NewResultBody(1, "查询失败")
