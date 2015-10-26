@@ -13,6 +13,11 @@ const (
 	// OLD_PASSWORD_ERROR      = "old_password_error"
 	// PARAMS_EMPTY            = "params_empty"
 	JSON_ERROR = `{"state":"fail","error","system_error"}`
+
+	// register from
+	SelfRegister       = 1
+	PreRegister        = 2
+	SalesToolsRegister = 3
 )
 
 var (
@@ -39,6 +44,15 @@ var (
 	USER_DATA_ERROR         = NewAppResult(FAIL, "user_data_error")
 )
 
+// AppUserContiditon app用户查找条件
+type AppUserContiditon struct {
+	SubAgentCode string
+	RegisterFrom int
+	Username     string
+	StartTime    string
+	EndTime      string
+}
+
 type AppResult struct {
 	// 必填
 	State string `json:"state"`           // 状态
@@ -56,6 +70,7 @@ type AppResult struct {
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
 	UploadToken  string      `json:"uploadToken,omitempty"`
 	AccessToken  string      `json:"accessToken,omitempty"`
+	DownloadUrl  string      `json:"downloadUrl,omitempty"`
 }
 
 type SettInfo struct {
@@ -104,10 +119,12 @@ type AppUser struct {
 	MerId        string `json:"clientid,omitempty" bson:"merId,omitempty"`
 	Limit        string `json:"limit,omitempty" bson:"limit,omitempty"`
 	CreateTime   string `json:"createTime,omitempty" bson:"createTime,omitempty"`
+	RegisterFrom int    `josn:"-" bson:"registerFrom"` // 0-自行注册 1-预先分配 2-公司地推
 	Remark       string `json:"-" bson:"remark,omitempty"`
 	UpdateTime   string `json:"-" bson:"updateTime,omitempty"`
 	SubAgentCode string `json:"-" bson:"subAgentCode,omitempty"` // 隶属某个公司发展的
 	MerName      string `json:"merName,omitempty" bson:"merName,omitempty"`
+	BelongsTo    string `json:"-" bson:"belongsTo,omitempty"` // 属于哪个公司人员发展的
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`

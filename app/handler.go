@@ -24,6 +24,7 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
+		UserFrom:  model.SelfRegister,
 		Remark:    "self_register",
 	})
 
@@ -341,6 +342,8 @@ type reqParams struct {
 	SubAgentCode string
 	MerName      string
 	Images       []string
+	UserFrom     int
+	BelongsTo    string
 	AppUser      *model.AppUser
 	m            *model.Merchant
 }

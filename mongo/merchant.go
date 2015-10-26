@@ -17,7 +17,7 @@ var MerchantColl = merchantCollection{"merchant"}
 
 var merCache = cache.New(model.Cache_Merchant)
 
-// Insert 插入一个商户信息。如果存在则更新，不存在则插入。@WonSikin
+// Upsert 插入一个商户信息。如果存在则更新，不存在则插入。@WonSikin
 func (c *merchantCollection) Upsert(m *model.Merchant) error {
 	q := bson.M{"merId": m.MerId}
 
@@ -219,8 +219,8 @@ func (col *merchantCollection) Remove(merId string) (err error) {
 	return err
 }
 
-// Insert2 创建一个机构商户
-func (c *merchantCollection) Insert2(m *model.Merchant) error {
+// Insert 创建一个机构商户
+func (c *merchantCollection) Insert(m *model.Merchant) error {
 
 	err := database.C(c.name).Insert(m)
 	if err != nil {

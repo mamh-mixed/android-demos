@@ -42,7 +42,7 @@ func requestDataValidate(req *reqParams) (model.AppResult, bool) {
 
 	if req.Index != "" {
 		if !regexDigit.MatchString(req.Index) {
-			return model.NewAppResult("FAIL", "index 必须为数字"), false
+			return model.NewAppResult("FAIL", "index 格式错误"), false
 		}
 	}
 

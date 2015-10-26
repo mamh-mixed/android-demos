@@ -183,7 +183,7 @@ type MerDetail struct {
 	OpenBankName  string   `bson:"openBankName,omitempty" json:"openBankName,omitempty"`   // 开户银行名称
 	BankName      string   `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 银行名称
 	BillUrl       string   `bson:"billUrl,omitempty" json:"billUrl,omitempty"`             // 扫固定码URL,获取账单
-	UserInfoUrl   string   `bson:"userInfoUrl,omitempty" json:"userInfoUrl,omitempty"`     // 扫固定码URL,获取用户信息
+	PayUrl        string   `bson:"payUrl,omitempty" json:"payUrl,omitempty"`               // 扫固定码URL,支付地址
 	Images        []string `bson:"images,omitempty" json:"images,omitempty"`               // 有关商户的一些图片路径
 }
 

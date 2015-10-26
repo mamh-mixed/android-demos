@@ -200,6 +200,7 @@ func scanFixedOrderInfoHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	uniqueId := r.FormValue("merchantCode")
+	log.Debugf("uniqueId: %s", uniqueId)
 	if uniqueId == "" {
 		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
 		return

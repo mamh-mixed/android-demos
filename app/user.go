@@ -63,9 +63,11 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 		Password:     req.Password,
 		Activate:     "false",
 		Limit:        "true",
+		RegisterFrom: req.UserFrom,
 		Remark:       req.Remark,
 		CreateTime:   time.Now().Format("2006-01-02 15:04:05"),
 		SubAgentCode: req.SubAgentCode,
+		BelongsTo:    req.BelongsTo,
 	}
 	user.UpdateTime = user.CreateTime
 
@@ -522,6 +524,10 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		}
 	}
 
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
+
 	result.Txn = txns
 	result.Size = len(trans)
 	result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
@@ -889,10 +895,10 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 
 		merchant.UniqueId = util.Confuse(merchant.MerId)
 		if merchant.Detail.TitleOne != "" && merchant.Detail.TitleTwo != "" {
-			merchant.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(merchant.MerId)))
-			merchant.Detail.UserInfoUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, merchant.UniqueId)
+			merchant.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, merchant.UniqueId)
+			merchant.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(merchant.MerId)))
 		}
-		err = mongo.MerchantColl.Insert2(merchant)
+		err = mongo.MerchantColl.Insert(merchant)
 		if err != nil {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
 			if !isDuplicateMerId {

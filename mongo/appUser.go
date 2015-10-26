@@ -38,14 +38,22 @@ func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err
 	return user, nil
 }
 
-// FindBySubAgentCode 查找某个公司发展的用户
-func (col *appUserCollection) FindBySubAgentCode(subAgentCode string) ([]*model.AppUser, error) {
-	bo := bson.M{
-		"subAgentCode": subAgentCode,
+// Find 根据条件查找
+func (col *appUserCollection) Find(q *model.AppUserContiditon) ([]*model.AppUser, error) {
+
+	query := bson.M{}
+	if q.SubAgentCode != "" {
+		query["subAgentCode"] = q.SubAgentCode
+	}
+	if q.RegisterFrom != 0 {
+		query["registerFrom"] = q.RegisterFrom
+	}
+	if q.StartTime != "" && q.EndTime != "" {
+		query["createTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
 
 	var users []*model.AppUser
-	err := database.C(col.name).Find(bo).All(&users)
+	err := database.C(col.name).Find(query).All(&users)
 	return users, err
 }
 

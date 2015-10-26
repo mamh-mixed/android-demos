@@ -124,10 +124,10 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 		m.UniqueId = util.Confuse(m.MerId)
 		// 有填相关信息才需要生成两个连接地址
 		if m.Detail.TitleOne != "" && m.Detail.TitleTwo != "" {
-			billUrl := fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(m.MerId)))
-			userInfoUrl := fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, m.UniqueId)
+			billUrl := fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, m.UniqueId)
+			payUrl := fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(m.MerId)))
 			m.Detail.BillUrl = billUrl
-			m.Detail.UserInfoUrl = userInfoUrl
+			m.Detail.PayUrl = payUrl
 		}
 	}
 
@@ -193,14 +193,14 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 	if m.EncryptKey == "" {
 		if m.Detail.TitleOne != "" && m.Detail.TitleTwo != "" {
 			if m.Detail.BillUrl == "" {
-				b64 := base64.StdEncoding.EncodeToString([]byte(m.MerId))
-				m.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, b64)
-			}
-			if m.Detail.UserInfoUrl == "" {
 				if m.UniqueId == "" {
 					m.UniqueId = util.Confuse(m.MerId)
 				}
-				m.Detail.UserInfoUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, m.UniqueId)
+				m.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, m.UniqueId)
+			}
+			if m.Detail.PayUrl == "" {
+				b64 := base64.StdEncoding.EncodeToString([]byte(m.MerId))
+				m.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64)
 			}
 		}
 	}

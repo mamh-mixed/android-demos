@@ -49,7 +49,7 @@ func doScanpaySettReport(settDate string) error {
 			excel.Write(bf)
 
 			// 上传到七牛
-			err = qiniu.Put(key, int64(len(bf.Bytes())), bf)
+			err = qiniu.Put(key, int64(bf.Len()), bf)
 			if err != nil {
 				log.Errorf("upload settReport excel err: %s", err)
 				continue
