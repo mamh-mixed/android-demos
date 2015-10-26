@@ -50,6 +50,14 @@ func Confuse(uniqueId string) string {
 	return fmt.Sprintf("%x", mb[:])
 }
 
+// SignKey 随机生成32的密钥
+func SignKey() string {
+	var b = make([]byte, 20)
+	rand.Read(b)
+	mb := md5.Sum(b)
+	return fmt.Sprintf("%x", mb[:])
+}
+
 // Millisecond 获取新世纪以来到目前为止的毫秒数
 func Millisecond() string {
 	return fmt.Sprintf("%d", int64(time.Now().UnixNano()/1000000))

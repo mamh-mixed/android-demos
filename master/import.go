@@ -45,6 +45,8 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer resp.Body.Close()
+
 	ebytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
@@ -311,11 +313,13 @@ func insertValidate(r *rowData) error {
 	}
 
 	if r.IsNeedSignStr == "是" {
-		if r.SignKey == "" {
-			return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
-		}
-		if len(r.SignKey) != 32 {
-			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+		// if r.SignKey == "" {
+		// 	return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+		// }
+		if r.SignKey != "" {
+			if len(r.SignKey) != 32 {
+				return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+			}
 		}
 		r.IsNeedSign = true
 	}
@@ -574,6 +578,10 @@ func (i *importer) doDataWrap() {
 			mer.Detail.OpenBankName = r.BankName
 			mer.Remark = "add-upload-" + i.fileName
 			mer.MerStatus = "Normal"
+			// 随机生成密钥
+			if mer.IsNeedSign && mer.SignKey == "" {
+				mer.SignKey = util.SignKey()
+			}
 			i.A.Mers = append(i.A.Mers, *mer)
 		case "U":
 			mer = r.Mer
@@ -740,7 +748,7 @@ func settFlagHandle(settFlag string, rp *model.RouterPolicy, mer *model.Merchant
 	case SR_AGENT:
 		rp.SettRole = mer.AgentCode
 	case SR_COMPANY:
-		// not support
+		rp.SettRole = mer.SubAgentCode
 	case SR_GROUP:
 		rp.SettRole = mer.GroupCode
 	}
@@ -758,6 +766,7 @@ func (o *operation) print() {
 	}
 }
 
+// TODO: fix bug mongo批量操作不是原子性的
 func (i *importer) persist() error {
 
 	if i.IsDebug {

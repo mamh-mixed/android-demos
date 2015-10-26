@@ -364,7 +364,7 @@ func TestActivateUser(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	bs, _ := json.Marshal(result)
 	t.Logf("%s", string(bs))

@@ -299,7 +299,7 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 		email := &email.Email{To: username, Title: open.Title}
 		if isEnocdeSuccess {
 			jpg64 := base64.StdEncoding.EncodeToString(payBuf.Bytes())
-			image := fmt.Sprintf(`<img src="data:image/jpeg;base64,%s"/>`, jpg64)
+			image := fmt.Sprintf(`<img src="data:image/jpeg;base64,%s" style=width:213px;height:300px;/>`, jpg64)
 			email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, image)
 		} else {
 			email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, "")
