@@ -28,8 +28,6 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	debugReqParams(r)
-
 	username := r.FormValue("username")
 	user, err := mongo.UserColl.FindOneUser(username, "", "")
 	if err != nil {
@@ -67,8 +65,6 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 
 	var agentUser *model.User
 	var ok bool
-
-	debugReqParams(r)
 
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
@@ -126,8 +122,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 	var agentUser *model.User
 	var ok bool
 
-	debugReqParams(r)
-
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -151,8 +145,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 // GetQiniuToken
 func GetQiniuToken(w http.ResponseWriter, r *http.Request) {
 
-	debugReqParams(r)
-
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -170,7 +162,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	var agentUser *model.User
 	var ok bool
-	debugReqParams(r)
+
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -182,7 +174,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
 		return
 	}
-	log.Debug(appUser)
+	// log.Debug(appUser)
 
 	req := &reqParams{
 		BankOpen:   r.FormValue("bank_open"),
@@ -269,7 +261,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 // UserActivate 用户激活
 func UserActivate(w http.ResponseWriter, r *http.Request) {
-	debugReqParams(r)
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -401,10 +392,6 @@ func genAccessToken(user *model.User) string {
 	mongo.SessionColl.Add(s)
 	tokenMap[s.SessionID] = user
 	return s.SessionID
-}
-
-func debugReqParams(r *http.Request) {
-	log.Debugf("app tools req: %v", r.Form)
 }
 
 // NotifySalesman 每天汇总当天用户数据给业务人员

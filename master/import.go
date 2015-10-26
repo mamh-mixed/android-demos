@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
@@ -30,7 +31,7 @@ const (
 var sysErr = errors.New("系统错误，请重新上传。")
 var emptyErr = errors.New("上传表格为空，请检查。")
 var maxFee = 0.03
-var settFlagArray = []string{}
+var settFlagArray = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
 
 // importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
@@ -274,15 +275,13 @@ func updateValidate(r *rowData) error {
 
 	}
 	if r.WxpSettFlag != "" {
-		if r.WxpSettFlag != SR_AGENT && r.WxpSettFlag != SR_CHANNEL &&
-			r.WxpSettFlag != SR_CIL && r.WxpSettFlag != SR_COMPANY && r.WxpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.WxpSettFlag, settFlagArray) {
 			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpSettFlag != "" {
-		if r.AlpSettFlag != SR_AGENT && r.AlpSettFlag != SR_CHANNEL &&
-			r.AlpSettFlag != SR_CIL && r.AlpSettFlag != SR_COMPANY && r.AlpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
 		}
 	}
@@ -338,15 +337,13 @@ func insertValidate(r *rowData) error {
 			}
 			r.IsAgent = true
 		}
-		if r.WxpSettFlag != SR_AGENT && r.WxpSettFlag != SR_CHANNEL &&
-			r.WxpSettFlag != SR_CIL && r.WxpSettFlag != SR_COMPANY && r.WxpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.WxpSettFlag, settFlagArray) {
 			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpMerId != "" {
-		if r.AlpSettFlag != SR_AGENT && r.AlpSettFlag != SR_CHANNEL &&
-			r.AlpSettFlag != SR_CIL && r.AlpSettFlag != SR_COMPANY && r.AlpSettFlag != SR_GROUP {
+		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
 		}
 	}
