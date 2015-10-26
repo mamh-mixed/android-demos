@@ -59,6 +59,7 @@
             <div class="th left">门店代码</div>
             <div class="th left">门店名称</div>
             <div class="th left">订单号</div>
+            <div class="th left">终端</div>
             <div class="th left">交易类型</div>
             <div class="th right">金额(元)</div>
             <div class="th left">渠道</div>
@@ -84,6 +85,7 @@
               <div class="td left">
                 <a on-tap="showTradeViewHandler">{{item.orderNum}}</a>
               </div>
+              <div class="td">{{item.terminalid}}</div>
               <div class="td left">{{busicdFilter(item.busicd)}}</div>
               <div class="td right">{{_currencyFilter(item.transAmt)}}</div>
               <div class="td">{{chanFilter(item.chanCode)}}</div>
