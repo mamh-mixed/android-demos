@@ -12,9 +12,9 @@ var (
 )
 
 func TestGroupPaginationFind(t *testing.T) {
-	groupCode, groupName, agentCode, agentName := "", "", "", ""
+	groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName := "", "", "", "", "", ""
 	size, page := 10, 1
-	results, total, err := GroupColl.PaginationFind(groupCode, groupName, agentCode, agentName, size, page)
+	results, total, err := GroupColl.PaginationFind(groupCode, groupName, agentCode, agentName, subAgentCode, subAgentName, size, page)
 	if err != nil {
 		log.Errorf("fail: %s", err)
 	}

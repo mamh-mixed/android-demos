@@ -7,7 +7,12 @@ import (
 
 func TestAddTask(t *testing.T) {
 
-	err := TaskCol.Add("test", false)
+	var task = &model.Task{
+		Name:    "test",
+		IsDoing: false,
+	}
+
+	err := TaskCol.Add(task)
 	if err != nil {
 		t.Error(err)
 	}
@@ -15,7 +20,11 @@ func TestAddTask(t *testing.T) {
 
 func TestPopTask(t *testing.T) {
 
-	err := TaskCol.Pop("test")
+	var task = &model.Task{
+		Name: "test",
+	}
+
+	err := TaskCol.Pop(task)
 	if err != nil {
 		t.Error(err)
 	}
