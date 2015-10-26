@@ -15,8 +15,8 @@
         "OrderCloseTime": "24h", // 未支付订单关闭时间
         "OrderRefreshTime":"10m",
         // 平台用户登录后，一段时间内无操作失效时间，比如 30m， 表示 30m 无操作后会话失效，
-        // 同时，当会话接近失效时间（1/5）时，如果用户有操作，那么延长失效时间，
-        // 比如 用户在第 26 分钟有操作，那么失效时间再延长 30m
+        // 同时，当会话接近失效时间（1/2）时，如果用户有操作，那么延长失效时间，
+        // 比如 用户在第 16 分钟有操作，那么失效时间再延长 30m
         "SessionExpiredTime": "30m"
     },
     "Qiniu": {
@@ -33,7 +33,7 @@
     "CILOnline": {
         "Host": "211.147.72.70",
         "Port": 10010,
-        "ServerCert": "config/pem/cil/server_product.cert" // SSL 证书
+        "ServerCert": "config/pem/cil/server_product.cert" // TLS 证书
     },
     "CFCA": {
         "URL": "https://www.china-clearing.com/Gateway/InterfaceII", // API 地址
@@ -42,7 +42,7 @@
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
         "NotifyURL": "https://api.shou.money", // 异步消息通知地址，路径是固定的，只需要域名和端口
-        "DNSCacheRefreshTime": "10m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
+        "DNSCacheRefreshTime": "5m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥
