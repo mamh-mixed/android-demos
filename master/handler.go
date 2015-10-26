@@ -16,6 +16,23 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 )
 
+// tradeSettleReportHandle 清算报表查询的
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	role := r.FormValue("role")
+	date := r.FormValue("date")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := tradeSettleReportQuery(role, date, size, page)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("marshal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 // respCodeMatchHandle 查找应答码处理器
 func respCodeMatchHandle(w http.ResponseWriter, r *http.Request) {
 	code := r.FormValue("code")

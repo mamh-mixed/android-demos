@@ -30,6 +30,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/trade/report", tradeReportHandle)
 	mux.HandleFunc("/master/trade/stat", tradeQueryStatsHandle)
 	mux.HandleFunc("/master/trade/stat/report", tradeQueryStatsReportHandle)
+	mux.HandleFunc("/master/trade/settle/report", tradeSettleReportHandle)
 	mux.HandleFunc("/master/trade/message", tradeMsgHandle)
 	mux.HandleFunc("/master/merchant/find", merchantFindHandle)
 	mux.HandleFunc("/master/merchant/one", merchantFindOneHandle)
