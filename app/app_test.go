@@ -8,12 +8,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strconv"
 	"testing"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 )
 
@@ -283,7 +285,7 @@ func TestMaxMerIdHandle(t *testing.T) {
 	t.Logf("%s", maxMerId)
 }
 
-var token = "378c679dd6e240045674c396a5c33436"
+var token = "2902f8a9caee45a46fb2a8408ec4f401"
 
 func TestAppToolsLogin(t *testing.T) {
 	values := url.Values{}
@@ -315,7 +317,7 @@ func TestAppToolsUserList(t *testing.T) {
 func TestAppToolsRegister(t *testing.T) {
 	values := url.Values{}
 	values.Add("accessToken", token)
-	values.Add("username", "379630413@QQ.com")
+	values.Add("username", "379630413@qq.com")
 	values.Add("password", "12345678")
 
 	result, err := post(values, UserRegister)
@@ -331,7 +333,7 @@ func TestAppToolsRegister(t *testing.T) {
 func TestAppToolsUpdateUserInfo(t *testing.T) {
 	values := url.Values{}
 	values.Add("accessToken", token)
-	values.Add("username", "379630413@QQ.com")
+	values.Add("username", "379630413@qq.com")
 	values.Add("bank_open", "中国工商")
 	values.Add("payee", "陈芝锐")
 	values.Add("payee_card", "6222022003008481261")
@@ -349,6 +351,59 @@ func TestAppToolsUpdateUserInfo(t *testing.T) {
 
 	bs, _ := json.Marshal(result)
 	t.Logf("%s", string(bs))
+}
+
+func TestActivateUser(t *testing.T) {
+	values := url.Values{}
+	values.Add("accessToken", token)
+	values.Add("username", "379630413@qq.com")
+
+	result, err := post(values, UserActivate)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	time.Sleep(10 * time.Second)
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestGetDownloadUrl(t *testing.T) {
+	values := url.Values{}
+	values.Add("accessToken", token)
+	values.Add("merId", "199005050000019")
+	values.Add("imageType", "pay")
+
+	result, err := post(values, GetDownloadUrl)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestDownload(t *testing.T) {
+
+	dlUrl := qiniu.MakePrivateUrl(fmt.Sprintf(qrImage, "199005050000019", "pay"))
+	resp, err := http.Get(dlUrl)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	jpg, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	f, _ := os.Create("/Users/zhiruichen/Desktop/d.jpg")
+	f.Write(jpg)
+	f.Close()
 }
 
 func TestRandBytes(t *testing.T) {

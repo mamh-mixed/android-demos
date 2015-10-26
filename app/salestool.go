@@ -18,7 +18,7 @@ import (
 )
 
 var tokenMap = make(map[string]*model.User)
-var qrImage = "salestools/qr/image/%s/%s.jpg"
+var qrImage = "tools/qr/image/%s/%s.jpg"
 
 // CompanyLogin 销售人员-公司级别登录
 func CompanyLogin(w http.ResponseWriter, r *http.Request) {
