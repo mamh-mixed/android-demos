@@ -30,6 +30,7 @@ const (
 var sysErr = errors.New("系统错误，请重新上传。")
 var emptyErr = errors.New("上传表格为空，请检查。")
 var maxFee = 0.03
+var settFlagArray = []string{}
 
 // importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
@@ -90,6 +91,7 @@ type importer struct {
 	U        *operation
 	Sheets   []*xlsx.Sheet
 	rowData  []*rowData
+	rowMap   map[string]*rowData
 	cache    *cache
 	fileName string
 	IsDebug  bool // 是否调试模式，如果是，会打印结果，不会入库
@@ -97,6 +99,7 @@ type importer struct {
 
 type cache struct {
 	ChanMerCache map[string]*model.ChanMer
+	CompanyCache map[string]*model.SubAgent
 	AgentCache   map[string]*model.Agent
 	GroupCache   map[string]*model.Group
 	RouterCache  map[string]*model.RouterPolicy
@@ -104,6 +107,7 @@ type cache struct {
 
 func (c *cache) Init() {
 	c.ChanMerCache = make(map[string]*model.ChanMer)
+	c.CompanyCache = make(map[string]*model.SubAgent)
 	c.AgentCache = make(map[string]*model.Agent)
 	c.GroupCache = make(map[string]*model.Group)
 	c.RouterCache = make(map[string]*model.RouterPolicy)
@@ -124,7 +128,7 @@ func (i *importer) DoImport() (string, error) {
 	if len(i.Sheets) == 0 {
 		return "", emptyErr
 	}
-
+	i.rowMap = make(map[string]*rowData)
 	// 读取数据
 	if err := i.read(); err != nil {
 		return "", err
@@ -145,6 +149,7 @@ func (i *importer) DoImport() (string, error) {
 	// 数据入库
 	if err := i.persist(); err != nil {
 		i.rollback()
+		log.Errorf("persist error: %s, rollback ...", err)
 		return "", sysErr
 	}
 
@@ -175,9 +180,9 @@ func (i *importer) dataHandle() error {
 	// 数据合法性验证
 	for index, r := range i.rowData {
 
-		// 先看是否有填商户号
+		// 先看是否有填门店号
 		if r.MerId == "" {
-			return fmt.Errorf("第 %d 行，商户代码为空", index+3)
+			return fmt.Errorf("第 %d 行，门店为空", index+3)
 		}
 		// 字段内容合法验证
 		mer, err := mongo.MerchantColl.Find(r.MerId)
@@ -185,7 +190,7 @@ func (i *importer) dataHandle() error {
 		case "A":
 			// 新增找到用户，报错
 			if err == nil {
-				return fmt.Errorf("商户：%s 已存在", r.MerId)
+				return fmt.Errorf("门店：%s 已存在", r.MerId)
 			}
 			// 插入验证
 			if err = insertValidate(r); err != nil {
@@ -194,7 +199,7 @@ func (i *importer) dataHandle() error {
 		case "U":
 			// 修改不存在用户，报错
 			if err != nil {
-				return fmt.Errorf("商户：%s 不存在", r.MerId)
+				return fmt.Errorf("门店：%s 不存在", r.MerId)
 			}
 			if err = updateValidate(r); err != nil {
 				return err
@@ -221,8 +226,8 @@ func (i *importer) dataHandle() error {
 			}
 		}
 
-		// 处理代理、集团
-		if err = handleAgentAndGroup(r, i.cache); err != nil {
+		// 处理代理、公司、集团
+		if err = handleDegree(r, i.cache); err != nil {
 			return err
 		}
 
@@ -357,18 +362,41 @@ func insertValidate(r *rowData) error {
 	return nil
 }
 
-func handleAgentAndGroup(r *rowData, c *cache) error {
+func handleDegree(r *rowData, c *cache) error {
 
 	// 验证代理
 	if r.AgentCode != "" {
 		if _, ok := c.AgentCache[r.AgentCode]; !ok {
 			a, err := mongo.AgentColl.Find(r.AgentCode)
 			if err != nil {
-				return fmt.Errorf("商户：%s 代理代码(%s)不存在", r.MerId, r.AgentCode)
+				return fmt.Errorf("门店：%s 代理代码(%s)不存在", r.MerId, r.AgentCode)
 			}
 			// 放入缓存
 			c.AgentCache[r.AgentCode] = a
 			r.AgentName = a.AgentName
+		}
+	}
+
+	// 验证公司
+	if r.SubAgentCode != "" {
+		if _, ok := c.CompanyCache[r.SubAgentCode]; !ok {
+			s, err := mongo.SubAgentColl.Find(r.SubAgentCode)
+			if err != nil {
+				return fmt.Errorf("门店：%s 公司代码(%s)不存在", r.MerId, r.SubAgentCode)
+			}
+			switch r.Operator {
+			case "A":
+				if s.AgentCode != r.AgentCode {
+					return fmt.Errorf("门店：%s 公司代码(%s)不属于该代理", r.MerId, r.SubAgentCode)
+				}
+			case "U":
+				if s.AgentCode != r.Mer.AgentCode {
+					return fmt.Errorf("门店：%s 公司代码(%s)不属于该代理(%s)", r.MerId, r.SubAgentCode, r.Mer.AgentCode)
+				}
+			}
+			// 放入缓存
+			c.CompanyCache[r.SubAgentCode] = s
+			r.SubAgentName = s.SubAgentName
 		}
 	}
 
@@ -377,23 +405,25 @@ func handleAgentAndGroup(r *rowData, c *cache) error {
 		if _, ok := c.GroupCache[r.GroupCode]; !ok {
 			g, err := mongo.GroupColl.Find(r.GroupCode)
 			if err != nil {
-				return fmt.Errorf("商户：%s 集团代码(%s)不存在", r.MerId, r.GroupCode)
+				return fmt.Errorf("门店：%s 集团代码(%s)不存在", r.MerId, r.GroupCode)
 			}
 
+			// TODO: 先验证是否是属于代理级别的后面加上是否是属于公司级别的
 			switch r.Operator {
 			case "A":
 				if g.AgentCode != r.AgentCode {
-					return fmt.Errorf("商户：%s 集团代码不属于该代理", r.MerId)
+					return fmt.Errorf("门店：%s 商户代码不属于该代理", r.MerId)
 				}
 			case "U":
 				if r.Mer.AgentCode != g.AgentCode {
-					return fmt.Errorf("商户：%s 集团代码不属于该代理(%s)", r.MerId, r.Mer.AgentCode)
+					return fmt.Errorf("门店：%s 商户代码(%s)不属于该代理(%s)", r.MerId, r.GroupCode, r.Mer.AgentCode)
 				}
 			}
 			c.GroupCache[r.GroupCode] = g
 			r.GroupName = g.GroupName
 		}
 	}
+
 	return nil
 }
 
@@ -415,8 +445,8 @@ func handleAlpMer(r *rowData, c *cache) error {
 	} else {
 		// 可能需要修改路由策略信息
 		if r.Operator == "U" {
-			// 有填清算标识，那么需要处理
-			if r.AlpSettFlag != "" {
+			// 有填清算标识，但是没有对应的渠道商户号，那么需要处理
+			if r.AlpSettFlag != "" && r.AlpMerId == "" {
 				rp := mongo.RouterPolicyColl.Find(r.MerId, "ALP")
 				if rp == nil {
 					return fmt.Errorf("没找到商户：%s，对应的支付宝路由策略，无法变更清算标识。", r.MerId)
@@ -477,8 +507,8 @@ func handleWxpMer(r *rowData, c *cache) error {
 	} else {
 		// 可能需要修改路由策略信息
 		if r.Operator == "U" {
-			// 有填清算标识，那么需要处理
-			if r.WxpSettFlag != "" {
+			// 有填清算标识，但是没有对应的渠道商户号，那么需要处理
+			if r.WxpSettFlag != "" && r.WxpMerId == "" {
 				rp := mongo.RouterPolicyColl.Find(r.MerId, "WXP")
 				if rp == nil {
 					return fmt.Errorf("没找到商户：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
@@ -535,6 +565,8 @@ func (i *importer) doDataWrap() {
 			mer.Detail.AcctName = r.AcctName
 			mer.AgentCode = r.AgentCode
 			mer.AgentName = r.AgentName
+			mer.SubAgentCode = r.SubAgentCode
+			mer.SubAgentName = r.SubAgentName
 			mer.GroupCode = r.GroupCode
 			mer.GroupName = r.GroupName
 			mer.SignKey = r.SignKey
@@ -571,6 +603,12 @@ func (i *importer) doDataWrap() {
 			}
 			if r.AgentName != "" {
 				mer.AgentName = r.AgentName
+			}
+			if r.SubAgentCode != "" {
+				mer.SubAgentCode = r.SubAgentCode
+			}
+			if r.SubAgentName != "" {
+				mer.SubAgentName = r.SubAgentName
 			}
 			if r.GroupCode != "" {
 				mer.GroupCode = r.GroupCode
@@ -819,8 +857,9 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
+	correctCol := 37
 	// 返回某列完整错误信息
-	if col != 35 {
+	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		var errStr string
 		for k, v := range cells {
@@ -833,7 +872,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 			}
 			errStr += fmt.Sprintf("( %s=%s ), ", offset, v)
 		}
-		return fmt.Errorf("列数有误，实际应为 35 行，读取到 %d 行。具体信息为：%s", col, errStr)
+		return fmt.Errorf("列数有误，实际应为 %d 行，读取到 %d 行。具体信息为：%s", correctCol, col, errStr)
 	}
 
 	r := &rowData{}
@@ -848,96 +887,109 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		r.AgentName = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[5]; cell != nil {
-		r.GroupCode = strings.Trim(cell.Value, " ")
+		r.SubAgentCode = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[6]; cell != nil {
-		r.GroupName = strings.Trim(cell.Value, " ")
+		r.SubAgentName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[7]; cell != nil {
-		r.MerId = strings.Trim(cell.Value, " ")
+		r.GroupCode = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[8]; cell != nil {
-		r.MerName = strings.Trim(cell.Value, " ")
+		r.GroupName = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[9]; cell != nil {
-		r.PermissionStr = strings.Trim(cell.Value, " ")
+		r.MerId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[10]; cell != nil {
-		r.IsNeedSignStr = strings.Trim(cell.Value, " ")
+		r.MerName = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[11]; cell != nil {
-		r.SignKey = strings.Trim(cell.Value, " ")
+		r.PermissionStr = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[12]; cell != nil {
-		r.CommodityName = strings.Trim(cell.Value, " ")
+		r.IsNeedSignStr = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[13]; cell != nil {
-		r.AlpMerId = strings.Trim(cell.Value, " ")
+		r.SignKey = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[14]; cell != nil {
-		r.AlpMd5 = strings.Trim(cell.Value, " ")
+		r.CommodityName = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[15]; cell != nil {
-		r.AlpAgentCode = strings.Trim(cell.Value, " ")
+		r.AlpMerId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[16]; cell != nil {
-		r.AlpAcqFee = strings.Trim(cell.Value, " ")
+		r.AlpMd5 = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[17]; cell != nil {
-		r.AlpMerFee = strings.Trim(cell.Value, " ")
+		r.AlpAgentCode = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[18]; cell != nil {
-		r.AlpSettFlag = strings.TrimSpace(cell.Value)
+		r.AlpAcqFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[19]; cell != nil {
-		r.WxpMerId = strings.Trim(cell.Value, " ")
+		r.AlpMerFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[20]; cell != nil {
-		r.WxpSubMerId = strings.Trim(cell.Value, " ")
+		r.AlpSettFlag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[21]; cell != nil {
-		r.IsAgentStr = strings.Trim(cell.Value, " ")
+		r.WxpMerId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[22]; cell != nil {
-		r.WxpAppId = strings.Trim(cell.Value, " ")
+		r.WxpSubMerId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[23]; cell != nil {
-		r.WxpSubAppId = strings.Trim(cell.Value, " ")
+		r.IsAgentStr = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[24]; cell != nil {
-		r.WxpMd5 = strings.Trim(cell.Value, " ")
+		r.WxpAppId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[25]; cell != nil {
-		r.WxpAcqFee = strings.Trim(cell.Value, " ")
+		r.WxpSubAppId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[26]; cell != nil {
-		r.WxpMerFee = strings.Trim(cell.Value, " ")
+		r.WxpMd5 = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[27]; cell != nil {
-		r.WxpSettFlag = strings.TrimSpace(cell.Value)
+		r.WxpAcqFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[28]; cell != nil {
-		r.ShopId = strings.Trim(cell.Value, " ")
+		r.WxpMerFee = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[29]; cell != nil {
-		r.GoodsTag = strings.Trim(cell.Value, " ")
+		r.WxpSettFlag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[30]; cell != nil {
-		r.AcctNum = strings.Trim(cell.Value, " ")
+		r.ShopId = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[31]; cell != nil {
-		r.AcctName = strings.Trim(cell.Value, " ")
+		r.GoodsTag = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[32]; cell != nil {
-		r.BankId = strings.Trim(cell.Value, " ")
+		r.AcctNum = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[33]; cell != nil {
-		r.BankName = strings.Trim(cell.Value, " ")
+		r.AcctName = strings.Trim(cell.Value, " ")
 	}
 	if cell = cells[34]; cell != nil {
+		r.BankId = strings.Trim(cell.Value, " ")
+	}
+	if cell = cells[35]; cell != nil {
+		r.BankName = strings.Trim(cell.Value, " ")
+	}
+	if cell = cells[36]; cell != nil {
 		r.City = strings.Trim(cell.Value, " ")
 	}
+
+	if _, ok := i.rowMap[r.MerId]; ok {
+		return fmt.Errorf("门店号(%s)重复", r.MerId)
+	}
+
+	i.rowMap[r.MerId] = r
 	i.rowData = append(i.rowData, r)
+
 	return nil
 }
 
@@ -947,6 +999,8 @@ type rowData struct {
 	AgentName string // 机构/代理名称
 	// 机构/代理支付宝成本
 	// 机构/代理微信成本
+	SubAgentCode  string // 公司编号
+	SubAgentName  string // 公司名称
 	GroupCode     string // 集团商户编号
 	GroupName     string // 集团商户名称
 	MerId         string // 商户编号

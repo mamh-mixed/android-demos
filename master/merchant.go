@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
@@ -17,6 +18,7 @@ type merchant struct{}
 var Merchant merchant
 
 var b64Encoding = base64.StdEncoding
+var webAppUrl = goconf.Config.MobileApp.WebAppUrl
 
 // Find 根据条件分页查找商户。
 func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
@@ -120,10 +122,10 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 		m.UniqueId = util.Confuse(m.MerId)
 		// 有填相关信息才需要生成两个连接地址
 		if m.Detail.TitleOne != "" && m.Detail.TitleTwo != "" {
-			billUrl := fmt.Sprintf("http://qrcode.cardinfolink.net/payment/trade.html?merchantCode=%s", b64Encoding.EncodeToString([]byte(m.MerId)))
-			userInfoUrl := fmt.Sprintf("http://qrcode.cardinfolink.net/payment/index.html?merchantCode=%s", m.UniqueId)
+			billUrl := fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, m.UniqueId)
+			payUrl := fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(m.MerId)))
 			m.Detail.BillUrl = billUrl
-			m.Detail.UserInfoUrl = userInfoUrl
+			m.Detail.PayUrl = payUrl
 		}
 	}
 
@@ -189,14 +191,14 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 	if m.EncryptKey == "" {
 		if m.Detail.TitleOne != "" && m.Detail.TitleTwo != "" {
 			if m.Detail.BillUrl == "" {
-				b64 := base64.StdEncoding.EncodeToString([]byte(m.MerId))
-				m.Detail.BillUrl = fmt.Sprintf("http://qrcode.cardinfolink.net/payment/trade.html?merchantCode=%s", b64)
-			}
-			if m.Detail.UserInfoUrl == "" {
 				if m.UniqueId == "" {
 					m.UniqueId = util.Confuse(m.MerId)
 				}
-				m.Detail.UserInfoUrl = fmt.Sprintf("http://qrcode.cardinfolink.net/payment/index.html?merchantCode=%s", m.UniqueId)
+				m.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, m.UniqueId)
+			}
+			if m.Detail.PayUrl == "" {
+				b64 := base64.StdEncoding.EncodeToString([]byte(m.MerId))
+				m.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64)
 			}
 		}
 	}
