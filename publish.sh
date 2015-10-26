@@ -76,6 +76,8 @@ function goBuild() {
     echo "Building $prog..."
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o distrib/"$prog" main.go
     cp -r config distrib/
+    mkdir -p distrib/app/material
+    cp -r app/material/ distrib/app/material
     if [ "$env" == "develop" ]; then
         rm distrib/config/*testing*
         rm distrib/config/*product*
