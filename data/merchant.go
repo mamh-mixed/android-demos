@@ -211,13 +211,13 @@ func updALPRouterPolicy(om merchant) {
 		r.AcqFee, _ = strconv.ParseFloat(om.Alp.AcqFee, 64)
 	}
 
-	if strings.TrimSpace(om.Alp.Type) == "1" {
-		r.SettFlag = "CIL"
-		r.SettRole = "CIL"
-	} else {
-		r.SettFlag = "CHANNEL"
-		r.SettRole = "ALP"
-	}
+	// if strings.TrimSpace(om.Alp.Type) == "1" {
+	// 	r.SettFlag = "CIL"
+	// 	r.SettRole = "CIL"
+	// } else {
+	// 	r.SettFlag = "CHANNEL"
+	// 	r.SettRole = "ALP"
+	// }
 }
 
 func updWXPRouterPolicy(om merchant) {
@@ -247,13 +247,13 @@ func updWXPRouterPolicy(om merchant) {
 		r.AcqFee, _ = strconv.ParseFloat(om.Wxp.AcqFee, 64)
 	}
 
-	if strings.TrimSpace(om.Wxp.Type) == "1" {
-		r.SettFlag = "CIL"
-		r.SettRole = "CIL"
-	} else {
-		r.SettFlag = "CHANNEL"
-		r.SettRole = "WXP"
-	}
+	// if strings.TrimSpace(om.Wxp.Type) == "1" {
+	// 	r.SettFlag = "CIL"
+	// 	r.SettRole = "CIL"
+	// } else {
+	// 	r.SettFlag = "CHANNEL"
+	// 	r.SettRole = "WXP"
+	// }
 
 	mongo.RouterPolicyColl.Insert(r)
 }

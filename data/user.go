@@ -34,12 +34,23 @@ func AsyncAppUser() error {
 		user.MerId = app.Clientid
 		user.Limit = app.Limit
 		user.Remark = "old_system_appUsers"
+		user.RegisterFrom = model.SelfRegister
 		user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 		user.UpdateTime = user.CreateTime
 		err = mongo.AppUserCol.Upsert(user)
 		if err != nil {
 			return err
 		}
+
+		m, err := mongo.MerchantColl.Find(app.Clientid)
+		if err != nil {
+			log.Errorf("未找到商户号 %s", app.Clientid)
+			continue
+		}
+
+		// 将商户设置为只能当天退款
+		m.RefundType = model.CurrentDayRefund
+		mongo.MerchantColl.Update(m)
 	}
 
 	log.Infof("成功导入 %d 条用户信息", len(appUsers))
