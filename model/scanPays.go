@@ -454,8 +454,8 @@ type ScanPayCSV struct {
 
 // MerSettStatus 商户清算状态
 type MerSettStatus struct {
-	MerId  string `bson:"merId"`
-	Status int    `bson:"status"`
+	MerId  string `bson:"merId" json:"merId"`
+	Status int    `bson:"status" json:"status"`
 }
 
 // RoleSett 清算角色级别信息

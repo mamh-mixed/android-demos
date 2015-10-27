@@ -1,8 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../layouts/scaffold-layout.html">
-<link rel="import" href="../../elements/quick-merchant-list/quick-merchant-list.html">
+<link rel="import" href="../../elements/settle-report-list/settle-report-list.html">
 
-<dom-module id="qp-merchants-page">
+<dom-module id="settle-report-page">
   <style>
     :host {
       display: block;
@@ -10,23 +10,23 @@
   </style>
   <template>
     <scaffold-layout route$="[[route]]">
-      <quick-merchant-list class="content"></quick-merchant-list>
+      <settle-report-list class="content"></settle-report-list>
     </scaffold-layout>
   </template>
   <script>
     (function() {
       Polymer({
-        is: 'qp-merchants-page',
+        is: 'settle-report-page',
         properties: {
           route: {
             type: Object,
             value: {
-              name: 'quickPay.merchants',
-              path: '/quickPay/merchants',
-              title: '快捷支付机构商户',
-              subtitle: '快捷支付查询、新增、变更或删除机构商户'
+              name: 'trade.settle.reports',
+              path: '/trade/settle/reports',
+              title: '清算报表下载',
+              subtitle: ''
             }
-          }
+          },
         },
       });
     })();
