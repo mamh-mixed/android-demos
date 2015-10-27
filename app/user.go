@@ -31,6 +31,7 @@ var (
 	hostAddress  = goconf.Config.App.NotifyURL
 	WXPMerId     = goconf.Config.MobileApp.WXPMerId
 	ALPMerId     = goconf.Config.MobileApp.ALPMerId
+	webAppUrl    = goconf.Config.MobileApp.WebAppUrl
 )
 
 // register 注册
@@ -62,9 +63,11 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 		Password:     req.Password,
 		Activate:     "false",
 		Limit:        "true",
+		RegisterFrom: req.UserFrom,
 		Remark:       req.Remark,
 		CreateTime:   time.Now().Format("2006-01-02 15:04:05"),
 		SubAgentCode: req.SubAgentCode,
+		BelongsTo:    req.BelongsTo,
 	}
 	user.UpdateTime = user.CreateTime
 
@@ -351,11 +354,13 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		log.Errorf("save user err,%s", err)
 		return model.SYSTEM_ERROR
 	}
+
 	result = model.AppResult{
 		State: model.SUCCESS,
 		Error: "",
 		User:  user,
 	}
+
 	return result
 }
 
@@ -416,14 +421,14 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 // getUserBill 获取用户账单
 func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 
+	// 用户名不为空
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.Status == "" || req.Index == "" {
+		return model.PARAMS_EMPTY
+	}
+
 	// 字段长度验证
 	if result, ok := requestDataValidate(req); !ok {
 		return result
-	}
-
-	// 用户名不为空
-	if req.UserName == "" || req.Transtime == "" || req.Password == "" {
-		return model.PARAMS_EMPTY
 	}
 
 	if !monthRegexp.MatchString(req.Month) {
@@ -465,13 +470,14 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	startDate := date[:4] + "-" + date[4:6] + "-" + "01"
 	endDate := date[:4] + "-" + date[4:6] + "-" + day
 
+	index, _ := strconv.Atoi(req.Index)
 	q := &model.QueryCondition{
 		MerId:     user.MerId,
 		StartTime: startDate + " 00:00:00",
 		EndTime:   endDate + " 23:59:59",
 		Size:      15,
 		Page:      1,
-		Skip:      req.Index,
+		Skip:      index,
 	}
 
 	switch req.Status {
@@ -516,6 +522,10 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 			transAmt -= v.TransAmt
 			refundCount += v.TransNum
 		}
+	}
+
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
 	}
 
 	result.Txn = txns
@@ -671,7 +681,7 @@ func (u *user) getSettInfo(req *reqParams) (result model.AppResult) {
 	}
 
 	// 用户名不为空
-	if req.UserName == "" {
+	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -856,44 +866,39 @@ func genRouter(merchant *model.Merchant) error {
 }
 
 func genMerId(merchant *model.Merchant, prefix string) error {
+	if prefix == "" {
+		return fmt.Errorf("%s", "prefix should not be empty")
+	}
+
+	var length = fmt.Sprintf("%d", 15-len(prefix))
 	for {
 		// 设置merId
 		maxMerId, err := mongo.MerchantColl.FindMaxMerId(prefix)
 		if err != nil {
 			if err.Error() == "not found" {
-				// 从第一个开始编
-				merchant.MerId = prefix + "000001"
+				merchant.MerId = prefix + fmt.Sprintf("%"+length+"0d", 1)
 			} else {
 				log.Errorf("find merchant err,%s", err)
 				return err
 			}
 
 		} else {
-			log.Debugf("maxMerId: %s", maxMerId)
-			var maxMerIdNum int
-			if len(maxMerId) == 15 {
-				// TODO:
-				order := maxMerId[len(prefix):15]
-				maxMerIdNum, err = strconv.Atoi(order)
-				if err != nil {
-					log.Errorf("format maxMerId(%s) err", maxMerId)
-					return err
-				}
-				merchant.MerId = fmt.Sprintf("%s%0"+fmt.Sprintf("%d", len(order))+"d", prefix, maxMerIdNum+1)
-			} else if len(maxMerId) < 15 {
-				// TODO:
-				l := fmt.Sprintf("%d", 14-len(prefix))
-				rp := fmt.Sprintf("%0"+l+"d", 0)
-				merchant.MerId = fmt.Sprintf("%s%s%d", prefix, rp, 1)
-			} else {
-				// TODO:
+			// 找到的话  len(maxMerId)==15
+			order := maxMerId[len(prefix):15]
+			maxMerIdNum, err := strconv.Atoi(order)
+			if err != nil {
 				log.Errorf("format maxMerId(%s) err", maxMerId)
-				return fmt.Errorf("%s", "merId too long")
+				return err
 			}
+			merchant.MerId = fmt.Sprintf("%s%0"+fmt.Sprintf("%d", len(order))+"d", prefix, maxMerIdNum+1)
 		}
 
 		merchant.UniqueId = util.Confuse(merchant.MerId)
-		err = mongo.MerchantColl.Insert2(merchant)
+		if merchant.Detail.TitleOne != "" && merchant.Detail.TitleTwo != "" {
+			merchant.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, merchant.UniqueId)
+			merchant.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(merchant.MerId)))
+		}
+		err = mongo.MerchantColl.Insert(merchant)
 		if err != nil {
 			isDuplicateMerId := strings.Contains(err.Error(), "E11000 duplicate key error index")
 			if !isDuplicateMerId {

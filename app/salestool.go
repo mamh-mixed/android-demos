@@ -2,6 +2,7 @@
 package app
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
@@ -11,13 +12,13 @@ import (
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"io/ioutil"
+	"image/jpeg"
 	"net/http"
 	"time"
 )
 
-// tokenMap TODO 将token存放到数据库
 var tokenMap = make(map[string]*model.User)
+var qrImage = "tools/qr/image/%s/%s.jpg"
 
 // CompanyLogin 销售人员-公司级别登录
 func CompanyLogin(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +27,6 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
-
-	debugReqParams(r)
 
 	username := r.FormValue("username")
 	user, err := mongo.UserColl.FindOneUser(username, "", "")
@@ -67,15 +66,13 @@ func UserList(w http.ResponseWriter, r *http.Request) {
 	var agentUser *model.User
 	var ok bool
 
-	debugReqParams(r)
-
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
 		return
 	}
 
-	users, err := mongo.AppUserCol.FindBySubAgentCode(agentUser.SubAgentCode)
+	users, err := mongo.AppUserCol.Find(&model.AppUserContiditon{SubAgentCode: agentUser.SubAgentCode})
 	if err != nil {
 		w.Write(jsonMarshal(model.SYSTEM_ERROR))
 		return
@@ -125,8 +122,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 	var agentUser *model.User
 	var ok bool
 
-	debugReqParams(r)
-
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -138,6 +133,8 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 		Password:     r.FormValue("password"),
 		Transtime:    time.Now().Format("20060102150405"),
 		Remark:       "company_register",
+		UserFrom:     model.SalesToolsRegister,
+		BelongsTo:    agentUser.UserName,
 		SubAgentCode: agentUser.SubAgentCode,
 	}
 	// 注册
@@ -147,8 +144,6 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 
 // GetQiniuToken
 func GetQiniuToken(w http.ResponseWriter, r *http.Request) {
-
-	debugReqParams(r)
 
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
@@ -167,7 +162,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 	var agentUser *model.User
 	var ok bool
-	debugReqParams(r)
+
 	// 验证token
 	if agentUser, ok = checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -179,7 +174,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
 		return
 	}
-	log.Debug(appUser)
+	// log.Debug(appUser)
 
 	req := &reqParams{
 		BankOpen:   r.FormValue("bank_open"),
@@ -226,7 +221,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 				TitleOne:      "欢迎光临",
 				TitleTwo:      req.MerName,
 				Images:        req.Images,
-				// TODO URL
 			},
 		}
 
@@ -267,7 +261,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 
 // UserActivate 用户激活
 func UserActivate(w http.ResponseWriter, r *http.Request) {
-	debugReqParams(r)
 	// 验证token
 	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
 		w.Write(jsonMarshal(model.TOKEN_ERROR))
@@ -275,12 +268,6 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := r.FormValue("username")
-	key := r.FormValue("imageUrl")
-	if username == "" || key == "" {
-		w.Write(jsonMarshal(model.PARAMS_EMPTY))
-		return
-	}
-
 	appUser, err := mongo.AppUserCol.FindOne(username)
 	if err != nil {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
@@ -293,41 +280,87 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 访问七牛获取二维码设计图
-	var pngBytes []byte
-	if key != "" {
-		resp, err := http.Get(qiniu.MakePrivateUrl(key))
-		if err == nil {
-			pngBytes, err = ioutil.ReadAll(resp.Body)
-			if err != nil {
-				log.Errorf("fail to read resp: %s", err)
-			}
-		} else {
-			log.Errorf("fail to load image: %s, key=%s", err, key)
-		}
-	}
-
-	// 发email告知用户已开通成功
-	email := &email.Email{To: username, Title: open.Title}
-
-	if err != nil && key != "" {
-		png64 := base64.StdEncoding.EncodeToString(pngBytes)
-		image := fmt.Sprintf(`<img src="data:image/png;base64,%s"/>`, png64)
-		email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, image)
-	} else {
-		email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, "")
-	}
-
-	// 异步发送邮件
+	// 异步处理邮件和上传图片
 	go func() {
-		err := email.Send()
+
+		// 生成支付设计图
+		payImage := genImageWithQrCode(payImageTemplate, m.Detail.PayUrl, m.Detail.MerName)
+
+		// 写入缓冲池
+		var isEnocdeSuccess = true
+		payBuf := bytes.NewBuffer([]byte{})
+		err = jpeg.Encode(payBuf, payImage, nil)
+		if err != nil {
+			log.Errorf("jpeg encode fail: %s", err)
+			isEnocdeSuccess = false
+		}
+
+		// 发email告知用户已开通成功
+		email := &email.Email{To: username, Title: open.Title}
+		if isEnocdeSuccess {
+			jpg64 := base64.StdEncoding.EncodeToString(payBuf.Bytes())
+			image := fmt.Sprintf(`<img src="data:image/jpeg;base64,%s" style=width:213px;height:300px;/>`, jpg64)
+			email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, image)
+		} else {
+			email.Body = fmt.Sprintf(open.Body, m.Detail.MerName, username, m.MerId, m.SignKey, "")
+		}
+		err = email.Send()
 		if err != nil {
 			log.Errorf("send email fail: %s, To=%s, body=%s", err, username, email.Body)
 		}
+
+		// upload payImage
+		if isEnocdeSuccess {
+			err = qiniu.Put(fmt.Sprintf(qrImage, m.MerId, "pay"), int64(payBuf.Len()), payBuf)
+			if err != nil {
+				log.Errorf("fail to upload image : %s", err)
+			}
+		}
+
+		// 生成账单设计图
+		billImage := genImageWithQrCode(billImageTemplate, m.Detail.BillUrl, m.Detail.MerName)
+		billBuf := bytes.NewBuffer([]byte{})
+		err = jpeg.Encode(billBuf, billImage, nil)
+		if err != nil {
+			log.Errorf("jpeg encode fail: %s", err)
+			isEnocdeSuccess = false
+		} else {
+			isEnocdeSuccess = true
+		}
+
+		// upload billImage
+		if isEnocdeSuccess {
+			err = qiniu.Put(fmt.Sprintf(qrImage, m.MerId, "bill"), int64(billBuf.Len()), billBuf)
+			if err != nil {
+				log.Errorf("fail to upload image : %s", err)
+			}
+		}
+
 	}()
 
 	w.Write(jsonMarshal(model.SUCCESS1))
 
+}
+
+// GetDownloadUrl 生成下载地址
+func GetDownloadUrl(w http.ResponseWriter, r *http.Request) {
+	// 验证token
+	if _, ok := checkAccessToken(r.FormValue("accessToken")); !ok {
+		w.Write(jsonMarshal(model.TOKEN_ERROR))
+		return
+	}
+
+	merId := r.FormValue("merId")
+	imageType := r.FormValue("imageType")
+
+	if merId == "" || imageType == "" {
+		w.Write(jsonMarshal(model.PARAMS_EMPTY))
+		return
+	}
+
+	result := model.SUCCESS1
+	result.DownloadUrl = qiniu.MakePrivateUrl(fmt.Sprintf(qrImage, merId, imageType))
+	w.Write(jsonMarshal(result))
 }
 
 // checkAccessToken
@@ -361,6 +394,33 @@ func genAccessToken(user *model.User) string {
 	return s.SessionID
 }
 
-func debugReqParams(r *http.Request) {
-	log.Debugf("app tools req: %v", r.Form)
+// NotifySalesman 每天汇总当天用户数据给业务人员
+func NotifySalesman() {
+	day := time.Now().Format("2006-01-02")
+	all, err := mongo.AppUserCol.Find(&model.AppUserContiditon{
+		RegisterFrom: model.SalesToolsRegister,
+		StartTime:    day + " 00:00:00",
+		EndTime:      day + " 23:59:59",
+	})
+	if err != nil {
+		log.Errorf("find appUser error:%s", err)
+		return
+	}
+
+	// 归属
+	c := make(map[string][]*model.AppUser)
+	for _, u := range all {
+		if users, ok := c[u.BelongsTo]; ok {
+			users = append(users, u)
+		} else {
+			c[u.BelongsTo] = []*model.AppUser{u}
+		}
+	}
+
+	for k, v := range c {
+		for _, u := range v {
+			log.Debugf("k=%s c=%s u=%s", k, u, v)
+		}
+	}
+
 }

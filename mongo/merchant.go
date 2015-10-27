@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -17,7 +17,7 @@ var MerchantColl = merchantCollection{"merchant"}
 
 var merCache = cache.New(model.Cache_Merchant)
 
-// Insert 插入一个商户信息。如果存在则更新，不存在则插入。@WonSikin
+// Upsert 插入一个商户信息。如果存在则更新，不存在则插入。@WonSikin
 func (c *merchantCollection) Upsert(m *model.Merchant) error {
 	q := bson.M{"merId": m.MerId}
 
@@ -132,31 +132,45 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 }
 
 // PaginationFind 分页查找机构商户
-func (c *merchantCollection) PaginationFind(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay string, size, page int) (results []*model.Merchant, total int, err error) {
+func (c *merchantCollection) PaginationFind(merchant model.Merchant, pay string, size, page int) (results []*model.Merchant, total int, err error) {
 	results = make([]*model.Merchant, 1)
 
 	match := bson.M{}
-	if merId != "" {
-		match["merId"] = merId
+	if merchant.MerId != "" {
+		match["merId"] = bson.RegEx{merchant.MerId, "i"}
 	}
-	if merStatus != "" {
-		match["merStatus"] = merStatus
+	if merchant.MerStatus != "" {
+		match["merStatus"] = merchant.MerStatus
 	}
-	if merName != "" {
-		match["merDetail.merName"] = merName
+	if merchant.Detail.MerName != "" {
+		match["merDetail.merName"] = bson.RegEx{merchant.Detail.MerName, "i"}
 	}
-	if groupCode != "" {
-		match["groupCode"] = groupCode
+	if merchant.AgentCode != "" {
+		match["agentCode"] = bson.RegEx{merchant.AgentCode, "i"}
 	}
-	if groupName != "" {
-		match["groupName"] = groupName
+	if merchant.AgentName != "" {
+		match["agentName"] = bson.RegEx{merchant.AgentName, "i"}
 	}
-	if agentCode != "" {
-		match["agentCode"] = agentCode
+	if merchant.SubAgentCode != "" {
+		match["subAgentCode"] = bson.RegEx{merchant.SubAgentCode, "i"}
 	}
-	if agentName != "" {
-		match["agentName"] = agentName
+	if merchant.GroupCode != "" {
+		match["groupCode"] = bson.RegEx{merchant.GroupCode, "i"}
 	}
+	if merchant.GroupName != "" {
+		match["groupName"] = bson.RegEx{merchant.GroupName, "i"}
+	}
+	if merchant.IsNeedSign == true {
+		match["isNeedSign"] = merchant.IsNeedSign
+	}
+
+	if merchant.Detail.AcctNum != "" {
+		match["merDetail.acctNum"] = bson.RegEx{merchant.Detail.AcctNum, "i"}
+	}
+	if merchant.Detail.GoodsTag != "" {
+		match["merDetail.goodsTag"] = bson.RegEx{merchant.Detail.GoodsTag, "i"}
+	}
+
 	if pay == "bp" {
 		match["encryptKey"] = bson.M{"$exists": true}
 	} else {
@@ -219,8 +233,8 @@ func (col *merchantCollection) Remove(merId string) (err error) {
 	return err
 }
 
-// Insert2 创建一个机构商户
-func (c *merchantCollection) Insert2(m *model.Merchant) error {
+// Insert 创建一个机构商户
+func (c *merchantCollection) Insert(m *model.Merchant) error {
 
 	err := database.C(c.name).Insert(m)
 	if err != nil {
@@ -233,23 +247,14 @@ func (c *merchantCollection) Insert2(m *model.Merchant) error {
 // findMaxMerId 查询merId最大值
 func (c *merchantCollection) FindMaxMerId(prefix string) (merId string, err error) {
 
-	// match := bson.M{}
-	// match["merId"] = bson.RegEx{prefix + ".", "\\d+"}
-	cond := []bson.M{
-		{"$match": bson.M{"merId": bson.M{"$regex": prefix + "\\d+"}}},
-	}
-	sort := bson.M{"$sort": bson.M{"merId": -1}}
-	limit := bson.M{"$limit": 1}
-
-	cond = append(cond, sort, limit)
-
 	m := new(model.Merchant)
-	err = database.C(c.name).Pipe(cond).One(m)
-	if err != nil {
-		log.Errorf("select maxMerId err,%s", err)
-		return "", err
-	}
-	return m.MerId, nil
+	length := fmt.Sprintf("%d", 15-len(prefix))
+	regex := bson.RegEx{"^" + prefix + "\\d{" + length + "}$", ""}
+	query := bson.M{"merId": regex}
+
+	err = database.C(c.name).Find(query).Sort("-merId").Select(bson.M{"merId": 1}).One(m)
+
+	return m.MerId, err
 }
 
 func (col *merchantCollection) FindCountByMerId(merId string) (num int, err error) {

@@ -1,9 +1,8 @@
 package util
 
 import (
+	"crypto/md5"
 	"crypto/rand"
-	"crypto/sha1"
-	"encoding/base64"
 	"fmt"
 	gouuid "github.com/nu7hatch/gouuid"
 	"github.com/omigo/log"
@@ -37,16 +36,26 @@ func Nonce(n int) string {
 // Confuse 混淆一个唯一码
 func Confuse(uniqueId string) string {
 
-	var sum = make([]byte, 24)
-	s := sha1.Sum([]byte(uniqueId))
-
-	for i, b := range s {
-		sum[i+2] = b
-	}
+	ub := []byte(uniqueId)
+	length := len(ub)
+	var sum = make([]byte, length+4)
 
 	rand.Read(sum[0:2])
-	rand.Read(sum[22:24])
-	return base64.StdEncoding.EncodeToString(sum)
+	for i, b := range ub {
+		sum[i+2] = b
+	}
+	rand.Read(sum[length+2 : length+4])
+
+	mb := md5.Sum(sum)
+	return fmt.Sprintf("%x", mb[:])
+}
+
+// SignKey 随机生成32的密钥
+func SignKey() string {
+	var b = make([]byte, 20)
+	rand.Read(b)
+	mb := md5.Sum(b)
+	return fmt.Sprintf("%x", mb[:])
 }
 
 // Millisecond 获取新世纪以来到目前为止的毫秒数

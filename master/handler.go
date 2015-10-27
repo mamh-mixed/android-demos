@@ -213,17 +213,31 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 
-	merId := r.FormValue("merId")
-	merStatus := r.FormValue("merStatus")
-	merName := r.FormValue("merName")
-	groupCode := r.FormValue("groupCode")
-	groupName := r.FormValue("groupName")
-	agentCode := r.FormValue("agentCode")
-	agentName := r.FormValue("agentName")
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	pay := r.FormValue("pay")
-	ret := Merchant.Find(merId, merStatus, merName, groupCode, groupName, agentCode, agentName, pay, size, page)
+	isNeedSignStr := r.FormValue("isNeedSign")
+	isNeedSign := false
+	if isNeedSignStr == "on" {
+		isNeedSign = true
+	}
+	merchant := model.Merchant{
+		MerId:        r.FormValue("merId"),
+		AgentCode:    r.FormValue("agentCode"),
+		AgentName:    r.FormValue("agentName"),
+		SubAgentCode: r.FormValue("subAgentCode"),
+		GroupCode:    r.FormValue("groupCode"),
+		GroupName:    r.FormValue("groupName"),
+		IsNeedSign:   isNeedSign,
+		MerStatus:    r.FormValue("merStatus"),
+		Detail: model.MerDetail{
+			MerName:  r.FormValue("merName"),
+			AcctNum:  r.FormValue("acctNum"),
+			GoodsTag: r.FormValue("goodsTag"),
+		},
+	}
+
+	ret := Merchant.Find(merchant, pay, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {

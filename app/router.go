@@ -27,6 +27,7 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/tools/uploadToken", GetQiniuToken)
 	mux.HandleFunc("/app/tools/update", UpdateUserInfo)
 	mux.HandleFunc("/app/tools/activate", UserActivate)
+	mux.HandleFunc("/app/tools/download", GetDownloadUrl)
 
 	return mux
 }

@@ -39,7 +39,12 @@ func TestNonce(t *testing.T) {
 }
 
 func TestConfuse(t *testing.T) {
-	fmt.Println(Confuse("991241058120194"))
-	fmt.Println(Confuse("991241058120195"))
+	fmt.Println(Confuse("99124105812019412313"))
+	fmt.Println(Confuse("991241058120"))
 	fmt.Println(Confuse("991241058120196"))
+}
+
+func TestSignKey(t *testing.T) {
+	fmt.Println(SignKey())
+	fmt.Println(SignKey())
 }

@@ -3,8 +3,10 @@ package email
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/SKatiyar/qr"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -95,8 +97,9 @@ func TestSend(t *testing.T) {
 }
 
 func TestSendOpen(t *testing.T) {
-
-	e := Email{To: "379630413@qq.com", Title: "【欢迎注册云收银】", Body: fmt.Sprintf(openTemplate, "金鸿洗餐厅", "379630413@qq.com", "999118880000001", "dajshdjasjbadasdasd", "")}
+	code, err := qr.Encode("awdawdawdadawwaawdawdawdawda", qr.Q)
+	png64 := base64.StdEncoding.EncodeToString(code.PNG())
+	e := Email{To: "379630413@qq.com", Title: "【欢迎注册云收银】", Body: fmt.Sprintf(openTemplate, "金鸿洗餐厅", "379630413@qq.com", "999118880000001", "dajshdjasjbadasdasd", png64)}
 	err = e.Send()
 	if err != nil {
 		t.Error(err)
