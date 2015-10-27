@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 
@@ -762,6 +763,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(retBytes)
+	InsertLog(w, r, user, data)
 }
 
 // 查找
@@ -793,6 +795,12 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
+	// 用于记录日志
+	session, err := mongo.SessionColl.Find(sid.Value)
+	if err != nil {
+		log.Errorf("find session(%s) err: %s", sid.Value, err)
+		return
+	}
 
 	ret := Session.Delete(sid.Value)
 	rdata, err := json.Marshal(ret)
@@ -809,6 +817,8 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+
+	HandleMasterLog(w, r, session.User)
 }
 
 func userUpdateHandle(w http.ResponseWriter, r *http.Request) {

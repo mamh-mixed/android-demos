@@ -97,7 +97,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 删除session
-	if r.URL.Path == "/master/session/delete" {
+	if r.URL.Path == "/master/logout" {
 		sessionDeleteHandle(w, r)
 		return
 	}
@@ -127,7 +127,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 记录平台操作日志
-	handleMasterLog(w, r, user)
+	HandleMasterLog(w, r, user)
 
 	fillUserTypeParam(r, user)
 	// log.Debugf("query: %#v", r.URL.Query())
@@ -239,7 +239,7 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 }
 
 // handleLog 记录平台操作日志
-func handleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
+func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 	var body []byte
 	var err error
 	if r.Method == "POST" {
@@ -254,6 +254,10 @@ func handleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	}
 
+	InsertLog(w, r, user, body)
+}
+
+func InsertLog(w http.ResponseWriter, r *http.Request, user *model.User, body []byte) {
 	masterLog := &model.MasterLog{
 		UserName: user.UserName,
 		Time:     time.Now().Format("2006-01-02 15:04:05"),
