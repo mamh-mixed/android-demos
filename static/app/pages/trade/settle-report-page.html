@@ -1,0 +1,34 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../layouts/scaffold-layout.html">
+<link rel="import" href="../../elements/settle-report-list/settle-report-list.html">
+
+<dom-module id="settle-report-page">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <template>
+    <scaffold-layout route$="[[route]]">
+      <settle-report-list class="content"></settle-report-list>
+    </scaffold-layout>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'settle-report-page',
+        properties: {
+          route: {
+            type: Object,
+            value: {
+              name: 'trade.settle.reports',
+              path: '/trade/settle/reports',
+              title: '清算报表下载',
+              subtitle: ''
+            }
+          },
+        },
+      });
+    })();
+  </script>
+</dom-module>
