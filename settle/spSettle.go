@@ -54,11 +54,10 @@ func doScanpaySettReport(settDate string) error {
 				log.Errorf("upload settReport excel err: %s", err)
 				continue
 			}
-		}
-
-		err = mongo.RoleSettCol.Upsert(rs)
-		if err != nil {
-			log.Errorf("roleSett upsert error: %s", err)
+			err = mongo.RoleSettCol.Upsert(rs)
+			if err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
 		}
 	}
 
@@ -78,19 +77,19 @@ func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
 		return rds
 	}
 
-	var cmMap = make(map[string]int)
-	for _, cm := range rs.ContainMers {
-		cmMap[cm.MerId] = cm.Status
-	}
+	// var cmMap = make(map[string]int)
+	// for _, cm := range rs.ContainMers {
+	// 	cmMap[cm.MerId] = cm.Status
+	// }
 
 	for _, mg := range sg.MerGroups {
-		if status, ok := cmMap[mg.MerId]; ok {
-			if status == 1 {
-				continue
-			}
-			// 存在，但状态不成功
-			delete(cmMap, mg.MerId)
-		}
+		// if status, ok := cmMap[mg.MerId]; ok {
+		// 	if status == 1 {
+		// 		continue
+		// 	}
+		// 	// 存在，但状态不成功
+		// 	delete(cmMap, mg.MerId)
+		// }
 
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {
@@ -116,15 +115,15 @@ func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
 			m.Detail.BankName = m.Detail.OpenBankName
 		}
 
-		cmMap[mg.MerId] = 1 // 清算成功
+		// cmMap[mg.MerId] = 1 // 清算成功
 		rds = append(rds, reportData{mg: mg, m: *m})
 	}
 
-	var cms []model.MerSettStatus
-	for k, v := range cmMap {
-		cms = append(cms, model.MerSettStatus{MerId: k, Status: v})
-	}
-	rs.ContainMers = cms
+	// var cms []model.MerSettStatus
+	// for k, v := range cmMap {
+	// 	cms = append(cms, model.MerSettStatus{MerId: k, Status: v})
+	// }
+	// rs.ContainMers = cms
 
 	return rds
 }

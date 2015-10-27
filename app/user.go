@@ -894,7 +894,7 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 		}
 
 		merchant.UniqueId = util.Confuse(merchant.MerId)
-		if merchant.Detail.TitleOne != "" && merchant.Detail.TitleTwo != "" {
+		if merchant.Detail.TitleOne != "" || merchant.Detail.TitleTwo != "" {
 			merchant.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, merchant.UniqueId)
 			merchant.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(merchant.MerId)))
 		}

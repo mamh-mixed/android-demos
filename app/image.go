@@ -10,7 +10,6 @@ import (
 	"image"
 	"image/draw"
 	"image/jpeg"
-	// "io"
 	"io/ioutil"
 	"os"
 )
