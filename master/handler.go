@@ -601,6 +601,33 @@ func downURLHandle(w http.ResponseWriter, r *http.Request) {
 	qiniu.HandleDownURL(w, r)
 }
 
+// qiniuDownloadHandle 用key换取七牛的私密下载链接
+func qiniuDownloadHandle(w http.ResponseWriter, r *http.Request) {
+	key := r.FormValue("key")
+	url := qiniu.MakePrivateUrl(key)
+	log.Debugf("redirect url is %s", url)
+	var result *model.ResultBody
+	if url == "" {
+		result = &model.ResultBody{
+			Status:  1,
+			Message: "未找到下载链接，请确认您输入的key是否有误",
+		}
+	} else {
+		result = &model.ResultBody{
+			Status:  0,
+			Message: url,
+		}
+	}
+
+	rdata, err := json.Marshal(result)
+	if err != nil {
+		w.Write([]byte("marshal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 func userCreateHandle(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadAll(r.Body)
