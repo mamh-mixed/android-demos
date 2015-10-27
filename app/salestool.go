@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var tokenMap = make(map[string]*model.User)
+var tokenMap = make(map[string]*model.Session)
 var qrImage = "tools/qr/image/%s/%s.jpg"
 
 // CompanyLogin 销售人员-公司级别登录
@@ -174,7 +174,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
 		return
 	}
-	// log.Debug(appUser)
 
 	req := &reqParams{
 		BankOpen:   r.FormValue("bank_open"),
@@ -202,7 +201,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 			SubAgentCode: agentUser.SubAgentCode,
 			Permission:   []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf},
 			MerStatus:    model.MerStatusNormal,
-			Remark:       "agent_register",
+			Remark:       "user_register",
 			TransCurr:    "156",
 			RefundType:   model.CurrentDayRefund, // 只能当天退
 			IsNeedSign:   true,
@@ -218,7 +217,6 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 				AcctName:      req.Payee,
 				AcctNum:       req.PayeeCard,
 				ContactTel:    req.PhoneNum,
-				TitleOne:      "欢迎光临",
 				TitleTwo:      req.MerName,
 				Images:        req.Images,
 			},
@@ -277,6 +275,14 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 	m, err := mongo.MerchantColl.Find(appUser.MerId)
 	if err != nil {
 		w.Write(jsonMarshal(model.MERID_NO_EXIST))
+		return
+	}
+
+	// 设置为已激活
+	appUser.Activate = "true"
+	err = mongo.AppUserCol.Upsert(appUser)
+	if err != nil {
+		w.Write(jsonMarshal(model.SYSTEM_ERROR))
 		return
 	}
 
@@ -366,8 +372,12 @@ func GetDownloadUrl(w http.ResponseWriter, r *http.Request) {
 // checkAccessToken
 func checkAccessToken(token string) (*model.User, bool) {
 
-	if user, ok := tokenMap[token]; ok {
-		return user, true
+	if s, ok := tokenMap[token]; ok {
+		if time.Now().After(s.Expires) {
+			delete(tokenMap, token)
+			return nil, false
+		}
+		return s.User, true
 	}
 	// 向数据库里查找
 	s, err := mongo.SessionColl.Find(token)
@@ -376,7 +386,7 @@ func checkAccessToken(token string) (*model.User, bool) {
 	}
 
 	// 放到map里
-	tokenMap[token] = s.User
+	tokenMap[token] = s
 
 	return s.User, true
 }
@@ -390,7 +400,7 @@ func genAccessToken(user *model.User) string {
 	s.UpdateTime = s.CreateTime
 	s.Expires = s.CreateTime.Add(24 * time.Hour)
 	mongo.SessionColl.Add(s)
-	tokenMap[s.SessionID] = user
+	tokenMap[s.SessionID] = s
 	return s.SessionID
 }
 

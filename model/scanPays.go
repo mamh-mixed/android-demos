@@ -460,10 +460,10 @@ type MerSettStatus struct {
 
 // RoleSett 清算角色级别信息
 type RoleSett struct {
-	SettRole    string          `bson:"settRole"`
-	SettDate    string          `bson:"settDate"`
-	ReportName  string          `bson:"reportName"`
-	CreateTime  string          `bson:"createTime"`
-	UpdateTime  string          `bson:"updateTime"`
-	ContainMers []MerSettStatus `bson:"containMers"`
+	SettRole   string `bson:"settRole"`
+	SettDate   string `bson:"settDate"`
+	ReportName string `bson:"reportName"`
+	CreateTime string `bson:"createTime"`
+	UpdateTime string `bson:"updateTime"`
+	// ContainMers []MerSettStatus `bson:"containMers"`
 }

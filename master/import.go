@@ -30,6 +30,7 @@ const (
 
 var sysErr = errors.New("系统错误，请重新上传。")
 var emptyErr = errors.New("上传表格为空，请检查。")
+var fileErr = resultBody("无法获取文件，请重新上传。", 1)
 var maxFee = 0.03
 var settFlagArray = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
 
@@ -40,8 +41,8 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	key := r.FormValue("key")
 	resp, err := http.Get(qiniu.MakePrivateUrl(key))
 	if err != nil {
-		log.Error(err)
-		w.Write(resultBody("无法获取文件，请重新上传。", 1))
+		log.Errorf("get file from qiniu err: %s", err)
+		w.Write(fileErr)
 		return
 	}
 
@@ -49,16 +50,16 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 
 	ebytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
-		w.Write(resultBody("无法获取文件，请重新上传。", 1))
+		log.Errorf("read body err: %s", err)
+		w.Write(fileErr)
 		return
 	}
 
 	// 判断内容类型
 	contentType := resp.Header.Get("content-type")
 	if contentType == "application/json" {
-		log.Error(string(ebytes))
-		w.Write(resultBody("无法获取文件，请重新上传。", 1))
+		log.Errorf("get file from qiniu err: %s", string(ebytes))
+		w.Write(fileErr)
 		return
 	}
 
@@ -66,16 +67,16 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	reader := bytes.NewReader(ebytes)
 	zipReader, err := zip.NewReader(reader, int64(len(ebytes)))
 	if err != nil {
-		log.Error(err)
-		w.Write(resultBody("无法获取文件，请重新上传。", 1))
+		log.Errorf("zip read bytes err: %s", err)
+		w.Write(fileErr)
 		return
 	}
 
 	// 转换成excel
 	file, err := xlsx.ReadZipReader(zipReader)
 	if err != nil {
-		log.Error(err)
-		w.Write(resultBody("无法获取文件，请重新上传。", 1))
+		log.Errorf("zip read excel err: %s", err)
+		w.Write(fileErr)
 		return
 	}
 
@@ -766,7 +767,6 @@ func (o *operation) print() {
 	}
 }
 
-// TODO: fix bug mongo批量操作不是原子性的
 func (i *importer) persist() error {
 
 	if i.IsDebug {
@@ -778,26 +778,29 @@ func (i *importer) persist() error {
 	// ===============ADD==============
 	if len(i.A.Mers) > 0 {
 		err = mongo.MerchantColl.BatchAdd(i.A.Mers)
+		// mongo insert 操作是没有原子性保证的
+		// 所以不管成功或失败，都认为保存成功，后续回退
+		// 下同
+		i.A.IsSaveMersSuccess = true
 		if err != nil {
 			return err
 		}
-		i.A.IsSaveMersSuccess = true
 	}
 
 	if len(i.A.ChanMers) > 0 {
 		err = mongo.ChanMerColl.BatchAdd(i.A.ChanMers)
+		i.A.IsSaveChanMersSuccess = true
 		if err != nil {
 			return err
 		}
-		i.A.IsSaveChanMersSuccess = true
 	}
 
 	if len(i.A.RouterPolicys) > 0 {
 		err = mongo.RouterPolicyColl.BatchAdd(i.A.RouterPolicys)
+		i.A.IsSaveRouterSuccess = true
 		if err != nil {
 			return err
 		}
-		i.A.IsSaveRouterSuccess = true
 	}
 
 	// ===============UPD==============
@@ -856,6 +859,7 @@ func (i *importer) rollback() {
 	// TODO: update的操作如何回滚
 }
 
+// TODO: 需要去除某些不可见字符
 func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 
 	var col = len(cells)
@@ -884,13 +888,13 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	r := &rowData{}
 	var cell *xlsx.Cell
 	if cell = cells[0]; cell != nil {
-		r.Operator = strings.Trim(cell.Value, " ")
+		r.Operator = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[1]; cell != nil {
-		r.AgentCode = strings.Trim(cell.Value, " ")
+		r.AgentCode = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[2]; cell != nil {
-		r.AgentName = strings.Trim(cell.Value, " ")
+		r.AgentName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[5]; cell != nil {
 		r.SubAgentCode = strings.TrimSpace(cell.Value)
@@ -899,94 +903,94 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		r.SubAgentName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[7]; cell != nil {
-		r.GroupCode = strings.Trim(cell.Value, " ")
+		r.GroupCode = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[8]; cell != nil {
-		r.GroupName = strings.Trim(cell.Value, " ")
+		r.GroupName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[9]; cell != nil {
-		r.MerId = strings.Trim(cell.Value, " ")
+		r.MerId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[10]; cell != nil {
-		r.MerName = strings.Trim(cell.Value, " ")
+		r.MerName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[11]; cell != nil {
-		r.PermissionStr = strings.Trim(cell.Value, " ")
+		r.PermissionStr = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[12]; cell != nil {
-		r.IsNeedSignStr = strings.Trim(cell.Value, " ")
+		r.IsNeedSignStr = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[13]; cell != nil {
-		r.SignKey = strings.Trim(cell.Value, " ")
+		r.SignKey = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[14]; cell != nil {
-		r.CommodityName = strings.Trim(cell.Value, " ")
+		r.CommodityName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[15]; cell != nil {
-		r.AlpMerId = strings.Trim(cell.Value, " ")
+		r.AlpMerId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[16]; cell != nil {
-		r.AlpMd5 = strings.Trim(cell.Value, " ")
+		r.AlpMd5 = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[17]; cell != nil {
-		r.AlpAgentCode = strings.Trim(cell.Value, " ")
+		r.AlpAgentCode = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[18]; cell != nil {
-		r.AlpAcqFee = strings.Trim(cell.Value, " ")
+		r.AlpAcqFee = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[19]; cell != nil {
-		r.AlpMerFee = strings.Trim(cell.Value, " ")
+		r.AlpMerFee = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[20]; cell != nil {
 		r.AlpSettFlag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[21]; cell != nil {
-		r.WxpMerId = strings.Trim(cell.Value, " ")
+		r.WxpMerId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[22]; cell != nil {
-		r.WxpSubMerId = strings.Trim(cell.Value, " ")
+		r.WxpSubMerId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[23]; cell != nil {
-		r.IsAgentStr = strings.Trim(cell.Value, " ")
+		r.IsAgentStr = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[24]; cell != nil {
-		r.WxpAppId = strings.Trim(cell.Value, " ")
+		r.WxpAppId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[25]; cell != nil {
-		r.WxpSubAppId = strings.Trim(cell.Value, " ")
+		r.WxpSubAppId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[26]; cell != nil {
-		r.WxpMd5 = strings.Trim(cell.Value, " ")
+		r.WxpMd5 = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[27]; cell != nil {
-		r.WxpAcqFee = strings.Trim(cell.Value, " ")
+		r.WxpAcqFee = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[28]; cell != nil {
-		r.WxpMerFee = strings.Trim(cell.Value, " ")
+		r.WxpMerFee = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[29]; cell != nil {
 		r.WxpSettFlag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[30]; cell != nil {
-		r.ShopId = strings.Trim(cell.Value, " ")
+		r.ShopId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[31]; cell != nil {
-		r.GoodsTag = strings.Trim(cell.Value, " ")
+		r.GoodsTag = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[32]; cell != nil {
-		r.AcctNum = strings.Trim(cell.Value, " ")
+		r.AcctNum = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[33]; cell != nil {
-		r.AcctName = strings.Trim(cell.Value, " ")
+		r.AcctName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[34]; cell != nil {
-		r.BankId = strings.Trim(cell.Value, " ")
+		r.BankId = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[35]; cell != nil {
-		r.BankName = strings.Trim(cell.Value, " ")
+		r.BankName = strings.TrimSpace(cell.Value)
 	}
 	if cell = cells[36]; cell != nil {
-		r.City = strings.Trim(cell.Value, " ")
+		r.City = strings.TrimSpace(cell.Value)
 	}
 
 	if _, ok := i.rowMap[r.MerId]; ok {
