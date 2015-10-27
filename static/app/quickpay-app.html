@@ -38,6 +38,7 @@
       <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="pages/trade/binding-pay-page.html"></app-route>
       <app-route path="/trade/reports" name="report-list" import="pages/trade/reports-page.html"></app-route>
       <app-route path="/trade/old/reports" name="report-list-old" import="pages/trade/old-system-page.html"></app-route>
+      <app-route path="/trade/settle/reports" name="settle-report-list" import="pages/trade/settle-report-page.html"></app-route>
 
       <app-route path="/test/scanpay" name="test-scanpay" import="pages/test/scanpay-page.html"></app-route>
       <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
@@ -58,7 +59,7 @@
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
     <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
-    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
+    <x-ajax id="deleteSessionAjax" method="GET" url="/master/logout" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
   </template>
   <script>
     (function() {

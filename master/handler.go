@@ -10,11 +10,29 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 
 	"github.com/CardInfoLink/quickpay/util"
 )
+
+// tradeSettleReportHandle 清算报表查询的
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	role := r.FormValue("role")
+	date := r.FormValue("date")
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	ret := tradeSettleReportQuery(role, date, size, page)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("marshal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
 
 // respCodeMatchHandle 查找应答码处理器
 func respCodeMatchHandle(w http.ResponseWriter, r *http.Request) {
@@ -209,14 +227,16 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 		AgentCode:    r.FormValue("agentCode"),
 		AgentName:    r.FormValue("agentName"),
 		SubAgentCode: r.FormValue("subAgentCode"),
+		SubAgentName: r.FormValue("subAgentName"),
 		GroupCode:    r.FormValue("groupCode"),
 		GroupName:    r.FormValue("groupName"),
 		IsNeedSign:   isNeedSign,
 		MerStatus:    r.FormValue("merStatus"),
 		Detail: model.MerDetail{
-			MerName:  r.FormValue("merName"),
-			AcctNum:  r.FormValue("acctNum"),
-			GoodsTag: r.FormValue("goodsTag"),
+			MerName:       r.FormValue("merName"),
+			AcctNum:       r.FormValue("acctNum"),
+			GoodsTag:      r.FormValue("goodsTag"),
+			CommodityName: r.FormValue("commodityName"),
 		},
 	}
 
@@ -598,6 +618,33 @@ func downURLHandle(w http.ResponseWriter, r *http.Request) {
 	qiniu.HandleDownURL(w, r)
 }
 
+// qiniuDownloadHandle 用key换取七牛的私密下载链接
+func qiniuDownloadHandle(w http.ResponseWriter, r *http.Request) {
+	key := r.FormValue("key")
+	url := qiniu.MakePrivateUrl(key)
+	log.Debugf("redirect url is %s", url)
+	var result *model.ResultBody
+	if url == "" {
+		result = &model.ResultBody{
+			Status:  1,
+			Message: "未找到下载链接，请确认您输入的key是否有误",
+		}
+	} else {
+		result = &model.ResultBody{
+			Status:  0,
+			Message: url,
+		}
+	}
+
+	rdata, err := json.Marshal(result)
+	if err != nil {
+		w.Write([]byte("marshal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
 func userCreateHandle(w http.ResponseWriter, r *http.Request) {
 
 	data, err := ioutil.ReadAll(r.Body)
@@ -716,6 +763,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(retBytes)
+	InsertLog(r, user, data)
 }
 
 // 查找
@@ -747,6 +795,12 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
+	// 用于记录日志
+	session, err := mongo.SessionColl.Find(sid.Value)
+	if err != nil {
+		log.Errorf("find session(%s) err: %s", sid.Value, err)
+		return
+	}
 
 	ret := Session.Delete(sid.Value)
 	rdata, err := json.Marshal(ret)
@@ -763,6 +817,8 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+
+	HandleMasterLog(w, r, session.User)
 }
 
 func userUpdateHandle(w http.ResponseWriter, r *http.Request) {

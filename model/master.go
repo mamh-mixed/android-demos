@@ -1,5 +1,7 @@
 package model
 
+import "net/url"
+
 type ResultBody struct {
 	Status  int         `json:"status"`  // 状态码
 	Message string      `json:"message"` // 消息
@@ -21,4 +23,15 @@ type Pagination struct {
 	Size  int         `json:"size"`  // 每页记录数
 	Count int         `json:"count"` // 当前页记录数
 	Data  interface{} `json:"data"`  // 数据
+}
+
+// MasterLog 平台操作日志
+type MasterLog struct {
+	UserName string     `bson:"userName" json:"userName"`
+	Time     string     `bson:"time" json:"time"`
+	Path     string     `bson:"path" json:"path"`
+	Method   string     `bson:"method" json:"method"`
+	Query    url.Values `bson:"query" json:"query"`
+	Body     string     `bson:"body" json:"body"`
+	IP       string     `bson:"ip" json:"ip"`
 }
