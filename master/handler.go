@@ -209,14 +209,16 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 		AgentCode:    r.FormValue("agentCode"),
 		AgentName:    r.FormValue("agentName"),
 		SubAgentCode: r.FormValue("subAgentCode"),
+		SubAgentName: r.FormValue("subAgentName"),
 		GroupCode:    r.FormValue("groupCode"),
 		GroupName:    r.FormValue("groupName"),
 		IsNeedSign:   isNeedSign,
 		MerStatus:    r.FormValue("merStatus"),
 		Detail: model.MerDetail{
-			MerName:  r.FormValue("merName"),
-			AcctNum:  r.FormValue("acctNum"),
-			GoodsTag: r.FormValue("goodsTag"),
+			MerName:       r.FormValue("merName"),
+			AcctNum:       r.FormValue("acctNum"),
+			GoodsTag:      r.FormValue("goodsTag"),
+			CommodityName: r.FormValue("commodityName"),
 		},
 	}
 

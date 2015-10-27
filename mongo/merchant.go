@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -154,11 +155,17 @@ func (c *merchantCollection) PaginationFind(merchant model.Merchant, pay string,
 	if merchant.SubAgentCode != "" {
 		match["subAgentCode"] = bson.RegEx{merchant.SubAgentCode, "i"}
 	}
+	if merchant.SubAgentName != "" {
+		match["subAgentName"] = bson.RegEx{merchant.SubAgentName, "i"}
+	}
 	if merchant.GroupCode != "" {
 		match["groupCode"] = bson.RegEx{merchant.GroupCode, "i"}
 	}
 	if merchant.GroupName != "" {
 		match["groupName"] = bson.RegEx{merchant.GroupName, "i"}
+	}
+	if merchant.Detail.CommodityName != "" {
+		match["merDetail.commodityName"] = bson.RegEx{merchant.Detail.CommodityName, "i"}
 	}
 	if merchant.IsNeedSign == true {
 		match["isNeedSign"] = merchant.IsNeedSign
