@@ -1,8 +1,10 @@
 package master
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -122,8 +124,11 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 记录平台操作日志
+	handleMasterLog(w, r, user)
+
 	fillUserTypeParam(r, user)
-	log.Debugf("query: %#v", r.URL.Query())
+	// log.Debugf("query: %#v", r.URL.Query())
 
 	h, _ := mux.Handler(r)
 	h.ServeHTTP(w, r)
@@ -229,4 +234,33 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	}
 
 	return session, nil
+}
+
+// handleLog 记录平台操作日志
+func handleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
+	var body []byte
+	var err error
+	if r.Method == "POST" {
+		body, err = ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Errorf("read body err,%s", err)
+			return
+		}
+		r.Body.Close()
+
+		// r.Body 只能被读取一次，所以。。。
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	}
+
+	masterLog := &model.MasterLog{
+		UserName: user.UserName,
+		Time:     time.Now().Format("2006-01-02 15:04:05"),
+		Path:     r.URL.Path,
+		Method:   r.Method,
+		Query:    r.URL.Query(),
+		Body:     string(body),
+		IP:       r.RemoteAddr,
+	}
+	mongo.MasterLogColl.Insert(masterLog)
+	log.Infof("masterLog:%#v", *masterLog)
 }
