@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 
@@ -226,14 +227,16 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 		AgentCode:    r.FormValue("agentCode"),
 		AgentName:    r.FormValue("agentName"),
 		SubAgentCode: r.FormValue("subAgentCode"),
+		SubAgentName: r.FormValue("subAgentName"),
 		GroupCode:    r.FormValue("groupCode"),
 		GroupName:    r.FormValue("groupName"),
 		IsNeedSign:   isNeedSign,
 		MerStatus:    r.FormValue("merStatus"),
 		Detail: model.MerDetail{
-			MerName:  r.FormValue("merName"),
-			AcctNum:  r.FormValue("acctNum"),
-			GoodsTag: r.FormValue("goodsTag"),
+			MerName:       r.FormValue("merName"),
+			AcctNum:       r.FormValue("acctNum"),
+			GoodsTag:      r.FormValue("goodsTag"),
+			CommodityName: r.FormValue("commodityName"),
 		},
 	}
 
@@ -760,6 +763,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(retBytes)
+	InsertLog(r, user, data)
 }
 
 // 查找
@@ -791,6 +795,12 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
+	// 用于记录日志
+	session, err := mongo.SessionColl.Find(sid.Value)
+	if err != nil {
+		log.Errorf("find session(%s) err: %s", sid.Value, err)
+		return
+	}
 
 	ret := Session.Delete(sid.Value)
 	rdata, err := json.Marshal(ret)
@@ -807,6 +817,8 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+
+	HandleMasterLog(w, r, session.User)
 }
 
 func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
