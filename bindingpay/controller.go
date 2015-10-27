@@ -2,12 +2,16 @@ package bindingpay
 
 import (
 	"encoding/json"
+
 	"github.com/CardInfoLink/quickpay/core"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/omigo/log"
 )
+
+var sysKey = goconf.Config.App.EncryptKey
 
 // BindingCreateHandle 建立绑定关系
 func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
@@ -22,14 +26,14 @@ func BindingCreateHandle(data []byte, merId string) (ret *model.BindingReturn) {
 	m, _ := mongo.MerchantColl.Find(merId)
 
 	// 解密特定字段
-	aes := security.NewAESCBCEncrypt(m.EncryptKey)
-	bc.AcctNumDecrypt, bc.AcctNum = aes.DcyAndUseSysKeyEcy(bc.AcctNum)
-	bc.AcctNameDecrypt, bc.AcctName = aes.DcyAndUseSysKeyEcy(bc.AcctName)
-	bc.IdentNumDecrypt, bc.IdentNum = aes.DcyAndUseSysKeyEcy(bc.IdentNum)
-	bc.PhoneNumDecrypt, bc.PhoneNum = aes.DcyAndUseSysKeyEcy(bc.PhoneNum)
+	aes := security.NewAESCBCEncrypt(m.EncryptKey, sysKey)
+	bc.AcctNumDecrypt, bc.AcctNum = aes.DcyAndUseSysKeyEcy(bc.AcctNum, sysKey)
+	bc.AcctNameDecrypt, bc.AcctName = aes.DcyAndUseSysKeyEcy(bc.AcctName, sysKey)
+	bc.IdentNumDecrypt, bc.IdentNum = aes.DcyAndUseSysKeyEcy(bc.IdentNum, sysKey)
+	bc.PhoneNumDecrypt, bc.PhoneNum = aes.DcyAndUseSysKeyEcy(bc.PhoneNum, sysKey)
 	if bc.AcctType == "20" {
-		bc.ValidDateDecrypt, bc.ValidDate = aes.DcyAndUseSysKeyEcy(bc.ValidDate)
-		bc.Cvv2Decrypt, bc.Cvv2 = aes.DcyAndUseSysKeyEcy(bc.Cvv2)
+		bc.ValidDateDecrypt, bc.ValidDate = aes.DcyAndUseSysKeyEcy(bc.ValidDate, sysKey)
+		bc.Cvv2Decrypt, bc.Cvv2 = aes.DcyAndUseSysKeyEcy(bc.Cvv2, sysKey)
 	}
 	// 报文解密错误
 	if aes.Err != nil {
@@ -63,9 +67,9 @@ func BindingPaymentSettlementHandle(data []byte, merId string) (ret *model.Bindi
 	r.MerId = merId
 
 	m, _ := mongo.MerchantColl.Find(merId)
-	aes := security.NewAESCBCEncrypt(m.EncryptKey)
-	r.AcctNameDecrypt, r.SettAccountName = aes.DcyAndUseSysKeyEcy(r.SettAccountName)
-	r.AcctNumDecrypt, r.SettAccountNum = aes.DcyAndUseSysKeyEcy(r.SettAccountNum)
+	aes := security.NewAESCBCEncrypt(m.EncryptKey, sysKey)
+	r.AcctNameDecrypt, r.SettAccountName = aes.DcyAndUseSysKeyEcy(r.SettAccountName, sysKey)
+	r.AcctNumDecrypt, r.SettAccountNum = aes.DcyAndUseSysKeyEcy(r.SettAccountNum, sysKey)
 	if aes.Err != nil {
 		log.Errorf("decrypt fail : merId=%s, request=%+v, err=%s", merId, r, aes.Err)
 		return mongo.RespCodeColl.Get("200021")
@@ -304,19 +308,19 @@ func NoTrackPaymentHandle(data []byte, merId string) (ret *model.BindingReturn) 
 		return mongo.RespCodeColl.Get("300030")
 	}
 
-	aes := security.NewAESCBCEncrypt(m.EncryptKey)
-	b.AcctNumDecrypt, b.AcctNum = aes.DcyAndUseSysKeyEcy(b.AcctNum)
+	aes := security.NewAESCBCEncrypt(m.EncryptKey, sysKey)
+	b.AcctNumDecrypt, b.AcctNum = aes.DcyAndUseSysKeyEcy(b.AcctNum, sysKey)
 	// b.AcctNameDecrypt, b.AcctName = aes.DcyAndUseSysKeyEcy(b.AcctName)
 	if b.IdentNum != "" {
-		b.IdentNumDecrypt, b.IdentNum = aes.DcyAndUseSysKeyEcy(b.IdentNum)
+		b.IdentNumDecrypt, b.IdentNum = aes.DcyAndUseSysKeyEcy(b.IdentNum, sysKey)
 	}
 	if b.PhoneNum != "" {
-		b.PhoneNumDecrypt, b.PhoneNum = aes.DcyAndUseSysKeyEcy(b.PhoneNum)
+		b.PhoneNumDecrypt, b.PhoneNum = aes.DcyAndUseSysKeyEcy(b.PhoneNum, sysKey)
 	}
 
 	if b.AcctType == "20" {
-		b.ValidDateDecrypt, b.ValidDate = aes.DcyAndUseSysKeyEcy(b.ValidDate)
-		b.Cvv2Decrypt, b.Cvv2 = aes.DcyAndUseSysKeyEcy(b.Cvv2)
+		b.ValidDateDecrypt, b.ValidDate = aes.DcyAndUseSysKeyEcy(b.ValidDate, sysKey)
+		b.Cvv2Decrypt, b.Cvv2 = aes.DcyAndUseSysKeyEcy(b.Cvv2, sysKey)
 	}
 
 	// 报文解密错误

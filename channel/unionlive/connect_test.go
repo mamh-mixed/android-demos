@@ -1,7 +1,5 @@
 package unionlive
 
-import "testing"
-
 // http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=PurchaseCoupons  电子券验证
 // http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseCouponsResult 电子券验证结果查询
 // http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseLog 商户券验证流水查询
@@ -14,10 +12,14 @@ http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseCouponsRes
 http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseLog 商户券验证流水查询
 样例报文:{"header":{"version":"1.0","transType":"W395","transDirect":"Q","sessionId":"747f6cf7-dadf-46ef-83e9-d3c0a87b3dbf","merchantId":"182000001000000","submitTime":"20130501201012","clientTraceNo":"497540"},"body":{"termId":"00000667","termSn":"9e908a255b3e5989","pageIndex":"1"}}
 
+http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=PurchaseCoupons&channelId=182000899000001
+http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseCouponsResult&channelId=182000899000001 电子券验证结果查询
+http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseLog&channelId=182000899000001
 
 其中商户编号:182000001000000
 终端编号:00000667
 终端硬件序列号:9e908a255b3e5989
+
 可用于消费的券号:
 1808700004000875
 1805702004000605
@@ -95,6 +97,3 @@ http://d.umq.me/PosService/CouponsPurchaseService.ashx?t=QueryPurchaseLog 商户
 1805703004000514
 1804709004000314
 */
-func TestConnect(t *testing.T) {
-
-}
