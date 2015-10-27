@@ -35,6 +35,42 @@ func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
 
 }
 
+// tradeSettleReportQuery 清算报表查询
+func tradeSettleReportQuery(role, date string, size, page int) (result *model.ResultBody) {
+	log.Debugf("role=%s; date=%s", role, date)
+
+	if page <= 0 {
+		return model.NewResultBody(400, "page 参数错误")
+	}
+
+	if size == 0 {
+		size = 10
+	}
+
+	results, total, err := mongo.RoleSettCol.PaginationFind(role, date, size, page)
+	if err != nil {
+		log.Errorf("分页查询出错%s", err)
+		return model.NewResultBody(1, "查询失败")
+	}
+
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  page,
+		Total: total,
+		Size:  size,
+		Count: len(results),
+		Data:  results,
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    pagination,
+	}
+
+	return result
+}
+
 // tradeQuery 交易查询
 func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 

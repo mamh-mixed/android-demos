@@ -1,0 +1,158 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
+
+<dom-module id="settle-report-list">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <form is="x-form" id="formSearch" method="GET" action="/master/trade/settle/report" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
+      <div class="search-condition">
+        <paper-input name="date" label="清算日期" on-tap="showSettDateDialog" value="{{cond.date::input}}}"></paper-input>
+        <paper-dialog id="settDateDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissSettDateDialog">
+          <paper-date-picker id="settDatePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm>OK</paper-button>
+          </div>
+        </paper-dialog>
+
+        <!-- <x-select items="[[settRoles]]" name="settRole" selected-item="{{settRole}}" label="清算角色" disabled="{{agentDisabled}}" id="agentCode"></x-select> -->
+        <paper-input label="清算角色" name="role" value="{{cond.role::input}}"></paper-input>
+
+        <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
+      </div>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th">清算日期</div>
+            <div class="th left">清算角色</div>
+            <div class="th left">报表名称</div>
+            <div class="th">下载报表</div>
+          </div>
+        </div>
+        <div class='tbody'>
+          <template is="dom-repeat" items="{{reports}}">
+            <div class="tr">
+              <div class="td center">{{addOneFilter(index)}}</div>
+              <div class="td center">{{item.settDate}}</div>
+              <div class="td">{{item.settRole}}</div>
+              <div class="td">{{item.reportName}}</div>
+              <div class="td center">
+                <a on-tap="handleDownloadReportEvent">下载</a>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="tfoot">
+          <div class="tr pagination">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+          </div>
+        </div>
+      </div>
+    </form>
+    <x-ajax id="privateDownloadUrlAjax"
+      url="/master/qiniu/download"
+      handle-as="json"
+      on-response="handlePrivateDownloadUrlAjaxResponse"></x-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'settle-report-list',
+
+        properties: {
+          reports: {
+            type: Array,
+            value: []
+          },
+          cond: {
+            type: Object,
+            value: function() {
+              var now = new Date();
+              var yesterdayTime = now.getTime() - 1000 * 60 * 60 * 24;
+              return {
+                date: new Date(yesterdayTime).format('yyyy-MM-dd'),
+                role: '',
+                total: 0,
+                page: 1,
+                size: 20
+              };
+            }
+          }
+        },
+        ready: function() {
+
+        },
+        attached: function() {
+
+        },
+        handleDownloadReportEvent: function(e){
+          var item = e.model.item;
+          this.$.privateDownloadUrlAjax.params = {
+            key: item.reportName
+          };
+          this.$.privateDownloadUrlAjax.generateRequest();
+        },
+        handlePrivateDownloadUrlAjaxResponse: function(e){
+          debugger;
+          var response = e.detail.response;
+          if (response.status !== 0){
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          var a = document.createElement('a');
+          a.setAttribute('href',response.message);
+          a.setAttribute('target', '_blank');
+
+          var evt = document.createEvent('MouseEvent');
+          evt.initEvent('click',true,true);
+          a.dispatchEvent(evt);
+        },
+        queryAction: function() {
+          this.$.formSearch.submit();
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.trades = [];
+        },
+        // ajax请求响应处理
+        handleSearchResponse: function(e) {
+          var response = e.detail;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          var pagination = e.detail.data;
+
+          this.reports = pagination.data.slice(0);
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
+
+          if (this.reports.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
+        },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        // 日期、时间控件
+        dismissSettDateDialog: function() {
+          var date = this.$.settDatePicker.date;
+          this.set('cond.date', this.$.settDatePicker.dateFormat(date, 'l'));
+        },
+        showSettDateDialog: function() {
+          this.$.settDateDialog.toggle();
+        },
+      });
+    })();
+  </script>
+</dom-module>
