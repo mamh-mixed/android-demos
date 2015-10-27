@@ -250,14 +250,14 @@ func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 		}
 		r.Body.Close()
 
-		// r.Body 只能被读取一次，所以。。。
+		// r.Body 只能被读取一次，读完之后再写入
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	}
 
-	InsertLog(w, r, user, body)
+	InsertLog(r, user, body)
 }
 
-func InsertLog(w http.ResponseWriter, r *http.Request, user *model.User, body []byte) {
+func InsertLog(r *http.Request, user *model.User, body []byte) {
 	masterLog := &model.MasterLog{
 		UserName: user.UserName,
 		Time:     time.Now().Format("2006-01-02 15:04:05"),
