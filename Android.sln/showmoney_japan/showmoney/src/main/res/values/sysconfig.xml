@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app用户系统交互key -->
+    <string name="app_key">eu1dr0c8znpa43blzy1wirzmk8jqdaon</string>
+
+    <!-- app用户系统服务器地址  -->
+    <string name="user_server">http://test.quick.ipay.so/app</string>
+
+    <!-- app网页版账单地址  -->
+    <string name="web_bill_url">http://qrcode.cardinfolink.net/agent/trade1.html</string>
+
+    <!-- 公共数据平台秘钥  -->
+    <string name="bankbase_key">20e786206dcf4aae8a63fe34553fd274</string>
+
+    <!-- 公共数据平台地址  -->
+    <string name="bankbase_url">http://211.144.213.120:443/bdp</string>
+
+</resources>
