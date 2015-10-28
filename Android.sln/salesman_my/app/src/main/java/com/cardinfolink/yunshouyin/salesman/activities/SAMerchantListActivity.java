@@ -110,7 +110,10 @@ public class SAMerchantListActivity extends BaseActivity {
             @Override
             public void onResult(SAServerPacket serverPacket) {
                 //必须保持users的引用,因为adapter使用了
-                final List<User> tempUsers = new ArrayList<>(Arrays.asList(serverPacket.getUsers()));
+                final List<User> tempUsers = new ArrayList<>();
+                if (serverPacket.getUsers() != null){
+                    tempUsers.addAll(Arrays.asList(serverPacket.getUsers()));
+                }
                 //order by create time
                 Collections.sort(tempUsers, new Comparator<User>() {
                     @Override
