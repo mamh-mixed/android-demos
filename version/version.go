@@ -75,7 +75,7 @@ func main() {
 	v := Version{
 		Program:        "quickpay",
 		ProgramVersion: runCommand("git", "describe", "--abbrev=0", "--tags"),
-		ProgramOS:      os.Getenv("GOOS"),
+		ProgramOS:      "linux", // os.Getenv("GOOS"),
 		ProgramArch:    os.Getenv("GOARCH"),
 		GoVersion:      runCommand("go", "version"),
 		Username:       curUser.Name,
