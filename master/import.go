@@ -29,12 +29,13 @@ const (
 )
 
 var (
+	halfwhite         = []byte{0xc2, 0xa0} // ASCII：32被UTF-8编码之后成为ASCII：194 和 160的组合
 	sysErr            = errors.New("系统错误，请重新上传。")
 	emptyErr          = errors.New("上传表格为空，请检查。")
 	fileErr           = resultBody("无法获取文件，请重新上传。", 1)
 	maxFee            = 0.03
 	settFlagArray     = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
-	replaceWhitespace = strings.NewReplacer(" ", "", "\r", "", "\t", "", "\n", "")
+	replaceWhitespace = strings.NewReplacer(" ", "", "\r", "", "\t", "", "\n", "", string(halfwhite), "")
 )
 
 // importMerchant 接受excel格式文件，导入商户
@@ -84,7 +85,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ip := importer{Sheets: file.Sheets, fileName: key}
-	ip.IsDebug = true
+	// ip.IsDebug = true
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -192,6 +193,11 @@ func (i *importer) dataHandle() error {
 		if r.MerId == "" {
 			return fmt.Errorf("第 %d 行，门店为空", index+3)
 		}
+
+		for _, r := range r.MerId {
+			log.Debug(r)
+		}
+
 		// 字段内容合法验证
 		mer, err := mongo.MerchantColl.Find(r.MerId)
 		switch r.Operator {
