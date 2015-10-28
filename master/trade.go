@@ -72,12 +72,16 @@ func tradeSettleReportQuery(role, date string, size, page int) (result *model.Re
 }
 
 // tradeQuery 交易查询
-func tradeQuery(q *model.QueryCondition) (ret *model.QueryResult) {
+func tradeQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 
-	if q.Col == "bp" {
+	switch {
+	case q.Col == "bp":
 		return query.BpTransQuery(q)
+	case q.Col == "coupon":
+		return query.CouponTransQuery(q)
+	default:
+		return query.SpTransQuery(q)
 	}
-	return query.SpTransQuery(q)
 }
 
 // tradeQuery 交易查询
@@ -93,12 +97,14 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	ret := query.SpTransQuery(cond)
 
 	// 类型转换
-	if trans, ok := ret.Rec.([]*model.Trans); ok {
-		// 生成报表
-		before := time.Now()
-		genReport(cond.MerId, file, trans)
-		after := time.Now()
-		log.Debugf("gen trans report spent %s", after.Sub(before))
+	if pagination, ok := ret.Data.(*model.Pagination); ok {
+		if trans, ok := pagination.Data.([]*model.Trans); ok {
+			// 生成报表
+			before := time.Now()
+			genReport(cond.MerId, file, trans)
+			after := time.Now()
+			log.Debugf("gen trans report spent %s", after.Sub(before))
+		}
 	}
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
