@@ -8,14 +8,14 @@ path=$GOPATH/src/$pkg
 
 cd $path
 
-git pull cil develop
+# git pull cil develop
+#
+# if [ $? -ne 0 ]; then
+#     echo 'use "git status && git add <file> && git commit -m <message>" before push'
+#     exit 1
+# fi
 
-if [ $? -ne 0 ]; then
-    echo 'use "git status && git add <file> && git commit -m <message>" before push'
-    exit 1
-fi
-
-rm -r static/app/bower_components/
-./publish.sh dev
+# rm -r static/app/bower_components/
+# ./publish.sh dev
 
 exit 0
