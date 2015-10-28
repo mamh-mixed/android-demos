@@ -29,7 +29,7 @@
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}}"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}"></paper-input>
       <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
@@ -38,7 +38,7 @@
         </div>
       </paper-dialog>
 
-      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}}"></paper-input>
+      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}"></paper-input>
       <paper-dialog id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
         <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
         <div class="buttons">
