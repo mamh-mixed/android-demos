@@ -194,10 +194,6 @@ func (i *importer) dataHandle() error {
 			return fmt.Errorf("第 %d 行，门店为空", index+3)
 		}
 
-		for _, r := range r.MerId {
-			log.Debug(r)
-		}
-
 		// 字段内容合法验证
 		mer, err := mongo.MerchantColl.Find(r.MerId)
 		switch r.Operator {
