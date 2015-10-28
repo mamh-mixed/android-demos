@@ -2,9 +2,9 @@
 package flags
 
 import (
-    "flag"
+	"flag"
 	"fmt"
-    "os"
+	"os"
 )
 
 func init() {
@@ -15,10 +15,18 @@ func init() {
 	flag.Parse()
 
 	if version {
-		fmt.Printf("quickpay %s %s %s\ngit:\n    %s\n  current branch %s\n  last commit %s\nbuild info:\n  build time %s\n  current user %s\n  %s\n  %s\n",
-            "v1.2.2","darwin","amd64","git version 2.4.9 (Apple Git-60)","testing","d6f5f4730fc8b15f71eff9465cec3e32120b28c4","2015-10-28 09:00:18.405029304 +0800 CST","Migo","Darwin migo.localdomain 15.0.0 Darwin Kernel Version 15.0.0: Sat Sep 19 15:53:46 PDT 2015; root:xnu-3247.10.11~1/RELEASE_X86_64 x86_64","go version go1.5.1 darwin/amd64","%!s(MISSING)")
+		fmt.Printf(`quickpay v1.2.2
+Build info:
+  go version go1.5.1 darwin/amd64
+  current user Migo(501)
+  build time 2015-10-28 09:54:15.344504438 +0800 CST
+  system info Darwin migo.localdomain 15.0.0 Darwin Kernel Version 15.0.0: Sat Sep 19 15:53:46 PDT 2015; root:xnu-3247.10.11~1/RELEASE_X86_64 x86_64
+Source version:
+  git version 2.4.9 (Apple Git-60)
+  current branch testing
+  last commit 5523aeb76f801ba1ffd5f49333aceaca24e99d12
+`)
 
-        os.Exit(0)
+		os.Exit(0)
 	}
 }
-
