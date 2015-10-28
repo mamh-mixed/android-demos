@@ -22,6 +22,9 @@ var TransColl = transCollection{"trans"}
 // SpTransColl 扫码交易 Collection
 var SpTransColl = transCollection{"trans.sp"}
 
+// CouTransColl 卡券交易 Collection
+var CouTransColl = transCollection{"trans.coupon"}
+
 // Add 添加一笔交易
 func (col *transCollection) Add(t *model.Trans) error {
 	// default
