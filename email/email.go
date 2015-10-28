@@ -1,9 +1,10 @@
 package email
 
 import (
+	"github.com/jordan-wright/email"
 	"github.com/omigo/log"
-	"gopkg.in/jordan-wright/email.v1"
 	"io"
+	"mime"
 	"net/smtp"
 )
 
@@ -32,7 +33,7 @@ type attachment struct {
 func (e *Email) Attach(r io.Reader, filename, contentType string) {
 	e.attachs = append(e.attachs, &attachment{
 		r:        r,
-		filename: filename,
+		filename: mime.BEncoding.Encode("UTF-8", filename), // 编码一下，防止乱码
 		c:        contentType,
 	})
 }
