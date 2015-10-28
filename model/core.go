@@ -321,6 +321,11 @@ type Trans struct {
 
 	// 批导辅助字段
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
+
+	//卡券字段
+	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
+	Prodname       string `bson:"prodname,omitempty" json:"prodname,omitempty"`             // 卡券名称
+	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 }
 
 // SummarySettData 交易汇总

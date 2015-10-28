@@ -51,6 +51,7 @@ gulp.task('minifyHTML', ['copy'], function() {
       '!app/bower_components/web-component-tester/data/index.html',
       '!app/**/demo/**',
       '!app/**/test/**',
+      '!app/**/tests/**',
       '!app/**/examples/**'
     ])
     .pipe(debug({
@@ -70,6 +71,7 @@ gulp.task('minifyJS', ['minifyHTML'], function() {
       '!app/**/sw-toolbox/sw-toolbox.js',
       '!app/**/demo/**',
       '!app/**/test/**',
+      '!app/**/tests/**',
       '!app/**/examples/**'
     ])
     .pipe(debug({
@@ -83,6 +85,10 @@ gulp.task('minifyCSS', ['minifyHTML'], function() {
   // 1. 找到文件
   return gulp.src([
       'app/**/*.css',
+      '!app/**/demo/**',
+      '!app/**/test/**',
+      '!app/**/tests/**',
+      '!app/**/examples/**'
     ])
     .pipe(debug({
       title: 'minifyCSS:'
