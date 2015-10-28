@@ -18,7 +18,7 @@ func init() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		fmt.Printf("unable connect to mongodb server %s\n", err)
+		fmt.Printf("unable connect to mongo %s: %s\n", url, err)
 		os.Exit(1)
 	}
 

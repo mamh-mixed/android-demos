@@ -2,13 +2,14 @@
 package data
 
 import (
+	"math"
+	"net/http"
+	"strconv"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
-	"math"
-	"net/http"
-	"strconv"
 )
 
 var (
@@ -21,8 +22,9 @@ const (
 	crypto = "cilxl123$"
 )
 
+//
 // func init() {
-// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+//  url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
 // 	connect()
 // }
 
@@ -37,16 +39,9 @@ func Import(w http.ResponseWriter, r *http.Request) {
 	t := r.FormValue("type")
 
 	switch t {
-	case "trans":
-		go func() {
-			err := AddTransFromOldDB(st, et)
-			if err != nil {
-				log.Error(err)
-			}
-		}()
 	case "merchant":
 		go func() {
-			err := DoSyncMerchant("/Users/zhiruichen/Desktop/product_pem/")
+			err := DoSyncMerchant("/Users/migo/Desktop/product_pem/")
 			if err != nil {
 				log.Error(err)
 			}
@@ -61,6 +56,13 @@ func Import(w http.ResponseWriter, r *http.Request) {
 	case "settInfo":
 		go func() {
 			err := AsyncSettInfo()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	case "trans":
+		go func() {
+			err := AddTransFromOldDB(st, et)
 			if err != nil {
 				log.Error(err)
 			}

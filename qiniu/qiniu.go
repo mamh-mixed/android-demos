@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"qiniupkg.com/api.v7/kodo"
+	"qiniupkg.com/x/url.v7"
 )
 
 const (
@@ -56,8 +57,8 @@ func Put(key string, size int64, reader io.Reader) error {
 }
 
 func MakePrivateUrl(key string) string {
-	baseUrl := kodo.MakeBaseUrl(DOMAIN, key) // 得到下载 url
-	return cli.MakePrivateUrl(baseUrl, nil)  // 用默认的下载策略去生成私有下载的 url
+	baseUrl := makeBaseUrl(DOMAIN, key)     // 得到下载 url
+	return cli.MakePrivateUrl(baseUrl, nil) // 用默认的下载策略去生成私有下载的 url
 }
 
 func HandleDownURL(w http.ResponseWriter, req *http.Request) {
@@ -65,4 +66,8 @@ func HandleDownURL(w http.ResponseWriter, req *http.Request) {
 	// 如果是资质文件，需要保存路径或 key 值
 	// 如果是 Excel/csv，需要下载并处理数据
 	w.Write([]byte(img))
+}
+
+func makeBaseUrl(domain, key string) (baseUrl string) {
+	return "https://" + domain + "/" + url.Escape(key)
 }

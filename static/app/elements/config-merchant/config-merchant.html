@@ -129,6 +129,7 @@
       background-color: #00bcd4 !important;
       color: #fff;
     }
+
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
@@ -141,20 +142,20 @@
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
         <div class="row">
+          <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
+          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
+          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+        </div>
+        <div class="row">
           <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
           <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
-        </div>
-        <div class="row">
-          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
-          <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
-        </div>
-        <div class="row">
-          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}"></paper-input>
-          <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
-        </div>
-        <div class="row">
-          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
-          <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
         </div>
         <div class="row">
           <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent" style="width:800px;"> 是否开启验签</paper-radio-button>
@@ -1340,5 +1341,6 @@
         this.set('merchant.signKey', generateMixed(32));
       },
     });
+
   </script>
 </dom-module>
