@@ -420,7 +420,7 @@ func NotifySalesman(em string) {
 		return
 	}
 
-	// 归属
+	// 业务人员
 	c := make(map[string][]*model.AppUser)
 	for _, u := range all {
 		if users, ok := c[u.BelongsTo]; ok {
@@ -431,58 +431,34 @@ func NotifySalesman(em string) {
 		}
 	}
 
+	// 向业务员发邮箱
 	for k, v := range c {
-		// 打包成zip
-		buf := new(bytes.Buffer)
-		w := zip.NewWriter(buf)
-
-		var eds []excelData
+		_, err := mongo.UserColl.FindOneUser(k, "", "")
+		if err != nil {
+			log.Errorf("fail to find login user(%s): %s", k, err)
+			continue
+		}
+		var (
+			eds []excelData
+			fds []fileData
+		)
 		for _, u := range v {
-			// log.Debugf("k=%s c=%s u=%s", k, u, v)
 			m, err := mongo.MerchantColl.Find(u.MerId)
 			if err != nil {
 				log.Errorf("fail to find merchant(%s): %s", u.MerId, err)
 				continue
 			}
-
-			eds = append(eds, excelData{m: m, u: u})
-
-			// 获取图片
-			for index, iu := range m.Detail.Images {
-				resp, err := http.Get(qiniu.MakePrivateUrl(iu))
-				if err != nil {
-					log.Errorf("http.get err: %s", err)
-					continue
-				}
-				defer resp.Body.Close()
-				bs, err := ioutil.ReadAll(resp.Body)
-				if err != nil {
-					log.Errorf("read body err: %s", err)
-					continue
-				}
-
-				// 按商户号排
-				name := "/" + m.MerId + "/" + fmt.Sprintf("%d.jpg", index+1)
-				f, err := w.Create(name)
-				if err != nil {
-					log.Errorf("create file err: %s", err)
-					continue
-				}
-				f.Write(bs)
-			}
+			eds = append(eds, excelData{m: m, u: u, operator: k})
+			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
-		w.Close()
-
 		if em == "" {
 			em = k
 		}
+		e := email.Email{To: em, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(eds)), Cc: andyLi}
+		e.Attach(zipWrite(fds), "商户.zip", "")
 
-		e := email.Email{To: em, Title: "当日商户汇总", Body: "如题，见附件。"}
-		e.Attach(buf, "商户.zip", "")
-
-		// 生成excel
 		excel := genExcel(eds)
-		ebuf := bytes.NewBuffer([]byte{})
+		ebuf := new(bytes.Buffer)
 		err = excel.Write(ebuf)
 		if err == nil {
 			e.Attach(ebuf, "汇总表.xlsx", "")
@@ -495,8 +471,9 @@ func NotifySalesman(em string) {
 }
 
 type excelData struct {
-	m *model.Merchant
-	u *model.AppUser
+	m        *model.Merchant
+	u        *model.AppUser
+	operator string
 }
 
 func genExcel(eds []excelData) *xlsx.File {
@@ -510,21 +487,78 @@ func genExcel(eds []excelData) *xlsx.File {
 	row = sheet.AddRow()
 
 	type rowType struct {
-		A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO, AP, AQ, AR, AS, AT string
+		A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO, AP, AQ, AR, AS, AT, AU string
 	}
 
 	row.WriteStruct(&rowType{"商家营业简称", "公司名称", "注册地址", "营业执照注册号", "经营范围", "营业期限", "注册资本", "预计年收入", "员工人数", "营业场所面积", "证件持有人类型", "证件持有人姓名", "证件类型", "证件号码", "证件有效期限", "组织机构代码", "有效期",
 		"商家简称", "售卖商品具体描述", "客服电话", "账户类型", "开户行代码", "开户银行城市", "开户名称", "开户支行", "银行账号", "主要联系人姓名", "主要联系人手机号码", "主要联系人邮箱", "联系地址", "公司传真", "营业执照影印件（资质）", "运营者证件",
-		"组织机构代码证（扫描件)", "门店照片", "个户工商户营业执照扫描件", "《餐饮服务许可证》/《食品卫生许可证》", "关注公众服务号(APPID)", "支付宝账户", "申请业务范围", "商家设备数量（台）", "商户号", "商户密钥", "app注册邮箱", "app密码md5值", "收款码链接"}, -1)
+		"组织机构代码证（扫描件)", "门店照片", "个户工商户营业执照扫描件", "《餐饮服务许可证》/《食品卫生许可证》", "关注公众服务号(APPID)", "支付宝账户", "申请业务范围", "商家设备数量（台）", "商户号", "商户密钥", "app注册邮箱", "app密码md5值", "收款码链接", "业务员邮箱"}, -1)
 
 	// 填充数据
 	for _, ed := range eds {
 		row = sheet.AddRow()
 		row.WriteStruct(&rowType{
 			ed.m.Detail.MerName, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-			ed.m.Detail.MerName, "", "", "个体", ed.m.Detail.BankId, ed.m.Detail.OpenBankName, ed.m.Detail.AcctName, ed.m.Detail.BankName, ed.m.Detail.AcctNum, ed.m.Detail.Contact, ed.m.Detail.ContactTel, "", "", "", "", "",
-			"附件形式提供", "附件形式提供", "附件形式提供", "附件形式提供", "", "", "", "", ed.m.MerId, ed.m.SignKey, ed.u.UserName, ed.u.Password, ed.m.Detail.PayUrl,
+			ed.m.Detail.MerName, "", "", "个体", ed.m.Detail.BankId, ed.m.Detail.OpenBankName, ed.m.Detail.AcctName, ed.m.Detail.BankName, ed.m.Detail.AcctNum, ed.m.Detail.Contact, ed.m.Detail.ContactTel, ed.u.UserName, "", "", "", "",
+			"附件形式提供", "附件形式提供", "附件形式提供", "附件形式提供", "", "", "", "", ed.m.MerId, ed.m.SignKey, ed.u.UserName, ed.u.Password, ed.m.Detail.PayUrl, ed.operator,
 		}, -1)
 	}
+
 	return excel
+}
+
+type fileData struct {
+	bs []byte
+	fn string
+}
+
+func downloadImage(images []string, merId string) []fileData {
+
+	var fds []fileData
+
+	if len(images) == 0 {
+		return fds
+	}
+
+	for index, iu := range images {
+		resp, err := http.Get(qiniu.MakePrivateUrl(iu))
+		if err != nil {
+			log.Errorf("http.get err: %s", err)
+			continue
+		}
+		defer resp.Body.Close()
+		bs, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Errorf("read body err: %s", err)
+			continue
+		}
+
+		// 按商户号排
+		name := "/" + merId + "/" + fmt.Sprintf("%d.jpg", index+1)
+		fds = append(fds, fileData{bs, name})
+	}
+
+	return fds
+}
+
+func zipWrite(data []fileData) *bytes.Buffer {
+	buf := new(bytes.Buffer)
+	if len(data) == 0 {
+		return buf
+	}
+	w := zip.NewWriter(buf)
+
+	for _, file := range data {
+		f, err := w.Create(file.fn)
+		if err != nil {
+			log.Errorf("create file err: %s", err)
+			continue
+		}
+		f.Write(file.bs)
+	}
+
+	// must be closed
+	w.Close()
+
+	return buf
 }
