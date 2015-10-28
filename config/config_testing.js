@@ -55,5 +55,14 @@
         "WXPMerId":"1247075201",
         "ALPMerId":"2088811767473826",
         "WebAppUrl":"http://qrcode.cardinfolink.net/agent"
+    },
+    "UnionLive": {
+        "Encrypt": false, // 密码是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
+        "URL": "http://d.umq.me/PosService/CouponsPurchaseService.ashx", // 优方卡券接口
+        "EncryptKey": "tommy123", // 加密密钥
+        "EncryptEncryptKey": "CpZQpCXovGXTHHfNILT1rBljRYpgBK4sKNxUOZjCQ5ah3bAYIjQZWk6Vhz7g4uKEtEL+rl2NXMPpF2DKsSOQ4/TLfJQNEcV7+Swnl+ZLzaDPrxDAGxFKdNEQYxiLwxhK78D/EP8qxx0WVUut2MXC0ok6DQiaJNXmQQpkiRGYb7AnGJycifwGFG/4dE++Iqn8nUPgdiGI5xy1VSEkcuOXwZKVRQGIe0wvoi1tzYECICoidL1u+6gqQ2u96821g7P2AYTs2yIMkuwBpdOzIuKvNbKlvEz5iBOPFriu7sl+RirWBtQSn5WSp5VxiYJ6gQzEnh6hkywJhyoSr2Yj10dDMA==", // 加密密钥
+        "SignKey": "tommy123", // 签名密钥
+        "EncryptSignKey": "IKOxKmCdK86pSgIUUJZFC1wDJBrFxNW7U2x9RuI1tzVi0ubRFqGJ84pAXr5RmoKrPsZeQ+CUOrPlulWrV8BFmyzp9aqu3VuyRfRbONKsgAyz+QIlnRXAQkpNK7raKzH5O+7Arva4TyVY2EaQG6igcRl4Eh79ezpLEaWxtX/EvpXg1jPrIWVBCrYD1qH5kOJHqWHbSiKBO+BKBRy27u0cC70yhWe63sUCoPvsYQg7jl/P3zP8UKn+xz4DFE0JYz81v8ON55F2DKmnOcFj1M2TV4xq5bYy56bQbVrsZxbTLKuw48BOLyM/bUPx2j9zSulhXmKc9eWhi3zFxbdlAdpQPg==", // 签名密钥
+        "ChannelId": "182000000000001" // 渠道 ID
     }
 }

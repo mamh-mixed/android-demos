@@ -3,9 +3,10 @@ package weixin
 import (
 	"crypto/tls"
 	"encoding/xml"
+	"net/http"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"net/http"
 )
 
 // NotifyURL 微信异步通知

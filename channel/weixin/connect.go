@@ -122,7 +122,7 @@ func send(cli *http.Client, uri string, body []byte) (ret []byte, err error) {
 		return nil, err
 	}
 
-	log.Debugf("content Type : %s", resp.Header.Get("Content-Type")) // application/octet-stream
+	// log.Debugf("content Type : %s", resp.Header.Get("Content-Type")) // application/octet-stream
 
 	return ret, nil
 }

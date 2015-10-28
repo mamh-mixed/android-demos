@@ -2,8 +2,9 @@
 package flags
 
 import (
-	"flag"
+    "flag"
 	"fmt"
+    "os"
 )
 
 func init() {
@@ -14,17 +15,10 @@ func init() {
 	flag.Parse()
 
 	if version {
-		fmt.Println(`
-You append 'version' argument, but something must done to show version:
+		fmt.Printf("quickpay %s %s %s\ngit:\n    %s\n  current branch %s\n  last commit %s\nbuild info:\n  build time %s\n  current user %s\n  %s\n  %s\n",
+            "v1.2.2","darwin","amd64","git version 2.4.9 (Apple Git-60)","develop","dd0661976cf53979a72693de4d9a8d7b333e6c7b","2015-10-28 08:54:54.472585103 +0800 CST","Migo","Darwin migo.localdomain 15.0.0 Darwin Kernel Version 15.0.0: Sat Sep 19 15:53:46 PDT 2015; root:xnu-3247.10.11~1/RELEASE_X86_64 x86_64","go version go1.5.1 darwin/amd64","%!s(MISSING)")
 
-1. env $GOBIN must be set, and must append it to $PATH;
-   example:
-    export GOPATH=/opt/gowork
-    export GOBIN=$GOPATH/bin
-    export PATH=$PATH:$GOBIN
-2. run 'go install github.com/CardInfoLink/quickpay/version/version.go';
-3. run 'go generate', then 'go build .....';
-4. run '<appname> -version', application version and build info will printed.
-        `)
+        os.Exit(0)
 	}
 }
+

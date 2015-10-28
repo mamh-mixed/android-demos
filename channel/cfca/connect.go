@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/omigo/log"
@@ -21,8 +22,9 @@ func sendRequest(req *BindingRequest) *BindingResponse {
 		return nil
 	}
 
-	body := send(values)
-	if body == nil {
+	body, err := send(values)
+	if err != nil {
+		log.Errorf("cfca connect error: %s", err)
 		return nil
 	}
 
@@ -58,11 +60,28 @@ func prepareRequestData(req *BindingRequest) (v *url.Values) {
 	return v
 }
 
-func send(v *url.Values) (body []byte) {
-	resp, err := http.PostForm(requestURL, *v)
+func send(v *url.Values) (body []byte, err error) {
+	var resp *http.Response
+
+	// 如果连接失败，重试 3 次，休眠 3s、6s
+	for i := 1; i <= 3; i++ {
+		start := time.Now()
+		resp, err = http.PostForm(requestURL, *v)
+		end := time.Now()
+		log.Infof("=== cfca %s === %s", end.Sub(start), requestURL)
+		if err == nil {
+			break
+		}
+		log.Warnf("unable to connect cfca gateway: %s", err)
+		sleepTime := time.Duration(i*3) * time.Second
+		log.Warnf("after %s retry...", sleepTime)
+		time.Sleep(sleepTime)
+	}
+
+	// 如果有错，说明重试了 3 次，都失败，那么直接返回
 	if err != nil {
-		log.Errorf("unable to connect Cfca gratway %s", err)
-		return nil
+		log.Errorf("unable to connect cfca gratway %s", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -70,11 +89,11 @@ func send(v *url.Values) (body []byte) {
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Errorf("unable to read from resp %s", err)
-		return nil
+		return nil, err
 	}
 	log.Debugf("resp from cfca: [%s]", body)
 
-	return body
+	return body, nil
 }
 
 func processResponseBody(body []byte) (resp *BindingResponse) {

@@ -59,7 +59,7 @@
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
     <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
-    <x-ajax id="deleteSessionAjax" method="GET" url="/master/session/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
+    <x-ajax id="deleteSessionAjax" method="GET" url="/master/logout" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
   </template>
   <script>
     (function() {

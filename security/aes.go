@@ -9,27 +9,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/omigo/log"
 )
-
-const hardHalf = "TEZMUboYmBLVfjnduURAk4="
-
-var sysKey []byte
-
-func init() {
-	firstPart := goconf.Config.App.EncryptKey
-	whole := firstPart + hardHalf
-	bytes, err := base64.StdEncoding.DecodeString(whole)
-	if err != nil {
-		log.Error(err)
-		os.Exit(3)
-	}
-	sysKey = bytes
-}
 
 // AESCBCMode 如果key位base64编码过的字符串
 type AESCBCMode struct {
@@ -39,7 +22,7 @@ type AESCBCMode struct {
 }
 
 // NewAESCBCEncrypt 创建一个 AES 加密对象，使用 CBC 模式
-func NewAESCBCEncrypt(b64Key string) *AESCBCMode {
+func NewAESCBCEncrypt(b64Key, sysKey string) *AESCBCMode {
 	bytesKey, err := base64.StdEncoding.DecodeString(b64Key)
 
 	if err != nil {
@@ -50,17 +33,16 @@ func NewAESCBCEncrypt(b64Key string) *AESCBCMode {
 		Key: bytesKey,
 		Err: err,
 		sysAES: &AESCBCMode{
-			Key: sysKey,
+			Key: []byte(sysKey),
 		},
 	}
 }
 
 // DcyAndUseSysKeyEcy 解密商户字段后用系统的key进行加密
 // decrypted 解密后的明文 encrypted 使用新key后的密文
-func (a *AESCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string) {
-
+func (a *AESCBCMode) DcyAndUseSysKeyEcy(ct, sysKey string) (decrypted, encrypted string) {
 	if a.sysAES == nil {
-		a.sysAES = &AESCBCMode{Key: sysKey}
+		a.sysAES = &AESCBCMode{Key: []byte(sysKey)}
 	}
 
 	// decrypt
@@ -80,10 +62,10 @@ func (a *AESCBCMode) DcyAndUseSysKeyEcy(ct string) (decrypted, encrypted string)
 }
 
 // UseSysKeyDcyAndMerEcy 使用系统的key解密再用商户的key加密
-func (a *AESCBCMode) UseSysKeyDcyAndMerEcy(ct string) string {
+func (a *AESCBCMode) UseSysKeyDcyAndMerEcy(ct string, sysKey []byte) string {
 
 	if a.sysAES == nil {
-		a.sysAES = &AESCBCMode{Key: sysKey}
+		a.sysAES = &AESCBCMode{Key: []byte(sysKey)}
 	}
 
 	decrypted := a.sysAES.Decrypt(ct)

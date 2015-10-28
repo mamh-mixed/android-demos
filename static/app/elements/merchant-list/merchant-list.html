@@ -19,26 +19,29 @@
       bottom: 100px;
       right: 10%;
     }
-    div.search-condition section {
-        width: 170px;
-        margin-right: 15px;
-        display: inline-block;
-    }
 
+    div.search-condition paper-checkbox {
+      width: 170px;
+      margin-right: 15px;
+      display: inline-block;
+    }
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
+
+        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
+        <paper-input name="subAgentCode" id="subAgentCode" label="公司代码" value="{{cond.subAgentCode::input}}"></paper-input>
+        <paper-input name="subAgentName" id="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}"></paper-input>
+        <paper-input name="groupCode" id="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
         <paper-input name="merId" id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
         <paper-input name="merName" id="merName" label="门店名称" value="{{cond.merName::input}}"></paper-input>
-        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-        <!-- <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input> -->
-        <paper-input name="subAgentCode" id="subAgentCode" label="公司代码" value="{{cond.subAgentCode::input}}"></paper-input>
-        <paper-input name="groupCode" id="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <section>开启验签<paper-checkbox name="isNeedSign" checked="{{cond.isNeedSign::change}}" style="margin-left:15px;"></paper-checkbox></section>
         <paper-input name="acctNum" id="acctNum" label="开户账户" value="{{cond.acctNum::input}}"></paper-input>
         <paper-input name="goodsTag" id="goodsTag" label="商品标签" value="{{cond.goodsTag::input}}"></paper-input>
-        <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-input name="commodityName" id="commodityName" label="商品名称" value="{{cond.commodityName::input}}"></paper-input>
+        <paper-checkbox name="isNeedSign" checked="{{cond.isNeedSign::change}}" style="margin-left:15px;">开启验签</paper-checkbox>
         <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
       </div>
       <div class="data-grid table">
@@ -48,9 +51,12 @@
             <div class="th left">门店代码</div>
             <div class="th left">门店名称</div>
             <div class="th left">代理代码</div>
-            <div class="th left">代理名称</div>
+            <div class="th left">公司代码</div>
             <div class="th left">商户代码</div>
-            <div class="th left">商户名称</div>
+            <div class="th left">开户账号</div>
+            <div class="th left">商品标签</div>
+            <div class="th left">商品名称</div>
+            <div class="th left">开启验签</div>
           </div>
         </div>
         <div class="tbody">
@@ -69,13 +75,22 @@
                 <span>{{item.agentCode}}</span>
               </div>
               <div class="td">
-                <span>{{item.agentName}}</span>
+                <span>{{item.subAgentCode}}</span>
               </div>
               <div class="td">
                 <span>{{item.groupCode}}</span>
               </div>
               <div class="td">
-                <span>{{item.groupName}}</span>
+                <span>{{item.detail.acctNum}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.detail.goodsTag}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.detail.commodityName}}</span>
+              </div>
+              <div class="td">
+                <span>{{getIsNeedSign(item.isNeedSign)}}</span>
               </div>
             </div>
           </template>
@@ -187,8 +202,13 @@
           this.merchants = [];
           this.set('cond.total', 0);
         },
+        getIsNeedSign: function(isNeedSign) {
+          if (isNeedSign) {
+            return '是';
+          }
+          return '否';
+        },
       });
     })();
-
   </script>
 </dom-module>
