@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 	"time"
 )
@@ -27,9 +28,8 @@ func init() {
 	flag.Parse()
 
 	if version {
-		fmt.Printf(
-            "quickpay %%s %%s %%s\ngit:\n  current branch %%s\n  last commit %%s\nbuild info:\n  build time %s\n  %%s\n  %%s  %%s\n",
-            "%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")
+		fmt.Printf("quickpay %%s %%s %%s\ngit:\n    %%s\n  current branch %%s\n  last commit %%s\nbuild info:\n  build time %%s\n  current user %%s\n  %%s\n  %%s\n",
+            "%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")
 
         os.Exit(0)
 	}
@@ -53,15 +53,21 @@ func main() {
 	goVersion := runCommand("go", "version")
 	gitVersion := runCommand("git", "--version")
 
-	fmt.Println("build info:")
+	curUser, err := user.Current()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// fmt.Println("build info:")
 	// fmt.Printf("  %s\n", uname)
 	// fmt.Printf("  %s\n", goVersion)
 	// fmt.Printf("  %s\n", gitVersion)
 
-	src := fmt.Sprintf(versionFile, gitLastTag, os.Getenv("GOOS"), os.Getenv("GOARCH"),
-		gitBranch, gitRev, time.Now(), uname, goVersion, gitVersion)
+	src := fmt.Sprintf(versionFile, gitLastTag, os.Getenv("GOOS"), os.Getenv("GOARCH"), gitVersion,
+		gitBranch, gitRev, time.Now(), curUser.Name, uname, goVersion)
 	fmt.Printf("-------\n%s\n------\n", src)
-	err := ioutil.WriteFile("flags/version.go", []byte(src), 0644)
+	err = ioutil.WriteFile("flags/version.go", []byte(src), 0644)
 	if err != nil {
 		log.Fatalf("writing output: %s", err)
 	}

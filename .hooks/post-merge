@@ -13,7 +13,9 @@ cd $path
 # auto update
 cp .hooks/* .git/hooks/
 
-# rm -r static/app/bower_components/
-# ./publish.sh dev
+go install github.com/CardInfoLink/quickpay/version
+
+rm -r static/app/bower_components/
+./publish.sh dev
 
 exit 0
