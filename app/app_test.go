@@ -406,6 +406,10 @@ func TestDownload(t *testing.T) {
 	f.Close()
 }
 
+func TestSendEmail(t *testing.T) {
+	NotifySalesman("rui.chen@cardinfolink.com")
+}
+
 func TestRandBytes(t *testing.T) {
 	bs := randBytes(32)
 	t.Logf("%x", bs)

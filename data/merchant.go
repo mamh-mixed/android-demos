@@ -266,24 +266,18 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 		return err
 	}
 
-	// 获取老系统代理信息
-	agents, err := readAgentFromOldDB()
-	if err != nil {
-		return err
-	}
-
 	// 更新新系统代理信息
-	aRec := 0
+	// aRec := 0
 	agentMap := make(map[string]string)
-	for _, agent := range agents {
-		agentMap[agent.AgentCode] = agent.AgentName
-		a := &model.Agent{AgentCode: agent.AgentCode, AgentName: agent.AgentName}
-		err = mongo.AgentColl.Upsert(a)
-		if err == nil {
-			aRec++
-		}
-	}
-	log.Infof("在旧系统查找到 %d 条代理信息，成功插入新系统 %d 条。", len(agents), aRec)
+	// for _, agent := range agents {
+	// 	agentMap[agent.AgentCode] = agent.AgentName
+	// 	a := &model.Agent{AgentCode: agent.AgentCode, AgentName: agent.AgentName}
+	// 	err = mongo.AgentColl.Upsert(a)
+	// 	if err == nil {
+	// 		aRec++
+	// 	}
+	// }
+	// log.Infof("在旧系统查找到 %d 条代理信息，成功插入新系统 %d 条。", len(agents), aRec)
 
 	// 集团信息
 	groupMap := make(map[string]*model.Group)
@@ -311,24 +305,35 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 		m.Detail.GoodsTag = mer.Wxp.GoodsTag
 		m.MerId = mer.Clientid
 		m.Permission = []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
-		m.Remark = "old_system_data"
+		m.Remark = "old_system_data_" + time.Now().Format("20060102")
 		m.SignKey = mer.SignKey
 		m.UniqueId = mer.UniqueId.Hex()
 		// 代理代码
 		m.AgentCode = mer.AgentCode
-		m.AgentName = agentMap[m.AgentCode]
+		if agentName, ok := agentMap[mer.AgentCode]; ok {
+			m.AgentName = agentName
+		} else {
+			agent, err := mongo.AgentColl.Find(mer.AgentCode)
+			if err == nil {
+				m.AgentName = agent.AgentName
+				agentMap[mer.AgentCode] = agent.AgentName
+			} else {
+				log.Errorf("没有找到代理代码: %s, 商户号: %s", mer.AgentCode, m.MerId)
+			}
+		}
 
 		// 集团
 		m.GroupCode = mer.Group.GroupCode
-		m.GroupName = mer.Group.GroupName
 		if m.GroupCode != "" {
-			if _, ok := groupMap[m.GroupCode]; !ok {
-				// 没有则存放
-				groupMap[m.GroupCode] = &model.Group{
-					GroupCode: m.GroupCode,
-					GroupName: m.GroupName,
-					AgentCode: m.AgentCode,
-					AgentName: m.AgentName,
+			if g, ok := groupMap[m.GroupCode]; ok {
+				m.GroupName = g.GroupName
+			} else {
+				g, err := mongo.GroupColl.Find(m.GroupCode)
+				if err == nil {
+					m.GroupName = g.GroupName
+					groupMap[m.GroupCode] = g
+				} else {
+					log.Errorf("没有找到集团代码: %s, 商户号: %s", m.GroupCode, m.MerId)
 				}
 			}
 		}
@@ -440,14 +445,14 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 		}
 	}
 
-	gRec := 0
-	for _, g := range groupMap {
-		err = mongo.GroupColl.Upsert(g)
-		if err == nil {
-			gRec++
-		}
-	}
-	log.Infof("新增：在旧系统查找到 %d 条集团信息，成功插入新系统 %d 条。", len(groupMap), gRec)
+	// gRec := 0
+	// for _, g := range groupMap {
+	// 	err = mongo.GroupColl.Upsert(g)
+	// 	if err == nil {
+	// 		gRec++
+	// 	}
+	// }
+	// log.Infof("新增：在旧系统查找到 %d 条集团信息，成功插入新系统 %d 条。", len(groupMap), gRec)
 	log.Infof("新增：在旧系统查找到 %d 条商户信息，成功插入新系统 %d 条。", len(mers), count)
 
 	return nil
