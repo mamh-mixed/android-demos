@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.activities;
 
 import android.annotation.SuppressLint;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class RegisterNextActivity extends BaseActivity {
-
+    private final String TAG = "RegisterNextActivity";
     private EditText mNameEdit;
     private EditText mBanknumEdit;
     private EditText mPhonenumEdit;
@@ -205,7 +206,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                     @Override
                     public void onError(String error) {
-                        Log.i("opp", "error:" + error);
+                        Log.i(TAG, "error:" + error);
                     }
                 });
 
@@ -214,7 +215,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                     @Override
                     public void onResult(String result) {
-                        Log.i("opp", "result:" + result);
+                        Log.i(TAG, "result:" + result);
                         final List<String> tempOpenBankList = new ArrayList<String>();
                         final List<String> tempBankIdList = new ArrayList<String>();
                         tempOpenBankList.add("请选择开户银行");
@@ -256,7 +257,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                     @Override
                     public void onError(String error) {
-                        Log.i("opp", "error:" + error);
+                        Log.i(TAG, "error:" + error);
                     }
                 });
 
@@ -286,7 +287,7 @@ public class RegisterNextActivity extends BaseActivity {
                 mCityEdit.setText("");
                 if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
                     String province = mProvinceEdit.getText().toString();
-                    Log.i("xxx", "province" + province);
+                    Log.i(TAG, "province" + province);
 
                     HttpCommunicationUtil.sendGetDataToServer(
                             BankBaseUtil.getCity(province),
@@ -294,7 +295,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onResult(String result) {
-                                    Log.i("opp", "result:" + result);
+                                    Log.i(TAG, "result:" + result);
                                     final List<String> tempCityList = new ArrayList<>();
                                     final List<String> tempCityCodeList = new ArrayList<>();
 
@@ -337,7 +338,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
+                                    Log.i(TAG, "error:" + error);
                                 }
                             });
                 }
@@ -371,7 +372,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onResult(String result) {
-                                    Log.i("opp", "result:" + result);
+                                    Log.i(TAG, "result:" + result);
                                     final List<String> tempOpenBankList = new ArrayList<>();
                                     final List<String> tempBankIdList = new ArrayList<>();
                                     tempOpenBankList.add("请选择开户银行");
@@ -423,7 +424,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
+                                    Log.i(TAG, "error:" + error);
 
                                 }
                             });
@@ -519,7 +520,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
+                                    Log.i(TAG, "error:" + error);
 
                                 }
                             });
@@ -670,7 +671,7 @@ public class RegisterNextActivity extends BaseActivity {
             user.setPhone_num(mPhonenumEdit.getText().toString());
             user.setMerName(mMerchantNameEdit.getText().toString());
 
-            Log.d("register user", SessonData.registerUser.getJsonString());
+            Log.d(TAG, SessonData.registerUser.getJsonString());
 
             HttpCommunicationUtil.sendDataToServer(
                     ParamsUtil.getUpdate_SA(SessonData.getAccessToken(), user),

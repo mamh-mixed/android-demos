@@ -16,7 +16,7 @@ import com.umeng.analytics.MobclickAgent;
 
 
 public class BaseActivity extends AppCompatActivity {
-
+    private final String TAG = "BaseActivity";
     private Loading_Dialog mLoading_Dialog;    //显示loading
     private Alert_Dialog mAlert_Dialog;       // 提示消息对话框
     protected Context mContext;
@@ -35,7 +35,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("BaseActivity", getClass().getSimpleName());
+        Log.d(TAG, getClass().getSimpleName());
         ActivityCollector.addActivity(this);
     }
 

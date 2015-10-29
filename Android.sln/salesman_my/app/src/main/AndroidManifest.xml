@@ -41,7 +41,9 @@
         </activity>
         <activity
             android:name=".activities.SAMerchantListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden">
+
 
         </activity>
         <activity
