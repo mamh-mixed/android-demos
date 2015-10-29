@@ -1,0 +1,34 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../layouts/scaffold-layout.html">
+<link rel="import" href="../../elements/coupon-wo-list/coupon-wo-list.html">
+
+<dom-module id="coupon-wo-page">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <template>
+    <scaffold-layout route$="[[route]]">
+      <coupon-wo-list class="content"></coupon-wo-list>
+    </scaffold-layout>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'coupon-wo-page',
+        properties: {
+          route: {
+            type: Object,
+            value: {
+              name: 'coupon.wo.list',
+              path: '/coupon/wo/list',
+              title: '卡券查询',
+              subtitle: ''
+            }
+          }
+        },
+      });
+    })();
+  </script>
+</dom-module>

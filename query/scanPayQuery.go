@@ -188,7 +188,7 @@ func GetMerInfo(merId string) scanFixedResponse {
 }
 
 // SpTransQuery 交易查询
-func SpTransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
+func SpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 
 	now := time.Now().Format("2006-01-02")
 	// 默认当天开始
@@ -211,19 +211,24 @@ func SpTransQuery(q *model.QueryCondition) (ret *model.QueryResult) {
 	}
 
 	// 没有数组的话返回空数据
-	if len(trans) == 0 {
+	count := len(trans)
+	if count == 0 {
 		trans = make([]*model.Trans, 0, 0)
 	}
 
-	count := len(trans)
-	ret = &model.QueryResult{
-		Page:     q.Page,
-		Size:     q.Size,
-		Total:    total,
-		RespCode: "000000",
-		RespMsg:  "成功",
-		Rec:      trans,
-		Count:    count,
+	// 分页信息
+	pagination := &model.Pagination{
+		Page:  q.Page,
+		Total: total,
+		Size:  q.Size,
+		Count: count,
+		Data:  trans,
+	}
+
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "查询成功",
+		Data:    pagination,
 	}
 
 	return ret

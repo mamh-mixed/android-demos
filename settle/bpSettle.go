@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/cfca"
 	"github.com/CardInfoLink/quickpay/model"
@@ -34,6 +35,7 @@ func DoSettWork() {
 }
 
 // ProcessTransSettle 清分
+// TODO: 重构到定时任务中
 func processTransSettle() {
 
 	// 凌晨10分时将交易数据copy到清分表
@@ -52,6 +54,10 @@ func processTransSettle() {
 	// 扫码每天出报表
 	disReport, _ := util.TimeToGiven("08:00:00")
 	afterFunc(disReport*time.Second, "doScanpaySettReport")
+
+	// app用户每天发邮件
+	appEmail, _ := util.TimeToGiven("23:00:00")
+	afterFunc(appEmail*time.Second, "doAppToolsSendEmail")
 
 	// 主线程阻塞
 	select {}
@@ -118,6 +124,8 @@ func do(method string) {
 		doCFCATransCheck()
 	case "doCILTransCheck":
 		doCilTransCheck()
+	case "doAppToolsSendEmail":
+		app.NotifySalesman()
 	case "doScanpaySettReport":
 		err = doScanpaySettReport(yesterday)
 	default:
