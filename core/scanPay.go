@@ -889,6 +889,20 @@ func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 	return nil, false
 }
 
+// isCouponOrderDuplicate 判断卡券订单号是否重复
+func isCouponOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
+	count, err := mongo.CouTransColl.Count(mchId, orderNum)
+	if err != nil {
+		log.Errorf("find trans fail : (%s)", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR"), true
+	}
+	if count > 0 {
+		// 订单号重复
+		return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE"), true
+	}
+	return nil, false
+}
+
 // CloseOrder
 func CloseOrder() {
 	log.Info("process closeOrder ...")
@@ -1115,18 +1129,34 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 
 // updateTrans 更新卡券交易信息
 func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
-	expDate, _ := time.ParseInLocation("20060102", ret.ExpDate, time.Local)
 	// 根据请求结果更新
 	t.ChanRespCode = ret.ChanRespCode
 	t.ChanOrderNum = ret.ChannelOrderNum
 	ret.ChannelOrderNum = ""
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
-	t.PayTime = dateFormat(ret.PayTime)
 	t.Prodname = ret.CardId
 	t.CardInfo = ret.CardInfo
 	t.AvailCount = ret.AvailCount
-	t.ExpDate = expDate.Format("2006-01-02")
+	t.Authcode = ret.Authcode
+
+	//更新核销状态
+	if ret.ChanRespCode == "0000" {
+		t.WriteoffStatus = model.COUPON_WO_SUCCESS
+	} else {
+		t.WriteoffStatus = model.COUPON_WO_ERROR
+	}
+
+	if ret.ExpDate != "" {
+		expDate, err := time.ParseInLocation("20060102", ret.ExpDate, time.Local)
+		if err != nil {
+			log.Errorf("format ret.ExpDate err,%s", err)
+			return err
+		}
+		t.ExpDate = expDate.Format("2006-01-02")
+	} else {
+		t.ExpDate = ret.ExpDate
+	}
 
 	return mongo.CouTransColl.UpdateAndUnlock(t)
 }
@@ -1174,7 +1204,7 @@ func dateFormat(payTime string) string {
 func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 判断订单是否存在
-	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+	if err, exist := isCouponOrderDuplicate(req.Mchntid, req.OrderNum); exist {
 		return err
 	}
 	// 核销次数不填默认为1

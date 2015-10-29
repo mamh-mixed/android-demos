@@ -21,6 +21,9 @@ const (
 	Qyzf = "QYZF" // 企业付款
 	Jszf = "JSZF"
 	Veri = "VERI" // 卡券核销
+	// 卡券核销状态
+	COUPON_WO_SUCCESS = "SUCCESS"
+	COUPON_WO_ERROR   = "ERROR"
 )
 
 // QueryCondition 扫码交易查询字段
@@ -264,7 +267,7 @@ type ScanPayResponse struct {
 	CardInfo   string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`       // 卡券详情 C
 	AvailCount string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"` // 卡券剩余可用次数C
 	ExpDate    string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`          // 卡券有效期 C
-	Authcode   int    `json:"-" url:"-" bson:"authcode,omitempty"`                                         // 授权码
+	Authcode   int    `json:"-" url:"-" bson:"-"`                                                          // 授权码
 
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-" bson:"-"` // 渠道详细应答码
