@@ -12,5 +12,4 @@
     <item name="return_scan_result" type="id" />
     <item name="search_book_contents_failed" type="id" />
     <item name="search_book_contents_succeeded" type="id" />
-    <item name="txn_unit" type="id">笔</item>
 </resources>
