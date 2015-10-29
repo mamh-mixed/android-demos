@@ -887,7 +887,7 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 		maxMerId, err := mongo.MerchantColl.FindMaxMerId(prefix)
 		if err != nil {
 			if err.Error() == "not found" {
-				merchant.MerId = prefix + fmt.Sprintf("%"+length+"0d", 1)
+				merchant.MerId = prefix + fmt.Sprintf("%0"+length+"d", 1)
 			} else {
 				log.Errorf("find merchant err,%s", err)
 				return err
