@@ -303,12 +303,10 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		return model.USER_ALREADY_IMPROVED
 	}
 
-	agentCode, agentName := "", ""
+	agentCode, agentName := "99911888", "讯联O2O机构"
 	if user.InvitationCode != "" {
 		agent, err := mongo.AgentColl.Find(user.InvitationCode)
-		if err != nil {
-			agentCode, agentName = "99911888", "讯联O2O机构"
-		} else {
+		if err == nil {
 			agentCode, agentName = agent.AgentCode, agent.AgentName
 		}
 	}
@@ -321,6 +319,7 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		Permission: permission,
 		MerStatus:  model.MerStatusNormal,
 		TransCurr:  "156",
+		Remark:     "app_register",
 		RefundType: model.CurrentDayRefund, // 只能当天退
 		IsNeedSign: true,
 		SignKey:    fmt.Sprintf("%x", randBytes(16)),
@@ -854,6 +853,9 @@ func genRouter(merchant *model.Merchant) error {
 		CardBrand: "ALP",
 		ChanCode:  "ALP",
 		ChanMerId: ALPMerId,
+		SettFlag:  "CIL",
+		SettRole:  "CIL",
+		MerFee:    0.006,
 	}
 	err := mongo.RouterPolicyColl.Insert(alpRoute)
 	if err != nil {
@@ -866,6 +868,9 @@ func genRouter(merchant *model.Merchant) error {
 		CardBrand: "WXP",
 		ChanCode:  "WXP",
 		ChanMerId: WXPMerId,
+		SettFlag:  "CIL",
+		SettRole:  "CIL",
+		MerFee:    0.006,
 	}
 	err = mongo.RouterPolicyColl.Insert(wxpRoute)
 	if err != nil {

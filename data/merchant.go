@@ -78,16 +78,16 @@ func DoSyncMerchant(path string) error {
 	var addMers []merchant
 	var updateCount int
 	for _, om := range mers {
-		nm, err := mongo.MerchantColl.Find(strings.TrimSpace(om.Clientid))
+		_, err = mongo.MerchantColl.Find(strings.TrimSpace(om.Clientid))
 		if err != nil {
 			// add
 			addMers = append(addMers, om)
 		} else {
 			// update
-			err = updateMerchantFromOldDB(om, nm)
-			if err != nil {
-				return err
-			}
+			// err = updateMerchantFromOldDB(om, nm)
+			// if err != nil {
+			// 	return err
+			// }
 			updateCount++
 		}
 	}

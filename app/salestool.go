@@ -421,6 +421,10 @@ func NotifySalesman() {
 		return
 	}
 
+	if len(all) == 0 {
+		return
+	}
+
 	// 业务人员
 	c := make(map[string][]*model.AppUser)
 	for _, u := range all {
