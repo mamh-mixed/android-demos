@@ -28,7 +28,7 @@
   </style>
   <template>
     <x-ajax id="deleteAjax" method="GET" url="/master/subAgent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
-    <paper-dialog id="dialogDelete">
+    <paper-dialog modal id="dialogDelete">
       <h2>删除【
         <span>{{subAgent.subAgentName}}</span>】公司</h2>
       <paper-dialog-scrollable>

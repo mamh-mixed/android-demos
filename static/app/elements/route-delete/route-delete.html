@@ -27,7 +27,7 @@
   </style>
   <template>
     <x-ajax id="deleteAjax" method="GET" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
-    <paper-dialog id="dialogDelete">
+    <paper-dialog modal id="dialogDelete">
       <h2>删除路由策略</h2>
       <paper-dialog-scrollable>
         <div class="row">

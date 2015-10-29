@@ -33,7 +33,7 @@
   </style>
   <template>
     <x-ajax id="saveAjax" method="POST" url="/master/subAgent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveSubAgentResponse"></x-ajax>
-    <paper-dialog id="dialogAdd">
+    <paper-dialog modal id="dialogAdd">
       <h2>创建公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
@@ -52,7 +52,7 @@
       </div>
     </paper-dialog>
 
-    <paper-dialog id="dialogEdit">
+    <paper-dialog modal id="dialogEdit">
       <h2>编辑公司</h2>
       <paper-dialog-scrollable>
         <div class="row">
