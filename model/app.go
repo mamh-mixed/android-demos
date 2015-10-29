@@ -113,18 +113,19 @@ type AppTxn struct {
 
 // AppUser 云收银用户
 type AppUser struct {
-	UserName     string `json:"username,omitempty" bson:"username,omitempty"`
-	Password     string `json:"password,omitempty" bson:"password,omitempty"`
-	Activate     string `json:"activate,omitempty" bson:"activate,omitempty"`
-	MerId        string `json:"clientid,omitempty" bson:"merId,omitempty"`
-	Limit        string `json:"limit,omitempty" bson:"limit,omitempty"`
-	CreateTime   string `json:"createTime,omitempty" bson:"createTime,omitempty"`
-	RegisterFrom int    `json:"-" bson:"registerFrom"` // 0-自行注册 1-预先分配 2-公司地推
-	Remark       string `json:"-" bson:"remark,omitempty"`
-	UpdateTime   string `json:"-" bson:"updateTime,omitempty"`
-	SubAgentCode string `json:"-" bson:"subAgentCode,omitempty"` // 隶属某个公司发展的
-	MerName      string `json:"merName,omitempty" bson:"merName,omitempty"`
-	BelongsTo    string `json:"-" bson:"belongsTo,omitempty"` // 属于哪个公司人员发展的
+	UserName       string `json:"username,omitempty" bson:"username,omitempty"`
+	Password       string `json:"password,omitempty" bson:"password,omitempty"`
+	Activate       string `json:"activate,omitempty" bson:"activate,omitempty"`
+	MerId          string `json:"clientid,omitempty" bson:"merId,omitempty"`
+	Limit          string `json:"limit,omitempty" bson:"limit,omitempty"`
+	CreateTime     string `json:"createTime,omitempty" bson:"createTime,omitempty"`
+	RegisterFrom   int    `json:"-" bson:"registerFrom"` // 0-自行注册 1-预先分配 2-公司地推
+	Remark         string `json:"-" bson:"remark,omitempty"`
+	UpdateTime     string `json:"-" bson:"updateTime,omitempty"`
+	SubAgentCode   string `json:"-" bson:"subAgentCode,omitempty"` // 隶属某个公司发展的
+	MerName        string `json:"merName,omitempty" bson:"merName,omitempty"`
+	BelongsTo      string `json:"-" bson:"belongsTo,omitempty"` // 属于哪个公司人员发展的
+	InvitationCode string `json:"-" bson:"invitationCode,omitempty"`
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`

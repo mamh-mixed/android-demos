@@ -41,7 +41,7 @@ func doScanpaySettReport(settDate string) error {
 		// 有数据才生成报表
 		if len(rpData) != 0 {
 			// 每一行就是一个报表
-			excel := genSpSettReportExcel(rpData, sd)
+			excel := genSpTransferReportExcel(rpData, sd)
 
 			var buf []byte
 			bf := bytes.NewBuffer(buf)
@@ -128,7 +128,8 @@ func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
 	return rds
 }
 
-func genSpSettReportExcel(data []reportData, date string) *xlsx.File {
+// genSpTransferReportExcel 划款报表
+func genSpTransferReportExcel(data []reportData, date string) *xlsx.File {
 	var file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row

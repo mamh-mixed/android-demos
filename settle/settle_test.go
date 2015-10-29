@@ -2,7 +2,6 @@ package settle
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
-	// "github.com/CardInfoLink/quickpay/mongo"
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/util"
@@ -33,7 +32,7 @@ func TestDoSettWork(t *testing.T) {
 }
 
 func TestDoScanpaySettReport(t *testing.T) {
-	yesterday = "2015-10-27"
+	yesterday = "2015-10-28"
 	err := doScanpaySettReport(yesterday)
 	if err != nil {
 		t.Error(err)
