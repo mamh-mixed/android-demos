@@ -20,9 +20,9 @@
 *云收银将严格遵守国家相关法律法规，承诺不将您的账户信息以任何形式透露给第三方。</string>
     <string name="detail_refd">交易退款</string>
     <string name="update_password">修改密码</string>
-    <string name="update_password_hint_oldpwd">当前密码</string>
-    <string name="update_password_hint_newpwd">新密码</string>
-    <string name="update_password_hint_qr_newpwd">确认新密码</string>
+    <string name="update_password_hint_oldpwd">現在パスワード</string>
+    <string name="update_password_hint_newpwd">新パスワード</string>
+    <string name="update_password_hint_qr_newpwd">新パスワード確認</string>
     <string name="update_account">账号修改</string>
     <string name="qr_update">确认修改</string>
     <string name="limit_increase">限额提升</string>
@@ -45,12 +45,12 @@
     <string name="detail_activity_trade_status_success">交易成功</string>
     <string name="detail_activity_trade_status_fail">交易失败</string>
     <string name="detail_activity_trade_status_nopay">未支付</string>
-    <string name="main_activity_menu_scancode">扫码支付</string>
-    <string name="main_activity_menu_transmange">交易管理</string>
-    <string name="main_activity_menu_passwordupdate">密码修改</string>
+    <string name="main_activity_menu_scancode">QR決済</string>
+    <string name="main_activity_menu_transmange">取引管理</string>
+    <string name="main_activity_menu_passwordupdate">暗証番号変更</string>
     <string name="main_activity_menu_accountupdate">账户修改</string>
     <string name="main_activity_menu_webbill">网页账单</string>
-    <string name="main_activity_menu_safeexit">安全退出</string>
+    <string name="main_activity_menu_safeexit">ログアウト</string>
     <string name="spinner_select_province">开户行所在省份</string>
     <string name="spinner_select_city">开户行所在城市</string>
     <string name="spinner_select_bank">请选择开户银行</string>
@@ -97,13 +97,14 @@
     <!-- 新信息-->
     <string name="qr_amount_exceed">金额过大!</string>
     <string name="qr_amount_nonzero">金额不能为零!</string>
-    <string name="txn_all">全部交易</string>
-    <string name="txn_success">交易成功</string>
-    <string name="txn_failed">交易失败</string>
-    <string name="txn_amount">交易金额</string>
-    <string name="custom_account">客户账户:</string>
-    <string name="txn_time">交易时间:</string>
-    <string name="txn_status">交易状态:</string>
-    <string name="txn_status_success">交易成功</string>
+
+    <string name="txn_all">取引全件</string>
+    <string name="txn_success">成功取引</string>
+    <string name="txn_failed">失敗取引</string>
+    <string name="txn_amount">取引金額</string>
+    <string name="custom_account">ユーザーID:</string>
+    <string name="txn_time">取引時間:</string>
+    <string name="txn_status">取引状態:</string>
+    <string name="txn_status_success">成功</string>
 
 </resources>
