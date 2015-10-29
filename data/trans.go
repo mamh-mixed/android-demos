@@ -22,9 +22,8 @@ const (
 	crypto = "cilxl123$"
 )
 
-//
 // func init() {
-//  url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
 // 	connect()
 // }
 

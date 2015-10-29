@@ -645,6 +645,13 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret.MerDiscount = t.MerDiscount
 		ret.Respcd = t.RespCode
 		ret.ErrorDetail = t.ErrorDetail
+		// 先简单处理
+		if ret.Respcd == adaptor.SuccessCode {
+			ret.ErrorCode = "SUCCESS"
+		} else {
+			// 其他都为失败，处理中上面已处理
+			ret.ErrorCode = "FAIL"
+		}
 	}
 
 	// 渠道

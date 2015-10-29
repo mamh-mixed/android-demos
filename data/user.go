@@ -45,7 +45,7 @@ func AsyncAppUser() error {
 		if app.Clientid != "" {
 			m, err := mongo.MerchantColl.Find(app.Clientid)
 			if err != nil {
-				// log.Errorf("未找到商户号 %s", app.Clientid)
+				log.Errorf("未找到商户号 %s", app.Clientid)
 				continue
 			}
 			if m.RefundType != model.CurrentDayRefund {
