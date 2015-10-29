@@ -1,5 +1,7 @@
 package coupon
 
+import "github.com/CardInfoLink/quickpay/model"
+
 type QueryPurchaseLogReqHeader struct {
 	Version       string `json:"version"`       // 报文版本号	15	M	当前版本1.0
 	Transdirect   string `json:"transDirect"`   // 交易方向	1	M	Q：请求
@@ -19,10 +21,14 @@ type QueryPurchaseLogReqBody struct {
 type QueryPurchaseLogReq struct {
 	Header QueryPurchaseLogReqHeader `json:"header"`
 	Body   QueryPurchaseLogReqBody   `json:"body"`
+	SpReq  *model.ScanPayRequest     `json:"-" url:"-" bson:"-"`
 }
 
 func (req *QueryPurchaseLogReq) GetT() string {
 	return "QueryPurchaseLog"
+}
+func (req *QueryPurchaseLogReq) GetSpReq() *model.ScanPayRequest {
+	return req.SpReq
 }
 
 type QueryPurchaseLogRespHeader struct {
