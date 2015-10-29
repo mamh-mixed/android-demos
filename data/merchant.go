@@ -3,11 +3,6 @@ package data
 
 import (
 	"fmt"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -15,6 +10,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type merchant struct {
@@ -489,7 +490,7 @@ func connect() {
 
 	session, err := mgo.Dial(url)
 	if err != nil {
-		fmt.Printf("unable connect to mongodb server %s\n", err)
+		fmt.Printf("unable connect to mongo %s: %s\n", url, err)
 		os.Exit(1)
 	}
 

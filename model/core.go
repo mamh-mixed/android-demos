@@ -27,6 +27,7 @@ const (
 	CloseTrans      = 5 // 关单
 	EnterpriseTrans = 6 // 企业付款
 	SettTrans       = 7 // 结算交易
+	PurchaseCoupons = 8 // 卡券核销
 
 	// settStatus
 	SettSuccess    = 1 // 勾兑成功
@@ -323,9 +324,15 @@ type Trans struct {
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
 
 	//卡券字段
-	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
-	Prodname       string `bson:"prodname,omitempty" json:"prodname,omitempty"`             // 卡券名称
-	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
+	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`                        // 卡券号
+	Prodname       string `bson:"prodname,omitempty" json:"prodname,omitempty"`                          // 卡券名称
+	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`              // 核销状态
+	VeriTime       string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"` // 核销次数 C
+	// CardId         string `json:"cardId,omitempty" url:"cardId,omitempty" bson:"cardId,omitempty"`             // 卡券类型 C
+	CardInfo   string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`       // 卡券详情 C
+	AvailCount string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"` // 卡券剩余可用次数C
+	ExpDate    string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`          // 卡券有效期 C
+	Authcode   int    `json:"authcode,omitempty" url:"authcode,omitempty" bson:"authcode,omitempty"`       // 卡券有效期 C
 }
 
 // SummarySettData 交易汇总

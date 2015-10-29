@@ -222,7 +222,7 @@
           3: '商户发起关闭',
           4: '交易超时系统关闭'
         };
-        this.isAdmin=false;
+        this.isAdmin = false;
       },
       observers: [
         '_watchAgentChange(agent.key)',
@@ -277,7 +277,7 @@
             this.$.groupCode.setAttribute('disabled', true);
             this.$.merId.setAttribute('disabled', true);
           } else if (user.userType === 'admin') {
-            this.isAdmin=true;
+            this.isAdmin = true;
             this.agentDisabled = false;
             this.$.subAgentCode.removeAttribute('disabled');
             this.$.groupCode.removeAttribute('disabled');
@@ -353,22 +353,24 @@
       // ajax请求响应处理
       handleSearchResponse: function(e) {
         var response = e.detail;
-        if (!response.respCode || response.respCode !== '000000') {
-          Util.toast(response.respMsg || '系统错误', 3000);
+        if (response.status !== 0) {
+          Util.toast(response.message || '系统错误', 3000);
           this.set('cond.total', 0);
           this.set('cond.page', 0);
           return;
         }
-        if (!response.rec || response.rec.length === 0) {
+
+        var pagination = response.data;
+        if (!pagination.data || pagination.data.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
           this.set('cond.total', 0);
           this.set('cond.page', 0);
           return;
         }
 
-        this.trades = response.rec.slice(0);
-        this.set('cond.total', response.total);
-        this.set('cond.page', response.page);
+        this.trades = pagination.data.slice(0);
+        this.set('cond.total', pagination.total);
+        this.set('cond.page', pagination.page);
       },
       chanFilter: function(chanCode) {
         var map = {
