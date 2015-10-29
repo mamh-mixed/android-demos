@@ -77,7 +77,7 @@ public class PasswordUpdateView extends LinearLayout {
                                     public void run() {
                                         //更新UI
                                         mBaseActivity.endLoading();
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), "修改成功", BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
+                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                         alert_Dialog.show();
                                         mOldPwdEdit.setText("");
                                         mNewPwdEdit.setText("");

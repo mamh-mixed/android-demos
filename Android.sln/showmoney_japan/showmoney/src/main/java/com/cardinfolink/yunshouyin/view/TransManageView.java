@@ -357,6 +357,7 @@ public class TransManageView extends LinearLayout {
             if (!bill.tradeFrom.isEmpty()) {
                 tradeFrom = bill.tradeFrom;
             }
+            //TODO: 待日文化
             String busicd = "支付";
             if (bill.busicd.equals("REFD")) {
                 busicd = "退款";
