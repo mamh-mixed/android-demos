@@ -94,4 +94,8 @@
     <string name="scancode_view_create_code">生产二维码</string>
     <string name="scancode_view_scaning_code">开始扫描</string>
 
+    <!-- 新信息-->
+    <string name="qr_amount_exceed">金额过大!</string>
+    <string name="qr_amount_nonzero">金额不能为零!</string>
+
 </resources>

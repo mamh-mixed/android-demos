@@ -11,57 +11,58 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.activity.BaseActivity;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
+/**
+ * 日币没有小数位
+ */
 public class ScanCodeView extends LinearLayout implements OnClickListener {
     Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
-            btn7, btn8, btn9, btnadd, btnpoint, btnsm, btnclear, btndelete,
+            btn7, btn8, btn9,
+//            btnadd,
+    //            btnpoint,
+    btnsm, btnclear, btndelete,
             swh;
-    RadioButton btnzhifubao, btnweixin;
+    //    RadioButton btnzhifubao, btnweixin;
     EditText edt_input;
     TextView txt_output;
+
     boolean clear_flag = true;
     boolean point_flag = true;
     boolean add_flag = true;
+    //默认是支付宝支付
     boolean switch_flag = true;
     boolean num_flag = true;
-    double result = 0;
+//    double result = 0;
     String[] s = new String[100];
     private Context mContext;
-    private List<Item> items = new ArrayList<Item>();
-    private BaseActivity mBaseActivity;
 
     public ScanCodeView(Context context) {
         super(context);
         mContext = context;
-        mBaseActivity = (BaseActivity) mContext;
+//        BaseActivity mBaseActivity = (BaseActivity) mContext;
         View contentView = LayoutInflater.from(context).inflate(
                 R.layout.scancode_view, null);
+        //在加入到父view前必须指定布局方式
         LinearLayout.LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
         initLayout();
-
     }
 
     public void clearValue() {
@@ -74,9 +75,9 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     }
 
     private void initLayout() {
-        swh = (Button) findViewById(R.id.swh);
-        btnzhifubao = (RadioButton) findViewById(R.id.btnzhifubao);
-        btnweixin = (RadioButton) findViewById(R.id.btnweixin);
+//        swh = (Button) findViewById(R.id.swh);
+//        btnzhifubao = (RadioButton) findViewById(R.id.btnzhifubao);
+//        btnweixin = (RadioButton) findViewById(R.id.btnweixin);
         btn0 = (Button) findViewById(R.id.btn0);
         btn1 = (Button) findViewById(R.id.btn1);
         btn2 = (Button) findViewById(R.id.btn2);
@@ -87,8 +88,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         btn7 = (Button) findViewById(R.id.btn7);
         btn8 = (Button) findViewById(R.id.btn8);
         btn9 = (Button) findViewById(R.id.btn9);
-        btnadd = (Button) findViewById(R.id.btnadd);
-        btnpoint = (Button) findViewById(R.id.btnpoint);
+//        btnadd = (Button) findViewById(R.id.btnadd);
+//        btnpoint = (Button) findViewById(R.id.btnpoint);
         btnsm = (Button) findViewById(R.id.btnsm);
         btnclear = (Button) findViewById(R.id.btnclear);
         btndelete = (Button) findViewById(R.id.btndelete);
@@ -106,28 +107,28 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         btn7.setOnClickListener(this);
         btn8.setOnClickListener(this);
         btn9.setOnClickListener(this);
-        btnadd.setOnClickListener(this);
-        btnpoint.setOnClickListener(this);
+//        btnadd.setOnClickListener(this);
+//        btnpoint.setOnClickListener(this);
         btnclear.setOnClickListener(this);
         btndelete.setOnClickListener(this);
-        btnzhifubao.setOnClickListener(this);
-        btnweixin.setOnClickListener(this);
+//        btnzhifubao.setOnClickListener(this);
+//        btnweixin.setOnClickListener(this);
         btnsm.setOnClickListener(this);
 
-        swh.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (switch_flag) {
-                    btnsm.setText(ContextUtil.getResString(R.string.scancode_view_create_code));
-                    switch_flag = false;
-                } else {
-                    btnsm.setText(ContextUtil.getResString(R.string.scancode_view_scaning_code));
-                    switch_flag = true;
-                }
-
-            }
-        });
+//        swh.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                if (switch_flag) {
+//                    btnsm.setText(ContextUtil.getResString(R.string.scancode_view_create_code));
+//                    switch_flag = false;
+//                } else {
+//                    btnsm.setText(ContextUtil.getResString(R.string.scancode_view_scaning_code));
+//                    switch_flag = true;
+//                }
+//
+//            }
+//        });
 
     }
 
@@ -224,52 +225,52 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     add_flag = true;
                 }
                 break;
-            case R.id.btnpoint:
-
-                String s1 = x.substring(x.lastIndexOf("+") + 1);
-                if (s1.contains(".")) {
-                    break;
-                }
-
-                if (x.contains(".")) {
-                    String k = x.substring(x.lastIndexOf("."));
-                    if (k.equals("."))
-
-                    {
-                        return;
-
-                    } else {
-                        clearzero(".");
-                        point_falg(".");
-                    }
-                } else {
-
-                    clearzero(".");
-                    point_falg(".");
-                }
-                break;
-            case R.id.btnadd:
-
-                if (x.contains("+")) {
-                    String k = x.substring(x.lastIndexOf("+"));
-
-                    if (k.equals("+"))
-
-                    {
-                        return;
-                    } else {
-                        clearzero("+");
-                        add_falg("+");
-
-                    }
-
-                } else {
-
-                    clearzero("+");
-                    add_falg("+");
-
-                }
-                break;
+//            case R.id.btnpoint:
+//
+//                String s1 = x.substring(x.lastIndexOf("+") + 1);
+//                if (s1.contains(".")) {
+//                    break;
+//                }
+//
+//                if (x.contains(".")) {
+//                    String k = x.substring(x.lastIndexOf("."));
+//                    if (k.equals("."))
+//
+//                    {
+//                        return;
+//
+//                    } else {
+//                        clearzero(".");
+//                        point_falg(".");
+//                    }
+//                } else {
+//
+//                    clearzero(".");
+//                    point_falg(".");
+//                }
+//                break;
+//            case R.id.btnadd:
+//
+//                if (x.contains("+")) {
+//                    String k = x.substring(x.lastIndexOf("+"));
+//
+//                    if (k.equals("+"))
+//
+//                    {
+//                        return;
+//                    } else {
+//                        clearzero("+");
+//                        add_falg("+");
+//
+//                    }
+//
+//                } else {
+//
+//                    clearzero("+");
+//                    add_falg("+");
+//
+//                }
+//                break;
             case R.id.btnclear:
                 num_flag = true;
                 edt_input.setText("=0");
@@ -319,16 +320,16 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 addcheck();
 
                 break;
-            case R.id.btnzhifubao:
-
-                break;
-            case R.id.btnweixin:
-
-                break;
+//            case R.id.btnzhifubao:
+//
+//                break;
+//            case R.id.btnweixin:
+//
+//                break;
             case R.id.btnsm:
                 final double sum = Double.parseDouble(edt_input.getText().toString().substring(1));
                 if (sum <= 0) {
-                    Toast.makeText(mContext, "金额不能为零!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, getResources().getString(R.string.qr_amount_nonzero), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -359,11 +360,11 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                     });
                                 } else {
                                     String chcd = "ALP";
-                                    if (btnweixin.isChecked()) {
-                                        chcd = "WXP";
-                                    } else {
-                                        chcd = "ALP";
-                                    }
+//                                    if (btnweixin.isChecked()) {
+//                                        chcd = "WXP";
+//                                    } else {
+//                                        chcd = "ALP";
+//                                    }
                                     Log.i("opp", "" + chcd);
 
                                     if (switch_flag) {
@@ -418,11 +419,11 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 } else {
 
                     String chcd = "ALP";
-                    if (btnweixin.isChecked()) {
-                        chcd = "WXP";
-                    } else {
-                        chcd = "ALP";
-                    }
+//                    if (btnweixin.isChecked()) {
+//                        chcd = "WXP";
+//                    } else {
+//                        chcd = "ALP";
+//                    }
                     Log.i("opp", "" + chcd);
 
                     if (switch_flag) {
@@ -479,7 +480,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         // String r=edt_input.getText().toString();
 
         if (result > 99999999) {
-            Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getResources().getString(R.string.qr_amount_exceed), Toast.LENGTH_SHORT).show();
             num_flag = false;
 
         } else {
@@ -513,9 +514,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
         // String r=edt_input.getText().toString();
         if (result > 99999999) {
-            Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getResources().getString(R.string.qr_amount_exceed), Toast.LENGTH_SHORT).show();
             num_flag = false;
-
         } else {
             num_flag = true;
         }
@@ -531,71 +531,71 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     }
 
-    public void clearzero(String z) {
+//    public void clearzero(String z) {
+//
+//        clear_flag = false;
+//
+//    }
 
-        clear_flag = false;
+//    public void add_falg(String q) {
+//        if (add_flag) {
+//            String x = txt_output.getText().toString();
+//            if (x.contains(".")) {
+//                String k = x.substring(x.lastIndexOf("."));
+//                if (k.equals("."))
+//
+//                {
+//                    txt_output.setText(x.substring(0, x.length() - 1));
+//                    txt_output.append(q);
+//                    add_flag = false;
+//                    point_flag = true;
+//
+//                } else {
+//                    txt_output.append(q);
+//                    add_flag = false;
+//                    point_flag = true;
+//                }
+//            } else {
+//
+//                txt_output.append(q);
+//                add_flag = false;
+//                point_flag = true;
+//
+//            }
+//        } else {
+//            return;
+//        }
+//
+//    }
 
-    }
-
-    public void add_falg(String q) {
-        if (add_flag) {
-            String x = txt_output.getText().toString();
-            if (x.contains(".")) {
-                String k = x.substring(x.lastIndexOf("."));
-                if (k.equals("."))
-
-                {
-                    txt_output.setText(x.substring(0, x.length() - 1));
-                    txt_output.append(q);
-                    add_flag = false;
-                    point_flag = true;
-
-                } else {
-                    txt_output.append(q);
-                    add_flag = false;
-                    point_flag = true;
-                }
-            } else {
-
-                txt_output.append(q);
-                add_flag = false;
-                point_flag = true;
-
-            }
-        } else {
-            return;
-        }
-
-    }
-
-    public void point_falg(String q) {
-        if (point_flag) {
-            String x = txt_output.getText().toString();
-            if (x.contains("+")) {
-                String k = x.substring(x.lastIndexOf("+"));
-                if (k.equals("+"))
-
-                {
-                    txt_output.append("0" + q);
-                    point_flag = false;
-                    add_flag = true;
-                } else {
-
-                    txt_output.append(q);
-                    point_flag = false;
-                    add_flag = true;
-                }
-            } else {
-
-                txt_output.append(q);
-                point_flag = false;
-                add_flag = true;
-            }
-        } else {
-            return;
-        }
-
-    }
+//    public void point_falg(String q) {
+//        if (point_flag) {
+//            String x = txt_output.getText().toString();
+//            if (x.contains("+")) {
+//                String k = x.substring(x.lastIndexOf("+"));
+//                if (k.equals("+"))
+//
+//                {
+//                    txt_output.append("0" + q);
+//                    point_flag = false;
+//                    add_flag = true;
+//                } else {
+//
+//                    txt_output.append(q);
+//                    point_flag = false;
+//                    add_flag = true;
+//                }
+//            } else {
+//
+//                txt_output.append(q);
+//                point_flag = false;
+//                add_flag = true;
+//            }
+//        } else {
+//            return;
+//        }
+//
+//    }
 
     public void addcheck() {
         String x = txt_output.getText().toString();
