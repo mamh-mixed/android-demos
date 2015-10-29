@@ -109,7 +109,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         '_userTypesChange(userType)'
       ],
       _userTypesChange: function(value) {
+        value = value || {};
         this.set('user.userType', value.key);
+
         if (value.key === 'agent') {
           this.set('user.subAgentCode', '');
           this.set('user.groupCode', '');
@@ -118,34 +120,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.subAgentCode.setAttribute('hidden', true);
           this.$.groupCode.setAttribute('hidden', true);
           this.$.merId.setAttribute('hidden', true);
-        } else if (value.key === 'subAgent') {
+          return;
+        }
+
+        if (value.key === 'subAgent') {
           this.set('user.groupCode', '');
           this.set('user.merId', '');
           this.$.agentCode.removeAttribute('hidden');
           this.$.subAgentCode.removeAttribute('hidden');
           this.$.groupCode.setAttribute('hidden', true);
           this.$.merId.setAttribute('hidden', true);
-        } else if (value.key === 'group') {
+          return;
+        }
+
+        if (value.key === 'group') {
           this.set('user.merName', '');
           this.$.agentCode.removeAttribute('hidden');
           this.$.groupCode.removeAttribute('hidden');
           this.$.subAgentCode.removeAttribute('hidden');
           this.$.merId.setAttribute('hidden', true);
-        } else if (value.key === 'merchant') {
+          return;
+        }
+
+        if (value.key === 'merchant') {
           this.$.agentCode.removeAttribute('hidden');
           this.$.groupCode.removeAttribute('hidden');
           this.$.subAgentCode.removeAttribute('hidden');
           this.$.merId.removeAttribute('hidden');
-        } else {
-          this.set('user.agentCode', '');
-          this.set('user.subAgentCode', '');
-          this.set('user.groupCode', '');
-          this.set('user.merId', '');
-          this.$.agentCode.setAttribute('hidden', true);
-          this.$.subAgentCode.setAttribute('hidden', true);
-          this.$.groupCode.setAttribute('hidden', true);
-          this.$.merId.setAttribute('hidden', true);
+          return;
         }
+
+
+        this.set('user.agentCode', '');
+        this.set('user.subAgentCode', '');
+        this.set('user.groupCode', '');
+        this.set('user.merId', '');
+        this.$.agentCode.setAttribute('hidden', true);
+        this.$.subAgentCode.setAttribute('hidden', true);
+        this.$.groupCode.setAttribute('hidden', true);
+        this.$.merId.setAttribute('hidden', true);
       },
       open: function() {
         this.$.dialogAdd.open();
@@ -153,7 +166,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.user = {};
           this.userType = {
             key: 'admin',
-            value: '管理员'
+            value: '讯联'
           };
           this.$.userName.removeAttribute('disabled');
         } else if (this.pageType === 'editor') {
