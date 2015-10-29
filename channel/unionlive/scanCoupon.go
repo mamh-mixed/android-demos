@@ -6,7 +6,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/channel/unionlive/coupon"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/qiniu/log"
+	"github.com/omigo/log"
 )
 
 // unionliveScanPay 卡券接口
@@ -39,7 +39,7 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 	unionLiveResp := &coupon.PurchaseCouponsResp{}
 	err := Execute(unionLiveReq, unionLiveResp)
 	if err != nil {
-		log.Errorf("sendRequest fail, orderNum=%s, service=PurchaseCoupons, channel=alp", req.OrderNum)
+		log.Errorf("sendRequest fail, orderNum=%s, service=PurchaseCoupons, channel=UnionLive", req.OrderNum)
 		return nil, err
 	}
 
