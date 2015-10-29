@@ -59,15 +59,16 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 	}
 
 	user := &model.AppUser{
-		UserName:     req.UserName,
-		Password:     req.Password,
-		Activate:     "false",
-		Limit:        "true",
-		RegisterFrom: req.UserFrom,
-		Remark:       req.Remark,
-		CreateTime:   time.Now().Format("2006-01-02 15:04:05"),
-		SubAgentCode: req.SubAgentCode,
-		BelongsTo:    req.BelongsTo,
+		UserName:       req.UserName,
+		Password:       req.Password,
+		Activate:       "false",
+		Limit:          "true",
+		RegisterFrom:   req.UserFrom,
+		Remark:         req.Remark,
+		CreateTime:     time.Now().Format("2006-01-02 15:04:05"),
+		SubAgentCode:   req.SubAgentCode,
+		BelongsTo:      req.BelongsTo,
+		InvitationCode: req.InvitationCode,
 	}
 	user.UpdateTime = user.CreateTime
 
@@ -302,11 +303,21 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		return model.USER_ALREADY_IMPROVED
 	}
 
+	agentCode, agentName := "", ""
+	if user.InvitationCode != "" {
+		agent, err := mongo.AgentColl.Find(user.InvitationCode)
+		if err != nil {
+			agentCode, agentName = "99911888", "讯联O2O机构"
+		} else {
+			agentCode, agentName = agent.AgentCode, agent.AgentName
+		}
+	}
+
 	// 创建商户
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
-		AgentCode:  "99911888",
-		AgentName:  "讯联O2O机构",
+		AgentCode:  agentCode,
+		AgentName:  agentName,
 		Permission: permission,
 		MerStatus:  model.MerStatusNormal,
 		TransCurr:  "156",
@@ -318,8 +329,8 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 			CommodityName: "讯联云收银在线注册商户",
 			Province:      req.Province,
 			City:          req.City,
-			OpenBankName:  req.BankOpen,
-			BankName:      req.BranchBank,
+			OpenBankName:  req.BranchBank,
+			BankName:      req.BankOpen,
 			BankId:        req.BankNo,
 			AcctName:      req.Payee,
 			AcctNum:       req.PayeeCard,
@@ -713,12 +724,12 @@ func (u *user) getSettInfo(req *reqParams) (result model.AppResult) {
 	result = model.NewAppResult(model.SUCCESS, "")
 	settInfo := &model.SettInfo{
 		Payee:      mer.Detail.AcctName,
-		BankOpen:   mer.Detail.OpenBankName,
+		BankOpen:   mer.Detail.BankName,
 		PayeeCard:  mer.Detail.AcctNum,
 		PhoneNum:   mer.Detail.ContactTel,
 		Province:   mer.Detail.Province,
 		City:       mer.Detail.City,
-		BranchBank: mer.Detail.BankName,
+		BranchBank: mer.Detail.OpenBankName,
 		BankNo:     mer.Detail.BankId,
 	}
 
@@ -776,11 +787,11 @@ func (u *user) updateSettInfo(req *reqParams) (result model.AppResult) {
 	if req.City != "" {
 		m.Detail.City = req.City
 	}
-	if req.BankOpen != "" {
-		m.Detail.OpenBankName = req.BankOpen
-	}
 	if req.BranchBank != "" {
-		m.Detail.BankName = req.BranchBank
+		m.Detail.OpenBankName = req.BranchBank // 支行对应开户行
+	}
+	if req.BankOpen != "" {
+		m.Detail.BankName = req.BankOpen // 银行对应银行
 	}
 	if req.BankNo != "" {
 		m.Detail.BankId = req.BankNo

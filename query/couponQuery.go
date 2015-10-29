@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// BpTransQuery 绑定支付交易查询
-func BpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
+// CouponTransQuery 卡券查询
+func CouponTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 
 	now := time.Now().Format("2006-01-02")
 	// 默认当天开始
@@ -24,16 +24,18 @@ func BpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 		q.EndTime += " 23:59:59"
 	}
 
-	// mongo统计
-	trans, total, err := mongo.TransColl.Find(q)
+	log.Debugf("condition is %#v", q)
+
+	results, total, err := mongo.CouTransColl.Find(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
+		return model.NewResultBody(101, "查询卡券核销列表失败")
 	}
 
-	// 没有数组的话返回空数据
-	count := len(trans)
+	count := len(results)
+	log.Debugf("total is %d", count)
 	if count == 0 {
-		trans = make([]*model.Trans, 0, 0)
+		results = make([]*model.Trans, 0, 0)
 	}
 
 	// 分页信息
@@ -42,7 +44,7 @@ func BpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 		Total: total,
 		Size:  q.Size,
 		Count: count,
-		Data:  trans,
+		Data:  results,
 	}
 
 	ret = &model.ResultBody{

@@ -99,22 +99,26 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 
 	transType, _ := strconv.Atoi(params.Get("transType"))
 
+	log.Debugf("col is %s", params.Get("pay"))
+
 	cond := &model.QueryCondition{
-		MerId:        merId,
-		AgentCode:    params.Get("agentCode"),
-		SubAgentCode: params.Get("subAgentCode"),
-		GroupCode:    params.Get("groupCode"),
-		TransType:    transType,
-		Respcd:       params.Get("respcd"),
-		Busicd:       params.Get("busicd"),
-		StartTime:    params.Get("startTime"),
-		EndTime:      params.Get("endTime"),
-		OrderNum:     params.Get("orderNum"),
-		OrigOrderNum: params.Get("origOrderNum"),
-		Col:          params.Get("pay"),
-		BindingId:    params.Get("bindingId"),
-		Size:         size,
-		Page:         page,
+		MerId:          merId,
+		AgentCode:      params.Get("agentCode"),
+		SubAgentCode:   params.Get("subAgentCode"),
+		GroupCode:      params.Get("groupCode"),
+		TransType:      transType,
+		Respcd:         params.Get("respcd"),
+		Busicd:         params.Get("busicd"),
+		StartTime:      params.Get("startTime"),
+		EndTime:        params.Get("endTime"),
+		OrderNum:       params.Get("orderNum"),
+		OrigOrderNum:   params.Get("origOrderNum"),
+		Col:            params.Get("pay"),
+		BindingId:      params.Get("bindingId"),
+		CouponsNo:      params.Get("couponsNo"),
+		WriteoffStatus: params.Get("writeoffStatus"),
+		Size:           size,
+		Page:           page,
 	}
 
 	transStatus := params.Get("transStatus")
@@ -123,10 +127,6 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ret := tradeQuery(cond)
-
-	// // 允许跨域
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
-	// w.Header().Set("Access-Control-Allow-Methods", "*")
 
 	retBytes, err := json.Marshal(ret)
 	if err != nil {

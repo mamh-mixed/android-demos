@@ -57,6 +57,9 @@ type QueryCondition struct {
 	ChanCode     string   `json:"chanCode,omitempty"`
 	Direction    string
 	ReqIds       []string
+
+	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
+	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 }
 
 // QueryResult 查询结果值

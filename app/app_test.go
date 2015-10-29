@@ -407,7 +407,7 @@ func TestDownload(t *testing.T) {
 }
 
 func TestSendEmail(t *testing.T) {
-	NotifySalesman("rui.chen@cardinfolink.com")
+	NotifySalesman()
 }
 
 func TestRandBytes(t *testing.T) {
