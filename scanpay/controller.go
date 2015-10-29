@@ -3,6 +3,9 @@ package scanpay
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strings"
+
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/logs"
@@ -12,8 +15,6 @@ import (
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"net/url"
-	"strings"
 )
 
 // ScanPayHandle 执行扫码支付逻辑
@@ -70,6 +71,8 @@ func dispatch(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validateEnterprisePay, core.EnterprisePay, req)
 	case model.Jszf:
 		ret = doScanPay(validatePublicPay, core.PublicPay, req)
+	case model.Veri:
+		ret = doScanPay(validatePurchaseCoupons, core.PurchaseCoupons, req)
 	default:
 		ret = fieldContentError(buiscd)
 		ret.FillWithRequest(req)

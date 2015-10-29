@@ -42,7 +42,7 @@ type PurchaseCouponsRespBody struct {
 	Termid     string `json:"termId"`     // 终端编号	8	M	由优麦圈后台分配给该终端的编号
 	Termsn     string `json:"termSn"`     // 终端唯一序列号	100	M	商户终端对应的硬件唯一序列号
 	Amount     int    `json:"amount"`     // 要验证的次数	10	M	要验证该券码的次数
-	Authcode   string `json:"authCode"`   // 主机授权码	10	C1	后台交易处理成功后的授权码
+	Authcode   int    `json:"authCode"`   // 主机授权码	10	C1	后台交易处理成功后的授权码
 	Prodname   string `json:"prodName"`   // 券产品名称	32	C1	该券的产品名称
 	Proddesc   string `json:"prodDesc"`   // 券描述	100	C1	该券的产品描述
 	AvailCount int    `json:"availCount"` // 券剩余可用次数	10	C1	该券的剩余可用次数

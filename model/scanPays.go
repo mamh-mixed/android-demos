@@ -20,6 +20,7 @@ const (
 	Canc = "CANC"
 	Qyzf = "QYZF" // 企业付款
 	Jszf = "JSZF"
+	Veri = "VERI" // 卡券核销
 )
 
 // QueryCondition 扫码交易查询字段
@@ -163,6 +164,12 @@ type ScanPayRequest struct {
 	Attach       string `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
 	TimeExpire   string `json:"timeExpire,omitempty" url:"timeExpire,omitempty" bson:"timeExpire,omitempty"` // 过期时间
 
+	TradeFrom string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
+
+	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
+	Terminalsn string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
+	CreateTime string `json:"-" url:"-" bson:"-"`                                                          // 卡券交易创建时间
+
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
 	DeviceInfo string `json:"-" url:"-" bson:"-"` // 设备号
@@ -183,8 +190,7 @@ type ScanPayRequest struct {
 	ReqId            string `json:"-" url:"-" bson:"-"`
 
 	// 访问方式
-	IsGBK     bool   `json:"-" url:"-" bson:"-"`
-	TradeFrom string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
+	IsGBK bool `json:"-" url:"-" bson:"-"`
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -248,6 +254,15 @@ type ScanPayResponse struct {
 	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty" bson:"veriCode,omitempty"`
 	GoodsInfo       string   `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty" bson:"goodsInfo,omitempty"`
 	Attach          string   `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
+
+	ScanCodeId string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty" bson:"scanCodeId,omitempty"` // 扫码号 卡券核销M
+	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
+	CardId     string `json:"cardId,omitempty" url:"cardId,omitempty" bson:"cardId,omitempty"`             // 卡券类型 C
+	CardInfo   string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`       // 卡券详情 C
+	AvailCount string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"` // 卡券剩余可用次数C
+	ExpDate    string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`          // 卡券有效期 C
+	Authcode   int    `json:"-" url:"-" bson:"authcode,omitempty"`                                         // 授权码
+
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-" bson:"-"` // 渠道详细应答码
 	PrePayId     string `json:"-" url:"-" bson:"-"`

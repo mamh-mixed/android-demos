@@ -28,11 +28,15 @@ const (
 	SR_GROUP   = "GROUP"
 )
 
-var sysErr = errors.New("系统错误，请重新上传。")
-var emptyErr = errors.New("上传表格为空，请检查。")
-var fileErr = resultBody("无法获取文件，请重新上传。", 1)
-var maxFee = 0.03
-var settFlagArray = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
+var (
+	halfwhite         = []byte{0xc2, 0xa0} // ASCII：32被UTF-8编码之后成为ASCII：194 和 160的组合
+	sysErr            = errors.New("系统错误，请重新上传。")
+	emptyErr          = errors.New("上传表格为空，请检查。")
+	fileErr           = resultBody("无法获取文件，请重新上传。", 1)
+	maxFee            = 0.03
+	settFlagArray     = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
+	replaceWhitespace = strings.NewReplacer(" ", "", "\r", "", "\t", "", "\n", "", string(halfwhite), "")
+)
 
 // importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
@@ -81,6 +85,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ip := importer{Sheets: file.Sheets, fileName: key}
+	// ip.IsDebug = true
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -188,6 +193,7 @@ func (i *importer) dataHandle() error {
 		if r.MerId == "" {
 			return fmt.Errorf("第 %d 行，门店为空", index+3)
 		}
+
 		// 字段内容合法验证
 		mer, err := mongo.MerchantColl.Find(r.MerId)
 		switch r.Operator {
@@ -859,7 +865,6 @@ func (i *importer) rollback() {
 	// TODO: update的操作如何回滚
 }
 
-// TODO: 需要去除某些不可见字符
 func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 
 	var col = len(cells)
@@ -888,109 +893,109 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	r := &rowData{}
 	var cell *xlsx.Cell
 	if cell = cells[0]; cell != nil {
-		r.Operator = strings.TrimSpace(cell.Value)
+		r.Operator = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[1]; cell != nil {
-		r.AgentCode = strings.TrimSpace(cell.Value)
+		r.AgentCode = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[2]; cell != nil {
-		r.AgentName = strings.TrimSpace(cell.Value)
+		r.AgentName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[5]; cell != nil {
-		r.SubAgentCode = strings.TrimSpace(cell.Value)
+		r.SubAgentCode = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[6]; cell != nil {
-		r.SubAgentName = strings.TrimSpace(cell.Value)
+		r.SubAgentName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[7]; cell != nil {
-		r.GroupCode = strings.TrimSpace(cell.Value)
+		r.GroupCode = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[8]; cell != nil {
-		r.GroupName = strings.TrimSpace(cell.Value)
+		r.GroupName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[9]; cell != nil {
-		r.MerId = strings.TrimSpace(cell.Value)
+		r.MerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[10]; cell != nil {
-		r.MerName = strings.TrimSpace(cell.Value)
+		r.MerName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[11]; cell != nil {
-		r.PermissionStr = strings.TrimSpace(cell.Value)
+		r.PermissionStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[12]; cell != nil {
-		r.IsNeedSignStr = strings.TrimSpace(cell.Value)
+		r.IsNeedSignStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[13]; cell != nil {
-		r.SignKey = strings.TrimSpace(cell.Value)
+		r.SignKey = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[14]; cell != nil {
-		r.CommodityName = strings.TrimSpace(cell.Value)
+		r.CommodityName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[15]; cell != nil {
-		r.AlpMerId = strings.TrimSpace(cell.Value)
+		r.AlpMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[16]; cell != nil {
-		r.AlpMd5 = strings.TrimSpace(cell.Value)
+		r.AlpMd5 = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[17]; cell != nil {
-		r.AlpAgentCode = strings.TrimSpace(cell.Value)
+		r.AlpAgentCode = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[18]; cell != nil {
-		r.AlpAcqFee = strings.TrimSpace(cell.Value)
+		r.AlpAcqFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[19]; cell != nil {
-		r.AlpMerFee = strings.TrimSpace(cell.Value)
+		r.AlpMerFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[20]; cell != nil {
-		r.AlpSettFlag = strings.TrimSpace(cell.Value)
+		r.AlpSettFlag = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[21]; cell != nil {
-		r.WxpMerId = strings.TrimSpace(cell.Value)
+		r.WxpMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[22]; cell != nil {
-		r.WxpSubMerId = strings.TrimSpace(cell.Value)
+		r.WxpSubMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[23]; cell != nil {
-		r.IsAgentStr = strings.TrimSpace(cell.Value)
+		r.IsAgentStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[24]; cell != nil {
-		r.WxpAppId = strings.TrimSpace(cell.Value)
+		r.WxpAppId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[25]; cell != nil {
-		r.WxpSubAppId = strings.TrimSpace(cell.Value)
+		r.WxpSubAppId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[26]; cell != nil {
-		r.WxpMd5 = strings.TrimSpace(cell.Value)
+		r.WxpMd5 = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[27]; cell != nil {
-		r.WxpAcqFee = strings.TrimSpace(cell.Value)
+		r.WxpAcqFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[28]; cell != nil {
-		r.WxpMerFee = strings.TrimSpace(cell.Value)
+		r.WxpMerFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[29]; cell != nil {
-		r.WxpSettFlag = strings.TrimSpace(cell.Value)
+		r.WxpSettFlag = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[30]; cell != nil {
-		r.ShopId = strings.TrimSpace(cell.Value)
+		r.ShopId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[31]; cell != nil {
-		r.GoodsTag = strings.TrimSpace(cell.Value)
+		r.GoodsTag = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[32]; cell != nil {
-		r.AcctNum = strings.TrimSpace(cell.Value)
+		r.AcctNum = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[33]; cell != nil {
-		r.AcctName = strings.TrimSpace(cell.Value)
+		r.AcctName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[34]; cell != nil {
-		r.BankId = strings.TrimSpace(cell.Value)
+		r.BankId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[35]; cell != nil {
-		r.BankName = strings.TrimSpace(cell.Value)
+		r.BankName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[36]; cell != nil {
-		r.City = strings.TrimSpace(cell.Value)
+		r.City = replaceWhitespace.Replace(cell.Value)
 	}
 
 	if _, ok := i.rowMap[r.MerId]; ok {

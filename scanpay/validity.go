@@ -29,6 +29,8 @@ const (
 	checkName  = "checkName"
 	desc       = "desc"
 	userName   = "userName"
+	txndir     = "txndir"
+	sign       = "sign"
 )
 
 var (
@@ -444,4 +446,42 @@ func fieldFormatError(f string) *model.ScanPayResponse {
 		ErrorDetail: errMsg,
 		ErrorCode:   formatError.ErrorCode,
 	}
+}
+
+// validatePurchaseCoupons 验证卡券核销的参数
+func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 验证非空
+	switch {
+	case req.Txndir == "":
+		return fieldEmptyError(txndir)
+	case req.Busicd == "":
+		return fieldEmptyError(buiscd)
+	case req.AgentCode == "":
+		return fieldEmptyError(agentCode)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.Terminalid == "":
+		return fieldEmptyError(terminalid)
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.ScanCodeId == "":
+		return fieldEmptyError(scanCodeId)
+	case req.Sign == "":
+		return fieldEmptyError(sign)
+
+	}
+
+	// 验证格式
+	if req.Chcd != "UNIONLIVE" {
+		return fieldContentError(chcd)
+	}
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
+	}
+
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+
+	return
 }
