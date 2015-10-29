@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/crontab"
@@ -14,9 +18,6 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
-	"math"
-	"strings"
-	"time"
 )
 
 var (
@@ -321,7 +322,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = adaptor.ProcessBarcodePay(t, c, req)
 
-	// 渠道
+	// 渠�����
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
@@ -1112,6 +1113,24 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	return mongo.SpTransColl.UpdateAndUnlock(t)
 }
 
+// updateTrans 更新卡券交易信息
+func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
+	expDate, _ := time.ParseInLocation("20060102", ret.ExpDate, time.Local)
+	// 根据请求结果更新
+	t.ChanRespCode = ret.ChanRespCode
+	t.ChanOrderNum = ret.ChannelOrderNum
+	ret.ChannelOrderNum = ""
+	t.RespCode = ret.Respcd
+	t.ErrorDetail = ret.ErrorDetail
+	t.PayTime = dateFormat(ret.PayTime)
+	t.Prodname = ret.CardId
+	t.CardInfo = ret.CardInfo
+	t.AvailCount = ret.AvailCount
+	t.ExpDate = expDate.Format("2006-01-02")
+
+	return mongo.CouTransColl.UpdateAndUnlock(t)
+}
+
 // copyProperties 从原交易拷贝属性
 func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.ChanCode = orig.ChanCode
@@ -1149,4 +1168,60 @@ func dateFormat(payTime string) string {
 		log.Errorf("payTime format error, expect length=14, but get length=%d, patTime=%s", len(payTime), payTime)
 		return ""
 	}
+}
+
+// PurchaseCoupons 卡券核销
+func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
+	}
+	// 核销次数不填默认为1
+	if req.VeriTime == "" {
+		req.VeriTime = "1"
+	}
+
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:       req.Mchntid,
+		SysOrderNum: util.SerialNumber(),
+		OrderNum:    req.OrderNum,
+		TransType:   model.PurchaseCoupons,
+		Busicd:      req.Busicd,
+		AgentCode:   req.AgentCode,
+		ChanCode:    req.Chcd,
+		Terminalid:  req.Terminalid,
+		TradeFrom:   req.TradeFrom,
+		CouponsNo:   req.ScanCodeId,
+		VeriTime:    req.VeriTime,
+	}
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+	}
+	t.ChanMerId = rp.ChanMerId
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 记录交易
+	// t.TransStatus = model.TransNotPay
+	err = mongo.CouTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	req.CreateTime = t.CreateTime
+	// 请求渠道
+	ret = adaptor.ProcessPurchaseCoupons(t, c, req)
+
+	// 更新交易信息
+	updateCouponTrans(t, ret)
+
+	return ret
 }

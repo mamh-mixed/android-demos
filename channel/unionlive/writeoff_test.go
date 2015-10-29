@@ -1,4 +1,4 @@
-package coupon
+package unionlive
 
 import "testing"
 

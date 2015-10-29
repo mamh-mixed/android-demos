@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/channel/unionlive"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -495,4 +496,31 @@ func addRelatedProperties(current *model.Trans, m *model.Merchant) {
 	current.ShortName = m.Detail.ShortName
 	current.SubAgentCode = m.SubAgentCode
 	current.SubAgentName = m.SubAgentName
+}
+
+// ProcessPurchaseCoupons 卡券核销
+func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	mer, err := mongo.MerchantColl.Find(t.MerId)
+	if err != nil {
+		return ReturnWithErrorCode("NO_MERCHANT")
+	}
+	addRelatedProperties(t, mer)
+
+	// 上送参数
+	req.SysOrderNum = t.SysOrderNum
+	// req.Subject = mer.Detail.CommodityName
+	req.ChanMerId = c.ChanMerId
+	req.Terminalsn = req.Terminalid
+	req.Terminalid = c.TerminalId
+
+	// 获得渠道实例，请求
+	client := unionlive.DefaultClient
+	ret, err = client.ProcessPurchaseCoupons(req)
+	if err != nil {
+		log.Errorf("process PurchaseCoupons error:%s", err)
+		return ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	return ret
 }

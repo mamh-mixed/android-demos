@@ -2,13 +2,14 @@ package scanpay
 
 import (
 	"encoding/json"
+	"sync"
+	"testing"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"sync"
-	"testing"
 	// "time"
 )
 
@@ -95,6 +96,20 @@ var (
 		Code:         "001fbfbe9b2a351311e4212dd30c6f83",
 		NeedUserInfo: "YES",
 	}
+
+	// 卡券核销
+	purchaseCoupons = &model.ScanPayRequest{
+		Txndir:     "Q",
+		Busicd:     "VERI",
+		AgentCode:  "19900505",
+		Chcd:       "UNIONLIVE",
+		Mchntid:    "1000000000505",
+		Terminalid: "9e908a255b3e5989",
+		OrderNum:   "1446031630947",
+		ScanCodeId: "1805702004000605",
+		VeriTime:   "1",
+		Sign:       "123456789",
+	}
 )
 
 func doOneScanPay(scanPay *model.ScanPayRequest) error {
@@ -153,4 +168,12 @@ func TestSignMsg(t *testing.T) {
 		t.Error(err)
 	}
 	t.Log(req.SignMsg())
+}
+
+// 测试卡券核销
+func TestPurchaseCoupons(t *testing.T) {
+	err := doOneScanPay(purchaseCoupons)
+	if err != nil {
+		t.Error(err)
+	}
 }
