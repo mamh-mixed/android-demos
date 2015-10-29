@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.salesman.activities;
 
 import android.annotation.SuppressLint;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;

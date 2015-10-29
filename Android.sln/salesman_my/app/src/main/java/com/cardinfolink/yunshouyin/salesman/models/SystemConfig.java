@@ -7,11 +7,11 @@ public class SystemConfig {
 
     //用户系统服务器地址
     // dev
-//    public static final String APP_Server ="http://dev.quick.ipay.so";
+    //public static final String APP_Server ="http://dev.quick.ipay.so";
     // test
-    public static final String APP_Server = "http://test.quick.ipay.so";
+    //public static final String APP_Server = "http://test.quick.ipay.so";
     // pro
-    //public static final String APP_Server = "https://api.shou.money";
+    public static final String APP_Server = "https://api.shou.money";
     public static final String Server_Tool = APP_Server + "/app/tools";
 
     // 行号信息

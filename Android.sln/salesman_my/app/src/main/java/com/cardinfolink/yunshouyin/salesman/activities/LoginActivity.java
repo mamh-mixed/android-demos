@@ -80,8 +80,8 @@ public class LoginActivity extends BaseActivity {
 
     private void login() {
         // Test only
-        mUsernameEdit.setText("toolstest");
-        mPasswordEdit.setText("Yun#1016");
+        //mUsernameEdit.setText("toolstest");
+        //mPasswordEdit.setText("Yun#1016");
 
 
         if (validate()) {
