@@ -33,7 +33,7 @@ func (lc *logsCollection) Find(q *model.QueryCondition) ([]model.SpTransLogs, er
 	var result []model.SpTransLogs
 	var err error
 	if len(q.ReqIds) > 0 {
-		err = database.C(lc.name).Find(lc.query(q)).All(&result)
+		err = database.C(lc.name).Find(lc.query(q)).Sort("transTime").All(&result)
 	} else {
 		err = database.C(lc.name).Find(lc.query(q)).Sort("transTime").Skip((q.Page - 1) * q.Size).Limit(q.Size).All(&result)
 	}

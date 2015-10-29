@@ -451,10 +451,10 @@ func NotifySalesman() {
 				log.Errorf("fail to find merchant(%s): %s", u.MerId, err)
 				continue
 			}
-			eds = append(eds, excelData{m: m, u: u, operator: k})
+			eds = append(eds, excelData{m: m, u: u, operator: user.NickName})
 			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
-		e := email.Email{To: user.Mail, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(eds)), Cc: andyLi}
+		e := email.Email{To: user.Mail, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(eds))}
 		e.Attach(zipWrite(fds), "商户.zip", "")
 
 		excel := genExcel(eds)
@@ -468,12 +468,14 @@ func NotifySalesman() {
 
 		e.Send()
 
-		// 将数据整合到同个代理邮箱
-		if ad, ok := agents[user.AgentEmail]; ok {
-			ad.es = append(ad.es, eds...)
-			ad.fs = append(ad.fs, fds...)
-		} else {
-			agents[user.AgentEmail] = &agentData{eds, fds}
+		if user.AgentEmail != "" {
+			// 将数据整合到同个代理邮箱
+			if ad, ok := agents[user.AgentEmail]; ok {
+				ad.es = append(ad.es, eds...)
+				ad.fs = append(ad.fs, fds...)
+			} else {
+				agents[user.AgentEmail] = &agentData{eds, fds}
+			}
 		}
 	}
 
