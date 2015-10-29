@@ -231,7 +231,7 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 			merchant.SubAgentName = subAgent.SubAgentName
 		}
 
-		prefix := subAgent.AgentCode[1:4] + agentUser.AreaCode
+		prefix := agentUser.AgentCode[1:4] + agentUser.AreaCode
 		if err := genMerId(merchant, prefix); err != nil {
 			w.Write(jsonMarshal(model.SYSTEM_ERROR))
 			return

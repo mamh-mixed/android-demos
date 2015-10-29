@@ -266,11 +266,13 @@ func TestGetSettInfoHandle(t *testing.T) {
 }
 
 func TestMaxMerIdHandle(t *testing.T) {
-	maxMerId, err := mongo.MerchantColl.FindMaxMerId("999118880")
+	prefix := "9902041"
+	var length = fmt.Sprintf("%d", 15-len(prefix))
+	maxMerId, err := mongo.MerchantColl.FindMaxMerId(prefix)
 	if err != nil {
 		if err.Error() == "not found" {
 			t.Logf(" set mix merId is 999118880000001")
-			maxMerId = "999118880000001"
+			maxMerId = prefix + fmt.Sprintf("%0"+length+"d", 1)
 		} else {
 			t.Log(err)
 			return
