@@ -51,7 +51,7 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user.SubAgentCode == "" {
+	if user.SubAgentCode == "" || user.AreaCode == "" {
 		log.Errorf("userType is company,but can not find subAgentCode, username=%s", username)
 		w.Write(jsonMarshal(model.USER_DATA_ERROR))
 		return
@@ -231,7 +231,8 @@ func UpdateUserInfo(w http.ResponseWriter, r *http.Request) {
 			merchant.SubAgentName = subAgent.SubAgentName
 		}
 
-		if err := genMerId(merchant, subAgent.AgentCode+"0"); err != nil {
+		prefix := subAgent.AgentCode[1:4] + agentUser.AreaCode
+		if err := genMerId(merchant, prefix); err != nil {
 			w.Write(jsonMarshal(model.SYSTEM_ERROR))
 			return
 		}
@@ -468,13 +469,13 @@ func NotifySalesman() {
 
 		e.Send()
 
-		if user.AgentEmail != "" {
+		if user.RelatedEmail != "" {
 			// 将数据整合到同个代理邮箱
-			if ad, ok := agents[user.AgentEmail]; ok {
+			if ad, ok := agents[user.RelatedEmail]; ok {
 				ad.es = append(ad.es, eds...)
 				ad.fs = append(ad.fs, fds...)
 			} else {
-				agents[user.AgentEmail] = &agentData{eds, fds}
+				agents[user.RelatedEmail] = &agentData{eds, fds}
 			}
 		}
 	}

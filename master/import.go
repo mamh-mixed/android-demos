@@ -217,7 +217,7 @@ func (i *importer) dataHandle() error {
 			r.Mer = mer
 		default:
 			// D 先不做删除
-			return fmt.Errorf("暂不支持 %s 操作。", r.Operator)
+			return fmt.Errorf("第 %d 行，暂不支持 %s 操作。", index+3, r.Operator)
 		}
 
 		// 处理费率

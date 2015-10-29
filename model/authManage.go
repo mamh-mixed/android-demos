@@ -32,7 +32,8 @@ type User struct {
 	// GroupName string `json:"groupName" bson:"groupName"`
 	MerId string `json:"merId" bson:"merId"`
 	// MerName   string `json:"merName" bson:"merName"`
-	AgentEmail string `json:"agentEmail,omitempty" bson:"agentEmail,omitempty"`
+	RelatedEmail string `json:"-" bson:"relatedEmail,omitempty"` // 关联email
+	AreaCode     string `json:"-" bson:"areaCode,omitempty"`     // 地区代码
 }
 
 // Session Session表
