@@ -215,12 +215,12 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    public void BtnRegisterOnClick(View view) {
-
-        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-        LoginActivity.this.startActivity(intent);
-
-    }
+//    public void BtnRegisterOnClick(View view) {
+//
+//        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+//        LoginActivity.this.startActivity(intent);
+//
+//    }
 
     @Override
     protected void onResume() {

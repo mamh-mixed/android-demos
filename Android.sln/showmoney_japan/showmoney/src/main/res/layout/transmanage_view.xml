@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:text="我的账单"
+        android:text="@string/my_bill"
         android:textColor="#FFFFFF"
         android:textSize="22dp" />
 

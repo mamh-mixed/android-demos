@@ -105,5 +105,19 @@
     <string name="txn_time">交易时间:</string>
     <string name="txn_status">交易状态:</string>
     <string name="txn_status_success">交易成功</string>
+    <string name="txn_bill_info">账单信息</string>
+    <string name="txn_description">交易摘要:</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="txn_total_times">交易笔数</string>
+    <string name="txn_total_amount">交易总金额:</string>
+    <string name="txn_currency">元</string>
+    <string name="txn_refund">退款</string>
+    <string name="txn_unit">笔</string>
+    <string name="login">登录</string>
+    <string name="clear">清空</string>
+    <string name="delete">删除</string>
+    <string name="begin_scan">开始扫描</string>
+    <string name="my_bill">我的账单</string>
 
 </resources>

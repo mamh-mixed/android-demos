@@ -19,7 +19,7 @@
 
 *云收银将严格遵守国家相关法律法规，承诺不将您的账户信息以任何形式透露给第三方。</string>
     <string name="detail_refd">交易退款</string>
-    <string name="update_password">修改密码</string>
+    <string name="update_password">暗証番号変更</string>
     <string name="update_password_hint_oldpwd">現在パスワード</string>
     <string name="update_password_hint_newpwd">新パスワード</string>
     <string name="update_password_hint_qr_newpwd">新パスワード確認</string>
@@ -106,5 +106,22 @@
     <string name="txn_time">取引時間:</string>
     <string name="txn_status">取引状態:</string>
     <string name="txn_status_success">成功</string>
+    <string name="txn_order_num">オーダーID:</string>
+    <string name="txn_status_refresh">取引ステータス更新</string>
+
+    <string name="txn_bill_info">账单信息</string>
+    <string name="txn_description">交易摘要:</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="txn_total_times">交易笔数</string>
+    <string name="txn_total_amount">交易总金额:</string>
+    <string name="txn_currency">元</string>
+    <string name="txn_refund">退款</string>
+    <string name="txn_unit">笔</string>
+    <string name="login">登录</string>
+    <string name="clear">清空</string>
+    <string name="delete">删除</string>
+    <string name="begin_scan">开始扫描</string>
+    <string name="my_bill">我的账单</string>
 
 </resources>
