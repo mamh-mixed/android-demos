@@ -69,17 +69,17 @@ public class MainActivity extends BaseActivity {
         mPasswordUpdateView.setLayoutParams(new LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        mAccountUpdateView = new AccountUpdateView(mContext);
-        mAccountUpdateView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-        mLimitIncreaseView = new LimitIncreaseView(mContext);
-        mLimitIncreaseView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-        mWapBillView = new WapView(mContext);
-        mWapBillView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//        mAccountUpdateView = new AccountUpdateView(mContext);
+//        mAccountUpdateView.setLayoutParams(new LayoutParams(
+//                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//
+//        mLimitIncreaseView = new LimitIncreaseView(mContext);
+//        mLimitIncreaseView.setLayoutParams(new LayoutParams(
+//                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//
+//        mWapBillView = new WapView(mContext);
+//        mWapBillView.setLayoutParams(new LayoutParams(
+//                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
 
         mMainContent.addView(mScanCodeView);
@@ -108,9 +108,10 @@ public class MainActivity extends BaseActivity {
         menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_scancode));
         menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_transmange));
         menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_passwordupdate));
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_accountupdate));
+        // JP不需要的功能
+//        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_accountupdate));
         //menuLists.add("限额提升");
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_webbill));
+//        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_webbill));
         menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_safeexit));
 
 
@@ -150,22 +151,22 @@ public class MainActivity extends BaseActivity {
                 mMainContent.addView(mPasswordUpdateView);
 
                 break;
-            case 3:
-                mMainContent.removeAllViews();
-                mAccountUpdateView = new AccountUpdateView(mContext);
-                mAccountUpdateView.setLayoutParams(new LayoutParams(
-                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                mMainContent.addView(mAccountUpdateView);
-                mAccountUpdateView.getInfo();
-
-                break;
-
-
-            case 4:
-                mMainContent.removeAllViews();
-                mMainContent.addView(mWapBillView);
-                mWapBillView.initData();
-                break;
+//            case 3:
+//                mMainContent.removeAllViews();
+//                mAccountUpdateView = new AccountUpdateView(mContext);
+//                mAccountUpdateView.setLayoutParams(new LayoutParams(
+//                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//                mMainContent.addView(mAccountUpdateView);
+//                mAccountUpdateView.getInfo();
+//
+//                break;
+//
+//
+//            case 4:
+//                mMainContent.removeAllViews();
+//                mMainContent.addView(mWapBillView);
+//                mWapBillView.initData();
+//                break;
 
         }
     }
@@ -226,31 +227,31 @@ public class MainActivity extends BaseActivity {
                     mMainContent.addView(mPasswordUpdateView);
                     mLeftMenu.toggle();
                     break;
-                case 3:
-                    mMainContent.removeAllViews();
-                    mAccountUpdateView = new AccountUpdateView(mContext);
-                    mAccountUpdateView.setLayoutParams(new LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                    mMainContent.addView(mAccountUpdateView);
-                    mAccountUpdateView.getInfo();
-                    mLeftMenu.toggle();
-                    break;
+//                case 3:
+//                    mMainContent.removeAllViews();
+//                    mAccountUpdateView = new AccountUpdateView(mContext);
+//                    mAccountUpdateView.setLayoutParams(new LayoutParams(
+//                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+//                    mMainContent.addView(mAccountUpdateView);
+//                    mAccountUpdateView.getInfo();
+//                    mLeftMenu.toggle();
+//                    break;
 
-                case 4:
-
-
-                    mMainContent.removeAllViews();
-                    mMainContent.addView(mWapBillView);
-                    mWapBillView.initData();
-                    mLeftMenu.toggle();
+//                case 4:
+//
+//
+//                    mMainContent.removeAllViews();
+//                    mMainContent.addView(mWapBillView);
+//                    mWapBillView.initData();
+//                    mLeftMenu.toggle();
 //					 mLeftMenu.toggle();
 //					 Uri uri;
 //					 uri = Uri.parse(SystemConfig.WEB_BILL_URL+"?merchantCode="+SessonData.loginUser.getObject_id());
 //					 Intent  intent = new  Intent(Intent.ACTION_VIEW, uri);
 //					 startActivity(intent);
 
-                    break;
-                case 5:
+//                    break;
+                case 3:
                     finish();
                     break;
 

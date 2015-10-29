@@ -87,14 +87,14 @@
             android:theme="@android:style/Theme.Light.NoTitleBar" />
 
         <activity
-            android:name="com.cardinfolink.yunshouyin.activity.CaptureActivity"
+            android:name=".activity.CaptureActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:process="com.cardinfolink.yunshouyin"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity"
+            android:name=".activity.CreateQRcodeActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
