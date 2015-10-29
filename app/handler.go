@@ -21,11 +21,12 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.register(&reqParams{
-		UserName:  r.FormValue("username"),
-		Password:  r.FormValue("password"),
-		Transtime: r.FormValue("transtime"),
-		UserFrom:  model.SelfRegister,
-		Remark:    "self_register",
+		UserName:       r.FormValue("username"),
+		Password:       r.FormValue("password"),
+		Transtime:      r.FormValue("transtime"),
+		InvitationCode: r.FormValue("invitationCode"),
+		UserFrom:       model.SelfRegister,
+		Remark:         "self_register",
 	})
 
 	w.Write(jsonMarshal(result))
@@ -316,34 +317,35 @@ func jsonMarshal(result model.AppResult) []byte {
 }
 
 type reqParams struct {
-	UserName     string
-	Password     string
-	Transtime    string
-	Sign         string
-	Code         string
-	BankOpen     string
-	Payee        string
-	PayeeCard    string
-	PhoneNum     string
-	Email        string
-	OldPassword  string
-	NewPassword  string
-	OrderNum     string
-	BusinessType string
-	Status       string
-	Index        string
-	Date         string
-	Month        string
-	Province     string
-	City         string
-	BranchBank   string
-	BankNo       string
-	Remark       string
-	SubAgentCode string
-	MerName      string
-	Images       []string
-	UserFrom     int
-	BelongsTo    string
-	AppUser      *model.AppUser
-	m            *model.Merchant
+	UserName       string
+	InvitationCode string
+	Password       string
+	Transtime      string
+	Sign           string
+	Code           string
+	BankOpen       string
+	Payee          string
+	PayeeCard      string
+	PhoneNum       string
+	Email          string
+	OldPassword    string
+	NewPassword    string
+	OrderNum       string
+	BusinessType   string
+	Status         string
+	Index          string
+	Date           string
+	Month          string
+	Province       string
+	City           string
+	BranchBank     string
+	BankNo         string
+	Remark         string
+	SubAgentCode   string
+	MerName        string
+	Images         []string
+	UserFrom       int
+	BelongsTo      string
+	AppUser        *model.AppUser
+	m              *model.Merchant
 }

@@ -408,7 +408,7 @@ func genAccessToken(user *model.User) string {
 }
 
 // NotifySalesman 每天汇总当天用户数据给业务人员
-func NotifySalesman(em string) {
+func NotifySalesman() {
 	day := time.Now().Format("2006-01-02")
 	all, err := mongo.AppUserCol.Find(&model.AppUserContiditon{
 		RegisterFrom: model.SalesToolsRegister,
@@ -431,13 +431,16 @@ func NotifySalesman(em string) {
 		}
 	}
 
+	agents := make(map[string]*agentData)
+
 	// 向业务员发邮箱
 	for k, v := range c {
-		_, err := mongo.UserColl.FindOneUser(k, "", "")
+		user, err := mongo.UserColl.FindOneUser(k, "", "")
 		if err != nil {
 			log.Errorf("fail to find login user(%s): %s", k, err)
 			continue
 		}
+
 		var (
 			eds []excelData
 			fds []fileData
@@ -451,10 +454,7 @@ func NotifySalesman(em string) {
 			eds = append(eds, excelData{m: m, u: u, operator: k})
 			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
-		if em == "" {
-			em = k
-		}
-		e := email.Email{To: em, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(eds)), Cc: andyLi}
+		e := email.Email{To: user.Mail, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(eds)), Cc: andyLi}
 		e.Attach(zipWrite(fds), "商户.zip", "")
 
 		excel := genExcel(eds)
@@ -467,7 +467,38 @@ func NotifySalesman(em string) {
 		}
 
 		e.Send()
+
+		// 将数据整合到同个代理邮箱
+		if ad, ok := agents[user.AgentEmail]; ok {
+			ad.es = append(ad.es, eds...)
+			ad.fs = append(ad.fs, fds...)
+		} else {
+			agents[user.AgentEmail] = &agentData{eds, fds}
+		}
 	}
+
+	// 向代理发邮件
+	for k, a := range agents {
+		e := email.Email{To: k, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(a.es)), Cc: andyLi}
+		excel := genExcel(a.es)
+		ebuf := new(bytes.Buffer)
+		err = excel.Write(ebuf)
+		if err == nil {
+			e.Attach(ebuf, "汇总表.xlsx", "")
+		} else {
+			log.Errorf("fail to gen excel: %s", err)
+		}
+
+		if len(a.fs) > 0 {
+			e.Attach(zipWrite(a.fs), "商户.zip", "")
+		}
+		e.Send()
+	}
+}
+
+type agentData struct {
+	es []excelData
+	fs []fileData
 }
 
 type excelData struct {
