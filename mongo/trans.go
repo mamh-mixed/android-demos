@@ -359,6 +359,12 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.ChanCode != "" {
 		match["chanCode"] = q.ChanCode
 	}
+	if q.CouponsNo != "" {
+		match["couponsNo"] = q.CouponsNo
+	}
+	if q.WriteoffStatus != "" {
+		match["writeoffStatus"] = q.WriteoffStatus
+	}
 	// or 退款的和成功的
 	or := []bson.M{}
 	if len(q.TransStatus) != 0 {
@@ -374,14 +380,15 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["createTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
 
-	// 将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
-	match["transAmt"] = bson.M{"$ne": 0}
+	// 如果是扫码交易或绑定交易，将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
+	if col.name != "trans.coupon" {
+		match["transAmt"] = bson.M{"$ne": 0}
+	}
 
 	p := []bson.M{
 		{"$match": match},
 	}
 
-	// log.Debugf("find condition: %#v", match)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
