@@ -322,7 +322,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = adaptor.ProcessBarcodePay(t, c, req)
 
-	// 渠�����
+	// 渠�������
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
@@ -1219,7 +1219,12 @@ func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		req.VeriTime = "1"
 	}
 
-	// 记录该笔交易
+	// 如果渠道号为空，默认设置为ULIVE
+	if req.Chcd == "" {
+		req.Chcd = "ULIVE"
+	}
+
+	// ���录该笔交易
 	t := &model.Trans{
 		MerId:       req.Mchntid,
 		SysOrderNum: util.SerialNumber(),
