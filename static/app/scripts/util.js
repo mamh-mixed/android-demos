@@ -23,6 +23,14 @@
 			toast.show();
 		};
 		var showLoginDialog = function() {
+			var abc = document.getElementsByTagName('paper-dialog'),
+			a = null;
+			for(var i = 0, l = abc.length; i < l; i++){
+				a = abc[i];
+				if (typeof a.close === 'function'){
+					abc[i].close();
+				}
+			}
 			Polymer.Base.fire('open-dialog-please', '', {
 				node: document.getElementById('reloginDialog')
 			});
