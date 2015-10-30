@@ -90,14 +90,16 @@
             </div>
           </template>
         </div>
-        <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="handleQueryTapped"></x-pagination>
+        <div class="tfoot">
+          <div class="tr pagination">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="handleQueryTapped"></x-pagination>
+          </div>
         </div>
       </div>
     </form>
     <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
     <user-create id="userCreate" on-saved="afterSavedHandle" page-type="{{pageType}}" user="[[user]]"></user-create>
-    <user-view id="userView" on-editor="editorUserHandle"  on-delete="afterDeleteHandle" item="{{user}}"></user-view>
+    <user-view id="userView" on-editor="editorUserHandle" on-delete="afterDeleteHandle" item="{{user}}"></user-view>
     </div>
   </template>
   <script>

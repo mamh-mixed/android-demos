@@ -17,7 +17,6 @@
       bottom: 100px;
       right: 10%;
     }
-
   </style>
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/router/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
@@ -88,8 +87,10 @@
             </div>
           </template>
         </div>
-        <div class="wedge">
-          <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+        <div class="tfoot">
+          <div class="tr pagination">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+          </div>
         </div>
       </div>
     </form>
@@ -237,6 +238,5 @@
         },
       });
     })();
-
   </script>
 </dom-module>
