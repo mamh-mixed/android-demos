@@ -327,7 +327,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 //
 //                break;
             case R.id.btnsm:
-                final double sum = Double.parseDouble(edt_input.getText().toString().substring(1));
+                //TODO: test only, 1元=0.01元
+                final double sum = Double.parseDouble(edt_input.getText().toString().substring(1))/100;
                 if (sum <= 0) {
                     Toast.makeText(mContext, getResources().getString(R.string.qr_amount_nonzero), Toast.LENGTH_SHORT).show();
                     return;
