@@ -87,7 +87,7 @@
     }
   </style>
   <template>
-    <paper-dialog id="dialogView">
+    <paper-dialog modal id="dialogView">
       <paper-tabs selected="{{idx}}">
         <paper-tab>门店信息</paper-tab>
         <paper-tab>支付宝</paper-tab>
@@ -139,9 +139,9 @@
                 </div>
                 <div class="tr">
                   <div class="td key">支行名称</div>
-                  <div class="td">{{item.detail.bankName}}</div>
-                  <div class="td key">开户行名称</div>
                   <div class="td">{{item.detail.openBankName}}</div>
+                  <div class="td key">开户行名称</div>
+                  <div class="td">{{item.detail.bankName}}</div>
                 </div>
                 <div class="tr">
                   <div class="td key">交易币种</div>

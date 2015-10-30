@@ -19,7 +19,7 @@
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
         <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}"></paper-input>
-        <paper-dialog id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
+        <paper-dialog modal id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
           <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>Cancel</paper-button>
@@ -28,7 +28,7 @@
         </paper-dialog>
 
         <paper-input name="endTime" label="* 交易时间到" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}"></paper-input>
-        <paper-dialog id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
+        <paper-dialog modal id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
           <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>Cancel</paper-button>
@@ -441,7 +441,7 @@
       // 弹框显示门店详情
       showMerchantViewHandler: function(e) {
         if (this.user.userType === 'admin') {
-          this.merId = event.model.item.merId;
+          this.merId = e.model.item.merId;
           this.$.merchantView.open();
         }
       },
