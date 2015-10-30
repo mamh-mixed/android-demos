@@ -4,6 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 type appUserCollection struct {
@@ -25,6 +26,30 @@ func (col *appUserCollection) Upsert(user *model.AppUser) (err error) {
 	return nil
 }
 
+// Update 修改密码
+func (col *appUserCollection) Update(user *model.AppUser) (err error) {
+
+	bo := bson.M{
+		"username": user.UserName,
+	}
+	update := bson.M{
+		"$set": bson.M{"password": user.Password,
+			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+		},
+	}
+	err = database.C(col.name).Update(bo, update)
+	return err
+}
+
+// BatchAdd 批量增加
+func (col *appUserCollection) BatchAdd(users []model.AppUser) (err error) {
+	var temp []interface{}
+	for _, user := range users {
+		temp = append(temp, user)
+	}
+	return database.C(col.name).Insert(temp...)
+}
+
 func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err error) {
 	bo := bson.M{
 		"username": userName,
@@ -36,6 +61,12 @@ func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err
 		return nil, err
 	}
 	return user, nil
+}
+
+func (col *appUserCollection) Count(userName string) (int, error) {
+	return database.C(col.name).Find(bson.M{
+		"username": userName,
+	}).Count()
 }
 
 // Find 根据条件查找

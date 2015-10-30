@@ -3,6 +3,7 @@ package master
 import (
 	"archive/zip"
 	"bytes"
+	"crypto/md5"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -36,6 +38,7 @@ var (
 	maxFee            = 0.03
 	settFlagArray     = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
 	replaceWhitespace = strings.NewReplacer(" ", "", "\r", "", "\t", "", "\n", "", string(halfwhite), "")
+	c                 = regexp.MustCompile(`^[0-9a-zA-Z]{15}$`)
 )
 
 // importMerchant 接受excel格式文件，导入商户
@@ -85,7 +88,6 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ip := importer{Sheets: file.Sheets, fileName: key}
-	// ip.IsDebug = true
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -126,9 +128,11 @@ type operation struct {
 	Mers                  []model.Merchant
 	ChanMers              []model.ChanMer
 	RouterPolicys         []model.RouterPolicy
+	AppAccts              []model.AppUser
 	IsSaveMersSuccess     bool
 	IsSaveChanMersSuccess bool
 	IsSaveRouterSuccess   bool
+	IsSaveAppAcctSuccess  bool
 }
 
 // DoImport 执行导入操作
@@ -191,7 +195,11 @@ func (i *importer) dataHandle() error {
 
 		// 先看是否有填门店号
 		if r.MerId == "" {
-			return fmt.Errorf("第 %d 行，门店为空", index+3)
+			return fmt.Errorf("第 %d 行，门店号为空", index+3)
+		}
+
+		if !c.MatchString(r.MerId) {
+			return fmt.Errorf("第 %d 行，门店号 %s 格式错误", index+3, r.MerId)
 		}
 
 		// 字段内容合法验证
@@ -251,6 +259,11 @@ func (i *importer) dataHandle() error {
 			return err
 		}
 
+		// app
+		if err = handleAppAcct(r); err != nil {
+			return err
+		}
+
 	}
 
 	// 包装成入库的结构体
@@ -271,6 +284,19 @@ func updateValidate(r *rowData) error {
 				return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
 			}
 			r.IsNeedSign = true
+		}
+	}
+
+	if r.IsAddAcctStr != "" {
+		if r.IsAddAcctStr != "是" && r.IsAddAcctStr != "否" {
+			return fmt.Errorf("是否新增账户信息：%s 取值错误，应为【是】或【否】", r.IsAddAcctStr)
+		}
+		if r.IsAddAcctStr == "是" {
+			r.IsAddAcct = true
+		}
+		// 修改时，是或者否都要填
+		if r.AppUsername == "" || r.AppPassword == "" {
+			return fmt.Errorf("门店：%s 新增账户信息用户名或密码为空", r.MerId)
 		}
 	}
 
@@ -308,15 +334,27 @@ func updateValidate(r *rowData) error {
 func insertValidate(r *rowData) error {
 
 	if r.MerName == "" {
-		return fmt.Errorf("商户：%s 商户名称为空", r.MerId)
+		return fmt.Errorf("门店：%s 商户名称为空", r.MerId)
 	}
 
 	if r.AgentCode == "" {
-		return fmt.Errorf("商户：%s 代理代码为空", r.MerId)
+		return fmt.Errorf("门店：%s 代理代码为空", r.MerId)
 	}
 
 	if r.IsNeedSignStr != "是" && r.IsNeedSignStr != "否" {
 		return fmt.Errorf("是否开启验签：%s 取值错误，应为【是】或【否】", r.IsNeedSignStr)
+	}
+
+	if r.IsAddAcctStr != "" {
+		if r.IsAddAcctStr != "是" && r.IsAddAcctStr != "否" {
+			return fmt.Errorf("是否新增账户信息：%s 取值错误，应为【是】或【否】", r.IsAddAcctStr)
+		}
+		if r.IsAddAcctStr == "是" {
+			if r.AppUsername == "" || r.AppPassword == "" {
+				return fmt.Errorf("门店：%s 新增账户信息用户名或密码为空", r.MerId)
+			}
+			r.IsAddAcct = true
+		}
 	}
 
 	if r.IsNeedSignStr == "是" {
@@ -367,6 +405,37 @@ func insertValidate(r *rowData) error {
 	}
 
 	// TODO:清算信息格式验证
+	return nil
+}
+
+// handleAppAcct 处理app账户信息
+func handleAppAcct(r *rowData) error {
+	// 填了是或者否再处理
+	if r.IsAddAcctStr != "" {
+		count, err := mongo.AppUserCol.Count(r.AppUsername)
+		if err != nil {
+			return sysErr
+		}
+		switch r.Operator {
+		case "A":
+			if r.IsAddAcct {
+				if count > 0 {
+					return fmt.Errorf("门店：%s 账户信息-用户名：%s 已存在", r.MerId, r.AppUsername)
+				}
+			}
+		case "U":
+			if r.IsAddAcct {
+				if count > 0 {
+					return fmt.Errorf("门店：%s 账户信息-用户名：%s 已存在", r.MerId, r.AppUsername)
+				}
+			} else {
+				// 修改密码
+				if count == 0 {
+					return fmt.Errorf("门店：%s 账户信息-用户名：%s 不存在", r.MerId, r.AppUsername)
+				}
+			}
+		}
+	}
 	return nil
 }
 
@@ -590,6 +659,22 @@ func (i *importer) doDataWrap() {
 				mer.SignKey = util.SignKey()
 			}
 			i.A.Mers = append(i.A.Mers, *mer)
+
+			// app账户
+			if r.IsAddAcct {
+				user := model.AppUser{}
+				user.UserName = r.AppUsername
+				pb := md5.Sum([]byte(r.AppPassword))
+				user.Password = fmt.Sprintf("%x", pb[:])
+				user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+				user.UpdateTime = user.CreateTime
+				user.Activate = "true"
+				user.Limit = "true"
+				user.MerId = mer.MerId
+				user.RegisterFrom = model.PreRegister
+				i.A.AppAccts = append(i.A.AppAccts, user)
+			}
+
 		case "U":
 			mer = r.Mer
 			if r.MerName != "" {
@@ -646,6 +731,26 @@ func (i *importer) doDataWrap() {
 
 			mer.Remark = "update-upload-" + i.fileName
 			i.U.Mers = append(i.U.Mers, *mer)
+
+			// app账户
+			if r.IsAddAcctStr != "" {
+				user := model.AppUser{}
+				user.UserName = r.AppUsername
+				pb := md5.Sum([]byte(r.AppPassword))
+				user.Password = fmt.Sprintf("%x", pb[:])
+				user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+				user.UpdateTime = user.CreateTime
+				user.Activate = "true"
+				user.Limit = "true"
+				user.MerId = mer.MerId
+				user.RegisterFrom = model.PreRegister
+				if r.IsAddAcct {
+					i.A.AppAccts = append(i.A.AppAccts, user)
+				} else {
+					// 修改
+					i.U.AppAccts = append(i.U.AppAccts, user)
+				}
+			}
 		}
 
 		// 渠道商户
@@ -762,15 +867,18 @@ func settFlagHandle(settFlag string, rp *model.RouterPolicy, mer *model.Merchant
 }
 
 func (o *operation) print() {
-	for _, m := range o.Mers {
-		log.Debugf("%+v", m)
-	}
-	for _, c := range o.ChanMers {
-		log.Debugf("%+v", c)
-	}
-	for _, r := range o.RouterPolicys {
-		log.Debugf("%+v", r)
-	}
+	// for _, m := range o.Mers {
+	log.Infof("Mers: %d length", len(o.Mers))
+	// }
+	// for _, c := range o.ChanMers {
+	log.Infof("ChanMers: %d length", len(o.ChanMers))
+	// }
+	// for _, r := range o.RouterPolicys {
+	log.Infof("RouterPolicys: %d length", len(o.RouterPolicys))
+	// }
+	// for _, u := range o.AppAccts {
+	log.Infof("AppAccts: %d length", len(o.AppAccts))
+	// }
 }
 
 func (i *importer) persist() error {
@@ -809,6 +917,14 @@ func (i *importer) persist() error {
 		}
 	}
 
+	if len(i.A.AppAccts) > 0 {
+		err = mongo.AppUserCol.BatchAdd(i.A.AppAccts)
+		i.A.IsSaveRouterSuccess = true
+		if err != nil {
+			return err
+		}
+	}
+
 	// ===============UPD==============
 	for _, m := range i.U.Mers {
 		err = mongo.MerchantColl.Update(&m)
@@ -833,6 +949,14 @@ func (i *importer) persist() error {
 		}
 	}
 	i.U.IsSaveRouterSuccess = true
+
+	for _, u := range i.U.AppAccts {
+		err = mongo.AppUserCol.Update(&u)
+		if err != nil {
+			return err
+		}
+	}
+	i.U.IsSaveAppAcctSuccess = true
 
 	return nil
 }
@@ -872,7 +996,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
-	correctCol := 37
+	correctCol := 40
 	// 返回某列完整错误信息
 	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -997,6 +1121,15 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[36]; cell != nil {
 		r.City = replaceWhitespace.Replace(cell.Value)
 	}
+	if cell = cells[37]; cell != nil {
+		r.IsAddAcctStr = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[38]; cell != nil {
+		r.AppUsername = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[39]; cell != nil {
+		r.AppPassword = replaceWhitespace.Replace(cell.Value)
+	}
 
 	if _, ok := i.rowMap[r.MerId]; ok {
 		return fmt.Errorf("门店号(%s)重复", r.MerId)
@@ -1046,6 +1179,10 @@ type rowData struct {
 	BankId        string // 行号
 	BankName      string // 开户银行名称
 	City          string // 城市
+	IsAddAcctStr  string // 是否新增app账户信息
+	IsAddAcct     bool
+	AppUsername   string // 用户名
+	AppPassword   string // 密码
 	// ...
 	IsAgent    bool
 	IsNeedSign bool

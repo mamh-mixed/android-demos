@@ -85,6 +85,11 @@ func activateHandle(w http.ResponseWriter, r *http.Request) {
 
 // improveInfoHandle 补充清算信息
 func improveInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 暂不支持
+	w.Write(jsonMarshal(model.NOT_SUPPORT))
+	return
+
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
