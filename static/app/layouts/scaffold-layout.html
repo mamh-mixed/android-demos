@@ -399,36 +399,37 @@
               "url": "#/trade/bindingpay/list",
               "route": "trade.bindingpay.list"
             }, {
-              "nameCN": "报表下载",
-              "nameEN": "",
-              "icon": "print",
-              "url": "#/trade/reports",
-              "route": "trade.reports"
-            }, {
-              "nameCN": "旧系统报表下载",
-              "nameEN": "",
-              "icon": "cloud-download",
-              "url": "#/trade/old/reports",
-              "route": "trade.old.reports"
-            }, {
-              "nameCN": "清算报表下载",
-              "nameEN": "",
-              "icon": "assignment-returned",
-              "url": "#/trade/settle/reports",
-              "route": "trade.settle.reports"
-            }]
-          }, {
-            "nameCN": "卡券管理",
-            "nameEN": "",
-            "icon": "card-membership",
-            "url": "",
-            "route": "/coupon",
-            "children": [{
               "nameCN": "核销查询",
               "nameEN": "",
               "icon": "card-giftcard",
-              "url": "#/coupon/wo/list",
-              "route": "coupon.wo.list"
+              "url": "#/trade/coupon/list",
+              "route": "trade.coupon.list"
+            }]
+          }, {
+            "nameCN": "统计报表",
+            "nameEN": "",
+            "icon": "receipt",
+            "url": "",
+            "route": "/stats",
+            "children": [{
+              "nameCN": "报表下载",
+              "nameEN": "",
+              "icon": "print",
+              "url": "#/stats/reports",
+              "route": "stats.reports"
+            },
+            /*{
+              "nameCN": "旧系统报表下载",
+              "nameEN": "",
+              "icon": "cloud-download",
+              "url": "#/stats/old/reports",
+              "route": "stats.old.reports"
+            }, */{
+              "nameCN": "清算报表下载",
+              "nameEN": "",
+              "icon": "assignment-returned",
+              "url": "#/stats/settle/reports",
+              "route": "stats.settle.reports"
             }]
           }, {
             "nameCN": "内部测试",
