@@ -2,9 +2,7 @@ package com.cardinfolink.yunshouyin.salesman.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -19,14 +17,12 @@ import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
 import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.SACompatibleUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.SAQrCodeUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 import com.umeng.update.UmengUpdateAgent;
 
 
 public class LoginActivity extends BaseActivity {
-
+    private final String TAG = "LoginActivity";
     private EditText mUsernameEdit;
     private EditText mPasswordEdit;
     private CheckBox mAutoLoginCheckBox;
@@ -60,7 +56,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     /**
-     *
      * 验证用户名密码是否有值
      *
      * @return
@@ -85,8 +80,8 @@ public class LoginActivity extends BaseActivity {
 
     private void login() {
         // Test only
-//        mUsernameEdit.setText("toolstest");
-//        mPasswordEdit.setText("Yun#1016");
+        //mUsernameEdit.setText("toolstest");
+        //mPasswordEdit.setText("Yun#1016");
 
 
         if (validate()) {
@@ -145,7 +140,7 @@ public class LoginActivity extends BaseActivity {
                             }
                             // convert to user friendly message
                             String errorStr = ErrorUtil.getErrorString(error);
-                            Log.i("opp", "error:" + error);
+                            Log.i(TAG, "error:" + error);
                             endLoadingWithError(errorStr);
                         }
                     });
