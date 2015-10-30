@@ -473,12 +473,15 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 	}
 
 	// 验证格式
-	if req.Chcd != "UNIONLIVE" {
+	if req.Chcd != "ULIVE" {
 		return fieldContentError(chcd)
 	}
-	if _, err := strconv.Atoi(req.VeriTime); err != nil {
-		return fieldFormatError(veriTime)
+	if req.VeriTime != "" {
+		if _, err := strconv.Atoi(req.VeriTime); err != nil {
+			return fieldFormatError(veriTime)
+		}
 	}
+
 	if matched, err := validateMchntid(req.Mchntid); !matched {
 		return err
 	}
