@@ -72,7 +72,7 @@ func (c *routerPolicyCollection) PaginationFind(merId string, cardBrand string, 
 	if pay == "bp" {
 		match["chanCode"] = bson.M{"$in": []string{"CFCA", "CIL", "Mock"}}
 	} else {
-		match["chanCode"] = bson.M{"$in": []string{"ALP", "WXP"}}
+		match["chanCode"] = bson.M{"$in": []string{"ALP", "WXP", "ULIVE"}}
 	}
 
 	if chanCode != "" {

@@ -54,7 +54,6 @@
       float: left;
       margin-left: 24px;
     }
-
   </style>
   <template>
     <paper-dialog modal id="dialogView">
@@ -110,6 +109,14 @@
             <pre>{{item.httpKey}}</pre>
           </dd>
         </dl>
+        <dl id="ulive" hidden>
+          <dt>渠道代码:</dt>
+          <dd>{{item.chanCode}}</dd>
+          <dt>商户代码:</dt>
+          <dd>{{item.chanMerId}}</dd>
+          <dt>终端号:</dt>
+          <dd>{{item.terminalId}}</dd>
+        </dl>
       </paper-dialog-scrollable>
       <div class="buttons">
         <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
@@ -140,9 +147,20 @@
         if (this.item.chanCode === 'ALP') {
           this.$.alp.hidden = false;
           this.$.wxp.hidden = true;
-        } else if (this.item.chanCode === 'WXP') {
+          this.$.ulive.hidden = true;
+          return;
+        }
+        if (this.item.chanCode === 'WXP') {
           this.$.alp.hidden = true;
           this.$.wxp.hidden = false;
+          this.$.ulive.hidden = true;
+          return;
+        }
+        if (this.item.chanCode === 'ULIVE') {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = true;
+          this.$.ulive.hidden = false;
+          return;
         }
       },
       // 关闭事件
@@ -182,6 +200,5 @@
         this.fire('delete-ok');
       },
     });
-
   </script>
 </dom-module>
