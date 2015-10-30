@@ -58,13 +58,13 @@ func (i *chanMer) FindByMerIdAndCardBrand(merId, cardBrand string) (result *mode
 	router := mongo.RouterPolicyColl.Find(merId, cardBrand)
 
 	if router == nil {
-		log.Errorf("未找到商户(%s)的一个路由(%s)", merId, cardBrand)
+		// log.Errorf("未找到商户(%s)的一个路由(%s)", merId, cardBrand)
 		return model.NewResultBody(1, "查询失败")
 	}
 
 	mer, err := mongo.ChanMerColl.Find(router.ChanCode, router.ChanMerId)
 	if err != nil {
-		log.Errorf("未找到渠道商户(%s)失败：(%s)", router.ChanCode, err)
+		// log.Errorf("未找到渠道商户(%s)失败：(%s)", router.ChanCode, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 

@@ -53,7 +53,7 @@ func (i *routerPolicy) FindOne(merId, cardBrand string) (result *model.ResultBod
 	router := mongo.RouterPolicyColl.Find(merId, cardBrand)
 
 	if router == nil {
-		log.Errorf("未找到商户(%s)的一个路由(%s)", merId, cardBrand)
+		// log.Errorf("未找到商户(%s)的一个路由(%s)", merId, cardBrand)
 		return model.NewResultBody(1, "查询失败")
 	}
 
