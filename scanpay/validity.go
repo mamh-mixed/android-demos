@@ -477,7 +477,11 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 		return fieldContentError(chcd)
 	}
 	if req.VeriTime != "" {
-		if _, err := strconv.Atoi(req.VeriTime); err != nil {
+		veriTimeNum, err := strconv.Atoi(req.VeriTime)
+		if err != nil {
+			return fieldFormatError(veriTime)
+		}
+		if veriTimeNum <= 0 {
 			return fieldFormatError(veriTime)
 		}
 	}

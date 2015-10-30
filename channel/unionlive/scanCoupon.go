@@ -54,15 +54,28 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		return nil, err
 	}
 
+	// 将渠道的错误应答码转为为系统应答码
+	returncode, ok := ChanSysRespCode[unionLiveResp.Header.Returncode]
+	if !ok {
+		log.Warnf("chan Returncode(%s) is not in ChanSysRespCode,", unionLiveResp.Header.Returncode)
+		// 未知应答
+		returncode = "58"
+	}
+	errDetail, ok := SysRespCode[returncode]
+	if !ok {
+		log.Warnf("ChanSysRespCode(key=%s) is not in SysRespCode", returncode)
+		errDetail = unionLiveResp.Header.Returnmessage
+	}
+
 	// 处理结果返回
 	scanPayResponse := &model.ScanPayResponse{
 		Txndir:          unionLiveResp.Header.Transdirect,
 		Busicd:          model.Veri,
-		Respcd:          unionLiveResp.Header.Returncode, // 这个暂时填渠道响应码，之后会改为对应我们系统的码
+		Respcd:          returncode,
 		AgentCode:       req.AgentCode,
 		Chcd:            req.Chcd,
 		Mchntid:         req.Mchntid,
-		ErrorDetail:     unionLiveResp.Header.Returnmessage,
+		ErrorDetail:     errDetail,
 		OrderNum:        unionLiveResp.Header.Clienttraceno,
 		ScanCodeId:      unionLiveResp.Body.Couponsno,
 		VeriTime:        req.VeriTime,

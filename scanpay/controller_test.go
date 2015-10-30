@@ -99,15 +99,15 @@ var (
 
 	// 卡券核销
 	purchaseCoupons = &model.ScanPayRequest{
-		Txndir:    "Q",
-		Busicd:    "VERI",
-		AgentCode: "19900505",
-		Chcd:      "ULIVE",
-		Mchntid:   "001000000000505",
+		Txndir:     "Q",
+		Busicd:     "VERI",
+		AgentCode:  "19900505",
+		Chcd:       "ULIVE",
+		Mchntid:    "001000000000505",
 		Terminalid: "9e908a25",
-		OrderNum:   "1446174133714",
-		ScanCodeId: "1806704504000709",
-		// VeriTime:   "1",
+		OrderNum:   "1446183642367",
+		ScanCodeId: "1802708104000667",
+		// VeriTime:   "-1",
 	}
 )
 

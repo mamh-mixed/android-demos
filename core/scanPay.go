@@ -1148,7 +1148,7 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.Authcode = ret.Authcode
 
 	//更新核销状态
-	if ret.ChanRespCode == "0000" {
+	if ret.Respcd == "00" {
 		t.WriteoffStatus = model.COUPON_WO_SUCCESS
 	} else {
 		t.WriteoffStatus = model.COUPON_WO_ERROR
