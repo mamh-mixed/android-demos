@@ -48,7 +48,9 @@ func (e *Email) Send() error {
 	em.To = []string{e.To}
 	em.From = USER
 	em.Subject = e.Title
-	em.Cc = []string{e.Cc}
+	if e.Cc != "" {
+		em.Cc = []string{e.Cc}
+	}
 
 	em.HTML = []byte(e.Body) // Content-Type: text/html
 

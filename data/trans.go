@@ -22,9 +22,8 @@ const (
 	crypto = "cilxl123$"
 )
 
-//
 // func init() {
-//  url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
+// 	url = "mongodb://saoma:saoma@211.147.72.70:10006/online"
 // 	connect()
 // }
 
@@ -39,6 +38,20 @@ func Import(w http.ResponseWriter, r *http.Request) {
 	t := r.FormValue("type")
 
 	switch t {
+	case "updTrans":
+		go func() {
+			err := UpdateTrans()
+			if err != nil {
+				log.Error(err)
+			}
+		}()
+	case "trans":
+		go func() {
+			err := AddTransFromOldDB(st, et)
+			if err != nil {
+				log.Error(err)
+			}
+		}()
 	case "merchant":
 		go func() {
 			err := DoSyncMerchant("/Users/migo/Desktop/product_pem/")
@@ -56,13 +69,6 @@ func Import(w http.ResponseWriter, r *http.Request) {
 	case "settInfo":
 		go func() {
 			err := AsyncSettInfo()
-			if err != nil {
-				log.Error(err)
-			}
-		}()
-	case "trans":
-		go func() {
-			err := AddTransFromOldDB(st, et)
 			if err != nil {
 				log.Error(err)
 			}
@@ -118,6 +124,36 @@ type txn struct {
 	} `bson:"payjson"`
 }
 
+// UpdateTrans 更新交易来源
+func UpdateTrans() error {
+	txns, err := findTransFromOldDB()
+	if err != nil {
+		return err
+	}
+
+	log.Infof("从旧系统找到有交易来源标识的交易 %d 条，正在更新新系统的交易...", len(txns))
+
+	var updated int
+	for _, ot := range txns {
+		nt, err := mongo.SpTransColl.FindOne(ot.Merchant.Clientid, ot.Request.OrderNum)
+		if err != nil {
+			log.Errorf("没找到新系统交易 merId=%s, orderNum=%s", ot.Merchant.Clientid, ot.Request.OrderNum)
+			continue
+		}
+
+		if ot.Request.Code != "" && nt.Busicd != model.Jszf {
+			nt.Busicd = model.Jszf
+		}
+
+		nt.TradeFrom = ot.Request.TradeFrom
+		mongo.SpTransColl.Update(nt)
+		updated++
+	}
+
+	log.Infof("已成功更新 %d 交易记录", updated)
+	return nil
+}
+
 func AddTransFromOldDB(st, et string) error {
 	// TODO 判断新系统是否包含该天的数据，如果包含，那么报错，避免数据紊乱
 
@@ -139,7 +175,7 @@ func AddTransFromOldDB(st, et string) error {
 		log.Warn("没有找到符合条件数据。。")
 		return nil
 	}
-	log.Debugf("从老系统取出 %d 条符合条件交易数据，正在逻辑处理。。。", len(txns))
+	log.Infof("从老系统取出 %d 条符合条件交易数据，正在逻辑处理。。。", len(txns))
 
 	// 存放退款、撤销、取消的交易
 	var reversalTrans []*model.Trans
@@ -362,6 +398,14 @@ func AddTransFromOldDB(st, et string) error {
 	// 批量入库
 	return mongo.SpTransColl.BatchAdd(effectTrans)
 	// return nil
+}
+
+func findTransFromOldDB() ([]txn, error) {
+	// 10-18 同步交易时才开始加入tradeFrom
+	q := bson.M{"gw_date": bson.M{"$lte": "2015-10-18"}, "m_request.tradeFrom": bson.M{"$exists": true}, "response": "00"}
+	var txns []txn
+	err := saomaDB.C("txn").Find(q).All(&txns)
+	return txns, err
 }
 
 func readTransFromOldDB(startTime, endTime string) ([]txn, error) {

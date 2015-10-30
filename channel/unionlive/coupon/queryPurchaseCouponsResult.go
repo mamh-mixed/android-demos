@@ -1,5 +1,7 @@
 package coupon
 
+import "github.com/CardInfoLink/quickpay/model"
+
 type QueryPurchaseCouponsResultReqHeader struct {
 	Version       string `json:"version"`       // 报文版本号	15	M	当前版本1.0
 	Transdirect   string `json:"transDirect"`   // 交易方向	1	M	Q：请求
@@ -21,10 +23,14 @@ type QueryPurchaseCouponsResultReqBody struct {
 type QueryPurchaseCouponsResultReq struct {
 	Header QueryPurchaseCouponsResultReqHeader `json:"header"`
 	Body   QueryPurchaseCouponsResultReqBody   `json:"body"`
+	SpReq  *model.ScanPayRequest               `json:"-" url:"-" bson:"-"`
 }
 
 func (req *QueryPurchaseCouponsResultReq) GetT() string {
 	return "QueryPurchaseCouponsResult"
+}
+func (req *QueryPurchaseCouponsResultReq) GetSpReq() *model.ScanPayRequest {
+	return req.SpReq
 }
 
 type QueryPurchaseCouponsResultRespHeader struct {
@@ -46,7 +52,7 @@ type QueryPurchaseCouponsResultRespBody struct {
 	Amount           int    `json:"amount"`           // 要验证的次数	10	M	要验证该券码的次数
 	Oldreturncode    string `json:"oldReturnCode"`    // 原交易返回码	4	C1	原验证交易的后台交易返回码。详见附录。
 	Oldreturnmessage string `json:"oldReturnMessage"` // 原交易返回码描述	100	C1	原验证交易的后台返回码描述
-	Authcode         string `json:"authCode"`         // 主机授权码	10	C2	后台交易处理成功后的授权码
+	Authcode         int    `json:"authCode"`         // 主机授权码	10	C2	后台交易处理成功后的授权码
 	Prodname         string `json:"prodName"`         // 券产品名称	32	C2	该券的产品名称
 	Proddesc         string `json:"prodDesc"`         // 券描述	100	C2	该券的产品描述
 	Availcount       int    `json:"availCount"`       // 券剩余可用次数	10	C2	该券的剩余可用次数

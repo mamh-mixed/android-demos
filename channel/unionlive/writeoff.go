@@ -1,7 +1,10 @@
 package unionlive
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel/unionlive/coupon"
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 )
 
@@ -27,6 +30,67 @@ func Demo() (a interface{}, err error) {
 		return nil, err
 	}
 
+	log.Debugf("%#v", resp)
+	// process resp code, return
+	return
+}
+
+// W394-电子券验证结果查询
+func QueryPurchaseCouponsResultDemo() (a interface{}, err error) {
+	req := &coupon.QueryPurchaseCouponsResultReq{
+		Header: coupon.QueryPurchaseCouponsResultReqHeader{
+			Version:       Version,
+			Transdirect:   TransDirectQ,
+			Transtype:     "W394",
+			Merchantid:    "182000001000000",
+			Submittime:    time.Now().Format("20060102150405"),
+			Clienttraceno: "1446102368374",
+		},
+		Body: coupon.QueryPurchaseCouponsResultReqBody{
+			Couponsno:        "1802702004000305",
+			Termid:           "00000667",
+			Termsn:           "9e908a255b3e5989",
+			Amount:           1,
+			Oldclienttraceno: "1446109183201",
+			Oldsubmittime:    "20151029170019",
+			// Couponsno:        "1808700004000875",
+			// Oldclienttraceno: "1446029945052",
+			// Oldsubmittime:    "20151028185926",
+		},
+		SpReq: &model.ScanPayRequest{},
+	}
+	resp := &coupon.QueryPurchaseCouponsResultResp{}
+	if err = Execute(req, resp); err != nil {
+		log.Errorf("sendRequest fail, service=QueryPurchaseCouponsResult, channel=UNIONLIVE,%s", err)
+		return nil, err
+	}
+	log.Debugf("%#v", resp)
+	// process resp code, return
+	return
+}
+
+func QueryPurchaseLogDemo() (a interface{}, err error) {
+	req := &coupon.QueryPurchaseLogReq{
+		Header: coupon.QueryPurchaseLogReqHeader{
+			Version:       Version,
+			Transdirect:   TransDirectQ,
+			Transtype:     "W395",
+			Merchantid:    "182000001000000",
+			Submittime:    time.Now().Format("20060102150405"),
+			Clienttraceno: "144611269437",
+		},
+		Body: coupon.QueryPurchaseLogReqBody{
+			Termid:    "00000667",
+			Termsn:    "9e908a255b3e5989",
+			Pageindex: 0,
+		},
+		SpReq: &model.ScanPayRequest{},
+	}
+	resp := &coupon.QueryPurchaseLogResp{}
+	if err = Execute(req, resp); err != nil {
+		log.Errorf("sendRequest fail, service=QueryPurchaseCouponsResult, channel=UNIONLIVE,%s", err)
+		return nil, err
+	}
 	log.Debugf("%#v", resp)
 	// process resp code, return
 	return

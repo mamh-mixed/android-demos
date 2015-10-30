@@ -17,8 +17,18 @@ var DefaultClient unionliveScanPay
 
 // ProcessPurchaseCoupons 卡券核销
 func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	submitTime, _ := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
-	amount, _ := strconv.Atoi(req.VeriTime)
+
+	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", req.CreateTime, time.Local)
+	if err != nil {
+		log.Errorf("format req.CreateTime err,%s", err)
+		return nil, err
+	}
+
+	amount, err := strconv.Atoi(req.VeriTime)
+	if err != nil {
+		log.Errorf("format req.VeriTime to int err,%s", err)
+		return nil, err
+	}
 
 	unionLiveReq := &coupon.PurchaseCouponsReq{
 		Header: coupon.PurchaseCouponsReqHeader{
@@ -35,11 +45,12 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 			TermSn:    req.Terminalsn,
 			Amount:    amount,
 		},
+		SpReq: req,
 	}
 	unionLiveResp := &coupon.PurchaseCouponsResp{}
-	err := Execute(unionLiveReq, unionLiveResp)
+	err = Execute(unionLiveReq, unionLiveResp)
 	if err != nil {
-		log.Errorf("sendRequest fail, orderNum=%s, service=PurchaseCoupons, channel=UnionLive", req.OrderNum)
+		log.Errorf("sendRequest fail, orderNum=%s, service=PurchaseCoupons, channel=UNIONLIVE", req.OrderNum)
 		return nil, err
 	}
 
@@ -49,13 +60,12 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		Busicd:          model.Veri,
 		Respcd:          unionLiveResp.Header.Returncode, // 这个暂时填渠道响应码，之后会改为对应我们系统的码
 		AgentCode:       req.AgentCode,
-		Chcd:            "UNIONLIVE",
+		Chcd:            req.Chcd,
 		Mchntid:         req.Mchntid,
 		ErrorDetail:     unionLiveResp.Header.Returnmessage,
 		OrderNum:        unionLiveResp.Header.Clienttraceno,
 		ScanCodeId:      unionLiveResp.Body.Couponsno,
-		VeriTime:        strconv.Itoa(unionLiveResp.Body.Amount),
-		Sign:            req.Sign,
+		VeriTime:        req.VeriTime,
 		CardId:          unionLiveResp.Body.Prodname,
 		CardInfo:        unionLiveResp.Body.Proddesc,
 		AvailCount:      strconv.Itoa(unionLiveResp.Body.AvailCount),
@@ -63,6 +73,7 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		ChanRespCode:    unionLiveResp.Header.Returncode,
 		ChannelOrderNum: unionLiveResp.Header.Hosttraceno,
 		Terminalid:      req.Terminalsn,
+		Authcode:        unionLiveResp.Body.Authcode,
 	}
 
 	return scanPayResponse, nil

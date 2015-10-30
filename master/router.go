@@ -146,23 +146,18 @@ func fillUserTypeParam(r *http.Request, user *model.User) {
 	case model.UserTypeCIL:
 	case model.UserTypeShop:
 		query.Set("merId", user.MerId)
-		// fallthrough
 	case model.UserTypeMerchant:
 		query.Set("groupCode", user.GroupCode)
-		// fallthrough
 	case model.UserTypeCompany:
 		query.Set("subAgentCode", user.SubAgentCode)
-		// fallthrough
 	case model.UserTypeAgent:
 		query.Set("agentCode", user.AgentCode)
 	default:
 		log.Errorf("user type error: %s", user.UserType)
 	}
 
-	// log.Debugf("query: %#v", query)
 	r.URL.RawQuery = query.Encode()
-	// log.Debugf("query: %#v", r.URL.RawQuery)
-	// log.Debugf("query: %#v", r.URL.Query())
+
 }
 
 // authProcess 权限处理
@@ -268,5 +263,4 @@ func InsertLog(r *http.Request, user *model.User, body []byte) {
 		IP:       r.RemoteAddr,
 	}
 	mongo.MasterLogColl.Insert(masterLog)
-	log.Infof("masterLog:%#v", *masterLog)
 }

@@ -78,16 +78,16 @@ func DoSyncMerchant(path string) error {
 	var addMers []merchant
 	var updateCount int
 	for _, om := range mers {
-		nm, err := mongo.MerchantColl.Find(strings.TrimSpace(om.Clientid))
+		_, err = mongo.MerchantColl.Find(strings.TrimSpace(om.Clientid))
 		if err != nil {
 			// add
 			addMers = append(addMers, om)
 		} else {
 			// update
-			err = updateMerchantFromOldDB(om, nm)
-			if err != nil {
-				return err
-			}
+			// err = updateMerchantFromOldDB(om, nm)
+			// if err != nil {
+			// 	return err
+			// }
 			updateCount++
 		}
 	}
@@ -176,6 +176,12 @@ func updateMerchantFromOldDB(om merchant, nm *model.Merchant) error {
 	if nm.Detail.Area == "" {
 		nm.Detail.Area = strings.TrimSpace(om.Area)
 	}
+	if nm.Detail.TitleOne == "" {
+		nm.Detail.TitleOne = strings.TrimSpace(om.Group.TitleOne)
+	}
+	if nm.Detail.TitleTwo == "" {
+		nm.Detail.TitleTwo = strings.TrimSpace(om.Group.TitleTwo)
+	}
 	if nm.UniqueId == "" {
 		nm.UniqueId = om.UniqueId.Hex()
 	}
@@ -256,7 +262,7 @@ func updWXPRouterPolicy(om merchant) {
 	// 	r.SettRole = "WXP"
 	// }
 
-	mongo.RouterPolicyColl.Insert(r)
+	// mongo.RouterPolicyColl.Insert(r)
 }
 
 // addMerchantFromOldDB 导入商户
@@ -350,19 +356,19 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 		}
 
 		if mer.Alp.PartnerId != "" {
-			// 导入渠道商户
-			alp := &model.ChanMer{}
-			alp.ChanMerId = mer.Alp.PartnerId
-			alp.SignKey = mer.Alp.Md5
-			alp.ChanCode = "ALP"
-			// acqFee, _ := strconv.ParseFloat(mer.Alp.AcqFee, 32)
-			// merFee, _ := strconv.ParseFloat(mer.Alp.MerFee, 32)
-			// alp.AcqFee = float32(acqFee)
-			// alp.MerFee = float32(merFee)
-			err = mongo.ChanMerColl.Add(alp)
+			alp, err := mongo.ChanMerColl.Find("ALP", mer.Alp.PartnerId)
 			if err != nil {
-				return err
+				// 导入渠道商户
+				alp = &model.ChanMer{}
+				alp.ChanMerId = mer.Alp.PartnerId
+				alp.SignKey = mer.Alp.Md5
+				alp.ChanCode = "ALP"
+				err = mongo.ChanMerColl.Add(alp)
+				if err != nil {
+					return err
+				}
 			}
+
 			// 路由策略
 			ralp := &model.RouterPolicy{}
 			ralp.MerId = m.MerId
@@ -385,6 +391,7 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 		}
 
 		if mer.Wxp.MchId != "" {
+
 			// 导入渠道商户
 			wxp := &model.ChanMer{}
 			// 只保存子渠道商户
@@ -407,6 +414,7 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 				wxp.SignKey = "" // 清空证书以及appid，这时的数据是大商户的。
 				wxp.WxpAppId = ""
 				wxp.IsAgentMode = true
+
 			} else {
 				wxpMerId = mer.Wxp.MchId
 				// 保存证书
@@ -418,10 +426,12 @@ func addMerchantFromOldDB(mers []merchant, path string) error {
 				}
 			}
 			wxp.ChanMerId = wxpMerId
-
-			err = mongo.ChanMerColl.Add(wxp)
+			_, err = mongo.ChanMerColl.Find("WXP", wxpMerId)
 			if err != nil {
-				return err
+				err = mongo.ChanMerColl.Add(wxp)
+				if err != nil {
+					return err
+				}
 			}
 
 			// 路由策略

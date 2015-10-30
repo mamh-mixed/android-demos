@@ -45,12 +45,14 @@ func AsyncAppUser() error {
 		if app.Clientid != "" {
 			m, err := mongo.MerchantColl.Find(app.Clientid)
 			if err != nil {
-				// log.Errorf("未找到商户号 %s", app.Clientid)
+				log.Errorf("未找到商户号 %s", app.Clientid)
 				continue
 			}
-			// 将商户设置为只能当天退款
-			m.RefundType = model.CurrentDayRefund
-			mongo.MerchantColl.Update(m)
+			if m.RefundType != model.CurrentDayRefund {
+				// 将商户设置为只能当天退款
+				m.RefundType = model.CurrentDayRefund
+				mongo.MerchantColl.Update(m)
+			}
 		}
 	}
 

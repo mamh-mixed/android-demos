@@ -105,10 +105,10 @@ var (
 		Chcd:       "UNIONLIVE",
 		Mchntid:    "1000000000505",
 		Terminalid: "9e908a255b3e5989",
-		OrderNum:   "1446031630947",
-		ScanCodeId: "1805702004000605",
+		OrderNum:   "1446109626824",
+		ScanCodeId: "1802702004000305",
 		VeriTime:   "1",
-		Sign:       "123456789",
+		// Sign:       "123456789",
 	}
 )
 
