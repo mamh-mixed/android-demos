@@ -42,6 +42,7 @@ var (
 	SYSTEM_ERROR_CH         = NewAppResult(FAIL, "系统错误")
 	TOKEN_ERROR             = NewAppResult(FAIL, "accessToken_error")
 	USER_DATA_ERROR         = NewAppResult(FAIL, "user_data_error")
+	NOT_SUPPORT             = NewAppResult(FAIL, "请联系您的服务商为您修改清算信息。")
 )
 
 // AppUserContiditon app用户查找条件
