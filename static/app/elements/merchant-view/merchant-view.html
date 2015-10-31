@@ -82,12 +82,14 @@
       float: left;
       margin-left: 24px;
     }
+
     paper-tabs {
-        margin-top: 0;
+      margin-top: 0;
     }
+
   </style>
   <template>
-    <paper-dialog modal id="dialogView">
+    <paper-dialog with-backdrop id="dialogView">
       <paper-tabs selected="{{idx}}">
         <paper-tab>门店信息</paper-tab>
         <paper-tab>支付宝</paper-tab>
@@ -234,30 +236,31 @@
         </section>
         <section alias="weixin">
           <paper-dialog-scrollable>
-            <dt>渠道代码:</dt>
-            <dd>{{weixin.chanCode}}</dd>
-            <dt>商户代码:</dt>
-            <dd>{{weixin.chanMerId}}</dd>
-            <dt>商户名称:</dt>
-            <dd>{{weixin.chanMerName}}</dd>
-            <dt>是否代理商模式:</dt>
-            <dd>
-              <paper-checkbox checked$="{{weixin.isAgentMode}}" disabled></paper-checkbox>
-            </dd>
-            <dt>大商户号:</dt>
-            <dd>{{weixin.agentMer.chanMerId}}</dd>
-            <dt>微信 APPID:</dt>
-            <dd>{{weixin.wxpAppId}}</dd>
-            <dt>签名密钥:</dt>
-            <dd>{{weixin.signCert}}</dd>
-            <dt>HTTP 证书:</dt>
-            <dd>
-              <pre>{{weixin.httpCert}}</pre>
-            </dd>
-            <dt>HTTP 密钥:</dt>
-            <dd>
-              <pre>{{weixin.httpKey}}</pre>
-            </dd>
+            <dl id="wxp">
+              <dt>渠道代码:</dt>
+              <dd>{{weixin.chanCode}}</dd>
+              <dt>商户代码:</dt>
+              <dd>{{weixin.chanMerId}}</dd>
+              <dt>商户名称:</dt>
+              <dd>{{weixin.chanMerName}}</dd>
+              <dt>是否代理商模式:</dt>
+              <dd>
+                <paper-checkbox checked$="{{weixin.isAgentMode}}" disabled></paper-checkbox>
+              </dd>
+              <dt>大商户号:</dt>
+              <dd>{{weixin.agentMer.chanMerId}}</dd>
+              <dt>微信 APPID:</dt>
+              <dd>{{weixin.wxpAppId}}</dd>
+              <dt>签名密钥:</dt>
+              <dd>{{weixin.signCert}}</dd>
+              <dt>HTTP 证书:</dt>
+              <dd>
+                <pre>{{weixin.httpCert}}</pre>
+              </dd>
+              <dt>HTTP 密钥:</dt>
+              <dd>
+                <pre>{{weixin.httpKey}}</pre>
+              </dd>
             </dl>
           </paper-dialog-scrollable>
           <div class="buttons">
@@ -475,5 +478,6 @@
         this.set('weixin', response.data);
       },
     });
+
   </script>
 </dom-module>
