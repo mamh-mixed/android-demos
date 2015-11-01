@@ -12,15 +12,15 @@
         android:src="@drawable/logo" />
 
     <!--<ToggleButton-->
-        <!--android:id="@+id/swh"-->
-        <!--style="@style/MyToggleButton"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="15dp"-->
-        <!--android:background="#00000000"-->
-        <!--android:checked="true"-->
-        <!--android:textOff=""-->
-        <!--android:textOn="" />-->
+    <!--android:id="@+id/swh"-->
+    <!--style="@style/MyToggleButton"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="15dp"-->
+    <!--android:background="#00000000"-->
+    <!--android:checked="true"-->
+    <!--android:textOff=""-->
+    <!--android:textOn="" />-->
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -228,7 +228,6 @@
                 android:textSize="18sp" />
 
             <Button
-                android:visibility="invisible"
                 android:id="@+id/btnadd"
                 android:layout_width="35dp"
                 android:layout_height="50dp"
@@ -237,7 +236,8 @@
                 android:background="@drawable/yellow_selector"
                 android:text="+"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
@@ -248,36 +248,37 @@
             android:orientation="horizontal">
 
             <!--<Button-->
-                <!--android:id="@+id/btnpoint"-->
-                <!--android:layout_width="35dp"-->
-                <!--android:layout_height="50dp"-->
-                <!--android:layout_weight="0.9"-->
-                <!--android:background="@drawable/white_selector"-->
-                <!--android:text="."-->
-                <!--android:textColor="#FFFFFF"-->
-                <!--android:textSize="18sp" />-->
+            <!--android:id="@+id/btnpoint"-->
+            <!--android:layout_width="35dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_weight="0.9"-->
+            <!--android:background="@drawable/white_selector"-->
+            <!--android:text="."-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="18sp" />-->
 
             <Button
-                android:visibility="invisible"
                 android:layout_width="35dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/white_selector"
                 android:text="0"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
             <Button
                 android:id="@+id/btn0"
-                android:layout_marginLeft="10dp"
                 android:layout_width="35dp"
                 android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/white_selector"
                 android:text="0"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp" />
+
             <Button
-                android:visibility="invisible"
                 android:layout_width="35dp"
                 android:layout_height="50dp"
                 android:layout_marginLeft="10dp"
@@ -285,9 +286,10 @@
                 android:background="@drawable/white_selector"
                 android:text="0"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
             <Button
-                android:visibility="invisible"
                 android:layout_width="35dp"
                 android:layout_height="50dp"
                 android:layout_marginLeft="10dp"
@@ -295,7 +297,8 @@
                 android:background="@drawable/white_selector"
                 android:text="0"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
@@ -319,40 +322,40 @@
     </LinearLayout>
 
     <!--<RadioGroup-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="10dp"-->
-        <!--android:gravity="center"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
-        <!--android:paddingRight="@dimen/activity_horizontal_margin">-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:gravity="center"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
+    <!--android:paddingRight="@dimen/activity_horizontal_margin">-->
 
-        <!--<RadioButton-->
-            <!--android:id="@+id/btnzhifubao"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@drawable/zhifubao"-->
-            <!--android:button="@null"-->
-            <!--android:checked="true"-->
-            <!--android:gravity="center"-->
-            <!--android:padding="7dp"-->
-            <!--android:text="支付宝  "-->
-            <!--android:textColor="#FFFFFF" />-->
+    <!--<RadioButton-->
+    <!--android:id="@+id/btnzhifubao"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:layout_marginRight="5dp"-->
+    <!--android:layout_weight="1"-->
+    <!--android:background="@drawable/zhifubao"-->
+    <!--android:button="@null"-->
+    <!--android:checked="true"-->
+    <!--android:gravity="center"-->
+    <!--android:padding="7dp"-->
+    <!--android:text="支付宝  "-->
+    <!--android:textColor="#FFFFFF" />-->
 
-        <!--<RadioButton-->
-            <!--android:id="@+id/btnweixin"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:layout_marginLeft="5dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@drawable/weixin"-->
-            <!--android:button="@null"-->
-            <!--android:gravity="center"-->
-            <!--android:padding="7dp"-->
-            <!--android:text="微信支付"-->
-            <!--android:textColor="#FFFFFF" />-->
+    <!--<RadioButton-->
+    <!--android:id="@+id/btnweixin"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:layout_marginLeft="5dp"-->
+    <!--android:layout_weight="1"-->
+    <!--android:background="@drawable/weixin"-->
+    <!--android:button="@null"-->
+    <!--android:gravity="center"-->
+    <!--android:padding="7dp"-->
+    <!--android:text="微信支付"-->
+    <!--android:textColor="#FFFFFF" />-->
     <!--</RadioGroup>-->
 
 </LinearLayout>

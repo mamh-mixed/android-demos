@@ -2,24 +2,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff" >
+    android:background="#ffffff">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="#1EBED6" >
+            android:background="#1EBED6">
 
             <ImageView
                 android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"              
+                android:layout_centerVertical="true"
                 android:padding="20dp"
                 android:src="@drawable/back" />
 
@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/qy"
@@ -81,6 +81,6 @@
         </LinearLayout>
     </LinearLayout>
 
-   <include layout="@layout/showmoney_dialog"></include> 
+    <include layout="@layout/showmoney_dialog"></include>
 
 </RelativeLayout>

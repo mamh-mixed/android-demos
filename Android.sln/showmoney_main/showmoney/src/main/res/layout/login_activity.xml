@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1EBED6" >
+    android:background="#1EBED6">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -22,15 +22,15 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp" >
+            android:layout_marginTop="30dp">
 
-            <TableRow              
+            <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical" >
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/imageView2"
@@ -45,23 +45,22 @@
                     android:layout_height="50dp"
                     android:background="@null"
                     android:ems="10"
-                    android:paddingLeft="15dp"
-                    android:textColor="#FFFFFF" 
-                    android:textColorHint="#eeeeee"
-                    android:inputType="textEmailAddress"
                     android:hint="@string/login_hint_username"
+                    android:inputType="textEmailAddress"
+                    android:paddingLeft="15dp"
                     android:singleLine="true"
-                    />
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#eeeeee" />
             </TableRow>
 
-            <TableRow              
+            <TableRow
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical" >
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/imageView3"
@@ -76,65 +75,61 @@
                     android:layout_height="50dp"
                     android:background="@null"
                     android:ems="10"
-                    android:paddingLeft="15dp"
-                    android:textColor="#FFFFFF" 
-                    android:textColorHint="#eeeeee"
-                    android:inputType="textPassword"
                     android:hint="@string/login_hint_password"
+                    android:inputType="textPassword"
+                    android:paddingLeft="15dp"
                     android:singleLine="true"
-                    />
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#eeeeee" />
             </TableRow>
         </TableLayout>
-        
-           <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content" 
-       android:orientation="horizontal"
-       android:layout_marginTop="20dp"
-       android:layout_marginLeft="30dp"
-         >
-       <CheckBox
-       android:id="@+id/checkbox_auto_login"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content" 
-       android:text="@string/login_auto_login"
-       android:button="@drawable/checkbox"
-       android:textColor="#ffffff"
-           />
-       
-      
-       </LinearLayout>
-       
-     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center" >
 
-        <Button
-            android:id="@+id/btnlogin"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="登录"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:background="@drawable/blue_selector" 
-            android:onClick="BtnLoginOnClick"
-            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnsignup"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:text="注册"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:background="@drawable/blue_selector"
-            android:layout_marginLeft="25dp" 
-            android:onClick="BtnRegisterOnClick"
-            />
-    </LinearLayout>       
-       
+            <CheckBox
+                android:id="@+id/checkbox_auto_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/checkbox"
+                android:text="@string/login_auto_login"
+                android:textColor="#ffffff" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btnlogin"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:background="@drawable/blue_selector"
+                android:onClick="BtnLoginOnClick"
+                android:text="登录"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btnsignup"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="25dp"
+                android:background="@drawable/blue_selector"
+                android:onClick="BtnRegisterOnClick"
+                android:text="注册"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -143,7 +138,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="30dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
@@ -154,7 +149,7 @@
             android:textColor="#ffffff"
             android:textSize="17sp" />
     </LinearLayout>
-    
-      <include layout="@layout/showmoney_dialog"></include> 
-    
+
+    <include layout="@layout/showmoney_dialog"></include>
+
 </RelativeLayout>

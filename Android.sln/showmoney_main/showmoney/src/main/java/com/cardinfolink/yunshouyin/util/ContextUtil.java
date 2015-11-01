@@ -2,10 +2,15 @@ package com.cardinfolink.yunshouyin.util;
 
 import android.app.Application;
 
-public class ContextUtil extends Application{
-	private static ContextUtil instance;
-	public static ContextUtil getInstance() {
+public class ContextUtil extends Application {
+    private static ContextUtil instance;
+
+    public static ContextUtil getInstance() {
         return instance;
+    }
+
+    public static String getResString(int id) {
+        return instance.getResources().getString(id);
     }
 
     @Override
@@ -15,10 +20,5 @@ public class ContextUtil extends Application{
         instance = this;
         CrashHandler handler = CrashHandler.getInstance();
         handler.init(getApplicationContext());
-    }
-    
-    
-    public static String getResString(int id){
-    	return instance.getResources().getString(id);
     }
 }

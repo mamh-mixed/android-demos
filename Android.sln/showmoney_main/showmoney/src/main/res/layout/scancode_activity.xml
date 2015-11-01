@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  Copyright (C) 2008 ZXing authors
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,60 +15,61 @@
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-     >
+    android:layout_height="match_parent">
 
-  <SurfaceView android:id="@+id/preview_view"
-               android:layout_width="fill_parent"
-               android:layout_gravity="center"
-               android:layout_height="fill_parent"
-               android:layout_centerInParent="true"/>
+    <SurfaceView
+        android:id="@+id/preview_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
 
-  <com.cardinfolink.yunshouyin.view.ViewfinderView
-      android:id="@+id/viewfinder_view"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:background="@color/transparent"/>
-  
-  
-    <ImageView 
-      android:id="@+id/back"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="20dp"
-      android:layout_marginLeft="20dp"
-      android:background="@drawable/back_color"
-      android:src="@drawable/back"
-      android:scaleType="centerInside"
-      
-      />
-  
-  
-  <ImageView 
-      android:id="@+id/flashlight"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="20dp"
-      android:layout_marginRight="20dp"
-      android:layout_alignParentRight="true"
-      android:background="@drawable/flashlight_color"
-      android:src="@drawable/flashlight"
-      android:scaleType="centerInside"
-      
-      />
-  
-  
-  <TextView 
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_centerHorizontal="true"
-      android:layout_alignParentBottom="true"
-      android:layout_marginBottom="40dp"
-      android:textSize="14sp"
-      android:textColor="#ffffff"
-      android:text="二维码或条码"
-      
-      />
-  <include layout="@layout/showmoney_dialog"></include> 
+    <com.cardinfolink.yunshouyin.view.ViewfinderView
+        android:id="@+id/viewfinder_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/transparent" />
+
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/back_color"
+        android:scaleType="centerInside"
+        android:src="@drawable/back"
+
+        />
+
+
+    <ImageView
+        android:id="@+id/flashlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/flashlight_color"
+        android:scaleType="centerInside"
+        android:src="@drawable/flashlight"
+
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:text="二维码或条码"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+
+        />
+
+    <include layout="@layout/showmoney_dialog"></include>
 
 </RelativeLayout>
