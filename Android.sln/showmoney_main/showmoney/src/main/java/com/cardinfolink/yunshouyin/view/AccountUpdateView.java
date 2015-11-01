@@ -945,7 +945,7 @@ public class AccountUpdateView extends LinearLayout {
                                                         null,
                                                         ((Activity) mContext)
                                                                 .findViewById(R.id.alert_dialog),
-                                                        "修改成功",
+                                                        getResources().getString(R.string.alert_update_success),
                                                         BitmapFactory
                                                                 .decodeResource(
                                                                         mContext.getResources(),

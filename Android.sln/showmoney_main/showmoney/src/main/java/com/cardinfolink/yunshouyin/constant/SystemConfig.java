@@ -9,14 +9,13 @@ public class SystemConfig {
     public static final String APP_KEY = ContextUtil.getInstance().getResources().getString(R.string.app_key);//app用户系统交互key
 
     //用户系统服务器地址
-    public static final String Server = ContextUtil.getInstance().getResources().getString(R.string.user_server);
+    public static final String Server = ContextUtil.getInstance().getResources().getString(R.string.test_user_server);
 
     //扫固定码支付网页订单支付
     public static final String WEB_BILL_URL = ContextUtil.getInstance().getResources().getString(R.string.web_bill_url);
-    ;
 
     // SDK 环境
-    public static final boolean IS_PRODUCE = true;
+    public static final boolean IS_PRODUCE = false;
 
     //公共数据平台秘钥和key
 

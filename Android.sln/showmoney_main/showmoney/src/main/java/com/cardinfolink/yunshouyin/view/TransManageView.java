@@ -67,7 +67,7 @@ public class TransManageView extends LinearLayout {
         addView(contentView);
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
         mMonth = spf.format(new Date());
-        tips_year_month = (new SimpleDateFormat("yyyy年MM月")).format(new Date());
+        tips_year_month = (new SimpleDateFormat("yyyy" + getResources().getString(R.string.year) + "MM" + getResources().getString(R.string.month))).format(new Date());
         mTradeBillList = new ArrayList<TradeBill>();
         initLayout();
         initListener();
@@ -243,10 +243,18 @@ public class TransManageView extends LinearLayout {
                                         mBillAdapter.setData(mTradeBillList);
                                         mBillAdapter.notifyDataSetChanged();
                                         mPullToRefreshListView.onRefreshComplete();
-                                        mBillTipsText.setText(tips_year_month
-                                                + "  交易笔数" + count + " 交易总金额:"
-                                                + total + "元 " + "退款" + refdcount
-                                                + "笔(" + refdtotal + "元)");
+
+
+                                        mBillTipsText.setText(
+                                                tips_year_month +
+                                                        "  " +
+                                                        getResources().getString(R.string.txn_total_times) + count +
+                                                        " " +
+                                                        getResources().getString(R.string.txn_total_amount) + total + getResources().getString(R.string.txn_currency) +
+                                                        " " +
+                                                        getResources().getString(R.string.txn_refund) + refdcount
+                                                        +
+                                                        getResources().getString(R.string.txn_unit)+ "(" + refdtotal + getResources().getString(R.string.txn_currency) + ")");
                                         bill_index += size;
                                     }
 
@@ -366,6 +374,7 @@ public class TransManageView extends LinearLayout {
             if (!bill.tradeFrom.isEmpty()) {
                 tradeFrom = bill.tradeFrom;
             }
+            //TODO: 待日文化
             String busicd = "支付";
             if (bill.busicd.equals("REFD")) {
                 busicd = "退款";

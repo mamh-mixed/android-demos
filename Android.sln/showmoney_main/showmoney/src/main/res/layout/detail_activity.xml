@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="账单信息"
+            android:text="@string/txn_bill_info"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -74,7 +74,7 @@
                     android:background="@drawable/white_selector"
                     android:onClick="BtnRefreshOnClick"
                     android:padding="5dp"
-                    android:text="刷新"
+                    android:text="@string/txn_status_refresh"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp" />
 
@@ -100,7 +100,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="交易金额"
+                android:text="@string/txn_amount"
                 android:textColor="#000000"
                 android:textSize="15sp" />
 
@@ -138,7 +138,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="客户账户:"
+                    android:text="@string/custom_account"
                     android:textColor="#777777"
                     android:textSize="17sp" />
 
@@ -162,7 +162,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="交易时间:"
+                    android:text="@string/txn_time"
                     android:textColor="#777777"
                     android:textSize="17sp" />
 
@@ -186,7 +186,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="交易状态:"
+                    android:text="@string/txn_status"
                     android:textColor="#777777"
                     android:textSize="17sp" />
 
@@ -210,7 +210,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="商户订单:"
+                    android:text="@string/txn_order_num"
                     android:textColor="#777777"
                     android:textSize="17sp" />
 
@@ -234,7 +234,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="交易摘要:"
+                    android:text="@string/txn_description"
                     android:textColor="#777777"
                     android:textSize="17sp" />
 

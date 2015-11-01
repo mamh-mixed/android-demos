@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:text="我的账单"
+        android:text="@string/my_bill"
         android:textColor="#FFFFFF"
         android:textSize="22dp" />
 
@@ -37,7 +37,7 @@
                 android:button="@null"
                 android:checked="true"
                 android:padding="7dp"
-                android:text="全部交易"
+                android:text="@string/txn_all"
                 android:textColor="@color/rb_txt" />
 
             <RadioButton
@@ -47,7 +47,7 @@
                 android:background="@drawable/rb2_bg_selector"
                 android:button="@null"
                 android:padding="7dp"
-                android:text="交易成功"
+                android:text="@string/txn_success"
                 android:textColor="@color/rb_txt" />
 
             <RadioButton
@@ -57,7 +57,7 @@
                 android:background="@drawable/rb3_bg_selector"
                 android:button="@null"
                 android:padding="7dp"
-                android:text="交易失败"
+                android:text="@string/txn_failed"
                 android:textColor="@color/rb_txt" />
 
 
