@@ -2,3 +2,4 @@ include ':cashierSdk'
 include ':library'
 include ':menulibrary'
 include ':showmoney'
+include ":showmoney_jp"
