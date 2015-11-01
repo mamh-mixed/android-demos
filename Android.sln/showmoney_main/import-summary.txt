@@ -1,0 +1,94 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Manifest Merging:
+-----------------
+Your project uses libraries that provide manifests, and your Eclipse
+project did not explicitly turn on manifest merging. In Android Gradle
+projects, manifests are always merged (meaning that contents from your
+libraries' manifests will be merged into the app manifest. If you had
+manually copied contents from library manifests into your app manifest
+you may need to remove these for the app to build correctly.
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+From CashierSdk:
+* ic_launcher-web.png
+* proguard-project.txt
+From library:
+* LICENSE
+* pom.xml
+From menulibrary:
+* LICENSE.txt
+* build.gradle
+* library.iml
+* pom.xml
+From showmoney:
+* .gitignore
+* ic_launcher-web.png
+* proguard/
+* proguard/dump.txt
+* proguard/mapping.txt
+* proguard/seeds.txt
+* proguard/usage.txt
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:18.0.0
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+In CashierSdk:
+* AndroidManifest.xml => cashierSdk/src/main/AndroidManifest.xml
+* res/ => cashierSdk/src/main/res/
+* src/ => cashierSdk/src/main/java/
+In library:
+* AndroidManifest.xml => library/src/main/AndroidManifest.xml
+* res/ => library/src/main/res/
+* src/ => library/src/main/java/
+In menulibrary:
+* AndroidManifest.xml => menulibrary/src/main/AndroidManifest.xml
+* res/ => menulibrary/src/main/res/
+* src/ => menulibrary/src/main/java/
+In showmoney:
+* AndroidManifest.xml => showmoney/src/main/AndroidManifest.xml
+* libs/armeabi/libbspatch.so => showmoney/src/main/jniLibs/armeabi/libbspatch.so
+* libs/commons-codec-1.3.jar => showmoney/libs/commons-codec-1.3.jar
+* libs/core.jar => showmoney/libs/core.jar
+* libs/umeng-analytics-v5.5.3.jar => showmoney/libs/umeng-analytics-v5.5.3.jar
+* libs/umeng-update-v2.6.0.1.jar => showmoney/libs/umeng-update-v2.6.0.1.jar
+* lint.xml => showmoney/lint.xml
+* proguard-project.txt => showmoney/proguard-project.txt
+* res/ => showmoney/src/main/res/
+* src/ => showmoney/src/main/java/
+* src/android/os/IHardwareService.aidl => showmoney/src/main/aidl/android/os/IHardwareService.aidl
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
