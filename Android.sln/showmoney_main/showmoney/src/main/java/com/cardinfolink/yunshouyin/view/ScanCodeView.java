@@ -328,7 +328,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             case R.id.btnsm:
                 final double sum = Double.parseDouble(edt_input.getText().toString().substring(1));
                 if (sum <= 0) {
-                    Toast.makeText(mContext, "金额不能为零!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, getResources().getString(R.string.qr_amount_nonzero), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -479,7 +479,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         // String r=edt_input.getText().toString();
 
         if (result > 99999999) {
-            Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getResources().getString(R.string.qr_amount_exceed), Toast.LENGTH_SHORT).show();
             num_flag = false;
 
         } else {
@@ -513,7 +513,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
         // String r=edt_input.getText().toString();
         if (result > 99999999) {
-            Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getResources().getString(R.string.qr_amount_exceed), Toast.LENGTH_SHORT).show();
             num_flag = false;
 
         } else {
