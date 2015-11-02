@@ -86,9 +86,10 @@
     paper-tabs {
       margin-top: 0;
     }
+
   </style>
   <template>
-    <paper-dialog modal id="dialogView">
+    <paper-dialog with-backdrop id="dialogView">
       <paper-tabs selected="{{idx}}">
         <paper-tab>门店信息</paper-tab>
         <paper-tab>支付宝</paper-tab>
@@ -236,7 +237,7 @@
         </section>
         <section alias="weixin">
           <paper-dialog-scrollable>
-            <dl id="weixin">
+            <dl id="wxp">
               <dt>渠道代码:</dt>
               <dd>{{weixin.chanCode}}</dd>
               <dt>商户代码:</dt>
@@ -519,5 +520,6 @@
         this.set('ulive.chanCode', 'ULIVE');
       },
     });
+
   </script>
 </dom-module>

@@ -59,7 +59,7 @@
   <template>
     <x-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></x-ajax>
     <x-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></x-ajax>
-    <paper-dialog modal id="dialogAdd">
+    <paper-dialog with-backdrop id="dialogAdd">
       <h2 id="header"></h2>
       <paper-dialog-scrollable>
         <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道" class="validate-container" required style="width:100%;" disabled="[[chanCodeDisabled]]"></x-select>

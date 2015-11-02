@@ -257,6 +257,8 @@
     </paper-drawer-panel>
     <iron-localstorage id="cilUserLocalStorageInScaffoldLayout" name="CILUSER" value="{{nickName}}" on-nick-name-reload="handleReloadNickNameEvent"></iron-localstorage>
     <iron-localstorage name="CIL.CONFIG.ISFULLSCREEN" value="{{isFullscreen}}"></iron-localstorage>
+
+
   </template>
   <script>
     (function() {
@@ -387,19 +389,19 @@
             "url": "",
             "route": "/trade",
             "children": [{
-              "nameCN": "扫码交易",
+              "nameCN": "扫码支付",
               "nameEN": "",
               "icon": "image:crop-free",
               "url": "#/trade/list",
               "route": "trade.list"
             }, {
-              "nameCN": "绑定交易",
+              "nameCN": "快捷支付",
               "nameEN": "",
               "icon": "hardware:phonelink",
               "url": "#/trade/bindingpay/list",
               "route": "trade.bindingpay.list"
             }, {
-              "nameCN": "核销查询",
+              "nameCN": "卡券核销",
               "nameEN": "",
               "icon": "card-giftcard",
               "url": "#/trade/coupon/list",
@@ -412,27 +414,26 @@
             "url": "",
             "route": "/stats",
             "children": [{
-                "nameCN": "报表下载",
+                "nameCN": "扫码支付交易统计",
                 "nameEN": "",
                 "icon": "print",
                 "url": "#/stats/reports",
                 "route": "stats.reports"
               },
               /*{
-                "nameCN": "旧系统报表下载",
+                "nameCN": "老系统扫码支付",
                 "nameEN": "",
                 "icon": "cloud-download",
                 "url": "#/stats/old/reports",
                 "route": "stats.old.reports"
               }, */
               {
-                "nameCN": "清算报表下载",
+                "nameCN": "扫码支付清算报表",
                 "nameEN": "",
                 "icon": "assignment-returned",
                 "url": "#/stats/settle/reports",
                 "route": "stats.settle.reports"
-              }
-            ]
+              }]
           }, {
             "nameCN": "内部测试",
             "nameEN": "",

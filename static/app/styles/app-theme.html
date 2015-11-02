@@ -125,6 +125,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     margin-left: 15px;
   }
 
+    paper-submenu iron-icon,
+    paper-submenu span {
+      pointer-events: none;
+    }
+
+    .sublist {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
   paper-toolbar.tall .app-name {
     font-size: 40px;
     font-weight: 300;
@@ -150,7 +159,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     transform-origin: left center;
   }
   /* Breakpoints */
-  /* Small */
+    #mainContainer > .content {
+      padding: 0 20px 20px 20px;
+    }
 
   @media (max-width: 600px) {
     paper-material {
