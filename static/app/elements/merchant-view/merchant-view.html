@@ -12,6 +12,7 @@
   <style>
     :host {
       display: block;
+      --paper-checkbox-label-spacing: 4px;
       --paper-dialog-scrollable: {
         width: 600px;
         min-height: 500px;
@@ -37,7 +38,6 @@
     .key {
       font-weight: bold;
       text-align: left !important;
-      /*margin-right: 10px;*/
     }
 
     .table .th,
@@ -85,6 +85,10 @@
 
     paper-tabs {
       margin-top: 0;
+    }
+
+    .checkbox-group > paper-checkbox{
+      margin-right: 20px;
     }
 
   </style>
@@ -197,7 +201,7 @@
               <dt class="key">支付URL</dt>
               <dd>{{item.detail.payUrl}}</dd>
               <dt class="key">授权接口</dt>
-              <dd>
+              <dd class="checkbox-group">
                 <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
                   <paper-checkbox checked$="{{perm.isChecked}}" disabled>
                     <span>{{perm.value}}</span>
@@ -324,6 +328,9 @@
           }, {
             key: 'CANC',
             value: '取消'
+          }, {
+            key: 'VERI',
+            value: '卡券核销'
           }]
         },
         item: Object,
