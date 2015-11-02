@@ -124,6 +124,9 @@
             }, {
               key: 'WXP',
               value: '微信'
+            }, {
+              key: 'ULIVE',
+              value: '优方'
             }]
           },
           chanCodes: {
@@ -134,6 +137,9 @@
             }, {
               key: 'WXP',
               value: 'WXP'
+            }, {
+              key: 'ULIVE',
+              value: 'ULIVE'
             }]
           },
         },
@@ -218,6 +224,8 @@
             return '支付宝';
           } else if (value === 'WXP') {
             return '微信';
+          } else if (value === 'ULIVE') {
+            return '优方';
           } else {
             return value;
           }

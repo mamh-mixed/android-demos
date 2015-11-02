@@ -94,6 +94,7 @@
         <paper-tab>门店信息</paper-tab>
         <paper-tab>支付宝</paper-tab>
         <paper-tab>微信</paper-tab>
+        <paper-tab>优方</paper-tab>
       </paper-tabs>
       <iron-pages selected="{{idx}}">
         <section alias="merchant">
@@ -267,6 +268,23 @@
             <paper-button on-tap="handleClose">关闭</paper-button>
           </div>
         </section>
+        <section alias="ulive">
+          <paper-dialog-scrollable>
+            <dl id="ulive">
+              <dt>渠道代码:</dt>
+              <dd>{{ulive.chanCode}}</dd>
+              <dt>商户代码:</dt>
+              <dd>{{ulive.chanMerId}}</dd>
+              <dt>商户代码:</dt>
+              <dd>{{ulive.chanMerName}}</dd>
+              <dt>终端号:</dt>
+              <dd>{{ulive.terminalId}}</dd>
+            </dl>
+          </paper-dialog-scrollable>
+          <div class="buttons">
+            <paper-button on-tap="handleClose">关闭</paper-button>
+          </div>
+        </section>
       </iron-pages>
 
     </paper-dialog>
@@ -274,6 +292,7 @@
     <x-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></x-ajax>
     <x-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></x-ajax>
     <x-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></x-ajax>
+    <x-ajax id="uliveChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleUliveChanMerResponse"></x-ajax>
   </template>
   <script>
     Polymer({
@@ -342,13 +361,24 @@
           };
           this.$.alpChanMerAjax.params = alpParams;
           this.$.alpChanMerAjax.generateRequest();
-        } else if (idx === 2 && !this.weixin.chanMerId) {
+          return;
+        }
+        if (idx === 2 && !this.weixin.chanMerId) {
           var wxpParams = {
             merId: this.item.merId,
             cardBrand: 'WXP'
           };
           this.$.wxpChanMerAjax.params = wxpParams;
           this.$.wxpChanMerAjax.generateRequest();
+          return;
+        }
+        if (idx === 3 && !this.ulive.chanMerId) {
+          this.$.uliveChanMerAjax.params = {
+            merId: this.item.merId,
+            cardBrand: 'ULIVE'
+          };
+          this.$.uliveChanMerAjax.generateRequest();
+          return;
         }
 
       },
@@ -357,6 +387,7 @@
         this.idx = 0;
         this.alipay = {};
         this.weixin = {};
+        this.ulive = {};
         if (this.merId && this.merId !== '') {
           var params = {
             merId: this.merId
@@ -476,6 +507,17 @@
           response.data.httpKey = '';
         }
         this.set('weixin', response.data);
+      },
+      // 查询优方渠道信息的响应事件
+      handleUliveChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0 || !response.data) {
+          Util.toast('查询优方渠道商户信息失败', 3000);
+          return;
+        }
+
+        this.set('ulive', response.data);
+        this.set('ulive.chanCode', 'ULIVE');
       },
     });
 
