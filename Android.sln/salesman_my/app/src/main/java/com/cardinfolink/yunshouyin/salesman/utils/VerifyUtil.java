@@ -3,15 +3,17 @@ package com.cardinfolink.yunshouyin.salesman.utils;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VerifyUtil {
+    private static final String TAG="VerifyUtil";
+
     /**
      * 校验银行卡卡号
-     *
      * @param cardId
      * @return
      */
@@ -29,7 +31,6 @@ public class VerifyUtil {
 
     /**
      * 从不含校验位的银行卡卡号采用 Luhm 校验算法获得校验位
-     *
      * @param nonCheckCodeCardId
      * @return
      */
@@ -55,7 +56,6 @@ public class VerifyUtil {
 
     /**
      * 银行卡四位加空格
-     *
      * @param mEditText
      */
     public static void bankCardNumAddSpace(final EditText mEditText) {
@@ -63,15 +63,12 @@ public class VerifyUtil {
             int beforeTextLength = 0;
             int onTextLength = 0;
             boolean isChanged = false;
-
             int location = 0;// 记录光标的位置
             private char[] tempChar;
             private StringBuffer buffer = new StringBuffer();
             int konggeNumberB = 0;
-
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 beforeTextLength = s.length();
                 if (buffer.length() > 0) {
                     buffer.delete(0, buffer.length());
@@ -85,8 +82,7 @@ public class VerifyUtil {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 onTextLength = s.length();
                 buffer.append(s.toString());
                 if (onTextLength == beforeTextLength || onTextLength <= 3
@@ -145,89 +141,51 @@ public class VerifyUtil {
 
     /**
      * 银行卡四位加空格
-     *
      * @param mEditText
      */
-    public static void addEmialLimit(final EditText mEditText) {
+    public static void addEmailLimit(final EditText mEditText) {
         mEditText.addTextChangedListener(new TextWatcher() {
-
             @Override
-
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
-
             @Override
-
-            public void beforeTextChanged(CharSequence s, int start, int count,
-
-                                          int after) {
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
-
             @Override
-
             public void afterTextChanged(Editable edt) {
-
                 try {
-
                     String temp = edt.toString();
-
+                    Log.d(TAG, "edt: " + edt);
                     String tem = temp.substring(temp.length() - 1, temp.length());
-
                     char[] temC = tem.toCharArray();
-
                     int mid = temC[0];
                     if (mid >= 33 && mid <= 47 || mid >= 58 && mid <= 64) {//特殊符号
-
                         return;
-
                     }
-
-
                     if (mid >= 48 && mid <= 57) {//数字
-
                         return;
-
                     }
-
                     if (mid >= 65 && mid <= 90) {//大写字母
-
                         return;
-
                     }
-
                     if (mid >= 97 && mid <= 122) {//小写字母
-
                         return;
-
                     }
-
                     edt.delete(temp.length() - 1, temp.length());
-
                 } catch (Exception e) {
-
                     // TODO: handle exception
-
                 }
-
             }
-
         });
-
-
     }
 
-	
 
-	/*
-	 * 校验手机号
-	 */
-
+    /**
+     * 校验手机号
+     */
     public static boolean isMobileNO(String mobiles) {
-
         Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
@@ -251,6 +209,4 @@ public class VerifyUtil {
         }
         return flag;
     }
-
-
 }

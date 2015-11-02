@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
 
 
 public class HttpCommunicationUtil {
-    private static final String TAG = "CommunicationUtil";
+    private static final String TAG = "HttpCommunicationUtil";
 
     /**
      * custom callback for QuickIpayServer call
@@ -26,6 +26,8 @@ public class HttpCommunicationUtil {
      * @param listener
      */
     public static void sendDataToQuickIpayServer(final RequestParam requestParam, final CommunicationListenerV2 listener) {
+        Log.d(TAG, "send data to QuickIpayServer");
+        //启动一个子线程执行任务
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -46,29 +48,23 @@ public class HttpCommunicationUtil {
     }
 
     //同步方法
+    @SuppressWarnings("deprecation")
     public static SAServerPacket getServerPacket(RequestParam requestParam) throws URISyntaxException, IOException {
+        Log.d(TAG, "will do post in getServerPacket()");
         URI baseUrl = new URI(requestParam.getUrl());
         Log.i(TAG, "url = " + requestParam.getUrl());
-        final HttpPost postMethod = new HttpPost(baseUrl);
-        final HttpClient httpClient = new DefaultHttpClient();
-        ;
-        postMethod.setEntity(new UrlEncodedFormEntity(requestParam.getParams(),
-                "utf-8")); // 将参数填入POST Entity中
+        HttpPost postMethod = new HttpPost(baseUrl);
+        HttpClient httpClient = new DefaultHttpClient();
+        postMethod.setEntity(new UrlEncodedFormEntity(requestParam.getParams(), "utf-8")); // 将参数填入POST Entity中
         HttpResponse response = httpClient.execute(postMethod); // 执行POST方法
-        Log.i(TAG, "resCode = "
-                + response.getStatusLine().getStatusCode()); // 获取响应码
-        String result = EntityUtils.toString(response.getEntity(),
-                "utf-8");
+        Log.i(TAG, "resCode = " + response.getStatusLine().getStatusCode()); // 获取响应码
+        String result = EntityUtils.toString(response.getEntity(), "utf-8");
         Log.i(TAG, "result = " + result); // 获取响应内容
-
         return SAServerPacket.getServerPacketFrom(result);
     }
 
-    public static void sendDataToServer(
-            final RequestParam requestParam, final CommunicationListener listener) {
-
+    public static void sendDataToServer(final RequestParam requestParam, final CommunicationListener listener) {
         new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
@@ -76,17 +72,12 @@ public class HttpCommunicationUtil {
                     Log.i(TAG, "url = " + requestParam.getUrl());
                     final HttpPost postMethod = new HttpPost(baseUrl);
                     final HttpClient httpClient = new DefaultHttpClient();
-                    ;
-                    postMethod.setEntity(new UrlEncodedFormEntity(requestParam.getParams(),
-                            "utf-8")); // 将参数填入POST Entity中
+                    postMethod.setEntity(new UrlEncodedFormEntity(requestParam.getParams(), "utf-8")); // 将参数填入POST Entity中
                     HttpResponse response = httpClient.execute(postMethod); // 执行POST方法
-                    Log.i(TAG, "resCode = "
-                            + response.getStatusLine().getStatusCode()); // 获取响应码
-                    String result = EntityUtils.toString(response.getEntity(),
-                            "utf-8");
+                    Log.i(TAG, "resCode = " + response.getStatusLine().getStatusCode()); // 获取响应码
+                    String result = EntityUtils.toString(response.getEntity(), "utf-8");
                     Log.i(TAG, "result = " + result); // 获取响应内容
                     listener.onResult(result);
-
                 } catch (Exception e) {
                     Log.i(TAG, "error = " + e.getMessage());
                     listener.onError("网络错误");
@@ -97,11 +88,8 @@ public class HttpCommunicationUtil {
     }
 
 
-    public static void sendGetDataToServer(
-            final RequestParam requestParam, final CommunicationListener listener) {
-
+    public static void sendGetDataToServer(final RequestParam requestParam, final CommunicationListener listener) {
         new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
@@ -110,13 +98,10 @@ public class HttpCommunicationUtil {
                     final HttpGet getMethod = new HttpGet(baseUrl);
                     final HttpClient httpClient = new DefaultHttpClient();
                     HttpResponse response = httpClient.execute(getMethod); // 执行POST方法
-                    Log.i(TAG, "resCode = "
-                            + response.getStatusLine().getStatusCode()); // 获取响应码
-                    String result = EntityUtils.toString(response.getEntity(),
-                            "utf-8");
+                    Log.i(TAG, "resCode = " + response.getStatusLine().getStatusCode()); // 获取响应码
+                    String result = EntityUtils.toString(response.getEntity(), "utf-8");
                     Log.i(TAG, "result = " + result); // 获取响应内容
                     listener.onResult(result);
-
                 } catch (Exception e) {
                     Log.i(TAG, "error = " + e.getMessage());
                     listener.onError("网络错误");

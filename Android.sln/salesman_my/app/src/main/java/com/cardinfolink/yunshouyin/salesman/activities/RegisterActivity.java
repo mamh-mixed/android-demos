@@ -13,14 +13,17 @@ import com.cardinfolink.yunshouyin.salesman.models.SessonData;
 import com.cardinfolink.yunshouyin.salesman.models.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListener;
+import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends BaseActivity {
+    private final String TAG = "RegisterActivity";
     private EditText mEmailEdit;
     private EditText mPasswordEdit;
     private EditText mQrPasswordEdit;
@@ -40,68 +43,63 @@ public class RegisterActivity extends BaseActivity {
 
     private void initLayout() {
         mEmailEdit = (EditText) findViewById(R.id.register_email);
-        VerifyUtil.addEmialLimit(mEmailEdit);
+        VerifyUtil.addEmailLimit(mEmailEdit);
         mPasswordEdit = (EditText) findViewById(R.id.register_password);
-        VerifyUtil.addEmialLimit(mPasswordEdit);
+        VerifyUtil.addEmailLimit(mPasswordEdit);
         mQrPasswordEdit = (EditText) findViewById(R.id.register_qr_password);
-        VerifyUtil.addEmialLimit(mQrPasswordEdit);
-        btnLogin = (Button)findViewById(R.id.btnlogin);
+        VerifyUtil.addEmailLimit(mQrPasswordEdit);
+
+
+        btnLogin = (Button) findViewById(R.id.btnlogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (validate()) {
-                    startLoading();
-                    final String username = mEmailEdit.getText().toString();
-                    final String password = mPasswordEdit.getText().toString();
-                    HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRegister_SA(SessonData.getAccessToken(), username, password), new CommunicationListener() {
-
-                        @Override
-                        public void onResult(final String result) {
-                            final SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(result);
-
-                            if (serverPacket.getState().equals("success")) {
-                                SessonData.registerUser.setUsername(username);
-                                SessonData.registerUser.setPassword(password);
-                                Log.d("register user", SessonData.registerUser.getJsonString());
-
-                                runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        endLoading();
-                                        intentToActivity(RegisterNextActivity.class);
-                                    }
-
-                                });
-
-                            } else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        String error = serverPacket.getError();
-                                        endLoadingWithError(error);
-
-                                        if (error.equals("accessToken_error")) {
-                                            //关闭所有activity,除了登录框
-                                            ActivityCollector.goLoginAndFinishRest();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onError(final String error) {
+                if (!validate()) {
+                    return;
+                }
+                startLoading();
+                final String username = mEmailEdit.getText().toString();
+                final String password = mPasswordEdit.getText().toString();
+                HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRegister_SA(SessonData.getAccessToken(), username, password), new CommunicationListener() {
+                    @Override
+                    public void onResult(final String result) {
+                        final SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(result);
+                        if (serverPacket.getState().equals("success")) {
+                            SessonData.registerUser.setUsername(username);
+                            SessonData.registerUser.setPassword(password);
+                            Log.d("register user", SessonData.registerUser.getJsonString());
                             runOnUiThread(new Runnable() {
-
                                 @Override
                                 public void run() {
-                                    endLoadingWithError(error);
+                                    endLoading();
+                                    intentToActivity(RegisterNextActivity.class);
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String error = serverPacket.getError();
+                                    endLoadingWithError(ErrorUtil.getErrorString(error));
+                                    if (error.equals("accessToken_error")) {
+                                        //关闭所有activity,除了登录框
+                                        ActivityCollector.goLoginAndFinishRest();
+                                    }
                                 }
                             });
                         }
-                    });
-                }
+                    }
+
+                    @Override
+                    public void onError(final String error) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                endLoadingWithError(error);
+                            }
+                        });
+                    }
+                });
             }
         });
     }

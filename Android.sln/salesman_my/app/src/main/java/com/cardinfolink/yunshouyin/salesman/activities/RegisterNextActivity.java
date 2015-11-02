@@ -1,8 +1,11 @@
 package com.cardinfolink.yunshouyin.salesman.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -25,18 +28,25 @@ import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.JsonUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
+import com.cardinfolink.yunshouyin.salesman.utils.RequestParam;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class RegisterNextActivity extends BaseActivity {
-    private final String TAG = "RegisterNextActivity";
+    private static final String TAG = "RegisterNextActivity";
     private EditText mNameEdit;
     private EditText mBanknumEdit;
     private EditText mPhonenumEdit;
@@ -62,6 +72,7 @@ public class RegisterNextActivity extends BaseActivity {
     private ArrayAdapter mOpenBankAdapter;
     private SearchAdapter mOpenBankSearchAdapter;
 
+    //分行，支行
     private AutoCompleteTextView mBranchBankEdit;
     private Spinner mBranchBankSpinner;
     private List<String> mBranchBankList;
@@ -74,7 +85,6 @@ public class RegisterNextActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_next_activity);
-
         initLayout();
         initListener();
         initData();
@@ -90,7 +100,6 @@ public class RegisterNextActivity extends BaseActivity {
         /**
          * setup for Province
          */
-        // view
         mProvinceEdit = (AutoCompleteTextView) findViewById(R.id.edit_province);
         mProvinceSpinner = (Spinner) findViewById(R.id.spinner_province);
 
@@ -138,13 +147,11 @@ public class RegisterNextActivity extends BaseActivity {
         mBankIdList = new ArrayList<String>();
         mBankIdList.add("");
 
-        mOpenBankAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mOpenBankList);
+        mOpenBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mOpenBankList);
         // 设置样式
         mOpenBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
         mOpenBankSpinner.setAdapter(mOpenBankAdapter);
-
         mOpenBankSearchAdapter = new SearchAdapter(mContext, mOpenBankList);
         mOpenBankEdit.setAdapter(mOpenBankSearchAdapter);
         mOpenBankEdit.setThreshold(1);
@@ -157,128 +164,317 @@ public class RegisterNextActivity extends BaseActivity {
         mBankNoList = new ArrayList<String>();
         mBankNoList.add("行号");
 
-        mBranchBankAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mBranchBankList);
+        mBranchBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mBranchBankList);
         // 设置样式
         mBranchBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
         mBranchBankSpinner.setAdapter(mBranchBankAdapter);
-
         mBranchBankSearchAdapter = new SearchAdapter(mContext, mBranchBankList);
         mBranchBankEdit.setAdapter(mBranchBankSearchAdapter);
         mBranchBankEdit.setThreshold(1);
     }
 
+    private void initProvinceData() {
+        String data = readFromSharePreference("data", "province");
+        if (data != null && data.length() != 0) {
+            Log.d(TAG, "will use cache data to get province: \n" + data);
+            updateProvinceAdapter(data);
+        } else {
+            Log.d(TAG, "will do post to get province data");
+            RequestParam provinceParam = BankBaseUtil.getProvince();
+            ProvinceCommunicationListener provinceCommunicationListener = new ProvinceCommunicationListener();
+            HttpCommunicationUtil.sendGetDataToServer(provinceParam, provinceCommunicationListener);
+        }
+    }
+
+    private void initBankData() {
+        //获取bank的数据
+        String data = readFromSharePreference("data", "bank");
+        if (data != null && data.length() != 0) {
+            Log.d(TAG, "will use cache data to get bank: \n" + data);
+            updateBankAdapter(data);
+        } else {
+            Log.d(TAG, "will do post to get bank data");
+            RequestParam bankParam = BankBaseUtil.getBank();
+            BankCommunicationListener bankCommunicationListener = new BankCommunicationListener();
+            HttpCommunicationUtil.sendGetDataToServer(bankParam, bankCommunicationListener);
+        }
+    }
+
+    private void initCityData(String province) {
+        String data = readFromSharePreference("data", province);
+        if (data != null && data.length() != 0) {
+            Log.d(TAG, "will use cache data to get City: " + data);
+            updateCityAdapter(data);
+        } else {
+            Log.d(TAG, "will post to get City: " + data);
+            RequestParam cityParam = BankBaseUtil.getCity(province);
+            CityCommunicationListener cityCommunicationListener = new CityCommunicationListener(province);
+            HttpCommunicationUtil.sendGetDataToServer(cityParam, cityCommunicationListener);
+        }
+    }
+
+    private void initBranchBankData(String cityCode, String bankId) {
+        String key = cityCode + "_" + bankId;
+        String data = readFromSharePreference("data", key);
+        if (data != null && data.length() != 0) {
+            Log.d(TAG, "will use cache data to get branch bank");
+            updateBranchBankAdapter(data);
+        } else {
+            Log.d(TAG, "will use post to get branch bank");
+            RequestParam bbParam = BankBaseUtil.getSerach(cityCode, bankId);
+            BranchBankCommunicationListener bbCL = new BranchBankCommunicationListener(cityCode, bankId);
+            HttpCommunicationUtil.sendGetDataToServer(bbParam, bbCL);
+        }
+    }
 
     // 开户省份和总行列表先读取
     public void initData() {
+        Log.d(TAG, "initData start");
+        initProvinceData();
+        initBankData();
+        Log.d(TAG, "initData end");
+    }//end public void initData()
 
-        HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getProvince(),
-                new CommunicationListener() {
-                    @Override
-                    public void onResult(String result) {
-                        final List<String> tempProvinceList = new ArrayList<>();
-                        tempProvinceList.add("开户行所在省份");
-                        try {
-                            JSONArray jsonArray = new JSONArray(result);
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                tempProvinceList.add(jsonArray.getString(i));
-                            }
 
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+    //字符串  -->  jsonArray --> List
+    private List<String> jsonArrayToList(String result) {
+        final List<String> list = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(result);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                list.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-                        runOnUiThread(new Runnable() {
+    //字符串  -->  jsonArray(每个数组元素又是一个jsonObject) ----> List
+    private List<String> jsonArrayToList(String result, String key) {
+        final List<String> list = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(result);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String tempjson = jsonArray.getString(i);
+                list.add(JsonUtil.getParam(tempjson, key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-                            @Override
-                            public void run() {
-                                mProvinceList.clear();
-                                mProvinceList.addAll(tempProvinceList);
-                                mProvinceAdapter.notifyDataSetChanged();
-                                mProvinceSearchAdapter.setData(mProvinceList);
-                                mProvinceSearchAdapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
+    private List<String> jsonArrayToList(String result, String key1, String key2, String sep) {
+        final List<String> list = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(result);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String tempjson = jsonArray.getString(i);
+                String value1 = JsonUtil.getParam(tempjson, key1);
+                String value2 = JsonUtil.getParam(tempjson, key2);
+                list.add(value1 + sep + value2);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-                    @Override
-                    public void onError(String error) {
-                        Log.i(TAG, "error:" + error);
-                    }
-                });
+    //字符串 --> jsonObject --> List
+    private List<String> jsonObjectToList(String result, String key) {
+        final List<String> list = new ArrayList<String>();
+        try {
+            //string 转换为  jsonObj
+            JSONObject jsonObj = new JSONObject(result);
+            Iterator it = jsonObj.keys();
+            while (it.hasNext()) {
+                String tempkey = it.next().toString();
+                String subJson = JsonUtil.getParam(result, tempkey);
+                list.add(JsonUtil.getParam(subJson, key));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-        HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getBank(),
-                new CommunicationListener() {
-
-                    @Override
-                    public void onResult(String result) {
-                        Log.i(TAG, "result:" + result);
-                        final List<String> tempOpenBankList = new ArrayList<String>();
-                        final List<String> tempBankIdList = new ArrayList<String>();
-                        tempOpenBankList.add("请选择开户银行");
-                        tempBankIdList.add("");//为了使index对应起来
-
-                        try {
-                            JSONObject jsonObj = new JSONObject(result);
-                            Iterator it = jsonObj.keys();
-
-                            while (it.hasNext()) {
-                                String key = it.next().toString();
-                                tempOpenBankList.add(JsonUtil.getParam(
-                                        JsonUtil.getParam(result, key),
-                                        "bank_name"));
-                                tempBankIdList.add(JsonUtil.getParam(
-                                        JsonUtil.getParam(result, key), "id"));
-                            }
-
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                mOpenBankList.clear();
-                                mBankIdList.clear();
-                                mOpenBankList.addAll(tempOpenBankList);
-                                mBankIdList.addAll(tempBankIdList);
-                                mOpenBankSpinner.setSelection(0);
-                                mOpenBankAdapter.notifyDataSetChanged();
-                                mOpenBankSearchAdapter.notifyDataSetChanged();
-                            }
-
-                        });
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.i(TAG, "error:" + error);
-                    }
-                });
+    private void updateProvinceAdapter(String data) {
+        final List<String> tempProvinceList = jsonArrayToList(data);
+        tempProvinceList.add(0, "开户行所在省份");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProvinceList.clear();
+                mProvinceList.addAll(tempProvinceList);
+                mProvinceAdapter.notifyDataSetChanged();
+                mProvinceSearchAdapter.setData(mProvinceList);
+                mProvinceSearchAdapter.notifyDataSetChanged();
+            }
+        });
 
     }
 
-    private void initListener() {
-
-
-        mProvinceEdit.addTextChangedListener(new TextWatcher() {
-
+    private void updateCityAdapter(String data) {
+        final List<String> tempCityList = jsonArrayToList(data, "city_name");
+        final List<String> tempCityCodeList = jsonArrayToList(data, "city_code");
+        tempCityList.add(0, "开户行所在城市");
+        tempCityCodeList.add(0, "");
+        runOnUiThread(new Runnable() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
-                // TODO Auto-generated method stub
+            public void run() {
+                mCityList.clear();
+                mCityList.addAll(tempCityList);
+                mCityCodeList.clear();
+                mCityCodeList.addAll(tempCityCodeList);
+                mCitySpinner.setSelection(0);
+                mCityAdapter.notifyDataSetChanged();
+                mCitySearchAdapter.setData(mCityList);
+            }
+        });
+    }
 
+
+    private void updateBankAdapter(String data) {
+        final List<String> tempOpenBankList = jsonObjectToList(data, "bank_name");
+        final List<String> tempBankIdList = jsonObjectToList(data, "id");
+        tempOpenBankList.add(0, "请选择开户银行");
+        tempBankIdList.add(0, "");//为了使index对应起来
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mOpenBankList.clear();
+                mBankIdList.clear();
+                mOpenBankList.addAll(tempOpenBankList);
+                mBankIdList.addAll(tempBankIdList);
+
+                mOpenBankSpinner.setSelection(0);
+                mOpenBankAdapter.notifyDataSetChanged();
+                mOpenBankSearchAdapter.notifyDataSetChanged();
+            }
+        });
+
+    }
+
+    private void updateBranchBankAdapter(String data) {
+        final List<String> tempBranchBankList = jsonArrayToList(data, "bank_name");
+        final List<String> tempBankNoList = jsonArrayToList(data, "one_bank_no", "two_bank_no", "|");
+        tempBranchBankList.add(0, "请选择开户支行");
+        tempBankNoList.add(0, "行号");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mBranchBankList.clear();
+                mBranchBankList.addAll(tempBranchBankList);
+
+                mBankNoList.clear();
+                mBankNoList.addAll(tempBankNoList);
+
+                mBranchBankSpinner.setSelection(0);
+
+                mBranchBankAdapter.notifyDataSetChanged();
+                mBranchBankSearchAdapter.setData(mBranchBankList);
+            }
+
+        });
+    }
+
+    //内部类，实现CommunicationListener接口
+    private class ProvinceCommunicationListener implements CommunicationListener {
+        @Override
+        public void onResult(String result) {
+            saveToSharePreferences(result, "data", "province");
+            updateProvinceAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.i(TAG, "get province data error:" + error);
+        }
+    }
+
+    //内部类，实现CommunicationListener接口,用来获取bank信息
+    private class BankCommunicationListener implements CommunicationListener {
+        @Override
+        public void onResult(String result) {
+            saveToSharePreferences(result, "data", "bank");
+            updateBankAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.i(TAG, "get bank data error:" + error);
+        }
+    }
+
+    private class CityCommunicationListener implements CommunicationListener {
+        private String province;
+
+        public CityCommunicationListener(String province) {
+            this.province = province;
+        }
+
+        @Override
+        public void onResult(String result) {
+            saveToSharePreferences(result, "data", province);
+            updateCityAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.d(TAG, "get city data error");
+        }
+    }
+
+    private class BranchBankCommunicationListener implements CommunicationListener {
+        private String cityCode;
+        private String bankId;
+
+        public BranchBankCommunicationListener(String cityCode, String bankId) {
+            this.cityCode = cityCode;
+            this.bankId = bankId;
+        }
+
+        @Override
+        public void onResult(String result) {
+            String key = cityCode + "_" + bankId;
+            saveToSharePreferences(result, "data", key);
+            updateBranchBankAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.i(TAG, "get branch bank error:" + error);
+        }
+    }
+
+
+    private String readFromSharePreference(String name, String key) {
+        SharedPreferences sp = getSharedPreferences(name, MODE_PRIVATE);
+        return sp.getString(key, "");
+    }
+
+    private void saveToSharePreferences(String result, String name, String key) {
+        SharedPreferences sp = getSharedPreferences(name, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(key, result);
+        editor.commit();
+    }
+
+
+    private void initListener() {
+        //添加province EditText框变化事件
+        mProvinceEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // TODO Auto-generated method stub
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
@@ -286,339 +482,120 @@ public class RegisterNextActivity extends BaseActivity {
                 mCityEdit.setText("");
                 if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
                     String province = mProvinceEdit.getText().toString();
-                    Log.i(TAG, "province" + province);
-
-                    HttpCommunicationUtil.sendGetDataToServer(
-                            BankBaseUtil.getCity(province),
-                            new CommunicationListener() {
-
-                                @Override
-                                public void onResult(String result) {
-                                    Log.i(TAG, "result:" + result);
-                                    final List<String> tempCityList = new ArrayList<>();
-                                    final List<String> tempCityCodeList = new ArrayList<>();
-
-                                    tempCityList.add("开户行所在城市");
-                                    tempCityCodeList.add("");
-
-                                    try {
-                                        JSONArray jsonArray = new JSONArray(
-                                                result);
-
-                                        for (int i = 0; i < jsonArray.length(); i++) {
-
-                                            tempCityList.add(JsonUtil.getParam(jsonArray.getString(i), "city_name"));
-                                            tempCityCodeList.add(JsonUtil.getParam(jsonArray.getString(i), "city_code"));
-                                        }
-
-                                    } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-
-                                    runOnUiThread(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            mCityList.clear();
-                                            mCityCodeList.clear();
-
-                                            mCityList.addAll(tempCityList);
-                                            mCityCodeList.addAll(tempCityCodeList);
-                                            mCitySpinner.setSelection(0);
-                                            mCityEdit.setText("");
-                                            mCityAdapter.notifyDataSetChanged();
-                                            mCitySearchAdapter.setData(mCityList);
-                                        }
-
-                                    });
-
-                                }
-
-                                @Override
-                                public void onError(String error) {
-                                    Log.i(TAG, "error:" + error);
-                                }
-                            });
-                }
-
-            }
+                    initCityData(province);
+                }//end if()
+            }//end public void afterTextChange(Editable s)
         });
 
+        //添加City EditText 框变化事件
         mCityEdit.addTextChangedListener(new TextWatcher() {
-
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 mOpenBankEdit.setText("");
                 if (mCityList.indexOf(mCityEdit.getText().toString()) > 0) {
-                    HttpCommunicationUtil.sendGetDataToServer(
-                            BankBaseUtil.getBank(),
-                            new CommunicationListener() {
-
-                                @Override
-                                public void onResult(String result) {
-                                    Log.i(TAG, "result:" + result);
-                                    final List<String> tempOpenBankList = new ArrayList<>();
-                                    final List<String> tempBankIdList = new ArrayList<>();
-                                    tempOpenBankList.add("请选择开户银行");
-                                    tempBankIdList.add("");
-
-                                    try {
-                                        JSONObject jsonObj = new JSONObject(
-                                                result);
-                                        Iterator it = jsonObj.keys();
-
-                                        while (it.hasNext()) {
-                                            String key = it.next().toString();
-                                            tempOpenBankList.add(JsonUtil
-                                                    .getParam(JsonUtil
-                                                                    .getParam(result,
-                                                                            key),
-                                                            "bank_name"));
-                                            tempBankIdList.add(JsonUtil.getParam(
-                                                    JsonUtil.getParam(result,
-                                                            key), "id"));
-                                        }
-
-                                    } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-
-                                    runOnUiThread(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            mOpenBankList.clear();
-                                            mBankIdList.clear();
-                                            mOpenBankList.addAll(tempOpenBankList);
-                                            mBankIdList.addAll(tempBankIdList);
-
-                                            mOpenBankSpinner
-                                                    .setSelection(0);
-                                            mOpenBankEdit.setText("");
-                                            mOpenBankAdapter
-                                                    .notifyDataSetChanged();
-                                            mOpenBankSearchAdapter
-                                                    .setData(mOpenBankList);
-                                        }
-
-                                    });
-
-                                }
-
-                                @Override
-                                public void onError(String error) {
-                                    Log.i(TAG, "error:" + error);
-
-                                }
-                            });
+                    initBankData();
                 }
-
             }
         });
 
+        //添加bank EditText 事件
         mOpenBankEdit.addTextChangedListener(new TextWatcher() {
-
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
-
                 mBranchBankEdit.setText("");
                 if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) > 0) {
-                    HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil
-                                    .getSerach(mCityCodeList.get(mCityList
-                                                    .indexOf(mCityEdit.getText().toString())),
-                                            mBankIdList.get(mOpenBankList
-                                                    .indexOf(mOpenBankEdit.getText()
-                                                            .toString()))),
-                            new CommunicationListener() {
-
-                                @Override
-                                public void onResult(String result) {
-                                    final List<String> tempBranchBankList = new ArrayList<>();
-                                    final List<String> tempBankNoList = new ArrayList<>();
-                                    tempBranchBankList.add("请选择开户支行");
-                                    tempBankNoList.add("行号");
-
-                                    try {
-                                        JSONArray jsonArray = new JSONArray(
-                                                result);
-
-                                        for (int i = 0; i < jsonArray.length(); i++) {
-
-                                            tempBranchBankList.add(JsonUtil
-                                                    .getParam(jsonArray
-                                                                    .getString(i),
-                                                            "bank_name"));
-                                            tempBankNoList.add(JsonUtil.getParam(
-                                                    jsonArray.getString(i),
-                                                    "one_bank_no")
-                                                    + "|"
-                                                    + JsonUtil.getParam(
-                                                    jsonArray
-                                                            .getString(i),
-                                                    "two_bank_no"));
-                                        }
-
-                                    } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-
-
-                                    runOnUiThread(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            mBranchBankList.clear();
-                                            mBankNoList.clear();
-                                            mBranchBankList.addAll(tempBranchBankList);
-                                            mBankNoList.addAll(tempBankNoList);
-
-                                            mBranchBankSpinner
-                                                    .setSelection(0);
-                                            mBranchBankEdit.setText("");
-                                            mBranchBankAdapter
-                                                    .notifyDataSetChanged();
-                                            mBranchBankSearchAdapter
-                                                    .setData(mBranchBankList);
-                                        }
-
-                                            });
-
-                                }
-
-                                @Override
-                                public void onError(String error) {
-                                    Log.i(TAG, "error:" + error);
-
-                                }
-                            });
+                    int indexOfCity = mCityList.indexOf(mCityEdit.getText().toString());
+                    int indexOfBank = mOpenBankList.indexOf(mOpenBankEdit.getText().toString());
+                    String cityCode = mCityCodeList.get(indexOfCity);
+                    String bankId = mBankIdList.get(indexOfBank);
+                    initBranchBankData(cityCode, bankId);
                 }
-
             }
         });
 
         mProvinceSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
             @Override
-            public void onItemSelected(AdapterView<?> parent,
-                                       View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     mProvinceEdit.setText(mProvinceList.get(position));
-
                 }
-
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
-
             }
         });
 
         mCitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     mCityEdit.setText(mCityList.get(position));
                 }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
+        mOpenBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) {
+                    mOpenBankEdit.setText(mOpenBankList.get(position));
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
-
             }
         });
 
-        mOpenBankSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
+        mBranchBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) {
+                    mBranchBankEdit.setText(mBranchBankList.get(position));
+                }
+            }
 
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mOpenBankEdit.setText(mOpenBankList.get(position));
-                        }
-
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-        mBranchBankSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
-
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mBranchBankEdit.setText(mBranchBankList
-                                    .get(position));
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         mCityEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    if (mProvinceList.indexOf(mProvinceEdit.getText()
-                            .toString()) < 0) {
+                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) < 0) {
                         mProvinceEdit.setText("");
                     }
                 }
-
             }
         });
 
         mOpenBankEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
@@ -626,39 +603,31 @@ public class RegisterNextActivity extends BaseActivity {
                         mCityEdit.setText("");
                     }
                 }
-
             }
         });
 
         mBranchBankEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    if (mOpenBankList.indexOf(mOpenBankEdit.getText()
-                            .toString()) < 0) {
+                    if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) < 0) {
                         mOpenBankEdit.setText("");
                     }
                 }
-
             }
         });
-
 
     }
 
     public void btnRegisterFinishedOnClick(View view) {
-        // Test only
-//        mBanknumEdit.setText("6228482371938777011");
-//        mPhonenumEdit.setText("18964153831");
-//        mMerchantNameEdit.setText("香辣鸡翅");
-//        mNameEdit.setText("鸡哥");
-
+        //Test only
+        //mBanknumEdit.setText("6228482371938777011");
+        //mPhonenumEdit.setText("18964153831");
+        //mMerchantNameEdit.setText("香辣鸡翅");
+        //mNameEdit.setText("鸡哥");
         if (validate()) {
             startLoading();
-
             final User user = SessonData.registerUser;
-
             user.setProvince(mProvinceEdit.getText().toString());
             user.setCity(mCityEdit.getText().toString());
             user.setBank_open(mOpenBankEdit.getText().toString());
@@ -670,54 +639,48 @@ public class RegisterNextActivity extends BaseActivity {
             user.setPhone_num(mPhonenumEdit.getText().toString());
             user.setMerName(mMerchantNameEdit.getText().toString());
 
-            Log.d(TAG, SessonData.registerUser.getJsonString());
-
-            HttpCommunicationUtil.sendDataToServer(
-                    ParamsUtil.getUpdate_SA(SessonData.getAccessToken(), user),
-                    new CommunicationListener() {
-
-                        @Override
-                        public void onResult(String result) {
-                            final SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(result);
-                            String state = JsonUtil.getParam(result, "state");
-                            if (serverPacket.getState().equals("success")) {
-                                //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
-                                SessonData.registerUser.setClientid(serverPacket.getUser().getClientid());
-//                                SessonData.registerUser.setObject_id(JsonUtil
-//                                        .getParam(user_json, "objectId"));
-
-                                intentToActivity(SARegisterStep3Activity.class);
-
-                            } else {
-                                runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        final String error = serverPacket.getError();
-                                        String errorStr = ErrorUtil.getErrorString(error);
-                                        endLoadingWithError(errorStr);
-                                        if (error.equals("accessToken_error")) {
-                                            //关闭所有activity,除了登录框
-                                            ActivityCollector.goLoginAndFinishRest();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onError(final String error) {
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    endLoadingWithError(error);
-                                }
-                            });
-                        }
-                    });
+            RequestParam requestParam = ParamsUtil.getUpdate_SA(SessonData.getAccessToken(), user);
+            HttpCommunicationUtil.sendDataToServer(requestParam, new RegisterCommunicationListener());
         }
     }
+
+    private class RegisterCommunicationListener implements CommunicationListener {
+        @Override
+        public void onResult(String result) {
+            final SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(result);
+            String state = JsonUtil.getParam(result, "state");
+            if (serverPacket.getState().equals("success")) {
+                //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
+                SessonData.registerUser.setClientid(serverPacket.getUser().getClientid());
+                //SessonData.registerUser.setObject_id(JsonUtil.getParam(user_json, "objectId"));
+                intentToActivity(SARegisterStep3Activity.class);
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String error = serverPacket.getError();
+                        String errorStr = ErrorUtil.getErrorString(error);
+                        endLoadingWithError(errorStr);
+                        if (error.equals("accessToken_error")) {
+                            //关闭所有activity,除了登录框
+                            ActivityCollector.goLoginAndFinishRest();
+                        }
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onError(final String error) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    endLoadingWithError(error);
+                }
+            });
+        }
+    }
+
 
     @SuppressLint("NewApi")
     private boolean validate() {

@@ -21,8 +21,7 @@ public class Alert_Dialog {
     private String mMessage;
     private Bitmap mBitmap;
 
-    public Alert_Dialog(Context context, Handler handler, View view,
-                        String message, Bitmap bitmap) {
+    public Alert_Dialog(Context context, Handler handler, View view, String message, Bitmap bitmap) {
         mContext = context;
         mHandler = handler;
         dialogView = view;
@@ -64,7 +63,6 @@ public class Alert_Dialog {
 
 
     public void show(String message, Bitmap bitmap) {
-
         TextView textView = (TextView) dialogView.findViewById(R.id.alert_message);
         if (message.length() == 0) {
             message = "网关错误!";
@@ -75,7 +73,6 @@ public class Alert_Dialog {
             imageView.setImageBitmap(bitmap);
         }
         dialogView.setVisibility(View.VISIBLE);
-
         dialogView.setOnTouchListener(new OnTouchListener() {
 
             @Override
