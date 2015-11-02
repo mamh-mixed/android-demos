@@ -35,7 +35,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, getClass().getSimpleName());
         ActivityCollector.addActivity(this);
     }
 
@@ -46,9 +45,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void intentToActivity(Class cls) {
-        Intent intent = new Intent(
-                mContext,
-                cls);
+        Intent intent = new Intent(mContext, cls);
         mContext.startActivity(intent);
     }
 

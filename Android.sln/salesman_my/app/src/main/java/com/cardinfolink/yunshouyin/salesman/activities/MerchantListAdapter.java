@@ -63,19 +63,13 @@ class MerchantListAdapter extends ArrayAdapter<User> {
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 ArrayList<User> objects = (ArrayList<User>) results.values;
-
-
                 //这里并没有引用arrayList的地址,而是对list内的item逐个加入adapter
                 users.clear();
                 if (objects != null && objects.size() > 0) {
-//                    saMerchantListActivity.adapter.clear();
+                    //saMerchantListActivity.adapter.clear();
                     users.addAll(objects);
                 }
                 notifyDataSetChanged();
-//                else{
-//                        //TODO:失效有何用???
-//                        notifyDataSetInvalidated();
-//                    }
             }
         };
     }
@@ -86,17 +80,13 @@ class MerchantListAdapter extends ArrayAdapter<User> {
         if (itemView == null) {
             itemView = saMerchantListActivity.getLayoutInflater().inflate(R.layout.merchant_item_view, parent, false);
         }
-
         final User merchant = users.get(position);
-
         final TableLayout detailViewGroup = (TableLayout) itemView.findViewById(R.id.mItem_detailViewGroup);
         TextView merchantNameText = (TextView) itemView.findViewById(R.id.mItem_txtMerchantName);
         merchantNameText.setText(merchant.getMerName());
-
         merchantNameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(saMerchantListActivity, "点击商户名收起或展开商户项", Toast.LENGTH_SHORT).show();
                 int status = detailViewGroup.getVisibility();
                 if (status == View.GONE) {
                     detailViewGroup.setVisibility(View.VISIBLE);

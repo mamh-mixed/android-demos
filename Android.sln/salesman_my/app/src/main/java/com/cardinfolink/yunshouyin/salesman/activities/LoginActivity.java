@@ -37,9 +37,9 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.login_activity);
 
         mUsernameEdit = (EditText) findViewById(R.id.login_username);
-        VerifyUtil.addEmialLimit(mUsernameEdit);
+        VerifyUtil.addEmailLimit(mUsernameEdit);
         mPasswordEdit = (EditText) findViewById(R.id.login_password);
-        VerifyUtil.addEmialLimit(mPasswordEdit);
+        VerifyUtil.addEmailLimit(mPasswordEdit);
         mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
         User user = SaveData.getUser(mContext);
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());
@@ -79,6 +79,7 @@ public class LoginActivity extends BaseActivity {
 
 
     private void login() {
+        Log.d(TAG, "======================login========================");
         // Test only
         //mUsernameEdit.setText("toolstest");
         //mPasswordEdit.setText("Yun#1016");
@@ -148,6 +149,7 @@ public class LoginActivity extends BaseActivity {
             });
         }
     }
+
 
 
     @Override

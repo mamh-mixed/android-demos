@@ -1,6 +1,8 @@
 package com.cardinfolink.yunshouyin.salesman.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -25,6 +27,7 @@ import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,33 +38,38 @@ import java.util.List;
 
 //TODO: 加入分页下载,搜索API,上拉更多
 public class SAMerchantListActivity extends BaseActivity {
+    private final String TAG = "SAMerchantListActivity";
+
     //该地址会被ArrayAdapter所引用,作为数据源,对merchantInfos所做的修改会影响到arrayAdapter
     private List<User> users = new ArrayList<>();
     MerchantListAdapter adapter;
-
     private SwipeRefreshLayout swipeRefreshLayout;
     private Button btnAddNewMer;
     private EditText searchText;
-
     private TextView txtMerchantCountThisMonth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_samerchant_list);
-
         initLayout();
         setupListView();
-        refreshData();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy(): will delete cache files");
+        SharedPreferences sp = getSharedPreferences("data", MODE_PRIVATE);
+        sp.edit().clear().commit();
+    }
+
 
     /**
      * setup listener
      */
     private void initLayout() {
-
         txtMerchantCountThisMonth = (TextView)findViewById(R.id.txt_merchantcountthismonth);
-
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -79,6 +87,7 @@ public class SAMerchantListActivity extends BaseActivity {
             }
         });
 
+        //输入关键字快速定位
         searchText = (EditText) findViewById(R.id.mItem_txtSearch);
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -102,7 +111,7 @@ public class SAMerchantListActivity extends BaseActivity {
      * called when refresh data, pull down to refresh
      */
     private void refreshData() {
-//        startLoading();
+        //startLoading();
         swipeRefreshLayout.setRefreshing(true);
 
         // async network call, callbacks
@@ -150,7 +159,7 @@ public class SAMerchantListActivity extends BaseActivity {
                         adapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
                         Toast.makeText(SAMerchantListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
-//                        endLoading();
+                        //endLoading();
                     }
                 });
             }
@@ -163,7 +172,7 @@ public class SAMerchantListActivity extends BaseActivity {
                         Log.i("opp", "error:" + error);
                         String errorStr = ErrorUtil.getErrorString(error);
                         swipeRefreshLayout.setRefreshing(false);
-//                        endLoadingWithError(errorStr);
+                        //endLoadingWithError(errorStr);
                         alertError(errorStr);
                         if (error.equals("accessToken_error")) {
                             //关闭所有activity,除了登录框
@@ -186,6 +195,7 @@ public class SAMerchantListActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         //回到页面之后,从服务器刷新数据
+        Log.d(TAG,"onResume() will refresh data");
         refreshData();
     }
 }
