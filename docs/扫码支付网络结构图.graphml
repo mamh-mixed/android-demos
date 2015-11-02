@@ -20,16 +20,17 @@
           <y:Geometry height="56.231998443603516" width="35.095298767089844" x="715.9523506164551" y="465.9865830739339"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="88.796875" modelName="custom" textColor="#000000" visible="true" width="102.197265625" x="58.97265625" y="-44.3984375">121.40.167.112
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="102.9296875" modelName="custom" textColor="#000000" visible="true" width="164.376953125" x="50.58182907104492" y="-51.46484375000006">121.40.167.112
 api.shou.money
 Nginx 统一入口
 :6000(TCP UTF8)
 :6000(TCP GBK)
-:443(HTTPS)<y:LabelModel>
+:443(HTTPS)
+:8080(HTTP 老版本用户接口)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-0.5" offsetX="23.877357482910156" offsetY="0.0" upX="0.0" upY="-1.0"/>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="5.551115123125783E-16" nodeRatioX="0.5" nodeRatioY="-0.5" offsetX="15.486530303955078" offsetY="0.0" upX="0.0" upY="-1.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:SVGNodeProperties usingVisualBounds="true"/>
@@ -210,8 +211,8 @@ Nginx 统一入口
                 </y:ModelParameter>
               </y:NodeLabel>
               <y:StyleProperties>
-                <y:Property class="com.yworks.yfiles.bpmn.view.EventCharEnum" name="com.yworks.bpmn.characteristic" value="EVENT_CHARACTERISTIC_START_EVENT_SUB_PROCESS_INTERRUPTING"/>
                 <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+                <y:Property class="com.yworks.yfiles.bpmn.view.EventCharEnum" name="com.yworks.bpmn.characteristic" value="EVENT_CHARACTERISTIC_START_EVENT_SUB_PROCESS_INTERRUPTING"/>
                 <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
                 <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
                 <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="EVENT_TYPE_ERROR"/>
@@ -224,7 +225,7 @@ Nginx 统一入口
     <node id="n4">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="45.56999588012695" width="67.49800109863281" x="876.7144412994385" y="224.46316782633454"/>
+          <y:Geometry height="45.56999588012695" width="67.49800109863281" x="960.7144412994385" y="249.46316782633454"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" modelName="custom" textColor="#000000" visible="true" width="143.078125" x="-37.790061950683594" y="-50.3984375">云收银管理平台
@@ -246,37 +247,16 @@ https://api.shou.money
     <node id="n5">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="58.30099868774414" width="35.78980255126953" x="715.6050987243652" y="198.13216654459632"/>
+          <y:Geometry height="56.231998443603516" width="35.095298767089844" x="459.7875576019287" y="367.6195011138916"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="32.265625" modelName="custom" textColor="#000000" visible="true" width="121.375" x="-52.99972343444824" y="-41.616811752319336">商户系统/云收银 SDK
-接入支付<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.5" nodeRatioX="-0.2851964521307744" nodeRatioY="-0.5" offsetX="0.0" offsetY="-9.351186752319336" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:SVGNodeProperties usingVisualBounds="true"/>
-          <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="4"/>
-          </y:SVGModel>
-        </y:SVGNode>
-      </data>
-    </node>
-    <node id="n6">
-      <data key="d6">
-        <y:SVGNode>
-          <y:Geometry height="56.231998443603516" width="35.095298767089844" x="523.7875576019287" y="222.80116526285798"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" modelName="custom" textColor="#000000" visible="true" width="215.646484375" x="-95.3232421875" y="-55.78412437438962">老系统转发
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" modelName="custom" textColor="#000000" visible="true" width="215.646484375" x="-90.27559280395508" y="71.1812801361084">老系统转发
 211.147.72.70:10009(TCP 交易接口)
 211.144.213.118:80(HTTP 用户接口)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.5" nodeRatioX="-0.14382693867471186" nodeRatioY="-0.5" offsetX="0.0" offsetY="-9.38568687438962" upX="0.0" upY="-1.0"/>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="0.5" offsetX="0.0" offsetY="14.949281692504883" upX="0.0" upY="-1.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
           <y:SVGNodeProperties usingVisualBounds="true"/>
@@ -286,7 +266,7 @@ https://api.shou.money
         </y:SVGNode>
       </data>
     </node>
-    <node id="n7">
+    <node id="n6">
       <data key="d6">
         <y:SVGNode>
           <y:Geometry height="41.72100067138672" width="41.71900177001953" x="712.6404991149902" y="374.875"/>
@@ -302,9 +282,69 @@ https://api.shou.money
           </y:NodeLabel>
           <y:SVGNodeProperties usingVisualBounds="true"/>
           <y:SVGModel svgBoundsPolicy="0">
-            <y:SVGContent refid="5"/>
+            <y:SVGContent refid="4"/>
           </y:SVGModel>
         </y:SVGNode>
+      </data>
+    </node>
+    <node id="n7">
+      <data key="d5"/>
+      <data key="d6">
+        <y:SVGNode>
+          <y:Geometry height="41.72100067138672" width="41.71900177001953" x="456.47570610046387" y="289.13949966430664"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="18.859500885009766" y="45.72100067138672">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:SVGNodeProperties usingVisualBounds="true"/>
+          <y:SVGModel svgBoundsPolicy="0">
+            <y:SVGContent refid="4"/>
+          </y:SVGModel>
+        </y:SVGNode>
+      </data>
+    </node>
+    <node id="n8">
+      <data key="d5"/>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.cloud">
+          <y:Geometry height="85.0" width="158.97976875305176" x="397.84532260894775" y="167.3804988861084"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" modelName="custom" textColor="#000000" visible="true" width="118.978515625" x="20.00062656402588" y="19.30078125">老系统商户/
+老版本云收银 SDK/
+老版本 App 用户接入<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n9">
+      <data key="d5"/>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.cloud">
+          <y:Geometry height="85.0" width="135.0" x="666.0" y="167.3804988861084"/>
+          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" modelName="custom" textColor="#000000" visible="true" width="97.375" x="18.8125" y="19.30078125">新入网商户/
+新版云收银 SDK/
+新版 App 用户<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+        </y:GenericNode>
       </data>
     </node>
     <edge id="e0" source="n2" target="n0">
@@ -387,13 +427,13 @@ https://api.shou.money
         </y:GenericEdge>
       </data>
     </edge>
-    <edge id="e4" source="n4" target="n7">
+    <edge id="e4" source="n4" target="n6">
       <data key="d10">
         <y:GenericEdge configuration="com.yworks.bpmn.Connection">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="none"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="76.943359375" x="-71.56969926711099" y="57.86757505757885">HTTPS/SPDY<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="76.943359375" x="-117.52484253026023" y="61.53059843789583">HTTPS/SPDY<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -407,13 +447,13 @@ https://api.shou.money
         </y:GenericEdge>
       </data>
     </edge>
-    <edge id="e5" source="n5" target="n7">
+    <edge id="e5" source="n9" target="n6">
       <data key="d10">
         <y:GenericEdge configuration="com.yworks.bpmn.Connection">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="none"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="85.09375" x="-15.093380340599879" y="22.14654477437341">    TCP/HTTPS<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="85.09375" x="-15.093380340599879" y="26.81041272626095">    TCP/HTTPS<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -427,17 +467,17 @@ https://api.shou.money
         </y:GenericEdge>
       </data>
     </edge>
-    <edge id="e6" source="n6" target="n7">
+    <edge id="e6" source="n5" target="n6">
       <data key="d10">
         <y:GenericEdge configuration="com.yworks.bpmn.Connection">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="none"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="69.90625" x="16.21658313967123" y="67.06106368917563">TCP/HTTPS<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="63.443359375" x="77.16225147247314" y="-39.06641006469732">TCP/HTTP<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="left" ratio="0.5" segment="0"/>
             </y:ModelParameter>
             <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
           </y:EdgeLabel>
@@ -507,12 +547,54 @@ https://api.shou.money
         </y:GenericEdge>
       </data>
     </edge>
-    <edge id="e7" source="n7" target="n0">
+    <edge id="e7" source="n6" target="n0">
       <data key="d10">
         <y:GenericEdge configuration="com.yworks.bpmn.Connection">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="none"/>
+          <y:StyleProperties>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONNECTION_TYPE_CONVERSATION_LINK"/>
+          </y:StyleProperties>
+        </y:GenericEdge>
+      </data>
+    </edge>
+    <edge id="e8" source="n8" target="n7">
+      <data key="d10">
+        <y:GenericEdge configuration="com.yworks.bpmn.Connection">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="none"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="28.000001907348633" y="23.710301399230957">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="left" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:StyleProperties>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONNECTION_TYPE_CONVERSATION_LINK"/>
+          </y:StyleProperties>
+        </y:GenericEdge>
+      </data>
+    </edge>
+    <edge id="e9" source="n7" target="n5">
+      <data key="d10">
+        <y:GenericEdge configuration="com.yworks.bpmn.Connection">
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="none"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="28.000001907348633" y="16.35035228729248">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="left" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
           <y:StyleProperties>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONNECTION_TYPE_CONVERSATION_LINK"/>
           </y:StyleProperties>
@@ -832,86 +914,6 @@ https://api.shou.money
 &lt;/svg&gt;
 </y:Resource>
       <y:Resource id="4">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;svg version="1.1"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-	 x="0px" y="0px" width="37px" height="59px" viewBox="-0.569 -0.349 37 59" enable-background="new -0.569 -0.349 37 59"
-	 xml:space="preserve"&gt;
-&lt;defs&gt;
-&lt;/defs&gt;
-&lt;linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="115.7744" y1="-158.8057" x2="115.7743" y2="-219.9759" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)"&gt;
-	&lt;stop  offset="0" style="stop-color:#B3B3B3"/&gt;
-	&lt;stop  offset="0.164" style="stop-color:#ABABAB"/&gt;
-	&lt;stop  offset="0.4188" style="stop-color:#959595"/&gt;
-	&lt;stop  offset="0.7308" style="stop-color:#717171"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/linearGradient&gt;
-&lt;path fill="url(#SVGID_1_)" d="M35.79,55.773c0,1.392-1.137,2.528-2.527,2.528H3.086c-1.39,0-2.528-1.139-2.528-2.528V2.528
-	C0.559,1.138,1.697,0,3.086,0h30.176c1.391,0,2.527,1.138,2.527,2.528V55.773z"/&gt;
-&lt;linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="115.7744" y1="-158.8057" x2="115.7743" y2="-219.9759" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)"&gt;
-	&lt;stop  offset="0" style="stop-color:#B3B3B3"/&gt;
-	&lt;stop  offset="0.164" style="stop-color:#ABABAB"/&gt;
-	&lt;stop  offset="0.4188" style="stop-color:#959595"/&gt;
-	&lt;stop  offset="0.7308" style="stop-color:#717171"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/linearGradient&gt;
-&lt;path fill="url(#SVGID_2_)" d="M35.79,55.773c0,1.392-1.137,2.528-2.527,2.528H3.086c-1.39,0-2.528-1.139-2.528-2.528V2.528
-	C0.559,1.138,1.697,0,3.086,0h30.176c1.391,0,2.527,1.138,2.527,2.528V55.773z"/&gt;
-&lt;path opacity="0.19" fill="#FFFFFF" d="M35.79,39.342L0.559,26.702V2.529c0-1.391,1.138-2.528,2.528-2.528h30.176
-	c1.391,0,2.527,1.138,2.527,2.528V39.342z"/&gt;
-&lt;path fill="#353535" d="M32.868,53.717c0,1.392-1.138,2.529-2.527,2.529H11.854c-1.39,0-2.528-1.139-2.528-2.529V11.534
-	c0-1.39,1.138-2.528,2.528-2.528H30.34c1.391,0,2.528,1.138,2.528,2.528V53.717L32.868,53.717z"/&gt;
-&lt;linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="123.9893" y1="-171.4683" x2="123.9893" y2="-215.0464" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)"&gt;
-	&lt;stop  offset="0" style="stop-color:#B3B3B3"/&gt;
-	&lt;stop  offset="0.164" style="stop-color:#ABABAB"/&gt;
-	&lt;stop  offset="0.4188" style="stop-color:#959595"/&gt;
-	&lt;stop  offset="0.7308" style="stop-color:#717171"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/linearGradient&gt;
-&lt;path fill="url(#SVGID_3_)" d="M30.34,52.129c0,0.695-0.568,1.265-1.265,1.265h-5.371c-0.695,0-1.265-0.568-1.265-1.265V13.123
-	c0-0.695,0.568-1.264,1.265-1.264h5.371c0.695,0,1.265,0.569,1.265,1.264V52.129z"/&gt;
-&lt;linearGradient id="SVGID_4_" gradientUnits="userSpaceOnUse" x1="113.4834" y1="-171.4683" x2="113.4834" y2="-215.0464" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)"&gt;
-	&lt;stop  offset="0" style="stop-color:#B3B3B3"/&gt;
-	&lt;stop  offset="0.164" style="stop-color:#ABABAB"/&gt;
-	&lt;stop  offset="0.4188" style="stop-color:#959595"/&gt;
-	&lt;stop  offset="0.7308" style="stop-color:#717171"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/linearGradient&gt;
-&lt;path fill="url(#SVGID_4_)" d="M19.833,52.129c0,0.695-0.567,1.265-1.264,1.265h-5.372c-0.695,0-1.264-0.568-1.264-1.265V13.123
-	c0-0.695,0.569-1.264,1.264-1.264h5.372c0.695,0,1.264,0.569,1.264,1.264V52.129z"/&gt;
-&lt;linearGradient id="SVGID_5_" gradientUnits="userSpaceOnUse" x1="123.9932" y1="-215.5532" x2="123.9932" y2="-209.4927" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)"&gt;
-	&lt;stop  offset="0" style="stop-color:#8D8D8D"/&gt;
-	&lt;stop  offset="0.2282" style="stop-color:#858585"/&gt;
-	&lt;stop  offset="0.5829" style="stop-color:#6F6F6F"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/linearGradient&gt;
-&lt;rect x="23.362" y="45.948" fill="url(#SVGID_5_)" width="6.06" height="6.061"/&gt;
-&lt;linearGradient id="SVGID_6_" gradientUnits="userSpaceOnUse" x1="113.4834" y1="-215.4204" x2="113.4834" y2="-209.3599" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)"&gt;
-	&lt;stop  offset="0" style="stop-color:#8D8D8D"/&gt;
-	&lt;stop  offset="0.2282" style="stop-color:#858585"/&gt;
-	&lt;stop  offset="0.5829" style="stop-color:#6F6F6F"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/linearGradient&gt;
-&lt;rect x="12.854" y="45.815" fill="url(#SVGID_6_)" width="6.06" height="6.061"/&gt;
-&lt;rect x="12.854" y="24.328" fill="#6E6E6E" width="6.06" height="15.014"/&gt;
-&lt;rect x="23.36" y="24.328" fill="#6E6E6E" width="6.061" height="15.014"/&gt;
-&lt;rect x="0.071" y="50.68" fill="#C8FF00" stroke="#717171" stroke-width="0.1416" stroke-miterlimit="10" width="5.709" height="2.898"/&gt;
-&lt;radialGradient id="SVGID_7_" cx="124.1484" cy="-180.064" r="3.221" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)" gradientUnits="userSpaceOnUse"&gt;
-	&lt;stop  offset="0" style="stop-color:#8D8D8D"/&gt;
-	&lt;stop  offset="0.2282" style="stop-color:#858585"/&gt;
-	&lt;stop  offset="0.5829" style="stop-color:#6F6F6F"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/radialGradient&gt;
-&lt;circle fill="url(#SVGID_7_)" stroke="#666666" stroke-width="0.632" stroke-miterlimit="10" cx="26.391" cy="18.307" r="2.296"/&gt;
-&lt;radialGradient id="SVGID_8_" cx="113.6426" cy="-180.064" r="3.2209" gradientTransform="matrix(1 0 0 -1 -97.6001 -161.5986)" gradientUnits="userSpaceOnUse"&gt;
-	&lt;stop  offset="0" style="stop-color:#8D8D8D"/&gt;
-	&lt;stop  offset="0.2282" style="stop-color:#858585"/&gt;
-	&lt;stop  offset="0.5829" style="stop-color:#6F6F6F"/&gt;
-	&lt;stop  offset="1" style="stop-color:#4D4D4D"/&gt;
-&lt;/radialGradient&gt;
-&lt;circle fill="url(#SVGID_8_)" stroke="#666666" stroke-width="0.632" stroke-miterlimit="10" cx="15.885" cy="18.307" r="2.295"/&gt;
-&lt;/svg&gt;
-</y:Resource>
-      <y:Resource id="5">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;svg version="1.1"
 	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 	 x="0px" y="0px" width="43px" height="43px" viewBox="-0.751 -0.597 43 43" enable-background="new -0.751 -0.597 43 43"
