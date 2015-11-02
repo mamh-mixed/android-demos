@@ -233,6 +233,7 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 	// 如果是卡券核销，应答报文设置ScanCodeId
 	if req.Busicd == Veri {
 		ret.ScanCodeId = req.ScanCodeId
+		ret.Terminalid = ""
 	}
 	ret.Attach = req.Attach
 }

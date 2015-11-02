@@ -66,7 +66,7 @@
             <div class="th left">退款</div>
             <div class="th">交易时间</div>
             <!-- <div class="th" id="test" align="center">更新时间</div> -->
-            <div class="th">报文</div>
+            <div class="th" hidden$="{{!isDatagramAccessible}}">报文</div>
           </div>
         </div>
         <div class='tbody'>
@@ -105,8 +105,8 @@
               <div class="td">{{refundStatusFilter(item.refundStatus)}}</div>
               <div class="td center">{{item.transTime}}</div>
               <!-- <div class="td" align="center">{{item.updateTime}}</div> -->
-              <div class="td center">
-                <iron-icon icon="receipt" on-tap="showTradeMessageEvent" hidden$="{{!isDatagramAccessible}}"></iron-icon>
+              <div class="td center" hidden$="{{!isDatagramAccessible}}">
+                <iron-icon icon="receipt" on-tap="showTradeMessageEvent" ></iron-icon>
               </div>
             </div>
           </template>
