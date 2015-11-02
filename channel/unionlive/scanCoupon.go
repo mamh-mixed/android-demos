@@ -85,8 +85,8 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		ExpDate:         unionLiveResp.Body.ExpDate,
 		ChanRespCode:    unionLiveResp.Header.Returncode,
 		ChannelOrderNum: unionLiveResp.Header.Hosttraceno,
-		Terminalid:      req.Terminalsn,
-		Authcode:        unionLiveResp.Body.Authcode,
+		// Terminalid:      req.Terminalsn,
+		Authcode: unionLiveResp.Body.Authcode,
 	}
 
 	return scanPayResponse, nil
