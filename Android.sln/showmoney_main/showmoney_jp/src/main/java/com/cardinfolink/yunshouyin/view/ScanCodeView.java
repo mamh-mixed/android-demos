@@ -327,7 +327,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 //
 //                break;
             case R.id.btnsm:
-                //TODO: test only, 1元=0.01元
+                //Test only: 日币没有小数点,使用人民币模拟,除以100了
                 final double sum = Double.parseDouble(edt_input.getText().toString().substring(1))/100;
                 if (sum <= 0) {
                     Toast.makeText(mContext, getResources().getString(R.string.qr_amount_nonzero), Toast.LENGTH_SHORT).show();
@@ -372,6 +372,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                         Intent intent = new Intent(mContext, CaptureActivity.class);
                                         intent.putExtra("chcd", chcd);
                                         intent.putExtra("total", "" + sum);
+
                                         mContext.startActivity(intent);
 
                                     } else {

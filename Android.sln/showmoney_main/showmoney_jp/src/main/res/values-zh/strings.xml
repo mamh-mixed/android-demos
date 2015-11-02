@@ -119,5 +119,6 @@
     <string name="delete">删除</string>
     <string name="begin_scan">开始扫描</string>
     <string name="my_bill">我的账单</string>
+    <string name="txt_txn_detail">详情</string>
 
 </resources>

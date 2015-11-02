@@ -374,23 +374,23 @@ public class TransManageView extends LinearLayout {
             if (!bill.tradeFrom.isEmpty()) {
                 tradeFrom = bill.tradeFrom;
             }
-            //TODO: 待日文化
-            String busicd = "支付";
+
+            String busicd = getResources().getString(R.string.detail_activity_busicd_pay);
             if (bill.busicd.equals("REFD")) {
-                busicd = "退款";
+                busicd = getResources().getString(R.string.detail_activity_busicd_refd);
             }
 
             holder.billTradeFrom.setText(tradeFrom + busicd);
-            String tradeStatus = "交易成功";
+            String tradeStatus;
             if (bill.response.equals("00")) {
-                tradeStatus = "交易成功";
+                tradeStatus = getResources().getString(R.string.detail_activity_trade_status_success);
                 holder.billTradeStatus
                         .setTextColor(Color.parseColor("#888888"));
             } else if (bill.response.equals("09")) {
-                tradeStatus = "正在处理";
+                tradeStatus = getResources().getString(R.string.detail_activity_trade_status_nopay);
                 holder.billTradeStatus.setTextColor(Color.RED);
             } else {
-                tradeStatus = "交易失败";
+                tradeStatus = getResources().getString(R.string.detail_activity_trade_status_fail);
                 holder.billTradeStatus.setTextColor(Color.RED);
             }
             holder.billTradeStatus.setText(tradeStatus);
