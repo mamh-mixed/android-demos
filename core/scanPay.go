@@ -322,7 +322,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	ret = adaptor.ProcessBarcodePay(t, c, req)
 
-	// 渠�������
+	// 渠道
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
