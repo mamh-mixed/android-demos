@@ -29,7 +29,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="请激活帐号"
+                    android:text="@string/txt_please_activate"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </RelativeLayout>
@@ -67,7 +67,7 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="取消"
+                    android:text="@string/txt_cancel"
                     android:textSize="17sp"
 
                     />
@@ -79,7 +79,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="确定"
+                    android:text="@string/txt_confirm"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -138,7 +138,7 @@
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="请输入退款金额："
+                        android:text="@string/txt_input_refund_amount"
                         android:textSize="17sp" />
 
                     <EditText
@@ -174,7 +174,7 @@
 
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="请输入登录密码："
+                        android:text="@string/txt_input_login_pwd"
                         android:textSize="17sp" />
 
                     <EditText
@@ -205,7 +205,7 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="取消"
+                    android:text="@string/txt_cancel"
                     android:textSize="17sp"
 
                     />
@@ -217,7 +217,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="确认"
+                    android:text="@string/txt_confirm"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -289,7 +289,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="确定"
+                    android:text="@string/txt_confirm"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -356,7 +356,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="交易读取中，请稍后。。。"
+                    android:text="@string/txt_txn_pending_msg"
                     android:textSize="17sp" />
 
                 <TextView
@@ -383,7 +383,7 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="查询结果"
+                    android:text="@string/txt_query_result"
                     android:textSize="17sp"
 
                     />
@@ -395,7 +395,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="关闭"
+                    android:text="@string/txt_close"
                     android:textSize="17sp"
                     android:visibility="gone" />
 
@@ -457,7 +457,7 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="查询结果"
+                    android:text="@string/txt_query_result"
                     android:textSize="17sp"
 
                     />
@@ -469,7 +469,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="关闭"
+                    android:text="@string/txt_close"
                     android:textSize="17sp"
                     android:visibility="gone" />
 
@@ -533,7 +533,7 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="历史交易"
+                    android:text="@string/txt_history_txns"
                     android:textSize="17sp"
 
                     />
@@ -545,7 +545,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="返回"
+                    android:text="@string/txt_return"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -607,7 +607,7 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="查询结果"
+                    android:text="@string/txt_query_result"
                     android:textSize="17sp"
 
                     />
@@ -619,7 +619,7 @@
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="返回"
+                    android:text="@string/txt_return"
                     android:textSize="17sp" />
 
             </LinearLayout>
