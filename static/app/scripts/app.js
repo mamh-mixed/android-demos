@@ -28,7 +28,7 @@
 				return;
 			}
 
-			if (userType !== 'agent' && userType !== 'group' && userType !== 'merchant') {
+			if (userType !== 'agent' && userType !== 'group' && userType !== 'merchant' && userType !== 'subAgent') {
 				document.querySelector('#appRouter').go('/');
 				return;
 			}
