@@ -42,7 +42,7 @@
 
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="yunshouyin" />
+            android:value="test" />
 
 
         <activity
