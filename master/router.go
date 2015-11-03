@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -21,6 +22,17 @@ var agentURLArr = []string{
 	"/master/trade/stat/report",
 	"/master/trade/findOne",
 	"/master/user/updatePwd",
+}
+
+// 路径中包含依稀关键字，则记录到数据库
+var logKeysArr = []string{
+	"create",
+	"save",
+	"update",
+	"delete",
+	"reset",
+	"login",
+	"logout",
 }
 
 // Route 后台管理的请求统一入口
@@ -235,6 +247,18 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 
 // handleLog 记录平台操作日志
 func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
+	path := r.URL.Path
+	// 增删改操作记录到数据库
+	isLog := false
+	for _, key := range logKeysArr {
+		if strings.Contains(path, key) {
+			isLog = true
+			break
+		}
+	}
+	if !isLog {
+		return
+	}
 	var body []byte
 	var err error
 	if r.Method == "POST" {
@@ -248,7 +272,10 @@ func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 		// r.Body 只能被读取一次，读完之后再写入
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	}
-
+	// 如果是修改密码操作，则不需要记录body中数据
+	if path == "/master/user/updatePwd" {
+		body = []byte("")
+	}
 	InsertLog(r, user, body)
 }
 

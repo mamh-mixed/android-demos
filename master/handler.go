@@ -763,7 +763,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(retBytes)
-	InsertLog(r, user, data)
+	InsertLog(r, user, []byte(""))
 }
 
 // 查找
