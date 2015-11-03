@@ -245,7 +245,7 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	return session, nil
 }
 
-// handleLog 记录平台操作日志
+// HandleMasterLog 记录平台操作日志
 func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 	path := r.URL.Path
 	// 增删改操作记录到数据库
@@ -276,18 +276,32 @@ func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 	if path == "/master/user/updatePwd" {
 		body = []byte("")
 	}
-	InsertLog(r, user, body)
+	InsertMasterLog(r, user, body)
 }
 
-func InsertLog(r *http.Request, user *model.User, body []byte) {
+// InsertMasterLog 操作日志入库
+func InsertMasterLog(r *http.Request, user *model.User, body []byte) {
+	// 取客户端 IP，优先取 X-Forwarded-For 第一个 IP，
+	// 如果没有，再取 X-Real-IP，最后是 RemoteAddr
+	clientIP := r.RemoteAddr
+	forwordedFor := r.Header.Get("X-Forwarded-For")
+	if forwordedFor != "" {
+		clientIP = strings.Split(forwordedFor, ", ")[0]
+	} else {
+		realIP := r.Header.Get("X-Real-IP")
+		if realIP != "" {
+			clientIP = realIP
+		}
+	}
+
 	masterLog := &model.MasterLog{
 		UserName: user.UserName,
 		Time:     time.Now().Format("2006-01-02 15:04:05"),
 		Path:     r.URL.Path,
 		Method:   r.Method,
-		Query:    r.URL.Query(),
+		Query:    r.URL.RawQuery,
 		Body:     string(body),
-		IP:       r.RemoteAddr,
+		IP:       clientIP,
 	}
 	mongo.MasterLogColl.Insert(masterLog)
 }
