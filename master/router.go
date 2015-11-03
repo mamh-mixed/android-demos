@@ -24,7 +24,7 @@ var agentURLArr = []string{
 	"/master/user/updatePwd",
 }
 
-// 路径中包含依稀关键字，则记录到数据库
+// 路径中包含以下关键字，则记录到数据库
 var logKeysArr = []string{
 	"create",
 	"save",
