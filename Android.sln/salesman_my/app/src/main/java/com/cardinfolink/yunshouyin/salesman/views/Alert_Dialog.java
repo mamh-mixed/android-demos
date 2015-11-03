@@ -77,7 +77,6 @@ public class Alert_Dialog {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });
