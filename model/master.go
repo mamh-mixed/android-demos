@@ -1,14 +1,12 @@
 package model
 
-import "net/url"
-
 type ResultBody struct {
 	Status  int         `json:"status"`  // 状态码
 	Message string      `json:"message"` // 消息
 	Data    interface{} `json:"data"`    // 数据
 }
 
-// NewBindingReturn ResultBody构造函数
+// NewResultBody ResultBody 构造函数
 func NewResultBody(status int, msg string) (ret *ResultBody) {
 	return &ResultBody{
 		Status:  status,
@@ -27,11 +25,11 @@ type Pagination struct {
 
 // MasterLog 平台操作日志
 type MasterLog struct {
-	UserName string     `bson:"userName" json:"userName"`
-	Time     string     `bson:"time" json:"time"`
-	Path     string     `bson:"path" json:"path"`
-	Method   string     `bson:"method" json:"method"`
-	Query    url.Values `bson:"query" json:"query"`
-	Body     string     `bson:"body" json:"body"`
-	IP       string     `bson:"ip" json:"ip"`
+	Time     string `bson:"time" json:"time"`
+	UserName string `bson:"userName" json:"userName"`
+	IP       string `bson:"ip" json:"ip"`
+	Path     string `bson:"path" json:"path"`
+	Method   string `bson:"method" json:"method"`
+	Query    string `bson:"query" json:"query"`
+	Body     string `bson:"body" json:"body"`
 }
