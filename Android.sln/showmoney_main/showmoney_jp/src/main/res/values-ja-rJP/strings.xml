@@ -95,7 +95,7 @@
     <string name="alert_error_username_exist">ユーザー名がすでに存在する!</string>
     <string name="alert_error_system_error">申し訳ありませんが、システムエラー!</string>
     <string name="alert_error_old_password_error">元のパスワードが間違っています!</string>
-    <string name="alert_update_success">改正成功!</string>
+    <string name="alert_update_success">変更成功!</string>
     <string name="alert_error_old_password_cannot_empty">元パスワードは空栏にしてはいけない!</string>
     <string name="alert_error_old_password_short_six">元パスワードは6位未満といけないです!</string>
     <string name="alert_error_new_password_cannot_empty">新しいパスワードは空栏にしてはいけない!</string>
@@ -139,15 +139,15 @@
     <string name="begin_scan">スキャン開始</string>
     <string name="my_bill">マイ明細</string>
     <string name="txt_txn_detail">詳細</string>
-    <string name="txt_input_refund_amount">请输入退款金额：</string>
-    <string name="txt_input_login_pwd">请输入登录密码：</string>
-    <string name="txt_confirm">确认</string>
-    <string name="txt_txn_pending_msg">交易读取中，请稍后。。。</string>
-    <string name="txt_please_activate">请激活帐号</string>
-    <string name="txt_cancel">取消</string>
-    <string name="txt_close">关闭</string>
-    <string name="txt_return">返回</string>
-    <string name="txt_history_txns">历史交易</string>
-    <string name="txt_query_result">查询结果</string>
+    <string name="txt_input_refund_amount">払い戻し金額を入力してください：</string>
+    <string name="txt_input_login_pwd">ログインパスワードを入力してください：</string>
+    <string name="txt_confirm">確認</string>
+    <string name="txt_txn_pending_msg">トレーディングロード中、お待ちください。。。</string>
+    <string name="txt_please_activate">アカウントをアクティベートしてください</string>
+    <string name="txt_cancel">キャンセル</string>
+    <string name="txt_close">クローズ</string>
+    <string name="txt_return">戻る</string>
+    <string name="txt_history_txns">トランザクション履歴</string>
+    <string name="txt_query_result">検索結果</string>
 
 </resources>
