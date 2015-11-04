@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:color="@color/color_txt_select" android:state_focused="true" />
-    <!-- not selected -->
-    <item android:color="@color/color_txt_normal" android:state_focused="false" />
-</selector>
