@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -21,6 +22,17 @@ var agentURLArr = []string{
 	"/master/trade/stat/report",
 	"/master/trade/findOne",
 	"/master/user/updatePwd",
+}
+
+// 路径中包含以下关键字，则记录到数据库
+var logKeysArr = []string{
+	"create",
+	"save",
+	"update",
+	"delete",
+	"reset",
+	"login",
+	"logout",
 }
 
 // Route 后台管理的请求统一入口
@@ -233,8 +245,20 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	return session, nil
 }
 
-// handleLog 记录平台操作日志
+// HandleMasterLog 记录平台操作日志
 func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
+	path := r.URL.Path
+	// 增删改操作记录到数据库
+	isLog := false
+	for _, key := range logKeysArr {
+		if strings.Contains(path, key) {
+			isLog = true
+			break
+		}
+	}
+	if !isLog {
+		return
+	}
 	var body []byte
 	var err error
 	if r.Method == "POST" {
@@ -248,19 +272,36 @@ func HandleMasterLog(w http.ResponseWriter, r *http.Request, user *model.User) {
 		// r.Body 只能被读取一次，读完之后再写入
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	}
-
-	InsertLog(r, user, body)
+	// 如果是修改密码操作，则不需要记录body中数据
+	if path == "/master/user/updatePwd" {
+		body = []byte("")
+	}
+	InsertMasterLog(r, user, body)
 }
 
-func InsertLog(r *http.Request, user *model.User, body []byte) {
+// InsertMasterLog 操作日志入库
+func InsertMasterLog(r *http.Request, user *model.User, body []byte) {
+	// 取客户端 IP，优先取 X-Forwarded-For 第一个 IP，
+	// 如果没有，再取 X-Real-IP，最后是 RemoteAddr
+	clientIP := r.RemoteAddr
+	forwordedFor := r.Header.Get("X-Forwarded-For")
+	if forwordedFor != "" {
+		clientIP = strings.Split(forwordedFor, ", ")[0]
+	} else {
+		realIP := r.Header.Get("X-Real-IP")
+		if realIP != "" {
+			clientIP = realIP
+		}
+	}
+
 	masterLog := &model.MasterLog{
 		UserName: user.UserName,
 		Time:     time.Now().Format("2006-01-02 15:04:05"),
 		Path:     r.URL.Path,
 		Method:   r.Method,
-		Query:    r.URL.Query(),
+		Query:    r.URL.RawQuery,
 		Body:     string(body),
-		IP:       r.RemoteAddr,
+		IP:       clientIP,
 	}
 	mongo.MasterLogColl.Insert(masterLog)
 }
