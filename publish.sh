@@ -1,6 +1,6 @@
 #/bin/bash
 
-set -e
+set -ex
 
 prog="quickpay"
 
@@ -48,20 +48,25 @@ function main() {
     goBuild $prog ${envs[$idx]}
     echo
 
+    version=$(git rev-parse --verify HEAD --short)
+    if [ ${envs[$idx]} == "product" ]; then
+        version=$(git describe --abbrev=0 --tags)
+    fi
+
     # 前端打包
     echo ">>> Use Gulp to package frontend html/js/css..."
-    gulpPackage
+    gulpPackage $version
     echo
 
     workdir="/opt/$prog"
 
     # 发布
     echo ">>> Rsync executable program..."
-    deploy $host $workdir
+    deploy $host $workdir $version
     echo
     # 重启
     echo ">>> Restart program and tail log..."
-    restart $host $workdir
+    restart $host $workdir $version
     echo
 
     rm -rf distrib/
@@ -91,33 +96,54 @@ function goBuild() {
 }
 
 function gulpPackage() {
-    mkdir -p distrib/static/app
+    version=$1
+
+    echo "frontend version $version"
+
+    mkdir -p distrib/static/$version
     cd static
     bower install # 安装前端依赖
     gulp # 压缩文件
     cd ..
-    cp -r static/dist/ distrib/static/app/
+    cp static/index.html distrib/static/index.html # 跳转页面
+    sed -i '' 's/url=v0.0.1"/url='$version'"/g' distrib/static/index.html # 替换版本号
+    cp -r static/dist/ distrib/static/$version/ # 新版本静态文件路径
 }
 
 function deploy() {
     host=$1
     workdir=$2
+    version=$3
+
+    # 远程执行备份并复制，以使用 rsync 加速传输
+    echo "SSH $host"
+    ssh $host << EOF
+cd $workdir
+cp $prog ${prog}_$version
+prev=\$(ls -t static | grep -v 'index.html' | head -n  1)
+if [ "\$prev" != "$version" ]; then
+    cp -r static/\$prev static/$version
+fi
+exit
+EOF
 
     # 上传文件
     echo "Uploading $prog..."
     rsync -rcv --exclude=logs --exclude=.DS_Store \
-        --delete --progress distrib/ $host:$workdir/
+        --progress distrib/ $host:$workdir/
 }
 
 function restart() {
     host=$1
     workdir=$2
+    version=$3
 
     # 远程执行重启命令
     echo "SSH $host"
     ssh $host << EOF
 
 cd $workdir
+cp ${prog}_$version $prog
 
 echo "Killing $prog process..."
 ps -ef | grep $prog
@@ -132,7 +158,6 @@ echo "Sleep 5 seconds..."
 sleep 5
 tail -n 30 logs/$prog.log
 
-exit
 EOF
 }
 
