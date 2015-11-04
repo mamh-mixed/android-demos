@@ -93,6 +93,11 @@
           </div>
           <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
         </div>
+        <div id="ulive">
+          <paper-input id="uliveChanMerId" label="渠道商户号" value="{{ulive.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="uliveChanMerName" label="渠道商户名称" value="{{ulive.chanMerName::input}}"></paper-input>
+          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}" required error-message="必填项"></paper-input>
+        </div>
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
@@ -117,6 +122,9 @@
             }, {
               key: 'WXP',
               value: 'WXP 微信'
+            }, {
+              key: 'ULIVE',
+              value: 'ULIVE 优方'
             }]
           },
           bigMerchant: {
@@ -181,9 +189,15 @@
             if (channel.key === 'ALP') {
               this.$.alp.hidden = false;
               this.$.wxp.hidden = true;
+              this.$.ulive.hidden = true;
             } else if (channel.key === 'WXP') {
               this.$.alp.hidden = true;
               this.$.wxp.hidden = false;
+              this.$.ulive.hidden = true;
+            } else if (channel.key === 'ULIVE') {
+              this.$.alp.hidden = true;
+              this.$.wxp.hidden = true;
+              this.$.ulive.hidden = false;
             }
           }
         },
@@ -245,7 +259,8 @@
             this.$.header.textContent = '编辑渠道商户';
             var map = {
               'ALP': 'ALP 支付宝',
-              'WXP': 'WXP 微信'
+              'WXP': 'WXP 微信',
+              'ULIVE': 'ULIVE 优方'
             };
             this.channel = {
               key: this.chanMer.chanCode,
@@ -255,8 +270,10 @@
             this.chanCodeDisabled = true;
             this.alp = this.chanMer;
             this.weixin = this.chanMer;
+            this.ulive = this.chanMer;
             this.$.achanMerId.disabled = true;
             this.$.wchanMerId.disabled = true;
+            this.$.uliveChanMerId.disabled=true;
             var aagentCodeMap = {
               '12010128a1': '讯联 12010128a1',
               '11719712a1': '天奕通 11719712a1'
@@ -318,6 +335,14 @@
           }
           return true;
         },
+        // 判断优方渠道信息是否必填项都填写了，返回false表示都填写了
+        isUliveConfigEmpty: function() {
+          if (this.$.uliveChanMerId.validate() && this.$.uliveTerminalId.validate()) {
+            return false;
+          }
+
+          return true;
+        },
         // 点击保存事件
         handleSaveTapped: function() {
           if (this.channel) {
@@ -355,6 +380,8 @@
                 this.set('weixin.agentMer', {});
               }
               this.chanMer = this.weixin;
+            } else if (this.channel.key === 'ULIVE' && !this.isUliveConfigEmpty()) {
+              this.chanMer = this.ulive;
             } else {
               Util.toast('必填项不能为空', 3000);
               return;
