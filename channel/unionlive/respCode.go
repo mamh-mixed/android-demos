@@ -47,4 +47,5 @@ func initRespCode() {
 	ChanSysRespCode["1105"] = "C6"
 	ChanSysRespCode["1102"] = "C1"
 	ChanSysRespCode["1101"] = "C1"
+	ChanSysRespCode["1563"] = "96"
 }
