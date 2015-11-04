@@ -29,6 +29,7 @@ import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.QiniuMultiUploadWrapper;
 import com.cardinfolink.yunshouyin.salesman.utils.QiniuTaskListener;
 import com.cardinfolink.yunshouyin.salesman.views.MerchantPhotoRecyclerViewAdapter;
+import com.cardinfolink.yunshouyin.salesman.views.WorkBeforeExitListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -170,8 +171,12 @@ public class SARegisterStep3Activity extends BaseActivity {
                         @Override
                         public void run() {
                             endLoading();
-                            alertInfo("成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。");
-                            ActivityCollector.goHomeAndFinishRest();
+                            alertInfo("成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", new WorkBeforeExitListener() {
+                                @Override
+                                public void complete() {
+                                    ActivityCollector.goHomeAndFinishRest();
+                                }
+                            });
                         }
                     });
                 } catch (Exception e) {

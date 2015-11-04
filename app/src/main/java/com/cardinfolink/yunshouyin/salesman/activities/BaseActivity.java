@@ -12,6 +12,7 @@ import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.views.Alert_Dialog;
 import com.cardinfolink.yunshouyin.salesman.views.Loading_Dialog;
+import com.cardinfolink.yunshouyin.salesman.views.WorkBeforeExitListener;
 import com.umeng.analytics.MobclickAgent;
 
 
@@ -66,8 +67,12 @@ public class BaseActivity extends AppCompatActivity {
         mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
     }
 
-    public void alertInfo(String msg) {
-        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
+//    public void alertInfo(String msg) {
+//        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
+//    }
+
+    public void alertInfo(String msg, WorkBeforeExitListener listener){
+        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right), listener);
     }
 
     /**

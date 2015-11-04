@@ -91,4 +91,35 @@ public class Alert_Dialog {
                     }
                 });
     }
+
+
+    public void show(String message, Bitmap bitmap, final WorkBeforeExitListener listener) {
+        TextView textView = (TextView) dialogView.findViewById(R.id.alert_message);
+        if (message.length() == 0) {
+            message = "网关错误!";
+        }
+        textView.setText(message);
+        ImageView imageView = (ImageView) dialogView.findViewById(R.id.alert_img);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        }
+        dialogView.setVisibility(View.VISIBLE);
+        dialogView.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+        dialogView.findViewById(R.id.alert_ok).setOnClickListener(
+                new OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        dialogView.setVisibility(View.GONE);
+                        listener.complete();
+                    }
+                });
+    }
 }
