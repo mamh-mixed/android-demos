@@ -202,7 +202,8 @@
         </paper-toolbar>
 
         <!-- 菜单列表 -->
-        <paper-menu id="quickPayMenuContainer" on-menu-render="handleMenuRenderEvent">
+        <!-- 管理员菜单 -->
+        <paper-menu id="quickPayMenuContainer" on-menu-render="handleMenuRenderEvent" hidden$="{{!isAdmin}}">
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
               <paper-item class="menu-trigger">
@@ -218,6 +219,15 @@
                 </template>
               </paper-menu>
             </paper-submenu>
+          </template>
+        </paper-menu>
+        <!-- 非管理员菜单 -->
+        <paper-menu class="menu-content" attr-for-selected="data-route" selected="{{route.name}}" hidden$="{{isAdmin}}">
+          <template is="dom-repeat" items="{{menus}}" as="menu">
+            <a data-route$="{{menu.route}}" href$="{{menu.url}}">
+              <iron-icon icon$="{{menu.icon}}"></iron-icon>
+              <span>{{menu.nameCN}}</span>
+            </a>
           </template>
         </paper-menu>
       </paper-scroll-header-panel>
@@ -296,11 +306,13 @@
               "nameEN": "",
               "icon": "account-circle",
               "url": "#/system/users",
+              'route': 'system.users'
             }, {
               "nameCN": "密码修改",
               "nameEN": "",
               "icon": "lock-outline",
               "url": "#/system/password/editor",
+              'route': 'system.password.editor'
             }]
           }, {
             "nameCN": "扫码支付",
@@ -433,7 +445,8 @@
                 "icon": "assignment-returned",
                 "url": "#/stats/settle/reports",
                 "route": "stats.settle.reports"
-              }]
+              }
+            ]
           }, {
             "nameCN": "内部测试",
             "nameEN": "",
@@ -466,46 +479,26 @@
               "route": "test.filereader"
             }]
           }];
+
           this.agentMenus = [{
-            "nameCN": "系统管理",
+            "nameCN": "密码修改",
             "nameEN": "",
-            "icon": "settings",
-            "url": "",
-            "route": "/system",
-            "children": [{
-              "nameCN": "密码修改",
-              "nameEN": "",
-              "icon": "lock-outline",
-              "url": "#/system/password/editor",
-            }]
+            "icon": "lock-outline",
+            "url": "#/system/password/editor",
+            'route': 'system.password.editor'
           }, {
-            "nameCN": "交易查询",
+            "nameCN": "扫码交易",
             "nameEN": "",
-            "icon": "payment",
-            "url": "",
-            "route": "/trade",
-            "children": [{
-              "nameCN": "扫码交易",
-              "nameEN": "",
-              "icon": "image:crop-free",
-              "url": "#/trade/list",
-              "route": "trade.list"
-            }]
+            "icon": "image:crop-free",
+            "url": "#/trade/list",
+            "route": "trade.list"
           }, {
-            "nameCN": "统计报表",
+            "nameCN": "扫码支付交易统计",
             "nameEN": "",
-            "icon": "receipt",
-            "url": "",
-            "route": "/stats",
-            "children": [{
-              "nameCN": "扫码支付交易统计",
-              "nameEN": "",
-              "icon": "print",
-              "url": "#/stats/reports",
-              "route": "stats.reports"
-            }]
+            "icon": "print",
+            "url": "#/stats/reports",
+            "route": "stats.reports"
           }];
-          // this.menus = this.adminMenus;
         },
         paperHeaderTransform: function(e) {
           var appName = this.$.appName;
@@ -555,9 +548,11 @@
         // 监听菜单渲染的事件
         handleMenuRenderEvent: function(e, detail) {
           if (detail === 'admin') {
+            this.set('isAdmin', true);
             this.menus = this.adminMenus;
             return;
           }
+          this.set('isAdmin', false);
           this.menus = this.agentMenus;
         },
         handleReloadNickNameEvent: function(e) {

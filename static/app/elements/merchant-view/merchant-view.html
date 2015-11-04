@@ -21,12 +21,6 @@
       }
     }
 
-    paper-dialog {
-      width: 680px;
-      min-height: 650px;
-      max-height: 650px;
-    }
-
     paper-checkbox {
       display: inline-block;
     }
@@ -102,7 +96,6 @@
       </paper-tabs>
       <iron-pages selected="{{idx}}">
         <section alias="merchant">
-          <!-- <h2>{{item.detail.merName}}</h2> -->
           <paper-dialog-scrollable>
             <div class="table low">
               <div class="tbody">
@@ -194,7 +187,6 @@
                 </div>
               </div>
             </div>
-
             <dl>
               <dt class="key">账单URL</dt>
               <dd>{{item.detail.billUrl}}</dd>
@@ -210,15 +202,6 @@
               </dd>
             </dl>
           </paper-dialog-scrollable>
-          <div class="buttons">
-            <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个门店吗?</label>
-            <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
-            <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
-            <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
-            <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
-            <paper-button on-tap="handleViewRouteTapped">查看路由</paper-button>
-            <paper-button on-tap="handleClose">关闭</paper-button>
-          </div>
         </section>
         <section alias="alipay">
           <paper-dialog-scrollable>
@@ -235,9 +218,6 @@
               <dd>{{alipay.agentCode}}</dd>
             </dl>
           </paper-dialog-scrollable>
-          <div class="buttons">
-            <paper-button on-tap="handleClose">关闭</paper-button>
-          </div>
         </section>
         <section alias="weixin">
           <paper-dialog-scrollable>
@@ -268,9 +248,6 @@
               </dd>
             </dl>
           </paper-dialog-scrollable>
-          <div class="buttons">
-            <paper-button on-tap="handleClose">关闭</paper-button>
-          </div>
         </section>
         <section alias="ulive">
           <paper-dialog-scrollable>
@@ -285,12 +262,17 @@
               <dd>{{ulive.terminalId}}</dd>
             </dl>
           </paper-dialog-scrollable>
-          <div class="buttons">
-            <paper-button on-tap="handleClose">关闭</paper-button>
-          </div>
         </section>
       </iron-pages>
-
+      <div class="buttons">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个门店吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
+        <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button on-tap="handleViewRouteTapped">查看路由</paper-button>
+        <paper-button on-tap="handleClose">关闭</paper-button>
+      </div>
     </paper-dialog>
     <x-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
     <x-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></x-ajax>

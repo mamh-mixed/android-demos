@@ -49,9 +49,12 @@
       transition: -webkit-transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .icon-button:hover > iron-icon:not(iron-icon[disabled]) {
-      -webkit-transform: scale(1.2);
-      transform: scale(1.2);
+    .icon-button:hover > iron-icon:not([disabled]) {
+      -webkit-transform: scale(1.4);
+         -moz-transform: scale(1.4);
+          -ms-transform: scale(1.4);
+           -o-transform: scale(1.4);
+              transform: scale(1.4);
     }
     .icon-button > paper-ripple {
       overflow: hidden;
