@@ -60,9 +60,9 @@
     "UnionLive": {
         "Encrypt": true, // 密码是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         "URL": "http://umq.cc/posservice/CouponsPurchaseService.ashx", // 优方卡券接口
-        "EncryptKey": "BA823FCE", // 加密密钥
+        "EncryptKey": "******", // 加密密钥
         "EncryptEncryptKey": "RkRcF8ofgwV8G5stnhtxZa7jebuAL8lOgmjxeNosgqvzVatwPxMkh+yPGD4uPrmuLXg/LeJ3kAb65AeluOltbbGhdafIA8rUftiKlq1ULmE16lcv8NrXZ/TtONcHBDwud5Ggzxo0aBND8qy3kfGi2DQSa8eFZPG31BjTDcgh0B1euV/X+pEzIW1z8+x3Izmf2TJzdUGqiwUFog437k47+zdVhtgyhWMX3m9GGpQx0CSEtJQtzxZfutNNONzJu+eVstr3en7RWMplTzxtWRZO+uy2W3LNEa1r1pmcTPbQEhr6YsjBgpP+TJ7RNaSq9fojTVAkiy9aacwq/+JvZJAKgg==", // 加密密钥
-        "SignKey": "291BFD0289B24317BF9A520CA6DFDAD2", // 签名密钥
+        "SignKey": "******", // 签名密钥
         "EncryptSignKey": "bNw1qCugpH6J7xILeOLRiHrBJRrEceLmJa0wZ9xA7gcvc7pdiCnH/1OaO2kfTKrZ0L9PtGjj3TilkBvBz7w2x/PkhyhwhGxnxpNzZSBpUNo84gskSRaJSd4Xv/d6VuyMzezUVnmsK2DtqCdcE/90Li22aOyvo5r8yJR8YRcLsEOpR4mh1su7MNkqG6zw3o4R+SEI9htqGCEugJ9b0VxE0es+o3zn0Kb5yr6zDN8fIgv5n7HRTj2ogLGF5SSMYt3bLlAaqNeoseZLursMYynd+XJo+uNq0EYDJfVzhoWtgq/rBUMHvGoIqihNvsrkM/ZJ95ZkgCEBWPEq6FTyDJN1Cg==", // 签名密钥
         "ChannelId": "180210000270000" // 渠道 ID
     }
