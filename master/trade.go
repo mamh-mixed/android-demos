@@ -198,7 +198,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		cell.Value = v.OrderNum
 		// 交易金额
 		cell = row.AddCell()
-		cell.SetFloat(amt)
+		cell.SetFloatWithFormat(float64(amt), floatFormat)
 		// 渠道
 		cell = row.AddCell()
 		switch v.ChanCode {

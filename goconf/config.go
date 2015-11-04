@@ -28,6 +28,7 @@ type configStruct struct {
 		OrderCloseTime     Duration
 		OrderRefreshTime   Duration
 		SessionExpiredTime Duration
+		MonitorMerId       string
 	}
 
 	Qiniu struct {

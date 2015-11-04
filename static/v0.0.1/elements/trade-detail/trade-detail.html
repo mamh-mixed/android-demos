@@ -1,0 +1,138 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="trade-detail">
+  <style>
+    .key {
+      width: 70px;
+    }
+
+    .divider {
+      height: 15px;
+    }
+  </style>
+  <template>
+    <div class="table data-grid low" id="orderDetail">
+      <div class="tr">
+        <div class="td key">门店代码:</div>
+        <div class="td">{{item.merId}}</div>
+        <div class="td key">门店名称:</div>
+        <div class="td">{{item.merName}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">商户代码:</div>
+        <div class="td">{{item.groupCode}}</div>
+        <div class="td key">商户名称:</div>
+        <div class="td">{{item.groupName}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">公司代码:</div>
+        <div class="td">{{item.subAgentCode}}</div>
+        <div class="td key">公司名称:</div>
+        <div class="td">{{item.subAgentName}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">代理代码:</div>
+        <div class="td">{{item.agentCode}}</div>
+        <div class="td key">代理名称:</div>
+        <div class="td">{{item.agentName}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">终端代码:</div>
+        <div class="td">{{item.terminalid}}</div>
+        <div class="td key">商户订单:</div>
+        <div class="td">{{item.orderNum}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">交易金额:</div>
+        <div class="td">{{_currencyFilter(item.transAmt)}}</div>
+        <div class="td key">商品明细:</div>
+        <div class="td">{{item.goodsInfo}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">交易币种:</div>
+        <div class="td">{{item.transCurr}}</div>
+        <div class="td key">交易类型:</div>
+        <div class="td">{{busicdFilter(item.busicd)}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">交易渠道:</div>
+        <div class="td">{{chanFilter(item.chanCode)}}</div>
+        <div class="td key">关联订单:</div>
+        <div class="td">{{item.origOrderNum}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">渠道商户:</div>
+        <div class="td">{{item.chanMerId}}</div>
+        <div class="td key">渠道订单:</div>
+        <div class="td">{{item.chanOrderNum}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">渠道折扣:</div>
+        <div class="td">{{item.chanDiscount}}</div>
+        <div class="td key">商户折扣:</div>
+        <div class="td">{{item.merDiscount}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">应答码:</div>
+        <div class="td">{{item.respcd}}</div>
+        <div class="td key">交易状态:</div>
+        <div class="td">{{transStatusFilter(item.transStatus)}}</div>
+      </div>
+      <div class="tr">
+        <div class="td key">创建时间:</div>
+        <div class="td">{{item.transTime}}</div>
+        <div class="td key">修改时间:</div>
+        <div class="td">{{item.updateTime}}</div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    var TRANS_TYPE_MAP = {
+      'PURC': '下单支付',
+      'PAUT': '预下单',
+      'VOID': '撤销',
+      'REFD': '退款',
+      'VERI': '卡券核销',
+      'CANC': '取消',
+      //   'purc': '下单支付',
+      //   'paut': '预下单',
+      //   'void': '撤销',
+      //   'refd': '退款',
+      //   'veri': '卡券核销',
+      //   'canc': '取消',
+      'QYZF': '企业付款',
+      'JSZF': '公众号支付'
+    };
+    Polymer({
+      is: 'trade-detail',
+
+      properties: {
+        item: Object,
+      },
+      _currencyFilter: function(money) {
+        return (money / 100).toFixed(2);
+      },
+      busicdFilter: function(busicd) {
+        return (busicd + '—' + TRANS_TYPE_MAP[busicd]) || busicd;
+      },
+      chanFilter: function(chanCode) {
+        var map = {
+          'ALP': '支付宝',
+          'WXP': '微信',
+          'ULIVE': '优方'
+        };
+        return (chanCode + '—' + map[chanCode]);
+      },
+      transStatusFilter: function(status) {
+        var map = {
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭'
+        };
+        return (status + '—' + map[status]);
+      },
+    });
+  </script>
+</dom-module>
