@@ -473,9 +473,9 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 	}
 
 	// 验证格式
-	// if req.Chcd != "ULIVE" {
-	// 	return fieldContentError(chcd)
-	// }
+	if req.Chcd != "" && req.Chcd != "ULIVE" {
+		return fieldContentError(chcd)
+	}
 	if req.VeriTime != "" {
 		veriTimeNum, err := strconv.Atoi(req.VeriTime)
 		if err != nil {
