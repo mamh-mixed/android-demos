@@ -1,6 +1,6 @@
 #/bin/bash
 
-set -ex
+set -e
 
 prog="quickpay"
 
@@ -115,11 +115,10 @@ function deploy() {
     workdir=$2
     version=$3
 
-    # 远程执行备份并复制，以使用 rsync 加速传输
+    # 远程执行复制，以使用 rsync 加速传输
     echo "SSH $host"
     ssh $host << EOF
 cd $workdir
-cp $prog ${prog}_$version
 prev=\$(ls -t static | grep -v 'index.html' | head -n  1)
 if [ "\$prev" != "$version" ]; then
     cp -r static/\$prev static/$version
@@ -141,9 +140,11 @@ function restart() {
     # 远程执行重启命令
     echo "SSH $host"
     ssh $host << EOF
-
 cd $workdir
-cp ${prog}_$version $prog
+# 备份
+cp $prog ${prog}_$version
+cp -r config config_$version
+cp -r app app_$version
 
 echo "Killing $prog process..."
 ps -ef | grep $prog
