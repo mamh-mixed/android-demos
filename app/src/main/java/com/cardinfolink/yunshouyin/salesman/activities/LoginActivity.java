@@ -2,6 +2,8 @@ package com.cardinfolink.yunshouyin.salesman.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +14,7 @@ import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.models.SAServerPacket;
 import com.cardinfolink.yunshouyin.salesman.models.SaveData;
 import com.cardinfolink.yunshouyin.salesman.models.SessonData;
+import com.cardinfolink.yunshouyin.salesman.models.SystemConfig;
 import com.cardinfolink.yunshouyin.salesman.models.User;
 import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
 import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
@@ -33,7 +36,7 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         // check update
         UmengUpdateAgent.update(this);
-
+        initEnvironment();
         setContentView(R.layout.login_activity);
 
         mUsernameEdit = (EditText) findViewById(R.id.login_username);
@@ -48,6 +51,24 @@ public class LoginActivity extends BaseActivity {
 
         if (user.isAutoLogin()) {
             login();
+        }
+    }
+
+    /**
+     *
+     */
+    private void initEnvironment(){
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(
+                    getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            String environment = bundle.getString("ENVIRONMENT");
+            Log.d(TAG, "ENVIRONMENT is " + environment);
+            SystemConfig.initEnvironment(environment);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to load meta-data: " + e.getMessage());
         }
     }
 

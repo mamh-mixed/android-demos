@@ -1,7 +1,7 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/.idea
+
 /build
 /captures
 
@@ -16,10 +16,4 @@ com_crashlytics_export_strings.xml
 # Gradle generated files
 # Signing files
 # User-specific configurations
-.idea/.name
-.idea/compiler.xml
-.idea/copyright/profiles_settings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
 *.iml

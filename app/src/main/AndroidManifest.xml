@@ -55,7 +55,7 @@
 
         <!-- umeng start -->
         <meta-data android:value="562f366b67e58eb9a1004086" android:name="UMENG_APPKEY"/>
-        <meta-data android:value="Wandoujia" android:name="UMENG_CHANNEL"/>
+        <meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" >
@@ -66,5 +66,6 @@
         </activity>
         <!-- umeng end -->
 
+        <meta-data android:name="ENVIRONMENT" android:value="${ENVIRONMENT_VALUE}"/>
     </application>
 </manifest>

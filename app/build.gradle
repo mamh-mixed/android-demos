@@ -5,12 +5,25 @@ android {
     buildToolsVersion "23.0.1"
     useLibrary 'org.apache.http.legacy'
 
+    productFlavors {
+        _test {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]
+        }
+        wandoujia {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia", ENVIRONMENT_VALUE: "pro"]
+        }
+        baidu {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu", ENVIRONMENT_VALUE: "pro"]
+        }
+    }
+
     defaultConfig {
         applicationId "com.cardinfolink.yunshouyin.salesman"
         minSdkVersion 8
         targetSdkVersion 23
         versionCode 1
         versionName "1.0.0"
+
     }
     buildTypes {
         release {

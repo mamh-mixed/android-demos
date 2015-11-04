@@ -37,7 +37,7 @@ public class ParamsUtil {
 
     public static RequestParam getLogin_SA(String username, String password) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/login";
+        String url = SystemConfig.getServer_Tool() + "/login";
         requestParam.setUrl(url);
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -53,7 +53,7 @@ public class ParamsUtil {
 
     public static RequestParam getUsers_SA(String accessToken) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/users";
+        String url = SystemConfig.getServer_Tool() + "/users";
         requestParam.setUrl(url);
         List<NameValuePair> params = new LinkedList();
         params.add(new BasicNameValuePair("accessToken", accessToken));
@@ -70,7 +70,7 @@ public class ParamsUtil {
      */
     public static RequestParam getRegister_SA(String accessToken, String username, String password) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/register";
+        String url = SystemConfig.getServer_Tool() + "/register";
         requestParam.setUrl(url);
         List<NameValuePair> params = new LinkedList();
         params.add(new BasicNameValuePair("accessToken", accessToken));
@@ -83,7 +83,7 @@ public class ParamsUtil {
 
     public static RequestParam getUploadToken_SA(String accessToken) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/uploadToken";
+        String url = SystemConfig.getServer_Tool() + "/uploadToken";
         requestParam.setUrl(url);
         List<NameValuePair> params = new LinkedList();
         params.add(new BasicNameValuePair("accessToken", accessToken));
@@ -98,7 +98,7 @@ public class ParamsUtil {
      */
     public static RequestParam getUpdate_SA(String accessToken, User user) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/update";
+        String url = SystemConfig.getServer_Tool() + "/update";
         requestParam.setUrl(url);
         List<NameValuePair> params = new LinkedList<>();
         params.add(new BasicNameValuePair("accessToken", accessToken));
@@ -152,7 +152,7 @@ public class ParamsUtil {
      */
     public static RequestParam getActivate_SA(String accessToken, String username, String qrCodeURI) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/activate";
+        String url = SystemConfig.getServer_Tool() + "/activate";
         requestParam.setUrl(url);
         List<NameValuePair> params = new LinkedList<>();
         params.add(new BasicNameValuePair("accessToken", accessToken));
@@ -165,7 +165,7 @@ public class ParamsUtil {
 
     public static RequestParam getDownload(String accessToken, String merchantId, String imageType) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.Server_Tool + "/download";
+        String url = SystemConfig.getServer_Tool() + "/download";
         requestParam.setUrl(url);
         List<NameValuePair> params = new LinkedList<>();
         params.add(new BasicNameValuePair("accessToken", accessToken));
