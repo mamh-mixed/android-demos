@@ -14,6 +14,9 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+const floatFormat = "#,##0.00"
+const intFormat = "#,##0"
+
 // tradeQueryStat 交易查询统计信息
 func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 
@@ -93,23 +96,23 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 		cell.Merge(1, 0)
 		row.AddCell()
 		cell = row.AddCell()
-		cell.SetInt(d.TotalTransNum)
+		cell.SetFloatWithFormat(float64(d.TotalTransNum), intFormat)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.TotalTransAmt))
+		cell.SetFloatWithFormat(float64(d.TotalTransAmt), floatFormat)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.TotalFee))
+		cell.SetFloatWithFormat(float64(d.TotalFee), floatFormat)
 		cell = row.AddCell()
-		cell.SetInt(d.Alp.TransNum)
+		cell.SetFloatWithFormat(float64(d.Alp.TransNum), intFormat)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Alp.TransAmt))
+		cell.SetFloatWithFormat(float64(d.Alp.TransAmt), floatFormat)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Alp.Fee))
+		cell.SetFloatWithFormat(float64(d.Alp.Fee), floatFormat)
 		cell = row.AddCell()
-		cell.SetInt(d.Wxp.TransNum)
+		cell.SetFloatWithFormat(float64(d.Wxp.TransNum), intFormat)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Wxp.TransAmt))
+		cell.SetFloatWithFormat(float64(d.Wxp.TransAmt), floatFormat)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Wxp.Fee))
+		cell.SetFloatWithFormat(float64(d.Wxp.Fee), floatFormat)
 		cell = row.AddCell()
 		cell.Value = d.AgentName
 		cell.Merge(1, 0)
@@ -126,21 +129,21 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 	cell = row.AddCell()
 	cell.SetInt(result.TotalTransNum)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.TotalTransAmt))
+	cell.SetFloatWithFormat(float64(result.TotalTransAmt), floatFormat)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.TotalFee))
+	cell.SetFloatWithFormat(float64(result.TotalFee), floatFormat)
 	cell = row.AddCell()
-	cell.SetInt(result.Alp.TransNum)
+	cell.SetFloatWithFormat(float64(result.Alp.TransNum), intFormat)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Alp.TransAmt))
+	cell.SetFloatWithFormat(float64(result.Alp.TransAmt), floatFormat)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Alp.Fee))
+	cell.SetFloatWithFormat(float64(result.Alp.Fee), floatFormat)
 	cell = row.AddCell()
-	cell.SetInt(result.Wxp.TransNum)
+	cell.SetFloatWithFormat(float64(result.Wxp.TransNum), intFormat)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Wxp.TransAmt))
+	cell.SetFloatWithFormat(float64(result.Wxp.TransAmt), floatFormat)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Wxp.Fee))
+	cell.SetFloatWithFormat(float64(result.Wxp.Fee), floatFormat)
 	row.AddCell().Merge(1, 0)
 }
 
