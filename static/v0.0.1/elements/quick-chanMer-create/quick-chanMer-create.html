@@ -9,9 +9,7 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        min-width: 600px;
-        min-height: 500px;
-        max-height: 500px;
+        width: 600px;
       }
     }
 
@@ -160,6 +158,10 @@
             this.cil = this.chanMer;
             this.$.cilchanMerId.disabled = true;
           }
+
+          window.setTimeout(function() {
+            this.$.dialogAdd.notifyResize();
+          }.bind(this), 0);
         },
         // 中金必填项是否为空
         isCFCAConfigEmpty: function() {
