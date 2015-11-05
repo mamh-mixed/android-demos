@@ -75,6 +75,13 @@
       margin-left: 24px;
     }
 
+    dd.cert {
+      float: none;
+      display: block;
+      margin-left: 10px;
+      clear: both;
+    }
+
     paper-tabs {
       margin-top: 0;
     }
@@ -235,11 +242,11 @@
                 <dt>签名密钥:</dt>
                 <dd>{{weixin.signCert}}</dd>
                 <dt>HTTP 证书:</dt>
-                <dd>
+                <dd class="cert">
                   <pre>{{weixin.httpCert}}</pre>
                 </dd>
                 <dt>HTTP 密钥:</dt>
-                <dd>
+                <dd class="cert">
                   <pre>{{weixin.httpKey}}</pre>
                 </dd>
               </dl>

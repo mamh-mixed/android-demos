@@ -10,8 +10,6 @@
       display: block;
       --paper-dialog-scrollable: {
         width: 600px;
-        min-height: 500px;
-        max-height: 500px;
         font-size: 14px;
       }
     }
@@ -44,13 +42,29 @@
       font-size: 16px;
     }
 
-    td {
-      min-width: 70px;
-      vertical-align: top;
-    }
-
     .key {
       width: 70px;
+    }
+
+    dt {
+      display: inline-block;
+      float: left;
+      clear: both;
+      width: 60px;
+      font-weight: bold;
+    }
+
+    dd {
+      display: inline-block;
+      float: left;
+      margin-left: 20px;
+    }
+
+    dd.cert {
+      float: none;
+      display: block;
+      margin-left: 10px;
+      clear: both;
     }
 
   </style>
@@ -58,48 +72,29 @@
     <paper-dialog with-backdrop id="dialogView">
       <h2>{{item.detail.merName}}</h2>
       <paper-dialog-scrollable>
-        <div>
-          <div class="tr">
-            <div class="td key">商户代码:</div>
-            <div class="td">{{item.merId}}</div>
-            <div class="td key">商户名称:</div>
-            <div class="td">{{item.detail.merName}}</div>
-          </div>
-          <div class="tr">
-            <div class="td">计费代码:</div>
-            <div class="td">{{item.detail.billingScheme}}</div>
-            <div class="td">交易币种:</div>
-            <div class="td">{{item.transCurr}}</div>
-          </div>
-          <div class="tr">
-            <div class="td"> 开启验签:</div>
-            <div class="td">
-              <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
-            </div>
-          </div>
-          <div class="tr">
-            <div class="td key">签名密钥:</div>
-            <div class="td" colspan="3" style="word-break:break-all;">{{item.signKey}}</div>
-          </div>
-          <div class="tr">
-            <div class="td key">加密密钥:</div>
-            <div class="td" colspan="3" style="word-break:break-all;">{{item.encryptKey}}</div>
-          </div>
-          <div class="tr">
-            <div class="td">&nbsp;</div>
-          </div>
-          <div class="tr">
-            <div class="td">&nbsp;</div>
-          </div>
-          <div class="tr">
-            <div class="td">商户状态:</div>
-            <div class="td">{{getMerStatus(item.merStatus)}}</div>
-          </div>
-          <div class="tr">
-            <div class="td">备注:</div>
-            <div class="td" colspan="3" style="word-break:break-all;">{{item.remark}}</div>
-          </div>
-        </div>
+        <dl id="ulive">
+          <dt>商户代码:</dt>
+          <dd>{{item.merId}}</dd>
+          <dt>商户名称:</dt>
+          <dd>{{item.detail.merName}}</dd>
+          <dt>计费代码:</dt>
+          <dd>{{item.detail.billingScheme}}</dd>
+          <dt>交易币种:</dt>
+          <dd>{{item.transCurr}}</dd>
+
+          <dt>开启验签:</dt>
+          <dd>
+            <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
+          </dd>
+          <dt>签名密钥:</dt>
+          <dd>{{item.signKey}}</dd>
+          <dt>加密密钥:</dt>
+          <dd>{{item.encryptKey}}</dd>
+          <dt>商户状态:</dt>
+          <dd>{{getMerStatus(item.merStatus)}}</dd>
+          <dt>备注:</dt>
+          <dd>{{item.remark}}</dd>
+        </dl>
       </paper-dialog-scrollable>
       <div class="buttons">
         <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
