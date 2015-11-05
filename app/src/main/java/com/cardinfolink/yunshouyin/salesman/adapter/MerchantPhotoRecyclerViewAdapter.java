@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.views;
+package com.cardinfolink.yunshouyin.salesman.adapter;
 
 
 import android.content.Context;
@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.models.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.view.MerchantImageViewHolder;
 
 import java.util.List;
 

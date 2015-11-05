@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.views;
+package com.cardinfolink.yunshouyin.salesman.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import com.baoyz.actionsheet.ActionSheet;
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.activities.SARegisterStep3Activity;
+import com.cardinfolink.yunshouyin.salesman.activity.SARegisterStep3Activity;
 
 public class MerchantImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener, ActionSheet.ActionSheetListener {
     private static final String TAG = "MerchantImageViewHolder";

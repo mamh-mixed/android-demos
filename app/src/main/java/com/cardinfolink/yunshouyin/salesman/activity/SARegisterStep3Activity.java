@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.activities;
+package com.cardinfolink.yunshouyin.salesman.activity;
 
 import android.annotation.TargetApi;
 import android.content.ContentUris;
@@ -18,18 +18,18 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.models.SAMerchantPhoto;
-import com.cardinfolink.yunshouyin.salesman.models.SAServerPacket;
-import com.cardinfolink.yunshouyin.salesman.models.SessonData;
-import com.cardinfolink.yunshouyin.salesman.models.User;
+import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.QiniuMultiUploadWrapper;
 import com.cardinfolink.yunshouyin.salesman.utils.QiniuTaskListener;
-import com.cardinfolink.yunshouyin.salesman.views.MerchantPhotoRecyclerViewAdapter;
-import com.cardinfolink.yunshouyin.salesman.views.WorkBeforeExitListener;
+import com.cardinfolink.yunshouyin.salesman.adapter.MerchantPhotoRecyclerViewAdapter;
+import com.cardinfolink.yunshouyin.salesman.view.WorkBeforeExitListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

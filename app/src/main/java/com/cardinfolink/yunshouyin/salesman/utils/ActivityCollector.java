@@ -2,8 +2,8 @@ package com.cardinfolink.yunshouyin.salesman.utils;
 
 import android.app.Activity;
 
-import com.cardinfolink.yunshouyin.salesman.activities.LoginActivity;
-import com.cardinfolink.yunshouyin.salesman.activities.SAMerchantListActivity;
+import com.cardinfolink.yunshouyin.salesman.activity.LoginActivity;
+import com.cardinfolink.yunshouyin.salesman.activity.SAMerchantListActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.cardinfolink.yunshouyin.salesman.utils;
 
 
-import com.cardinfolink.yunshouyin.salesman.models.SystemConfig;
-import com.cardinfolink.yunshouyin.salesman.models.User;
+import com.cardinfolink.yunshouyin.salesman.model.SystemConfig;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;

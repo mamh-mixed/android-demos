@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.activities;
+package com.cardinfolink.yunshouyin.salesman.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -11,11 +11,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.models.SAServerPacket;
-import com.cardinfolink.yunshouyin.salesman.models.SaveData;
-import com.cardinfolink.yunshouyin.salesman.models.SessonData;
-import com.cardinfolink.yunshouyin.salesman.models.SystemConfig;
-import com.cardinfolink.yunshouyin.salesman.models.User;
+import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.model.SaveData;
+import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.SystemConfig;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
 import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;

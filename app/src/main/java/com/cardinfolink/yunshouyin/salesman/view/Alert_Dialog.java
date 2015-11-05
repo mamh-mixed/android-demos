@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.views;
+package com.cardinfolink.yunshouyin.salesman.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.models.Msg;
+import com.cardinfolink.yunshouyin.salesman.model.Msg;
 
 
 public class Alert_Dialog {

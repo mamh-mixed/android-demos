@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.views;
+package com.cardinfolink.yunshouyin.salesman.view;
 
 
 import android.content.Context;

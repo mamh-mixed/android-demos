@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.models;
+package com.cardinfolink.yunshouyin.salesman.model;
 
 public class SANetworkException extends RuntimeException {
     private String errorCode;

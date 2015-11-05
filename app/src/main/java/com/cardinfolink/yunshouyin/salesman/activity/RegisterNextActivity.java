@@ -1,11 +1,9 @@
-package com.cardinfolink.yunshouyin.salesman.activities;
+package com.cardinfolink.yunshouyin.salesman.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -18,9 +16,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.models.SAServerPacket;
-import com.cardinfolink.yunshouyin.salesman.models.SessonData;
-import com.cardinfolink.yunshouyin.salesman.models.User;
+import com.cardinfolink.yunshouyin.salesman.adapter.SearchAdapter;
+import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.BankBaseUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListener;
@@ -35,12 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

@@ -1,18 +1,16 @@
-package com.cardinfolink.yunshouyin.salesman.activities;
+package com.cardinfolink.yunshouyin.salesman.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
-import com.cardinfolink.yunshouyin.salesman.views.Alert_Dialog;
-import com.cardinfolink.yunshouyin.salesman.views.Loading_Dialog;
-import com.cardinfolink.yunshouyin.salesman.views.WorkBeforeExitListener;
+import com.cardinfolink.yunshouyin.salesman.view.Alert_Dialog;
+import com.cardinfolink.yunshouyin.salesman.view.Loading_Dialog;
+import com.cardinfolink.yunshouyin.salesman.view.WorkBeforeExitListener;
 import com.umeng.analytics.MobclickAgent;
 
 

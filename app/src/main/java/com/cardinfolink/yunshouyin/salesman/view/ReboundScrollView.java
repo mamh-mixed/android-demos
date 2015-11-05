@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.views;
+package com.cardinfolink.yunshouyin.salesman.view;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.ScrollView;
 
-import com.cardinfolink.yunshouyin.salesman.models.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 
 
 public class ReboundScrollView extends ScrollView {

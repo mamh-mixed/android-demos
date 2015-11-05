@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Looper;
 import android.util.Log;
 
-import com.cardinfolink.yunshouyin.salesman.models.SAMerchantPhoto;
-import com.cardinfolink.yunshouyin.salesman.models.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;

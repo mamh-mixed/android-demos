@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.models;
+package com.cardinfolink.yunshouyin.salesman.model;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.models;
+package com.cardinfolink.yunshouyin.salesman.model;
 
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;

@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.activities;
+package com.cardinfolink.yunshouyin.salesman.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -3,7 +3,7 @@ package com.cardinfolink.yunshouyin.salesman.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.cardinfolink.yunshouyin.salesman.models.SystemConfig;
+import com.cardinfolink.yunshouyin.salesman.model.SystemConfig;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.NameValuePair;

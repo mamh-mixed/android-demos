@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.salesman.activities;
+package com.cardinfolink.yunshouyin.salesman.adapter;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -13,21 +13,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.models.SAServerPacket;
-import com.cardinfolink.yunshouyin.salesman.models.SessonData;
-import com.cardinfolink.yunshouyin.salesman.models.User;
+import com.cardinfolink.yunshouyin.salesman.activity.SAMerchantListActivity;
+import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.SAApplication;
 import com.cardinfolink.yunshouyin.salesman.utils.SADownloader;
 import com.cardinfolink.yunshouyin.salesman.utils.SAImageUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.SAQrCodeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class MerchantListAdapter extends ArrayAdapter<User> {
+public class MerchantListAdapter extends ArrayAdapter<User> {
     private SAMerchantListActivity saMerchantListActivity;
     Filter myFilter;
     private List<User> users_origin = new ArrayList<>();

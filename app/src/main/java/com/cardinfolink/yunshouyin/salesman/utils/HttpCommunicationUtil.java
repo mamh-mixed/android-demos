@@ -2,7 +2,7 @@ package com.cardinfolink.yunshouyin.salesman.utils;
 
 import android.util.Log;
 
-import com.cardinfolink.yunshouyin.salesman.models.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
