@@ -12,16 +12,6 @@
         height: 340px;
       }
     }
-
-    .header {
-      font-weight: bold;
-      color: #05B0CF;
-    }
-
-    .order {
-      margin-top: 10px;
-    }
-
     paper-dialog-scrollable /deep/ #scrollable {
       min-height: auto;
     }
@@ -64,24 +54,6 @@
               <div class="td">{{item.orderNum}}</div>
             </div>
             <div class="tr">
-              <div class="td key">券名称:</div>
-              <div class="td">{{item.prodname}}</div>
-              <div class="td key">券明细:</div>
-              <div class="td">{{item.cardInfo}}</div>
-            </div>
-            <div class="tr">
-              <div class="td key">核销次数:</div>
-              <div class="td">{{item.veriTime}}</div>
-              <div class="td key">可用次数:</div>
-              <div class="td">{{item.availCount}}</div>
-            </div>
-            <div class="tr">
-              <div class="td key">主机授权码:</div>
-              <div class="td">{{item.authcode}}</div>
-              <div class="td key">券有效期:</div>
-              <div class="td">{{item.expDate}}</div>
-            </div>
-            <div class="tr">
               <div class="td key">交易渠道:</div>
               <div class="td">{{chanFilter(item.chanCode)}}</div>
               <div class="td key">交易类型:</div>
@@ -104,6 +76,24 @@
               <div class="td">{{item.transTime}}</div>
               <div class="td key">修改时间:</div>
               <div class="td">{{item.updateTime}}</div>
+            </div>
+            <div class="tr">
+              <div class="td key">卡券名称:</div>
+              <div class="td">{{item.prodname}}</div>
+              <div class="td key">卡券明细:</div>
+              <div class="td">{{item.cardInfo}}</div>
+            </div>
+            <div class="tr">
+              <div class="td key">核销次数:</div>
+              <div class="td">{{item.veriTime}}</div>
+              <div class="td key">可用次数:</div>
+              <div class="td">{{item.availCount}}</div>
+            </div>
+            <div class="tr">
+              <div class="td key">主机授权码:</div>
+              <div class="td">{{item.authcode}}</div>
+              <div class="td key">券有效期:</div>
+              <div class="td">{{item.expDate}}</div>
             </div>
             <div class="tr">
               <div class="td key">关联订单:</div>
