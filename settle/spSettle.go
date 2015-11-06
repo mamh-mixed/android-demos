@@ -144,53 +144,22 @@ func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
 		return rds
 	}
 
-	// var cmMap = make(map[string]int)
-	// for _, cm := range rs.ContainMers {
-	// 	cmMap[cm.MerId] = cm.Status
-	// }
-
 	for _, mg := range sg.MerGroups {
-		// if status, ok := cmMap[mg.MerId]; ok {
-		// 	if status == 1 {
-		// 		continue
-		// 	}
-		// 	// 存在，但状态不成功
-		// 	delete(cmMap, mg.MerId)
-		// }
-
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {
 			// cmMap[mg.MerId] = 0 // 标识不成功
 			// continue
 			m = &model.Merchant{MerId: mg.MerId} // 兼容老系统数据，可能商户没同步到新系统
 		}
-
-		// if m.Detail.BankId == "" || m.Detail.AcctNum == "" || m.Detail.AcctName == "" ||
-		// 	(m.Detail.OpenBankName == "" && m.Detail.BankName == "") || m.Detail.City == "" {
-		// 	log.Warnf("settinfo not found , gen report skip , merId=%s", mg.MerId)
-		// 	// 清算信息缺一不可
-		// 	cmMap[mg.MerId] = 0
-		// 	continue
-		// }
-
 		// 补充开户银行和支行
 		if m.Detail.OpenBankName == "" {
 			m.Detail.OpenBankName = m.Detail.BankName
 		}
-
 		if m.Detail.BankName == "" {
 			m.Detail.BankName = m.Detail.OpenBankName
 		}
-
-		// cmMap[mg.MerId] = 1 // 清算成功
 		rds = append(rds, reportData{mg: mg, m: *m})
 	}
-
-	// var cms []model.MerSettStatus
-	// for k, v := range cmMap {
-	// 	cms = append(cms, model.MerSettStatus{MerId: k, Status: v})
-	// }
-	// rs.ContainMers = cms
 
 	return rds
 }

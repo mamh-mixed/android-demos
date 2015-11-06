@@ -583,7 +583,7 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
 
 	find := bson.M{
-		"createTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
+		"payTime":     bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
 		"transStatus": model.TransSuccess,
 		"transType":   model.PayTrans,
 	}
