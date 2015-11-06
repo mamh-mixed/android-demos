@@ -148,6 +148,8 @@ type Merchant struct {
 	Permission   []string  `bson:"permission,omitempty" json:"permission,omitempty"`     // 接口权限
 	RefundType   int       `bson:"refundType" json:"refundType"`                         // 0-无限制 1-只能当日退 2-只能隔日退
 	Detail       MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
+	CreateTime   string    `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
+	UpdateTime   string    `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
 }
 
 // MerDetail 商户详细信息

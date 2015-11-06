@@ -213,6 +213,13 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
+	createTime := r.FormValue("createTime")
+	createStartTime := ""
+	createEndTime := ""
+	if createTime != "" {
+		createStartTime = createTime + " 00:00:00"
+		createEndTime = createTime + " 23:59:59"
+	}
 
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
@@ -240,7 +247,7 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	ret := Merchant.Find(merchant, pay, size, page)
+	ret := Merchant.Find(merchant, pay, createStartTime, createEndTime, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -897,4 +904,41 @@ func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+}
+
+// 商户导出
+func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
+	filename := r.FormValue("filename")
+	createTime := r.FormValue("createTime")
+	createStartTime := ""
+	createEndTime := ""
+	if createTime != "" {
+		createStartTime = createTime + " 00:00:00"
+		createEndTime = createTime + " 23:59:59"
+	}
+	pay := r.FormValue("pay")
+	isNeedSignStr := r.FormValue("isNeedSign")
+	isNeedSign := false
+	if isNeedSignStr == "true" {
+		isNeedSign = true
+	}
+	merchant := model.Merchant{
+		MerId:        r.FormValue("merId"),
+		AgentCode:    r.FormValue("agentCode"),
+		AgentName:    r.FormValue("agentName"),
+		SubAgentCode: r.FormValue("subAgentCode"),
+		SubAgentName: r.FormValue("subAgentName"),
+		GroupCode:    r.FormValue("groupCode"),
+		GroupName:    r.FormValue("groupName"),
+		IsNeedSign:   isNeedSign,
+		MerStatus:    r.FormValue("merStatus"),
+		Detail: model.MerDetail{
+			MerName:       r.FormValue("merName"),
+			AcctNum:       r.FormValue("acctNum"),
+			GoodsTag:      r.FormValue("goodsTag"),
+			CommodityName: r.FormValue("commodityName"),
+		},
+	}
+
+	Merchant.Export(w, merchant, pay, filename, createStartTime, createEndTime)
 }

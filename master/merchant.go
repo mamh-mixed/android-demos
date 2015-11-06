@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -11,6 +12,7 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"github.com/tealeg/xlsx"
 )
 
 type merchant struct{}
@@ -44,7 +46,7 @@ func (m *merchant) FindOne(merId string) (result *model.ResultBody) {
 }
 
 // Find 根据条件分页查找商户。
-func (m *merchant) Find(merchant model.Merchant, pay string, size, page int) (result *model.ResultBody) {
+func (m *merchant) Find(merchant model.Merchant, pay, createStartTime, createEndTime string, size, page int) (result *model.ResultBody) {
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
@@ -54,7 +56,7 @@ func (m *merchant) Find(merchant model.Merchant, pay string, size, page int) (re
 		size = 10
 	}
 
-	merchants, total, err := mongo.MerchantColl.PaginationFind(merchant, pay, size, page)
+	merchants, total, err := mongo.MerchantColl.PaginationFind(merchant, pay, createStartTime, createEndTime, size, page)
 	if err != nil {
 		log.Errorf("查询所有商户出错:%s", err)
 		return model.NewResultBody(1, "查询失败")
@@ -129,7 +131,7 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 		}
 	}
 
-	err = mongo.MerchantColl.Upsert(m)
+	err = mongo.MerchantColl.Insert(m)
 	if err != nil {
 		log.Errorf("新增商户失败:%s", err)
 		return model.NewResultBody(1, err.Error())
@@ -203,7 +205,7 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 		}
 	}
 
-	err = mongo.MerchantColl.Upsert(m)
+	err = mongo.MerchantColl.Update(m)
 	if err != nil {
 		log.Errorf("更新商户失败:%s", err)
 		return model.NewResultBody(1, err.Error())
@@ -251,4 +253,66 @@ func ProcessSensitiveInfo(value string) string {
 		value = fmt.Sprintf("%s%s%s", value[:4], starString, value[valueLen-4:valueLen])
 		return value
 	}
+}
+
+func (m *merchant) Export(w http.ResponseWriter, merchant model.Merchant, pay, filename, createStartTime, createEndTime string) {
+	size := 10000
+	page := 1
+	var file = xlsx.NewFile()
+
+	merchants, total, err := mongo.MerchantColl.PaginationFind(merchant, pay, createStartTime, createEndTime, size, page)
+	if err != nil {
+		log.Errorf("查询所有商户出错:%s", err)
+		return
+	}
+	log.Debugf("total:%d", total)
+	exportMerchant(file, merchants)
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+	file.Write(w)
+}
+
+func exportMerchant(file *xlsx.File, merchants []*model.Merchant) {
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+
+	// 可能有多个sheet
+	sheet, _ = file.AddSheet("商户表")
+
+	// 生成title
+	row = sheet.AddRow()
+	headRow := &struct {
+		MerId      string
+		MerName    string
+		IsNeedSign string
+		SignKey    string
+	}{"商户号", "商户名称", "是否验签", "签名密钥"}
+	row.WriteStruct(headRow, -1)
+	for _, v := range merchants {
+		// 商户号 商户名称 是否签名 签名密钥
+		row = sheet.AddRow()
+		// 商户号
+		cell = row.AddCell()
+		cell.Value = v.MerId
+		// 商户名称
+		cell = row.AddCell()
+		cell.Value = v.Detail.MerName
+
+		isNeedSign := "是"
+		if !v.IsNeedSign {
+			isNeedSign = "否"
+		}
+		//  是否验签
+		cell = row.AddCell()
+		cell.Value = isNeedSign
+
+		//  签名密钥
+		cell = row.AddCell()
+		cell.Value = v.SignKey
+
+	}
+
+	// 设置列宽
+	sheet.SetColWidth(0, 3, 18)
 }
