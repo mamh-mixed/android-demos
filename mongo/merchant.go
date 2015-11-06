@@ -38,6 +38,14 @@ func (c *merchantCollection) FindByUniqueId(uniqueId string) (m *model.Merchant,
 	return
 }
 
+// FindNoUniqueId 查找商户信息
+func (c *merchantCollection) FindNoUniqueId() ([]*model.Merchant, error) {
+	var ms []*model.Merchant
+	q := bson.M{"uniqueId": bson.M{"$exists": false}}
+	err := database.C(c.name).Find(q).All(&ms)
+	return ms, err
+}
+
 // Find 查找商户信息
 // 先从缓存里取，没有再访问数据库
 func (c *merchantCollection) Find(merId string) (m *model.Merchant, err error) {
