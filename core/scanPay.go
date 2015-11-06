@@ -56,6 +56,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		NotifyUrl:   req.NotifyUrl,
 		Attach:      req.Attach,
+		LockFlag:    1, // 锁住
 	}
 
 	// 网页授权获取token和openid
@@ -86,7 +87,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
-	t.TransStatus = model.TransNotPay
+	// t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
@@ -189,6 +190,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			GatheringName: req.UserName,
 			ChanCode:      req.Chcd,
 			TradeFrom:     req.TradeFrom,
+			LockFlag:      1,
 		}
 	} else {
 		// 比较数据是否一致
@@ -263,6 +265,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:    req.IntTxamt,
 		GoodsInfo:   req.GoodsInfo,
 		TradeFrom:   req.TradeFrom,
+		LockFlag:    1,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -302,7 +305,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
-	t.TransStatus = model.TransNotPay
+	// t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
@@ -342,6 +345,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		NotifyUrl:   req.NotifyUrl,
 		TradeFrom:   req.TradeFrom,
 		Attach:      req.Attach,
+		LockFlag:    1,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -365,7 +369,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	req.OpenId = ""
 
 	// 记录交易
-	t.TransStatus = model.TransNotPay
+	// t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
@@ -996,55 +1000,36 @@ func RefreshOrder() {
 // findAndLockOrigTrans 查找原交易记录
 // 如果找到原交易，那么对原交易加锁。
 func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error) {
-	var retry int
-	for {
 
-		// 判断是否有此订单
-		orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
-		if err != nil {
-			return nil, errors.New("TRADE_NOT_EXIST")
-		}
-		retry++
-		// 判断订单状态主要是保证下单、预下单新增、修改的事务完整性
-		if orig.TransStatus == model.TransNotPay {
-
-			// 最多延迟5s，如果这笔交易还是没处理完，报交易超时
-			// TODO:时间待商榷
-			if retry == 5 {
-				log.Errorf("trans(%s,%s) spent long time to update.", merId, orderNum)
-				return nil, errors.New("TRADE_OVERTIME")
-			}
-			// 说明该笔交易在支付接口时还没完成更新，此时数据是脏数据
-			log.Info("find trans sleep 500ms ...")
-			time.Sleep(500 * time.Millisecond * time.Duration(retry))
-			// 等待500ms，继续循环
-			continue
-		}
-
-		// 如果此时交易被锁住
-		if orig.LockFlag == 1 {
-			now := time.Now()
-			lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
-			if err != nil {
-				log.Errorf("fail to parse time : %s", err)
-				return nil, errors.New("SYSTEM_ERROR")
-			}
-			// TODO:被锁时间 1分钟？
-			if now.Sub(lockTime) > 1*time.Minute {
-				// 直接返回该原交易
-				return orig, err
-			}
-			// 休眠一段时间
-			time.Sleep(200 * time.Millisecond * time.Duration(retry))
-		}
-
-		// 锁住交易，并且此时交易是最新的
-		orig, err = findAndLockTrans(merId, orderNum)
-		if err != nil {
-			return nil, err
-		}
-		break
+	// 判断是否有此订单
+	orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
+	if err != nil {
+		return nil, errors.New("TRADE_NOT_EXIST")
 	}
+
+	// 如果此时交易被锁住
+	if orig.LockFlag == 1 {
+		now := time.Now()
+		lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
+		if err != nil {
+			log.Errorf("fail to parse time : %s", err)
+			return nil, errors.New("SYSTEM_ERROR")
+		}
+		// TODO:被锁时间 1分钟？
+		if now.Sub(lockTime) > 1*time.Minute {
+			// 直接返回该原交易
+			return orig, err
+		}
+		// 休眠一段时间
+		time.Sleep(300 * time.Millisecond)
+	}
+
+	// 锁住交易，并且此时交易是最新的
+	orig, err = findAndLockTrans(merId, orderNum)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }
 

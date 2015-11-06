@@ -20,9 +20,7 @@ import (
 	"github.com/omigo/log"
 )
 
-// ProcessAlipayNotify 支付宝异步通知处理
-// 该接口只接受预下单的异步通知
-// 支付宝的其它接口将不接受异步通知
+// ProcessAlipayNotify 支付宝异步通知处理，接受预下单和下单异步通知
 func ProcessAlipayNotify(params url.Values) error {
 
 	// 通知动作类型
@@ -31,8 +29,6 @@ func ProcessAlipayNotify(params url.Values) error {
 	orderNum := params.Get("out_trade_no")
 	// 系统订单号
 	sysOrderNum := params.Get("extra_common_param")
-	// 交易时间
-	payTime := params.Get("gmt_payment")
 
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
@@ -81,57 +77,44 @@ func ProcessAlipayNotify(params url.Values) error {
 	}()
 
 	ret := &model.ScanPayResponse{}
-	switch notifyAction {
-	// 退款
-	case "refundFPAction":
-		// 将优惠信息更新为0.00，貌似为了打单用
-		// mongo.SpTransColl.UpdateFields(&model.Trans{
-		// 	Id:           t.Id,
-		// 	MerDiscount:  "0.00",
-		// 	ChanDiscount: "0.00",
-		// })
+	bills := params.Get("paytools_pay_amount")
+	tradeStatus := params.Get("trade_status")
+	tradeNo := params.Get("trade_no")
+	account := params.Get("buyer_email")
+	payTime := params.Get("gmt_payment")
 
-	// 预下单时支付异步通知
-	// TODO 是否需要校验
-	default:
-		bills := params.Get("paytools_pay_amount")
-		tradeStatus := params.Get("trade_status")
-		tradeNo := params.Get("trade_no")
-		account := params.Get("buyer_email")
-
-		// 折扣
-		var merDiscount float64
-		if bills != "" {
-			var arrayBills []map[string]string
-			if err := json.Unmarshal([]byte(bills), &arrayBills); err == nil {
-				for _, bill := range arrayBills {
-					for k, v := range bill {
-						if k == "MCOUPON" || k == "MDISCOUNT" {
-							f, _ := strconv.ParseFloat(v, 64)
-							merDiscount += f
-						}
+	// 折扣
+	var merDiscount float64
+	if bills != "" {
+		var arrayBills []map[string]string
+		if err := json.Unmarshal([]byte(bills), &arrayBills); err == nil {
+			for _, bill := range arrayBills {
+				for k, v := range bill {
+					if k == "MCOUPON" || k == "MDISCOUNT" {
+						f, _ := strconv.ParseFloat(v, 64)
+						merDiscount += f
 					}
 				}
 			}
 		}
-		// 交易状态更新
-		switch tradeStatus {
-		case "TRADE_SUCCESS":
-			ret.ChanRespCode = tradeStatus
-			ret.ChannelOrderNum = tradeNo
-			ret.ConsumerAccount = account
-			ret.Respcd = adaptor.SuccessCode
-			ret.ErrorDetail = adaptor.SuccessMsg
-			ret.ErrorCode = "SUCCESS"
-			ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
-			ret.PayTime = payTime
-		case "WAIT_BUYER_PAY":
-			log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
-			return fmt.Errorf("%s", "transStatus no change")
-		default:
-			ret = adaptor.ReturnWithErrorCode("FAIL")
-			ret.ChanRespCode = tradeStatus
-		}
+	}
+	// 交易状态更新
+	switch tradeStatus {
+	case "TRADE_SUCCESS":
+		ret.ChanRespCode = tradeStatus
+		ret.ChannelOrderNum = tradeNo
+		ret.ConsumerAccount = account
+		ret.Respcd = adaptor.SuccessCode
+		ret.ErrorDetail = adaptor.SuccessMsg
+		ret.ErrorCode = "SUCCESS"
+		ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
+		ret.PayTime = payTime
+	case "WAIT_BUYER_PAY":
+		log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
+		return fmt.Errorf("%s", "transStatus no change")
+	default:
+		ret = adaptor.ReturnWithErrorCode("FAIL")
+		ret.ChanRespCode = tradeStatus
 	}
 
 	if t.TransStatus != model.TransClosed {
@@ -149,10 +132,16 @@ func ProcessAlipayNotify(params url.Values) error {
 			t.ErrorDetail = adaptor.SuccessMsg
 			t.ConsumerAccount = ret.ConsumerAccount
 			t.ChanOrderNum = ret.ChannelOrderNum
+			t.PayTime = payTime
 			if err = mongo.SpTransColl.UpdateAndUnlock(t); err != nil {
 				return err
 			}
 		}
+	}
+
+	// 为空时为预下单
+	if notifyAction != "" {
+		return nil
 	}
 
 	reqBytes, _ := json.Marshal(params)

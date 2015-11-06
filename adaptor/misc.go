@@ -33,6 +33,7 @@ func LogicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse 
 	// 交易保存
 	t.RespCode = code
 	t.ErrorDetail = msg
+	t.LockFlag = 0
 	mongo.SpTransColl.Add(t)
 
 	return &model.ScanPayResponse{

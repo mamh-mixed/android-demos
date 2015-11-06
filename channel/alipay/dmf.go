@@ -38,19 +38,20 @@ const (
 func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
 	alpReq := &alpRequest{
-		Partner:       req.ChanMerId,
-		Service:       createAndPay,
-		NotifyUrl:     alipayNotifyUrl,
-		OutTradeNo:    req.OrderNum, // 送的是原订单号，不转换
-		Subject:       req.Subject,
-		GoodsDetail:   req.AlpMarshalGoods(),
-		ProductCode:   "BARCODE_PAY_OFFLINE",
-		TotalFee:      req.ActTxamt,
-		ExtendParams:  req.ExtendParams, //...
-		ItBPay:        "1d",             // 超时时间
-		DynamicIdType: "bar_code",
-		DynamicId:     req.ScanCodeId,
-		SpReq:         req,
+		Partner:        req.ChanMerId,
+		Service:        createAndPay,
+		NotifyUrl:      alipayNotifyUrl,
+		OutTradeNo:     req.OrderNum,    // 送的是原订单号，不转换
+		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
+		Subject:        req.Subject,
+		GoodsDetail:    req.AlpMarshalGoods(),
+		ProductCode:    "BARCODE_PAY_OFFLINE",
+		TotalFee:       req.ActTxamt,
+		ExtendParams:   req.ExtendParams, //...
+		ItBPay:         "1d",             // 超时时间
+		DynamicIdType:  "bar_code",
+		DynamicId:      req.ScanCodeId,
+		SpReq:          req,
 	}
 
 	alpResp, err := sendRequest(alpReq)
