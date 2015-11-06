@@ -27,6 +27,28 @@ func Start() {
 		go doTick(t)
 	}
 
+	// 检查是否一直没被更新
+	go checkDeathLock()
+
+}
+
+func checkDeathLock() {
+	ticker := time.NewTicker(5 * time.Minute)
+	for {
+		<-ticker.C
+		ts, err := mongo.TaskCol.FindAll()
+		if err != nil {
+			continue
+		}
+
+		for _, t := range ts {
+			ut, _ := time.ParseInLocation("2006-01-02 15:04:05", t.UpdateTime, time.Local)
+			// 超过时间并且一直在doing
+			if time.Since(ut) > 2*t.D && t.IsDoing {
+				mongo.TaskCol.Finish(&t)
+			}
+		}
+	}
 }
 
 func doTick(t *model.Task) {

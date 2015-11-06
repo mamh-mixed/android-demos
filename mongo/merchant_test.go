@@ -25,7 +25,7 @@ func TestInsertFindUpdateMerchant(t *testing.T) {
 		Permission: []string{"purc", "paut", "inqy", "refd", "void"},
 	}
 	t.Log("Insert------")
-	err := MerchantColl.Insert2(m)
+	err := MerchantColl.Insert(m)
 
 	if err != nil {
 		t.Errorf("Insert merchant error: %s", err)

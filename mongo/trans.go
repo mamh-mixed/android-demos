@@ -85,9 +85,6 @@ func (col *transCollection) FindAndLock(merId, orderNum string) (*model.Trans, e
 	change.ReturnNew = true
 	result := &model.Trans{}
 	_, err := database.C(col.name).Find(query).Apply(change, result)
-	if err != nil {
-		log.Debug(err)
-	}
 	return result, err
 }
 
@@ -414,7 +411,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.IsForReport {
 		sortByChan := bson.M{"$sort": bson.M{"chanCode": 1}}
 		sort = bson.M{"$sort": bson.M{"busicd": 1}}
-		p = append(p, sort, skip, limit, sortByChan)
+		// no skip, no limit
+		p = append(p, sort, sortByChan)
 	} else {
 		p = append(p, sort, skip, limit)
 	}
@@ -585,7 +583,7 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
 
 	find := bson.M{
-		"createTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
+		"payTime":     bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
 		"transStatus": model.TransSuccess,
 		"transType":   model.PayTrans,
 	}
