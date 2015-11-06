@@ -787,14 +787,23 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 删除session
+// 删除session。 登出操作，无论后台出什么错都返回成功。
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	// 清除cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "QUICKMASTERID",
+		Value:  "",
+		Path:   "/master",
+		MaxAge: -1,
+	})
+
 	sid, err := r.Cookie(SessionKey)
 	if err != nil {
-		log.Errorf("user not login: %s", err)
-		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		log.Errorf("user not login when doing logout operation: %s", err)
+		// http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
+
 	// 用于记录日志
 	session, err := mongo.SessionColl.Find(sid.Value)
 	if err != nil {
@@ -807,13 +816,6 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Write([]byte("mashal data error"))
 	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:   "QUICKMASTERID",
-		Value:  "",
-		Path:   "/master",
-		MaxAge: -1,
-	})
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
