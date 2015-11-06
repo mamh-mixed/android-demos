@@ -17,7 +17,7 @@
   <template>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
-        <paper-input name="startTime" label="创建日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}"></paper-input>
+        <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}"></paper-input>
         <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
           <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
           <div class="buttons">
