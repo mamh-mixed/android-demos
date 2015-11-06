@@ -1,7 +1,9 @@
 package com.cardinfolink.yunshouyin.salesman.utils;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -10,10 +12,11 @@ import android.util.Log;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
-import com.cardinfolink.yunshouyin.salesman.model.SystemConfig;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 
 public class SAApplication extends Application {
     private static final String TAG = "SAApplication";
+
     private static SAApplication singleton;
 
     public static SAApplication getInstance(){
@@ -86,5 +89,26 @@ public class SAApplication extends Application {
 
         quickPayService = new QuickPayService(quickPayConfigStorage);
         qiniuMultiUploadService = new QiniuMultiUploadService(quickPayService);
+    }
+
+    private User loginUser = new User();
+
+    public User getLoginUser() {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata", Activity.MODE_PRIVATE);
+        loginUser.setUsername(mySharedPreferences.getString("username", ""));
+        loginUser.setPassword(mySharedPreferences.getString("password", ""));
+        loginUser.setAutoLogin(mySharedPreferences.getBoolean("autologin", false));
+        System.out.println(loginUser.getUsername());
+        return loginUser;
+    }
+
+    public void setLoginUser(User user) {
+        this.loginUser = user;
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString("username", user.getUsername());
+        editor.putString("password", user.getPassword());
+        editor.putBoolean("autologin", user.isAutoLogin());
+        editor.commit();
     }
 }

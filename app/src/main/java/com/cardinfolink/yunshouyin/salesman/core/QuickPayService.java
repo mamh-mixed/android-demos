@@ -1,5 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.core;
 
+import android.os.AsyncTask;
+
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayApi;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayApiImpl;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
@@ -23,17 +25,38 @@ public class QuickPayService {
      * @param quickPayCallbackListener
      */
     public void loginAsync(final String username, final String password, final QuickPayCallbackListener<String> quickPayCallbackListener) {
-        new Thread(new Runnable() {
+        if (username.equals("")) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "用户名不能为空!"));
+            return;
+        }
+
+        if (password.equals("")) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "密码不能为空!"));
+            return;
+        }
+
+        new AsyncTask<Void, Integer, AsyncTaskResult<String>>() {
             @Override
-            public void run() {
+            protected AsyncTaskResult<String> doInBackground(Void... params) {
                 try {
                     String accessToken = quickPayApi.login(username, password);
-                    quickPayCallbackListener.onSuccess(accessToken);
+
+                    return new AsyncTaskResult<String>(accessToken, null);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+
+                    return new AsyncTaskResult<String>(null, ex);
                 }
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<String> stringAsyncTaskResult) {
+                if (stringAsyncTaskResult.getException() != null) {
+                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                } else {
+                    quickPayCallbackListener.onSuccess(stringAsyncTaskResult.getResult());
+                }
+            }
+        }.execute();
     }
 
     public void getUsersAsync(final QuickPayCallbackListener<User[]> quickPayCallbackListener) {

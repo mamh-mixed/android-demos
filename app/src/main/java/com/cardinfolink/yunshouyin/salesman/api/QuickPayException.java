@@ -24,6 +24,11 @@ public class QuickPayException extends RuntimeException {
         this.errorMsg = ErrorUtil.getErrorString(errorCode);
     }
 
+    public QuickPayException(String errorCode, String errorMsg) {
+        this.errorCode = errorCode;
+        this.errorMsg = errorMsg;
+    }
+
     /**
      * default is network exception
      */

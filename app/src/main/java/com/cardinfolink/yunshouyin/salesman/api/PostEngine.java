@@ -61,9 +61,14 @@ public class PostEngine {
 
             DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
             wr.write(postData);
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            String response = IOUtils.toString(in, "UTF-8");
-            return response;
+            if (conn.getResponseCode() == 200) {
+                InputStream in = new BufferedInputStream(conn.getInputStream());
+                String response = IOUtils.toString(in, "UTF-8");
+                return response;
+            }else {
+                return null;
+            }
+
         } finally {
             conn.disconnect();
         }
