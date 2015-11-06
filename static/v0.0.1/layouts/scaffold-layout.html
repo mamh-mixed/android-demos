@@ -239,9 +239,7 @@
         <paper-toolbar id="mainToolbar" class="tall">
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
-          <div>欢迎您，
-            <span>{{nickName}}</span>
-          </div>
+          <div> 当前用户 【 <span>{{nickName}}</span> 】</div>
           <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
           <!-- Toolbar icons -->
           <div hidden$="{{isNarrow}}">

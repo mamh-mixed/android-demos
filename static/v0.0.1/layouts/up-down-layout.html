@@ -79,6 +79,7 @@
     .app-title > .app-name {
       font-size: 20px;
     }
+
   </style>
   <template>
     <div id="banner">
@@ -87,10 +88,8 @@
         <div class="app-name">云收银管理平台</div>
       </div>
       <div class="user-title">
-        <div>欢迎您，
-          <span>{{nickName}}</span>
-        </div>
-        <paper-button id="logoutBtn" on-tap="logoutHandle">退出</paper-button>
+        <div> 当前用户 【 <span>{{nickName}}</span> 】</div>
+        <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
         <paper-icon-button icon="refresh"></paper-icon-button>
         <paper-icon-button icon="search"></paper-icon-button>
       </div>
@@ -110,10 +109,11 @@
         },
         ready: function() {},
         // 退出
-        logoutHandle: function() {
+        handleLogoutTapped: function() {
           this.fire('logout');
         },
       });
     })();
+
   </script>
 </dom-module>

@@ -35,7 +35,7 @@
 
     .table .th {
       display: table-cell;
-      min-width: 60px;
+      max-width: 60px;
     }
 
     .table .td {
@@ -188,6 +188,12 @@
                   <div class="td">{{getMerStatus(item.merStatus)}}</div>
                   <div class="td key">唯一码</div>
                   <div class="td">{{item.uniqueId}}</div>
+                </div>
+                <div class="tr">
+                  <div class="th key">创建时间</div>
+                  <div class="td">{{item.createTime}}</div>
+                  <div class="th key">更新时间</div>
+                  <div class="td">{{item.updateTime}}</div>
                 </div>
               </div>
             </div>
