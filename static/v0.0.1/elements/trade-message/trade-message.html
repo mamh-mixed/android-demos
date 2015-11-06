@@ -9,8 +9,6 @@
         display: block;
         --paper-dialog-scrollable: {
           width: 920px;
-          min-height: 500px;
-          max-height: 500px;
         }
       }
 
@@ -43,7 +41,7 @@
       }
 
     </style>
-    <paper-dialog with-backdrop id="dialogView">
+    <paper-dialog with-backdrop id="tradeMessageDialogView">
       <h2>交易报文</h2>
       <paper-dialog-scrollable>
         <dl>
@@ -76,7 +74,7 @@
           user: Object,
         },
         open: function() {
-          this.$.dialogView.open();
+          this.$.tradeMessageDialogView.open();
           this.messages = [];
 
           this.cond = {};
@@ -172,6 +170,10 @@
               c++;
             }
           }
+
+          window.setTimeout(function(){
+            this.$.tradeMessageDialogView.notifyResize();
+          }.bind(this), 0);
 
         },
         queryAction: function() {

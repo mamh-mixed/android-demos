@@ -54,7 +54,7 @@
     <!-- TOAST: 用来实现信息弹出的功能 -->
     <paper-toast id="toast" duration="5000" visible="true" text$="{{toastText}}" style="z-index:1000;"></paper-toast>
     <!-- PAPER-DIALOG: 用来重新登录的对话框 -->
-    <paper-dialog id="reloginDialog" modal on-open-dialog-please="handleOpenDialogPleaseEvent" on-close-dialog-please="handleCloseDialogPleaseEvent">
+    <paper-dialog id="reloginDialog" modal no-cancel-on-esc-key on-open-dialog-please="handleOpenDialogPleaseEvent" on-close-dialog-please="handleCloseDialogPleaseEvent">
       <login-form style="width:252px;" on-login-success="handleLoginSuccessEvent"></login-form>
     </paper-dialog>
 
@@ -160,6 +160,10 @@
             });
 
             this.$.reloginDialog.close();
+            var backdrops = document.querySelectorAll('iron-overlay-backdrop');
+            for(var i = 0, l = backdrops.length; i< l;i++) {
+              backdrops[i].close();
+            }
             // 如果再次登录的人不是管理员，但是当前页面是管理员的页面，就跳转到普通用户的主页
             if (this.userType !== 'admin' && agentRoutes.indexOf(this.route.path) < 0) {
               this.$.appRouter.go('/trade/list');

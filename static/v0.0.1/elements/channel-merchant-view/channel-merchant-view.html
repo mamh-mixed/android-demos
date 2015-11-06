@@ -8,8 +8,7 @@
       display: block;
       --paper-dialog-scrollable: {
         width: 600px;
-        min-height: 500px;
-        max-height: 500px;
+        height: 500px;
       }
     }
 
@@ -118,13 +117,13 @@
           <dd>{{item.terminalId}}</dd>
         </dl>
       </paper-dialog-scrollable>
-      <div class="buttons">
-        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;line-height:40px;">您确定要删除这个商户吗?</label>
+      <div class="buttons layout center">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个商户吗?</label>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
-        <paper-button on-tap="handleItemEditedEvent">编辑</paper-button>
-        <paper-button on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="deleteMerAjax" method="GET" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
