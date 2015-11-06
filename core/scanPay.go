@@ -27,7 +27,7 @@ var (
 
 func init() {
 	crontab.RegisterTask(refreshInterval, "refreshOrder", RefreshOrder)
-	crontab.RegisterTask(closeInterval, "closeOrder", CloseOrder)
+	crontab.RegisterTask(5*time.Minute, "closeOrder", CloseOrder)
 }
 
 // PublicPay 公众号页面支付

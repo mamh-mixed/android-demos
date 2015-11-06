@@ -469,7 +469,7 @@ type SpTransLogs struct {
 
 // Task 任务
 type Task struct {
-	D          time.Duration `bson:"d"`
+	D          time.Duration `bson:"-"`
 	Name       string        `bson:"name"`
 	IsDoing    bool          `bson:"isDoing"`
 	F          func()        `bson:"-"`
