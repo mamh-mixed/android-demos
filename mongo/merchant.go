@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
@@ -84,6 +85,7 @@ func (c *merchantCollection) Update(m *model.Merchant) error {
 		return errors.New("MerId is required!")
 	}
 	q := bson.M{"merId": m.MerId}
+	m.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	err := database.C(c.name).Update(q, m)
 	if err != nil {
 		log.Errorf("'Update Merchant ERROR!' condition is (%+v);error is (%s)", q, err)
@@ -133,7 +135,7 @@ func (c *merchantCollection) FuzzyFind(cond *model.QueryCondition) ([]*model.Mer
 }
 
 // PaginationFind 分页查找机构商户
-func (c *merchantCollection) PaginationFind(merchant model.Merchant, pay string, size, page int) (results []*model.Merchant, total int, err error) {
+func (c *merchantCollection) PaginationFind(merchant model.Merchant, pay, createStartTime, createEndTime string, size, page int) (results []*model.Merchant, total int, err error) {
 	results = make([]*model.Merchant, 1)
 
 	match := bson.M{}
@@ -183,6 +185,10 @@ func (c *merchantCollection) PaginationFind(merchant model.Merchant, pay string,
 	} else {
 		match["encryptKey"] = bson.M{"$exists": false}
 	}
+
+	if createStartTime != "" && createEndTime != "" {
+		match["createTime"] = bson.M{"$gte": createStartTime, "$lte": createEndTime}
+	}
 	// 计算总数
 	total, err = database.C(c.name).Find(match).Count()
 	if err != nil {
@@ -211,6 +217,8 @@ func (c *merchantCollection) BatchAdd(mers []model.Merchant) error {
 
 	var temps []interface{}
 	for _, m := range mers {
+		m.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+		m.UpdateTime = m.CreateTime
 		temps = append(temps, m)
 	}
 	err := database.C(c.name).Insert(temps...)
@@ -243,6 +251,8 @@ func (col *merchantCollection) Remove(merId string) (err error) {
 // Insert 创建一个机构商户
 func (c *merchantCollection) Insert(m *model.Merchant) error {
 
+	m.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+	m.UpdateTime = m.CreateTime
 	err := database.C(c.name).Insert(m)
 	if err != nil {
 		log.Errorf("'Insert Merchant ERROR!' Merchant is (%+v); error is (%s)", m, err)
