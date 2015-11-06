@@ -40,7 +40,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	alpReq := &alpRequest{
 		Partner:       req.ChanMerId,
 		Service:       createAndPay,
-		NotifyUrl:     req.NotifyUrl,
+		NotifyUrl:     alipayNotifyUrl,
 		OutTradeNo:    req.OrderNum, // 送的是原订单号，不转换
 		Subject:       req.Subject,
 		GoodsDetail:   req.AlpMarshalGoods(),

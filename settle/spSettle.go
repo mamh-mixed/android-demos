@@ -11,6 +11,73 @@ import (
 	"strings"
 )
 
+//  reportType
+const (
+	TransferReport       = 1 // 划款报表
+	ReconciliationReport = 2 // 对账报表
+	InsFlowReport        = 3 // 机构流水报表
+	ChanMerReport        = 4 // 渠道商户报表
+	// 分润报表
+)
+
+// DoScanpaySettReport 清算
+func DoScanpaySettReport(settDate string) error {
+	// 对账，入库
+	tss, err := Reconciliation(settDate)
+	if err != nil {
+		return nil
+	}
+
+	// 出报表
+	err = genReport(tss)
+	if err != nil {
+		return nil
+	}
+
+	// 发邮件?
+
+	return nil
+}
+
+// Reconciliation 对账
+func Reconciliation(settDate string) ([]model.TransSett, error) {
+
+	var reconcilated []*model.Trans
+
+	// TODO: 与渠道对账，然后将交易存进对账交易表里
+
+	ts, _, err := mongo.SpTransColl.Find(&model.QueryCondition{
+		StartTime:    settDate + " 00:00:00",
+		EndTime:      settDate + " 23:59:59",
+		TransStatus:  []string{model.TransSuccess},
+		RefundStatus: model.TransRefunded,
+		IsForReport:  true,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	// 先已我们系统为准，默认都对上
+	reconcilated = append(reconcilated, ts...)
+
+	// 计算费率等，入清算表
+	var tss []model.TransSett
+	for _, t := range reconcilated {
+		ts := model.TransSett{
+			Trans: *t,
+		}
+		// TODO
+		tss = append(tss, ts)
+	}
+
+	return tss, nil
+}
+
+func genReport([]model.TransSett) error {
+	return nil
+}
+
 const filePrefix = "sett/report/%s/" // 文件名：sett/report/20151012/IC202_99911888_20151012.xlsx
 
 // doScanpaySettReport 扫码每天出清算报表

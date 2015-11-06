@@ -414,7 +414,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.IsForReport {
 		sortByChan := bson.M{"$sort": bson.M{"chanCode": 1}}
 		sort = bson.M{"$sort": bson.M{"busicd": 1}}
-		p = append(p, sort, skip, limit, sortByChan)
+		// no skip, no limit
+		p = append(p, sort, sortByChan)
 	} else {
 		p = append(p, sort, skip, limit)
 	}

@@ -31,6 +31,8 @@ func ProcessAlipayNotify(params url.Values) error {
 	orderNum := params.Get("out_trade_no")
 	// 系统订单号
 	sysOrderNum := params.Get("extra_common_param")
+	// 交易时间
+	payTime := params.Get("gmt_payment")
 
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
@@ -122,7 +124,7 @@ func ProcessAlipayNotify(params url.Values) error {
 			ret.ErrorDetail = adaptor.SuccessMsg
 			ret.ErrorCode = "SUCCESS"
 			ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
-
+			ret.PayTime = payTime
 		case "WAIT_BUYER_PAY":
 			log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, sysOrderNum=%s", sysOrderNum)
 			return fmt.Errorf("%s", "transStatus no change")
