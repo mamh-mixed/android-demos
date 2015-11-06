@@ -1009,16 +1009,19 @@ func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error)
 
 	// 如果此时交易被锁住
 	if orig.LockFlag == 1 {
-		now := time.Now()
-		lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
-		if err != nil {
-			log.Errorf("fail to parse time : %s", err)
-			return nil, errors.New("SYSTEM_ERROR")
-		}
-		// TODO:被锁时间 1分钟？
-		if now.Sub(lockTime) > 1*time.Minute {
-			// 直接返回该原交易
-			return orig, err
+		// 这时交易可能没有被update
+		if orig.UpdateTime != "" {
+			now := time.Now()
+			lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
+			if err != nil {
+				log.Errorf("fail to parse time : %s", err)
+				return nil, errors.New("SYSTEM_ERROR")
+			}
+			// TODO:被锁时间 1分钟？
+			if now.Sub(lockTime) > 1*time.Minute {
+				// 直接返回该原交易
+				return orig, err
+			}
 		}
 		// 休眠一段时间
 		time.Sleep(300 * time.Millisecond)
