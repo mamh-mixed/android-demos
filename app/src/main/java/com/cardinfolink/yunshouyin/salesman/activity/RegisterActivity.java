@@ -8,14 +8,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
-import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListener;
 import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 
 import java.util.regex.Matcher;
@@ -28,6 +26,25 @@ public class RegisterActivity extends BaseActivity {
     private EditText mQrPasswordEdit;
 
     private Button btnLogin;
+
+    /**
+     * 验证邮箱
+     *
+     * @param email
+     * @return
+     */
+    public static boolean checkEmail(String email) {
+        boolean flag = false;
+        try {
+            String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+            Pattern regex = Pattern.compile(check);
+            Matcher matcher = regex.matcher(email);
+            flag = matcher.matches();
+        } catch (Exception e) {
+            flag = false;
+        }
+        return flag;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,44 +76,35 @@ public class RegisterActivity extends BaseActivity {
                 startLoading();
                 final String username = mEmailEdit.getText().toString();
                 final String password = mPasswordEdit.getText().toString();
-                HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRegister_SA(SessonData.getAccessToken(), username, password), new CommunicationListener() {
+                application.getQuickPayService().registerUserAsync(username, password, new QuickPayCallbackListener<User>() {
                     @Override
-                    public void onResult(final String result) {
-                        final SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(result);
-                        if (serverPacket.getState().equals("success")) {
-                            SessonData.registerUser.setUsername(username);
-                            SessonData.registerUser.setPassword(password);
-                            Log.d("register user", SessonData.registerUser.getJsonString());
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    endLoading();
-                                    intentToActivity(RegisterNextActivity.class);
-                                }
-                            });
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String error = serverPacket.getError();
-                                    endLoadingWithError(ErrorUtil.getErrorString(error));
-                                    if (error.equals("accessToken_error")) {
-                                        //关闭所有activity,除了登录框
-                                        ActivityCollector.goLoginAndFinishRest();
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onError(final String error) {
+                    public void onSuccess(User data) {
+                        SessonData.registerUser.setUsername(username);
+                        SessonData.registerUser.setPassword(password);
+                        Log.d("register user", SessonData.registerUser.getJsonString());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                endLoadingWithError(error);
+                                endLoading();
+                                intentToActivity(RegisterNextActivity.class);
                             }
                         });
+                    }
+
+                    @Override
+                    public void onFailure(final QuickPayException ex) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String error = ex.getErrorMsg();
+                                endLoadingWithError(error);
+                                if (ex.getErrorCode().equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
+                                    //关闭所有activity,除了登录框
+                                    ActivityCollector.goLoginAndFinishRest();
+                                }
+                            }
+                        });
+
                     }
                 });
             }
@@ -132,25 +140,6 @@ public class RegisterActivity extends BaseActivity {
         }
 
         return true;
-    }
-
-    /**
-     * 验证邮箱
-     *
-     * @param email
-     * @return
-     */
-    public static boolean checkEmail(String email) {
-        boolean flag = false;
-        try {
-            String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-            Pattern regex = Pattern.compile(check);
-            Matcher matcher = regex.matcher(email);
-            flag = matcher.matches();
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
     }
 
 }

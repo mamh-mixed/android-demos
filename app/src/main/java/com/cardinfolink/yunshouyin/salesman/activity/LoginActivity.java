@@ -11,15 +11,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.SaveData;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.SystemConfig;
 import com.cardinfolink.yunshouyin.salesman.model.User;
-import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
-import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -36,7 +33,6 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         // check update
         UmengUpdateAgent.update(this);
-        initEnvironment();
         setContentView(R.layout.login_activity);
 
         mUsernameEdit = (EditText) findViewById(R.id.login_username);
@@ -51,24 +47,6 @@ public class LoginActivity extends BaseActivity {
 
         if (user.isAutoLogin()) {
             login();
-        }
-    }
-
-    /**
-     *
-     */
-    private void initEnvironment(){
-        try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(
-                    getPackageName(), PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            String environment = bundle.getString("ENVIRONMENT");
-            Log.d(TAG, "ENVIRONMENT is " + environment);
-            SystemConfig.initEnvironment(environment);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Failed to load meta-data, NameNotFound: " + e.getMessage());
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to load meta-data: " + e.getMessage());
         }
     }
 
@@ -101,10 +79,6 @@ public class LoginActivity extends BaseActivity {
 
     private void login() {
         Log.d(TAG, "======================login========================");
-        // Test only
-        //mUsernameEdit.setText("toolstest");
-        //mPasswordEdit.setText("Yun#1016");
-
 
         if (validate()) {
             startLoading();
@@ -138,10 +112,10 @@ public class LoginActivity extends BaseActivity {
             /**
              * async network call and callbacks
              */
-            HttpCommunicationUtil.sendDataToQuickIpayServer(ParamsUtil.getLogin_SA(username, password), new CommunicationListenerV2() {
+            application.getQuickPayService().loginAsync(username, password, new QuickPayCallbackListener<String>() {
                 @Override
-                public void onResult(SAServerPacket serverPacket) {
-                    SessonData.loginUser.setAccessToken(serverPacket.getAccessToken());
+                public void onSuccess(String data) {
+                    SessonData.loginUser.setAccessToken(data);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -153,16 +127,14 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onError(final String error) {
+                public void onFailure(final QuickPayException ex) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (error.equals("username_password_error")) {
+                            if (ex.getErrorCode().equals("username_password_error")) {
                                 mPasswordEdit.setText("");
                             }
-                            // convert to user friendly message
-                            String errorStr = ErrorUtil.getErrorString(error);
-                            Log.i(TAG, "error:" + error);
+                            String errorStr = ex.getErrorMsg();
                             endLoadingWithError(errorStr);
                         }
                     });
@@ -170,7 +142,6 @@ public class LoginActivity extends BaseActivity {
             });
         }
     }
-
 
 
     @Override

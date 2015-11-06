@@ -17,16 +17,15 @@ import android.widget.Spinner;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.adapter.SearchAdapter;
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.BankBaseUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListener;
-import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.JsonUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.RequestParam;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 
@@ -374,76 +373,6 @@ public class RegisterNextActivity extends BaseActivity {
         });
     }
 
-    //内部类，实现CommunicationListener接口
-    private class ProvinceCommunicationListener implements CommunicationListener {
-        @Override
-        public void onResult(String result) {
-            saveToSharePreferences(result, "data", "province");
-            updateProvinceAdapter(result);
-        }
-
-        @Override
-        public void onError(String error) {
-            Log.i(TAG, "get province data error:" + error);
-        }
-    }
-
-    //内部类，实现CommunicationListener接口,用来获取bank信息
-    private class BankCommunicationListener implements CommunicationListener {
-        @Override
-        public void onResult(String result) {
-            saveToSharePreferences(result, "data", "bank");
-            updateBankAdapter(result);
-        }
-
-        @Override
-        public void onError(String error) {
-            Log.i(TAG, "get bank data error:" + error);
-        }
-    }
-
-    private class CityCommunicationListener implements CommunicationListener {
-        private String province;
-
-        public CityCommunicationListener(String province) {
-            this.province = province;
-        }
-
-        @Override
-        public void onResult(String result) {
-            saveToSharePreferences(result, "data", province);
-            updateCityAdapter(result);
-        }
-
-        @Override
-        public void onError(String error) {
-            Log.d(TAG, "get city data error");
-        }
-    }
-
-    private class BranchBankCommunicationListener implements CommunicationListener {
-        private String cityCode;
-        private String bankId;
-
-        public BranchBankCommunicationListener(String cityCode, String bankId) {
-            this.cityCode = cityCode;
-            this.bankId = bankId;
-        }
-
-        @Override
-        public void onResult(String result) {
-            String key = cityCode + "_" + bankId;
-            saveToSharePreferences(result, "data", key);
-            updateBranchBankAdapter(result);
-        }
-
-        @Override
-        public void onError(String error) {
-            Log.i(TAG, "get branch bank error:" + error);
-        }
-    }
-
-
     private String readFromSharePreference(String name, String key) {
         SharedPreferences sp = getSharedPreferences(name, MODE_PRIVATE);
         return sp.getString(key, "");
@@ -455,7 +384,6 @@ public class RegisterNextActivity extends BaseActivity {
         editor.putString(key, result);
         editor.commit();
     }
-
 
     private void initListener() {
         //添加province EditText框变化事件
@@ -546,6 +474,7 @@ public class RegisterNextActivity extends BaseActivity {
                     mCityEdit.setText(mCityList.get(position));
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -614,10 +543,10 @@ public class RegisterNextActivity extends BaseActivity {
 
     public void btnRegisterFinishedOnClick(View view) {
         //Test only
-        //mBanknumEdit.setText("6228482371938777011");
-        //mPhonenumEdit.setText("18964153831");
-        //mMerchantNameEdit.setText("香辣鸡翅");
-        //mNameEdit.setText("鸡哥");
+        mBanknumEdit.setText("6228482371938777011");
+        mPhonenumEdit.setText("18964153831");
+        mMerchantNameEdit.setText("香辣鸡翅");
+        mNameEdit.setText("鸡哥");
         if (validate()) {
             startLoading();
             final User user = SessonData.registerUser;
@@ -632,48 +561,41 @@ public class RegisterNextActivity extends BaseActivity {
             user.setPhone_num(mPhonenumEdit.getText().toString());
             user.setMerName(mMerchantNameEdit.getText().toString());
 
-            RequestParam requestParam = ParamsUtil.getUpdate_SA(SessonData.getAccessToken(), user);
-            HttpCommunicationUtil.sendDataToServer(requestParam, new RegisterCommunicationListener());
-        }
-    }
 
-    private class RegisterCommunicationListener implements CommunicationListener {
-        @Override
-        public void onResult(String result) {
-            final SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(result);
-            String state = JsonUtil.getParam(result, "state");
-            if (serverPacket.getState().equals("success")) {
-                //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
-                SessonData.registerUser.setClientid(serverPacket.getUser().getClientid());
-                //SessonData.registerUser.setObject_id(JsonUtil.getParam(user_json, "objectId"));
-                intentToActivity(SARegisterStep3Activity.class);
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final String error = serverPacket.getError();
-                        String errorStr = ErrorUtil.getErrorString(error);
-                        endLoadingWithError(errorStr);
-                        if (error.equals("accessToken_error")) {
-                            //关闭所有activity,除了登录框
-                            ActivityCollector.goLoginAndFinishRest();
-                        }
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void onError(final String error) {
-            runOnUiThread(new Runnable() {
+            application.getQuickPayService().updateUserAsync(user, new QuickPayCallbackListener<User>() {
                 @Override
-                public void run() {
-                    endLoadingWithError(error);
+                public void onSuccess(final User data) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
+                            SessonData.registerUser.setClientid(data.getClientid());
+                            //SessonData.registerUser.setObject_id(JsonUtil.getParam(user_json, "objectId"));
+                            endLoading();
+                            intentToActivity(SARegisterStep3Activity.class);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onFailure(final QuickPayException ex) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String error = ex.getErrorCode();
+                            String errorStr = ex.getErrorMsg();
+                            endLoadingWithError(errorStr);
+                            if (error.equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
+                                //关闭所有activity,除了登录框
+                                ActivityCollector.goLoginAndFinishRest();
+                            }
+                        }
+                    });
                 }
             });
         }
     }
-
 
     @SuppressLint("NewApi")
     private boolean validate() {
@@ -733,5 +655,74 @@ public class RegisterNextActivity extends BaseActivity {
         }
 
         return true;
+    }
+
+    //内部类，实现CommunicationListener接口
+    private class ProvinceCommunicationListener implements CommunicationListener {
+        @Override
+        public void onResult(String result) {
+            saveToSharePreferences(result, "data", "province");
+            updateProvinceAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.i(TAG, "get province data error:" + error);
+        }
+    }
+
+    //内部类，实现CommunicationListener接口,用来获取bank信息
+    private class BankCommunicationListener implements CommunicationListener {
+        @Override
+        public void onResult(String result) {
+            saveToSharePreferences(result, "data", "bank");
+            updateBankAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.i(TAG, "get bank data error:" + error);
+        }
+    }
+
+    private class CityCommunicationListener implements CommunicationListener {
+        private String province;
+
+        public CityCommunicationListener(String province) {
+            this.province = province;
+        }
+
+        @Override
+        public void onResult(String result) {
+            saveToSharePreferences(result, "data", province);
+            updateCityAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.d(TAG, "get city data error");
+        }
+    }
+
+    private class BranchBankCommunicationListener implements CommunicationListener {
+        private String cityCode;
+        private String bankId;
+
+        public BranchBankCommunicationListener(String cityCode, String bankId) {
+            this.cityCode = cityCode;
+            this.bankId = bankId;
+        }
+
+        @Override
+        public void onResult(String result) {
+            String key = cityCode + "_" + bankId;
+            saveToSharePreferences(result, "data", key);
+            updateBranchBankAdapter(result);
+        }
+
+        @Override
+        public void onError(String error) {
+            Log.i(TAG, "get branch bank error:" + error);
+        }
     }
 }

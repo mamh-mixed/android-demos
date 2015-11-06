@@ -33,9 +33,9 @@ public class ActivityCollector {
     /**
      * Used if accessToken expired
      */
-    public static void goLoginAndFinishRest(){
+    public static void goLoginAndFinishRest() {
         for (Activity activity : activityList) {
-            if (activity instanceof LoginActivity){
+            if (activity instanceof LoginActivity) {
                 continue;
             }
             if (!activity.isFinishing()) {
@@ -45,15 +45,14 @@ public class ActivityCollector {
     }
 
     /**
-     *
      * Used if registration finished or cancelled
      */
-    public static void goHomeAndFinishRest(){
+    public static void goHomeAndFinishRest() {
         for (Activity activity : activityList) {
-            if (activity instanceof LoginActivity){
+            if (activity instanceof LoginActivity) {
                 continue;
             }
-            if (activity instanceof SAMerchantListActivity){
+            if (activity instanceof SAMerchantListActivity) {
                 continue;
             }
             if (!activity.isFinishing()) {

@@ -5,6 +5,7 @@ android {
     buildToolsVersion "23.0.1"
     useLibrary 'org.apache.http.legacy'
 
+    // env options: dev, test, pro
     productFlavors {
         _test {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]

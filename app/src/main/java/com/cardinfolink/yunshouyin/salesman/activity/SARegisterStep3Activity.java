@@ -18,17 +18,14 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.salesman.R;
+import com.cardinfolink.yunshouyin.salesman.adapter.MerchantPhotoRecyclerViewAdapter;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
-import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.QiniuMultiUploadWrapper;
-import com.cardinfolink.yunshouyin.salesman.utils.QiniuTaskListener;
-import com.cardinfolink.yunshouyin.salesman.adapter.MerchantPhotoRecyclerViewAdapter;
+import com.cardinfolink.yunshouyin.salesman.core.QiniuCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.view.WorkBeforeExitListener;
 
 import java.text.SimpleDateFormat;
@@ -98,7 +95,7 @@ public class SARegisterStep3Activity extends BaseActivity {
 
         // imageList会生成出qiniukey出来
         // 1. upload images to qiniu server
-        new QiniuMultiUploadWrapper().uploadImageToQiniu(SARegisterStep3Activity.this, imageList, qiniuKeyPattern, new QiniuTaskListener() {
+        application.getQiniuMultiUploadService().upload(imageList, qiniuKeyPattern, new QiniuCallbackListener() {
             @Override
             public void onComplete() {
                 if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -123,80 +120,70 @@ public class SARegisterStep3Activity extends BaseActivity {
                 }
                 user.setImages((images.toArray(new String[images.size()])));
 
-                try {
-                    final SAServerPacket serverPacket = HttpCommunicationUtil.getServerPacket(ParamsUtil.getUpdate_SA(SessonData.getAccessToken(), user));
-                    if (!serverPacket.getState().equals("success")) {
+
+                application.getQuickPayService().updateUser(user, new QuickPayCallbackListener<User>() {
+                    @Override
+                    public void onSuccess(User data) {
+                        // TODO: no check user result
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                String errorStr = ErrorUtil.getErrorString(serverPacket.getError());
-                                endLoadingWithError(errorStr);
+                                Toast.makeText(SARegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT);
                             }
                         });
-                        return;
+
+                        // 3.激活
+                        application.getQuickPayService().activateUser(user.getUsername(), new QuickPayCallbackListener<User>() {
+                            @Override
+                            public void onSuccess(User data) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        endLoading();
+                                        Toast.makeText(SARegisterStep3Activity.this, "成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", Toast.LENGTH_LONG);
+                                        ActivityCollector.goHomeAndFinishRest();
+//                                        alertInfo("成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", new WorkBeforeExitListener() {
+//                                            @Override
+//                                            public void complete() {
+//                                                ActivityCollector.goHomeAndFinishRest();
+//                                            }
+//                                        });
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(final QuickPayException ex) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String errorStr = ex.getErrorMsg();
+                                        endLoadingWithError(errorStr);
+                                    }
+                                });
+                            }
+                        });
                     }
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(SARegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT);
-                        }
-                    });
-                } catch (Exception e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            endLoadingWithError("网络错误");
-                        }
-                    });
-                    e.printStackTrace();
-                }
-
-                // 3.激活
-//                user.setImageUrl("testUrl.png");
-                try {
-                    final SAServerPacket serverPacket = HttpCommunicationUtil.getServerPacket(ParamsUtil.getActivate_SA(SessonData.getAccessToken(), user.getUsername(), user.getImageUrl()));
-                    if (!serverPacket.getState().equals("success")) {
+                    @Override
+                    public void onFailure(final QuickPayException ex) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                String errorStr = ErrorUtil.getErrorString(serverPacket.getError());
-                                endLoadingWithError(errorStr);
+                                endLoadingWithError(ex.getErrorMsg());
                             }
                         });
-                        return;
                     }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            endLoading();
-                            alertInfo("成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", new WorkBeforeExitListener() {
-                                @Override
-                                public void complete() {
-                                    ActivityCollector.goHomeAndFinishRest();
-                                }
-                            });
-                        }
-                    });
-                } catch (Exception e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            endLoadingWithError("网络错误");
-                        }
-                    });
-                    e.printStackTrace();
-                }
+                });
             }
 
             @Override
-            public void onError(Exception ex) {
+            public void onFailure(Exception ex) {
                 Log.d(LOG_TAG, ex.getMessage());
                 if (Looper.myLooper() == Looper.getMainLooper()) {
-                    Log.d(LOG_TAG, "onError" + " is in main thread");
+                    Log.d(LOG_TAG, "onFailure" + " is in main thread");
                 } else {
-                    Log.d(LOG_TAG, "onError" + " is in background thread");
+                    Log.d(LOG_TAG, "onFailure" + " is in background thread");
                 }
                 runOnUiThread(new Runnable() {
                     @Override

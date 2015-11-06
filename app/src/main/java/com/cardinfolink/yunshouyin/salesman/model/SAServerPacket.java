@@ -1,15 +1,10 @@
 package com.cardinfolink.yunshouyin.salesman.model;
 
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class SAServerPacket {
-    public static SAServerPacket getServerPacketFrom(String json){
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-        SAServerPacket packet = gson.fromJson(json, SAServerPacket.class);
-        return packet;
-    }
-
     private String state;
     private String error;
     private User user;
@@ -18,6 +13,15 @@ public class SAServerPacket {
     private String uploadToken;
     private String downloadUrl;
 
+    public static SAServerPacket getServerPacketFrom(String json) {
+        try {
+            Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+            SAServerPacket packet = gson.fromJson(json, SAServerPacket.class);
+            return packet;
+        }catch (Exception ex){
+            throw new QuickPayException(QuickPayException.CONFIG_ERROR);
+        }
+    }
 
     public String getState() {
         return state;

@@ -16,14 +16,10 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.adapter.MerchantListAdapter;
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
-import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
-import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
-import com.cardinfolink.yunshouyin.salesman.utils.ErrorUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +32,9 @@ import java.util.List;
 //TODO: 加入分页下载,搜索API,上拉更多
 public class SAMerchantListActivity extends BaseActivity {
     private final String TAG = "SAMerchantListActivity";
-
+    MerchantListAdapter adapter;
     //该地址会被ArrayAdapter所引用,作为数据源,对merchantInfos所做的修改会影响到arrayAdapter
     private List<User> users = new ArrayList<>();
-    MerchantListAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Button btnAddNewMer;
     private EditText searchText;
@@ -66,7 +61,7 @@ public class SAMerchantListActivity extends BaseActivity {
      * setup listener
      */
     private void initLayout() {
-        txtMerchantCountThisMonth = (TextView)findViewById(R.id.txt_merchantcountthismonth);
+        txtMerchantCountThisMonth = (TextView) findViewById(R.id.txt_merchantcountthismonth);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -112,23 +107,23 @@ public class SAMerchantListActivity extends BaseActivity {
         swipeRefreshLayout.setRefreshing(true);
 
         // async network call, callbacks
-        HttpCommunicationUtil.sendDataToQuickIpayServer(ParamsUtil.getUsers_SA(SessonData.getAccessToken()), new CommunicationListenerV2() {
+        application.getQuickPayService().getUsersAsync(new QuickPayCallbackListener<User[]>() {
             @Override
-            public void onResult(SAServerPacket serverPacket) {
+            public void onSuccess(User[] data) {
                 //必须保持users的引用,因为adapter使用了
                 final List<User> tempUsers = new ArrayList<>();
-                if (serverPacket.getUsers() != null){
-                    tempUsers.addAll(Arrays.asList(serverPacket.getUsers()));
+                if (data != null) {
+                    tempUsers.addAll(Arrays.asList(data));
                 }
                 //order by create time
                 Collections.sort(tempUsers, new Comparator<User>() {
                     @Override
                     public int compare(User lhs, User rhs) {
-                        return lhs.getCreateTime().after(rhs.getCreateTime())==true?-1:1;
+                        return lhs.getCreateTime().after(rhs.getCreateTime()) == true ? -1 : 1;
                     }
                 });
 
-                int num =0;
+                int num = 0;
                 Date today = new Date();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(today);
@@ -139,8 +134,8 @@ public class SAMerchantListActivity extends BaseActivity {
                 calendar.set(Calendar.MILLISECOND, 0);
                 Date firstDayOfMonth = calendar.getTime();
 
-                for (User user: tempUsers){
-                    if (user.getCreateTime().after(firstDayOfMonth)){
+                for (User user : tempUsers) {
+                    if (user.getCreateTime().after(firstDayOfMonth)) {
                         num++;
                     }
                 }
@@ -162,16 +157,14 @@ public class SAMerchantListActivity extends BaseActivity {
             }
 
             @Override
-            public void onError(final String error) {
+            public void onFailure(final QuickPayException ex) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("opp", "error:" + error);
-                        String errorStr = ErrorUtil.getErrorString(error);
+                        String errorStr = ex.getErrorMsg();
                         swipeRefreshLayout.setRefreshing(false);
-                        //endLoadingWithError(errorStr);
                         alertError(errorStr);
-                        if (error.equals("accessToken_error")) {
+                        if (ex.getErrorCode().equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
                             //关闭所有activity,除了登录框
                             ActivityCollector.goLoginAndFinishRest();
                         }
@@ -192,7 +185,7 @@ public class SAMerchantListActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         //回到页面之后,从服务器刷新数据
-        Log.d(TAG,"onResume() will refresh data");
+        Log.d(TAG, "onResume() will refresh data");
         refreshData();
     }
 }

@@ -14,12 +14,9 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.activity.SAMerchantListActivity;
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
-import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.User;
-import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListenerV2;
-import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.ParamsUtil;
 import com.cardinfolink.yunshouyin.salesman.utils.SAApplication;
 import com.cardinfolink.yunshouyin.salesman.utils.SADownloader;
 import com.cardinfolink.yunshouyin.salesman.utils.SAImageUtil;
@@ -28,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantListAdapter extends ArrayAdapter<User> {
-    private SAMerchantListActivity saMerchantListActivity;
     Filter myFilter;
+    private SAMerchantListActivity saMerchantListActivity;
     private List<User> users_origin = new ArrayList<>();
     private List<User> users;
 
@@ -108,51 +105,14 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
             @Override
             public void onClick(View v) {
                 Log.d("jiahua:", "download qrcode");
-                Toast.makeText(SAApplication.getContext(), "二维码生成中...", Toast.LENGTH_LONG).show();
+                Toast.makeText(SAApplication.getInstance().getContext(), "二维码生成中...", Toast.LENGTH_LONG).show();
 
                 String merchantId = merchant.getClientid();
-                HttpCommunicationUtil.sendDataToQuickIpayServer(ParamsUtil.getDownload(SessonData.getAccessToken(), merchantId, "bill"), new CommunicationListenerV2() {
+
+                SAApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "bill", new QuickPayCallbackListener<String>() {
                     @Override
-                    public void onResult(SAServerPacket serverPacket) {
-                        String imageUrl = serverPacket.getDownloadUrl();
-                        try {
-                            Bitmap bitmap = SADownloader.downloadBitmap(imageUrl);
-                            new SAImageUtil().saveImageToExternalStorage(bitmap);
-                        }catch (final Exception ex){
-                            Log.d("jiahua", ex.getMessage());
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(SAApplication.getContext(), "下载错误:"+ex.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-                            return;
-                        }
-
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SAApplication.getContext(), "账单二维码已经下载到相册", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(final String error) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SAApplication.getContext(), "下载失败:"+error, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                });
-
-                HttpCommunicationUtil.sendDataToQuickIpayServer(ParamsUtil.getDownload(SessonData.getAccessToken(), merchantId, "pay"), new CommunicationListenerV2() {
-                    @Override
-                    public void onResult(SAServerPacket serverPacket) {
-                        String imageUrl = serverPacket.getDownloadUrl();
+                    public void onSuccess(String data) {
+                        String imageUrl = data;
                         try {
                             Bitmap bitmap = SADownloader.downloadBitmap(imageUrl);
                             new SAImageUtil().saveImageToExternalStorage(bitmap);
@@ -161,7 +121,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(SAApplication.getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SAApplication.getInstance().getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
 
@@ -171,17 +131,55 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SAApplication.getContext(), "支付二维码已经下载到相册", Toast.LENGTH_LONG).show();
+                                Toast.makeText(SAApplication.getInstance().getContext(), "账单二维码已经下载到相册", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
 
                     @Override
-                    public void onError(final String error) {
+                    public void onFailure(final QuickPayException ex) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SAApplication.getContext(), "下载失败:" + error, Toast.LENGTH_LONG).show();
+                                Toast.makeText(SAApplication.getInstance().getContext(), "下载失败:" + ex.getErrorMsg(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                SAApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "pay", new QuickPayCallbackListener<String>() {
+                    @Override
+                    public void onSuccess(String data) {
+                        String imageUrl = data;
+                        try {
+                            Bitmap bitmap = SADownloader.downloadBitmap(imageUrl);
+                            new SAImageUtil().saveImageToExternalStorage(bitmap);
+                        } catch (final Exception ex) {
+                            Log.d("jiahua", ex.getMessage());
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SAApplication.getInstance().getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+                            return;
+                        }
+
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SAApplication.getInstance().getContext(), "支付二维码已经下载到相册", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(final QuickPayException ex) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SAApplication.getInstance().getContext(), "下载失败:" + ex.getErrorMsg(), Toast.LENGTH_LONG).show();
                             }
                         });
                     }

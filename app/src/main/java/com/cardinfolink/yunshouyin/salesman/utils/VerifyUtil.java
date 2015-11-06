@@ -10,10 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VerifyUtil {
-    private static final String TAG="VerifyUtil";
+    private static final String TAG = "VerifyUtil";
 
     /**
      * 校验银行卡卡号
+     *
      * @param cardId
      * @return
      */
@@ -31,6 +32,7 @@ public class VerifyUtil {
 
     /**
      * 从不含校验位的银行卡卡号采用 Luhm 校验算法获得校验位
+     *
      * @param nonCheckCodeCardId
      * @return
      */
@@ -56,6 +58,7 @@ public class VerifyUtil {
 
     /**
      * 银行卡四位加空格
+     *
      * @param mEditText
      */
     public static void bankCardNumAddSpace(final EditText mEditText) {
@@ -64,9 +67,10 @@ public class VerifyUtil {
             int onTextLength = 0;
             boolean isChanged = false;
             int location = 0;// 记录光标的位置
+            int konggeNumberB = 0;
             private char[] tempChar;
             private StringBuffer buffer = new StringBuffer();
-            int konggeNumberB = 0;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 beforeTextLength = s.length();
@@ -141,6 +145,7 @@ public class VerifyUtil {
 
     /**
      * 银行卡四位加空格
+     *
      * @param mEditText
      */
     public static void addEmailLimit(final EditText mEditText) {

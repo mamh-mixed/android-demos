@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.salesman.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.provider.MediaStore;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.google.zxing.BarcodeFormat;
@@ -22,10 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SAQrCodeUtil {
-//    public static void save2Album(Bitmap bitmap){
-//        SACompatibleUtil.fixMediaDir();
-//        MediaStore.Images.Media.insertImage(SAApplication.getContext().getContentResolver(), bitmap, "云收银二维码", "云收银生成商户二维码");
-//    }
     public static Bitmap getQRPostA(String qrContent, String title) {
         return getQRPostCommon(R.drawable.template_a, qrContent, title);
     }
@@ -36,19 +30,20 @@ public class SAQrCodeUtil {
 
     /**
      * 这里是根据UI给的标注图设定的,TODO:缺少title的位置
+     *
      * @param templateResId
      * @param qrContent
      * @param title
      * @return
      */
-    private static Bitmap getQRPostCommon(int templateResId, String qrContent, String title){
-        if (title ==null || title.equals("")){
-            title ="没有名字";
+    private static Bitmap getQRPostCommon(int templateResId, String qrContent, String title) {
+        if (title == null || title.equals("")) {
+            title = "没有名字";
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         // mutable template
-        Bitmap template = BitmapFactory.decodeResource(SAApplication.getContext().getResources(), templateResId, options).copy(Bitmap.Config.ARGB_8888, true);
+        Bitmap template = BitmapFactory.decodeResource(SAApplication.getInstance().getContext().getResources(), templateResId, options).copy(Bitmap.Config.ARGB_8888, true);
         int screenWidth = template.getWidth();
         int screenHeight = template.getHeight();
         int qrWidth = 90 * screenWidth / 148;
@@ -68,6 +63,7 @@ public class SAQrCodeUtil {
 
     /**
      * draw text
+     *
      * @param template
      * @param title
      * @param txtCenterX
@@ -81,13 +77,13 @@ public class SAQrCodeUtil {
         paint.setColor(Color.WHITE);
         paint.setTextSize(50);
 
-        Typeface tf =Typeface.createFromAsset(SAApplication.getContext().getAssets(), "fonts/simhei.ttf");
+        Typeface tf = Typeface.createFromAsset(SAApplication.getInstance().getContext().getAssets(), "fonts/simhei.ttf");
         paint.setTypeface(tf);
 
         Rect bounds = new Rect();
-        paint.getTextBounds(title,0, title.length(), bounds);
-        int x = txtCenterX- bounds.width()/2;
-        int y = txtCenterY-bounds.height()/2;
+        paint.getTextBounds(title, 0, title.length(), bounds);
+        int x = txtCenterX - bounds.width() / 2;
+        int y = txtCenterY - bounds.height() / 2;
         canvas.drawText(title, x, y, paint);
 
         return template;

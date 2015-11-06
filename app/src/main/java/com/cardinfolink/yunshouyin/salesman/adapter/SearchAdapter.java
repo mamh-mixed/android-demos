@@ -70,6 +70,11 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         return convertView;
     }
 
+    @Override
+    public Filter getFilter() {
+        // TODO Auto-generated method stub
+        return new SearchFilter();
+    }
 
     public final class ViewHolder {
 
@@ -77,21 +82,13 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     }
 
-
-    @Override
-    public Filter getFilter() {
-        // TODO Auto-generated method stub
-        return new SearchFilter();
-    }
-
-
     class SearchFilter extends Filter {
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
             List<String> data = new ArrayList<>();
-            if (constraint!=null && !constraint.equals("")) {
+            if (constraint != null && !constraint.equals("")) {
                 for (String name : mOriginData) {
                     if (name.contains(constraint)) {
                         data.add(name);

@@ -227,7 +227,7 @@ public class User {
         this.merName = merName;
     }
 
-    public String getJsonString(){
+    public String getJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }

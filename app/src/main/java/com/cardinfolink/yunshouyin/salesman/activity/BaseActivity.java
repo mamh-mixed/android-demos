@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
+import com.cardinfolink.yunshouyin.salesman.utils.SAApplication;
 import com.cardinfolink.yunshouyin.salesman.view.Alert_Dialog;
 import com.cardinfolink.yunshouyin.salesman.view.Loading_Dialog;
 import com.cardinfolink.yunshouyin.salesman.view.WorkBeforeExitListener;
@@ -16,10 +17,10 @@ import com.umeng.analytics.MobclickAgent;
 
 public class BaseActivity extends AppCompatActivity {
     private final String TAG = "BaseActivity";
+    protected SAApplication application;
+    protected Context mContext;
     private Loading_Dialog mLoading_Dialog;    //显示loading
     private Alert_Dialog mAlert_Dialog;       // 提示消息对话框
-    protected Context mContext;
-
 
     //重载 setContentView 初始化 mLoading_Dialog,mAlert_Dialog
     @Override
@@ -29,6 +30,7 @@ public class BaseActivity extends AppCompatActivity {
         mLoading_Dialog = new Loading_Dialog(this, findViewById(R.id.loading_dialog));
         mAlert_Dialog = new Alert_Dialog(this, null, findViewById(R.id.alert_dialog),
                 getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        application = SAApplication.getInstance();
     }
 
     @Override
@@ -69,7 +71,7 @@ public class BaseActivity extends AppCompatActivity {
 //        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
 //    }
 
-    public void alertInfo(String msg, WorkBeforeExitListener listener){
+    public void alertInfo(String msg, WorkBeforeExitListener listener) {
         mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right), listener);
     }
 

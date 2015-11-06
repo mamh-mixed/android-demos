@@ -35,8 +35,8 @@ public class MerchantImageViewHolder extends RecyclerView.ViewHolder implements 
 
         activity = (AppCompatActivity) v.getContext();
         itemIndex = getAdapterPosition();
-        Log.d("testpos", "long clicked AdapterPosition: "+itemIndex);
-        Log.d("testpos", "long clicked LayoutPosition: "+getLayoutPosition());
+        Log.d("testpos", "long clicked AdapterPosition: " + itemIndex);
+        Log.d("testpos", "long clicked LayoutPosition: " + getLayoutPosition());
 
         ActionSheet.createBuilder(activity, activity.getSupportFragmentManager())
                 .setOtherButtonTitles("删除")
@@ -59,7 +59,7 @@ public class MerchantImageViewHolder extends RecyclerView.ViewHolder implements 
         switch (index) {
             case 0:
                 if (activity instanceof SARegisterStep3Activity) {
-                    Log.d(TAG, "delete item at position: "+itemIndex);
+                    Log.d(TAG, "delete item at position: " + itemIndex);
                     SARegisterStep3Activity SARegisterStep3Activity = (SARegisterStep3Activity) activity;
                     SARegisterStep3Activity.removeItemAt(itemIndex);
                 }
