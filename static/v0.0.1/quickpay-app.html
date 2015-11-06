@@ -96,9 +96,9 @@
           // debugger;
           console.log(e.type, e.detail.path);
 
-          if (e.detail.path !== '/' && e.detail.path[e.detail.path.length-1] === '/' ) {
-              this.$.appRouter.go(LOGIN_PATH);
-              e.preventDefault();
+          if (e.detail.path !== '/' && e.detail.path[e.detail.path.length - 1] === '/') {
+            this.$.appRouter.go(LOGIN_PATH);
+            e.preventDefault();
           }
 
           this.set('route.path', e.detail.path);
@@ -111,7 +111,7 @@
             return;
           }
 
-          if (this.userType !== 'agent' && this.userType !== 'group' && this.userType !== 'merchant' && this.userType !== 'subAgent' ) {
+          if (this.userType !== 'agent' && this.userType !== 'group' && this.userType !== 'merchant' && this.userType !== 'subAgent') {
             this.$.appRouter.go('/');
             return;
           }
@@ -159,10 +159,14 @@
             });
 
             this.$.reloginDialog.close();
-            var backdrops = document.querySelectorAll('iron-overlay-backdrop');
-            for(var i = 0, l = backdrops.length; i< l;i++) {
-              backdrops[i].close();
-            }
+            // 异步操作，保证paper-dialog关闭后再关闭iron-overlay-backdrop。
+            window.setTimeout(function() {
+              var backdrops = document.querySelectorAll('iron-overlay-backdrop');
+              for (var i = 0, l = backdrops.length; i < l; i++) {
+                backdrops[i].close();
+              }
+            }, 0);
+
             // 如果再次登录的人不是管理员，但是当前页面是管理员的页面，就跳转到普通用户的主页
             if (this.userType !== 'admin' && agentRoutes.indexOf(this.route.path) < 0) {
               this.$.appRouter.go('/trade/list');
