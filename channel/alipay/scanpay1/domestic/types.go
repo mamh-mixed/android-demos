@@ -1,4 +1,4 @@
-package alipay
+package domestic
 
 // type Request
 import (

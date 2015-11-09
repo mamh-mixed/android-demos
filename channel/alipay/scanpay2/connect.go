@@ -1,4 +1,4 @@
-package scanpay
+package scanpay2
 
 import (
 	"bytes"
@@ -73,8 +73,8 @@ func prepareData(d BaseReq) (v url.Values, err error) {
 	return v, nil
 }
 
-func send(v url.Values) (body []byte, err error) {
-	res, err := http.PostForm(openAPIURL, v)
+func send(v url.Values, gw string) (body []byte, err error) {
+	res, err := http.PostForm(gw, v)
 
 	if err != nil {
 		log.Errorf("unable to connect alipay gateway: %s", err)
