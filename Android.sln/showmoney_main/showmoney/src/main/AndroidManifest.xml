@@ -95,7 +95,7 @@
         <!-- UMENG start-->
         <meta-data
             android:name="UMENG_APPKEY"
-            android:value="55ebd98367e58e0f13002f2a"></meta-data>
+            android:value="${UMENG_APPKEY_VALUE}"></meta-data>
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="${UMENG_CHANNEL_VALUE}" />

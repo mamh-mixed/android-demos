@@ -11,32 +11,30 @@ android {
         targetSdkVersion 23
         versionCode 55
         versionName "2.0"
-        buildConfigField 'String', 'URL', '"https://api.shou.money/app"'
-        buildConfigField 'boolean', 'IS_PRODUCE', 'true'
+        // 3 options: pro, test, dev
+        buildConfigField 'String', 'ENVIRONMENT', '"pro"'
     }
 
     productFlavors{
         cardinfolink {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yunshouyin", ENVIRONMENT_VALUE: "pro"]
+            manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yunshouyin"]
 //            comment out below for go live
-            buildConfigField 'String', 'URL', '"http://test.quick.ipay.so/app"'
-            buildConfigField 'boolean', 'IS_PRODUCE', 'false'
+            applicationId "com.cardinfolink.yunshouyin.test"
+            buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
         yinxun {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yinxun", ENVIRONMENT_VALUE: "pro"]
+            manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yinxun"]
             //            comment out below for go live
-            applicationId "com.cardinfolink.yunshouyin.yinxun"
-            buildConfigField 'String', 'URL', '"http://test.quick.ipay.so/app"'
-            buildConfigField 'boolean', 'IS_PRODUCE', 'false'
+            applicationId "com.cardinfolink.yunshouyin.yinxun.test"
+            buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
         japan{
             applicationId "com.cardinfolink.yunshouyin.jp"
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "japan", ENVIRONMENT_VALUE: "pro"]
+            manifestPlaceholders = [UMENG_APPKEY_VALUE: "563029e367e58ee1d5000617", UMENG_CHANNEL_VALUE: "japan"]
             versionName "0.5"
             versionCode 1
             //            comment out below for go live
-            buildConfigField 'String', 'URL', '"http://test.quick.ipay.so/app"'
-            buildConfigField 'boolean', 'IS_PRODUCE', 'false'
+            buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
     }
 
