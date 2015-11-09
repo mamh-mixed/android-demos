@@ -188,7 +188,7 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts [
 // FindHandingTrans 找到处理中的交易
 func (col *transCollection) FindHandingTrans(d time.Duration, busicd ...string) ([]model.Trans, error) {
 	q := bson.M{
-		"updateTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
+		"createTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
 		"lockFlag":    0,
 		"transStatus": model.TransHandling,
 		"transType":   model.PayTrans,

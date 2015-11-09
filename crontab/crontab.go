@@ -44,8 +44,10 @@ func checkDeathLock() {
 		for _, t := range ts {
 			ut, _ := time.ParseInLocation("2006-01-02 15:04:05", t.UpdateTime, time.Local)
 			// 超过时间并且一直在doing
-			if time.Since(ut) > 2*t.D && t.IsDoing {
-				mongo.TaskCol.Finish(&t)
+			if mt, ok := tasks[t.Name]; ok {
+				if time.Since(ut) > 2*mt.D && t.IsDoing {
+					mongo.TaskCol.Finish(&t)
+				}
 			}
 		}
 	}

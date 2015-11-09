@@ -2,11 +2,9 @@ package main
 
 import (
 	"net/http"
-	"os"
 	"runtime"
 
 	_ "github.com/CardInfoLink/quickpay/flags"
-	"github.com/gorilla/handlers"
 
 	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/bindingpay"
@@ -74,8 +72,8 @@ func startSettle() {
 }
 
 func startMaster() {
-	// http.Handle("/", http.FileServer(http.Dir("static")))
-	http.Handle("/", handlers.LoggingHandler(os.Stdout, http.FileServer(http.Dir("static"))))
+	http.Handle("/", http.FileServer(http.Dir("static")))
+	// http.Handle("/", handlers.LoggingHandler(os.Stdout, http.FileServer(http.Dir("static"))))
 
 	http.Handle("/master/", master.Route())
 }
