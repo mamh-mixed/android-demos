@@ -59,6 +59,9 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		LockFlag:    1, // 锁住
 	}
 
+	// 补充关联字段
+	addRelatedProperties(t, req.M)
+
 	// 网页授权获取token和openid
 	token, err := weixin.GetAuthAccessToken(req.Code)
 	if err != nil {
@@ -192,6 +195,9 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			TradeFrom:     req.TradeFrom,
 			LockFlag:      1,
 		}
+		// 补充关联字段
+		addRelatedProperties(t, req.M)
+
 	} else {
 		// 比较数据是否一致
 		if t.Remark != req.Desc || t.GatheringId != req.OpenId || t.GatheringName != req.UserName ||
@@ -267,6 +273,8 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		LockFlag:    1,
 	}
+	// 补充关联字段
+	addRelatedProperties(t, req.M)
 
 	// 根据扫码Id判断走哪个渠道
 	shouldChcd := ""
@@ -347,6 +355,8 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		Attach:      req.Attach,
 		LockFlag:    1,
 	}
+	// 补充关联字段
+	addRelatedProperties(t, req.M)
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -411,6 +421,8 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	orig, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
+		// 补充关联字段
+		addRelatedProperties(refund, req.M)
 		return adaptor.LogicErrorHandler(refund, err.Error())
 	}
 
@@ -662,6 +674,8 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	orig, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
+		// 补充关联字段
+		addRelatedProperties(cancel, req.M)
 		return adaptor.LogicErrorHandler(cancel, err.Error())
 	}
 
@@ -771,6 +785,8 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	orig, err := findAndLockOrigTrans(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
+		// 补充关联字段
+		addRelatedProperties(closed, req.M)
 		return adaptor.LogicErrorHandler(closed, err.Error())
 	}
 
@@ -847,6 +863,70 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret.Chcd = closed.ChanCode
 	ret.ChannelOrderNum = orig.ChanOrderNum
 	ret.ConsumerAccount = orig.ConsumerAccount
+
+	return ret
+}
+
+// PurchaseCoupons 卡券核销
+func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	if err, exist := isCouponOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
+	}
+	// 核销次数不填默认为1
+	if req.VeriTime == "" {
+		req.VeriTime = "1"
+	}
+
+	// 如果渠道号为空，默认设置为ULIVE
+	if req.Chcd == "" {
+		req.Chcd = "ULIVE"
+	}
+
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:       req.Mchntid,
+		SysOrderNum: util.SerialNumber(),
+		OrderNum:    req.OrderNum,
+		TransType:   model.PurchaseCoupons,
+		Busicd:      req.Busicd,
+		AgentCode:   req.AgentCode,
+		ChanCode:    req.Chcd,
+		Terminalid:  req.Terminalid,
+		TradeFrom:   req.TradeFrom,
+		CouponsNo:   req.ScanCodeId,
+		VeriTime:    req.VeriTime,
+	}
+
+	// 补充关联字段
+	addRelatedProperties(t, req.M)
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+	}
+	t.ChanMerId = rp.ChanMerId
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 记录交易
+	// t.TransStatus = model.TransNotPay
+	err = mongo.CouTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	req.CreateTime = t.CreateTime
+	// 请求渠道
+	ret = adaptor.ProcessPurchaseCoupons(t, c, req)
+
+	// 更新交易信息
+	updateCouponTrans(t, ret)
 
 	return ret
 }
@@ -1165,63 +1245,13 @@ func dateFormat(payTime string) string {
 	}
 }
 
-// PurchaseCoupons 卡券核销
-func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 判断订单是否存在
-	if err, exist := isCouponOrderDuplicate(req.Mchntid, req.OrderNum); exist {
-		return err
-	}
-	// 核销次数不填默认为1
-	if req.VeriTime == "" {
-		req.VeriTime = "1"
-	}
-
-	// 如果渠道号为空，默认设置为ULIVE
-	if req.Chcd == "" {
-		req.Chcd = "ULIVE"
-	}
-
-	// ���录该笔交易
-	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PurchaseCoupons,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		ChanCode:    req.Chcd,
-		Terminalid:  req.Terminalid,
-		TradeFrom:   req.TradeFrom,
-		CouponsNo:   req.ScanCodeId,
-		VeriTime:    req.VeriTime,
-	}
-
-	// 通过路由策略找到渠道和渠道商户
-	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
-	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
-	}
-	t.ChanMerId = rp.ChanMerId
-
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
-	}
-
-	// 记录交易
-	// t.TransStatus = model.TransNotPay
-	err = mongo.CouTransColl.Add(t)
-	if err != nil {
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
-	}
-	req.CreateTime = t.CreateTime
-	// 请求渠道
-	ret = adaptor.ProcessPurchaseCoupons(t, c, req)
-
-	// 更新交易信息
-	updateCouponTrans(t, ret)
-
-	return ret
+// 为交易关联商户属性
+func addRelatedProperties(current *model.Trans, m model.Merchant) {
+	current.MerName = m.Detail.MerName
+	current.AgentName = m.AgentName
+	current.GroupCode = m.GroupCode
+	current.GroupName = m.GroupName
+	current.ShortName = m.Detail.ShortName
+	current.SubAgentCode = m.SubAgentCode
+	current.SubAgentName = m.SubAgentName
 }

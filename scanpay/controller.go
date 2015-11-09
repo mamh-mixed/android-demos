@@ -124,6 +124,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
 		return
 	}
+	req.M = *mer
 
 	// 需要验签
 	if mer.IsNeedSign {

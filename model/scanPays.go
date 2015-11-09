@@ -196,7 +196,8 @@ type ScanPayRequest struct {
 	ReqId            string `json:"-" url:"-" bson:"-"`
 
 	// 访问方式
-	IsGBK bool `json:"-" url:"-" bson:"-"`
+	IsGBK bool     `json:"-" url:"-" bson:"-"`
+	M     Merchant `json:"-" url:"-" bson:"-"`
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
