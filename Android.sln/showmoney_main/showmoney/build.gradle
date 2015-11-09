@@ -14,7 +14,7 @@ android {
     }
 
     productFlavors{
-        _test {
+        cardinfolink_test {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]
             buildConfigField 'String', 'HOST', '"http://192.168.1.34:3000"'
         }
@@ -24,6 +24,11 @@ android {
         yinxun {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yinxun", ENVIRONMENT_VALUE: "pro"]
         }
+        japan_test{
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "japan", ENVIRONMENT_VALUE: "pro"]
+            versionName "0.5"
+            versionCode 1
+        }
         japan{
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "japan", ENVIRONMENT_VALUE: "pro"]
             versionName "0.5"
@@ -32,10 +37,11 @@ android {
     }
 
     sourceSets{
-        _test.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
-        yinxun.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
         cardinfolink.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
+        cardinfolink_test.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
+        yinxun.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
         japan.java.srcDirs = ['src/japan/java', 'src/main/java']
+        japan_test.java.srcDirs = ['src/japan/java', 'src/main/java']
     }
 
     signingConfigs {
