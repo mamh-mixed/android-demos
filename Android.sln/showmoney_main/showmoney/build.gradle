@@ -11,37 +11,39 @@ android {
         targetSdkVersion 23
         versionCode 55
         versionName "2.0"
+        buildConfigField 'String', 'URL', '"https://api.shou.money/app"'
+        buildConfigField 'boolean', 'IS_PRODUCE', 'true'
     }
 
     productFlavors{
-        cardinfolink_test {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]
-            buildConfigField 'String', 'HOST', '"http://192.168.1.34:3000"'
-        }
         cardinfolink {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yunshouyin", ENVIRONMENT_VALUE: "pro"]
+//            comment out below for go live
+            buildConfigField 'String', 'URL', '"http://test.quick.ipay.so/app"'
+            buildConfigField 'boolean', 'IS_PRODUCE', 'false'
         }
         yinxun {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yinxun", ENVIRONMENT_VALUE: "pro"]
-        }
-        japan_test{
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "japan", ENVIRONMENT_VALUE: "pro"]
-            versionName "0.5"
-            versionCode 1
+            //            comment out below for go live
+            applicationId "com.cardinfolink.yunshouyin.yinxun"
+            buildConfigField 'String', 'URL', '"http://test.quick.ipay.so/app"'
+            buildConfigField 'boolean', 'IS_PRODUCE', 'false'
         }
         japan{
+            applicationId "com.cardinfolink.yunshouyin.jp"
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "japan", ENVIRONMENT_VALUE: "pro"]
             versionName "0.5"
             versionCode 1
+            //            comment out below for go live
+            buildConfigField 'String', 'URL', '"http://test.quick.ipay.so/app"'
+            buildConfigField 'boolean', 'IS_PRODUCE', 'false'
         }
     }
 
     sourceSets{
         cardinfolink.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
-        cardinfolink_test.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
         yinxun.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
         japan.java.srcDirs = ['src/japan/java', 'src/main/java']
-        japan_test.java.srcDirs = ['src/japan/java', 'src/main/java']
     }
 
     signingConfigs {
