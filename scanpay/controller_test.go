@@ -10,7 +10,7 @@ import (
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	// "time"
+	"time"
 )
 
 var (
@@ -19,10 +19,10 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "130100780239237875",
+		ScanCodeId: "282623583794215869",
 		AgentCode:  "19992900",
 		Txamt:      "000000000001",
-		Chcd:       "WXP",
+		Chcd:       "ALP",
 		Busicd:     "PURC",
 		Mchntid:    "200000000010001",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
@@ -131,18 +131,18 @@ func doOneScanPay(scanPay *model.ScanPayRequest) error {
 func TestConcurrentScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
 	var wg sync.WaitGroup
-	n := "1441764717955"
-	// scanPayBarcodePay.OrderNum = n
+	n := "14417647179553"
+	scanPayBarcodePay.OrderNum = n
 	scanPayClose.OrigOrderNum = n
 	wg.Add(2)
 	go func() {
-		doOneScanPay(scanPayClose)
+		doOneScanPay(scanPayBarcodePay)
 		wg.Done()
 	}()
 
 	// scanPayClose.OrderNum += "2"
 	go func() {
-		// time.Sleep(500 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		doOneScanPay(scanPayClose)
 		wg.Done()
 	}()
@@ -151,7 +151,8 @@ func TestConcurrentScanPay(t *testing.T) {
 
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
-	err := doOneScanPay(scanPayQrCodeOfflinePay)
+	// scanPayClose.OrigOrderNum = "14417647179551"
+	err := doOneScanPay(scanPayClose)
 	if err != nil {
 		t.Error(err)
 	}

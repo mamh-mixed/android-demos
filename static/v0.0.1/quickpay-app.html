@@ -10,6 +10,7 @@
       :host {
         display: block;
       }
+
     </style>
     <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-login-success="handleLoginSuccessEvent" on-logout="handleLogoutEvent"
     on-toast-open="handleToastOpenEvent" on-page-jump="handlePageJumpEvent">
@@ -190,14 +191,14 @@
           this.$.deleteSessionAjax.generateRequest();
         },
         handleDeleteSessionResponse: function(e) {
+          // 清除客户端 SessionID
+          document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
           // 清除localStorage中的信息
           this.set('sessionId', '');
           this.set('userType', '');
           this.set('nickName', '');
           // 跳转至登录页面
           this.$.appRouter.go('/');
-          // 清除客户端 SessionID
-          document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         },
         // 处理子孙元素冒泡的toast open事件
         handleToastOpenEvent: function(e) {
@@ -216,5 +217,6 @@
         }
       });
     })();
+
   </script>
 </dom-module>

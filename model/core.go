@@ -1,9 +1,8 @@
 package model
 
 import (
-	"time"
-
 	"gopkg.in/mgo.v2/bson"
+	"time"
 )
 
 // status
@@ -148,6 +147,8 @@ type Merchant struct {
 	Permission   []string  `bson:"permission,omitempty" json:"permission,omitempty"`     // 接口权限
 	RefundType   int       `bson:"refundType" json:"refundType"`                         // 0-无限制 1-只能当日退 2-只能隔日退
 	Detail       MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
+	CreateTime   string    `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
+	UpdateTime   string    `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
 }
 
 // MerDetail 商户详细信息
@@ -201,8 +202,7 @@ type ChanMer struct {
 	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
 	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	AcqFee      float32  `bson:"acqFee" json:"acqFee"`                               // 讯联跟渠道费率
-	MerFee      float32  `bson:"merFee" json:"merFee"`                               // 商户跟讯联费率
+	AcqFee      float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
 	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
 	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
 	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
@@ -380,13 +380,14 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 
 // TransSett 清算信息
 type TransSett struct {
-	Tran        Trans  `bson:",inline"`
+	Trans       Trans  `bson:"trans"`       // 清算的交易
 	SettFlag    int8   `bson:"settFlag"`    // 清算标志
 	SettDate    string `bson:"settDate"`    // 清算时间
 	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
 	MerFee      int64  `bson:"merFee"`      // 商户手续费
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
 	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
+	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
 }
 
 // TransSettInfo 清分信息明细
@@ -468,7 +469,7 @@ type SpTransLogs struct {
 
 // Task 任务
 type Task struct {
-	D          time.Duration `bson:"d"`
+	D          time.Duration `bson:"-"`
 	Name       string        `bson:"name"`
 	IsDoing    bool          `bson:"isDoing"`
 	F          func()        `bson:"-"`

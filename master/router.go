@@ -52,6 +52,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/merchant/update", merchantUpdateHandle)
 	mux.HandleFunc("/master/merchant/import", importMerchant)
 	mux.HandleFunc("/master/merchant/delete", merchantDeleteHandle)
+	mux.HandleFunc("/master/merchant/export", merchantExportHandle)
 	mux.HandleFunc("/master/router/save", routerSaveHandle)
 	mux.HandleFunc("/master/router/find", routerFindHandle)
 	mux.HandleFunc("/master/router/one", routerFindOneHandle)

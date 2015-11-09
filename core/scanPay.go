@@ -27,7 +27,7 @@ var (
 
 func init() {
 	crontab.RegisterTask(refreshInterval, "refreshOrder", RefreshOrder)
-	crontab.RegisterTask(closeInterval, "closeOrder", CloseOrder)
+	crontab.RegisterTask(5*time.Minute, "closeOrder", CloseOrder)
 }
 
 // PublicPay 公众号页面支付
@@ -56,6 +56,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		NotifyUrl:   req.NotifyUrl,
 		Attach:      req.Attach,
+		LockFlag:    1, // 锁住
 	}
 
 	// 网页授权获取token和openid
@@ -82,17 +83,11 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
 
-	// 计算费率 四舍五入
-	// 兼容以前数据
-	merFee := rp.MerFee
-	if merFee == 0 {
-		merFee = float64(c.MerFee)
-	}
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*merFee + 0.5))
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
-	t.TransStatus = model.TransNotPay
+	// t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
@@ -195,6 +190,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			GatheringName: req.UserName,
 			ChanCode:      req.Chcd,
 			TradeFrom:     req.TradeFrom,
+			LockFlag:      1,
 		}
 	} else {
 		// 比较数据是否一致
@@ -269,6 +265,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:    req.IntTxamt,
 		GoodsInfo:   req.GoodsInfo,
 		TradeFrom:   req.TradeFrom,
+		LockFlag:    1,
 	}
 
 	// 根据扫码Id判断走哪个渠道
@@ -304,17 +301,11 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
 
-	// 计算费率 四舍五入
-	// 兼容之前旧数据
-	merFee := rp.MerFee
-	if merFee == 0 {
-		merFee = float64(c.MerFee)
-	}
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*merFee + 0.5))
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 记录交易
-	t.TransStatus = model.TransNotPay
+	// t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
@@ -354,6 +345,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		NotifyUrl:   req.NotifyUrl,
 		TradeFrom:   req.TradeFrom,
 		Attach:      req.Attach,
+		LockFlag:    1,
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -370,19 +362,14 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
 
-	// 计算费率 四舍五入
-	merFee := rp.MerFee
-	if merFee == 0 {
-		merFee = float64(c.MerFee)
-	}
-	t.Fee = int64(math.Floor(float64(t.TransAmt)*merFee + 0.5))
+	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
 
 	// 将openId参数设置为空，防止tradeType为JSAPI
 	req.OpenId = ""
 
 	// 记录交易
-	t.TransStatus = model.TransNotPay
+	// t.TransStatus = model.TransNotPay
 	err = mongo.SpTransColl.Add(t)
 	if err != nil {
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
@@ -506,15 +493,6 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	c, err := mongo.ChanMerColl.Find(orig.ChanCode, orig.ChanMerId)
 	if err != nil {
 		return adaptor.LogicErrorHandler(refund, "NO_CHANMER")
-	}
-	// 重新计算手续费
-	// if orig.RefundStatus == model.TransPartRefunded {
-	// 	orig.Fee = int64(math.Floor(float64(orig.TransAmt-orig.RefundAmt))*float64(c.MerFee) + 0.5)
-	// }
-
-	// 兼容旧数据
-	if rp.MerFee == 0 {
-		rp.MerFee = float64(c.MerFee)
 	}
 
 	// 退款算退款部分的手续费，出报表时，将原订单的跟退款的相减
@@ -742,11 +720,6 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(cancel, "NO_CHANMER")
 	}
 
-	// 兼容旧数据
-	if rp.MerFee == 0 {
-		rp.MerFee = float64(c.MerFee)
-	}
-
 	// 对这笔撤销计算手续费，不然会对应不上，出现多扣少退。
 	cancel.Fee = int64(math.Floor(float64(cancel.TransAmt)*rp.MerFee + 0.5))
 	orig.NetFee = orig.NetFee - cancel.Fee // 重新计算原订单的手续费
@@ -851,10 +824,6 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 因为在执行关单时，还有可能查询订单以明确状态
 		// 原交易成功，那么计算这笔取消的手续费
 		if orig.TransStatus == model.TransSuccess {
-			// 兼容旧数据
-			if rp.MerFee == 0 {
-				rp.MerFee = float64(c.MerFee)
-			}
 
 			// 这样做方便于报表导出计算
 			closed.TransAmt = orig.TransAmt
@@ -1031,33 +1000,17 @@ func RefreshOrder() {
 // findAndLockOrigTrans 查找原交易记录
 // 如果找到原交易，那么对原交易加锁。
 func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error) {
-	var retry int
-	for {
 
-		// 判断是否有此订单
-		orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
-		if err != nil {
-			return nil, errors.New("TRADE_NOT_EXIST")
-		}
-		retry++
-		// 判断订单状态主要是保证下单、预下单新增、修改的事务完整性
-		if orig.TransStatus == model.TransNotPay {
+	// 判断是否有此订单
+	orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
+	if err != nil {
+		return nil, errors.New("TRADE_NOT_EXIST")
+	}
 
-			// 最多延迟5s，如果这笔交易还是没处理完，报交易超时
-			// TODO:时间待商榷
-			if retry == 5 {
-				log.Errorf("trans(%s,%s) spent long time to update.", merId, orderNum)
-				return nil, errors.New("TRADE_OVERTIME")
-			}
-			// 说明该笔交易在支付接口时还没完成更新，此时数据是脏数据
-			log.Info("find trans sleep 500ms ...")
-			time.Sleep(500 * time.Millisecond * time.Duration(retry))
-			// 等待500ms，继续循环
-			continue
-		}
-
-		// 如果此时交易被锁住
-		if orig.LockFlag == 1 {
+	// 如果此时交易被锁住
+	if orig.LockFlag == 1 {
+		// 这时交易可能没有被update
+		if orig.UpdateTime != "" {
 			now := time.Now()
 			lockTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.UpdateTime, time.Local)
 			if err != nil {
@@ -1069,17 +1022,17 @@ func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error)
 				// 直接返回该原交易
 				return orig, err
 			}
-			// 休眠一段时间
-			time.Sleep(200 * time.Millisecond * time.Duration(retry))
 		}
-
-		// 锁住交易，并且此时交易是最新的
-		orig, err = findAndLockTrans(merId, orderNum)
-		if err != nil {
-			return nil, err
-		}
-		break
+		// 休眠一段时间
+		time.Sleep(300 * time.Millisecond)
 	}
+
+	// 锁住交易，并且此时交易是最新的
+	orig, err = findAndLockTrans(merId, orderNum)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }
 
@@ -1198,11 +1151,16 @@ func dateFormat(payTime string) string {
 	if payTime == "" {
 		return ""
 	}
-
-	if len(payTime) == 14 {
+	switch len(payTime) {
+	case 14:
+		// 20060102150405
 		return payTime[0:4] + "-" + payTime[4:6] + "-" + payTime[6:8] + " " + payTime[8:10] + ":" + payTime[10:12] + ":" + payTime[12:14]
-	} else {
-		log.Errorf("payTime format error, expect length=14, but get length=%d, patTime=%s", len(payTime), payTime)
+	case 19:
+		// 2015-01-02 15:04:05
+		return payTime
+	default:
+		// unknown
+		log.Errorf("payTime format error, unknown length,get length=%d, patTime=%s", len(payTime), payTime)
 		return ""
 	}
 }

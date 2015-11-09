@@ -13,6 +13,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -65,6 +66,24 @@ type merCert struct {
 	MerId    string
 	HttpCert string
 	HttpKey  string
+}
+
+func UpdateMerchant() error {
+	ms, err := mongo.MerchantColl.FindNoUniqueId()
+	if err != nil {
+		return err
+	}
+
+	log.Infof("find merchant %d ", len(ms))
+
+	for _, m := range ms {
+		if m.UniqueId == "" {
+			m.UniqueId = util.Confuse(m.MerId)
+			mongo.MerchantColl.Update(m)
+		}
+	}
+
+	return nil
 }
 
 // DoSyncMerchant 同步旧系统和新系统的商户
