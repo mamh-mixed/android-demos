@@ -1,0 +1,306 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="./yun-expand-animation.html">
+<link rel="import" href="../x-ajax/x-ajax.html">
+
+<dom-module id="yun-select">
+  <template>
+    <style>
+    :host {
+        display: inline-block;
+      }
+
+      ul.dropdown-content {
+        display: block;
+        position: relative;
+        background-color: #fff;
+        box-shadow: 0px 2px 6px #ccc;
+        margin: 0.25em 0;
+        padding: 0.25em;
+        border-radius: 3px;
+        max-height: 280px;
+      }
+
+      [vertical-align="top"] ul {
+        margin-top: 0;
+      }
+
+      [vertical-align="bottom"] ul {
+        margin-bottom: 0;
+      }
+
+      li {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+
+      a {
+        display: block;
+        position: relative;
+        padding: 0.75em 1em;
+        text-decoration: none;
+        color: var(--default-primary-color);
+      }
+
+      li:not(:last-of-type) {
+        border-bottom: 1px solid #eee;
+      }
+
+      li:hover a {
+        background: var(--default-primary-color);
+        color: #fff;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      #input-group {
+        margin-right: 0px;
+      }
+
+      .input-group > iron-icon {
+        position: absolute;
+        bottom: 4px;
+        right: 15px;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+      }
+
+      .input-group > iron-icon[icon="clear"] {
+        height: 20px;
+      }
+
+      .input-group[disabled] > iron-icon {
+        color: #bdbdbd;
+      }
+    }
+    </style>
+    <div class="input-group" disabled$="[[disabled]]">
+      <input type="hidden" name="[[name]]" value="{{selectedItem.key}}"></input>
+      <paper-input id="input" readonly label="[[label]]" value="{{selectedItem.value}}" on-tap="open" disabled="[[disabled]]"></paper-input>
+      <iron-icon icon="clear" on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
+      <iron-icon icon="arrow-drop-down" hidden$="{{isClearActive}}"></iron-icon>
+    </div>
+    <iron-dropdown id="dropdown" vertical-align="[[verticalAlign]]" horizontal-align="[[horizontalAlign]]" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]">
+      <ul class="dropdown-content" on-scroll="handleScrollEvent">
+        <template is="dom-repeat" items="[[items]]">
+          <li on-tap="handleItemSelectedTapped">
+            <a href="javascript:void(0)">{{ _computeFullName(item) }}</a>
+          </li>
+        </template>
+      </ul>
+    </iron-dropdown>
+    <x-ajax auto id="ajax" url="{{url}}" params="{{requestParams}}" handle-as="json" on-request="handleRequestSent" on-response="handleResponse"></x-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'yun-select',
+
+        properties: {
+          /**
+           * 显示在页面上的列表
+           * 'items' that will show in select list/
+           * items is array and element in items should be an Object just like following:
+           * {
+           *      key: 'key',
+           *      value: 'value'
+           * }
+           */
+          items: {
+            type: Array,
+            notify: true
+          },
+          // 所有的列表
+          totalItems: {
+            type: Array
+          },
+          itemStep:{
+            type: Number,
+            value: 50
+          }
+
+          /**
+           * the selected item
+           */
+          selectedItem: {
+            type: Object,
+            value: {},
+            notify: true,
+            reflectToAttribute: true
+          },
+          isClearActive: {
+            type: Boolean,
+            value: false
+          },
+          // ajax url
+          url: {
+            type: String,
+            value: ''
+          },
+          // ajax parameter
+          requestParams: {
+            type: Object,
+            value: function() {
+                return {};
+              }
+          },
+          keyField: String,
+          valueField: String,
+          label: String,
+          name: String,
+          verticalAlign: String,
+          horizontalAlign: String,
+          disabled: Boolean,
+          openAnimationConfig: {
+            type: Array,
+            value: function() {
+              return [{
+                name: 'fade-in-animation',
+                timing: {
+                  delay: 150,
+                  duration: 50
+                }
+              }, {
+                name: 'yun-expand-animation',
+                timing: {
+                  delay: 150,
+                  duration: 200
+                }
+              }];
+            }
+          },
+
+          closeAnimationConfig: {
+            type: Array,
+            value: function() {
+              return [{
+                name: 'fade-out-animation',
+                timing: {
+                  duration: 200
+                }
+              }];
+            }
+          }
+        },
+        attached: function() {
+          if (this.url && this.url !== '') {
+            this.$.ajax.generateRequest();
+          }
+        },
+        // 发送ajax请求前，数据重置
+        handleRequestSent: function() {
+          this.set('items', []);
+          this.set('disabled', false);
+          this.clear();
+        },
+        handleResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast('加载列表失败', 3000);
+            return;
+          }
+
+          var data = response.data;
+          if (!data || !data.data || !data.data.length) {
+            this.set('items', []);
+            this.set('disabled', true);
+            return;
+          }
+
+          // TODO 性能瓶颈，如果返回的数据列表很大，不应该全部显示出来
+          var items = data.data;
+          this.set('items',
+            items.map(function(i) {
+              return {
+                key: this.deepPathValue(i, this.keyField),
+                value: this.deepPathValue(i, this.valueField)
+              }
+            }.bind(this)));
+        },
+        // 当field = 'abc.def.ghi'时，返回obj[abc][def][ghi]
+        deepPathValue: function(obj, field) {
+          var fields = field.split('.');
+          if (fields.length === 1) {
+            return obj[field];
+          }
+          return fields.reduce(function(previous, current) {
+            if (typeof previous === 'string') {
+              previous = obj[previous];
+            }
+            return previous[current];
+          });
+        },
+        /**
+         * open the dropdown and show all select item.
+         *
+         */
+        open: function() {
+          this.$.dropdown.open();
+        },
+        /**
+         * clear the selected item and set input filed undefined.
+         *
+         */
+        clear: function() {
+          if (!this.disabled) {
+            this.$.input.value = '';
+            this.set('selectedItem', {});
+            this.$.dropdown.close();
+          }
+
+        },
+        handleScrollEvent: function(e) {
+          // TODO 性能瓶颈，如果返回的数据列表很大，不应该全部显示出来
+          // console.log(e.target.scrollTop); // 滚动高度
+          // console.log(e.target.scrollHeight); // dropdown滚动列表的可视高度 高度
+        },
+        /**
+         * list select event.
+         *
+         */
+        handleItemSelectedTapped: function(e) {
+          this.set('selectedItem.key', e.model.item.key);
+          this.set('selectedItem.value', e.model.item.value);
+          this.$.input.value = this.selectedItem.value;
+          this.$.dropdown.close();
+          this.fire('item-selected', this.selectedItem);
+        },
+        observers: [
+          '_watchValueChange(selectedItem.value)'
+        ],
+        /**
+         * if selectedItem.value exist ,show the clear icon.
+         *
+         */
+        _watchValueChange: function(value) {
+          this.set('isClearActive', !!value);
+        },
+        _computeFullName: function(item) {
+          var arr = [];
+          arr.push(item.key);
+          item.value = item.value || '';
+          if (item.value === '') {
+            item.value = item.key;
+          } else {
+            arr.push(item.value);
+          }
+          return arr.join('-');
+        }
+
+      });
+    })();
+  </script>
+</dom-module>
