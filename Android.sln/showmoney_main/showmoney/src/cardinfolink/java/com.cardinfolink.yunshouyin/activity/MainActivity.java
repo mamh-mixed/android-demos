@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
     private void initLayout() {
         mMainContent = (LinearLayout) findViewById(R.id.main_content);
 
-        LayoutParams layoutParams = new LayoutParams(
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mScanCodeView = new ScanCodeView(mContext);
         mScanCodeView.setLayoutParams(layoutParams);
