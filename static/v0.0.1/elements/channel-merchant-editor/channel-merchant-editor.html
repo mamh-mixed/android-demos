@@ -299,6 +299,8 @@
             }
             this.oldAlpSignCert = this.alp.signCert;
             this.oldWxpSignCert = this.weixin.signCert;
+            this.oldWxpHttpCert = this.weixin.httpCert;
+            this.oldWxpHttpKey = this.weixin.httpKey;
           }
         },
         // 查询渠道商户的响应事件，这里是查找大商户
@@ -362,9 +364,27 @@
                 Util.toast('签名密钥长度不能小于8位', 3000);
                 return;
               }
+              if (this.weixin.httpCert && this.weixin.httpCert !== '' && this.weixin.httpCert.length < 8) {
+                Util.toast('HTTP证书长度不能小于8位', 3000);
+                return;
+              }
+              if (this.weixin.httpKey && this.weixin.httpKey !== '' && this.weixin.httpKey.length < 8) {
+                Util.toast('HTTP密钥长度不能小于8位', 3000);
+                return;
+              }
               if (this.weixin.signCert !== this.oldWxpSignCert && this.weixin.signCert.indexOf('*') !== -1) {
                 Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
                 this.set('weixin.signCert', this.oldWxpSignCert)
+                return;
+              }
+              if (this.weixin.httpCert !== this.oldWxpHttpCert && this.weixin.httpCert.indexOf('*') !== -1) {
+                Util.toast('HTTP证书不能包含 *,已恢复为原HTTP证书', 3000);
+                this.set('weixin.httpCert', this.oldWxpHttpCert)
+                return;
+              }
+              if (this.weixin.httpKey !== this.oldWxpHttpKey && this.weixin.httpKey.indexOf('*') !== -1) {
+                Util.toast('HTTP密钥不能包含 *,已恢复为原HTTP密钥', 3000);
+                this.set('weixin.httpKey', this.oldWxpHttpKey)
                 return;
               }
               this.set('weixin.chanCode', 'WXP');

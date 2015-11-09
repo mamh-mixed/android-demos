@@ -154,6 +154,7 @@
             this.chanCodeDisabled = true;
             this.cfca = this.chanMer;
             this.$.cfchanMerId.disabled = true;
+            this.oldCfcaPrivateKey = this.chanMer.privateKey;
 
             this.cil = this.chanMer;
             this.$.cilchanMerId.disabled = true;
@@ -183,6 +184,22 @@
         handleSaveTapped: function() {
           if (this.channel) {
             if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
+              if (this.cfca.privateKey && this.cfca.privateKey.length < 8) {
+                Util.toast('商户私钥长度不能小于8位', 3000);
+                return;
+              }
+              if (this.pageType === 'create') {
+                if (this.cfca.privateKey.indexOf('*') !== -1) {
+                  Util.toast('商户私钥不能包含 *', 3000);
+                  return;
+                }
+              } else {
+                if (this.cfca.privateKey !== this.oldCfcaPrivateKey && this.cfca.privateKey.indexOf('*') !== -1) {
+                  Util.toast('商户私钥不能包含 *,已恢复为原商户私钥', 3000);
+                  this.set('cfca.privateKey', this.oldCfcaPrivateKey)
+                  return;
+                }
+              }
               var wacqFee = parseFloat(this.cfca.acqFee),
                 wmerFee = parseFloat(this.cfca.merFee);
               // if (isNaN(wacqFee) || isNaN(wmerFee)) {

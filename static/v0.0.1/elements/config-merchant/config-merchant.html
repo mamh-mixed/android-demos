@@ -12,7 +12,8 @@
 <dom-module id="config-merchant">
   <style>
     :host {
-      display: block; --paper-tab-ink: #eee;
+      display: block;
+      --paper-tab-ink: #eee;
       --paper-tabs-selection-bar-color: #eee;
       --default-primary-color: #00BCD4;
       --text-primary-color: #ffffff;
@@ -522,6 +523,7 @@
           chanCode: 'ALP'
         };
         this.$.findChanMerAlpAjax.generateRequest();
+        this.alpUpdate = false;
       },
       _wchanMerIdChange: function(e) {
         if (!e.target.value) {
@@ -533,6 +535,7 @@
           chanCode: 'WXP'
         };
         this.$.findChanMerWeixinAjax.generateRequest();
+        this.wxpUpdate = false;
       },
       // 选择大商户号
       _wbigchanMerIdChanged: function(value) {
@@ -600,6 +603,8 @@
         }
       },
       attributeChanged: function() {
+        this.alpUpdate = false;
+        this.wxpUpdate = false;
         if (!this.merId) {
           return;
         }
@@ -715,6 +720,7 @@
 
         this.set('alipay', response.data);
         if (this.alipay) {
+          this.alpUpdate = true;
           this.oldAlpSignCert = this.alipay.signCert;
         }
         if (this.alipay.agentCode) {
@@ -754,7 +760,10 @@
         }
 
         if (this.weixin) {
+          this.wxpUpdate = true;
           this.oldWxpSignCert = this.weixin.signCert;
+          this.oldWxpHttpCert = this.weixin.httpCert;
+          this.oldWxpHttpKey = this.weixin.httpKey;
         }
       },
       // 编辑的时候查询优方渠道商户请求的响应事件
@@ -959,6 +968,7 @@
         this.set('alipayRoute.settFlag', '');
 
         if (this.alipay) {
+          this.alpUpdate = true;
           this.oldAlpSignCert = this.alipay.signCert;
         }
       },
@@ -990,7 +1000,10 @@
         this.set('weixinRoute.settFlag', '');
 
         if (this.weixin) {
+          this.wxpUpdate = true;
           this.oldWxpSignCert = this.weixin.signCert;
+          this.oldWxpHttpCert = this.weixin.httpCert;
+          this.oldWxpHttpKey = this.weixin.httpKey;
         }
       },
       //判断商户录入必填项是否为空
@@ -1099,7 +1112,7 @@
           Util.toast('MD5 KEY长度不能小于8位', 3000);
           return;
         }
-        if (this.update) {
+        if (this.alpUpdate) {
           if (this.alipay.signCert !== this.oldAlpSignCert && this.alipay.signCert.indexOf('*') !== -1) {
             Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
             this.set('alipay.signCert', this.oldAlpSignCert)
@@ -1161,15 +1174,41 @@
           Util.toast('签名密钥长度不能小于8位', 3000);
           return;
         }
-        if (this.update) {
+        if (this.weixin.httpCert && this.weixin.httpCert !== '' && this.weixin.httpCert.length < 8) {
+          Util.toast('HTTP证书长度不能小于8位', 3000);
+          return;
+        }
+        if (this.weixin.httpKey && this.weixin.httpKey !== '' && this.weixin.httpKey.length < 8) {
+          Util.toast('HTTP密钥长度不能小于8位', 3000);
+          return;
+        }
+        if (this.wxpUpdate) {
           if (this.weixin.signCert !== this.oldWxpSignCert && this.weixin.signCert.indexOf('*') !== -1) {
             Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
             this.set('weixin.signCert', this.oldWxpSignCert)
             return;
           }
+          if (this.weixin.httpCert !== this.oldWxpHttpCert && this.weixin.httpCert.indexOf('*') !== -1) {
+            Util.toast('HTTP证书不能包含 *,已恢复为原HTTP证书', 3000);
+            this.set('weixin.httpCert', this.oldWxpHttpCert)
+            return;
+          }
+          if (this.weixin.httpKey !== this.oldWxpHttpKey && this.weixin.httpKey.indexOf('*') !== -1) {
+            Util.toast('HTTP密钥不能包含 *,已恢复为原HTTP密钥', 3000);
+            this.set('weixin.httpKey', this.oldWxpHttpKey)
+            return;
+          }
         } else {
           if (this.weixin.signCert.indexOf('*') !== -1) {
             Util.toast('签名密钥不能包含 *', 3000);
+            return;
+          }
+          if (this.weixin.httpCert.indexOf('*') !== -1) {
+            Util.toast('HTTP证书不能包含 *', 3000);
+            return;
+          }
+          if (this.weixin.httpKey.indexOf('*') !== -1) {
+            Util.toast('HTTP密钥不能包含 *', 3000);
             return;
           }
         }
