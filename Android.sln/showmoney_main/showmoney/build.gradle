@@ -31,8 +31,8 @@ android {
         japan{
             applicationId "com.cardinfolink.yunshouyin.jp"
             manifestPlaceholders = [UMENG_APPKEY_VALUE: "563029e367e58ee1d5000617", UMENG_CHANNEL_VALUE: "japan"]
-            versionName "0.5"
-            versionCode 1
+            versionName "0.6"
+            versionCode 2
             //            comment out below for go live
             buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
