@@ -92,7 +92,7 @@
     <string name="refd_dialog_amount_foramt_error">金额格式错误</string>
     <string name="refd_dialog_amount_not_exceeds_max">金额不能超过%s元</string>
     <string name="refd_dialog__password_error">密码错误!</string>
-    <string name="scancode_view_create_code">生产二维码</string>
+    <string name="scancode_view_create_code">生成二维码</string>
     <string name="scancode_view_scaning_code">开始扫描</string>
 
     <!-- 新信息-->

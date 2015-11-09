@@ -23,6 +23,7 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.BankBaseUtil;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
+import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
@@ -930,7 +931,7 @@ public class AccountUpdateView extends LinearLayout {
                     new CommunicationListener() {
 
                         @Override
-                        public void onResult(String result) {
+                        public void onResult(final String result) {
                             String state = JsonUtil.getParam(result, "state");
                             if (state.equals("success")) {
                                 ((Activity) mContext)
@@ -964,7 +965,7 @@ public class AccountUpdateView extends LinearLayout {
                                                 // 更新UI
                                                 mBaseActivity.endLoading();
                                                 mBaseActivity.alertShow(
-                                                        "提交失败!",
+                                                        ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")),
                                                         BitmapFactory
                                                                 .decodeResource(
                                                                         mContext.getResources(),

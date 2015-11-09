@@ -9,7 +9,7 @@ android {
         applicationId "com.cardinfolink.yunshouyin"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 54
+        versionCode 55
         versionName "2.0"
     }
 
