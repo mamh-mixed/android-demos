@@ -13,10 +13,46 @@ android {
         versionName "2.0"
     }
 
+    productFlavors{
+        _test {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]
+        }
+        cardinfolink {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yunshouyin", ENVIRONMENT_VALUE: "pro"]
+        }
+        yinxun {
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yinxun", ENVIRONMENT_VALUE: "pro"]
+        }
+    }
+
+    signingConfigs {
+        debug {
+        }
+
+        release {
+            storeFile file("../key.keystore")
+            storePassword "cil1009"
+            keyAlias "cardinfolink"
+            keyPassword "cil1009"
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled true
+//            TODO: 混淆代码
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+            shrinkResources true
+            signingConfig signingConfigs.release
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        def fileName = "showmoney_v${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
         }
     }
 }
@@ -29,4 +65,8 @@ dependencies {
     compile files('libs/core.jar')
     compile files('libs/umeng-analytics-v5.5.3.jar')
     compile files('libs/umeng-update-v2.6.0.1.jar')
+}
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
 }
