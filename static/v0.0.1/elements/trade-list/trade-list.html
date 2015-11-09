@@ -5,7 +5,6 @@
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../x-select/x-select.html">
 <link rel="import" href="../x-form/x-form.html">
-<link rel="import" href="../yun-select/yun-select.html">
 <link rel="import" href="../trade-view/trade-view.html">
 <link rel="import" href="../trade-message/trade-message.html">
 <link rel="import" href="../merchant-view/merchant-view.html">
@@ -36,10 +35,10 @@
           </div>
         </paper-dialog>
 
-        <yun-select url="/master/agent/find" request-params='{"page": 1, "size": 1000}' name="agentCode" selected-item="{{agent}}" key-field="agentCode" value-field="agentName" label="代理" disabled="{{agentDisabled}}" id="agentCode"></yun-select>
-        <yun-select url="/master/subAgent/find" request-params="{{subAgentParams}}" name="subAgentCode" selected-item="{{subAgent}}" key-field="subAgentCode" value-field="subAgentName" label="公司" disabled="{{subAgentDisabled}}" id="subAgentCode"></yun-select>
-        <yun-select url="/master/group/find" request-params="{{groupParams}}" name="groupCode" selected-item="{{group}}" key-field="groupCode" value-field="groupName" label="商户" disabled="{{groupDisabled}}" id="groupCode"></yun-select>
-        <yun-select url="/master/merchant/find" request-params="{{merchantParams}}" name="merId" selected-item="{{merchant}}" key-field="merId" value-field="detail.merName" label="门店" disabled="{{merchantDisabled}}" id="merId"></yun-select>
+        <x-select items="[[agents]]" name="agentCode" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" id="agentCode"></x-select>
+        <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}"></paper-input>
+        <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input id="merId" label="门店代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
@@ -66,6 +65,7 @@
             <div class="th left">交易状态</div>
             <div class="th left">退款</div>
             <div class="th">交易时间</div>
+            <!-- <div class="th" id="test" align="center">更新时间</div> -->
             <div class="th" hidden$="{{!isDatagramAccessible}}">报文</div>
           </div>
         </div>
@@ -124,9 +124,6 @@
     <x-ajax id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
     <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
     <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
-
-
-
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -165,27 +162,6 @@
         },
         busicd: {
           type: Object
-        },
-        subAgentParams: {
-          type: Object,
-          value: {
-            page: 1,
-            size: 1000
-          }
-        },
-        groupParams: {
-          type: Object,
-          value: {
-            page: 1,
-            size: 1000
-          }
-        },
-        merchantParams: {
-          type: Object,
-          value: {
-            page: 1,
-            size: 1000
-          }
         },
         busicds: {
           type: Array,
@@ -249,28 +225,13 @@
       },
       observers: [
         '_watchAgentChange(agent.key)',
-        '_watchSubAgentChange(subAgent.key)',
-        '_watchGroupChange(group.key)',
         '_watchBusicdChange(busicd.key)',
         '_watchCondChange(cond.*)',
         '_watchTransStatusChange(transStatus.key)',
         '_watchUserChanged(user.*)',
       ],
       _watchAgentChange: function(key) {
-        key = key || '';
         this.set('cond.agentCode', key);
-        this.set('subAgentParams.agentCode', key);
-        this.set('groupParams.agentCode', key);
-        this.set('merchantParams.agentCode', key);
-      },
-      _watchSubAgentChange: function(key) {
-        key = key || '';
-        this.set('groupParams.subAgentCode', key);
-        this.set('merchantParams.subAgentCode', key);
-      },
-      _watchGroupChange: function(key) {
-        key = key || '';
-        this.set('merchantParams.groupCode', key);
       },
       _watchBusicdChange: function(key) {
         this.cond.busicd = key;
@@ -351,7 +312,6 @@
       },
       queryAction: function() {
         this.$.formSearch.submit();
-        this.set('cond.page', 1);
       },
       // 发送查询交易的ajax请求
       submitForm: function() {
@@ -395,7 +355,7 @@
         if (response.status !== 0) {
           Util.toast(response.message || '系统错误', 3000);
           this.set('cond.total', 0);
-          this.set('cond.page', 1);
+          this.set('cond.page', 0);
           return;
         }
 
@@ -403,7 +363,7 @@
         if (!pagination.data || pagination.data.length === 0) {
           Util.toast('没有找到符合条件的数据', 3000);
           this.set('cond.total', 0);
-          this.set('cond.page', 1);
+          this.set('cond.page', 0);
           return;
         }
 
