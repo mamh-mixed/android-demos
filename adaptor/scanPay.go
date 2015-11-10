@@ -261,6 +261,8 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)
+	case channel.ChanCodeAliOversea:
+		ret, err = sp.ProcessCancel(req)
 	default:
 		err = fmt.Errorf("unknown scan pay channel `%s`", orig.ChanCode)
 	}
@@ -276,16 +278,17 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 // ProcessClose 关闭订单
 func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 支付交易（下单、预下单）
-	if orig.ChanCode == channel.ChanCodeAlipay {
+	switch orig.ChanCode {
+	case channel.ChanCodeAlipay, channel.ChanCodeAliOversea:
 		// 成功支付的交易标记已退款
 		if orig.TransStatus == model.TransSuccess {
 			orig.RefundStatus = model.TransRefunded
 		}
 		// 执行撤销流程
 		return ProcessCancel(orig, c, req)
-	}
 
-	if orig.ChanCode == channel.ChanCodeWeixin {
+	case channel.ChanCodeWeixin:
+
 		// 下单，微信叫做刷卡支付，即被扫，收银员使用扫码设备读取微信用户刷卡授权码
 		if orig.Busicd == model.Purc {
 
@@ -324,8 +327,10 @@ func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest
 			}
 		}
 		return ReturnWithErrorCode("NOT_SUPPORT_TYPE")
+
+	default:
+		return ReturnWithErrorCode("NO_CHANNEL")
 	}
-	return ReturnWithErrorCode("NO_CHANNEL")
 }
 
 // func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {

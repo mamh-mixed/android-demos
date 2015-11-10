@@ -69,8 +69,8 @@ var (
 	scanPayClose = &model.ScanPayRequest{
 		Busicd:       "CANC",
 		Mchntid:      "200000000010001",
-		OrderNum:     util.Millisecond() + "1",
-		OrigOrderNum: "1439886859870",
+		OrderNum:     util.Millisecond(),
+		OrigOrderNum: "1447149877051",
 		AgentCode:    "19992900",
 	}
 	// 企业支付
@@ -154,7 +154,7 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(scanPayBarcodePay)
+	err := doOneScanPay(scanPayClose)
 	if err != nil {
 		t.Error(err)
 	}

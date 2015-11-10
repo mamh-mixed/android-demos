@@ -2,10 +2,11 @@
 package oversea
 
 import (
+	"errors"
 	"github.com/CardInfoLink/quickpay/channel/alipay/scanpay1"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
+	// "github.com/omigo/log"
 	"time"
 )
 
@@ -35,7 +36,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	b.BuyerIdentityCode = req.ScanCodeId
 	b.ExtendInfo = req.ExtendParams
 	b.TransAmount = req.ActTxamt
-	b.TransCreateTime = time.Now().Format("20060102150405")
+	b.TransCreateTime = time.Now().Format("20060102150405") // TODO
 
 	// resp
 	p := &PayResp{}
@@ -47,7 +48,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	resp := &model.ScanPayResponse{}
 	resp.ChannelOrderNum = p.Response.Alipay.AlipayTransId
 	resp.PayTime = p.Response.Alipay.AlipayPayTime
-	resp.ConsumerId = p.Response.Alipay.AlipayBuyerUserId
+	resp.ConsumerId = p.Response.Alipay.AlipayBuyerLoginId
 	// TODO...
 
 	// result
@@ -57,7 +58,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 }
 
 func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	return nil, nil
+	return nil, errors.New("Not support yet!")
 }
 
 // ProcessRefund 退款
@@ -72,7 +73,26 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 
 // ProcessCancel 撤销
 func (a *alp) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	return nil, nil
+
+	// reverse
+	b := NewReverseReq()
+	b.CommonReq = getCommonParams(req)
+	b.PartnerTransId = req.OrigOrderNum
+
+	// resp
+	p := &ReverseResp{}
+	if err := scanpay1.Execute(b, p); err != nil {
+		return nil, err
+	}
+
+	resp := &model.ScanPayResponse{}
+	resp.ChannelOrderNum = p.Response.Alipay.AlipayTransId
+	resp.PayTime = p.Response.Alipay.AlipayReverseTime
+
+	// result
+	alipayResponseHandle(p, resp, "cancel")
+
+	return resp, nil
 }
 
 // ProcessClose 关闭
