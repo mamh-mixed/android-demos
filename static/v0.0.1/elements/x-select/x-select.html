@@ -86,13 +86,18 @@ Example:
       cursor: pointer;
       height: 1.2em;
     }
+
+    .input-group[disabled] > iron-icon {
+      color: #bdbdbd;
+    }
   </style>
 
   <template>
-    <div class="input-group">
+    <div class="input-group" disabled$="[[disabled]]">
       <input type="hidden" name="[[name]]" value="{{selectedItem.key}}"></input>
       <paper-input id="input" readonly label="[[label]]" value="{{selectedItem.value}}" on-tap="open" disabled="[[disabled]]"></paper-input>
       <iron-icon icon="clear" on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
+      <iron-icon icon="arrow-drop-down" hidden$="{{isClearActive}}"></iron-icon>
     </div>
     <iron-dropdown id="dropdown" vertical-align="[[verticalAlign]]" horizontal-align="[[horizontalAlign]]" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]">
       <ul class="dropdown-content">
