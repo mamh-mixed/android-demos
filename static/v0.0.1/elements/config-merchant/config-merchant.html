@@ -292,7 +292,7 @@
           <paper-input id="uliveChanMerName" label="渠道商户名称" value="{{ulive.chanMerName::input}}"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}"></paper-input>
           <paper-input label="Input label" hidden></paper-input>
         </div>
         <div class="row button">
@@ -1068,7 +1068,7 @@
       },
       // 判断优方渠道信息是否必填项都填写了，返回false表示都填写了
       isUliveConfigEmpty: function() {
-        if (this.$.uliveChanMerId.validate() && this.$.uliveTerminalId.validate()) {
+        if (this.$.uliveChanMerId.validate()) {
           return false;
         }
 

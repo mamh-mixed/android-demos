@@ -50,6 +50,8 @@
         <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}"></paper-input>
         <paper-input id="mail" label="邮箱" value="{{user.mail::input}}"></paper-input>
         <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}"></paper-input>
+        <paper-input id="areaCode" label="地区编号" value="{{user.areaCode::input}}"></paper-input>
+        <paper-input id="relatedEmail" label="关联邮箱" value="{{user.relatedEmail::input}}"></paper-input>
         <x-select id="merStatus" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
         <paper-input id="agentCode" label="代理代码" value="{{user.agentCode::input}}" required error-message="必填项"></paper-input>
         <paper-input id="subAgentCode" label="公司代码" value="{{user.subAgentCode::input}}" required error-message="必填项"></paper-input>

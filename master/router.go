@@ -34,6 +34,7 @@ var genAdminURLArr = []string{
 	"/master/trade/settle/report",
 	"/master/trade/message",
 	"/master/agent/find",
+	"/master/qiniu/download",
 }
 
 // 路径中包含以下关键字，则记录到数据库
