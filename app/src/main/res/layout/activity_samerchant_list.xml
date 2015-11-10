@@ -18,29 +18,29 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:hint="@string/search_hint"
                 android:paddingLeft="15dp"
                 android:singleLine="true"
                 android:textColor="#FFFFFF"
-                android:textColorHint="#eeeeee"
-                android:hint="@string/search_hint" />
+                android:textColorHint="#eeeeee" />
 
             <Button
                 android:id="@+id/btnAddNewMerchant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/blue_selector"
+                android:text="@string/add_newuser"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:text="@string/add_newuser" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
-            android:text="本月已经发展商户: 0 家"
-            android:textColor="#FFFFFF"
-            android:paddingLeft="15dp"
             android:id="@+id/txt_merchantcountthismonth"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingLeft="15dp"
+            android:text="本月已经发展商户: 0 家"
+            android:textColor="#FFFFFF" />
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"

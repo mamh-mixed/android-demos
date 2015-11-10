@@ -36,6 +36,21 @@ public class ErrorUtil {
             return "登录过期,请重新登录!";
         }
 
+        //new added, 这些错误都是在何时触发的,需要梳理清楚.
+        if (error.equals("params_empty")) {
+            return "参数不能为空!";
+        }
+
+        if (error.equals("user_already_improved")) {
+            return "用户数据已经更新了!";
+        }
+        if (error.equals("merId_no_exist")) {
+            return "商户ID不存在!";
+        }
+        if (error.equals("user_data_error")) {
+            return "用户数据错误!";
+        }
+
         return error;
     }
 }

@@ -18,7 +18,7 @@ public class SAServerPacket {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
             SAServerPacket packet = gson.fromJson(json, SAServerPacket.class);
             return packet;
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new QuickPayException(QuickPayException.CONFIG_ERROR);
         }
     }

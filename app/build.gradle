@@ -8,16 +8,11 @@ android {
     // env options: dev, test, pro
     productFlavors {
         _test {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]
-        }
-        wandoujia {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "wandoujia", ENVIRONMENT_VALUE: "pro"]
-        }
-        baidu {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu", ENVIRONMENT_VALUE: "pro"]
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test"]
+            buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
         cardinfolink {
-            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "cardinfolink", ENVIRONMENT_VALUE: "pro"]
+            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "cardinfolink"]
         }
     }
 
@@ -27,7 +22,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0.0"
-        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "test", ENVIRONMENT_VALUE: "test"]
+        buildConfigField 'String', 'ENVIRONMENT', '"pro"'
     }
 
     signingConfigs {
@@ -41,7 +36,7 @@ android {
             keyPassword "12345678"
         }
     }
-    
+
     buildTypes {
         release {
             minifyEnabled false

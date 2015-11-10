@@ -65,7 +65,7 @@ public class PostEngine {
                 InputStream in = new BufferedInputStream(conn.getInputStream());
                 String response = IOUtils.toString(in, "UTF-8");
                 return response;
-            }else {
+            } else {
                 return null;
             }
 

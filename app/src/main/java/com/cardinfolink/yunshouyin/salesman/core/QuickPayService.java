@@ -8,6 +8,9 @@ import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class QuickPayService {
     private QuickPayApi quickPayApi;
     private QuickPayConfigStorage quickPayConfigStorage;
@@ -17,9 +20,20 @@ public class QuickPayService {
         this.quickPayConfigStorage = quickPayConfigStorage;
     }
 
+    private static boolean checkEmail(String email) {
+        boolean flag = false;
+        try {
+            String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+            Pattern regex = Pattern.compile(check);
+            Matcher matcher = regex.matcher(email);
+            flag = matcher.matches();
+        } catch (Exception e) {
+            flag = false;
+        }
+        return flag;
+    }
+
     /**
-     * TODO: add validation
-     *
      * @param username
      * @param password
      * @param quickPayCallbackListener
@@ -119,18 +133,49 @@ public class QuickPayService {
         }).start();
     }
 
-    public void registerUserAsync(final String username, final String password, final QuickPayCallbackListener<User> quickPayCallbackListener) {
-        new Thread(new Runnable() {
+    public void registerUserAsync(final String email, final String password, final String password_repeat, final QuickPayCallbackListener<User> quickPayCallbackListener) {
+        if (email.equals("")) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "邮箱不能为空!"));
+            return;
+        }
+        if (!checkEmail(email)) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "邮箱格式不正确!"));
+            return;
+        }
+        if (password.equals("")) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "密码不能为空!"));
+            return;
+        }
+        if (password.length() < 6) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "密码不能小于六位!"));
+            return;
+        }
+        if (!password.equals(password_repeat)) {
+            quickPayCallbackListener.onFailure(new QuickPayException("", "确认密码不一致!"));
+            return;
+        }
+
+        new AsyncTask<Void, Integer, AsyncTaskResult<User>>() {
             @Override
-            public void run() {
+            protected AsyncTaskResult<User> doInBackground(Void... params) {
                 try {
-                    User user = quickPayApi.registerUser(username, password);
-                    quickPayCallbackListener.onSuccess(user);
+                    User user = quickPayApi.registerUser(email, password);
+                    return new AsyncTaskResult<User>(user, null);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+
+                    return new AsyncTaskResult<User>(null, ex);
                 }
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<User> stringAsyncTaskResult) {
+                if (stringAsyncTaskResult.getException() != null) {
+                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                } else {
+                    quickPayCallbackListener.onSuccess(stringAsyncTaskResult.getResult());
+                }
+            }
+        }.execute();
     }
 
     public void updateUserAsync(final User user, final QuickPayCallbackListener<User> quickPayCallbackListener) {

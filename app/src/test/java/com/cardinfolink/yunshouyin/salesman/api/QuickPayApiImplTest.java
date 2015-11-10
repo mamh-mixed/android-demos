@@ -3,8 +3,6 @@ package com.cardinfolink.yunshouyin.salesman.api;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class QuickPayApiImplTest {
     private QuickPayApi quickPayApi;
 
@@ -22,7 +20,7 @@ public class QuickPayApiImplTest {
 
         quickPayApi = new QuickPayApiImpl(quickPayConfigStorage);
 
-        String accessToken = quickPayApi.login("toolstest","Yun#1016");
+        String accessToken = quickPayApi.login("toolstest", "Yun#1016");
         System.out.println(accessToken);
     }
 

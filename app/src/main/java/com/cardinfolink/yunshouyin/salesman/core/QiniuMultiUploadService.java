@@ -19,17 +19,16 @@ public class QiniuMultiUploadService {
 
     private QuickPayService quickPayService;
     private UploadManager uploadManager = new UploadManager();
-
+    private List<SAMerchantPhoto> imageList;
+    private QiniuCallbackListener listener;
+    private String qiniuKeyPattern;
     public QiniuMultiUploadService(QuickPayService quickPayService) {
         this.quickPayService = quickPayService;
     }
 
-    private List<SAMerchantPhoto> imageList;
-    private QiniuCallbackListener listener;
-    private String qiniuKeyPattern;
-
     /**
      * 同时只能有一个upload使用, 加上同步关键字
+     *
      * @param imageList
      * @param qiniuKeyPattern
      * @param listener

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.cardinfolink.yunshouyin.salesman.BuildConfig;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
@@ -16,17 +17,18 @@ import com.cardinfolink.yunshouyin.salesman.model.User;
 
 public class SAApplication extends Application {
     private static final String TAG = "SAApplication";
+    private static final String ENV= BuildConfig.ENVIRONMENT;
 
     private static SAApplication singleton;
-
-    public static SAApplication getInstance(){
-        return singleton;
-    }
-
     private Context context;
     private QuickPayConfigStorage quickPayConfigStorage;
     private QuickPayService quickPayService;
     private QiniuMultiUploadService qiniuMultiUploadService;
+    private User loginUser = new User();
+
+    public static SAApplication getInstance() {
+        return singleton;
+    }
 
     public Context getContext() {
         return context;
@@ -64,12 +66,8 @@ public class SAApplication extends Application {
         quickPayConfigStorage.setUrl("http://test.quick.ipay.so/app/tools");
 
         try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(
-                    getPackageName(), PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            String environment = bundle.getString("ENVIRONMENT");
-            Log.d(TAG, "ENVIRONMENT is " + environment);
-            switch (environment) {
+            Log.d(TAG, "ENVIRONMENT is " + ENV);
+            switch (ENV) {
                 case "dev":
                     quickPayConfigStorage.setUrl("http://dev.quick.ipay.so/app/tools");
                     break;
@@ -82,16 +80,13 @@ public class SAApplication extends Application {
                 default:
                     break;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Failed to load meta-data: " + e.getMessage());
         }
 
         quickPayService = new QuickPayService(quickPayConfigStorage);
         qiniuMultiUploadService = new QiniuMultiUploadService(quickPayService);
     }
-
-    private User loginUser = new User();
 
     public User getLoginUser() {
         SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata", Activity.MODE_PRIVATE);

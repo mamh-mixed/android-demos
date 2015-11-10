@@ -101,23 +101,25 @@
 
 
         </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="30dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/btnlogin"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:background="@drawable/blue_selector"
-            android:onClick="BtnLoginOnClick"
-            android:text="登录"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnlogin"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:background="@drawable/blue_selector"
+                android:onClick="BtnLoginOnClick"
+                android:text="登录"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
         </LinearLayout>
 
     </LinearLayout>

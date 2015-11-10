@@ -20,13 +20,12 @@ import android.widget.Toast;
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.adapter.MerchantPhotoRecyclerViewAdapter;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
+import com.cardinfolink.yunshouyin.salesman.core.QiniuCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
-import com.cardinfolink.yunshouyin.salesman.core.QiniuCallbackListener;
-import com.cardinfolink.yunshouyin.salesman.view.WorkBeforeExitListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
