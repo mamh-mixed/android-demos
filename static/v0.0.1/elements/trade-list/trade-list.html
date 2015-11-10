@@ -282,11 +282,14 @@
             this.$.groupCode.removeAttribute('disabled');
             this.$.merId.removeAttribute('disabled');
             this.$.queryAgentAjax.generateRequest();
+          } else if (user.userType === 'genAdmin') {
+            this.isAdmin = false;
+            this.$.queryAgentAjax.generateRequest();
           }
         }
       },
       handleUserType: function() {
-        if (this.userType === 'admin') {
+        if (this.userType === 'admin' || this.userType === 'genAdmin') {
           this.isDatagramAccessible = true;
           return;
         }

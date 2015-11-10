@@ -12,8 +12,10 @@ type PurchaseCouponsReqHeader struct {
 }
 type PurchaseCouponsReqBody struct {
 	CouponsNo string `json:"couponsNo"` // 优麦圈电子券号 50 M 优麦圈电子券号
-	TermId    string `json:"termId"`    // 终端编号 8 M 由优麦圈后台分配给该终端的编号
-	TermSn    string `json:"termSn"`    // 终端唯一序列号 100 M 商户终端对应的硬件唯一序列号
+	TermId    string `json:"termId"`    // 终端编号 8 C1 由优麦圈后台分配给该终端的编号
+	TermSn    string `json:"termSn"`    // 终端唯一序列号 100 C2 商户终端对应的硬件唯一序列号
+	ExtMercId string `json:"extMercId"` // 商户自定义商户编号 C3
+	ExtTermId string `json:"extTermId"` //商户自定义终端编号  C3
 	Amount    int    `json:"amount"`    // 要验证的次数  10 M 要验证该券码的次数,次数必须大于0
 }
 
@@ -47,6 +49,8 @@ type PurchaseCouponsRespBody struct {
 	Couponsno  string `json:"couponsNo"`  // 优麦圈电子券号	50	M	优麦圈电子券号，中间部分以*屏蔽
 	Termid     string `json:"termId"`     // 终端编号	8	M	由优麦圈后台分配给该终端的编号
 	Termsn     string `json:"termSn"`     // 终端唯一序列号	100	M	商户终端对应的硬件唯一序列号
+	ExtMercId  string `json:"extMercId"`  // 商户自定义商户编号 C3
+	ExtTermId  string `json:"extTermId"`  //商户自定义终端编号  C3
 	Amount     int    `json:"amount"`     // 要验证的次数	10	M	要验证该券码的次数
 	Authcode   int    `json:"authCode"`   // 主机授权码	10	C1	后台交易处理成功后的授权码
 	Prodname   string `json:"prodName"`   // 券产品名称	32	C1	该券的产品名称
