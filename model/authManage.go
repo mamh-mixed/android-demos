@@ -11,6 +11,7 @@ const DEFAULT_PWD = "Yun#1016"
 // 用户类型
 const (
 	UserTypeCIL      = "admin"
+	UserTypeGenAdmin = "genAdmin"
 	UserTypeAgent    = "agent"
 	UserTypeCompany  = "subAgent"
 	UserTypeMerchant = "group"
