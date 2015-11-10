@@ -24,6 +24,18 @@ var agentURLArr = []string{
 	"/master/user/updatePwd",
 }
 
+var genAdminURLArr = []string{
+	"/master/trade/query",
+	"/master/trade/report",
+	"/master/trade/stat",
+	"/master/trade/stat/report",
+	"/master/trade/findOne",
+	"/master/user/updatePwd",
+	"/master/trade/settle/report",
+	"/master/trade/message",
+	"/master/agent/find",
+}
+
 // 路径中包含以下关键字，则记录到数据库
 var logKeysArr = []string{
 	"create",
@@ -157,6 +169,7 @@ func fillUserTypeParam(r *http.Request, user *model.User) {
 
 	switch user.UserType {
 	case model.UserTypeCIL:
+	case model.UserTypeGenAdmin:
 	case model.UserTypeShop:
 		query.Set("merId", user.MerId)
 	case model.UserTypeMerchant:
@@ -179,6 +192,8 @@ func authProcess(user *model.User, url string) (err error) {
 	switch user.UserType {
 	case model.UserTypeCIL:
 		has = true
+	case model.UserTypeGenAdmin:
+		has = util.StringInSlice(url, genAdminURLArr)
 	case model.UserTypeAgent:
 		has = util.StringInSlice(url, agentURLArr)
 	case model.UserTypeCompany:
