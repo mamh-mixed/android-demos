@@ -72,7 +72,8 @@
                 </div>
               </div>
               <div class="td">
-                <a on-tap="showMerchantViewHandler">{{item.merId}}</a>
+                <span hidden$="{{isAdmin}}">{{item.merId}}</span>
+                <a on-tap="showMerchantViewHandler" hidden$="{{!isAdmin}}">{{item.merId}}</a>
               </div>
               <div class="td">{{item.merName}}</div>
               <div class="td left">
@@ -100,6 +101,7 @@
     <coupon-view id="tradeView" item="{{transItem}}"></coupon-view>
     <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
     <merchant-view id="merchantView" mer-id="{{merId}}" on-editor="handleItemEditedEvent"></merchant-view>
+    <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
   </template>
   <script>
     (function() {
@@ -122,6 +124,7 @@
         is: 'coupon-wo-list',
 
         properties: {
+          user: Object,
           cond: {
             type: Object,
             value: function() {
@@ -139,13 +142,27 @@
             value: function() {
               var arr = [];
 
-              arr = Object.keys(WO_STATUS_MAP).map(function(item){
+              arr = Object.keys(WO_STATUS_MAP).map(function(item) {
                 return {
                   key: item,
                   value: WO_STATUS_MAP[item]
                 };
               })
               return arr;
+            }
+          }
+        },
+        observers: [
+          '_watchUserChanged(user.*)'
+        ],
+        _watchUserChanged: function(value) {
+          // 权限判断
+          if (value) {
+            var user = value.base;
+            if (user.userType === 'admin') {
+              this.isAdmin = true;
+            } else if (user.userType === 'genAdmin') {
+              this.isAdmin = false;
             }
           }
         },
@@ -160,6 +177,7 @@
           //     value: '失败'
           //   }
           // ];
+          this.isAdmin = false;
         },
         attached: function() {
 
@@ -243,6 +261,16 @@
         },
         addOneFilter: function(index) {
           return index + 1;
+        },
+        // 当前用户查询的响应事件
+        handleQueryCurrentUserResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          this.set('user', response.data);
         },
       });
     })();

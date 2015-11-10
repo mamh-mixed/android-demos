@@ -108,7 +108,7 @@
           }
           var isAccess = false;
 
-          if (this.userType === 'admin') {
+          if (this.userType === 'admin'||this.userType === 'genAdmin') {
             return;
           }
 
@@ -160,10 +160,14 @@
             });
 
             this.$.reloginDialog.close();
-            var backdrops = document.querySelectorAll('iron-overlay-backdrop');
-            for(var i = 0, l = backdrops.length; i< l;i++) {
-              backdrops[i].close();
-            }
+            // 异步操作，保证paper-dialog关闭后再关闭iron-overlay-backdrop。
+            window.setTimeout(function() {
+              var backdrops = document.querySelectorAll('iron-overlay-backdrop');
+              for (var i = 0, l = backdrops.length; i < l; i++) {
+                backdrops[i].close();
+              }
+            }, 0);
+
             // 如果再次登录的人不是管理员，但是当前页面是管理员的页面，就跳转到普通用户的主页
             if (this.userType !== 'admin' && agentRoutes.indexOf(this.route.path) < 0) {
               this.$.appRouter.go('/trade/list');

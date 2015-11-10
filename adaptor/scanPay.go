@@ -490,8 +490,8 @@ func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPay
 	req.SysOrderNum = t.SysOrderNum
 	// req.Subject = mer.Detail.CommodityName
 	req.ChanMerId = c.ChanMerId
-	req.Terminalsn = req.Terminalid
-	req.Terminalid = c.TerminalId
+	// req.Terminalsn = req.Terminalid
+	// req.Terminalid = c.TerminalId
 
 	// 获得渠道实例，请求
 	client := unionlive.DefaultClient

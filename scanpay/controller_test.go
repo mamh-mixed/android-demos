@@ -5,12 +5,13 @@ import (
 	"sync"
 	"testing"
 
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"time"
 )
 
 var (
@@ -102,12 +103,12 @@ var (
 	purchaseCoupons = &model.ScanPayRequest{
 		Txndir:    "Q",
 		Busicd:    "VERI",
-		AgentCode: "19900505",
+		AgentCode: "10134001",
 		// Chcd:       "ULIVE",
-		Mchntid:    "001000000000505",
-		Terminalid: "9e908a25",
-		OrderNum:   "1446199851869",
-		ScanCodeId: "1802708104000667",
+		Mchntid:    "100000000010001",
+		Terminalid: "30150006",
+		OrderNum:   "1447145911569",
+		ScanCodeId: "1801708104000529",
 		// VeriTime:   "-1",
 	}
 )

@@ -106,7 +106,7 @@
               <div class="td center">{{item.transTime}}</div>
               <!-- <div class="td" align="center">{{item.updateTime}}</div> -->
               <div class="td center" hidden$="{{!isDatagramAccessible}}">
-                <iron-icon icon="receipt" on-tap="showTradeMessageEvent" ></iron-icon>
+                <iron-icon icon="receipt" on-tap="showTradeMessageEvent"></iron-icon>
               </div>
             </div>
           </template>
@@ -124,9 +124,6 @@
     <x-ajax id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
     <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
     <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
-
-
-
   </template>
   <script>
     var TRANS_TYPE_MAP = {
@@ -285,11 +282,14 @@
             this.$.groupCode.removeAttribute('disabled');
             this.$.merId.removeAttribute('disabled');
             this.$.queryAgentAjax.generateRequest();
+          } else if (user.userType === 'genAdmin') {
+            this.isAdmin = false;
+            this.$.queryAgentAjax.generateRequest();
           }
         }
       },
       handleUserType: function() {
-        if (this.userType === 'admin') {
+        if (this.userType === 'admin' || this.userType === 'genAdmin') {
           this.isDatagramAccessible = true;
           return;
         }
