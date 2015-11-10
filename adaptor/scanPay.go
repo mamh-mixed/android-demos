@@ -68,12 +68,14 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.ExtendParams = genExtendParams(req.M, chanMer)
-		req.SubMchId = chanMer.AgentCode // 支付宝受理商
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
+	case channel.ChanCodeAliOversea:
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		req.ExtendParams = genOverseaExtendInfo(req.M)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -450,6 +452,19 @@ func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, e
 	}
 	chanMer = c
 	return
+}
+
+func genOverseaExtendInfo(mer model.Merchant) string {
+	var extendInfo = &struct {
+		MerName    string `json:"merchant_name,omitempty"`
+		MerNo      string `json:"merchant_no,omitempty"`
+		Bn         string `json:"business_no,omitempty"`
+		TerId      string `json:"terminal_id,omitempty"`
+		Mcc        string `json:"mcc,omitempty"`
+		RegionCode string `json:"region_code,omitempty"`
+	}{mer.Detail.MerName, mer.MerId, "", "", "", ""}
+	bytes, _ := json.Marshal(extendInfo)
+	return string(bytes)
 }
 
 func genExtendParams(mer model.Merchant, c *model.ChanMer) string {

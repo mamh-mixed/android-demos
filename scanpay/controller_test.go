@@ -19,11 +19,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "282623583794215869",
+		ScanCodeId: "28920011519519358",
 		AgentCode:  "19992900",
-		Txamt:      "000000000001",
-		Chcd:       "ALP",
+		Txamt:      "000000000100",
+		Chcd:       "AOS",
 		Busicd:     "PURC",
+		Currency:   "JPY",
 		Mchntid:    "200000000010001",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
@@ -152,7 +153,7 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(scanPayClose)
+	err := doOneScanPay(scanPayBarcodePay)
 	if err != nil {
 		t.Error(err)
 	}

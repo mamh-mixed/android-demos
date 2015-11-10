@@ -20,6 +20,11 @@ import (
 
 var requestURL = goconf.Config.AlipayScanPay.URL
 
+var (
+	// gbkDecoder = mahonia.NewDecoder("gbk")
+	gbkEncoder = mahonia.NewEncoder("gbk")
+)
+
 // Execute 发送报文执行微信支付
 func Execute(req BaseReq, resp BaseResp) error {
 
@@ -59,7 +64,8 @@ func prepareData(req BaseReq) (url.Values, error) {
 		return nil, err
 	}
 
-	content := buf.String()
+	// gbk encoding
+	content := gbkEncoder.ConvertString(buf.String())
 	signed := md5.Sum([]byte(content + req.GetSignKey()))
 	params, err := url.ParseQuery(content)
 	if err != nil {

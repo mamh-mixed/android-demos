@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Gw = ""
+	Gw = "https://intlmapi.alipay.com/gateway.do?"
 )
 
 type BaseReq interface {
@@ -15,27 +15,49 @@ type BaseReq interface {
 }
 
 type BaseResp interface {
+	ReqFlag() bool
+	ResultCode() string
+	ErrorCode() string
 }
 
-type CommonParams struct {
-	Service      string `url:"service"`
-	Sign         string `url:"sign"`
-	SignType     string `url:"Sign_type"`
-	Partner      string `url:"partner"`
-	InputCharset string `url:"_input_charset"`
-
-	SignKey string                `url:"-"`
-	SpReq   *model.ScanPayRequest `url:"-"`
+type CommonReq struct {
+	Sign         string                `url:"sign,omitempty"`
+	SignType     string                `url:"Sign_type,omitempty"`
+	Partner      string                `url:"partner,omitempty"`
+	InputCharset string                `url:"_input_charset,omitempty"`
+	SignKey      string                `url:"-"`
+	SpReq        *model.ScanPayRequest `url:"-"`
 }
 
-func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
+type CommonResp struct {
+	IsSuccess string  `url:"is_success" xml:"is_success"`
+	Error     string  `url:"error" xml:"error"`
+	SignType  string  `url:"sign_type" xml:"sign_type"`
+	Sign      string  `url:"sign" xml:"sign"`
+	Request   []Param `xml:"request>param"`
+}
+
+type Param struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:",innerxml"`
+}
+
+func (c *CommonReq) GetSpReq() *model.ScanPayRequest {
 	return c.SpReq
 }
 
-func (c *CommonParams) GetSignKey() string {
+func (c *CommonReq) GetSignKey() string {
 	return c.SignKey
 }
 
-func (c *CommonParams) GetURI() string {
-	return Gw + ""
+func (c *CommonReq) GetURI() string {
+	return Gw
+}
+
+func (c *CommonResp) ReqFlag() bool {
+	if c.IsSuccess == "T" {
+		return true
+	} else {
+		return false
+	}
 }
