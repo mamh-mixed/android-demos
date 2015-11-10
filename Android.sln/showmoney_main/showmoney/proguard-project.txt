@@ -18,31 +18,30 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+#-dontwarn CompatHoneycomb -keep class android.support.v4. { *; }
+#-dontwarn **CompatCreatorHoneycombMR2
+#-dontwarn **ActivityCompatHoneycomb
+#-dontwarn **MenuCompatHoneycomb
+#
+#-keep public class com.cardinfolink.yunshouyin.R$*{
+#public static final int *;
+#}
+#
+#-keepclassmembers enum * {
+#    public static **[] values();
+#    public static ** valueOf(java.lang.String);
+#}
+#
+#-keepclassmembers class * {
+#   public <init>(org.json.JSONObject);
+#}
+#
+#-keep public class com.umeng.fb.ui.ThreadView {
+#}
+#
+#-keep public class * extends com.umeng.**
+#-keep class com.umeng.** { *; }
 
 
--keep public class com.cardinfolink.yunshouyin.R$*{
-public static final int *;
-}
 
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
--keepclassmembers class * {
-   public <init>(org.json.JSONObject);
-}
-
--keep public class com.umeng.fb.ui.ThreadView {
-}
-
--keep public class * extends com.umeng.**
--keep class com.umeng.** { *; }
-
-
-
--libraryjars libs/umeng-analytics-v5.5.3.jar
--libraryjars libs/commons-codec-1.3.jar
--libraryjars libs/core.jar
--libraryjars libs/umeng-analytics-v5.5.3.jar
--libraryjars libs/umeng-update-v2.6.0.1.jar
+#-injars libs

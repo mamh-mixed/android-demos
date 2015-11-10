@@ -61,7 +61,7 @@ android {
 //            TODO: 混淆代码
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
-            shrinkResources true
+            shrinkResources false
             signingConfig signingConfigs.release
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
