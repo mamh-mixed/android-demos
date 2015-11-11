@@ -18,30 +18,16 @@ android {
     productFlavors{
         cardinfolink {
             manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yunshouyin"]
-//            comment out below for go live
+            //comment out below for go live
+            applicationId "com.cardinfolink.yunshouyin"
+            buildConfigField 'String', 'ENVIRONMENT', '"pro"'
+        }
+        _test{
+            manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yunshouyin"]
+            //comment out below for go live
             applicationId "com.cardinfolink.yunshouyin.test"
             buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
-        yinxun {
-            manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yinxun"]
-            //            comment out below for go live
-            applicationId "com.cardinfolink.yunshouyin.yinxun.test"
-            buildConfigField 'String', 'ENVIRONMENT', '"test"'
-        }
-        japan{
-            applicationId "com.cardinfolink.yunshouyin.jp"
-            manifestPlaceholders = [UMENG_APPKEY_VALUE: "563029e367e58ee1d5000617", UMENG_CHANNEL_VALUE: "japan"]
-            versionName "0.6"
-            versionCode 2
-            //            comment out below for go live
-            buildConfigField 'String', 'ENVIRONMENT', '"test"'
-        }
-    }
-
-    sourceSets{
-        cardinfolink.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
-        yinxun.java.srcDirs = ['src/cardinfolink/java', 'src/main/java']
-        japan.java.srcDirs = ['src/japan/java', 'src/main/java']
     }
 
     signingConfigs {
@@ -58,7 +44,7 @@ android {
 
     buildTypes {
         release {
-//            TODO: 混淆代码
+            //TODO: 混淆代码
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
             shrinkResources false
