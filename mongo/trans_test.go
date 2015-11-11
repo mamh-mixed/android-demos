@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -8,17 +9,33 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestBeginWith(t *testing.T) {
+	var target = "GC-12u972398789"
+	var prefix = "GC-"
+
+	var result = strings.HasPrefix(target, prefix)
+
+	t.Logf("hasPrefx result is %s", result)
+
+	t.Logf("substring is %s", target[3:len(target)])
+}
+
+func TestDollarConcat(t *testing.T) {
+	SpTransColl.TestConcat()
+}
+
 func TestTransFindAndGroupBy(t *testing.T) {
 
 	q := &model.QueryCondition{
-		StartTime:    "2015-08-27 00:00:00",
-		EndTime:      "2015-08-29 00:00:00",
-		TransStatus:  []string{model.TransSuccess},
-		TransType:    model.PayTrans,
-		RefundStatus: model.TransRefunded,
+		StartTime:          "2015-11-01 00:00:00",
+		EndTime:            "2015-11-09 23:59:59",
+		TransStatus:        []string{model.TransSuccess},
+		TransType:          model.PayTrans,
+		RefundStatus:       model.TransRefunded,
+		IsAggregateByGroup: true,
 		// MerIds:       []string{"999118880000312"},
 		Page: 1,
-		Size: 10,
+		Size: 20,
 	}
 	t.Logf("%+v", q)
 	ss, all, total, err := SpTransColl.FindAndGroupBy(q)

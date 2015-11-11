@@ -179,6 +179,14 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		TransStatus:  []string{model.TransSuccess},
 	}
 
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
+	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
+	if err == nil {
+		cond.IsAggregateByGroup = isAggreByGroup
+	}
+
+	log.Debugf("tradeReportHandle condition is %#v", cond)
+
 	tradeReport(w, cond, filename)
 }
 
@@ -195,6 +203,12 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		MerName:      r.FormValue("merName"),
 		StartTime:    r.FormValue("startTime"),
 		EndTime:      r.FormValue("endTime"),
+	}
+
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
+	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
+	if err == nil {
+		q.IsAggregateByGroup = isAggreByGroup
 	}
 
 	ret := tradeQueryStats(q)
