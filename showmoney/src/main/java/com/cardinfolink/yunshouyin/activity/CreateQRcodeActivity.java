@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import java.util.Random;
 
 public class CreateQRcodeActivity extends BaseActivity {
+    private static final String TAG = "CreateQRcodeActivity";
     private static final int IMAGE_HALFWIDTH = 40;
     int FOREGROUND_COLOR = 0xff000000;
     int BACKGROUND_COLOR = 0xffffffff;
@@ -80,7 +81,7 @@ public class CreateQRcodeActivity extends BaseActivity {
 
             @Override
             public void onResult(ResultData resultData) {
-                Log.i("opp", resultData.qrcode);
+                Log.i(TAG, resultData.qrcode);
                 mResultData = resultData;
                 Message msg = new Message();
                 msg.what = 1;
@@ -90,7 +91,7 @@ public class CreateQRcodeActivity extends BaseActivity {
 
             @Override
             public void onError(int errorCode) {
-                Log.i("opp", "" + errorCode);
+                Log.i(TAG, "errorCode: " + errorCode);
 
             }
         });
