@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 // status
@@ -72,20 +73,22 @@ const (
 
 // RouterPolicy 路由策略
 type RouterPolicy struct {
-	MerId     string  `json:"merId" bson:"merId,omitempty"`         // 商户号
-	CardBrand string  `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
-	CardType  string  `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
-	TransType string  `json:"transType" bson:"transType,omitempty"` // 交易类型
-	BinGroup  string  `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
-	InputWay  string  `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
-	MinAmount string  `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
-	MaxAmount string  `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
-	ChanCode  string  `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
-	ChanMerId string  `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
-	SettFlag  string  `json:"settFlag" bson:"settFlag,omitempty"`
-	SettRole  string  `json:"settRole" bson:"settRole,omitempty"`
-	MerFee    float64 `json:"merFee" bson:"merFee,omitempty"`
-	AcqFee    float64 `json:"acqFee" bson:"acqFee,omitempty"`
+	MerId      string  `json:"merId" bson:"merId,omitempty"`         // 商户号
+	CardBrand  string  `json:"cardBrand" bson:"cardBrand,omitempty"` // 卡品牌
+	CardType   string  `json:"cardType" bson:"cardType,omitempty"`   // 卡类型
+	TransType  string  `json:"transType" bson:"transType,omitempty"` // 交易类型
+	BinGroup   string  `json:"binGroup" bson:"binGroup,omitempty"`   // 卡Bin组
+	InputWay   string  `json:"inputWay" bson:"inputWay,omitempty"`   // 输入方式
+	MinAmount  string  `json:"minAmount" bson:"minAmount,omitempty"` // 起始金额
+	MaxAmount  string  `json:"maxAmount" bson:"maxAmount,omitempty"` // 最大金额（与起始金额配套使用，该金额范围）
+	ChanCode   string  `json:"chanCode" bson:"chanCode,omitempty"`   // 渠道代码
+	ChanMerId  string  `json:"chanMerId" bson:"chanMerId,omitempty"` // 渠道商户号
+	SettFlag   string  `json:"settFlag" bson:"settFlag,omitempty"`
+	SettRole   string  `json:"settRole" bson:"settRole,omitempty"`
+	MerFee     float64 `json:"merFee" bson:"merFee,omitempty"`
+	AcqFee     float64 `json:"acqFee" bson:"acqFee,omitempty"`
+	CreateTime string  `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
+	UpdateTime string  `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
 }
 
 // BindingInfo 商家绑定信息
@@ -209,15 +212,19 @@ type ChanMer struct {
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 交易模式 1-商户模式 2-市场模式
+	CreateTime  string   `bson:"createTime,omitempty" json:"createTime,omitempty"`   // 创建时间
+	UpdateTime  string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`   // 更新时间
 
 	// ...
 }
 
 type Agent struct {
-	AgentCode string  `bson:"agentCode,omitempty" json:"agentCode,omitempty"` // 代理代码
-	AgentName string  `bson:"agentName,omitempty" json:"agentName,omitempty"` // 代理名称
-	WxpCost   float64 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`     // 微信成本
-	AlpCost   float64 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`     // 支付宝成本
+	AgentCode  string  `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理代码
+	AgentName  string  `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理名称
+	WxpCost    float64 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`       // 微信成本
+	AlpCost    float64 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`       // 支付宝成本
+	CreateTime string  `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
+	UpdateTime string  `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
 }
 
 type SubAgent struct {
@@ -225,6 +232,8 @@ type SubAgent struct {
 	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
 	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
 	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
+	CreateTime   string `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
+	UpdateTime   string `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
 }
 
 type Group struct {
@@ -234,6 +243,8 @@ type Group struct {
 	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理名称
 	SubAgentCode string `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 二级代理代码
 	SubAgentName string `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 二级代理名称
+	CreateTime   string `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
+	UpdateTime   string `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
 }
 
 // SettSchemeCd 计费方案代码
