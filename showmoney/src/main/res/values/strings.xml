@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">云收银</string>
+    <string name="app_name">银迅闪付</string>
     <string name="copyright">cardinfolink 2015</string>
     <string name="login_hint_username">请输入用户名</string>
     <string name="login_hint_password">请输入密码</string>
