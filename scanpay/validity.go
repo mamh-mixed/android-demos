@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 )
@@ -35,11 +36,16 @@ const (
 )
 
 var (
-	success      = mongo.ScanPayRespCol.Get("SUCCESS")
-	emptyError   = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
-	formatError  = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
-	contentError = mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR")
+	alipayCurrency map[string]int
+	success        = mongo.ScanPayRespCol.Get("SUCCESS")
+	emptyError     = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
+	formatError    = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
+	contentError   = mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR")
 )
+
+func init() {
+	alipayCurrency = alipayAvailableCurrency()
+}
 
 // validateBarcodePay 验证扫码下单的参数
 func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -71,6 +77,11 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 		return err
 	}
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+
+	// 需在验证完金额后调用
+	if ok, err := validateCurreny(req); !ok {
 		return err
 	}
 
@@ -167,6 +178,11 @@ func validateRefund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return err
 	}
 	if matched, err := validateOrderNum(req.OrigOrderNum); !matched {
+		return err
+	}
+
+	// 需在验证完金额后调用
+	if ok, err := validateCurreny(req); !ok {
 		return err
 	}
 
@@ -314,6 +330,26 @@ func validatePublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	return
+}
+
+func validateCurreny(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
+	// 结合渠道、币种
+	if req.Chcd == channel.ChanCodeAliOversea {
+		if cur, ok := alipayCurrency[req.Currency]; ok {
+			// 判断可支持精度，默认是2个小数点
+			if cur == 0 {
+				// JPY、KRW 截取金额后两位看是否为0
+				dec := req.Txamt[len(req.Txamt)-2:]
+				if dec != "00" {
+					return false, fieldFormatError(txamt)
+				}
+			}
+		} else {
+			return false, fieldContentError("currency")
+		}
+	}
+
+	return true, nil
 }
 
 // validateTimeExpire 验证失效时间
@@ -495,4 +531,23 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 	}
 
 	return
+}
+
+func alipayAvailableCurrency() map[string]int {
+	// 币种、精度
+	curs := make(map[string]int)
+	curs["GBP"] = 2
+	curs["HKD"] = 2
+	curs["USD"] = 2
+	curs["CHF"] = 2
+	curs["SGD"] = 2
+	curs["SEK"] = 2
+	curs["DKK"] = 2
+	curs["NOK"] = 2
+	curs["JPY"] = 0
+	curs["CAD"] = 2
+	curs["AUD"] = 2
+	curs["EUR"] = 2
+	curs["KRW"] = 0
+	return curs
 }

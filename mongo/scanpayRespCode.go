@@ -43,9 +43,9 @@ func (c *scanPayRespCollection) Get(errorCode string) (resp *model.ScanPayRespCo
 }
 
 // Get8583CodeAndMsg 8583应答
-func (c *scanPayRespCollection) Get8583CodeAndMsg(errorCode string) (code, msg string) {
+func (c *scanPayRespCollection) Get8583CodeAndMsg(errorCode string) (code, ch_msg, msg string) {
 	spResp := c.Get(errorCode)
-	return spResp.ISO8583Code, spResp.ISO8583Msg
+	return spResp.ISO8583Code, spResp.ISO8583Msg, errorCode
 }
 
 // GetByAlp 由支付宝应答得到Resp对象

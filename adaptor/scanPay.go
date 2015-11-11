@@ -8,7 +8,6 @@ import (
 	"github.com/CardInfoLink/quickpay/channel/unionlive"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 )
 
@@ -25,12 +24,6 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
 
-	mer, err := mongo.MerchantColl.Find(t.MerId)
-	if err != nil {
-		return ReturnWithErrorCode("NO_MERCHANT")
-	}
-	addRelatedProperties(t, mer)
-
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	// 目前暂时不支付支付宝
@@ -45,7 +38,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	}
 
 	ep := channel.GetEnterprisePayChan(t.ChanCode)
-	ret, err = ep.ProcessPay(req)
+	ret, err := ep.ProcessPay(req)
 	if err != nil {
 		log.Errorf("process BarcodePay error:%s", err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -64,15 +57,9 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
-	mer, err := mongo.MerchantColl.Find(t.MerId)
-	if err != nil {
-		return ReturnWithErrorCode("NO_MERCHANT")
-	}
-	addRelatedProperties(t, mer)
-
 	// 上送参数
 	req.SysOrderNum = t.SysOrderNum
-	req.Subject = mer.Detail.CommodityName
+	req.Subject = req.M.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
 
@@ -80,13 +67,15 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.ExtendParams = genExtendParams(mer, chanMer)
-		req.SubMchId = chanMer.AgentCode // 支付宝受理商
+		req.ExtendParams = genExtendParams(req.M, chanMer)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
-		req.GoodsTag = mer.Detail.GoodsTag
+		req.GoodsTag = req.M.Detail.GoodsTag
+	case channel.ChanCodeAliOversea:
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		req.ExtendParams = genOverseaExtendInfo(req.M)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -115,29 +104,23 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
-	mer, err := mongo.MerchantColl.Find(t.MerId)
-	if err != nil {
-		return ReturnWithErrorCode("NO_MERCHANT")
-	}
-	addRelatedProperties(t, mer)
-
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.ExtendParams = genExtendParams(mer, chanMer)
+		req.ExtendParams = genExtendParams(req.M, chanMer)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
-		req.GoodsTag = mer.Detail.GoodsTag
+		req.GoodsTag = req.M.Detail.GoodsTag
 	default:
 		req.ActTxamt = req.Txamt
 	}
 
 	// 上送参数
 	req.SysOrderNum = t.SysOrderNum
-	req.Subject = mer.Detail.CommodityName
+	req.Subject = req.M.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
 
@@ -172,6 +155,8 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	// 不同渠道参数转换
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
+	case channel.ChanCodeAliOversea:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
 	case channel.ChanCodeWeixin:
 		req.AppID = chanMer.WxpAppId
@@ -216,6 +201,8 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
+		// do nothing...
+	case channel.ChanCodeAliOversea:
 		// do nothing...
 	case channel.ChanCodeWeixin:
 		req.AppID = chanMer.WxpAppId
@@ -278,6 +265,8 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)
+	case channel.ChanCodeAliOversea:
+		ret, err = sp.ProcessCancel(req)
 	default:
 		err = fmt.Errorf("unknown scan pay channel `%s`", orig.ChanCode)
 	}
@@ -293,23 +282,22 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 // ProcessClose 关闭订单
 func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 支付交易（下单、预下单）
-	if orig.ChanCode == channel.ChanCodeAlipay {
+	switch orig.ChanCode {
+	case channel.ChanCodeAlipay, channel.ChanCodeAliOversea:
 		// 成功支付的交易标记已退款
 		if orig.TransStatus == model.TransSuccess {
 			orig.RefundStatus = model.TransRefunded
 		}
 		// 执行撤销流程
 		return ProcessCancel(orig, c, req)
-	}
 
-	if orig.ChanCode == channel.ChanCodeWeixin {
+	case channel.ChanCodeWeixin:
 		// 下单，微信叫做刷卡支付，即被扫，收银员使用扫码设备读取微信用户刷卡授权码
 		if orig.Busicd == model.Purc {
 
 			// 走微信撤销接口
 			return ProcessWxpCancel(orig, c, req)
 		}
-
 		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
 		if orig.Busicd == model.Paut {
 			// 支付成功，调用退款接口
@@ -341,8 +329,10 @@ func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest
 			}
 		}
 		return ReturnWithErrorCode("NOT_SUPPORT_TYPE")
+
+	default:
+		return ReturnWithErrorCode("NO_CHANNEL")
 	}
-	return ReturnWithErrorCode("NO_CHANNEL")
 }
 
 // func weixinCloseOrder(orig, closed *model.Trans, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -471,7 +461,20 @@ func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, e
 	return
 }
 
-func genExtendParams(mer *model.Merchant, c *model.ChanMer) string {
+func genOverseaExtendInfo(mer model.Merchant) string {
+	var extendInfo = &struct {
+		MerName    string `json:"merchant_name,omitempty"`
+		MerNo      string `json:"merchant_no,omitempty"`
+		Bn         string `json:"business_no,omitempty"`
+		TerId      string `json:"terminal_id,omitempty"`
+		Mcc        string `json:"mcc,omitempty"`
+		RegionCode string `json:"region_code,omitempty"`
+	}{mer.Detail.MerName, mer.MerId, "", "", "", ""} // TODO
+	bytes, _ := json.Marshal(extendInfo)
+	return string(bytes)
+}
+
+func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
 	var agentCode = agentId
 	if c.AgentCode != "" {
 		agentCode = c.AgentCode
@@ -487,25 +490,8 @@ func genExtendParams(mer *model.Merchant, c *model.ChanMer) string {
 	return string(bytes)
 }
 
-// 为交易关联商户属性
-func addRelatedProperties(current *model.Trans, m *model.Merchant) {
-	current.MerName = m.Detail.MerName
-	current.AgentName = m.AgentName
-	current.GroupCode = m.GroupCode
-	current.GroupName = m.GroupName
-	current.ShortName = m.Detail.ShortName
-	current.SubAgentCode = m.SubAgentCode
-	current.SubAgentName = m.SubAgentName
-}
-
 // ProcessPurchaseCoupons 卡券核销
 func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	mer, err := mongo.MerchantColl.Find(t.MerId)
-	if err != nil {
-		return ReturnWithErrorCode("NO_MERCHANT")
-	}
-	addRelatedProperties(t, mer)
 
 	// 上送参数
 	req.SysOrderNum = t.SysOrderNum
@@ -516,7 +502,7 @@ func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPay
 
 	// 获得渠道实例，请求
 	client := unionlive.DefaultClient
-	ret, err = client.ProcessPurchaseCoupons(req)
+	ret, err := client.ProcessPurchaseCoupons(req)
 	if err != nil {
 		log.Errorf("process PurchaseCoupons error:%s", err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")

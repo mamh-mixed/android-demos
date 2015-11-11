@@ -1,4 +1,4 @@
-package alipay
+package domestic
 
 import (
 	"github.com/CardInfoLink/quickpay/model"

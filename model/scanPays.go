@@ -28,36 +28,37 @@ const (
 
 // QueryCondition 扫码交易查询字段
 type QueryCondition struct {
-	MerName      string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
-	MerId        string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
-	MerIds       []string `json:"-"`
-	Col          string   `json:"-"`
-	BindingId    string   `json:"bindingId"`
-	AgentCode    string   `json:"agentCode,omitempty"`
-	SubAgentCode string   `json:"subAgentCode,omitempty"`
-	GroupCode    string   `json:"groupCode,omitempty"`
-	TransStatus  []string `json:"transStatus,omitempty"`
-	RefundStatus int      `json:"refundStatus,omitempty"`
-	TransType    int      `json:"transType,omitempty"`
-	StartTime    string   `json:"startTime,omitempty"`
-	EndTime      string   `json:"endTime,omitempty"`
-	Busicd       string   `json:"busicd,omitempty"`
-	OrderNum     string   `json:"orderNum,omitempty"`
-	OrigOrderNum string   `json:"origOrderNum,omitempty"`
-	NextOrderNum string   `json:"nextOrderNum,omitempty"`
-	Count        int      `json:"count,omitempty"`
-	Page         int      `json:"page,omitempty"`
-	Total        int      `json:"total,omitempty"`
-	Size         int      `json:"size,omitempty"`
-	IsForReport  bool     `json:"-"`
-	Respcd       string   `json:"respcd" url:"respcd"`
-	RespcdNotIn  string   `json:"respcdNotIn"`
-	TradeFrom    string   `json:"tradeFrom,omitempty"`
-	Skip         int      `json:"skip,omitempty"`
-	ChanCode     string   `json:"chanCode,omitempty"`
-	Direction    string
-	ReqIds       []string
-
+	MerName        string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
+	MerId          string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
+	MerIds         []string `json:"-"`
+	Col            string   `json:"-"`
+	BindingId      string   `json:"bindingId"`
+	AgentCode      string   `json:"agentCode,omitempty"`
+	SubAgentCode   string   `json:"subAgentCode,omitempty"`
+	GroupCode      string   `json:"groupCode,omitempty"`
+	TransStatus    []string `json:"transStatus,omitempty"`
+	RefundStatus   int      `json:"refundStatus,omitempty"`
+	TransType      int      `json:"transType,omitempty"`
+	StartTime      string   `json:"startTime,omitempty"`
+	EndTime        string   `json:"endTime,omitempty"`
+	Busicd         string   `json:"busicd,omitempty"`
+	OrderNum       string   `json:"orderNum,omitempty"`
+	OrigOrderNum   string   `json:"origOrderNum,omitempty"`
+	NextOrderNum   string   `json:"nextOrderNum,omitempty"`
+	Count          int      `json:"count,omitempty"`
+	Page           int      `json:"page,omitempty"`
+	Total          int      `json:"total,omitempty"`
+	Size           int      `json:"size,omitempty"`
+	IsForReport    bool     `json:"-"`
+	Respcd         string   `json:"respcd" url:"respcd"`
+	RespcdNotIn    string   `json:"respcdNotIn"`
+	TradeFrom      string   `json:"tradeFrom,omitempty"`
+	Skip           int      `json:"skip,omitempty"`
+	ChanCode       string   `json:"chanCode,omitempty"`
+	Direction      string
+	ReqIds         []string
+	TimeType       string
+	SettRole       string `json:"settRole,omitempty"`
 	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
 	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 }
@@ -196,7 +197,8 @@ type ScanPayRequest struct {
 	ReqId            string `json:"-" url:"-" bson:"-"`
 
 	// 访问方式
-	IsGBK bool `json:"-" url:"-" bson:"-"`
+	IsGBK bool     `json:"-" url:"-" bson:"-"`
+	M     Merchant `json:"-" url:"-" bson:"-"`
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -279,6 +281,7 @@ type ScanPayResponse struct {
 	PrePayId     string `json:"-" url:"-" bson:"-"`
 	ErrorCode    string `json:"-" url:"-" bson:"-"`
 	PayTime      string `json:"-" url:"-" bson:"-"`
+	Rate         string `json:"-" url:"-" bson:"-"` // 币种费率
 }
 
 // PayJson 公众号支付字段
