@@ -383,8 +383,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
 
-	// 如果是扫码交易或绑定交易，将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
-	if col.name != "trans.coupon" {
+	// 如果报表的话，将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
+	if q.IsForReport {
 		match["transAmt"] = bson.M{"$ne": 0}
 	}
 
