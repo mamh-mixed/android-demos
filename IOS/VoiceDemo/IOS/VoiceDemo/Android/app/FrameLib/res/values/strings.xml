@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="app_name">FrameLib</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="activate_sentto_email">激活链接将发送到该邮箱:\n\n330961193@qq.com</string>
-    <string name="appserverurl">http://qrcode.cardinfolink.net/app/version/version.xml</string> 
-</resources>
