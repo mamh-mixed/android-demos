@@ -41,10 +41,10 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		},
 		Body: coupon.PurchaseCouponsReqBody{
 			CouponsNo: req.ScanCodeId,
-			// TermId:    req.Terminalid,
+			TermId:    req.Terminalid,
 			// TermSn:    req.Terminalsn,
 			ExtMercId: req.Mchntid,
-			ExtTermId: req.Terminalid,
+			ExtTermId: req.Terminalsn,
 			Amount:    amount,
 		},
 		SpReq: req,
