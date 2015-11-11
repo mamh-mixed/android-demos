@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class RegisterNextActivity extends BaseActivity {
+    private static final String TAG = "RegisterNextActivity";
 
     private EditText mNameEdit;
     private EditText mBanknumEdit;
@@ -214,7 +215,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                     @Override
                     public void onError(String error) {
-                        Log.i("opp", "error:" + error);
+                        Log.i(TAG, "error:" + error);
 
                     }
                 });
@@ -224,7 +225,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                     @Override
                     public void onResult(String result) {
-                        Log.i("opp", "result:" + result);
+                        Log.i(TAG, "result:" + result);
                         try {
                             JSONObject jsonObj = new JSONObject(result);
                             Iterator it = jsonObj.keys();
@@ -264,7 +265,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                     @Override
                     public void onError(String error) {
-                        Log.i("opp", "error:" + error);
+                        Log.i(TAG, "error:" + error);
 
                     }
                 });
@@ -299,7 +300,7 @@ public class RegisterNextActivity extends BaseActivity {
                 mCityEdit.setText("");
                 if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
                     String province = mProvinceEdit.getText().toString();
-                    Log.i("xxx", "province" + province);
+                    Log.i(TAG, "province" + province);
 
                     HttpCommunicationUtil.sendGetDataToServer(
                             BankBaseUtil.getCity(province),
@@ -307,7 +308,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onResult(String result) {
-                                    Log.i("opp", "result:" + result);
+                                    Log.i(TAG, "result:" + result);
                                     try {
                                         JSONArray jsonArray = new JSONArray(
                                                 result);
@@ -350,7 +351,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
+                                    Log.i(TAG, "error:" + error);
 
                                 }
                             });
@@ -389,7 +390,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onResult(String result) {
-                                    Log.i("opp", "result:" + result);
+                                    Log.i(TAG, "result:" + result);
                                     try {
                                         JSONObject jsonObj = new JSONObject(
                                                 result);
@@ -439,7 +440,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
+                                    Log.i(TAG, "error:" + error);
 
                                 }
                             });
@@ -533,7 +534,7 @@ public class RegisterNextActivity extends BaseActivity {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
+                                    Log.i(TAG, "error:" + error);
 
                                 }
                             });
@@ -708,8 +709,6 @@ public class RegisterNextActivity extends BaseActivity {
                                         "inscd");// 机构号
                                 data.signKey = JsonUtil.getParam(user_json,
                                         "signKey");// 秘钥
-                                // Log.e("opp",
-                                // ""+TelephonyManagerUtil.getDeviceId(mContext));
                                 data.terminalid = TelephonyManagerUtil
                                         .getDeviceId(mContext);// 设备号
                                 data.isProduce = SystemConfig.IS_PRODUCE;// 是否生产环境

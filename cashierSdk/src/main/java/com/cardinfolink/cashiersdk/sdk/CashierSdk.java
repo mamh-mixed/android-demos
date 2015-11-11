@@ -16,6 +16,7 @@ import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import java.util.Map;
 
 public class CashierSdk {
+    private static final String TAG = "CashierSdk";
 
     private static final String mProduceHost = "121.40.167.112";
     private static final String mProducePort = "6001";
@@ -67,13 +68,13 @@ public class CashierSdk {
                     map.remove("sign");
 
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-                    Log.i("opp", veriSign);
+                    Log.i(TAG,"veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
 
                     } else {
-                        Log.i("opp", "签名不一致");
+                        Log.i(TAG, "签名不一致");
                         listener.onError(3);
                     }
                 }
@@ -157,7 +158,7 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-                    Log.i("opp", "" + veriSign);
+                    Log.i(TAG, "verisign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -245,7 +246,7 @@ public class CashierSdk {
                     map.remove("sign");
 
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-                    Log.i("opp", "" + veriSign);
+                    Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
