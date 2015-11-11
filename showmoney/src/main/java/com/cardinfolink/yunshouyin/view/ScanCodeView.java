@@ -284,9 +284,9 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 String r = edt_input.getText().toString();
 
                 add_flag = true;
-                if (x.contains(".")) {
-                    String k = x.substring(x.lastIndexOf("."));
-                    if (k.equals("."))
+                if (x.contains("")) {
+                    String k = x.substring(x.lastIndexOf(""));
+                    if (k.equals(""))
 
                     {
                         point_flag = true;

@@ -110,24 +110,26 @@
 
             <Button
                 android:id="@+id/btnlogin"
-                android:layout_width="150dp"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:background="@drawable/blue_selector"
                 android:onClick="BtnLoginOnClick"
                 android:text="@string/login"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/btnsignup"
-                android:layout_width="150dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="25dp"
-                android:background="@drawable/blue_selector"
-                android:onClick="BtnRegisterOnClick"
-                android:text="注册"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
+            <!--<Button-->
+            <!--android:id="@+id/btnsignup"-->
+            <!--android:layout_width="150dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_marginLeft="25dp"-->
+            <!--android:background="@drawable/blue_selector"-->
+            <!--android:onClick="BtnRegisterOnClick"-->
+            <!--android:text="注册"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="16sp" />-->
         </LinearLayout>
 
     </LinearLayout>
