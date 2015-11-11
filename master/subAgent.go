@@ -91,7 +91,7 @@ func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 
 	}
 	if isExist {
-		return model.NewResultBody(1, "SubAgentCode已存在")
+		return model.NewResultBody(1, "公司代码已存在")
 	}
 	if s.SubAgentName == "" {
 		log.Error("没有SubAgentName")

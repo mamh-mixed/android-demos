@@ -87,7 +87,7 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 
 	}
 	if isExist {
-		return model.NewResultBody(1, "agentCode已存在")
+		return model.NewResultBody(1, "代理代码已存在")
 	}
 	if a.AgentCode == "" {
 		log.Error("没有AgentCode")
