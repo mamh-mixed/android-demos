@@ -12,7 +12,7 @@ import (
 )
 
 var DefaultClient alp
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + alipay.Sp1_NotifyUrl_Domestic
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + alipay.NotifyUrl
 
 // alp 当面付，扫码支付
 type alp struct{}

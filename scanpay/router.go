@@ -13,7 +13,7 @@ func Route() (mux *http.ServeMux) {
 
 	mux.HandleFunc("/scanpay/unified", scanpayUnifiedHandle)
 	mux.HandleFunc(weixin.NotifyURL, weixinNotifyHandle)
-	mux.HandleFunc(alipay.Sp1_NotifyUrl_Domestic, alipayNotifyHandle)
+	mux.HandleFunc(alipay.NotifyUrl, alipayNotifyHandle)
 	mux.HandleFunc("/scanpay/test/recNotify", testReceiveNotifyHandle)
 	mux.HandleFunc("/scanpay/fixed/merInfo", scanFixedMerInfoHandle)
 	mux.HandleFunc("/scanpay/fixed/orderInfo", scanFixedOrderInfoHandle)
