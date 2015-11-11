@@ -3,7 +3,10 @@ package com.cardinfolink.yunshouyin.util;
 import android.app.Application;
 
 import com.cardinfolink.yunshouyin.BuildConfig;
+import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
+import com.cardinfolink.yunshouyin.core.QuickPayServiceImpl;
 
 public class ContextUtil extends Application {
     private static final String ENVIRONMENT = BuildConfig.ENVIRONMENT;
@@ -16,6 +19,13 @@ public class ContextUtil extends Application {
 
     public static String getResString(int id) {
         return instance.getResources().getString(id);
+    }
+
+    private QuickPayConfigStorage quickPayConfigStorage;
+    private QuickPayService quickPayService;
+
+    public QuickPayService getQuickPayService() {
+        return quickPayService;
     }
 
     @Override
@@ -31,6 +41,10 @@ public class ContextUtil extends Application {
 
 
     private void initEnvironment() {
+        quickPayConfigStorage = new QuickPayConfigStorage();
+        //dev, test, pro 是一样的
+        quickPayConfigStorage.setAppKey("eu1dr0c8znpa43blzy1wirzmk8jqdaon");
+
         //default is pro
         SystemConfig.IS_PRODUCE =true;
         SystemConfig.Server="https://api.shou.money/app";
@@ -54,5 +68,8 @@ public class ContextUtil extends Application {
             default:
                 break;
         }
+
+        quickPayConfigStorage.setUrl(SystemConfig.Server);
+        quickPayService = new QuickPayServiceImpl(quickPayConfigStorage);
     }
 }
