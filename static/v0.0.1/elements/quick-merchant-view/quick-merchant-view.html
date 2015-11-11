@@ -1,0 +1,181 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<dom-module id="quick-merchant-view">
+
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 600px;
+        font-size: 14px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+
+    paper-icon-button.red:hover {
+      background: #CD4F39;
+      border-radius: 0%;
+    }
+
+    .header {
+      padding: 0px;
+      margin: 0px;
+      background: red;
+      color: #ffffff;
+      heigth: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .key {
+      width: 70px;
+    }
+
+    dt {
+      display: inline-block;
+      float: left;
+      clear: both;
+      width: 60px;
+      font-weight: bold;
+    }
+
+    dd {
+      display: inline-block;
+      float: left;
+      margin-left: 20px;
+    }
+
+    dd.cert {
+      float: none;
+      display: block;
+      margin-left: 10px;
+      clear: both;
+    }
+
+  </style>
+  <template>
+    <paper-dialog with-backdrop id="dialogView">
+      <h2>{{item.detail.merName}}</h2>
+      <paper-dialog-scrollable>
+        <dl id="ulive">
+          <dt>商户代码:</dt>
+          <dd>{{item.merId}}</dd>
+          <dt>商户名称:</dt>
+          <dd>{{item.detail.merName}}</dd>
+          <dt>计费代码:</dt>
+          <dd>{{item.detail.billingScheme}}</dd>
+          <dt>交易币种:</dt>
+          <dd>{{item.transCurr}}</dd>
+
+          <dt>开启验签:</dt>
+          <dd>
+            <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
+          </dd>
+          <dt>签名密钥:</dt>
+          <dd>{{item.signKey}}</dd>
+          <dt>加密密钥:</dt>
+          <dd>{{item.encryptKey}}</dd>
+          <dt>商户状态:</dt>
+          <dd>{{getMerStatus(item.merStatus)}}</dd>
+          <dt>备注:</dt>
+          <dd>{{item.remark}}</dd>
+        </dl>
+      </paper-dialog-scrollable>
+      <div class="buttons layout center">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个商户吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleViewRouteTapped">查看路由</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
+      </div>
+    </paper-dialog>
+    <x-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
+  </template>
+  <script>
+    Polymer({
+      is: 'quick-merchant-view',
+      properties: {
+        item: Object,
+      },
+      open: function() {
+        this.$.dialogView.open();
+        this.deleteFlag = false;
+      },
+      _computeYesOrNo: function(flag) {
+        if (flag) {
+          return '是';
+        }
+        return '否';
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      },
+      //   将商户状态转换为中文
+      getMerStatus: function(status) {
+        if (status === 'Normal') {
+          return '正常';
+        } else if (status === 'Test') {
+          return '测试商户';
+        } else if (status === 'Deleted') {
+          return '已删除商户';
+        } else {
+          return status;
+        }
+      },
+      // 编辑事件
+      handleItemEditedEvent: function() {
+        this.fire('editor');
+        this.handleClose();
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 查看路由
+      handleViewRouteTapped: function() {
+        document.querySelector('#appRouter').go('/quickPay/route/' + this.item.merId);
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          merId: this.item.merId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
+      },
+    });
+
+  </script>
+</dom-module>

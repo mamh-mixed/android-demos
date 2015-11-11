@@ -72,7 +72,9 @@ func startSettle() {
 }
 
 func startMaster() {
-	http.Handle("/", http.FileServer(http.Dir("static/app")))
+	http.Handle("/", http.FileServer(http.Dir("static")))
+	// http.Handle("/", handlers.LoggingHandler(os.Stdout, http.FileServer(http.Dir("static"))))
+
 	http.Handle("/master/", master.Route())
 }
 

@@ -85,9 +85,6 @@ func (col *transCollection) FindAndLock(merId, orderNum string) (*model.Trans, e
 	change.ReturnNew = true
 	result := &model.Trans{}
 	_, err := database.C(col.name).Find(query).Apply(change, result)
-	if err != nil {
-		log.Debug(err)
-	}
 	return result, err
 }
 
@@ -191,7 +188,7 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts [
 // FindHandingTrans 找到处理中的交易
 func (col *transCollection) FindHandingTrans(d time.Duration, busicd ...string) ([]model.Trans, error) {
 	q := bson.M{
-		"updateTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
+		"createTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
 		"lockFlag":    0,
 		"transStatus": model.TransHandling,
 		"transType":   model.PayTrans,
@@ -365,6 +362,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.WriteoffStatus != "" {
 		match["writeoffStatus"] = q.WriteoffStatus
 	}
+	if q.SettRole != "" {
+		match["settRole"] = q.SettRole
+	}
 	// or 退款的和成功的
 	or := []bson.M{}
 	if len(q.TransStatus) != 0 {
@@ -377,7 +377,10 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["$or"] = or
 	}
 	if q.StartTime != "" && q.EndTime != "" {
-		match["createTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
+		if q.TimeType == "" {
+			q.TimeType = "createTime"
+		}
+		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
 
 	// 如果是扫码交易或绑定交易，将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
@@ -414,7 +417,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.IsForReport {
 		sortByChan := bson.M{"$sort": bson.M{"chanCode": 1}}
 		sort = bson.M{"$sort": bson.M{"busicd": 1}}
-		p = append(p, sort, skip, limit, sortByChan)
+		// no skip, no limit
+		p = append(p, sort, sortByChan)
 	} else {
 		p = append(p, sort, skip, limit)
 	}
@@ -585,7 +589,7 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
 
 	find := bson.M{
-		"createTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
+		"payTime":     bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
 		"transStatus": model.TransSuccess,
 		"transType":   model.PayTrans,
 	}

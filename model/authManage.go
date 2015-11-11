@@ -11,6 +11,7 @@ const DEFAULT_PWD = "Yun#1016"
 // 用户类型
 const (
 	UserTypeCIL      = "admin"
+	UserTypeGenAdmin = "genAdmin"
 	UserTypeAgent    = "agent"
 	UserTypeCompany  = "subAgent"
 	UserTypeMerchant = "group"
@@ -32,8 +33,8 @@ type User struct {
 	// GroupName string `json:"groupName" bson:"groupName"`
 	MerId string `json:"merId" bson:"merId"`
 	// MerName   string `json:"merName" bson:"merName"`
-	RelatedEmail string `json:"-" bson:"relatedEmail,omitempty"` // 关联email
-	AreaCode     string `json:"-" bson:"areaCode,omitempty"`     // 地区代码
+	RelatedEmail string `json:"relatedEmail" bson:"relatedEmail,omitempty"` // 关联email
+	AreaCode     string `json:"areaCode" bson:"areaCode,omitempty"`         // 地区代码
 }
 
 // Session Session表

@@ -1,0 +1,119 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../elements/x-ajax/x-ajax.html">
+<link rel="import" href="../styles/app-theme.html">
+
+<dom-module id="up-down-layout">
+  <style>
+    :host {
+      display: block;
+      --dark-primary-color: #05B0CF;
+      --default-primary-color: #00BCD4;
+      --light-primary-color: #ffffff;
+      --text-primary-color: #ffffff;
+      /*text/icons*/
+      --accent-color: #FF4081;
+      --primary-background-color: #ffffff;
+      --primary-text-color: #212121;
+      --secondary-text-color: #727272;
+      --disabled-text-color: #bdbdbd;
+      --divider-color: #B6B6B6;
+      /* Components */
+      /* paper-drawer-panel */
+      --drawer-menu-color: #ffffff;
+      --drawer-border-color: 1px solid #ccc;
+      --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
+      /* paper-menu */
+      --paper-menu-background-color: #fff;
+      --menu-link-color: #111111;
+      --paper-input-container-input: {
+        font-size: 12px;
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
+      --paper-input-container-label: {
+        font-size: 12px;
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
+      --paper-menu-selected-item: {
+        background-color: rgb(226, 240, 249);
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
+    }
+
+    #banner {
+      background: #00BCD4;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .user-title {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-right: 18px;
+    }
+
+    .app-title {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      height: 64px;
+      padding: 0 0px;
+      pointer-events: none;
+      margin: 0 20px;
+      position: relative;
+    }
+
+    .app-title > .logo {
+      margin: auto 16px;
+    }
+
+    .app-title > .app-name {
+      font-size: 20px;
+    }
+
+  </style>
+  <template>
+    <div id="banner">
+      <div class="app-title">
+        <img src="../images/logo2.svg" alt="云收银" class="logo">
+        <div class="app-name">云收银管理平台</div>
+      </div>
+      <div class="user-title">
+        <div> 当前用户 【 <span>{{nickName}}</span> 】</div>
+        <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
+        <paper-icon-button icon="refresh"></paper-icon-button>
+        <paper-icon-button icon="search"></paper-icon-button>
+      </div>
+    </div>
+    <content select=".content"></content>
+    <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'up-down-layout',
+        properties: {
+          user: {
+            type: Object,
+            notify: true
+          }
+        },
+        ready: function() {},
+        // 退出
+        handleLogoutTapped: function() {
+          this.fire('logout');
+        },
+      });
+    })();
+
+  </script>
+</dom-module>

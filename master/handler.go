@@ -17,8 +17,8 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 )
 
-// tradeSettleReportHandle 清算报表查询的
-func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+// tradeSettleQueryHandle 清算报表查询的
+func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -32,6 +32,23 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+}
+
+// tradeSettleReportHandle 清算交易明细报表
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	role := r.FormValue("role")
+	date := r.FormValue("date")
+	fn := r.FormValue("filename")
+
+	tradeReport(w, &model.QueryCondition{
+		IsForReport:  true,
+		TimeType:     "payTime",
+		TransStatus:  []string{model.TransSuccess},
+		RefundStatus: model.TransRefunded,
+		StartTime:    date,
+		EndTime:      date,
+		SettRole:     role,
+	}, fn)
 }
 
 // respCodeMatchHandle 查找应答码处理器
@@ -213,6 +230,13 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
+	createTime := r.FormValue("createTime")
+	createStartTime := ""
+	createEndTime := ""
+	if createTime != "" {
+		createStartTime = createTime + " 00:00:00"
+		createEndTime = createTime + " 23:59:59"
+	}
 
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
@@ -240,7 +264,7 @@ func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	ret := Merchant.Find(merchant, pay, size, page)
+	ret := Merchant.Find(merchant, pay, createStartTime, createEndTime, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -763,7 +787,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(retBytes)
-	InsertLog(r, user, data)
+	InsertMasterLog(r, user, []byte(""))
 }
 
 // 查找
@@ -787,14 +811,23 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 删除session
+// 删除session。 登出操作，无论后台出什么错都返回成功。
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	// 清除cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "QUICKMASTERID",
+		Value:  "",
+		Path:   "/master",
+		MaxAge: -1,
+	})
+
 	sid, err := r.Cookie(SessionKey)
 	if err != nil {
-		log.Errorf("user not login: %s", err)
-		http.Error(w, "用户未登录", http.StatusNotAcceptable)
+		log.Errorf("user not login when doing logout operation: %s", err)
+		// http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
+
 	// 用于记录日志
 	session, err := mongo.SessionColl.Find(sid.Value)
 	if err != nil {
@@ -807,13 +840,6 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Write([]byte("mashal data error"))
 	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:   "QUICKMASTERID",
-		Value:  "",
-		Path:   "/master",
-		MaxAge: -1,
-	})
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
@@ -897,4 +923,41 @@ func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+}
+
+// 商户导出
+func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
+	filename := r.FormValue("filename")
+	createTime := r.FormValue("createTime")
+	createStartTime := ""
+	createEndTime := ""
+	if createTime != "" {
+		createStartTime = createTime + " 00:00:00"
+		createEndTime = createTime + " 23:59:59"
+	}
+	pay := r.FormValue("pay")
+	isNeedSignStr := r.FormValue("isNeedSign")
+	isNeedSign := false
+	if isNeedSignStr == "true" {
+		isNeedSign = true
+	}
+	merchant := model.Merchant{
+		MerId:        r.FormValue("merId"),
+		AgentCode:    r.FormValue("agentCode"),
+		AgentName:    r.FormValue("agentName"),
+		SubAgentCode: r.FormValue("subAgentCode"),
+		SubAgentName: r.FormValue("subAgentName"),
+		GroupCode:    r.FormValue("groupCode"),
+		GroupName:    r.FormValue("groupName"),
+		IsNeedSign:   isNeedSign,
+		MerStatus:    r.FormValue("merStatus"),
+		Detail: model.MerDetail{
+			MerName:       r.FormValue("merName"),
+			AcctNum:       r.FormValue("acctNum"),
+			GoodsTag:      r.FormValue("goodsTag"),
+			CommodityName: r.FormValue("commodityName"),
+		},
+	}
+
+	Merchant.Export(w, merchant, pay, filename, createStartTime, createEndTime)
 }

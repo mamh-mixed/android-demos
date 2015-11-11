@@ -1,0 +1,239 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<dom-module id="trade-message">
+  <template>
+    <style>
+      :host {
+        display: block;
+        --paper-dialog-scrollable: {
+          width: 920px;
+        }
+      }
+
+      paper-dialog-scrollable {
+        margin-top: 10px !important;
+        padding-top: 0px !important;
+      }
+
+      dl {
+        margin-top: 0px;
+      }
+
+      dt {
+        line-height: 36px;
+        font-weight: bold;
+      }
+
+      dd {
+        margin: 0;
+        border: 1px solid #e3e3e3;
+        padding: 6px;
+      }
+
+      dd:hover {
+        background-color: rgba(0, 188, 212, 0.17) !important;
+      }
+
+      div.buttons {
+        color: black;
+      }
+
+    </style>
+    <paper-dialog with-backdrop id="tradeMessageDialogView">
+      <h2>交易报文</h2>
+      <paper-dialog-scrollable>
+        <dl>
+          <template is="dom-repeat" items="{{messages}}" as="m">
+            <dt class$="{{getMsgTypeClass(m)}}">
+              <span>{{m.transTime}}</span>&nbsp;&nbsp;&nbsp;
+              <span>{{getMessageDirection(m)}}</span>
+            </dt>
+            <dd>
+              <code>{{formatMsg(m.msg)}}</code>
+            </dd>
+          </template>
+        </dl>
+
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="queryAction"></x-pagination>
+      </div>
+    </paper-dialog>
+    <x-ajax id="merMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleMerMessageResponse"></x-ajax>
+    <x-ajax id="chanMessageQueryAjax" method="GET" url="/master/trade/message" handle-as="json" on-response="handleChanMessageResponse"></x-ajax>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'trade-message',
+
+        properties: {
+          item: Object,
+          user: Object,
+        },
+        open: function() {
+          this.$.tradeMessageDialogView.open();
+          this.messages = [];
+
+          this.cond = {};
+          this.set('cond.size', 10);
+          this.set('cond.page', 1);
+
+          this.$.merMessageQueryAjax.params = {
+            'merId': this.item.merId,
+            'orderNum': this.item.orderNum,
+            'msgType': '1',
+            'size': this.cond.size,
+            'page': this.cond.page
+          };
+          this.$.merMessageQueryAjax.generateRequest();
+        },
+        handleMerMessageResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            this.set('cond.total', 0);
+            this.set('cond.page', 0);
+            return;
+          }
+          if (!response.data || !response.data.data) {
+            return;
+          }
+          var merMessages = response.data.data.slice(0);
+
+          this.messages = merMessages;
+
+          // 查询渠道报文
+          this.$.chanMessageQueryAjax.params = {
+            'merId': this.item.merId,
+            'orderNum': this.item.orderNum,
+            'msgType': '2',
+            'reqIds': this.reqArray
+          };
+          this.$.chanMessageQueryAjax.generateRequest();
+
+          this.set('cond.total', response.data.total);
+          this.set('cond.page', response.data.page);
+        },
+        handleChanMessageResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          if (!response.data || !response.data.data) {
+            return;
+          }
+          var chanMessages = response.data.data.slice(0);
+
+
+          // 把 c 归并到 m，条件是两个列表都有序递增
+          var m = 0,
+            c = 0;
+          while (true) {
+            // 如果 c 内没有元素了，归并完毕
+            if (c >= chanMessages.length) {
+              break;
+            }
+
+            // 如果 c 内还有元素，但 m 已经到结尾，把 c 内剩下的元素接到 m 的后面，归并完毕
+            if (m >= this.messages.length) {
+              for (; c < chanMessages.length; c++) {
+                this.push("messages", chanMessages[c]);
+              }
+              break;
+            }
+
+            // 如果 m 内当前元素小于 c 内当前元素，那么 c 内当前元素不能放在 m 这个位置，m 要前移
+            if (this.messages[m].transTime < chanMessages[c].transTime) {
+              m++;
+            }
+            // 如果 m 内当前元素等于 c 内当前元素
+            else if (this.messages[m].transTime === chanMessages[c].transTime) {
+              // 如果是一次请求，并且渠道返回的报文先于返回给商户报文，所以要插在商户报文前
+              if (this.messages[m].reqId === chanMessages[c].reqId && this.messages[m].direction === "out") {
+                // c 插入到 m 这个位置
+                this.splice("messages", m, 0, chanMessages[c]);
+                m++; // m 内加入了 c 内的元素，所以 m 要前移一个，实际上下一次比较的还是 m 中原来那个元素
+                c++;
+              } else {
+                m++;
+              }
+            }
+            // 如果 m 内当前元素大于 c 内当前元素，那么 c 内当前元素应该放在 m 这个位置
+            else {
+              // c 插入到 m 这个位置
+              this.splice("messages", m, 0, chanMessages[c]);
+              //   m++; // m 内加入了 c 内的元素，所以 m 要前移一个，实际上下一次比较的还是 m 中原来那个元素
+              c++;
+            }
+          }
+
+          window.setTimeout(function(){
+            this.$.tradeMessageDialogView.notifyResize();
+          }.bind(this), 0);
+
+        },
+        queryAction: function() {
+          this.$.merMessageQueryAjax.params = {
+            'merId': this.item.merId,
+            'orderNum': this.item.orderNum,
+            'msgType': '1',
+            'size': this.cond.size,
+            'page': this.cond.page
+          };
+          this.$.merMessageQueryAjax.generateRequest();
+          this.reqArray = [];
+          this.messageMap = {};
+          this.messageArray = [];
+        },
+        formatMsg: function(m) {
+          return JSON.stringify(m, null, 4);
+        },
+        getMsgTypeClass: function(m) {
+          if (m.msgType === 1) {
+            return 'green';
+          }
+
+          if (m.msgType === 2) {
+            return 'primary';
+          }
+
+          if (m.msgType === 3) {
+            return 'blue';
+          }
+
+          console.log("未知 msgType（" + m.msgType + "）")
+          return "";
+        },
+        getMessageDirection: function(m) {
+          var dir = "";
+          if (m.msgType === 1) {
+            dir = '商户';
+          } else if (m.msgType === 2) {
+            dir = '渠道';
+          } else if (m.msgType === 3) {
+            return '渠道 ==> 云收银 （异步通知）';
+          } else {
+            console.log("未知 msgType（" + m.msgType + "）");
+            return "";
+          }
+
+          if (m.direction === 'in') {
+            dir += " ==> 云收银";
+          } else if (m.direction === 'out') {
+            dir = "云收银 ==> " + dir;
+          } else {
+            console.log("未知 direction（" + m.direction + "）");
+            return "";
+          }
+
+          return dir
+        }
+      });
+    })();
+
+  </script>
+</dom-module>

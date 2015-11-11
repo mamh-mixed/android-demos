@@ -6,12 +6,13 @@ import (
 )
 
 // 使用8583应答
+// TODO 常用状态码整合到一起
 var (
-	CloseCode, CloseMsg         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
-	FailCode, FailMsg           = mongo.ScanPayRespCol.Get8583CodeAndMsg("FAIL")
-	InprocessCode, InprocessMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
-	SuccessCode, SuccessMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
-	UnKnownCode, UnKnownMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
+	CloseCode, CloseMsg, _         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
+	FailCode, FailMsg, _           = mongo.ScanPayRespCol.Get8583CodeAndMsg("FAIL")
+	InprocessCode, InprocessMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
+	SuccessCode, SuccessMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
+	UnKnownCode, UnKnownMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
 )
 
 // ReturnWithErrorCode 使用错误码直接返回
@@ -33,6 +34,7 @@ func LogicErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse 
 	// 交易保存
 	t.RespCode = code
 	t.ErrorDetail = msg
+	t.LockFlag = 0
 	mongo.SpTransColl.Add(t)
 
 	return &model.ScanPayResponse{

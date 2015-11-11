@@ -1,0 +1,246 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
+<link rel="import" href="../merchant-editor/merchant-editor.html">
+<link rel="import" href="../merchant-view/merchant-view.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<dom-module id="merchant-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    card-item {
+      margin-bottom: 20px;
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
+
+    div.search-condition paper-checkbox {
+      width: 170px;
+      margin-right: 15px;
+      display: inline-block;
+    }
+  </style>
+  <template>
+    <form is="x-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="search-condition">
+
+        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
+        <paper-input name="subAgentCode" id="subAgentCode" label="公司代码" value="{{cond.subAgentCode::input}}"></paper-input>
+        <paper-input name="subAgentName" id="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}"></paper-input>
+        <paper-input name="groupCode" id="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
+        <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
+        <paper-input name="merId" id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
+        <paper-input name="merName" id="merName" label="门店名称" value="{{cond.merName::input}}"></paper-input>
+        <paper-input name="acctNum" id="acctNum" label="开户账户" value="{{cond.acctNum::input}}"></paper-input>
+        <paper-input name="goodsTag" id="goodsTag" label="商品标签" value="{{cond.goodsTag::input}}"></paper-input>
+        <paper-input name="commodityName" id="commodityName" label="商品名称" value="{{cond.commodityName::input}}"></paper-input>
+        <paper-input name="createTime" label="创建日期" on-tap="showStartTimeDialog" value="{{cond.createTime::input}}"></paper-input>
+        <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
+          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>取消</paper-button>
+            <paper-button dialog-confirm>确定</paper-button>
+          </div>
+        </paper-dialog>
+        <paper-checkbox name="isNeedSign" checked="{{cond.isNeedSign::change}}" style="margin-left:15px;">开启验签</paper-checkbox>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <div class="paper-button-1" style="margin-top:20px;">
+          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{exportUri}}">导出</a>
+        </div>
+      </div>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th">序号</div>
+            <div class="th left">门店代码</div>
+            <div class="th left">门店名称</div>
+            <div class="th left">代理代码</div>
+            <div class="th left">公司代码</div>
+            <div class="th left">商户代码</div>
+            <div class="th left">开户账号</div>
+            <div class="th left">商品标签</div>
+            <div class="th left">商品名称</div>
+            <div class="th left">开启验签</div>
+          </div>
+        </div>
+        <div class="tbody">
+          <template is="dom-repeat" items="{{merchants}}">
+            <div class="tr">
+              <div class="td center">
+                <span>{{addOneFilter(index)}}</span>
+              </div>
+              <div class="td">
+                <a on-tap="viewMerchantTap">{{item.merId}}</a>
+              </div>
+              <div class="td">
+                <span>{{item.detail.merName}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.agentCode}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.subAgentCode}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.groupCode}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.detail.acctNum}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.detail.goodsTag}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.detail.commodityName}}</span>
+              </div>
+              <div class="td">
+                <span>{{getIsNeedSign(item.isNeedSign)}}</span>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="tfoot">
+          <div class="tr pagination">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+          </div>
+        </div>
+      </div>
+    </form>
+    <merchant-editor id="merchantEditor" on-saved="handleMerchantSave"></merchant-editor>
+    <merchant-view id="merchantView" item="{{merchant}}" on-editor="handleItemEditedEvent" on-delete-ok="handleAfterDelete"></merchant-view>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'merchant-list',
+        properties: {
+          tiny: {
+            type: Boolean,
+            value: false
+          },
+          autoLoading: {
+            type: Boolean,
+            value: false
+          },
+        },
+        ready: function() {
+          this.merchants = [];
+          this.cond = {
+            page: 1,
+            size: 20,
+            total: 0
+          };
+        },
+        attached: function() {
+          if (this.autoLoading) {
+            this.handleQueryTapped();
+          }
+        },
+        observers: [
+          '_watchMerStatusChange(merStatus.key)',
+          '_watchCondChange(cond.*)',
+        ],
+        _watchMerStatusChange: function(key) {
+          if (key) {
+            this.cond.merStatus = key;
+          } else {
+            delete this.cond.merStatus;
+          }
+        },
+        // 发送查询交易的ajax请求
+        handleQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+        generateAjaxRequest: function() {
+          this.merchants = [];
+          this.$.formQuery.submit();
+        },
+        // ajax请求响应处理
+        handleQueryResponse: function(e) {
+          var response = e.detail;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          var pagination = response.data;
+          this.merchants = pagination.data.slice(0);
+
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
+
+          if (this.merchants.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
+        },
+        // 新增机构商户事件
+        handleCreateFabTapped: function() {
+          this.$.merchantEditor.open();
+        },
+        // 新机构商户保存成功事件，刷新列表
+        handleMerchantSave: function() {
+          this.handleQueryTapped();
+        },
+        // 清除商户选中的标志
+        initialList: function() {
+          for (var i = 0, l = this.merchants.length; i < l; i++) {
+            this.set('merchants.' + i + '.stared', false);
+          }
+        },
+        // 编辑机构商户
+        handleItemEditedEvent: function() {
+          document.querySelector('#appRouter').go('/config/merchant/' + this.merchant.merId);
+        },
+
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        // 查看商户详细信息
+        viewMerchantTap: function(event) {
+          this.merchant = event.model.item;
+          this.$.merchantView.open();
+        },
+        handleAfterDelete: function() {
+          this.handleQueryTapped();
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.merchants = [];
+          this.set('cond.total', 0);
+        },
+        getIsNeedSign: function(isNeedSign) {
+          if (isNeedSign) {
+            return '是';
+          }
+          return '';
+        },
+        _watchCondChange: function(newValue) {
+          var filename = 'Merchants.xlsx';
+          if (this.cond.startTime && this.cond.startTime !== '') {
+            filename = 'Merchants_' + this.cond.startTime + '.xlsx';
+          }
+          filename = filename.replace(/-/g, '');
+          this.exportUri = '/master/merchant/export?' + Util.query(this.cond) + '&filename=' + filename;
+
+        },
+        showStartTimeDialog: function() {
+          this.$.startTimeDailog.toggle();
+        },
+        // 日期、时间控件
+        dismissStartTimeDialog: function() {
+          var startTime = this.$.startTimePicker.date;
+          this.set('cond.createTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
+        },
+      });
+    })();
+  </script>
+</dom-module>

@@ -65,8 +65,13 @@ func (t *taskCollection) Finish(task *model.Task) error {
 		},
 	}
 	change.ReturnNew = true
-
 	_, err := database.C(t.name).Find(query).Apply(change, task)
 
 	return err
+}
+
+func (t *taskCollection) FindAll() ([]model.Task, error) {
+	var ts []model.Task
+	err := database.C(t.name).Find(nil).All(&ts)
+	return ts, err
 }

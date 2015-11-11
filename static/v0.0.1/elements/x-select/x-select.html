@@ -1,0 +1,219 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="./expand-animation.html">
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <x-select items="[[optionArray]]" selected-item="{{selectedItem}}" label="labelName"></x-select>
+
+@demo
+-->
+<dom-module id="x-select">
+
+  <style>
+    :host {
+      display: inline-block;
+    }
+
+    ul.dropdown-content {
+      display: block;
+      position: relative;
+      background-color: #fff;
+      box-shadow: 0px 2px 6px #ccc;
+      margin: 0.25em 0;
+      padding: 0.25em;
+      border-radius: 3px;
+      max-height: 280px;
+    }
+
+    [vertical-align="top"] ul {
+      margin-top: 0;
+    }
+
+    [vertical-align="bottom"] ul {
+      margin-bottom: 0;
+    }
+
+    li {
+      display: block;
+      position: relative;
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      display: block;
+      position: relative;
+      padding: 0.75em 1em;
+      text-decoration: none;
+      color: var(--default-primary-color);
+    }
+
+    li:not(:last-of-type) {
+      border-bottom: 1px solid #eee;
+    }
+
+    li:hover a {
+      background: var(--default-primary-color);
+      color: #fff;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-group > iron-icon {
+      position: absolute;
+      right: 5px;
+      bottom: 10px;
+      cursor: pointer;
+      height: 1.2em;
+    }
+
+    .input-group[disabled] > iron-icon {
+      color: #bdbdbd;
+    }
+  </style>
+
+  <template>
+    <div class="input-group" disabled$="[[disabled]]">
+      <input type="hidden" name="[[name]]" value="{{selectedItem.key}}"></input>
+      <paper-input id="input" readonly label="[[label]]" value="{{selectedItem.value}}" on-tap="open" disabled="[[disabled]]"></paper-input>
+      <iron-icon icon="clear" on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
+      <iron-icon icon="arrow-drop-down" hidden$="{{isClearActive}}"></iron-icon>
+    </div>
+    <iron-dropdown id="dropdown" vertical-align="[[verticalAlign]]" horizontal-align="[[horizontalAlign]]" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]">
+      <ul class="dropdown-content">
+        <template is="dom-repeat" items="[[items]]">
+          <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)">[[item.value]]</a></li>
+        </template>
+      </ul>
+    </iron-dropdown>
+  </template>
+
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 'x-select',
+
+    properties: {
+      /**
+       * 'items' that will show in select list/
+       * items is array and element in items should be an Object just like following:
+       * {
+       *      key: 'key',
+       *      value: 'value'
+       * }
+       */
+      items: {
+        type: Array,
+        notify: true
+      },
+      /**
+       * the selected item
+       */
+      selectedItem: {
+        type: Object,
+        notify: true,
+        reflectToAttribute: true
+      },
+      isClearActive: {
+        type: Boolean,
+        value: false
+      },
+      label: String,
+      name: String,
+      verticalAlign: String,
+      horizontalAlign: String,
+      disabled: Boolean,
+      openAnimationConfig: {
+        type: Array,
+        value: function() {
+          return [{
+            name: 'fade-in-animation',
+            timing: {
+              delay: 150,
+              duration: 50
+            }
+          }, {
+            name: 'expand-animation',
+            timing: {
+              delay: 150,
+              duration: 200
+            }
+          }];
+        }
+      },
+
+      closeAnimationConfig: {
+        type: Array,
+        value: function() {
+          return [{
+            name: 'fade-out-animation',
+            timing: {
+              duration: 200
+            }
+          }];
+        }
+      }
+    },
+    /**
+     * open the dropdown and show all select item.
+     *
+     */
+    open: function() {
+      this.$.dropdown.open();
+    },
+    /**
+     * clear the selected item and set input filed undefined.
+     *
+     */
+    clear: function() {
+      if (!this.disabled) {
+        this.$.input.value = '';
+        this.selectedItem = undefined;
+        this.$.dropdown.close();
+      }
+
+    },
+    /**
+     * list select event.
+     *
+     */
+    handleItemSelectedTapped: function(e) {
+      this.selectedItem = e.model.item;
+      this.$.input.value = e.model.item.value;
+      this.$.dropdown.close();
+      this.fire('item-selected', this.selectedItem);
+    },
+    observers: [
+      '_watchValueChange(selectedItem.value)'
+    ],
+    /**
+     * if selectedItem.value exist ,show the clear icon.
+     *
+     */
+    _watchValueChange: function(value) {
+      this.set('isClearActive', !!value);
+    }
+  });
+</script>

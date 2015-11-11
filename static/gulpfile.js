@@ -18,23 +18,23 @@ gulp.task('vendor', ['clean'], function() {
     .pipe(debug({
       title: 'vendor:'
     }))
-    .pipe(gulp.dest('app'));
+    .pipe(gulp.dest('v0.0.1'));
 });
 
 gulp.task('copy', ['vendor'], function() {
   return gulp.src([
-      'app/**/*',
-      '!app/bower_components/**/demo',
-      '!app/bower_components/**/demo/**',
-      '!app/bower_components/**/tests',
-      '!app/bower_components/**/tests/**',
-      '!app/bower_components/**/test',
-      '!app/bower_components/**/test/**',
-      '!app/bower_components/**/examples',
-      '!app/bower_components/**/examples/**',
-      '!app/**/.*',
-      '!app/**/bower.json',
-      '!app/**/*.md'
+      'v0.0.1/**/*',
+      '!v0.0.1/bower_components/**/demo',
+      '!v0.0.1/bower_components/**/demo/**',
+      '!v0.0.1/bower_components/**/tests',
+      '!v0.0.1/bower_components/**/tests/**',
+      '!v0.0.1/bower_components/**/test',
+      '!v0.0.1/bower_components/**/test/**',
+      '!v0.0.1/bower_components/**/examples',
+      '!v0.0.1/bower_components/**/examples/**',
+      '!v0.0.1/**/.*',
+      '!v0.0.1/**/bower.json',
+      '!v0.0.1/**/*.md'
     ])
     .pipe(debug({
       title: 'copy:'
@@ -45,14 +45,14 @@ gulp.task('copy', ['vendor'], function() {
 
 gulp.task('minifyHTML', ['copy'], function() {
   return gulp.src([
-      'app/**/*.html',
-      '!app/**/app-router/app-router.html',
-      '!app/**/app-router/app-router.csp.html',
-      '!app/bower_components/web-component-tester/data/index.html',
-      '!app/**/demo/**',
-      '!app/**/test/**',
-      '!app/**/tests/**',
-      '!app/**/examples/**'
+      'v0.0.1/**/*.html',
+      '!v0.0.1/**/app-router/app-router.html',
+      '!v0.0.1/**/app-router/app-router.csp.html',
+      '!v0.0.1/bower_components/web-component-tester/data/index.html',
+      '!v0.0.1/**/demo/**',
+      '!v0.0.1/**/test/**',
+      '!v0.0.1/**/tests/**',
+      '!v0.0.1/**/examples/**'
     ])
     .pipe(debug({
       title: 'minifyHTML:'
@@ -63,16 +63,16 @@ gulp.task('minifyHTML', ['copy'], function() {
 
 gulp.task('minifyJS', ['minifyHTML'], function() {
   return gulp.src([
-      'app/**/*.js',
-      '!app/**/*min.js',
-      '!app/**/platinum-push-messaging/service-worker.js',
-      '!app/bower_components/async/support/sync-package-managers.js',
-      '!app/bower_components/sw-toolbox/demo/service-worker.js',
-      '!app/**/sw-toolbox/sw-toolbox.js',
-      '!app/**/demo/**',
-      '!app/**/test/**',
-      '!app/**/tests/**',
-      '!app/**/examples/**'
+      'v0.0.1/**/*.js',
+      '!v0.0.1/**/*min.js',
+      '!v0.0.1/**/platinum-push-messaging/service-worker.js',
+      '!v0.0.1/bower_components/async/support/sync-package-managers.js',
+      '!v0.0.1/bower_components/sw-toolbox/demo/service-worker.js',
+      '!v0.0.1/**/sw-toolbox/sw-toolbox.js',
+      '!v0.0.1/**/demo/**',
+      '!v0.0.1/**/test/**',
+      '!v0.0.1/**/tests/**',
+      '!v0.0.1/**/examples/**'
     ])
     .pipe(debug({
       title: 'minifyJS:'
@@ -84,11 +84,11 @@ gulp.task('minifyJS', ['minifyHTML'], function() {
 gulp.task('minifyCSS', ['minifyHTML'], function() {
   // 1. 找到文件
   return gulp.src([
-      'app/**/*.css',
-      '!app/**/demo/**',
-      '!app/**/test/**',
-      '!app/**/tests/**',
-      '!app/**/examples/**'
+      'v0.0.1/**/*.css',
+      '!v0.0.1/**/demo/**',
+      '!v0.0.1/**/test/**',
+      '!v0.0.1/**/tests/**',
+      '!v0.0.1/**/examples/**'
     ])
     .pipe(debug({
       title: 'minifyCSS:'

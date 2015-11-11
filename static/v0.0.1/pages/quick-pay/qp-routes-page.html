@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../layouts/scaffold-layout.html">
+<link rel="import" href="../../elements/quick-route-list/quick-route-list.html">
+
+<dom-module id="qp-routes-page">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <template>
+    <scaffold-layout route$="[[route]]">
+      <quick-route-list class="content" mer-id="[[merId]]"></quick-route-list>
+    </scaffold-layout>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'qp-routes-page',
+        properties: {
+          merId: {
+            type: String
+          },
+          route: {
+            type: Object,
+            value: {
+              name: 'quickPay.routes',
+              path: '/quickPay/routes',
+              title: '快捷支付路由策略',
+              subtitle: '快捷支付查询，增加或删除路由策略',
+            }
+          }
+        },
+        observers: [
+          'watchMerId(merId)'
+        ],
+        watchMerId: function(merId) {
+          console.log(merId);
+          this.set('route', {
+            name: 'quickPay.routes',
+            path: '/quickPay/routes',
+            title: '快捷支付路由策略',
+            subtitle: '快捷支付查询，增加或删除路由策略',
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>

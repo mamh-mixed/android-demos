@@ -144,8 +144,10 @@ func UpdateTrans() error {
 		if ot.Request.Code != "" && nt.Busicd != model.Jszf {
 			nt.Busicd = model.Jszf
 		}
-
-		nt.TradeFrom = ot.Request.TradeFrom
+		nt.GatheringId = ot.Payjson.UserInfo.OpenID
+		nt.NickName = ot.Payjson.UserInfo.NickName
+		nt.HeadImgUrl = ot.Payjson.UserInfo.Headimgurl
+		nt.VeriCode = ot.Request.VeriCode
 		mongo.SpTransColl.Update(nt)
 		updated++
 	}
@@ -401,8 +403,7 @@ func AddTransFromOldDB(st, et string) error {
 }
 
 func findTransFromOldDB() ([]txn, error) {
-	// 10-18 同步交易时才开始加入tradeFrom
-	q := bson.M{"gw_date": bson.M{"$lte": "2015-10-18"}, "m_request.tradeFrom": bson.M{"$exists": true}, "response": "00"}
+	q := bson.M{"gw_date": bson.M{"$lte": "2015-10-20"}, "payjson.userinfo.headimgurl": bson.M{"$exists": true}, "response": "00"}
 	var txns []txn
 	err := saomaDB.C("txn").Find(q).All(&txns)
 	return txns, err

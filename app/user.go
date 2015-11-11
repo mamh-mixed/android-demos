@@ -856,6 +856,7 @@ func genRouter(merchant *model.Merchant) error {
 		SettFlag:  "CIL",
 		SettRole:  "CIL",
 		MerFee:    0.006,
+		AcqFee:    0.0,
 	}
 	err := mongo.RouterPolicyColl.Insert(alpRoute)
 	if err != nil {
@@ -871,6 +872,7 @@ func genRouter(merchant *model.Merchant) error {
 		SettFlag:  "CIL",
 		SettRole:  "CIL",
 		MerFee:    0.006,
+		AcqFee:    0.003,
 	}
 	err = mongo.RouterPolicyColl.Insert(wxpRoute)
 	if err != nil {

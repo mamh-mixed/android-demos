@@ -33,6 +33,9 @@ func (c *chanMer) Find(chanCode, chanMerId, chanMerName, pay string, size, page 
 
 	for _, chanMer := range chanMers {
 		chanMer.SignKey = ProcessSensitiveInfo(chanMer.SignKey)
+
+		// httpCert和httpKey敏感信息处理
+		processSensitiveKey(chanMer)
 	}
 
 	// 分页信息
@@ -69,6 +72,9 @@ func (i *chanMer) FindByMerIdAndCardBrand(merId, cardBrand string) (result *mode
 	}
 
 	mer.SignKey = ProcessSensitiveInfo(mer.SignKey)
+
+	// httpCert和httpKey敏感信息处理
+	processSensitiveKey(mer)
 
 	result = &model.ResultBody{
 		Status:  0,
@@ -113,13 +119,38 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 				return model.NewResultBody(1, "查找数据库失败")
 			}
 		}
+		if isCreate {
+			if strings.Contains(c.SignKey, "*") {
+				return model.NewResultBody(4, "SignKey不能包含*")
+			}
+			if strings.Contains(c.HttpCert, "*") {
+				return model.NewResultBody(4, "Http证书不能包含*")
+			}
+			if strings.Contains(c.HttpKey, "*") {
+				return model.NewResultBody(4, "Http密钥不能包含*")
+			}
+			if strings.Contains(c.PrivateKey, "*") {
+				return model.NewResultBody(4, "商户私钥不能包含*")
+			}
+		}
 		if !isCreate {
 			log.Debugf("newSignCert:%s,oldSignCert:%s", c.SignKey, channel.SignKey)
 		}
-
-		if !isCreate && strings.Contains(c.SignKey, "*") {
-			c.SignKey = channel.SignKey
+		if !isCreate {
+			if strings.Contains(c.SignKey, "*") {
+				c.SignKey = channel.SignKey
+			}
+			if strings.Contains(c.HttpCert, "*") {
+				c.HttpCert = channel.HttpCert
+			}
+			if strings.Contains(c.HttpKey, "*") {
+				c.HttpKey = channel.HttpKey
+			}
+			if strings.Contains(c.PrivateKey, "*") {
+				c.PrivateKey = channel.PrivateKey
+			}
 		}
+
 	}
 
 	// 将微信大商户的签名密钥带*号的改为不带*号的
@@ -161,6 +192,9 @@ func (i *chanMer) Match(chanCode, chanMerId, chanMerName string, maxSize int) (r
 	}
 	for _, chanMer := range chanMers {
 		chanMer.SignKey = ProcessSensitiveInfo(chanMer.SignKey)
+
+		// httpCert和httpKey敏感信息处理
+		processSensitiveKey(chanMer)
 	}
 
 	result = &model.ResultBody{
@@ -190,4 +224,47 @@ func (i *chanMer) Delete(chanCode, chanMerId string) (result *model.ResultBody) 
 	}
 
 	return result
+}
+
+func processSensitiveKey(chanMer *model.ChanMer) {
+	// httpCert,httpKey，privateKey敏感信息处理
+	if chanMer.HttpCert != "" {
+		httpCertStrs := strings.Split(chanMer.HttpCert, "\n")
+		newHttpCert := ""
+		for _, httpCert := range httpCertStrs {
+			if strings.Contains(httpCert, "BEGIN CERTIFICATE") || strings.Contains(httpCert, "END CERTIFICATE") {
+				newHttpCert += httpCert + "\n"
+			} else {
+				newHttpCert += ProcessSensitiveInfo(httpCert) + "\n"
+			}
+
+		}
+		chanMer.HttpCert = newHttpCert
+	}
+	if chanMer.HttpKey != "" {
+		httpKeyStrs := strings.Split(chanMer.HttpKey, "\n")
+		newHttpKey := ""
+		for _, httpKey := range httpKeyStrs {
+			if strings.Contains(httpKey, "BEGIN RSA PRIVATE KEY") || strings.Contains(httpKey, "END RSA PRIVATE KEY") {
+				newHttpKey += httpKey + "\n"
+			} else {
+				newHttpKey += ProcessSensitiveInfo(httpKey) + "\n"
+			}
+
+		}
+		chanMer.HttpKey = newHttpKey
+	}
+	if chanMer.PrivateKey != "" {
+		privateKeyStrs := strings.Split(chanMer.PrivateKey, "\n")
+		newPrivateKey := ""
+		for _, privateKey := range privateKeyStrs {
+			if strings.Contains(privateKey, "BEGIN RSA PRIVATE KEY") || strings.Contains(privateKey, "END RSA PRIVATE KEY") {
+				newPrivateKey += privateKey + "\n"
+			} else {
+				newPrivateKey += ProcessSensitiveInfo(privateKey) + "\n"
+			}
+
+		}
+		chanMer.PrivateKey = newPrivateKey
+	}
 }

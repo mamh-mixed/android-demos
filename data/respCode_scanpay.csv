@@ -1,7 +1,7 @@
 iso8583Code,iso8583Msg,errorCode,isUseISO,respCode,respMsg
 00,成功,SUCCESS,true,,
 01,交易失败,FAIL,false,,
-03,商户错误,NO_MERCHANT,false,,
+03,商户不存在,NO_MERCHANT,false,,
 05,不支持该交易类型,NOT_SUPPORT_TYPE,true,,
 09,处理中,INPROCESS,true,,
 12,签名错误,SIGN_AUTH_ERROR,true,,

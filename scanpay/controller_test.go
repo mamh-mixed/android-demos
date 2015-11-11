@@ -5,12 +5,13 @@ import (
 	"sync"
 	"testing"
 
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	// "time"
 )
 
 var (
@@ -19,11 +20,12 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "130100780239237875",
+		ScanCodeId: "286310047481684515",
 		AgentCode:  "19992900",
-		Txamt:      "000000000001",
-		Chcd:       "WXP",
+		Txamt:      "000000000200",
+		Chcd:       "AOS",
 		Busicd:     "PURC",
+		Currency:   "JPY",
 		Mchntid:    "200000000010001",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
@@ -41,19 +43,20 @@ var (
 	// 查询
 	scanPayEnquiry = &model.ScanPayRequest{
 		Busicd:       "INQY",
-		Mchntid:      "100000000000210",
-		AgentCode:    "CIL00002",
-		OrigOrderNum: "1439884584561",
+		Mchntid:      "200000000010001",
+		AgentCode:    "19992900",
+		OrigOrderNum: "1447168085242",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
 		Busicd:       "REFD",
-		Mchntid:      "100000000000210",
+		Mchntid:      "200000000010001",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1440032751947",
-		AgentCode:    "CIL00002",
-		Txamt:        "000000000001",
-		Chcd:         "WXP",
+		OrigOrderNum: "1447213516899",
+		AgentCode:    "19992900",
+		Txamt:        "000000000100",
+		Currency:     "JPY",
+		// Chcd:         "AOS",
 	}
 	// 撤销
 	scanPayCancel = &model.ScanPayRequest{
@@ -67,8 +70,8 @@ var (
 	scanPayClose = &model.ScanPayRequest{
 		Busicd:       "CANC",
 		Mchntid:      "200000000010001",
-		OrderNum:     util.Millisecond() + "1",
-		OrigOrderNum: "1439886859870",
+		OrderNum:     util.Millisecond(),
+		OrigOrderNum: "1447166282329",
 		AgentCode:    "19992900",
 	}
 	// 企业支付
@@ -101,12 +104,12 @@ var (
 	purchaseCoupons = &model.ScanPayRequest{
 		Txndir:    "Q",
 		Busicd:    "VERI",
-		AgentCode: "19900505",
+		AgentCode: "10134001",
 		// Chcd:       "ULIVE",
-		Mchntid:    "001000000000505",
-		Terminalid: "9e908a25",
-		OrderNum:   "1446199851869",
-		ScanCodeId: "1802708104000667",
+		Mchntid:    "100000000010001",
+		Terminalid: "30150006",
+		OrderNum:   "1447145911569",
+		ScanCodeId: "1801708104000529",
 		// VeriTime:   "-1",
 	}
 )
@@ -131,18 +134,18 @@ func doOneScanPay(scanPay *model.ScanPayRequest) error {
 func TestConcurrentScanPay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
 	var wg sync.WaitGroup
-	n := "1441764717955"
-	// scanPayBarcodePay.OrderNum = n
+	n := "14417647179553"
+	scanPayBarcodePay.OrderNum = n
 	scanPayClose.OrigOrderNum = n
 	wg.Add(2)
 	go func() {
-		doOneScanPay(scanPayClose)
+		doOneScanPay(scanPayBarcodePay)
 		wg.Done()
 	}()
 
 	// scanPayClose.OrderNum += "2"
 	go func() {
-		// time.Sleep(500 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		doOneScanPay(scanPayClose)
 		wg.Done()
 	}()
@@ -151,7 +154,8 @@ func TestConcurrentScanPay(t *testing.T) {
 
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
-	err := doOneScanPay(scanPayQrCodeOfflinePay)
+	// scanPayClose.OrigOrderNum = "14417647179551"
+	err := doOneScanPay(scanPayRefund)
 	if err != nil {
 		t.Error(err)
 	}

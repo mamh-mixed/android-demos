@@ -1,0 +1,522 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<dom-module id="merchant-view">
+
+  <style>
+    :host {
+      display: block;
+      --paper-checkbox-label-spacing: 4px;
+      --paper-dialog-scrollable: {
+        font-size: 14px;
+        width: 700px;
+        height: 500px;
+      }
+    }
+
+    paper-checkbox {
+      display: inline-block;
+    }
+
+    #dialogView {
+      background-color: #ffffff;
+    }
+
+    .key {
+      font-weight: bold;
+      text-align: left !important;
+    }
+
+    .table .th {
+      display: table-cell;
+      max-width: 60px;
+    }
+
+    .table .td {
+      display: table-cell;
+    }
+
+    paper-tabs,
+    paper-toolbar {
+      background-color: #00bcd4;
+      color: #fff;
+      box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    paper-toolbar paper-tabs {
+      box-shadow: none;
+    }
+
+    paper-tabs[noink][no-bar] paper-tab.iron-selected {
+      color: #ffff8d;
+    }
+
+    paper-tabs[align-bottom] {
+      box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    dt {
+      display: inline-block;
+      float: left;
+      clear: both;
+      width: 140px;
+      font-weight: bold;
+    }
+
+    dd {
+      display: inline-block;
+      float: left;
+      margin-left: 24px;
+    }
+
+    dd.cert {
+      float: none;
+      display: block;
+      margin-left: 10px;
+      clear: both;
+    }
+
+    paper-tabs {
+      margin-top: 0;
+    }
+
+    .checkbox-group > paper-checkbox {
+      margin-right: 20px;
+    }
+  </style>
+  <template>
+    <paper-dialog with-backdrop id="dialogView">
+      <paper-tabs selected="{{idx}}">
+        <paper-tab>门店信息</paper-tab>
+        <paper-tab>支付宝</paper-tab>
+        <paper-tab>微信</paper-tab>
+        <paper-tab>优方</paper-tab>
+      </paper-tabs>
+      <paper-dialog-scrollable>
+        <iron-pages selected="{{idx}}">
+          <section alias="merchant">
+            <div class="table low">
+              <div class="tbody">
+                <div class="tr">
+                  <div class="th key">门店代码</div>
+                  <div class="td">{{item.merId}}</div>
+                  <div class="th key">门店名称</div>
+                  <div class="td">{{item.detail.merName}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">代理代码</div>
+                  <div class="td">{{item.agentCode}}</div>
+                  <div class="td key">代理名称</div>
+                  <div class="td">{{item.agentName}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">公司代码</div>
+                  <div class="td">{{item.subAgentCode}}</div>
+                  <div class="td key">公司名称</div>
+                  <div class="td">{{item.subAgentName}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">商户代码</div>
+                  <div class="td">{{item.groupCode}}</div>
+                  <div class="td key">商户名称</div>
+                  <div class="td">{{item.groupName}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key"> 开启验签</div>
+                  <div class="td">
+                    <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
+                  </div>
+                  <div class="td key">签名密钥</div>
+                  <div class="td" colspan="3" style="word-break:break-all;">{{item.signKey}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">开户姓名</div>
+                  <div class="td">{{item.detail.acctName}}</div>
+                  <div class="td key">开户账户</div>
+                  <div class="td">{{item.detail.acctNum}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">支行名称</div>
+                  <div class="td">{{item.detail.openBankName}}</div>
+                  <div class="td key">开户行名称</div>
+                  <div class="td">{{item.detail.bankName}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">交易币种</div>
+                  <div class="td">{{item.transCurr}}</div>
+                  <div class="td key">开户行号</div>
+                  <div class="td">{{item.detail.bankId}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">省份</div>
+                  <div class="td">{{item.detail.province}}</div>
+                  <div class="td key">城市</div>
+                  <div class="td">{{item.detail.city}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">门店类型</div>
+                  <div class="td">{{item.detail.shopType}}</div>
+                  <div class="td key">门店 ID</div>
+                  <div class="td">{{item.detail.shopID}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">商品标签</div>
+                  <div class="td">{{item.detail.goodsTag}}</div>
+                  <div class="td key">商品名称</div>
+                  <div class="td">{{item.detail.commodityName}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">品牌编号</div>
+                  <div class="td">{{item.detail.brandNum}}</div>
+                  <div class="td key">备注</div>
+                  <div class="td" style="word-break:break-all;">{{item.remark}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">标题一</div>
+                  <div class="td">{{item.detail.titleOne}}</div>
+                  <div class="td key">标题二</div>
+                  <div class="td">{{item.detail.titleTwo}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">门店状态</div>
+                  <div class="td">{{getMerStatus(item.merStatus)}}</div>
+                  <div class="td key">唯一码</div>
+                  <div class="td">{{item.uniqueId}}</div>
+                </div>
+                <div class="tr">
+                  <div class="th key">创建时间</div>
+                  <div class="td">{{item.createTime}}</div>
+                  <div class="th key">更新时间</div>
+                  <div class="td">{{item.updateTime}}</div>
+                </div>
+              </div>
+            </div>
+            <dl>
+              <dt class="key">账单URL</dt>
+              <dd>{{item.detail.billUrl}}</dd>
+              <dt class="key">支付URL</dt>
+              <dd>{{item.detail.payUrl}}</dd>
+              <dt class="key">授权接口</dt>
+              <dd class="checkbox-group">
+                <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
+                  <paper-checkbox checked$="{{perm.isChecked}}" disabled>
+                    <span>{{perm.value}}</span>
+                  </paper-checkbox>
+                </template>
+              </dd>
+            </dl>
+          </section>
+          <section alias="alipay">
+            <paper-dialog-scrollable>
+              <dl id="alp">
+                <dt>渠道代码:</dt>
+                <dd>{{alipay.chanCode}}</dd>
+                <dt>商户代码:</dt>
+                <dd>{{alipay.chanMerId}}</dd>
+                <dt>商户名称:</dt>
+                <dd>{{alipay.chanMerName}}</dd>
+                <dt>MD5 KEY:</dt>
+                <dd>{{alipay.signCert}}</dd>
+                <dt>代理代码:</dt>
+                <dd>{{alipay.agentCode}}</dd>
+              </dl>
+            </paper-dialog-scrollable>
+          </section>
+          <section alias="weixin">
+            <paper-dialog-scrollable>
+              <dl id="wxp">
+                <dt>渠道代码:</dt>
+                <dd>{{weixin.chanCode}}</dd>
+                <dt>商户代码:</dt>
+                <dd>{{weixin.chanMerId}}</dd>
+                <dt>商户名称:</dt>
+                <dd>{{weixin.chanMerName}}</dd>
+                <dt>是否代理商模式:</dt>
+                <dd>
+                  <paper-checkbox checked$="{{weixin.isAgentMode}}" disabled></paper-checkbox>
+                </dd>
+                <dt>大商户号:</dt>
+                <dd>{{weixin.agentMer.chanMerId}}</dd>
+                <dt>微信 APPID:</dt>
+                <dd>{{weixin.wxpAppId}}</dd>
+                <dt>签名密钥:</dt>
+                <dd>{{weixin.signCert}}</dd>
+                <dt>HTTP 证书:</dt>
+                <dd class="cert">
+                  <pre>{{weixin.httpCert}}</pre>
+                </dd>
+                <dt>HTTP 密钥:</dt>
+                <dd class="cert">
+                  <pre>{{weixin.httpKey}}</pre>
+                </dd>
+              </dl>
+            </paper-dialog-scrollable>
+          </section>
+          <section alias="ulive">
+            <paper-dialog-scrollable>
+              <dl id="ulive">
+                <dt>渠道代码:</dt>
+                <dd>{{ulive.chanCode}}</dd>
+                <dt>商户代码:</dt>
+                <dd>{{ulive.chanMerId}}</dd>
+                <dt>商户名称:</dt>
+                <dd>{{ulive.chanMerName}}</dd>
+                <dt>终端号:</dt>
+                <dd>{{ulive.terminalId}}</dd>
+              </dl>
+            </paper-dialog-scrollable>
+          </section>
+      </paper-dialog-scrollable>
+      <div class="buttons layout center">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个门店吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleViewRouteTapped">查看路由</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
+      </div>
+    </paper-dialog>
+    <x-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
+    <x-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></x-ajax>
+    <x-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></x-ajax>
+    <x-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></x-ajax>
+    <x-ajax id="uliveChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleUliveChanMerResponse"></x-ajax>
+  </template>
+  <script>
+    Polymer({
+      is: 'merchant-view',
+      properties: {
+        permissionArray: {
+          type: Array,
+          value: [{
+            key: 'PURC',
+            value: '下单支付'
+          }, {
+            key: 'PAUT',
+            value: '预下单'
+          }, {
+            key: 'QYZF',
+            value: '企业付款'
+          }, {
+            key: 'JSZF',
+            value: '公众号支付'
+          }, {
+            key: 'INQY',
+            value: '查询订单'
+          }, {
+            key: 'VOID',
+            value: '撤销'
+          }, {
+            key: 'REFD',
+            value: '退款'
+          }, {
+            key: 'CANC',
+            value: '取消'
+          }, {
+            key: 'VERI',
+            value: '卡券核销'
+          }]
+        },
+        item: Object,
+        merId: String,
+      },
+      observers: [
+        '_permissionChanged(item.permission)',
+        '_idxChange(idx)'
+      ],
+      _permissionChanged: function(value) {
+        this.deleteFlag = false;
+        for (var k = 0; k < this.permissionArray.length; k++) {
+          this.set('permissionArray.' + k + '.isChecked', false);
+        }
+        var permissions = value;
+        // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+        if (permissions) {
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
+            }
+          }
+        }
+      },
+      _idxChange: function(idx) {
+        if (idx === 1 && !this.alipay.chanMerId) {
+          var alpParams = {
+            merId: this.item.merId,
+            cardBrand: 'ALP'
+          };
+          this.$.alpChanMerAjax.params = alpParams;
+          this.$.alpChanMerAjax.generateRequest();
+          return;
+        }
+        if (idx === 2 && !this.weixin.chanMerId) {
+          var wxpParams = {
+            merId: this.item.merId,
+            cardBrand: 'WXP'
+          };
+          this.$.wxpChanMerAjax.params = wxpParams;
+          this.$.wxpChanMerAjax.generateRequest();
+          return;
+        }
+        if (idx === 3 && !this.ulive.chanMerId) {
+          this.$.uliveChanMerAjax.params = {
+            merId: this.item.merId,
+            cardBrand: 'ULIVE'
+          };
+          this.$.uliveChanMerAjax.generateRequest();
+          return;
+        }
+
+      },
+      open: function() {
+        this.$.dialogView.open();
+        this.idx = 0;
+        this.alipay = {};
+        this.weixin = {};
+        this.ulive = {};
+        if (this.merId && this.merId !== '') {
+          var params = {
+            merId: this.merId
+          };
+          this.$.queryMerchantAjax.params = params;
+          this.$.queryMerchantAjax.generateRequest();
+        }
+      },
+      _computeYesOrNo: function(flag) {
+        if (flag) {
+          return '是';
+        }
+        return '否';
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      },
+      //   将商户状态转换为中文
+      getMerStatus: function(status) {
+        if (status === 'Normal') {
+          return '正常';
+        } else if (status === 'Test') {
+          return '测试商户';
+        } else if (status === 'Deleted') {
+          return '已删除商户';
+        } else {
+          return status;
+        }
+      },
+      // 编辑事件
+      handleItemEditedEvent: function() {
+        this.fire('editor');
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 查看路由
+      handleViewRouteTapped: function() {
+        document.querySelector('#appRouter').go('/config/route/' + this.item.merId);
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          merId: this.item.merId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
+      },
+      // 查询门店信息响应事件
+      handleQueryMerchantResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('查询机构商户信息失败', 3000);
+          return;
+        }
+
+        var item = response.data;
+        this.set('item', item);
+        if (item.permission) {
+          var permissions = item.permission;
+          // 遍历当前商户的权限列表，把它们映射到this.permissionArray上，然后在页面上展示
+          for (var i = 0, il = permissions.length; i < il; i++) {
+            var p = permissions[i];
+            for (var j = 0, jl = this.permissionArray.length; j < jl; j++) {
+              var pa = this.permissionArray[j];
+              if (pa.key === p) {
+                this.set('permissionArray.' + j + '.isChecked', true);
+                break;
+              }
+            }
+          }
+        } else {
+          // 如果商户权限未定义的话，设置未空数组，防止保存的时候权限信息没有传到后台
+          this.set('item.permission', []);
+        }
+      },
+      // 查询支付宝渠道信息的响应事件
+      handleAlpChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0 || !response.data) {
+          Util.toast('查询支付宝渠道商户信息失败', 3000);
+          return;
+        }
+
+        this.set('alipay', response.data);
+      },
+      // 查询微信渠道信息的响应事件
+      handleWxpChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0 || !response.data) {
+          Util.toast('查询微信渠道商户信息失败', 3000);
+          this.set('weixin.httpCert', '');
+          this.set('weixin.httpKey', '');
+          return;
+        }
+
+        if (!response.data.httpCert) {
+          response.data.httpCert = '';
+        }
+        if (!response.data.httpKey) {
+          response.data.httpKey = '';
+        }
+        this.set('weixin', response.data);
+      },
+      // 查询优方渠道信息的响应事件
+      handleUliveChanMerResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0 || !response.data) {
+          Util.toast('查询优方渠道商户信息失败', 3000);
+          return;
+        }
+
+        this.set('ulive', response.data);
+        this.set('ulive.chanCode', 'ULIVE');
+      },
+    });
+  </script>
+</dom-module>
