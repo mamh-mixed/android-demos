@@ -1,17 +1,18 @@
-package scanpay
+package scanpay2
 
 import "testing"
 
-func TestCancel(t *testing.T) {
-	req := &CancelReq{
+func TestRefund(t *testing.T) {
+	req := &RefundReq{
 		CommonParams: CommonParams{
 			AppID:      "2015051100069108",
 			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
 		},
-		OutTradeNo: "42608e0f54f940624a86d4696da83f7d",
+		TradeNo:      "2015072821001004000056841780",
+		RefundAmount: "0.01",
 	}
 
-	resp := &CancelResp{}
+	resp := &RefundResp{}
 	err := Execute(req, resp)
 	if err != nil {
 		t.Errorf("prepare data error: %s", err)
@@ -19,8 +20,9 @@ func TestCancel(t *testing.T) {
 	}
 
 	if resp.Code != "10000" {
-		t.Errorf("cancel failed")
+		t.Errorf("refund failed")
 		t.FailNow()
 	}
+
 	t.Logf("%+v", resp)
 }

@@ -173,7 +173,6 @@ func genSpTransferReportExcel(data []reportData, date string) *xlsx.File {
 
 	sheet, _ = file.AddSheet("商户清算划款表")
 
-	// xlsx SDK 暂不支持Alignment
 	// 第一行
 	row = sheet.AddRow()
 	row.SetHeightCM(0.91)
@@ -182,52 +181,68 @@ func genSpTransferReportExcel(data []reportData, date string) *xlsx.File {
 	cell.SetValue("O2O商户划款报表(讯汇通)")
 	style := xlsx.NewStyle()
 
-	style.Alignment = xlsx.Alignment{Horizontal: "Center", Vertical: "Center"}
+	style.Alignment = xlsx.Alignment{Horizontal: "center", Vertical: "center"}
 	style.Font = *xlsx.NewFont(20, "宋体")
-	style.Border = *xlsx.NewBorder("Left", "Right", "Top", "Bottom")
 	style.ApplyAlignment = true
 	style.ApplyFont = true
-	style.ApplyBorder = true
 	cell.SetStyle(style)
 
 	// 第二行
-	twoStyle := xlsx.NewStyle()
-	twoStyle.Font = *xlsx.NewFont(10, "Times New Roman")
-	twoStyle.ApplyFont = true
+	bodyStyle := xlsx.NewStyle()
+	bodyStyle.Font = xlsx.Font{
+		Size: 10,
+		Name: "Times New Roman",
+		Bold: true,
+	}
+	bodyStyle.Alignment = xlsx.Alignment{Horizontal: "center", Vertical: "center"}
+	bodyStyle.Border = xlsx.Border{
+		Left:        "thin",
+		LeftColor:   "FF999999",
+		Right:       "thin",
+		RightColor:  "FF999999",
+		Top:         "thin",
+		TopColor:    "FF999999",
+		Bottom:      "thin",
+		BottomColor: "FF999999",
+	}
+	bodyStyle.ApplyFont = true
+	bodyStyle.ApplyAlignment = true
+	bodyStyle.ApplyBorder = true
+
 	row = sheet.AddRow()
 	row.SetHeightCM(1.83)
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "行号"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "城市"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "银行名称"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "开户行名称"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "收款方姓名"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "收款方银行账号"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "金额"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "备注"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "商户订单号"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "渠道编号"
 	cell = row.AddCell()
-	cell.SetStyle(twoStyle)
+	cell.SetStyle(bodyStyle)
 	cell.Value = "收支标识"
 
 	// 接下来是数据填充
@@ -235,37 +250,37 @@ func genSpTransferReportExcel(data []reportData, date string) *xlsx.File {
 		row = sheet.AddRow()
 		row.SetHeightCM(1.48)
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.Detail.BankId
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.Detail.City
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.Detail.BankName
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.Detail.OpenBankName
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.Detail.AcctName
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.Detail.AcctNum
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = fmt.Sprintf("%0.2f", float32(d.mg.TransAmt-d.mg.RefundAmt-d.mg.Fee)/100)
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = fmt.Sprintf("%s手续费%0.2f元", date, float32(d.mg.Fee)/100)
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = d.m.MerId
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = "05"
 		cell = row.AddCell()
-		cell.SetStyle(twoStyle)
+		cell.SetStyle(bodyStyle)
 		cell.Value = "0"
 	}
 

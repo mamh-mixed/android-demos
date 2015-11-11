@@ -124,6 +124,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
 		return
 	}
+	req.M = *mer
 
 	// 需要验签
 	if mer.IsNeedSign {
@@ -222,10 +223,10 @@ func alipayNotifyCtrl(v url.Values) error {
 	return core.ProcessAlipayNotify(v)
 }
 
-var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
-var dataErrCode, dataErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("DATA_ERROR")
-var signErrCode, signErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SIGN_AUTH_ERROR")
-var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
+var noMerCode, noMerMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+var dataErrCode, dataErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("DATA_ERROR")
+var signErrCode, signErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("SIGN_AUTH_ERROR")
+var sysErrCode, sysErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
 
 // getBillsCtrl 获取商户对账单
 func getBillsCtrl(reqBytes []byte) []byte {
