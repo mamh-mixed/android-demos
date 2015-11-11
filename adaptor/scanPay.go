@@ -156,6 +156,8 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
+	case channel.ChanCodeAliOversea:
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
 	case channel.ChanCodeWeixin:
 		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
@@ -199,6 +201,8 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
+		// do nothing...
+	case channel.ChanCodeAliOversea:
 		// do nothing...
 	case channel.ChanCodeWeixin:
 		req.AppID = chanMer.WxpAppId
@@ -288,14 +292,12 @@ func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest
 		return ProcessCancel(orig, c, req)
 
 	case channel.ChanCodeWeixin:
-
 		// 下单，微信叫做刷卡支付，即被扫，收银员使用扫码设备读取微信用户刷卡授权码
 		if orig.Busicd == model.Purc {
 
 			// 走微信撤销接口
 			return ProcessWxpCancel(orig, c, req)
 		}
-
 		// 预下单，微信叫做扫码支付，即主扫，统一下单，商户系统先调用该接口在微信支付服务后台生成预支付交易单
 		if orig.Busicd == model.Paut {
 			// 支付成功，调用退款接口
@@ -467,7 +469,7 @@ func genOverseaExtendInfo(mer model.Merchant) string {
 		TerId      string `json:"terminal_id,omitempty"`
 		Mcc        string `json:"mcc,omitempty"`
 		RegionCode string `json:"region_code,omitempty"`
-	}{mer.Detail.MerName, mer.MerId, "", "", "", ""}
+	}{mer.Detail.MerName, mer.MerId, "", "", "", ""} // TODO
 	bytes, _ := json.Marshal(extendInfo)
 	return string(bytes)
 }

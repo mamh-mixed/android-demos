@@ -56,6 +56,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		NotifyUrl:   req.NotifyUrl,
 		Attach:      req.Attach,
+		Currency:    req.Currency,
 		LockFlag:    1, // 锁住
 	}
 
@@ -193,6 +194,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			GatheringName: req.UserName,
 			ChanCode:      req.Chcd,
 			TradeFrom:     req.TradeFrom,
+			Currency:      req.Currency,
 			LockFlag:      1,
 		}
 		// 补充关联字段
@@ -271,6 +273,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TransAmt:    req.IntTxamt,
 		GoodsInfo:   req.GoodsInfo,
 		TradeFrom:   req.TradeFrom,
+		Currency:    req.Currency,
 		LockFlag:    1,
 	}
 	// 补充关联字段
@@ -356,6 +359,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		NotifyUrl:   req.NotifyUrl,
 		TradeFrom:   req.TradeFrom,
 		Attach:      req.Attach,
+		Currency:    req.Currency,
 		LockFlag:    1,
 	}
 	// 补充关联字段
@@ -1150,12 +1154,18 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.MerDiscount = ret.MerDiscount
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
-	t.PayTime = dateFormat(ret.PayTime)
+
 	if ret.ConsumerAccount != "" {
 		t.ConsumerAccount = ret.ConsumerAccount
 	}
 	if ret.ConsumerId != "" {
 		t.ConsumerId = ret.ConsumerId
+	}
+	if ret.Rate != "" {
+		t.ExchangeRate = ret.Rate
+	}
+	if ret.PayTime != "" {
+		t.PayTime = dateFormat(ret.PayTime)
 	}
 
 	// 根据应答码判断交易状态

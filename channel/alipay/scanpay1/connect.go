@@ -64,6 +64,8 @@ func prepareData(req BaseReq) (url.Values, error) {
 		return nil, err
 	}
 
+	log.Debugf("sign content: %s", buf.String())
+
 	// gbk encoding
 	content := gbkEncoder.ConvertString(buf.String())
 	signed := md5.Sum([]byte(content + req.GetSignKey()))

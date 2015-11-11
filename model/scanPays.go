@@ -281,6 +281,7 @@ type ScanPayResponse struct {
 	PrePayId     string `json:"-" url:"-" bson:"-"`
 	ErrorCode    string `json:"-" url:"-" bson:"-"`
 	PayTime      string `json:"-" url:"-" bson:"-"`
+	Rate         string `json:"-" url:"-" bson:"-"` // 币种费率
 }
 
 // PayJson 公众号支付字段
