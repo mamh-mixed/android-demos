@@ -80,7 +80,19 @@ func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 		log.Error("没有SubAgentCode")
 		return model.NewResultBody(3, "缺失必要元素SubAgentCode")
 	}
+	isExist := true
+	_, err = mongo.SubAgentColl.Find(s.SubAgentCode)
+	if err != nil {
+		if err.Error() == "not found" {
+			isExist = false
+		} else {
+			return model.NewResultBody(1, "查询数据库失败")
+		}
 
+	}
+	if isExist {
+		return model.NewResultBody(1, "SubAgentCode已存在")
+	}
 	if s.SubAgentName == "" {
 		log.Error("没有SubAgentName")
 		return model.NewResultBody(3, "缺失必要元素SubAgentName")
@@ -96,7 +108,7 @@ func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素AgentName")
 	}
 
-	err = mongo.SubAgentColl.Add(s)
+	err = mongo.SubAgentColl.Insert(s)
 	if err != nil {
 		log.Errorf("新增二级代理失败:%s", err)
 		return model.NewResultBody(1, err.Error())
@@ -124,6 +136,50 @@ func (s *subAgent) Delete(subAgentCode string) (result *model.ResultBody) {
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "删除成功",
+	}
+
+	return result
+}
+
+// Update
+func (i *subAgent) Update(data []byte) (result *model.ResultBody) {
+	s := new(model.SubAgent)
+	err := json.Unmarshal(data, s)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if s.SubAgentCode == "" {
+		log.Error("没有SubAgentCode")
+		return model.NewResultBody(3, "缺失必要元素SubAgentCode")
+	}
+
+	if s.SubAgentName == "" {
+		log.Error("没有SubAgentName")
+		return model.NewResultBody(3, "缺失必要元素SubAgentName")
+	}
+
+	if s.AgentCode == "" {
+		log.Error("没有AgentCode")
+		return model.NewResultBody(3, "缺失必要元素AgentCode")
+	}
+
+	if s.AgentName == "" {
+		log.Error("没有AgentName")
+		return model.NewResultBody(3, "缺失必要元素AgentName")
+	}
+
+	err = mongo.SubAgentColl.Update(s)
+	if err != nil {
+		log.Errorf("新增二级代理失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    s,
 	}
 
 	return result
