@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -29,6 +31,7 @@ func (col *agentCollection) Find(agentCode string) (a *model.Agent, err error) {
 
 // Add 增加一个代理
 func (col *agentCollection) Add(a *model.Agent) error {
+	a.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
 		"agentCode": a.AgentCode,
 	}
@@ -39,6 +42,7 @@ func (col *agentCollection) Add(a *model.Agent) error {
 
 // Update 更新代理信息
 func (col *agentCollection) Update(a *model.Agent) error {
+	a.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
 		"agentCode": a.AgentCode,
 	}
@@ -116,4 +120,13 @@ func (c *agentCollection) PaginationFind(agentCode, agentName string, size, page
 	err = database.C(c.name).Pipe(cond).All(&results)
 
 	return results, total, err
+}
+
+// Insert 创建一个代理
+func (c *agentCollection) Insert(a *model.Agent) error {
+
+	a.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+	a.UpdateTime = a.CreateTime
+	err := database.C(c.name).Insert(a)
+	return err
 }

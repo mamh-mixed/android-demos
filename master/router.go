@@ -78,6 +78,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/agent/find", agentFindHandle)
 	mux.HandleFunc("/master/agent/delete", agentDeleteHandle)
 	mux.HandleFunc("/master/agent/save", agentSaveHandle)
+	mux.HandleFunc("/master/agent/update", agentUpdateHandle)
 	mux.HandleFunc("/master/subAgent/find", subAgentFindHandle)
 	mux.HandleFunc("/master/subAgent/delete", subAgentDeleteHandle)
 	mux.HandleFunc("/master/subAgent/save", subAgentSaveHandle)

@@ -67,8 +67,55 @@ func (a *agent) Find(agentCode, agentName string, size, page int) (result *model
 	return result
 }
 
-// Save 保存代理信息，能同时用于新增或者修改的时候
+// Save 保存代理信息
 func (i *agent) Save(data []byte) (result *model.ResultBody) {
+	a := new(model.Agent)
+	err := json.Unmarshal(data, a)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+	isExist := true
+	// 查看agentCode是否存在
+	_, err = mongo.AgentColl.Find(a.AgentCode)
+	if err != nil {
+		if err.Error() == "not found" {
+			isExist = false
+		} else {
+			return model.NewResultBody(4, "查询数据库失败")
+		}
+
+	}
+	if isExist {
+		return model.NewResultBody(1, "agentCode已存在")
+	}
+	if a.AgentCode == "" {
+		log.Error("没有AgentCode")
+		return model.NewResultBody(3, "缺失必要元素AgentCode")
+	}
+
+	if a.AgentName == "" {
+		log.Error("没有AgentName")
+		return model.NewResultBody(3, "缺失必要元素AgentName")
+	}
+
+	err = mongo.AgentColl.Insert(a)
+	if err != nil {
+		log.Errorf("新增代理失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    a,
+	}
+
+	return result
+}
+
+// Update 更新代理信息
+func (i *agent) Update(data []byte) (result *model.ResultBody) {
 	a := new(model.Agent)
 	err := json.Unmarshal(data, a)
 	if err != nil {
@@ -86,7 +133,7 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素AgentName")
 	}
 
-	err = mongo.AgentColl.Add(a)
+	err = mongo.AgentColl.Update(a)
 	if err != nil {
 		log.Errorf("新增代理失败:%s", err)
 		return model.NewResultBody(1, err.Error())
