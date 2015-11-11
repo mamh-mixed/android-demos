@@ -69,7 +69,7 @@
           <x-select id="rcardBrand" items="[[cardBrands]]" selected-item="{{cardBrand}}" label="卡品牌" class="routeAtt validate-container" required></x-select>
         </div>
         <div class="row">
-          <paper-input id="rchanCode" label="渠道代码" value="{{route.chanCode::input}}" class="routeAtt" required error-message="必填项"></paper-input>
+          <x-select id="rchanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码" class="routeAtt validate-container" required></x-select>
           <paper-input id="rchanMerId" label="渠道商户号" value="{{route.chanMerId::input}}" class="routeAtt" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
@@ -121,15 +121,29 @@
             value: '微信'
           }]
         },
+        chanCodes: {
+          type: Array,
+          value: [{
+            key: 'CIL',
+            value: 'CIL-讯联'
+          }, {
+            key: 'CFCA',
+            value: 'CFCA-中金'
+          }]
+        },
         route: {
           type: Object
         },
       },
       observers: [
-        '_watchCardBrandChange(cardBrand.key)'
+        '_watchCardBrandChange(cardBrand.key)',
+        '_watchChanCodeChange(chanCode.key)'
       ],
       _watchCardBrandChange: function(key) {
         this.set('route.cardBrand', key);
+      },
+      _watchChanCodeChange: function(key) {
+        this.set('route.chanCode', key);
       },
       open: function() {
         this.$.dialogView.open();
@@ -161,7 +175,7 @@
       },
       // 判断路由必填项是否为空
       isRouteConfigEmpty: function() {
-        if (this.$.rmerId.validate() && this.$.rcardBrand.selectedItem && this.$.rchanCode.validate() && this.$.rchanMerId.validate()) {
+        if (this.$.rmerId.validate() && this.$.rcardBrand.selectedItem && this.$.rchanCode.selectedItem && this.$.rchanMerId.validate()) {
           return false;
         }
         return true;
