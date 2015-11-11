@@ -14,6 +14,44 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+const floatFormat = "#,##0.00"
+const intFormat = "#,##0"
+
+var headStyle = &xlsx.Style{
+	Border: xlsx.Border{
+		Left:        "thin",
+		LeftColor:   "FF999999",
+		Right:       "thin",
+		RightColor:  "FF999999",
+		Top:         "thin",
+		TopColor:    "FF999999",
+		Bottom:      "thin",
+		BottomColor: "FF999999",
+	},
+	Fill: xlsx.Fill{
+		PatternType: "solid",
+		FgColor:     "FF00BCD4",
+	},
+	Font: xlsx.Font{
+		Size:    10,
+		Name:    "微软雅黑",
+		Family:  2,
+		Charset: 134,
+	},
+	Alignment: xlsx.Alignment{
+		Horizontal: "center",
+		Vertical:   "center",
+	},
+}
+var bodyStyle = &xlsx.Style{
+	Font: xlsx.Font{
+		Size:    10,
+		Name:    "微软雅黑",
+		Family:  2,
+		Charset: 134,
+	},
+}
+
 // tradeQueryStat 交易查询统计信息
 func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 
@@ -86,32 +124,44 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = d.MerId
+		cell.SetStyle(bodyStyle)
 		cell.Merge(1, 0)
 		row.AddCell()
 		cell = row.AddCell()
 		cell.Value = d.MerName
+		cell.SetStyle(bodyStyle)
 		cell.Merge(1, 0)
 		row.AddCell()
 		cell = row.AddCell()
-		cell.SetInt(d.TotalTransNum)
+		cell.SetFloatWithFormat(float64(d.TotalTransNum), intFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.TotalTransAmt))
+		cell.SetFloatWithFormat(float64(d.TotalTransAmt), floatFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.TotalFee))
+		cell.SetFloatWithFormat(float64(d.TotalFee), floatFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetInt(d.Alp.TransNum)
+		cell.SetFloatWithFormat(float64(d.Alp.TransNum), intFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Alp.TransAmt))
+		cell.SetFloatWithFormat(float64(d.Alp.TransAmt), floatFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Alp.Fee))
+		cell.SetFloatWithFormat(float64(d.Alp.Fee), floatFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetInt(d.Wxp.TransNum)
+		cell.SetFloatWithFormat(float64(d.Wxp.TransNum), intFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Wxp.TransAmt))
+		cell.SetFloatWithFormat(float64(d.Wxp.TransAmt), floatFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloat(float64(d.Wxp.Fee))
+		cell.SetFloatWithFormat(float64(d.Wxp.Fee), floatFormat)
+		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
 		cell.Value = d.AgentName
+		cell.SetStyle(bodyStyle)
 		cell.Merge(1, 0)
 	}
 
@@ -119,28 +169,38 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "总计："
+	cell.SetStyle(bodyStyle)
 	cell.Merge(3, 0)
 	for i := 0; i < 3; i++ {
 		row.AddCell()
 	}
 	cell = row.AddCell()
 	cell.SetInt(result.TotalTransNum)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.TotalTransAmt))
+	cell.SetFloatWithFormat(float64(result.TotalTransAmt), floatFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.TotalFee))
+	cell.SetFloatWithFormat(float64(result.TotalFee), floatFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetInt(result.Alp.TransNum)
+	cell.SetFloatWithFormat(float64(result.Alp.TransNum), intFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Alp.TransAmt))
+	cell.SetFloatWithFormat(float64(result.Alp.TransAmt), floatFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Alp.Fee))
+	cell.SetFloatWithFormat(float64(result.Alp.Fee), floatFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetInt(result.Wxp.TransNum)
+	cell.SetFloatWithFormat(float64(result.Wxp.TransNum), intFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Wxp.TransAmt))
+	cell.SetFloatWithFormat(float64(result.Wxp.TransAmt), floatFormat)
+	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloat(float64(result.Wxp.Fee))
+	cell.SetFloatWithFormat(float64(result.Wxp.Fee), floatFormat)
+	cell.SetStyle(bodyStyle)
 	row.AddCell().Merge(1, 0)
 }
 
@@ -150,61 +210,87 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	cell.Value = "开始日期："
 	cell = row.AddCell()
 	cell.Value = cond.StartTime
+	cell.SetStyle(bodyStyle)
+	cell.Merge(1, 0)
+	row.AddCell()
+
 	cell = row.AddCell()
 	cell.Value = "结束日期："
 	cell = row.AddCell()
 	cell.Value = cond.EndTime
+	cell.SetStyle(bodyStyle)
+	cell.Merge(1, 0)
+	row.AddCell()
+
 	cell = row.AddCell()
 	cell.Value = "注：手续费为每笔单笔计算后四舍五入精确到分，跟总额计算手续费略有误差。因本表仅统计了讯联数据系统的数据，数据仅供参考"
-	cell.Merge(10, 0)
+	cell.SetStyle(bodyStyle)
+	cell.Merge(8, 0)
+
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "商户号"
+	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "商户名称"
+	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "汇总"
+	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "支付宝"
+	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "微信"
+	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = "代理名称"
+	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
+
 	row = sheet.AddRow()
 	for i := 0; i < 4; i++ {
 		row.AddCell()
 	}
 	cell = row.AddCell()
 	cell.Value = "总笔数"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "总金额"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "手续费"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "笔数"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "金额"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "手续费"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "笔数"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "金额"
+	cell.SetStyle(headStyle)
 	cell = row.AddCell()
 	cell.Value = "手续费"
+	cell.SetStyle(headStyle)
 }

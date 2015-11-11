@@ -57,7 +57,7 @@ func TestTransSettAdd(t *testing.T) {
 			CreateTime: "2015-03-23 23:59:59",
 		}
 		transSett := &model.TransSett{
-			Tran:       tran,
+			Trans:      tran,
 			SettDate:   "2015-03-23 23:59:59",
 			SettFlag:   1,
 			MerSettAmt: 100,

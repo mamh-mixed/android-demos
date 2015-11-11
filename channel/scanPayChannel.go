@@ -1,7 +1,8 @@
 package channel
 
 import (
-	"github.com/CardInfoLink/quickpay/channel/alipay"
+	"github.com/CardInfoLink/quickpay/channel/alipay/scanpay1/domestic"
+	"github.com/CardInfoLink/quickpay/channel/alipay/scanpay1/oversea"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -9,8 +10,9 @@ import (
 
 // 扫码支付渠道
 const (
-	ChanCodeWeixin = "WXP"
-	ChanCodeAlipay = "ALP"
+	ChanCodeWeixin     = "WXP"
+	ChanCodeAlipay     = "ALP"
+	ChanCodeAliOversea = "AOS" // TODO:未定
 )
 
 // ScanPayChan 扫码支付
@@ -45,7 +47,9 @@ func GetScanPayChan(chanCode string) ScanPayChan {
 		return &scanpay.DefaultWeixinScanPay
 	// 支付宝
 	case ChanCodeAlipay:
-		return &alipay.DefaultClient
+		return &domestic.DefaultClient
+	case ChanCodeAliOversea:
+		return &oversea.DefaultClient
 	default:
 		log.Errorf("unknown scan pay channel `%s`", chanCode)
 		return nil

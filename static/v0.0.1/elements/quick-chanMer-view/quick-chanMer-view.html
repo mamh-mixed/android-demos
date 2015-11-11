@@ -1,0 +1,236 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<dom-module id="quick-chanMer-view">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 600px;
+        height: 500px;
+        font-size: 14px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row iron-icon {
+      color: red;
+    }
+
+    paper-icon-button.red:hover {
+      background: #CD4F39;
+      border-radius: 0%;
+    }
+
+    .header {
+      padding: 0px;
+      margin: 0px;
+      background: red;
+      color: #ffffff;
+      heigth: 40px;
+      line-height: 40px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    dt {
+      display: inline-block;
+      float: left;
+      clear: both;
+      width: 110px;
+      font-weight: bold;
+    }
+
+    dd {
+      display: inline-block;
+      float: left;
+      margin-left: 24px;
+    }
+  </style>
+  <template>
+    <paper-dialog with-backdrop id="dialogView">
+      <h2>查看渠道商户信息</h2>
+      <paper-dialog-scrollable>
+        <dl id="alp" hidden>
+          <dt>渠道代码:</dt>
+          <dd>{{item.chanCode}}</dd>
+          <dt>商户代码:</dt>
+          <dd>{{item.chanMerId}}</dd>
+          <dt>商户名称:</dt>
+          <dd>{{item.chanMerName}}</dd>
+          <dt>渠道费率:</dt>
+          <dd>{{item.acqFee}}</dd>
+          <dt>商户费率:</dt>
+          <dd>{{item.merFee}}</dd>
+          <dt>MD5 KEY:</dt>
+          <dd>{{item.signCert}}</dd>
+          <dt>代理代码:</dt>
+          <dd>{{item.agentCode}}</dd>
+        </dl>
+
+        <dl id="wxp" hidden>
+          <dt>渠道代码:</dt>
+          <dd>{{item.chanCode}}</dd>
+          <dt>商户代码:</dt>
+          <dd>{{item.chanMerId}}</dd>
+          <dt>商户名称:</dt>
+          <dd>{{item.chanMerName}}</dd>
+          <dt>是否代理商模式:</dt>
+          <dd>
+            <paper-checkbox checked$="{{item.isAgentMode}}" disabled></paper-checkbox>
+          </dd>
+          <dt>大商户号:</dt>
+          <dd>{{item.agentMer.chanMerId}}</dd>
+          <dt>渠道费率:</dt>
+          <dd>{{item.acqFee}}</dd>
+          <dt>商户费率:</dt>
+          <dd>{{item.merFee}}</dd>
+          <dt>微信 APPID:</dt>
+          <dd>{{item.wxpAppId}}</dd>
+
+          <dt>签名证书:</dt>
+          <dd>{{item.signCert}}</dd>
+          <dt>HTTP Cert:</dt>
+          <dd>
+            <pre>{{item.httpCert}}</pre>
+          </dd>
+          <dt>HTTP Key:</dt>
+          <dd>
+            <pre>{{item.httpKey}}</pre>
+          </dd>
+        </dl>
+
+        <dl id="cfca" hidden>
+          <dt>渠道代码:</dt>
+          <dd>{{item.chanCode}}</dd>
+          <dt>商户代码:</dt>
+          <dd>{{item.chanMerId}}</dd>
+          <dt>商户名称:</dt>
+          <dd>{{item.chanMerName}}</dd>
+          <dt>清算标识:</dt>
+          <dd>{{item.settFlag}}</dd>
+          <dt>清算角色:</dt>
+          <dd>{{item.settRole}}</dd>
+          <dt>渠道费率:</dt>
+          <dd>{{item.acqFee}}</dd>
+          <dt>商户费率:</dt>
+          <dd>{{item.merFee}}</dd>
+          <dt>CFCA 商户私钥:</dt>
+          <dd>
+            <pre>{{item.privateKey}}</pre>
+          </dd>
+          <dt>CFCA 商户公钥:</dt>
+          <dd>
+            <pre>{{item.publicKey}}</pre>
+          </dd>
+        </dl>
+
+        <dl id="cil" hidden>
+          <dt>渠道代码:</dt>
+          <dd>{{item.chanCode}}</dd>
+          <dt>商户代码:</dt>
+          <dd>{{item.chanMerId}}</dd>
+          <dt>商户名称:</dt>
+          <dd>{{item.chanMerName}}</dd>
+          <dt>机构号:</dt>
+          <dd>{{item.insCode}}</dd>
+          <dt>终端号:</dt>
+          <dd>{{item.terminalId}}</dd>
+        </dl>
+      </paper-dialog-scrollable>
+      <div class="buttons layout center">
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个商户吗?</label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
+      </div>
+    </paper-dialog>
+    <x-ajax id="deleteMerAjax" method="GET" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
+  </template>
+  <script>
+    Polymer({
+      is: 'quick-chanMer-view',
+
+      properties: {
+        foo: {
+          type: String,
+          value: 'channel-merchant-view',
+          notify: true
+        },
+        item: Object
+      },
+      open: function() {
+        this.$.dialogView.open();
+        this.deleteFlag = false;
+        if (this.item.chanCode === 'ALP') {
+          this.$.alp.hidden = false;
+          this.$.wxp.hidden = true;
+          this.$.cfca.hidden = true;
+          this.$.cil.hidden = true;
+        } else if (this.item.chanCode === 'WXP') {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = false;
+          this.$.cfca.hidden = true;
+          this.$.cil.hidden = true;
+        } else if (this.item.chanCode === 'CFCA') {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = true;
+          this.$.cfca.hidden = false;
+          this.$.cil.hidden = true;
+        } else {
+          this.$.alp.hidden = true;
+          this.$.wxp.hidden = true;
+          this.$.cfca.hidden = true;
+          this.$.cil.hidden = false;
+        }
+      },
+      // 关闭事件
+      handleClose: function() {
+        this.$.dialogView.close();
+      },
+      // 编辑
+      handleItemEditedEvent: function() {
+        this.fire('editor');
+        this.handleClose();
+      },
+      // 删除事件
+      deleteTap: function() {
+        this.deleteFlag = true;
+      },
+      // 取消删除事件
+      cancelDeleteTap: function() {
+        this.deleteFlag = false;
+      },
+      // 确认删除
+      confirmDeleteTap: function() {
+        this.$.deleteMerAjax.params = {
+          chanCode: this.item.chanCode,
+          chanMerId: this.item.chanMerId
+        };
+        this.$.deleteMerAjax.generateRequest();
+      },
+      // 删除机构商户响应信息
+      handleDeleteResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        Util.toast(response.message, 3000);
+        this.$.dialogView.close();
+        this.fire('delete-ok');
+      },
+    });
+  </script>
+</dom-module>

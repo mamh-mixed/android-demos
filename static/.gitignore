@@ -1,5 +1,5 @@
 /node_modules
 /dist
-/app/bower_components
+/v0.0.1/bower_components
 .tmp
-/app/test/
+/v0.0.1/test/

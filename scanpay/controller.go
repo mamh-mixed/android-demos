@@ -8,6 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -17,9 +18,11 @@ import (
 	"github.com/omigo/log"
 )
 
+// 专门做监控的商户
+var monitorMerId = goconf.Config.App.MonitorMerId
+
 // ScanPayHandle 执行扫码支付逻辑
 func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
-	log.Infof("from merchant message: %s", string(reqBytes))
 
 	// 解析请求内容
 	req := model.NewScanPayRequest()
@@ -32,14 +35,22 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 		return errorResp(req, "DATA_ERROR")
 	}
 
+	if req.Mchntid != monitorMerId { // 专门做监控的商户，不打日志
+		log.Infof("from merchant message: %s", string(reqBytes))
+	}
+
 	// 记录请求时日志
-	logs.SpLogs <- req.GetMerReqLogs()
+	if req.Mchntid != monitorMerId { // 专门做监控的商户，不记录日志
+		logs.SpLogs <- req.GetMerReqLogs()
+	}
 
 	// 具体业务
 	ret := dispatch(req)
 
 	// 记录返回时日志
-	logs.SpLogs <- req.GetMerRetLogs(ret)
+	if req.Mchntid != monitorMerId { // 专门做监控的商户，不记录日志
+		logs.SpLogs <- req.GetMerRetLogs(ret)
+	}
 
 	// 应答
 	retBytes, err := json.Marshal(ret)
@@ -47,8 +58,9 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 		log.Errorf("fail to marshal (%+v): %s", ret, err)
 		return errorResp(req, "SYSTEM_ERROR")
 	}
-
-	log.Infof("to merchant message: %s", retBytes)
+	if req.Mchntid != monitorMerId { // 专门做监控的商户，不打日志
+		log.Infof("to merchant message: %s", retBytes)
+	}
 	return retBytes
 }
 
@@ -112,6 +124,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_MERCHANT"))
 		return
 	}
+	req.M = *mer
 
 	// 需要验签
 	if mer.IsNeedSign {
@@ -210,10 +223,10 @@ func alipayNotifyCtrl(v url.Values) error {
 	return core.ProcessAlipayNotify(v)
 }
 
-var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
-var dataErrCode, dataErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("DATA_ERROR")
-var signErrCode, signErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SIGN_AUTH_ERROR")
-var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
+var noMerCode, noMerMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+var dataErrCode, dataErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("DATA_ERROR")
+var signErrCode, signErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("SIGN_AUTH_ERROR")
+var sysErrCode, sysErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
 
 // getBillsCtrl 获取商户对账单
 func getBillsCtrl(reqBytes []byte) []byte {

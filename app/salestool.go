@@ -451,6 +451,9 @@ func NotifySalesman() {
 			fds []fileData
 		)
 		for _, u := range v {
+			if u.MerId == "" {
+				continue
+			}
 			m, err := mongo.MerchantColl.Find(u.MerId)
 			if err != nil {
 				log.Errorf("fail to find merchant(%s): %s", u.MerId, err)
@@ -486,7 +489,7 @@ func NotifySalesman() {
 
 	// 向代理发邮件
 	for k, a := range agents {
-		e := email.Email{To: k, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(a.es)), Cc: andyLi}
+		e := email.Email{To: k, Title: "商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(a.es)), Cc: andyLi}
 		excel := genExcel(a.es)
 		ebuf := new(bytes.Buffer)
 		err = excel.Write(ebuf)
@@ -500,6 +503,7 @@ func NotifySalesman() {
 			e.Attach(zipWrite(a.fs), "商户.zip", "")
 		}
 		e.Send()
+		// log.Infof("edata: %d , fdata: %d", len(a.es), len(a.fs))
 	}
 }
 
@@ -537,7 +541,7 @@ func genExcel(eds []excelData) *xlsx.File {
 		row = sheet.AddRow()
 		row.WriteStruct(&rowType{
 			ed.m.Detail.MerName, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-			ed.m.Detail.MerName, "", "", "个体", ed.m.Detail.BankId, ed.m.Detail.OpenBankName, ed.m.Detail.AcctName, ed.m.Detail.BankName, ed.m.Detail.AcctNum, ed.m.Detail.Contact, ed.m.Detail.ContactTel, ed.u.UserName, "", "", "", "",
+			ed.m.Detail.MerName, "", "", "个体", ed.m.Detail.BankId, ed.m.Detail.BankName, ed.m.Detail.AcctName, ed.m.Detail.OpenBankName, ed.m.Detail.AcctNum, ed.m.Detail.Contact, ed.m.Detail.ContactTel, ed.u.UserName, "", "", "", "",
 			"附件形式提供", "附件形式提供", "附件形式提供", "附件形式提供", "", "", "", "", ed.m.MerId, ed.m.SignKey, ed.u.UserName, ed.u.Password, ed.m.Detail.PayUrl, ed.operator,
 		}, -1)
 	}

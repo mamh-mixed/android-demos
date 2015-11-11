@@ -634,6 +634,7 @@ func (i *importer) doDataWrap() {
 			// 集团商户
 			mer = &model.Merchant{}
 			mer.MerId = r.MerId
+			mer.UniqueId = util.Confuse(mer.MerId)
 			mer.Detail.MerName = r.MerName
 			mer.Detail.CommodityName = r.CommodityName
 			mer.Detail.ShopID = r.ShopId
@@ -677,6 +678,9 @@ func (i *importer) doDataWrap() {
 
 		case "U":
 			mer = r.Mer
+			if mer.UniqueId == "" {
+				mer.UniqueId = util.Confuse(mer.MerId)
+			}
 			if r.MerName != "" {
 				mer.Detail.MerName = r.MerName
 			}

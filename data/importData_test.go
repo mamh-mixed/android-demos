@@ -21,6 +21,10 @@ import (
 // 	t.Log("SUCCESS")
 // }
 
+func xTestUpdateMerchant(t *testing.T) {
+	UpdateMerchant()
+}
+
 // 导入扫码渠道应答码，同quickpay
 func xTestAddSpChanFromCSV(t *testing.T) {
 

@@ -1,0 +1,264 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../x-select/x-select.html">
+<dom-module id="quick-chanMer-create">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 600px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    x-select {
+      width: 100%;
+    }
+
+    paper-input {
+      width: 100%;
+    }
+
+    paper-textarea,
+    paper-input,
+    .validate-container {
+      position: relative;
+    }
+
+    paper-textarea[required]::after,
+    paper-input[required]::after,
+    .validate-container[required]::after {
+      content: "*";
+      color: #F00;
+      display: block;
+      position: absolute;
+      left: -10px;
+      top: 50%;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
+    }
+
+    .row paper-input,
+    .row label {
+      @apply(--layout-flex-6);
+      margin-right: 35px;
+      margin-left: -35px;
+    }
+  </style>
+  <template>
+    <x-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></x-ajax>
+    <x-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></x-ajax>
+    <paper-dialog with-backdrop id="dialogAdd">
+      <h2 id="header"></h2>
+      <paper-dialog-scrollable>
+        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道" class="validate-container" required style="width:100%;" disabled="[[chanCodeDisabled]]"></x-select>
+        <div id="cfca">
+          <paper-input id="cfchanMerId" label="渠道商户号" value="{{cfca.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cfchanMerName" label="商户名称" value="{{cfca.chanMerName::input}}"></paper-input>
+          <paper-input id="cfsettFlag" label="清算标识" value="{{cfca.settFlag::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cfsettRole" label="清算角色" value="{{cfca.settRole::input}}"></paper-input>
+          <div class="row">
+            <paper-input id="cfprivateKeyFile" type="file" on-change="handlecfPrivateKeyFile" style="margin-left:0px;"></paper-input>
+            <label id="cfprivateKeyL" style="margin-top:20px;">请选择.pem文件的HTTP证书</label>
+          </div>
+          <paper-textarea id="cfprivateKey" label="CFCA 商户私钥" value="{{cfca.privateKey::input}}" required error-message="必填项"></paper-textarea>
+          <paper-input id="cfpublicKey" label="CFCA 商户公钥" value="{{cfca.publicKey::input}}"></paper-input>
+          <paper-input id="cfacqFee" label="讯联跟渠道费率" value="{{cfca.acqFee::input}}"></paper-input>
+          <paper-input id="cfmerFee" label="商户跟讯联费率" value="{{cfca.merFee::input}}"></paper-input>
+        </div>
+        <div id="cil">
+          <paper-input id="cilchanMerId" label="渠道商户号" value="{{cil.chanMerId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cilchanMerName" label="商户名称" value="{{cil.chanMerName::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cilinsCode" label="机构号" value="{{cil.insCode::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="cilterminalId" label="终端号" value="{{cil.terminalId::input}}" required error-message="必填项"></paper-input>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>取消</paper-button>
+        <paper-button on-tap="handleSaveTapped">保存</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'quick-chanMer-create',
+        properties: {
+          pageType: String,
+          chanMer: {
+            type: Object
+          },
+          channels: {
+            type: Array,
+            value: [{
+              key: 'CFCA',
+              value: 'CFCA 中金'
+            }, {
+              key: 'CIL',
+              value: 'CIL 线下'
+
+            }]
+          },
+          bigMerchant: {
+            type: Object
+          },
+        },
+        observers: [
+          '_channelChange(channel)'
+        ],
+        _channelChange: function(channel) {
+          if (channel) {
+            if (channel.key === 'CFCA') {
+              this.$.cfca.hidden = false;
+              this.$.cil.hidden = true;
+            } else {
+              this.$.cfca.hidden = true;
+              this.$.cil.hidden = false;
+            }
+          }
+        },
+        open: function() {
+          this.$.dialogAdd.open();
+          if (this.pageType === 'create') {
+            this.$.header.textContent = '创建渠道商户';
+            this.channel = {
+              key: 'CFCA',
+              value: '中金'
+            };
+            this.cfca = {};
+            this.set('cfca.privateKey', '');
+            this.chanCodeDisabled = false;
+            this.$.cfchanMerId.disabled = false;
+
+            this.cil = {};
+            this.$.cilchanMerId.disabled = false;
+          } else {
+            this.$.header.textContent = '编辑渠道商户';
+            var map = {
+              'CFCA': 'CFCA 中金',
+              'CIL': 'CIL 线下'
+            };
+            this.channel = {
+              key: this.chanMer.chanCode,
+              value: map[this.chanMer.chanCode]
+            };
+            this.chanCodeDisabled = true;
+            this.cfca = this.chanMer;
+            this.$.cfchanMerId.disabled = true;
+            this.oldCfcaPrivateKey = this.chanMer.privateKey;
+
+            this.cil = this.chanMer;
+            this.$.cilchanMerId.disabled = true;
+          }
+
+          window.setTimeout(function() {
+            this.$.dialogAdd.notifyResize();
+          }.bind(this), 0);
+        },
+        // 中金必填项是否为空
+        isCFCAConfigEmpty: function() {
+          if (this.$.cfchanMerId.validate() && this.$.cfsettFlag.validate() && this.$.cfprivateKey.validate()) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        // CIL必填项是否为空
+        isCILConfigEmpty: function() {
+          if (this.$.cilchanMerId.validate() && this.$.cilchanMerName.validate() && this.$.cilinsCode.validate() && this.$.cilterminalId.validate()) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          if (this.channel) {
+            if (this.channel.key === 'CFCA' && !this.isCFCAConfigEmpty()) {
+              if (this.cfca.privateKey && this.cfca.privateKey.length < 8) {
+                Util.toast('商户私钥长度不能小于8位', 3000);
+                return;
+              }
+              if (this.pageType === 'create') {
+                if (this.cfca.privateKey.indexOf('*') !== -1) {
+                  Util.toast('商户私钥不能包含 *', 3000);
+                  return;
+                }
+              } else {
+                if (this.cfca.privateKey !== this.oldCfcaPrivateKey && this.cfca.privateKey.indexOf('*') !== -1) {
+                  Util.toast('商户私钥不能包含 *,已恢复为原商户私钥', 3000);
+                  this.set('cfca.privateKey', this.oldCfcaPrivateKey)
+                  return;
+                }
+              }
+              var wacqFee = parseFloat(this.cfca.acqFee),
+                wmerFee = parseFloat(this.cfca.merFee);
+              // if (isNaN(wacqFee) || isNaN(wmerFee)) {
+              //   Util.toast('中金渠道的费率必须是数字', 3000);
+              //   return;
+              // }
+              this.set('cfca.acqFee', wacqFee);
+              this.set('cfca.merFee', wmerFee);
+              this.set('cfca.chanCode', 'CFCA');
+              this.chanMer = this.cfca;
+            } else if (this.channel.key === 'CIL' && !this.isCILConfigEmpty()) {
+              this.set('cil.chanCode', 'CIL');
+              this.chanMer = this.cil;
+            } else {
+              Util.toast('必填项不能为空', 3000);
+              return;
+            }
+
+          } else {
+            Util.toast('请选择渠道', 3000);
+            return;
+          }
+          this.$.saveAjax.body = JSON.stringify(this.chanMer);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveChannelMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialogAdd.close();
+          Util.toast(response.message, 1000);
+          this.fire('saved');
+          this.set('chanMer', {});
+        },
+        // html5 读取证书文件内容
+        handlecfPrivateKeyFile: function(e) {
+          var _this = this;
+          var files = e.srcElement.files;
+          if (files.length) {
+            var file = files[0];
+            if ('application/x-x509-ca-cert' === file.type) {
+              var reader = new FileReader();
+              reader.onload = function() {
+                if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
+                  Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN RSA PRIVATE KEY--- 开头', 3000);
+                  return;
+                }
+                _this.set('cfca.privateKey', this.result);
+              };
+              reader.readAsText(file);
+            } else {
+              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+            }
+          }
+        },
+      });
+    })();
+  </script>
+</dom-module>
