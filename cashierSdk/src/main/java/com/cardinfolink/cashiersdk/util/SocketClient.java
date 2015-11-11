@@ -17,6 +17,7 @@ import java.net.Socket;
  * @author webapp
  */
 public class SocketClient {
+    private static final String TAG = "SocketClient";
     private Socket sk;
     private String host = null;
     private String port = null;
@@ -40,7 +41,7 @@ public class SocketClient {
             lengthStr = "0" + lengthStr;
         }
         msg = lengthStr + msg;
-        Log.e("opp", "json :" + msg);
+        Log.e(TAG, "json :" + msg);
         PrintWriter out = null;
         BufferedReader in = null;
 
