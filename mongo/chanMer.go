@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -31,6 +33,7 @@ func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer
 
 // Add 增加一个渠道商户
 func (col *chanMerCollection) Add(c *model.ChanMer) error {
+	c.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
 		"chanMerId": c.ChanMerId,
 		"chanCode":  c.ChanCode,
@@ -45,6 +48,8 @@ func (col *chanMerCollection) BatchAdd(cms []model.ChanMer) error {
 
 	var temp []interface{}
 	for _, cm := range cms {
+		cm.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+		cm.UpdateTime = cm.CreateTime
 		temp = append(temp, cm)
 	}
 	err := database.C(col.name).Insert(temp...)
@@ -71,6 +76,7 @@ func (col *chanMerCollection) BatchRemove(cms []model.ChanMer) error {
 
 // Modify 更新渠道商户信息
 func (col *chanMerCollection) Update(c *model.ChanMer) error {
+	c.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
 		"chanCode":  c.ChanCode,
 		"chanMerId": c.ChanMerId,
@@ -200,5 +206,12 @@ func (col *chanMerCollection) Remove(chanCode, chanMerId string) error {
 	}
 	err := database.C(col.name).Remove(q)
 
+	return err
+}
+
+func (col *chanMerCollection) Insert(c *model.ChanMer) error {
+	c.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+	c.UpdateTime = c.CreateTime
+	err := database.C(col.name).Insert(c)
 	return err
 }

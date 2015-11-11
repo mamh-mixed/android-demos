@@ -1001,3 +1001,40 @@ func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
+func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := ChanMer.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := RouterPolicy.Update(data)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
