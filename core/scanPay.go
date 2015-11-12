@@ -299,9 +299,6 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		shouldChcd = channel.ChanCodeWeixin
 	case "2":
 		shouldChcd = channel.ChanCodeAlipay
-		if req.Chcd != "" && req.Chcd == channel.ChanCodeAliOversea {
-			shouldChcd = channel.ChanCodeAliOversea
-		}
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
 	}
