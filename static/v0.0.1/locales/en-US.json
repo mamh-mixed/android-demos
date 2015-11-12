@@ -1,0 +1,19 @@
+{
+  "TITLE": {
+    "description": "...",
+    "message": "Cloud Cashier Admin System"
+  },
+  "CURRENTUSER": {
+    "description": "...",
+    "message": "User"
+  },
+  "QUERY": {
+    "description": "xxx",
+    "message": "Query"
+  },
+  "xxx": {
+    "description": "xxx",
+    "message": "xxx"
+  }
+
+}

@@ -1,0 +1,18 @@
+{
+  "TITLE": {
+    "description": "...",
+    "message": "雲キャッシャー管理システム"
+  },
+  "CURRENTUSER": {
+    "description": "...",
+    "message": "ようこそ"
+  },
+  "QUERY": {
+    "description": "xxx",
+    "message": "検索"
+  },
+  "xxx": {
+    "description": "xxx",
+    "message": "xxx"
+  }
+}

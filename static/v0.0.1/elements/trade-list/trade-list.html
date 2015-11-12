@@ -45,7 +45,7 @@
         <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型"></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
 
-        <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
+        <paper-button class="colorful" raised on-tap="queryAction"><i18n-msg msgid="QUERY">查询</i18n-msg></paper-button>
         <div class="paper-button-1">
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">下载报表</a>
         </div>

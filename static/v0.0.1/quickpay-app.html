@@ -4,6 +4,7 @@
 <link rel="import" href="bower_components/app-router/app-router.html">
 <link rel="import" href="layouts/scaffold-layout.html">
 <link rel="import" href="elements/login-form/login-form.html">
+<link rel="import" href="bower_components/i18n-msg/i18n-msg.html">
 <dom-module id="quickpay-app">
   <template>
     <style>
@@ -83,6 +84,11 @@
             type: Object,
             value: {},
           },
+        },
+        ready: function() {
+          // default language en-US, zh-CN, ja
+          // I18nMsg.lang = 'zh-CN';
+          I18nMsg.lang = window.navigator.language;
         },
         attached: function() {
           this.$.appRouter.init();

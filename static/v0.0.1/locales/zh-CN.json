@@ -1,0 +1,18 @@
+{
+  "TITLE": {
+    "description": "...",
+    "message": "云收银管理平台"
+  },
+  "CURRENTUSER": {
+    "description": "...",
+    "message": "当前用户"
+  },
+  "QUERY": {
+    "description": "xxx",
+    "message": "查询"
+  },
+  "xxx": {
+    "description": "xxx",
+    "message": "xxx"
+  }
+}
