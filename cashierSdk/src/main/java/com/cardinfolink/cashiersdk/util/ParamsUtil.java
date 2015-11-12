@@ -23,6 +23,9 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("scanCodeId", orderData.scanCodeId);
             json.put("terminalid", initData.terminalid);
+            if (orderData.currency != null) {
+                json.put("currency", orderData.currency);
+            }
             json.put("tradeFrom", "android");
             if (orderData.goodsInfo != null) {
                 json.put("goodsInfo", orderData.goodsInfo);
@@ -51,6 +54,9 @@ public class ParamsUtil {
             json.put("chcd", orderData.chcd);
             json.put("terminalid", initData.terminalid);
             json.put("tradeFrom", "android");
+            if (orderData.currency != null) {
+                json.put("currency", orderData.currency);
+            }
             if (orderData.goodsInfo != null) {
                 json.put("goodsInfo", orderData.goodsInfo);
             }
@@ -122,6 +128,9 @@ public class ParamsUtil {
             json.put("txamt", orderData.txamt);
             json.put("terminalid", initData.terminalid);
             json.put("tradeFrom", "android");
+            if (orderData.currency != null) {
+                json.put("currency", orderData.currency);
+            }
             json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
 
         } catch (JSONException e) {
