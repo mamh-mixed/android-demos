@@ -55,12 +55,13 @@ type QueryCondition struct {
 	TradeFrom          string   `json:"tradeFrom,omitempty"`
 	Skip               int      `json:"skip,omitempty"`
 	ChanCode           string   `json:"chanCode,omitempty"`
-	IsAggregateByGroup bool     `json:"isAggregateByGroup,omitempty"` // 是否按照商户号汇总
 	Direction          string
 	ReqIds             []string
-
-	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
-	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
+	TimeType           string
+	SettRole           string `json:"settRole,omitempty"`
+	IsAggregateByGroup bool   `json:"isAggregateByGroup,omitempty"`                             // 是否按照商户号汇总
+	CouponsNo          string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
+	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 }
 
 // QueryResult 查询结果值
@@ -200,7 +201,8 @@ type ScanPayRequest struct {
 	ReqId            string `json:"-" url:"-" bson:"-"`
 
 	// 访问方式
-	IsGBK bool `json:"-" url:"-" bson:"-"`
+	IsGBK bool     `json:"-" url:"-" bson:"-"`
+	M     Merchant `json:"-" url:"-" bson:"-"`
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -283,6 +285,7 @@ type ScanPayResponse struct {
 	PrePayId     string `json:"-" url:"-" bson:"-"`
 	ErrorCode    string `json:"-" url:"-" bson:"-"`
 	PayTime      string `json:"-" url:"-" bson:"-"`
+	Rate         string `json:"-" url:"-" bson:"-"` // 币种费率
 }
 
 // PayJson 公众号支付字段

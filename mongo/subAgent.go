@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -39,6 +41,7 @@ func (col *subAgentCollection) Add(s *model.SubAgent) error {
 
 // Update 更新二级代理信息
 func (col *subAgentCollection) Update(s *model.SubAgent) error {
+	s.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
 		"subAgentCode": s.SubAgentCode,
 	}
@@ -121,4 +124,9 @@ func (c *subAgentCollection) PaginationFind(subAgentCode, subAgentName, agentCod
 	err = database.C(c.name).Pipe(cond).All(&results)
 
 	return results, total, err
+}
+func (col *subAgentCollection) Insert(s *model.SubAgent) error {
+	s.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+	s.UpdateTime = s.CreateTime
+	return database.C(col.name).Insert(s)
 }

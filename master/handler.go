@@ -17,8 +17,8 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 )
 
-// tradeSettleReportHandle 清算报表查询的
-func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+// tradeSettleQueryHandle 清算报表查询的
+func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -32,6 +32,23 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
+}
+
+// tradeSettleReportHandle 清算交易明细报表
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	role := r.FormValue("role")
+	date := r.FormValue("date")
+	fn := r.FormValue("filename")
+
+	tradeReport(w, &model.QueryCondition{
+		IsForReport:  true,
+		TimeType:     "payTime",
+		TransStatus:  []string{model.TransSuccess},
+		RefundStatus: model.TransRefunded,
+		StartTime:    date,
+		EndTime:      date,
+		SettRole:     role,
+	}, fn)
 }
 
 // respCodeMatchHandle 查找应答码处理器
@@ -98,8 +115,6 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	transType, _ := strconv.Atoi(params.Get("transType"))
-
-	log.Debugf("col is %s", params.Get("pay"))
 
 	cond := &model.QueryCondition{
 		MerId:          merId,
@@ -957,4 +972,98 @@ func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Merchant.Export(w, merchant, pay, filename, createStartTime, createEndTime)
+}
+
+func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Agent.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func subAgentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := SubAgent.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Group.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := ChanMer.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := RouterPolicy.Update(data)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }

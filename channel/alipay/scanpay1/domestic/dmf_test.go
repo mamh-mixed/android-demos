@@ -1,4 +1,4 @@
-package alipay
+package domestic
 
 // 真实测试，如果参数对的话，是会扣钱的！！！！！
 // ScanCodeId 从手机获取扫条码

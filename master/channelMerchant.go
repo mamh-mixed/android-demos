@@ -108,50 +108,50 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 		log.Debugf("签名密钥长度不能小于8，signKey=%s", c.SignKey)
 		return model.NewResultBody(3, "签名密钥长度不能小于8")
 	}
-	if c.SignKey != "" {
-		isCreate := false
-		channel, err := mongo.ChanMerColl.Find(c.ChanCode, c.ChanMerId)
-		if err != nil {
-			if err.Error() == "not found" {
-				isCreate = true
-			} else {
-				log.Errorf("find database err,%s", err)
-				return model.NewResultBody(1, "查找数据库失败")
-			}
+	// if c.SignKey != "" {
+	isCreate := false
+	channel, err := mongo.ChanMerColl.Find(c.ChanCode, c.ChanMerId)
+	if err != nil {
+		if err.Error() == "not found" {
+			isCreate = true
+		} else {
+			log.Errorf("find database err,%s", err)
+			return model.NewResultBody(1, "查找数据库失败")
 		}
-		if isCreate {
-			if strings.Contains(c.SignKey, "*") {
-				return model.NewResultBody(4, "SignKey不能包含*")
-			}
-			if strings.Contains(c.HttpCert, "*") {
-				return model.NewResultBody(4, "Http证书不能包含*")
-			}
-			if strings.Contains(c.HttpKey, "*") {
-				return model.NewResultBody(4, "Http密钥不能包含*")
-			}
-			if strings.Contains(c.PrivateKey, "*") {
-				return model.NewResultBody(4, "商户私钥不能包含*")
-			}
-		}
-		if !isCreate {
-			log.Debugf("newSignCert:%s,oldSignCert:%s", c.SignKey, channel.SignKey)
-		}
-		if !isCreate {
-			if strings.Contains(c.SignKey, "*") {
-				c.SignKey = channel.SignKey
-			}
-			if strings.Contains(c.HttpCert, "*") {
-				c.HttpCert = channel.HttpCert
-			}
-			if strings.Contains(c.HttpKey, "*") {
-				c.HttpKey = channel.HttpKey
-			}
-			if strings.Contains(c.PrivateKey, "*") {
-				c.PrivateKey = channel.PrivateKey
-			}
-		}
-
 	}
+	if isCreate {
+		if strings.Contains(c.SignKey, "*") {
+			return model.NewResultBody(4, "SignKey不能包含*")
+		}
+		if strings.Contains(c.HttpCert, "*") {
+			return model.NewResultBody(4, "Http证书不能包含*")
+		}
+		if strings.Contains(c.HttpKey, "*") {
+			return model.NewResultBody(4, "Http密钥不能包含*")
+		}
+		if strings.Contains(c.PrivateKey, "*") {
+			return model.NewResultBody(4, "商户私钥不能包含*")
+		}
+	}
+	if !isCreate {
+		log.Debugf("newSignCert:%s,oldSignCert:%s", c.SignKey, channel.SignKey)
+	}
+	if !isCreate {
+		if strings.Contains(c.SignKey, "*") {
+			c.SignKey = channel.SignKey
+		}
+		if strings.Contains(c.HttpCert, "*") {
+			c.HttpCert = channel.HttpCert
+		}
+		if strings.Contains(c.HttpKey, "*") {
+			c.HttpKey = channel.HttpKey
+		}
+		if strings.Contains(c.PrivateKey, "*") {
+			c.PrivateKey = channel.PrivateKey
+		}
+	}
+
+	// }
 
 	// 将微信大商户的签名密钥带*号的改为不带*号的
 	if c.ChanCode == "WXP" && c.AgentMer != nil && c.AgentMer.SignKey != "" {
@@ -161,6 +161,8 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 			return model.NewResultBody(1, "查找数据库失败")
 		}
 		c.AgentMer.SignKey = bigChannel.SignKey
+		c.AgentMer.HttpCert = bigChannel.HttpCert
+		c.AgentMer.HttpKey = bigChannel.HttpKey
 		log.Debugf("bigChannel signCert:%s", c.AgentMer.SignKey)
 	}
 
@@ -267,4 +269,75 @@ func processSensitiveKey(chanMer *model.ChanMer) {
 		}
 		chanMer.PrivateKey = newPrivateKey
 	}
+}
+
+func (i *chanMer) Update(data []byte) (result *model.ResultBody) {
+	c := new(model.ChanMer)
+	err := json.Unmarshal(data, c)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if c.ChanCode == "" {
+		log.Error("没有chanCode")
+		return model.NewResultBody(3, "缺失必要元素chanCode")
+	}
+
+	if c.ChanMerId == "" {
+		log.Error("没有chanMerId")
+		return model.NewResultBody(3, "缺失必要元素chanMerId")
+	}
+
+	if c.SignKey != "" && len(c.SignKey) < 8 {
+		log.Debugf("签名密钥长度不能小于8，signKey=%s", c.SignKey)
+		return model.NewResultBody(3, "签名密钥长度不能小于8")
+	}
+	channel, err := mongo.ChanMerColl.Find(c.ChanCode, c.ChanMerId)
+	if err != nil {
+		log.Errorf("find database err,%s", err)
+		return model.NewResultBody(1, "查找数据库失败")
+	}
+
+	log.Debugf("newSignCert:%s,oldSignCert:%s", c.SignKey, channel.SignKey)
+
+	if strings.Contains(c.SignKey, "*") {
+		c.SignKey = channel.SignKey
+	}
+	if strings.Contains(c.HttpCert, "*") {
+		c.HttpCert = channel.HttpCert
+	}
+	if strings.Contains(c.HttpKey, "*") {
+		c.HttpKey = channel.HttpKey
+	}
+	if strings.Contains(c.PrivateKey, "*") {
+		c.PrivateKey = channel.PrivateKey
+	}
+
+	// 将微信大商户的签名密钥带*号的改为不带*号的
+	if c.ChanCode == "WXP" && c.AgentMer != nil && c.AgentMer.SignKey != "" {
+		bigChannel, err := mongo.ChanMerColl.Find(c.AgentMer.ChanCode, c.AgentMer.ChanMerId)
+		if err != nil {
+			log.Errorf("find database err,%s", err)
+			return model.NewResultBody(1, "查找数据库失败")
+		}
+		c.AgentMer.SignKey = bigChannel.SignKey
+		c.AgentMer.HttpCert = bigChannel.HttpCert
+		c.AgentMer.HttpKey = bigChannel.HttpKey
+		log.Debugf("bigChannel signCert:%s", c.AgentMer.SignKey)
+	}
+
+	err = mongo.ChanMerColl.Update(c)
+	if err != nil {
+		log.Errorf("更新渠道商户失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    c,
+	}
+
+	return result
 }

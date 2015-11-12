@@ -32,6 +32,7 @@
   </style>
   <template>
     <x-ajax id="saveAjax" method="POST" url="/master/subAgent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveSubAgentResponse"></x-ajax>
+    <x-ajax id="updateAjax" method="POST" url="/master/subAgent/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateSubAgentResponse"></x-ajax>
     <paper-dialog with-backdrop id="dialogAdd">
       <h2>创建公司</h2>
       <paper-dialog-scrollable>
@@ -66,7 +67,7 @@
       </paper-dialog-scrollable>
       <div class="buttons">
         <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+        <paper-button autofocus on-tap="handleUpdateTapped">保存</paper-button>
       </div>
     </paper-dialog>
     <x-ajax auto id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
@@ -136,6 +137,24 @@
         },
         // 保存事件响应结果
         handleSaveSubAgentResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.agent = {};
+          this.$.dialogAdd.close();
+          this.$.dialogEdit.close();
+          this.fire('saved');
+          this.set('subAgent', {});
+        },
+        // 点击保存事件
+        handleUpdateTapped: function() {
+          this.$.updateAjax.body = JSON.stringify(this.subAgent);
+          this.$.updateAjax.generateRequest();
+        },
+        // 更新事件响应结果
+        handleUpdateSubAgentResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);
