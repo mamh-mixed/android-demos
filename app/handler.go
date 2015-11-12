@@ -27,6 +27,7 @@ func registerHandle(w http.ResponseWriter, r *http.Request) {
 		InvitationCode: r.FormValue("invitationCode"),
 		UserFrom:       model.SelfRegister,
 		Remark:         "self_register",
+		Limit:          "true",
 	})
 
 	w.Write(jsonMarshal(result))
@@ -146,6 +147,7 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Month:     r.FormValue("month"),
+		Date:      r.FormValue("day"),
 		Status:    r.FormValue("status"),
 		Transtime: r.FormValue("transtime"),
 		Index:     r.FormValue("index"),
@@ -352,6 +354,7 @@ type reqParams struct {
 	Images         []string
 	UserFrom       int
 	BelongsTo      string
+	Limit          string
 	AppUser        *model.AppUser
 	m              *model.Merchant
 }

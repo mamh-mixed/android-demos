@@ -62,7 +62,7 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 		UserName:       req.UserName,
 		Password:       req.Password,
 		Activate:       "false",
-		Limit:          "true",
+		Limit:          req.Limit,
 		RegisterFrom:   req.UserFrom,
 		Remark:         req.Remark,
 		CreateTime:     time.Now().Format("2006-01-02 15:04:05"),
@@ -461,24 +461,33 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	}
 
 	result = model.NewAppResult(model.SUCCESS, "")
-	date := req.Month
-	yearNum, _ := strconv.Atoi(date[:4])
-	month := date[4:6]
-	day := ""
-	if month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12" {
-		day = "31"
-	} else if month == "02" {
-		if (yearNum%4 == 0 && yearNum%100 != 0) || yearNum%400 == 0 {
-			day = "29"
-		} else {
-			day = "28"
-		}
-	} else {
-		day = "30"
-	}
 
-	startDate := date[:4] + "-" + date[4:6] + "-" + "01"
-	endDate := date[:4] + "-" + date[4:6] + "-" + day
+	startDate, endDate := "", ""
+	if req.Date != "" {
+		day, _ := strconv.Atoi(req.Date)
+		now := time.Now()
+		startDate = now.Format("2006-01-02")
+		endDate = now.Add(-time.Hour * 24 * time.Duration(day)).Format("2006-01-02")
+	} else {
+		// 按month来
+		ym := req.Month
+		yearNum, _ := strconv.Atoi(ym[:4])
+		month := ym[4:6]
+		day := ""
+		if month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12" {
+			day = "31"
+		} else if month == "02" {
+			if (yearNum%4 == 0 && yearNum%100 != 0) || yearNum%400 == 0 {
+				day = "29"
+			} else {
+				day = "28"
+			}
+		} else {
+			day = "30"
+		}
+		startDate = ym[:4] + "-" + ym[4:6] + "-" + "01"
+		endDate = ym[:4] + "-" + ym[4:6] + "-" + day
+	}
 
 	index, _ := strconv.Atoi(req.Index)
 	q := &model.QueryCondition{

@@ -139,6 +139,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 		UserFrom:     model.SalesToolsRegister,
 		BelongsTo:    agentUser.UserName,
 		SubAgentCode: agentUser.SubAgentCode,
+		Limit:        "false",
 	}
 	// 注册
 
