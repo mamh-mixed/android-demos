@@ -670,7 +670,7 @@ func (i *importer) doDataWrap() {
 				user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 				user.UpdateTime = user.CreateTime
 				user.Activate = "true"
-				user.Limit = "true"
+				user.Limit = "false"
 				user.MerId = mer.MerId
 				user.RegisterFrom = model.PreRegister
 				i.A.AppAccts = append(i.A.AppAccts, user)
@@ -745,7 +745,7 @@ func (i *importer) doDataWrap() {
 				user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 				user.UpdateTime = user.CreateTime
 				user.Activate = "true"
-				user.Limit = "true"
+				user.Limit = "false"
 				user.MerId = mer.MerId
 				user.RegisterFrom = model.PreRegister
 				if r.IsAddAcct {

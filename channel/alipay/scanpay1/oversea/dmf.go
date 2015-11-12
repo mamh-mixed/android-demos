@@ -11,14 +11,20 @@ import (
 )
 
 var DefaultClient alp
+var alipayCurrency map[string]int
 
 // TODO 常用状态码整合到一起
 var (
-	CloseCode, _, CloseMsg         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
-	InprocessCode, _, InprocessMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
-	SuccessCode, _, SuccessMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
-	UnKnownCode, _, UnKnownMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
+	CloseCode, CloseMsg, _         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
+	InprocessCode, InprocessMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
+	SuccessCode, SuccessMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
+	UnKnownCode, UnKnownMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
+	amtErr                         = mongo.ScanPayRespCol.Get("AMT_INVALID")
 )
+
+func init() {
+	initAvailableCurrency()
+}
 
 type alp struct{}
 
@@ -33,6 +39,11 @@ func getCommonParams(m *model.ScanPayRequest) scanpay1.CommonReq {
 
 // ProcessBarcodePay 下单
 func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+
+	// 校验币种对应的金额格式
+	if ok, err := validateAmt(req); !ok {
+		return err, nil
+	}
 
 	// pay
 	b := NewPayReq()
@@ -70,6 +81,11 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 
 // ProcessRefund 退款
 func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+
+	// 校验币种对应的金额格式
+	if ok, err := validateAmt(req); !ok {
+		return err, nil
+	}
 
 	b := NewRefundReq()
 	b.CommonReq = getCommonParams(req)
@@ -171,7 +187,7 @@ func alipayResponseHandle(p scanpay1.BaseResp, resp *model.ScanPayResponse, serv
 		// error
 		spCode := mongo.ScanPayRespCol.GetByAlp(errorCode, service)
 		resp.Respcd = spCode.ISO8583Code
-		resp.ErrorDetail = spCode.ErrorCode
+		resp.ErrorDetail = spCode.ISO8583Msg
 		if !spCode.IsUseISO {
 			resp.ErrorDetail = errorCode // TODO
 		}
@@ -180,11 +196,47 @@ func alipayResponseHandle(p scanpay1.BaseResp, resp *model.ScanPayResponse, serv
 
 	switch p.ResultCode() {
 	case "SUCCESS":
-		resp.Respcd, resp.ErrorCode = SuccessCode, SuccessMsg
+		resp.Respcd, resp.ErrorDetail = SuccessCode, SuccessMsg
 	case "UNKNOW":
-		resp.Respcd, resp.ErrorCode = InprocessCode, InprocessMsg
+		resp.Respcd, resp.ErrorDetail = InprocessCode, InprocessMsg
 	default:
-		resp.Respcd, resp.ErrorCode = UnKnownCode, UnKnownMsg
+		resp.Respcd, resp.ErrorDetail = UnKnownCode, UnKnownMsg
 	}
+}
 
+func validateAmt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
+	// 结合币种校验送往渠道的金额是否合法
+	if cur, ok := alipayCurrency[req.Currency]; ok {
+		// 判断可支持精度，默认是2个小数点
+		if cur == 0 {
+			// JPY、KRW 截取金额后两位看是否为0
+			dec := req.Txamt[len(req.Txamt)-2:]
+			if dec != "00" {
+				return false, &model.ScanPayResponse{
+					Respcd:      amtErr.ISO8583Code,
+					ErrorDetail: amtErr.ISO8583Msg,
+					ErrorCode:   amtErr.ErrorCode,
+				}
+			}
+		}
+	}
+	return true, nil
+}
+
+func initAvailableCurrency() {
+	// 币种、精度
+	alipayCurrency = make(map[string]int)
+	alipayCurrency["GBP"] = 2
+	alipayCurrency["HKD"] = 2
+	alipayCurrency["USD"] = 2
+	alipayCurrency["CHF"] = 2
+	alipayCurrency["SGD"] = 2
+	alipayCurrency["SEK"] = 2
+	alipayCurrency["DKK"] = 2
+	alipayCurrency["NOK"] = 2
+	alipayCurrency["JPY"] = 0
+	alipayCurrency["CAD"] = 2
+	alipayCurrency["AUD"] = 2
+	alipayCurrency["EUR"] = 2
+	alipayCurrency["KRW"] = 0
 }

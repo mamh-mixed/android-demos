@@ -20,9 +20,9 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "286310047481684515",
+		ScanCodeId: "287528698389366895",
 		AgentCode:  "19992900",
-		Txamt:      "000000000200",
+		Txamt:      "000000000100",
 		Chcd:       "AOS",
 		Busicd:     "PURC",
 		Currency:   "JPY",
@@ -52,7 +52,7 @@ var (
 		Busicd:       "REFD",
 		Mchntid:      "200000000010001",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1447213516899",
+		OrigOrderNum: "1447297657383",
 		AgentCode:    "19992900",
 		Txamt:        "000000000100",
 		Currency:     "JPY",
@@ -61,9 +61,9 @@ var (
 	// 撤销
 	scanPayCancel = &model.ScanPayRequest{
 		Busicd:       "VOID",
-		Mchntid:      "966833200000007",
+		Mchntid:      "200000000010001",
 		OrderNum:     util.Millisecond(),
-		OrigOrderNum: "1440040340745",
+		OrigOrderNum: "1447297595319",
 		AgentCode:    "96683320",
 	}
 	// 关单
@@ -155,7 +155,7 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(scanPayRefund)
+	err := doOneScanPay(scanPayCancel)
 	if err != nil {
 		t.Error(err)
 	}
