@@ -255,7 +255,6 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 
 // TransStatistics 交易统计
 func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
-
 	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
 
 	// 设置条件过滤
@@ -274,7 +273,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 		return errResult
 	}
 	after := time.Now()
-	log.Debugf("spent %s", after.Sub(now))
+	log.Debugf("Run mongo.SpTransColl.FindAndGroupBy(q) spent %s", after.Sub(now))
 	var data = make([]model.Summary, 0)
 
 	// 将数据合并
@@ -283,7 +282,9 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 			MerId:     d.MerId,
 			AgentName: d.AgentName,
 			MerName:   d.MerName,
+			GroupName: d.GroupName,
 		}
+
 		// 遍历渠道，合并数据
 		combine(&s, d.Detail)
 		data = append(data, s)

@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
@@ -52,13 +53,19 @@
       <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
       <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
       <paper-input label="门店名称" value="{{cond.merName::input}}"></paper-input>
+      <paper-checkbox id="isAggregateByGroup" on-change="handleIsAggregateByGroupCheckboxChangeEvent">按商户汇总</paper-checkbox>
+      <input type="hidden" name="isAggregateByGroup" value="{{cond.isAggregateByGroup}}">
       <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
     </div>
     <div class="data-grid table">
       <div class="thead">
         <div class="tr">
           <div class="th">序号</div>
-          <div class="th">门店代码</div>
+          <div class="th">
+            <span hidden="{{cond.isAggregateByGroup}}">门店代码</span>
+            <span hidden="{{!cond.isAggregateByGroup}}">商户代码</span>
+          </div>
+          <div class="th" hidden="{{!cond.isAggregateByGroup}}">商户名称</div>
           <div class="th">门店名称</div>
           <div class="th rowspan-cell">
             <div class="rowspan-top">&nbsp;</div>
@@ -94,8 +101,11 @@
             <div class="td center">
               <span>{{addOneFilter(index)}}</span>
             </div>
-            <div class="td center">
+            <div class="td left">
               <span>{{item.merId}}</span>
+            </div>
+            <div class="td" hidden="{{!cond.isAggregateByGroup}}">
+              <span>{{item.groupName}}</span>
             </div>
             <div class="td">
               <span>{{item.merName}}</span>
@@ -132,9 +142,10 @@
           <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
         </div>
         <div class="tr hover">
-          <div class="td "></div>
-          <div class="td "></div>
-          <div class="td "></div>
+          <div class="td"></div>
+          <div class="td"></div>
+          <div class="td" hidden="{{!cond.isAggregateByGroup}}"></div>
+          <div class="td"></div>
           <div class="td right">
             <span>{{summary.totalTransNum}}</span>
           </div>
@@ -363,6 +374,12 @@
         addOneFilter: function(index) {
           return index + 1;
         },
+        // 按商户汇总统计的复选框改变事件
+        handleIsAggregateByGroupCheckboxChangeEvent: function(e) {
+          this.set('cond.isAggregateByGroup', e.target.checked);
+          // this.set('records', []);
+          this.handleQueryTapped();
+        }
       });
     })();
   </script>
