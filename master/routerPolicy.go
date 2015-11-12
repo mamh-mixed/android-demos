@@ -160,3 +160,79 @@ func (i *routerPolicy) Delete(merId, chanCode, cardBrand string) (result *model.
 
 	return result
 }
+
+func (i *routerPolicy) Update(data []byte) (result *model.ResultBody) {
+	r := new(model.RouterPolicy)
+	err := json.Unmarshal(data, r)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if r.MerId == "" {
+		log.Error("MerId")
+		return model.NewResultBody(3, "缺失必要元素 merId")
+	}
+
+	if r.ChanCode == "" {
+		log.Error("没有 ChanCode")
+		return model.NewResultBody(3, "缺失必要元素 chanCode")
+	}
+
+	if r.ChanMerId == "" {
+		log.Error("没有 ChanMerId")
+		return model.NewResultBody(3, "缺失必要元素 chanMerId")
+	}
+
+	if r.CardBrand == "" {
+		log.Error("没有 CardBrand")
+		return model.NewResultBody(3, "缺失必要元素 cardBrand")
+	}
+
+	merchant, err := mongo.MerchantColl.FindNotInCache(r.MerId)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewResultBody(4, "merId不存在")
+		} else {
+			return model.NewResultBody(1, "查询数据库失败")
+		}
+	}
+	// 对清算标识与清算角色做校验
+	if r.SettFlag == model.SR_AGENT {
+		if r.SettRole != merchant.AgentCode {
+			return model.NewResultBody(5, "agentCode错误")
+		}
+	} else if r.SettFlag == model.SR_COMPANY {
+		if r.SettRole != merchant.SubAgentCode {
+			return model.NewResultBody(5, "subAgentCode错误")
+		}
+	} else if r.SettFlag == model.SR_GROUP {
+		if r.SettRole != merchant.GroupCode {
+			return model.NewResultBody(5, "groupCode错误")
+		}
+	} else if r.SettFlag == model.SR_CIL {
+		if r.SettRole != "CIL" {
+			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+		}
+	} else if r.SettFlag == model.SR_CHANNEL {
+		if r.SettFlag == "ALP" && r.SettRole != "ALP" {
+			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+		} else if r.SettFlag == "WXP" && r.SettRole != "WXP" {
+			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+		}
+	}
+
+	err = mongo.RouterPolicyColl.Update(r)
+	if err != nil {
+		log.Errorf("保存路由信息失败:%s", err)
+		return model.NewResultBody(1, "保存路由信息失败")
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "保存成功",
+		Data:    r,
+	}
+
+	return
+}

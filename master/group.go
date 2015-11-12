@@ -68,7 +68,7 @@ func (g *group) Find(groupCode, groupName, agentCode, agentName, subAgentCode, s
 	return result
 }
 
-// Save 保存集团商户信息，能同时用于新增或者修改的时候
+// Save 保存集团商户信息
 func (i *group) Save(data []byte) (result *model.ResultBody) {
 	g := new(model.Group)
 	err := json.Unmarshal(data, g)
@@ -82,12 +82,26 @@ func (i *group) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(3, "缺失必要元素GroupCode")
 	}
 
+	isExist := true
+
+	_, err = mongo.GroupColl.Find(g.GroupCode)
+	if err != nil {
+		if err.Error() == "not found" {
+			isExist = false
+		} else {
+			return model.NewResultBody(4, "查询数据库失败")
+		}
+	}
+	if isExist {
+		return model.NewResultBody(1, "商户代码已存在")
+	}
+
 	if g.GroupName == "" {
 		log.Error("没有GroupName")
 		return model.NewResultBody(3, "缺失必要元素GroupName")
 	}
 
-	err = mongo.GroupColl.Add(g)
+	err = mongo.GroupColl.Insert(g)
 	if err != nil {
 		log.Errorf("新增集团商户失败:%s", err)
 		return model.NewResultBody(1, err.Error())
@@ -115,6 +129,40 @@ func (g *group) Delete(groupCode string) (result *model.ResultBody) {
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "删除成功",
+	}
+
+	return result
+}
+
+// Update 更新集团商户信息
+func (i *group) Update(data []byte) (result *model.ResultBody) {
+	g := new(model.Group)
+	err := json.Unmarshal(data, g)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "解析失败")
+	}
+
+	if g.GroupCode == "" {
+		log.Error("没有GroupCode")
+		return model.NewResultBody(3, "缺失必要元素GroupCode")
+	}
+
+	if g.GroupName == "" {
+		log.Error("没有GroupName")
+		return model.NewResultBody(3, "缺失必要元素GroupName")
+	}
+
+	err = mongo.GroupColl.Update(g)
+	if err != nil {
+		log.Errorf("新增集团商户失败:%s", err)
+		return model.NewResultBody(1, err.Error())
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "操作成功",
+		Data:    g,
 	}
 
 	return result
