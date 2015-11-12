@@ -73,4 +73,44 @@ public class PostEngine {
             conn.disconnect();
         }
     }
+
+
+    public String get(String _url, Map<String, String> params) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
+        for (String s : params.keySet()) {
+            if (isFirst) {
+                sb.append(s + "=");
+                isFirst = false;
+            } else {
+                sb.append("&" + s + "=");
+            }
+            sb.append(params.get(s));
+        }
+        _url += "?" + sb.toString();
+
+        URL url = new URL(_url);
+        HttpURLConnection conn = null;
+        if (httpProxy != null) {
+            conn = (HttpURLConnection) url.openConnection(httpProxy);
+        } else {
+            conn = (HttpURLConnection) url.openConnection();
+        }
+        try {
+            conn.setRequestProperty("charset", "utf-8");
+            conn.setRequestMethod("GET");
+
+            if (conn.getResponseCode() == 200) {
+                InputStream in = new BufferedInputStream(conn.getInputStream());
+                String response = IOUtils.toString(in, "UTF-8");
+                return response;
+            } else {
+                //TODO: handle other http code
+                return null;
+            }
+
+        } finally {
+            conn.disconnect();
+        }
+    }
 }
