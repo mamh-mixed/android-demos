@@ -2,12 +2,15 @@ package com.cardinfolink.yunshouyin.core;
 
 import android.os.AsyncTask;
 
+import com.cardinfolink.cashiersdk.model.Server;
 import com.cardinfolink.yunshouyin.api.QuickPayApi;
 import com.cardinfolink.yunshouyin.api.QuickPayApiImpl;
 import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
+import com.cardinfolink.yunshouyin.model.ServerPacket;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -234,4 +237,29 @@ public class QuickPayServiceImpl implements QuickPayService {
         }.execute();
     }
 
+    @Override
+    public void getHistoryBillsAsync(final String month, final long index, final String status, final QuickPayCallbackListener<ServerPacket> quickPayCallbackListener) {
+        final User loginUser = SessonData.loginUser;
+
+        new AsyncTask<Void, Integer,AsyncTaskResult<ServerPacket>>(){
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                try{
+                    ServerPacket serverPacket =  quickPayApi.getHistoryBills(loginUser.getUsername(), loginUser.getPassword(), loginUser.getClientid(), month, index, status);
+                    return new AsyncTaskResult<ServerPacket>(serverPacket,null);
+                }catch (QuickPayException ex){
+                    return new AsyncTaskResult<ServerPacket>(null, ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> serverPacketAsyncTaskResult) {
+                if (serverPacketAsyncTaskResult.getException() !=null){
+                    quickPayCallbackListener.onFailure(serverPacketAsyncTaskResult.getException());
+                }else {
+                    quickPayCallbackListener.onSuccess(serverPacketAsyncTaskResult.getResult());
+                }
+            }
+        }.execute();
+    }
 }

@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.api;
 
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.model.ServerPacket;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class QuickPayApiImplTest {
 
     @Test
     public void testUpdateInfo() throws Exception {
-        quickPayApi.updateInfo("453481716@qq.com", "123456","上海","上海","上海浦发银行","张江支行","123456","哈哈过着","6228482371938777011","18516566509");
+        quickPayApi.updateInfo("453481716@qq.com", "123456", "上海", "上海", "上海浦发银行", "张江支行", "123456", "哈哈过着", "6228482371938777011", "18516566509");
     }
 
     @Test
@@ -53,7 +54,7 @@ public class QuickPayApiImplTest {
 
     @Test
     public void testIncreaseLimit() throws Exception {
-        quickPayApi.increaseLimit("453481716@qq.com", "123456", "Tom","18516566509","john.xu@cardinfolink.com");
+        quickPayApi.increaseLimit("453481716@qq.com", "123456", "Tom", "18516566509", "john.xu@cardinfolink.com");
     }
 
     @Test
@@ -64,5 +65,11 @@ public class QuickPayApiImplTest {
     @Test
     public void testResetPassword() throws Exception {
 
+    }
+
+
+    @Test
+    public void testGetHistoryBills() throws Exception {
+        ServerPacket serverPacket = quickPayApi.getHistoryBills("453481716@qq.com", "123456","999118880000017","201511",0,"all");
     }
 }
