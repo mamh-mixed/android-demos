@@ -1,4 +1,4 @@
-package alipay
+package domestic
 
 import (
 	"errors"
@@ -10,10 +10,9 @@ import (
 	"time"
 )
 
-const NotifyURL = "/scanpay/upNotify/alipay"
-
 var DefaultClient alp
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyURL
+var NotifyPath = "/scanpay/upNotify/alipay"
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyPath
 
 // alp 当面付，扫码支付
 type alp struct{}

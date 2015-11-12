@@ -1,4 +1,4 @@
-package alipay
+package domestic
 
 import (
 	"encoding/xml"

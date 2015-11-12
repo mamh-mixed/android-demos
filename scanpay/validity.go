@@ -35,10 +35,11 @@ const (
 )
 
 var (
-	success      = mongo.ScanPayRespCol.Get("SUCCESS")
-	emptyError   = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
-	formatError  = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
-	contentError = mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR")
+	alipayCurrency map[string]int
+	success        = mongo.ScanPayRespCol.Get("SUCCESS")
+	emptyError     = mongo.ScanPayRespCol.Get("DATA_EMPTY_ERROR")
+	formatError    = mongo.ScanPayRespCol.Get("DATA_FORMAT_ERROR")
+	contentError   = mongo.ScanPayRespCol.Get("DATA_CONTENT_ERROR")
 )
 
 // validateBarcodePay 验证扫码下单的参数

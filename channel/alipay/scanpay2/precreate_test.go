@@ -1,17 +1,24 @@
-package scanpay
+package scanpay2
 
-import "testing"
+import (
+	"testing"
 
-func TestQuery(t *testing.T) {
-	req := &QueryReq{
+	"github.com/dawei888/quickpay/util"
+)
+
+func TestPrecreate(t *testing.T) {
+	num := util.SerialNumber()
+	req := &PrecreateReq{
 		CommonParams: CommonParams{
 			AppID:      "2015051100069108",
 			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
 		},
-		OutTradeNo: "5b1fbd21a9334e68431337f4884bc061",
+		OutTradeNo:  num,
+		Subject:     "2024-" + num,
+		TotalAmount: "0.01",
 	}
 
-	resp := &QueryResp{}
+	resp := &PrecreateResp{}
 	err := Execute(req, resp)
 	if err != nil {
 		t.Errorf("prepare data error: %s", err)
@@ -19,7 +26,7 @@ func TestQuery(t *testing.T) {
 	}
 
 	if resp.Code != "10000" {
-		t.Errorf("query failed")
+		t.Errorf("precreate failed")
 		t.FailNow()
 	}
 

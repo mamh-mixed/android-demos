@@ -1,4 +1,4 @@
-package scanpay
+package scanpay2
 
 import (
 	"crypto"

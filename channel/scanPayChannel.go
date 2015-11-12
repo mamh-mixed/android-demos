@@ -13,6 +13,12 @@ const (
 	ChanCodeAlipay = "ALP"
 )
 
+// 境内还是境外
+const (
+	Domestic = 0
+	Oversea  = 1
+)
+
 // ScanPayChan 扫码支付
 type ScanPayChan interface {
 	// ProcessBarcodePay 扫条码下单
@@ -38,14 +44,17 @@ type ScanPayChan interface {
 }
 
 // GetScanPayChan 扫码支付渠道
-func GetScanPayChan(chanCode string) ScanPayChan {
+func GetScanPayChan(chanCode string, areaType int) ScanPayChan {
 	switch chanCode {
 	// 微信
 	case ChanCodeWeixin:
 		return &scanpay.DefaultWeixinScanPay
 	// 支付宝
 	case ChanCodeAlipay:
-		return &alipay.DefaultClient
+		if areaType == Oversea {
+			return alipay.Oversea
+		}
+		return alipay.Domestic
 	default:
 		log.Errorf("unknown scan pay channel `%s`", chanCode)
 		return nil

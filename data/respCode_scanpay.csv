@@ -5,6 +5,7 @@ iso8583Code,iso8583Msg,errorCode,isUseISO,respCode,respMsg
 05,不支持该交易类型,NOT_SUPPORT_TYPE,true,,
 09,处理中,INPROCESS,true,,
 12,签名错误,SIGN_AUTH_ERROR,true,,
+13,金额错误,AMT_INVALID,true,,
 14,条码错误或过期,QRCODE_INVALID,true,,
 15,无此渠道,NO_CHANNEL,true,,
 19,订单号重复,ORDER_DUPLICATE,true,,

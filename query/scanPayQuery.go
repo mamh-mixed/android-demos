@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-var noMerCode, noMerMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
-var sysErrCode, sysErrMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
-var sucCode, sucMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
+var noMerCode, noMerMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
+var sysErrCode, sysErrMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("SYSTEM_ERROR")
+var sucCode, sucMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
 
 func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 
