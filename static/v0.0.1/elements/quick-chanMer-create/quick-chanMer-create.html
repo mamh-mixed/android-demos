@@ -56,6 +56,7 @@
   </style>
   <template>
     <x-ajax id="saveAjax" method="POST" url="/master/channelMerchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveChannelMerchantResponse"></x-ajax>
+    <x-ajax id="updateAjax" method="POST" url="/master/channelMerchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateChannelMerchantResponse"></x-ajax>
     <x-ajax id="findChanMerAjax" method="GET" url="/master/channelMerchant/find" handle-as="json" debounce-duration="1000" on-response="handleFindChanMerResponse"></x-ajax>
     <paper-dialog with-backdrop id="dialogAdd">
       <h2 id="header"></h2>
@@ -222,11 +223,29 @@
             Util.toast('请选择渠道', 3000);
             return;
           }
-          this.$.saveAjax.body = JSON.stringify(this.chanMer);
-          this.$.saveAjax.generateRequest();
+          if(this.pageType === 'create'){
+              this.$.saveAjax.body = JSON.stringify(this.chanMer);
+              this.$.saveAjax.generateRequest();
+          }else{
+              this.$.updateAjax.body = JSON.stringify(this.chanMer);
+              this.$.updateAjax.generateRequest();
+          }
+
         },
         // 保存事件响应结果
         handleSaveChannelMerchantResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.$.dialogAdd.close();
+          Util.toast(response.message, 1000);
+          this.fire('saved');
+          this.set('chanMer', {});
+        },
+        // 保存事件响应结果
+        handleUpdateChannelMerchantResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
             Util.toast(response.message, 3000);

@@ -2,6 +2,8 @@ package mongo
 
 import (
 	// "errors"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/omigo/log"
@@ -16,6 +18,7 @@ var RouterPolicyColl = routerPolicyCollection{"routerPolicy"}
 
 // Insert 插入一个路由策略到数据库中，如果路由中已经存在一模一样的，就更新
 func (c *routerPolicyCollection) Insert(rp *model.RouterPolicy) error {
+	rp.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	cond := bson.M{
 		"merId":     rp.MerId,
 		"cardBrand": rp.CardBrand,
@@ -31,6 +34,8 @@ func (c *routerPolicyCollection) Insert(rp *model.RouterPolicy) error {
 func (c *routerPolicyCollection) BatchAdd(routers []model.RouterPolicy) error {
 	var temp []interface{}
 	for _, r := range routers {
+		r.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+		r.UpdateTime = r.CreateTime
 		temp = append(temp, r)
 	}
 	return database.C(c.name).Insert(temp...)
@@ -149,4 +154,14 @@ func (c *routerPolicyCollection) Remove(merId, chanCode, cardBrand string) (err 
 	err = database.C(c.name).Remove(q)
 
 	return err
+}
+
+func (c *routerPolicyCollection) Update(rp *model.RouterPolicy) error {
+	rp.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+	cond := bson.M{
+		"merId":     rp.MerId,
+		"cardBrand": rp.CardBrand,
+		"chanCode":  rp.ChanCode,
+	}
+	return database.C(c.name).Update(cond, rp)
 }

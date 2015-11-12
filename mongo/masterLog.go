@@ -1,6 +1,10 @@
 package mongo
 
-import "github.com/CardInfoLink/quickpay/model"
+import (
+	"time"
+
+	"github.com/CardInfoLink/quickpay/model"
+)
 
 type masterLogCollection struct {
 	name string
@@ -10,6 +14,7 @@ type masterLogCollection struct {
 var MasterLogColl = masterLogCollection{"masterlog"}
 
 func (col *masterLogCollection) Insert(log *model.MasterLog) error {
+	log.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 	err := database.C(col.name).Insert(log)
 	return err
 }

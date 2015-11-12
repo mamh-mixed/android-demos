@@ -33,8 +33,10 @@ type User struct {
 	// GroupName string `json:"groupName" bson:"groupName"`
 	MerId string `json:"merId" bson:"merId"`
 	// MerName   string `json:"merName" bson:"merName"`
-	RelatedEmail string `json:"relatedEmail" bson:"relatedEmail,omitempty"` // 关联email
-	AreaCode     string `json:"areaCode" bson:"areaCode,omitempty"`         // 地区代码
+	RelatedEmail string `json:"relatedEmail" bson:"relatedEmail,omitempty"`       // 关联email
+	AreaCode     string `json:"areaCode" bson:"areaCode,omitempty"`               // 地区代码
+	CreateTime   string `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
+	UpdateTime   string `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
 }
 
 // Session Session表
