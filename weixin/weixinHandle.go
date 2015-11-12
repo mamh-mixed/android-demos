@@ -56,8 +56,15 @@ type RefreshAATokenResp struct {
 	Errmsg       string `json:"errmsg"`
 }
 
+var Client = AuthClient{appID, appSECRET}
+
+type AuthClient struct {
+	AppID     string
+	AppSecret string
+}
+
 // GetAuthAccessToken 获取AuthAccessToken
-func GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, err error) {
+func (c *AuthClient) GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, err error) {
 	authAccessTokenURLT := fmt.Sprintf(authAccessTokenURL, appID, appSECRET, code)
 	resp, err := http.Get(authAccessTokenURLT)
 	if err != nil {
@@ -83,7 +90,7 @@ func GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, 
 }
 
 // GetAuthUserInfo 获取网页授权用户信息
-func GetAuthUserInfo(authAccessToken, openId string) (authUserInfoResp *AuthUserInfoResp, err error) {
+func (c *AuthClient) GetAuthUserInfo(authAccessToken, openId string) (authUserInfoResp *AuthUserInfoResp, err error) {
 	authUserInfoURLT := fmt.Sprintf(authUserInfoURL, authAccessToken, openId)
 	resp, err := http.Get(authUserInfoURLT)
 	if err != nil {
@@ -109,7 +116,7 @@ func GetAuthUserInfo(authAccessToken, openId string) (authUserInfoResp *AuthUser
 }
 
 // RefreshAuthAccessToken 刷新authAccessToken  refreshToken:通过access_token获取到的refresh_token参数
-func RefreshAuthAccessToken(appid, refreshToken string) (refreshAATokenResp *RefreshAATokenResp, err error) {
+func (c *AuthClient) RefreshAuthAccessToken(appid, refreshToken string) (refreshAATokenResp *RefreshAATokenResp, err error) {
 	refreshAATokenURLT := fmt.Sprintf(refreshAATokenURL, appid, refreshToken)
 	resp, err := http.Get(refreshAATokenURLT)
 	if err != nil {

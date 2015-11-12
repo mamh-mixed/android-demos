@@ -3,7 +3,6 @@ package domestic
 import (
 	"errors"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -12,7 +11,8 @@ import (
 )
 
 var DefaultClient alp
-var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + alipay.NotifyUrl
+var NotifyPath = "/scanpay/upNotify/alipay"
+var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyPath
 
 // alp 当面付，扫码支付
 type alp struct{}

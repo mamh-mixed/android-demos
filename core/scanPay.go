@@ -63,17 +63,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
 
-	// 网页授权获取token和openid
-	token, err := weixin.GetAuthAccessToken(req.Code)
-	if err != nil {
-		log.Errorf("get accessToken error: %s", err)
-		return adaptor.LogicErrorHandler(t, "AUTH_CODE_ERROR")
-	}
-	openId := token.OpenId
-	req.OpenId = openId
-
-	// 走预下单渠道
-	// 通过路由策略找到渠道和渠道商户
+	// 路由策略
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
 		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
@@ -86,6 +76,29 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+
+	appID, appSecret := "", ""
+	if c.IsAgentMode && c.AgentMer != nil {
+		appID, appSecret = c.AgentMer.WxpAppId, c.AgentMer.WxpAppSecret
+	} else {
+		appID, appSecret = c.WxpAppId, c.WxpAppSecret
+	}
+
+	var authClient weixin.AuthClient
+	if appID == "" || appSecret == "" {
+		authClient = weixin.Client
+	} else {
+		authClient = weixin.AuthClient{appID, appSecret}
+	}
+
+	// 网页授权获取token和openid
+	token, err := authClient.GetAuthAccessToken(req.Code)
+	if err != nil {
+		log.Errorf("get accessToken error: %s", err)
+		return adaptor.LogicErrorHandler(t, "AUTH_CODE_ERROR")
+	}
+	openId := token.OpenId
+	req.OpenId = openId
 
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
@@ -105,7 +118,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 		if req.NeedUserInfo == "YES" {
 			// 用token换取用户信息
-			userInfo, err := weixin.GetAuthUserInfo(token.AccessToken, token.OpenId)
+			userInfo, err := authClient.GetAuthUserInfo(token.AccessToken, token.OpenId)
 			if err != nil {
 				log.Errorf("unable to get userInfo by accessToken: %s", err)
 			}
@@ -286,9 +299,6 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		shouldChcd = channel.ChanCodeWeixin
 	case "2":
 		shouldChcd = channel.ChanCodeAlipay
-		if req.Chcd != "" && req.Chcd == channel.ChanCodeAliOversea {
-			shouldChcd = channel.ChanCodeAliOversea
-		}
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
 	}
