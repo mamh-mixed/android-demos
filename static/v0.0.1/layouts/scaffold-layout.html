@@ -15,6 +15,7 @@
 <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../elements/choose-language/choose-language.html">
 <link rel="import" href="../elements/x-ajax/x-ajax.html">
 <link rel="import" href="../elements/x-pagination/x-pagination.html">
 <link rel="import" href="../styles/app-theme.html">
@@ -71,6 +72,11 @@
 
     paper-scroll-header-panel {
       height: 100%;
+    }
+
+    paper-scroll-header-panel /deep/ #headerContainer {
+      transform: inherit!important;
+      transform-style: flat;
     }
 
     paper-material {
@@ -152,61 +158,6 @@
 
     #mainContainer > .content {
       padding: 0 20px 20px 20px;
-    }
-
-    .language-choose {
-      display: inline-block;
-      position: relative;
-    }
-
-    .dropdown-menu {
-      -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      -ms-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      position: absolute;
-      display: none;
-      padding: 5px 0;
-      margin: 2px 0 0;
-      list-style: none;
-      font-size: 13px;
-      text-align: left;
-      background-color: #fff;
-      color: #333;
-      border: 1px solid transparent;
-      right: 10px;
-      top: 40px;
-    }
-
-    .dropdown-menu > li > a {
-      display: block;
-      padding: 3px 20px;
-      clear: both;
-      font-weight: 400;
-      line-height: 1.42857143;
-      color: #333;
-      white-space: nowrap;
-      padding: 8px 17px;
-      -webkit-transition: background-color;
-      -moz-transition: background-color;
-      -ms-transition: background-color;
-      transition: background-color;
-      -webkit-transition-duration: 300ms;
-      -moz-transition-duration: 300ms;
-      -ms-transition-duration: 300ms;
-      transition-duration: 300ms;
-    }
-
-    .dropdown-menu > li > a:hover,
-    .dropdown-menu > li > a:focus,
-    .dropdown-menu > li.active > a {
-      text-decoration: none;
-      color: #000;
-      background-color: rgba(0, 0, 0, 0.075);
-    }
-
-    .show {
-      display: block!important;
     }
 
     @media (max-width: 600px) {
@@ -304,16 +255,7 @@
           </div>
           <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
           <!-- Toolbar icons -->
-          <div class="language-choose" id="languageChoose">
-            <paper-icon-button icon="translate" on-tap="handleOpenLanguagesDropdownTapped"></paper-icon-button>
-            <ul class="dropdown-menu dropdown-content" id="dropdownMenu">
-              <template is="dom-repeat" items="[[languages]]" as="la">
-                <li class$="{{la.activeClass}}">
-                  <a on-tap="handleLanguageItemTapped">[[la.value]]</a>
-                </li>
-              </template>
-            </ul>
-          </div>
+          <choose-language id="languageChoose"></choose-language>
           <div hidden$="{{isNarrow}}">
             <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
             <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
@@ -687,31 +629,6 @@
         },
         handleReloadNickNameEvent: function(e) {
           this.set('nickName', e.detail);
-        },
-        // 打开选择语言的下拉框
-        handleOpenLanguagesDropdownTapped: function() {
-          this.toggleClass('show', true, this.$.dropdownMenu);
-        },
-        // 选中语言事件
-        handleLanguageItemTapped: function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var language = e.model.la;
-          if (language && language.key !== '') {
-            I18nMsg.lang = language.key;
-            Platform.performMicrotaskCheckpoint();
-          }
-          this.set('languages.' + e.model.index + '.activeClass', 'active');
-          for (var i = 0, l = this.languages.length; i < l; i++) {
-            if (i !== e.model.index) {
-              this.set('languages.' + i + '.activeClass', '');
-            }
-          }
-          this.toggleClass('show', false, this.$.dropdownMenu);
-          return;
-        },
-        testHandler: function() {
-          this.$.cilUserLocalStorageInScaffoldLayout.reload();
         }
       });
     })();

@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="language-overlay.html">
+<dom-module id="choose-language">
+  <style>
+    :host {
+      display: inline-block;
+      position: relative;
+    }
+
+    language-overlay {
+      -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      -ms-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      right: 8px;
+      top: 40px;
+    }
+
+    .dropdown-menu {
+      list-style: none;
+      padding: 5px 0;
+      margin: 2px 0 0;
+      font-size: 13px;
+      text-align: left;
+      background-color: #fff;
+      color: #333;
+      border: 1px solid transparent;
+    }
+
+    .dropdown-menu > li > a {
+      display: block;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      white-space: nowrap;
+      padding: 8px 17px;
+      -webkit-transition: background-color;
+      -moz-transition: background-color;
+      -ms-transition: background-color;
+      transition: background-color;
+      -webkit-transition-duration: 300ms;
+      -moz-transition-duration: 300ms;
+      -ms-transition-duration: 300ms;
+      transition-duration: 300ms;
+    }
+
+    .dropdown-menu > li > a:hover,
+    .dropdown-menu > li > a:focus,
+    .dropdown-menu > li.active > a {
+      text-decoration: none;
+      color: #000;
+      background-color: rgba(0, 0, 0, 0.075);
+    }
+  </style>
+  <template>
+    <paper-icon-button icon="translate" on-tap="handleOpenLanguagesDropdownTapped"></paper-icon-button>
+    <language-overlay id="languageOverlay">
+      <!-- Hello world -->
+      <ul class="dropdown-menu dropdown-content" id="dropdownMenu">
+        <template is="dom-repeat" items="[[languages]]" as="la">
+          <li class$="{{la.activeClass}}">
+            <a on-tap="handleLanguageItemTapped">[[la.value]]</a>
+          </li>
+        </template>
+      </ul>
+    </language-overlay>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'choose-language',
+        properties: {
+          languages: {
+            type: Array,
+            value: [{
+              key: 'zh-CN',
+              value: '简体中文',
+              activeClass: ''
+            }, {
+              key: 'en-US',
+              value: 'English',
+              activeClass: ''
+            }, {
+              key: 'ja',
+              value: '日本語',
+              activeClass: ''
+            }]
+          }
+        },
+        // 打开选择语言的下拉框
+        handleOpenLanguagesDropdownTapped: function() {
+          this.$.languageOverlay.open();
+        },
+        // 选中语言事件
+        handleLanguageItemTapped: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          var language = e.model.la;
+          if (language && language.key !== '') {
+            I18nMsg.lang = language.key;
+            Platform.performMicrotaskCheckpoint();
+          }
+          this.set('languages.' + e.model.index + '.activeClass', 'active');
+
+          for (var i = 0, l = this.languages.length; i < l; i++) {
+            if (i !== e.model.index) {
+              this.set('languages.' + i + '.activeClass', '');
+            }
+          }
+          return;
+        },
+
+      });
+    })();
+  </script>
+</dom-module>
