@@ -39,7 +39,7 @@ func (col *groupCollection) Add(g *model.Group) error {
 	return err
 }
 
-// Modify 更新集团商户信息
+// Update 更新集团商户信息
 func (col *groupCollection) Update(g *model.Group) error {
 	g.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
@@ -134,7 +134,7 @@ func (c *groupCollection) PaginationFind(groupCode, groupName, agentCode, agentN
 	return results, total, err
 }
 
-// Modify 更新集团商户信息
+// Insert 更新集团商户信息
 func (col *groupCollection) Insert(g *model.Group) error {
 	g.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 	g.UpdateTime = g.CreateTime

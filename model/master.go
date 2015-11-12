@@ -25,12 +25,11 @@ type Pagination struct {
 
 // MasterLog 平台操作日志
 type MasterLog struct {
-	Time       string `bson:"time" json:"time"`
-	UserName   string `bson:"userName" json:"userName"`
-	IP         string `bson:"ip" json:"ip"`
-	Path       string `bson:"path" json:"path"`
-	Method     string `bson:"method" json:"method"`
-	Query      string `bson:"query" json:"query"`
-	Body       string `bson:"body" json:"body"`
-	CreateTime string `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
+	Time     string `bson:"time" json:"time"`
+	UserName string `bson:"userName" json:"userName"`
+	IP       string `bson:"ip" json:"ip"`
+	Path     string `bson:"path" json:"path"`
+	Method   string `bson:"method" json:"method"`
+	Query    string `bson:"query" json:"query"`
+	Body     string `bson:"body" json:"body"`
 }

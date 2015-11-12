@@ -75,6 +75,10 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
 		return model.NewResultBody(2, "解析失败")
 	}
+	if a.AgentCode == "" {
+		log.Error("没有AgentCode")
+		return model.NewResultBody(3, "缺失必要元素AgentCode")
+	}
 	isExist := true
 	// 查看agentCode是否存在
 	_, err = mongo.AgentColl.Find(a.AgentCode)
@@ -88,10 +92,6 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 	}
 	if isExist {
 		return model.NewResultBody(1, "代理代码已存在")
-	}
-	if a.AgentCode == "" {
-		log.Error("没有AgentCode")
-		return model.NewResultBody(3, "缺失必要元素AgentCode")
 	}
 
 	if a.AgentName == "" {
