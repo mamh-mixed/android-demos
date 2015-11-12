@@ -71,5 +71,10 @@ public class ContextUtil extends Application {
 
         quickPayConfigStorage.setUrl(SystemConfig.Server);
         quickPayService = new QuickPayServiceImpl(quickPayConfigStorage);
+
+        quickPayConfigStorage.setBankbaseKey(SystemConfig.bankbase_key);
+        quickPayConfigStorage.setBankbaseUrl(SystemConfig.bankbase_url);
+
+
     }
 }
