@@ -69,19 +69,6 @@ public class MainActivity extends BaseActivity {
         mPasswordUpdateView.setLayoutParams(new LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-//        mAccountUpdateView = new AccountUpdateView(mContext);
-//        mAccountUpdateView.setLayoutParams(new LayoutParams(
-//                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//
-//        mLimitIncreaseView = new LimitIncreaseView(mContext);
-//        mLimitIncreaseView.setLayoutParams(new LayoutParams(
-//                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//
-//        mWapBillView = new WapView(mContext);
-//        mWapBillView.setLayoutParams(new LayoutParams(
-//                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-
         mMainContent.addView(mScanCodeView);
 
         mLeftMenu = new SlidingMenu(this);
@@ -151,23 +138,6 @@ public class MainActivity extends BaseActivity {
                 mMainContent.addView(mPasswordUpdateView);
 
                 break;
-//            case 3:
-//                mMainContent.removeAllViews();
-//                mAccountUpdateView = new AccountUpdateView(mContext);
-//                mAccountUpdateView.setLayoutParams(new LayoutParams(
-//                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//                mMainContent.addView(mAccountUpdateView);
-//                mAccountUpdateView.getInfo();
-//
-//                break;
-//
-//
-//            case 4:
-//                mMainContent.removeAllViews();
-//                mMainContent.addView(mWapBillView);
-//                mWapBillView.initData();
-//                break;
-
         }
     }
 

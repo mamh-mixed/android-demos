@@ -135,7 +135,7 @@
     <string name="txn_refund">リファンド</string>
     <string name="txn_unit">ユニット</string>
     <string name="login">ログイン</string>
-    <string name="clear">クリア</string>
+    <string name="clear">CLR</string>
     <string name="delete">削除</string>
     <string name="begin_scan">スキャン開始</string>
     <string name="my_bill">マイ明細</string>
