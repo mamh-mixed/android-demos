@@ -43,7 +43,7 @@
 
         </activity>
         <activity
-            android:name=".activity.SAMerchantListActivity"
+            android:name=".activity.MerchantListActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden">
 

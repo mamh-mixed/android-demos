@@ -30,8 +30,8 @@ import java.util.Date;
 import java.util.List;
 
 //TODO: 加入分页下载,搜索API,上拉更多
-public class SAMerchantListActivity extends BaseActivity {
-    private final String TAG = "SAMerchantListActivity";
+public class MerchantListActivity extends BaseActivity {
+    private final String TAG = "MerchantListActivity";
     MerchantListAdapter adapter;
     //该地址会被ArrayAdapter所引用,作为数据源,对merchantInfos所做的修改会影响到arrayAdapter
     private List<User> users = new ArrayList<>();
@@ -150,7 +150,7 @@ public class SAMerchantListActivity extends BaseActivity {
                         adapter.refreshDataSource(users);
                         adapter.notifyDataSetChanged();
                         swipeRefreshLayout.setRefreshing(false);
-                        Toast.makeText(SAMerchantListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MerchantListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
                         //endLoading();
                     }
                 });

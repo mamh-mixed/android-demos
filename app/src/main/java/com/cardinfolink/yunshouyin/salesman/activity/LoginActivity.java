@@ -75,7 +75,7 @@ public class LoginActivity extends BaseActivity {
 
 
                 endLoading();
-                Intent intent = new Intent(mContext, SAMerchantListActivity.class);
+                Intent intent = new Intent(mContext, MerchantListActivity.class);
                 mContext.startActivity(intent);
             }
 

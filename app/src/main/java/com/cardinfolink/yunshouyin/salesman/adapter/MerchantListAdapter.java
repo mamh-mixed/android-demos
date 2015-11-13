@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.activity.SAMerchantListActivity;
+import com.cardinfolink.yunshouyin.salesman.activity.MerchantListActivity;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.User;
@@ -26,13 +26,13 @@ import java.util.List;
 
 public class MerchantListAdapter extends ArrayAdapter<User> {
     Filter myFilter;
-    private SAMerchantListActivity saMerchantListActivity;
+    private MerchantListActivity merchantListActivity;
     private List<User> users_origin = new ArrayList<>();
     private List<User> users;
 
-    public MerchantListAdapter(SAMerchantListActivity saMerchantListActivity, final List<User> users) {
-        super(saMerchantListActivity, R.layout.merchant_item_view, users);
-        this.saMerchantListActivity = saMerchantListActivity;
+    public MerchantListAdapter(MerchantListActivity merchantListActivity, final List<User> users) {
+        super(merchantListActivity, R.layout.merchant_item_view, users);
+        this.merchantListActivity = merchantListActivity;
         this.users = users;
         this.users_origin.addAll(users);
 
@@ -63,7 +63,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                 //这里并没有引用arrayList的地址,而是对list内的item逐个加入adapter
                 users.clear();
                 if (objects != null && objects.size() > 0) {
-                    //saMerchantListActivity.adapter.clear();
+                    //MerchantListActivity.adapter.clear();
                     users.addAll(objects);
                 }
                 notifyDataSetChanged();
@@ -75,7 +75,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
     public View getView(final int position, View convertView, ViewGroup parent) {
         View itemView = convertView;
         if (itemView == null) {
-            itemView = saMerchantListActivity.getLayoutInflater().inflate(R.layout.merchant_item_view, parent, false);
+            itemView = merchantListActivity.getLayoutInflater().inflate(R.layout.merchant_item_view, parent, false);
         }
         final User merchant = users.get(position);
         final TableLayout detailViewGroup = (TableLayout) itemView.findViewById(R.id.mItem_detailViewGroup);

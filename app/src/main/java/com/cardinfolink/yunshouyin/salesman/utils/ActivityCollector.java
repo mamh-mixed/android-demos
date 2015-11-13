@@ -3,7 +3,7 @@ package com.cardinfolink.yunshouyin.salesman.utils;
 import android.app.Activity;
 
 import com.cardinfolink.yunshouyin.salesman.activity.LoginActivity;
-import com.cardinfolink.yunshouyin.salesman.activity.SAMerchantListActivity;
+import com.cardinfolink.yunshouyin.salesman.activity.MerchantListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ActivityCollector {
             if (activity instanceof LoginActivity) {
                 continue;
             }
-            if (activity instanceof SAMerchantListActivity) {
+            if (activity instanceof MerchantListActivity) {
                 continue;
             }
             if (!activity.isFinishing()) {
