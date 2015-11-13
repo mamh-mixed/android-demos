@@ -35,8 +35,8 @@ public class MerchantImageViewHolder extends RecyclerView.ViewHolder implements 
 
         activity = (AppCompatActivity) v.getContext();
         itemIndex = getAdapterPosition();
-        Log.d("testpos", "long clicked AdapterPosition: " + itemIndex);
-        Log.d("testpos", "long clicked LayoutPosition: " + getLayoutPosition());
+        Log.d(TAG, "long clicked AdapterPosition: " + itemIndex);
+        Log.d(TAG, "long clicked LayoutPosition: " + getLayoutPosition());
 
         ActionSheet.createBuilder(activity, activity.getSupportFragmentManager())
                 .setOtherButtonTitles("删除")

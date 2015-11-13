@@ -57,7 +57,7 @@ public class RegisterActivity extends BaseActivity {
                     public void onSuccess(User data) {
                         SessonData.registerUser.setUsername(username);
                         SessonData.registerUser.setPassword(password);
-                        Log.d("register user", SessonData.registerUser.getJsonString());
+                        Log.d(TAG, SessonData.registerUser.getJsonString());
                         endLoading();
                         intentToActivity(RegisterNextActivity.class);
                     }

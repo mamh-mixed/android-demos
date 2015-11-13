@@ -2,9 +2,11 @@ package com.cardinfolink.yunshouyin.salesman.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
@@ -27,9 +29,15 @@ public class BaseActivity extends AppCompatActivity {
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         mContext = this;
-        mLoadingDialog = new LoadingDialog(this, findViewById(R.id.loading_dialog));
-        mAlertDialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
-                getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+
+        View loadingDialogView = findViewById(R.id.loading_dialog);
+        mLoadingDialog = new LoadingDialog(this, loadingDialogView);
+
+        Bitmap alertDialogBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.wrong);
+        String alertDialogMsg = getResources().getString(R.string.username_password_error);
+        View alertDialogView = findViewById(R.id.alert_dialog);
+        mAlertDialog = new AlertDialog(this, null, alertDialogView, alertDialogMsg, alertDialogBitmap);
+
         application = SalesmanApplication.getInstance();
     }
 
@@ -67,9 +75,9 @@ public class BaseActivity extends AppCompatActivity {
         mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
     }
 
-//    public void alertInfo(String msg) {
-//        mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
-//    }
+    public void alertInfo(String msg) {
+        mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
+    }
 
     public void alertInfo(String msg, WorkBeforeExitListener listener) {
         mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right), listener);

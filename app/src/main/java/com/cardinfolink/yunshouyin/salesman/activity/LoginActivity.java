@@ -32,9 +32,12 @@ public class LoginActivity extends BaseActivity {
 
         mUsernameEdit = (EditText) findViewById(R.id.login_username);
         VerifyUtil.addEmailLimit(mUsernameEdit);
+
         mPasswordEdit = (EditText) findViewById(R.id.login_password);
         VerifyUtil.addEmailLimit(mPasswordEdit);
+
         mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
+
         User user = application.getLoginUser();
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
@@ -51,7 +54,6 @@ public class LoginActivity extends BaseActivity {
 
 
     private void login() {
-        Log.d(TAG, "======================login========================");
         startLoading();
 
         final String username = mUsernameEdit.getText().toString();
@@ -72,8 +74,6 @@ public class LoginActivity extends BaseActivity {
                     user.setPassword(password);
                 }
                 application.setLoginUser(user);
-
-
                 endLoading();
                 Intent intent = new Intent(mContext, MerchantListActivity.class);
                 mContext.startActivity(intent);

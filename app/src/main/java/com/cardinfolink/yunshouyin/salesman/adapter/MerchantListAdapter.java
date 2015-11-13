@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MerchantListAdapter extends ArrayAdapter<User> {
-    Filter myFilter;
+    private static final String TAG = "MerchantListAdapter";
+
+    private Filter myFilter;
     private MerchantListActivity merchantListActivity;
     private List<User> users_origin = new ArrayList<>();
     private List<User> users;
@@ -104,7 +106,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
         downloadQRText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("jiahua:", "download qrcode");
+                Log.d(TAG, "download qrcode");
                 Toast.makeText(SalesmanApplication.getInstance().getContext(), "二维码生成中...", Toast.LENGTH_LONG).show();
 
                 String merchantId = merchant.getClientid();
@@ -117,7 +119,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                             Bitmap bitmap = Downloader.downloadBitmap(imageUrl);
                             new ImageUtil().saveImageToExternalStorage(bitmap);
                         } catch (final Exception ex) {
-                            Log.d("jiahua", ex.getMessage());
+                            Log.d(TAG, ex.getMessage());
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -155,7 +157,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                             Bitmap bitmap = Downloader.downloadBitmap(imageUrl);
                             new ImageUtil().saveImageToExternalStorage(bitmap);
                         } catch (final Exception ex) {
-                            Log.d("jiahua", ex.getMessage());
+                            Log.d(TAG, ex.getMessage());
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {

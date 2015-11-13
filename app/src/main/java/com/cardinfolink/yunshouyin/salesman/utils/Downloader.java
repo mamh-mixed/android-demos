@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Downloader {
+    private static final String TAG = "Downloader";
+
     public static Bitmap downloadBitmap(String url) {
         HttpURLConnection urlConnection = null;
         try {
@@ -30,11 +32,11 @@ public class Downloader {
                 return bitmap;
             }
         } catch (Exception e) {
-            Log.d("URLCONNECTIONERROR", e.toString());
+            Log.e(TAG, e.toString());
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
-            Log.w("ImageDownloader", "Error downloading image from " + url);
+            Log.e(TAG, "Error downloading image from " + url);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
