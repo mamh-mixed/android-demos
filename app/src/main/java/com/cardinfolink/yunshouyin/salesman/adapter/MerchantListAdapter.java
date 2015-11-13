@@ -18,7 +18,7 @@ import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.SalesmanApplication;
-import com.cardinfolink.yunshouyin.salesman.utils.SADownloader;
+import com.cardinfolink.yunshouyin.salesman.utils.Downloader;
 import com.cardinfolink.yunshouyin.salesman.utils.ImageUtil;
 
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                     public void onSuccess(String data) {
                         String imageUrl = data;
                         try {
-                            Bitmap bitmap = SADownloader.downloadBitmap(imageUrl);
+                            Bitmap bitmap = Downloader.downloadBitmap(imageUrl);
                             new ImageUtil().saveImageToExternalStorage(bitmap);
                         } catch (final Exception ex) {
                             Log.d("jiahua", ex.getMessage());
@@ -152,7 +152,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                     public void onSuccess(String data) {
                         String imageUrl = data;
                         try {
-                            Bitmap bitmap = SADownloader.downloadBitmap(imageUrl);
+                            Bitmap bitmap = Downloader.downloadBitmap(imageUrl);
                             new ImageUtil().saveImageToExternalStorage(bitmap);
                         } catch (final Exception ex) {
                             Log.d("jiahua", ex.getMessage());

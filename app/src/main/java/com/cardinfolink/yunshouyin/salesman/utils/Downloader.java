@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class SADownloader {
+public class Downloader {
     public static Bitmap downloadBitmap(String url) {
         HttpURLConnection urlConnection = null;
         try {
