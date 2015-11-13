@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SARegisterStep3Activity extends BaseActivity {
+public class RegisterStep3Activity extends BaseActivity {
     private static final String LOG_TAG = "RegisterStep3";
     private static final int PICK_IMAGE_REQUEST = 1000;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
@@ -73,7 +73,7 @@ public class SARegisterStep3Activity extends BaseActivity {
 
         // fill data adapter
         imageList = getListItemData();
-        rcAdapter = new MerchantPhotoRecyclerViewAdapter(SARegisterStep3Activity.this, imageList);
+        rcAdapter = new MerchantPhotoRecyclerViewAdapter(RegisterStep3Activity.this, imageList);
         recyclerView.setAdapter(rcAdapter);
     }
 
@@ -107,7 +107,7 @@ public class SARegisterStep3Activity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(SARegisterStep3Activity.this, "上传图片成功中,请等待", Toast.LENGTH_SHORT);
+                        Toast.makeText(RegisterStep3Activity.this, "上传图片成功中,请等待", Toast.LENGTH_SHORT);
                     }
                 });
 
@@ -127,7 +127,7 @@ public class SARegisterStep3Activity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SARegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT);
+                                Toast.makeText(RegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT);
                             }
                         });
 
@@ -139,7 +139,7 @@ public class SARegisterStep3Activity extends BaseActivity {
                                     @Override
                                     public void run() {
                                         endLoading();
-                                        Toast.makeText(SARegisterStep3Activity.this, "成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", Toast.LENGTH_LONG);
+                                        Toast.makeText(RegisterStep3Activity.this, "成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", Toast.LENGTH_LONG);
                                         ActivityCollector.goHomeAndFinishRest();
 //                                        alertInfo("成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", new WorkBeforeExitListener() {
 //                                            @Override

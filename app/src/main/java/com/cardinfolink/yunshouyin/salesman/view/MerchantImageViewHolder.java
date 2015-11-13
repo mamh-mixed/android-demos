@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import com.baoyz.actionsheet.ActionSheet;
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.activity.SARegisterStep3Activity;
+import com.cardinfolink.yunshouyin.salesman.activity.RegisterStep3Activity;
 
 public class MerchantImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener, ActionSheet.ActionSheetListener {
     private static final String TAG = "MerchantImageViewHolder";
@@ -58,10 +58,10 @@ public class MerchantImageViewHolder extends RecyclerView.ViewHolder implements 
     public void onOtherButtonClick(ActionSheet actionSheet, int index) {
         switch (index) {
             case 0:
-                if (activity instanceof SARegisterStep3Activity) {
+                if (activity instanceof RegisterStep3Activity) {
                     Log.d(TAG, "delete item at position: " + itemIndex);
-                    SARegisterStep3Activity SARegisterStep3Activity = (SARegisterStep3Activity) activity;
-                    SARegisterStep3Activity.removeItemAt(itemIndex);
+                    RegisterStep3Activity registerStep3Activity = (RegisterStep3Activity) activity;
+                    registerStep3Activity.removeItemAt(itemIndex);
                 }
                 break;
             default:

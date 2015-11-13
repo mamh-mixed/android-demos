@@ -572,7 +572,7 @@ public class RegisterNextActivity extends BaseActivity {
                             SessonData.registerUser.setClientid(data.getClientid());
                             //SessonData.registerUser.setObject_id(JsonUtil.getParam(user_json, "objectId"));
                             endLoading();
-                            intentToActivity(SARegisterStep3Activity.class);
+                            intentToActivity(RegisterStep3Activity.class);
                         }
                     });
 

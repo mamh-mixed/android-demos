@@ -38,7 +38,7 @@
 
         </activity>
         <activity
-            android:name=".activity.SARegisterStep3Activity"
+            android:name=".activity.RegisterStep3Activity"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
