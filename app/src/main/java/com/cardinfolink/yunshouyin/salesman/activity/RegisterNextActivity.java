@@ -547,8 +547,8 @@ public class RegisterNextActivity extends BaseActivity {
             final User user = SessonData.registerUser;
             user.setProvince(mProvinceEdit.getText().toString());
             user.setCity(mCityEdit.getText().toString());
-            user.setBank_open(mOpenBankEdit.getText().toString());
-            user.setBranch_bank(mBranchBankEdit.getText().toString());
+            user.setBankOpen(mOpenBankEdit.getText().toString());
+            user.setBranchBank(mBranchBankEdit.getText().toString());
 
             //有些地方没有支行，get()会抛出outofindex异常
             String branchBank = mBranchBankEdit.getText().toString();
@@ -556,8 +556,8 @@ public class RegisterNextActivity extends BaseActivity {
             user.setBankNo((index != -1) ? mBankNoList.get(index) : "");
 
             user.setPayee(mNameEdit.getText().toString());
-            user.setPayee_card(mBanknumEdit.getText().toString().replace(" ", ""));
-            user.setPhone_num(mPhonenumEdit.getText().toString());
+            user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
+            user.setPhoneNum(mPhonenumEdit.getText().toString());
             user.setMerName(mMerchantNameEdit.getText().toString());
 
 
@@ -569,7 +569,6 @@ public class RegisterNextActivity extends BaseActivity {
                         public void run() {
                             //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
                             SessonData.registerUser.setClientid(data.getClientid());
-                            //SessonData.registerUser.setObject_id(JsonUtil.getParam(user_json, "objectId"));
                             endLoading();
                             intentToActivity(RegisterStep3Activity.class);
                         }

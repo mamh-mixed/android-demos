@@ -190,11 +190,11 @@ public class QuickPayApiImpl implements QuickPayApi {
         if (user.getCity() != null && !user.getCity().equals("")) {
             params.put("city", user.getCity());
         }
-        if (user.getBank_open() != null && !user.getBank_open().equals("")) {
-            params.put("bank_open", user.getBank_open());
+        if (user.getBankOpen() != null && !user.getBankOpen().equals("")) {
+            params.put("bank_open", user.getBankOpen());
         }
-        if (user.getBranch_bank() != null && !user.getBranch_bank().equals("")) {
-            params.put("branch_bank", user.getBranch_bank());
+        if (user.getBranchBank() != null && !user.getBranchBank().equals("")) {
+            params.put("branch_bank", user.getBranchBank());
         }
         if (user.getBankNo() != null && !user.getBankNo().equals("")) {
             params.put("bankNo", user.getBankNo());
@@ -202,11 +202,11 @@ public class QuickPayApiImpl implements QuickPayApi {
         if (user.getPayee() != null && !user.getPayee().equals("")) {
             params.put("payee", user.getPayee());
         }
-        if (user.getPayee_card() != null && !user.getPayee_card().equals("")) {
-            params.put("payee_card", user.getPayee_card());
+        if (user.getPayeeCard() != null && !user.getPayeeCard().equals("")) {
+            params.put("payee_card", user.getPayeeCard());
         }
-        if (user.getPhone_num() != null && !user.getPhone_num().equals("")) {
-            params.put("phone_num", user.getPhone_num());
+        if (user.getPhoneNum() != null && !user.getPhoneNum().equals("")) {
+            params.put("phone_num", user.getPhoneNum());
         }
         if (user.getMerName() != null && !user.getMerName().equals("")) {
             params.put("merName", user.getMerName());
