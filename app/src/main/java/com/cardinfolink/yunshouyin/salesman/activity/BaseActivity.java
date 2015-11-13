@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.SalesmanApplication;
-import com.cardinfolink.yunshouyin.salesman.view.Alert_Dialog;
-import com.cardinfolink.yunshouyin.salesman.view.Loading_Dialog;
+import com.cardinfolink.yunshouyin.salesman.view.AlertDialog;
+import com.cardinfolink.yunshouyin.salesman.view.LoadingDialog;
 import com.cardinfolink.yunshouyin.salesman.view.WorkBeforeExitListener;
 import com.umeng.analytics.MobclickAgent;
 
@@ -19,16 +19,16 @@ public class BaseActivity extends AppCompatActivity {
     private final String TAG = "BaseActivity";
     protected SalesmanApplication application;
     protected Context mContext;
-    private Loading_Dialog mLoading_Dialog;    //显示loading
-    private Alert_Dialog mAlert_Dialog;       // 提示消息对话框
+    private LoadingDialog mLoadingDialog;    //显示loading
+    private AlertDialog mAlertDialog;       // 提示消息对话框
 
-    //重载 setContentView 初始化 mLoading_Dialog,mAlert_Dialog
+    //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         mContext = this;
-        mLoading_Dialog = new Loading_Dialog(this, findViewById(R.id.loading_dialog));
-        mAlert_Dialog = new Alert_Dialog(this, null, findViewById(R.id.alert_dialog),
+        mLoadingDialog = new LoadingDialog(this, findViewById(R.id.loading_dialog));
+        mAlertDialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
                 getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
         application = SalesmanApplication.getInstance();
     }
@@ -51,11 +51,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void startLoading() {
-        mLoading_Dialog.startLoading();
+        mLoadingDialog.startLoading();
     }
 
     public void endLoading() {
-        mLoading_Dialog.endLoading();
+        mLoadingDialog.endLoading();
     }
 
     public void endLoadingWithError(String msg) {
@@ -64,15 +64,15 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void alertError(String msg) {
-        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
     }
 
 //    public void alertInfo(String msg) {
-//        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
+//        mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right));
 //    }
 
     public void alertInfo(String msg, WorkBeforeExitListener listener) {
-        mAlert_Dialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right), listener);
+        mAlertDialog.show(msg, BitmapFactory.decodeResource(this.getResources(), R.drawable.right), listener);
     }
 
     /**

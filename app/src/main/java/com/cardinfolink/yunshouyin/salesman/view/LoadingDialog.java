@@ -9,12 +9,12 @@ import android.widget.ImageView;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 
-public class Loading_Dialog {
+public class LoadingDialog {
     private View dialogView;
     private ImageView loadImg;
     private Context mContext;
 
-    public Loading_Dialog(Context context, View view) {
+    public LoadingDialog(Context context, View view) {
         dialogView = view;
         mContext = context;
         loadImg = (ImageView) dialogView.findViewById(R.id.load_img);

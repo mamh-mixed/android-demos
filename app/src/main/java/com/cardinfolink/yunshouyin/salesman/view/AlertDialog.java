@@ -14,14 +14,14 @@ import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.model.Msg;
 
 
-public class Alert_Dialog {
+public class AlertDialog {
     private Context mContext;
     private Handler mHandler;
     private View dialogView;
     private String mMessage;
     private Bitmap mBitmap;
 
-    public Alert_Dialog(Context context, Handler handler, View view, String message, Bitmap bitmap) {
+    public AlertDialog(Context context, Handler handler, View view, String message, Bitmap bitmap) {
         mContext = context;
         mHandler = handler;
         dialogView = view;
