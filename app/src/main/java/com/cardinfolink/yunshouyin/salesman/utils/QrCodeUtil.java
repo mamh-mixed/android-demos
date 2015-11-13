@@ -19,7 +19,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SAQrCodeUtil {
+public class QrCodeUtil {
     public static Bitmap getQRPostA(String qrContent, String title) {
         return getQRPostCommon(R.drawable.template_a, qrContent, title);
     }
