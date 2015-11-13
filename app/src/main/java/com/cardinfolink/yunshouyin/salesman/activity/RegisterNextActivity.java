@@ -655,6 +655,7 @@ public class RegisterNextActivity extends BaseActivity {
 
         if (merchantname.isEmpty()) {
             alertError("请输入商店名称");
+            return false;
         }
 
         return true;
