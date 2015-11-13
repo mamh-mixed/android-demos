@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.UUID;
 
-public class SAImageUtil {
+public class ImageUtil {
     public static final String LOG_TAG = "picture";
 
     // Ref: http://stackoverflow.com/questions/3401579/get-filename-and-path-from-uri-from-mediastore
