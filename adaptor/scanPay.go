@@ -66,10 +66,10 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
-		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		if channel.Oversea == c.AreaType {
 			req.ExtendParams = genOverseaExtendInfo(req.M)
 		} else {
+			req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 			req.ExtendParams = genExtendParams(req.M, chanMer)
 		}
 	case channel.ChanCodeWeixin:

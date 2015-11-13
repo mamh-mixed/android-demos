@@ -281,7 +281,7 @@ func updateValidate(r *rowData) error {
 		}
 		if r.IsNeedSignStr == "是" {
 			if r.SignKey == "" {
-				return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+				return fmt.Errorf("门店：%s 开启验签需要填写签名密钥", r.MerId)
 			}
 			r.IsNeedSign = true
 		}
@@ -323,7 +323,7 @@ func updateValidate(r *rowData) error {
 
 	if r.SignKey != "" {
 		if len(r.SignKey) != 32 {
-			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+			return fmt.Errorf("门店：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
 		}
 	}
 
@@ -363,14 +363,14 @@ func insertValidate(r *rowData) error {
 		// }
 		if r.SignKey != "" {
 			if len(r.SignKey) != 32 {
-				return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+				return fmt.Errorf("门店：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
 			}
 		}
 		r.IsNeedSign = true
 	}
 
 	if r.CommodityName == "" {
-		return fmt.Errorf("商户：%s 商品名称为空", r.MerId)
+		return fmt.Errorf("门店：%s 商品名称为空", r.MerId)
 	}
 
 	if r.WxpSubMerId != "" {
@@ -379,10 +379,10 @@ func insertValidate(r *rowData) error {
 		}
 		if r.IsAgentStr == "是" {
 			if r.WxpMerId == "" {
-				return fmt.Errorf("商户：%s 代理商模式需要填写微信商户号", r.MerId)
+				return fmt.Errorf("门店：%s 代理商模式需要填写微信商户号", r.MerId)
 			}
 			if r.WxpSubMerId == "" {
-				return fmt.Errorf("商户：%s 代理商模式需要填写微信子商户号", r.MerId)
+				return fmt.Errorf("门店：%s 代理商模式需要填写微信子商户号", r.MerId)
 			}
 			r.IsAgent = true
 		}
@@ -588,7 +588,7 @@ func handleWxpMer(r *rowData, c *cache) error {
 			if r.WxpSettFlag != "" && r.WxpMerId == "" {
 				rp := mongo.RouterPolicyColl.Find(r.MerId, "WXP")
 				if rp == nil {
-					return fmt.Errorf("没找到商户：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
+					return fmt.Errorf("没找到门店：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
 				}
 				settFlagHandle(r.WxpSettFlag, rp, r.Mer)
 				// TODO:处理手续费
