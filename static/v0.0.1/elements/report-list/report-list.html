@@ -221,7 +221,7 @@
           this.set('summary', pagination.data);
 
           if (pagination.count <= 0) {
-            Util.toast('没有数据', 1000);
+            Util.toast('没有找到符合条件的数据', 1000);
             return;
           }
           this.records = pagination.data.data.slice(0);
@@ -229,7 +229,7 @@
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
           if (this.records.length === 0) {
-            Util.toast('没有数据', 2000);
+            Util.toast('没有找到符合条件的数据', 2000);
           }
         },
         // 查询代理列表
