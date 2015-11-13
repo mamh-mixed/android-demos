@@ -3,6 +3,7 @@ package mongo
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -317,11 +318,27 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 
 	// 根据条件查找
 	match := bson.M{}
+
+	// 如果是按照商户号聚合查询的话
+	// 前台传过来的参数中的MerId要么是groupCode（当交易记录中存在groupCode的时候）
+	// 或者是 GC-[merId]（交易记录中不存在groupCode）
+	if q.MerId != "" && q.IsAggregateByGroup == true {
+		if strings.HasPrefix(q.MerId, "GC-") {
+			match["merId"] = q.MerId[3:len(q.MerId)]
+		} else {
+			match["groupCode"] = q.MerId
+		}
+	} else {
+		if q.MerId != "" {
+			match["merId"] = q.MerId
+		}
+		if q.GroupCode != "" {
+			match["groupCode"] = q.GroupCode
+		}
+	}
+
 	if q.OrderNum != "" {
 		match["orderNum"] = q.OrderNum
-	}
-	if q.MerId != "" {
-		match["merId"] = q.MerId
 	}
 	if q.Busicd != "" {
 		match["busicd"] = q.Busicd
@@ -334,9 +351,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 	if q.SubAgentCode != "" {
 		match["subAgentCode"] = q.SubAgentCode
-	}
-	if q.GroupCode != "" {
-		match["groupCode"] = q.GroupCode
 	}
 	if q.Respcd != "" {
 		match["respCode"] = q.Respcd
@@ -429,7 +443,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 
 // FindAndGroupBy 统计
 func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, []model.Channel, int, error) {
-
 	var group []model.TransGroup
 
 	find := bson.M{
@@ -458,22 +471,53 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		Value int `bson:"total"`
 	}{}
 
-	database.C(col.name).Pipe([]bson.M{
-		{"$match": find},
-		{"$group": bson.M{"_id": "$merId"}},
-		{"$group": bson.M{"_id": "null", "total": bson.M{"$sum": 1}}},
-	}).One(&total)
+	groupByPlaceholder := "$merId"
+	if q.IsAggregateByGroup {
+		groupByPlaceholder = "$groupCode"
+		// 按照商户号归纳
+		database.C(col.name).Pipe([]bson.M{
+			{"$match": find},
+			{"$project": bson.M{
+				"groupCode": bson.M{"$ifNull": []interface{}{"$groupCode", bson.M{"$concat": []interface{}{"GC", "-", "$merId"}}}},
+				"groupName": bson.M{"$ifNull": []interface{}{"$groupName", bson.M{"$concat": []interface{}{"GN", "-", "$merName"}}}},
+			}},
+			{"$group": bson.M{"_id": groupByPlaceholder}},
+			{"$group": bson.M{"_id": "null", "total": bson.M{"$sum": 1}}},
+		}).One(&total)
+
+	} else {
+		// 按照门店号归纳
+		database.C(col.name).Pipe([]bson.M{
+			{"$match": find},
+			{"$group": bson.M{"_id": groupByPlaceholder}},
+			{"$group": bson.M{"_id": "null", "total": bson.M{"$sum": 1}}},
+		}).One(&total)
+	}
 
 	//使用pipe统计
 	pipeline := []bson.M{
 		{"$match": find},
+		{"$project": bson.M{
+			"merId":     1,
+			"chanCode":  1,
+			"transAmt":  1,
+			"refundAmt": 1,
+			"transNum":  1,
+			"merName":   1,
+			"agentName": 1,
+			"netFee":    1,
+			"groupCode": bson.M{"$ifNull": []interface{}{"$groupCode", bson.M{"$concat": []interface{}{"GC", "-", "$merId"}}}},
+			"groupName": bson.M{"$ifNull": []interface{}{"$groupName", bson.M{"$concat": []interface{}{"GN", "-", "$merName"}}}},
+		}},
 		{"$group": bson.M{
-			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode"},
+			"_id":       bson.M{"merId": groupByPlaceholder, "chanCode": "$chanCode"},
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
 			"merName":   bson.M{"$last": "$merName"},
 			"agentName": bson.M{"$last": "$agentName"},
+			"groupCode": bson.M{"$last": "$groupCode"},
+			"groupName": bson.M{"$last": "$groupName"},
 			"netFee":    bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
 		}},
 		{"$group": bson.M{
@@ -483,6 +527,8 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 			"transNum":  bson.M{"$sum": "$transNum"},
 			"merName":   bson.M{"$first": "$merName"},
 			"agentName": bson.M{"$first": "$agentName"},
+			"groupCode": bson.M{"$first": "$groupCode"},
+			"groupName": bson.M{"$first": "$groupName"},
 			"detail": bson.M{"$push": bson.M{"chanCode": "$_id.chanCode",
 				"transNum":  "$transNum",
 				"transAmt":  "$transAmt",

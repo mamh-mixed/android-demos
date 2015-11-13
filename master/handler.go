@@ -194,6 +194,14 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		TransStatus:  []string{model.TransSuccess},
 	}
 
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
+	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
+	if err == nil {
+		cond.IsAggregateByGroup = isAggreByGroup
+	}
+
+	log.Debugf("tradeReportHandle condition is %#v", cond)
+
 	tradeReport(w, cond, filename)
 }
 
@@ -210,6 +218,12 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		MerName:      r.FormValue("merName"),
 		StartTime:    r.FormValue("startTime"),
 		EndTime:      r.FormValue("endTime"),
+	}
+
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
+	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
+	if err == nil {
+		q.IsAggregateByGroup = isAggreByGroup
 	}
 
 	ret := tradeQueryStats(q)
@@ -958,4 +972,98 @@ func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Merchant.Export(w, merchant, pay, filename, createStartTime, createEndTime)
+}
+
+func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Agent.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func subAgentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := SubAgent.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := Group.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := ChanMer.Update(data)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := RouterPolicy.Update(data)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
 }
