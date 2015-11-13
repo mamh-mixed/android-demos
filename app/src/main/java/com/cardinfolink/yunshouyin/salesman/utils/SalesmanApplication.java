@@ -90,7 +90,6 @@ public class SalesmanApplication extends Application {
         loginUser.setUsername(mySharedPreferences.getString("username", ""));
         loginUser.setPassword(mySharedPreferences.getString("password", ""));
         loginUser.setAutoLogin(mySharedPreferences.getBoolean("autologin", false));
-        System.out.println(loginUser.getUsername());
         return loginUser;
     }
 
