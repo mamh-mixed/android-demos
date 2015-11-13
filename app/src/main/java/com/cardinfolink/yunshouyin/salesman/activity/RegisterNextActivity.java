@@ -542,11 +542,6 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     public void btnRegisterFinishedOnClick(View view) {
-        //Test only
-        mBanknumEdit.setText("6228482371938777011");
-        mPhonenumEdit.setText("18964153831");
-        mMerchantNameEdit.setText("香辣鸡翅");
-        mNameEdit.setText("鸡哥");
         if (validate()) {
             startLoading();
             final User user = SessonData.registerUser;
@@ -555,7 +550,11 @@ public class RegisterNextActivity extends BaseActivity {
             user.setBank_open(mOpenBankEdit.getText().toString());
             user.setBranch_bank(mBranchBankEdit.getText().toString());
 
-            user.setBankNo(mBankNoList.get(mBranchBankList.indexOf(mBranchBankEdit.getText().toString())));
+            //有些地方没有支行，get()会抛出outofindex异常
+            String branchBank = mBranchBankEdit.getText().toString();
+            int index = mBranchBankList.indexOf(branchBank);
+            user.setBankNo((index != -1) ? mBankNoList.get(index) : "");
+
             user.setPayee(mNameEdit.getText().toString());
             user.setPayee_card(mBanknumEdit.getText().toString().replace(" ", ""));
             user.setPhone_num(mPhonenumEdit.getText().toString());
@@ -621,8 +620,12 @@ public class RegisterNextActivity extends BaseActivity {
         }
 
         if (mBranchBankEdit.getText().toString().isEmpty()) {
-            alertError("开户支行不能为空!");
-            return false;
+            if (mBranchBankList.size() == 1 && mBranchBankList.get(0).equals("请选择开户支行")) {
+                //有些地方没有支行，这里不填写就不能下一步
+            }else {
+                alertError("开户支行不能为空!");
+                return false;
+            }
         }
 
         if (name.isEmpty()) {
