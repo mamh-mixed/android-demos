@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="@string/search_hint"
-                android:paddingLeft="15dp"
+                android:paddingLeft="5dp"
                 android:singleLine="true"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#eeeeee" />
@@ -38,14 +38,16 @@
             android:id="@+id/txt_merchantcountthismonth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
+            android:paddingLeft="5dp"
             android:text="本月已经发展商户: 0 家"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp">
 
             <ListView
                 android:id="@+id/listViewMerchants"
