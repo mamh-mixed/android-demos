@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cardinfolink.yunshouyin.salesman.R;
-import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.salesman.view.MerchantImageViewHolder;
 
 import java.util.List;
 
 public class MerchantPhotoRecyclerViewAdapter extends RecyclerView.Adapter<MerchantImageViewHolder> {
 
-    private List<SAMerchantPhoto> itemList;
+    private List<MerchantPhoto> itemList;
     private Context context;
 
-    public MerchantPhotoRecyclerViewAdapter(Context context, List<SAMerchantPhoto> itemList) {
+    public MerchantPhotoRecyclerViewAdapter(Context context, List<MerchantPhoto> itemList) {
         this.itemList = itemList;
         this.context = context;
     }
@@ -45,13 +45,13 @@ public class MerchantPhotoRecyclerViewAdapter extends RecyclerView.Adapter<Merch
      */
     @Override
     public void onBindViewHolder(MerchantImageViewHolder holder, int position) {
-        SAMerchantPhoto saMerchantPhoto = itemList.get(position);
-//        String imagePath = saMerchantPhoto.getFilename();
+        MerchantPhoto merchantPhoto = itemList.get(position);
+//        String imagePath = merchantPhoto.getFilename();
 //        if (imagePath != null){//这样特别耗内存
 //            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
 //            holder.merchantPhoto.setImageBitmap(bitmap);
 //        }
-        holder.merchantPhoto.setImageURI(saMerchantPhoto.getImageUri());
+        holder.merchantPhoto.setImageURI(merchantPhoto.getImageUri());
     }
 
     @Override

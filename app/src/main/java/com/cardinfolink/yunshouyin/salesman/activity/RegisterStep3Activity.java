@@ -22,7 +22,7 @@ import com.cardinfolink.yunshouyin.salesman.adapter.MerchantPhotoRecyclerViewAda
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QiniuCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
@@ -36,7 +36,7 @@ public class RegisterStep3Activity extends BaseActivity {
     private static final String LOG_TAG = "RegisterStep3";
     private static final int PICK_IMAGE_REQUEST = 1000;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
-    private List<SAMerchantPhoto> imageList;
+    private List<MerchantPhoto> imageList;
     private MerchantPhotoRecyclerViewAdapter rcAdapter;
     private RecyclerView recyclerView;
 
@@ -77,8 +77,8 @@ public class RegisterStep3Activity extends BaseActivity {
         recyclerView.setAdapter(rcAdapter);
     }
 
-    private List<SAMerchantPhoto> getListItemData() {
-        List<SAMerchantPhoto> listViewItems = new ArrayList<SAMerchantPhoto>();
+    private List<MerchantPhoto> getListItemData() {
+        List<MerchantPhoto> listViewItems = new ArrayList<MerchantPhoto>();
         return listViewItems;
     }
 
@@ -114,8 +114,8 @@ public class RegisterStep3Activity extends BaseActivity {
                 // 2. update to cardinfolink server
                 final User user = SessonData.registerUser;
                 List<String> images = new ArrayList<String>();
-                for (SAMerchantPhoto SAMerchantPhoto : imageList) {
-                    images.add(SAMerchantPhoto.getQiniuKey());
+                for (MerchantPhoto merphoto : imageList) {
+                    images.add(merphoto.getQiniuKey());
                 }
                 user.setImages((images.toArray(new String[images.size()])));
 
@@ -221,7 +221,7 @@ public class RegisterStep3Activity extends BaseActivity {
             Uri uri = data.getData();
             String imagePath = getImagePath(uri, null);
             Log.d(LOG_TAG, imagePath);
-            imageList.add(new SAMerchantPhoto(uri, imagePath));
+            imageList.add(new MerchantPhoto(uri, imagePath));
             rcAdapter.notifyDataSetChanged();
 //            staggeredGridLayoutManager.onItemsAdded(recyclerView, 0, 1);
 //            staggeredGridLayoutManager.onItemsChanged(recyclerView);
@@ -248,7 +248,7 @@ public class RegisterStep3Activity extends BaseActivity {
             }
 
             Log.d(LOG_TAG, imagePath);
-            imageList.add(new SAMerchantPhoto(uri, imagePath));
+            imageList.add(new MerchantPhoto(uri, imagePath));
             rcAdapter.notifyDataSetChanged();
         }
     }

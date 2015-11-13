@@ -3,13 +3,13 @@ package com.cardinfolink.yunshouyin.salesman.model;
 
 import android.net.Uri;
 
-public class SAMerchantPhoto {
+public class MerchantPhoto {
     private Uri imageUri;
     private String qiniuKey;
     private String fileType;
     private String filename;
 
-    public SAMerchantPhoto(Uri imageUri, String filename) {
+    public MerchantPhoto(Uri imageUri, String filename) {
         this.imageUri = imageUri;
         this.filename = filename;
     }

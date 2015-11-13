@@ -4,7 +4,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
-import com.cardinfolink.yunshouyin.salesman.model.SAMerchantPhoto;
+import com.cardinfolink.yunshouyin.salesman.model.MerchantPhoto;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
@@ -19,7 +19,7 @@ public class QiniuMultiUploadService {
 
     private QuickPayService quickPayService;
     private UploadManager uploadManager = new UploadManager();
-    private List<SAMerchantPhoto> imageList;
+    private List<MerchantPhoto> imageList;
     private QiniuCallbackListener listener;
     private String qiniuKeyPattern;
     public QiniuMultiUploadService(QuickPayService quickPayService) {
@@ -33,7 +33,7 @@ public class QiniuMultiUploadService {
      * @param qiniuKeyPattern
      * @param listener
      */
-    public synchronized void upload(final List<SAMerchantPhoto> imageList, String qiniuKeyPattern, final QiniuCallbackListener listener) {
+    public synchronized void upload(final List<MerchantPhoto> imageList, String qiniuKeyPattern, final QiniuCallbackListener listener) {
         //UI线程内
         if (imageList == null || imageList.size() == 0) {
             //TODO: if no picture, show something to user
@@ -79,8 +79,8 @@ public class QiniuMultiUploadService {
             return;
         }
         try {
-            SAMerchantPhoto saMerchantPhoto = imageList.get(index);
-            String filename = saMerchantPhoto.getFilename();
+            MerchantPhoto merchantPhoto = imageList.get(index);
+            String filename = merchantPhoto.getFilename();
             //NOTE: 文件可能没有后缀名
             String fileType = filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : "";
             String qiniuKey = String.format(qiniuKeyPattern, UUID.randomUUID().toString().replace("-", ""), fileType);
@@ -88,7 +88,7 @@ public class QiniuMultiUploadService {
             Log.d(TAG, filename);
             Log.d(TAG, qiniuKey);
 
-            saMerchantPhoto.setQiniuKey(qiniuKey);
+            merchantPhoto.setQiniuKey(qiniuKey);
 
             uploadManager.put(filename, qiniuKey, uploadToken,
                     new UpCompletionHandler() {
