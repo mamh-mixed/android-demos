@@ -100,6 +100,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/updatePwd", userUpdatePwdHandle)
 	mux.HandleFunc("/master/user/delete", userDeleteHandle)
 	mux.HandleFunc("/master/user/resetPwd", userResetPwdHandle)
+	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	return mux
 }
 

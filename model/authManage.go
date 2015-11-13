@@ -48,6 +48,7 @@ type Session struct {
 	CreateTime time.Time `json:"-" bson:"createTime"`
 	UpdateTime time.Time `json:"-" bson:"updateTime"`
 	Expires    time.Time `json:"-" bson:"expires"`
+	Locale     string    `json:"-" bson:"locale"` // default is zh_CN
 }
 
 type UserPwd struct {
