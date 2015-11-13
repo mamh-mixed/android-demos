@@ -1,6 +1,6 @@
 package com.cardinfolink.yunshouyin.salesman.api;
 
-import com.cardinfolink.yunshouyin.salesman.model.SAServerPacket;
+import com.cardinfolink.yunshouyin.salesman.model.ServerPacket;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.EncoderUtil;
 
@@ -95,7 +95,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 // cache the accessToken
                 quickPayConfigStorage.setAccessToken(serverPacket.getAccessToken());
@@ -118,7 +118,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUploadToken();
             } else {
@@ -139,7 +139,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUsers();
             } else {
@@ -163,7 +163,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUser();
             } else {
@@ -219,7 +219,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUser();
             } else {
@@ -241,7 +241,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUser();
             } else {
@@ -264,7 +264,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         try {
             String response = postEngine.post(url, params);
-            SAServerPacket serverPacket = SAServerPacket.getServerPacketFrom(response);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getDownloadUrl();
             } else {
