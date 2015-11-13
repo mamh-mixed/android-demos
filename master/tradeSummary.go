@@ -1,16 +1,8 @@
 package master
 
 import (
-	// "encoding/json"
-	"fmt"
-	"net/http"
-	// "time"
-
-	// "github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
-	// "github.com/CardInfoLink/quickpay/mongo"
-	// "github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 )
 
@@ -75,45 +67,18 @@ func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 	return result
 }
 
-// tradeQueryStatReport 交易汇总报表
-func tradeQueryStatsReport(w http.ResponseWriter, r *http.Request) {
-
-	params := r.URL.Query()
-	filename := params.Get("filename")
-
-	var file = xlsx.NewFile()
-
-	q := &model.QueryCondition{
-		MerId:        params.Get("merId"),
-		AgentCode:    params.Get("agentCode"),
-		SubAgentCode: params.Get("subAgentCode"),
-		MerName:      params.Get("merName"),
-		GroupCode:    params.Get("groupCode"),
-		StartTime:    params.Get("startTime"),
-		EndTime:      params.Get("endTime"),
-		Page:         1,
-		Size:         maxReportRec,
-	}
-
-	qr := query.TransStatistics(q)
-
-	if summarys, ok := qr.Rec.(model.Summary); ok {
-		genQueryStatReport(file, summarys, q)
-	}
-
-	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
-	file.Write(w)
-}
-
 // TODO: 优化
-func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.QueryCondition) {
+func genQueryStatReport(result model.Summary, cond *model.QueryCondition) (file *xlsx.File) {
 
+	// 选择报表的语言模板
+	reportLocale := GetLocale(cond.Locale).StatReport
+
+	file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
-	sheet, _ = file.AddSheet("商户交易报表汇总")
+	sheet, _ = file.AddSheet(reportLocale.Title)
 
 	// 表头样式
 	genHead(sheet, row, cell, cond)
@@ -168,7 +133,7 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 	// 最后填写汇总
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = "总计："
+	cell.Value = reportLocale.Total
 	cell.SetStyle(bodyStyle)
 	cell.Merge(3, 0)
 	for i := 0; i < 3; i++ {
@@ -202,12 +167,15 @@ func genQueryStatReport(file *xlsx.File, result model.Summary, cond *model.Query
 	cell.SetFloatWithFormat(float64(result.Wxp.Fee), floatFormat)
 	cell.SetStyle(bodyStyle)
 	row.AddCell().Merge(1, 0)
+	return file
 }
 
 func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.QueryCondition) {
+
+	reportLocale := GetLocale(cond.Locale).StatReport
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = "开始日期："
+	cell.Value = reportLocale.StartDate
 	cell = row.AddCell()
 	cell.Value = cond.StartTime
 	cell.SetStyle(bodyStyle)
@@ -215,7 +183,7 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	row.AddCell()
 
 	cell = row.AddCell()
-	cell.Value = "结束日期："
+	cell.Value = reportLocale.EndDate
 	cell = row.AddCell()
 	cell.Value = cond.EndTime
 	cell.SetStyle(bodyStyle)
@@ -223,41 +191,41 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	row.AddCell()
 
 	cell = row.AddCell()
-	cell.Value = "注：手续费为每笔单笔计算后四舍五入精确到分，跟总额计算手续费略有误差。因本表仅统计了讯联数据系统的数据，数据仅供参考"
+	cell.Value = reportLocale.Remark
 	cell.SetStyle(bodyStyle)
 	cell.Merge(8, 0)
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = "商户号"
+	cell.Value = reportLocale.MerId
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = "商户名称"
+	cell.Value = reportLocale.MerName
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = "汇总"
+	cell.Value = reportLocale.Summary
 	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = "支付宝"
+	cell.Value = reportLocale.ALP
 	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = "微信"
+	cell.Value = reportLocale.WXP
 	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = "代理名称"
+	cell.Value = reportLocale.AgentName
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
@@ -267,30 +235,30 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 		row.AddCell()
 	}
 	cell = row.AddCell()
-	cell.Value = "总笔数"
+	cell.Value = reportLocale.TotalCount
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "总金额"
+	cell.Value = reportLocale.TotalAmt
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "手续费"
+	cell.Value = reportLocale.Fee
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "笔数"
+	cell.Value = reportLocale.Count
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "金额"
+	cell.Value = reportLocale.Amt
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "手续费"
+	cell.Value = reportLocale.Fee
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "笔数"
+	cell.Value = reportLocale.Count
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "金额"
+	cell.Value = reportLocale.Amt
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = "手续费"
+	cell.Value = reportLocale.Fee
 	cell.SetStyle(headStyle)
 }

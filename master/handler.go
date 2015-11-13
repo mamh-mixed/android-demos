@@ -3,6 +3,7 @@ package master
 import (
 	// "bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -12,10 +13,36 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 
 	"github.com/CardInfoLink/quickpay/util"
 )
+
+// appLocaleHandle 网关展示语言
+func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
+	locale := r.FormValue("locale")
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	if curSession.Locale == locale {
+		return
+	}
+
+	// 查看是否支持该语言
+	if !IsLocaleExist(locale) {
+		return
+	}
+
+	curSession.Locale = locale
+	err = mongo.SessionColl.Update(curSession)
+	if err != nil {
+		log.Errorf("update session(id=%s) fail:", curSession.SessionID, err)
+	}
+}
 
 // tradeSettleQueryHandle 清算报表查询的
 func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
@@ -238,7 +265,38 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
-	tradeQueryStatsReport(w, r)
+
+	params := r.URL.Query()
+	filename := params.Get("filename")
+
+	// TODO 优化session
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	q := &model.QueryCondition{
+		MerId:        params.Get("merId"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		MerName:      params.Get("merName"),
+		GroupCode:    params.Get("groupCode"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		Page:         1,
+		Size:         maxReportRec,
+		Locale:       curSession.Locale,
+	}
+
+	qr := query.TransStatistics(q)
+
+	if summarys, ok := qr.Rec.(model.Summary); ok {
+		file := genQueryStatReport(summarys, q)
+		w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+		w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+		file.Write(w)
+	}
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
@@ -773,7 +831,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
-			Name:    "QUICKMASTERID",
+			Name:    SessionKey,
 			Value:   cValue,
 			Path:    "/master",
 			Expires: cExpires,
@@ -786,6 +844,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 			CreateTime: now,
 			UpdateTime: now,
 			Expires:    cExpires,
+			Locale:     DefaultLocale,
 		}
 
 		ret = Session.Save(session)
