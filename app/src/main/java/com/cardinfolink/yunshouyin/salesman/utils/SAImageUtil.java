@@ -59,7 +59,7 @@ public class SAImageUtil {
         FileOutputStream outputStream;
 
         try {
-            outputStream = SAApplication.getInstance().getContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream = SalesmanApplication.getInstance().getContext().openFileOutput(filename, Context.MODE_PRIVATE);
             outputStream.write(string.getBytes());
             outputStream.close();
         } catch (Exception ex) {
@@ -134,6 +134,6 @@ public class SAImageUtil {
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
         values.put(MediaStore.MediaColumns.DATA, filePath);
 
-        SAApplication.getInstance().getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        SalesmanApplication.getInstance().getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 }

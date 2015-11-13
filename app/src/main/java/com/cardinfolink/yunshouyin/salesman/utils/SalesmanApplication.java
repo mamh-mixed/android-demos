@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.cardinfolink.yunshouyin.salesman.BuildConfig;
@@ -15,18 +12,18 @@ import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 
-public class SAApplication extends Application {
-    private static final String TAG = "SAApplication";
+public class SalesmanApplication extends Application {
+    private static final String TAG = "SalesmanApplication";
     private static final String ENV= BuildConfig.ENVIRONMENT;
 
-    private static SAApplication singleton;
+    private static SalesmanApplication singleton;
     private Context context;
     private QuickPayConfigStorage quickPayConfigStorage;
     private QuickPayService quickPayService;
     private QiniuMultiUploadService qiniuMultiUploadService;
     private User loginUser = new User();
 
-    public static SAApplication getInstance() {
+    public static SalesmanApplication getInstance() {
         return singleton;
     }
 

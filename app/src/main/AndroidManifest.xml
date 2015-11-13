@@ -14,7 +14,7 @@
     <!-- umeng end -->
 
     <application
-        android:name=".utils.SAApplication"
+        android:name=".utils.SalesmanApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"

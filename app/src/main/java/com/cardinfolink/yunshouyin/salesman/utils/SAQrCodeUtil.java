@@ -43,7 +43,7 @@ public class SAQrCodeUtil {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         // mutable template
-        Bitmap template = BitmapFactory.decodeResource(SAApplication.getInstance().getContext().getResources(), templateResId, options).copy(Bitmap.Config.ARGB_8888, true);
+        Bitmap template = BitmapFactory.decodeResource(SalesmanApplication.getInstance().getContext().getResources(), templateResId, options).copy(Bitmap.Config.ARGB_8888, true);
         int screenWidth = template.getWidth();
         int screenHeight = template.getHeight();
         int qrWidth = 90 * screenWidth / 148;
@@ -77,7 +77,7 @@ public class SAQrCodeUtil {
         paint.setColor(Color.WHITE);
         paint.setTextSize(50);
 
-        Typeface tf = Typeface.createFromAsset(SAApplication.getInstance().getContext().getAssets(), "fonts/simhei.ttf");
+        Typeface tf = Typeface.createFromAsset(SalesmanApplication.getInstance().getContext().getAssets(), "fonts/simhei.ttf");
         paint.setTypeface(tf);
 
         Rect bounds = new Rect();

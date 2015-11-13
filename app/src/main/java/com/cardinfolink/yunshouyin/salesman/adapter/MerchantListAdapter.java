@@ -17,7 +17,7 @@ import com.cardinfolink.yunshouyin.salesman.activity.MerchantListActivity;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.User;
-import com.cardinfolink.yunshouyin.salesman.utils.SAApplication;
+import com.cardinfolink.yunshouyin.salesman.utils.SalesmanApplication;
 import com.cardinfolink.yunshouyin.salesman.utils.SADownloader;
 import com.cardinfolink.yunshouyin.salesman.utils.SAImageUtil;
 
@@ -105,11 +105,11 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
             @Override
             public void onClick(View v) {
                 Log.d("jiahua:", "download qrcode");
-                Toast.makeText(SAApplication.getInstance().getContext(), "二维码生成中...", Toast.LENGTH_LONG).show();
+                Toast.makeText(SalesmanApplication.getInstance().getContext(), "二维码生成中...", Toast.LENGTH_LONG).show();
 
                 String merchantId = merchant.getClientid();
 
-                SAApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "bill", new QuickPayCallbackListener<String>() {
+                SalesmanApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "bill", new QuickPayCallbackListener<String>() {
                     @Override
                     public void onSuccess(String data) {
                         String imageUrl = data;
@@ -121,7 +121,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(SAApplication.getInstance().getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SalesmanApplication.getInstance().getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
 
@@ -131,7 +131,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SAApplication.getInstance().getContext(), "账单二维码已经下载到相册", Toast.LENGTH_LONG).show();
+                                Toast.makeText(SalesmanApplication.getInstance().getContext(), "账单二维码已经下载到相册", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -141,13 +141,13 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SAApplication.getInstance().getContext(), "下载失败:" + ex.getErrorMsg(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(SalesmanApplication.getInstance().getContext(), "下载失败:" + ex.getErrorMsg(), Toast.LENGTH_LONG).show();
                             }
                         });
                     }
                 });
 
-                SAApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "pay", new QuickPayCallbackListener<String>() {
+                SalesmanApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "pay", new QuickPayCallbackListener<String>() {
                     @Override
                     public void onSuccess(String data) {
                         String imageUrl = data;
@@ -159,7 +159,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(SAApplication.getInstance().getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(SalesmanApplication.getInstance().getContext(), "下载错误:" + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
 
@@ -169,7 +169,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SAApplication.getInstance().getContext(), "支付二维码已经下载到相册", Toast.LENGTH_LONG).show();
+                                Toast.makeText(SalesmanApplication.getInstance().getContext(), "支付二维码已经下载到相册", Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -179,7 +179,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(SAApplication.getInstance().getContext(), "下载失败:" + ex.getErrorMsg(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(SalesmanApplication.getInstance().getContext(), "下载失败:" + ex.getErrorMsg(), Toast.LENGTH_LONG).show();
                             }
                         });
                     }
