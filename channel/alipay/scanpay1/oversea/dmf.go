@@ -3,10 +3,11 @@ package oversea
 
 import (
 	"errors"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel/alipay/scanpay1"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	// "github.com/omigo/log"
+	"math"
 	"time"
 )
 
@@ -19,7 +20,6 @@ var (
 	InprocessCode, InprocessMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
 	SuccessCode, SuccessMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
 	UnKnownCode, UnKnownMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
-	amtErr                         = mongo.ScanPayRespCol.Get("AMT_INVALID")
 )
 
 func init() {
@@ -40,11 +40,6 @@ func getCommonParams(m *model.ScanPayRequest) scanpay1.CommonReq {
 // ProcessBarcodePay 下单
 func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
-	// 校验币种对应的金额格式
-	if ok, err := validateAmt(req); !ok {
-		return err, nil
-	}
-
 	// pay
 	b := NewPayReq()
 	b.CommonReq = getCommonParams(req)
@@ -54,7 +49,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	b.PartnerTransId = req.OrderNum
 	b.BuyerIdentityCode = req.ScanCodeId
 	b.ExtendInfo = req.ExtendParams
-	b.TransAmount = req.ActTxamt
+	b.TransAmount = handleAmt(req.IntTxamt, req.Currency)
 	b.TransCreateTime = time.Now().Format("20060102150405") // TODO
 
 	// resp
@@ -82,16 +77,11 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 // ProcessRefund 退款
 func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
 
-	// 校验币种对应的金额格式
-	if ok, err := validateAmt(req); !ok {
-		return err, nil
-	}
-
 	b := NewRefundReq()
 	b.CommonReq = getCommonParams(req)
 	b.PartnerTransId = req.OrigOrderNum
 	b.PartnerRefundId = req.OrderNum
-	b.RefundAmount = req.ActTxamt
+	b.RefundAmount = handleAmt(req.IntTxamt, req.Currency)
 	b.Currency = req.Currency
 
 	// resp
@@ -204,23 +194,12 @@ func alipayResponseHandle(p scanpay1.BaseResp, resp *model.ScanPayResponse, serv
 	}
 }
 
-func validateAmt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
-	// 结合币种校验送往渠道的金额是否合法
-	if cur, ok := alipayCurrency[req.Currency]; ok {
-		// 判断可支持精度，默认是2个小数点
-		if cur == 0 {
-			// JPY、KRW 截取金额后两位看是否为0
-			dec := req.Txamt[len(req.Txamt)-2:]
-			if dec != "00" {
-				return false, &model.ScanPayResponse{
-					Respcd:      amtErr.ISO8583Code,
-					ErrorDetail: amtErr.ISO8583Msg,
-					ErrorCode:   amtErr.ErrorCode,
-				}
-			}
-		}
+func handleAmt(txamt int64, currency string) string {
+	if cur, ok := alipayCurrency[currency]; ok {
+		realUnit := math.Pow(10, float64(cur))
+		return fmt.Sprintf("%0."+fmt.Sprintf("%d", cur)+"f", float64(txamt)/realUnit)
 	}
-	return true, nil
+	return fmt.Sprintf("%d", txamt)
 }
 
 func initAvailableCurrency() {
