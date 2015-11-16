@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 public class RegisterStep3Activity extends BaseActivity {
-    private static final String LOG_TAG = "RegisterStep3";
+    private static final String TAG = "RegisterStep3Activity";
     private static final int PICK_IMAGE_REQUEST = 1000;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private List<MerchantPhoto> imageList;
@@ -73,14 +73,9 @@ public class RegisterStep3Activity extends BaseActivity {
         recyclerView.setLayoutManager(staggeredGridLayoutManager);
 
         // fill data adapter
-        imageList = getListItemData();
+        imageList = new ArrayList<MerchantPhoto>();
         rcAdapter = new MerchantPhotoRecyclerViewAdapter(RegisterStep3Activity.this, imageList);
         recyclerView.setAdapter(rcAdapter);
-    }
-
-    private List<MerchantPhoto> getListItemData() {
-        List<MerchantPhoto> listViewItems = new ArrayList<MerchantPhoto>();
-        return listViewItems;
     }
 
 
@@ -90,7 +85,7 @@ public class RegisterStep3Activity extends BaseActivity {
         // tools/20150202/clientId/uuid.png
         Date now = new Date();
         SimpleDateFormat yyMMdd = new SimpleDateFormat("yyyyMMdd");
-        if (SessonData.registerUser == null){
+        if (SessonData.registerUser == null) {
             SessonData.registerUser = new User();
             SessonData.registerUser.setUsername(mSharedPreferences.getString("register_username", ""));
             SessonData.registerUser.setPassword(mSharedPreferences.getString("register_password", ""));
@@ -116,9 +111,9 @@ public class RegisterStep3Activity extends BaseActivity {
             @Override
             public void onComplete() {
                 if (Looper.myLooper() == Looper.getMainLooper()) {
-                    Log.d(LOG_TAG, "onComplete" + " is in main thread");
+                    Log.d(TAG, "onComplete" + " is in main thread");
                 } else {
-                    Log.d(LOG_TAG, "onComplete" + " is in background thread");
+                    Log.d(TAG, "onComplete" + " is in background thread");
                 }
 
                 // 7n上传成功
@@ -193,11 +188,11 @@ public class RegisterStep3Activity extends BaseActivity {
 
             @Override
             public void onFailure(Exception ex) {
-                Log.d(LOG_TAG, ex.getMessage());
+                Log.d(TAG, ex.getMessage());
                 if (Looper.myLooper() == Looper.getMainLooper()) {
-                    Log.d(LOG_TAG, "onFailure" + " is in main thread");
+                    Log.d(TAG, "onFailure" + " is in main thread");
                 } else {
-                    Log.d(LOG_TAG, "onFailure" + " is in background thread");
+                    Log.d(TAG, "onFailure" + " is in background thread");
                 }
                 runOnUiThread(new Runnable() {
                     @Override
@@ -211,11 +206,10 @@ public class RegisterStep3Activity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(LOG_TAG, String.format("requestCode: %d, resultCode: %d", requestCode, resultCode));
+        Log.d(TAG, String.format("requestCode: %d, resultCode: %d", requestCode, resultCode));
         switch (requestCode) {
             case PICK_IMAGE_REQUEST:
-                //至少有一张图之后确认激活才能打开
-                btnActivate.setEnabled(true);
+
 
                 if (resultCode == RESULT_OK) {
                     if (Build.VERSION.SDK_INT >= 19) {
@@ -225,6 +219,12 @@ public class RegisterStep3Activity extends BaseActivity {
                         handleImageBeforeKitKat(data);
                     }
                 }
+                Log.d(TAG, "imagelist = " + imageList.size());
+                if (imageList.size() > 0) {
+                    //至少有一张图之后确认激活才能打开
+                    btnActivate.setEnabled(true);
+                }
+
                 break;
             default:
                 break;
@@ -235,11 +235,9 @@ public class RegisterStep3Activity extends BaseActivity {
         if (data != null) {
             Uri uri = data.getData();
             String imagePath = getImagePath(uri, null);
-            Log.d(LOG_TAG, imagePath);
+            Log.d(TAG, imagePath);
             imageList.add(new MerchantPhoto(uri, imagePath));
             rcAdapter.notifyDataSetChanged();
-//            staggeredGridLayoutManager.onItemsAdded(recyclerView, 0, 1);
-//            staggeredGridLayoutManager.onItemsChanged(recyclerView);
         }
     }
 
@@ -262,7 +260,7 @@ public class RegisterStep3Activity extends BaseActivity {
                 imagePath = getImagePath(uri, null);
             }
 
-            Log.d(LOG_TAG, imagePath);
+            Log.d(TAG, imagePath);
             imageList.add(new MerchantPhoto(uri, imagePath));
             rcAdapter.notifyDataSetChanged();
         }
@@ -287,6 +285,9 @@ public class RegisterStep3Activity extends BaseActivity {
      */
     public void removeItemAt(int index) {
         imageList.remove(index);
+        if (imageList.size() < 1) {
+            btnActivate.setEnabled(false);
+        }
         rcAdapter.notifyDataSetChanged();
     }
 }
