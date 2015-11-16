@@ -111,7 +111,7 @@ public class RegisterStep3Activity extends BaseActivity {
 
         // imageList会生成出qiniukey出来
         // 1. upload images to qiniu server
-        application.getQiniuMultiUploadService().upload(imageList, qiniuKeyPattern, new QiniuCallbackListener() {
+        qiniuMultiUploadService.upload(imageList, qiniuKeyPattern, new QiniuCallbackListener() {
 
             @Override
             public void onComplete() {
@@ -138,7 +138,7 @@ public class RegisterStep3Activity extends BaseActivity {
                 user.setImages((images.toArray(new String[images.size()])));
 
 
-                application.getQuickPayService().updateUser(user, new QuickPayCallbackListener<User>() {
+                quickPayService.updateUser(user, new QuickPayCallbackListener<User>() {
                     @Override
                     public void onSuccess(User data) {
                         // TODO: no check user result
@@ -153,7 +153,7 @@ public class RegisterStep3Activity extends BaseActivity {
 
                         editor.commit();
                         // 3.激活
-                        application.getQuickPayService().activateUser(user.getUsername(), new QuickPayCallbackListener<User>() {
+                        quickPayService.activateUser(user.getUsername(), new QuickPayCallbackListener<User>() {
                             @Override
                             public void onSuccess(User data) {
                                 runOnUiThread(new Runnable() {

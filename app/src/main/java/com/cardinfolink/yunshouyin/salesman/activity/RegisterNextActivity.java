@@ -581,7 +581,7 @@ public class RegisterNextActivity extends BaseActivity {
         final String merName = mMerchantNameEdit.getText().toString();
         user.setMerName(merName);
 
-        application.getQuickPayService().updateUserAsync(user, new QuickPayCallbackListener<User>() {
+        quickPayService.updateUserAsync(user, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(final User data) {
                 runOnUiThread(new Runnable() {

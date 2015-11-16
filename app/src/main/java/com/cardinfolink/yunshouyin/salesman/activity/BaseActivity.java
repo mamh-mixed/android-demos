@@ -11,6 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.cardinfolink.yunshouyin.salesman.R;
+import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
+import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
+import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.SalesmanApplication;
 import com.cardinfolink.yunshouyin.salesman.view.AlertDialog;
@@ -24,11 +28,13 @@ public class BaseActivity extends AppCompatActivity {
 
     private LoadingDialog mLoadingDialog;    //显示loading
     private AlertDialog mAlertDialog;       // 提示消息对话框
-
+    protected User loginUser = new User();
     protected SalesmanApplication application;
     protected Context mContext;
     protected SharedPreferences mSharedPreferences;//保存数据。
 
+    protected QuickPayService quickPayService;
+    protected QiniuMultiUploadService qiniuMultiUploadService;
 
     //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
     @Override
@@ -48,6 +54,8 @@ public class BaseActivity extends AppCompatActivity {
         mAlertDialog = new AlertDialog(this, null, alertDialogView, alertDialogMsg, alertDialogBitmap);
 
         application = SalesmanApplication.getInstance();
+        quickPayService = application.getQuickPayService();
+        qiniuMultiUploadService = application.getQiniuMultiUploadService();
     }
 
     @Override
@@ -107,5 +115,24 @@ public class BaseActivity extends AppCompatActivity {
         super.onPause();
         MobclickAgent.onPause(this);
     }
+
+    public User getLoginUser() {
+        loginUser.setUsername(mSharedPreferences.getString("username", ""));
+        loginUser.setPassword(mSharedPreferences.getString("password", ""));
+        loginUser.setAutoLogin(mSharedPreferences.getBoolean("autologin", false));
+        return loginUser;
+    }
+
+    public void setLoginUser(User user) {
+        this.loginUser = user;
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString("username", user.getUsername());
+        editor.putString("password", user.getPassword());
+        editor.putBoolean("autologin", user.isAutoLogin());
+        editor.commit();
+    }
+
+
+
 }
 

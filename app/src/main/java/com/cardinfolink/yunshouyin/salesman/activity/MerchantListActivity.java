@@ -147,7 +147,7 @@ public class MerchantListActivity extends BaseActivity {
         swipeRefreshLayout.setRefreshing(true);
 
         // async network call, callbacks
-        application.getQuickPayService().getUsersAsync(new QuickPayCallbackListener<User[]>() {
+        quickPayService.getUsersAsync(new QuickPayCallbackListener<User[]>() {
             @Override
             public void onSuccess(User[] data) {
                 //必须保持users的引用,因为adapter使用了

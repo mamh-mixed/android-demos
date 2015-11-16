@@ -21,7 +21,7 @@ public class SalesmanApplication extends Application {
     private QuickPayConfigStorage quickPayConfigStorage;
     private QuickPayService quickPayService;
     private QiniuMultiUploadService qiniuMultiUploadService;
-    private User loginUser = new User();
+
 
     public static SalesmanApplication getInstance() {
         return singleton;
@@ -85,21 +85,5 @@ public class SalesmanApplication extends Application {
         qiniuMultiUploadService = new QiniuMultiUploadService(quickPayService);
     }
 
-    public User getLoginUser() {
-        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata", Activity.MODE_PRIVATE);
-        loginUser.setUsername(mySharedPreferences.getString("username", ""));
-        loginUser.setPassword(mySharedPreferences.getString("password", ""));
-        loginUser.setAutoLogin(mySharedPreferences.getBoolean("autologin", false));
-        return loginUser;
-    }
 
-    public void setLoginUser(User user) {
-        this.loginUser = user;
-        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mySharedPreferences.edit();
-        editor.putString("username", user.getUsername());
-        editor.putString("password", user.getPassword());
-        editor.putBoolean("autologin", user.isAutoLogin());
-        editor.commit();
-    }
 }

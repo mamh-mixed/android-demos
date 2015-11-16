@@ -38,7 +38,7 @@ public class LoginActivity extends BaseActivity {
 
         mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
 
-        User user = application.getLoginUser();
+        User user = getLoginUser();
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
@@ -59,12 +59,10 @@ public class LoginActivity extends BaseActivity {
         final String username = mUsernameEdit.getText().toString();
         final String password = mPasswordEdit.getText().toString();
 
-        application.getQuickPayService().loginAsync(username, password, new QuickPayCallbackListener<String>() {
+        quickPayService.loginAsync(username, password, new QuickPayCallbackListener<String>() {
             @Override
             public void onSuccess(String data) {
-                /**
-                 * save to share preference
-                 */
+                //save to share preference
                 User user = new User();
                 user.setUsername(username);
                 user.setPassword(password);
@@ -73,10 +71,9 @@ public class LoginActivity extends BaseActivity {
                     user.setAutoLogin(true);
                     user.setPassword(password);
                 }
-                application.setLoginUser(user);
+                setLoginUser(user);
                 endLoading();
-                Intent intent = new Intent(mContext, MerchantListActivity.class);
-                mContext.startActivity(intent);
+                intentToActivity(MerchantListActivity.class);
             }
 
             @Override
@@ -94,7 +91,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        User user = application.getLoginUser();
+        User user = getLoginUser();
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
