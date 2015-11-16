@@ -120,7 +120,7 @@ public class RegisterStep3Activity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(RegisterStep3Activity.this, "上传图片成功中,请等待", Toast.LENGTH_SHORT);
+                        Toast.makeText(RegisterStep3Activity.this, "上传图片成功中,请等待", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -140,7 +140,7 @@ public class RegisterStep3Activity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(RegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT);
+                                Toast.makeText(RegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT).show();
                             }
                         });
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -155,7 +155,7 @@ public class RegisterStep3Activity extends BaseActivity {
                                     @Override
                                     public void run() {
                                         endLoading();
-                                        Toast.makeText(RegisterStep3Activity.this, "成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", Toast.LENGTH_LONG);
+                                        Toast.makeText(RegisterStep3Activity.this, "成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", Toast.LENGTH_LONG).show();
                                         ActivityCollector.goHomeAndFinishRest();
                                     }
                                 });
