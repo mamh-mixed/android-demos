@@ -29,14 +29,14 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
 
     private Filter myFilter;
     private MerchantListActivity merchantListActivity;
-    private List<User> users_origin = new ArrayList<>();
+    private List<User> usersOrigin = new ArrayList<>();
     private List<User> users;
 
     public MerchantListAdapter(MerchantListActivity merchantListActivity, final List<User> users) {
         super(merchantListActivity, R.layout.merchant_item_view, users);
         this.merchantListActivity = merchantListActivity;
         this.users = users;
-        this.users_origin.addAll(users);
+        this.usersOrigin.addAll(users);
 
         myFilter = new Filter() {
             @Override
@@ -45,10 +45,10 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                 ArrayList<User> tmpUsers = new ArrayList<>();
                 // 没有关键字,数据内容使用原始的数据拷贝引用
                 if (constraint == null || constraint.length() == 0) {
-                    filterResults.values = users_origin;
-                    filterResults.count = users_origin.size();
-                } else if (users_origin != null) {
-                    for (User user : users_origin) {
+                    filterResults.values = usersOrigin;
+                    filterResults.count = usersOrigin.size();
+                } else if (usersOrigin != null) {
+                    for (User user : usersOrigin) {
                         if (user.getMerName() != null && user.getMerName().contains(constraint)) {
                             tmpUsers.add(user);
                         }
@@ -198,7 +198,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
     }
 
     public void refreshDataSource(List<User> users) {
-        users_origin.clear();
-        users_origin.addAll(users);
+        usersOrigin.clear();
+        usersOrigin.addAll(users);
     }
 }

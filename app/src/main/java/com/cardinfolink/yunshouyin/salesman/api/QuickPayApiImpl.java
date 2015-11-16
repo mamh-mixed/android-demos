@@ -27,8 +27,8 @@ public class QuickPayApiImpl implements QuickPayApi {
     public QuickPayApiImpl(QuickPayConfigStorage quickPayConfigStorage) {
         this.quickPayConfigStorage = quickPayConfigStorage;
 
-        if (this.quickPayConfigStorage.getProxy_url() != null && !"".equals(this.quickPayConfigStorage.getProxy_url())) {
-            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.quickPayConfigStorage.getProxy_url(), this.quickPayConfigStorage.getProxy_port()));
+        if (this.quickPayConfigStorage.getProxyUrl() != null && !"".equals(this.quickPayConfigStorage.getProxyUrl())) {
+            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.quickPayConfigStorage.getProxyUrl(), this.quickPayConfigStorage.getProxyPort()));
             postEngine = new PostEngine(httpProxy);
         } else {
             postEngine = new PostEngine();

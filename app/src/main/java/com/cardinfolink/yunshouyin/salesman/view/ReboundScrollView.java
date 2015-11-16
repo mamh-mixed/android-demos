@@ -72,7 +72,7 @@ public class ReboundScrollView extends ScrollView {
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (SessonData.position_view == 1) {
+        if (SessonData.positionView == 1) {
             return super.dispatchTouchEvent(ev);
         }
 
@@ -158,7 +158,7 @@ public class ReboundScrollView extends ScrollView {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (SessonData.position_view == 1) {
+        if (SessonData.positionView == 1) {
             return false;
         }
         return super.onInterceptTouchEvent(ev);
