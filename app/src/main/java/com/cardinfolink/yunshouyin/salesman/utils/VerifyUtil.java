@@ -162,7 +162,6 @@ public class VerifyUtil {
             public void afterTextChanged(Editable edt) {
                 try {
                     String temp = edt.toString();
-                    Log.d(TAG, "edt: " + edt);
                     String tem = temp.substring(temp.length() - 1, temp.length());
                     char[] temC = tem.toCharArray();
                     int mid = temC[0];
