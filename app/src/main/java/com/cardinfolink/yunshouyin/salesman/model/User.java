@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.salesman.model;
 
 import com.google.gson.Gson;
 
+import java.util.Arrays;
 import java.util.Date;
 
 public class User {
@@ -230,5 +231,34 @@ public class User {
     public String getJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", bankOpen='" + bankOpen + '\'' +
+                ", payee='" + payee + '\'' +
+                ", payeeCard='" + payeeCard + '\'' +
+                ", phoneNum='" + phoneNum + '\'' +
+                ", clientid='" + clientid + '\'' +
+                ", limitEmail='" + limitEmail + '\'' +
+                ", objectId='" + objectId + '\'' +
+                ", isAutoLogin=" + isAutoLogin +
+                ", limitName='" + limitName + '\'' +
+                ", limitPhone='" + limitPhone + '\'' +
+                ", limit='" + limit + '\'' +
+                ", province='" + province + '\'' +
+                ", city='" + city + '\'' +
+                ", branchBank='" + branchBank + '\'' +
+                ", bankNo='" + bankNo + '\'' +
+                ", accessToken='" + accessToken + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", images=" + Arrays.toString(images) +
+                ", createTime=" + createTime +
+                ", merName='" + merName + '\'' +
+                ", signKey='" + signKey + '\'' +
+                '}';
     }
 }
