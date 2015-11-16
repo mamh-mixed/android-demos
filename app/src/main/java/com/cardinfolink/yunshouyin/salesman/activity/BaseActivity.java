@@ -1,7 +1,9 @@
 package com.cardinfolink.yunshouyin.salesman.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -19,16 +21,23 @@ import com.umeng.analytics.MobclickAgent;
 
 public class BaseActivity extends AppCompatActivity {
     private final String TAG = "BaseActivity";
-    protected SalesmanApplication application;
-    protected Context mContext;
+
     private LoadingDialog mLoadingDialog;    //显示loading
     private AlertDialog mAlertDialog;       // 提示消息对话框
+
+    protected SalesmanApplication application;
+    protected Context mContext;
+    protected SharedPreferences mSharedPreferences;//保存数据。
+
 
     //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
+
         mContext = this;
+        mSharedPreferences = getSharedPreferences("savedata", Activity.MODE_PRIVATE);
+
 
         View loadingDialogView = findViewById(R.id.loading_dialog);
         mLoadingDialog = new LoadingDialog(this, loadingDialogView);

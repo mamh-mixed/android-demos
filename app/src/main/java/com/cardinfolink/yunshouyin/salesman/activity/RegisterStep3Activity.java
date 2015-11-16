@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.salesman.activity;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -46,7 +47,7 @@ public class RegisterStep3Activity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_saregister_step3);
+        setContentView(R.layout.activity_register_step3);
 
         btnActivate = (Button) findViewById(R.id.btnActivate);
         btnActivate.setEnabled(false);
@@ -89,12 +90,29 @@ public class RegisterStep3Activity extends BaseActivity {
         // tools/20150202/clientId/uuid.png
         Date now = new Date();
         SimpleDateFormat yyMMdd = new SimpleDateFormat("yyyyMMdd");
+        if (SessonData.registerUser == null){
+            SessonData.registerUser = new User();
+            SessonData.registerUser.setUsername(mSharedPreferences.getString("register_username", ""));
+            SessonData.registerUser.setPassword(mSharedPreferences.getString("register_password", ""));
+            SessonData.registerUser.setClientid(mSharedPreferences.getString("register_clientid", ""));
+            SessonData.registerUser.setProvince(mSharedPreferences.getString("register_province", ""));
+            SessonData.registerUser.setCity(mSharedPreferences.getString("register_city", ""));
+            SessonData.registerUser.setBankOpen(mSharedPreferences.getString("register_bankopen", ""));
+            SessonData.registerUser.setBranchBank(mSharedPreferences.getString("register_branchbank", ""));
+            SessonData.registerUser.setBankNo(mSharedPreferences.getString("register_bankno", ""));
+            SessonData.registerUser.setPayee(mSharedPreferences.getString("register_payee", ""));
+            SessonData.registerUser.setPayeeCard(mSharedPreferences.getString("register_payeecard", ""));
+            SessonData.registerUser.setPhoneNum(mSharedPreferences.getString("register_phonenum", ""));
+            SessonData.registerUser.setMerName(mSharedPreferences.getString("register_mername", ""));
+        }
+
         String clientId = SessonData.registerUser.getClientid();
         final String qiniuKeyPattern = String.format("tools/%s/%s", yyMMdd.format(now), clientId) + "/%s.%s";
 
         // imageList会生成出qiniukey出来
         // 1. upload images to qiniu server
         application.getQiniuMultiUploadService().upload(imageList, qiniuKeyPattern, new QiniuCallbackListener() {
+
             @Override
             public void onComplete() {
                 if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -130,7 +148,10 @@ public class RegisterStep3Activity extends BaseActivity {
                                 Toast.makeText(RegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT);
                             }
                         });
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putInt("register_step_finish", 3);
 
+                        editor.commit();
                         // 3.激活
                         application.getQuickPayService().activateUser(user.getUsername(), new QuickPayCallbackListener<User>() {
                             @Override
@@ -141,12 +162,6 @@ public class RegisterStep3Activity extends BaseActivity {
                                         endLoading();
                                         Toast.makeText(RegisterStep3Activity.this, "成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", Toast.LENGTH_LONG);
                                         ActivityCollector.goHomeAndFinishRest();
-//                                        alertInfo("成功新增商户，参数已经发送到您的邮箱和商户邮箱，请查收。", new WorkBeforeExitListener() {
-//                                            @Override
-//                                            public void complete() {
-//                                                ActivityCollector.goHomeAndFinishRest();
-//                                            }
-//                                        });
                                     }
                                 });
                             }

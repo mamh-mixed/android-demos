@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.salesman.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,10 +24,14 @@ public class RegisterActivity extends BaseActivity {
     private Button btnLogin;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_activity);
+
+
 
         initLayout();
 
@@ -58,8 +63,16 @@ public class RegisterActivity extends BaseActivity {
                         SessonData.registerUser.setUsername(username);
                         SessonData.registerUser.setPassword(password);
                         Log.d(TAG, SessonData.registerUser.getJsonString());
+
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putInt("register_step_finish", 1);
+                        editor.putString("register_username", username);
+                        editor.putString("register_password", password);
+                        editor.commit();
+
                         endLoading();
                         intentToActivity(RegisterNextActivity.class);
+                        finish();
                     }
 
                     @Override

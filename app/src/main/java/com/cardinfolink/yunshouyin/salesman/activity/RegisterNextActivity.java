@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -542,97 +543,132 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     public void btnRegisterFinishedOnClick(View view) {
-        if (validate()) {
-            startLoading();
-            final User user = SessonData.registerUser;
-            user.setProvince(mProvinceEdit.getText().toString());
-            user.setCity(mCityEdit.getText().toString());
-            user.setBankOpen(mOpenBankEdit.getText().toString());
-            user.setBranchBank(mBranchBankEdit.getText().toString());
-
-            //有些地方没有支行，get()会抛出outofindex异常
-            String branchBank = mBranchBankEdit.getText().toString();
-            int index = mBranchBankList.indexOf(branchBank);
-            user.setBankNo((index != -1) ? mBankNoList.get(index) : "");
-
-            user.setPayee(mNameEdit.getText().toString());
-            user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
-            user.setPhoneNum(mPhonenumEdit.getText().toString());
-            user.setMerName(mMerchantNameEdit.getText().toString());
-
-
-            application.getQuickPayService().updateUserAsync(user, new QuickPayCallbackListener<User>() {
-                @Override
-                public void onSuccess(final User data) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
-                            SessonData.registerUser.setClientid(data.getClientid());
-                            endLoading();
-                            intentToActivity(RegisterStep3Activity.class);
-                        }
-                    });
-
-                }
-
-                @Override
-                public void onFailure(final QuickPayException ex) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String error = ex.getErrorCode();
-                            String errorStr = ex.getErrorMsg();
-                            endLoadingWithError(errorStr);
-                            if (error.equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
-                                //关闭所有activity,除了登录框
-                                ActivityCollector.goLoginAndFinishRest();
-                            }
-                        }
-                    });
-                }
-            });
+        if (!validate()) {
+            return;
         }
+
+        startLoading();
+
+        if (SessonData.registerUser == null) {
+            SessonData.registerUser = new User();
+            SessonData.registerUser.setUsername(mSharedPreferences.getString("register_username", ""));
+            SessonData.registerUser.setPassword(mSharedPreferences.getString("register_password", ""));
+        }
+        final User user = SessonData.registerUser;
+
+
+        final String province = mProvinceEdit.getText().toString();
+        user.setProvince(province);
+        final String city = mCityEdit.getText().toString();
+        user.setCity(city);
+
+        final String bankopen = mOpenBankEdit.getText().toString();
+        user.setBankOpen(bankopen);
+        final String branchBank = mBranchBankEdit.getText().toString();
+        user.setBranchBank(branchBank);
+
+        //有些地方没有支行，get()会抛出outofindex异常
+        int index = mBranchBankList.indexOf(branchBank);
+        final String bankNo = (index != -1) ? mBankNoList.get(index) : "";
+        user.setBankNo(bankNo);
+
+        final String payee = mNameEdit.getText().toString();
+        user.setPayee(payee);
+        final String payeeCard = mBanknumEdit.getText().toString().replace(" ", "");
+        user.setPayeeCard(payeeCard);
+        final String phoneNum = mPhonenumEdit.getText().toString();
+        user.setPhoneNum(phoneNum);
+        final String merName = mMerchantNameEdit.getText().toString();
+        user.setMerName(merName);
+
+        application.getQuickPayService().updateUserAsync(user, new QuickPayCallbackListener<User>() {
+            @Override
+            public void onSuccess(final User data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
+                        String clientId = data.getClientid();
+                        SessonData.registerUser.setClientid(clientId);
+
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putString("register_clientid", clientId);
+                        editor.putString("register_province", province);
+                        editor.putString("register_city", city);
+                        editor.putString("register_bankopen", bankopen);
+                        editor.putString("register_branchbank", branchBank);
+                        editor.putString("register_bankno", bankNo);
+                        editor.putString("register_payee", payee);
+                        editor.putString("register_payeecard", payeeCard);
+                        editor.putString("register_phonenum", phoneNum);
+                        editor.putString("register_mername", merName);
+                        editor.putInt("register_step_finish", 2);
+                        editor.commit();
+
+                        endLoading();
+                        intentToActivity(RegisterStep3Activity.class);
+                        finish();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailure(final QuickPayException ex) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String error = ex.getErrorCode();
+                        String errorStr = ex.getErrorMsg();
+                        endLoadingWithError(errorStr);
+                        if (error.equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
+                            //关闭所有activity,除了登录框
+                            ActivityCollector.goLoginAndFinishRest();
+                        }
+                    }
+                });
+            }
+        });
+
     }
 
     @SuppressLint("NewApi")
     private boolean validate() {
-        String openbank = "";
-        String name = mNameEdit.getText().toString().replace(" ", "");
-        String banknum = mBanknumEdit.getText().toString().replace(" ", "");
-        String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");
-        String merchantname = mMerchantNameEdit.getText().toString().replace(" ", "");
-
-        if (mProvinceEdit.getText().toString().isEmpty()) {
+        String province = mProvinceEdit.getText().toString();
+        if (TextUtils.isEmpty(province)) {
             alertError("开户行所在省份不能为空!");
             return false;
         }
 
-        if (mCityEdit.getText().toString().isEmpty()) {
+        String city = mCityEdit.getText().toString();
+        if (TextUtils.isEmpty(city)) {
             alertError("开户行所在城市不能为空!");
             return false;
         }
 
-        if (mOpenBankEdit.getText().toString().isEmpty()) {
+        String openbank = mOpenBankEdit.getText().toString();
+        if (TextUtils.isEmpty(openbank)) {
             alertError("开户行不能为空!");
             return false;
         }
-
-        if (mBranchBankEdit.getText().toString().isEmpty()) {
+        String branchbank = mBranchBankEdit.getText().toString();
+        if (TextUtils.isEmpty(branchbank)) {
             if (mBranchBankList.size() == 1 && mBranchBankList.get(0).equals("请选择开户支行")) {
                 //有些地方没有支行，这里不填写就不能下一步
-            }else {
+            } else {
                 alertError("开户支行不能为空!");
                 return false;
             }
         }
 
-        if (name.isEmpty()) {
+        String name = mNameEdit.getText().toString().replace(" ", "");
+        if (TextUtils.isEmpty(name)) {
             alertError("姓名不能为空!");
             return false;
         }
 
-        if (banknum.isEmpty()) {
+        String banknum = mBanknumEdit.getText().toString().replace(" ", "");
+        if (TextUtils.isEmpty(banknum)) {
             alertError("银行卡号不能为空!");
             return false;
         }
@@ -642,21 +678,21 @@ public class RegisterNextActivity extends BaseActivity {
             return false;
         }
 
-        if (phonenum.isEmpty()) {
+        String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");
+        if (TextUtils.isEmpty(phonenum)) {
             alertError("手机号不能为空!");
             return false;
         }
-
         if (!VerifyUtil.isMobileNO(phonenum)) {
             alertError("请输入正确的手机号!");
             return false;
         }
 
-        if (merchantname.isEmpty()) {
+        String merchantname = mMerchantNameEdit.getText().toString().replace(" ", "");
+        if (TextUtils.isEmpty(merchantname)) {
             alertError("请输入商店名称");
             return false;
         }
-
         return true;
     }
 

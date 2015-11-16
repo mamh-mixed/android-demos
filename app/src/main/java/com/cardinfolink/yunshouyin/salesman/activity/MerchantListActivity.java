@@ -1,5 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -43,7 +45,7 @@ public class MerchantListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_samerchant_list);
+        setContentView(R.layout.activity_merchant_list);
         initLayout();
         setupListView();
     }
@@ -74,8 +76,46 @@ public class MerchantListActivity extends BaseActivity {
         btnAddNewMer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, RegisterActivity.class);
-                mContext.startActivity(intent);
+                int step = mSharedPreferences.getInt("register_step_finish", 0);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MerchantListActivity.this);
+                builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putInt("register_step_finish", 0);
+                        editor.commit();
+                        intentToActivity(RegisterActivity.class);
+                    }
+                });
+                switch (step) {
+                    case 1:
+                        //有未完成的注册步骤,这里是第一步完成了
+                        builder.setMessage("有未完成的注册是否继续？");
+                        builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(MerchantListActivity.this, RegisterNextActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        builder.show();
+                        break;
+                    case 2:
+                        //有未完成的注册步骤,这里是第2步完成了
+                        builder.setMessage("有未完成的注册是否继续？");
+                        builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(MerchantListActivity.this, RegisterStep3Activity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        builder.show();
+                        break;
+                    default:
+                        intentToActivity(RegisterActivity.class);
+                        break;
+                }
             }
         });
 
