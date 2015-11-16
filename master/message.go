@@ -57,6 +57,8 @@ func init() {
 		log.Errorf("fail to find default locale: %s", DefaultLocale)
 		os.Exit(6)
 	}
+
+	// log.Debugf("%+v", GetLocale(DefaultLocale))
 }
 
 // IsLocaleExist 是否有该语言模板
@@ -79,24 +81,84 @@ func GetLocale(l string) *LocaleTemplate {
 // LocaleTemplate 语言模板
 type LocaleTemplate struct {
 	// 统计报表
-	StatReport struct {
-		Title      string
-		Total      string
-		StartDate  string
-		EndDate    string
-		Remark     string
-		MerId      string
-		MerName    string
-		Summary    string
-		ALP        string
-		WXP        string
-		AgentName  string
-		TotalCount string
-		TotalAmt   string
-		TotalFee   string
-		Count      string
-		Amt        string
-		Fee        string
+	StatReport StatReport
+
+	ImportMessage ImportMessage
+}
+
+// StatReport 统计报表
+type StatReport struct {
+	Title      string
+	Total      string
+	StartDate  string
+	EndDate    string
+	Remark     string
+	MerId      string
+	MerName    string
+	Summary    string
+	ALP        string
+	WXP        string
+	AgentName  string
+	TotalCount string
+	TotalAmt   string
+	TotalFee   string
+	Count      string
+	Amt        string
+	Fee        string
+}
+
+// ImportMessage 批导信息
+type ImportMessage struct {
+	Yes           string
+	No            string
+	SysErr        string
+	EmptyErr      string
+	FileErr       string
+	CellMapErr    string
+	ColNumErr     string
+	ImportSuccess string
+	MerIdRepeat   string
+	DataHandleErr struct {
+		NotSupportOperation string
+		NoMerId             string
+		MerIdFormatErr      string
+		MerIdExist          string
+		MerIdNotExist       string
+		ALPMerchantErr      string
+		WXPMerchantErr      string
+		UsernameExist       string
+		UsernameNotExist    string
+		AgentNotExist       string
+		CompanyNotExist     string
+		CompanyBelongsErr   string
+		GroupNotExist       string
+		GroupBelongsErr     string
+		NoALPKey            string
+		NoALPRouteToUdpSf   string
+		NoWXPRouteToUdpSf   string
+		WXPNotAgentMode     string
+		SysConfigErr        string
+		AgentMerInfoErr     string
+		AgentModeNotMatch   string
+		NoSuchAgentMer      string
+		NoWXPKey            string
+		CILFeeErr           string
+		MerFeeErr           string
+		CILFeeOverMax       string
+		MerFeeOverMax       string
 	}
-	// TODO...
+	ValidateErr struct {
+		NoMerName        string
+		NoSignKey        string
+		NoAgentCode      string
+		OpenSignValueErr string
+		AddAcctValueErr  string
+		UNOrPWDEmptyErr  string
+		SignLengthErr    string
+		NoCommodityName  string
+		IsAgentStrErr    string
+		NoWXPMer         string
+		WXPSettFlagErr   string
+		ALPSettFlagErr   string
+	}
 }
