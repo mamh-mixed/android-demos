@@ -65,7 +65,7 @@ type AuthClient struct {
 
 // GetAuthAccessToken 获取AuthAccessToken
 func (c *AuthClient) GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, err error) {
-	authAccessTokenURLT := fmt.Sprintf(authAccessTokenURL, appID, appSECRET, code)
+	authAccessTokenURLT := fmt.Sprintf(authAccessTokenURL, c.AppID, c.AppSecret, code)
 	resp, err := http.Get(authAccessTokenURLT)
 	if err != nil {
 		log.Errorf("http.Get authAccessToken err,%s", err)
