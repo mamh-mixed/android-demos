@@ -20,10 +20,6 @@ func TestBeginWith(t *testing.T) {
 	t.Logf("substring is %s", target[3:len(target)])
 }
 
-func TestDollarConcat(t *testing.T) {
-	SpTransColl.TestConcat()
-}
-
 func TestTransFindAndGroupBy(t *testing.T) {
 
 	q := &model.QueryCondition{

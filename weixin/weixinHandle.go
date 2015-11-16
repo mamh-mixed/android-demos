@@ -56,7 +56,7 @@ type RefreshAATokenResp struct {
 	Errmsg       string `json:"errmsg"`
 }
 
-var Client = AuthClient{appID, appSECRET}
+var DefaultClient = AuthClient{appID, appSECRET}
 
 type AuthClient struct {
 	AppID     string
