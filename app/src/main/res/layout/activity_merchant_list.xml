@@ -49,13 +49,15 @@
             android:layout_height="match_parent"
             android:paddingLeft="5dp">
 
-            <ListView
+            <com.cardinfolink.yunshouyin.salesman.swipeview.SwipeMenuListView
                 android:id="@+id/listViewMerchants"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
                 android:divider="#eae9e2"
                 android:dividerHeight="1dp" />
+
+
         </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
