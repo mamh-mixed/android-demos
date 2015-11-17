@@ -68,6 +68,7 @@
         </template>
       </ul>
     </language-overlay>
+    <iron-localstorage name="CIL.CONFIG.LANGUAGE" value="{{language}}"></iron-localstorage>
   </template>
   <script>
     (function() {
@@ -103,6 +104,7 @@
           var language = e.model.la;
           if (language && language.key !== '') {
             I18nMsg.lang = language.key;
+            this.set('language', language.key);
             Platform.performMicrotaskCheckpoint();
           }
           this.set('languages.' + e.model.index + '.activeClass', 'active');
@@ -112,6 +114,8 @@
               this.set('languages.' + i + '.activeClass', '');
             }
           }
+
+          this.fire('i18n-language-change', language);
           return;
         },
 

@@ -7,9 +7,275 @@
     "description": "...",
     "message": "ようこそ"
   },
-  "QUERY": {
-    "description": "xxx",
+  "BUTTON.SAVE": {
+    "description": "保存按钮",
+    "message": "保存"
+  },
+  "BUTTON.QUERY": {
+    "description": "查询按钮",
     "message": "検索"
+  },
+  "BUTTON.CONFIRM": {
+    "description": "确认按钮",
+    "message": "JA确认"
+  },
+  "BUTTON.CANCEL": {
+    "description": "取消按钮",
+    "message": "JA取消"
+  },
+  "BUTTON.DOWNLOADREPORT": {
+    "description": "下载报表按钮",
+    "message": "JA下载报表"
+  },
+  "PAGINATION.PER_PAGE": {
+    "description": "每页显示 N 条",
+    "message": "每页显示 N 条"
+  },
+  "DATE_PICKER.LOCALE": {
+    "description": "日历国际化",
+    "message": "ja"
+  },
+  "LOGIN.USERNAME": {
+    "description": "用户名",
+    "message": "ユーザー名"
+  },
+  "LOGIN.PASSWORD": {
+    "description": "密码",
+    "message": "パスワード"
+  },
+  "LOGIN.BUTTON": {
+    "description": "登录按钮",
+    "message": "ログイン"
+  },
+  "LOGIN.HINT": {
+    "description": "登录页提示",
+    "message": "JA如果您还没有用户名、密码，请联系讯联数据运营中心为您分配"
+  },
+  "LOGIN.TOAST.LOGIN_FAIL": {
+    "description": "登录失败提示",
+    "message": "JA用户名或密码不能为空"
+  },
+
+  "PASSWORDMODIFICATION.TITLE": {
+    "description": "修改密码标题",
+    "message": "パスワード変更"
+  },
+  "PASSWORDMODIFICATION.USERNAME": {
+    "description": "用户名",
+    "message": "JA用户名"
+  },
+  "PASSWORDMODIFICATION.OLDPASSWORD": {
+    "description": "原密码",
+    "message": "JA原密码"
+  },
+  "PASSWORDMODIFICATION.NEWPASSWORD": {
+    "description": "新密码",
+    "message": "JA新密码"
+  },
+  "PASSWORDMODIFICATION.CONFIRMPASSWORD": {
+    "description": "重复新密码",
+    "message": "JA重复新密码"
+  },
+  "PASSWORDMODIFICATION.REQUIREDITEM": {
+    "description": "必填项",
+    "message": "JA必填项"
+  },
+  "PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS": {
+    "description": "必填项不能为空",
+    "message": "JA必填项不能为空"
+  },
+  "PASSWORDMODIFICATION.TOAST.OLD_PASSWORD_NOT_MATCH": {
+    "description": "原密码错误",
+    "message": "JA原密码错误"
+  },
+  "PASSWORDMODIFICATION.TOAST.MIDIFICATION_PASSWORD_SUCCESS": {
+    "description": "修改密码成功",
+    "message": "JA修改密码成功"
+  },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
+    "description": "新密码不一致",
+    "message": "JA新密码不一致"
+  },
+
+  "SCANPAY_TRADE_LIST.MENU_NAME": {
+    "description": "扫码交易菜单名",
+    "message": "JA扫码交易"
+  },
+  "SCANPAY_TRADE_LIST.TITLE": {
+    "description": "扫码支付交易查询",
+    "message": "JA扫码支付交易查询"
+  },
+  "SCANPAY_TRADE_LIST.DATE_FROM": {
+    "description": "交易时间从",
+    "message": "JA交易时间从"
+  },
+  "SCANPAY_TRADE_LIST.DATE_TO": {
+    "description": "交易时间到",
+    "message": "JA交易时间到"
+  },
+  "SCANPAY_TRADE_LIST.AGENT": {
+    "description": "代理",
+    "message": "JA代理"
+  },
+  "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
+    "description": "公司代码",
+    "message": "JA公司代码"
+  },
+  "SCANPAY_TRADE_LIST.GROUP_NO": {
+    "description": "商户代码",
+    "message": "JA商户代码"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT_NO": {
+    "description": "门店代码",
+    "message": "JA门店代码"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT_NAME": {
+    "description": "门店名称",
+    "message": "JA门店名称"
+  },
+  "SCANPAY_TRADE_LIST.ORDER_NO": {
+    "description": "订单号",
+    "message": "JA订单号"
+  },
+  "SCANPAY_TRADE_LIST.TERMINAL": {
+    "description": "终端",
+    "message": "JA终端"
+  },
+  "SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO": {
+    "description": "关联订单号",
+    "message": "JA关联订单号"
+  },
+  "SCANPAY_TRADE_LIST.RESPONSE_CODE": {
+    "description": "应答码",
+    "message": "JA应答码"
+  },
+  "SCANPAY_TRADE_LIST.TRANS_TYPE": {
+    "description": "交易类型",
+    "message": "JA交易类型"
+  },
+  "SCANPAY_TRADE_LIST.TRANS_STATUS": {
+    "description": "交易状态",
+    "message": "JA交易状态"
+  },
+  "SCANPAY_TRADE_LIST.INDEX": {
+    "description": "序号",
+    "message": "JA番号"
+  },
+  "SCANPAY_TRADE_LIST.AMOUNT": {
+    "description": "金额",
+    "message": "JA金额"
+  },
+  "SCANPAY_TRADE_LIST.CHANNEL": {
+    "description": "渠道",
+    "message": "JA渠道"
+  },
+  "SCANPAY_TRADE_LIST.REFUND": {
+    "description": "退款",
+    "message": "JA退款"
+  },
+  "SCANPAY_TRADE_LIST.NO_REFUND": {
+    "description": "无退款",
+    "message": "JA无退款"
+  },
+  "SCANPAY_TRADE_LIST.ALREADY_REFUND": {
+    "description": "已退款",
+    "message": "JA已退款"
+  },
+  "SCANPAY_TRADE_LIST.PART_REFUND": {
+    "description": "部分退款",
+    "message": "JA部分退款"
+  },
+  "SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT": {
+    "description": "商户发起关闭",
+    "message": "JA商户发起关闭"
+  },
+  "SCANPAY_TRADE_LIST.CLOSE_BY_SYSTEM_AS_OVERTIME": {
+    "description": "交易超时系统关闭",
+    "message": "JA交易超时系统关闭"
+  },
+  "SCANPAY_TRADE_LIST.TRANS_TIME": {
+    "description": "交易时间",
+    "message": "JA交易时间"
+  },
+  "SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL": {
+    "description": "加载代理列表失败",
+    "message": "JA加载代理列表失败"
+  },
+  "SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS": {
+    "description": "没有代理数据",
+    "message": "JA没有代理数据"
+  },
+  "SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR": {
+    "description": "系统错误",
+    "message": "JA系统错误"
+  },
+  "SCANPAY_TRADE_LIST.TOAST.NOT_FOUND": {
+    "description": "没有找到符合条件的数据",
+    "message": "JA没有找到符合条件的数据"
+  },
+  "TRANS_TYPE.PURC": {
+    "description": "下单支付",
+    "message": "JA下单支付"
+  },
+  "TRANS_TYPE.PAUT": {
+    "description": "预下单",
+    "message": "JA预下单"
+  },
+  "TRANS_TYPE.VOID": {
+    "description": "撤销",
+    "message": "JA撤销"
+  },
+  "TRANS_TYPE.REFD": {
+    "description": "退款",
+    "message": "JA退款"
+  },
+  "TRANS_TYPE.VERI": {
+    "description": "卡券核销",
+    "message": "JA卡券核销"
+  },
+  "TRANS_TYPE.CANC": {
+    "description": "取消",
+    "message": "JA取消"
+  },
+  "TRANS_TYPE.QYZF": {
+    "description": "企业付款",
+    "message": "JA企业付款"
+  },
+  "TRANS_TYPE.JSZF": {
+    "description": "公众号支付",
+    "message": "JA公众号支付"
+  },
+  "TRANS_STATUS.IN_PROCESS": {
+    "description": "处理中",
+    "message": "処理中"
+  },
+  "TRANS_STATUS.FAIL": {
+    "description": "失败",
+    "message": "失敗"
+  },
+  "TRANS_STATUS.SUCCESS": {
+    "description": "成功",
+    "message": "成功"
+  },
+  "TRANS_STATUS.CLOSED": {
+    "description": "已关闭",
+    "message": "クローズ"
+  },
+  "CHANNEL.WECHAT": {
+    "description": "微信渠道",
+    "message": "Wechat"
+  },
+  "CHANNEL.ALIPAY": {
+    "description": "支付宝渠道",
+    "message": "Alipay"
+  },
+  "SCANPAY_TRADE_STATS.MENU_NAME": {
+    "description": "扫码支付交易统计菜单名",
+    "message": "JA扫码支付交易统计"
+  },
+  "SCANPAY_TRADE_STATS.TITLE": {
+    "description": "扫码支付交易统计标题",
+    "message": "JA交易报表下载"
   },
   "xxx": {
     "description": "xxx",

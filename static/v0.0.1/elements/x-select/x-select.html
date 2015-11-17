@@ -101,8 +101,15 @@ Example:
     </div>
     <iron-dropdown id="dropdown" vertical-align="[[verticalAlign]]" horizontal-align="[[horizontalAlign]]" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]">
       <ul class="dropdown-content">
-        <template is="dom-repeat" items="[[items]]">
-          <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)">[[item.value]]</a></li>
+        <template is="dom-if" if="{{isLocale}}">
+          <template is="dom-repeat" items="[[items]]">
+            <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)"><i18n-msg msgid="[[item.value]]">[[item.value]]</i18n-msg></a></li>
+          </template>
+        </template>
+        <template is="dom-if" if="{{!isLocale}}">
+          <template is="dom-repeat" items="[[items]]">
+            <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)">[[item.value]]</a></li>
+          </template>
         </template>
       </ul>
     </iron-dropdown>
@@ -162,6 +169,10 @@ Example:
             }
           }];
         }
+      },
+      isLocale: {
+        type: Boolean,
+        value: false
       },
 
       closeAnimationConfig: {
