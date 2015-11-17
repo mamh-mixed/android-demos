@@ -289,6 +289,70 @@
     "description": "扫码支付交易统计标题",
     "message": "交易报表下载"
   },
+  "SCANPAY_TRADE_STATS.DATE_FROM": {
+    "description": "开始日期",
+    "message": "开始日期"
+  },
+  "SCANPAY_TRADE_STATS.DATE_TO": {
+    "description": "结束日期",
+    "message": "结束日期"
+  },
+  "SCANPAY_TRADE_STATS.AGENT": {
+    "description": "代理",
+    "message": "代理"
+  },
+  "SCANPAY_TRADE_STATS.SUBAGENT_NO": {
+    "description": "公司代码",
+    "message": "公司代码"
+  },
+  "SCANPAY_TRADE_STATS.GROUP_NO": {
+    "description": "商户代码",
+    "message": "商户代码"
+  },
+  "SCANPAY_TRADE_STATS.GROUP_NAME": {
+    "description": "商户代码",
+    "message": "商户代码"
+  },
+  "SCANPAY_TRADE_STATS.MERCHANT_NO": {
+    "description": "门店代码",
+    "message": "门店代码"
+  },
+  "SCANPAY_TRADE_STATS.MERCHANT_NAME": {
+    "description": "门店名称",
+    "message": "门店名称"
+  },
+  "SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP": {
+    "description": "按商户汇总",
+    "message": "按商户汇总"
+  },
+  "SCANPAY_TRADE_STATS.SUMMARY": {
+    "description": "汇总",
+    "message": "汇总"
+  },
+  "SCANPAY_TRADE_STATS.TRANS_COUNT": {
+    "description": "（交易）笔数",
+    "message": "笔数"
+  },
+  "SCANPAY_TRADE_STATS.AMOUNT": {
+    "description": "金额",
+    "message": "金额"
+  },
+  "SCANPAY_TRADE_STATS.AGENT_NAME": {
+    "description": "代理名称",
+    "message": "代理名称"
+  },
+  "SCANPAY_TRADE_STATS.DOWNLOAD": {
+    "description": "下载",
+    "message": "下载"
+  },
+  "SCANPAY_TRADE_STATS.DOWNLOAD_DETAIL": {
+    "description": "下载明细",
+    "message": "下载明细"
+  },
+  "SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY": {
+    "description": "下载汇总",
+    "message": "下载汇总"
+  },
   "xxx": {
     "description": "xxx",
     "message": "xxx"
