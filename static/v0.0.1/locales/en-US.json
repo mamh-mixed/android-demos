@@ -352,6 +352,22 @@
     "description": "下载汇总",
     "message": "下载汇总"
   },
+  "TRADE_VIEW.HEADER": {
+    "description": "交易明细",
+    "message": "Transaction Detail"
+  },
+  "TRADE_VIEW.HEADER_VOID_ORDER": {
+    "description": "撤销订单",
+    "message": "Void Order"
+  },
+  "TRADE_VIEW.HEADER_CANCEL_ORDER": {
+    "description": "取消订单",
+    "message": "Cancel Order"
+  },
+  "TRADE_VIEW.HEADER_REFUND_ORDER": {
+    "description": "退款订单",
+    "message": "Refund Order"
+  },
   "xxx": {
     "description": "xxx",
     "message": "xxx"

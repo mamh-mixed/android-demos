@@ -310,8 +310,8 @@
     "message": "商户代码"
   },
   "SCANPAY_TRADE_STATS.GROUP_NAME": {
-    "description": "商户代码",
-    "message": "商户代码"
+    "description": "商户名称",
+    "message": "商户名称"
   },
   "SCANPAY_TRADE_STATS.MERCHANT_NO": {
     "description": "门店代码",
@@ -352,6 +352,22 @@
   "SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY": {
     "description": "下载汇总",
     "message": "下载汇总"
+  },
+  "TRADE_VIEW.HEADER": {
+    "description": "交易明细",
+    "message": "交易明细"
+  },
+  "TRADE_VIEW.HEADER_VOID_ORDER": {
+    "description": "撤销订单",
+    "message": "撤销订单"
+  },
+  "TRADE_VIEW.HEADER_CANCEL_ORDER": {
+    "description": "取消订单",
+    "message": "取消订单"
+  },
+  "TRADE_VIEW.HEADER_REFUND_ORDER": {
+    "description": "退款订单",
+    "message": "退款订单"
   },
   "xxx": {
     "description": "xxx",

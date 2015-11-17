@@ -29,7 +29,9 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogView">
-      <h2>交易明细</h2>
+      <h2>
+        <i18n-msg msgid="TRADE_VIEW.HEADER">交易明细</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <!-- 订单明细 -->
         <div id="order">
@@ -39,21 +41,27 @@
         </div>
         <!-- 撤销订单 -->
         <div id="voidOrder" class="order">
-          <div class="header">撤销订单</div>
+          <div class="header">
+            <i18n-msg msgid="TRADE_VIEW.HEADER_VOID_ORDER">撤销订单</i18n-msg>
+          </div>
           <div class="content">
             <trade-detail item="{{voidOrderItem}}"></trade-detail>
           </div>
         </div>
         <!-- 取消订单 -->
         <div id="cancOrder" class="order">
-          <div class="header">取消订单</div>
+          <div class="header">
+            <i18n-msg msgid="TRADE_VIEW.HEADER_CANCEL_ORDER">取消订单</i18n-msg>
+          </div>
           <div class="content">
             <trade-detail item="{{cancOrderItem}}"></trade-detail>
           </div>
         </div>
         <!-- 退款订单 -->
         <div id="refdOrder" class="order">
-          <div class="header">退款订单</div>
+          <div class="header">
+            <i18n-msg msgid="TRADE_VIEW.HEADER_REFUND_ORDER">退款订单</i18n-msg>
+          </div>
           <template is="dom-repeat" items="{{refdOrderItems}}" as="refdOrderItem">
             <div class="content">
               <trade-detail item="{{refdOrderItem}}"></trade-detail>
@@ -62,7 +70,9 @@
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button on-tap="handleClose">关闭</paper-button>
+        <paper-button on-tap="handleClose">
+          <i18n-msg msgid="BUTTON.CLOSE">关闭</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="tradeQueryAjax" method="GET" url="/master/trade/findOne" handle-as="json" on-response="handleResponse"></x-ajax>
