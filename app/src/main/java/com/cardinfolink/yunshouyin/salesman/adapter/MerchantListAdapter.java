@@ -39,52 +39,67 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
         this.users = users;
         this.usersOrigin.addAll(users);
 
-        myFilter = new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                ArrayList<User> tmpUsers = new ArrayList<>();
-                // 没有关键字,数据内容使用原始的数据拷贝引用
-                if (constraint == null || constraint.length() == 0) {
-                    filterResults.values = usersOrigin;
-                    filterResults.count = usersOrigin.size();
-                } else if (usersOrigin != null) {
-                    for (User user : usersOrigin) {
-                        if (user.getMerName() != null && user.getMerName().contains(constraint)) {
-                            tmpUsers.add(user);
-                        }
-                    }
-                    filterResults.values = tmpUsers;
-                    filterResults.count = tmpUsers.size();
-                }
-                return filterResults;
-            }
+        myFilter = new MerchantFilter();
 
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                ArrayList<User> objects = (ArrayList<User>) results.values;
-                //这里并没有引用arrayList的地址,而是对list内的item逐个加入adapter
-                users.clear();
-                if (objects != null && objects.size() > 0) {
-                    //MerchantListActivity.adapter.clear();
-                    users.addAll(objects);
+    }
+
+    private class MerchantFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults filterResults = new FilterResults();
+            ArrayList<User> tmpUsers = new ArrayList<>();
+            // 没有关键字,数据内容使用原始的数据拷贝引用
+            if (constraint == null || constraint.length() == 0) {
+                filterResults.values = usersOrigin;
+                filterResults.count = usersOrigin.size();
+            } else if (usersOrigin != null) {
+                for (User user : usersOrigin) {
+                    if (user.getMerName() != null && user.getMerName().contains(constraint)) {
+                        tmpUsers.add(user);
+                    }
                 }
-                notifyDataSetChanged();
+                filterResults.values = tmpUsers;
+                filterResults.count = tmpUsers.size();
             }
-        };
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            ArrayList<User> objects = (ArrayList<User>) results.values;
+            //这里并没有引用arrayList的地址,而是对list内的item逐个加入adapter
+            users.clear();
+            if (objects != null && objects.size() > 0) {
+                //MerchantListActivity.adapter.clear();
+                users.addAll(objects);
+            }
+            notifyDataSetChanged();
+        }
     }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View itemView = convertView;
-        if (itemView == null) {
-            itemView = merchantListActivity.getLayoutInflater().inflate(R.layout.merchant_item_view, parent, false);
+        ViewHolder holder = null;
+        if (convertView == null) {
+            convertView = merchantListActivity.getLayoutInflater().inflate(R.layout.merchant_item_view, parent, false);
+            holder = new ViewHolder();
+            holder.detailViewGroup = (TableLayout) convertView.findViewById(R.id.mItem_detailViewGroup);
+            holder.merchantName = (TextView) convertView.findViewById(R.id.mItem_txtMerchantName);
+            holder.merchantEmail = (TextView) convertView.findViewById(R.id.mItem_txtEmail);
+            holder.merchantId = (TextView) convertView.findViewById(R.id.mItem_txtMerchantId);
+            holder.merchantSecret = (TextView) convertView.findViewById(R.id.mItem_txtSecretKey);
+            holder.downloadQR = (TextView) convertView.findViewById(R.id.merchantlist_download_qrcode);
+
+            convertView.setTag(holder);
+
+        }else{
+            holder = (ViewHolder)convertView.getTag();
         }
         final User merchant = users.get(position);
-        final TableLayout detailViewGroup = (TableLayout) itemView.findViewById(R.id.mItem_detailViewGroup);
-        TextView merchantNameText = (TextView) itemView.findViewById(R.id.mItem_txtMerchantName);
-        merchantNameText.setText(merchant.getMerName());
-        merchantNameText.setOnClickListener(new View.OnClickListener() {
+        final TableLayout detailViewGroup = holder.detailViewGroup;
+
+        holder.merchantName.setText(merchant.getMerName());
+        holder.merchantName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int status = detailViewGroup.getVisibility();
@@ -96,15 +111,13 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
             }
         });
 
-        TextView emailText = (TextView) itemView.findViewById(R.id.mItem_txtEmail);
-        emailText.setText(merchant.getUsername());
-        TextView midText = (TextView) itemView.findViewById(R.id.mItem_txtMerchantId);
-        midText.setText(merchant.getClientid());
-        TextView secretText = (TextView) itemView.findViewById(R.id.mItem_txtSecretKey);
-        secretText.setText(merchant.getSignKey());
+        holder.merchantEmail.setText(merchant.getUsername());
 
-        TextView downloadQRText = (TextView) itemView.findViewById(R.id.merchantlist_download_qrcode);
-        downloadQRText.setOnClickListener(new View.OnClickListener() {
+        holder.merchantId.setText(merchant.getClientid());
+
+        holder.merchantSecret.setText(merchant.getSignKey());
+
+        holder.downloadQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "download qrcode");
@@ -151,7 +164,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
                     }
                 });
 
-                SalesmanApplication.getInstance().getQuickPayService().getQrPostUrlAsync(merchantId, "pay", new QuickPayCallbackListener<String>() {
+                quickPayService.getQrPostUrlAsync(merchantId, "pay", new QuickPayCallbackListener<String>() {
                     @Override
                     public void onSuccess(String data) {
                         String imageUrl = data;
@@ -191,7 +204,7 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
             }
         });
 
-        return itemView;
+        return convertView;
     }
 
     @Override
@@ -202,5 +215,14 @@ public class MerchantListAdapter extends ArrayAdapter<User> {
     public void refreshDataSource(List<User> users) {
         usersOrigin.clear();
         usersOrigin.addAll(users);
+    }
+
+    private static class ViewHolder {
+        public TableLayout detailViewGroup;
+        public TextView merchantName;
+        public TextView merchantEmail;
+        public TextView merchantId;
+        public TextView merchantSecret;
+        public TextView downloadQR;
     }
 }
