@@ -836,6 +836,8 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 		Response:        t.RespCode,
 		SystemDate:      timeReplacer.Replace(t.CreateTime),
 		ConsumerAccount: t.ConsumerAccount,
+		TransStatus:     t.TransStatus,
+		RefundAmt:       t.RefundAmt,
 	}
 	txn.ReqData.Busicd = t.Busicd
 	txn.ReqData.AgentCode = t.AgentCode
