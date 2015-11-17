@@ -502,16 +502,15 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		Size:      15,
 		Page:      1,
 		Skip:      index,
+		TransType: model.PayTrans,
 	}
 
 	switch req.Status {
 	case "all":
 	case "success":
 		q.Respcd = "00"
-		q.TransType = model.PayTrans
 	case "fail":
 		q.RespcdNotIn = "00"
-		q.TransType = model.PayTrans
 	}
 
 	trans, _, err := mongo.SpTransColl.Find(q)
