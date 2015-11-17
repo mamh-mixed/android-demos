@@ -413,7 +413,7 @@ var downloadKey = "tools/summary/images/%s/%s"
 
 // NotifySalesman 每天汇总当天用户数据给业务人员
 func NotifySalesman() {
-	day := time.Now().Format("2006-01-02")
+	day := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
 	all, err := mongo.AppUserCol.Find(&model.AppUserContiditon{
 		RegisterFrom: model.SalesToolsRegister,
 		StartTime:    day + " 00:00:00",
@@ -592,7 +592,7 @@ func saveToQiniu(key string, fs *bytes.Buffer) {
 
 var (
 	body   = `您好，本次共汇总 %d 商户。`
-	attach = `请在7天之内下载<a href="%s">商户.zip</a>附件`
+	attach = `请在一个星期之内下载<a href="%s">商户.zip</a>。`
 )
 
 func sendEmail(ed *emailData, to, name, day string) {
