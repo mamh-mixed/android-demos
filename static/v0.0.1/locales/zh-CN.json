@@ -369,6 +369,50 @@
     "description": "退款订单",
     "message": "退款订单"
   },
+  "TRADE_DETAIL.GROUP_NAME": {
+    "description": "公司名称",
+    "message": "公司名称"
+  },
+  "TRADE_DETAIL.AGENT_NO": {
+    "description": "代理代码",
+    "message": "代理代码"
+  },
+  "TRADE_DETAIL.TRANS_AMOUNT": {
+    "description": "交易金额",
+    "message": "交易金额"
+  },
+  "TRADE_DETAIL.GOOD_DETAIL": {
+    "description": "商品明细",
+    "message": "商品明细"
+  },
+  "TRADE_DETAIL.TRANS_CURRENCY": {
+    "description": "交易币种",
+    "message": "交易币种"
+  },
+  "TRADE_DETAIL.CHANNEL_MERCHANT": {
+    "description": "渠道商户",
+    "message": "渠道商户"
+  },
+  "TRADE_DETAIL.CHANNEL_ORDER": {
+    "description": "渠道订单",
+    "message": "渠道订单"
+  },
+  "TRADE_DETAIL.CHANNEL_DISCOUNT": {
+    "description": "渠道折扣",
+    "message": "渠道折扣"
+  },
+  "TRADE_DETAIL.MERCHANT_DISCOUNT": {
+    "description": "商户折扣",
+    "message": "商户折扣"
+  },
+  "TRADE_DETAIL.CREATE_TIME": {
+    "description": "创建时间",
+    "message": "创建时间"
+  },
+  "TRADE_DETAIL.MODIFY_TIME": {
+    "description": "修改时间",
+    "message": "修改时间"
+  },
   "xxx": {
     "description": "xxx",
     "message": "xxx"

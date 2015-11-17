@@ -13,75 +13,123 @@
   <template>
     <div class="table data-grid low" id="orderDetail">
       <div class="tr">
-        <div class="td key">门店代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NO">门店代码</i18n-msg>:
+        </div>
         <div class="td">{{item.merId}}</div>
-        <div class="td key">门店名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NAME">门店名称</i18n-msg>:
+        </div>
         <div class="td">{{item.merName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">商户代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NO">商户代码</i18n-msg>:
+        </div>
         <div class="td">{{item.groupCode}}</div>
-        <div class="td key">商户名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NAME">商户名称</i18n-msg>:
+        </div>
         <div class="td">{{item.groupName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">公司代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.SUBAGENT_NO">公司代码</i18n-msg>:
+        </div>
         <div class="td">{{item.subAgentCode}}</div>
-        <div class="td key">公司名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.GROUP_NAME">公司名称</i18n-msg>:
+        </div>
         <div class="td">{{item.subAgentName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">代理代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>:
+        </div>
         <div class="td">{{item.agentCode}}</div>
-        <div class="td key">代理名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>:
+        </div>
         <div class="td">{{item.agentName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">终端代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.TERMINAL">终端代码</i18n-msg>:
+        </div>
         <div class="td">{{item.terminalid}}</div>
-        <div class="td key">商户订单:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.ORDER_NO">商户订单</i18n-msg>:
+        </div>
         <div class="td">{{item.orderNum}}</div>
       </div>
       <div class="tr">
-        <div class="td key">交易金额:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.TRANS_AMOUNT">交易金额</i18n-msg>:
+        </div>
         <div class="td">{{_currencyFilter(item.transAmt)}}</div>
-        <div class="td key">商品明细:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.GOOD_DETAIL">商品明细</i18n-msg>:
+        </div>
         <div class="td">{{item.goodsInfo}}</div>
       </div>
       <div class="tr">
-        <div class="td key">交易币种:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.TRANS_CURRENCY">交易币种</i18n-msg>:
+        </div>
         <div class="td">{{item.transCurr}}</div>
-        <div class="td key">交易类型:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.TRANS_TYPE">交易类型</i18n-msg>:
+        </div>
         <div class="td">{{busicdFilter(item.busicd)}}</div>
       </div>
       <div class="tr">
-        <div class="td key">交易渠道:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.CHANNEL">交易渠道</i18n-msg>:
+        </div>
         <div class="td">{{chanFilter(item.chanCode)}}</div>
-        <div class="td key">关联订单:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO">关联订单</i18n-msg>:
+        </div>
         <div class="td">{{item.origOrderNum}}</div>
       </div>
       <div class="tr">
-        <div class="td key">渠道商户:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CHANNEL_MERCHANT">渠道商户</i18n-msg>:
+        </div>
         <div class="td">{{item.chanMerId}}</div>
-        <div class="td key">渠道订单:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CHANNEL_ORDER">渠道订单</i18n-msg>:
+        </div>
         <div class="td">{{item.chanOrderNum}}</div>
       </div>
       <div class="tr">
-        <div class="td key">渠道折扣:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CHANNEL_DISCOUNT">渠道折扣</i18n-msg>:
+        </div>
         <div class="td">{{item.chanDiscount}}</div>
-        <div class="td key">商户折扣:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.MERCHANT_DISCOUNT">商户折扣</i18n-msg>:
+        </div>
         <div class="td">{{item.merDiscount}}</div>
       </div>
       <div class="tr">
-        <div class="td key">应答码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.RESPONSE_CODE">应答码</i18n-msg>:
+        </div>
         <div class="td">{{item.respcd}}</div>
-        <div class="td key">交易状态:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.TRANS_STATUS">交易状态</i18n-msg>:
+        </div>
         <div class="td">{{transStatusFilter(item.transStatus)}}</div>
       </div>
       <div class="tr">
-        <div class="td key">创建时间:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CREATE_TIME">创建时间</i18n-msg>:
+        </div>
         <div class="td">{{item.transTime}}</div>
-        <div class="td key">修改时间:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.MODIFY_TIME">修改时间</i18n-msg>:
+        </div>
         <div class="td">{{item.updateTime}}</div>
       </div>
     </div>

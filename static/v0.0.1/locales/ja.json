@@ -369,6 +369,50 @@
     "description": "退款订单",
     "message": "リファンドオーダー"
   },
+  "TRADE_DETAIL.GROUP_NAME": {
+    "description": "公司名称",
+    "message": "会社名称"
+  },
+  "TRADE_DETAIL.AGENT_NO": {
+    "description": "代理代码",
+    "message": "代理コード"
+  },
+  "TRADE_DETAIL.TRANS_AMOUNT": {
+    "description": "交易金额",
+    "message": "取引金額"
+  },
+  "TRADE_DETAIL.GOOD_DETAIL": {
+    "description": "商品明细",
+    "message": "商品明細"
+  },
+  "TRADE_DETAIL.TRANS_CURRENCY": {
+    "description": "交易币种",
+    "message": "取引通貨"
+  },
+  "TRADE_DETAIL.CHANNEL_MERCHANT": {
+    "description": "渠道商户",
+    "message": "チャンネル加盟店"
+  },
+  "TRADE_DETAIL.CHANNEL_ORDER": {
+    "description": "渠道订单",
+    "message": "チャンネルオーダー"
+  },
+  "TRADE_DETAIL.CHANNEL_DISCOUNT": {
+    "description": "渠道折扣",
+    "message": "チャンネル値引き"
+  },
+  "TRADE_DETAIL.MERCHANT_DISCOUNT": {
+    "description": "商户折扣",
+    "message": "加盟店値引き"
+  },
+  "TRADE_DETAIL.CREATE_TIME": {
+    "description": "创建时间",
+    "message": "作成時間"
+  },
+  "TRADE_DETAIL.MODIFY_TIME": {
+    "description": "修改时间",
+    "message": "変更時間"
+  },
   "xxx": {
     "description": "xxx",
     "message": "xxx"
