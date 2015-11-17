@@ -27,6 +27,10 @@
     "description": "下载报表按钮",
     "message": "Download Report"
   },
+  "BUTTON.CLOSE": {
+    "description": "关闭按钮",
+    "message": "Close"
+  },
   "PAGINATION.PER_PAGE": {
     "description": "每页显示 N 条",
     "message": "每页显示 N 条"

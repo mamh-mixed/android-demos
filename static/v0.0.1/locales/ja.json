@@ -17,15 +17,19 @@
   },
   "BUTTON.CONFIRM": {
     "description": "确认按钮",
-    "message": "JA确认"
+    "message": "確定"
   },
   "BUTTON.CANCEL": {
     "description": "取消按钮",
-    "message": "JA取消"
+    "message": "取消"
   },
   "BUTTON.DOWNLOADREPORT": {
     "description": "下载报表按钮",
-    "message": "JA下载报表"
+    "message": "レポートダウンロード"
+  },
+  "BUTTON.CLOSE": {
+    "description": "关闭按钮",
+    "message": "クローズ"
   },
   "PAGINATION.PER_PAGE": {
     "description": "每页显示 N 条",
@@ -49,11 +53,11 @@
   },
   "LOGIN.HINT": {
     "description": "登录页提示",
-    "message": "JA如果您还没有用户名、密码，请联系讯联数据运营中心为您分配"
+    "message": "ユーザー未登録、Cardinfolink に連絡してください"
   },
   "LOGIN.TOAST.LOGIN_FAIL": {
     "description": "登录失败提示",
-    "message": "JA用户名或密码不能为空"
+    "message": "ユーザー名またはパスワードが空白不可"
   },
 
   "PASSWORDMODIFICATION.TITLE": {
@@ -62,48 +66,48 @@
   },
   "PASSWORDMODIFICATION.USERNAME": {
     "description": "用户名",
-    "message": "JA用户名"
+    "message": "ユーザー"
   },
   "PASSWORDMODIFICATION.OLDPASSWORD": {
     "description": "原密码",
-    "message": "JA原密码"
+    "message": "元パスワード"
   },
   "PASSWORDMODIFICATION.NEWPASSWORD": {
     "description": "新密码",
-    "message": "JA新密码"
+    "message": "新パスワード"
   },
   "PASSWORDMODIFICATION.CONFIRMPASSWORD": {
     "description": "重复新密码",
-    "message": "JA重复新密码"
+    "message": "重複新パスワード"
   },
   "PASSWORDMODIFICATION.REQUIREDITEM": {
     "description": "必填项",
-    "message": "JA必填项"
+    "message": "必須項目"
   },
   "PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS": {
     "description": "必填项不能为空",
-    "message": "JA必填项不能为空"
+    "message": "必須項目ため、空白不可"
   },
   "PASSWORDMODIFICATION.TOAST.OLD_PASSWORD_NOT_MATCH": {
     "description": "原密码错误",
-    "message": "JA原密码错误"
+    "message": "元パスワードエラー"
   },
   "PASSWORDMODIFICATION.TOAST.MIDIFICATION_PASSWORD_SUCCESS": {
     "description": "修改密码成功",
-    "message": "JA修改密码成功"
+    "message": "パスワード変更成功"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
-    "message": "JA新密码不一致"
+    "message": "新パスワード不一致"
   },
 
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
-    "message": "JA扫码交易"
+    "message": "QRコード取引"
   },
   "SCANPAY_TRADE_LIST.TITLE": {
     "description": "扫码支付交易查询",
-    "message": "JA扫码支付交易查询"
+    "message": "QRコード取引検索"
   },
   "SCANPAY_TRADE_LIST.DATE_FROM": {
     "description": "交易时间从",

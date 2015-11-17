@@ -87,13 +87,10 @@
         },
         listeners: {
           'i18n-language-change': 'handleI18nLanguageChangeEvent',
-          'i18n-language-ready': 'handleI18nLanguageChangeEvent'
+          'i18n-language-ready': 'handleI18nLanguageChangeEvent',
+          'rerender-i18n': 'handleI18nLanguageChangeEvent'
         },
-        ready: function() {
-          // default language en-US, zh-CN, ja
-          // I18nMsg.lang = 'zh-CN';
-          // I18nMsg.lang = window.navigator.language;
-        },
+        ready: function() {},
         attached: function() {
           this.$.appRouter.init();
           I18nMsg.lang = this.language || window.navigator.language;
@@ -226,16 +223,23 @@
         handleCloseDialogPleaseEvent: function() {
           this.$.reloginDialog.close();
         },
-        handleI18nLanguageChangeEvent: function(e) {
+        handleI18nLanguageChangeEvent: function() {
           var i18nMsg = document.createElement('i18n-msg');
 
           var paperInputs = document.querySelectorAll('paper-input');
           for (var i = 0, l = paperInputs.length, item; i < l; i++) {
+            var msgId = null;
             item = paperInputs[i];
             if (item.hasAttribute('data-msg-id')) {
-              var msgId = item.getAttribute('data-msg-id');
+              msgId = item.getAttribute('data-msg-id');
               item.setAttribute('label', i18nMsg.getMsg(msgId));
             }
+
+            if (item.required) {
+              msgId = item.getAttribute('data-error-msg-id');
+              item.setAttribute('error-message', i18nMsg.getMsg(msgId));
+            }
+            msgId = null;
           }
 
           var datePickers = document.querySelectorAll('paper-date-picker');
@@ -255,7 +259,6 @@
               item.setAttribute('label', i18nMsg.getMsg(msgId));
             }
           }
-          console.log(e.type, e.target);
         }
       });
     })();
