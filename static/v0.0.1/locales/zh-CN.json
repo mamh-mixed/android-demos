@@ -31,9 +31,13 @@
     "description": "关闭按钮",
     "message": "关闭"
   },
-  "PAGINATION.PER_PAGE": {
-    "description": "每页显示 N 条",
-    "message": "每页显示 N 条"
+  "PAGINATION.PER_PAGE_PREFIX": {
+    "description": "每页显示前缀",
+    "message": "每页显示"
+  },
+  "PAGINATION.PER_PAGE_SUFFIX": {
+    "description": "每页显示后缀",
+    "message": "条"
   },
   "DATE_PICKER.LOCALE": {
     "description": "日历国际化",
@@ -272,6 +276,10 @@
   "CHANNEL.ALIPAY": {
     "description": "支付宝渠道",
     "message": "支付宝"
+  },
+  "CHANNEL.UNKNOWN": {
+    "description": "未知渠道",
+    "message": "未知"
   },
   "SCANPAY_TRADE_STATS.MENU_NAME": {
     "description": "扫码支付交易统计菜单名",
