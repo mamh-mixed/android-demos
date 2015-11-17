@@ -242,7 +242,7 @@ func weChatAuthHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var redirectUri = url.QueryEscape(webAppUrl + "/pay.html?merchantCode=" + b64MerId + "&showwxpaytitle=1")
+	var redirectUri = webAppUrl + "/pay.html" + url.QueryEscape("?merchantCode="+b64MerId+"&showwxpaytitle=1")
 	wxpUri := "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect"
 
 	// 告诉页面重定向到微信
