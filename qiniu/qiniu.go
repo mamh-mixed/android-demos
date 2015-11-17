@@ -61,6 +61,11 @@ func MakePrivateUrl(key string) string {
 	return cli.MakePrivateUrl(baseUrl, nil) // 用默认的下载策略去生成私有下载的 url
 }
 
+func MakePrivateUrlWithExpiresTime(key string, expires uint32) string {
+	baseUrl := makeBaseUrl(DOMAIN, key)                                   // 得到下载 url
+	return cli.MakePrivateUrl(baseUrl, &kodo.GetPolicy{Expires: expires}) // 用默认的下载策略去生成私有下载的 url
+}
+
 func HandleDownURL(w http.ResponseWriter, req *http.Request) {
 	img := MakePrivateUrl(req.URL.Query().Get("key"))
 	// 如果是资质文件，需要保存路径或 key 值
