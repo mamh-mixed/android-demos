@@ -239,7 +239,28 @@ public class MerchantListActivity extends BaseActivity {
                 switch (index) {
                     case 0:
                         User user = users.get(position);
-                        Log.d(TAG,"will update user = " + user);
+                        Log.d(TAG, "will update user = " + user);
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putInt("register_step_finish", 1);
+
+                        editor.putString("register_username", user.getUsername());
+                        //editor.putString("register_password", password);
+
+                        editor.putString("register_clientid", user.getClientid());
+                        editor.putString("register_province", user.getProvince());
+                        editor.putString("register_city", user.getCity());
+                        editor.putString("register_bankopen", user.getBankOpen());
+                        editor.putString("register_branchbank", user.getBranchBank());
+                        editor.putString("register_bankno", user.getBankNo());
+                        editor.putString("register_payee", user.getPayee());
+                        editor.putString("register_payeecard", user.getPayeeCard());
+                        editor.putString("register_phonenum", user.getPhoneNum());
+                        editor.putString("register_mername", user.getMerName());
+
+                        editor.commit();
+                        Intent intent = new Intent(MerchantListActivity.this, RegisterNextActivity.class);
+                        startActivity(intent);
+
                         break;
                     case 1:
                         Log.d(TAG, "will delete " + position);
