@@ -38,7 +38,7 @@ func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
 func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
-	fn := r.FormValue("filename")
+	fn := strings.Replace(date, "-", "", -1) + "_CIL.xlsx"
 
 	tradeReport(w, &model.QueryCondition{
 		IsForReport:  true,

@@ -851,6 +851,10 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.Txamt = fmt.Sprintf("%012d", t.TransAmt)
 	txn.ReqData.ChanCode = t.ChanCode
 	txn.ReqData.Currency = t.Currency
+	if t.Currency == "" {
+		txn.ReqData.Currency = "CNY"
+	}
+
 	return txn
 }
 
