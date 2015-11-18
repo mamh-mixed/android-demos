@@ -3,22 +3,28 @@ package oversea
 
 import (
 	"errors"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel/alipay/scanpay1"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	// "github.com/omigo/log"
+	"math"
 	"time"
 )
 
 var DefaultClient alp
+var alipayCurrency map[string]int
 
 // TODO 常用状态码整合到一起
 var (
-	CloseCode, _, CloseMsg         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
-	InprocessCode, _, InprocessMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
-	SuccessCode, _, SuccessMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
-	UnKnownCode, _, UnKnownMsg     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
+	CloseCode, CloseMsg, _         = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
+	InprocessCode, InprocessMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("INPROCESS")
+	SuccessCode, SuccessMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("SUCCESS")
+	UnKnownCode, UnKnownMsg, _     = mongo.ScanPayRespCol.Get8583CodeAndMsg("CHAN_UNKNOWN_ERROR")
 )
+
+func init() {
+	initAvailableCurrency()
+}
 
 type alp struct{}
 
@@ -43,7 +49,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	b.PartnerTransId = req.OrderNum
 	b.BuyerIdentityCode = req.ScanCodeId
 	b.ExtendInfo = req.ExtendParams
-	b.TransAmount = req.ActTxamt
+	b.TransAmount = handleAmt(req.IntTxamt, req.Currency)
 	b.TransCreateTime = time.Now().Format("20060102150405") // TODO
 
 	// resp
@@ -75,7 +81,7 @@ func (a *alp) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse, 
 	b.CommonReq = getCommonParams(req)
 	b.PartnerTransId = req.OrigOrderNum
 	b.PartnerRefundId = req.OrderNum
-	b.RefundAmount = req.ActTxamt
+	b.RefundAmount = handleAmt(req.IntTxamt, req.Currency)
 	b.Currency = req.Currency
 
 	// resp
@@ -171,7 +177,7 @@ func alipayResponseHandle(p scanpay1.BaseResp, resp *model.ScanPayResponse, serv
 		// error
 		spCode := mongo.ScanPayRespCol.GetByAlp(errorCode, service)
 		resp.Respcd = spCode.ISO8583Code
-		resp.ErrorDetail = spCode.ErrorCode
+		resp.ErrorDetail = spCode.ISO8583Msg
 		if !spCode.IsUseISO {
 			resp.ErrorDetail = errorCode // TODO
 		}
@@ -180,11 +186,36 @@ func alipayResponseHandle(p scanpay1.BaseResp, resp *model.ScanPayResponse, serv
 
 	switch p.ResultCode() {
 	case "SUCCESS":
-		resp.Respcd, resp.ErrorCode = SuccessCode, SuccessMsg
+		resp.Respcd, resp.ErrorDetail = SuccessCode, SuccessMsg
 	case "UNKNOW":
-		resp.Respcd, resp.ErrorCode = InprocessCode, InprocessMsg
+		resp.Respcd, resp.ErrorDetail = InprocessCode, InprocessMsg
 	default:
-		resp.Respcd, resp.ErrorCode = UnKnownCode, UnKnownMsg
+		resp.Respcd, resp.ErrorDetail = UnKnownCode, UnKnownMsg
 	}
+}
 
+func handleAmt(txamt int64, currency string) string {
+	if cur, ok := alipayCurrency[currency]; ok {
+		realUnit := math.Pow(10, float64(cur))
+		return fmt.Sprintf("%0."+fmt.Sprintf("%d", cur)+"f", float64(txamt)/realUnit)
+	}
+	return fmt.Sprintf("%d", txamt)
+}
+
+func initAvailableCurrency() {
+	// 币种、精度
+	alipayCurrency = make(map[string]int)
+	alipayCurrency["GBP"] = 2
+	alipayCurrency["HKD"] = 2
+	alipayCurrency["USD"] = 2
+	alipayCurrency["CHF"] = 2
+	alipayCurrency["SGD"] = 2
+	alipayCurrency["SEK"] = 2
+	alipayCurrency["DKK"] = 2
+	alipayCurrency["NOK"] = 2
+	alipayCurrency["JPY"] = 0
+	alipayCurrency["CAD"] = 2
+	alipayCurrency["AUD"] = 2
+	alipayCurrency["EUR"] = 2
+	alipayCurrency["KRW"] = 0
 }
