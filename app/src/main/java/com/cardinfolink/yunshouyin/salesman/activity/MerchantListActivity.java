@@ -4,14 +4,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,11 +21,6 @@ import com.cardinfolink.yunshouyin.salesman.adapter.MerchantListAdapter;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.User;
-import com.cardinfolink.yunshouyin.salesman.swipeview.OnMenuItemClickListener;
-import com.cardinfolink.yunshouyin.salesman.swipeview.SwipeMenu;
-import com.cardinfolink.yunshouyin.salesman.swipeview.SwipeMenuCreator;
-import com.cardinfolink.yunshouyin.salesman.swipeview.SwipeMenuItem;
-import com.cardinfolink.yunshouyin.salesman.swipeview.SwipeMenuListView;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 
 import java.util.ArrayList;
@@ -225,51 +217,8 @@ public class MerchantListActivity extends BaseActivity {
     private void setupListView() {
         // currently no data
         adapter = new MerchantListAdapter(this, users);
-        SwipeMenuListView listView = (SwipeMenuListView) findViewById(R.id.listViewMerchants);
+        ListView listView = (ListView) findViewById(R.id.listViewMerchants);
         listView.setAdapter(adapter);
-
-        // step 1. create a MenuCreator
-        SwipeMenuCreator creator = new MerchantSwipeMenuCreator();
-        // set creator
-        listView.setMenuCreator(creator);
-
-        listView.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-            @Override
-            public void onMenuItemClick(int position, SwipeMenu menu, int index) {
-                switch (index) {
-                    case 0:
-                        User user = users.get(position);
-                        Log.d(TAG, "will update user = " + user);
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putInt("register_step_finish", 1);
-
-                        editor.putString("register_username", user.getUsername());
-                        //editor.putString("register_password", password);
-
-                        editor.putString("register_clientid", user.getClientid());
-                        editor.putString("register_province", user.getProvince());
-                        editor.putString("register_city", user.getCity());
-                        editor.putString("register_bankopen", user.getBankOpen());
-                        editor.putString("register_branchbank", user.getBranchBank());
-                        editor.putString("register_bankno", user.getBankNo());
-                        editor.putString("register_payee", user.getPayee());
-                        editor.putString("register_payeecard", user.getPayeeCard());
-                        editor.putString("register_phonenum", user.getPhoneNum());
-                        editor.putString("register_mername", user.getMerName());
-
-                        editor.commit();
-                        Intent intent = new Intent(MerchantListActivity.this, RegisterNextActivity.class);
-                        startActivity(intent);
-
-                        break;
-                    case 1:
-                        Log.d(TAG, "will delete " + position);
-                        users.remove(position);
-                        adapter.notifyDataSetChanged();
-                        break;
-                }
-            }
-        });
     }
 
 
@@ -282,39 +231,4 @@ public class MerchantListActivity extends BaseActivity {
     }
 
 
-    private class MerchantSwipeMenuCreator implements SwipeMenuCreator {
-        private int dp2px(int dp) {
-            return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                    getResources().getDisplayMetrics());
-        }
-
-        @Override
-        public void create(SwipeMenu menu) {
-            // create "open" item
-            SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
-            // set item background
-            openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
-            // set item width
-            openItem.setWidth(dp2px(90));
-            // set item title
-            openItem.setTitle("Update");
-            // set item title fontsize
-            openItem.setTitleSize(18);
-            // set item title font color
-            openItem.setTitleColor(Color.WHITE);
-            // add to menu
-            menu.addMenuItem(openItem);
-
-            // create "delete" item
-            SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
-            // set item background
-            deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-            // set item width
-            deleteItem.setWidth(dp2px(90));
-            // set a icon
-            deleteItem.setIcon(R.drawable.delete);
-            // add to menu
-            menu.addMenuItem(deleteItem);
-        }
-    }
 }

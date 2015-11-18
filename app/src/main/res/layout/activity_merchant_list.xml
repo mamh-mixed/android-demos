@@ -49,7 +49,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="5dp">
 
-            <com.cardinfolink.yunshouyin.salesman.swipeview.SwipeMenuListView
+            <ListView
                 android:id="@+id/listViewMerchants"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
