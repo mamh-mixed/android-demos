@@ -221,6 +221,9 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		switch v.TransStatus {
 		case model.TransSuccess:
 			cell.Value = "交易成功"
+			if v.RefundStatus == model.TransPartRefunded {
+				cell.Value = "部分退款" + fmt.Sprintf("(-%0.2f)", float64(v.RefundAmt)/100)
+			}
 		case model.TransFail:
 			cell.Value = "交易失败"
 		case model.TransHandling:

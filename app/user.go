@@ -502,7 +502,6 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		Size:      15,
 		Page:      1,
 		Skip:      index,
-		TransType: model.PayTrans,
 	}
 
 	switch req.Status {
