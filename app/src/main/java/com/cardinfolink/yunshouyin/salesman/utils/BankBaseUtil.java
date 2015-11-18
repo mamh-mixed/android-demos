@@ -73,6 +73,7 @@ public class BankBaseUtil {
         if (bank_id != null && !TextUtils.isEmpty(bank_id)) {
             params.add(new BasicNameValuePair("bank_id", bank_id));
         }
+        params.add(new BasicNameValuePair("size", "500"));
         params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.bankbase_key)));
         url = url + "?" + getValue(params);
         requestParam.setUrl(url);
