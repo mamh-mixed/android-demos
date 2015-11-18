@@ -26,6 +26,7 @@
     .rowspan-bottom {
       border-top: 1px solid #ddd;
       line-height: 30px;
+      padding-right: 6px;
     }
   </style>
   <template>
@@ -67,7 +68,7 @@
           <div class="th">
             <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
           </div>
-          <div class="th">
+          <div class="th left">
             <span hidden="{{cond.isAggregateByGroup}}">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NO">门店代码</i18n-msg>
             </span>
@@ -75,15 +76,15 @@
               <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NO">商户代码</i18n-msg>
             </span>
           </div>
-          <div class="th" hidden="{{!cond.isAggregateByGroup}}">
+          <div class="th left" hidden="{{!cond.isAggregateByGroup}}">
             <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NAME">商户名称</i18n-msg>
           </div>
-          <div class="th">
+          <div class="th left" hidden="{{cond.isAggregateByGroup}}">
             <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NAME">门店名称</i18n-msg>
           </div>
           <div class="th rowspan-cell">
             <div class="rowspan-top">&nbsp;</div>
-            <div class="rowspan-bottom">
+            <div class="rowspan-bottom right">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.TRANS_COUNT">笔数</i18n-msg>
             </div>
           </div>
@@ -91,13 +92,13 @@
             <div class="rowspan-top">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.SUMMARY">汇总</i18n-msg>
             </div>
-            <div class="rowspan-bottom">
+            <div class="rowspan-bottom right">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.AMOUNT">金额(元)</i18n-msg>
             </div>
           </div>
           <div class="th rowspan-cell">
             <div class="rowspan-top">&nbsp;</div>
-            <div class="rowspan-bottom">
+            <div class="rowspan-bottom right">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.TRANS_COUNT">笔数</i18n-msg>
             </div>
           </div>
@@ -105,13 +106,13 @@
             <div class="rowspan-top">
               <i18n-msg msgid="CHANNEL.ALIPAY">支付宝</i18n-msg>
             </div>
-            <div class="rowspan-bottom">
+            <div class="rowspan-bottom right">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.AMOUNT">金额(元)</i18n-msg>
             </div>
           </div>
           <div class="th rowspan-cell">
             <div class="rowspan-top">&nbsp;</div>
-            <div class="rowspan-bottom">
+            <div class="rowspan-bottom right">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.TRANS_COUNT">笔数</i18n-msg>
             </div>
           </div>
@@ -119,7 +120,7 @@
             <div class="rowspan-top">
               <i18n-msg msgid="CHANNEL.WECHAT">微信</i18n-msg>
             </div>
-            <div class="rowspan-bottom">
+            <div class="rowspan-bottom right">
               <i18n-msg msgid="SCANPAY_TRADE_STATS.AMOUNT">金额(元)</i18n-msg>
             </div>
           </div>
@@ -143,7 +144,7 @@
             <div class="td" hidden="{{!cond.isAggregateByGroup}}">
               <span>{{item.groupName}}</span>
             </div>
-            <div class="td">
+            <div class="td" hidden="{{cond.isAggregateByGroup}}">
               <span>{{item.merName}}</span>
             </div>
             <div class="td right">
@@ -164,7 +165,7 @@
             <div class="td right">
               <span>{{_computeAmount(item.wxp.transAmt)}}</span>
             </div>
-            <div class="td">
+            <div class="td center">
               <span>{{item.agentName}}</span>
             </div>
             <div class="td center">
@@ -264,7 +265,7 @@
           this.set('summary', pagination.data);
 
           if (pagination.count <= 0) {
-            Util.toast('没有找到符合条件的数据', 1000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             return;
           }
           this.records = pagination.data.data.slice(0);
@@ -272,7 +273,7 @@
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
           if (this.records.length === 0) {
-            Util.toast('没有找到符合条件的数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           }
         },
         // 查询代理列表
@@ -287,13 +288,13 @@
         handleQueryAgentsResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL', 3000, true);
             return;
           }
 
           var pagination = response.data;
           if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS', 3000, true);
             return;
           }
 

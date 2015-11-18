@@ -272,7 +272,9 @@
         this.isAdmin = false;
       },
       attached: function() {
-        this.fire('rerender-i18n', {from: 'trade-list'});
+        this.fire('rerender-i18n', {
+          from: 'trade-list'
+        });
       },
       observers: [
         '_watchAgentChange(agent.key)',
@@ -375,13 +377,13 @@
       handleQueryAgentsResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('加载代理列表失败', 3000);
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
-          Util.toast('没有代理数据', 2000);
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS', 3000, true);
           return;
         }
 
@@ -407,7 +409,12 @@
       handleSearchResponse: function(e) {
         var response = e.detail;
         if (response.status !== 0) {
-          Util.toast(response.message || '系统错误', 3000);
+          if (response.message) {
+            Util.toast(response.message, 3000);
+          } else {
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
+
+          }
           this.set('cond.total', 0);
           this.set('cond.page', 0);
           return;
@@ -415,7 +422,7 @@
 
         var pagination = response.data;
         if (!pagination.data || pagination.data.length === 0) {
-          Util.toast('没有找到符合条件的数据', 3000);
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           this.set('cond.total', 0);
           this.set('cond.page', 0);
           return;
