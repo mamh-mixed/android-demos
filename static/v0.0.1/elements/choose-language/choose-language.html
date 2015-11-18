@@ -115,7 +115,10 @@
             }
           }
 
-          this.fire('i18n-language-change', language);
+          // 异步执行
+          window.setTimeout(function(){
+            this.fire('i18n-language-change', language);
+          }.bind(this), 0);
           return;
         },
 
