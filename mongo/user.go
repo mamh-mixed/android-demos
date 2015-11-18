@@ -1,6 +1,8 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
@@ -36,6 +38,8 @@ func (col *userCollection) FindOneUser(userName, mail, phoneNum string) (u *mode
 
 // Add 增加一个用户
 func (col *userCollection) Add(u *model.User) error {
+	u.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+	u.UpdateTime = u.CreateTime
 	err := database.C(col.name).Insert(u)
 	if err != nil {
 		return err
@@ -45,6 +49,7 @@ func (col *userCollection) Add(u *model.User) error {
 
 // Update 更新用户信息
 func (col *userCollection) Update(u *model.User) error {
+	u.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	bo := bson.M{
 		"userName": u.UserName,
 	}

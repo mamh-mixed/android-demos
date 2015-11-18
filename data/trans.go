@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	inprocess           = mongo.ScanPayRespCol.Get("INPROCESS")
-	success             = mongo.ScanPayRespCol.Get("SUCCESS")
-	CloseCode, CloseMsg = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
+	inprocess              = mongo.ScanPayRespCol.Get("INPROCESS")
+	success                = mongo.ScanPayRespCol.Get("SUCCESS")
+	CloseCode, CloseMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("ORDER_CLOSED")
 )
 
 const (

@@ -139,6 +139,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request) {
 		UserFrom:     model.SalesToolsRegister,
 		BelongsTo:    agentUser.UserName,
 		SubAgentCode: agentUser.SubAgentCode,
+		Limit:        "false",
 	}
 	// 注册
 
@@ -408,6 +409,8 @@ func genAccessToken(user *model.User) string {
 	return s.SessionID
 }
 
+var downloadKey = "tools/summary/images/%s/%s"
+
 // NotifySalesman 每天汇总当天用户数据给业务人员
 func NotifySalesman() {
 	day := time.Now().Format("2006-01-02")
@@ -436,7 +439,7 @@ func NotifySalesman() {
 		}
 	}
 
-	agents := make(map[string]*agentData)
+	agents := make(map[string]*emailData)
 
 	// 向业务员发邮箱
 	for k, v := range c {
@@ -462,19 +465,8 @@ func NotifySalesman() {
 			eds = append(eds, excelData{m: m, u: u, operator: user.NickName})
 			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
-		e := email.Email{To: user.Mail, Title: "当日商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(eds))}
-		e.Attach(zipWrite(fds), "商户.zip", "")
 
-		excel := genExcel(eds)
-		ebuf := new(bytes.Buffer)
-		err = excel.Write(ebuf)
-		if err == nil {
-			e.Attach(ebuf, "汇总表.xlsx", "")
-		} else {
-			log.Errorf("fail to gen excel: %s", err)
-		}
-
-		e.Send()
+		sendEmail(&emailData{eds, fds}, user.Mail, k, day)
 
 		if user.RelatedEmail != "" {
 			// 将数据整合到同个代理邮箱
@@ -482,32 +474,18 @@ func NotifySalesman() {
 				ad.es = append(ad.es, eds...)
 				ad.fs = append(ad.fs, fds...)
 			} else {
-				agents[user.RelatedEmail] = &agentData{eds, fds}
+				agents[user.RelatedEmail] = &emailData{eds, fds}
 			}
 		}
 	}
 
-	// 向代理发邮件
+	// 代理
 	for k, a := range agents {
-		e := email.Email{To: k, Title: "商户汇总", Body: fmt.Sprintf("您好，本次共汇总 %d 商户，详见附件。", len(a.es)), Cc: andyLi}
-		excel := genExcel(a.es)
-		ebuf := new(bytes.Buffer)
-		err = excel.Write(ebuf)
-		if err == nil {
-			e.Attach(ebuf, "汇总表.xlsx", "")
-		} else {
-			log.Errorf("fail to gen excel: %s", err)
-		}
-
-		if len(a.fs) > 0 {
-			e.Attach(zipWrite(a.fs), "商户.zip", "")
-		}
-		e.Send()
-		// log.Infof("edata: %d , fdata: %d", len(a.es), len(a.fs))
+		sendEmail(a, k, k, day)
 	}
 }
 
-type agentData struct {
+type emailData struct {
 	es []excelData
 	fs []fileData
 }
@@ -603,4 +581,39 @@ func zipWrite(data []fileData) *bytes.Buffer {
 	w.Close()
 
 	return buf
+}
+
+func saveToQiniu(key string, fs *bytes.Buffer) {
+	err := qiniu.Put(key, int64(fs.Len()), fs)
+	if err != nil {
+		log.Errorf("%s save to qiniu fail: %s", key, err)
+	}
+}
+
+var (
+	body   = `您好，本次共汇总 %d 商户。`
+	attach = `请在一个星期之内下载<a href="%s">商户.zip</a>。`
+)
+
+func sendEmail(ed *emailData, to, name, day string) {
+	var emailBody = fmt.Sprintf(body, len(ed.es))
+	var d = uint32((7 * time.Hour).Seconds())
+
+	// 保存到七牛
+	key := fmt.Sprintf(downloadKey, day, name+"_商户.zip")
+	if len(ed.fs) > 0 {
+		saveToQiniu(key, zipWrite(ed.fs))
+		emailBody += fmt.Sprintf(attach, qiniu.MakePrivateUrlWithExpiresTime(key, d))
+	}
+
+	// 发邮件
+	e := email.Email{To: to, Title: "当日商户汇总", Body: emailBody, Cc: andyLi}
+	ebuf := new(bytes.Buffer)
+	err := genExcel(ed.es).Write(ebuf)
+	if err == nil {
+		e.Attach(ebuf, "汇总表.xlsx", "")
+	} else {
+		log.Errorf("fail to gen excel: %s", err)
+	}
+	e.Send()
 }

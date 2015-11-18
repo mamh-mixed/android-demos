@@ -281,7 +281,7 @@ func updateValidate(r *rowData) error {
 		}
 		if r.IsNeedSignStr == "是" {
 			if r.SignKey == "" {
-				return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
+				return fmt.Errorf("门店：%s 开启验签需要填写签名密钥", r.MerId)
 			}
 			r.IsNeedSign = true
 		}
@@ -323,7 +323,7 @@ func updateValidate(r *rowData) error {
 
 	if r.SignKey != "" {
 		if len(r.SignKey) != 32 {
-			return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+			return fmt.Errorf("门店：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
 		}
 	}
 
@@ -363,14 +363,14 @@ func insertValidate(r *rowData) error {
 		// }
 		if r.SignKey != "" {
 			if len(r.SignKey) != 32 {
-				return fmt.Errorf("商户：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+				return fmt.Errorf("门店：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
 			}
 		}
 		r.IsNeedSign = true
 	}
 
 	if r.CommodityName == "" {
-		return fmt.Errorf("商户：%s 商品名称为空", r.MerId)
+		return fmt.Errorf("门店：%s 商品名称为空", r.MerId)
 	}
 
 	if r.WxpSubMerId != "" {
@@ -379,10 +379,10 @@ func insertValidate(r *rowData) error {
 		}
 		if r.IsAgentStr == "是" {
 			if r.WxpMerId == "" {
-				return fmt.Errorf("商户：%s 代理商模式需要填写微信商户号", r.MerId)
+				return fmt.Errorf("门店：%s 代理商模式需要填写微信商户号", r.MerId)
 			}
 			if r.WxpSubMerId == "" {
-				return fmt.Errorf("商户：%s 代理商模式需要填写微信子商户号", r.MerId)
+				return fmt.Errorf("门店：%s 代理商模式需要填写微信子商户号", r.MerId)
 			}
 			r.IsAgent = true
 		}
@@ -588,7 +588,7 @@ func handleWxpMer(r *rowData, c *cache) error {
 			if r.WxpSettFlag != "" && r.WxpMerId == "" {
 				rp := mongo.RouterPolicyColl.Find(r.MerId, "WXP")
 				if rp == nil {
-					return fmt.Errorf("没找到商户：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
+					return fmt.Errorf("没找到门店：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
 				}
 				settFlagHandle(r.WxpSettFlag, rp, r.Mer)
 				// TODO:处理手续费
@@ -653,12 +653,20 @@ func (i *importer) doDataWrap() {
 			mer.Detail.BankId = r.BankId
 			mer.Detail.City = r.City
 			mer.Detail.OpenBankName = r.BankName
+			mer.Detail.TitleOne = r.TitleOne
+			mer.Detail.TitleTwo = r.TitleTwo
 			mer.Remark = "add-upload-" + i.fileName
 			mer.MerStatus = "Normal"
 			// 随机生成密钥
 			if mer.IsNeedSign && mer.SignKey == "" {
 				mer.SignKey = util.SignKey()
 			}
+			// 生成账单和支付地址
+			if r.TitleOne != "" || r.TitleTwo != "" {
+				mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
+				mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+			}
+
 			i.A.Mers = append(i.A.Mers, *mer)
 
 			// app账户
@@ -670,7 +678,7 @@ func (i *importer) doDataWrap() {
 				user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 				user.UpdateTime = user.CreateTime
 				user.Activate = "true"
-				user.Limit = "true"
+				user.Limit = "false"
 				user.MerId = mer.MerId
 				user.RegisterFrom = model.PreRegister
 				i.A.AppAccts = append(i.A.AppAccts, user)
@@ -732,6 +740,19 @@ func (i *importer) doDataWrap() {
 			if r.BankName != "" {
 				mer.Detail.OpenBankName = r.BankName
 			}
+			if r.TitleOne != "" {
+				mer.Detail.TitleOne = r.TitleOne
+			}
+			if r.TitleTwo != "" {
+				mer.Detail.TitleTwo = r.TitleTwo
+			}
+			// 生成账单和支付地址
+			if mer.Detail.BillUrl == "" && mer.Detail.PayUrl == "" {
+				if r.TitleOne != "" || r.TitleTwo != "" {
+					mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
+					mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+				}
+			}
 
 			mer.Remark = "update-upload-" + i.fileName
 			i.U.Mers = append(i.U.Mers, *mer)
@@ -745,7 +766,7 @@ func (i *importer) doDataWrap() {
 				user.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 				user.UpdateTime = user.CreateTime
 				user.Activate = "true"
-				user.Limit = "true"
+				user.Limit = "false"
 				user.MerId = mer.MerId
 				user.RegisterFrom = model.PreRegister
 				if r.IsAddAcct {
@@ -1000,7 +1021,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
-	correctCol := 40
+	correctCol := 42
 	// 返回某列完整错误信息
 	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1134,6 +1155,12 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[39]; cell != nil {
 		r.AppPassword = replaceWhitespace.Replace(cell.Value)
 	}
+	if cell = cells[40]; cell != nil {
+		r.TitleOne = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[41]; cell != nil {
+		r.TitleTwo = replaceWhitespace.Replace(cell.Value)
+	}
 
 	if _, ok := i.rowMap[r.MerId]; ok {
 		return fmt.Errorf("门店号(%s)重复", r.MerId)
@@ -1187,6 +1214,8 @@ type rowData struct {
 	IsAddAcct     bool
 	AppUsername   string // 用户名
 	AppPassword   string // 密码
+	TitleOne      string // 标题一
+	TitleTwo      string // 标题二
 	// ...
 	IsAgent    bool
 	IsNeedSign bool
