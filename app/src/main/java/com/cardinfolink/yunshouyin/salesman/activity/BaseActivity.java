@@ -32,6 +32,8 @@ public class BaseActivity extends AppCompatActivity {
     protected SalesmanApplication application;
     protected Context mContext;
     protected SharedPreferences mSharedPreferences;//保存数据。
+    protected SharedPreferences mDataSharedPreferences;//缓存
+    protected SharedPreferences mRegisterSharedPreferences;//注册缓存
 
     protected QuickPayService quickPayService;
     protected QiniuMultiUploadService qiniuMultiUploadService;
@@ -43,6 +45,8 @@ public class BaseActivity extends AppCompatActivity {
 
         mContext = this;
         mSharedPreferences = getSharedPreferences("savedata", Activity.MODE_PRIVATE);
+        mDataSharedPreferences = getSharedPreferences("data", Activity.MODE_PRIVATE);
+        mRegisterSharedPreferences = getSharedPreferences("registerdata", Activity.MODE_PRIVATE);
 
 
         View loadingDialogView = findViewById(R.id.loading_dialog);

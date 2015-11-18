@@ -64,7 +64,7 @@ public class RegisterActivity extends BaseActivity {
                         SessonData.registerUser.setPassword(password);
                         Log.d(TAG, SessonData.registerUser.getJsonString());
 
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
                         editor.putInt("register_step_finish", 1);
                         editor.putString("register_username", username);
                         editor.putString("register_password", password);

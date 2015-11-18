@@ -87,18 +87,18 @@ public class RegisterStep3Activity extends BaseActivity {
         SimpleDateFormat yyMMdd = new SimpleDateFormat("yyyyMMdd");
         if (SessonData.registerUser == null) {
             SessonData.registerUser = new User();
-            SessonData.registerUser.setUsername(mSharedPreferences.getString("register_username", ""));
-            SessonData.registerUser.setPassword(mSharedPreferences.getString("register_password", ""));
-            SessonData.registerUser.setClientid(mSharedPreferences.getString("register_clientid", ""));
-            SessonData.registerUser.setProvince(mSharedPreferences.getString("register_province", ""));
-            SessonData.registerUser.setCity(mSharedPreferences.getString("register_city", ""));
-            SessonData.registerUser.setBankOpen(mSharedPreferences.getString("register_bankopen", ""));
-            SessonData.registerUser.setBranchBank(mSharedPreferences.getString("register_branchbank", ""));
-            SessonData.registerUser.setBankNo(mSharedPreferences.getString("register_bankno", ""));
-            SessonData.registerUser.setPayee(mSharedPreferences.getString("register_payee", ""));
-            SessonData.registerUser.setPayeeCard(mSharedPreferences.getString("register_payeecard", ""));
-            SessonData.registerUser.setPhoneNum(mSharedPreferences.getString("register_phonenum", ""));
-            SessonData.registerUser.setMerName(mSharedPreferences.getString("register_mername", ""));
+            SessonData.registerUser.setUsername(mRegisterSharedPreferences.getString("register_username", ""));
+            SessonData.registerUser.setPassword(mRegisterSharedPreferences.getString("register_password", ""));
+            SessonData.registerUser.setClientid(mRegisterSharedPreferences.getString("register_clientid", ""));
+            SessonData.registerUser.setProvince(mRegisterSharedPreferences.getString("register_province", ""));
+            SessonData.registerUser.setCity(mRegisterSharedPreferences.getString("register_city", ""));
+            SessonData.registerUser.setBankOpen(mRegisterSharedPreferences.getString("register_bankopen", ""));
+            SessonData.registerUser.setBranchBank(mRegisterSharedPreferences.getString("register_branchbank", ""));
+            SessonData.registerUser.setBankNo(mRegisterSharedPreferences.getString("register_bankno", ""));
+            SessonData.registerUser.setPayee(mRegisterSharedPreferences.getString("register_payee", ""));
+            SessonData.registerUser.setPayeeCard(mRegisterSharedPreferences.getString("register_payeecard", ""));
+            SessonData.registerUser.setPhoneNum(mRegisterSharedPreferences.getString("register_phonenum", ""));
+            SessonData.registerUser.setMerName(mRegisterSharedPreferences.getString("register_mername", ""));
         }
 
         String clientId = SessonData.registerUser.getClientid();
@@ -143,7 +143,7 @@ public class RegisterStep3Activity extends BaseActivity {
                                 Toast.makeText(RegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT).show();
                             }
                         });
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
                         editor.putInt("register_step_finish", 3);
 
                         editor.commit();

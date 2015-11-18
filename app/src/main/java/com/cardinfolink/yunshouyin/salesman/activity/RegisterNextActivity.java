@@ -120,8 +120,7 @@ public class RegisterNextActivity extends BaseActivity {
         mCityCodeList = new ArrayList<String>();
         mCityList.add("开户行所在城市");
         mCityCodeList.add("");
-        mCityAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mCityList);
+        mCityAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mCityList);
         // 设置样式
         mCityAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -168,7 +167,7 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initProvinceData() {
-        String data = readFromSharePreference("data", "province");
+        String data = readFromSharePreference("province");
         if (data != null && data.length() != 0) {
             Log.d(TAG, "will use cache data to get province: \n" + data);
             updateProvinceAdapter(data);
@@ -182,7 +181,7 @@ public class RegisterNextActivity extends BaseActivity {
 
     private void initBankData() {
         //获取bank的数据
-        String data = readFromSharePreference("data", "bank");
+        String data = readFromSharePreference("bank");
         if (data != null && data.length() != 0) {
             Log.d(TAG, "will use cache data to get bank: \n" + data);
             updateBankAdapter(data);
@@ -195,7 +194,7 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initCityData(String province) {
-        String data = readFromSharePreference("data", province);
+        String data = readFromSharePreference(province);
         if (data != null && data.length() != 0) {
             Log.d(TAG, "will use cache data to get City: " + data);
             updateCityAdapter(data);
@@ -209,7 +208,7 @@ public class RegisterNextActivity extends BaseActivity {
 
     private void initBranchBankData(String cityCode, String bankId) {
         String key = cityCode + "_" + bankId;
-        String data = readFromSharePreference("data", key);
+        String data = readFromSharePreference(key);
         if (data != null && data.length() != 0) {
             Log.d(TAG, "will use cache data to get branch bank");
             updateBranchBankAdapter(data);
@@ -374,14 +373,12 @@ public class RegisterNextActivity extends BaseActivity {
         });
     }
 
-    private String readFromSharePreference(String name, String key) {
-        SharedPreferences sp = getSharedPreferences(name, MODE_PRIVATE);
-        return sp.getString(key, "");
+    private String readFromSharePreference(String key) {
+        return mDataSharedPreferences.getString(key, "");
     }
 
-    private void saveToSharePreferences(String result, String name, String key) {
-        SharedPreferences sp = getSharedPreferences(name, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
+    private void saveToSharePreferences(String result, String key) {
+        SharedPreferences.Editor editor = mDataSharedPreferences.edit();
         editor.putString(key, result);
         editor.commit();
     }
@@ -700,7 +697,7 @@ public class RegisterNextActivity extends BaseActivity {
     private class ProvinceCommunicationListener implements CommunicationListener {
         @Override
         public void onResult(String result) {
-            saveToSharePreferences(result, "data", "province");
+            saveToSharePreferences(result, "province");
             updateProvinceAdapter(result);
         }
 
@@ -714,7 +711,7 @@ public class RegisterNextActivity extends BaseActivity {
     private class BankCommunicationListener implements CommunicationListener {
         @Override
         public void onResult(String result) {
-            saveToSharePreferences(result, "data", "bank");
+            saveToSharePreferences(result, "bank");
             updateBankAdapter(result);
         }
 
@@ -733,7 +730,7 @@ public class RegisterNextActivity extends BaseActivity {
 
         @Override
         public void onResult(String result) {
-            saveToSharePreferences(result, "data", province);
+            saveToSharePreferences(result, province);
             updateCityAdapter(result);
         }
 
@@ -755,7 +752,7 @@ public class RegisterNextActivity extends BaseActivity {
         @Override
         public void onResult(String result) {
             String key = cityCode + "_" + bankId;
-            saveToSharePreferences(result, "data", key);
+            saveToSharePreferences(result, key);
             updateBranchBankAdapter(result);
         }
 

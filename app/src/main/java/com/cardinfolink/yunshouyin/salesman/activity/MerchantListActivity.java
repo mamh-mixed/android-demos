@@ -54,7 +54,7 @@ public class MerchantListActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy(): will delete cache files");
-        SharedPreferences sp = getSharedPreferences("data", MODE_PRIVATE);
+        SharedPreferences sp = mDataSharedPreferences;
         sp.edit().clear().commit();
     }
 
@@ -76,12 +76,12 @@ public class MerchantListActivity extends BaseActivity {
         btnAddNewMer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int step = mSharedPreferences.getInt("register_step_finish", 0);
+                int step = mRegisterSharedPreferences.getInt("register_step_finish", 0);
                 final AlertDialog.Builder builder = new AlertDialog.Builder(MerchantListActivity.this);
                 builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
                         editor.putInt("register_step_finish", 0);
                         editor.commit();
                         intentToActivity(RegisterActivity.class);
