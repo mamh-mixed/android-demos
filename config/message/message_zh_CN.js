@@ -1,4 +1,29 @@
 {
+
+	"ChanCode":{
+		"ALP":"支付宝",
+		"WXP":"微信",
+		"Unknown":"未知"
+	},
+	"BusicdType":{
+		"Purc":"下单并支付",
+		"Paut":"预下单",
+		"Inqy":"查询",
+		"Refd":"退款",
+		"Void":"撤销",
+		"Canc":"取消",
+		"Qyzf":"企业付款",
+		"Jszf":"公众号支付",
+		"Veri":"卡券核销",
+		"Unknown":"未知"
+	},
+	"TransStatus":{
+		"TransHandling":"交易处理中",
+		"TransFail":"交易失败",
+		"TransSuccess":"交易成功",
+		"TransClosed":"交易已退款",
+		"Unknown":"未知"
+	},
 	"StatReport":{
 		"Title"					:"商户交易报表汇总",
 		"Total" 				:"总计：",
@@ -16,6 +41,27 @@
 		"Count"					:"笔数",
 		"Amt"					:"金额",
 		"Fee"					:"手续费"
+	},
+	"TransReport":{
+		"SheetName"      			:"商户交易报表",
+		"MerId"          			:"商户号",
+		"MerName"        			:"商户名称",
+		"OrderNum"       			:"订单号",
+		"TransAmt"       			:"交易金额",
+		"ChanCode"       			:"渠道",
+		"TransTime"      			:"交易时间",
+		"TransStatus"    			:"交易状态",
+		"AgentCode"      			:"机构",
+		"TerminalId"     			:"终端号",
+		"Busicd"         			:"交易类型",
+		"OrigOrderNum"   			:"原订单号",
+		"RefundAmt"      			:"退款金额",
+		"Fee"            			:"手续费",
+		"SettAmt"        			:"清算金额",
+		"TotalTransAmt"  			:"交易总额",
+		"TotalRefundAmt" 			:"退款总额",
+		"TotalFee"       			:"手续费总额",
+		"TotalSettAmt"   			:"清算总额",
 	},
 	"ImportMessage":{
 		"Yes"					:"是",
