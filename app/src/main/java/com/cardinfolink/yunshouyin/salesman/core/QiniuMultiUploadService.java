@@ -22,6 +22,7 @@ public class QiniuMultiUploadService {
     private List<MerchantPhoto> imageList;
     private QiniuCallbackListener listener;
     private String qiniuKeyPattern;
+
     public QiniuMultiUploadService(QuickPayService quickPayService) {
         this.quickPayService = quickPayService;
     }
@@ -101,6 +102,9 @@ public class QiniuMultiUploadService {
                         @Override
                         public void complete(String key, ResponseInfo info, JSONObject response) {
                             Log.i(TAG, key + ",\r\n " + info + ",\r\n " + response);
+                            if (!info.isOK()) {
+                                listener.onFailure(new QuickPayException());
+                            }
                             if (Looper.myLooper() == Looper.getMainLooper()) {
                                 Log.d(TAG, "7ncomplete" + " is in main thread");
                             } else {
