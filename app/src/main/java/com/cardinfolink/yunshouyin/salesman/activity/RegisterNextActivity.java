@@ -83,93 +83,283 @@ public class RegisterNextActivity extends BaseActivity {
         initData();
     }
 
-    private void initLayout() {
+    private void initSpinner() {
+        //初始化四个spinner
+        mProvinceSpinner = (Spinner) findViewById(R.id.spinner_province);
+        mCitySpinner = (Spinner) findViewById(R.id.spinner_city);
+        mOpenBankSpinner = (Spinner) findViewById(R.id.spinner_openbank);
+        mBranchBankSpinner = (Spinner) findViewById(R.id.spinner_branchbank);
+    }//end initSpinner()
+
+    private void initEditText() {
         mNameEdit = (EditText) findViewById(R.id.info_name);
         mBanknumEdit = (EditText) findViewById(R.id.info_banknum);
         mPhonenumEdit = (EditText) findViewById(R.id.info_phonenum);
         mMerchantNameEdit = (EditText) findViewById(R.id.info_merchantname);
-        VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
 
-        /**
-         * setup for Province
-         */
         mProvinceEdit = (AutoCompleteTextView) findViewById(R.id.edit_province);
-        mProvinceSpinner = (Spinner) findViewById(R.id.spinner_province);
+        mCityEdit = (AutoCompleteTextView) findViewById(R.id.edit_city);
+        mOpenBankEdit = (AutoCompleteTextView) findViewById(R.id.edit_openbank);
+        mBranchBankEdit = (AutoCompleteTextView) findViewById(R.id.edit_branchbank);
+    }//end initEditText()
 
-        // 适配器data
+    private void initArrayList() {
         mProvinceList = new ArrayList<String>();
         mProvinceList.add("开户行所在省份");
 
-        // spinner view
-        mProvinceAdapter = new ArrayAdapter<>(mContext, R.layout.spinner_item, mProvinceList);
-        // 设置样式
-        mProvinceAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
-        // 加载适配器
-        mProvinceSpinner.setAdapter(mProvinceAdapter);
+        mCityList = new ArrayList<String>();
+        mCityList.add("开户行所在城市");
 
-        // autocomplete text view
+        mCityCodeList = new ArrayList<String>();
+        mCityCodeList.add("");
+
+        mOpenBankList = new ArrayList<String>();
+        mOpenBankList.add("请选择开户银行");
+
+        mBankIdList = new ArrayList<String>();
+        mBankIdList.add("");
+
+        mBranchBankList = new ArrayList<String>();
+        mBranchBankList.add("请选择开户支行");
+
+        mBankNoList = new ArrayList<String>();
+        mBankNoList.add("行号");
+    }//end initArrayList()
+
+    private void initAdapter() {
+        mProvinceAdapter = new ArrayAdapter<>(mContext, R.layout.spinner_item, mProvinceList);
+        mProvinceAdapter.setDropDownViewResource(R.layout.spinner_drop_item);// 设置样式
+        mProvinceSpinner.setAdapter(mProvinceAdapter);// 加载适配器
+
         mProvinceSearchAdapter = new SearchAdapter(mContext, mProvinceList);
         mProvinceEdit.setAdapter(mProvinceSearchAdapter);
         mProvinceEdit.setThreshold(1);
 
-
-        mCityEdit = (AutoCompleteTextView) findViewById(R.id.edit_city);
-        mCitySpinner = (Spinner) findViewById(R.id.spinner_city);
-        // 适配器
-        mCityList = new ArrayList<String>();
-        mCityCodeList = new ArrayList<String>();
-        mCityList.add("开户行所在城市");
-        mCityCodeList.add("");
         mCityAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mCityList);
-        // 设置样式
-        mCityAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
-        // 加载适配器
+        mCityAdapter.setDropDownViewResource(R.layout.spinner_drop_item); // 设置样式
         mCitySpinner.setAdapter(mCityAdapter);
 
         mCitySearchAdapter = new SearchAdapter(mContext, mCityList);
-
         mCityEdit.setAdapter(mCitySearchAdapter);
         mCityEdit.setThreshold(1);
 
-        mOpenBankEdit = (AutoCompleteTextView) findViewById(R.id.edit_openbank);
-        mOpenBankSpinner = (Spinner) findViewById(R.id.spinner_openbank);
-        // 适配器
-        mOpenBankList = new ArrayList<String>();
-        mOpenBankList.add("请选择开户银行");
-        mBankIdList = new ArrayList<String>();
-        mBankIdList.add("");
 
         mOpenBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mOpenBankList);
-        // 设置样式
         mOpenBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
-        // 加载适配器
         mOpenBankSpinner.setAdapter(mOpenBankAdapter);
+
         mOpenBankSearchAdapter = new SearchAdapter(mContext, mOpenBankList);
         mOpenBankEdit.setAdapter(mOpenBankSearchAdapter);
         mOpenBankEdit.setThreshold(1);
 
-        mBranchBankEdit = (AutoCompleteTextView) findViewById(R.id.edit_branchbank);
-        mBranchBankSpinner = (Spinner) findViewById(R.id.spinner_branchbank);
-        // 适配器
-        mBranchBankList = new ArrayList<String>();
-        mBranchBankList.add("请选择开户支行");
-        mBankNoList = new ArrayList<String>();
-        mBankNoList.add("行号");
 
         mBranchBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mBranchBankList);
-        // 设置样式
-        mBranchBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
-        // 加载适配器
+        mBranchBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);// 设置样式
         mBranchBankSpinner.setAdapter(mBranchBankAdapter);
+
         mBranchBankSearchAdapter = new SearchAdapter(mContext, mBranchBankList);
         mBranchBankEdit.setAdapter(mBranchBankSearchAdapter);
         mBranchBankEdit.setThreshold(1);
+    }//end initAdapter()
+
+    private void initLayout() {
+        initSpinner();
+        initEditText();
+        initArrayList();//一定要注意初始化的顺序
+        initAdapter();
+
+        //收款人
+        String payee = mRegisterSharedPreferences.getString("register_payee", "");
+        if (!TextUtils.isEmpty(payee)) {
+            mNameEdit.setText(payee);
+        }
+
+        //收款的银行账号
+        String payeeCard = mRegisterSharedPreferences.getString("register_payeecard", "");
+        if (!TextUtils.isEmpty(payeeCard)) {
+            mBanknumEdit.setText(payeeCard);
+        }
+        VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
+
+        //电话号
+        String phoneNum = mRegisterSharedPreferences.getString("register_phonenum", "");
+        if (!TextUtils.isEmpty(phoneNum)) {
+            mPhonenumEdit.setText(phoneNum);
+        }
+        String merName = mRegisterSharedPreferences.getString("register_mername", "");
+        if (!TextUtils.isEmpty(merName)) {
+            mMerchantNameEdit.setText(merName);
+        }
+
+        String province = mRegisterSharedPreferences.getString("register_province", "");
+        if (!TextUtils.isEmpty(province)) {
+            mProvinceEdit.setText(province);
+            initCityData(province);
+        }
+
+        String city = mRegisterSharedPreferences.getString("register_city", "");
+        if (!TextUtils.isEmpty(city)) {
+            mCityEdit.setText(city);
+            initBankData();
+        }
+
+        String bankopen = mRegisterSharedPreferences.getString("register_bankopen", "");
+        if (!TextUtils.isEmpty(bankopen)) {
+            mOpenBankEdit.setText(bankopen);
+            int indexBank = mOpenBankList.indexOf(bankopen);
+            int indexCity = mCityList.indexOf(city);
+
+            if (indexBank > 0 && indexCity > 0) {
+                String cityCode = mCityCodeList.get(indexCity);
+                String bankId = mBankIdList.get(indexBank);
+                initBranchBankData(cityCode, bankId);
+            }
+        }
+
+        String branchBank = mRegisterSharedPreferences.getString("register_branchbank", "");
+        if (!TextUtils.isEmpty(branchBank)) {
+            int index = mBranchBankList.indexOf(branchBank);
+            if (index > 0) {
+                mBranchBankEdit.setText(branchBank);
+            }
+        }
     }
+
+    private void initListener() {
+        //添加province EditText框变化事件
+        mProvinceEdit.addTextChangedListener(new RegisterTextWatcher(mProvinceEdit));
+
+        //添加City EditText 框变化事件
+        mCityEdit.addTextChangedListener(new RegisterTextWatcher(mCityEdit));
+
+        //添加bank EditText 事件
+        mOpenBankEdit.addTextChangedListener(new RegisterTextWatcher(mOpenBankEdit));
+
+        mBranchBankEdit.addTextChangedListener(new RegisterTextWatcher(mBranchBankEdit));
+
+        mBanknumEdit.addTextChangedListener(new RegisterTextWatcher(mBanknumEdit));
+
+        mNameEdit.addTextChangedListener(new RegisterTextWatcher(mNameEdit));
+
+        mPhonenumEdit.addTextChangedListener(new RegisterTextWatcher(mPhonenumEdit));
+
+        mMerchantNameEdit.addTextChangedListener(new RegisterTextWatcher(mMerchantNameEdit));
+
+        mProvinceSpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
+
+        mCitySpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
+
+        mOpenBankSpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
+
+        mBranchBankSpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
+
+        mCityEdit.setOnFocusChangeListener(new RegisterOnFocusChangeListener());
+
+        mOpenBankEdit.setOnFocusChangeListener(new RegisterOnFocusChangeListener());
+
+        mBranchBankEdit.setOnFocusChangeListener(new RegisterOnFocusChangeListener());
+
+    }
+
+    // 开户省份和总行列表先读取
+    public void initData() {
+        initProvinceData();
+        initBankData();
+    }//end public void initData()
+
+    public void btnRegisterFinishedOnClick(View view) {
+        if (!validate()) {
+            return;
+        }
+
+        startLoading();
+
+        if (SessonData.registerUser == null) {
+            SessonData.registerUser = new User();
+            SessonData.registerUser.setUsername(mRegisterSharedPreferences.getString("register_username", ""));
+            SessonData.registerUser.setPassword(mRegisterSharedPreferences.getString("register_password", ""));
+        }
+        final User user = SessonData.registerUser;
+
+
+        final String province = mProvinceEdit.getText().toString();
+        user.setProvince(province);
+        final String city = mCityEdit.getText().toString();
+        user.setCity(city);
+
+        final String bankopen = mOpenBankEdit.getText().toString();
+        user.setBankOpen(bankopen);
+        final String branchBank = mBranchBankEdit.getText().toString();
+        user.setBranchBank(branchBank);
+
+        //有些地方没有支行，get()会抛出outofindex异常
+        int index = mBranchBankList.indexOf(branchBank);
+        final String bankNo = (index != -1) ? mBankNoList.get(index) : "";
+        user.setBankNo(bankNo);
+
+        final String payee = mNameEdit.getText().toString();
+        user.setPayee(payee);
+        final String payeeCard = mBanknumEdit.getText().toString().replace(" ", "");
+        user.setPayeeCard(payeeCard);
+        final String phoneNum = mPhonenumEdit.getText().toString();
+        user.setPhoneNum(phoneNum);
+        final String merName = mMerchantNameEdit.getText().toString();
+        user.setMerName(merName);
+
+        quickPayService.updateUserAsync(user, new QuickPayCallbackListener<User>() {
+            @Override
+            public void onSuccess(final User data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
+                        String clientId = data.getClientid();
+                        SessonData.registerUser.setClientid(clientId);
+
+                        saveToRegisterSharedPreferences("register_clientid", clientId);
+                        saveToRegisterSharedPreferences("register_province", province);
+                        saveToRegisterSharedPreferences("register_city", city);
+                        saveToRegisterSharedPreferences("register_bankopen", bankopen);
+                        saveToRegisterSharedPreferences("register_branchbank", branchBank);
+                        saveToRegisterSharedPreferences("register_bankno", bankNo);
+                        saveToRegisterSharedPreferences("register_payee", payee);
+                        saveToRegisterSharedPreferences("register_payeecard", payeeCard);
+                        saveToRegisterSharedPreferences("register_phonenum", phoneNum);
+                        saveToRegisterSharedPreferences("register_mername", merName);
+                        saveToRegisterSharedPreferences("register_step_finish", 2);
+
+                        endLoading();
+                        intentToActivity(RegisterStep3Activity.class);
+                        finish();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailure(final QuickPayException ex) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String error = ex.getErrorCode();
+                        String errorStr = ex.getErrorMsg();
+                        endLoadingWithError(errorStr);
+                        if (error.equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
+                            //关闭所有activity,除了登录框
+                            ActivityCollector.goLoginAndFinishRest();
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
 
     private void initProvinceData() {
         String data = readFromSharePreference("province");
         if (data != null && data.length() != 0) {
-            Log.d(TAG, "will use cache data to get province: \n" + data);
+            Log.d(TAG, "will use cache data to get province");
             updateProvinceAdapter(data);
         } else {
             Log.d(TAG, "will do post to get province data");
@@ -183,7 +373,7 @@ public class RegisterNextActivity extends BaseActivity {
         //获取bank的数据
         String data = readFromSharePreference("bank");
         if (data != null && data.length() != 0) {
-            Log.d(TAG, "will use cache data to get bank: \n" + data);
+            Log.d(TAG, "will use cache data to get bank");
             updateBankAdapter(data);
         } else {
             Log.d(TAG, "will do post to get bank data");
@@ -196,7 +386,7 @@ public class RegisterNextActivity extends BaseActivity {
     private void initCityData(String province) {
         String data = readFromSharePreference(province);
         if (data != null && data.length() != 0) {
-            Log.d(TAG, "will use cache data to get City: " + data);
+            Log.d(TAG, "will use cache data to get City");
             updateCityAdapter(data);
         } else {
             Log.d(TAG, "will post to get City: " + data);
@@ -219,15 +409,6 @@ public class RegisterNextActivity extends BaseActivity {
             HttpCommunicationUtil.sendGetDataToServer(bbParam, bbCL);
         }
     }
-
-    // 开户省份和总行列表先读取
-    public void initData() {
-        Log.d(TAG, "initData start");
-        initProvinceData();
-        initBankData();
-        Log.d(TAG, "initData end");
-    }//end public void initData()
-
 
     //字符串  -->  jsonArray --> List
     private List<String> jsonArrayToList(String result) {
@@ -328,7 +509,6 @@ public class RegisterNextActivity extends BaseActivity {
         });
     }
 
-
     private void updateBankAdapter(String data) {
         final List<String> tempOpenBankList = jsonObjectToList(data, "bank_name");
         final List<String> tempBankIdList = jsonObjectToList(data, "id");
@@ -383,250 +563,16 @@ public class RegisterNextActivity extends BaseActivity {
         editor.commit();
     }
 
-    private void initListener() {
-        //添加province EditText框变化事件
-        mProvinceEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mCityEdit.setText("");
-                if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
-                    String province = mProvinceEdit.getText().toString();
-                    initCityData(province);
-                }//end if()
-            }//end public void afterTextChange(Editable s)
-        });
-
-        //添加City EditText 框变化事件
-        mCityEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mOpenBankEdit.setText("");
-                if (mCityList.indexOf(mCityEdit.getText().toString()) > 0) {
-                    initBankData();
-                }
-            }
-        });
-
-        //添加bank EditText 事件
-        mOpenBankEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                mBranchBankEdit.setText("");
-                if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) > 0) {
-                    int indexOfCity = mCityList.indexOf(mCityEdit.getText().toString());
-                    int indexOfBank = mOpenBankList.indexOf(mOpenBankEdit.getText().toString());
-                    String cityCode = mCityCodeList.get(indexOfCity);
-                    String bankId = mBankIdList.get(indexOfBank);
-                    initBranchBankData(cityCode, bankId);
-                }
-            }
-        });
-
-        mProvinceSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mProvinceEdit.setText(mProvinceList.get(position));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        mCitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mCityEdit.setText(mCityList.get(position));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        mOpenBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mOpenBankEdit.setText(mOpenBankList.get(position));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        mBranchBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mBranchBankEdit.setText(mBranchBankList.get(position));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        mCityEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) < 0) {
-                        mProvinceEdit.setText("");
-                    }
-                }
-            }
-        });
-
-        mOpenBankEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mCityList.indexOf(mCityEdit.getText().toString()) < 0) {
-                        mCityEdit.setText("");
-                    }
-                }
-            }
-        });
-
-        mBranchBankEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) < 0) {
-                        mOpenBankEdit.setText("");
-                    }
-                }
-            }
-        });
-
+    private void saveToRegisterSharedPreferences(String key, String value) {
+        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
     }
 
-    public void btnRegisterFinishedOnClick(View view) {
-        if (!validate()) {
-            return;
-        }
-
-        startLoading();
-
-        if (SessonData.registerUser == null) {
-            SessonData.registerUser = new User();
-            SessonData.registerUser.setUsername(mSharedPreferences.getString("register_username", ""));
-            SessonData.registerUser.setPassword(mSharedPreferences.getString("register_password", ""));
-        }
-        final User user = SessonData.registerUser;
-
-
-        final String province = mProvinceEdit.getText().toString();
-        user.setProvince(province);
-        final String city = mCityEdit.getText().toString();
-        user.setCity(city);
-
-        final String bankopen = mOpenBankEdit.getText().toString();
-        user.setBankOpen(bankopen);
-        final String branchBank = mBranchBankEdit.getText().toString();
-        user.setBranchBank(branchBank);
-
-        //有些地方没有支行，get()会抛出outofindex异常
-        int index = mBranchBankList.indexOf(branchBank);
-        final String bankNo = (index != -1) ? mBankNoList.get(index) : "";
-        user.setBankNo(bankNo);
-
-        final String payee = mNameEdit.getText().toString();
-        user.setPayee(payee);
-        final String payeeCard = mBanknumEdit.getText().toString().replace(" ", "");
-        user.setPayeeCard(payeeCard);
-        final String phoneNum = mPhonenumEdit.getText().toString();
-        user.setPhoneNum(phoneNum);
-        final String merName = mMerchantNameEdit.getText().toString();
-        user.setMerName(merName);
-
-        quickPayService.updateUserAsync(user, new QuickPayCallbackListener<User>() {
-            @Override
-            public void onSuccess(final User data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //NOTE:clientID也是merchantId,用于在七牛那边创建唯一id
-                        String clientId = data.getClientid();
-                        SessonData.registerUser.setClientid(clientId);
-
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putString("register_clientid", clientId);
-                        editor.putString("register_province", province);
-                        editor.putString("register_city", city);
-                        editor.putString("register_bankopen", bankopen);
-                        editor.putString("register_branchbank", branchBank);
-                        editor.putString("register_bankno", bankNo);
-                        editor.putString("register_payee", payee);
-                        editor.putString("register_payeecard", payeeCard);
-                        editor.putString("register_phonenum", phoneNum);
-                        editor.putString("register_mername", merName);
-                        editor.putInt("register_step_finish", 2);
-                        editor.commit();
-
-                        endLoading();
-                        intentToActivity(RegisterStep3Activity.class);
-                        finish();
-                    }
-                });
-
-            }
-
-            @Override
-            public void onFailure(final QuickPayException ex) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String error = ex.getErrorCode();
-                        String errorStr = ex.getErrorMsg();
-                        endLoadingWithError(errorStr);
-                        if (error.equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
-                            //关闭所有activity,除了登录框
-                            ActivityCollector.goLoginAndFinishRest();
-                        }
-                    }
-                });
-            }
-        });
-
+    private void saveToRegisterSharedPreferences(String key, int value) {
+        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
+        editor.putInt(key, value);
+        editor.commit();
     }
 
     @SuppressLint("NewApi")
@@ -759,6 +705,154 @@ public class RegisterNextActivity extends BaseActivity {
         @Override
         public void onError(String error) {
             Log.i(TAG, "get branch bank error:" + error);
+        }
+    }
+
+
+    private class RegisterTextWatcher implements TextWatcher {
+        private View view;
+
+        public RegisterTextWatcher(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+            switch (view.getId()) {
+                case R.id.edit_province:
+                    //province
+                    mCityEdit.setText("");//先把city的清空
+                    saveToRegisterSharedPreferences("register_city", "");
+                    String province = mProvinceEdit.getText().toString();
+                    if (mProvinceList.indexOf(province) > 0) {
+                        saveToRegisterSharedPreferences("register_province", province);
+                        initCityData(province);
+                    }//end if()
+                    break;
+                case R.id.edit_city:
+                    //city
+                    mOpenBankEdit.setText("");
+                    saveToRegisterSharedPreferences("register_bankopen", "");
+                    String city = mCityEdit.getText().toString();
+                    if (mCityList.indexOf(city) > 0) {
+                        saveToRegisterSharedPreferences("register_city", city);
+                        initBankData();
+                    }
+                    break;
+                case R.id.edit_openbank:
+                    mBranchBankEdit.setText("");
+                    saveToRegisterSharedPreferences("register_branchbank", "");
+                    String openBank = mOpenBankEdit.getText().toString();
+                    city = mCityEdit.getText().toString();
+                    if (mOpenBankList.indexOf(openBank) > 0) {
+
+                        int indexOfCity = mCityList.indexOf(city);
+                        int indexOfBank = mOpenBankList.indexOf(openBank);
+                        if (indexOfCity > 0 && indexOfBank > 0) {
+                            String cityCode = mCityCodeList.get(indexOfCity);
+                            String bankId = mBankIdList.get(indexOfBank);
+
+                            saveToRegisterSharedPreferences("register_bankopen", openBank);
+                            initBranchBankData(cityCode, bankId);
+                        }
+                    }
+                    break;
+                case R.id.edit_branchbank:
+                    String branchBank = mBranchBankEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_branchbank", branchBank);
+                    break;
+                case R.id.info_name:
+                    String payee = mNameEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_payee", payee);
+                    break;
+                case R.id.info_banknum:
+                    String payeeCard = mBanknumEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_payeecard", payeeCard);
+                    break;
+                case R.id.info_phonenum:
+                    String phoneNum = mPhonenumEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_phonenum", phoneNum);
+                    break;
+                case R.id.info_merchantname:
+                    String merName = mMerchantNameEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_mername", merName);
+                    break;
+            }
+
+        }
+    }
+
+    private class RegisterOnItemSelectedListener implements OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            switch (parent.getId()) {
+                case R.id.spinner_province:
+                    if (position > 0) {
+                        mProvinceEdit.setText(mProvinceList.get(position));
+                    }
+                    break;
+                case R.id.spinner_city:
+                    if (position > 0) {
+                        mCityEdit.setText(mCityList.get(position));
+                    }
+                    break;
+                case R.id.spinner_openbank:
+                    if (position > 0) {
+                        mOpenBankEdit.setText(mOpenBankList.get(position));
+                    }
+                    break;
+                case R.id.spinner_branchbank:
+                    if (position > 0) {
+                        mBranchBankEdit.setText(mBranchBankList.get(position));
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
+
+    private class RegisterOnFocusChangeListener implements OnFocusChangeListener {
+
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            if (!hasFocus) {
+                return;
+            }
+            switch (view.getId()) {
+                case R.id.edit_city:
+                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) < 0) {
+                        mProvinceEdit.setText("");
+                    }
+                    break;
+                case R.id.edit_openbank:
+                    if (mCityList.indexOf(mCityEdit.getText().toString()) < 0) {
+                        mCityEdit.setText("");
+                    }
+                    break;
+                case R.id.edit_branchbank:
+                    if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) < 0) {
+                        mOpenBankEdit.setText("");
+                    }
+                    break;
+                case R.id.edit_province:
+                    break;
+            }
         }
     }
 }

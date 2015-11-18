@@ -81,9 +81,7 @@ public class MerchantListActivity extends BaseActivity {
                 builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
-                        editor.putInt("register_step_finish", 0);
-                        editor.commit();
+                        mRegisterSharedPreferences.edit().clear().commit();
                         intentToActivity(RegisterActivity.class);
                     }
                 });

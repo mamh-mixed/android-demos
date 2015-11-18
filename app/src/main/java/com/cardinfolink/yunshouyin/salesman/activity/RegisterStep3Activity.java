@@ -143,10 +143,7 @@ public class RegisterStep3Activity extends BaseActivity {
                                 Toast.makeText(RegisterStep3Activity.this, "更新到服务器,激活中", Toast.LENGTH_SHORT).show();
                             }
                         });
-                        SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
-                        editor.putInt("register_step_finish", 3);
-
-                        editor.commit();
+                        mRegisterSharedPreferences.edit().clear().commit();
                         // 3.激活
                         quickPayService.activateUser(user.getUsername(), new QuickPayCallbackListener<User>() {
                             @Override
