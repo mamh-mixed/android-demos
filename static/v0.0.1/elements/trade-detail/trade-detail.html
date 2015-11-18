@@ -158,28 +158,71 @@
       properties: {
         item: Object,
       },
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'trade-detail'
+        });
+      },
       _currencyFilter: function(money) {
         return (money / 100).toFixed(2);
       },
       busicdFilter: function(busicd) {
-        return (busicd + '—' + TRANS_TYPE_MAP[busicd]) || busicd;
+        var el = document.createElement('i18n-msg'),
+          i18nId = 'TRANS_TYPE.' + busicd.toUpperCase(),
+          text = el.getMsg(i18nId);
+
+        if (text && typeof text === 'string') {
+          return busicd + '—' + text;
+        }
+
+        return busicd;
+
+        // return (busicd + '—' + TRANS_TYPE_MAP[busicd]) || busicd;
       },
       chanFilter: function(chanCode) {
         var map = {
-          'ALP': '支付宝',
-          'WXP': '微信',
-          'ULIVE': '优方'
+          'ALP': {
+            i18nID: 'CHANNEL.ALIPAY',
+            value: '支付宝'
+          },
+          'WXP': {
+            i18nID: 'CHANNEL.WECHAT',
+            value: '微信'
+          }
         };
-        return (chanCode + '—' + map[chanCode]);
+        if (map[chanCode]) {
+          var el = document.createElement('i18n-msg');
+          var i18nId = map[chanCode].i18nID;
+          return chanCode + '－' + el.getMsg(i18nId);
+        }
+        return chanCode;
       },
       transStatusFilter: function(status) {
         var map = {
-          '10': '处理中',
-          '20': '失败',
-          '30': '成功',
-          '40': '已关闭'
+          '10': {
+            i18nID: 'TRANS_STATUS.IN_PROCESS',
+            value: '处理中'
+          },
+          '20': {
+            i18nID: 'TRANS_STATUS.FAIL',
+            value: '失败'
+          },
+          '30': {
+            i18nID: 'TRANS_STATUS.SUCCESS',
+            value: '成功'
+          },
+          '40': {
+            i18nID: 'TRANS_STATUS.CLOSED',
+            value: '已关闭'
+          }
         };
-        return (status + '—' + map[status]);
+
+        if (map[status]) {
+          var el = document.createElement('i18n-msg');
+          var i18nId = map[status].i18nID;
+          return status + '－' + el.getMsg(i18nId);
+        }
+        return status;
       },
     });
   </script>

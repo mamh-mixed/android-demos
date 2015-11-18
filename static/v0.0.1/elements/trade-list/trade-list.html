@@ -128,7 +128,7 @@
               </div>
               <div class="td right">{{_currencyFilter(item.transAmt)}}</div>
               <div class="td">
-                <i18n-msg msgid$="{{chanFilter(item.chanCode)}}"></i18n-msg>
+                <i18n-msg msgid$="{{chanFilter(item.chanCode)}}">{{chanFilter(item.chanCode)}}</i18n-msg>
               </div>
               <div class="td">
                 <template is="dom-if" if="{{isCloseTrans(item.transStatus)}}">
@@ -433,17 +433,13 @@
         this.set('cond.page', pagination.page);
       },
       chanFilter: function(chanCode) {
-        // var map = {
-        //   'ALP': '支付宝',
-        //   'WXP': '微信'
-        // };
         var map = {
           'ALP': {
-            i18nID: 'CHANNEL.WECHAT',
+            i18nID: 'CHANNEL.ALIPAY',
             value: '支付宝'
           },
           'WXP': {
-            i18nID: 'CHANNEL.ALIPAY',
+            i18nID: 'CHANNEL.WECHAT',
             value: '微信'
           }
         };
