@@ -123,7 +123,7 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	if m.EncryptKey == "" {
 		m.UniqueId = util.Confuse(m.MerId)
 		// 有填相关信息才需要生成两个连接地址
-		if m.Detail.TitleOne != "" && m.Detail.TitleTwo != "" {
+		if m.Detail.TitleOne != "" || m.Detail.TitleTwo != "" {
 			billUrl := fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, m.UniqueId)
 			payUrl := fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(m.MerId)))
 			m.Detail.BillUrl = billUrl
@@ -191,7 +191,7 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 
 	// 扫码商户
 	if m.EncryptKey == "" {
-		if m.Detail.TitleOne != "" && m.Detail.TitleTwo != "" {
+		if m.Detail.TitleOne != "" || m.Detail.TitleTwo != "" {
 			if m.Detail.BillUrl == "" {
 				if m.UniqueId == "" {
 					m.UniqueId = util.Confuse(m.MerId)
@@ -287,7 +287,9 @@ func exportMerchant(file *xlsx.File, merchants []*model.Merchant) {
 		MerName    string
 		IsNeedSign string
 		SignKey    string
-	}{"商户号", "商户名称", "是否验签", "签名密钥"}
+		BillUrl    string
+		PayUrl     string
+	}{"商户号", "商户名称", "是否验签", "签名密钥", "账单链接", "支付链接"}
 	row.WriteStruct(headRow, -1)
 	for _, v := range merchants {
 		// 商户号 商户名称 是否签名 签名密钥
@@ -310,6 +312,14 @@ func exportMerchant(file *xlsx.File, merchants []*model.Merchant) {
 		//  签名密钥
 		cell = row.AddCell()
 		cell.Value = v.SignKey
+
+		//  账单链接
+		cell = row.AddCell()
+		cell.Value = v.Detail.BillUrl
+
+		//  支付链接
+		cell = row.AddCell()
+		cell.Value = v.Detail.PayUrl
 
 	}
 

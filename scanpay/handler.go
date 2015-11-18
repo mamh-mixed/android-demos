@@ -4,16 +4,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
-	"io/ioutil"
-	"math/rand"
-	"net/http"
-	"net/url"
-
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/omigo/mahonia"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"net/url"
 )
 
 // scanpayUnifiedHandle 扫码支付入口
@@ -182,6 +183,7 @@ func scanFixedMerInfoHandle(w http.ResponseWriter, r *http.Request) {
 	// 解b64
 	mbytes, err := base64.StdEncoding.DecodeString(b64MerId)
 	if err != nil {
+		log.Errorf("decode merId=%s fail: %s", b64MerId, err)
 		http.Error(w, `{"response":"01","errorDetail":"params decode error"}`, http.StatusOK)
 		return
 	}
@@ -211,4 +213,38 @@ func scanFixedOrderInfoHandle(w http.ResponseWriter, r *http.Request) {
 		log.Errorf("json marshal error:%s", err)
 	}
 	w.Write(rbytes)
+}
+
+var webAppUrl = goconf.Config.MobileApp.WebAppUrl
+
+// weChatAuthHandle 重定向到微信获取code
+func weChatAuthHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	b64MerId := r.FormValue("merchantCode")
+	if b64MerId == "" {
+		http.Error(w, `{"response":"01","errorDetail":"params should not be null"}`, http.StatusOK)
+		return
+	}
+	// 解b64
+	mbytes, err := base64.StdEncoding.DecodeString(b64MerId)
+	if err != nil {
+		log.Errorf("decode merId=%s fail: %s", b64MerId, err)
+		http.Error(w, `{"response":"01","errorDetail":"params decode error"}`, http.StatusOK)
+		return
+	}
+
+	// Get chanMer info
+	pa, err := query.GetPublicAccount(string(mbytes))
+	if err != nil {
+		http.Error(w, `{"response":"01","errorDetail":"no appID found"}`, http.StatusOK)
+		return
+	}
+
+	var redirectUri = webAppUrl + "/pay.html" + url.QueryEscape("?merchantCode="+b64MerId+"&showwxpaytitle=1")
+	wxpUri := "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect"
+
+	// 告诉页面重定向到微信
+	http.Redirect(w, r, fmt.Sprintf(wxpUri, pa.AppID, redirectUri), http.StatusFound)
 }

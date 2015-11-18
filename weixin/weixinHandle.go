@@ -56,7 +56,7 @@ type RefreshAATokenResp struct {
 	Errmsg       string `json:"errmsg"`
 }
 
-var Client = AuthClient{appID, appSECRET}
+var DefaultClient = AuthClient{appID, appSECRET}
 
 type AuthClient struct {
 	AppID     string
@@ -65,7 +65,7 @@ type AuthClient struct {
 
 // GetAuthAccessToken 获取AuthAccessToken
 func (c *AuthClient) GetAuthAccessToken(code string) (authAccessTokenResp *AuthAccessTokenResp, err error) {
-	authAccessTokenURLT := fmt.Sprintf(authAccessTokenURL, appID, appSECRET, code)
+	authAccessTokenURLT := fmt.Sprintf(authAccessTokenURL, c.AppID, c.AppSecret, code)
 	resp, err := http.Get(authAccessTokenURLT)
 	if err != nil {
 		log.Errorf("http.Get authAccessToken err,%s", err)

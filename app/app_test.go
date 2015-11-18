@@ -132,6 +132,7 @@ func TestBillHandle(t *testing.T) {
 	values.Add("password", "670b14728ad9902aecba32e22fa4f6bd")
 	values.Add("transtime", time.Now().Format("20060102150405"))
 	values.Add("month", "201509")
+	values.Add("day", "30")
 	values.Add("status", "all")
 	values.Add("index", "1")
 	result, err := post(values, billHandle)

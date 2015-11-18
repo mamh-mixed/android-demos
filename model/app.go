@@ -97,6 +97,8 @@ type AppTxn struct {
 	Response        string `json:"response" bson:"response"`
 	SystemDate      string `json:"system_date"`
 	ConsumerAccount string `json:"consumerAccount,omitempty"`
+	TransStatus     string `json:"transStatus,omitempty"`
+	RefundAmt       int64  `json:"refundAmt"`
 	ReqData         struct {
 		Busicd       string `json:"busicd,omitempty"`
 		AgentCode    string `json:"inscd,omitempty"`
