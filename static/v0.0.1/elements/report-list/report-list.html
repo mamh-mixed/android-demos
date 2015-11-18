@@ -33,7 +33,7 @@
     <div class="condition search-condition">
       <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
       <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-        <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+        <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
         <div class="buttons">
           <paper-button dialog-dismiss><i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg></paper-button>
           <paper-button dialog-confirm><i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg></paper-button>
@@ -42,7 +42,7 @@
 
       <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
       <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-        <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+        <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
         <div class="buttons">
           <paper-button dialog-dismiss><i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg></paper-button>
           <paper-button dialog-confirm><i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg></paper-button>
