@@ -850,7 +850,7 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.TradeFrom = t.TradeFrom
 	txn.ReqData.Txamt = fmt.Sprintf("%012d", t.TransAmt)
 	txn.ReqData.ChanCode = t.ChanCode
-	txn.ReqData.Currency = t.TransCurr
+	txn.ReqData.Currency = t.Currency
 	return txn
 }
 

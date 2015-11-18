@@ -413,7 +413,7 @@ var downloadKey = "tools/summary/images/%s/%s"
 
 // NotifySalesman 每天汇总当天用户数据给业务人员
 func NotifySalesman() {
-	day := time.Now().Add(-24 * time.Hour).Format("2006-01-02")
+	day := time.Now().Format("2006-01-02")
 	all, err := mongo.AppUserCol.Find(&model.AppUserContiditon{
 		RegisterFrom: model.SalesToolsRegister,
 		StartTime:    day + " 00:00:00",
