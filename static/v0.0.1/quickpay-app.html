@@ -93,7 +93,14 @@
         ready: function() {},
         attached: function() {
           this.$.appRouter.init();
-          I18nMsg.lang = this.language || window.navigator.language;
+          var lan = this.language || window.navigator.language;
+          switch (lan) {
+            case 'ja':
+              I18nMsg.lang = 'ja';
+              break;
+            default:
+              I18nMsg.lang = 'zh-CN';
+          }
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
