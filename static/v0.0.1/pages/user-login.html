@@ -39,7 +39,9 @@
     <div class="container">
       <paper-material elevation="5" class="loginWrapper">
         <login-form redirect on-login-success="handleLoginSuccessEvent" router="{{router}}"></login-form>
-        <div class="user-alert">如果您还没有用户名、密码，请联系讯联数据运营中心为您分配。</div>
+        <div class="user-alert">
+          <i18n-msg msgid="LOGIN.HINT">如果您还没有用户名、密码，请联系讯联数据运营中心为您分配。</i18n-msg>
+        </div>
       </paper-material>
     </div>
   </template>

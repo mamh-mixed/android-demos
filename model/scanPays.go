@@ -461,6 +461,13 @@ type ScanPayRespCode struct {
 	ErrorCode   string `bson:"errorCode"`
 }
 
+// PublicAccount 公众号参数
+type PublicAccount struct {
+	ChanMerId string `bson:"chanMerId"`
+	AppID     string `bson:"appID"`
+	AppSecret string `bson:"appSecret"`
+}
+
 /* only use for import respCode */
 
 // SpChanCSV 渠道文件csv

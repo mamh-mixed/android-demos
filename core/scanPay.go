@@ -77,18 +77,19 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
 
-	appID, appSecret := "", ""
+	var chanMerId string
 	if c.IsAgentMode && c.AgentMer != nil {
-		appID, appSecret = c.AgentMer.WxpAppId, c.AgentMer.WxpAppSecret
+		chanMerId = c.AgentMer.ChanMerId
 	} else {
-		appID, appSecret = c.WxpAppId, c.WxpAppSecret
+		chanMerId = c.ChanMerId
 	}
 
 	var authClient weixin.AuthClient
-	if appID == "" || appSecret == "" {
-		authClient = weixin.Client
+	pa, err := mongo.PulicAccountCol.Get(chanMerId)
+	if err != nil {
+		authClient = weixin.DefaultClient
 	} else {
-		authClient = weixin.AuthClient{appID, appSecret}
+		authClient = weixin.AuthClient{pa.AppID, pa.AppSecret}
 	}
 
 	// 网页授权获取token和openid

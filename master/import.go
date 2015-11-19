@@ -674,12 +674,20 @@ func (i *importer) doDataWrap() {
 			mer.Detail.BankId = r.BankId
 			mer.Detail.City = r.City
 			mer.Detail.OpenBankName = r.BankName
+			mer.Detail.TitleOne = r.TitleOne
+			mer.Detail.TitleTwo = r.TitleTwo
 			mer.Remark = "add-upload-" + i.fileName
 			mer.MerStatus = "Normal"
 			// 随机生成密钥
 			if mer.IsNeedSign && mer.SignKey == "" {
 				mer.SignKey = util.SignKey()
 			}
+			// 生成账单和支付地址
+			if r.TitleOne != "" || r.TitleTwo != "" {
+				mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
+				mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+			}
+
 			i.A.Mers = append(i.A.Mers, *mer)
 
 			// app账户
@@ -752,6 +760,19 @@ func (i *importer) doDataWrap() {
 			}
 			if r.BankName != "" {
 				mer.Detail.OpenBankName = r.BankName
+			}
+			if r.TitleOne != "" {
+				mer.Detail.TitleOne = r.TitleOne
+			}
+			if r.TitleTwo != "" {
+				mer.Detail.TitleTwo = r.TitleTwo
+			}
+			// 生成账单和支付地址
+			if mer.Detail.BillUrl == "" && mer.Detail.PayUrl == "" {
+				if r.TitleOne != "" || r.TitleTwo != "" {
+					mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
+					mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+				}
 			}
 
 			mer.Remark = "update-upload-" + i.fileName
@@ -1021,7 +1042,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
-	correctCol := 40
+	correctCol := 42
 	// 返回某列完整错误信息
 	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1155,6 +1176,12 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[39]; cell != nil {
 		r.AppPassword = replaceWhitespace.Replace(cell.Value)
 	}
+	if cell = cells[40]; cell != nil {
+		r.TitleOne = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[41]; cell != nil {
+		r.TitleTwo = replaceWhitespace.Replace(cell.Value)
+	}
 
 	if _, ok := i.rowMap[r.MerId]; ok {
 		return fmt.Errorf(i.msg.MerIdRepeat, r.MerId)
@@ -1208,6 +1235,8 @@ type rowData struct {
 	IsAddAcct     bool
 	AppUsername   string // 用户名
 	AppPassword   string // 密码
+	TitleOne      string // 标题一
+	TitleTwo      string // 标题二
 	// ...
 	IsAgent    bool
 	IsNeedSign bool

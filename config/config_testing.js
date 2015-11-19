@@ -10,7 +10,7 @@
         "HTTPAddr": ":6800", // HTTP 接口
         "TCPAddr": ":6600", // 扫码 TCP 接口，UTF-8 编码传输，UTF-8 签名
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
-        "DefaultCacheTime": "5m", // 缓存有效时间
+        "DefaultCacheTime": "1s", // 缓存有效时间
         "NotifyURL": "http://test.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime": "24h", // 未支付订单关闭时间
         "OrderRefreshTime":"10m",

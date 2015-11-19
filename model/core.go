@@ -194,28 +194,27 @@ type MerDetail struct {
 
 // ChanMer 渠道商户
 type ChanMer struct {
-	ChanCode     string   `bson:"chanCode,omitempty" json:"chanCode,omitempty"`         // 渠道代码
-	ChanMerId    string   `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`       // 商户号
-	ChanMerName  string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"`   // 商户名称
-	SettFlag     string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`         // 清算标识
-	SettRole     string   `bson:"settRole,omitempty" json:"settRole,omitempty"`         // 清算角色
-	SignKey      string   `bson:"signCert,omitempty" json:"signCert,omitempty"`         // 签名密钥 !!!!数据库存的是signCert
-	PrivateKey   string   `bson:"privateKey,omitempty" json:"privateKey,omitempty"`     // 渠道商户私钥
-	PublicKey    string   `bson:"publicKey,omitempty" json:"publicKey,omitempty"`       // 渠道商户公钥
-	WxpAppId     string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`         // 微信支付App Id
-	WxpAppSecret string   `bson:"wxpAppSercet,omitempty" json:"wxpAppSercet,omitempty"` // 公众号密钥
-	InsCode      string   `bson:"insCode,omitempty" json:"insCode,omitempty"`           // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
-	TerminalId   string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`     // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	AcqFee       float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`             // 讯联跟渠道费率
-	HttpCert     string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`         // http cert证书
-	HttpKey      string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`           // http key 证书
-	AgentCode    string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 支付宝代理代码
-	IsAgentMode  bool     `bson:"isAgentMode" json:"isAgentMode"`                       // 是否受理商模式
-	AgentMer     *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`         // 受理商商户
-	TransMode    int      `bson:"transMode,omitempty" json:"transMode,omitempty"`       // 交易模式 1-商户模式 2-市场模式
-	AreaType     int      `bson:"areaType,omitempty" json:"areaType,omitempty"`         // 境内外区分字段
-	CreateTime   string   `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
-	UpdateTime   string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
+	ChanCode    string   `bson:"chanCode,omitempty" json:"chanCode,omitempty"`       // 渠道代码
+	ChanMerId   string   `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`     // 商户号
+	ChanMerName string   `bson:"chanMerName,omitempty" json:"chanMerName,omitempty"` // 商户名称
+	SettFlag    string   `bson:"settFlag,omitempty" json:"settFlag,omitempty"`       // 清算标识
+	SettRole    string   `bson:"settRole,omitempty" json:"settRole,omitempty"`       // 清算角色
+	SignKey     string   `bson:"signCert,omitempty" json:"signCert,omitempty"`       // 签名密钥 !!!!数据库存的是signCert
+	PrivateKey  string   `bson:"privateKey,omitempty" json:"privateKey,omitempty"`   // 渠道商户私钥
+	PublicKey   string   `bson:"publicKey,omitempty" json:"publicKey,omitempty"`     // 渠道商户公钥
+	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
+	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
+	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
+	AcqFee      float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
+	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
+	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
+	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
+	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
+	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
+	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 交易模式 1-商户模式 2-市场模式
+	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段
+	CreateTime  string   `bson:"createTime,omitempty" json:"createTime,omitempty"`   // 创建时间
+	UpdateTime  string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`   // 更新时间
 	// ...
 }
 

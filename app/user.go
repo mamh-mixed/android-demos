@@ -441,7 +441,12 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		return result
 	}
 
-	if !monthRegexp.MatchString(req.Month) {
+	// 不同时为空
+	if req.Month == "" && req.Date == "" {
+		return model.TIME_ERROR
+	}
+
+	if req.Month != "" && !monthRegexp.MatchString(req.Month) {
 		return model.TIME_ERROR
 	}
 
@@ -466,8 +471,8 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	if req.Date != "" {
 		day, _ := strconv.Atoi(req.Date)
 		now := time.Now()
-		startDate = now.Format("2006-01-02")
-		endDate = now.Add(-time.Hour * 24 * time.Duration(day)).Format("2006-01-02")
+		startDate = now.Add(-time.Hour * 24 * time.Duration(day)).Format("2006-01-02")
+		endDate = now.Format("2006-01-02")
 	} else {
 		// 按month来
 		ym := req.Month
@@ -831,6 +836,8 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 		Response:        t.RespCode,
 		SystemDate:      timeReplacer.Replace(t.CreateTime),
 		ConsumerAccount: t.ConsumerAccount,
+		TransStatus:     t.TransStatus,
+		RefundAmt:       t.RefundAmt,
 	}
 	txn.ReqData.Busicd = t.Busicd
 	txn.ReqData.AgentCode = t.AgentCode
@@ -842,7 +849,11 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.TradeFrom = t.TradeFrom
 	txn.ReqData.Txamt = fmt.Sprintf("%012d", t.TransAmt)
 	txn.ReqData.ChanCode = t.ChanCode
-	txn.ReqData.Currency = t.TransCurr
+	txn.ReqData.Currency = t.Currency
+	if t.Currency == "" {
+		txn.ReqData.Currency = "CNY"
+	}
+
 	return txn
 }
 

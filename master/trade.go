@@ -136,12 +136,13 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		TransAmt     string
 		ChanCode     string
 		TransTime    string
+		PayTime      string
 		TransStatus  string
 		AgentCode    string
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
-	}{"商户号", "商户名称", "订单号", "金额", "渠道", "交易时间", "交易状态", "机构", "终端号", "交易类型", "原订单号"}
+	}{"商户号", "商户名称", "订单号", "金额", "渠道", "交易时间", "支付时间", "交易状态", "机构", "终端号", "交易类型", "原订单号"}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -212,11 +213,17 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		// 交易时间
 		cell = row.AddCell()
 		cell.Value = v.CreateTime
+		// 支付时间
+		cell = row.AddCell()
+		cell.Value = v.PayTime
 		// 交易状态
 		cell = row.AddCell()
 		switch v.TransStatus {
 		case model.TransSuccess:
 			cell.Value = "交易成功"
+			if v.RefundStatus == model.TransPartRefunded {
+				cell.Value = "部分退款" + fmt.Sprintf("(-%0.2f)", float64(v.RefundAmt)/100)
+			}
 		case model.TransFail:
 			cell.Value = "交易失败"
 		case model.TransHandling:
