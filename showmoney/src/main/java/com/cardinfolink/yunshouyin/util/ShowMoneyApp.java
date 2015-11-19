@@ -8,12 +8,12 @@ import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.core.QuickPayServiceImpl;
 
-public class ContextUtil extends Application {
+public class ShowMoneyApp extends Application {
     private static final String ENVIRONMENT = BuildConfig.ENVIRONMENT;
 
-    private static ContextUtil instance;
+    private static ShowMoneyApp instance;
 
-    public static ContextUtil getInstance() {
+    public static ShowMoneyApp getInstance() {
         return instance;
     }
 

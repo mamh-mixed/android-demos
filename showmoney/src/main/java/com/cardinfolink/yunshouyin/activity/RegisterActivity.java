@@ -11,7 +11,7 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
@@ -137,24 +137,24 @@ public class RegisterActivity extends BaseActivity {
         qr_password = mQrPasswordEdit.getText().toString();
 
         if (email.isEmpty()) {
-            mAlert_Dialog.show(ContextUtil.getResString(R.string.alert_error_email_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         if (!checkEmail(email)) {
-            mAlert_Dialog.show(ContextUtil.getResString(R.string.alert_error_email_format_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_format_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (password.isEmpty()) {
-            mAlert_Dialog.show(ContextUtil.getResString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         if (password.length() < 6) {
-            mAlert_Dialog.show(ContextUtil.getResString(R.string.alert_error_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         if (!password.equals(qr_password)) {
-            mAlert_Dialog.show(ContextUtil.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
