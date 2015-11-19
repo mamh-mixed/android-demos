@@ -24,7 +24,7 @@ var pay = &model.ScanPayRequest{
 var prePay = &model.ScanPayRequest{
 	GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 	OrderNum:  util.Millisecond(),
-	SignKey:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+	SignKey:   "86l3l20oagn2afs0r0ztkizut1il66ec",
 	ActTxamt:  "0.01",
 	Subject:   "讯联测试",
 	ChanMerId: "2088811767473826",
@@ -71,7 +71,11 @@ func TestProcessQrCodeOfflinePay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
 	log.Infof("%+v", prePay)
 	Convey("支付宝预下单", t, func() {
-		resp, _ := DefaultClient.ProcessQrCodeOfflinePay(prePay)
+		resp, err := DefaultClient.ProcessQrCodeOfflinePay(prePay)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
 		log.Infof("%+v", resp)
 		Convey("期望", func() {
 			So(resp.Respcd, ShouldEqual, "09")

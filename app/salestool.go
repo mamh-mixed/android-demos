@@ -466,7 +466,7 @@ func NotifySalesman() {
 			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
 
-		sendEmail(&emailData{eds, fds}, user.Mail, k, day)
+		sendEmail(&emailData{eds, fds}, user.Mail, "", k, day)
 
 		if user.RelatedEmail != "" {
 			// 将数据整合到同个代理邮箱
@@ -481,7 +481,7 @@ func NotifySalesman() {
 
 	// 代理
 	for k, a := range agents {
-		sendEmail(a, k, k, day)
+		sendEmail(a, k, andyLi, k, day)
 	}
 }
 
@@ -595,7 +595,7 @@ var (
 	attach = `请在一个星期之内下载<a href="%s">商户.zip</a>。`
 )
 
-func sendEmail(ed *emailData, to, name, day string) {
+func sendEmail(ed *emailData, to, cc, name, day string) {
 	var emailBody = fmt.Sprintf(body, len(ed.es))
 	var d = uint32((7 * 24 * time.Hour).Seconds())
 
@@ -607,7 +607,7 @@ func sendEmail(ed *emailData, to, name, day string) {
 	}
 
 	// 发邮件
-	e := email.Email{To: to, Title: "当日商户汇总", Body: emailBody, Cc: andyLi}
+	e := email.Email{To: to, Title: "当日商户汇总", Body: emailBody, Cc: cc}
 	ebuf := new(bytes.Buffer)
 	err := genExcel(ed.es).Write(ebuf)
 	if err == nil {
