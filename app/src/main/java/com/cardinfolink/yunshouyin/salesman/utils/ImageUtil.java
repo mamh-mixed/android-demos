@@ -12,7 +12,7 @@ import java.io.FileOutputStream;
 import java.util.UUID;
 
 public class ImageUtil {
-    public static final String LOG_TAG = "picture";
+    private static final String LOG = "ImageUtil";
 
     // Ref: http://stackoverflow.com/questions/3401579/get-filename-and-path-from-uri-from-mediastore
 //    public static String getRealPathFromURI(Context context, Uri contentUri) {
@@ -38,7 +38,7 @@ public class ImageUtil {
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-            Log.d(LOG_TAG, "external storage is writable");
+            Log.d(LOG, "external storage is writable");
             return true;
         }
         return false;
@@ -47,24 +47,10 @@ public class ImageUtil {
     private boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            Log.d(LOG_TAG, "external storage is readable");
+            Log.d(LOG, "external storage is readable");
             return true;
         }
         return false;
-    }
-
-    public void readSample() {
-        String filename = "myfile";
-        String string = "Hello World!";
-        FileOutputStream outputStream;
-
-        try {
-            outputStream = SalesmanApplication.getInstance().getContext().openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(string.getBytes());
-            outputStream.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     /**
@@ -76,7 +62,7 @@ public class ImageUtil {
     private File getAlbumStorageDir(String albumName) {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), albumName);
         if (!file.mkdirs()) {
-            Log.e(LOG_TAG, "Directory not created");
+            Log.e(LOG, "Directory not created");
         }
         return file;
     }
@@ -86,7 +72,7 @@ public class ImageUtil {
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_PICTURES), albumName);
         if (!file.mkdirs()) {
-            Log.e(LOG_TAG, "Directory not created");
+            Log.e(LOG, "Directory not created");
         }
         return file;
     }
@@ -97,7 +83,7 @@ public class ImageUtil {
     public void saveImageToExternalStorage(Bitmap bitmap) {
         //check if SD card available
         if (!isExternalStorageWritable()) {
-            Log.e(LOG_TAG, "请配置外部存储");
+            Log.e(LOG, "请配置外部存储");
         }
 
         //get app's album folder
@@ -113,9 +99,9 @@ public class ImageUtil {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
-            Log.d(LOG_TAG, file.toString());
+            Log.d(LOG, file.toString());
         } catch (Exception ex) {
-            Log.e(LOG_TAG, ex.getMessage());
+            Log.e(LOG, ex.getMessage());
         }
 
         //show in gallery
