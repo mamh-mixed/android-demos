@@ -34,7 +34,7 @@
             <div class="th">清算日期</div>
             <div class="th left">清算角色</div>
             <div class="th left">报表名称</div>
-            <div class="th">下载报表</div>
+            <div class="th">下载</div>
           </div>
         </div>
         <div class='tbody'>
@@ -45,7 +45,8 @@
               <div class="td">{{item.settRole}}</div>
               <div class="td">{{item.reportName}}</div>
               <div class="td center">
-                <a on-tap="handleDownloadReportEvent">下载</a>
+                <a on-tap="handleDownloadReportEvent">报表</a> |
+                <a href="/master/trade/settle/report?date={{item.settDate}}&role={{item.settRole}}">明细</a>
               </div>
             </div>
           </template>

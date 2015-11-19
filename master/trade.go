@@ -139,6 +139,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		TransAmt     string
 		ChanCode     string
 		TransTime    string
+		PayTime      string
 		TransStatus  string
 		AgentCode    string
 		TerminalId   string
@@ -215,6 +216,9 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		// 交易时间
 		cell = row.AddCell()
 		cell.Value = v.CreateTime
+		// 支付时间
+		cell = row.AddCell()
+		cell.Value = v.PayTime
 		// 交易状态
 		cell = row.AddCell()
 		switch v.TransStatus {

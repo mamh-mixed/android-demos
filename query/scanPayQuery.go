@@ -187,6 +187,29 @@ func GetMerInfo(merId string) scanFixedResponse {
 	return response
 }
 
+// GetPublicAccount 根据门店号获取对应的公众号信息
+func GetPublicAccount(merId string) (*model.PublicAccount, error) {
+	chanCode := "WXP"
+	r := mongo.RouterPolicyColl.Find(merId, chanCode)
+	if r == nil {
+		return nil, fmt.Errorf("%s", "not found")
+	}
+
+	c, err := mongo.ChanMerColl.Find(chanCode, r.ChanMerId)
+	if err != nil {
+		return nil, err
+	}
+
+	var chanMerId string
+	if c.IsAgentMode && c.AgentMer != nil {
+		chanMerId = c.AgentMer.ChanMerId
+	} else {
+		chanMerId = c.ChanMerId
+	}
+
+	return mongo.PulicAccountCol.Get(chanMerId)
+}
+
 // SpTransQuery 交易查询
 func SpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 

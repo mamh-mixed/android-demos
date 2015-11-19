@@ -11,7 +11,6 @@
       :host {
         display: block;
       }
-
     </style>
     <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-login-success="handleLoginSuccessEvent" on-logout="handleLogoutEvent"
     on-toast-open="handleToastOpenEvent" on-page-jump="handlePageJumpEvent">
@@ -62,6 +61,7 @@
     <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
+    <iron-localstorage name="CIL.CONFIG.LANGUAGE" value="{{language}}"></iron-localstorage>
     <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
     <x-ajax id="deleteSessionAjax" method="GET" url="/master/logout" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
   </template>
@@ -85,13 +85,22 @@
             value: {},
           },
         },
-        ready: function() {
-          // default language en-US, zh-CN, ja
-          // I18nMsg.lang = 'zh-CN';
-          I18nMsg.lang = window.navigator.language;
+        listeners: {
+          'i18n-language-change': 'handleI18nLanguageChangeEvent',
+          'i18n-language-ready': 'handleI18nLanguageChangeEvent',
+          'rerender-i18n': 'handleI18nLanguageChangeEvent'
         },
+        ready: function() {},
         attached: function() {
           this.$.appRouter.init();
+          var lan = this.language || window.navigator.language;
+          switch (lan) {
+            case 'ja':
+              I18nMsg.lang = 'ja';
+              break;
+            default:
+              I18nMsg.lang = 'zh-CN';
+          }
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
@@ -114,7 +123,7 @@
           }
           var isAccess = false;
 
-          if (this.userType === 'admin'||this.userType === 'genAdmin') {
+          if (this.userType === 'admin' || this.userType === 'genAdmin') {
             return;
           }
 
@@ -220,9 +229,45 @@
         },
         handleCloseDialogPleaseEvent: function() {
           this.$.reloginDialog.close();
+        },
+        handleI18nLanguageChangeEvent: function() {
+          var i18nMsg = document.createElement('i18n-msg');
+
+          var paperInputs = document.querySelectorAll('paper-input');
+          for (var i = 0, l = paperInputs.length, item; i < l; i++) {
+            var msgId = null;
+            item = paperInputs[i];
+            if (item.hasAttribute('data-msg-id')) {
+              msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('label', i18nMsg.getMsg(msgId));
+            }
+
+            if (item.required) {
+              msgId = item.getAttribute('data-error-msg-id');
+              item.setAttribute('error-message', i18nMsg.getMsg(msgId));
+            }
+            msgId = null;
+          }
+
+          var datePickers = document.querySelectorAll('paper-date-picker');
+          for (var i = 0, l = datePickers.length, item; i < l; i++) {
+            item = datePickers[i];
+            if (item.hasAttribute('data-msg-id')) {
+              var msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('locale', i18nMsg.getMsg(msgId));
+            }
+          }
+
+          var xSelects = document.querySelectorAll('x-select');
+          for (var i = 0, l = xSelects.length, item; i < l; i++) {
+            item = xSelects[i];
+            if (item.hasAttribute('data-msg-id')) {
+              var msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('label', i18nMsg.getMsg(msgId));
+            }
+          }
         }
       });
     })();
-
   </script>
 </dom-module>

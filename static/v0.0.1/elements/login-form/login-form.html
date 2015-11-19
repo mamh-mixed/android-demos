@@ -81,19 +81,23 @@
 
     <div class="logo">
       <img src="../../images/touch/ms-touch-icon-144x144-precomposed.png" alt="" class="circle">
-      <div class="app-name">云收银管理平台</div>
+      <div class="app-name">
+        <i18n-msg msgid="TITLE">云收银管理平台</i18n-msg>
+      </div>
     </div>
     <div class="login-inner">
       <form id="loginForm">
         <div class="row">
           <iron-icon icon="perm-identity"></iron-icon>
-          <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项" autofocus></paper-input>
+          <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项" autofocus data-msg-id="LOGIN.USERNAME" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
           <iron-icon icon="lock-outline"></iron-icon>
-          <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
+          <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项" data-msg-id="LOGIN.PASSWORD" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
-        <paper-button raised on-tap="loginTapHandle">登录</paper-button>
+        <paper-button raised on-tap="loginTapHandle">
+          <i18n-msg msgid="LOGIN.BUTTON">登录</i18n-msg>
+        </paper-button>
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
@@ -126,6 +130,9 @@
         },
         ready: function() {
           this.user = {};
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {from: 'password-editor'});
         },
         loginTapHandle: function() {
           if (this.isloginConfigEmpty()) {

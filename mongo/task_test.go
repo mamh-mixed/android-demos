@@ -5,6 +5,19 @@ import (
 	"testing"
 )
 
+func TestAddPublicAccount(t *testing.T) {
+
+	a := &model.PublicAccount{
+		ChanMerId: "1276970101",
+		AppID:     "wxaa785395d3d09403",
+		AppSecret: "ff84e8b52e2ca0c439590070c7001c60",
+	}
+	err := PulicAccountCol.Add(a)
+	if err != nil {
+		t.Log(err)
+	}
+}
+
 func TestAddTask(t *testing.T) {
 
 	var task = &model.Task{
