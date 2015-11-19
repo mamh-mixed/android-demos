@@ -670,7 +670,7 @@ public class RegisterNextActivity extends BaseActivity {
 
     public void BtnRegisterFinishedOnClick(View view) {
         if (validate()) {
-            mLoading_Dialog.startLoading();
+            mLoadingDialog.startLoading();
             User user = new User();
             user.setUsername(SessonData.loginUser.getUsername());
             user.setPassword(SessonData.loginUser.getPassword());
@@ -725,8 +725,8 @@ public class RegisterNextActivity extends BaseActivity {
                                     @Override
                                     public void run() {
                                         // 更新UI
-                                        mLoading_Dialog.endLoading();
-                                        mAlert_Dialog.show(
+                                        mLoadingDialog.endLoading();
+                                        mAlertDialog.show(
                                                 "提交失败!",
                                                 BitmapFactory.decodeResource(
                                                         mContext.getResources(),
@@ -744,8 +744,8 @@ public class RegisterNextActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     // 更新UI
-                                    mLoading_Dialog.endLoading();
-                                    mAlert_Dialog.show(error, BitmapFactory
+                                    mLoadingDialog.endLoading();
+                                    mAlertDialog.show(error, BitmapFactory
                                             .decodeResource(
                                                     mContext.getResources(),
                                                     R.drawable.wrong));

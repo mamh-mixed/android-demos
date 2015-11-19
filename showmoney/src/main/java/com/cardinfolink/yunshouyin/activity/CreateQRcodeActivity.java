@@ -213,7 +213,7 @@ public class CreateQRcodeActivity extends BaseActivity {
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
-                        mAlert_Dialog.show("" + getResources().getString(R.string.dialog_trade_nopay), BitmapFactory
+                        mAlertDialog.show("" + getResources().getString(R.string.dialog_trade_nopay), BitmapFactory
                                 .decodeResource(
                                         mContext.getResources(),
                                         R.drawable.wrong));

@@ -14,20 +14,20 @@ import com.umeng.analytics.MobclickAgent;
 
 public class BaseActivity extends Activity {
 
-    protected LoadingDialog mLoading_Dialog;    //显示loading
-    protected AlertDialog mAlert_Dialog;       // 提示消息对话框
+    protected LoadingDialog mLoadingDialog;    //显示loading
+    protected AlertDialog mAlertDialog;       // 提示消息对话框
     protected Context mContext;
     protected QuickPayService quickPayService;
     protected ShowMoneyApp yunApplication;
 
 
-    //重载 setContentView 初始化 mLoading_Dialog,mAlert_Dialog
+    //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         mContext = this;
-        mLoading_Dialog = new LoadingDialog(this, findViewById(R.id.loading_dialog));
-        mAlert_Dialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
+        mLoadingDialog = new LoadingDialog(this, findViewById(R.id.loading_dialog));
+        mAlertDialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
                 getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
 
         yunApplication = (ShowMoneyApp)getApplication();
@@ -36,15 +36,15 @@ public class BaseActivity extends Activity {
 
 
     public void startLoading() {
-        mLoading_Dialog.startLoading();
+        mLoadingDialog.startLoading();
     }
 
     public void endLoading() {
-        mLoading_Dialog.endLoading();
+        mLoadingDialog.endLoading();
     }
 
     public void alertShow(String msg, Bitmap bitmap) {
-        mAlert_Dialog.show(msg, bitmap);
+        mAlertDialog.show(msg, bitmap);
     }
 
     @Override

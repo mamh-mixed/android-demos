@@ -229,7 +229,7 @@ public class DetailActivity extends BaseActivity {
                                 public void run() {
                                     // 更新UI
                                     endLoading();
-                                    mAlert_Dialog.show(ErrorUtil
+                                    mAlertDialog.show(ErrorUtil
                                                     .getErrorString(JsonUtil.getParam(
                                                             result, "error")),
                                             BitmapFactory.decodeResource(
@@ -250,7 +250,7 @@ public class DetailActivity extends BaseActivity {
                             public void run() {
                                 // 更新UI
                                 endLoading();
-                                mAlert_Dialog.show(error, BitmapFactory
+                                mAlertDialog.show(error, BitmapFactory
                                         .decodeResource(
                                                 mContext.getResources(),
                                                 R.drawable.wrong));
