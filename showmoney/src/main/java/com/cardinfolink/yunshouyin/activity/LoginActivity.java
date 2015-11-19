@@ -62,12 +62,12 @@ public class LoginActivity extends BaseActivity {
         username = mUsernameEdit.getText().toString();
         password = mPasswordEdit.getText().toString();
         if (username.isEmpty()) {
-            mAlert_Dialog.show(getResources().getString(R.string.alert_error_username_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(getResources().getString(R.string.alert_error_username_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (password.isEmpty()) {
-            mAlert_Dialog.show(getResources().getString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(getResources().getString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         return true;
@@ -77,7 +77,7 @@ public class LoginActivity extends BaseActivity {
     private void login() {
         if (validate()) {
 
-            mLoading_Dialog.startLoading();
+            mLoadingDialog.startLoading();
 
             final String username = mUsernameEdit.getText().toString();
             final String password = mPasswordEdit.getText().toString();
@@ -113,7 +113,7 @@ public class LoginActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     //更新UI
-                                    mLoading_Dialog.endLoading();
+                                    mLoadingDialog.endLoading();
                                     Intent intent = new Intent(mContext, RegisterNextActivity.class);
                                     mContext.startActivity(intent);
                                 }
@@ -137,7 +137,7 @@ public class LoginActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     //更新UI
-                                    mLoading_Dialog.endLoading();
+                                    mLoadingDialog.endLoading();
                                     SessonData.position_view = 0;
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -164,7 +164,7 @@ public class LoginActivity extends BaseActivity {
                                 @Override
                                 public void run() {
                                     //更新UI
-                                    mLoading_Dialog.endLoading();
+                                    mLoadingDialog.endLoading();
                                     ActivateDialog activate_dialog = new ActivateDialog(mContext, LoginActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
                                     activate_dialog.show();
 
@@ -180,8 +180,8 @@ public class LoginActivity extends BaseActivity {
                                 public void run() {
                                     //更新UI
                                     String errorStr = ErrorUtil.getErrorString(error);
-                                    mLoading_Dialog.endLoading();
-                                    mAlert_Dialog.show(errorStr, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                    mLoadingDialog.endLoading();
+                                    mAlertDialog.show(errorStr, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                     if (error.equals("username_password_error")) {
                                         mPasswordEdit.setText("");
 
@@ -204,8 +204,8 @@ public class LoginActivity extends BaseActivity {
                         public void run() {
                             //更新UI
                             Log.i("opp", "error:" + error);
-                            mLoading_Dialog.endLoading();
-                            mAlert_Dialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                            mLoadingDialog.endLoading();
+                            mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                         }
 
                     });
