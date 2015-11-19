@@ -15,7 +15,7 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
@@ -138,28 +138,28 @@ public class PasswordUpdateView extends LinearLayout {
 
 
         if (oldpwd.isEmpty()) {
-            mBaseActivity.alertShow(ContextUtil.getResString(R.string.alert_error_old_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_old_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (oldpwd.length() < 6) {
-            mBaseActivity.alertShow(ContextUtil.getResString(R.string.alert_error_old_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_old_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
 
         if (newpwd.isEmpty()) {
-            mBaseActivity.alertShow(ContextUtil.getResString(R.string.alert_error_new_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_new_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (newpwd.length() < 6) {
-            mBaseActivity.alertShow(ContextUtil.getResString(R.string.alert_error_new_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_new_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (!qrpwd.equals(newpwd)) {
-            mBaseActivity.alertShow(ContextUtil.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
