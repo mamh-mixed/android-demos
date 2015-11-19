@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity {
                     mLeftMenu.toggle();
 //					 mLeftMenu.toggle();
 //					 Uri uri;
-//					 uri = Uri.parse(SystemConfig.WEB_BILL_URL+"?merchantCode="+SessonData.loginUser.getObject_id());
+//					 uri = Uri.parse(SystemConfig.WEB_BILL_URL+"?merchantCode="+SessonData.loginUser.getObjectId());
 //					 Intent  intent = new  Intent(Intent.ACTION_VIEW, uri);
 //					 startActivity(intent);
 
