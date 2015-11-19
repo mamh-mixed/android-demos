@@ -1,5 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.api;
 
+import android.text.TextUtils;
+
 import com.cardinfolink.yunshouyin.salesman.model.ServerPacket;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.EncoderUtil;
@@ -27,8 +29,11 @@ public class QuickPayApiImpl implements QuickPayApi {
     public QuickPayApiImpl(QuickPayConfigStorage quickPayConfigStorage) {
         this.quickPayConfigStorage = quickPayConfigStorage;
 
-        if (this.quickPayConfigStorage.getProxyUrl() != null && !"".equals(this.quickPayConfigStorage.getProxyUrl())) {
-            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.quickPayConfigStorage.getProxyUrl(), this.quickPayConfigStorage.getProxyPort()));
+        String proxyUrl = quickPayConfigStorage.getProxyUrl();
+        int proxyPort = quickPayConfigStorage.getProxyPort();
+        if (!TextUtils.isEmpty(proxyUrl)) {
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(proxyUrl, proxyPort);
+            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
             postEngine = new PostEngine(httpProxy);
         } else {
             postEngine = new PostEngine();
@@ -64,9 +69,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             }
         }
         toSign.append(quickPayConfigStorage.getAppKey());
-//        Log.d(TAG, "Raw string: " + toSign.toString());
         String sign = EncoderUtil.Encrypt(toSign.toString(), signType);
-//        Log.d(TAG, "Signed string: " + sign);
         return sign;
     }
 
@@ -181,34 +184,34 @@ public class QuickPayApiImpl implements QuickPayApi {
         String url = quickPayConfigStorage.getUrl() + "/update";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("accessToken", quickPayConfigStorage.getAccessToken());
-        if (user.getUsername() != null && !user.getUsername().equals("")) {
+        if (!TextUtils.isEmpty(user.getUsername())) {
             params.put("username", user.getUsername());
         }
-        if (user.getProvince() != null && !user.getProvince().equals("")) {
+        if (!TextUtils.isEmpty(user.getProvince())) {
             params.put("province", user.getProvince());
         }
-        if (user.getCity() != null && !user.getCity().equals("")) {
+        if (!TextUtils.isEmpty(user.getCity())) {
             params.put("city", user.getCity());
         }
-        if (user.getBankOpen() != null && !user.getBankOpen().equals("")) {
+        if (!TextUtils.isEmpty(user.getBankOpen())) {
             params.put("bank_open", user.getBankOpen());
         }
-        if (user.getBranchBank() != null && !user.getBranchBank().equals("")) {
+        if (!TextUtils.isEmpty(user.getBranchBank())) {
             params.put("branch_bank", user.getBranchBank());
         }
-        if (user.getBankNo() != null && !user.getBankNo().equals("")) {
+        if (!TextUtils.isEmpty(user.getBankNo())) {
             params.put("bankNo", user.getBankNo());
         }
-        if (user.getPayee() != null && !user.getPayee().equals("")) {
+        if (!TextUtils.isEmpty(user.getPayee())) {
             params.put("payee", user.getPayee());
         }
-        if (user.getPayeeCard() != null && !user.getPayeeCard().equals("")) {
+        if (!TextUtils.isEmpty(user.getPayeeCard())) {
             params.put("payee_card", user.getPayeeCard());
         }
-        if (user.getPhoneNum() != null && !user.getPhoneNum().equals("")) {
+        if (!TextUtils.isEmpty(user.getPhoneNum())) {
             params.put("phone_num", user.getPhoneNum());
         }
-        if (user.getMerName() != null && !user.getMerName().equals("")) {
+        if (!TextUtils.isEmpty(user.getMerName())) {
             params.put("merName", user.getMerName());
         }
         if (user.getImages() != null) {
@@ -276,7 +279,7 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     private void checkAccessToken() {
-        if (quickPayConfigStorage.getAccessToken() == null || "".equals(quickPayConfigStorage.getAccessToken())) {
+        if(TextUtils.isEmpty(quickPayConfigStorage.getAccessToken())){
             throw new QuickPayException(QuickPayException.ACCESSTOKEN_NOT_FOUND);
         }
     }
