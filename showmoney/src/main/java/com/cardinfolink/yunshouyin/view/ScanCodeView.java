@@ -21,7 +21,7 @@ import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
@@ -119,10 +119,10 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             @Override
             public void onClick(View v) {
                 if (switch_flag) {
-                    btnsm.setText(ContextUtil.getResString(R.string.scancode_view_create_code));
+                    btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_create_code));
                     switch_flag = false;
                 } else {
-                    btnsm.setText(ContextUtil.getResString(R.string.scancode_view_scaning_code));
+                    btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
                     switch_flag = true;
                 }
 

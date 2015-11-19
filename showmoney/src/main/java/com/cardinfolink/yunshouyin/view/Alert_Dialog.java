@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 public class Alert_Dialog {
     private Context mContext;
@@ -67,7 +67,7 @@ public class Alert_Dialog {
 
         TextView textView = (TextView) dialogView.findViewById(R.id.alert_message);
         if (message.length() == 0) {
-            message = ContextUtil.getResString(R.string.server_timeout);
+            message = ShowMoneyApp.getResString(R.string.server_timeout);
         }
         textView.setText(message);
         ImageView imageView = (ImageView) dialogView.findViewById(R.id.alert_img);
