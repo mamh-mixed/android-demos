@@ -101,7 +101,7 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 	if err != nil {
 		log.Errorf("find database err,%s", err)
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		return model.SYSTEM_ERROR
 	}
@@ -154,7 +154,7 @@ func (u *user) reqActivate(req *reqParams) (result model.AppResult) {
 	if err != nil {
 		log.Errorf("find database err,%s", err)
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		return model.SYSTEM_ERROR
 	}
@@ -288,7 +288,7 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 	if err != nil {
 		log.Errorf("find database err,%s", err)
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		return model.SYSTEM_ERROR
 	}
@@ -395,7 +395,7 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
@@ -454,7 +454,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
@@ -502,6 +502,11 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		Size:      15,
 		Page:      1,
 		Skip:      index,
+	}
+
+	// 是否只包含支付交易
+	if req.OrderDetail == "pay" {
+		q.TransType = model.PayTrans
 	}
 
 	switch req.Status {
@@ -578,7 +583,7 @@ func (u *user) getUserTrans(req *reqParams) (result model.AppResult) {
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
@@ -603,7 +608,12 @@ func (u *user) getUserTrans(req *reqParams) (result model.AppResult) {
 	result = model.NewAppResult(model.SUCCESS, "")
 	switch req.BusinessType {
 	case "getRefd":
-		result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(t.RefundAmt)/100)
+		// TODO 兼容所有币种
+		if t.Currency == "JPY" {
+			result.RefdTotalAmt = fmt.Sprintf("%d", t.RefundAmt)
+		} else {
+			result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(t.RefundAmt)/100)
+		}
 	case "getOrder":
 		result.Txn = transToTxn(t)
 	}
@@ -628,7 +638,7 @@ func (u *user) passwordHandle(req *reqParams) (result model.AppResult) {
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
@@ -665,7 +675,7 @@ func (u *user) promoteLimit(req *reqParams) (result model.AppResult) {
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
@@ -713,7 +723,7 @@ func (u *user) getSettInfo(req *reqParams) (result model.AppResult) {
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.USERNAME_NO_EXIST
+			return model.USERNAME_PASSWORD_ERROR
 		}
 		log.Errorf("find database err,%s", err)
 		return model.SYSTEM_ERROR
@@ -771,7 +781,7 @@ func (u *user) updateSettInfo(req *reqParams) (result model.AppResult) {
 		user, err = mongo.AppUserCol.FindOne(req.UserName)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.USERNAME_NO_EXIST
+				return model.USERNAME_PASSWORD_ERROR
 			}
 			log.Errorf("find database err,%s", err)
 			return model.SYSTEM_ERROR

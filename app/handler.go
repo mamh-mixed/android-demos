@@ -144,13 +144,14 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.getUserBill(&reqParams{
-		UserName:  r.FormValue("username"),
-		Password:  r.FormValue("password"),
-		Month:     r.FormValue("month"),
-		Date:      r.FormValue("day"),
-		Status:    r.FormValue("status"),
-		Transtime: r.FormValue("transtime"),
-		Index:     r.FormValue("index"),
+		UserName:    r.FormValue("username"),
+		Password:    r.FormValue("password"),
+		Month:       r.FormValue("month"),
+		Date:        r.FormValue("day"),
+		Status:      r.FormValue("status"),
+		Transtime:   r.FormValue("transtime"),
+		Index:       r.FormValue("index"),
+		OrderDetail: r.FormValue("order_detail"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -343,6 +344,7 @@ func jsonMarshal(result model.AppResult) []byte {
 }
 
 type reqParams struct {
+	OrderDetail    string
 	UserName       string
 	InvitationCode string
 	Password       string
