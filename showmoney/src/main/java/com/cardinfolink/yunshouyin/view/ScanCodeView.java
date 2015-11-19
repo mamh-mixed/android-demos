@@ -351,7 +351,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                         @Override
                                         public void run() {
 
-                                            Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), "当日交易已超过限额,请申请提升限额!", BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), "当日交易已超过限额,请申请提升限额!", BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                             alert_Dialog.show();
 
                                         }
@@ -389,7 +389,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                     @Override
                                     public void run() {
 
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                         alert_Dialog.show();
 
                                     }
@@ -407,7 +407,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                 @Override
                                 public void run() {
 
-                                    Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                    AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                     alert_Dialog.show();
 
                                 }
