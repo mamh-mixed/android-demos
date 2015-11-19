@@ -17,7 +17,7 @@ import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
-import com.cardinfolink.yunshouyin.view.Activate_dialog;
+import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,7 +90,7 @@ public class RegisterActivity extends BaseActivity {
                             public void run() {
                                 //更新UI
                                 mLoading_Dialog.endLoading();
-                                Activate_dialog activate_dialog = new Activate_dialog(mContext, RegisterActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
+                                ActivateDialog activate_dialog = new ActivateDialog(mContext, RegisterActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
                                 activate_dialog.show();
                             }
 

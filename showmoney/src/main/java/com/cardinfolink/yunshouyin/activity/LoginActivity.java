@@ -23,7 +23,7 @@ import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
-import com.cardinfolink.yunshouyin.view.Activate_dialog;
+import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
 public class LoginActivity extends BaseActivity {
 
@@ -165,7 +165,7 @@ public class LoginActivity extends BaseActivity {
                                 public void run() {
                                     //更新UI
                                     mLoading_Dialog.endLoading();
-                                    Activate_dialog activate_dialog = new Activate_dialog(mContext, LoginActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
+                                    ActivateDialog activate_dialog = new ActivateDialog(mContext, LoginActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
                                     activate_dialog.show();
 
                                 }
