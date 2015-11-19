@@ -831,6 +831,52 @@ func (u *user) updateSettInfo(req *reqParams) (result model.AppResult) {
 	return model.SUCCESS1
 }
 
+// ticketHandle 处理小票接口
+func (u *user) ticketHandle(req *reqParams) (result model.AppResult) {
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
+
+	// 必填参数不为空
+	if req.UserName == "" || req.Password == "" || req.TicketNum == "" || req.OrderNum == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	// 更新交易
+	if user.MerId != "" {
+		err = mongo.SpTransColl.UpdateFields(user.MerId, req.OrderNum, "ticketNum", req.TicketNum)
+		if err != nil {
+			if err.Error() == "not found" {
+				return model.NO_TRANS
+			} else {
+				log.Errorf("update fields fail: %s", err)
+				return model.SYSTEM_ERROR
+			}
+		}
+	} else {
+		return model.NO_PAY_MER
+	}
+
+	return model.SUCCESS1
+
+}
+
 func transToTxn(t *model.Trans) *model.AppTxn {
 	txn := &model.AppTxn{
 		Response:        t.RespCode,

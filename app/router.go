@@ -19,6 +19,7 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/limitincrease", promoteLimitHandle)
 	mux.HandleFunc("/app/updateinfo", updateSettInfoHandle)
 	mux.HandleFunc("/app/getinfo", getSettInfoHandle)
+	mux.HandleFunc("/app/ticket", ticketHandle)
 
 	// 地推工具api
 	mux.HandleFunc("/app/tools/login", CompanyLogin)

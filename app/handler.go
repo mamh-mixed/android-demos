@@ -276,6 +276,24 @@ func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// ticketHandle 处理小票接口
+func ticketHandle(w http.ResponseWriter, r *http.Request) {
+
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.ticketHandle(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		OrderNum:  r.FormValue("ordernum"),
+		TicketNum: r.FormValue("receiptnum"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 func checkSign(r *http.Request) bool {
 
 	sign := r.FormValue("sign")
@@ -355,6 +373,7 @@ type reqParams struct {
 	UserFrom       int
 	BelongsTo      string
 	Limit          string
+	TicketNum      string
 	AppUser        *model.AppUser
 	m              *model.Merchant
 }
