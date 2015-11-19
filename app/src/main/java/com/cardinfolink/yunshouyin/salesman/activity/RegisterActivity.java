@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.salesman.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -71,7 +72,8 @@ public class RegisterActivity extends BaseActivity {
                         editor.commit();
 
                         endLoading();
-                        intentToActivity(RegisterNextActivity.class);
+                        Intent intent = new Intent(RegisterActivity.this, RegisterNextActivity.class);
+                        startActivity(intent);
                         finish();
                     }
 

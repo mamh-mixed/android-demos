@@ -74,10 +74,6 @@ public class BaseActivity extends AppCompatActivity {
         ActivityCollector.removeActivity(this);
     }
 
-    public void intentToActivity(Class cls) {
-        Intent intent = new Intent(mContext, cls);
-        mContext.startActivity(intent);
-    }
 
     public void startLoading() {
         mLoadingDialog.startLoading();

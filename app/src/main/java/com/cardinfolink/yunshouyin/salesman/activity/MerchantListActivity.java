@@ -82,7 +82,8 @@ public class MerchantListActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mRegisterSharedPreferences.edit().clear().commit();
-                        intentToActivity(RegisterActivity.class);
+                        Intent intent = new Intent(MerchantListActivity.this, RegisterActivity.class);
+                        startActivity(intent);
                     }
                 });
                 switch (step) {
@@ -111,7 +112,8 @@ public class MerchantListActivity extends BaseActivity {
                         builder.show();
                         break;
                     default:
-                        intentToActivity(RegisterActivity.class);
+                        Intent intent = new Intent(MerchantListActivity.this, RegisterActivity.class);
+                        startActivity(intent);
                         break;
                 }
             }

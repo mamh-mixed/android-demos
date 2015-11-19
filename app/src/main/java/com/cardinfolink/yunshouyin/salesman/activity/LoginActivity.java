@@ -73,7 +73,8 @@ public class LoginActivity extends BaseActivity {
                 }
                 setLoginUser(user);
                 endLoading();
-                intentToActivity(MerchantListActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MerchantListActivity.class);
+                startActivity(intent);
             }
 
             @Override

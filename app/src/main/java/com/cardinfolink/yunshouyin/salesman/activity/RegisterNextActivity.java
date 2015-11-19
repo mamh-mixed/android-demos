@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -325,7 +326,8 @@ public class RegisterNextActivity extends BaseActivity {
                         saveToRegisterSharedPreferences("register_step_finish", 2);
 
                         endLoading();
-                        intentToActivity(RegisterStep3Activity.class);
+                        Intent intent = new Intent(RegisterNextActivity.this, RegisterStep3Activity.class);
+                        startActivity(intent);
                         finish();
                     }
                 });
