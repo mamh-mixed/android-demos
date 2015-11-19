@@ -6,20 +6,20 @@ public class User {
 
     private String province;
     private String city;
-    private String branch_bank;
+    private String branchBank;
     private String bankNo;
 
-    private String bank_open;
+    private String bankOpen;
     private String payee;
-    private String payee_card;
-    private String phone_num;
+    private String payeeCard;
+    private String phoneNum;
     private String clientid;
-    private String limit_email;
-    private String object_id;
+    private String limitEmail;
+    private String objectId;
     private boolean isAutoLogin;
-    private String limit_name;
+    private String limitName;
 
-    private String limit_phone;
+    private String limitPhone;
     private String limit = "true";
 
     public String getProvince() {
@@ -38,12 +38,12 @@ public class User {
         this.city = city;
     }
 
-    public String getBranch_bank() {
-        return branch_bank;
+    public String getBranchBank() {
+        return branchBank;
     }
 
-    public void setBranch_bank(String branch_bank) {
-        this.branch_bank = branch_bank;
+    public void setBranchBank(String branchBank) {
+        this.branchBank = branchBank;
     }
 
     public String getBankNo() {
@@ -54,28 +54,28 @@ public class User {
         this.bankNo = bankNo;
     }
 
-    public String getLimit_email() {
-        return limit_email;
+    public String getLimitEmail() {
+        return limitEmail;
     }
 
-    public void setLimit_email(String limit_email) {
-        this.limit_email = limit_email;
+    public void setLimitEmail(String limitEmail) {
+        this.limitEmail = limitEmail;
     }
 
-    public String getLimit_name() {
-        return limit_name;
+    public String getLimitName() {
+        return limitName;
     }
 
-    public void setLimit_name(String limit_name) {
-        this.limit_name = limit_name;
+    public void setLimitName(String limitName) {
+        this.limitName = limitName;
     }
 
-    public String getLimit_phone() {
-        return limit_phone;
+    public String getLimitPhone() {
+        return limitPhone;
     }
 
-    public void setLimit_phone(String limit_phone) {
-        this.limit_phone = limit_phone;
+    public void setLimitPhone(String limitPhone) {
+        this.limitPhone = limitPhone;
     }
 
     public boolean isAutoLogin() {
@@ -86,12 +86,12 @@ public class User {
         this.isAutoLogin = isAutoLogin;
     }
 
-    public String getObject_id() {
-        return object_id;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setObject_id(String object_id) {
-        this.object_id = object_id;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
     public String getLimit() {
@@ -130,12 +130,12 @@ public class User {
         this.password = password;
     }
 
-    public String getBank_open() {
-        return bank_open;
+    public String getBankOpen() {
+        return bankOpen;
     }
 
-    public void setBank_open(String bank_open) {
-        this.bank_open = bank_open;
+    public void setBankOpen(String bankOpen) {
+        this.bankOpen = bankOpen;
     }
 
     public String getPayee() {
@@ -146,20 +146,20 @@ public class User {
         this.payee = payee;
     }
 
-    public String getPayee_card() {
-        return payee_card;
+    public String getPayeeCard() {
+        return payeeCard;
     }
 
-    public void setPayee_card(String payee_card) {
-        this.payee_card = payee_card;
+    public void setPayeeCard(String payeeCard) {
+        this.payeeCard = payeeCard;
     }
 
-    public String getPhone_num() {
-        return phone_num;
+    public String getPhoneNum() {
+        return phoneNum;
     }
 
-    public void setPhone_num(String phone_num) {
-        this.phone_num = phone_num;
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 
 
