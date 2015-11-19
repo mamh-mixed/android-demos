@@ -80,7 +80,6 @@ public class RegisterNextActivity extends BaseActivity {
         setContentView(R.layout.register_next_activity);
         initLayout();
         initListener();
-        initData();
     }
 
     private void initSpinner() {
@@ -168,6 +167,39 @@ public class RegisterNextActivity extends BaseActivity {
         initArrayList();//一定要注意初始化的顺序
         initAdapter();
 
+        initProvinceData();
+        String province = mRegisterSharedPreferences.getString("register_province", "");
+        if (!TextUtils.isEmpty(province)) {
+            mProvinceEdit.setText(province);
+            initCityData(province);
+        }
+
+        String city = mRegisterSharedPreferences.getString("register_city", "");
+        if (!TextUtils.isEmpty(city)) {
+            mCityEdit.setText(city);
+        }
+        initBankData();
+
+        String bankopen = mRegisterSharedPreferences.getString("register_bankopen", "");
+        if (!TextUtils.isEmpty(bankopen)) {
+            mOpenBankEdit.setText(bankopen);
+            int indexBank = mOpenBankList.indexOf(bankopen);
+            int indexCity = mCityList.indexOf(city);
+
+            if (indexBank > 0 && indexCity > 0) {
+                String cityCode = mCityCodeList.get(indexCity);
+                String bankId = mBankIdList.get(indexBank);
+                initBranchBankData(cityCode, bankId);
+            }
+        }
+
+        String branchBank = mRegisterSharedPreferences.getString("register_branchbank", "");
+        if (!TextUtils.isEmpty(branchBank)) {
+            int index = mBranchBankList.indexOf(branchBank);
+            if (index > 0) {
+                mBranchBankEdit.setText(branchBank);
+            }
+        }
         //收款人
         String payee = mRegisterSharedPreferences.getString("register_payee", "");
         if (!TextUtils.isEmpty(payee)) {
@@ -191,38 +223,6 @@ public class RegisterNextActivity extends BaseActivity {
             mMerchantNameEdit.setText(merName);
         }
 
-        String province = mRegisterSharedPreferences.getString("register_province", "");
-        if (!TextUtils.isEmpty(province)) {
-            mProvinceEdit.setText(province);
-            initCityData(province);
-        }
-
-        String city = mRegisterSharedPreferences.getString("register_city", "");
-        if (!TextUtils.isEmpty(city)) {
-            mCityEdit.setText(city);
-            initBankData();
-        }
-
-        String bankopen = mRegisterSharedPreferences.getString("register_bankopen", "");
-        if (!TextUtils.isEmpty(bankopen)) {
-            mOpenBankEdit.setText(bankopen);
-            int indexBank = mOpenBankList.indexOf(bankopen);
-            int indexCity = mCityList.indexOf(city);
-
-            if (indexBank > 0 && indexCity > 0) {
-                String cityCode = mCityCodeList.get(indexCity);
-                String bankId = mBankIdList.get(indexBank);
-                initBranchBankData(cityCode, bankId);
-            }
-        }
-
-        String branchBank = mRegisterSharedPreferences.getString("register_branchbank", "");
-        if (!TextUtils.isEmpty(branchBank)) {
-            int index = mBranchBankList.indexOf(branchBank);
-            if (index > 0) {
-                mBranchBankEdit.setText(branchBank);
-            }
-        }
     }
 
     private void initListener() {
@@ -261,11 +261,7 @@ public class RegisterNextActivity extends BaseActivity {
 
     }
 
-    // 开户省份和总行列表先读取
-    public void initData() {
-        initProvinceData();
-        initBankData();
-    }//end public void initData()
+
 
     public void btnRegisterFinishedOnClick(View view) {
         if (!validate()) {
@@ -474,83 +470,99 @@ public class RegisterNextActivity extends BaseActivity {
         return list;
     }
 
-    private void updateProvinceAdapter(String data) {
-        final List<String> tempProvinceList = jsonArrayToList(data);
-        tempProvinceList.add(0, "开户行所在省份");
-        runOnUiThread(new Runnable() {
+    private void updateProvinceAdapter(final String data) {
+        new Thread() {
             @Override
             public void run() {
-                mProvinceList.clear();
-                mProvinceList.addAll(tempProvinceList);
-                mProvinceAdapter.notifyDataSetChanged();
-                mProvinceSearchAdapter.setData(mProvinceList);
-                mProvinceSearchAdapter.notifyDataSetChanged();
+                final List<String> tempProvinceList = jsonArrayToList(data);
+                tempProvinceList.add(0, "开户行所在省份");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProvinceList.clear();
+                        mProvinceList.addAll(tempProvinceList);
+                        mProvinceAdapter.notifyDataSetChanged();
+                        mProvinceSearchAdapter.setData(mProvinceList);
+                        mProvinceSearchAdapter.notifyDataSetChanged();
+                    }
+                });
             }
-        });
+        }.start();
+    }
+
+    private void updateCityAdapter(final String data) {
+        new Thread() {
+            @Override
+            public void run() {
+                final List<String> tempCityList = jsonArrayToList(data, "city_name");
+                final List<String> tempCityCodeList = jsonArrayToList(data, "city_code");
+                tempCityList.add(0, "开户行所在城市");
+                tempCityCodeList.add(0, "");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mCityList.clear();
+                        mCityList.addAll(tempCityList);
+                        mCityCodeList.clear();
+                        mCityCodeList.addAll(tempCityCodeList);
+                        mCitySpinner.setSelection(0);
+                        mCityAdapter.notifyDataSetChanged();
+                        mCitySearchAdapter.setData(mCityList);
+                    }
+                });
+            }
+        }.start();
+    }
+
+    private void updateBankAdapter(final String data) {
+        new Thread() {
+            @Override
+            public void run() {
+                final List<String> tempOpenBankList = jsonObjectToList(data, "bank_name");
+                final List<String> tempBankIdList = jsonObjectToList(data, "id");
+                tempOpenBankList.add(0, "请选择开户银行");
+                tempBankIdList.add(0, "");//为了使index对应起来
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mOpenBankList.clear();
+                        mBankIdList.clear();
+                        mOpenBankList.addAll(tempOpenBankList);
+                        mBankIdList.addAll(tempBankIdList);
+                        mOpenBankSpinner.setSelection(0);
+                        mOpenBankAdapter.notifyDataSetChanged();
+                        mOpenBankSearchAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }.start();
+
 
     }
 
-    private void updateCityAdapter(String data) {
-        final List<String> tempCityList = jsonArrayToList(data, "city_name");
-        final List<String> tempCityCodeList = jsonArrayToList(data, "city_code");
-        tempCityList.add(0, "开户行所在城市");
-        tempCityCodeList.add(0, "");
-        runOnUiThread(new Runnable() {
+    private void updateBranchBankAdapter(final String data) {
+        new Thread() {
             @Override
             public void run() {
-                mCityList.clear();
-                mCityList.addAll(tempCityList);
-                mCityCodeList.clear();
-                mCityCodeList.addAll(tempCityCodeList);
-                mCitySpinner.setSelection(0);
-                mCityAdapter.notifyDataSetChanged();
-                mCitySearchAdapter.setData(mCityList);
+                final List<String> tempBranchBankList = jsonArrayToList(data, "bank_name");
+                final List<String> tempBankNoList = jsonArrayToList(data, "one_bank_no", "two_bank_no", "|");
+                tempBranchBankList.add(0, "请选择开户支行");
+                tempBankNoList.add(0, "行号");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBranchBankList.clear();
+                        mBranchBankList.addAll(tempBranchBankList);
+                        mBankNoList.clear();
+                        mBankNoList.addAll(tempBankNoList);
+                        mBranchBankSpinner.setSelection(0);
+                        mBranchBankAdapter.notifyDataSetChanged();
+                        mBranchBankSearchAdapter.setData(mBranchBankList);
+                    }
+
+                });
             }
-        });
-    }
-
-    private void updateBankAdapter(String data) {
-        final List<String> tempOpenBankList = jsonObjectToList(data, "bank_name");
-        final List<String> tempBankIdList = jsonObjectToList(data, "id");
-        tempOpenBankList.add(0, "请选择开户银行");
-        tempBankIdList.add(0, "");//为了使index对应起来
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mOpenBankList.clear();
-                mBankIdList.clear();
-                mOpenBankList.addAll(tempOpenBankList);
-                mBankIdList.addAll(tempBankIdList);
-
-                mOpenBankSpinner.setSelection(0);
-                mOpenBankAdapter.notifyDataSetChanged();
-                mOpenBankSearchAdapter.notifyDataSetChanged();
-            }
-        });
-
-    }
-
-    private void updateBranchBankAdapter(String data) {
-        final List<String> tempBranchBankList = jsonArrayToList(data, "bank_name");
-        final List<String> tempBankNoList = jsonArrayToList(data, "one_bank_no", "two_bank_no", "|");
-        tempBranchBankList.add(0, "请选择开户支行");
-        tempBankNoList.add(0, "行号");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mBranchBankList.clear();
-                mBranchBankList.addAll(tempBranchBankList);
-
-                mBankNoList.clear();
-                mBankNoList.addAll(tempBankNoList);
-
-                mBranchBankSpinner.setSelection(0);
-
-                mBranchBankAdapter.notifyDataSetChanged();
-                mBranchBankSearchAdapter.setData(mBranchBankList);
-            }
-
-        });
+        }.start();
     }
 
     private String readFromSharePreference(String key) {
@@ -735,8 +747,8 @@ public class RegisterNextActivity extends BaseActivity {
                     mCityEdit.setText("");//先把city的清空
                     saveToRegisterSharedPreferences("register_city", "");
                     String province = mProvinceEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_province", province);
                     if (mProvinceList.indexOf(province) > 0) {
-                        saveToRegisterSharedPreferences("register_province", province);
                         initCityData(province);
                     }//end if()
                     break;
@@ -745,8 +757,8 @@ public class RegisterNextActivity extends BaseActivity {
                     mOpenBankEdit.setText("");
                     saveToRegisterSharedPreferences("register_bankopen", "");
                     String city = mCityEdit.getText().toString();
+                    saveToRegisterSharedPreferences("register_city", city);
                     if (mCityList.indexOf(city) > 0) {
-                        saveToRegisterSharedPreferences("register_city", city);
                         initBankData();
                     }
                     break;
