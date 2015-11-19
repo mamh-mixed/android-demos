@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AccountUpdateView;
 import com.cardinfolink.yunshouyin.view.LimitIncreaseView;
 import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
@@ -105,13 +105,13 @@ public class MainActivity extends BaseActivity {
         mDrawerList = (ListView) mLeftMenu.findViewById(R.id.left_drawer);
         menuLists = new ArrayList<String>();
 
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_scancode));
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_transmange));
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_passwordupdate));
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_accountupdate));
+        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_scancode));
+        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_transmange));
+        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_passwordupdate));
+        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_accountupdate));
         //menuLists.add("限额提升");
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_webbill));
-        menuLists.add(ContextUtil.getResString(R.string.main_activity_menu_safeexit));
+        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_webbill));
+        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_safeexit));
 
 
         adapter = new ArrayAdapter<String>(this, R.layout.menu_list_item, menuLists);

@@ -13,7 +13,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
@@ -32,7 +32,7 @@ public class Activate_dialog {
 
     public void show() {
         TextView textView = (TextView) dialogView.findViewById(R.id.email);
-        textView.setText(ContextUtil.getResString(R.string.activate_sentto_email) + mEmali + "");
+        textView.setText(ShowMoneyApp.getResString(R.string.activate_sentto_email) + mEmali + "");
         dialogView.setVisibility(View.VISIBLE);
         dialogView.setOnTouchListener(new OnTouchListener() {
 
