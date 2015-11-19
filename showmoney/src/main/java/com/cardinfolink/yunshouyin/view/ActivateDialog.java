@@ -18,12 +18,12 @@ import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
 
-public class Activate_dialog {
+public class ActivateDialog {
     private Context mContext;
     private View dialogView;
     private String mEmali;
 
-    public Activate_dialog(Context context, View view, String email) {
+    public ActivateDialog(Context context, View view, String email) {
         mContext = context;
         dialogView = view;
         mEmali = email;
