@@ -597,7 +597,7 @@ var (
 
 func sendEmail(ed *emailData, to, name, day string) {
 	var emailBody = fmt.Sprintf(body, len(ed.es))
-	var d = uint32((7 * time.Hour).Seconds())
+	var d = uint32((7 * 24 * time.Hour).Seconds())
 
 	// 保存到七牛
 	key := fmt.Sprintf(downloadKey, day, name+"_商户.zip")
