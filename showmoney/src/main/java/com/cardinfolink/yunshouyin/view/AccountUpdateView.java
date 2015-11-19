@@ -941,7 +941,7 @@ public class AccountUpdateView extends LinearLayout {
                                             public void run() {
                                                 // 更新UI
                                                 mBaseActivity.endLoading();
-                                                Alert_Dialog alert_Dialog = new Alert_Dialog(
+                                                AlertDialog alert_Dialog = new AlertDialog(
                                                         mContext,
                                                         null,
                                                         ((Activity) mContext)
