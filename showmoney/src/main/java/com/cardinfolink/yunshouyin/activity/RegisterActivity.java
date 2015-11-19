@@ -67,7 +67,7 @@ public class RegisterActivity extends BaseActivity {
 
     public void BtnRegisterNextOnClick(View view) {
         if (validate()) {
-            mLoading_Dialog.startLoading();
+            mLoadingDialog.startLoading();
             final String username = mEmailEdit.getText().toString();
             final String password = mPasswordEdit.getText().toString();
             HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRegister(username, password), new CommunicationListener() {
@@ -89,7 +89,7 @@ public class RegisterActivity extends BaseActivity {
                             @Override
                             public void run() {
                                 //更新UI
-                                mLoading_Dialog.endLoading();
+                                mLoadingDialog.endLoading();
                                 ActivateDialog activate_dialog = new ActivateDialog(mContext, RegisterActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
                                 activate_dialog.show();
                             }
@@ -102,8 +102,8 @@ public class RegisterActivity extends BaseActivity {
                             @Override
                             public void run() {
                                 //更新UI
-                                mLoading_Dialog.endLoading();
-                                mAlert_Dialog.show(ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                mLoadingDialog.endLoading();
+                                mAlertDialog.show(ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                             }
 
                         });
@@ -118,8 +118,8 @@ public class RegisterActivity extends BaseActivity {
                         @Override
                         public void run() {
                             //更新UI
-                            mLoading_Dialog.endLoading();
-                            mAlert_Dialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                            mLoadingDialog.endLoading();
+                            mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                         }
 
                     });
@@ -137,24 +137,24 @@ public class RegisterActivity extends BaseActivity {
         qr_password = mQrPasswordEdit.getText().toString();
 
         if (email.isEmpty()) {
-            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         if (!checkEmail(email)) {
-            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_format_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_format_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (password.isEmpty()) {
-            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         if (password.length() < 6) {
-            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
         if (!password.equals(qr_password)) {
-            mAlert_Dialog.show(ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
