@@ -144,13 +144,14 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.getUserBill(&reqParams{
-		UserName:  r.FormValue("username"),
-		Password:  r.FormValue("password"),
-		Month:     r.FormValue("month"),
-		Date:      r.FormValue("day"),
-		Status:    r.FormValue("status"),
-		Transtime: r.FormValue("transtime"),
-		Index:     r.FormValue("index"),
+		UserName:    r.FormValue("username"),
+		Password:    r.FormValue("password"),
+		Month:       r.FormValue("month"),
+		Date:        r.FormValue("day"),
+		Status:      r.FormValue("status"),
+		Transtime:   r.FormValue("transtime"),
+		Index:       r.FormValue("index"),
+		OrderDetail: r.FormValue("order_detail"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -276,6 +277,24 @@ func getSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// ticketHandle 处理小票接口
+func ticketHandle(w http.ResponseWriter, r *http.Request) {
+
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.ticketHandle(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		OrderNum:  r.FormValue("ordernum"),
+		TicketNum: r.FormValue("receiptnum"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 func checkSign(r *http.Request) bool {
 
 	sign := r.FormValue("sign")
@@ -325,6 +344,7 @@ func jsonMarshal(result model.AppResult) []byte {
 }
 
 type reqParams struct {
+	OrderDetail    string
 	UserName       string
 	InvitationCode string
 	Password       string
@@ -355,6 +375,7 @@ type reqParams struct {
 	UserFrom       int
 	BelongsTo      string
 	Limit          string
+	TicketNum      string
 	AppUser        *model.AppUser
 	m              *model.Merchant
 }

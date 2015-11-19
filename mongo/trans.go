@@ -114,6 +114,26 @@ func (col *transCollection) Update(t *model.Trans) error {
 	return err
 }
 
+// UpdateFields 根据键值对更新某些字段
+func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) error {
+	if len(fv) == 0 {
+		return nil
+	}
+
+	if len(fv)%2 != 0 {
+		return fmt.Errorf("%s", "should be field/value ... ")
+	}
+
+	set := bson.M{}
+	for i := 0; i < len(fv); i += 2 {
+		set[fv[i]] = fv[i+1]
+	}
+	update := bson.M{"$set": set}
+	log.Debugf("%+v", update)
+
+	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, update)
+}
+
 // Count 通过订单号、商户号查找交易数量
 func (col *transCollection) Count(merId, orderNum string) (count int, err error) {
 
@@ -291,25 +311,25 @@ func (col *transCollection) FindByOrderNum(sysOrderNum string) (t *model.Trans, 
 }
 
 // UpdateFields 更新指定字段
-func (col *transCollection) UpdateFields(t *model.Trans) error {
+// func (col *transCollection) UpdateFields(t *model.Trans) error {
 
-	if t.Id == "" {
-		return fmt.Errorf("%s", "id is null!")
-	}
-	// update fields
-	fields := bson.M{
-		"updateTime": time.Now().Format("2006-01-02 15:04:05"),
-	}
-	if t.MerDiscount != "" {
-		fields["merDiscount"] = t.MerDiscount
-	}
-	if t.ChanDiscount != "" {
-		fields["chanDiscount"] = t.ChanDiscount
-	}
-	// more fields
+// 	if t.Id == "" {
+// 		return fmt.Errorf("%s", "id is null!")
+// 	}
+// 	// update fields
+// 	fields := bson.M{
+// 		"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+// 	}
+// 	if t.MerDiscount != "" {
+// 		fields["merDiscount"] = t.MerDiscount
+// 	}
+// 	if t.ChanDiscount != "" {
+// 		fields["chanDiscount"] = t.ChanDiscount
+// 	}
+// 	// more fields
 
-	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
-}
+// 	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
+// }
 
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序

@@ -9,8 +9,9 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
+	// "github.com/omigo/mahonia"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
@@ -50,6 +51,7 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	// 重试
 	for {
 		count++
+		log.Infof("%s", requestURL)
 		res, err = http.PostForm(requestURL, values)
 		if err != nil {
 			log.Errorf("connect %s fail : %s, retry ... %d", requestURL, err, count)
@@ -80,17 +82,25 @@ func handleResponseBody(reader io.Reader) (*alpResponse, error) {
 	alpResp := new(alpResponse)
 
 	// 重写CharsetReader，使Decoder能解析gbk
-	d := xml.NewDecoder(reader)
-	d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
-		dec := mahonia.NewDecoder(s)
-		if dec == nil {
-			return nil, fmt.Errorf("not support %s", s)
-		}
-		return dec.NewReader(r), nil
-	}
-	err := d.Decode(alpResp)
+	// d := xml.NewDecoder(reader)
+	// d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
+	// 	dec := mahonia.NewDecoder(s)
+	// 	if dec == nil {
+	// 		return nil, fmt.Errorf("not support %s", s)
+	// 	}
+	// 	return dec.NewReader(r), nil
+	// }
+	// err := d.Decode(alpResp)
+	// if err != nil {
+	// 	log.Errorf("unmarsal body fail : %s", err)
+	// 	return nil, err
+	// }
+	bs, err := ioutil.ReadAll(reader)
 	if err != nil {
-		log.Errorf("unmarsal body fail : %s", err)
+		return nil, err
+	}
+	err = xml.Unmarshal(bs, alpResp)
+	if err != nil {
 		return nil, err
 	}
 	log.Infof("alp response body: \n %+v \n", alpResp)

@@ -6,7 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
+	// "github.com/omigo/mahonia"
 	"time"
 )
 
@@ -183,15 +183,18 @@ func toMap(req *alpRequest) map[string]string {
 	dict["passback_parameters"] = req.PassbackParams
 
 	// utf-8 -> gbk
-	e := mahonia.NewEncoder("gbk")
+	// e := mahonia.NewEncoder("gbk")
 	if req.Subject != "" {
-		dict["subject"] = e.ConvertString(req.Subject)
+		dict["subject"] = req.Subject
+		// dict["subject"] = e.ConvertString(req.Subject)
 	}
 	if req.GoodsDetail != "" {
-		dict["goods_detail"] = e.ConvertString(req.GoodsDetail)
+		dict["goods_detail"] = req.GoodsDetail
+		// dict["goods_detail"] = e.ConvertString(req.GoodsDetail)
 	}
 	if req.ExtendParams != "" {
-		dict["extend_params"] = e.ConvertString(req.ExtendParams)
+		dict["extend_params"] = req.ExtendParams
+		// dict["extend_params"] = e.ConvertString(req.ExtendParams)
 	}
 
 	return dict
