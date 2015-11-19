@@ -77,7 +77,7 @@ public class PasswordUpdateView extends LinearLayout {
                                     public void run() {
                                         //更新UI
                                         mBaseActivity.endLoading();
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
+                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                         alert_Dialog.show();
                                         mOldPwdEdit.setText("");
                                         mNewPwdEdit.setText("");
@@ -93,7 +93,7 @@ public class PasswordUpdateView extends LinearLayout {
                                     @Override
                                     public void run() {
                                         mBaseActivity.endLoading();
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                         alert_Dialog.show();
 
                                     }
@@ -111,7 +111,7 @@ public class PasswordUpdateView extends LinearLayout {
                                 @Override
                                 public void run() {
                                     mBaseActivity.endLoading();
-                                    Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                                    AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                     alert_Dialog.show();
 
                                 }

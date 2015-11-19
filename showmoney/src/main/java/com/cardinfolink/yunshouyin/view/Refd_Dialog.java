@@ -113,14 +113,14 @@ public class Refd_Dialog {
                                 public void run() {
                                     mBaseActivity.endLoading();
                                     if (resultData.respcd.equals("00")) {
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, mHandler, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
+                                        AlertDialog alert_Dialog = new AlertDialog(mContext, mHandler, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                         alert_Dialog.show();
 
                                     } else if (resultData.respcd.equals("R6")) {
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
+                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                         alert_Dialog.show();
                                     } else {
-                                        Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
+                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                         alert_Dialog.show();
                                     }
 
@@ -139,7 +139,7 @@ public class Refd_Dialog {
                                 @Override
                                 public void run() {
                                     mBaseActivity.endLoading();
-                                    Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
+                                    AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                     alert_Dialog.show();
 
                                 }
@@ -163,7 +163,7 @@ public class Refd_Dialog {
     private boolean check() {
 
         if (refdValue.getText().toString().isEmpty()) {
-            Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
             alert_Dialog.show();
             return false;
         }
@@ -173,24 +173,24 @@ public class Refd_Dialog {
 
             refd = Double.parseDouble(refdValue.getText().toString());
         } catch (Exception e) {
-            Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
             alert_Dialog.show();
             return false;
         }
 
         if (refd < 0.01) {
-            Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
             alert_Dialog.show();
             return false;
         }
 
         if (refd > maxRefd) {
-            Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
             alert_Dialog.show();
             return false;
         }
         if (!refdPassword.getText().toString().equals(SessonData.loginUser.getPassword())) {
-            Alert_Dialog alert_Dialog = new Alert_Dialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog__password_error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog__password_error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
             alert_Dialog.show();
             return false;
         }
