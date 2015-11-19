@@ -9,12 +9,12 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AlertDialog;
-import com.cardinfolink.yunshouyin.view.Loading_Dialog;
+import com.cardinfolink.yunshouyin.view.LoadingDialog;
 import com.umeng.analytics.MobclickAgent;
 
 public class BaseActivity extends Activity {
 
-    protected Loading_Dialog mLoading_Dialog;    //显示loading
+    protected LoadingDialog mLoading_Dialog;    //显示loading
     protected AlertDialog mAlert_Dialog;       // 提示消息对话框
     protected Context mContext;
     protected QuickPayService quickPayService;
@@ -26,7 +26,7 @@ public class BaseActivity extends Activity {
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         mContext = this;
-        mLoading_Dialog = new Loading_Dialog(this, findViewById(R.id.loading_dialog));
+        mLoading_Dialog = new LoadingDialog(this, findViewById(R.id.loading_dialog));
         mAlert_Dialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
                 getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
 
