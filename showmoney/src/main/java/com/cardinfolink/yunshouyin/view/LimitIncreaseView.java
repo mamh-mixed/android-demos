@@ -49,9 +49,9 @@ public class LimitIncreaseView extends LinearLayout {
                     ;
                     String email = mEmailEdit.getText().toString().replace(" ", "");
                     String phone = mPhonenumEdit.getText().toString().replace(" ", "");
-                    SessonData.loginUser.setLimit_email(email);
-                    SessonData.loginUser.setLimit_phone(phone);
-                    SessonData.loginUser.setLimit_name(name);
+                    SessonData.loginUser.setLimitEmail(email);
+                    SessonData.loginUser.setLimitPhone(phone);
+                    SessonData.loginUser.setLimitName(name);
                     HttpCommunicationUtil.sendDataToServer(ParamsUtil.getLimitincrease(SessonData.loginUser), new CommunicationListener() {
 
                         @Override

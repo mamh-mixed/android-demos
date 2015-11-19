@@ -908,11 +908,11 @@ public class AccountUpdateView extends LinearLayout {
             User user = new User();
             user.setUsername(SessonData.loginUser.getUsername());
             user.setPassword(SessonData.loginUser.getPassword());
-            // user.setBank_open(mOpenBankEdit.getText().toString());
+            // user.setBankOpen(mOpenBankEdit.getText().toString());
             user.setProvince(mProvinceEdit.getText().toString());
-            user.setBank_open(mOpenBankEdit.getText().toString());
+            user.setBankOpen(mOpenBankEdit.getText().toString());
             user.setCity(mCityEdit.getText().toString());
-            user.setBranch_bank(mBranchBankEdit.getText().toString());
+            user.setBranchBank(mBranchBankEdit.getText().toString());
             int index = mBranchBankList.indexOf(mBranchBankEdit.getText().toString());
             if (index >= 0) {
 
@@ -923,9 +923,9 @@ public class AccountUpdateView extends LinearLayout {
 
 
             user.setPayee(mNameEdit.getText().toString());
-            user.setPayee_card(mBanknumEdit.getText().toString()
+            user.setPayeeCard(mBanknumEdit.getText().toString()
                     .replace(" ", ""));
-            user.setPhone_num(mPhonenumEdit.getText().toString());
+            user.setPhoneNum(mPhonenumEdit.getText().toString());
             HttpCommunicationUtil.sendDataToServer(
                     ParamsUtil.getUpdateInfo(user),
                     new CommunicationListener() {

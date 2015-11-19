@@ -102,7 +102,7 @@ public class LoginActivity extends BaseActivity {
                         SessonData.loginUser.setPassword(password);
                         String user_json = JsonUtil.getParam(result, "user");
                         SessonData.loginUser.setClientid(JsonUtil.getParam(user_json, "clientid"));
-                        SessonData.loginUser.setObject_id(JsonUtil.getParam(user_json, "objectId"));
+                        SessonData.loginUser.setObjectId(JsonUtil.getParam(user_json, "objectId"));
                         SessonData.loginUser.setLimit(JsonUtil.getParam(user_json, "limit"));
 
                         if (SessonData.loginUser.getClientid() == null || SessonData.loginUser.getClientid().isEmpty()) {

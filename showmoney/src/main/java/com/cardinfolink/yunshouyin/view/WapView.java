@@ -75,10 +75,10 @@ public class WapView extends LinearLayout {
     }
 
     public void initData() {
-        Log.i("xxx", SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObject_id());
-        if (SessonData.loginUser.getObject_id() != null && SessonData.loginUser.getObject_id().length() > 0) {
+        Log.i("xxx", SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObjectId());
+        if (SessonData.loginUser.getObjectId() != null && SessonData.loginUser.getObjectId().length() > 0) {
 
-            mWebView.loadUrl(SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObject_id());
+            mWebView.loadUrl(SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObjectId());
         }
 
     }

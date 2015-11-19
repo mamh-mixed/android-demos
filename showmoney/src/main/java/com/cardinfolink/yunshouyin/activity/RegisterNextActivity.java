@@ -674,16 +674,16 @@ public class RegisterNextActivity extends BaseActivity {
             User user = new User();
             user.setUsername(SessonData.loginUser.getUsername());
             user.setPassword(SessonData.loginUser.getPassword());
-            // user.setBank_open(mOpenBankEdit.getText().toString());
+            // user.setBankOpen(mOpenBankEdit.getText().toString());
             user.setProvince(mProvinceEdit.getText().toString());
-            user.setBank_open(mOpenBankEdit.getText().toString());
+            user.setBankOpen(mOpenBankEdit.getText().toString());
             user.setCity(mCityEdit.getText().toString());
-            user.setBranch_bank(mBranchBankEdit.getText().toString());
+            user.setBranchBank(mBranchBankEdit.getText().toString());
             user.setBankNo(mBankNoList.get(mBranchBankList.indexOf(mBranchBankEdit.getText().toString())));
             user.setPayee(mNameEdit.getText().toString());
-            user.setPayee_card(mBanknumEdit.getText().toString()
+            user.setPayeeCard(mBanknumEdit.getText().toString()
                     .replace(" ", ""));
-            user.setPhone_num(mPhonenumEdit.getText().toString());
+            user.setPhoneNum(mPhonenumEdit.getText().toString());
 
 
             HttpCommunicationUtil.sendDataToServer(
@@ -698,7 +698,7 @@ public class RegisterNextActivity extends BaseActivity {
                                         "user");
                                 SessonData.loginUser.setClientid(JsonUtil
                                         .getParam(user_json, "clientid"));
-                                SessonData.loginUser.setObject_id(JsonUtil
+                                SessonData.loginUser.setObjectId(JsonUtil
                                         .getParam(user_json, "objectId"));
                                 SessonData.loginUser.setLimit(JsonUtil
                                         .getParam(user_json, "limit"));
