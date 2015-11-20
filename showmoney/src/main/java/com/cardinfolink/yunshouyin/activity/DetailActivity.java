@@ -25,7 +25,7 @@ import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
-import com.cardinfolink.yunshouyin.view.Refd_Dialog;
+import com.cardinfolink.yunshouyin.view.RefdDialog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -212,7 +212,7 @@ public class DetailActivity extends BaseActivity {
                                 public void run() {
                                     // 更新UI
                                     endLoading();
-                                    Refd_Dialog refd_Dialog = new Refd_Dialog(
+                                    RefdDialog refd_Dialog = new RefdDialog(
                                             DetailActivity.this, mHandler,
                                             findViewById(R.id.refd_dialog),
                                             mTradeBill.orderNum, refdtotal,
