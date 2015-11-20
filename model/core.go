@@ -324,6 +324,9 @@ type Trans struct {
 	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 	Attach          string `bson:"attach,omitempty" json:"-"`
 
+	// APP
+	TicketNum string `bson:"ticketNum,omitempty" json:"-"` // 关联的小票号
+
 	// 可用于关联查询字段
 	MerName      string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
 	AgentName    string `bson:"agentName,omitempty" json:"agentName,omitempty"`
