@@ -269,7 +269,7 @@ public class DetailActivity extends BaseActivity {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case Msg.MSG_FROM_CLIENT_ALERT_OK: {
-                        SessonData.position_view = 1;
+                        SessonData.positionView = 1;
                         setResult(101);
                         finish();
                     }
