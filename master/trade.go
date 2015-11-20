@@ -112,7 +112,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	file.Write(w)
 }
 
-// genReport 生成报表
+// TODO:genReport 生成报表
 func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
@@ -145,7 +145,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.ChanCode, m.TransTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.ChanCode, m.TransTime, "支付时间", m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽

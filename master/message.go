@@ -15,7 +15,7 @@ var avaiableLocale = make(map[string]*LocaleTemplate)
 
 const (
 	prefix        = "message_"
-	DefaultLocale = "zh_CN"
+	DefaultLocale = "zh-CN"
 )
 
 func init() {
