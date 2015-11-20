@@ -13,19 +13,18 @@ import android.widget.TextView;
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.adapter.BillAdapter;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.TradeBill;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
+import com.cardinfolink.yunshouyin.model.QRequest;
+import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.Txn;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TransManageView extends LinearLayout {
+    private static final String TAG = "TransManageView";
     private Context mContext;
 
     private PullToRefreshListView mPullToRefreshListView;
@@ -159,85 +159,70 @@ public class TransManageView extends LinearLayout {
     }
 
     private void getTradeBill() {
-
-        HttpCommunicationUtil.sendDataToServer(ParamsUtil.getHistory(SessonData.loginUser, mMonth, bill_index, mBillStatus), new CommunicationListener() {
-
+        QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
+        quickPayService.getHistoryBillsAsync(mMonth, bill_index, mBillStatus, new QuickPayCallbackListener<ServerPacket>() {
             @Override
-            public void onResult(String result) {
-                String state = JsonUtil.getParam(result, "state");
-                if (state.equals("success")) {
-                    final String count = JsonUtil.getParam(result, "count");
-                    final String total = JsonUtil.getParam(result, "total");
-                    final String refdcount = JsonUtil.getParam(result, "refdcount");
-                    final String refdtotal = JsonUtil.getParam(result, "refdtotal");
-                    String txn = JsonUtil.getParam(result, "txn");
-                    final int size = Integer.parseInt(JsonUtil.getParam(result, "size"));
-                    try {
-                        JSONArray txnAJsonArray = new JSONArray(txn);
-                        for (int i = 0; i < txnAJsonArray.length(); i++) {
-                            String bill = txnAJsonArray.getString(i);
-                            String m_request = JsonUtil.getParam(bill, "m_request");
-                            TradeBill tradeBill = new TradeBill();
-                            tradeBill.orderNum = JsonUtil.getParam(m_request, "orderNum");
-                            tradeBill.amount = TxamtUtil.getNormal(JsonUtil.getParam(m_request, "txamt"));
-                            tradeBill.busicd = JsonUtil.getParam(m_request, "busicd");
-                            tradeBill.chcd = JsonUtil.getParam(m_request, "chcd");
-                            tradeBill.response = JsonUtil.getParam(bill, "response");
-                            tradeBill.tandeDate = JsonUtil.getParam(bill, "system_date");
-                            tradeBill.consumerAccount = JsonUtil.getParam(bill, "consumerAccount");
-                            tradeBill.tradeFrom = JsonUtil.getParam(m_request, "tradeFrom");
-                            tradeBill.goodsInfo = JsonUtil.getParam(m_request, "goodsInfo");
-                            mTradeBillList.add(tradeBill);
+            public void onSuccess(ServerPacket data) {
+                final int count = data.getCount();
+                final String total = data.getTotal();
+                final int refdcount = data.getRefdcount();
+                final String refdtotal = data.getRefdtotal();
+                final int size = data.getSize();
+
+                for (Txn txn : data.getTxn()) {
+                    TradeBill tradeBill = new TradeBill();
+                    tradeBill.response = txn.getResponse();
+                    tradeBill.tandeDate = txn.getSystem_date();
+                    tradeBill.consumerAccount = txn.getConsumerAccount();
+
+                    QRequest req = txn.getM_request();
+                    if (req != null) {
+                        tradeBill.orderNum = req.getOrderNum();
+                        tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());
+                        tradeBill.busicd = req.getBusicd();
+                        if (tradeBill.busicd.equals("REFD")) {
+                            tradeBill.amount = "-" + tradeBill.amount;
                         }
-
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @SuppressLint("NewApi")
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mBillAdapter.setData(mTradeBillList);
-                                mBillAdapter.notifyDataSetChanged();
-                                mPullToRefreshListView.onRefreshComplete();
-
-
-                                mBillTipsText.setText(
-                                        tips_year_month +
-                                                "  " +
-                                                getResources().getString(R.string.txn_total_times) + count +
-                                                " " +
-                                                getResources().getString(R.string.txn_total_amount) + total + getResources().getString(R.string.txn_currency) +
-                                                " " +
-                                                getResources().getString(R.string.txn_refund) + refdcount
-                                                +
-                                                getResources().getString(R.string.txn_unit) + "(" + refdtotal + getResources().getString(R.string.txn_currency) + ")");
-                                bill_index += size;
-                            }
-
-                        });
-
-                    } catch (JSONException e) {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @SuppressLint("NewApi")
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mBillAdapter.notifyDataSetChanged();
-                                mPullToRefreshListView.onRefreshComplete();
-
-                            }
-
-                        });
-                        e.printStackTrace();
+                        tradeBill.chcd = req.getChcd();
+                        tradeBill.tradeFrom = req.getTradeFrom();
+                        tradeBill.goodsInfo = req.getGoodsInfo();
                     }
-                    // bill_tips
+                    mTradeBillList.add(tradeBill);
                 }
+                // 更新UI
+                mBillAdapter.setData(mTradeBillList);
+                mBillAdapter.notifyDataSetChanged();
+                mPullToRefreshListView.onRefreshComplete();
+
+
+                mBillTipsText.setText(
+                        tips_year_month +
+                                "  " +
+                                getResources().getString(R.string.txn_total_times) + count +
+                                " " +
+                                getResources().getString(R.string.txn_total_amount) + total + getResources().getString(R.string.txn_currency) +
+                                " " +
+                                getResources().getString(R.string.txn_refund) + refdcount
+                                +
+                                getResources().getString(R.string.txn_unit) + "(" + refdtotal + getResources().getString(R.string.txn_currency) + ")");
+                bill_index += size;
             }
 
             @Override
-            public void onError(String error) {
+            public void onFailure(QuickPayException ex) {
 
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                    @SuppressLint("NewApi")
+                    @Override
+                    public void run() {
+                        // 更新UI
+                        mBillAdapter.notifyDataSetChanged();
+                        mPullToRefreshListView.onRefreshComplete();
+
+                    }
+
+                });
             }
         });
     }

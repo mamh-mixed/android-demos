@@ -301,6 +301,8 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+
+
     /**
      * server not support
      * @param username
@@ -359,5 +361,31 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    @Override
+    public ServerPacket getHistoryBills(String username, String password, String clientid, String month, long index, String status) {
+        String url = quickPayConfigStorage.getUrl() + "/bill";
 
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", username);
+        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("password", password);
+        params.put("clientid", clientid);
+        params.put("month", month);
+        params.put("index", "" + index);
+        params.put("status", status);
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params, "SHA-1"));
+
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
 }
