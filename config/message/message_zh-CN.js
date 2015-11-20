@@ -50,6 +50,7 @@
 		"TransAmt"       			:"交易金额",
 		"ChanCode"       			:"渠道",
 		"TransTime"      			:"交易时间",
+		"PayTime"					:"支付时间",
 		"TransStatus"    			:"交易状态",
 		"AgentCode"      			:"机构",
 		"TerminalId"     			:"终端号",

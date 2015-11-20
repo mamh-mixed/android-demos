@@ -125,6 +125,7 @@ type TransReport struct {
 	TransAmt       string
 	ChanCode       string
 	TransTime      string
+	PayTime        string
 	TransStatus    string
 	AgentCode      string
 	TerminalId     string

@@ -49,6 +49,7 @@
 		"TransAmt"       			:"取引金額",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間",
+		"PayTime"					:"支払い時間",
 		"TransStatus"    			:"取引状態",
 		"AgentCode"      			:"提携先",
 		"TerminalId"     			:"端末番号",

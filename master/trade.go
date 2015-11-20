@@ -145,7 +145,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.ChanCode, m.TransTime, "支付时间", m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -276,24 +276,24 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 	rows := sheet.Rows
 	row = rows[0]
 	row.WriteStruct(&summary{
-		"支付宝交易金额：", float64(alpTransAmt) / 100,
-		"支付宝退款金额：", -float64(alpRefundAmt) / 100,
-		"支付宝手续费：", float64(alpFee) / 100,
-		"支付宝清算金额：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
+		lALP + m.TransAmt + "：", float64(alpTransAmt) / 100,
+		lALP + m.RefundAmt + "：", -float64(alpRefundAmt) / 100,
+		lALP + m.Fee + "：", float64(alpFee) / 100,
+		lALP + m.SettAmt + "：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
-		"微信交易金额：", float64(wxpTransAmt) / 100,
-		"微信退款金额：", -float64(wxpRefundAmt) / 100,
-		"微信手续费：", float64(wxpFee) / 100,
-		"微信清算金额：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
+		lWXP + m.TransAmt + "：", float64(wxpTransAmt) / 100,
+		lWXP + m.RefundAmt + "：", -float64(wxpRefundAmt) / 100,
+		lWXP + m.Fee + "：", float64(wxpFee) / 100,
+		lWXP + m.SettAmt + "：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
-		"交易总额：", float64(transAmt) / 100,
-		"退款总额：", -float64(refundAmt) / 100,
-		"手续费总额：", float64(fee) / 100,
-		"清算总额：", float64(transAmt-refundAmt-fee) / 100,
+		m.TotalTransAmt + "：", float64(transAmt) / 100,
+		m.TotalRefundAmt + "：", -float64(refundAmt) / 100,
+		m.TotalFee + "：", float64(fee) / 100,
+		m.TotalSettAmt + "：", float64(transAmt-refundAmt-fee) / 100,
 	}, -1)
 }
 

@@ -200,6 +200,13 @@ func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
+	// get session
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
 	params := r.URL.Query()
 	filename := params.Get("filename")
 
@@ -219,6 +226,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		Page:         1,
 		RefundStatus: model.TransRefunded,
 		TransStatus:  []string{model.TransSuccess},
+		Locale:       curSession.Locale,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
