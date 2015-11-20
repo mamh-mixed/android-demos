@@ -15,7 +15,6 @@ public class SaveData {
         user.setUsername(mySharedPreferences.getString("username", ""));
         user.setPassword(mySharedPreferences.getString("password", ""));
         user.setAutoLogin(mySharedPreferences.getBoolean("autologin", false));
-        System.out.println(user.getUsername());
         return user;
     }
 
