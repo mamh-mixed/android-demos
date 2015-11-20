@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.Random;
 
 
-public class Refd_Dialog {
+public class RefdDialog {
     EditText refdValue;
     EditText refdPassword;
     private Context mContext;
@@ -37,7 +37,7 @@ public class Refd_Dialog {
     private String mOrderNum;
     private BaseActivity mBaseActivity;
 
-    public Refd_Dialog(Context context, Handler handler, View view, String orderNum, String refdTotal, String total) {
+    public RefdDialog(Context context, Handler handler, View view, String orderNum, String refdTotal, String total) {
         mContext = context;
         mBaseActivity = (BaseActivity) mContext;
         mHandler = handler;
