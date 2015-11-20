@@ -33,9 +33,6 @@ public class ShowMoneyApp extends Application {
         // TODO Auto-generated method stub
         super.onCreate();
         instance = this;
-        CrashHandler handler = CrashHandler.getInstance();
-        handler.init(getApplicationContext());
-
         initEnvironment();
     }
 
