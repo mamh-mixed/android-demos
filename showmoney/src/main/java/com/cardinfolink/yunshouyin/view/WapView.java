@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -75,7 +74,6 @@ public class WapView extends LinearLayout {
     }
 
     public void initData() {
-        Log.i("xxx", SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObjectId());
         if (SessonData.loginUser.getObjectId() != null && SessonData.loginUser.getObjectId().length() > 0) {
 
             mWebView.loadUrl(SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObjectId());

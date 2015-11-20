@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -183,7 +182,6 @@ public class TransManageView extends LinearLayout {
     }
 
     private void getTradeBill() {
-        Log.i("opp", "index=" + bill_index);
 
         HttpCommunicationUtil.sendDataToServer(ParamsUtil.getHistory(
                         SessonData.loginUser, mMonth, bill_index, mBillStatus),

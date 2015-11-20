@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.util;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.data.RequestParam;
@@ -367,7 +366,6 @@ public class ParamsUtil {
         sb.append('=');
         sb.append(params.get(params.size() - 1).getValue());
         sb.append(SystemConfig.APP_KEY);
-        Log.i("opp", sb.toString());
         String sign = EncoderUtil.Encrypt(sb.toString(), signType);
         return sign;
     }

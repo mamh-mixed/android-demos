@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -233,7 +232,6 @@ public class AccountUpdateView extends LinearLayout {
                                     mCityCodeList.add("");
                                     if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
                                         String province = mProvinceEdit.getText().toString();
-                                        Log.i("xxx", "province" + province);
 
                                         HttpCommunicationUtil.sendGetDataToServer(
                                                 BankBaseUtil.getCity(province),
@@ -241,7 +239,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                                     @Override
                                                     public void onResult(String result) {
-                                                        Log.i("opp", "result:" + result);
                                                         try {
                                                             JSONArray jsonArray = new JSONArray(
                                                                     result);
@@ -282,7 +279,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                                                                     @Override
                                                                                     public void onResult(String result) {
-                                                                                        Log.i("opp", "result:" + result);
                                                                                         try {
                                                                                             JSONObject jsonObj = new JSONObject(result);
                                                                                             Iterator it = jsonObj.keys();
@@ -384,7 +380,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                                                                                                 @Override
                                                                                                                 public void onError(String error) {
-                                                                                                                    Log.i("opp", "error:" + error);
 
                                                                                                                 }
                                                                                                             });
@@ -398,7 +393,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                                                                     @Override
                                                                                     public void onError(String error) {
-                                                                                        Log.i("opp", "error:" + error);
 
                                                                                     }
                                                                                 });
@@ -412,7 +406,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                                     @Override
                                                     public void onError(String error) {
-                                                        Log.i("opp", "error:" + error);
 
                                                     }
                                                 });
@@ -493,7 +486,6 @@ public class AccountUpdateView extends LinearLayout {
 
                     @Override
                     public void onError(String error) {
-                        Log.i("opp", "error:" + error);
 
                     }
                 });
@@ -534,7 +526,6 @@ public class AccountUpdateView extends LinearLayout {
                 mCityEdit.setText("");
                 if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
                     String province = mProvinceEdit.getText().toString();
-                    Log.i("xxx", "province" + province);
 
                     HttpCommunicationUtil.sendGetDataToServer(
                             BankBaseUtil.getCity(province),
@@ -542,7 +533,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                 @Override
                                 public void onResult(String result) {
-                                    Log.i("opp", "result:" + result);
                                     try {
                                         JSONArray jsonArray = new JSONArray(
                                                 result);
@@ -585,7 +575,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
 
                                 }
                             });
@@ -624,7 +613,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                 @Override
                                 public void onResult(String result) {
-                                    Log.i("opp", "result:" + result);
                                     try {
                                         JSONObject jsonObj = new JSONObject(
                                                 result);
@@ -674,7 +662,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
 
                                 }
                             });
@@ -768,7 +755,6 @@ public class AccountUpdateView extends LinearLayout {
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.i("opp", "error:" + error);
 
                                 }
                             });

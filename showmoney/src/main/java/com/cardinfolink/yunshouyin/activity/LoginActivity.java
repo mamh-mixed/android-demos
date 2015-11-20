@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -126,8 +125,6 @@ public class LoginActivity extends BaseActivity {
                             data.mchntid = SessonData.loginUser.getClientid();// 商户号
                             data.inscd = JsonUtil.getParam(user_json, "inscd");// 机构号
                             data.signKey = JsonUtil.getParam(user_json, "signKey");// 秘钥
-                            // Log.e("opp",
-                            // ""+TelephonyManagerUtil.getDeviceId(mContext));
                             data.terminalid = TelephonyManagerUtil
                                     .getDeviceId(mContext);// 设备号
                             data.isProduce = SystemConfig.IS_PRODUCE;// 是否生产环境
@@ -203,7 +200,6 @@ public class LoginActivity extends BaseActivity {
                         @Override
                         public void run() {
                             //更新UI
-                            Log.i("opp", "error:" + error);
                             mLoadingDialog.endLoading();
                             mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                         }
