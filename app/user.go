@@ -564,11 +564,11 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 
 	// TODO:先用该字段做判断是日币还是元
 	if req.OrderDetail == "pay" {
-		result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
-		result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
-	} else {
 		result.TotalAmt = fmt.Sprintf("%d", transAmt)
 		result.RefdTotalAmt = fmt.Sprintf("%d", refundAmt)
+	} else {
+		result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
+		result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
 	}
 
 	return
