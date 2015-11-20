@@ -417,3 +417,20 @@ func TestRandBytes(t *testing.T) {
 	bs := randBytes(32)
 	t.Logf("%x", bs)
 }
+
+func TestTickHandle(t *testing.T) {
+	values := url.Values{}
+	values.Add("receiptnum", "199005050000019")
+	values.Add("ordernum", "15111716332617542")
+	values.Add("username", "cherripe.Chen@cardinfolink.com")
+	values.Add("password", "96e79218965eb72c92a549dd5a330112")
+
+	result, err := post(values, ticketHandle)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
