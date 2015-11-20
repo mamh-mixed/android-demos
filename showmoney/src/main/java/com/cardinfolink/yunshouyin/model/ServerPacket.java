@@ -10,11 +10,12 @@ public class ServerPacket {
     private String error;
     private User user;
     private int count;
-    private double total;
+    private String total;
     private int refdcount;
-    private double refdtotal;
+    private String refdtotal;
     private int size;
     private BankInfo info;
+    private Txn[] txn;
 
     public static ServerPacket getServerPacketFrom(String json) {
         try {
@@ -58,11 +59,11 @@ public class ServerPacket {
         this.count = count;
     }
 
-    public double getTotal() {
+    public String getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public void setTotal(String total) {
         this.total = total;
     }
 
@@ -74,11 +75,11 @@ public class ServerPacket {
         this.refdcount = refdcount;
     }
 
-    public double getRefdtotal() {
+    public String getRefdtotal() {
         return refdtotal;
     }
 
-    public void setRefdtotal(double refdtotal) {
+    public void setRefdtotal(String refdtotal) {
         this.refdtotal = refdtotal;
     }
 
@@ -96,5 +97,13 @@ public class ServerPacket {
 
     public void setInfo(BankInfo info) {
         this.info = info;
+    }
+
+    public Txn[] getTxn() {
+        return txn;
+    }
+
+    public void setTxn(Txn[] txn) {
+        this.txn = txn;
     }
 }
