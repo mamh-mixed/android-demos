@@ -19,7 +19,7 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.Txn;
-import com.cardinfolink.yunshouyin.util.ContextUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -174,7 +174,7 @@ public class TransManageView extends LinearLayout {
     }
 
     private void getTradeBill() {
-        ContextUtil.getInstance().getQuickPayService().getHistoryBillsAsync(mMonth, bill_index, mBillStatus, new QuickPayCallbackListener<ServerPacket>() {
+        ShowMoneyApp.getInstance().getQuickPayService().getHistoryBillsAsync(mMonth, bill_index, mBillStatus, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 final int count = data.getCount();
