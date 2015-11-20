@@ -115,7 +115,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void openView(int position) {
-        SessonData.position_view = position;
+        SessonData.positionView = position;
         switch (position) {
             case 0:
                 mMainContent.removeAllViews();
@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        openView(SessonData.position_view);
+        openView(SessonData.positionView);
     }
 
     private class MenuOnItemClick implements OnItemClickListener {
@@ -171,7 +171,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-            SessonData.position_view = position;
+            SessonData.positionView = position;
             switch (position) {
                 case 0:
                     mMainContent.removeAllViews();
@@ -190,30 +190,6 @@ public class MainActivity extends BaseActivity {
                     mMainContent.addView(mPasswordUpdateView);
                     mLeftMenu.toggle();
                     break;
-//                case 3:
-//                    mMainContent.removeAllViews();
-//                    mAccountUpdateView = new AccountUpdateView(mContext);
-//                    mAccountUpdateView.setLayoutParams(new LayoutParams(
-//                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//                    mMainContent.addView(mAccountUpdateView);
-//                    mAccountUpdateView.getInfo();
-//                    mLeftMenu.toggle();
-//                    break;
-
-//                case 4:
-//
-//
-//                    mMainContent.removeAllViews();
-//                    mMainContent.addView(mWapBillView);
-//                    mWapBillView.initData();
-//                    mLeftMenu.toggle();
-//					 mLeftMenu.toggle();
-//					 Uri uri;
-//					 uri = Uri.parse(SystemConfig.WEB_BILL_URL+"?merchantCode="+SessonData.loginUser.getObjectId());
-//					 Intent  intent = new  Intent(Intent.ACTION_VIEW, uri);
-//					 startActivity(intent);
-
-//                    break;
                 case 3:
                     finish();
                     break;
