@@ -4,7 +4,7 @@ public class Txn {
     private String response;
     private String system_date;
     private String consumerAccount;
-    private QRequest m_request;
+    private QRequest mRequest;
 
     public String getResponse() {
         return response;
@@ -30,11 +30,11 @@ public class Txn {
         this.consumerAccount = consumerAccount;
     }
 
-    public QRequest getM_request() {
-        return m_request;
+    public QRequest getmRequest() {
+        return mRequest;
     }
 
-    public void setM_request(QRequest m_request) {
-        this.m_request = m_request;
+    public void setmRequest(QRequest mRequest) {
+        this.mRequest = mRequest;
     }
 }

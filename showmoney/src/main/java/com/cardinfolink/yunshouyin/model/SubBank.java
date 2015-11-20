@@ -2,40 +2,40 @@ package com.cardinfolink.yunshouyin.model;
 
 
 public class SubBank {
-    private String bank_name;
-    private String city_code;
-    private String one_bank_no;
-    private String two_bank_no;
+    private String bankName;
+    private String cityCode;
+    private String oneBankNo;
+    private String twoBankNo;
 
-    public String getBank_name() {
-        return bank_name;
+    public String getBankName() {
+        return bankName;
     }
 
-    public void setBank_name(String bank_name) {
-        this.bank_name = bank_name;
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
-    public String getCity_code() {
-        return city_code;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setCity_code(String city_code) {
-        this.city_code = city_code;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 
-    public String getOne_bank_no() {
-        return one_bank_no;
+    public String getOneBankNo() {
+        return oneBankNo;
     }
 
-    public void setOne_bank_no(String one_bank_no) {
-        this.one_bank_no = one_bank_no;
+    public void setOneBankNo(String oneBankNo) {
+        this.oneBankNo = oneBankNo;
     }
 
-    public String getTwo_bank_no() {
-        return two_bank_no;
+    public String getTwoBankNo() {
+        return twoBankNo;
     }
 
-    public void setTwo_bank_no(String two_bank_no) {
-        this.two_bank_no = two_bank_no;
+    public void setTwoBankNo(String twoBankNo) {
+        this.twoBankNo = twoBankNo;
     }
 }
