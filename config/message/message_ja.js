@@ -1,4 +1,5 @@
 {	
+	"Currency":"JPY",
 	"ChanCode":{
 		"ALP":"アリペイ",
 		"WXP":"Wechat",

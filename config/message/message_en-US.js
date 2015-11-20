@@ -1,4 +1,5 @@
 {
+	"Currency":"USD",
 	"StatReport":{
 		"Title":"merchant trade summary",
 		"Total" :"total: ",

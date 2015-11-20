@@ -1,5 +1,5 @@
 {
-
+	"Currency":"CNY",
 	"ChanCode":{
 		"ALP":"支付宝",
 		"WXP":"微信",

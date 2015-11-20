@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
@@ -112,7 +113,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	file.Write(w)
 }
 
-// TODO:genReport 生成报表
+// genReport 生成报表
 func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
@@ -121,6 +122,9 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 	// 语言
 	m := locale.TransReport
 	lALP, lWXP := locale.ChanCode.ALP, locale.ChanCode.WXP
+
+	// 币种单位
+	cur := currency.Get(locale.Currency)
 
 	// 可能有多个sheet
 	sheet, _ = file.AddSheet(m.SheetName)
@@ -167,7 +171,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
 		switch v.TransType {
 		case model.PayTrans:
-			amt = float64(v.TransAmt) / 100
+			amt = cur.F64(v.TransAmt)
 			if v.ChanCode == channel.ChanCodeAlipay {
 				alpTransAmt += v.TransAmt
 				alpFee += v.Fee
@@ -178,7 +182,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 			}
 		// 退款、撤销、取消
 		default:
-			amt = -float64(v.TransAmt) / 100
+			amt = -cur.F64(v.TransAmt)
 			if v.ChanCode == channel.ChanCodeAlipay {
 				alpRefundAmt += v.TransAmt
 				alpFee -= v.Fee
@@ -202,7 +206,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		cell.Value = v.OrderNum
 		// 交易金额
 		cell = row.AddCell()
-		cell.SetFloatWithFormat(float64(amt), floatFormat)
+		cell.SetFloatWithFormat(amt, floatFormat)
 		// 渠道
 		cell = row.AddCell()
 		switch v.ChanCode {
@@ -276,24 +280,24 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 	rows := sheet.Rows
 	row = rows[0]
 	row.WriteStruct(&summary{
-		lALP + m.TransAmt + "：", float64(alpTransAmt) / 100,
-		lALP + m.RefundAmt + "：", -float64(alpRefundAmt) / 100,
-		lALP + m.Fee + "：", float64(alpFee) / 100,
-		lALP + m.SettAmt + "：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
+		lALP + m.TransAmt + "：", cur.F64(alpTransAmt),
+		lALP + m.RefundAmt + "：", -cur.F64(alpRefundAmt),
+		lALP + m.Fee + "：", cur.F64(alpFee),
+		lALP + m.SettAmt + "：", cur.F64(alpTransAmt - alpRefundAmt - alpFee),
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
-		lWXP + m.TransAmt + "：", float64(wxpTransAmt) / 100,
-		lWXP + m.RefundAmt + "：", -float64(wxpRefundAmt) / 100,
-		lWXP + m.Fee + "：", float64(wxpFee) / 100,
-		lWXP + m.SettAmt + "：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
+		lWXP + m.TransAmt + "：", cur.F64(wxpTransAmt),
+		lWXP + m.RefundAmt + "：", -cur.F64(wxpRefundAmt),
+		lWXP + m.Fee + "：", cur.F64(wxpFee),
+		lWXP + m.SettAmt + "：", cur.F64(wxpTransAmt - wxpRefundAmt - wxpFee),
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
-		m.TotalTransAmt + "：", float64(transAmt) / 100,
-		m.TotalRefundAmt + "：", -float64(refundAmt) / 100,
-		m.TotalFee + "：", float64(fee) / 100,
-		m.TotalSettAmt + "：", float64(transAmt-refundAmt-fee) / 100,
+		m.TotalTransAmt + "：", cur.F64(transAmt),
+		m.TotalRefundAmt + "：", -cur.F64(refundAmt),
+		m.TotalFee + "：", cur.F64(fee),
+		m.TotalSettAmt + "：", cur.F64(transAmt - refundAmt - fee),
 	}, -1)
 }
 
