@@ -3,7 +3,6 @@ package com.cardinfolink.yunshouyin.view;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -96,7 +95,6 @@ public class TradingCustomDialog {
             public void onClick(View v) {
                 OrderData orderData = new OrderData();
                 orderData.origOrderNum = mOrderNum;
-                Log.i("xxx", "origOrderNum:" + mOrderNum);
                 CashierSdk.startQy(orderData, new CashierListener() {
 
                     @Override
