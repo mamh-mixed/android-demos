@@ -6,6 +6,7 @@ import android.util.Log;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 public class CrashHandler implements UncaughtExceptionHandler {
+    private static final String TAG = "CrashHandler";
 
     private static CrashHandler instance;  //单例引用，这里我们做成单例的，因为我们一个应用程序里面只需要一个UncaughtExceptionHandler实例
 
@@ -25,7 +26,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {  //当有未处理的异常发生时，就会来到这里。。 
-        Log.d("opp", "uncaughtException, thread: " + thread
+        Log.d(TAG, "uncaughtException, thread: " + thread
                 + " name: " + thread.getName() + " id: " + thread.getId() + "exception: "
                 + ex);
         String threadName = thread.getName();

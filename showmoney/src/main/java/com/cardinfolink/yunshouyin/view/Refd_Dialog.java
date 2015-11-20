@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -90,7 +89,6 @@ public class Refd_Dialog {
                     mBaseActivity.startLoading();
                     OrderData orderData = new OrderData();
                     orderData.origOrderNum = mOrderNum;
-                    Log.i("opp", orderData.origOrderNum);
                     Date now = new Date();
                     SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
                     String orderNmuber = spf.format(now);
@@ -133,7 +131,6 @@ public class Refd_Dialog {
 
                         @Override
                         public void onError(int errorCode) {
-                            Log.i("opp", "error:" + errorCode);
                             ((Activity) mContext).runOnUiThread(new Runnable() {
 
                                 @Override
