@@ -135,7 +135,7 @@ public class LoginActivity extends BaseActivity {
                                 public void run() {
                                     //更新UI
                                     mLoadingDialog.endLoading();
-                                    SessonData.position_view = 0;
+                                    SessonData.positionView = 0;
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     LoginActivity.this.startActivity(intent);

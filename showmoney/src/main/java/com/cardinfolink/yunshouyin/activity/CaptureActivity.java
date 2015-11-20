@@ -189,7 +189,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         break;
                     }
                     case Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY: {
-                        SessonData.position_view = 1;
+                        SessonData.positionView = 1;
                         setResult(101);
                         finish();
                         break;
