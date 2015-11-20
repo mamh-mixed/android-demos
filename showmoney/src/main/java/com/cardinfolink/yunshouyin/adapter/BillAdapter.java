@@ -102,7 +102,7 @@ public class BillAdapter extends BaseAdapter {
         } else {
             holder.paylogo.setImageResource(R.drawable.apay);
         }
-        SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHthismmss");
+        SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
         SimpleDateFormat spf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date tandeDate = spf1.parse(bill.tandeDate);
