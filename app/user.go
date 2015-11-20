@@ -559,10 +559,18 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 
 	result.Txn = txns
 	result.Size = len(trans)
-	result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
 	result.RefdCount = refundCount
-	result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
 	result.Count = transCount
+
+	// TODO:先用该字段做判断是日币还是元
+	if req.OrderDetail == "pay" {
+		result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
+		result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
+	} else {
+		result.TotalAmt = fmt.Sprintf("%d", transAmt)
+		result.RefdTotalAmt = fmt.Sprintf("%d", refundAmt)
+	}
+
 	return
 }
 
@@ -894,6 +902,7 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 		ConsumerAccount: t.ConsumerAccount,
 		TransStatus:     t.TransStatus,
 		RefundAmt:       t.RefundAmt,
+		TicketNum:       t.TicketNum,
 	}
 	txn.ReqData.Busicd = t.Busicd
 	txn.ReqData.AgentCode = t.AgentCode
