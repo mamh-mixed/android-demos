@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,11 +20,11 @@ import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -364,7 +363,6 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                     } else {
                                         chcd = "ALP";
                                     }
-                                    Log.i("opp", "" + chcd);
 
                                     if (switch_flag) {
                                         Intent intent = new Intent(mContext, CaptureActivity.class);
@@ -423,7 +421,6 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     } else {
                         chcd = "ALP";
                     }
-                    Log.i("opp", "" + chcd);
 
                     if (switch_flag) {
                         Intent intent = new Intent(mContext, CaptureActivity.class);

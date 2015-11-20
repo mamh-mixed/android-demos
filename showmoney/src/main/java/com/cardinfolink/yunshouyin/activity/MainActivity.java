@@ -2,7 +2,6 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -197,8 +196,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        Log.i("opp", "position=" + SessonData.position_view);
         openView(SessonData.position_view);
     }
 
