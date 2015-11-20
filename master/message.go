@@ -15,7 +15,7 @@ var avaiableLocale = make(map[string]*LocaleTemplate)
 
 const (
 	prefix        = "message_"
-	DefaultLocale = "zh_CN"
+	DefaultLocale = "zh-CN"
 )
 
 func init() {
@@ -80,10 +80,63 @@ func GetLocale(l string) *LocaleTemplate {
 
 // LocaleTemplate 语言模板
 type LocaleTemplate struct {
-	// 统计报表
-	StatReport StatReport
+	// 渠道代号
+	ChanCode struct {
+		ALP     string
+		WXP     string
+		Unknown string
+	}
 
+	// 交易类型
+	BusicdType struct {
+		Purc    string
+		Paut    string
+		Inqy    string
+		Refd    string
+		Void    string
+		Canc    string
+		Qyzf    string
+		Jszf    string
+		Veri    string
+		Unknown string
+	}
+
+	// 交易状态
+	TransStatus struct {
+		TransHandling string
+		TransFail     string
+		TransSuccess  string
+		TransClosed   string
+		Unknown       string
+	}
+
+	// 统计报表
+	StatReport    StatReport
 	ImportMessage ImportMessage
+	TransReport   TransReport
+}
+
+// TransReport 交易明细报表
+type TransReport struct {
+	SheetName      string
+	MerId          string
+	MerName        string
+	OrderNum       string
+	TransAmt       string
+	ChanCode       string
+	TransTime      string
+	TransStatus    string
+	AgentCode      string
+	TerminalId     string
+	Busicd         string
+	OrigOrderNum   string
+	RefundAmt      string
+	Fee            string
+	SettAmt        string
+	TotalTransAmt  string
+	TotalRefundAmt string
+	TotalFee       string
+	TotalSettAmt   string
 }
 
 // StatReport 统计报表
