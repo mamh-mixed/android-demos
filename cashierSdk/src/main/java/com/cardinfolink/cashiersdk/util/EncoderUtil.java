@@ -20,7 +20,6 @@ public class EncoderUtil {
             md.update(bt);
             strDes = bytes2Hex(md.digest()); //to HexString
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("Invalid algorithm.");
             return null;
         }
         return strDes;
@@ -39,14 +38,4 @@ public class EncoderUtil {
         return des;
     }
 
-//		public static void main(String[]args) {
-//		TestEncrypt te=new TestEncrypt();
-//		String strSrc="可以加密汉字.Oh,and english";
-//		System.out.println("Source String:"+strSrc);
-//		System.out.println("Encrypted String:");
-//		System.out.println("Use Def:"+te.Encrypt(strSrc,null));
-//		System.out.println("Use MD5:"+te.Encrypt(strSrc,"MD5"));
-//		System.out.println("Use SHA:"+te.Encrypt(strSrc,"SHA-1"));
-//		System.out.println("Use SHA-256:"+te.Encrypt(strSrc,"SHA-256"));
-//		}
 }
