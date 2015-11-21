@@ -47,16 +47,53 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 	b.TransCreateTime = time.Now().Format("20060102150405") // TODO
 
 	// resp
-	p := &PayResp{}
+	p, resp := &PayResp{}, &model.ScanPayResponse{}
 	if err := scanpay1.Execute(b, p); err != nil {
 		return nil, err
 	}
 
-	resp := &model.ScanPayResponse{}
-	resp.ChannelOrderNum = p.Response.Alipay.AlipayTransId
-	resp.PayTime = p.Response.Alipay.AlipayPayTime
-	resp.ConsumerId = p.Response.Alipay.AlipayBuyerLoginId
-	resp.Rate = p.Response.Alipay.ExchangeRate
+	// 业务结果
+	alipay := p.Response.Alipay
+
+	// 如果同时出现SYSTEM_ERROR 和 UNKNOW 则先认为支付中
+	if alipay.Error == "SYSTEM_ERROR" && alipay.ResultCode == "UNKNOW" {
+		resp.Respcd, resp.ErrorDetail = InprocessCode, InprocessMsg
+		return resp, nil
+	}
+
+	// 业务应答返回系统错误，先查询，还是失败的话发起冲正
+	if alipay.Error == "SYSTEM_ERROR" {
+		time.Sleep(3 * time.Second)
+		// 查询参数
+		eq := &model.ScanPayRequest{
+			OrigOrderNum: req.OrderNum,
+			ChanMerId:    req.ChanMerId,
+			SignKey:      req.SignKey,
+		}
+
+		ep, err := a.ProcessEnquiry(eq)
+		if err != nil {
+			// 系统错误
+			a.ProcessClose(eq)
+			return nil, err
+		}
+
+		// 业务不成功
+		if ep.Respcd != SuccessCode {
+			// 发起冲正，返回失败
+			ep.Respcd, ep.ErrorDetail = CloseCode, CloseMsg
+			a.ProcessClose(eq)
+			return ep, nil
+		}
+
+		// 成功
+		return ep, nil
+	}
+
+	resp.ChannelOrderNum = alipay.AlipayTransId
+	resp.PayTime = alipay.AlipayPayTime
+	resp.ConsumerId = alipay.AlipayBuyerLoginId
+	resp.Rate = alipay.ExchangeRate
 
 	// result
 	alipayResponseHandle(p, resp, "createandpay")
@@ -112,6 +149,7 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 	resp.ChannelOrderNum = p.Response.Alipay.AlipayTransId
 	resp.PayTime = p.Response.Alipay.AlipayPayTime
 	resp.ConsumerId = p.Response.Alipay.AlipayBuyerLoginId
+	resp.Rate = p.Response.Alipay.ExchangeRate
 
 	// result
 	alipayResponseHandle(p, resp, "query")
