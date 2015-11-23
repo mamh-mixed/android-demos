@@ -63,6 +63,10 @@
     "description": "登录失败提示",
     "message": "ユーザー名またはパスワードが空白不可"
   },
+  "LOGIN.TOAST.LOGIN_ERROR": {
+    "description": "用户名或密码错误",
+    "message": "ユーザー名またはパスワードがエラー"
+  },
 
   "PASSWORDMODIFICATION.TITLE": {
     "description": "修改密码标题",
