@@ -1,10 +1,9 @@
 package com.cardinfolink.yunshouyin.salesman.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
@@ -18,11 +17,12 @@ import com.umeng.update.UmengUpdateAgent;
 
 public class LoginActivity extends BaseActivity {
     private final String TAG = "LoginActivity";
-    private EditText mUsernameEdit;
-    private EditText mPasswordEdit;
-    private CheckBox mAutoLoginCheckBox;
 
-    @SuppressLint("NewApi")
+    private EditText mUsername;
+    private EditText mPassword;
+    private CheckBox mAutoLogin;
+    private Button mLogin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,34 +30,38 @@ public class LoginActivity extends BaseActivity {
         UmengUpdateAgent.update(this);
         setContentView(R.layout.login_activity);
 
-        mUsernameEdit = (EditText) findViewById(R.id.login_username);
-        VerifyUtil.addEmailLimit(mUsernameEdit);
+        mUsername = (EditText) findViewById(R.id.login_username);
+        VerifyUtil.addEmailLimit(mUsername);
 
-        mPasswordEdit = (EditText) findViewById(R.id.login_password);
-        VerifyUtil.addEmailLimit(mPasswordEdit);
+        mPassword = (EditText) findViewById(R.id.login_password);
+        VerifyUtil.addEmailLimit(mPassword);
 
-        mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
+        mAutoLogin = (CheckBox) findViewById(R.id.checkbox_auto_login);
 
         User user = getLoginUser();
-        mAutoLoginCheckBox.setChecked(user.isAutoLogin());
-        mUsernameEdit.setText(user.getUsername());
-        mPasswordEdit.setText(user.getPassword());
+        mAutoLogin.setChecked(user.isAutoLogin());
+        mUsername.setText(user.getUsername());
+        mPassword.setText(user.getPassword());
 
         if (user.isAutoLogin()) {
             login();
         }
-    }
 
-    public void BtnLoginOnClick(View view) {
-        login();
+        mLogin = (Button) findViewById(R.id.btnlogin);
+        mLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
     }
 
 
     private void login() {
         startLoading();
 
-        final String username = mUsernameEdit.getText().toString();
-        final String password = mPasswordEdit.getText().toString();
+        final String username = mUsername.getText().toString();
+        final String password = mPassword.getText().toString();
 
         quickPayService.loginAsync(username, password, new QuickPayCallbackListener<String>() {
             @Override
@@ -67,7 +71,7 @@ public class LoginActivity extends BaseActivity {
                 user.setUsername(username);
                 user.setPassword(password);
                 // 自动登录checkbox 保存密码
-                if (mAutoLoginCheckBox.isChecked()) {
+                if (mAutoLogin.isChecked()) {
                     user.setAutoLogin(true);
                     user.setPassword(password);
                 }
@@ -80,7 +84,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(final QuickPayException ex) {
                 if (ex.getErrorCode().equals("username_password_error")) {
-                    mPasswordEdit.setText("");
+                    mPassword.setText("");
                 }
                 String errorStr = ex.getErrorMsg();
                 endLoadingWithError(errorStr);
@@ -93,8 +97,8 @@ public class LoginActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         User user = getLoginUser();
-        mAutoLoginCheckBox.setChecked(user.isAutoLogin());
-        mUsernameEdit.setText(user.getUsername());
-        mPasswordEdit.setText(user.getPassword());
+        mAutoLogin.setChecked(user.isAutoLogin());
+        mUsername.setText(user.getUsername());
+        mPassword.setText(user.getPassword());
     }
 }
