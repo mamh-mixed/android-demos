@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.core;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayApi;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayApiImpl;
@@ -12,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * QuickPayService接口的实现子类
  * Created by mamh on 15-11-23.
  */
 public class QuickPayServiceImpl implements QuickPayService {
@@ -20,7 +22,7 @@ public class QuickPayServiceImpl implements QuickPayService {
     private QuickPayConfigStorage quickPayConfigStorage;
 
     public QuickPayServiceImpl(QuickPayConfigStorage quickPayConfigStorage) {
-        quickPayApi = new QuickPayApiImpl(quickPayConfigStorage);
+        this.quickPayApi = new QuickPayApiImpl(quickPayConfigStorage);
         this.quickPayConfigStorage = quickPayConfigStorage;
     }
 
@@ -40,17 +42,17 @@ public class QuickPayServiceImpl implements QuickPayService {
     /**
      * @param username
      * @param password
-     * @param quickPayCallbackListener
+     * @param listener
      */
     @Override
-    public void loginAsync(final String username, final String password, final QuickPayCallbackListener<String> quickPayCallbackListener) {
-        if (username.equals("")) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "用户名不能为空!"));
+    public void loginAsync(final String username, final String password, final QuickPayCallbackListener<String> listener) {
+        if (TextUtils.isEmpty(username)) {
+            listener.onFailure(new QuickPayException("", "用户名不能为空!"));
             return;
         }
 
-        if (password.equals("")) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "密码不能为空!"));
+        if (TextUtils.isEmpty(password)) {
+            listener.onFailure(new QuickPayException("", "密码不能为空!"));
             return;
         }
 
@@ -59,109 +61,123 @@ public class QuickPayServiceImpl implements QuickPayService {
             protected AsyncTaskResult<String> doInBackground(Void... params) {
                 try {
                     String accessToken = quickPayApi.login(username, password);
-
-                    return new AsyncTaskResult<String>(accessToken, null);
+                    return new AsyncTaskResult<String>(accessToken);
                 } catch (QuickPayException ex) {
-
-                    return new AsyncTaskResult<String>(null, ex);
+                    return new AsyncTaskResult<String>(ex);
                 }
             }
 
             @Override
-            protected void onPostExecute(AsyncTaskResult<String> stringAsyncTaskResult) {
-                if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+            protected void onPostExecute(AsyncTaskResult<String> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(stringAsyncTaskResult.getResult());
+                    listener.onSuccess(result.getResult());
                 }
             }
         }.execute();
     }
 
+    /**
+     *
+     * @param listener
+     */
     @Override
-    public void getUsersAsync(final QuickPayCallbackListener<User[]> quickPayCallbackListener) {
+    public void getUsersAsync(final QuickPayCallbackListener<User[]> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     User[] users = quickPayApi.getUsers();
-                    quickPayCallbackListener.onSuccess(users);
+                    listener.onSuccess(users);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+                    listener.onFailure(ex);
                 }
             }
         }).start();
     }
 
+    /**
+     *
+     * @param merchantId
+     * @param imageType
+     * @param listener
+     */
     @Override
-    public void getQrPostUrlAsync(final String merchantId, final String imageType, final QuickPayCallbackListener<String> quickPayCallbackListener) {
+    public void getQrPostUrlAsync(final String merchantId, final String imageType, final QuickPayCallbackListener<String> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     String url = quickPayApi.getQrPostUrl(merchantId, imageType);
-                    quickPayCallbackListener.onSuccess(url);
+                    listener.onSuccess(url);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+                    listener.onFailure(ex);
                 }
             }
         }).start();
     }
 
+
     @Override
-    public void getUploadToken(QuickPayCallbackListener<String> quickPayCallbackListener) {
+    public void getUploadToken(QuickPayCallbackListener<String> listener) {
         if (quickPayConfigStorage.getUploadToken() != null && "".equals(quickPayConfigStorage.getUploadToken())) {
-            quickPayCallbackListener.onSuccess(quickPayConfigStorage.getUploadToken());
+            listener.onSuccess(quickPayConfigStorage.getUploadToken());
             return;
         }
 
         try {
             String uploadToken = quickPayApi.getUploadToken();
-            // cache
-            // TODO: what if uploadToken expires
             quickPayConfigStorage.setUploadToken(uploadToken);
-            quickPayCallbackListener.onSuccess(uploadToken);
+            listener.onSuccess(uploadToken);
 
         } catch (QuickPayException ex) {
-            quickPayCallbackListener.onFailure(ex);
+            listener.onFailure(ex);
         }
     }
 
     @Override
-    public void getUploadTokenAsync(final QuickPayCallbackListener<String> quickPayCallbackListener) {
+    public void getUploadTokenAsync(final QuickPayCallbackListener<String> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     String url = quickPayApi.getUploadToken();
-                    quickPayCallbackListener.onSuccess(url);
+                    listener.onSuccess(url);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+                    listener.onFailure(ex);
                 }
             }
         }).start();
     }
 
+    /**
+     *
+     * @param email
+     * @param password
+     * @param passwordRepeat
+     * @param listener
+     */
     @Override
-    public void registerUserAsync(final String email, final String password, final String password_repeat, final QuickPayCallbackListener<User> quickPayCallbackListener) {
+    public void registerUserAsync(final String email, final String password, final String passwordRepeat, final QuickPayCallbackListener<User> listener) {
         if (email.equals("")) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "邮箱不能为空!"));
+            listener.onFailure(new QuickPayException("", "邮箱不能为空!"));
             return;
         }
         if (!checkEmail(email)) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "邮箱格式不正确!"));
+            listener.onFailure(new QuickPayException("", "邮箱格式不正确!"));
             return;
         }
         if (password.equals("")) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "密码不能为空!"));
+            listener.onFailure(new QuickPayException("", "密码不能为空!"));
             return;
         }
         if (password.length() < 6) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "密码不能小于六位!"));
+            listener.onFailure(new QuickPayException("", "密码不能小于六位!"));
             return;
         }
-        if (!password.equals(password_repeat)) {
-            quickPayCallbackListener.onFailure(new QuickPayException("", "确认密码不一致!"));
+        if (!password.equals(passwordRepeat)) {
+            listener.onFailure(new QuickPayException("", "确认密码不一致!"));
             return;
         }
 
@@ -170,71 +186,91 @@ public class QuickPayServiceImpl implements QuickPayService {
             protected AsyncTaskResult<User> doInBackground(Void... params) {
                 try {
                     User user = quickPayApi.registerUser(email, password);
-                    return new AsyncTaskResult<User>(user, null);
+                    return new AsyncTaskResult<User>(user);
                 } catch (QuickPayException ex) {
 
-                    return new AsyncTaskResult<User>(null, ex);
+                    return new AsyncTaskResult<User>(ex);
                 }
             }
 
             @Override
-            protected void onPostExecute(AsyncTaskResult<User> stringAsyncTaskResult) {
-                if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+            protected void onPostExecute(AsyncTaskResult<User> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(stringAsyncTaskResult.getResult());
+                    listener.onSuccess(result.getResult());
                 }
             }
         }.execute();
     }
 
+    /**
+     *
+     * @param user
+     * @param listener
+     */
     @Override
-    public void updateUserAsync(final User user, final QuickPayCallbackListener<User> quickPayCallbackListener) {
+    public void updateUserAsync(final User user, final QuickPayCallbackListener<User> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     User res = quickPayApi.updateUser(user);
-                    quickPayCallbackListener.onSuccess(res);
+                    listener.onSuccess(res);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+                    listener.onFailure(ex);
                 }
             }
         }).start();
     }
 
+    /**
+     *
+     * @param user
+     * @param listener
+     */
     @Override
-    public void updateUser(final User user, QuickPayCallbackListener<User> quickPayCallbackListener) {
+    public void updateUser(final User user, QuickPayCallbackListener<User> listener) {
         try {
             User res = quickPayApi.updateUser(user);
-            quickPayCallbackListener.onSuccess(res);
+            listener.onSuccess(res);
         } catch (QuickPayException ex) {
-            quickPayCallbackListener.onFailure(ex);
+            listener.onFailure(ex);
         }
     }
 
+    /**
+     *
+     * @param username
+     * @param listener
+     */
     @Override
-    public void activateUserAsync(final String username, final QuickPayCallbackListener<User> quickPayCallbackListener) {
+    public void activateUserAsync(final String username, final QuickPayCallbackListener<User> listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     User user = quickPayApi.activateUser(username);
-                    quickPayCallbackListener.onSuccess(user);
+                    listener.onSuccess(user);
                 } catch (QuickPayException ex) {
-                    quickPayCallbackListener.onFailure(ex);
+                    listener.onFailure(ex);
                 }
             }
         }).start();
     }
 
+    /**
+     *
+     * @param username
+     * @param listener
+     */
     @Override
-    public void activateUser(final String username, final QuickPayCallbackListener<User> quickPayCallbackListener) {
+    public void activateUser(final String username, final QuickPayCallbackListener<User> listener) {
         try {
             User user = quickPayApi.activateUser(username);
-            quickPayCallbackListener.onSuccess(user);
+            listener.onSuccess(user);
         } catch (QuickPayException ex) {
-            quickPayCallbackListener.onFailure(ex);
+            listener.onFailure(ex);
         }
     }
 }
