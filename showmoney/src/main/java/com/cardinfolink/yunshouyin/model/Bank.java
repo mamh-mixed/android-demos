@@ -1,8 +1,12 @@
 package com.cardinfolink.yunshouyin.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Bank {
     private String id;
-    private String bank_name;
+
+    @SerializedName("bank_name")
+    private String bankName;
 
     public String getId() {
         return id;
@@ -12,11 +16,11 @@ public class Bank {
         this.id = id;
     }
 
-    public String getBank_name() {
-        return bank_name;
+    public String getBankName() {
+        return bankName;
     }
 
-    public void setBank_name(String bank_name) {
-        this.bank_name = bank_name;
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 }
