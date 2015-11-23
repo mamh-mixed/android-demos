@@ -172,7 +172,7 @@ public class TransManageView extends LinearLayout {
                 for (Txn txn : data.getTxn()) {
                     TradeBill tradeBill = new TradeBill();
                     tradeBill.response = txn.getResponse();
-                    tradeBill.tandeDate = txn.getSystem_date();
+                    tradeBill.tandeDate = txn.getSystemDate();
                     tradeBill.consumerAccount = txn.getConsumerAccount();
 
                     QRequest req = txn.getmRequest();
