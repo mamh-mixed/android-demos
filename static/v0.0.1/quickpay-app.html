@@ -64,6 +64,7 @@
     <iron-localstorage name="CIL.CONFIG.LANGUAGE" value="{{language}}"></iron-localstorage>
     <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
     <x-ajax id="deleteSessionAjax" method="GET" url="/master/logout" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
+    <x-ajax id="localeAjax" method="GET" url="/master/app/locale" handle-as="json" debounce-duration="1000" on-response="handleLocaleResponse"></x-ajax>
   </template>
   <script>
     (function() {
@@ -98,9 +99,15 @@
             case 'ja':
               I18nMsg.lang = 'ja';
               break;
+            case 'ja-JP':
+              I18nMsg.lang = 'ja';
+              break;
             default:
               I18nMsg.lang = 'zh-CN';
           }
+
+          // 如果不是中文的话，发送一个切换后台服务器语言的指令
+          this.localeChangeRequest(I18nMsg.lang);
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
@@ -230,7 +237,20 @@
         handleCloseDialogPleaseEvent: function() {
           this.$.reloginDialog.close();
         },
-        handleI18nLanguageChangeEvent: function() {
+        localeChangeRequest: function(lang) {
+          this.$.localeAjax.params = {
+            "locale": lang
+          };
+          this.$.localeAjax.generateRequest();
+        },
+        handleLocaleResponse: function(e) {
+          console.log(e.detail.response);
+        },
+        handleI18nLanguageChangeEvent: function(e) {
+          // 如果e.type === 'i18n-language-change' 的话，发送一个切换语言的请求
+          if (e && e.type === 'i18n-language-change') {
+            this.localeChangeRequest(e.detail.key);
+          }
           var i18nMsg = document.createElement('i18n-msg');
 
           var paperInputs = document.querySelectorAll('paper-input');

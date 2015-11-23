@@ -21,26 +21,28 @@ import (
 // appLocaleHandle 网关展示语言
 func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 	locale := r.FormValue("locale")
+	log.Debugf("LOCALE is %s", locale)
 	curSession, err := Session.Get(r)
 	if err != nil {
 		log.Error("fail to find session")
-		return
-	}
-
-	if curSession.Locale == locale {
+		w.Write([]byte("FIND SESSION ERROR"))
 		return
 	}
 
 	// 查看是否支持该语言
 	if !IsLocaleExist(locale) {
+		log.Warnf("Unsupport language: %s", locale)
+		w.Write([]byte("UNSUPPORT LANGUAGE"))
 		return
 	}
 
 	curSession.Locale = locale
 	err = mongo.SessionColl.Update(curSession)
 	if err != nil {
-		log.Errorf("update session(id=%s) fail:", curSession.SessionID, err)
+		log.Errorf("update session(id=%s) fail:%s", curSession.SessionID, err)
 	}
+
+	w.Write([]byte("SUCCESS"))
 }
 
 // tradeSettleQueryHandle 清算报表查询的
