@@ -1,6 +1,10 @@
 package com.cardinfolink.yunshouyin.salesman.api;
 
 public class QuickPayConfigStorage {
+    private String proxyUrl;
+    private int proxyPort;
+
+
     /**
      * access to quick pay
      */
@@ -11,8 +15,10 @@ public class QuickPayConfigStorage {
     private String uploadToken;
     private String appKey;
     private String url;
-    private String proxyUrl;
-    private int proxyPort;
+
+    // bank data setting
+    private String bankbaseKey;
+    private String bankbaseUrl;
 
     public String getAccessToken() {
         return accessToken;
@@ -60,5 +66,21 @@ public class QuickPayConfigStorage {
 
     public void setProxyPort(int proxyPort) {
         this.proxyPort = proxyPort;
+    }
+
+    public String getBankbaseKey() {
+        return bankbaseKey;
+    }
+
+    public void setBankbaseKey(String bankbaseKey) {
+        this.bankbaseKey = bankbaseKey;
+    }
+
+    public String getBankbaseUrl() {
+        return bankbaseUrl;
+    }
+
+    public void setBankbaseUrl(String bankbaseUrl) {
+        this.bankbaseUrl = bankbaseUrl;
     }
 }

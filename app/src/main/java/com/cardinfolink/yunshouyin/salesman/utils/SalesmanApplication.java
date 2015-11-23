@@ -10,6 +10,7 @@ import com.cardinfolink.yunshouyin.salesman.BuildConfig;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
+import com.cardinfolink.yunshouyin.salesman.core.QuickPayServiceImpl;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 
 public class SalesmanApplication extends Application {
@@ -81,7 +82,7 @@ public class SalesmanApplication extends Application {
             Log.e(TAG, "Failed to load meta-data: " + e.getMessage());
         }
 
-        quickPayService = new QuickPayService(quickPayConfigStorage);
+        quickPayService = new QuickPayServiceImpl(quickPayConfigStorage);
         qiniuMultiUploadService = new QiniuMultiUploadService(quickPayService);
     }
 
