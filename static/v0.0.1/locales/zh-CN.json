@@ -171,7 +171,7 @@
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "金额",
-    "message": "金额"
+    "message": "金额(CNY)"
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
@@ -335,7 +335,7 @@
   },
   "SCANPAY_TRADE_STATS.AMOUNT": {
     "description": "金额",
-    "message": "金额"
+    "message": "金额(CNY)"
   },
   "SCANPAY_TRADE_STATS.AGENT_NAME": {
     "description": "代理名称",
