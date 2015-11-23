@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,9 +37,9 @@ public class MerchantListActivity extends BaseActivity {
     private List<User> users = new ArrayList<>();
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Button addNewMerchant;
-    private EditText searchMerchant;
-    private TextView countMerchant;//this month mer count
+    private Button mAddNewMerchant;
+    private EditText mSearchMerchant;
+    private TextView mMerchantCount;//this month mer count
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +64,17 @@ public class MerchantListActivity extends BaseActivity {
         ListView listView = (ListView) findViewById(R.id.listViewMerchants);
         listView.setAdapter(merchantListAdapter);
 
-        countMerchant = (TextView) findViewById(R.id.txt_merchantcountthismonth);
+        mMerchantCount = (TextView) findViewById(R.id.txt_merchantcountthismonth);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(new MerchantOnRefreshListener());
 
-        addNewMerchant = (Button) findViewById(R.id.btnAddNewMerchant);
-        addNewMerchant.setOnClickListener(new AddNewMerchantOnClickListener());
+        mAddNewMerchant = (Button) findViewById(R.id.btnAddNewMerchant);
+        mAddNewMerchant.setOnClickListener(new AddNewMerchantOnClickListener());
 
         //输入关键字快速定位
-        searchMerchant = (EditText) findViewById(R.id.mItem_txtSearch);
-        searchMerchant.addTextChangedListener(new SearchMerchantTextChangedListener());
+        mSearchMerchant = (EditText) findViewById(R.id.mItem_txtSearch);
+        mSearchMerchant.addTextChangedListener(new SearchMerchantTextChangedListener());
     }
 
 
@@ -118,7 +117,7 @@ public class MerchantListActivity extends BaseActivity {
                     }
                 }
 
-                countMerchant.setText(String.format("本月已经发展商户: %d 家", num));
+                mMerchantCount.setText(String.format("本月已经发展商户: %d 家", num));
                 users.clear();
                 users.addAll(tempUsers);
                 merchantListAdapter.refreshDataSource(users);
