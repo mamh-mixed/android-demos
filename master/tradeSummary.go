@@ -47,6 +47,9 @@ var bodyStyle = &xlsx.Style{
 // tradeQueryStat 交易查询统计信息
 func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 
+	reportLocale := GetLocale(q.Locale)
+	q.Currency = reportLocale.Currency
+
 	// 调用core方法统计
 	qr := query.TransStatistics(q)
 

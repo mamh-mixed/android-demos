@@ -124,6 +124,7 @@ type TransReport struct {
 	MerName        string
 	OrderNum       string
 	TransAmt       string
+	MerFee         string
 	ChanCode       string
 	TransTime      string
 	PayTime        string
@@ -132,6 +133,7 @@ type TransReport struct {
 	TerminalId     string
 	Busicd         string
 	OrigOrderNum   string
+	Remark         string
 	RefundAmt      string
 	Fee            string
 	SettAmt        string

@@ -50,7 +50,7 @@ func F64(currency string, amt int64) float64 {
 	return Get(currency).F64(amt)
 }
 
-// TransferToStr CNY-1->0.01,JPY-1->1
+// Str CNY-1->0.01,JPY-1->1
 func Str(currency string, amt int64) string {
 	return Get(currency).Str(amt)
 }
@@ -62,7 +62,7 @@ func (c Cur) F64(amt int64) float64 {
 	return float64(amt) / math.Pow(10, float64(c.Precision))
 }
 
-// TransferToStr CNY-1->0.01,JPY-1->1
+// Str CNY-1->0.01,JPY-1->1
 func (c Cur) Str(amt int64) string {
 	if c.Precision == 0 {
 		return fmt.Sprintf("%d", amt)

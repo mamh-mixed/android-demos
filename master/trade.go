@@ -141,6 +141,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		MerName      string
 		OrderNum     string
 		TransAmt     string
+		MerFee       string
 		ChanCode     string
 		TransTime    string
 		PayTime      string
@@ -149,7 +150,8 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum}
+		Remark       string
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -207,6 +209,9 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		// 交易金额
 		cell = row.AddCell()
 		cell.SetFloatWithFormat(amt, floatFormat)
+		// 商户手续费
+		cell = row.AddCell()
+		cell.SetFloatWithFormat(cur.F64(v.NetFee), floatFormat)
 		// 渠道
 		cell = row.AddCell()
 		switch v.ChanCode {
@@ -268,7 +273,9 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		// 原订单号
 		cell = row.AddCell()
 		cell.Value = v.OrigOrderNum
-
+		// 备注
+		cell = row.AddCell()
+		cell.Value = v.TicketNum
 	}
 
 	// 总金额

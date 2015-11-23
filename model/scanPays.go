@@ -60,6 +60,7 @@ type QueryCondition struct {
 	TimeType           string
 	SettRole           string `json:"settRole,omitempty"`
 	Locale             string
+	Currency           string
 	IsAggregateByGroup bool   `json:"isAggregateByGroup,omitempty"`                             // 是否按照商户号汇总
 	CouponsNo          string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态

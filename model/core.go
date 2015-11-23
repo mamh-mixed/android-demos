@@ -287,7 +287,7 @@ type Trans struct {
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
 	SettRole     string        `bson:"settRole,omitempty" json:"-"`                          // 清算角色
 	PayTime      string        `bson:"payTime,omitempty" json:"-"`                           // 支付时间
-	Currency     string        `bson:"currency,omitempty" json:"-"`
+	Currency     string        `bson:"currency,omitempty" json:"currency"`
 	ExchangeRate string        `bson:"exchangeRate,omitempty" json:"-"`
 
 	// 快捷支付
