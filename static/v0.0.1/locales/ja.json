@@ -239,7 +239,7 @@
   },
   "TRANS_TYPE.VERI": {
     "description": "卡券核销",
-    "message": "JA-卡券核销"
+    "message": "クーポン検証"
   },
   "TRANS_TYPE.CANC": {
     "description": "取消",
@@ -412,6 +412,18 @@
   "TRADE_DETAIL.MODIFY_TIME": {
     "description": "修改时间",
     "message": "変更時間"
+  },
+  "TRADE_DETAIL.SETT_ROLE": {
+    "description": "清算角色",
+    "message": "JA清算角色"
+  },
+  "TRADE_DETAIL.TICKET_NUM": {
+    "description": "小票号",
+    "message": "レシート番号"
+  },
+  "TRADE_DETAIL.PAY_TIME": {
+    "description": "支付时间",
+    "message": "決済日時"
   },
   "xxx": {
     "description": "xxx",
