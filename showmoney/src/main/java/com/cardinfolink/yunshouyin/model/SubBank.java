@@ -1,10 +1,19 @@
 package com.cardinfolink.yunshouyin.model;
 
 
+import com.google.gson.annotations.SerializedName;
+
 public class SubBank {
+    @SerializedName("bank_name")
     private String bankName;
+
+    @SerializedName("city_code")
     private String cityCode;
+
+    @SerializedName("one_bank_no")
     private String oneBankNo;
+
+    @SerializedName("two_bank_no")
     private String twoBankNo;
 
     public String getBankName() {
