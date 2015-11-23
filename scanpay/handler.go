@@ -10,7 +10,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
+	// "github.com/omigo/mahonia"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -122,10 +122,10 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		log.Errorf("alp notify: %s, unescape error: %s ", string(data), err)
 	}
 
-	d := mahonia.NewDecoder("gbk")
-	utf8 := d.ConvertString(unescape)
+	// d := mahonia.NewDecoder("gbk")
+	// utf8 := d.ConvertString(unescape)
 
-	vs, err := url.ParseQuery(utf8)
+	vs, err := url.ParseQuery(unescape)
 	if err != nil {
 		log.Infof("return alipay: %s", err)
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
