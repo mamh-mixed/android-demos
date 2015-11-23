@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -37,12 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 
 public class AccountUpdateView extends LinearLayout {
+    private Context mContext;
+    private BaseActivity mBaseActivity;
 
     private EditText mNameEdit;
     private EditText mBanknumEdit;
     private EditText mPhonenumEdit;
-    private Context mContext;
-    private BaseActivity mBaseActivity;
+
 
     private AutoCompleteTextView mProvinceEdit;
     private Spinner mProvinceSpinner;
@@ -71,10 +73,12 @@ public class AccountUpdateView extends LinearLayout {
     private ArrayAdapter mBranchBankAdapter;
     private SearchAdapter mBranchBankSearchAdapter;
 
-    private String info_province;
-    private String info_city;
-    private String info_openbank;
-    private String info_branch_bank;
+    private String infoProvince;
+    private String infoCity;
+    private String infoOpenbank;
+    private String infoBranchBank;
+
+    private Button mSubmitButton;
 
     private boolean isInit = false;
 
@@ -82,46 +86,36 @@ public class AccountUpdateView extends LinearLayout {
         super(context);
         mContext = context;
         mBaseActivity = (BaseActivity) mContext;
-        View contentView = LayoutInflater.from(context).inflate(
-                R.layout.account_update_view, null);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        View contentView = LayoutInflater.from(context).inflate(R.layout.account_update_view, null);
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
         initLayout(contentView);
         initData();
-        //initListener();
-        //	initListener();
-        // getInfo();
 
-        contentView.findViewById(R.id.btn_submit).setOnClickListener(
-                new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        finishedOnClick();
-                    }
-                });
+        mSubmitButton = (Button) contentView.findViewById(R.id.btn_submit);
+        mSubmitButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishedOnClick();
+            }
+        });
 
     }
 
-    private void initLayout(View contentView) {
 
+    private void initLayout(View contentView) {
         mNameEdit = (EditText) contentView.findViewById(R.id.info_name);
         mBanknumEdit = (EditText) contentView.findViewById(R.id.info_banknum);
         mPhonenumEdit = (EditText) contentView.findViewById(R.id.info_phonenum);
         VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
 
-        VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
-
-        mProvinceEdit = (AutoCompleteTextView) contentView
-                .findViewById(R.id.edit_province);
+        mProvinceEdit = (AutoCompleteTextView) contentView.findViewById(R.id.edit_province);
         mProvinceSpinner = (Spinner) findViewById(R.id.spinner_province);
-        // 适配器
+
         mProvinceList = new ArrayList<String>();
         mProvinceList.add("开户行所在省份");
-        mProvinceAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mProvinceList);
+        mProvinceAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mProvinceList);
 
         // 设置样式
         mProvinceAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
@@ -134,16 +128,14 @@ public class AccountUpdateView extends LinearLayout {
         mProvinceEdit.setThreshold(1);
         // mProvinceEdit.setf
 
-        mCityEdit = (AutoCompleteTextView) contentView
-                .findViewById(R.id.edit_city);
+        mCityEdit = (AutoCompleteTextView) contentView.findViewById(R.id.edit_city);
         mCitySpinner = (Spinner) findViewById(R.id.spinner_city);
         // 适配器
         mCityList = new ArrayList<String>();
         mCityCodeList = new ArrayList<String>();
         mCityList.add("开户行所在城市");
         mCityCodeList.add("");
-        mCityAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mCityList);
+        mCityAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mCityList);
         // 设置样式
         mCityAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -154,8 +146,7 @@ public class AccountUpdateView extends LinearLayout {
         mCityEdit.setAdapter(mCitySearchAdapter);
         mCityEdit.setThreshold(1);
 
-        mOpenBankEdit = (AutoCompleteTextView) contentView
-                .findViewById(R.id.edit_openbank);
+        mOpenBankEdit = (AutoCompleteTextView) contentView.findViewById(R.id.edit_openbank);
         mOpenBankSpinner = (Spinner) findViewById(R.id.spinner_openbank);
         // 适配器
         mOpenBankList = new ArrayList<String>();
@@ -163,8 +154,7 @@ public class AccountUpdateView extends LinearLayout {
         mBankIdList = new ArrayList<String>();
         mBankIdList.add("");
 
-        mOpenBankAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mOpenBankList);
+        mOpenBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mOpenBankList);
         // 设置样式
         mOpenBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -174,8 +164,7 @@ public class AccountUpdateView extends LinearLayout {
         mOpenBankEdit.setAdapter(mOpenBankSearchAdapter);
         mOpenBankEdit.setThreshold(1);
 
-        mBranchBankEdit = (AutoCompleteTextView) contentView
-                .findViewById(R.id.edit_branchbank);
+        mBranchBankEdit = (AutoCompleteTextView) contentView.findViewById(R.id.edit_branchbank);
         mBranchBankSpinner = (Spinner) findViewById(R.id.spinner_branchbank);
         // 适配器
         mBranchBankList = new ArrayList<String>();
@@ -183,8 +172,7 @@ public class AccountUpdateView extends LinearLayout {
         mBankNoList = new ArrayList<String>();
         mBankNoList.add("行号");
 
-        mBranchBankAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mBranchBankList);
+        mBranchBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mBranchBankList);
         // 设置样式
         mBranchBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -198,60 +186,82 @@ public class AccountUpdateView extends LinearLayout {
 
     public void getInfo() {
 
-        HttpCommunicationUtil.sendDataToServer(ParamsUtil.getInfo(SessonData.loginUser),
-                new CommunicationListener() {
+        HttpCommunicationUtil.sendDataToServer(ParamsUtil.getInfo(SessonData.loginUser), new CommunicationListener() {
 
-                    @Override
-                    public void onResult(final String result) {
-                        if (JsonUtil.getParam(result, "state").equals("success")) {
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void onResult(final String result) {
+                if (JsonUtil.getParam(result, "state").equals("success")) {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    String info = JsonUtil.getParam(result, "info");
+                        @Override
+                        public void run() {
+                            String info = JsonUtil.getParam(result, "info");
 
-                                    info_province = JsonUtil.getParam(info, "province");
-                                    info_city = JsonUtil.getParam(info, "city");
-                                    info_openbank = JsonUtil.getParam(info, "bank_open");
-                                    info_branch_bank = JsonUtil.getParam(info, "branch_bank");
+                            infoProvince = JsonUtil.getParam(info, "province");
+                            infoCity = JsonUtil.getParam(info, "city");
+                            infoOpenbank = JsonUtil.getParam(info, "bank_open");
+                            infoBranchBank = JsonUtil.getParam(info, "branch_bank");
 
-                                    mProvinceEdit.setText(info_province);
-                                    mCityEdit.setText(info_city);
-                                    mOpenBankEdit.setText(info_openbank);
-                                    mBranchBankEdit.setText(info_branch_bank);
+                            mProvinceEdit.setText(infoProvince);
+                            mCityEdit.setText(infoCity);
+                            mOpenBankEdit.setText(infoOpenbank);
+                            mBranchBankEdit.setText(infoBranchBank);
 
-                                    mNameEdit.setText(JsonUtil.getParam(info, "bank_open"));
-                                    mNameEdit.setText(JsonUtil.getParam(info, "payee"));
-                                    mBanknumEdit.setText(JsonUtil.getParam(info, "payee_card"));
-                                    mPhonenumEdit.setText(JsonUtil.getParam(info, "phone_num"));
+                            mNameEdit.setText(JsonUtil.getParam(info, "bank_open"));
+                            mNameEdit.setText(JsonUtil.getParam(info, "payee"));
+                            mBanknumEdit.setText(JsonUtil.getParam(info, "payee_card"));
+                            mPhonenumEdit.setText(JsonUtil.getParam(info, "phone_num"));
 
 
-                                    mCityList.clear();
-                                    mCityCodeList.clear();
-                                    mCityList.add("开户行所在城市");
-                                    mCityCodeList.add("");
-                                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
-                                        String province = mProvinceEdit.getText().toString();
+                            mCityList.clear();
+                            mCityCodeList.clear();
+                            mCityList.add("开户行所在城市");
+                            mCityCodeList.add("");
+                            if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
+                                String province = mProvinceEdit.getText().toString();
 
-                                        HttpCommunicationUtil.sendGetDataToServer(
-                                                BankBaseUtil.getCity(province),
-                                                new CommunicationListener() {
+                                HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getCity(province), new CommunicationListener() {
+
+                                    @Override
+                                    public void onResult(String result) {
+                                        try {
+                                            JSONArray jsonArray = new JSONArray(result);
+                                            for (int i = 0; i < jsonArray.length(); i++) {
+                                                mCityList.add(JsonUtil.getParam(jsonArray.getString(i), "city_name"));
+                                                mCityCodeList.add(JsonUtil.getParam(jsonArray.getString(i), "city_code"));
+                                            }
+                                        } catch (JSONException e) {
+                                            // TODO Auto-generated catch block
+                                            e.printStackTrace();
+                                        }
+
+                                        ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                                            @Override
+                                            public void run() {
+
+                                                // 更新UI
+                                                mCityAdapter.notifyDataSetChanged();
+                                                mCitySearchAdapter.setData(mCityList);
+
+
+                                                HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getBank(), new CommunicationListener() {
 
                                                     @Override
                                                     public void onResult(String result) {
                                                         try {
-                                                            JSONArray jsonArray = new JSONArray(
-                                                                    result);
+                                                            JSONObject jsonObj = new JSONObject(result);
+                                                            Iterator it = jsonObj.keys();
+                                                            mOpenBankList.clear();
+                                                            mOpenBankList.add("请选择开户银行");
 
-                                                            for (int i = 0; i < jsonArray.length(); i++) {
+                                                            mBankIdList.clear();
+                                                            mBankIdList.add("");
 
-                                                                mCityList.add(JsonUtil.getParam(
-                                                                        jsonArray.getString(i),
-                                                                        "city_name"));
-                                                                mCityCodeList.add(JsonUtil
-                                                                        .getParam(jsonArray
-                                                                                        .getString(i),
-                                                                                "city_code"));
+                                                            while (it.hasNext()) {
+                                                                String key = it.next().toString();
+                                                                mOpenBankList.add(JsonUtil.getParam(JsonUtil.getParam(result, key), "bank_name"));
+                                                                mBankIdList.add(JsonUtil.getParam(JsonUtil.getParam(result, key), "id"));
                                                             }
 
                                                         } catch (JSONException e) {
@@ -259,148 +269,63 @@ public class AccountUpdateView extends LinearLayout {
                                                             e.printStackTrace();
                                                         }
 
-                                                        ((Activity) mContext)
-                                                                .runOnUiThread(new Runnable() {
+                                                        ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                                                                    @Override
-                                                                    public void run() {
-
-
-                                                                        // 更新UI
-
-                                                                        mCityAdapter
-                                                                                .notifyDataSetChanged();
-                                                                        mCitySearchAdapter
-                                                                                .setData(mCityList);
+                                                            @Override
+                                                            public void run() {
+                                                                // 更新UI
+                                                                mOpenBankSpinner.setSelection(0);
+                                                                mOpenBankAdapter.notifyDataSetChanged();
+                                                                mOpenBankSearchAdapter.notifyDataSetChanged();
 
 
-                                                                        HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getBank(),
-                                                                                new CommunicationListener() {
+                                                                mBranchBankList.clear();
+                                                                mBranchBankList.add("请选择开户支行");
+                                                                mBankNoList.clear();
+                                                                mBankNoList.add("行号");
+                                                                if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) > 0) {
+                                                                    HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getSerach(mCityCodeList.get(mCityList.indexOf(mCityEdit.getText().toString())), mBankIdList.get(mOpenBankList.indexOf(mOpenBankEdit.getText().toString()))), new CommunicationListener() {
 
-                                                                                    @Override
-                                                                                    public void onResult(String result) {
-                                                                                        try {
-                                                                                            JSONObject jsonObj = new JSONObject(result);
-                                                                                            Iterator it = jsonObj.keys();
-                                                                                            mOpenBankList.clear();
-                                                                                            mOpenBankList.add("请选择开户银行");
+                                                                        @Override
+                                                                        public void onResult(String result) {
+                                                                            try {
+                                                                                JSONArray jsonArray = new JSONArray(result);
+                                                                                mBranchBankList.clear();
+                                                                                mBranchBankList.add("请选择开户支行");
+                                                                                mBankNoList.clear();
+                                                                                mBankNoList.add("行号");
 
-                                                                                            mBankIdList.clear();
-                                                                                            mBankIdList.add("");
+                                                                                for (int i = 0; i < jsonArray.length(); i++) {
+                                                                                    mBranchBankList.add(JsonUtil.getParam(jsonArray.getString(i), "bank_name"));
+                                                                                    mBankNoList.add(JsonUtil.getParam(jsonArray.getString(i), "one_bank_no") + "|" + JsonUtil.getParam(jsonArray.getString(i), "two_bank_no"));
+                                                                                }
+                                                                            } catch (JSONException e) {
+                                                                                // TODO Auto-generated catch block
+                                                                                e.printStackTrace();
+                                                                            }
+                                                                            ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                                                                                            while (it.hasNext()) {
-                                                                                                String key = it.next().toString();
-                                                                                                mOpenBankList.add(JsonUtil.getParam(
-                                                                                                        JsonUtil.getParam(result, key),
-                                                                                                        "bank_name"));
-                                                                                                mBankIdList.add(JsonUtil.getParam(
-                                                                                                        JsonUtil.getParam(result, key), "id"));
-                                                                                            }
+                                                                                @Override
+                                                                                public void run() {
+                                                                                    // 更新UI
+                                                                                    mBranchBankSpinner.setSelection(0);
+                                                                                    mBranchBankAdapter.notifyDataSetChanged();
+                                                                                    mBranchBankSearchAdapter.setData(mBranchBankList);
+                                                                                    initListener();
+                                                                                }
+                                                                            });
+                                                                        }
 
-                                                                                        } catch (JSONException e) {
-                                                                                            // TODO Auto-generated catch block
-                                                                                            e.printStackTrace();
-                                                                                        }
+                                                                        @Override
+                                                                        public void onError(String error) {
 
-                                                                                        ((Activity) mContext).runOnUiThread(new Runnable() {
+                                                                        }
+                                                                    });
+                                                                }
 
-                                                                                            @Override
-                                                                                            public void run() {
-                                                                                                // 更新UI
-                                                                                                mOpenBankSpinner.setSelection(0);
-                                                                                                mOpenBankAdapter.notifyDataSetChanged();
-                                                                                                mOpenBankSearchAdapter.notifyDataSetChanged();
+                                                            }
 
-
-                                                                                                mBranchBankList.clear();
-                                                                                                mBranchBankList.add("请选择开户支行");
-                                                                                                mBankNoList.clear();
-                                                                                                mBankNoList.add("行号");
-                                                                                                if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) > 0) {
-                                                                                                    HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil
-                                                                                                                    .getSerach(mCityCodeList.get(mCityList
-                                                                                                                                    .indexOf(mCityEdit.getText().toString())),
-                                                                                                                            mBankIdList.get(mOpenBankList
-                                                                                                                                    .indexOf(mOpenBankEdit.getText()
-                                                                                                                                            .toString()))),
-                                                                                                            new CommunicationListener() {
-
-                                                                                                                @Override
-                                                                                                                public void onResult(String result) {
-                                                                                                                    try {
-                                                                                                                        JSONArray jsonArray = new JSONArray(
-                                                                                                                                result);
-                                                                                                                        mBranchBankList.clear();
-                                                                                                                        mBranchBankList.add("请选择开户支行");
-                                                                                                                        mBankNoList.clear();
-                                                                                                                        mBankNoList.add("行号");
-
-                                                                                                                        for (int i = 0; i < jsonArray.length(); i++) {
-
-                                                                                                                            mBranchBankList.add(JsonUtil
-                                                                                                                                    .getParam(jsonArray
-                                                                                                                                                    .getString(i),
-                                                                                                                                            "bank_name"));
-                                                                                                                            mBankNoList.add(JsonUtil.getParam(
-                                                                                                                                    jsonArray.getString(i),
-                                                                                                                                    "one_bank_no")
-                                                                                                                                    + "|"
-                                                                                                                                    + JsonUtil.getParam(
-                                                                                                                                    jsonArray
-                                                                                                                                            .getString(i),
-                                                                                                                                    "two_bank_no"));
-                                                                                                                        }
-
-                                                                                                                    } catch (JSONException e) {
-                                                                                                                        // TODO Auto-generated catch block
-                                                                                                                        e.printStackTrace();
-                                                                                                                    }
-
-                                                                                                                    ((Activity) mContext)
-                                                                                                                            .runOnUiThread(new Runnable() {
-
-                                                                                                                                @Override
-                                                                                                                                public void run() {
-                                                                                                                                    // 更新UI
-
-                                                                                                                                    mBranchBankSpinner
-                                                                                                                                            .setSelection(0);
-
-                                                                                                                                    mBranchBankAdapter
-                                                                                                                                            .notifyDataSetChanged();
-                                                                                                                                    mBranchBankSearchAdapter
-                                                                                                                                            .setData(mBranchBankList);
-
-                                                                                                                                    initListener();
-                                                                                                                                }
-
-                                                                                                                            });
-
-                                                                                                                }
-
-                                                                                                                @Override
-                                                                                                                public void onError(String error) {
-
-                                                                                                                }
-                                                                                                            });
-                                                                                                }
-
-                                                                                            }
-
-                                                                                        });
-
-                                                                                    }
-
-                                                                                    @Override
-                                                                                    public void onError(String error) {
-
-                                                                                    }
-                                                                                });
-
-
-                                                                    }
-
-                                                                });
+                                                        });
 
                                                     }
 
@@ -411,23 +336,35 @@ public class AccountUpdateView extends LinearLayout {
                                                 });
 
 
+                                            }
+
+                                        });
+
                                     }
 
+                                    @Override
+                                    public void onError(String error) {
 
-                                }
+                                    }
+                                });
 
-                            });
+
+                            }
+
 
                         }
 
-                    }
+                    });
 
-                    @Override
-                    public void onError(String error) {
-                        // TODO Auto-generated method stub
+                }
 
-                    }
-                });
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
 
 
         new Thread(new Runnable() {
@@ -437,7 +374,6 @@ public class AccountUpdateView extends LinearLayout {
                 try {
                     Thread.sleep(4000);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 initListener();
@@ -496,24 +432,18 @@ public class AccountUpdateView extends LinearLayout {
     private void initListener() {
 
         if (isInit) {
-
-
             return;
         }
         isInit = true;
         mProvinceEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
-                // TODO Auto-generated method stub
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                // TODO Auto-generated method stub
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
@@ -534,42 +464,27 @@ public class AccountUpdateView extends LinearLayout {
                                 @Override
                                 public void onResult(String result) {
                                     try {
-                                        JSONArray jsonArray = new JSONArray(
-                                                result);
-
+                                        JSONArray jsonArray = new JSONArray(result);
                                         for (int i = 0; i < jsonArray.length(); i++) {
-
-                                            mCityList.add(JsonUtil.getParam(
-                                                    jsonArray.getString(i),
-                                                    "city_name"));
-                                            mCityCodeList.add(JsonUtil
-                                                    .getParam(jsonArray
-                                                                    .getString(i),
-                                                            "city_code"));
+                                            mCityList.add(JsonUtil.getParam(jsonArray.getString(i), "city_name"));
+                                            mCityCodeList.add(JsonUtil.getParam(jsonArray.getString(i), "city_code"));
                                         }
-
                                     } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
                                         e.printStackTrace();
                                     }
 
-                                    ((Activity) mContext)
-                                            .runOnUiThread(new Runnable() {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                                                @Override
-                                                public void run() {
-                                                    // 更新UI
-                                                    mCitySpinner
-                                                            .setSelection(0);
-                                                    mCityEdit.setText("");
-                                                    mCityAdapter
-                                                            .notifyDataSetChanged();
-                                                    mCitySearchAdapter
-                                                            .setData(mCityList);
+                                        @Override
+                                        public void run() {
+                                            // 更新UI
+                                            mCitySpinner.setSelection(0);
+                                            mCityEdit.setText("");
+                                            mCityAdapter.notifyDataSetChanged();
+                                            mCitySearchAdapter.setData(mCityList);
+                                        }
 
-                                                }
-
-                                            });
+                                    });
 
                                 }
 
@@ -586,16 +501,12 @@ public class AccountUpdateView extends LinearLayout {
         mCityEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
-                // TODO Auto-generated method stub
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                // TODO Auto-generated method stub
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
@@ -614,8 +525,7 @@ public class AccountUpdateView extends LinearLayout {
                                 @Override
                                 public void onResult(String result) {
                                     try {
-                                        JSONObject jsonObj = new JSONObject(
-                                                result);
+                                        JSONObject jsonObj = new JSONObject(result);
                                         Iterator it = jsonObj.keys();
                                         mOpenBankList.clear();
                                         mOpenBankList.add("请选择开户银行");
@@ -625,38 +535,27 @@ public class AccountUpdateView extends LinearLayout {
 
                                         while (it.hasNext()) {
                                             String key = it.next().toString();
-                                            mOpenBankList.add(JsonUtil
-                                                    .getParam(JsonUtil
-                                                                    .getParam(result,
-                                                                            key),
-                                                            "bank_name"));
-                                            mBankIdList.add(JsonUtil.getParam(
-                                                    JsonUtil.getParam(result,
-                                                            key), "id"));
+                                            mOpenBankList.add(JsonUtil.getParam(JsonUtil.getParam(result, key), "bank_name"));
+                                            mBankIdList.add(JsonUtil.getParam(JsonUtil.getParam(result, key), "id"));
                                         }
 
                                     } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
                                         e.printStackTrace();
                                     }
 
-                                    ((Activity) mContext)
-                                            .runOnUiThread(new Runnable() {
+                                    ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                                                @Override
-                                                public void run() {
-                                                    // 更新UI
+                                        @Override
+                                        public void run() {
+                                            // 更新UI
 
-                                                    mOpenBankSpinner
-                                                            .setSelection(0);
-                                                    mOpenBankEdit.setText("");
-                                                    mOpenBankAdapter
-                                                            .notifyDataSetChanged();
-                                                    mOpenBankSearchAdapter
-                                                            .setData(mOpenBankList);
-                                                }
+                                            mOpenBankSpinner.setSelection(0);
+                                            mOpenBankEdit.setText("");
+                                            mOpenBankAdapter.notifyDataSetChanged();
+                                            mOpenBankSearchAdapter.setData(mOpenBankList);
+                                        }
 
-                                            });
+                                    });
 
                                 }
 
@@ -673,16 +572,12 @@ public class AccountUpdateView extends LinearLayout {
         mOpenBankEdit.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
-                // TODO Auto-generated method stub
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
-                // TODO Auto-generated method stub
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
@@ -694,100 +589,69 @@ public class AccountUpdateView extends LinearLayout {
                 mBankNoList.add("行号");
                 mBranchBankEdit.setText("");
                 if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) > 0) {
-                    HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil
-                                    .getSerach(mCityCodeList.get(mCityList
-                                                    .indexOf(mCityEdit.getText().toString())),
-                                            mBankIdList.get(mOpenBankList
-                                                    .indexOf(mOpenBankEdit.getText()
-                                                            .toString()))),
-                            new CommunicationListener() {
+                    HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getSerach(mCityCodeList.get(mCityList.indexOf(mCityEdit.getText().toString())), mBankIdList.get(mOpenBankList.indexOf(mOpenBankEdit.getText().toString()))), new CommunicationListener() {
+
+                        @Override
+                        public void onResult(String result) {
+                            try {
+                                JSONArray jsonArray = new JSONArray(result);
+                                mBranchBankList.clear();
+                                mBranchBankList.add("请选择开户支行");
+                                mBankNoList.clear();
+                                mBankNoList.add("行号");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    mBranchBankList.add(JsonUtil.getParam(jsonArray.getString(i), "bank_name"));
+                                    mBankNoList.add(JsonUtil.getParam(jsonArray.getString(i), "one_bank_no") + "|" + JsonUtil.getParam(jsonArray.getString(i), "two_bank_no"));
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
 
                                 @Override
-                                public void onResult(String result) {
-                                    try {
-                                        JSONArray jsonArray = new JSONArray(
-                                                result);
-                                        mBranchBankList.clear();
-                                        mBranchBankList.add("请选择开户支行");
-                                        mBankNoList.clear();
-                                        mBankNoList.add("行号");
-
-                                        for (int i = 0; i < jsonArray.length(); i++) {
-
-                                            mBranchBankList.add(JsonUtil
-                                                    .getParam(jsonArray
-                                                                    .getString(i),
-                                                            "bank_name"));
-                                            mBankNoList.add(JsonUtil.getParam(
-                                                    jsonArray.getString(i),
-                                                    "one_bank_no")
-                                                    + "|"
-                                                    + JsonUtil.getParam(
-                                                    jsonArray
-                                                            .getString(i),
-                                                    "two_bank_no"));
-                                        }
-
-                                    } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-
-                                    ((Activity) mContext)
-                                            .runOnUiThread(new Runnable() {
-
-                                                @Override
-                                                public void run() {
-                                                    // 更新UI
-
-                                                    mBranchBankSpinner
-                                                            .setSelection(0);
-                                                    mBranchBankEdit.setText("");
-                                                    mBranchBankAdapter
-                                                            .notifyDataSetChanged();
-                                                    mBranchBankSearchAdapter
-                                                            .setData(mBranchBankList);
-                                                }
-
-                                            });
-
+                                public void run() {
+                                    // 更新UI
+                                    mBranchBankSpinner.setSelection(0);
+                                    mBranchBankEdit.setText("");
+                                    mBranchBankAdapter.notifyDataSetChanged();
+                                    mBranchBankSearchAdapter.setData(mBranchBankList);
                                 }
 
-                                @Override
-                                public void onError(String error) {
-
-                                }
                             });
+
+                        }
+
+                        @Override
+                        public void onError(String error) {
+
+                        }
+                    });
                 }
 
             }
         });
 
-        mProvinceSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
+        mProvinceSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mProvinceEdit.setText(mProvinceList.get(position));
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) {
+                    mProvinceEdit.setText(mProvinceList.get(position));
+                }
 
-                        }
+            }
 
-                    }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
+            }
+        });
 
         mCitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
                     mCityEdit.setText(mCityList.get(position));
                 }
@@ -796,57 +660,48 @@ public class AccountUpdateView extends LinearLayout {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
 
             }
         });
 
-        mOpenBankSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
+        mOpenBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mOpenBankEdit.setText(mOpenBankList.get(position));
-                        }
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) {
+                    mOpenBankEdit.setText(mOpenBankList.get(position));
+                }
 
-                    }
+            }
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                    }
-                });
+            }
+        });
 
-        mBranchBankSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
+        mBranchBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mBranchBankEdit.setText(mBranchBankList
-                                    .get(position));
-                        }
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position > 0) {
+                    mBranchBankEdit.setText(mBranchBankList.get(position));
+                }
 
-                    }
+            }
 
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                    }
-                });
+            }
+        });
 
         mCityEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    if (mProvinceList.indexOf(mProvinceEdit.getText()
-                            .toString()) < 0) {
+                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) < 0) {
                         mProvinceEdit.setText("");
                     }
                 }
@@ -901,7 +756,6 @@ public class AccountUpdateView extends LinearLayout {
             user.setBranchBank(mBranchBankEdit.getText().toString());
             int index = mBranchBankList.indexOf(mBranchBankEdit.getText().toString());
             if (index >= 0) {
-
                 user.setBankNo(mBankNoList.get(index));
             } else {
                 user.setBankNo("");
@@ -909,87 +763,58 @@ public class AccountUpdateView extends LinearLayout {
 
 
             user.setPayee(mNameEdit.getText().toString());
-            user.setPayeeCard(mBanknumEdit.getText().toString()
-                    .replace(" ", ""));
+            user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
             user.setPhoneNum(mPhonenumEdit.getText().toString());
-            HttpCommunicationUtil.sendDataToServer(
-                    ParamsUtil.getUpdateInfo(user),
-                    new CommunicationListener() {
+            HttpCommunicationUtil.sendDataToServer(ParamsUtil.getUpdateInfo(user), new CommunicationListener() {
 
-                        @Override
-                        public void onResult(final String result) {
-                            String state = JsonUtil.getParam(result, "state");
-                            if (state.equals("success")) {
-                                ((Activity) mContext)
-                                        .runOnUiThread(new Runnable() {
+                @Override
+                public void onResult(final String result) {
+                    String state = JsonUtil.getParam(result, "state");
+                    if (state.equals("success")) {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                                            @Override
-                                            public void run() {
-                                                // 更新UI
-                                                mBaseActivity.endLoading();
-                                                AlertDialog alert_Dialog = new AlertDialog(
-                                                        mContext,
-                                                        null,
-                                                        ((Activity) mContext)
-                                                                .findViewById(R.id.alert_dialog),
-                                                        getResources().getString(R.string.alert_update_success),
-                                                        BitmapFactory
-                                                                .decodeResource(
-                                                                        mContext.getResources(),
-                                                                        R.drawable.right));
-                                                alert_Dialog.show();
-                                            }
-
-                                        });
-
-                            } else {
-                                ((Activity) mContext)
-                                        .runOnUiThread(new Runnable() {
-
-                                            @Override
-                                            public void run() {
-                                                // 更新UI
-                                                mBaseActivity.endLoading();
-                                                mBaseActivity.alertShow(
-                                                        ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")),
-                                                        BitmapFactory
-                                                                .decodeResource(
-                                                                        mContext.getResources(),
-                                                                        R.drawable.wrong));
-                                            }
-
-                                        });
+                            @Override
+                            public void run() {
+                                // 更新UI
+                                mBaseActivity.endLoading();
+                                AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(),  R.drawable.right));
+                                alert_Dialog.show();
                             }
-                        }
+
+                        });
+
+                    } else {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                // 更新UI
+                                mBaseActivity.endLoading();
+                                mBaseActivity.alertShow(ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                            }
+
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(final String error) {
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
 
                         @Override
-                        public void onError(final String error) {
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    // 更新UI
-                                    mBaseActivity.endLoading();
-                                    mBaseActivity.alertShow(error,
-                                            BitmapFactory.decodeResource(
-                                                    mContext.getResources(),
-                                                    R.drawable.wrong));
-                                }
-
-                            });
+                        public void run() {
+                            // 更新UI
+                            mBaseActivity.endLoading();
+                            mBaseActivity.alertShow(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                         }
-                    });
 
-            // Intent intent = new
-            // Intent(RegisterNextActivity.this,MainActivity.class);
-            // RegisterNextActivity.this.startActivity(intent);
-            // RegisterNextActivity.this.finish();
+                    });
+                }
+            });
+
+
         }
 
-        // Intent intent = new
-        // Intent(RegisterNextActivity.this,MainActivity.class);
-        // RegisterNextActivity.this.startActivity(intent);
-        // RegisterNextActivity.this.finish();
     }
 
     @SuppressLint("NewApi")
@@ -1003,56 +828,47 @@ public class AccountUpdateView extends LinearLayout {
         String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");
 
         if (mProvinceEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户行所在省份不能为空!", BitmapFactory
-                    .decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("开户行所在省份不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (mCityEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户行所在城市不能为空!", BitmapFactory
-                    .decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("开户行所在城市不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (mOpenBankEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户行不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("开户行不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (mBranchBankEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户支行不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("开户支行不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (name.isEmpty()) {
-            mBaseActivity.alertShow("姓名不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("姓名不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (banknum.isEmpty()) {
-            mBaseActivity.alertShow("银行卡号不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("银行卡号不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (!VerifyUtil.checkBankCard(banknum)) {
-            mBaseActivity.alertShow("请输入正确的银行卡号!", BitmapFactory
-                    .decodeResource(this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("请输入正确的银行卡号!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (phonenum.isEmpty()) {
-            mBaseActivity.alertShow("手机号不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("手机号不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (!VerifyUtil.isMobileNO(phonenum)) {
-            mBaseActivity.alertShow("请输入正确的手机号!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            mBaseActivity.alertShow("请输入正确的手机号!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
