@@ -1,17 +1,22 @@
 package com.cardinfolink.yunshouyin.model;
 
-public class BankInfo {
-    private String bank_open;
-    private String payee;
-    private String payee_card;
-    private String phone_num;
+import com.google.gson.annotations.SerializedName;
 
-    public String getBank_open() {
-        return bank_open;
+public class BankInfo {
+    @SerializedName("bank_open")
+    private String bankOpen;
+    private String payee;
+    @SerializedName("payee_card")
+    private String payeeCard;
+    @SerializedName("phone_num")
+    private String phoneNum;
+
+    public String getBankOpen() {
+        return bankOpen;
     }
 
-    public void setBank_open(String bank_open) {
-        this.bank_open = bank_open;
+    public void setBankOpen(String bankOpen) {
+        this.bankOpen = bankOpen;
     }
 
     public String getPayee() {
@@ -22,19 +27,19 @@ public class BankInfo {
         this.payee = payee;
     }
 
-    public String getPayee_card() {
-        return payee_card;
+    public String getPayeeCard() {
+        return payeeCard;
     }
 
-    public void setPayee_card(String payee_card) {
-        this.payee_card = payee_card;
+    public void setPayeeCard(String payeeCard) {
+        this.payeeCard = payeeCard;
     }
 
-    public String getPhone_num() {
-        return phone_num;
+    public String getPhoneNum() {
+        return phoneNum;
     }
 
-    public void setPhone_num(String phone_num) {
-        this.phone_num = phone_num;
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 }
