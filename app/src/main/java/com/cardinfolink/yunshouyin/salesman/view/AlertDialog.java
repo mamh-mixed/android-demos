@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.salesman.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -43,23 +44,22 @@ public class AlertDialog {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });
 
-        dialogView.findViewById(R.id.alert_ok).setOnClickListener(
-                new OnClickListener() {
+        TextView ok = (TextView) dialogView.findViewById(R.id.alert_ok);
+        ok.setOnClickListener(new OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        dialogView.setVisibility(View.GONE);
-                        if (mHandler != null) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_CLIENT_ALERT_OK);
-                        }
+            @Override
+            public void onClick(View v) {
+                dialogView.setVisibility(View.GONE);
+                if (mHandler != null) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_CLIENT_ALERT_OK);
+                }
 
-                    }
-                });
+            }
+        });
     }
 
 
@@ -82,15 +82,15 @@ public class AlertDialog {
             }
         });
 
-        dialogView.findViewById(R.id.alert_ok).setOnClickListener(
-                new OnClickListener() {
+        TextView ok = (TextView) dialogView.findViewById(R.id.alert_ok);
+        ok.setOnClickListener(new OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        dialogView.setVisibility(View.GONE);
+            @Override
+            public void onClick(View v) {
+                dialogView.setVisibility(View.GONE);
 
-                    }
-                });
+            }
+        });
     }
 
 
@@ -113,14 +113,14 @@ public class AlertDialog {
             }
         });
 
-        dialogView.findViewById(R.id.alert_ok).setOnClickListener(
-                new OnClickListener() {
+        TextView ok = (TextView) dialogView.findViewById(R.id.alert_ok);
+        ok.setOnClickListener(new OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        dialogView.setVisibility(View.GONE);
-                        listener.complete();
-                    }
-                });
+            @Override
+            public void onClick(View v) {
+                dialogView.setVisibility(View.GONE);
+                listener.complete();
+            }
+        });
     }
 }
