@@ -82,6 +82,25 @@
         </div>
         <div class="td">{{busicdFilter(item.busicd)}}</div>
       </div>
+
+      <div class="tr">
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.SETT_ROLE">清算角色</i18n-msg>:
+        </div>
+        <div class="td">{{item.settRole}}</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.TICKET_NUM">小票号</i18n-msg>:
+        </div>
+        <div class="td">{{item.ticketNum}}</div>
+      </div>
+
+      <div class="tr" hidden$="{{!_isPayTrans(item.busicd)}}">
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.PAY_TIME">支付时间</i18n-msg>:
+        </div>
+        <div class="td">{{item.payTime}}</div>
+      </div>
+
       <div class="tr">
         <div class="td key">
           <i18n-msg msgid="SCANPAY_TRADE_LIST.CHANNEL">交易渠道</i18n-msg>:
@@ -176,8 +195,10 @@
         }
 
         return busicd;
-
-        // return (busicd + '—' + TRANS_TYPE_MAP[busicd]) || busicd;
+      },
+      _isPayTrans: function(busicd) {
+        busicd = busicd.toUpperCase();
+        return "PURC" === busicd || "PAUT" === busicd;
       },
       chanFilter: function(chanCode) {
         var map = {

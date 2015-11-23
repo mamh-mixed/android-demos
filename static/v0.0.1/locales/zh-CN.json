@@ -413,6 +413,18 @@
     "description": "修改时间",
     "message": "修改时间"
   },
+  "TRADE_DETAIL.SETT_ROLE": {
+    "description": "清算角色",
+    "message": "清算角色"
+  },
+  "TRADE_DETAIL.TICKET_NUM": {
+    "description": "小票号",
+    "message": "小票号"
+  },
+  "TRADE_DETAIL.PAY_TIME": {
+    "description": "支付时间",
+    "message": "支付时间"
+  },
   "xxx": {
     "description": "xxx",
     "message": "xxx"
