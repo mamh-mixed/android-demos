@@ -79,26 +79,35 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     /**
-     *
      * @param listener
      */
     @Override
     public void getUsersAsync(final QuickPayCallbackListener<User[]> listener) {
-        new Thread(new Runnable() {
+        new AsyncTask<Void, Integer, AsyncTaskResult<User[]>>() {
+
             @Override
-            public void run() {
+            protected AsyncTaskResult<User[]> doInBackground(Void... params) {
                 try {
                     User[] users = quickPayApi.getUsers();
-                    listener.onSuccess(users);
+                    return new AsyncTaskResult<User[]>(users);
                 } catch (QuickPayException ex) {
-                    listener.onFailure(ex);
+                    return new AsyncTaskResult<User[]>(ex);
                 }
             }
-        }).start();
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<User[]> result) {
+                //这个会在UI线程中执行
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
     }
 
     /**
-     *
      * @param merchantId
      * @param imageType
      * @param listener
@@ -152,7 +161,6 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     /**
-     *
      * @param email
      * @param password
      * @param passwordRepeat
@@ -205,7 +213,6 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     /**
-     *
      * @param user
      * @param listener
      */
@@ -225,7 +232,6 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     /**
-     *
      * @param user
      * @param listener
      */
@@ -240,7 +246,6 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     /**
-     *
      * @param username
      * @param listener
      */
@@ -260,7 +265,6 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     /**
-     *
      * @param username
      * @param listener
      */

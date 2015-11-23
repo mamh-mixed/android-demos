@@ -31,29 +31,27 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-//TODO: 加入分页下载,搜索API,上拉更多
 public class MerchantListActivity extends BaseActivity {
     private final String TAG = "MerchantListActivity";
-    MerchantListAdapter adapter;
+    MerchantListAdapter merchantListAdapter;
     //该地址会被ArrayAdapter所引用,作为数据源,对merchantInfos所做的修改会影响到arrayAdapter
     private List<User> users = new ArrayList<>();
+
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Button btnAddNewMer;
-    private EditText searchText;
-    private TextView txtMerchantCountThisMonth;
+    private Button addNewMerchant;
+    private EditText searchMerchant;
+    private TextView countMerchant;//this month mer count
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_merchant_list);
         initLayout();
-        setupListView();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy(): will delete cache files");
         SharedPreferences sp = mDataSharedPreferences;
         sp.edit().clear().commit();
     }
@@ -63,87 +61,28 @@ public class MerchantListActivity extends BaseActivity {
      * setup listener
      */
     private void initLayout() {
-        txtMerchantCountThisMonth = (TextView) findViewById(R.id.txt_merchantcountthismonth);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshData();
-            }
-        });
+        merchantListAdapter = new MerchantListAdapter(this, users);
+        ListView listView = (ListView) findViewById(R.id.listViewMerchants);
+        listView.setAdapter(merchantListAdapter);
 
-        btnAddNewMer = (Button) findViewById(R.id.btnAddNewMerchant);
-        btnAddNewMer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int step = mRegisterSharedPreferences.getInt("register_step_finish", 0);
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MerchantListActivity.this);
-                builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mRegisterSharedPreferences.edit().clear().commit();
-                        Intent intent = new Intent(MerchantListActivity.this, RegisterActivity.class);
-                        startActivity(intent);
-                    }
-                });
-                switch (step) {
-                    case 1:
-                        //有未完成的注册步骤,这里是第一步完成了
-                        builder.setMessage("有未完成的注册是否继续？");
-                        builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(MerchantListActivity.this, RegisterNextActivity.class);
-                                startActivity(intent);
-                            }
-                        });
-                        builder.show();
-                        break;
-                    case 2:
-                        //有未完成的注册步骤,这里是第2步完成了
-                        builder.setMessage("有未完成的注册是否继续？");
-                        builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(MerchantListActivity.this, RegisterStep3Activity.class);
-                                startActivity(intent);
-                            }
-                        });
-                        builder.show();
-                        break;
-                    default:
-                        Intent intent = new Intent(MerchantListActivity.this, RegisterActivity.class);
-                        startActivity(intent);
-                        break;
-                }
-            }
-        });
+        countMerchant = (TextView) findViewById(R.id.txt_merchantcountthismonth);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(new MerchantOnRefreshListener());
+
+        addNewMerchant = (Button) findViewById(R.id.btnAddNewMerchant);
+        addNewMerchant.setOnClickListener(new AddNewMerchantOnClickListener());
 
         //输入关键字快速定位
-        searchText = (EditText) findViewById(R.id.mItem_txtSearch);
-        searchText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        searchMerchant = (EditText) findViewById(R.id.mItem_txtSearch);
+        searchMerchant.addTextChangedListener(new SearchMerchantTextChangedListener());
     }
+
 
     /**
      * called when refresh data, pull down to refresh
      */
     private void refreshData() {
-        //startLoading();
         swipeRefreshLayout.setRefreshing(true);
 
         // async network call, callbacks
@@ -163,7 +102,6 @@ public class MerchantListActivity extends BaseActivity {
                     }
                 });
 
-                int num = 0;
                 Date today = new Date();
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(today);
@@ -173,62 +111,112 @@ public class MerchantListActivity extends BaseActivity {
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
                 Date firstDayOfMonth = calendar.getTime();
-
+                int num = 0;
                 for (User user : tempUsers) {
                     if (user.getCreateTime().after(firstDayOfMonth)) {
                         num++;
                     }
                 }
 
-                final int finalNum = num;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        txtMerchantCountThisMonth.setText(String.format("本月已经发展商户: %d 家", finalNum));
-                        users.clear();
-                        users.addAll(tempUsers);
-                        adapter.refreshDataSource(users);
-                        adapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
-                        Toast.makeText(MerchantListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
-                        //endLoading();
-                    }
-                });
+                countMerchant.setText(String.format("本月已经发展商户: %d 家", num));
+                users.clear();
+                users.addAll(tempUsers);
+                merchantListAdapter.refreshDataSource(users);
+                merchantListAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(MerchantListActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(final QuickPayException ex) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String errorStr = ex.getErrorMsg();
-                        swipeRefreshLayout.setRefreshing(false);
-                        alertError(errorStr);
-                        if (ex.getErrorCode().equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
-                            //关闭所有activity,除了登录框
-                            ActivityCollector.goLoginAndFinishRest();
-                        }
-                    }
-                });
+                String errorStr = ex.getErrorMsg();
+                swipeRefreshLayout.setRefreshing(false);
+                alertError(errorStr);
+                if (ex.getErrorCode().equals(QuickPayException.ACCESSTOKEN_NOT_FOUND)) {
+                    //关闭所有activity,除了登录框
+                    ActivityCollector.goLoginAndFinishRest();
+                }
             }
         });
-    }
-
-    private void setupListView() {
-        // currently no data
-        adapter = new MerchantListAdapter(this, users);
-        ListView listView = (ListView) findViewById(R.id.listViewMerchants);
-        listView.setAdapter(adapter);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        //回到页面之后,从服务器刷新数据
-        Log.d(TAG, "onResume() will refresh data");
         refreshData();
     }
 
+    private class MerchantOnRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
 
+        @Override
+        public void onRefresh() {
+            refreshData();
+        }
+    }
+
+    private class AddNewMerchantOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            int step = mRegisterSharedPreferences.getInt("register_step_finish", 0);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(MerchantListActivity.this);
+            builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mRegisterSharedPreferences.edit().clear().commit();
+                    Intent intent = new Intent(MerchantListActivity.this, RegisterActivity.class);
+                    startActivity(intent);
+                }
+            });
+            switch (step) {
+                case 1:
+                    //有未完成的注册步骤,这里是第一步完成了
+                    builder.setMessage("有未完成的注册是否继续？");
+                    builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(MerchantListActivity.this, RegisterNextActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    builder.show();
+                    break;
+                case 2:
+                    //有未完成的注册步骤,这里是第2步完成了
+                    builder.setMessage("有未完成的注册是否继续？");
+                    builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(MerchantListActivity.this, RegisterStep3Activity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    builder.show();
+                    break;
+                default:
+                    Intent intent = new Intent(MerchantListActivity.this, RegisterActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+        }
+    }
+
+    private class SearchMerchantTextChangedListener implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            merchantListAdapter.getFilter().filter(s);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    }
 }
