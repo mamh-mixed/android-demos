@@ -475,7 +475,7 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
 	}
 	if q.Currency != "" {
-		match["currency"] = q.Currency
+		find["currency"] = q.Currency
 	}
 	if q.MerId != "" {
 		find["merId"] = bson.RegEx{q.MerId, "."}

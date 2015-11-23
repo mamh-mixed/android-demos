@@ -13,7 +13,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 
 	"github.com/CardInfoLink/quickpay/util"
@@ -291,15 +290,16 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 
 func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 
-	params := r.URL.Query()
-	filename := params.Get("filename")
-
+	// 语言环境
 	curSession, err := Session.Get(r)
 	if err != nil {
 		log.Error("fail to find session")
 		return
 	}
 
+	params := r.URL.Query()
+	filename := params.Get("filename")
+	// 查询条件
 	q := &model.QueryCondition{
 		MerId:        params.Get("merId"),
 		AgentCode:    params.Get("agentCode"),
@@ -313,14 +313,12 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		Locale:       curSession.Locale,
 	}
 
-	qr := query.TransStatistics(q)
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
-	if summarys, ok := qr.Rec.(model.Summary); ok {
-		file := genQueryStatReport(summarys, q)
-		w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-		w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
-		file.Write(w)
-	}
+	// 导出
+	statTradeReport(w, q)
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {

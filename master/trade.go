@@ -2,9 +2,6 @@ package master
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
@@ -12,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
+	"net/http"
 )
 
 var maxReportRec = 10000
@@ -81,7 +79,18 @@ func tradeQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 	case q.Col == "coupon":
 		return query.CouponTransQuery(q)
 	default:
-		return query.SpTransQuery(q)
+		trans, total := query.SpTransQuery(q)
+		return &model.ResultBody{
+			Status:  0,
+			Message: "查询成功",
+			Data: &model.Pagination{
+				Page:  q.Page,
+				Total: total,
+				Size:  q.Size,
+				Count: len(trans),
+				Data:  trans,
+			},
+		}
 	}
 }
 
@@ -93,20 +102,11 @@ func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 // tradeReport 处理查找所有商户的请求
 func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
 	var file = xlsx.NewFile()
-
 	// 查询
-	ret := query.SpTransQuery(cond)
+	trans, _ := query.SpTransQuery(cond)
 
-	// 类型转换
-	if pagination, ok := ret.Data.(*model.Pagination); ok {
-		if trans, ok := pagination.Data.([]*model.Trans); ok {
-			// 生成报表
-			before := time.Now()
-			genReport(cond.MerId, file, trans, GetLocale(cond.Locale))
-			after := time.Now()
-			log.Debugf("gen trans report spent %s", after.Sub(before))
-		}
-	}
+	// 生成报表
+	genReport(file, trans, GetLocale(cond.Locale))
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
@@ -114,7 +114,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 }
 
 // genReport 生成报表
-func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
+func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell

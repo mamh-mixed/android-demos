@@ -410,7 +410,7 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 	month := req.Date
 	month = month[:4] + "-" + month[4:6] + "-" + month[6:8]
 
-	ret := query.TransStatistics(&model.QueryCondition{
+	s, _ := query.TransStatistics(&model.QueryCondition{
 		MerId:     user.MerId,
 		StartTime: month,
 		EndTime:   month,
@@ -418,13 +418,8 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 		Page:      1,
 	})
 
-	if summary, ok := ret.Rec.(model.Summary); ok {
-		result.Count = summary.TotalTransNum
-		result.TotalAmt = fmt.Sprintf("%0.2f", summary.TotalTransAmt)
-	} else {
-		return model.SYSTEM_ERROR
-	}
-
+	result.Count = s.TotalTransNum
+	result.TotalAmt = fmt.Sprintf("%0.2f", s.TotalTransAmt)
 	return result
 }
 

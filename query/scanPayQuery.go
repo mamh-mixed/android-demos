@@ -211,7 +211,7 @@ func GetPublicAccount(merId string) (*model.PublicAccount, error) {
 }
 
 // SpTransQuery 交易查询
-func SpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
+func SpTransQuery(q *model.QueryCondition) ([]*model.Trans, int) {
 
 	now := time.Now().Format("2006-01-02")
 	// 默认当天开始
@@ -239,22 +239,7 @@ func SpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 		trans = make([]*model.Trans, 0, 0)
 	}
 
-	// 分页信息
-	pagination := &model.Pagination{
-		Page:  q.Page,
-		Total: total,
-		Size:  q.Size,
-		Count: count,
-		Data:  trans,
-	}
-
-	ret = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    pagination,
-	}
-
-	return ret
+	return trans, total
 }
 
 // SpTransFindOne 交易查询
@@ -277,8 +262,7 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 }
 
 // TransStatistics 交易统计
-func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
-	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
+func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 
 	// 设置条件过滤
 	q.TransStatus = []string{model.TransSuccess}
@@ -293,7 +277,6 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
-		return errResult
 	}
 	after := time.Now()
 	log.Debugf("Run mongo.SpTransColl.FindAndGroupBy(q) spent %s", after.Sub(now))
@@ -317,17 +300,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	summary := model.Summary{Data: data}
 	combine(&summary, all)
 
-	// 组装返回报文
-	count := len(data)
-	ret = &model.QueryResult{
-		Page:  q.Page,
-		Size:  q.Size,
-		Total: total,
-		Rec:   summary,
-		Count: count,
-	}
-
-	return ret
+	return summary, total
 
 }
 
@@ -335,16 +308,16 @@ func combine(s *model.Summary, detail []model.Channel) {
 	for _, d := range detail {
 		switch d.ChanCode {
 		case channel.ChanCodeAlipay:
-			s.Alp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
+			s.Alp.TransAmt = d.TransAmt - d.RefundAmt
 			s.Alp.TransNum = d.TransNum
-			s.Alp.Fee = float32(d.Fee) / 100
+			s.Alp.Fee = d.Fee
 			s.TotalTransAmt += s.Alp.TransAmt
 			s.TotalTransNum += s.Alp.TransNum
 			s.TotalFee += s.Alp.Fee
 		case channel.ChanCodeWeixin:
-			s.Wxp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
+			s.Wxp.TransAmt = d.TransAmt - d.RefundAmt
 			s.Wxp.TransNum = d.TransNum
-			s.Wxp.Fee = float32(d.Fee) / 100
+			s.Wxp.Fee = d.Fee
 			s.TotalTransAmt += s.Wxp.TransAmt
 			s.TotalTransNum += s.Wxp.TransNum
 			s.TotalFee += s.Wxp.Fee

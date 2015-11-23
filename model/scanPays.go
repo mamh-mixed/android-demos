@@ -80,22 +80,22 @@ type QueryResult struct {
 
 // Summary 商户交易汇总
 type Summary struct {
-	MerId         string  `json:"merId,omitempty"`
-	MerName       string  `json:"merName,omitempty"`
-	AgentName     string  `json:"agentName,omitempty"`
-	GroupName     string  `json:"groupName,omitempty"`
-	TotalTransAmt float32 `json:"totalTransAmt"`
-	TotalTransNum int     `json:"totalTransNum"`
-	TotalFee      float32 `json:"-"`
+	MerId         string `json:"merId,omitempty"`
+	MerName       string `json:"merName,omitempty"`
+	AgentName     string `json:"agentName,omitempty"`
+	GroupName     string `json:"groupName,omitempty"`
+	TotalTransAmt int64  `json:"totalTransAmt"`
+	TotalTransNum int    `json:"totalTransNum"`
+	TotalFee      int64  `json:"-"`
 	Wxp           struct {
-		TransAmt float32 `json:"transAmt"`
-		TransNum int     `json:"transNum"`
-		Fee      float32 `json:"-"`
+		TransAmt int64 `json:"transAmt"`
+		TransNum int   `json:"transNum"`
+		Fee      int64 `json:"-"`
 	} `json:"wxp"`
 	Alp struct {
-		TransAmt float32 `json:"transAmt"`
-		TransNum int     `json:"transNum"`
-		Fee      float32 `json:"-"`
+		TransAmt int64 `json:"transAmt"`
+		TransNum int   `json:"transNum"`
+		Fee      int64 `json:"-"`
 	} `json:"alp"`
 	Data []Summary `json:"data"` // 包含每个商户单独数据
 }
