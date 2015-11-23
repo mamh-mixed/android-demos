@@ -1,9 +1,16 @@
 package com.cardinfolink.yunshouyin.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Txn {
     private String response;
-    private String system_date;
+
+    @SerializedName("system_date")
+    private String systemDate;
+
     private String consumerAccount;
+
+    @SerializedName("m_request")
     private QRequest mRequest;
 
     public String getResponse() {
@@ -14,12 +21,12 @@ public class Txn {
         this.response = response;
     }
 
-    public String getSystem_date() {
-        return system_date;
+    public String getSystemDate() {
+        return systemDate;
     }
 
-    public void setSystem_date(String system_date) {
-        this.system_date = system_date;
+    public void setSystemDate(String systemDate) {
+        this.systemDate = systemDate;
     }
 
     public String getConsumerAccount() {
