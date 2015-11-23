@@ -1,5 +1,6 @@
 {	
 	"Currency":"JPY",
+	"ExportF64Format":"#,##0",
 	"ChanCode":{
 		"ALP":"アリペイ",
 		"WXP":"Wechat",

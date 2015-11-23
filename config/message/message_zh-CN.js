@@ -1,5 +1,6 @@
 {
 	"Currency":"CNY",
+	"ExportF64Format":"#,##0.00",
 	"ChanCode":{
 		"ALP":"支付宝",
 		"WXP":"微信",

@@ -8,7 +8,6 @@ import (
 	"net/http"
 )
 
-const floatFormat = "#,##0.00"
 const intFormat = "#,##0"
 
 var headStyle = &xlsx.Style{
@@ -103,6 +102,9 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 
 	// 表头样式
 	genHead(sheet, row, cell, cond)
+
+	// format
+	floatFormat := locale.ExportF64Format
 
 	// 填充数据
 	for _, d := range result.Data {

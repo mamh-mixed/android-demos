@@ -431,7 +431,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
-	log.Infof("%+v", p)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {

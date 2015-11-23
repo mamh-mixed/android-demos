@@ -102,11 +102,16 @@ func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 // tradeReport 处理查找所有商户的请求
 func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
 	var file = xlsx.NewFile()
+
+	// 语言模板
+	rl := GetLocale(cond.Locale)
+	cond.Currency = rl.Currency
+
 	// 查询
 	trans, _ := query.SpTransQuery(cond)
 
 	// 生成报表
-	genReport(file, trans, GetLocale(cond.Locale))
+	genReport(file, trans, rl)
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
@@ -125,6 +130,9 @@ func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
 
 	// 币种单位
 	cur := currency.Get(locale.Currency)
+
+	// format
+	floatFormat := locale.ExportF64Format
 
 	// 可能有多个sheet
 	sheet, _ = file.AddSheet(m.SheetName)
