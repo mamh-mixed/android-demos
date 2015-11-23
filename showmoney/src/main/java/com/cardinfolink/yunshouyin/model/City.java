@@ -1,11 +1,22 @@
 package com.cardinfolink.yunshouyin.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class City {
     private String id;
-    private String city_code;
-    private String province_code;
-    private String city_name;
-    private String city_jb;
+
+    @SerializedName("city_code")
+    private String cityCode;
+
+    @SerializedName("province_code")
+    private String provinceCode;
+
+    @SerializedName("city_name")
+    private String cityName;
+
+    @SerializedName("city_jb")
+    private String cityJb;
+
     private String city;
     private String province;
 
@@ -17,36 +28,36 @@ public class City {
         this.id = id;
     }
 
-    public String getCity_code() {
-        return city_code;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setCity_code(String city_code) {
-        this.city_code = city_code;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 
-    public String getProvince_code() {
-        return province_code;
+    public String getProvinceCode() {
+        return provinceCode;
     }
 
-    public void setProvince_code(String province_code) {
-        this.province_code = province_code;
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
     }
 
-    public String getCity_name() {
-        return city_name;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setCity_name(String city_name) {
-        this.city_name = city_name;
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
-    public String getCity_jb() {
-        return city_jb;
+    public String getCityJb() {
+        return cityJb;
     }
 
-    public void setCity_jb(String city_jb) {
-        this.city_jb = city_jb;
+    public void setCityJb(String cityJb) {
+        this.cityJb = cityJb;
     }
 
     public String getCity() {
