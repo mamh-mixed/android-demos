@@ -18,52 +18,44 @@ import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 
 public class RegisterActivity extends BaseActivity {
     private final String TAG = "RegisterActivity";
-    private EditText mEmailEdit;
-    private EditText mPasswordEdit;
-    private EditText mQrPasswordEdit;
 
-    private Button btnLogin;
-
-
+    private EditText mEmail;
+    private EditText mPassword;
+    private EditText mQrPassword;
+    private Button mLogin;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_activity);
-
-
-
         initLayout();
-
         //每次进入三步创建环节,都新建一个静态用户变量,后面两部也会使用到
         SessonData.registerUser = new User();
     }
 
     private void initLayout() {
-        mEmailEdit = (EditText) findViewById(R.id.register_email);
-        VerifyUtil.addEmailLimit(mEmailEdit);
-        mPasswordEdit = (EditText) findViewById(R.id.register_password);
-        VerifyUtil.addEmailLimit(mPasswordEdit);
-        mQrPasswordEdit = (EditText) findViewById(R.id.register_qr_password);
-        VerifyUtil.addEmailLimit(mQrPasswordEdit);
+        mEmail = (EditText) findViewById(R.id.register_email);
+        VerifyUtil.addEmailLimit(mEmail);
+        mPassword = (EditText) findViewById(R.id.register_password);
+        VerifyUtil.addEmailLimit(mPassword);
+        mQrPassword = (EditText) findViewById(R.id.register_qr_password);
+        VerifyUtil.addEmailLimit(mQrPassword);
 
-
-        btnLogin = (Button) findViewById(R.id.btnlogin);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        mLogin = (Button) findViewById(R.id.btnlogin);
+        mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startLoading();
-                final String username = mEmailEdit.getText().toString();
-                final String password = mPasswordEdit.getText().toString();
-                final String password_repeat = mQrPasswordEdit.getText().toString();
+                final String username = mEmail.getText().toString();
+                final String password = mPassword.getText().toString();
+                final String passwordRepeat = mQrPassword.getText().toString();
 
-                application.getQuickPayService().registerUserAsync(username, password, password_repeat, new QuickPayCallbackListener<User>() {
+                quickPayService.registerUserAsync(username, password, passwordRepeat, new QuickPayCallbackListener<User>() {
                     @Override
                     public void onSuccess(User data) {
                         SessonData.registerUser.setUsername(username);
                         SessonData.registerUser.setPassword(password);
-                        Log.d(TAG, SessonData.registerUser.getJsonString());
 
                         SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
                         editor.putInt("register_step_finish", 1);

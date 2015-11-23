@@ -168,7 +168,7 @@ public class QuickPayServiceImpl implements QuickPayService {
      */
     @Override
     public void registerUserAsync(final String email, final String password, final String passwordRepeat, final QuickPayCallbackListener<User> listener) {
-        if (email.equals("")) {
+        if (TextUtils.isEmpty(email)) {
             listener.onFailure(new QuickPayException("", "邮箱不能为空!"));
             return;
         }
@@ -176,7 +176,7 @@ public class QuickPayServiceImpl implements QuickPayService {
             listener.onFailure(new QuickPayException("", "邮箱格式不正确!"));
             return;
         }
-        if (password.equals("")) {
+        if (TextUtils.isEmpty(password)) {
             listener.onFailure(new QuickPayException("", "密码不能为空!"));
             return;
         }

@@ -279,7 +279,7 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     private void checkAccessToken() {
-        if(TextUtils.isEmpty(quickPayConfigStorage.getAccessToken())){
+        if (TextUtils.isEmpty(quickPayConfigStorage.getAccessToken())) {
             throw new QuickPayException(QuickPayException.ACCESSTOKEN_NOT_FOUND);
         }
     }
