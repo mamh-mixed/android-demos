@@ -12,6 +12,8 @@ import android.view.View;
 
 import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayConfigStorage;
+import com.cardinfolink.yunshouyin.salesman.core.BankDataService;
+import com.cardinfolink.yunshouyin.salesman.core.BankDataServiceImpl;
 import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
 import com.cardinfolink.yunshouyin.salesman.model.User;
@@ -36,6 +38,8 @@ public class BaseActivity extends AppCompatActivity {
     protected SharedPreferences mRegisterSharedPreferences;//注册缓存
 
     protected QuickPayService quickPayService;
+    protected BankDataService bankDataService;
+
     protected QiniuMultiUploadService qiniuMultiUploadService;
 
     //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
@@ -59,6 +63,7 @@ public class BaseActivity extends AppCompatActivity {
 
         application = SalesmanApplication.getInstance();
         quickPayService = application.getQuickPayService();
+        bankDataService = application.getBankDataService();
         qiniuMultiUploadService = application.getQiniuMultiUploadService();
     }
 
@@ -131,7 +136,6 @@ public class BaseActivity extends AppCompatActivity {
         editor.putBoolean("autologin", user.isAutoLogin());
         editor.commit();
     }
-
 
 
 }

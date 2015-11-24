@@ -83,13 +83,13 @@ public class BankDataApiImpl implements BankDataApi {
     }
 
     @Override
-    public List<SubBank> search(String city_code, String bank_id) {
+    public List<SubBank> search(String cityCode, String bankId) {
         String url = quickPayConfigStorage.getBankbaseUrl() + "/bank/search.json";
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("appkey", quickPayConfigStorage.getBankbaseKey());
-        params.put("city_code", city_code);
-        params.put("bank_id", bank_id);
+        params.put("city_code", cityCode);
+        params.put("bank_id", bankId);
         params.put("size", "500");
         params.put("sig", createSign(params));
 
