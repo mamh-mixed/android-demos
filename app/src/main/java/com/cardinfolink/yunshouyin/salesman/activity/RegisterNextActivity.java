@@ -22,6 +22,7 @@ import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.adapter.SearchAdapter;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.salesman.model.City;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
@@ -394,15 +395,13 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initCityData(String province) {
-        String data = readFromSharePreference(province);
-        if (data != null && data.length() != 0) {
+        List<City> data = null;
+        if (data != null && data.size() != 0) {
             Log.d(TAG, "will use cache data to get City");
-            updateCityAdapter(data);
+            //updateCityAdapter(data);
         } else {
             Log.d(TAG, "will post to get City: " + data);
-            RequestParam cityParam = BankBaseUtil.getCity(province);
-            CityCommunicationListener cityCommunicationListener = new CityCommunicationListener(province);
-            HttpCommunicationUtil.sendGetDataToServer(cityParam, cityCommunicationListener);
+            bankDataService.getCity(province, new CityQuickPayCallbackListener());
         }
     }
 
@@ -494,28 +493,25 @@ public class RegisterNextActivity extends BaseActivity {
         mProvinceSearchAdapter.notifyDataSetChanged();
     }
 
-    private void updateCityAdapter(final String data) {
-        new Thread() {
-            @Override
-            public void run() {
-                final List<String> tempCityList = jsonArrayToList(data, "city_name");
-                final List<String> tempCityCodeList = jsonArrayToList(data, "city_code");
-                tempCityList.add(0, "开户行所在城市");
-                tempCityCodeList.add(0, "");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCityList.clear();
-                        mCityList.addAll(tempCityList);
-                        mCityCodeList.clear();
-                        mCityCodeList.addAll(tempCityCodeList);
-                        mCitySpinner.setSelection(0);
-                        mCityAdapter.notifyDataSetChanged();
-                        mCitySearchAdapter.setData(mCityList);
-                    }
-                });
-            }
-        }.start();
+    private void updateCityAdapter(final List<City> data) {
+        ArrayList<String> tempCityList = new ArrayList<String>();
+        ArrayList<String> tempCityCodeList =  new ArrayList<String>();
+        tempCityList.add(0, "开户行所在城市");
+        tempCityCodeList.add(0, "");
+        Iterator<City> it = data.iterator();
+        while(it.hasNext()){
+            City c = it.next();
+            tempCityList.add(c.getCityName());//"city_name"这个要注意别弄成getCity（）了。
+            tempCityCodeList.add(c.getCityCode());//"city_code"
+        }
+        mCityList.clear();
+        mCityList.addAll(tempCityList);
+        mCityCodeList.clear();
+        mCityCodeList.addAll(tempCityCodeList);
+
+        mCitySpinner.setSelection(0);
+        mCityAdapter.notifyDataSetChanged();
+        mCitySearchAdapter.setData(mCityList);
     }
 
     private void updateBankAdapter(final String data) {
@@ -684,22 +680,16 @@ public class RegisterNextActivity extends BaseActivity {
         }
     }
 
-    private class CityCommunicationListener implements CommunicationListener {
-        private String province;
+    private class CityQuickPayCallbackListener implements QuickPayCallbackListener<List<City>> {
 
-        public CityCommunicationListener(String province) {
-            this.province = province;
+        @Override
+        public void onSuccess(List<City> data) {
+            updateCityAdapter(data);
         }
 
         @Override
-        public void onResult(String result) {
-            saveToSharePreferences(result, province);
-            updateCityAdapter(result);
-        }
+        public void onFailure(QuickPayException ex) {
 
-        @Override
-        public void onError(String error) {
-            Log.d(TAG, "get city data error");
         }
     }
 

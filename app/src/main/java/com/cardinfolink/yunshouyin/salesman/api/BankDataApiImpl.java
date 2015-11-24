@@ -73,7 +73,7 @@ public class BankDataApiImpl implements BankDataApi {
         params.put("sig", createSign(params));
 
         try {
-            String response = postEngine.get(url, params);
+            String response = postEngine.post(url, params);
             Gson gson = new Gson();
             City[] arr = gson.fromJson(response, City[].class);
             return Arrays.asList(arr);

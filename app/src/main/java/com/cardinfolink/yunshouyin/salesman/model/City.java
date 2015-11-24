@@ -3,6 +3,20 @@ package com.cardinfolink.yunshouyin.salesman.model;
 import com.google.gson.annotations.SerializedName;
 
 public class City {
+
+    /**
+     {
+         "id": "669",
+         "city_code": "3620",
+         "province_code": "3600",
+         "city_name": "芜湖市",
+         "city_jb": "2",
+         "city": "芜湖市",
+         "province": "安徽省"
+     }
+     */
+
+
     private String id;
 
     @SerializedName("city_code")
@@ -74,5 +88,18 @@ public class City {
 
     public void setProvince(String province) {
         this.province = province;
+    }
+
+    @Override
+    public String toString() {
+        return "\nCity{" +
+                "id='" + id + '\'' +
+                ", cityCode='" + cityCode + '\'' +
+                ", provinceCode='" + provinceCode + '\'' +
+                ", cityName='" + cityName + '\'' +
+                ", cityJb='" + cityJb + '\'' +
+                ", city='" + city + '\'' +
+                ", province='" + province + '\'' +
+                '}'+'\n';
     }
 }

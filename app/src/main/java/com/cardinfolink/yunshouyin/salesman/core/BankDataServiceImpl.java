@@ -55,8 +55,29 @@ public class BankDataServiceImpl implements BankDataService {
     }
 
     @Override
-    public void getCity(String province, QuickPayCallbackListener<List<City>> listener) {
+    public void getCity(final String province, final QuickPayCallbackListener<List<City>> listener) {
 
+        new AsyncTask<Void, Integer, AsyncTaskResult<List<City>>>() {
+            @Override
+            protected AsyncTaskResult<List<City>> doInBackground(Void... params) {
+                try {
+                    List<City> city = bankDataApi.getCity(province);
+                    // TODO: 15-11-24 在这里做缓存会好些？？
+                    return new AsyncTaskResult<List<City>>(city);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<List<City>>(ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<List<City>> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
     }
 
     @Override
