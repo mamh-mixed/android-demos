@@ -1,5 +1,6 @@
 {
-
+	"Currency":"CNY",
+	"ExportF64Format":"#,##0.00",
 	"ChanCode":{
 		"ALP":"支付宝",
 		"WXP":"微信",
@@ -48,13 +49,16 @@
 		"MerName"        			:"商户名称",
 		"OrderNum"       			:"订单号",
 		"TransAmt"       			:"交易金额",
+		"MerFee"					:"商户手续费",
 		"ChanCode"       			:"渠道",
 		"TransTime"      			:"交易时间",
+		"PayTime"					:"支付时间",
 		"TransStatus"    			:"交易状态",
 		"AgentCode"      			:"机构",
 		"TerminalId"     			:"终端号",
 		"Busicd"         			:"交易类型",
 		"OrigOrderNum"   			:"原订单号",
+		"Remark"					:"备注",
 		"RefundAmt"      			:"退款金额",
 		"Fee"            			:"手续费",
 		"SettAmt"        			:"清算金额",

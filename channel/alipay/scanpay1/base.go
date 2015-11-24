@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Gw = "https://intlmapi.alipay.com/gateway.do?"
+	Gw = "https://intlmapi.alipay.com/gateway.do?_input_charset=utf-8"
 )
 
 type BaseReq interface {
@@ -24,7 +24,7 @@ type CommonReq struct {
 	Sign         string                `url:"sign,omitempty"`
 	SignType     string                `url:"Sign_type,omitempty"`
 	Partner      string                `url:"partner,omitempty"`
-	InputCharset string                `url:"_input_charset,omitempty"`
+	InputCharset string                `url:"_input_charset"`
 	SignKey      string                `url:"-"`
 	SpReq        *model.ScanPayRequest `url:"-"`
 }

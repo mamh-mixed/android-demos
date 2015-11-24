@@ -80,6 +80,8 @@ func GetLocale(l string) *LocaleTemplate {
 
 // LocaleTemplate 语言模板
 type LocaleTemplate struct {
+	Currency        string
+	ExportF64Format string
 	// 渠道代号
 	ChanCode struct {
 		ALP     string
@@ -123,13 +125,16 @@ type TransReport struct {
 	MerName        string
 	OrderNum       string
 	TransAmt       string
+	MerFee         string
 	ChanCode       string
 	TransTime      string
+	PayTime        string
 	TransStatus    string
 	AgentCode      string
 	TerminalId     string
 	Busicd         string
 	OrigOrderNum   string
+	Remark         string
 	RefundAmt      string
 	Fee            string
 	SettAmt        string

@@ -339,6 +339,11 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	// 根据条件查找
 	match := bson.M{}
 
+	// 默认查找人名币的交易
+	if q.Currency != "" {
+		match["currency"] = q.Currency
+	}
+
 	// 如果是按照商户号聚合查询的话
 	// 前台传过来的参数中的MerId要么是groupCode（当交易记录中存在groupCode的时候）
 	// 或者是 GC-[merId]（交易记录中不存在groupCode）
@@ -426,7 +431,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
-	log.Infof("%+v", p)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
@@ -468,6 +472,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 
 	find := bson.M{
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+	}
+	if q.Currency != "" {
+		find["currency"] = q.Currency
 	}
 	if q.MerId != "" {
 		find["merId"] = bson.RegEx{q.MerId, "."}

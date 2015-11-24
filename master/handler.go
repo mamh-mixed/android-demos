@@ -13,7 +13,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 
 	"github.com/CardInfoLink/quickpay/util"
@@ -143,8 +142,16 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	transType, _ := strconv.Atoi(params.Get("transType"))
+	// get session
+	CurSession, err := Session.Get(r)
+	if err != nil {
+		return
+	}
 
+	// get locale
+	locale := GetLocale(CurSession.Locale)
+
+	transType, _ := strconv.Atoi(params.Get("transType"))
 	cond := &model.QueryCondition{
 		MerId:          merId,
 		AgentCode:      params.Get("agentCode"),
@@ -161,6 +168,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		BindingId:      params.Get("bindingId"),
 		CouponsNo:      params.Get("couponsNo"),
 		WriteoffStatus: params.Get("writeoffStatus"),
+		Currency:       locale.Currency,
 		Size:           size,
 		Page:           page,
 	}
@@ -202,6 +210,13 @@ func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
+	// get session
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
 	params := r.URL.Query()
 	filename := params.Get("filename")
 
@@ -221,6 +236,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		Page:         1,
 		RefundStatus: model.TransRefunded,
 		TransStatus:  []string{model.TransSuccess},
+		Locale:       curSession.Locale,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
@@ -235,6 +251,13 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
+
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	q := &model.QueryCondition{
@@ -247,6 +270,7 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		MerName:      r.FormValue("merName"),
 		StartTime:    r.FormValue("startTime"),
 		EndTime:      r.FormValue("endTime"),
+		Locale:       curSession.Locale,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
@@ -268,16 +292,16 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 
 func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 
-	params := r.URL.Query()
-	filename := params.Get("filename")
-
-	// TODO 优化session
+	// 语言环境
 	curSession, err := Session.Get(r)
 	if err != nil {
 		log.Error("fail to find session")
 		return
 	}
 
+	params := r.URL.Query()
+	filename := params.Get("filename")
+	// 查询条件
 	q := &model.QueryCondition{
 		MerId:        params.Get("merId"),
 		AgentCode:    params.Get("agentCode"),
@@ -291,14 +315,12 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		Locale:       curSession.Locale,
 	}
 
-	qr := query.TransStatistics(q)
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
-	if summarys, ok := qr.Rec.(model.Summary); ok {
-		file := genQueryStatReport(summarys, q)
-		w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-		w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
-		file.Write(w)
-	}
+	// 导出
+	statTradeReport(w, q)
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {

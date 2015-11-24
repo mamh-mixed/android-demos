@@ -410,6 +410,13 @@ func insertValidate(r *rowData, im *ImportMessage) error {
 		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf(m.ALPSettFlagErr, r.AlpSettFlag)
 		}
+		if r.IsDomesticStr != "" {
+			if r.IsDomesticStr == no {
+				if r.AlpMerName == "" || r.AlpMerNo == "" {
+					return fmt.Errorf("门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no", r.MerId)
+				}
+			}
+		}
 	}
 
 	// 空则说明需要所有权限
@@ -1214,32 +1221,42 @@ type rowData struct {
 	AlpAgentCode  string // 支付宝代理代码
 	AlpAcqFee     string // 讯联跟支付宝费率
 	AlpMerFee     string // 商户跟讯联费率
-	AlpSettFlag   string // 是否讯联清算
-	WxpAppId      string // 商户appId
-	WxpMd5        string // 微信密钥
-	WxpMerId      string // 微信商户号
-	WxpSubMerId   string // 微信子商户号
-	IsAgentStr    string // 是否代理商模式
-	WxpSubAppId   string // 子商户AppId
-	WxpAcqFee     string // 讯联跟微信费率
-	WxpMerFee     string // 商户跟讯联费率(微信)
-	WxpSettFlag   string // 是否讯联清算
-	ShopId        string // 门店标识
-	GoodsTag      string // 商品标识
-	AcctNum       string // 开户账户
-	AcctName      string // 开户名称
-	BankId        string // 行号
-	BankName      string // 开户银行名称
-	City          string // 城市
-	IsAddAcctStr  string // 是否新增app账户信息
-	IsAddAcct     bool
-	AppUsername   string // 用户名
-	AppPassword   string // 密码
-	TitleOne      string // 标题一
-	TitleTwo      string // 标题二
+	AlpSettFlag   string // 清算标识
+	IsDomesticStr string // 是否境内渠道
+	// ---支付宝海外接口参数
+	AlpMerName string
+	AlpMerNo   string
+	AlpBusNo   string
+	AlpTermNo  string
+	AlpMcc     string
+	AlpRegCode string
+	// ---
+	WxpAppId     string // 商户appId
+	WxpMd5       string // 微信密钥
+	WxpMerId     string // 微信商户号
+	WxpSubMerId  string // 微信子商户号
+	IsAgentStr   string // 是否代理商模式
+	WxpSubAppId  string // 子商户AppId
+	WxpAcqFee    string // 讯联跟微信费率
+	WxpMerFee    string // 商户跟讯联费率(微信)
+	WxpSettFlag  string // 是否讯联清算
+	ShopId       string // 门店标识
+	GoodsTag     string // 商品标识
+	AcctNum      string // 开户账户
+	AcctName     string // 开户名称
+	BankId       string // 行号
+	BankName     string // 开户银行名称
+	City         string // 城市
+	IsAddAcctStr string // 是否新增app账户信息
+	IsAddAcct    bool
+	AppUsername  string // 用户名
+	AppPassword  string // 密码
+	TitleOne     string // 标题一
+	TitleTwo     string // 标题二
 	// ...
 	IsAgent    bool
 	IsNeedSign bool
+	IsDomestic bool
 	Permission []string
 	AlpAcqFeeF float64
 	AlpMerFeeF float64

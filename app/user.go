@@ -410,7 +410,7 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 	month := req.Date
 	month = month[:4] + "-" + month[4:6] + "-" + month[6:8]
 
-	ret := query.TransStatistics(&model.QueryCondition{
+	s, _ := query.TransStatistics(&model.QueryCondition{
 		MerId:     user.MerId,
 		StartTime: month,
 		EndTime:   month,
@@ -418,13 +418,8 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 		Page:      1,
 	})
 
-	if summary, ok := ret.Rec.(model.Summary); ok {
-		result.Count = summary.TotalTransNum
-		result.TotalAmt = fmt.Sprintf("%0.2f", summary.TotalTransAmt)
-	} else {
-		return model.SYSTEM_ERROR
-	}
-
+	result.Count = s.TotalTransNum
+	result.TotalAmt = fmt.Sprintf("%0.2f", s.TotalTransAmt)
 	return result
 }
 
@@ -559,10 +554,18 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 
 	result.Txn = txns
 	result.Size = len(trans)
-	result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
 	result.RefdCount = refundCount
-	result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
 	result.Count = transCount
+
+	// TODO:先用该字段做判断是日币还是元
+	if req.OrderDetail == "pay" {
+		result.TotalAmt = fmt.Sprintf("%d", transAmt)
+		result.RefdTotalAmt = fmt.Sprintf("%d", refundAmt)
+	} else {
+		result.TotalAmt = fmt.Sprintf("%0.2f", float32(transAmt)/100)
+		result.RefdTotalAmt = fmt.Sprintf("%0.2f", float32(refundAmt)/100)
+	}
+
 	return
 }
 
@@ -894,6 +897,7 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 		ConsumerAccount: t.ConsumerAccount,
 		TransStatus:     t.TransStatus,
 		RefundAmt:       t.RefundAmt,
+		TicketNum:       t.TicketNum,
 	}
 	txn.ReqData.Busicd = t.Busicd
 	txn.ReqData.AgentCode = t.AgentCode

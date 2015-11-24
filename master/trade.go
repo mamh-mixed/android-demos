@@ -2,15 +2,14 @@ package master
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
+	"net/http"
 )
 
 var maxReportRec = 10000
@@ -80,7 +79,18 @@ func tradeQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 	case q.Col == "coupon":
 		return query.CouponTransQuery(q)
 	default:
-		return query.SpTransQuery(q)
+		trans, total := query.SpTransQuery(q)
+		return &model.ResultBody{
+			Status:  0,
+			Message: "查询成功",
+			Data: &model.Pagination{
+				Page:  q.Page,
+				Total: total,
+				Size:  q.Size,
+				Count: len(trans),
+				Data:  trans,
+			},
+		}
 	}
 }
 
@@ -93,27 +103,23 @@ func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
 	var file = xlsx.NewFile()
 
-	// 查询
-	ret := query.SpTransQuery(cond)
+	// 语言模板
+	rl := GetLocale(cond.Locale)
+	cond.Currency = rl.Currency
 
-	// 类型转换
-	if pagination, ok := ret.Data.(*model.Pagination); ok {
-		if trans, ok := pagination.Data.([]*model.Trans); ok {
-			// 生成报表
-			before := time.Now()
-			genReport(cond.MerId, file, trans, GetLocale(cond.Locale))
-			after := time.Now()
-			log.Debugf("gen trans report spent %s", after.Sub(before))
-		}
-	}
+	// 查询
+	trans, _ := query.SpTransQuery(cond)
+
+	// 生成报表
+	genReport(file, trans, rl)
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 	file.Write(w)
 }
 
-// TODO:genReport 生成报表
-func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
+// genReport 生成报表
+func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
@@ -121,6 +127,12 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 	// 语言
 	m := locale.TransReport
 	lALP, lWXP := locale.ChanCode.ALP, locale.ChanCode.WXP
+
+	// 币种单位
+	cur := currency.Get(locale.Currency)
+
+	// format
+	floatFormat := locale.ExportF64Format
 
 	// 可能有多个sheet
 	sheet, _ = file.AddSheet(m.SheetName)
@@ -137,6 +149,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		MerName      string
 		OrderNum     string
 		TransAmt     string
+		MerFee       string
 		ChanCode     string
 		TransTime    string
 		PayTime      string
@@ -145,7 +158,8 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.ChanCode, m.TransTime, "支付时间", m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum}
+		Remark       string
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -167,7 +181,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
 		switch v.TransType {
 		case model.PayTrans:
-			amt = float64(v.TransAmt) / 100
+			amt = cur.F64(v.TransAmt)
 			if v.ChanCode == channel.ChanCodeAlipay {
 				alpTransAmt += v.TransAmt
 				alpFee += v.Fee
@@ -178,7 +192,7 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 			}
 		// 退款、撤销、取消
 		default:
-			amt = -float64(v.TransAmt) / 100
+			amt = -cur.F64(v.TransAmt)
 			if v.ChanCode == channel.ChanCodeAlipay {
 				alpRefundAmt += v.TransAmt
 				alpFee -= v.Fee
@@ -202,7 +216,10 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		cell.Value = v.OrderNum
 		// 交易金额
 		cell = row.AddCell()
-		cell.SetFloatWithFormat(float64(amt), floatFormat)
+		cell.SetFloatWithFormat(amt, floatFormat)
+		// 商户手续费
+		cell = row.AddCell()
+		cell.SetFloatWithFormat(cur.F64(v.NetFee), floatFormat)
 		// 渠道
 		cell = row.AddCell()
 		switch v.ChanCode {
@@ -264,7 +281,9 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 		// 原订单号
 		cell = row.AddCell()
 		cell.Value = v.OrigOrderNum
-
+		// 备注
+		cell = row.AddCell()
+		cell.Value = v.TicketNum
 	}
 
 	// 总金额
@@ -276,24 +295,24 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans, locale *Loca
 	rows := sheet.Rows
 	row = rows[0]
 	row.WriteStruct(&summary{
-		"支付宝交易金额：", float64(alpTransAmt) / 100,
-		"支付宝退款金额：", -float64(alpRefundAmt) / 100,
-		"支付宝手续费：", float64(alpFee) / 100,
-		"支付宝清算金额：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
+		lALP + m.TransAmt + "：", cur.F64(alpTransAmt),
+		lALP + m.RefundAmt + "：", -cur.F64(alpRefundAmt),
+		lALP + m.Fee + "：", cur.F64(alpFee),
+		lALP + m.SettAmt + "：", cur.F64(alpTransAmt - alpRefundAmt - alpFee),
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
-		"微信交易金额：", float64(wxpTransAmt) / 100,
-		"微信退款金额：", -float64(wxpRefundAmt) / 100,
-		"微信手续费：", float64(wxpFee) / 100,
-		"微信清算金额：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
+		lWXP + m.TransAmt + "：", cur.F64(wxpTransAmt),
+		lWXP + m.RefundAmt + "：", -cur.F64(wxpRefundAmt),
+		lWXP + m.Fee + "：", cur.F64(wxpFee),
+		lWXP + m.SettAmt + "：", cur.F64(wxpTransAmt - wxpRefundAmt - wxpFee),
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
-		"交易总额：", float64(transAmt) / 100,
-		"退款总额：", -float64(refundAmt) / 100,
-		"手续费总额：", float64(fee) / 100,
-		"清算总额：", float64(transAmt-refundAmt-fee) / 100,
+		m.TotalTransAmt + "：", cur.F64(transAmt),
+		m.TotalRefundAmt + "：", -cur.F64(refundAmt),
+		m.TotalFee + "：", cur.F64(fee),
+		m.TotalSettAmt + "：", cur.F64(transAmt - refundAmt - fee),
 	}, -1)
 }
 
