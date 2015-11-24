@@ -7,93 +7,95 @@
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-
 <dom-module id="login-form">
   <style>
-    :host {
-      display: block;
-      text-align: left;
-      --paper-input-container-input: {
-        font-size: 16px;
-      }
-      ;
-      /* 必须有分号，否则压缩后，无法正常渲染 */
-      --paper-input-container-label: {
-        font-size: 14px;
-      }
-      ;
-      /* 必须有分号，否则压缩后，无法正常渲染 */
+  :host {
+    display: block;
+    text-align: left;
+    --paper-input-container-input: {
+      font-size: 16px;
     }
-
-    .logo {
-      text-align: center;
+    ;
+    /* 必须有分号，否则压缩后，无法正常渲染 */
+    --paper-input-container-label: {
+      font-size: 14px;
     }
-
-    .circle {
-      margin: 10px auto;
-      border-radius: 48px;
-    }
-
-    paper-button {
-      width: 80%;
-      margin-top: 30px;
-      background: #ff4081;
-      color: #ffffff;
-    }
-
-    .login-inner {
-      width: 70%;
-      margin: 0 auto;
-      @apply(--layout-vertical);
-      @apply(--layout-center);
-      @apply(--layout-center-justified);
-      height: 100%;
-    }
-
-    .login-inner > #loginForm {
-      width: 100%;
-    }
-
-    #loginForm > h1 {
-      font-size: 30px;
-    }
-
-    #loginForm > paper-button {
-      margin: 30px 12.5%;
-    }
-
-    .row {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-    }
-
-    .row > iron-icon {
-      @apply(--layout-self-end);
-      margin-right: 10px;
-    }
-
-    .row > paper-input {
-      @apply(--layout-self-end);
-      @apply(--layout-flex);
-    }
+    ;
+    /* 必须有分号，否则压缩后，无法正常渲染 */
+  }
+  
+  .logo {
+    text-align: center;
+  }
+  
+  .circle {
+    margin: 10px auto;
+    border-radius: 48px;
+  }
+  
+  paper-button {
+    width: 80%;
+    margin-top: 30px;
+    background: #ff4081;
+    color: #ffffff;
+  }
+  
+  .login-inner {
+    width: 70%;
+    margin: 0 auto;
+    @apply(--layout-vertical);
+    @apply(--layout-center);
+    @apply(--layout-center-justified);
+    height: 100%;
+  }
+  
+  .login-inner > #loginForm {
+    width: 100%;
+  }
+  
+  #loginForm > h1 {
+    font-size: 30px;
+  }
+  
+  #loginForm > paper-button {
+    margin: 30px 12.5%;
+  }
+  
+  .row {
+    @apply(--layout-horizontal);
+    @apply(--layout-center);
+  }
+  
+  .row > iron-icon {
+    @apply(--layout-self-end);
+    margin-right: 10px;
+  }
+  
+  .row > paper-input {
+    @apply(--layout-self-end);
+    @apply(--layout-flex);
+  }
   </style>
   <template>
-
     <div class="logo">
       <img src="../../images/touch/ms-touch-icon-144x144-precomposed.png" alt="" class="circle">
-      <div class="app-name">云收银管理平台</div>
+      <div class="app-name">
+        <i18n-msg msgid="TITLE">云收银管理平台</i18n-msg>
+      </div>
     </div>
     <div class="login-inner">
       <form id="loginForm">
         <div class="row">
           <iron-icon icon="perm-identity"></iron-icon>
-          <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项" autofocus></paper-input>
+          <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项" autofocus data-msg-id="LOGIN.USERNAME" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
           <iron-icon icon="lock-outline"></iron-icon>
-          <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项"></paper-input>
+          <paper-input id="pwd" label="密码" value="{{user.password::input}}" type="password" required error-message="必填项" data-msg-id="LOGIN.PASSWORD" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
-        <paper-button raised on-tap="loginTapHandle">登录</paper-button>
+        <paper-button raised on-tap="loginTapHandle">
+          <i18n-msg msgid="LOGIN.BUTTON">登录</i18n-msg>
+        </paper-button>
         <iron-a11y-keys id="keys" keys="enter" target="[[target]]" on-keys-pressed="handleEnterKeyPresse"></iron-a11y-keys>
       </form>
     </div>
@@ -102,76 +104,81 @@
   </template>
   <script src="../../scripts/util.js"></script>
   <script>
-    (function() {
-      Polymer({
-        is: 'login-form',
+  (function() {
+    Polymer({
+      is: 'login-form',
 
-        properties: {
-          // isRedirect 如果为TRUE，登入成功后会跳转到首页
-          redirect: {
-            type: Boolean,
-            value: false
-          },
-          target: {
-            type: Object,
-            value: function() {
-              return this.$.loginForm;
-            }
-          },
-          // 父辈传来的router对象，用来做跳转的
-          router: {
-            type: Object,
-            notify: true
+      properties: {
+        // isRedirect 如果为TRUE，登入成功后会跳转到首页
+        redirect: {
+          type: Boolean,
+          value: false
+        },
+        target: {
+          type: Object,
+          value: function() {
+            return this.$.loginForm;
           }
         },
-        ready: function() {
-          this.user = {};
-        },
-        loginTapHandle: function() {
-          if (this.isloginConfigEmpty()) {
-            Util.toast('用户名或密码不能为空', 3000);
-            return;
-          }
-          var loginAjax = this.$.loginAjax;
-          loginAjax.body = JSON.stringify(this.user);
-          loginAjax.generateRequest();
-        },
-        isloginConfigEmpty: function() {
-          if (this.$.userName.validate() && this.$.pwd.validate()) {
-            return false;
-          } else {
-            return true;
-          }
-        },
-        handleLoginResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-          this.user = {
-            userName: '',
-            password: ''
-          };
+        // 父辈传来的router对象，用来做跳转的
+        router: {
+          type: Object,
+          notify: true
+        }
+      },
+      ready: function() {
+        this.user = {};
+      },
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'password-editor'
+        });
+      },
+      loginTapHandle: function() {
+        if (this.isloginConfigEmpty()) {
+          Util.toast('LOGIN.TOAST.LOGIN_FAIL', 3000, true);
+          return;
+        }
+        var loginAjax = this.$.loginAjax;
+        loginAjax.body = JSON.stringify(this.user);
+        loginAjax.generateRequest();
+      },
+      isloginConfigEmpty: function() {
+        if (this.$.userName.validate() && this.$.pwd.validate()) {
+          return false;
+        } else {
+          return true;
+        }
+      },
+      handleLoginResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('LOGIN.TOAST.LOGIN_ERROR', 3000, true);
+          return;
+        }
+        this.user = {
+          userName: '',
+          password: ''
+        };
 
-          var detail = {
-            loginUser: response.data,
-            jumpTo: null
-          };
-          if (this.redirect) {
-            detail.jumpTo = '/trade/list';
-          }
+        var detail = {
+          loginUser: response.data,
+          jumpTo: null
+        };
+        if (this.redirect) {
+          detail.jumpTo = '/trade/list';
+        }
 
-          // 事件冒泡到顶层
-          this.fire('login-success', detail, {
-            bubbles: false // 默认为true，默认情况下，login-success会在quickpay-app里面触发两次
-          });
-        },
-        // 表单内点击回车键事件
-        handleEnterKeyPresse: function(e) {
-          this.loginTapHandle();
-        },
-      });
-    })();
+        // 事件冒泡到顶层
+        this.fire('login-success', detail, {
+          bubbles: false // 默认为true，默认情况下，login-success会在quickpay-app里面触发两次
+        });
+      },
+      // 表单内点击回车键事件
+      handleEnterKeyPresse: function(e) {
+        this.loginTapHandle();
+      },
+    });
+  })();
   </script>
 </dom-module>

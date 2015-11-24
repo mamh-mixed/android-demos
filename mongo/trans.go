@@ -339,6 +339,11 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	// 根据条件查找
 	match := bson.M{}
 
+	// 默认查找人名币的交易
+	if q.Currency != "" {
+		match["currency"] = q.Currency
+	}
+
 	// 如果是按照商户号聚合查询的话
 	// 前台传过来的参数中的MerId要么是groupCode（当交易记录中存在groupCode的时候）
 	// 或者是 GC-[merId]（交易记录中不存在groupCode）
@@ -426,7 +431,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
-	log.Infof("%+v", p)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
@@ -468,6 +472,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 
 	find := bson.M{
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
+	}
+	if q.Currency != "" {
+		find["currency"] = q.Currency
 	}
 	if q.MerId != "" {
 		find["merId"] = bson.RegEx{q.MerId, "."}
@@ -688,4 +695,38 @@ func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGr
 func (col *transCollection) AddSettRole(settRole, merId, orderNum string) error {
 	set := bson.M{"$set": bson.M{"settRole": settRole}}
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)
+}
+
+// ExportAgentProfit 导出分润 // TODO:DELETE
+func (col *transCollection) ExportAgentProfit(bt string) ([]agentProfit, error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{
+			"createTime": bson.M{"$lte": bt},
+			"transType":  1,
+			"$or":        []bson.M{bson.M{"transStatus": "30"}, bson.M{"refundStatus": 1}},
+		}},
+		{"$group": bson.M{
+			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode", "date": bson.M{"$substr": []interface{}{"$createTime", 0, 10}}},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum":  bson.M{"$sum": 1},
+			"agentCode": bson.M{"$last": "$agentCode"},
+		}},
+		{"$sort": bson.M{"_id.date": -1}},
+	}
+	var result []agentProfit
+	err := database.C(col.name).Pipe(pipeline).All(&result)
+	return result, err
+}
+
+type agentProfit struct {
+	ID struct {
+		MerId    string `bson:"merId"`
+		ChanCode string `bson:"chanCode"`
+		Date     string `bson:"date"`
+	} `bson:"_id"`
+	TransAmt  int64  `bson:"transAmt"`
+	RefundAmt int64  `bson:"refundAmt"`
+	TransNum  int    `bson:"transNum"`
+	AgentCode string `bson:"agentCode"`
 }

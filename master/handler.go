@@ -3,6 +3,7 @@ package master
 import (
 	// "bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -16,6 +17,33 @@ import (
 
 	"github.com/CardInfoLink/quickpay/util"
 )
+
+// appLocaleHandle 网关展示语言
+func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
+	locale := r.FormValue("locale")
+	log.Debugf("LOCALE is %s", locale)
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+
+	// 查看是否支持该语言
+	if !IsLocaleExist(locale) {
+		log.Warnf("Unsupport language: %s", locale)
+		w.Write([]byte("UNSUPPORT LANGUAGE"))
+		return
+	}
+
+	curSession.Locale = locale
+	err = mongo.SessionColl.Update(curSession)
+	if err != nil {
+		log.Errorf("update session(id=%s) fail:%s", curSession.SessionID, err)
+	}
+
+	w.Write([]byte("SUCCESS"))
+}
 
 // tradeSettleQueryHandle 清算报表查询的
 func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
@@ -114,8 +142,16 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	transType, _ := strconv.Atoi(params.Get("transType"))
+	// get session
+	CurSession, err := Session.Get(r)
+	if err != nil {
+		return
+	}
 
+	// get locale
+	locale := GetLocale(CurSession.Locale)
+
+	transType, _ := strconv.Atoi(params.Get("transType"))
 	cond := &model.QueryCondition{
 		MerId:          merId,
 		AgentCode:      params.Get("agentCode"),
@@ -132,6 +168,7 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		BindingId:      params.Get("bindingId"),
 		CouponsNo:      params.Get("couponsNo"),
 		WriteoffStatus: params.Get("writeoffStatus"),
+		Currency:       locale.Currency,
 		Size:           size,
 		Page:           page,
 	}
@@ -173,6 +210,13 @@ func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
+	// get session
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
 	params := r.URL.Query()
 	filename := params.Get("filename")
 
@@ -192,6 +236,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		Page:         1,
 		RefundStatus: model.TransRefunded,
 		TransStatus:  []string{model.TransSuccess},
+		Locale:       curSession.Locale,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
@@ -206,6 +251,13 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
+
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	q := &model.QueryCondition{
@@ -218,6 +270,7 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		MerName:      r.FormValue("merName"),
 		StartTime:    r.FormValue("startTime"),
 		EndTime:      r.FormValue("endTime"),
+		Locale:       curSession.Locale,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
@@ -238,7 +291,36 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
-	tradeQueryStatsReport(w, r)
+
+	// 语言环境
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	params := r.URL.Query()
+	filename := params.Get("filename")
+	// 查询条件
+	q := &model.QueryCondition{
+		MerId:        params.Get("merId"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		MerName:      params.Get("merName"),
+		GroupCode:    params.Get("groupCode"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		Page:         1,
+		Size:         maxReportRec,
+		Locale:       curSession.Locale,
+	}
+
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+
+	// 导出
+	statTradeReport(w, q)
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
@@ -773,7 +855,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
-			Name:    "QUICKMASTERID",
+			Name:    SessionKey,
 			Value:   cValue,
 			Path:    "/master",
 			Expires: cExpires,
@@ -786,6 +868,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 			CreateTime: now,
 			UpdateTime: now,
 			Expires:    cExpires,
+			Locale:     DefaultLocale,
 		}
 
 		ret = Session.Save(session)

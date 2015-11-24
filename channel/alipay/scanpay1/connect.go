@@ -2,27 +2,16 @@
 package scanpay1
 
 import (
-	"bytes"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"github.com/omigo/mahonia"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-)
-
-var requestURL = goconf.Config.AlipayScanPay.URL
-
-var (
-	// gbkDecoder = mahonia.NewDecoder("gbk")
-	gbkEncoder = mahonia.NewEncoder("gbk")
 )
 
 // Execute 发送报文执行微信支付
@@ -67,7 +56,7 @@ func prepareData(req BaseReq) (url.Values, error) {
 	log.Debugf("sign content: %s", buf.String())
 
 	// gbk encoding
-	content := gbkEncoder.ConvertString(buf.String())
+	content := buf.String()
 	signed := md5.Sum([]byte(content + req.GetSignKey()))
 	params, err := url.ParseQuery(content)
 	if err != nil {
@@ -112,20 +101,21 @@ func send(gw string, params url.Values) ([]byte, error) {
 func processRespBody(ret []byte, resp BaseResp) error {
 
 	// 重写CharsetReader，使Decoder能解析gbk
-	d := xml.NewDecoder(bytes.NewReader(ret))
-	d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
-		dec := mahonia.NewDecoder(s)
-		if dec == nil {
-			return nil, fmt.Errorf("not support %s", s)
-		}
-		return dec.NewReader(r), nil
-	}
-	err := d.Decode(resp)
-	if err != nil {
-		log.Errorf("unmarsal body fail : %s", err)
-		return err
-	}
+	// d := xml.NewDecoder(bytes.NewReader(ret))
+	// d.CharsetReader = func(s string, r io.Reader) (io.Reader, error) {
+	// 	dec := mahonia.NewDecoder(s)
+	// 	if dec == nil {
+	// 		return nil, fmt.Errorf("not support %s", s)
+	// 	}
+	// 	return dec.NewReader(r), nil
+	// }
+	// err := d.Decode(resp)
+	// if err != nil {
+	// 	log.Errorf("unmarsal body fail : %s", err)
+	// 	return err
+	// }
+	err := xml.Unmarshal(ret, resp)
 
 	// TODO:验证签名
-	return nil
+	return err
 }

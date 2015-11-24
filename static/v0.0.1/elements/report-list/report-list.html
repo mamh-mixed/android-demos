@@ -8,91 +8,134 @@
 <link rel="import" href="../x-select/x-select.html">
 <dom-module id="report-list">
   <style>
-    :host {
-      display: block;
-    }
-
-    .thead .th.rowspan-cell {
-      padding: 0 !important;
-      position: relative;
-    }
-
-    .rowspan-top {
-      position: relative;
-      left: -50%;
-      line-height: 30px;
-    }
-
-    .rowspan-bottom {
-      border-top: 1px solid #ddd;
-      line-height: 30px;
-    }
+  :host {
+    display: block;
+  }
+  
+  .thead .th.rowspan-cell {
+    padding: 0 !important;
+    position: relative;
+  }
+  
+  .rowspan-top {
+    position: relative;
+    left: -50%;
+    line-height: 30px;
+  }
+  
+  .rowspan-bottom {
+    border-top: 1px solid #ddd;
+    line-height: 30px;
+    padding-right: 6px;
+  }
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
       <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-        <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+        <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
         <div class="buttons">
-          <paper-button dialog-dismiss>取消</paper-button>
-          <paper-button dialog-confirm>确定</paper-button>
+          <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+          </paper-button>
+          <paper-button dialog-confirm>
+            <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+          </paper-button>
         </div>
       </paper-dialog>
-
-      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}"></paper-input>
+      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
       <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-        <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+        <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
         <div class="buttons">
-          <paper-button dialog-dismiss>取消</paper-button>
-          <paper-button dialog-confirm>确定</paper-button>
+          <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+          </paper-button>
+          <paper-button dialog-confirm>
+            <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+          </paper-button>
         </div>
       </paper-dialog>
-
-      <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}"></x-select>
-      <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}"></paper-input>
-      <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}"></paper-input>
-      <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
-      <paper-input label="门店名称" value="{{cond.merName::input}}"></paper-input>
-      <paper-checkbox id="isAggregateByGroup" on-change="handleIsAggregateByGroupCheckboxChangeEvent">按商户汇总</paper-checkbox>
+      <x-select id="agent" items="[[agents]]" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" data-msg-id="SCANPAY_TRADE_STATS.AGENT"></x-select>
+      <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_STATS.SUBAGENT_NO"></paper-input>
+      <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}" data-msg-id="SCANPAY_TRADE_STATS.GROUP_NO"></paper-input>
+      <paper-input id="merId" label="门店代码" value="{{cond.merId::input}}" data-msg-id="SCANPAY_TRADE_STATS.MERCHANT_NO"></paper-input>
+      <paper-input label="门店名称" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_STATS.MERCHANT_NAME"></paper-input>
+      <paper-checkbox id="isAggregateByGroup" on-change="handleIsAggregateByGroupCheckboxChangeEvent">
+        <i18n-msg msgid="SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP">按商户汇总</i18n-msg>
+      </paper-checkbox>
       <input type="hidden" name="isAggregateByGroup" value="{{cond.isAggregateByGroup}}">
-      <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+      <paper-button class="colorful" raised on-tap="handleQueryTapped">
+        <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+      </paper-button>
     </div>
     <div class="data-grid table">
       <div class="thead">
         <div class="tr">
-          <div class="th">序号</div>
           <div class="th">
-            <span hidden="{{cond.isAggregateByGroup}}">门店代码</span>
-            <span hidden="{{!cond.isAggregateByGroup}}">商户代码</span>
+            <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
           </div>
-          <div class="th" hidden="{{!cond.isAggregateByGroup}}">商户名称</div>
-          <div class="th">门店名称</div>
-          <div class="th rowspan-cell">
-            <div class="rowspan-top">&nbsp;</div>
-            <div class="rowspan-bottom">笔数</div>
+          <div class="th left">
+            <span hidden="{{cond.isAggregateByGroup}}">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NO">门店代码</i18n-msg>
+            </span>
+            <span hidden="{{!cond.isAggregateByGroup}}">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NO">商户代码</i18n-msg>
+            </span>
           </div>
-          <div class="th rowspan-cell">
-            <div class="rowspan-top">汇总</div>
-            <div class="rowspan-bottom">金额(元)</div>
+          <div class="th left" hidden="{{!cond.isAggregateByGroup}}">
+            <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NAME">商户名称</i18n-msg>
           </div>
-          <div class="th rowspan-cell">
-            <div class="rowspan-top">&nbsp;</div>
-            <div class="rowspan-bottom">笔数</div>
-          </div>
-          <div class="th rowspan-cell">
-            <div class="rowspan-top">支付宝</div>
-            <div class="rowspan-bottom">金额(元)</div>
+          <div class="th left" hidden="{{cond.isAggregateByGroup}}">
+            <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NAME">门店名称</i18n-msg>
           </div>
           <div class="th rowspan-cell">
             <div class="rowspan-top">&nbsp;</div>
-            <div class="rowspan-bottom">笔数</div>
+            <div class="rowspan-bottom right">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.TRANS_COUNT">笔数</i18n-msg>
+            </div>
           </div>
           <div class="th rowspan-cell">
-            <div class="rowspan-top">微信</div>
-            <div class="rowspan-bottom">金额(元)</div>
+            <div class="rowspan-top">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.SUMMARY">汇总</i18n-msg>
+            </div>
+            <div class="rowspan-bottom right">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.AMOUNT">金额(元)</i18n-msg>
+            </div>
           </div>
-          <div class="th">代理名称</div>
-          <div class="th">下载</div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom right">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.TRANS_COUNT">笔数</i18n-msg>
+            </div>
+          </div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">
+              <i18n-msg msgid="CHANNEL.ALIPAY">支付宝</i18n-msg>
+            </div>
+            <div class="rowspan-bottom right">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.AMOUNT">金额(元)</i18n-msg>
+            </div>
+          </div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">&nbsp;</div>
+            <div class="rowspan-bottom right">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.TRANS_COUNT">笔数</i18n-msg>
+            </div>
+          </div>
+          <div class="th rowspan-cell">
+            <div class="rowspan-top">
+              <i18n-msg msgid="CHANNEL.WECHAT">微信</i18n-msg>
+            </div>
+            <div class="rowspan-bottom right">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.AMOUNT">金额(元)</i18n-msg>
+            </div>
+          </div>
+          <div class="th">
+            <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>
+          </div>
+          <div class="th">
+            <i18n-msg msgid="SCANPAY_TRADE_STATS.DOWNLOAD">下载</i18n-msg>
+          </div>
         </div>
       </div>
       <div class="tbody">
@@ -107,7 +150,7 @@
             <div class="td" hidden="{{!cond.isAggregateByGroup}}">
               <span>{{item.groupName}}</span>
             </div>
-            <div class="td">
+            <div class="td" hidden="{{cond.isAggregateByGroup}}">
               <span>{{item.merName}}</span>
             </div>
             <div class="td right">
@@ -128,11 +171,13 @@
             <div class="td right">
               <span>{{_computeAmount(item.wxp.transAmt)}}</span>
             </div>
-            <div class="td">
+            <div class="td center">
               <span>{{item.agentName}}</span>
             </div>
             <div class="td center">
-              <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">下载明细</a>
+              <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">
+                <i18n-msg msgid="SCANPAY_TRADE_STATS.DOWNLOAD_DETAIL">下载明细</i18n-msg>
+              </a>
             </div>
           </div>
         </template>
@@ -145,7 +190,7 @@
           <div class="td"></div>
           <div class="td"></div>
           <div class="td" hidden="{{!cond.isAggregateByGroup}}"></div>
-          <div class="td"></div>
+          <div class="td" hidden="{{cond.isAggregateByGroup}}"></div>
           <div class="td right">
             <span>{{summary.totalTransNum}}</span>
           </div>
@@ -166,7 +211,9 @@
           </div>
           <div class="td"></div>
           <div class="td center">
-            <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">下载汇总</a>
+            <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY">下载汇总</i18n-msg>
+            </a>
           </div>
         </div>
       </div>
@@ -176,211 +223,247 @@
     <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
   </template>
   <script>
-    (function() {
-      Polymer({
-        is: 'report-list',
-
-        properties: {
-          cond: {
-            type: Object,
-            value: {}
-          },
-          user: Object,
+  // 币种精度表
+  var CURRENCY_DECIMAL_MAP = {
+    'GBP': {
+      key: 'GBP',
+      currency: 'British Sterling',
+      decimal: 2
+    },
+    'HKD': {
+      key: 'HKD',
+      currency: 'Hong Kong Dollar',
+      decimal: 2
+    },
+    'CNY': {
+      key: 'CNY',
+      currency: 'Chinese RMB',
+      decimal: 2
+    },
+    'JPY': {
+      key: 'JPY',
+      currency: 'Japanese Yen',
+      decimal: 0
+    },
+    'USD': {
+      key: 'USD',
+      currency: 'U.S. Dollar',
+      decimal: 2
+    }
+  };
+  (function() {
+    Polymer({
+      is: 'report-list',
+      properties: {
+        cond: {
+          type: Object,
+          value: {}
         },
-        ready: function() {
-          this.cond = {
-            startTime: this.getYesterdayISODate(),
-            endTime: this.getYesterdayISODate(),
-            page: 1,
-            size: 20,
-            total: 0
-          };
-          //   // 加载代理列表
-          //   this.handleQueryAgentsEvent();
-        },
-        // 查询交易报表事件
-        handleQueryTapped: function() {
-          this.set('cond.page', 1);
-          this.generateAjaxRequest();
-        },
-        generateAjaxRequest: function() {
-          this.records = [];
-          var ajax = this.$.queryAjax;
-          ajax.params = this.cond;
-          ajax.generateRequest();
-        },
-        // 查询交易报表的响应事件
-        handelQueryResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-
-          var pagination = response.data;
-          this.set('summary', pagination.data);
-
-          if (pagination.count <= 0) {
-            Util.toast('没有数据', 1000);
-            return;
-          }
-          this.records = pagination.data.data.slice(0);
-
-          this.set('cond.total', pagination.total);
-          this.set('cond.page', pagination.page);
-          if (this.records.length === 0) {
-            Util.toast('没有数据', 2000);
-          }
-        },
-        // 查询代理列表
-        handleQueryAgentsEvent: function() {
-          this.$.queryAgentAjax.params = {
-            page: 1,
-            size: 1000
-          };
-          this.$.queryAgentAjax.generateRequest();
-        },
-        // 代理列表响应
-        handleQueryAgentsResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
-            return;
-          }
-
-          var pagination = response.data;
-          if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
-            return;
-          }
-
-          var agents = response.data.data.slice(0);
-          this.set('agents', []);
-          for (var i = 0, l = agents.length; i < l; i++) {
-            this.push('agents', {
-              key: agents[i].agentCode,
-              value: agents[i].agentName
-            });
-          }
-        },
-        // 当前用户查询的响应事件
-        handleQueryCurrentUserResponse: function(e) {
-          var response = e.detail.response;
-          if (response.status !== 0) {
-            Util.toast(response.message, 3000);
-            return;
-          }
-
-          this.set('user', response.data);
-        },
-        observers: [
-          '_watchAgentChange(agent.key)',
-          '_watchCondChange(cond.*)',
-          '_watchUserChanged(user.*)',
-        ],
-        _watchCondChange: function() {
-          var filename = "Summary_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
-          filename = filename.replace(/-/g, '');
-          this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=' + filename;
-        },
-        _watchAgentChange: function(key) {
-          if (key) {
-            this.set('cond.agentCode', key);
-          } else {
-            delete this.cond.agentCode;
-          }
-        },
-        _watchUserChanged: function(value) {
-          if (value) {
-            var user = value.base;
-            if (user.userType === 'agent') {
-              this.set('cond.agentCode', user.agentCode);
-              this.agent = {
-                key: user.agentCode,
-                value: user.agentCode,
-              };
-              this.agentDisabled = true;
-            } else if (user.userType === 'subAgent') {
-              this.set('cond.subAgentCode', user.subAgentCode);
-              this.agentDisabled = true;
-              this.$.subAgentCode.setAttribute('disabled', true);
-            } else if (user.userType === 'group') {
-              this.set('cond.groupCode', user.groupCode);
-              this.agentDisabled = true;
-              this.$.subAgentCode.setAttribute('disabled', true);
-              this.$.groupCode.setAttribute('disabled', true);
-            } else if (user.userType === 'merchant') {
-              this.set('cond.merId', user.merId);
-              this.agentDisabled = true;
-              this.$.subAgentCode.setAttribute('disabled', true);
-              this.$.groupCode.setAttribute('disabled', true);
-              this.$.merId.setAttribute('disabled', true);
-            } else if (user.userType === 'admin') {
-              this.agentDisabled = false;
-              this.$.subAgentCode.removeAttribute('disabled');
-              this.$.groupCode.removeAttribute('disabled');
-              this.$.merId.removeAttribute('disabled');
-              // 加载代理列表
-              this.handleQueryAgentsEvent();
-            }
-          }
-        },
-        getYesterdayISODate: function() {
-          var now = new Date();
-          var yesterday = new Date(now.valueOf() - 24 * 60 * 60 * 1000);
-          return yesterday.format('yyyy-MM-dd');
-        },
-        // 日期、时间控件
-        dismissStartTimeDialog: function() {
-          var startTime = this.$.startTimePicker.date;
-          this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
-        },
-        showStartTimeDialog: function() {
-          this.$.startTimeDailog.toggle();
-        },
-        dismissEndTimeDialog: function() {
-          var endTime = this.$.endTimePicker.date;
-          this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
-        },
-        showEndTimeDialog: function() {
-          this.$.endTimeDailog.toggle();
-        },
-        // 修饰金额的方法
-        _computeAmount: function(amount) {
-          amount = amount.toFixed(2);
-          var x = amount.split('.');
-          var x1 = x[0];
-          var x2 = '';
-          x2 = x.length > 1 ? '.' + x[1] : '';
-          var rgx = /(\d+)(\d{3})/;
-          while (rgx.test(x1)) {
-            x1 = x1.replace(rgx, '$1' + ',' + '$2');
-          }
-          return x1 + x2;
-        },
-        // 整理下载报表的url
-        _computeDownLoadUrl: function(item) {
-          var filename = "Detail_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
-          filename = filename.replace(/-/g, '');
-          var obj = {};
-          for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
-            var v = arr[i];
-            obj[v] = this.cond[v];
-          }
-          obj.merId = item.merId;
-          obj.filename = filename;
-          return '/master/trade/report?' + Util.query(obj);
-        },
-        addOneFilter: function(index) {
-          return index + 1;
-        },
-        // 按商户汇总统计的复选框改变事件
-        handleIsAggregateByGroupCheckboxChangeEvent: function(e) {
-          this.set('cond.isAggregateByGroup', e.target.checked);
-          // this.set('records', []);
-          this.handleQueryTapped();
+        user: Object,
+      },
+      ready: function() {
+        this.cond = {
+          startTime: this.getYesterdayISODate(),
+          endTime: this.getYesterdayISODate(),
+          page: 1,
+          size: 20,
+          total: 0
+        };
+        //   // 加载代理列表
+        //   this.handleQueryAgentsEvent();
+      },
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'report-list'
+        });
+      },
+      // 查询交易报表事件
+      handleQueryTapped: function() {
+        this.set('cond.page', 1);
+        this.generateAjaxRequest();
+      },
+      generateAjaxRequest: function() {
+        this.records = [];
+        var ajax = this.$.queryAjax;
+        ajax.params = this.cond;
+        ajax.generateRequest();
+      },
+      // 查询交易报表的响应事件
+      handelQueryResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
         }
-      });
-    })();
+        var pagination = response.data;
+        this.set('summary', pagination.data);
+        if (pagination.count <= 0) {
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
+          return;
+        }
+        this.currency = pagination.data.currency || 'CNY';
+        this.records = pagination.data.data.slice(0);
+        this.set('cond.total', pagination.total);
+        this.set('cond.page', pagination.page);
+        if (this.records.length === 0) {
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
+        }
+      },
+      // 查询代理列表
+      handleQueryAgentsEvent: function() {
+        this.$.queryAgentAjax.params = {
+          page: 1,
+          size: 1000
+        };
+        this.$.queryAgentAjax.generateRequest();
+      },
+      // 代理列表响应
+      handleQueryAgentsResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL', 3000, true);
+          return;
+        }
+        var pagination = response.data;
+        if (pagination.count <= 0) {
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS', 3000, true);
+          return;
+        }
+        var agents = response.data.data.slice(0);
+        this.set('agents', []);
+        for (var i = 0, l = agents.length; i < l; i++) {
+          this.push('agents', {
+            key: agents[i].agentCode,
+            value: agents[i].agentName
+          });
+        }
+      },
+      // 当前用户查询的响应事件
+      handleQueryCurrentUserResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
+          Util.toast(response.message, 3000);
+          return;
+        }
+        this.set('user', response.data);
+      },
+      observers: [
+        '_watchAgentChange(agent.key)',
+        '_watchCondChange(cond.*)',
+        '_watchUserChanged(user.*)',
+      ],
+      _watchCondChange: function() {
+        var filename = "Summary_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
+        filename = filename.replace(/-/g, '');
+        this.summaryReportUri = '/master/trade/stat/report?' + Util.query(this.cond) + '&filename=' + filename;
+      },
+      _watchAgentChange: function(key) {
+        if (key) {
+          this.set('cond.agentCode', key);
+        } else {
+          delete this.cond.agentCode;
+        }
+      },
+      _watchUserChanged: function(value) {
+        if (value) {
+          var user = value.base;
+          if (user.userType === 'agent') {
+            this.set('cond.agentCode', user.agentCode);
+            this.agent = {
+              key: user.agentCode,
+              value: user.agentCode,
+            };
+            this.agentDisabled = true;
+          } else if (user.userType === 'subAgent') {
+            this.set('cond.subAgentCode', user.subAgentCode);
+            this.agentDisabled = true;
+            this.$.subAgentCode.setAttribute('disabled', true);
+          } else if (user.userType === 'group') {
+            this.set('cond.groupCode', user.groupCode);
+            this.agentDisabled = true;
+            this.$.subAgentCode.setAttribute('disabled', true);
+            this.$.groupCode.setAttribute('disabled', true);
+          } else if (user.userType === 'merchant') {
+            this.set('cond.merId', user.merId);
+            this.agentDisabled = true;
+            this.$.subAgentCode.setAttribute('disabled', true);
+            this.$.groupCode.setAttribute('disabled', true);
+            this.$.merId.setAttribute('disabled', true);
+          } else if (user.userType === 'admin') {
+            this.agentDisabled = false;
+            this.$.subAgentCode.removeAttribute('disabled');
+            this.$.groupCode.removeAttribute('disabled');
+            this.$.merId.removeAttribute('disabled');
+            // 加载代理列表
+            this.handleQueryAgentsEvent();
+          }
+        }
+      },
+      getYesterdayISODate: function() {
+        var now = new Date();
+        var yesterday = new Date(now.valueOf() - 24 * 60 * 60 * 1000);
+        return yesterday.format('yyyy-MM-dd');
+      },
+      // 日期、时间控件
+      dismissStartTimeDialog: function() {
+        var startTime = this.$.startTimePicker.date;
+        this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'YYYY-MM-DD'));
+      },
+      showStartTimeDialog: function() {
+        this.$.startTimeDailog.toggle();
+      },
+      dismissEndTimeDialog: function() {
+        var endTime = this.$.endTimePicker.date;
+        this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'YYYY-MM-DD'));
+      },
+      showEndTimeDialog: function() {
+        this.$.endTimeDailog.toggle();
+      },
+      // 修饰金额的方法
+      _computeAmount: function(amount) {
+        var currency = this.currency;
+        if (!currency || currency === '') {
+          currency = 'CNY';
+        }
+
+        var decInfo = CURRENCY_DECIMAL_MAP[currency];
+        if (!decInfo) {
+          decInfo = CURRENCY_DECIMAL_MAP['CNY'];
+        }
+        amount = (amount / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
+        var x = amount.split('.');
+        var x1 = x[0];
+        var x2 = '';
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+          x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+      },
+      // 整理下载报表的url
+      _computeDownLoadUrl: function(item) {
+        var filename = "Detail_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
+        filename = filename.replace(/-/g, '');
+        var obj = {};
+        for (var i = 0, arr = Object.keys(this.cond), l = arr.length; i < l; i++) {
+          var v = arr[i];
+          obj[v] = this.cond[v];
+        }
+        obj.merId = item.merId;
+        obj.filename = filename;
+        return '/master/trade/report?' + Util.query(obj);
+      },
+      addOneFilter: function(index) {
+        return index + 1;
+      },
+      // 按商户汇总统计的复选框改变事件
+      handleIsAggregateByGroupCheckboxChangeEvent: function(e) {
+        this.set('cond.isAggregateByGroup', e.target.checked);
+        // this.set('records', []);
+        this.handleQueryTapped();
+      }
+    });
+  })();
   </script>
 </dom-module>
