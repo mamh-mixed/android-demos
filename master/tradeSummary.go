@@ -6,6 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/tealeg/xlsx"
 	"net/http"
+	"time"
 )
 
 const intFormat = "#,##0"
@@ -48,9 +49,6 @@ var bodyStyle = &xlsx.Style{
 // tradeQueryStat 交易查询统计信息
 func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 
-	reportLocale := GetLocale(q.Locale)
-	q.Currency = reportLocale.Currency
-
 	// 调用core方法统计
 	s, total := query.TransStatistics(q)
 
@@ -73,9 +71,8 @@ func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 
 // statTradeReport 交易统计报表
 func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
-	// 限制查找的币种交易
+	// 语言模板
 	reportLocale := GetLocale(q.Locale)
-	q.Currency = reportLocale.Currency
 
 	// 调用core方法统计
 	s, _ := query.TransStatistics(q)

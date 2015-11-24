@@ -105,7 +105,6 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 
 	// 语言模板
 	rl := GetLocale(cond.Locale)
-	cond.Currency = rl.Currency
 
 	// 查询
 	trans, _ := query.SpTransQuery(cond)

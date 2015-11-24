@@ -142,15 +142,6 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	// get session
-	CurSession, err := Session.Get(r)
-	if err != nil {
-		return
-	}
-
-	// get locale
-	locale := GetLocale(CurSession.Locale)
-
 	transType, _ := strconv.Atoi(params.Get("transType"))
 	cond := &model.QueryCondition{
 		MerId:          merId,
@@ -168,7 +159,6 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 		BindingId:      params.Get("bindingId"),
 		CouponsNo:      params.Get("couponsNo"),
 		WriteoffStatus: params.Get("writeoffStatus"),
-		Currency:       locale.Currency,
 		Size:           size,
 		Page:           page,
 	}
@@ -252,12 +242,6 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 
-	curSession, err := Session.Get(r)
-	if err != nil {
-		log.Error("fail to find session")
-		return
-	}
-
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	q := &model.QueryCondition{
@@ -270,7 +254,6 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 		MerName:      r.FormValue("merName"),
 		StartTime:    r.FormValue("startTime"),
 		EndTime:      r.FormValue("endTime"),
-		Locale:       curSession.Locale,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
