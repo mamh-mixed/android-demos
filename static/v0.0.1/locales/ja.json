@@ -63,6 +63,10 @@
     "description": "登录失败提示",
     "message": "ユーザー名またはパスワードが空白不可"
   },
+  "LOGIN.TOAST.LOGIN_ERROR": {
+    "description": "用户名或密码错误",
+    "message": "ユーザー名またはパスワードがエラー"
+  },
 
   "PASSWORDMODIFICATION.TITLE": {
     "description": "修改密码标题",
@@ -171,7 +175,7 @@
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "金额",
-    "message": "金額"
+    "message": "金額(JPY)"
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
@@ -335,7 +339,7 @@
   },
   "SCANPAY_TRADE_STATS.AMOUNT": {
     "description": "金额",
-    "message": "金額"
+    "message": "金額(JPY)"
   },
   "SCANPAY_TRADE_STATS.AGENT_NAME": {
     "description": "代理名称",
@@ -407,23 +411,23 @@
   },
   "TRADE_DETAIL.CREATE_TIME": {
     "description": "创建时间",
-    "message": "作成時間"
+    "message": "作成日時"
   },
   "TRADE_DETAIL.MODIFY_TIME": {
     "description": "修改时间",
-    "message": "変更時間"
+    "message": "変更日時"
   },
   "TRADE_DETAIL.SETT_ROLE": {
     "description": "清算角色",
-    "message": "JA清算角色"
+    "message": "清算の役割"
   },
   "TRADE_DETAIL.TICKET_NUM": {
     "description": "小票号",
-    "message": "レシート番号"
+    "message": "領収証番号"
   },
   "TRADE_DETAIL.PAY_TIME": {
     "description": "支付时间",
-    "message": "決済日時"
+    "message": "お支払い日時"
   },
   "xxx": {
     "description": "xxx",
