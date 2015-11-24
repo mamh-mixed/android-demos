@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -41,6 +42,7 @@ import java.util.List;
 
 public class RegisterNextActivity extends BaseActivity {
     private static final String TAG = "RegisterNextActivity";
+
     private EditText mNameEdit;
     private EditText mBanknumEdit;
     private EditText mPhonenumEdit;
@@ -74,6 +76,7 @@ public class RegisterNextActivity extends BaseActivity {
     private ArrayAdapter mBranchBankAdapter;
     private SearchAdapter mBranchBankSearchAdapter;
 
+    private Button mRegisterNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,16 @@ public class RegisterNextActivity extends BaseActivity {
         mOpenBankEdit = (AutoCompleteTextView) findViewById(R.id.edit_openbank);
         mBranchBankEdit = (AutoCompleteTextView) findViewById(R.id.edit_branchbank);
     }//end initEditText()
+
+    private void initButton() {
+        mRegisterNext = (Button) findViewById(R.id.bt_register_next);
+        mRegisterNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerNext(v);
+            }
+        });
+    }
 
     private void initArrayList() {
         mProvinceList = new ArrayList<String>();
@@ -165,6 +178,7 @@ public class RegisterNextActivity extends BaseActivity {
     private void initLayout() {
         initSpinner();
         initEditText();
+        initButton();
         initArrayList();//一定要注意初始化的顺序
         initAdapter();
 
@@ -263,8 +277,7 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
 
-
-    public void btnRegisterFinishedOnClick(View view) {
+    public void registerNext(View view) {
         if (!validate()) {
             return;
         }

@@ -308,10 +308,10 @@
                     android:gravity="center">
 
                     <Button
+                        android:id="@+id/bt_register_next"
                         android:layout_width="300dp"
                         android:layout_height="50dp"
                         android:background="@drawable/blue_selector"
-                        android:onClick="btnRegisterFinishedOnClick"
                         android:text="@string/register_next"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp" />
