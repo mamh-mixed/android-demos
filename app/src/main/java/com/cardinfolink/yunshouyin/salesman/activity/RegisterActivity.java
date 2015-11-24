@@ -3,7 +3,6 @@ package com.cardinfolink.yunshouyin.salesman.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +21,7 @@ public class RegisterActivity extends BaseActivity {
     private EditText mEmail;
     private EditText mPassword;
     private EditText mQrPassword;
-    private Button mLogin;
+    private Button mRegister;
 
 
     @Override
@@ -42,8 +41,8 @@ public class RegisterActivity extends BaseActivity {
         mQrPassword = (EditText) findViewById(R.id.register_qr_password);
         VerifyUtil.addEmailLimit(mQrPassword);
 
-        mLogin = (Button) findViewById(R.id.btnlogin);
-        mLogin.setOnClickListener(new View.OnClickListener() {
+        mRegister = (Button) findViewById(R.id.btn_register);
+        mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startLoading();
