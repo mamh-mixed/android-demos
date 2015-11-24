@@ -368,15 +368,14 @@ public class RegisterNextActivity extends BaseActivity {
 
 
     private void initProvinceData() {
-        String data = readFromSharePreference("province");
-        if (data != null && data.length() != 0) {
+
+        List<String> data = null;
+        // TODO: 15-11-24 这里需要读取缓存,或者在 getProvince（）里的一个异步任务里做会更好呢？？！！
+        if (data != null && data.size() != 0) {
             Log.d(TAG, "will use cache data to get province");
             updateProvinceAdapter(data);
         } else {
-            Log.d(TAG, "will do post to get province data");
-            RequestParam provinceParam = BankBaseUtil.getProvince();
-            ProvinceCommunicationListener provinceCommunicationListener = new ProvinceCommunicationListener();
-            HttpCommunicationUtil.sendGetDataToServer(provinceParam, provinceCommunicationListener);
+            bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
         }
     }
 
@@ -485,24 +484,14 @@ public class RegisterNextActivity extends BaseActivity {
         return list;
     }
 
-    private void updateProvinceAdapter(final String data) {
-        new Thread() {
-            @Override
-            public void run() {
-                final List<String> tempProvinceList = jsonArrayToList(data);
-                tempProvinceList.add(0, "开户行所在省份");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mProvinceList.clear();
-                        mProvinceList.addAll(tempProvinceList);
-                        mProvinceAdapter.notifyDataSetChanged();
-                        mProvinceSearchAdapter.setData(mProvinceList);
-                        mProvinceSearchAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        }.start();
+    private void updateProvinceAdapter(List<String> data) {
+        //这里直接得到的就是一个省份的list，不需要再去用json去解析了。
+        mProvinceList.clear();
+        mProvinceList.add(0, "开户行所在省份");
+        mProvinceList.addAll(data);
+        mProvinceAdapter.notifyDataSetChanged();
+        mProvinceSearchAdapter.setData(mProvinceList);
+        mProvinceSearchAdapter.notifyDataSetChanged();
     }
 
     private void updateCityAdapter(final String data) {
@@ -666,17 +655,18 @@ public class RegisterNextActivity extends BaseActivity {
         return true;
     }
 
-    //内部类，实现CommunicationListener接口
-    private class ProvinceCommunicationListener implements CommunicationListener {
+    //内部类，实现QuickPayCallbackListener接口
+    private class ProvinceQuickPayCallbackListener implements QuickPayCallbackListener<List<String>> {
+
         @Override
-        public void onResult(String result) {
-            saveToSharePreferences(result, "province");
-            updateProvinceAdapter(result);
+        public void onSuccess(List<String> data) {
+            // TODO: 15-11-24 save data to file or sqlite??!!
+            updateProvinceAdapter(data);
         }
 
         @Override
-        public void onError(String error) {
-            Log.i(TAG, "get province data error:" + error);
+        public void onFailure(QuickPayException ex) {
+
         }
     }
 
