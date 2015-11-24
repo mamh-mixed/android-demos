@@ -92,7 +92,8 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 
 	resp.ChannelOrderNum = alipay.AlipayTransId
 	resp.PayTime = alipay.AlipayPayTime
-	resp.ConsumerId = alipay.AlipayBuyerLoginId
+	resp.ConsumerAccount = alipay.AlipayBuyerLoginId
+	resp.ConsumerId = p.Response.Alipay.AlipayBuyerUserId
 	resp.Rate = alipay.ExchangeRate
 
 	// result
@@ -148,7 +149,8 @@ func (a *alp) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse,
 	resp := &model.ScanPayResponse{}
 	resp.ChannelOrderNum = p.Response.Alipay.AlipayTransId
 	resp.PayTime = p.Response.Alipay.AlipayPayTime
-	resp.ConsumerId = p.Response.Alipay.AlipayBuyerLoginId
+	resp.ConsumerAccount = p.Response.Alipay.AlipayBuyerLoginId
+	resp.ConsumerId = p.Response.Alipay.AlipayBuyerUserId
 	resp.Rate = p.Response.Alipay.ExchangeRate
 
 	// result
