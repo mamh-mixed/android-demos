@@ -4,10 +4,13 @@ set -e
 
 prog="quickpay"
 
-shortcut=("dev" "test" "app1" "app2")
-envs=("develop" "testing" "product" "product")
-hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" \
-    "quick@app1.set.shou.money" "quick@app2.set.shou.money")
+# shortcut=("dev" "test" "app1" "app2")
+shortcut=("test" "app1" "app2")
+# envs=("develop" "testing" "product" "product")
+envs=("testing" "product" "product")
+# hosts=("webapp@dev.ipay.so" "webapp@test.ipay.so" \
+#     "quick@app1.set.shou.money" "quick@app2.set.shou.money")
+hosts=("webapp@test.overseas.ipay.so" "webapp@52.192.171.57" "webapp@52.192.176.149")
 
 input=$1
 
@@ -116,16 +119,16 @@ function deploy() {
     version=$3
 
     # 远程执行复制，以使用 rsync 加速传输
-    echo "SSH $host"
-    ssh $host << EOF
-cd $workdir
-prev=\$(ls -t static | grep -v 'index.html' | head -n  1)
-if [ "\$prev" != "$version" ]; then
-    cd static
-    cp -r \$prev ../$version
-fi
-exit
-EOF
+#     echo "SSH $host"
+#     ssh $host << EOF
+# cd $workdir
+# prev=\$(ls -t static | grep -v 'index.html' | head -n  1)
+# if [ "\$prev" != "$version" ]; then
+#     cd static
+#     cp -r \$prev ../$version
+# fi
+# exit
+# EOF
 
     # 上传文件
     echo "Uploading $prog..."
@@ -153,6 +156,7 @@ killall $prog
 
 echo "Starting $prog process ..."
 mkdir -p logs
+export QUICKPAY_ENV=product
 nohup ./$prog >> logs/$prog.log 2>&1 &
 ps -ef | grep $prog
 
