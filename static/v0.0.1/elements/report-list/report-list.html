@@ -265,6 +265,7 @@
         this.cond = {
           startTime: this.getYesterdayISODate(),
           endTime: this.getYesterdayISODate(),
+          utcOffset: moment().utcOffset(),
           page: 1,
           size: 20,
           total: 0
