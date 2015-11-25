@@ -31,7 +31,7 @@
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{time.startTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
       <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
         <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
         <div class="buttons">
@@ -43,7 +43,7 @@
           </paper-button>
         </div>
       </paper-dialog>
-      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
+      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{time.endTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
       <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
         <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
         <div class="buttons">
@@ -262,9 +262,12 @@
         user: Object,
       },
       ready: function() {
-        this.cond = {
+        this.time = {
           startTime: this.getYesterdayISODate(),
-          endTime: this.getYesterdayISODate(),
+          endTime: this.getYesterdayISODate()
+        };
+        this.cond = {
+          utcOffset: moment().utcOffset(),
           page: 1,
           size: 20,
           total: 0
@@ -285,6 +288,12 @@
       generateAjaxRequest: function() {
         this.records = [];
         var ajax = this.$.queryAjax;
+        if (this.time.startTime && this.time.startTime !== '') {
+          this.cond.startTime = Util.toCSTDateTime(this.time.startTime + '00:00:00');
+        }
+        if (this.time.endTime && this.time.endTime !== '') {
+          this.cond.endTime = Util.toCSTDateTime(this.time.endTime + '23:59:59');
+        }
         ajax.params = this.cond;
         ajax.generateRequest();
       },
@@ -407,14 +416,16 @@
       // 日期、时间控件
       dismissStartTimeDialog: function() {
         var startTime = this.$.startTimePicker.date;
-        this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'YYYY-MM-DD'));
+        this.set('time.startTime', this.$.startTimePicker.dateFormat(startTime, 'YYYY-MM-DD'));
+        this.set('cond.startTime', Util.toCSTDateTime(this.time.startTime + ' 00:00:00'));
       },
       showStartTimeDialog: function() {
         this.$.startTimeDailog.toggle();
       },
       dismissEndTimeDialog: function() {
         var endTime = this.$.endTimePicker.date;
-        this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'YYYY-MM-DD'));
+        this.set('time.endTime', this.$.endTimePicker.dateFormat(endTime, 'YYYY-MM-DD'));
+        this.set('cond.endTime', Util.toCSTDateTime(this.time.endTime + ' 23:59:59'));
       },
       showEndTimeDialog: function() {
         this.$.endTimeDailog.toggle();

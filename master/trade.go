@@ -10,6 +10,7 @@ import (
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"net/http"
+	"time"
 )
 
 var maxReportRec = 10000
@@ -105,13 +106,12 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 
 	// 语言模板
 	rl := GetLocale(cond.Locale)
-	cond.Currency = rl.Currency
 
 	// 查询
 	trans, _ := query.SpTransQuery(cond)
 
 	// 生成报表
-	genReport(file, trans, rl)
+	genReport(file, trans, rl, &Zone{cond.UtcOffset, time.Local})
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
@@ -119,7 +119,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 }
 
 // genReport 生成报表
-func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
+func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate, z *Zone) {
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
@@ -232,10 +232,10 @@ func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate) {
 		}
 		// 交易时间
 		cell = row.AddCell()
-		cell.Value = v.CreateTime
+		cell.Value = z.GetTime(v.CreateTime)
 		// 支付时间
 		cell = row.AddCell()
-		cell.Value = v.PayTime
+		cell.Value = z.GetTime(v.PayTime)
 		// 交易状态
 		cell = row.AddCell()
 		switch v.TransStatus {
@@ -326,3 +326,42 @@ type summary struct {
 	Cell8 string
 	Cell9 float64
 }
+
+// Zone 代表时区
+type Zone struct {
+	UtcOffset     int            // UTC 的偏移量
+	ParseLocation *time.Location // 原时间时区
+}
+
+// GetTime 获得某个地区时间
+func (z *Zone) GetTime(ctime string) string {
+
+	// 东八区时间偏移量
+	cstOffset := 60 * 60 * 8
+
+	// 假如是东八区北京时间，直接返回
+	if z.UtcOffset == cstOffset {
+		return ctime
+	}
+
+	// 以服务器时区为准，即东八区
+	t, err := time.ParseInLocation("2006-01-02 15:04:05", ctime, z.ParseLocation)
+	if err != nil {
+		log.Errorf("fail to parse time in Local: %s", ctime)
+		return ctime
+	}
+
+	if loc, ok := locationsMap[z.UtcOffset]; ok {
+		t = t.In(loc)
+		return t.Format(layout)
+	}
+
+	loc := time.FixedZone("CUR", z.UtcOffset)
+	locationsMap[z.UtcOffset] = loc
+
+	t = t.In(loc)
+	return t.Format(layout)
+}
+
+var layout = "2006-01-02 15:04:05 -0700"
+var locationsMap = make(map[int]*time.Location)

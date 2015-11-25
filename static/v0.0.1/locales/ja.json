@@ -67,7 +67,6 @@
     "description": "用户名或密码错误",
     "message": "ユーザー名またはパスワードがエラー"
   },
-
   "PASSWORDMODIFICATION.TITLE": {
     "description": "修改密码标题",
     "message": "パスワード変更"
@@ -108,7 +107,6 @@
     "description": "新密码不一致",
     "message": "新パスワード不一致"
   },
-
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
     "message": "QRコード取引"
@@ -175,7 +173,11 @@
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "金额",
-    "message": "金額(JPY)"
+    "message": "金額"
+  },
+  "SCANPAY_TRADE_LIST.CURRENCY": {
+    "description": "币种",
+    "message": "通貨"
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
@@ -339,7 +341,7 @@
   },
   "SCANPAY_TRADE_STATS.AMOUNT": {
     "description": "金额",
-    "message": "金額(JPY)"
+    "message": "金額"
   },
   "SCANPAY_TRADE_STATS.AGENT_NAME": {
     "description": "代理名称",
