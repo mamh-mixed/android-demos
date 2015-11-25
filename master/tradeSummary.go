@@ -191,12 +191,17 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 
 func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.QueryCondition) {
 
+	// 语言模板
 	reportLocale := GetLocale(cond.Locale).StatReport
+
+	// 时区
+	z := &Zone{cond.UtcOffset, time.Local}
+
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = reportLocale.StartDate
 	cell = row.AddCell()
-	cell.Value = cond.StartTime
+	cell.Value = z.GetTime(cond.StartTime)
 	cell.SetStyle(bodyStyle)
 	cell.Merge(1, 0)
 	row.AddCell()
@@ -204,7 +209,7 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	cell = row.AddCell()
 	cell.Value = reportLocale.EndDate
 	cell = row.AddCell()
-	cell.Value = cond.EndTime
+	cell.Value = z.GetTime(cond.EndTime)
 	cell.SetStyle(bodyStyle)
 	cell.Merge(1, 0)
 	row.AddCell()

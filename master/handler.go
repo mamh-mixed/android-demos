@@ -207,8 +207,14 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询参数
 	params := r.URL.Query()
-	filename := params.Get("filename")
+
+	// 时区偏移量，前端传过来是分
+	utcOffset, err := strconv.Atoi(params.Get("utcOffset"))
+	if err != nil {
+		return
+	}
 
 	var merId = params.Get("merId")
 	cond := &model.QueryCondition{
@@ -227,6 +233,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		RefundStatus: model.TransRefunded,
 		TransStatus:  []string{model.TransSuccess},
 		Locale:       curSession.Locale,
+		UtcOffset:    utcOffset * 60,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
@@ -237,7 +244,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Debugf("tradeReportHandle condition is %#v", cond)
 
-	tradeReport(w, cond, filename)
+	tradeReport(w, cond, params.Get("filename"))
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
@@ -283,7 +290,13 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	params := r.URL.Query()
-	filename := params.Get("filename")
+
+	// 时区偏移量，前端传过来是分
+	utcOffset, err := strconv.Atoi(params.Get("utcOffset"))
+	if err != nil {
+		return
+	}
+
 	// 查询条件
 	q := &model.QueryCondition{
 		MerId:        params.Get("merId"),
@@ -296,11 +309,12 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		Page:         1,
 		Size:         maxReportRec,
 		Locale:       curSession.Locale,
+		UtcOffset:    utcOffset * 60,
 	}
 
 	// 设置content-type
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, params.Get("filename")))
 
 	// 导出
 	statTradeReport(w, q)
