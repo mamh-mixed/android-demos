@@ -215,6 +215,12 @@ type ChanMer struct {
 	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段
 	CreateTime  string   `bson:"createTime,omitempty" json:"createTime,omitempty"`   // 创建时间
 	UpdateTime  string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`   // 更新时间
+
+	// 0. 渠道退手续费，手续费原路返还，支付宝→机构→商户，统计报表及清算报表中的交易金额 =  负的原交易金额；
+	// 1. 渠道不退手续费，机构承担手续费，统计报表及清算报表中的交易金额 =  负的原交易金额；
+	// 2. 渠道不退手续费，商户承担手续费，统计报表及清算报表中的交易金额 =  负的（原交易金额 – 手续费）；
+	// 3. 渠道不退手续费（预留），机构商户按比例承担手续费，这个模式目前不会有，先不统计在报表里。
+	SchemeType int `bson:"schemeType" json:"schemeType"` // 计费方案
 	// ...
 }
 
