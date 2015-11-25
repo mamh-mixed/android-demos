@@ -67,7 +67,6 @@
     "description": "用户名或密码错误",
     "message": "EN用户名或密码错误"
   },
-
   "PASSWORDMODIFICATION.TITLE": {
     "description": "修改密码标题",
     "message": "Password Modification"
@@ -175,6 +174,10 @@
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "金额",
     "message": "Amount"
+  },
+  "SCANPAY_TRADE_LIST.CURRENCY": {
+    "description": "币种",
+    "message": "Currency"
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
@@ -432,5 +435,4 @@
     "description": "xxx",
     "message": "xxx"
   }
-
 }
