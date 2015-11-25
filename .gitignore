@@ -5,6 +5,9 @@
 static/v0.0.1/elements/trade-list/trade-list-yun-select.html
 static/v0.0.1/elements/yun-select/yun-select-bak.html
 
+cloudCashier/bower_components/
+cloudCashier/**/bower_components/
+
 admin/bower_components
 
 static/dist

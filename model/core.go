@@ -285,9 +285,9 @@ type Trans struct {
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
-	SettRole     string        `bson:"settRole,omitempty" json:"-"`                          // 清算角色
-	PayTime      string        `bson:"payTime,omitempty" json:"-"`                           // 支付时间
-	Currency     string        `bson:"currency,omitempty" json:"-"`
+	SettRole     string        `bson:"settRole,omitempty" json:"settRole,omitempty"`         // 清算角色
+	PayTime      string        `bson:"payTime,omitempty" json:"payTime,omitempty"`           // 支付时间
+	Currency     string        `bson:"currency,omitempty" json:"currency"`
 	ExchangeRate string        `bson:"exchangeRate,omitempty" json:"-"`
 
 	// 快捷支付
@@ -325,7 +325,7 @@ type Trans struct {
 	Attach          string `bson:"attach,omitempty" json:"-"`
 
 	// APP
-	TicketNum string `bson:"ticketNum,omitempty" json:"-"` // 关联的小票号
+	TicketNum string `bson:"ticketNum,omitempty" json:"ticketNum,omitempty"` // 关联的小票号
 
 	// 可用于关联查询字段
 	MerName      string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称

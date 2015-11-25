@@ -7,9 +7,12 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"net/http"
 )
 
-const SessionKey = "QUICKMASTERID"
+const (
+	SessionKey = "QUICKMASTERID"
+)
 
 type sessionService struct{}
 
@@ -34,6 +37,15 @@ func timingClearSession() {
 			log.Infof("clear %d sessions", num)
 		}
 	}
+}
+
+// Get
+func (s *sessionService) Get(req *http.Request) (*model.Session, error) {
+	c, err := req.Cookie(SessionKey)
+	if err != nil {
+		return nil, err
+	}
+	return mongo.SessionColl.Find(c.Value)
 }
 
 // 新建会话

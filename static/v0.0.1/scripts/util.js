@@ -2,7 +2,11 @@
 (function(window) {
 	var Util = (function() {
 		var init = function() {};
-		var toast = function(text, duration) {
+		var toast = function(text, duration, isLocale) {
+			if (isLocale) {
+				var el = document.createElement('i18n-msg');
+				text = el.getMsg(text);
+			}
 			if (!text || typeof text !== 'string' || text === '') {
 				return;
 			}

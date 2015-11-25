@@ -121,7 +121,8 @@ function deploy() {
 cd $workdir
 prev=\$(ls -t static | grep -v 'index.html' | head -n  1)
 if [ "\$prev" != "$version" ]; then
-    cp -r static/\$prev static/$version
+    cd static
+    cp -r \$prev ../$version
 fi
 exit
 EOF
