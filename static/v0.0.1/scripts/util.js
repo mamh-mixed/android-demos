@@ -52,6 +52,23 @@
 			// returns false when event.preventDefault() is called, true otherwise
 			return node.dispatchEvent(event);
 		};
+		// 将后台传过来的北京时间转换成当地时间
+		var _toLocaleDateTime = function(dateTime) {
+			if (!dateTime || !moment(dateTime, 'YYYY-MM-DD HH:mm:ss').isValid()){
+				return dateTime;
+			}
+			var org = dateTime + ' +0800';
+			var aft = moment(org, 'YYYY-MM-DD HH:mm:ss Z').format('YYYY-MM-DD HH:mm:ss');
+			return aft;
+		};
+		// 将本地时间转换成北京时间
+		var _toCSTDateTime = function(dateTime) {
+			if (!dateTime || !moment(dateTime, 'YYYY-MM-DD HH:mm:ss').isValid()){
+				return dateTime;
+			}
+			var aft = moment(dateTime, 'YYYY-MM-DD HH:mm:ss').utcOffset(8).format('YYYY-MM-DD HH:mm:ss');
+			return aft;
+		};
 		var query = function(obj) {
 			var q = '';
 			for (var k in obj) {
@@ -69,7 +86,9 @@
 			toast: toast,
 			query: query,
 			showLoginDialog: showLoginDialog,
-			hideLoginDialog: hideLoginDialog
+			hideLoginDialog: hideLoginDialog,
+			toLocaleDateTime: _toLocaleDateTime,
+			toCSTDateTime: _toCSTDateTime
 		};
 	}());
 

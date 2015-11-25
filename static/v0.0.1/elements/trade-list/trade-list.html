@@ -17,7 +17,8 @@
   <template>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
-        <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_FROM"></paper-input>
+        <input type="hidden" name="startTime" value="{{cond.startTime::input}}" />
+        <paper-input label="* 交易时间从" on-tap="showStartTimeDialog" value="{{time.startTime::input}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_FROM"></paper-input>
         <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
           <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
           <div class="buttons">
@@ -29,7 +30,9 @@
             </paper-button>
           </div>
         </paper-dialog>
-        <paper-input name="endTime" label="* 交易时间到" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_TO"></paper-input>
+
+        <input type="hidden" name="endTime" value="{{cond.endTime::input}}" />
+        <paper-input label="* 交易时间到" on-tap="showEndTimeDialog" value="{{time.endTime::input}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_TO"></paper-input>
         <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
           <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
           <div class="buttons">
@@ -278,9 +281,11 @@
       user: Object,
     },
     ready: function() {
-      this.cond = {
+      this.time = {
         startTime: new Date().format('yyyy-MM-dd'),
-        endTime: new Date().format('yyyy-MM-dd'),
+        endTime: new Date().format('yyyy-MM-dd')
+      };
+      this.cond = {
         total: 0,
         page: 1,
         size: 20
@@ -380,19 +385,21 @@
     // 日期、时间控件
     dismissStartTimeDialog: function() {
       var startTime = this.$.startTimePicker.date;
-      this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'YYYY-MM-DD'));
+      this.set('time.startTime', this.$.startTimePicker.dateFormat(startTime, 'YYYY-MM-DD'));
     },
     showStartTimeDialog: function() {
       this.$.startTimeDailog.toggle();
     },
     dismissEndTimeDialog: function() {
       var endTime = this.$.endTimePicker.date;
-      this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'YYYY-MM-DD'));
+      this.set('time.endTime', this.$.endTimePicker.dateFormat(endTime, 'YYYY-MM-DD'));
     },
     showEndTimeDialog: function() {
       this.$.endTimeDailog.toggle();
     },
     queryAction: function() {
+      this.set('cond.startTime', Util.toCSTDateTime(this.time.startTime + ' 00:00:00'));
+      this.set('cond.endTime', Util.toCSTDateTime(this.time.endTime + ' 23:59:59'));
       this.$.formSearch.submit();
     },
     // 发送查询交易的ajax请求
@@ -462,6 +469,9 @@
         if (!item.currency) {
           item.currency = 'CNY';
         }
+        item.payTime = Util.toLocaleDateTime(item.payTime);
+        item.transTime = Util.toLocaleDateTime(item.transTime);
+        item.updateTime = Util.toLocaleDateTime(item.updateTime);
         this.push('trades', item);
       }
 
