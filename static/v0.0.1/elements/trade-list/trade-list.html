@@ -57,7 +57,7 @@
           <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
         </paper-button>
         <div class="paper-button-1">
-          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{reportUri}}">
+          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href$="{{reportUri}}">
             <i18n-msg msgid="BUTTON.DOWNLOADREPORT">取消</i18n-msg>
           </a>
         </div>
@@ -292,6 +292,7 @@
         endTime: new Date().format('yyyy-MM-dd')
       };
       this.cond = {
+        utcOffset: moment().utcOffset(),
         total: 0,
         page: 1,
         size: 20
