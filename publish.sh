@@ -69,7 +69,7 @@ function main() {
     echo
     # 重启
     echo ">>> Restart program and tail log..."
-    restart $host $workdir $version
+    restart $host $workdir $version ${envs[$idx]}
     echo
 
     rm -rf distrib/
@@ -140,6 +140,7 @@ function restart() {
     host=$1
     workdir=$2
     version=$3
+    env=$4
 
     # 远程执行重启命令
     echo "SSH $host"
@@ -156,7 +157,7 @@ killall $prog
 
 echo "Starting $prog process ..."
 mkdir -p logs
-export QUICKPAY_ENV=product
+export QUICKPAY_ENV=$env
 nohup ./$prog >> logs/$prog.log 2>&1 &
 ps -ef | grep $prog
 
