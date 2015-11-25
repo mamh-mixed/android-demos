@@ -97,9 +97,6 @@
           default:
             I18nMsg.lang = 'zh-CN';
         }
-
-        // 如果不是中文的话，发送一个切换后台服务器语言的指令
-        this.localeChangeRequest(I18nMsg.lang);
       },
       // 当没有登入的时候，跳转到登入页面
       handleNotLogin: function() {
@@ -159,6 +156,9 @@
       },
       // 处理子孙元素冒泡的登录成功事件
       handleLoginSuccessEvent: function(e) {
+        // 如果不是中文的话，发送一个切换后台服务器语言的指令
+        this.localeChangeRequest(I18nMsg.lang);
+
         var loginUser = e.detail.loginUser;
         this.set('sessionId', loginUser.sessionId);
         this.set('userType', loginUser.userType);

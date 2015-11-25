@@ -265,6 +265,7 @@
         this.cond = {
           startTime: this.getYesterdayISODate(),
           endTime: this.getYesterdayISODate(),
+          utcOffset: moment().utcOffset(),
           page: 1,
           size: 20,
           total: 0
@@ -285,6 +286,12 @@
       generateAjaxRequest: function() {
         this.records = [];
         var ajax = this.$.queryAjax;
+        if (this.cond.startTime && this.cond.startTime !== '') {
+          this.cond.startTime = Util.toCSTDateTime(this.cond.startTime + '00:00:00');
+        }
+        if (this.cond.endTime && this.cond.endTime !== '') {
+          this.cond.endTime = Util.toCSTDateTime(this.cond.endTime + '23:59:59');
+        }
         ajax.params = this.cond;
         ajax.generateRequest();
       },
