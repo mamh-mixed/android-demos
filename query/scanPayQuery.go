@@ -2,11 +2,13 @@ package query
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
 var noMerCode, noMerMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
@@ -218,13 +220,17 @@ func SpTransQuery(q *model.QueryCondition) ([]*model.Trans, int) {
 	if q.StartTime == "" {
 		q.StartTime = now + " 00:00:00"
 	} else {
-		q.StartTime += " 00:00:00"
+		if strings.Index(q.StartTime, " ") == -1 {
+			q.StartTime += " 00:00:00"
+		}
 	}
 	// 默认当天结束
 	if q.EndTime == "" {
 		q.EndTime = now + " 23:59:59"
 	} else {
-		q.EndTime += " 23:59:59"
+		if strings.Index(q.EndTime, " ") == -1 {
+			q.EndTime += " 23:59:59"
+		}
 	}
 
 	// mongo统计
@@ -269,8 +275,23 @@ func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 	q.TransType = model.PayTrans
 	q.RefundStatus = model.TransRefunded
 	// q.MerIds = merIds
-	q.StartTime += " 00:00:00"
-	q.EndTime += " 23:59:59"
+	// 默认当天开始
+	today := time.Now().Format("2006-01-02")
+	if q.StartTime == "" {
+		q.StartTime = today + " 00:00:00"
+	} else {
+		if strings.Index(q.StartTime, " ") == -1 {
+			q.StartTime += " 00:00:00"
+		}
+	}
+	if q.EndTime == "" {
+		q.EndTime = today + " 23:59:59"
+	} else {
+		if strings.Index(q.EndTime, " ") == -1 {
+			q.EndTime += " 23:59:59"
+		}
+	}
+	log.Debugf("start time is %s; end time is %s", q.StartTime, q.EndTime)
 
 	// 查询交易
 	now := time.Now()
