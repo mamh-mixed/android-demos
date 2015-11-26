@@ -22,6 +22,7 @@ import com.cardinfolink.yunshouyin.salesman.R;
 import com.cardinfolink.yunshouyin.salesman.adapter.SearchAdapter;
 import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.salesman.model.Bank;
 import com.cardinfolink.yunshouyin.salesman.model.City;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.User;
@@ -37,9 +38,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class RegisterNextActivity extends BaseActivity {
     private static final String TAG = "RegisterNextActivity";
@@ -381,16 +386,15 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initBankData() {
-        //获取bank的数据
-        String data = readFromSharePreference("bank");
-        if (data != null && data.length() != 0) {
+        //获取bank的数据:
+        Map<String, Bank> data = null;
+        // TODO: mamh  这里需要读取缓存,或者在 getBank（）里的一个异步任务里做会更好呢？？！！
+        if (data != null && data.size() != 0) {
             Log.d(TAG, "will use cache data to get bank");
             updateBankAdapter(data);
         } else {
             Log.d(TAG, "will do post to get bank data");
-            RequestParam bankParam = BankBaseUtil.getBank();
-            BankCommunicationListener bankCommunicationListener = new BankCommunicationListener();
-            HttpCommunicationUtil.sendGetDataToServer(bankParam, bankCommunicationListener);
+            bankDataService.getBank(new BankQuickPayCallbackListener());
         }
     }
 
@@ -495,11 +499,11 @@ public class RegisterNextActivity extends BaseActivity {
 
     private void updateCityAdapter(final List<City> data) {
         ArrayList<String> tempCityList = new ArrayList<String>();
-        ArrayList<String> tempCityCodeList =  new ArrayList<String>();
+        ArrayList<String> tempCityCodeList = new ArrayList<String>();
         tempCityList.add(0, "开户行所在城市");
         tempCityCodeList.add(0, "");
         Iterator<City> it = data.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             City c = it.next();
             tempCityList.add(c.getCityName());//"city_name"这个要注意别弄成getCity（）了。
             tempCityCodeList.add(c.getCityCode());//"city_code"
@@ -514,30 +518,26 @@ public class RegisterNextActivity extends BaseActivity {
         mCitySearchAdapter.setData(mCityList);
     }
 
-    private void updateBankAdapter(final String data) {
-        new Thread() {
-            @Override
-            public void run() {
-                final List<String> tempOpenBankList = jsonObjectToList(data, "bank_name");
-                final List<String> tempBankIdList = jsonObjectToList(data, "id");
-                tempOpenBankList.add(0, "请选择开户银行");
-                tempBankIdList.add(0, "");//为了使index对应起来
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mOpenBankList.clear();
-                        mBankIdList.clear();
-                        mOpenBankList.addAll(tempOpenBankList);
-                        mBankIdList.addAll(tempBankIdList);
-                        mOpenBankSpinner.setSelection(0);
-                        mOpenBankAdapter.notifyDataSetChanged();
-                        mOpenBankSearchAdapter.notifyDataSetChanged();
-                    }
-                });
-            }
-        }.start();
+    private void updateBankAdapter(Map<String, Bank> data) {
+        List<String> tempOpenBankList = new ArrayList<String>();
+        List<String> tempBankIdList = new ArrayList<String>();
+        Collection<Bank> vallues = data.values();
+        Iterator<Bank> it = vallues.iterator();
+        while(it.hasNext()){
+            Bank b = it.next();
+            tempOpenBankList.add(b.getBankName());
+            tempBankIdList.add(b.getId());
+        }
+        tempOpenBankList.add(0, "请选择开户银行");
+        tempBankIdList.add(0, "");//为了使index对应起来
 
-
+        mOpenBankList.clear();
+        mBankIdList.clear();
+        mOpenBankList.addAll(tempOpenBankList);
+        mBankIdList.addAll(tempBankIdList);
+        mOpenBankSpinner.setSelection(0);
+        mOpenBankAdapter.notifyDataSetChanged();
+        mOpenBankSearchAdapter.notifyDataSetChanged();
     }
 
     private void updateBranchBankAdapter(final String data) {
@@ -666,17 +666,17 @@ public class RegisterNextActivity extends BaseActivity {
         }
     }
 
-    //内部类，实现CommunicationListener接口,用来获取bank信息
-    private class BankCommunicationListener implements CommunicationListener {
+    //内部类，实现QuickPayCallbackListener接口,用来获取bank信息
+    private class BankQuickPayCallbackListener implements QuickPayCallbackListener<Map<String, Bank>> {
+
         @Override
-        public void onResult(String result) {
-            saveToSharePreferences(result, "bank");
-            updateBankAdapter(result);
+        public void onSuccess(Map<String, Bank> data) {
+            updateBankAdapter(data);
         }
 
         @Override
-        public void onError(String error) {
-            Log.i(TAG, "get bank data error:" + error);
+        public void onFailure(QuickPayException ex) {
+
         }
     }
 

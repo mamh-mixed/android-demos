@@ -81,8 +81,28 @@ public class BankDataServiceImpl implements BankDataService {
     }
 
     @Override
-    public void getBank(QuickPayCallbackListener<Map<String, Bank>> listener) {
+    public void getBank(final QuickPayCallbackListener<Map<String, Bank>> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<Map<String, Bank>>>() {
+            @Override
+            protected AsyncTaskResult<Map<String, Bank>> doInBackground(Void... params) {
+                try {
+                    Map<String, Bank> bank = bankDataApi.getBank();
+                    // TODO: 15-11-24 在这里做缓存会好些？？
+                    return new AsyncTaskResult<Map<String, Bank>>(bank);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<Map<String, Bank>>(ex);
+                }
+            }
 
+            @Override
+            protected void onPostExecute(AsyncTaskResult<Map<String, Bank>> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
     }
 
     @Override
