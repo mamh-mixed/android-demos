@@ -211,9 +211,13 @@ Example:
      *
      */
     handleItemSelectedTapped: function(e) {
-      this.selectedItem = e.model.item;
+      this.selectedItem = {
+        key: e.model.item.key, 
+        value: e.model.item.value, 
+        valueCN: e.model.item.valueCN
+      };
 
-      var text = e.model.item.value;
+      var text = this.selectedItem.value;
       if (this.isLocale) {
         var el = document.createElement('i18n-msg');
         text = el.getMsg(text);
