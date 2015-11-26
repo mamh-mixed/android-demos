@@ -826,7 +826,12 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
+// 登录操作，只允许get请求
 func loginHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -854,6 +859,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:    SessionKey,
 			Value:   cValue,
+			HttpOnly: true,
 			Path:    "/master",
 			Expires: cExpires,
 		})
@@ -909,6 +915,7 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:   "QUICKMASTERID",
 		Value:  "",
+		HttpOnly: true,
 		Path:   "/master",
 		MaxAge: -1,
 	})

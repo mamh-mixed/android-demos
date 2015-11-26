@@ -143,10 +143,11 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		// 将QUICKMASTERID设成失效
 		http.SetCookie(w, &http.Cookie{
-			Name:   "QUICKMASTERID",
-			Value:  "",
-			Path:   "/master",
-			MaxAge: -1,
+			Name:     "QUICKMASTERID",
+			Value:    "",
+			HttpOnly: true,
+			Path:     "/master",
+			MaxAge:   -1,
 		})
 
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
