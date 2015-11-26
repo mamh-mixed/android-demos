@@ -220,7 +220,7 @@ func authProcess(user *model.User, url string) (err error) {
 
 	if !has {
 		log.Errorf("permission deney: username=%s, url=%s", user.UserName, url)
-		return fmt.Errorf("用户没有权限访问 `%s`", url)
+		return errors.New("Unauthorized")
 	}
 
 	return nil
