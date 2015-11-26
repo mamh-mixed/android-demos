@@ -14,8 +14,8 @@ type QueryPurchaseLogReqHeader struct {
 type QueryPurchaseLogReqBody struct {
 	TermId    string `json:"termId"`    // 终端编号	8	M	由优麦圈后台分配给该终端的编号
 	TermSn    string `json:"termSn"`    // 终端唯一序列号	100	M	商户终端对应的硬件唯一序列号
-	ExtMercId string `json:"extMercId"` // 商户自定义商户号 40 C3 商户自定义的商户编号,可选,如果送入则会校验该值
-	ExtTermId string `json:"extTermId"` // 商户自定义终端号  40 C3 商户自定义的终端编号,可选
+	ExtMercId string `json:"extMercId"` // 商户自定义商户号 40 O 商户自定义的商户编号,可选,如果送入则会校验该值
+	ExtTermId string `json:"extTermId"` // 商户自定义终端号  40 O 商户自定义的终端编号,可选
 	PageIndex int    `json:"pageIndex"` // 分页索引	5	O	指定查询第几页数据，从0开始。每页最多返回20笔交易，按时间倒序返回
 }
 
