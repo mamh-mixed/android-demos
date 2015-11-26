@@ -20,6 +20,11 @@ import (
 
 // appLocaleHandle 网关展示语言
 func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	locale := r.FormValue("locale")
 	log.Debugf("LOCALE is %s", locale)
 	curSession, err := Session.Get(r)
@@ -379,6 +384,11 @@ func merchantFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -396,7 +406,13 @@ func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
 func merchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -416,6 +432,10 @@ func merchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	merId := r.FormValue("merId")
 	ret := Merchant.Delete(merId)
@@ -429,6 +449,11 @@ func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func routerSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -481,6 +506,10 @@ func routerFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func routerDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	merId := r.FormValue("merId")
 	chanCode := r.FormValue("chanCode")
@@ -545,6 +574,10 @@ func channelFindByMerIdAndCardBrandHandle(w http.ResponseWriter, r *http.Request
 }
 
 func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -564,6 +597,11 @@ func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func channelMerchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	v := r.URL.Query()
 	chanCode := v.Get("chanCode")
 	chanMerId := v.Get("chanMerId")
@@ -593,6 +631,10 @@ func agentFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func agentDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	agentCode := r.FormValue("agentCode")
 	ret := Agent.Delete(agentCode)
@@ -606,6 +648,10 @@ func agentDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func agentSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -642,6 +688,10 @@ func subAgentFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func subAgentDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	subAgentCode := r.FormValue("subAgentCode")
 	ret := SubAgent.Delete(subAgentCode)
@@ -655,6 +705,10 @@ func subAgentDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func subAgentSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -693,6 +747,10 @@ func groupFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	groupCode := r.FormValue("groupCode")
 	ret := Group.Delete(groupCode)
@@ -707,6 +765,10 @@ func groupDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -761,6 +823,10 @@ func qiniuDownloadHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func userCreateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -826,7 +892,12 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
+// 登录操作，只允许get请求
 func loginHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -854,6 +925,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:    SessionKey,
 			Value:   cValue,
+			HttpOnly: true,
 			Path:    "/master",
 			Expires: cExpires,
 		})
@@ -909,6 +981,7 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:   "QUICKMASTERID",
 		Value:  "",
+		HttpOnly: true,
 		Path:   "/master",
 		MaxAge: -1,
 	})
@@ -940,6 +1013,10 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -963,6 +1040,10 @@ func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
 
 // userUpdatePwdHandle 修改密码
 func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -985,6 +1066,11 @@ func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
 
 // userDeleteHandle 删除用户
 func userDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	params := r.URL.Query()
 	userName := params.Get("userName")
 	ret := User.RemoveUser(userName)
@@ -1002,6 +1088,11 @@ func userDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 // userResetPwdHandle 重置密码
 func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	params := r.URL.Query()
 	userName := params.Get("userName")
 	ret := User.ResetPwd(userName)
@@ -1055,6 +1146,10 @@ func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1074,6 +1169,10 @@ func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func subAgentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1093,6 +1192,10 @@ func subAgentUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1112,6 +1215,10 @@ func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1129,7 +1236,13 @@ func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
 func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)

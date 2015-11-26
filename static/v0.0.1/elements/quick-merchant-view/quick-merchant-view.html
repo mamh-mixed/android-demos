@@ -106,7 +106,7 @@
         <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
       </div>
     </paper-dialog>
-    <x-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
+    <x-ajax id="deleteMerAjax" method="POST" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
   </template>
   <script>
     Polymer({

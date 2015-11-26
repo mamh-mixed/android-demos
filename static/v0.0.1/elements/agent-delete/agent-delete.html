@@ -27,7 +27,6 @@
     }
   </style>
   <template>
-    <x-ajax id="deleteAjax" method="GET" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
     <paper-dialog with-backdrop id="dialogDelete">
       <h2>删除【
         <span>{{agent.agentName}}</span>】代理</h2>
@@ -43,7 +42,7 @@
         <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
       </div>
     </paper-dialog>
-
+    <x-ajax id="deleteAjax" method="POST" url="/master/agent/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
   </template>
   <script>
     (function() {
