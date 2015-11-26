@@ -28,21 +28,10 @@ import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.SubBank;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
-import com.cardinfolink.yunshouyin.salesman.utils.BankBaseUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.CommunicationListener;
-import com.cardinfolink.yunshouyin.salesman.utils.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.JsonUtil;
-import com.cardinfolink.yunshouyin.salesman.utils.RequestParam;
 import com.cardinfolink.yunshouyin.salesman.utils.VerifyUtil;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -333,17 +322,17 @@ public class RegisterNextActivity extends BaseActivity {
                         String clientId = data.getClientid();
                         SessonData.registerUser.setClientid(clientId);
 
-                        saveToRegisterSharedPreferences("register_clientid", clientId);
-                        saveToRegisterSharedPreferences("register_province", province);
-                        saveToRegisterSharedPreferences("register_city", city);
-                        saveToRegisterSharedPreferences("register_bankopen", bankopen);
-                        saveToRegisterSharedPreferences("register_branchbank", branchBank);
-                        saveToRegisterSharedPreferences("register_bankno", bankNo);
-                        saveToRegisterSharedPreferences("register_payee", payee);
-                        saveToRegisterSharedPreferences("register_payeecard", payeeCard);
-                        saveToRegisterSharedPreferences("register_phonenum", phoneNum);
-                        saveToRegisterSharedPreferences("register_mername", merName);
-                        saveToRegisterSharedPreferences("register_step_finish", 2);
+                        saveRegister("register_clientid", clientId);
+                        saveRegister("register_province", province);
+                        saveRegister("register_city", city);
+                        saveRegister("register_bankopen", bankopen);
+                        saveRegister("register_branchbank", branchBank);
+                        saveRegister("register_bankno", bankNo);
+                        saveRegister("register_payee", payee);
+                        saveRegister("register_payeecard", payeeCard);
+                        saveRegister("register_phonenum", phoneNum);
+                        saveRegister("register_mername", merName);
+                        saveRegister("register_step_finish", 2);
 
                         endLoading();
                         Intent intent = new Intent(RegisterNextActivity.this, RegisterStep3Activity.class);
@@ -421,70 +410,6 @@ public class RegisterNextActivity extends BaseActivity {
         }
     }
 
-    //字符串  -->  jsonArray --> List
-    private List<String> jsonArrayToList(String result) {
-        final List<String> list = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(result);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                list.add(jsonArray.getString(i));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    //字符串  -->  jsonArray(每个数组元素又是一个jsonObject) ----> List
-    private List<String> jsonArrayToList(String result, String key) {
-        final List<String> list = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(result);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                String tempjson = jsonArray.getString(i);
-                list.add(JsonUtil.getParam(tempjson, key));
-            }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    private List<String> jsonArrayToList(String result, String key1, String key2, String sep) {
-        final List<String> list = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(result);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                String tempjson = jsonArray.getString(i);
-                String value1 = JsonUtil.getParam(tempjson, key1);
-                String value2 = JsonUtil.getParam(tempjson, key2);
-                list.add(value1 + sep + value2);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    //字符串 --> jsonObject --> List
-    private List<String> jsonObjectToList(String result, String key) {
-        final List<String> list = new ArrayList<String>();
-        try {
-            //string 转换为  jsonObj
-            JSONObject jsonObj = new JSONObject(result);
-            Iterator it = jsonObj.keys();
-            while (it.hasNext()) {
-                String tempkey = it.next().toString();
-                String subJson = JsonUtil.getParam(result, tempkey);
-                list.add(JsonUtil.getParam(subJson, key));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
     private void updateProvinceAdapter(List<String> data) {
         //这里直接得到的就是一个省份的list，不需要再去用json去解析了。
         mProvinceList.clear();
@@ -560,23 +485,13 @@ public class RegisterNextActivity extends BaseActivity {
         mBranchBankSearchAdapter.setData(mBranchBankList);
     }
 
-    private String readFromSharePreference(String key) {
-        return mDataSharedPreferences.getString(key, "");
-    }
-
-    private void saveToSharePreferences(String result, String key) {
-        SharedPreferences.Editor editor = mDataSharedPreferences.edit();
-        editor.putString(key, result);
-        editor.commit();
-    }
-
-    private void saveToRegisterSharedPreferences(String key, String value) {
+    private void saveRegister(String key, String value) {
         SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
         editor.putString(key, value);
         editor.commit();
     }
 
-    private void saveToRegisterSharedPreferences(String key, int value) {
+    private void saveRegister(String key, int value) {
         SharedPreferences.Editor editor = mRegisterSharedPreferences.edit();
         editor.putInt(key, value);
         editor.commit();
@@ -726,9 +641,9 @@ public class RegisterNextActivity extends BaseActivity {
                 case R.id.edit_province:
                     //province
                     mCityEdit.setText("");//先把city的清空
-                    saveToRegisterSharedPreferences("register_city", "");
+                    saveRegister("register_city", "");
                     String province = mProvinceEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_province", province);
+                    saveRegister("register_province", province);
                     if (mProvinceList.indexOf(province) > 0) {
                         initCityData(province);
                     }//end if()
@@ -736,16 +651,16 @@ public class RegisterNextActivity extends BaseActivity {
                 case R.id.edit_city:
                     //city
                     mOpenBankEdit.setText("");
-                    saveToRegisterSharedPreferences("register_bankopen", "");
+                    saveRegister("register_bankopen", "");
                     String city = mCityEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_city", city);
+                    saveRegister("register_city", city);
                     if (mCityList.indexOf(city) > 0) {
                         initBankData();
                     }
                     break;
                 case R.id.edit_openbank:
                     mBranchBankEdit.setText("");
-                    saveToRegisterSharedPreferences("register_branchbank", "");
+                    saveRegister("register_branchbank", "");
                     String openBank = mOpenBankEdit.getText().toString();
                     city = mCityEdit.getText().toString();
                     if (mOpenBankList.indexOf(openBank) > 0) {
@@ -756,30 +671,30 @@ public class RegisterNextActivity extends BaseActivity {
                             String cityCode = mCityCodeList.get(indexOfCity);
                             String bankId = mBankIdList.get(indexOfBank);
 
-                            saveToRegisterSharedPreferences("register_bankopen", openBank);
+                            saveRegister("register_bankopen", openBank);
                             initBranchBankData(cityCode, bankId);
                         }
                     }
                     break;
                 case R.id.edit_branchbank:
                     String branchBank = mBranchBankEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_branchbank", branchBank);
+                    saveRegister("register_branchbank", branchBank);
                     break;
                 case R.id.info_name:
                     String payee = mNameEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_payee", payee);
+                    saveRegister("register_payee", payee);
                     break;
                 case R.id.info_banknum:
                     String payeeCard = mBanknumEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_payeecard", payeeCard);
+                    saveRegister("register_payeecard", payeeCard);
                     break;
                 case R.id.info_phonenum:
                     String phoneNum = mPhonenumEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_phonenum", phoneNum);
+                    saveRegister("register_phonenum", phoneNum);
                     break;
                 case R.id.info_merchantname:
                     String merName = mMerchantNameEdit.getText().toString();
-                    saveToRegisterSharedPreferences("register_mername", merName);
+                    saveRegister("register_mername", merName);
                     break;
             }
 
