@@ -30,8 +30,6 @@
     }
   </style>
   <template>
-    <x-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></x-ajax>
-    <x-ajax id="updateAjax" method="POST" url="/master/group/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateGroupResponse"></x-ajax>
     <paper-dialog with-backdrop id="dialogAdd">
       <h2>创建商户</h2>
       <paper-dialog-scrollable>
@@ -77,6 +75,8 @@
     </paper-dialog>
     <x-ajax auto id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
     <x-ajax id="querySubAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/subAgent/find" handle-as="json" debounce-duration="1000" on-response="handleQuerySubAgentsResponse"></x-ajax>
+    <x-ajax id="saveAjax" method="POST" url="/master/group/save" handle-as="json" debounce-duration="1000" on-response="handleSaveGroupResponse"></x-ajax>
+    <x-ajax id="updateAjax" method="POST" url="/master/group/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateGroupResponse"></x-ajax>
   </template>
   <script>
     (function() {
