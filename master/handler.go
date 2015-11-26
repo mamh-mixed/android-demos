@@ -13,9 +13,9 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/omigo/log"
-
 	"github.com/CardInfoLink/quickpay/util"
+
+	"github.com/omigo/log"
 )
 
 // appLocaleHandle 网关展示语言
@@ -905,6 +905,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(501)
 		return
 	}
+
 	user := &model.User{}
 	err = json.Unmarshal(data, user)
 	if err != nil {
@@ -913,7 +914,17 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Infof("user login,username=%s", user.UserName)
-	ret := User.Login(user.UserName, user.Password)
+
+	// 密码解密
+	pwd, err := rsaDecryptFromBrowser(user.Password)
+	if err != nil{
+		log.Errorf("escrypt password error %s", err)
+		w.WriteHeader(http.StatusNotImplemented)
+		return
+	}
+	log.Debugf("decrypted password is %s", pwd)
+
+	ret := User.Login(user.UserName, pwd)
 
 	if ret.Status == 0 {
 		log.Debugf("create session begin")

@@ -55,6 +55,10 @@
     "description": "登录按钮",
     "message": "Log in"
   },
+  "LOGIN.SUCCESS": {
+    "description": "登录成功",
+    "message": "Log in successfully"
+  },
   "LOGIN.HINT": {
     "description": "登录页提示",
     "message": "EN如果您还没有用户名、密码，请联系讯联数据运营中心为您分配"

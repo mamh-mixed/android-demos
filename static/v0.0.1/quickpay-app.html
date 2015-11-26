@@ -156,6 +156,11 @@
       },
       // 处理子孙元素冒泡的登录成功事件
       handleLoginSuccessEvent: function(e) {
+        var el = document.createElement('i18n-msg'),
+            text = el.getMsg('LOGIN.SUCCESS');
+        this.set('toastText', text);
+        this.$.toast.show();
+
         // 如果不是中文的话，发送一个切换后台服务器语言的指令
         this.localeChangeRequest(I18nMsg.lang);
 
