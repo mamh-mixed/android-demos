@@ -283,7 +283,7 @@
         <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
       </div>
     </paper-dialog>
-    <x-ajax id="deleteMerAjax" method="GET" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
+    <x-ajax id="deleteMerAjax" method="POST" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
     <x-ajax id="queryMerchantAjax" method="GET" url="/master/merchant/one" handle-as="json" debounce-duration="1000" on-response="handleQueryMerchantResponse"></x-ajax>
     <x-ajax id="alpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleAlpChanMerResponse"></x-ajax>
     <x-ajax id="wxpChanMerAjax" method="GET" url="/master/channelMerchant/findByMerIdAndCardBrand" handle-as="json" debounce-duration="1000" on-response="handleWxpChanMerResponse"></x-ajax>

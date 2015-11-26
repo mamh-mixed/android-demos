@@ -29,8 +29,6 @@
     }
   </style>
   <template>
-    <x-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></x-ajax>
-    <x-ajax id="updateAjax" method="POST" url="/master/agent/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateAgentResponse"></x-ajax>
     <paper-dialog with-backdrop id="dialogAdd">
       <h2>创建代理</h2>
       <paper-dialog-scrollable>
@@ -74,7 +72,8 @@
         <paper-button autofocus on-tap="handleUpdateTapped">保存</paper-button>
       </div>
     </paper-dialog>
-
+    <x-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></x-ajax>
+    <x-ajax id="updateAjax" method="POST" url="/master/agent/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateAgentResponse"></x-ajax>
   </template>
   <script>
     (function() {

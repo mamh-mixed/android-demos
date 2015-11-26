@@ -3,16 +3,42 @@
 package data
 
 import (
+	"crypto/sha1"
 	"encoding/csv"
 	"fmt"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
 )
+
+// readUserCSV
+func readUserCSV(path string) ([]model.User, error) {
+	data, err := readCSV(path)
+	if err != nil {
+		return nil, err
+	}
+
+	users := make([]model.User, 0, len(data))
+	// 门店类型	商户编号	门店名称	手机号	对账平台账号	代理编号	公司编号	公司名称	商户编号	商户名称	备注
+	for _, v := range data {
+		u := model.User{}
+		u.UserType = model.UserTypeShop
+		u.MerId = strings.TrimSpace(v[1])
+		u.PhoneNum = strings.TrimSpace(v[3])
+		u.UserName = strings.TrimSpace(v[4])
+		u.AgentCode = strings.TrimSpace(v[5])
+		u.SubAgentCode = strings.TrimSpace(v[6])
+		u.GroupCode = strings.TrimSpace(v[8])
+		passData := []byte(model.RAND_PWD + "{" + u.UserName + "}" + model.DEFAULT_PWD)
+		u.Password = fmt.Sprintf("%x", sha1.Sum(passData))
+		users = append(users, u)
+	}
+
+	return users, nil
+}
 
 // InitTestMer 初始化测试商户
 // start:从哪个数值开始 end:结束 cardBrand:卡品牌

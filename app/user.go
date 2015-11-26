@@ -419,7 +419,7 @@ func (u *user) getTotalTransAmt(req *reqParams) (result model.AppResult) {
 	})
 
 	result.Count = s.TotalTransNum
-	result.TotalAmt = fmt.Sprintf("%0.2f", s.TotalTransAmt)
+	result.TotalAmt = fmt.Sprintf("%0.2f", float64(s.TotalTransAmt)/100)
 	return result
 }
 

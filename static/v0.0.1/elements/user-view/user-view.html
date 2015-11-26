@@ -69,8 +69,8 @@
         <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
       </div>
     </paper-dialog>
-    <x-ajax id="deleteUserAjax" method="GET" url="/master/user/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
-    <x-ajax id="resetPwdAjax" method="GET" url="/master/user/resetPwd" handle-as="json" on-response="handleResetPwdResponse"></x-ajax>
+    <x-ajax id="deleteUserAjax" method="POST" url="/master/user/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
+    <x-ajax id="resetPwdAjax" method="POST" url="/master/user/resetPwd" handle-as="json" on-response="handleResetPwdResponse"></x-ajax>
   </template>
   <script>
     Polymer({
