@@ -25,6 +25,7 @@ import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.Bank;
 import com.cardinfolink.yunshouyin.salesman.model.City;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
+import com.cardinfolink.yunshouyin.salesman.model.SubBank;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.BankBaseUtil;
@@ -410,16 +411,13 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initBranchBankData(String cityCode, String bankId) {
-        String key = cityCode + "_" + bankId;
-        String data = readFromSharePreference(key);
-        if (data != null && data.length() != 0) {
+        List<SubBank> data = null;
+        if (data != null && data.size() != 0) {
             Log.d(TAG, "will use cache data to get branch bank");
             updateBranchBankAdapter(data);
         } else {
             Log.d(TAG, "will use post to get branch bank");
-            RequestParam bbParam = BankBaseUtil.getSerach(cityCode, bankId);
-            BranchBankCommunicationListener bbCL = new BranchBankCommunicationListener(cityCode, bankId);
-            HttpCommunicationUtil.sendGetDataToServer(bbParam, bbCL);
+            bankDataService.getBranchBank(cityCode, bankId, new BranchBankQuickPayCallbackListener());
         }
     }
 
@@ -523,7 +521,7 @@ public class RegisterNextActivity extends BaseActivity {
         List<String> tempBankIdList = new ArrayList<String>();
         Collection<Bank> vallues = data.values();
         Iterator<Bank> it = vallues.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Bank b = it.next();
             tempOpenBankList.add(b.getBankName());
             tempBankIdList.add(b.getId());
@@ -540,29 +538,26 @@ public class RegisterNextActivity extends BaseActivity {
         mOpenBankSearchAdapter.notifyDataSetChanged();
     }
 
-    private void updateBranchBankAdapter(final String data) {
-        new Thread() {
-            @Override
-            public void run() {
-                final List<String> tempBranchBankList = jsonArrayToList(data, "bank_name");
-                final List<String> tempBankNoList = jsonArrayToList(data, "one_bank_no", "two_bank_no", "|");
-                tempBranchBankList.add(0, "请选择开户支行");
-                tempBankNoList.add(0, "行号");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBranchBankList.clear();
-                        mBranchBankList.addAll(tempBranchBankList);
-                        mBankNoList.clear();
-                        mBankNoList.addAll(tempBankNoList);
-                        mBranchBankSpinner.setSelection(0);
-                        mBranchBankAdapter.notifyDataSetChanged();
-                        mBranchBankSearchAdapter.setData(mBranchBankList);
-                    }
+    private void updateBranchBankAdapter(List<SubBank> data) {
+        final List<String> tempBranchBankList = new ArrayList<String>();
+        final List<String> tempBankNoList = new ArrayList<String>();
+        Iterator<SubBank> it = data.iterator();
 
-                });
-            }
-        }.start();
+        while (it.hasNext()) {
+            SubBank sb = it.next();
+            tempBranchBankList.add(sb.getBankName());
+            tempBankNoList.add(sb.getOneBankNo() + "|" + sb.getTwoBankNo());
+        }
+        tempBranchBankList.add(0, "请选择开户支行");
+        tempBankNoList.add(0, "行号");
+
+        mBranchBankList.clear();
+        mBranchBankList.addAll(tempBranchBankList);
+        mBankNoList.clear();
+        mBankNoList.addAll(tempBankNoList);
+        mBranchBankSpinner.setSelection(0);
+        mBranchBankAdapter.notifyDataSetChanged();
+        mBranchBankSearchAdapter.setData(mBranchBankList);
     }
 
     private String readFromSharePreference(String key) {
@@ -693,25 +688,16 @@ public class RegisterNextActivity extends BaseActivity {
         }
     }
 
-    private class BranchBankCommunicationListener implements CommunicationListener {
-        private String cityCode;
-        private String bankId;
+    private class BranchBankQuickPayCallbackListener implements QuickPayCallbackListener<List<SubBank>> {
 
-        public BranchBankCommunicationListener(String cityCode, String bankId) {
-            this.cityCode = cityCode;
-            this.bankId = bankId;
+        @Override
+        public void onSuccess(List<SubBank> data) {
+            updateBranchBankAdapter(data);
         }
 
         @Override
-        public void onResult(String result) {
-            String key = cityCode + "_" + bankId;
-            saveToSharePreferences(result, key);
-            updateBranchBankAdapter(result);
-        }
+        public void onFailure(QuickPayException ex) {
 
-        @Override
-        public void onError(String error) {
-            Log.i(TAG, "get branch bank error:" + error);
         }
     }
 

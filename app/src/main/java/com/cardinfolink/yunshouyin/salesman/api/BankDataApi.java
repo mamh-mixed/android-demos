@@ -15,5 +15,5 @@ public interface BankDataApi {
 
     Map<String, Bank> getBank();
 
-    List<SubBank> search(String cityCode, String bankId);
+    List<SubBank> getBranchBank(String cityCode, String bankId);
 }

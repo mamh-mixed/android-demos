@@ -17,5 +17,5 @@ public interface BankDataService {
 
     void getBank(QuickPayCallbackListener<Map<String, Bank>> quickPayCallbackListener);
 
-    void search(String city_code, String bank_id, QuickPayCallbackListener<List<SubBank>> quickPayCallbackListener);
+    void getBranchBank(String city_code, String bank_id, QuickPayCallbackListener<List<SubBank>> quickPayCallbackListener);
 }
