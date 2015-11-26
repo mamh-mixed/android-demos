@@ -81,10 +81,10 @@ Example:
 
     .input-group > iron-icon {
       position: absolute;
-      right: 5px;
-      bottom: 10px;
+      right: -2px;
+      bottom: 3px;
       cursor: pointer;
-      height: 1.2em;
+      height: 20px;
     }
 
     .input-group[disabled] > iron-icon {
@@ -101,8 +101,15 @@ Example:
     </div>
     <iron-dropdown id="dropdown" vertical-align="[[verticalAlign]]" horizontal-align="[[horizontalAlign]]" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]">
       <ul class="dropdown-content">
-        <template is="dom-repeat" items="[[items]]">
-          <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)">[[item.value]]</a></li>
+        <template is="dom-if" if="{{isLocale}}">
+          <template is="dom-repeat" items="[[items]]">
+            <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)"><i18n-msg msgid="[[item.value]]">[[item.value]]</i18n-msg></a></li>
+          </template>
+        </template>
+        <template is="dom-if" if="{{!isLocale}}">
+          <template is="dom-repeat" items="[[items]]">
+            <li on-tap="handleItemSelectedTapped"><a href="javascript:void(0)">[[item.value]]</a></li>
+          </template>
         </template>
       </ul>
     </iron-dropdown>
@@ -163,6 +170,10 @@ Example:
           }];
         }
       },
+      isLocale: {
+        type: Boolean,
+        value: false
+      },
 
       closeAnimationConfig: {
         type: Array,
@@ -200,8 +211,18 @@ Example:
      *
      */
     handleItemSelectedTapped: function(e) {
-      this.selectedItem = e.model.item;
-      this.$.input.value = e.model.item.value;
+      this.selectedItem = {
+        key: e.model.item.key, 
+        value: e.model.item.value, 
+        valueCN: e.model.item.valueCN
+      };
+
+      var text = this.selectedItem.value;
+      if (this.isLocale) {
+        var el = document.createElement('i18n-msg');
+        text = el.getMsg(text);
+      }
+      this.$.input.value = text;
       this.$.dropdown.close();
       this.fire('item-selected', this.selectedItem);
     },

@@ -22,6 +22,7 @@ var agentURLArr = []string{
 	"/master/trade/stat/report",
 	"/master/trade/findOne",
 	"/master/user/updatePwd",
+	"/master/app/locale",
 }
 
 var genAdminURLArr = []string{
@@ -35,6 +36,7 @@ var genAdminURLArr = []string{
 	"/master/trade/message",
 	"/master/agent/find",
 	"/master/qiniu/download",
+	"/master/app/locale",
 }
 
 // 路径中包含以下关键字，则记录到数据库
@@ -100,6 +102,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/updatePwd", userUpdatePwdHandle)
 	mux.HandleFunc("/master/user/delete", userDeleteHandle)
 	mux.HandleFunc("/master/user/resetPwd", userResetPwdHandle)
+	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	return mux
 }
 

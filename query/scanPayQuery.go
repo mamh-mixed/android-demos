@@ -2,11 +2,13 @@ package query
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"time"
 )
 
 var noMerCode, noMerMsg, _ = mongo.ScanPayRespCol.Get8583CodeAndMsg("NO_MERCHANT")
@@ -211,20 +213,24 @@ func GetPublicAccount(merId string) (*model.PublicAccount, error) {
 }
 
 // SpTransQuery 交易查询
-func SpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
+func SpTransQuery(q *model.QueryCondition) ([]*model.Trans, int) {
 
 	now := time.Now().Format("2006-01-02")
 	// 默认当天开始
 	if q.StartTime == "" {
 		q.StartTime = now + " 00:00:00"
 	} else {
-		q.StartTime += " 00:00:00"
+		if strings.Index(q.StartTime, " ") == -1 {
+			q.StartTime += " 00:00:00"
+		}
 	}
 	// 默认当天结束
 	if q.EndTime == "" {
 		q.EndTime = now + " 23:59:59"
 	} else {
-		q.EndTime += " 23:59:59"
+		if strings.Index(q.EndTime, " ") == -1 {
+			q.EndTime += " 23:59:59"
+		}
 	}
 
 	// mongo统计
@@ -239,22 +245,7 @@ func SpTransQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 		trans = make([]*model.Trans, 0, 0)
 	}
 
-	// 分页信息
-	pagination := &model.Pagination{
-		Page:  q.Page,
-		Total: total,
-		Size:  q.Size,
-		Count: count,
-		Data:  trans,
-	}
-
-	ret = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    pagination,
-	}
-
-	return ret
+	return trans, total
 }
 
 // SpTransFindOne 交易查询
@@ -277,23 +268,36 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 }
 
 // TransStatistics 交易统计
-func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
-	errResult := &model.QueryResult{RespCode: "000001", RespMsg: "系统错误，请重试。"}
+func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 
 	// 设置条件过滤
 	q.TransStatus = []string{model.TransSuccess}
 	q.TransType = model.PayTrans
 	q.RefundStatus = model.TransRefunded
 	// q.MerIds = merIds
-	q.StartTime += " 00:00:00"
-	q.EndTime += " 23:59:59"
+	// 默认当天开始
+	today := time.Now().Format("2006-01-02")
+	if q.StartTime == "" {
+		q.StartTime = today + " 00:00:00"
+	} else {
+		if strings.Index(q.StartTime, " ") == -1 {
+			q.StartTime += " 00:00:00"
+		}
+	}
+	if q.EndTime == "" {
+		q.EndTime = today + " 23:59:59"
+	} else {
+		if strings.Index(q.EndTime, " ") == -1 {
+			q.EndTime += " 23:59:59"
+		}
+	}
+	log.Debugf("start time is %s; end time is %s", q.StartTime, q.EndTime)
 
 	// 查询交易
 	now := time.Now()
 	group, all, total, err := mongo.SpTransColl.FindAndGroupBy(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
-		return errResult
 	}
 	after := time.Now()
 	log.Debugf("Run mongo.SpTransColl.FindAndGroupBy(q) spent %s", after.Sub(now))
@@ -317,17 +321,7 @@ func TransStatistics(q *model.QueryCondition) (ret *model.QueryResult) {
 	summary := model.Summary{Data: data}
 	combine(&summary, all)
 
-	// 组装返回报文
-	count := len(data)
-	ret = &model.QueryResult{
-		Page:  q.Page,
-		Size:  q.Size,
-		Total: total,
-		Rec:   summary,
-		Count: count,
-	}
-
-	return ret
+	return summary, total
 
 }
 
@@ -335,16 +329,16 @@ func combine(s *model.Summary, detail []model.Channel) {
 	for _, d := range detail {
 		switch d.ChanCode {
 		case channel.ChanCodeAlipay:
-			s.Alp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
+			s.Alp.TransAmt = d.TransAmt - d.RefundAmt
 			s.Alp.TransNum = d.TransNum
-			s.Alp.Fee = float32(d.Fee) / 100
+			s.Alp.Fee = d.Fee
 			s.TotalTransAmt += s.Alp.TransAmt
 			s.TotalTransNum += s.Alp.TransNum
 			s.TotalFee += s.Alp.Fee
 		case channel.ChanCodeWeixin:
-			s.Wxp.TransAmt = float32(d.TransAmt-d.RefundAmt) / 100
+			s.Wxp.TransAmt = d.TransAmt - d.RefundAmt
 			s.Wxp.TransNum = d.TransNum
-			s.Wxp.Fee = float32(d.Fee) / 100
+			s.Wxp.Fee = d.Fee
 			s.TotalTransAmt += s.Wxp.TransAmt
 			s.TotalTransNum += s.Wxp.TransNum
 			s.TotalFee += s.Wxp.Fee
