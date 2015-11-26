@@ -4,16 +4,26 @@ import com.google.gson.annotations.SerializedName;
 
 public class City {
 
+    public City(String id, String cityCode, String provinceCode, String cityName, String cityJb, String city, String province) {
+        this.id = id;
+        this.cityCode = cityCode;
+        this.provinceCode = provinceCode;
+        this.cityName = cityName;
+        this.cityJb = cityJb;
+        this.city = city;
+        this.province = province;
+    }
+
     /**
-     {
-         "id": "669",
-         "city_code": "3620",
-         "province_code": "3600",
-         "city_name": "芜湖市",
-         "city_jb": "2",
-         "city": "芜湖市",
-         "province": "安徽省"
-     }
+     * {
+     * "id": "669",
+     * "city_code": "3620",
+     * "province_code": "3600",
+     * "city_name": "芜湖市",
+     * "city_jb": "2",
+     * "city": "芜湖市",
+     * "province": "安徽省"
+     * }
      */
 
 
@@ -100,6 +110,6 @@ public class City {
                 ", cityJb='" + cityJb + '\'' +
                 ", city='" + city + '\'' +
                 ", province='" + province + '\'' +
-                '}'+'\n';
+                '}' + '\n';
     }
 }
