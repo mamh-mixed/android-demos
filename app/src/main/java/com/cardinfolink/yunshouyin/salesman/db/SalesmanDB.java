@@ -255,4 +255,55 @@ public class SalesmanDB {
         return list;
     }
 
+    /**
+     * 通过bankName查询出来bankid
+     *
+     * @param bankName
+     * @return
+     */
+    public String searchBank(String bankName) {
+        String bankId = null;
+
+        String[] selectArgs = new String[]{
+                bankName
+        };
+        String selection = " bank_name = ? ";
+        Cursor cursor = db.query(BANK_TABLE, null, selection, selectArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                bankId = cursor.getString(cursor.getColumnIndex("id"));
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return bankId;
+    }
+
+    /**
+     * 通过cityName 查询出来cityCode
+     *
+     * @param cityName
+     * @return
+     */
+    public String searchCity(String cityName, String province) {
+        String cityCode = null;
+
+        String[] selectArgs = new String[]{
+                cityName,province
+        };
+        String selection = " city_name = ? and province = ?";
+        Cursor cursor = db.query(CITY_TABLE, null, selection, selectArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                cityCode = cursor.getString(cursor.getColumnIndex("city_code"));
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return cityCode;
+    }
+
 }
