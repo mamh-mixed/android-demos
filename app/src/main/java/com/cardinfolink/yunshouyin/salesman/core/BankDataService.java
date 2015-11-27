@@ -4,6 +4,7 @@ package com.cardinfolink.yunshouyin.salesman.core;
 
 import com.cardinfolink.yunshouyin.salesman.model.Bank;
 import com.cardinfolink.yunshouyin.salesman.model.City;
+import com.cardinfolink.yunshouyin.salesman.model.Province;
 import com.cardinfolink.yunshouyin.salesman.model.SubBank;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 public interface BankDataService {
 
-    void getProvince(QuickPayCallbackListener<List<String>> quickPayCallbackListener);
+    void getProvince(QuickPayCallbackListener<List<Province>> quickPayCallbackListener);
 
     void getCity(String province, QuickPayCallbackListener<List<City>> quickPayCallbackListener);
 

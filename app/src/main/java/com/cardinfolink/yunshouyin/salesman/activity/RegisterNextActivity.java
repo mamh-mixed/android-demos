@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
@@ -24,6 +23,7 @@ import com.cardinfolink.yunshouyin.salesman.api.QuickPayException;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.salesman.model.Bank;
 import com.cardinfolink.yunshouyin.salesman.model.City;
+import com.cardinfolink.yunshouyin.salesman.model.Province;
 import com.cardinfolink.yunshouyin.salesman.model.SessonData;
 import com.cardinfolink.yunshouyin.salesman.model.SubBank;
 import com.cardinfolink.yunshouyin.salesman.model.User;
@@ -364,57 +364,33 @@ public class RegisterNextActivity extends BaseActivity {
 
 
     private void initProvinceData() {
-
-        List<String> data = null;
-        // TODO: 15-11-24 这里需要读取缓存,或者在 getProvince（）里的一个异步任务里做会更好呢？？！！
-        if (data != null && data.size() != 0) {
-            Log.d(TAG, "will use cache data to get province");
-            updateProvinceAdapter(data);
-        } else {
-            bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
-        }
+        bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
     }
 
     private void initBankData() {
-        //获取bank的数据:
-        Map<String, Bank> data = null;
-        // TODO: mamh  这里需要读取缓存,或者在 getBank（）里的一个异步任务里做会更好呢？？！！
-        if (data != null && data.size() != 0) {
-            Log.d(TAG, "will use cache data to get bank");
-            updateBankAdapter(data);
-        } else {
-            Log.d(TAG, "will do post to get bank data");
-            bankDataService.getBank(new BankQuickPayCallbackListener());
-        }
+        bankDataService.getBank(new BankQuickPayCallbackListener());
     }
 
     private void initCityData(String province) {
-        List<City> data = null;
-        if (data != null && data.size() != 0) {
-            Log.d(TAG, "will use cache data to get City");
-            //updateCityAdapter(data);
-        } else {
-            Log.d(TAG, "will post to get City: " + data);
-            bankDataService.getCity(province, new CityQuickPayCallbackListener());
-        }
+        bankDataService.getCity(province, new CityQuickPayCallbackListener());
     }
 
     private void initBranchBankData(String cityCode, String bankId) {
-        List<SubBank> data = null;
-        if (data != null && data.size() != 0) {
-            Log.d(TAG, "will use cache data to get branch bank");
-            updateBranchBankAdapter(data);
-        } else {
-            Log.d(TAG, "will use post to get branch bank");
-            bankDataService.getBranchBank(cityCode, bankId, new BranchBankQuickPayCallbackListener());
-        }
+        bankDataService.getBranchBank(cityCode, bankId, new BranchBankQuickPayCallbackListener());
     }
 
-    private void updateProvinceAdapter(List<String> data) {
+    private void updateProvinceAdapter(List<Province> data) {
         //这里直接得到的就是一个省份的list，不需要再去用json去解析了。
+        List<String> tempProvinceList = new ArrayList<>();
+        tempProvinceList.add(0, "开户行所在省份");
+
+        Iterator<Province> iterator = data.iterator();
+        while (iterator.hasNext()) {
+            Province p = iterator.next();
+            tempProvinceList.add(p.getProvinceName());
+        }
         mProvinceList.clear();
-        mProvinceList.add(0, "开户行所在省份");
-        mProvinceList.addAll(data);
+        mProvinceList.addAll(tempProvinceList);
         mProvinceAdapter.notifyDataSetChanged();
         mProvinceSearchAdapter.setData(mProvinceList);
         mProvinceSearchAdapter.notifyDataSetChanged();
@@ -444,8 +420,8 @@ public class RegisterNextActivity extends BaseActivity {
     private void updateBankAdapter(Map<String, Bank> data) {
         List<String> tempOpenBankList = new ArrayList<String>();
         List<String> tempBankIdList = new ArrayList<String>();
-        Collection<Bank> vallues = data.values();
-        Iterator<Bank> it = vallues.iterator();
+        Collection<Bank> values = data.values();
+        Iterator<Bank> it = values.iterator();
         while (it.hasNext()) {
             Bank b = it.next();
             tempOpenBankList.add(b.getBankName());
@@ -562,11 +538,10 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     //内部类，实现QuickPayCallbackListener接口
-    private class ProvinceQuickPayCallbackListener implements QuickPayCallbackListener<List<String>> {
+    private class ProvinceQuickPayCallbackListener implements QuickPayCallbackListener<List<Province>> {
 
         @Override
-        public void onSuccess(List<String> data) {
-            // TODO: 15-11-24 save data to file or sqlite??!!
+        public void onSuccess(List<Province> data) {
             updateProvinceAdapter(data);
         }
 
