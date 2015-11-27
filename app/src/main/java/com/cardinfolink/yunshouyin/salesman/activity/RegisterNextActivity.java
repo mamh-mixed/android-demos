@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
@@ -194,12 +195,9 @@ public class RegisterNextActivity extends BaseActivity {
         String bankopen = mRegisterSharedPreferences.getString("register_bankopen", "");
         if (!TextUtils.isEmpty(bankopen)) {
             mOpenBankEdit.setText(bankopen);
-            int indexBank = mOpenBankList.indexOf(bankopen);
-            int indexCity = mCityList.indexOf(city);
-
-            if (indexBank > 0 && indexCity > 0) {
-                String cityCode = mCityCodeList.get(indexCity);
-                String bankId = mBankIdList.get(indexBank);
+            String bankId = salesmanDB.searchBank(bankopen);
+            String cityCode = salesmanDB.searchCity(city, province);
+            if (!TextUtils.isEmpty(bankId) && !TextUtils.isEmpty(cityCode)) {
                 initBranchBankData(cityCode, bankId);
             }
         }
@@ -364,19 +362,40 @@ public class RegisterNextActivity extends BaseActivity {
 
 
     private void initProvinceData() {
-        bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
+        List<Province> provinceList = salesmanDB.loadProvince();
+        if (provinceList != null && provinceList.size() > 0) {
+            updateProvinceAdapter(provinceList);
+        } else {
+            bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
+        }
     }
 
     private void initBankData() {
-        bankDataService.getBank(new BankQuickPayCallbackListener());
+        List<Bank> banks = salesmanDB.loadBank();
+        if (banks != null && banks.size() > 0) {
+            updateBankAdapter(banks);
+        } else {
+            bankDataService.getBank(new BankQuickPayCallbackListener());
+        }
     }
 
     private void initCityData(String province) {
-        bankDataService.getCity(province, new CityQuickPayCallbackListener());
+        List<City> cityList = salesmanDB.loadCity(province);//要查出某个省下面的所有城市
+        if (cityList != null && cityList.size() > 0) {
+            updateCityAdapter(cityList);
+        } else {
+            bankDataService.getCity(province, new CityQuickPayCallbackListener());
+        }
+
     }
 
     private void initBranchBankData(String cityCode, String bankId) {
-        bankDataService.getBranchBank(cityCode, bankId, new BranchBankQuickPayCallbackListener());
+        List<SubBank> subBankList = salesmanDB.loadBranchBank(cityCode, bankId);
+        if (subBankList != null && subBankList.size() > 0) {
+            updateBranchBankAdapter(subBankList);
+        } else {
+            bankDataService.getBranchBank(cityCode, bankId, new BranchBankQuickPayCallbackListener());
+        }
     }
 
     private void updateProvinceAdapter(List<Province> data) {
@@ -417,11 +436,11 @@ public class RegisterNextActivity extends BaseActivity {
         mCitySearchAdapter.setData(mCityList);
     }
 
-    private void updateBankAdapter(Map<String, Bank> data) {
+    private void updateBankAdapter(List<Bank> data) {
         List<String> tempOpenBankList = new ArrayList<String>();
         List<String> tempBankIdList = new ArrayList<String>();
-        Collection<Bank> values = data.values();
-        Iterator<Bank> it = values.iterator();
+
+        Iterator<Bank> it = data.iterator();
         while (it.hasNext()) {
             Bank b = it.next();
             tempOpenBankList.add(b.getBankName());
@@ -552,10 +571,10 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     //内部类，实现QuickPayCallbackListener接口,用来获取bank信息
-    private class BankQuickPayCallbackListener implements QuickPayCallbackListener<Map<String, Bank>> {
+    private class BankQuickPayCallbackListener implements QuickPayCallbackListener<List<Bank>> {
 
         @Override
-        public void onSuccess(Map<String, Bank> data) {
+        public void onSuccess(List<Bank> data) {
             updateBankAdapter(data);
         }
 
@@ -611,13 +630,13 @@ public class RegisterNextActivity extends BaseActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-
+            String province, city, openBank;
             switch (view.getId()) {
                 case R.id.edit_province:
                     //province
                     mCityEdit.setText("");//先把city的清空
                     saveRegister("register_city", "");
-                    String province = mProvinceEdit.getText().toString();
+                    province = mProvinceEdit.getText().toString();
                     saveRegister("register_province", province);
                     if (mProvinceList.indexOf(province) > 0) {
                         initCityData(province);
@@ -627,7 +646,7 @@ public class RegisterNextActivity extends BaseActivity {
                     //city
                     mOpenBankEdit.setText("");
                     saveRegister("register_bankopen", "");
-                    String city = mCityEdit.getText().toString();
+                    city = mCityEdit.getText().toString();
                     saveRegister("register_city", city);
                     if (mCityList.indexOf(city) > 0) {
                         initBankData();
@@ -636,16 +655,15 @@ public class RegisterNextActivity extends BaseActivity {
                 case R.id.edit_openbank:
                     mBranchBankEdit.setText("");
                     saveRegister("register_branchbank", "");
-                    String openBank = mOpenBankEdit.getText().toString();
+
+                    openBank = mOpenBankEdit.getText().toString();
                     city = mCityEdit.getText().toString();
+                    province = mProvinceEdit.getText().toString();
+                    String bankId = salesmanDB.searchBank(openBank);
+                    String cityCode = salesmanDB.searchCity(city, province);
+
                     if (mOpenBankList.indexOf(openBank) > 0) {
-
-                        int indexOfCity = mCityList.indexOf(city);
-                        int indexOfBank = mOpenBankList.indexOf(openBank);
-                        if (indexOfCity > 0 && indexOfBank > 0) {
-                            String cityCode = mCityCodeList.get(indexOfCity);
-                            String bankId = mBankIdList.get(indexOfBank);
-
+                        if (!TextUtils.isEmpty(cityCode) && !TextUtils.isEmpty(bankId)) {
                             saveRegister("register_bankopen", openBank);
                             initBranchBankData(cityCode, bankId);
                         }

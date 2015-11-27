@@ -15,6 +15,7 @@ import com.cardinfolink.yunshouyin.salesman.model.Province;
 import com.cardinfolink.yunshouyin.salesman.model.SubBank;
 import com.cardinfolink.yunshouyin.salesman.utils.SalesmanApplication;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -114,33 +115,30 @@ public class BankDataServiceImpl implements BankDataService {
     }
 
     @Override
-    public void getBank(final QuickPayCallbackListener<Map<String, Bank>> listener) {
-        new AsyncTask<Void, Integer, AsyncTaskResult<Map<String, Bank>>>() {
+    public void getBank(final QuickPayCallbackListener<List<Bank>> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<List<Bank>>>() {
             @Override
-            protected AsyncTaskResult<Map<String, Bank>> doInBackground(Void... params) {
+            protected AsyncTaskResult<List<Bank>> doInBackground(Void... params) {
                 try {
-                    Collection<Bank> banks = salesmanDB.loadBank();
-                    Map<String, Bank> bankMap = null;
-                    if (banks == null || banks.size() <= 0) {
-                        bankMap = bankDataApi.getBank();
-                        banks = bankMap.values();
-                    } else {
-                        bankMap = new Hashtable<String, Bank>();
-                        Iterator<Bank> it = banks.iterator();
-                        while (it.hasNext()) {
-                            Bank b = it.next();
-                            bankMap.put(b.getId(), b);
+                    List<Bank> bankList = salesmanDB.loadBank();
+                    if (bankList == null || bankList.size() <= 0) {
+                        Map<String, Bank> bankMap = bankDataApi.getBank();//这个返回的是个map
+                        Collection<Bank> bankss = bankMap.values();
+                        bankList = new ArrayList<Bank>();
+                        for (Bank b : bankss) {
+                            bankList.add(b);
                         }
                     }
-                    saveBanks(banks);
-                    return new AsyncTaskResult<Map<String, Bank>>(bankMap);
+
+                    saveBanks(bankList);
+                    return new AsyncTaskResult<List<Bank>>(bankList);
                 } catch (QuickPayException ex) {
-                    return new AsyncTaskResult<Map<String, Bank>>(ex);
+                    return new AsyncTaskResult<List<Bank>>(ex);
                 }
             }
 
             @Override
-            protected void onPostExecute(AsyncTaskResult<Map<String, Bank>> result) {
+            protected void onPostExecute(AsyncTaskResult<List<Bank>> result) {
                 if (result.getException() != null) {
                     listener.onFailure(result.getException());
                 } else {
