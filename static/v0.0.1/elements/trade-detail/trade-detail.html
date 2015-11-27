@@ -66,7 +66,7 @@
         <div class="td key">
           <i18n-msg msgid="TRADE_DETAIL.TRANS_AMOUNT">交易金额</i18n-msg>:
         </div>
-        <div class="td">{{_currencyFilter(item.transAmt)}}</div>
+        <div class="td">{{_currencyFilter(item.transAmt, item.currency)}}</div>
         <div class="td key">
           <i18n-msg msgid="TRADE_DETAIL.GOOD_DETAIL">商品明细</i18n-msg>:
         </div>
@@ -76,7 +76,7 @@
         <div class="td key">
           <i18n-msg msgid="TRADE_DETAIL.TRANS_CURRENCY">交易币种</i18n-msg>:
         </div>
-        <div class="td">{{item.transCurr}}</div>
+        <div class="td">{{item.currency}}</div>
         <div class="td key">
           <i18n-msg msgid="SCANPAY_TRADE_LIST.TRANS_TYPE">交易类型</i18n-msg>:
         </div>
@@ -182,8 +182,17 @@
           from: 'trade-detail'
         });
       },
-      _currencyFilter: function(money) {
-        return (money / 100).toFixed(2);
+      _currencyFilter: function(money, currency) {
+        if (!currency || currency === '') {
+          currency = 'CNY';
+        }
+
+        var decInfo = CURRENCY_DECIMAL_MAP[currency];
+        if (!decInfo) {
+          decInfo = CURRENCY_DECIMAL_MAP['CNY'];
+        }
+
+        return (money / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
       },
       busicdFilter: function(busicd) {
         var el = document.createElement('i18n-msg'),
