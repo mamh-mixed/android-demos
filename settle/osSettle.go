@@ -2,10 +2,11 @@ package settle
 
 import (
 	"bufio"
-	"fmt"
+	// "fmt"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/omigo/log"
 	"os"
 	"strings"
 	"time"
@@ -21,8 +22,12 @@ const (
 )
 
 // copyTrans 假设每天23:59:59时拷贝到清算表
+// 拷贝所有交易成功的交易，包括交易关闭中被退款的
+// 这时勾兑状态默认是渠道少清的
 func copyTrans(date string) {}
 
+// readSftpTxt 返回的数据格式如下：
+// orderNum|chanOrderNum|amt|fee|time|type|
 func readSftpTxt(fn string) ([][]string, error) {
 	f, err := os.Open(fn)
 	if err != nil {
@@ -43,14 +48,11 @@ type alipayOverseas struct {
 	chanData [][]string
 }
 
-func (a *alipayOverseas) dataHandle() {
-
-}
-
 func (a *alipayOverseas) Reconciliation() error {
 	for _, data := range a.chanData {
 		if len(data) != 8 {
-			return fmt.Errorf("invalid reconciliation data length=%d should be 8", len(data))
+			log.Errorf("invalid reconciliation data length=%d should be 8", len(data))
+			continue
 		}
 		orderNum, chanOrderNum := data[0], data[1]
 
@@ -59,7 +61,7 @@ func (a *alipayOverseas) Reconciliation() error {
 		var err error
 		var retry int
 		for {
-			ts, err = mongo.TransSettColl.FindOne(orderNum, chanOrderNum)
+			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
 			if err != nil {
 				retry++
 				if retry == 2 {
@@ -69,7 +71,7 @@ func (a *alipayOverseas) Reconciliation() error {
 					mt.Trans.ChanOrderNum = chanOrderNum
 					mt.BlendType = CHAN_MORE
 					// TODO..
-					mongo.TransSettColl.Add(mt)
+					mongo.SpTransSettColl.Add(mt)
 					break
 				}
 				time.Sleep(100 * time.Millisecond)
@@ -77,14 +79,31 @@ func (a *alipayOverseas) Reconciliation() error {
 			}
 			break
 		}
+		t := ts.Trans
 
-		if currency.Str(ts.Trans.Currency, ts.Trans.TransAmt) != data[2] {
+		// 开始勾兑，默认成功
+		ts.BlendType = MATCH
+
+		// 原交易要么成功，要么被退款，都认为是成功的
+		if t.TransStatus != model.TransSuccess || t.RefundStatus != model.TransRefunded {
+			// 渠道多清
+			ts.BlendType = CHAN_MORE
+		}
+
+		// 不管是支付交易还是逆向交易，成功的交易都是有金额的，所以直接比较金额即可。
+		if currency.Str(t.Currency, t.TransAmt) != data[2] {
 			// 金额不一致
+			ts.BlendType = AMT_ERROR
 		}
 
-		if currency.Str(ts.Trans.Currency, ts.Trans.NetFee) != data[3] {
+		// 不管是支付交易还是逆向交易，都是有计算手续费的。
+		if currency.Str(t.Currency, t.Fee) != data[3] {
 			// 手续费不一致
+			ts.BlendType = FEE_ERROR
 		}
+
+		// 更新交易状态
+		mongo.SpTransSettColl.Update(ts)
 
 	}
 	return nil

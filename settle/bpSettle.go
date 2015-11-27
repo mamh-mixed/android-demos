@@ -306,8 +306,8 @@ func addTransSett(t *model.Trans, settFlag int8) {
 	sett := &model.TransSett{}
 	sett.Trans = *t
 	sett.SettFlag = settFlag
-	sett.MerFee = int64(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
-	sett.MerSettAmt = t.TransAmt - sett.MerFee
+	sett.MerFee = int(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
+	sett.MerSettAmt = t.TransAmt - int64(sett.MerFee)
 
 	if err := mongo.TransSettColl.Add(sett); err != nil {
 		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)

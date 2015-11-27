@@ -418,10 +418,10 @@ type TransSett struct {
 	SettFlag    int8   `bson:"settFlag"`    // 清算标志
 	SettDate    string `bson:"settDate"`    // 清算时间
 	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
-	MerFee      int64  `bson:"merFee"`      // 商户手续费
+	MerFee      int    `bson:"merFee"`      // 商户手续费
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
-	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
-	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
+	ChanFee     int    `bson:"chanFee"`     // 渠道手续费
+	AgentFee    int    `bson:"agentFee"`    // 代理、机构手续费
 	BlendType   int    `bson:"blendType"`   // 勾兑状态
 }
 

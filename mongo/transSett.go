@@ -21,6 +21,7 @@ type transSettLogCollection struct {
 }
 
 var TransSettColl = transSettCollection{"transSett"}
+var SpTransSettColl = transSettCollection{"transSett.sp"}
 var TransSettLogColl = transSettLogCollection{"transSettLog"}
 
 // AtomUpsert mongodb-findAndModify
