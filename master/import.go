@@ -413,8 +413,11 @@ func insertValidate(r *rowData, im *ImportMessage) error {
 		if r.IsDomesticStr != "" {
 			if r.IsDomesticStr == no {
 				if r.AlpMerName == "" || r.AlpMerNo == "" {
-					return fmt.Errorf("门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no", r.MerId)
+					return fmt.Errorf("门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no", r.MerId) //TODO
 				}
+			} else {
+				// 其他情况默认都是国内的
+				r.IsDomestic = true
 			}
 		}
 	}
@@ -542,6 +545,12 @@ func handleAlpMer(r *rowData, c *cache, im *ImportMessage) error {
 				// 验证必填的信息
 				if r.AlpMd5 == "" {
 					return fmt.Errorf(m.NoALPKey, r.AlpMerId)
+				}
+				// 海外支付宝商户必填字段
+				if !r.IsDomestic {
+					if r.AlpSchemeType == "" {
+						return fmt.Errorf("format", r.AlpMerId) // TODO
+					}
 				}
 			}
 		}
@@ -695,6 +704,18 @@ func (i *importer) doDataWrap() {
 				mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
 			}
 
+			// 补充境外渠道参数
+			if !r.IsDomestic {
+				o := model.OverseasParams{}
+				o.Bn = r.AlpBusNo
+				o.Mcc = r.AlpMcc
+				o.MerName = r.AlpMerName
+				o.MerNo = r.AlpMerNo
+				o.RegionCode = r.AlpRegCode
+				o.TerId = r.AlpTermNo
+				mer.Options = &o
+			}
+
 			i.A.Mers = append(i.A.Mers, *mer)
 
 			// app账户
@@ -779,6 +800,39 @@ func (i *importer) doDataWrap() {
 				if r.TitleOne != "" || r.TitleTwo != "" {
 					mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
 					mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+				}
+			}
+
+			// 修改境外渠道参数
+			if !r.IsDomestic {
+				if mer.Options != nil {
+					if r.AlpBusNo != "" {
+						mer.Options.Bn = r.AlpBusNo
+					}
+					if r.AlpMerNo != "" {
+						mer.Options.MerNo = r.AlpMerNo
+					}
+					if r.AlpMerName != "" {
+						mer.Options.MerName = r.AlpMerName
+					}
+					if r.AlpRegCode != "" {
+						mer.Options.RegionCode = r.AlpRegCode
+					}
+					if r.AlpMcc != "" {
+						mer.Options.Mcc = r.AlpMcc
+					}
+					if r.AlpTermNo != "" {
+						mer.Options.TerId = r.AlpTermNo
+					}
+				} else {
+					o := model.OverseasParams{}
+					o.Bn = r.AlpBusNo
+					o.Mcc = r.AlpMcc
+					o.MerName = r.AlpMerName
+					o.MerNo = r.AlpMerNo
+					o.RegionCode = r.AlpRegCode
+					o.TerId = r.AlpTermNo
+					mer.Options = &o
 				}
 			}
 
@@ -1049,7 +1103,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
-	correctCol := 42
+	correctCol := 50
 	// 返回某列完整错误信息
 	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1108,6 +1162,8 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[14]; cell != nil {
 		r.CommodityName = replaceWhitespace.Replace(cell.Value)
 	}
+
+	// -----支付宝商户begin
 	if cell = cells[15]; cell != nil {
 		r.AlpMerId = replaceWhitespace.Replace(cell.Value)
 	}
@@ -1126,69 +1182,109 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[20]; cell != nil {
 		r.AlpSettFlag = replaceWhitespace.Replace(cell.Value)
 	}
+
+	// ------海外字段begin
 	if cell = cells[21]; cell != nil {
-		r.WxpMerId = replaceWhitespace.Replace(cell.Value)
+		r.AlpSchemeType = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[22]; cell != nil {
-		r.WxpSubMerId = replaceWhitespace.Replace(cell.Value)
+		r.IsDomesticStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[23]; cell != nil {
-		r.IsAgentStr = replaceWhitespace.Replace(cell.Value)
+		r.AlpMerName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[24]; cell != nil {
-		r.WxpAppId = replaceWhitespace.Replace(cell.Value)
+		r.AlpMerNo = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[25]; cell != nil {
-		r.WxpSubAppId = replaceWhitespace.Replace(cell.Value)
+		r.AlpBusNo = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[26]; cell != nil {
-		r.WxpMd5 = replaceWhitespace.Replace(cell.Value)
+		r.AlpTermNo = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[27]; cell != nil {
-		r.WxpAcqFee = replaceWhitespace.Replace(cell.Value)
+		r.AlpMcc = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[28]; cell != nil {
-		r.WxpMerFee = replaceWhitespace.Replace(cell.Value)
+		r.AlpRegCode = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------海外字段end
+	// -----支付宝商户end
+
+	// ------微信字段begin
 	if cell = cells[29]; cell != nil {
-		r.WxpSettFlag = replaceWhitespace.Replace(cell.Value)
+		r.WxpMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[30]; cell != nil {
-		r.ShopId = replaceWhitespace.Replace(cell.Value)
+		r.WxpSubMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[31]; cell != nil {
-		r.GoodsTag = replaceWhitespace.Replace(cell.Value)
+		r.IsAgentStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[32]; cell != nil {
-		r.AcctNum = replaceWhitespace.Replace(cell.Value)
+		r.WxpAppId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[33]; cell != nil {
-		r.AcctName = replaceWhitespace.Replace(cell.Value)
+		r.WxpSubAppId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[34]; cell != nil {
-		r.BankId = replaceWhitespace.Replace(cell.Value)
+		r.WxpMd5 = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[35]; cell != nil {
-		r.BankName = replaceWhitespace.Replace(cell.Value)
+		r.WxpAcqFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[36]; cell != nil {
-		r.City = replaceWhitespace.Replace(cell.Value)
+		r.WxpMerFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[37]; cell != nil {
-		r.IsAddAcctStr = replaceWhitespace.Replace(cell.Value)
+		r.WxpSettFlag = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------微信字段end
+
+	// ------营销信息begin
 	if cell = cells[38]; cell != nil {
-		r.AppUsername = replaceWhitespace.Replace(cell.Value)
+		r.ShopId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[39]; cell != nil {
-		r.AppPassword = replaceWhitespace.Replace(cell.Value)
+		r.GoodsTag = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------营销信息end
+
+	// ------清算信息begin
 	if cell = cells[40]; cell != nil {
-		r.TitleOne = replaceWhitespace.Replace(cell.Value)
+		r.AcctNum = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[41]; cell != nil {
+		r.AcctName = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[42]; cell != nil {
+		r.BankId = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[43]; cell != nil {
+		r.BankName = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[44]; cell != nil {
+		r.City = replaceWhitespace.Replace(cell.Value)
+	}
+	// ------清算信息end
+
+	// ------账户信息begin
+	if cell = cells[45]; cell != nil {
+		r.IsAddAcctStr = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[46]; cell != nil {
+		r.AppUsername = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[47]; cell != nil {
+		r.AppPassword = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[48]; cell != nil {
+		r.TitleOne = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[49]; cell != nil {
 		r.TitleTwo = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------账户信息end
 
 	if _, ok := i.rowMap[r.MerId]; ok {
 		return fmt.Errorf(i.msg.MerIdRepeat, r.MerId)
@@ -1222,6 +1318,7 @@ type rowData struct {
 	AlpAcqFee     string // 讯联跟支付宝费率
 	AlpMerFee     string // 商户跟讯联费率
 	AlpSettFlag   string // 清算标识
+	AlpSchemeType string // 计费方式
 	IsDomesticStr string // 是否境内渠道
 	// ---支付宝海外接口参数
 	AlpMerName string
