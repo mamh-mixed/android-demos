@@ -3,8 +3,8 @@ package com.cardinfolink.yunshouyin.salesman.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 
 import com.cardinfolink.yunshouyin.salesman.model.Bank;
 import com.cardinfolink.yunshouyin.salesman.model.City;
@@ -21,6 +21,7 @@ public class SalesmanDB {
     public static final String DB_NAME = "sales_man";
 
     public static final int VERSION = 1;
+    private static final String TAG = "SalesmanDB";
 
     private static SalesmanDB salesmanDB;
 
@@ -36,7 +37,20 @@ public class SalesmanDB {
         db = dbHelper.getWritableDatabase();
     }
 
-
+    /**
+     * 多线程读写
+     * <p/>
+     * SQLite实质上是将数据写入一个文件，通常情况下，在应用的包名下面都能找到xxx.db的文件，
+     * 拥有root权限的手机，可以通过adb shell，看到data/data/packagename/databases/xxx.db这样的文件。
+     * <p/>
+     * 我们可以得知SQLite是文件级别的锁：多个线程可以同时读，但是同时只能有一个线程写。
+     * Android提供了SqliteOpenHelper类，加入Java的锁机制以便调用。
+     * <p/>
+     * 如果多线程同时读写（这里的指不同的线程用使用的是不同的Helper实例），
+     * 后面的就会遇到android.database.sqlite.SQLiteException: database is locked这样的异常。
+     * 对于这样的问题，解决的办法就是keep single sqlite connection，
+     * 保持单个SqliteOpenHelper实例，同时对所有数据库操作的方法添加synchronized关键字。
+     */
     public synchronized static SalesmanDB getInstance(Context context) {
         if (salesmanDB == null) {
             salesmanDB = new SalesmanDB(context);
@@ -59,7 +73,11 @@ public class SalesmanDB {
 
         ContentValues values = new ContentValues();
         values.put("province_name", province.getProvinceName());
-        db.insert(PROVINCE_TABLE, null, values);
+        try {
+            db.insertOrThrow(PROVINCE_TABLE, null, values);
+        } catch (SQLException e) {
+
+        }
     }
 
     public List<Province> loadProvince() {
@@ -106,12 +124,15 @@ public class SalesmanDB {
         values.put("city_jb", city.getCityJb());
         values.put("city", city.getCity());
         values.put("province", city.getProvince());
-        db.insert(CITY_TABLE, null, values);
+        try {
+            db.insertOrThrow(CITY_TABLE, null, values);
+        } catch (Exception e) {
+
+        }
     }
 
     public List<City> loadCity() {
         List<City> list = new ArrayList<City>();
-
         Cursor cursor = db.query(CITY_TABLE, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
@@ -149,7 +170,11 @@ public class SalesmanDB {
         ContentValues values = new ContentValues();
         values.put("id", bank.getId());
         values.put("bank_name", bank.getBankName());
-        db.insert(BANK_TABLE, null, values);
+        try {
+            db.insertOrThrow(BANK_TABLE, null, values);
+        } catch (Exception e) {
+
+        }
     }
 
     public List<Bank> loadBank() {
@@ -178,7 +203,7 @@ public class SalesmanDB {
      * "bank_name text, " +
      * "city_code text, " +
      * "one_bank_no text, " +
-     * "two_bank_no text " +
+     * "two_bank_no text, " +
      * ")";
      */
     public void saveBranchBank(SubBank sBank) {
@@ -191,7 +216,11 @@ public class SalesmanDB {
         values.put("city_code", sBank.getCityCode());
         values.put("one_bank_no", sBank.getOneBankNo());
         values.put("two_bank_no", sBank.getTwoBankNo());
-        db.insert(BRANCH_BANK_TABLE, null, values);
+        try {
+            db.insertOrThrow(BRANCH_BANK_TABLE, null, values);
+        } catch (Exception e) {
+
+        }
     }
 
     public List<SubBank> loadBranchBank() {
@@ -203,7 +232,7 @@ public class SalesmanDB {
                 String bankName = cursor.getString(cursor.getColumnIndex("bank_name"));
                 String cityCode = cursor.getString(cursor.getColumnIndex("city_code"));
                 String oneBNo = cursor.getString(cursor.getColumnIndex("one_bank_no"));
-                String twoBNo = cursor.getString(cursor.getColumnIndex("two_bnak_no"));
+                String twoBNo = cursor.getString(cursor.getColumnIndex("two_bank_no"));
                 SubBank subBank = new SubBank(bankName, cityCode, oneBNo, twoBNo);
                 list.add(subBank);
             } while (cursor.moveToNext());
