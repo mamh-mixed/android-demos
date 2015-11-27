@@ -204,6 +204,7 @@ public class SalesmanDB {
      * "city_code text, " +
      * "one_bank_no text, " +
      * "two_bank_no text, " +
+     * "bank_id " +
      * ")";
      */
     public void saveBranchBank(SubBank sBank) {
@@ -216,6 +217,7 @@ public class SalesmanDB {
         values.put("city_code", sBank.getCityCode());
         values.put("one_bank_no", sBank.getOneBankNo());
         values.put("two_bank_no", sBank.getTwoBankNo());
+        values.put("bank_id", sBank.getBankId());
         try {
             db.insertOrThrow(BRANCH_BANK_TABLE, null, values);
         } catch (Exception e) {
@@ -233,7 +235,8 @@ public class SalesmanDB {
                 String cityCode = cursor.getString(cursor.getColumnIndex("city_code"));
                 String oneBNo = cursor.getString(cursor.getColumnIndex("one_bank_no"));
                 String twoBNo = cursor.getString(cursor.getColumnIndex("two_bank_no"));
-                SubBank subBank = new SubBank(bankName, cityCode, oneBNo, twoBNo);
+                String bankId= cursor.getString(cursor.getColumnIndex("bank_id"));
+                SubBank subBank = new SubBank(bankName, cityCode, oneBNo, twoBNo, bankId);
                 list.add(subBank);
             } while (cursor.moveToNext());
         }

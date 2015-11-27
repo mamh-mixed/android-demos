@@ -16,11 +16,14 @@ public class SubBank {
     @SerializedName("two_bank_no")
     private String twoBankNo;
 
-    public SubBank(String bankName, String cityCode, String oneBankNo, String twoBankNo) {
+    private String bankId;  //对应的大银行号，json里不会返回这个
+
+    public SubBank(String bankName, String cityCode, String oneBankNo, String twoBankNo, String bankId) {
         this.bankName = bankName;
         this.cityCode = cityCode;
         this.oneBankNo = oneBankNo;
         this.twoBankNo = twoBankNo;
+        this.bankId = bankId;
     }
 
     public String getBankName() {
@@ -53,5 +56,13 @@ public class SubBank {
 
     public void setTwoBankNo(String twoBankNo) {
         this.twoBankNo = twoBankNo;
+    }
+
+    public String getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(String bankId) {
+        this.bankId = bankId;
     }
 }

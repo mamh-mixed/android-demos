@@ -59,7 +59,8 @@ public class SalesmanOpenHelper extends SQLiteOpenHelper {
                     "bank_name text, " + //银行名称
                     "city_code text, " +
                     "one_bank_no text, " + //一级行号
-                    "two_bank_no text " + //1级行号
+                    "two_bank_no text, " + //1级行号
+                    "bank_id text " + //大银行id，即API3.5.1返回的id。比如工行id为102
                     ")";
     private static final String CREATE_UNIQUE_INDEX_BRANCH_BANK =
             "create unique index unique_index_branch_bank" +
