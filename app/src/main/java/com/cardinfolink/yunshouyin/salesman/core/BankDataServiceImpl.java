@@ -50,10 +50,7 @@ public class BankDataServiceImpl implements BankDataService {
             @Override
             protected AsyncTaskResult<List<Province>> doInBackground(Void... params) {
                 try {
-                    List<Province> provinceList = salesmanDB.loadProvince();
-                    if (provinceList == null || provinceList.size() <= 0) {
-                        provinceList = bankDataApi.getProvince();
-                    }
+                    List<Province> provinceList = bankDataApi.getProvince();
                     saveProvinces(provinceList);//save to database
                     return new AsyncTaskResult<List<Province>>(provinceList);
                 } catch (QuickPayException ex) {
@@ -86,10 +83,7 @@ public class BankDataServiceImpl implements BankDataService {
             @Override
             protected AsyncTaskResult<List<City>> doInBackground(Void... params) {
                 try {
-                    List<City> cityList = salesmanDB.loadCity(province);//要查出某个省下面的所有城市
-                    if (cityList == null || cityList.size() <= 0) {
-                        cityList = bankDataApi.getCity(province);
-                    }
+                    List<City> cityList = bankDataApi.getCity(province);
                     saveCities(cityList);
                     return new AsyncTaskResult<List<City>>(cityList);
                 } catch (QuickPayException ex) {
@@ -120,16 +114,12 @@ public class BankDataServiceImpl implements BankDataService {
             @Override
             protected AsyncTaskResult<List<Bank>> doInBackground(Void... params) {
                 try {
-                    List<Bank> bankList = salesmanDB.loadBank();
-                    if (bankList == null || bankList.size() <= 0) {
-                        Map<String, Bank> bankMap = bankDataApi.getBank();//这个返回的是个map
-                        Collection<Bank> bankss = bankMap.values();
-                        bankList = new ArrayList<Bank>();
-                        for (Bank b : bankss) {
-                            bankList.add(b);
-                        }
+                    Map<String, Bank> bankMap = bankDataApi.getBank();//这个返回的是个map
+                    Collection<Bank> bankCollection = bankMap.values();
+                    List<Bank> bankList = new ArrayList<Bank>();
+                    for (Bank b : bankCollection) {
+                        bankList.add(b);
                     }
-
                     saveBanks(bankList);
                     return new AsyncTaskResult<List<Bank>>(bankList);
                 } catch (QuickPayException ex) {
@@ -160,10 +150,7 @@ public class BankDataServiceImpl implements BankDataService {
             @Override
             protected AsyncTaskResult<List<SubBank>> doInBackground(Void... params) {
                 try {
-                    List<SubBank> subBankList = salesmanDB.loadBranchBank(cityCode, bankId);
-                    if (subBankList == null || subBankList.size() <= 0) {
-                        subBankList = bankDataApi.getBranchBank(cityCode, bankId);
-                    }
+                    List<SubBank> subBankList = bankDataApi.getBranchBank(cityCode, bankId);
                     saveBranchBanks(bankId, subBankList);//把相应的大银行行号也存入
                     return new AsyncTaskResult<List<SubBank>>(subBankList);
                 } catch (QuickPayException ex) {
