@@ -51,8 +51,6 @@ public class MerchantListActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SharedPreferences sp = mDataSharedPreferences;
-        sp.edit().clear().commit();
     }
 
 

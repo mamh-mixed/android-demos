@@ -16,6 +16,7 @@ import com.cardinfolink.yunshouyin.salesman.core.BankDataService;
 import com.cardinfolink.yunshouyin.salesman.core.BankDataServiceImpl;
 import com.cardinfolink.yunshouyin.salesman.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.salesman.core.QuickPayService;
+import com.cardinfolink.yunshouyin.salesman.db.SalesmanDB;
 import com.cardinfolink.yunshouyin.salesman.model.User;
 import com.cardinfolink.yunshouyin.salesman.utils.ActivityCollector;
 import com.cardinfolink.yunshouyin.salesman.utils.SalesmanApplication;
@@ -34,13 +35,14 @@ public class BaseActivity extends AppCompatActivity {
     protected SalesmanApplication application;
     protected Context mContext;
     protected SharedPreferences mSharedPreferences;//保存数据。
-    protected SharedPreferences mDataSharedPreferences;//缓存
     protected SharedPreferences mRegisterSharedPreferences;//注册缓存
 
     protected QuickPayService quickPayService;
     protected BankDataService bankDataService;
 
     protected QiniuMultiUploadService qiniuMultiUploadService;
+
+    protected SalesmanDB salesmanDB;//使用数据库存储省份城市银行信息
 
     //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
     @Override
@@ -49,9 +51,8 @@ public class BaseActivity extends AppCompatActivity {
 
         mContext = this;
         mSharedPreferences = getSharedPreferences("savedata", Activity.MODE_PRIVATE);
-        mDataSharedPreferences = getSharedPreferences("data", Activity.MODE_PRIVATE);
         mRegisterSharedPreferences = getSharedPreferences("registerdata", Activity.MODE_PRIVATE);
-
+        salesmanDB = SalesmanDB.getInstance(this);
 
         View loadingDialogView = findViewById(R.id.loading_dialog);
         mLoadingDialog = new LoadingDialog(this, loadingDialogView);
