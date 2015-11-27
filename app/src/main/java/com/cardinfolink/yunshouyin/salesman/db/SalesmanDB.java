@@ -131,9 +131,13 @@ public class SalesmanDB {
         }
     }
 
-    public List<City> loadCity() {
+    public List<City> loadCity(String whichProvince) {
         List<City> list = new ArrayList<City>();
-        Cursor cursor = db.query(CITY_TABLE, null, null, null, null, null, null);
+        String[] selectArgs = new String[]{
+                whichProvince
+        };
+        String selection = "province = ? ";
+        Cursor cursor = db.query(CITY_TABLE, null, selection, selectArgs, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
@@ -225,17 +229,21 @@ public class SalesmanDB {
         }
     }
 
-    public List<SubBank> loadBranchBank() {
+    public List<SubBank> loadBranchBank(String whichCityCode, String whichBankId) {
         List<SubBank> list = new ArrayList<SubBank>();
-
-        Cursor cursor = db.query(BRANCH_BANK_TABLE, null, null, null, null, null, null);
+        String[] selectArgs = new String[]{
+                whichCityCode, whichBankId
+        };
+        //通过cityCode 和 大银行号 bankId来查询分行的信息
+        String selection = "city_code = ? and bank_id = ? ";
+        Cursor cursor = db.query(BRANCH_BANK_TABLE, null, selection, selectArgs, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String bankName = cursor.getString(cursor.getColumnIndex("bank_name"));
                 String cityCode = cursor.getString(cursor.getColumnIndex("city_code"));
                 String oneBNo = cursor.getString(cursor.getColumnIndex("one_bank_no"));
                 String twoBNo = cursor.getString(cursor.getColumnIndex("two_bank_no"));
-                String bankId= cursor.getString(cursor.getColumnIndex("bank_id"));
+                String bankId = cursor.getString(cursor.getColumnIndex("bank_id"));
                 SubBank subBank = new SubBank(bankName, cityCode, oneBNo, twoBNo, bankId);
                 list.add(subBank);
             } while (cursor.moveToNext());
