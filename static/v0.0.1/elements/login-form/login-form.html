@@ -139,8 +139,15 @@
           Util.toast('LOGIN.TOAST.LOGIN_FAIL', 3000, true);
           return;
         }
+
+        // 密码加密后再传输到后台
+        var login = {
+          userName: this.user.userName,
+          password: Util.RSAEncrypt(this.user.password)
+        };
+
         var loginAjax = this.$.loginAjax;
-        loginAjax.body = JSON.stringify(this.user);
+        loginAjax.body = JSON.stringify(login);
         loginAjax.generateRequest();
       },
       isloginConfigEmpty: function() {

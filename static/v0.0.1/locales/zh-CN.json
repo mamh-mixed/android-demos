@@ -55,6 +55,10 @@
     "description": "登录按钮",
     "message": "登录"
   },
+  "LOGIN.SUCCESS": {
+    "description": "登录成功",
+    "message": "登录成功"
+  },
   "LOGIN.HINT": {
     "description": "登录页提示",
     "message": "如果您还没有用户名、密码，请联系讯联数据运营中心为您分配"
@@ -67,7 +71,6 @@
     "description": "用户名或密码错误",
     "message": "用户名或密码错误"
   },
-
   "PASSWORDMODIFICATION.TITLE": {
     "description": "修改密码标题",
     "message": "修改密码"
@@ -108,7 +111,6 @@
     "description": "新密码不一致",
     "message": "新密码不一致"
   },
-
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
     "message": "扫码交易"
@@ -175,7 +177,11 @@
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "金额",
-    "message": "金额(CNY)"
+    "message": "金额"
+  },
+  "SCANPAY_TRADE_LIST.CURRENCY": {
+    "description": "币种",
+    "message": "币种"
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
@@ -339,7 +345,7 @@
   },
   "SCANPAY_TRADE_STATS.AMOUNT": {
     "description": "金额",
-    "message": "金额(CNY)"
+    "message": "金额"
   },
   "SCANPAY_TRADE_STATS.AGENT_NAME": {
     "description": "代理名称",

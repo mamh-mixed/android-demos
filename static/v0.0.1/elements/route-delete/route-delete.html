@@ -26,7 +26,6 @@
     }
   </style>
   <template>
-    <x-ajax id="deleteAjax" method="GET" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
     <paper-dialog with-backdrop id="dialogDelete">
       <h2>删除路由策略</h2>
       <paper-dialog-scrollable>
@@ -41,7 +40,7 @@
         <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
       </div>
     </paper-dialog>
-
+    <x-ajax id="deleteAjax" method="POST" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
   </template>
   <script>
     (function() {

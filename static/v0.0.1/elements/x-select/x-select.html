@@ -211,8 +211,18 @@ Example:
      *
      */
     handleItemSelectedTapped: function(e) {
-      this.selectedItem = e.model.item;
-      this.$.input.value = e.model.item.value;
+      this.selectedItem = {
+        key: e.model.item.key, 
+        value: e.model.item.value, 
+        valueCN: e.model.item.valueCN
+      };
+
+      var text = this.selectedItem.value;
+      if (this.isLocale) {
+        var el = document.createElement('i18n-msg');
+        text = el.getMsg(text);
+      }
+      this.$.input.value = text;
       this.$.dropdown.close();
       this.fire('item-selected', this.selectedItem);
     },

@@ -152,6 +152,18 @@ type Merchant struct {
 	Detail       MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
 	CreateTime   string    `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
 	UpdateTime   string    `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
+	// Version      string          `bson:"version,omitempty" json:"version,omitempty"`
+	Options *OverseasParams `bson:"options,omitempty"`
+}
+
+//  TODO :OverseasParams
+type OverseasParams struct {
+	MerName    string `json:"merchant_name,omitempty" bson:"merName"`
+	MerNo      string `json:"merchant_no,omitempty" bson:"merNo"`
+	Bn         string `json:"business_no,omitempty" bson:"busNo"`
+	TerId      string `json:"terminal_id,omitempty" bson:"termNo"`
+	Mcc        string `json:"mcc,omitempty" bson:"mcc"`
+	RegionCode string `json:"region_code,omitempty" bson:"regCode"`
 }
 
 // MerDetail 商户详细信息
@@ -410,6 +422,7 @@ type TransSett struct {
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
 	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
 	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
+	BlendType   int    `bson:"blendType"`   // 勾兑状态
 }
 
 // TransSettInfo 清分信息明细
