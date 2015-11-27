@@ -483,6 +483,8 @@ func handleDegree(r *rowData, c *cache, im *ImportMessage) error {
 			// 放入缓存
 			c.AgentCache[r.AgentCode] = a
 			r.AgentName = a.AgentName
+		} else {
+			r.AgentName = c.AgentCache[r.AgentCode].AgentName
 		}
 	}
 
