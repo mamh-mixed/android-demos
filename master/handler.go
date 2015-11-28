@@ -1000,7 +1000,6 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	sid, err := r.Cookie(SessionKey)
 	if err != nil {
 		log.Errorf("user not login when doing logout operation: %s", err)
-		// http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
 

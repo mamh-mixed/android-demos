@@ -49,7 +49,6 @@
     <paper-dialog id="reloginDialog" modal no-cancel-on-esc-key on-open-dialog-please="handleOpenDialogPleaseEvent" on-close-dialog-please="handleCloseDialogPleaseEvent">
       <login-form style="width:252px;" on-login-success="handleLoginSuccessEvent"></login-form>
     </paper-dialog>
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
     <iron-localstorage name="CIL.CONFIG.LANGUAGE" value="{{language}}"></iron-localstorage>
@@ -165,7 +164,6 @@
         this.localeChangeRequest(I18nMsg.lang);
 
         var loginUser = e.detail.loginUser;
-        this.set('sessionId', loginUser.sessionId);
         this.set('userType', loginUser.userType);
         this.set('nickName', loginUser.nickName);
 
@@ -204,14 +202,10 @@
       // 处理子孙元素冒泡的登出事件
       handleLogoutEvent: function(e) {
         // 删除后台sesseion信息
-        this.$.deleteSessionAjax.params = {
-          'sessionId': this.sessionId,
-        };
         this.$.deleteSessionAjax.generateRequest();
       },
       handleDeleteSessionResponse: function(e) {
         // 清除localStorage中的信息
-        this.set('sessionId', '');
         this.set('userType', '');
         this.set('nickName', '');
         // 跳转至登录页面
