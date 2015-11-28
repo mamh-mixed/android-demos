@@ -62,7 +62,8 @@
           <x-select items="[[subAgents]]" selected-item="{{subAgent}}" label="公司" id="subAgent" disabled$="{{isSubAgentDisabled}}"></x-select>
         </div>
         <div class="row">
-          <paper-input label="商户代码" value="{{group.groupCode::input}}" disabled></paper-input>
+          <!-- 这里的paperInput不能设置disabled，否则在火狐下会报错。 more info： https://github.com/PolymerElements/iron-input/issues/47 20151128-->
+          <paper-input label="商户代码" value="[[group.groupCode]]"></paper-input>
         </div>
         <div class="row">
           <paper-input label="商户名称" value="{{group.groupName::input}}"></paper-input>
