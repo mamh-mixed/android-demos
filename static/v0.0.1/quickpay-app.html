@@ -210,8 +210,6 @@
         this.$.deleteSessionAjax.generateRequest();
       },
       handleDeleteSessionResponse: function(e) {
-        // 清除客户端 SessionID
-        document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         // 清除localStorage中的信息
         this.set('sessionId', '');
         this.set('userType', '');
