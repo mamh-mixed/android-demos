@@ -20,6 +20,7 @@ RKT+8boB/cYYhHxZ9rzDIQJAWYu4Erm8Oaed1NnXlBkLiz6jq8DVc4x2zpAK+VbZ
 -----END RSA PRIVATE KEY-----
 	`)
 
+// rsaDecryptFromBrowser 对浏览器端传过来的敏感数据解密
 func rsaDecryptFromBrowser(cipertext string) (plaintext string, err error) {
 	plainData, err := security.RSADecryptBase64(cipertext, privateKeyForBrowser)
 	if err != nil {
