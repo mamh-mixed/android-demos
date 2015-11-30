@@ -78,8 +78,7 @@
         </div>
       </div>
     </form>
-    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped">
-    </paper-fab>
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
 
     <agent-editor id="agentEditor" on-saved="handleAgentSave"></agent-editor>
     <agent-delete id="agentDelete" on-saved="handleAgentSave"></agent-delete>
@@ -191,7 +190,7 @@
         submitForm: function() {
           this.agents = [];
           this.set('cond.total', 0);
-        },
+        }
       });
     })();
   </script>

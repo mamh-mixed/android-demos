@@ -225,6 +225,13 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(1, "json失败")
 	}
 
+	// 原密码解密
+	pwd, err := rsaDecryptFromBrowser(userPwd.Password)
+	if err != nil {
+		log.Errorf("escrypt password error %s", err)
+		return model.NewResultBody(2, "DECRYPT_ERROR")
+	}
+
 	var appUser *model.AppUser
 	oldPwdEncrypt, oldPwd := "", ""
 
@@ -234,13 +241,13 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 		if err != nil {
 			return model.NewResultBody(2, "查询数据库失败")
 		} else {
-			pb := md5.Sum([]byte(userPwd.Password))
+			pb := md5.Sum([]byte(pwd))
 			oldPwd, oldPwdEncrypt = appUser.Password, fmt.Sprintf("%x", string(pb[:]))
 		}
 
 	} else {
 		oldPwd = user.Password
-		oldPwdEncrypt = fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userPwd.UserName + "}" + userPwd.Password))))
+		oldPwdEncrypt = fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userPwd.UserName + "}" + pwd))))
 	}
 
 	// 校验
@@ -248,14 +255,21 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(3, "原密码错误")
 	}
 
+	// 新密码解密
+	pwd, err = rsaDecryptFromBrowser(userPwd.NewPwd)
+	if err != nil {
+		log.Errorf("escrypt password error %s", err)
+		return model.NewResultBody(2, "DECRYPT_ERROR")
+	}
+
 	if appUser != nil {
-		pb := md5.Sum([]byte(userPwd.NewPwd))
+		pb := md5.Sum([]byte(pwd))
 		appUser.Password = fmt.Sprintf("%x", string(pb[:]))
 		if err = mongo.AppUserCol.Update(appUser); err != nil {
 			return model.NewResultBody(4, "修改密码失败")
 		}
 	} else {
-		user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+userPwd.NewPwd)))
+		user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+pwd)))
 		if err = mongo.UserColl.Update(user); err != nil {
 			return model.NewResultBody(4, "修改密码失败")
 		}
