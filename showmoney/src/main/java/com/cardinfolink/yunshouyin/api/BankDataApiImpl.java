@@ -10,7 +10,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.codec.binary.Hex;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -84,7 +83,7 @@ public class BankDataApiImpl implements BankDataApi {
     }
 
     @Override
-    public List<SubBank> search(String city_code, String bank_id) {
+    public List<SubBank> getBranchBank(String city_code, String bank_id) {
         String url = quickPayConfigStorage.getBankbaseUrl() + "/bank/search.json";
 
         Map<String, String> params = new LinkedHashMap<>();
