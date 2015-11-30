@@ -2,8 +2,8 @@ package com.cardinfolink.yunshouyin.api;
 
 public class QuickPayConfigStorage {
     // proxy setting
-    private String proxy_url;
-    private int proxy_port;
+    private String proxyUrl;
+    private int proxyPort;
 
     // quick pay setting
     private String appKey;
@@ -30,20 +30,20 @@ public class QuickPayConfigStorage {
         this.url = url;
     }
 
-    public String getProxy_url() {
-        return proxy_url;
+    public String getProxyUrl() {
+        return proxyUrl;
     }
 
-    public void setProxy_url(String proxy_url) {
-        this.proxy_url = proxy_url;
+    public void setProxyUrl(String proxyUrl) {
+        this.proxyUrl = proxyUrl;
     }
 
-    public int getProxy_port() {
-        return proxy_port;
+    public int getProxyPort() {
+        return proxyPort;
     }
 
-    public void setProxy_port(int proxy_port) {
-        this.proxy_port = proxy_port;
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
     }
 
 

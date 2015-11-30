@@ -20,8 +20,8 @@ public class BankDataApiImplTest {
         QuickPayConfigStorage quickPayConfigStorage = new QuickPayConfigStorage();
         quickPayConfigStorage.setBankbaseKey("20e786206dcf4aae8a63fe34553fd274");
         quickPayConfigStorage.setBankbaseUrl("http://211.144.213.120:443/bdp");
-        quickPayConfigStorage.setProxy_url("127.0.0.1");
-        quickPayConfigStorage.setProxy_port(8888);
+        quickPayConfigStorage.setProxyUrl("127.0.0.1");
+        quickPayConfigStorage.setProxyPort(8888);
 
         bankDataApi = new BankDataApiImpl(quickPayConfigStorage);
     }
