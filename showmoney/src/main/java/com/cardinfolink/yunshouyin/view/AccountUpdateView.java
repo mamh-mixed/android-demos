@@ -19,8 +19,14 @@ import android.widget.Spinner;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.BaseActivity;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.model.Bank;
+import com.cardinfolink.yunshouyin.model.City;
+import com.cardinfolink.yunshouyin.model.Province;
+import com.cardinfolink.yunshouyin.model.SubBank;
 import com.cardinfolink.yunshouyin.util.BankBaseUtil;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
@@ -126,7 +132,6 @@ public class AccountUpdateView extends LinearLayout {
 
         mProvinceEdit.setAdapter(mProvinceSearchAdapter);
         mProvinceEdit.setThreshold(1);
-        // mProvinceEdit.setf
 
         mCityEdit = (AutoCompleteTextView) contentView.findViewById(R.id.edit_city);
         mCitySpinner = (Spinner) findViewById(R.id.spinner_city);
@@ -777,7 +782,7 @@ public class AccountUpdateView extends LinearLayout {
                             public void run() {
                                 // 更新UI
                                 mBaseActivity.endLoading();
-                                AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(),  R.drawable.right));
+                                AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
                                 alert_Dialog.show();
                             }
 
@@ -875,4 +880,141 @@ public class AccountUpdateView extends LinearLayout {
         return true;
     }
 
+
+    private void updateProvinceAdapter(List<Province> data) {
+        //这里直接得到的就是一个省份的list，不需要再去用json去解析了。
+        List<String> tempProvinceList = new ArrayList<>();
+        tempProvinceList.add(0, "开户行所在省份");
+
+        Iterator<Province> iterator = data.iterator();
+        while (iterator.hasNext()) {
+            Province p = iterator.next();
+            tempProvinceList.add(p.getProvinceName());
+        }
+        mProvinceList.clear();
+        mProvinceList.addAll(tempProvinceList);
+        mProvinceAdapter.notifyDataSetChanged();
+        mProvinceSearchAdapter.setData(mProvinceList);
+        mProvinceSearchAdapter.notifyDataSetChanged();
+    }
+
+    private void updateBankAdapter(List<Bank> data) {
+        List<String> tempOpenBankList = new ArrayList<String>();
+        List<String> tempBankIdList = new ArrayList<String>();
+
+        Iterator<Bank> it = data.iterator();
+        while (it.hasNext()) {
+            Bank b = it.next();
+            tempOpenBankList.add(b.getBankName());
+            tempBankIdList.add(b.getId());
+        }
+        tempOpenBankList.add(0, "请选择开户银行");
+        tempBankIdList.add(0, "");//为了使index对应起来
+
+        mOpenBankList.clear();
+        mBankIdList.clear();
+        mOpenBankList.addAll(tempOpenBankList);
+        mBankIdList.addAll(tempBankIdList);
+        mOpenBankSpinner.setSelection(0);
+        mOpenBankAdapter.notifyDataSetChanged();
+        mOpenBankSearchAdapter.notifyDataSetChanged();
+    }
+
+    private void updateCityAdapter(final List<City> data) {
+        ArrayList<String> tempCityList = new ArrayList<String>();
+        ArrayList<String> tempCityCodeList = new ArrayList<String>();
+        tempCityList.add(0, "开户行所在城市");
+        tempCityCodeList.add(0, "");
+        Iterator<City> it = data.iterator();
+        while (it.hasNext()) {
+            City c = it.next();
+            tempCityList.add(c.getCityName());//"city_name"这个要注意别弄成getCity（）了。
+            tempCityCodeList.add(c.getCityCode());//"city_code"
+        }
+        mCityList.clear();
+        mCityList.addAll(tempCityList);
+        mCityCodeList.clear();
+        mCityCodeList.addAll(tempCityCodeList);
+
+        mCitySpinner.setSelection(0);
+        mCityAdapter.notifyDataSetChanged();
+        mCitySearchAdapter.setData(mCityList);
+    }
+
+
+    private void updateBranchBankAdapter(List<SubBank> data) {
+        final List<String> tempBranchBankList = new ArrayList<String>();
+        final List<String> tempBankNoList = new ArrayList<String>();
+        Iterator<SubBank> it = data.iterator();
+
+        while (it.hasNext()) {
+            SubBank sb = it.next();
+            tempBranchBankList.add(sb.getBankName());
+            tempBankNoList.add(sb.getOneBankNo() + "|" + sb.getTwoBankNo());
+        }
+        tempBranchBankList.add(0, "请选择开户支行");
+        tempBankNoList.add(0, "行号");
+
+        mBranchBankList.clear();
+        mBranchBankList.addAll(tempBranchBankList);
+        mBankNoList.clear();
+        mBankNoList.addAll(tempBankNoList);
+        mBranchBankSpinner.setSelection(0);
+        mBranchBankAdapter.notifyDataSetChanged();
+        mBranchBankSearchAdapter.setData(mBranchBankList);
+    }
+
+    //内部类，实现QuickPayCallbackListener接口,用来获取bank信息
+    private class BankQuickPayCallbackListener implements QuickPayCallbackListener<List<Bank>> {
+
+        @Override
+        public void onSuccess(List<Bank> data) {
+            updateBankAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
+
+    //内部类，实现QuickPayCallbackListener接口
+    private class ProvinceQuickPayCallbackListener implements QuickPayCallbackListener<List<Province>> {
+
+        @Override
+        public void onSuccess(List<Province> data) {
+            updateProvinceAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
+
+    private class CityQuickPayCallbackListener implements QuickPayCallbackListener<List<City>> {
+
+        @Override
+        public void onSuccess(List<City> data) {
+            updateCityAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
+
+    private class BranchBankQuickPayCallbackListener implements QuickPayCallbackListener<List<SubBank>> {
+
+        @Override
+        public void onSuccess(List<SubBank> data) {
+            updateBranchBankAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
 }
