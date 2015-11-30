@@ -12,6 +12,8 @@ import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -79,9 +81,37 @@ public class BankDataServiceImpl implements BankDataService {
         }.execute();
     }
 
+    /**
+     * 获取所有的银行信息，返回一个list
+     * @param listener
+     */
     @Override
-    public void getBank(QuickPayCallbackListener<Map<String, Bank>> listener) {
+    public void getBank(final QuickPayCallbackListener<List<Bank>> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<List<Bank>>>() {
+            @Override
+            protected AsyncTaskResult<List<Bank>> doInBackground(Void... params) {
+                try {
+                    Map<String, Bank> bankMap = bankDataApi.getBank();//这个返回的是个map
+                    Collection<Bank> bankCollection = bankMap.values();
+                    List<Bank> bankList = new ArrayList<Bank>();
+                    for (Bank b : bankCollection) {
+                        bankList.add(b);
+                    }
+                    return new AsyncTaskResult<List<Bank>>(bankList);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<List<Bank>>(ex);
+                }
+            }
 
+            @Override
+            protected void onPostExecute(AsyncTaskResult<List<Bank>> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
     }
 
     @Override
