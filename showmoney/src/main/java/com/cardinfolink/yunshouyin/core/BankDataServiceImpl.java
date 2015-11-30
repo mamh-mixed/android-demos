@@ -54,6 +54,7 @@ public class BankDataServiceImpl implements BankDataService {
 
     /**
      * 传人一个省份，会去服务器查询出这个省份下的所有的城市。
+     *
      * @param province
      * @param listener
      */
@@ -83,6 +84,7 @@ public class BankDataServiceImpl implements BankDataService {
 
     /**
      * 获取所有的银行信息，返回一个list
+     *
      * @param listener
      */
     @Override
@@ -114,8 +116,33 @@ public class BankDataServiceImpl implements BankDataService {
         }.execute();
     }
 
+    /**
+     * 传人cityCode和bankId，去服务器查询分行的信息
+     * @param cityCode
+     * @param bankId
+     * @param listener
+     */
     @Override
-    public void getBranchBank(String city_code, String bank_id, QuickPayCallbackListener<List<SubBank>> listener) {
+    public void getBranchBank(final String cityCode, final String bankId, final QuickPayCallbackListener<List<SubBank>> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<List<SubBank>>>() {
+            @Override
+            protected AsyncTaskResult<List<SubBank>> doInBackground(Void... params) {
+                try {
+                    List<SubBank> subBankList = bankDataApi.getBranchBank(cityCode, bankId);
+                    return new AsyncTaskResult<List<SubBank>>(subBankList);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<>(ex);
+                }
+            }
 
+            @Override
+            protected void onPostExecute(AsyncTaskResult<List<SubBank>> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
     }
 }
