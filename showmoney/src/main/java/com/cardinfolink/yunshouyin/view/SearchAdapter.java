@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,6 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         if (mNewData != null) {
             return mNewData.size();
         }
@@ -52,7 +52,6 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return position;
     }
 
@@ -61,60 +60,52 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         ViewHolder holder = null;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(
-                    R.layout.search_item, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.search_item, null);
             holder.text = (TextView) convertView.findViewById(R.id.text1);
             convertView.setTag(holder);
-
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.text.setText(mNewData.get(position));
-
 
         return convertView;
     }
 
     @Override
     public Filter getFilter() {
-        // TODO Auto-generated method stub
         return new SearchFilter();
     }
 
-    public final class ViewHolder {
-
+    private final class ViewHolder {
         public TextView text;
-
     }
 
-    class SearchFilter extends Filter {
+    private class SearchFilter extends Filter {
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
             List<String> data = new ArrayList<String>();
-            for (String name : mOriginData) {
-                if (name.contains(constraint)) {
-                    data.add(name);
+            if (!TextUtils.isEmpty(constraint)) {
+                for (String name : mOriginData) {
+                    if (name.contains(constraint)) {
+                        data.add(name);
+                    }
                 }
             }
-
             results.values = data;
             results.count = data.size();
             return results;
         }
 
         @Override
-        protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
+        protected void publishResults(CharSequence constraint, FilterResults results) {
             mNewData = (List<String>) results.values;
             if (results.count > 0) {
                 notifyDataSetChanged();
             } else {
                 notifyDataSetInvalidated();
             }
-
         }
-
     }
 }
