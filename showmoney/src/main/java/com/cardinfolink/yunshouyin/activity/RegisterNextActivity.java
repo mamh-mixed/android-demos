@@ -811,6 +811,29 @@ public class RegisterNextActivity extends BaseActivity {
         mCitySearchAdapter.setData(mCityList);
     }
 
+
+    private void updateBranchBankAdapter(List<SubBank> data) {
+        final List<String> tempBranchBankList = new ArrayList<String>();
+        final List<String> tempBankNoList = new ArrayList<String>();
+        Iterator<SubBank> it = data.iterator();
+
+        while (it.hasNext()) {
+            SubBank sb = it.next();
+            tempBranchBankList.add(sb.getBankName());
+            tempBankNoList.add(sb.getOneBankNo() + "|" + sb.getTwoBankNo());
+        }
+        tempBranchBankList.add(0, "请选择开户支行");
+        tempBankNoList.add(0, "行号");
+
+        mBranchBankList.clear();
+        mBranchBankList.addAll(tempBranchBankList);
+        mBankNoList.clear();
+        mBankNoList.addAll(tempBankNoList);
+        mBranchBankSpinner.setSelection(0);
+        mBranchBankAdapter.notifyDataSetChanged();
+        mBranchBankSearchAdapter.setData(mBranchBankList);
+    }
+
     //内部类，实现QuickPayCallbackListener接口,用来获取bank信息
     private class BankQuickPayCallbackListener implements QuickPayCallbackListener<List<Bank>> {
 
@@ -852,4 +875,16 @@ public class RegisterNextActivity extends BaseActivity {
         }
     }
 
+    private class BranchBankQuickPayCallbackListener implements QuickPayCallbackListener<List<SubBank>> {
+
+        @Override
+        public void onSuccess(List<SubBank> data) {
+            updateBranchBankAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
 }
