@@ -20,6 +20,17 @@ public class City {
     private String city;
     private String province;
 
+
+    public City(String id, String cityCode, String provinceCode, String cityName, String cityJb, String city, String province) {
+        this.id = id;
+        this.cityCode = cityCode;
+        this.provinceCode = provinceCode;
+        this.cityName = cityName;
+        this.cityJb = cityJb;
+        this.city = city;
+        this.province = province;
+    }
+
     public String getId() {
         return id;
     }
