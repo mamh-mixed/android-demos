@@ -8,6 +8,11 @@ public class Bank {
     @SerializedName("bank_name")
     private String bankName;
 
+    public Bank(String id, String bankName) {
+        this.id = id;
+        this.bankName = bankName;
+    }
+
     public String getId() {
         return id;
     }
