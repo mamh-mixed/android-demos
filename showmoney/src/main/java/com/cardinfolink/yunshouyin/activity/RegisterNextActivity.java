@@ -196,82 +196,13 @@ public class RegisterNextActivity extends BaseActivity {
 
         mOpenBankEdit.addTextChangedListener(new RegisterTextWatcher(mOpenBankEdit));
 
-        mProvinceSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
+        mProvinceSpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
 
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mProvinceEdit.setText(mProvinceList.get(position));
+        mCitySpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
 
-                        }
+        mOpenBankSpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
 
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-        mCitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                if (position > 0) {
-                    mCityEdit.setText(mCityList.get(position));
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-        mOpenBankSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
-
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mOpenBankEdit.setText(mOpenBankList.get(position));
-                        }
-
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
-
-        mBranchBankSpinner
-                .setOnItemSelectedListener(new OnItemSelectedListener() {
-
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent,
-                                               View view, int position, long id) {
-                        if (position > 0) {
-                            mBranchBankEdit.setText(mBranchBankList
-                                    .get(position));
-                        }
-
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                        // TODO Auto-generated method stub
-
-                    }
-                });
+        mBranchBankSpinner.setOnItemSelectedListener(new RegisterOnItemSelectedListener());
 
         mCityEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
 
@@ -692,6 +623,34 @@ public class RegisterNextActivity extends BaseActivity {
                     //phone number
                     break;
             }
+        }
+    }
+
+    private class RegisterOnItemSelectedListener implements OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (position > 0) {
+                switch (parent.getId()) {
+                    case R.id.spinner_province:
+                        mProvinceEdit.setText(mProvinceList.get(position));
+                        break;
+                    case R.id.spinner_city:
+                        mCityEdit.setText(mCityList.get(position));
+                        break;
+                    case R.id.spinner_openbank:
+                        mOpenBankEdit.setText(mOpenBankList.get(position));
+                        break;
+                    case R.id.spinner_branchbank:
+                        mBranchBankEdit.setText(mBranchBankList.get(position));
+                        break;
+                }
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
         }
     }
 }
