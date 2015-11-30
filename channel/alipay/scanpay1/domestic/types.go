@@ -10,26 +10,28 @@ import (
 
 // AlpRequest 请求参数
 type alpRequest struct {
-	Service        string                `bson:"service,omitempty"`
-	Partner        string                `bson:"partner,omitempty"`
-	Charset        string                `bson:"charset,omitempty"`
-	NotifyUrl      string                `bson:"notifyUrl,omitempty"`
-	OutTradeNo     string                `bson:"outTradeNo,omitempty"`
-	RefundAmount   string                `bson:"refundAmount,omitempty"`
-	OutRequestNo   string                `bson:"outRequestNo,omitempty"`
-	PassbackParams string                `bson:"passBackParams,omitempty"`
-	Subject        string                `bson:"subject,omitempty"`
-	GoodsDetail    string                `bson:"goodsDetail,omitempty"`
-	ProductCode    string                `bson:"productCode,omitempty"`
-	TotalFee       string                `bson:"totalFee,omitempty"`
-	SellerId       string                `bson:"sellerId,omitempty"`
-	Currency       string                `bson:"currency,omitempty"`
-	ExtendParams   string                `bson:"extendParams,omitempty"`
-	ItBPay         string                `bson:"itBPay,omitempty"`
-	DynamicIdType  string                `bson:"dynamicIdType,omitempty"`
-	DynamicId      string                `bson:"dynamicId,omitempty"`
-	Key            string                `bson:"-"`
-	SpReq          *model.ScanPayRequest `bson:"-"`
+	Service          string                `bson:"service,omitempty"`
+	Partner          string                `bson:"partner,omitempty"`
+	Charset          string                `bson:"charset,omitempty"`
+	NotifyUrl        string                `bson:"notifyUrl,omitempty"`
+	OutTradeNo       string                `bson:"outTradeNo,omitempty"`
+	RefundAmount     string                `bson:"refundAmount,omitempty"`
+	OutRequestNo     string                `bson:"outRequestNo,omitempty"`
+	PassbackParams   string                `bson:"passBackParams,omitempty"`
+	Subject          string                `bson:"subject,omitempty"`
+	GoodsDetail      string                `bson:"goodsDetail,omitempty"`
+	ProductCode      string                `bson:"productCode,omitempty"`
+	TotalFee         string                `bson:"totalFee,omitempty"`
+	SellerId         string                `bson:"sellerId,omitempty"`
+	Currency         string                `bson:"currency,omitempty"`
+	ExtendParams     string                `bson:"extendParams,omitempty"`
+	ItBPay           string                `bson:"itBPay,omitempty"`
+	DynamicIdType    string                `bson:"dynamicIdType,omitempty"`
+	DynamicId        string                `bson:"dynamicId,omitempty"`
+	Key              string                `bson:"-"`
+	SpReq            *model.ScanPayRequest `bson:"-"`
+	Gmt_create_start string                `bson:"gmt_create_start,omitempty"`
+	Gmt_create_end   string                `bson:"gmt_create_end,omitempty"`
 }
 
 // AlpResponse 支付宝接口返回信息

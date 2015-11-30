@@ -309,6 +309,27 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 	return ret, err
 }
 
+//微信对账接口
+func (sp *WeixinScanPay) ProcessSettleEnquiry(m *model.ScanPayRequest) (ret *SettleQueryResp, err error) {
+
+	d := &SettleQueryReq{
+		CommonParams: *getCommonParams(m),
+		SettleDate:   m.SettleDate,
+		SettleType:   "ALL",
+	}
+
+	d.CommonParams.Req = m
+
+	p := &SettleQueryResp{}
+	err = weixin.Execute(d, p)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return p, err
+}
+
 func handleExpireTime(expirtTime string) (string, string) {
 
 	layout := "20060102150405"

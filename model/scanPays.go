@@ -203,6 +203,11 @@ type ScanPayRequest struct {
 	// 访问方式
 	IsGBK bool     `json:"-" url:"-" bson:"-"`
 	M     Merchant `json:"-" url:"-" bson:"-"`
+
+	//对账
+	SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
+	StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
+	EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
 }
 
 // FillWithRequest 如果空白，默认将原信息返回

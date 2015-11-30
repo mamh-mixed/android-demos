@@ -29,10 +29,18 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	// 记录日志
 	logs.SpLogs <- req.GetChanReqLogs(alpReq)
 
-	params := toMap(alpReq)
+	params := make(map[string]string)
+	if isSettle {
+		params = toSettleMap(alpReq)
+		isSettle = false
+	} else {
+		params = toMap(alpReq)
+	}
+
 	toSign := preContent(params)
 
 	toSign += req.SignKey
+	fmt.Printf("the toSign:%s\n", toSign)
 	signed := md5.Sum([]byte(toSign))
 	params["sign"] = hex.EncodeToString(signed[:])
 	params["sign_type"] = "MD5"
@@ -51,6 +59,8 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	for {
 		count++
 		res, err = http.PostForm(requestURL, values)
+		fmt.Printf("##########utl:%s\n", requestURL)
+		fmt.Printf("##########value:%s\n", values)
 		if err != nil {
 			log.Errorf("connect %s fail : %s, retry ... %d", requestURL, err, count)
 			if count == 3 {
@@ -67,6 +77,10 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("*************************************\n")
+	fmt.Printf("the reponse is : %s\n", alpResp)
+	fmt.Printf("***************************************\n")
 
 	// 记录日志
 	logs.SpLogs <- req.GetChanRetLogs(alpResp)

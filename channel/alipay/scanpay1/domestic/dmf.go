@@ -17,13 +17,17 @@ var alipayNotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyPath
 // alp 当面付，扫码支付
 type alp struct{}
 
+// 对账标识
+var isSettle = false
+
 // service
 const (
-	createAndPay = "alipay.acquire.createandpay"
-	preCreate    = "alipay.acquire.precreate"
-	refund       = "alipay.acquire.refund"
-	query        = "alipay.acquire.query"
-	cancel       = "alipay.acquire.cancel"
+	createAndPay  = "alipay.acquire.createandpay"
+	preCreate     = "alipay.acquire.precreate"
+	refund        = "alipay.acquire.refund"
+	query         = "alipay.acquire.query"
+	cancel        = "alipay.acquire.cancel"
+	settleService = "export_trade_account_report"
 )
 
 // params
@@ -220,4 +224,39 @@ func handleItBpay(timeExpired string) string {
 	}
 
 	return fmt.Sprintf("%0.fm", d.Minutes()+1)
+}
+
+func toSettleMap(req *alpRequest) map[string]string {
+	dict := make(map[string]string)
+
+	dict["service"] = req.Service
+	dict["partner"] = req.Partner
+	dict["_input_charset"] = charSet
+	dict["gmt_create_end"] = req.Gmt_create_end
+	dict["gmt_create_start"] = req.Gmt_create_start
+
+	return dict
+}
+
+//账单明细查询
+func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+
+	alpReq := &alpRequest{
+		Partner:          req.ChanMerId,
+		Service:          settleService,
+		Gmt_create_start: req.StartTime,
+		Gmt_create_end:   req.EndTime,
+	}
+
+	alpReq.SpReq = req
+
+	isSettle = true
+	alpRsp, err := sendRequest(alpReq)
+
+	if err != nil {
+		log.Errorf("sendRequest fail, func name is ProcessSettleEnquiry, the settle time start:%s, end:%s", req.StartTime, req.EndTime)
+		return nil, err
+	}
+
+	return transform(alpReq.Service, alpRsp)
 }

@@ -114,7 +114,6 @@ func doScanpaySettReport(settDate string) error {
 			bf := bytes.NewBuffer(buf)
 			// 写到buf里
 			excel.Write(bf)
-
 			// 上传到七牛
 			err = qiniu.Put(key, int64(bf.Len()), bf)
 			if err != nil {
