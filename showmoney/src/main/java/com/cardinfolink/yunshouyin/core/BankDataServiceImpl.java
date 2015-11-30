@@ -1,6 +1,9 @@
 package com.cardinfolink.yunshouyin.core;
 
 
+import com.cardinfolink.yunshouyin.api.BankDataApi;
+import com.cardinfolink.yunshouyin.api.BankDataApiImpl;
+import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.SubBank;
@@ -10,6 +13,15 @@ import java.util.Map;
 
 //TODO: 参照QuickPayServiceImpl,在这里加入缓存效果
 public class BankDataServiceImpl implements BankDataService {
+    private BankDataApi bankDataApi;
+    private QuickPayConfigStorage quickPayConfigStorage;
+
+
+    public BankDataServiceImpl(QuickPayConfigStorage quickPayConfigStorage) {
+        this.bankDataApi = new BankDataApiImpl(quickPayConfigStorage);
+        this.quickPayConfigStorage = quickPayConfigStorage;
+    }
+
     @Override
     public void getProvince(QuickPayCallbackListener<List<String>> quickPayCallbackListener) {
 
