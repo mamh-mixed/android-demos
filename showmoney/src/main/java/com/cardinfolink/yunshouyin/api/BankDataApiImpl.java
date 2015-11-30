@@ -1,5 +1,7 @@
 package com.cardinfolink.yunshouyin.api;
 
+import android.text.TextUtils;
+
 import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.SubBank;
@@ -32,8 +34,12 @@ public class BankDataApiImpl implements BankDataApi {
 
     public BankDataApiImpl(QuickPayConfigStorage quickPayConfigStorage) {
         this.quickPayConfigStorage = quickPayConfigStorage;
-        if (this.quickPayConfigStorage.getProxy_url() != null && !"".equals(this.quickPayConfigStorage.getProxy_url())) {
-            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.quickPayConfigStorage.getProxy_url(), this.quickPayConfigStorage.getProxy_port()));
+
+        String proxyUrl = quickPayConfigStorage.getProxyUrl();
+        int proxyPort = quickPayConfigStorage.getProxyPort();
+        if (!TextUtils.isEmpty(proxyUrl)) {
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(proxyUrl, proxyPort);
+            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
             postEngine = new PostEngine(httpProxy);
         } else {
             postEngine = new PostEngine();
@@ -50,8 +56,8 @@ public class BankDataApiImpl implements BankDataApi {
 
         try {
             String response = postEngine.get(url, params);
-            Gson gson= new Gson();
-            String[] arr= gson.fromJson(response, String[].class);
+            Gson gson = new Gson();
+            String[] arr = gson.fromJson(response, String[].class);
             return Arrays.asList(arr);
         } catch (Exception e) {
             throw new QuickPayException();
@@ -69,8 +75,8 @@ public class BankDataApiImpl implements BankDataApi {
 
         try {
             String response = postEngine.get(url, params);
-            Gson gson= new Gson();
-            City[] arr= gson.fromJson(response, City[].class);
+            Gson gson = new Gson();
+            City[] arr = gson.fromJson(response, City[].class);
             return Arrays.asList(arr);
         } catch (Exception e) {
             throw new QuickPayException();
@@ -90,8 +96,8 @@ public class BankDataApiImpl implements BankDataApi {
 
         try {
             String response = postEngine.get(url, params);
-            Gson gson= new Gson();
-            SubBank[] arr= gson.fromJson(response, SubBank[].class);
+            Gson gson = new Gson();
+            SubBank[] arr = gson.fromJson(response, SubBank[].class);
             return Arrays.asList(arr);
         } catch (Exception e) {
             throw new QuickPayException();
@@ -109,7 +115,8 @@ public class BankDataApiImpl implements BankDataApi {
         try {
             String response = postEngine.get(url, params);
             Gson gson = new Gson();
-            Map<String, Bank> decoded = gson.fromJson(response,new TypeToken<Map<String, Bank>>(){}.getType());
+            Map<String, Bank> decoded = gson.fromJson(response, new TypeToken<Map<String, Bank>>() {
+            }.getType());
             return decoded;
         } catch (Exception e) {
             throw new QuickPayException();

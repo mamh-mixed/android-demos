@@ -14,8 +14,8 @@ public class QuickPayApiImplTest {
         QuickPayConfigStorage quickPayConfigStorage = new QuickPayConfigStorage();
         quickPayConfigStorage.setAppKey("eu1dr0c8znpa43blzy1wirzmk8jqdaon");
         quickPayConfigStorage.setUrl("http://test.quick.ipay.so/app");
-        quickPayConfigStorage.setProxy_url("127.0.0.1");
-        quickPayConfigStorage.setProxy_port(8888);
+        quickPayConfigStorage.setProxyUrl("127.0.0.1");
+        quickPayConfigStorage.setProxyPort(8888);
 
         quickPayApi = new QuickPayApiImpl(quickPayConfigStorage);
     }
