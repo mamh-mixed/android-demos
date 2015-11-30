@@ -340,14 +340,23 @@ type Trans struct {
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
 
 	//卡券字段
-	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`                              // 卡券号
-	Prodname       string `bson:"prodname,omitempty" json:"prodname,omitempty"`                                // 卡券名称
-	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`                    // 核销状态
-	VeriTime       string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
-	CardInfo       string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`       // 卡券详情 C
-	AvailCount     string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"` // 卡券剩余可用次数C
-	ExpDate        string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`          // 卡券有效期 C
-	Authcode       int    `json:"authcode,omitempty" url:"authcode,omitempty" bson:"authcode,omitempty"`       // 卡券有效期 C
+	CouponsNo       string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`             // 卡券号
+	Prodname        string `bson:"prodname,omitempty" json:"prodname,omitempty"`               // 卡券名称
+	WriteoffStatus  string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`   // 核销状态
+	VeriTime        string `json:"veriTime,omitempty" bson:"veriTime,omitempty"`               // 核销次数
+	CardInfo        string `json:"cardInfo,omitempty"  bson:"cardInfo,omitempty"`              // 卡券详情
+	AvailCount      string `json:"availCount,omitempty"  bson:"availCount,omitempty"`          // 卡券剩余可用次数
+	ExpDate         string `json:"expDate,omitempty"  bson:"expDate,omitempty"`                // 卡券有效期
+	Authcode        int    `json:"authcode,omitempty"  bson:"authcode,omitempty"`              // 卡券有效期
+	VoucherType     string `json:"voucherType,omitempty"  bson:"voucherType,omitempty"`        // 券类型
+	SaleMinAmount   string `json:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`     // 满足优惠条件的最小金额
+	SaleDiscount    string `json:"saleDiscount,omitempty"  bson:"saleDiscount,omitempty"`      // 抵扣值
+	Cardbin         string `json:"cardbin,omitempty" bson:"cardbin,omitempty"`                 // 银行卡cardbin或者用户标识等
+	TransAmount     string `json:"transAmount,omitempty"  bson:"transAmount,omitempty"`        // 交易原始金额
+	PayType         string `json:"payType,omitempty"  bson:"payType,omitempty"`                // 支付方式
+	ActualPayAmount string `json:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"` // 实际支付金额
+	ChannelTime     string `json:"channelTime,omitempty"  bson:"channelTime,omitempty"`        // 渠道处理时间
+
 }
 
 // SummarySettData 交易汇总

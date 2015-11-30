@@ -19,7 +19,7 @@ type PurchaseActCouponsReqBody struct {
 	ExtTermId      string `json:"extTermId"`      // 商户自定义终端号  40 O 商户自定义的终端编号,可选
 	Amount         int    `json:"amount"`         // 要验证的次数  10 M 要验证该券码的次数,次数必须大于0,默认为1
 	Cardbin        string `json:"cardbin"`        // 银行卡cardbin或者用户标识等 30 O 如果券类型为21/22/23时,该值传入cardbin
-	TransAmount    int    `json:"transAmount"`    // 交易原始金额 10 M 交易的原始金额,即抵扣前的原价
+	TransAmount    int64  `json:"transAmount"`    // 交易原始金额 10 M 交易的原始金额,即抵扣前的原价
 	PayType        int    `json:"payType"`        // 支付方式 2 M 2:银行卡支付;4:微信支付;5: 支付宝支付
 }
 

@@ -885,87 +885,9 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	return ret
 }
 
-// PurchaseCoupons 卡券核销
-func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 判断订单是否存在
-	if err, exist := isCouponOrderDuplicate(req.Mchntid, req.OrderNum); exist {
-		return err
-	}
-	// 核销次数不填默认为1
-	if req.VeriTime == "" {
-		req.VeriTime = "1"
-	}
-
-	// 如果渠道号为空，默认设置为ULIVE
-	if req.Chcd == "" {
-		req.Chcd = "ULIVE"
-	}
-
-	// 记录该笔交易
-	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PurchaseCoupons,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		ChanCode:    req.Chcd,
-		Terminalid:  req.Terminalid,
-		TradeFrom:   req.TradeFrom,
-		CouponsNo:   req.ScanCodeId,
-		VeriTime:    req.VeriTime,
-	}
-
-	// 补充关联字段
-	addRelatedProperties(t, req.M)
-
-	// 通过路由策略找到渠道和渠道商户
-	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
-	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
-	}
-	t.ChanMerId = rp.ChanMerId
-
-	// 获取渠道商户
-	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
-	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
-	}
-
-	// 记录交易
-	// t.TransStatus = model.TransNotPay
-	err = mongo.CouTransColl.Add(t)
-	if err != nil {
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
-	}
-	req.CreateTime = t.CreateTime
-	// 请求渠道
-	ret = adaptor.ProcessPurchaseCoupons(t, c, req)
-
-	// 更新交易信息
-	updateCouponTrans(t, ret)
-
-	return ret
-}
-
 // isOrderDuplicate 判断订单号是否重复
 func isOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
 	count, err := mongo.SpTransColl.Count(mchId, orderNum)
-	if err != nil {
-		log.Errorf("find trans fail : (%s)", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR"), true
-	}
-	if count > 0 {
-		// 订单号重复
-		return adaptor.ReturnWithErrorCode("ORDER_DUPLICATE"), true
-	}
-	return nil, false
-}
-
-// isCouponOrderDuplicate 判断卡券订单号是否重复
-func isCouponOrderDuplicate(mchId, orderNum string) (*model.ScanPayResponse, bool) {
-	count, err := mongo.CouTransColl.Count(mchId, orderNum)
 	if err != nil {
 		log.Errorf("find trans fail : (%s)", err)
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR"), true
@@ -1189,40 +1111,6 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 		t.TransStatus = model.TransFail
 	}
 	return mongo.SpTransColl.UpdateAndUnlock(t)
-}
-
-// updateTrans 更新卡券交易信息
-func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
-	// 根据请求结果更新
-	t.ChanRespCode = ret.ChanRespCode
-	t.ChanOrderNum = ret.ChannelOrderNum
-	ret.ChannelOrderNum = ""
-	t.RespCode = ret.Respcd
-	t.ErrorDetail = ret.ErrorDetail
-	t.Prodname = ret.CardId
-	t.CardInfo = ret.CardInfo
-	t.AvailCount = ret.AvailCount
-	t.Authcode = ret.Authcode
-
-	//更新核销状态
-	if ret.Respcd == "00" {
-		t.WriteoffStatus = model.COUPON_WO_SUCCESS
-	} else {
-		t.WriteoffStatus = model.COUPON_WO_ERROR
-	}
-
-	if ret.ExpDate != "" {
-		expDate, err := time.ParseInLocation("20060102", ret.ExpDate, time.Local)
-		if err != nil {
-			log.Errorf("format ret.ExpDate err,%s", err)
-			return err
-		}
-		t.ExpDate = expDate.Format("2006-01-02")
-	} else {
-		t.ExpDate = ret.ExpDate
-	}
-
-	return mongo.CouTransColl.UpdateAndUnlock(t)
 }
 
 // copyProperties 从原交易拷贝属性
