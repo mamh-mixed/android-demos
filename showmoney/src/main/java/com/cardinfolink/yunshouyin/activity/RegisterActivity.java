@@ -56,11 +56,11 @@ public class RegisterActivity extends BaseActivity {
 
     private void initLayout() {
         mEmailEdit = (EditText) findViewById(R.id.register_email);
-        VerifyUtil.addEmialLimit(mEmailEdit);
+        VerifyUtil.addEmailLimit(mEmailEdit);
         mPasswordEdit = (EditText) findViewById(R.id.register_password);
-        VerifyUtil.addEmialLimit(mPasswordEdit);
+        VerifyUtil.addEmailLimit(mPasswordEdit);
         mQrPasswordEdit = (EditText) findViewById(R.id.register_qr_password);
-        VerifyUtil.addEmialLimit(mQrPasswordEdit);
+        VerifyUtil.addEmailLimit(mQrPasswordEdit);
 
 
     }

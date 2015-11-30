@@ -40,11 +40,11 @@ public class PasswordUpdateView extends LinearLayout {
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
         mOldPwdEdit = (EditText) contentView.findViewById(R.id.update_password_oldpwd);
-        VerifyUtil.addEmialLimit(mOldPwdEdit);
+        VerifyUtil.addEmailLimit(mOldPwdEdit);
         mNewPwdEdit = (EditText) contentView.findViewById(R.id.update_password_newpwd);
-        VerifyUtil.addEmialLimit(mNewPwdEdit);
+        VerifyUtil.addEmailLimit(mNewPwdEdit);
         mQrPwdEdit = (EditText) contentView.findViewById(R.id.update_password_qr_newpwd);
-        VerifyUtil.addEmialLimit(mQrPwdEdit);
+        VerifyUtil.addEmailLimit(mQrPwdEdit);
 
 
         contentView.findViewById(R.id.btn_update_password).setOnClickListener(new OnClickListener() {
