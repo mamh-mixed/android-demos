@@ -157,10 +157,22 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	}
 
 	// 5. 商户存在，则验签
-	if mer.IsNeedSign && req.Busicd != nonCheckSignBusicd {
-		content := req.SignMsg()
-		sig := security.SHA1WithKey(content, mer.SignKey)
-		if sig != req.Sign {
+	if mer.IsNeedSign {
+		content, sig := "", ""
+		switch req.Busicd {
+		// 公众号支付
+		case nonCheckSignBusicd:
+			if mer.JsPayVersion == "2.0" {
+				content = fmt.Sprintf("backUrl=%s&mchntid=%s&orderNum=%s&txamt=%s", req.NotifyUrl, req.Mchntid, req.OrderNum, req.Txamt)
+				sig = security.SHA1WithKey(content, mer.SignKey)
+			}
+		// 其他接口
+		default:
+			content = req.SignMsg()
+			sig = security.SHA1WithKey(content, mer.SignKey)
+		}
+
+		if sig != "" && sig != req.Sign {
 			log.Errorf("mer(%s) sign failed: data=%v, expect sign=%s, get sign=%s", req.Mchntid, content, sig, req.Sign)
 			ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("SIGN_AUTH_ERROR"))
 			return

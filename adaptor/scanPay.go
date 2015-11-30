@@ -66,7 +66,10 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		if channel.Oversea == c.AreaType {
-			req.ExtendParams = genOverseaExtendInfo(req.M)
+			req.ExtendParams, err = genOverseaExtendInfo(req.M)
+			if err != nil {
+				return ReturnWithErrorCode("SYSTEM_ERROR")
+			}
 		} else {
 			req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 			req.ExtendParams = genExtendParams(req.M, chanMer)
@@ -462,17 +465,12 @@ func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, e
 	return
 }
 
-func genOverseaExtendInfo(mer model.Merchant) string {
-	var extendInfo = &struct {
-		MerName    string `json:"merchant_name,omitempty"`
-		MerNo      string `json:"merchant_no,omitempty"`
-		Bn         string `json:"business_no,omitempty"`
-		TerId      string `json:"terminal_id,omitempty"`
-		Mcc        string `json:"mcc,omitempty"`
-		RegionCode string `json:"region_code,omitempty"`
-	}{mer.Detail.MerName, mer.MerId, "", "", "", ""} // TODO
-	bytes, _ := json.Marshal(extendInfo)
-	return string(bytes)
+func genOverseaExtendInfo(mer model.Merchant) (string, error) {
+	if mer.Options == nil {
+		return "", fmt.Errorf("%s", "no options params found")
+	}
+	bytes, _ := json.Marshal(mer.Options)
+	return string(bytes), nil
 }
 
 func genExtendParams(mer model.Merchant, c *model.ChanMer) string {

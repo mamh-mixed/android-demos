@@ -143,10 +143,11 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		// 将QUICKMASTERID设成失效
 		http.SetCookie(w, &http.Cookie{
-			Name:   "QUICKMASTERID",
-			Value:  "",
-			Path:   "/master",
-			MaxAge: -1,
+			Name:     "QUICKMASTERID",
+			Value:    "",
+			HttpOnly: true,
+			Path:     "/master",
+			MaxAge:   -1,
 		})
 
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
@@ -219,7 +220,7 @@ func authProcess(user *model.User, url string) (err error) {
 
 	if !has {
 		log.Errorf("permission deney: username=%s, url=%s", user.UserName, url)
-		return fmt.Errorf("用户没有权限访问 `%s`", url)
+		return errors.New("Unauthorized")
 	}
 
 	return nil

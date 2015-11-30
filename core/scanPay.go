@@ -542,6 +542,9 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		mongo.SpTransColl.UpdateAndUnlock(orig)
 	}
 
+	// 补充支付时间
+	ret.PayTime = refund.CreateTime
+
 	// 更新这笔交易
 	updateTrans(refund, ret)
 
@@ -769,6 +772,9 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		mongo.SpTransColl.UpdateAndUnlock(orig)
 	}
 
+	// 补充支付时间
+	ret.PayTime = cancel.CreateTime
+
 	// 更新交易状态
 	updateTrans(cancel, ret)
 
@@ -873,6 +879,9 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
 		// orig.ErrorDetail = adaptor.CloseMsg
 	}
+
+	// 补充支付时间
+	ret.PayTime = closed.CreateTime
 
 	// 更新交易状态
 	updateTrans(closed, ret)
@@ -1122,6 +1131,7 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.GroupCode = orig.GroupCode
 	current.GroupName = orig.GroupName
 	current.ShortName = orig.ShortName
+	current.Currency = orig.Currency
 	current.SubAgentCode = orig.SubAgentCode
 	current.SubAgentName = orig.SubAgentName
 	current.ConsumerAccount = orig.ConsumerAccount
