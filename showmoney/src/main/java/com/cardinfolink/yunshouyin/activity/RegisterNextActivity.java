@@ -26,7 +26,9 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.Bank;
+import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
+import com.cardinfolink.yunshouyin.model.SubBank;
 import com.cardinfolink.yunshouyin.util.BankBaseUtil;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
@@ -788,6 +790,27 @@ public class RegisterNextActivity extends BaseActivity {
         mOpenBankSearchAdapter.notifyDataSetChanged();
     }
 
+    private void updateCityAdapter(final List<City> data) {
+        ArrayList<String> tempCityList = new ArrayList<String>();
+        ArrayList<String> tempCityCodeList = new ArrayList<String>();
+        tempCityList.add(0, "开户行所在城市");
+        tempCityCodeList.add(0, "");
+        Iterator<City> it = data.iterator();
+        while (it.hasNext()) {
+            City c = it.next();
+            tempCityList.add(c.getCityName());//"city_name"这个要注意别弄成getCity（）了。
+            tempCityCodeList.add(c.getCityCode());//"city_code"
+        }
+        mCityList.clear();
+        mCityList.addAll(tempCityList);
+        mCityCodeList.clear();
+        mCityCodeList.addAll(tempCityCodeList);
+
+        mCitySpinner.setSelection(0);
+        mCityAdapter.notifyDataSetChanged();
+        mCitySearchAdapter.setData(mCityList);
+    }
+
     //内部类，实现QuickPayCallbackListener接口,用来获取bank信息
     private class BankQuickPayCallbackListener implements QuickPayCallbackListener<List<Bank>> {
 
@@ -815,4 +838,18 @@ public class RegisterNextActivity extends BaseActivity {
 
         }
     }
+
+    private class CityQuickPayCallbackListener implements QuickPayCallbackListener<List<City>> {
+
+        @Override
+        public void onSuccess(List<City> data) {
+            updateCityAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
+
 }
