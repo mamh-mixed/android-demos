@@ -25,6 +25,7 @@ import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.util.BankBaseUtil;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
@@ -181,60 +182,8 @@ public class RegisterNextActivity extends BaseActivity {
 
 
     public void initData() {
-
         bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
-
-
-        HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getBank(),
-                new CommunicationListener() {
-
-                    @Override
-                    public void onResult(String result) {
-                        Log.i(TAG, "result:" + result);
-                        try {
-                            JSONObject jsonObj = new JSONObject(result);
-                            Iterator it = jsonObj.keys();
-                            mOpenBankList.clear();
-                            mOpenBankList.add("请选择开户银行");
-
-                            mBankIdList.clear();
-                            mBankIdList.add("");
-
-                            while (it.hasNext()) {
-                                String key = it.next().toString();
-                                mOpenBankList.add(JsonUtil.getParam(
-                                        JsonUtil.getParam(result, key),
-                                        "bank_name"));
-                                mBankIdList.add(JsonUtil.getParam(
-                                        JsonUtil.getParam(result, key), "id"));
-                            }
-
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mOpenBankSpinner.setSelection(0);
-                                mOpenBankAdapter.notifyDataSetChanged();
-                                mOpenBankSearchAdapter.notifyDataSetChanged();
-                            }
-
-                        });
-
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.i(TAG, "error:" + error);
-
-                    }
-                });
-
+        bankDataService.getBank(new BankQuickPayCallbackListener());
     }
 
     private void initListener() {
@@ -817,6 +766,41 @@ public class RegisterNextActivity extends BaseActivity {
         mProvinceSearchAdapter.notifyDataSetChanged();
     }
 
+    private void updateBankAdapter(List<Bank> data) {
+        List<String> tempOpenBankList = new ArrayList<String>();
+        List<String> tempBankIdList = new ArrayList<String>();
+
+        Iterator<Bank> it = data.iterator();
+        while (it.hasNext()) {
+            Bank b = it.next();
+            tempOpenBankList.add(b.getBankName());
+            tempBankIdList.add(b.getId());
+        }
+        tempOpenBankList.add(0, "请选择开户银行");
+        tempBankIdList.add(0, "");//为了使index对应起来
+
+        mOpenBankList.clear();
+        mBankIdList.clear();
+        mOpenBankList.addAll(tempOpenBankList);
+        mBankIdList.addAll(tempBankIdList);
+        mOpenBankSpinner.setSelection(0);
+        mOpenBankAdapter.notifyDataSetChanged();
+        mOpenBankSearchAdapter.notifyDataSetChanged();
+    }
+
+    //内部类，实现QuickPayCallbackListener接口,用来获取bank信息
+    private class BankQuickPayCallbackListener implements QuickPayCallbackListener<List<Bank>> {
+
+        @Override
+        public void onSuccess(List<Bank> data) {
+            updateBankAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
+    }
 
     //内部类，实现QuickPayCallbackListener接口
     private class ProvinceQuickPayCallbackListener implements QuickPayCallbackListener<List<Province>> {
