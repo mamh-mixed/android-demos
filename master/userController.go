@@ -1,10 +1,10 @@
 package master
 
 import (
+	"crypto/md5"
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -20,14 +20,40 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		log.Errorf("username or passwod must not blank")
 		return model.NewResultBody(1, "用户名或密码不用为空")
 	}
+
+	var encryptPass string
 	user, err := mongo.UserColl.FindOneUser(userName, "", "")
 	if err != nil {
-		log.Errorf("find user(%s) error: %s", userName, err)
-		return model.NewResultBody(2, "无此用户名")
+
+		// 兼容appUser用户登录
+		appUser, err := mongo.AppUserCol.FindOne(userName)
+		if err != nil {
+			log.Errorf("find user(%s) error: %s", userName, err)
+			return model.NewResultBody(2, "无此用户名")
+		} else {
+			pb := md5.Sum([]byte(password))
+			encryptPass = fmt.Sprintf("%x", pb[:])
+			user = &model.User{
+				UserName: appUser.UserName,
+				NickName: appUser.UserName,
+				Password: appUser.Password,
+				Mail:     "",
+				PhoneNum: "",
+				UserType: model.UserTypeShop,
+				// AgentCode:    "",
+				// SubAgentCode: "",
+				// GroupCode:    "",
+				MerId: appUser.MerId,
+			}
+		}
+
+	} else {
+		encryptPass = fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userName + "}" + password))))
 	}
-	passSha1 := fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userName + "}" + password))))
-	if passSha1 != user.Password {
-		log.Errorf("wrong password")
+
+	// 校验
+	if encryptPass != user.Password {
+		log.Errorf("wrong password, expect %s but get %s", user.Password, encryptPass)
 		return model.NewResultBody(3, "密码错误")
 	}
 
@@ -206,14 +232,27 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(2, "DECRYPT_ERROR")
 	}
 
+	var appUser *model.AppUser
+	oldPwdEncrypt, oldPwd := "", ""
+
 	user, err := mongo.UserColl.FindOneUser(userPwd.UserName, "", "")
 	if err != nil {
-		return model.NewResultBody(2, "查询数据库失败")
+		appUser, err = mongo.AppUserCol.FindOne(userPwd.UserName)
+		if err != nil {
+			return model.NewResultBody(2, "查询数据库失败")
+		} else {
+			pb := md5.Sum([]byte(pwd))
+			oldPwd, oldPwdEncrypt = appUser.Password, fmt.Sprintf("%x", string(pb[:]))
+		}
+
+	} else {
+		oldPwd = user.Password
+		oldPwdEncrypt = fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userPwd.UserName + "}" + pwd))))
 	}
 
-	// 核对原密码是否匹配
-	if user.Password != fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD+"{"+userPwd.UserName+"}"+pwd)))) {
-		return model.NewResultBody(3, "OLD_PASSWORD_NOT_MATCH")
+	// 校验
+	if oldPwd != oldPwdEncrypt {
+		return model.NewResultBody(3, "原密码错误")
 	}
 
 	// 新密码解密
@@ -223,13 +262,19 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(2, "DECRYPT_ERROR")
 	}
 
-	// 新密码加盐值后散列加密
-	user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+pwd)))
-	err = mongo.UserColl.Update(user)
-	if err != nil {
-		log.Infof("修改密码失败,%s", err)
-		return model.NewResultBody(4, "修改密码失败")
+	if appUser != nil {
+		pb := md5.Sum([]byte(pwd))
+		appUser.Password = fmt.Sprintf("%x", string(pb[:]))
+		if err = mongo.AppUserCol.Update(appUser); err != nil {
+			return model.NewResultBody(4, "修改密码失败")
+		}
+	} else {
+		user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+pwd)))
+		if err = mongo.UserColl.Update(user); err != nil {
+			return model.NewResultBody(4, "修改密码失败")
+		}
 	}
+
 	ret = &model.ResultBody{
 		Status:  0,
 		Message: "修改密码成功",
