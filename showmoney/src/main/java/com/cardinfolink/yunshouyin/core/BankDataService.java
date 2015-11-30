@@ -13,7 +13,7 @@ public interface BankDataService {
 
     void getCity(String province, QuickPayCallbackListener<List<City>> quickPayCallbackListener);
 
-    void getBank(QuickPayCallbackListener<Map<String, Bank>> quickPayCallbackListener);
+    void getBank(QuickPayCallbackListener<List<Bank>> quickPayCallbackListener);
 
     void getBranchBank(String city_code, String bank_id, QuickPayCallbackListener<List<SubBank>> quickPayCallbackListener);
 }
