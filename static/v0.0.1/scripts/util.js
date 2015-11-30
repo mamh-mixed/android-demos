@@ -25,6 +25,11 @@
 			toast.text = text;
 			toast.duration = duration;
 			toast.show();
+
+			setTimeout(function() {
+				toast.text = '';
+				toast.duration = 1;
+			}, duration)
 		};
 		var showLoginDialog = function() {
 			var abc = document.getElementsByTagName('paper-dialog'),

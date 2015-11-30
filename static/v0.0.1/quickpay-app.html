@@ -44,7 +44,7 @@
       <app-route path="*" name="not-found" redirect="/404"></app-route>
     </app-router>
     <!-- TOAST: 用来实现信息弹出的功能 -->
-    <paper-toast id="toast" duration="5000" visible="true" text$="{{toastText}}" style="z-index:1000;"></paper-toast>
+    <paper-toast id="toast" duration="1" visible="true" text$="{{toastText}}" style="z-index:1000;"></paper-toast>
     <!-- PAPER-DIALOG: 用来重新登录的对话框 -->
     <paper-dialog id="reloginDialog" modal no-cancel-on-esc-key on-open-dialog-please="handleOpenDialogPleaseEvent" on-close-dialog-please="handleCloseDialogPleaseEvent">
       <login-form style="width:252px;" on-login-success="handleLoginSuccessEvent"></login-form>
@@ -157,8 +157,12 @@
       handleLoginSuccessEvent: function(e) {
         var el = document.createElement('i18n-msg'),
             text = el.getMsg('LOGIN.SUCCESS');
-        this.set('toastText', text);
+        this.$.toast.text = text;
+        this.$.toast.duration = 1000;
         this.$.toast.show();
+        setTimeout(function() {
+          this.$.toast.duration = 10;
+        }.bind(this), 1010);
 
         // 如果不是中文的话，发送一个切换后台服务器语言的指令
         this.localeChangeRequest(I18nMsg.lang);

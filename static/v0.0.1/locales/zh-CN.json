@@ -111,6 +111,14 @@
     "description": "新密码不一致",
     "message": "新密码不一致"
   },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
+    "description": "新密码最小长度位",
+    "message": "新密码长度不能少于8位"
+  },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
+    "description": "新密码必须复杂点，包含大小写字母和数字",
+    "message": "新密码必须包含大小写字母和数字"
+  },
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
     "message": "扫码交易"
