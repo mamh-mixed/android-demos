@@ -666,49 +666,11 @@ public class AccountUpdateView extends LinearLayout {
             }
         });
 
-        mCityEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
+        mCityEdit.setOnFocusChangeListener(new AccountOnFocusChangeListener());
 
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) < 0) {
-                        mProvinceEdit.setText("");
-                    }
-                }
+        mOpenBankEdit.setOnFocusChangeListener(new AccountOnFocusChangeListener());
 
-            }
-        });
-
-        mOpenBankEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mCityList.indexOf(mCityEdit.getText().toString()) < 0) {
-                        mCityEdit.setText("");
-                    }
-                }
-
-            }
-        });
-
-        mBranchBankEdit.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    if (mOpenBankList.indexOf(mOpenBankEdit.getText()
-                            .toString()) < 0) {
-                        mOpenBankEdit.setText("");
-                    }
-                } else {
-                    if (mBranchBankList.indexOf(mBranchBankEdit.getText().toString()) < 0) {
-                        mBranchBankEdit.setText("");
-                    }
-                }
-
-            }
-        });
+        mBranchBankEdit.setOnFocusChangeListener(new AccountOnFocusChangeListener());
 
 
     }
@@ -980,6 +942,36 @@ public class AccountUpdateView extends LinearLayout {
         @Override
         public void onFailure(QuickPayException ex) {
 
+        }
+    }
+
+
+    private class AccountOnFocusChangeListener implements OnFocusChangeListener {
+
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            if (!hasFocus) {
+                return;
+            }
+            switch (view.getId()) {
+                case R.id.edit_city:
+                    if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) < 0) {
+                        mProvinceEdit.setText("");
+                    }
+                    break;
+                case R.id.edit_openbank:
+                    if (mCityList.indexOf(mCityEdit.getText().toString()) < 0) {
+                        mCityEdit.setText("");
+                    }
+                    break;
+                case R.id.edit_branchbank:
+                    if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) < 0) {
+                        mOpenBankEdit.setText("");
+                    }
+                    break;
+                case R.id.edit_province:
+                    break;
+            }
         }
     }
 }
