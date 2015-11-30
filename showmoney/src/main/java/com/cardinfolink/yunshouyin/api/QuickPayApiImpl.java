@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.api;
 
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
@@ -31,8 +32,11 @@ public class QuickPayApiImpl implements QuickPayApi {
     public QuickPayApiImpl(QuickPayConfigStorage quickPayConfigStorage) {
         this.quickPayConfigStorage = quickPayConfigStorage;
 
-        if (this.quickPayConfigStorage.getProxy_url() != null && !"".equals(this.quickPayConfigStorage.getProxy_url())) {
-            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.quickPayConfigStorage.getProxy_url(), this.quickPayConfigStorage.getProxy_port()));
+        String proxyUrl = quickPayConfigStorage.getProxyUrl();
+        int proxyPort = quickPayConfigStorage.getProxyPort();
+        if (!TextUtils.isEmpty(proxyUrl)) {
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(proxyUrl, proxyPort);
+            Proxy httpProxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
             postEngine = new PostEngine(httpProxy);
         } else {
             postEngine = new PostEngine();
@@ -161,7 +165,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return ;
+                return;
             } else {
                 throw new QuickPayException(serverPacket.getError());
             }
@@ -204,6 +208,7 @@ public class QuickPayApiImpl implements QuickPayApi {
     /**
      * errors:
      * user_already_improved
+     *
      * @param username
      * @param password
      * @param province
@@ -302,9 +307,9 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
 
-
     /**
      * server not support
+     *
      * @param username
      */
     @Override
@@ -332,6 +337,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     /**
      * Not tested, no one use
+     *
      * @param username
      * @param code
      * @param newPassword
