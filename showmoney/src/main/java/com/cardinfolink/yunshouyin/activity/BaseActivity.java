@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.core.BankDataService;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AlertDialog;
@@ -18,6 +19,7 @@ public class BaseActivity extends Activity {
     protected AlertDialog mAlertDialog;       // 提示消息对话框
     protected Context mContext;
     protected QuickPayService quickPayService;
+    protected BankDataService bankDataService;
     protected ShowMoneyApp yunApplication;
 
 
@@ -30,8 +32,9 @@ public class BaseActivity extends Activity {
         mAlertDialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
                 getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
 
-        yunApplication = (ShowMoneyApp)getApplication();
+        yunApplication = (ShowMoneyApp) getApplication();
         quickPayService = yunApplication.getQuickPayService();
+        bankDataService = yunApplication.getBankDataService();
     }
 
 
