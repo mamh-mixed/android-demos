@@ -38,7 +38,7 @@ public class BankDataServiceImpl implements BankDataService {
     }
 
     @Override
-    public void search(String city_code, String bank_id, QuickPayCallbackListener<List<SubBank>> quickPayCallbackListener) {
+    public void getBranchBank(String city_code, String bank_id, QuickPayCallbackListener<List<SubBank>> quickPayCallbackListener) {
 
     }
 }
