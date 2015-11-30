@@ -233,139 +233,39 @@ public class AccountUpdateView extends LinearLayout {
                             mCityCodeList.add("");
                             if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
                                 String province = mProvinceEdit.getText().toString();
-
-                                HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getCity(province), new CommunicationListener() {
-
+                                bankDataService.getCity(province, new QuickPayCallbackListener<List<City>>() {
                                     @Override
-                                    public void onResult(String result) {
-                                        try {
-                                            JSONArray jsonArray = new JSONArray(result);
-                                            for (int i = 0; i < jsonArray.length(); i++) {
-                                                mCityList.add(JsonUtil.getParam(jsonArray.getString(i), "city_name"));
-                                                mCityCodeList.add(JsonUtil.getParam(jsonArray.getString(i), "city_code"));
-                                            }
-                                        } catch (JSONException e) {
-                                            // TODO Auto-generated catch block
-                                            e.printStackTrace();
-                                        }
+                                    public void onSuccess(List<City> dataCity) {
+                                        updateCityAdapter(dataCity);
 
-                                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
+                                        bankDataService.getBank(new QuickPayCallbackListener<List<Bank>>() {
                                             @Override
-                                            public void run() {
+                                            public void onSuccess(List<Bank> dataBank) {
+                                                updateBankAdapter(dataBank);
+                                                String _city = mCityEdit.getText().toString();
+                                                String _bank = mOpenBankEdit.getText().toString();
+                                                int _cityIndex = mCityList.indexOf(_city);
+                                                int _bank_index = mOpenBankList.indexOf(_bank);
 
-                                                // 更新UI
-                                                mCityAdapter.notifyDataSetChanged();
-                                                mCitySearchAdapter.setData(mCityList);
-
-
-                                                HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getBank(), new CommunicationListener() {
-
-                                                    @Override
-                                                    public void onResult(String result) {
-                                                        try {
-                                                            JSONObject jsonObj = new JSONObject(result);
-                                                            Iterator it = jsonObj.keys();
-                                                            mOpenBankList.clear();
-                                                            mOpenBankList.add("请选择开户银行");
-
-                                                            mBankIdList.clear();
-                                                            mBankIdList.add("");
-
-                                                            while (it.hasNext()) {
-                                                                String key = it.next().toString();
-                                                                mOpenBankList.add(JsonUtil.getParam(JsonUtil.getParam(result, key), "bank_name"));
-                                                                mBankIdList.add(JsonUtil.getParam(JsonUtil.getParam(result, key), "id"));
-                                                            }
-
-                                                        } catch (JSONException e) {
-                                                            // TODO Auto-generated catch block
-                                                            e.printStackTrace();
-                                                        }
-
-                                                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                                            @Override
-                                                            public void run() {
-                                                                // 更新UI
-                                                                mOpenBankSpinner.setSelection(0);
-                                                                mOpenBankAdapter.notifyDataSetChanged();
-                                                                mOpenBankSearchAdapter.notifyDataSetChanged();
-
-
-                                                                mBranchBankList.clear();
-                                                                mBranchBankList.add("请选择开户支行");
-                                                                mBankNoList.clear();
-                                                                mBankNoList.add("行号");
-                                                                if (mOpenBankList.indexOf(mOpenBankEdit.getText().toString()) > 0) {
-                                                                    HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getSerach(mCityCodeList.get(mCityList.indexOf(mCityEdit.getText().toString())), mBankIdList.get(mOpenBankList.indexOf(mOpenBankEdit.getText().toString()))), new CommunicationListener() {
-
-                                                                        @Override
-                                                                        public void onResult(String result) {
-                                                                            try {
-                                                                                JSONArray jsonArray = new JSONArray(result);
-                                                                                mBranchBankList.clear();
-                                                                                mBranchBankList.add("请选择开户支行");
-                                                                                mBankNoList.clear();
-                                                                                mBankNoList.add("行号");
-
-                                                                                for (int i = 0; i < jsonArray.length(); i++) {
-                                                                                    mBranchBankList.add(JsonUtil.getParam(jsonArray.getString(i), "bank_name"));
-                                                                                    mBankNoList.add(JsonUtil.getParam(jsonArray.getString(i), "one_bank_no") + "|" + JsonUtil.getParam(jsonArray.getString(i), "two_bank_no"));
-                                                                                }
-                                                                            } catch (JSONException e) {
-                                                                                // TODO Auto-generated catch block
-                                                                                e.printStackTrace();
-                                                                            }
-                                                                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                                                                @Override
-                                                                                public void run() {
-                                                                                    // 更新UI
-                                                                                    mBranchBankSpinner.setSelection(0);
-                                                                                    mBranchBankAdapter.notifyDataSetChanged();
-                                                                                    mBranchBankSearchAdapter.setData(mBranchBankList);
-                                                                                    initListener();
-                                                                                }
-                                                                            });
-                                                                        }
-
-                                                                        @Override
-                                                                        public void onError(String error) {
-
-                                                                        }
-                                                                    });
-                                                                }
-
-                                                            }
-
-                                                        });
-
-                                                    }
-
-                                                    @Override
-                                                    public void onError(String error) {
-
-                                                    }
-                                                });
-
+                                                if (_cityIndex > 0 && _bank_index > 0) {
+                                                    String _cityCode = mCityCodeList.get(_cityIndex);
+                                                    String _bankId = mBankIdList.get(_bank_index);
+                                                    bankDataService.getBranchBank(_cityCode, _bankId, new BranchBankQuickPayCallbackListener());
+                                                }
+                                            }
+                                            @Override
+                                            public void onFailure(QuickPayException ex) {
 
                                             }
-
                                         });
-
                                     }
 
                                     @Override
-                                    public void onError(String error) {
+                                    public void onFailure(QuickPayException ex) {
 
                                     }
                                 });
-
-
                             }
-
-
                         }
 
                     });
@@ -379,23 +279,6 @@ public class AccountUpdateView extends LinearLayout {
 
             }
         });
-
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                initListener();
-
-            }
-        }).start();
-
-
     }
 
     public void initData() {
