@@ -50,9 +50,33 @@ public class BankDataServiceImpl implements BankDataService {
         }.execute();
     }
 
+    /**
+     * 传人一个省份，会去服务器查询出这个省份下的所有的城市。
+     * @param province
+     * @param listener
+     */
     @Override
-    public void getCity(String province, QuickPayCallbackListener<List<City>> listener) {
+    public void getCity(final String province, final QuickPayCallbackListener<List<City>> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<List<City>>>() {
+            @Override
+            protected AsyncTaskResult<List<City>> doInBackground(Void... params) {
+                try {
+                    List<City> cityList = bankDataApi.getCity(province);
+                    return new AsyncTaskResult<List<City>>(cityList);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<List<City>>(ex);
+                }
+            }
 
+            @Override
+            protected void onPostExecute(AsyncTaskResult<List<City>> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
     }
 
     @Override
