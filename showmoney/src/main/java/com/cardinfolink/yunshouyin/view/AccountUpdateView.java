@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.BaseActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.BankDataService;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
@@ -33,6 +34,7 @@ import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 
 import org.json.JSONArray;
@@ -88,10 +90,14 @@ public class AccountUpdateView extends LinearLayout {
 
     private boolean isInit = false;
 
+    private BankDataService bankDataService;
+
+
     public AccountUpdateView(Context context) {
         super(context);
         mContext = context;
         mBaseActivity = (BaseActivity) mContext;
+        bankDataService = ShowMoneyApp.getInstance().getBankDataService();
         View contentView = LayoutInflater.from(context).inflate(R.layout.account_update_view, null);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
@@ -390,48 +396,7 @@ public class AccountUpdateView extends LinearLayout {
     }
 
     public void initData() {
-
-        HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getProvince(),
-                new CommunicationListener() {
-
-                    @Override
-                    public void onResult(String result) {
-
-                        try {
-                            JSONArray jsonArray = new JSONArray(result);
-                            mProvinceList.clear();
-                            mProvinceList.add("开户行所在省份");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                mProvinceList.add(jsonArray.getString(i));
-                            }
-
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mProvinceAdapter.notifyDataSetChanged();
-                                mProvinceSearchAdapter.setData(mProvinceList);
-                                mProvinceSearchAdapter.notifyDataSetChanged();
-
-                            }
-
-                        });
-
-                    }
-
-                    @Override
-                    public void onError(String error) {
-
-                    }
-                });
-
-
+        bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
     }
 
     private void initListener() {
