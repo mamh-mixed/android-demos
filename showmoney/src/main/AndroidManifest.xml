@@ -52,16 +52,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
-        <activity
-            android:name=".activity.RegisterActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" />
-
-        <activity
-            android:name=".activity.RegisterNextActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.MainActivity"
@@ -93,18 +83,18 @@
         <!-- UMENG start-->
         <meta-data
             android:name="UMENG_APPKEY"
-            android:value="${UMENG_APPKEY_VALUE}"></meta-data>
+            android:value="${UMENG_APPKEY_VALUE}"/>
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="${UMENG_CHANNEL_VALUE}" />
 
         <service
             android:name="com.umeng.update.net.DownloadingService"
-            android:process=":DownloadingService"></service>
+            android:process=":DownloadingService"/>
 
         <activity
             android:name="com.umeng.update.UpdateDialogActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <!-- UMENG end-->
     </application>
 

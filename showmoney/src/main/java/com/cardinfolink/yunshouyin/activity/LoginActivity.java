@@ -105,19 +105,9 @@ public class LoginActivity extends BaseActivity {
                         SessonData.loginUser.setLimit(JsonUtil.getParam(user_json, "limit"));
 
                         if (SessonData.loginUser.getClientid() == null || SessonData.loginUser.getClientid().isEmpty()) {
-                            // clientid为空,跳转到完善信息页面
+                            // clientid为空,日本的apk没有这个页面。跳转到完善信息页面
 
-                            runOnUiThread(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    //更新UI
-                                    mLoadingDialog.endLoading();
-                                    Intent intent = new Intent(mContext, RegisterNextActivity.class);
-                                    mContext.startActivity(intent);
-                                }
-
-                            });
 
 
                         } else {
@@ -209,13 +199,6 @@ public class LoginActivity extends BaseActivity {
                 }
             });
         }
-    }
-
-    public void BtnRegisterOnClick(View view) {
-
-        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-        LoginActivity.this.startActivity(intent);
-
     }
 
     @Override

@@ -16,12 +16,9 @@ import android.widget.Toast;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.view.AccountUpdateView;
-import com.cardinfolink.yunshouyin.view.LimitIncreaseView;
 import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
-import com.cardinfolink.yunshouyin.view.WapView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -32,9 +29,6 @@ public class MainActivity extends BaseActivity {
     private ScanCodeView mScanCodeView;
     private TransManageView mTransManageView;
     private PasswordUpdateView mPasswordUpdateView;
-    private AccountUpdateView mAccountUpdateView;
-    private LimitIncreaseView mLimitIncreaseView;
-    private WapView mWapBillView;
 
     private LinearLayout mMainContent;
     private ListView mDrawerList;
