@@ -602,69 +602,13 @@ public class AccountUpdateView extends LinearLayout {
             }
         });
 
-        mProvinceSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        mProvinceSpinner.setOnItemSelectedListener(new AccountOnItemSelectedListener());
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mProvinceEdit.setText(mProvinceList.get(position));
-                }
+        mCitySpinner.setOnItemSelectedListener(new AccountOnItemSelectedListener());
 
-            }
+        mOpenBankSpinner.setOnItemSelectedListener(new AccountOnItemSelectedListener());
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        mCitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mCityEdit.setText(mCityList.get(position));
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        mOpenBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mOpenBankEdit.setText(mOpenBankList.get(position));
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        mBranchBankSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
-                    mBranchBankEdit.setText(mBranchBankList.get(position));
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        mBranchBankSpinner.setOnItemSelectedListener(new AccountOnItemSelectedListener());
 
         mCityEdit.setOnFocusChangeListener(new AccountOnFocusChangeListener());
 
@@ -945,6 +889,33 @@ public class AccountUpdateView extends LinearLayout {
         }
     }
 
+    private class AccountOnItemSelectedListener implements OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (position > 0) {
+                switch (parent.getId()) {
+                    case R.id.spinner_province:
+                        mProvinceEdit.setText(mProvinceList.get(position));
+                        break;
+                    case R.id.spinner_city:
+                        mCityEdit.setText(mCityList.get(position));
+                        break;
+                    case R.id.spinner_openbank:
+                        mOpenBankEdit.setText(mOpenBankList.get(position));
+                        break;
+                    case R.id.spinner_branchbank:
+                        mBranchBankEdit.setText(mBranchBankList.get(position));
+                        break;
+                }
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
 
     private class AccountOnFocusChangeListener implements OnFocusChangeListener {
 
