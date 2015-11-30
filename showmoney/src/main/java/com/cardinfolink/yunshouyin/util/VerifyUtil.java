@@ -148,7 +148,7 @@ public class VerifyUtil {
      *
      * @param mEditText
      */
-    public static void addEmialLimit(final EditText mEditText) {
+    public static void addEmailLimit(final EditText mEditText) {
         mEditText.addTextChangedListener(new TextWatcher() {
 
             @Override
