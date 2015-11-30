@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
+import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -46,7 +47,7 @@ public class BankDataApiImpl implements BankDataApi {
     }
 
     @Override
-    public List<String> getProvince() {
+    public List<Province> getProvince() {
         String url = quickPayConfigStorage.getBankbaseUrl() + "/city/provinces/list.json";
 
         Map<String, String> params = new LinkedHashMap<>();
@@ -57,7 +58,11 @@ public class BankDataApiImpl implements BankDataApi {
             String response = postEngine.get(url, params);
             Gson gson = new Gson();
             String[] arr = gson.fromJson(response, String[].class);
-            return Arrays.asList(arr);
+            List<Province> list = new ArrayList<Province>();
+            for (String province : arr) {
+                list.add(new Province(province));
+            }
+            return list;
         } catch (Exception e) {
             throw new QuickPayException();
         }
