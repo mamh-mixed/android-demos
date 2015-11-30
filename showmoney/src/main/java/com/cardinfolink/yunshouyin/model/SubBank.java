@@ -16,6 +16,14 @@ public class SubBank {
     @SerializedName("two_bank_no")
     private String twoBankNo;
 
+
+    public SubBank(String bankName, String cityCode, String oneBankNo, String twoBankNo) {
+        this.bankName = bankName;
+        this.cityCode = cityCode;
+        this.oneBankNo = oneBankNo;
+        this.twoBankNo = twoBankNo;
+    }
+
     public String getBankName() {
         return bankName;
     }
