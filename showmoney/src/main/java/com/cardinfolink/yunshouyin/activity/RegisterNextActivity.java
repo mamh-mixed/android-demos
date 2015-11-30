@@ -20,9 +20,12 @@ import android.widget.Spinner;
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.util.BankBaseUtil;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
@@ -179,46 +182,8 @@ public class RegisterNextActivity extends BaseActivity {
 
     public void initData() {
 
-        HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getProvince(),
-                new CommunicationListener() {
+        bankDataService.getProvince(new ProvinceQuickPayCallbackListener());
 
-                    @Override
-                    public void onResult(String result) {
-
-                        try {
-                            JSONArray jsonArray = new JSONArray(result);
-                            mProvinceList.clear();
-                            mProvinceList.add("开户行所在省份");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                mProvinceList.add(jsonArray.getString(i));
-                            }
-
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mProvinceAdapter.notifyDataSetChanged();
-                                mProvinceSearchAdapter.setData(mProvinceList);
-                                mProvinceSearchAdapter.notifyDataSetChanged();
-
-                            }
-
-                        });
-
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.i(TAG, "error:" + error);
-
-                    }
-                });
 
         HttpCommunicationUtil.sendGetDataToServer(BankBaseUtil.getBank(),
                 new CommunicationListener() {
@@ -832,5 +797,38 @@ public class RegisterNextActivity extends BaseActivity {
         }
 
         return true;
+    }
+
+
+    private void updateProvinceAdapter(List<Province> data) {
+        //这里直接得到的就是一个省份的list，不需要再去用json去解析了。
+        List<String> tempProvinceList = new ArrayList<>();
+        tempProvinceList.add(0, "开户行所在省份");
+
+        Iterator<Province> iterator = data.iterator();
+        while (iterator.hasNext()) {
+            Province p = iterator.next();
+            tempProvinceList.add(p.getProvinceName());
+        }
+        mProvinceList.clear();
+        mProvinceList.addAll(tempProvinceList);
+        mProvinceAdapter.notifyDataSetChanged();
+        mProvinceSearchAdapter.setData(mProvinceList);
+        mProvinceSearchAdapter.notifyDataSetChanged();
+    }
+
+
+    //内部类，实现QuickPayCallbackListener接口
+    private class ProvinceQuickPayCallbackListener implements QuickPayCallbackListener<List<Province>> {
+
+        @Override
+        public void onSuccess(List<Province> data) {
+            updateProvinceAdapter(data);
+        }
+
+        @Override
+        public void onFailure(QuickPayException ex) {
+
+        }
     }
 }
