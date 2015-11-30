@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.salesman.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,7 +89,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
             List<String> data = new ArrayList<>();
-            if (constraint != null && !constraint.equals("")) {
+            if (!TextUtils.isEmpty(constraint)) {
                 for (String name : mOriginData) {
                     if (name.contains(constraint)) {
                         data.add(name);
