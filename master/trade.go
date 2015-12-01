@@ -131,8 +131,14 @@ func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate, z 
 	// 币种单位
 	cur := currency.Get(locale.Currency)
 
-	// format
-	floatFormat := locale.ExportF64Format
+	// 金额显示格式
+	var floatFormat = "#,##0"
+	for i := 0; i < cur.Precision; i++ {
+		if i == 0 {
+			floatFormat += "."
+		}
+		floatFormat += "0"
+	}
 
 	// 可能有多个sheet
 	sheet, _ = file.AddSheet(m.SheetName)

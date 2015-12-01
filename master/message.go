@@ -80,8 +80,7 @@ func GetLocale(l string) *LocaleTemplate {
 
 // LocaleTemplate 语言模板
 type LocaleTemplate struct {
-	Currency        string
-	ExportF64Format string
+	Currency string
 	// 渠道代号
 	ChanCode struct {
 		ALP     string
