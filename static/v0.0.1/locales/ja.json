@@ -153,7 +153,7 @@
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
-    "message": "店舗カード"
+    "message": "店舗コード"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NAME": {
     "description": "门店名称",
