@@ -268,13 +268,12 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 }
 
 // TransSettStatistics 交易清算汇总
-func TransSettStatistics(q *model.QueryCondition) (model.Summary, int) {
-	group, all, total, err := mongo.SpTransSettColl.FindAndGroupBy(q)
+func TransSettStatistics(q *model.QueryCondition) model.Summary {
+	group, all, err := mongo.SpTransSettColl.FindAndGroupBy(q)
 	if err != nil {
 		log.Errorf("find trans error: %s", err)
 	}
-	after := time.Now()
-	log.Debugf("Run mongo.SpTransColl.FindAndGroupBy(q) spent %s", after.Sub(now))
+
 	var data = make([]model.Summary, 0)
 
 	// 将数据合并
@@ -295,7 +294,7 @@ func TransSettStatistics(q *model.QueryCondition) (model.Summary, int) {
 	summary := model.Summary{Data: data}
 	combine(&summary, all)
 
-	return summary, total
+	return summary
 }
 
 // TransStatistics 交易统计

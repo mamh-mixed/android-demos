@@ -261,7 +261,7 @@ func (col *transCollection) FindToSett(time string) ([]*model.Trans, error) {
 			"$gt":  time,
 			"$lte": util.NextDay(time),
 		},
-		"$in": []bson.M{
+		"$or": []bson.M{
 			bson.M{"transStatus": model.TransSuccess},
 			bson.M{"refundStatus": model.TransRefunded},
 		},

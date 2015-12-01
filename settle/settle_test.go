@@ -8,6 +8,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestDoSpTransSett(t *testing.T) {
+	DoSpTransSett("2015-12-01")
+}
+
 func TestAddTrans(t *testing.T) {
 
 	tran := &model.Trans{

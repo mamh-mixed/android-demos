@@ -245,7 +245,7 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 			"_id":       bson.M{"merId": "$trans.merId", "chanCode": "$trans.chanCode"},
 			"transAmt":  bson.M{"$sum": "$trans.transAmt"},
 			"refundAmt": bson.M{"$sum": "$trans.refundAmt"},
-			"transNum":  bson.M{"$sum": 1},
+			"transNum":  bson.M{"$sum": bson.M{"$eq": []interface{}{"$trans.transType", 1}}}, //只记录支付的笔数
 			"merName":   bson.M{"$last": "$trans.merName"},
 			"agentName": bson.M{"$last": "$trans.agentName"},
 			"groupCode": bson.M{"$last": "$trans.groupCode"},
