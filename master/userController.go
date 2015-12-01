@@ -5,6 +5,8 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"unicode"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -252,7 +254,7 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 
 	// 校验
 	if oldPwd != oldPwdEncrypt {
-		return model.NewResultBody(3, "原密码错误")
+		return model.NewResultBody(3, "OLD_PASSWORD_NOT_MATCH")
 	}
 
 	// 新密码解密
@@ -260,6 +262,17 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 	if err != nil {
 		log.Errorf("escrypt password error %s", err)
 		return model.NewResultBody(2, "DECRYPT_ERROR")
+	}
+
+	if len(pwd) < 8 {
+		log.Errorf("new password's length must greater than 8; now is %d", len(pwd))
+		return model.NewResultBody(6, "PASSWORD_LENGTH_NOT_ENOUGH")
+	}
+
+	// 密码复杂度校验
+	if !isPasswordOk(pwd) {
+		log.Errorf("new password is not conplicated enough: %s", pwd)
+		return model.NewResultBody(7, "PASSWORD_NOT_COMPLICATED_ENOUGH")
 	}
 
 	if appUser != nil {
@@ -280,6 +293,30 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 		Message: "修改密码成功",
 	}
 	return ret
+}
+
+var mustHaveInPwd = []func(rune) bool{
+	unicode.IsUpper,
+	unicode.IsLower,
+	unicode.IsDigit,
+}
+
+// isPasswordOk 判断密码是否足够复杂
+func isPasswordOk(p string) bool {
+	for _, testRune := range mustHaveInPwd {
+		found := false
+		for _, r := range p {
+			if testRune(r) {
+				found = true
+			}
+		}
+
+		if !found {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (u *userController) ResetPwd(userName string) (ret *model.ResultBody) {
