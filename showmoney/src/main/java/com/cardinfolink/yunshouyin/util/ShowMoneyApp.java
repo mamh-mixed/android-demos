@@ -76,8 +76,8 @@ public class ShowMoneyApp extends Application {
 
         quickPayConfigStorage.setUrl(SystemConfig.Server);
 
-        quickPayConfigStorage.setBankbaseKey(SystemConfig.bankbase_key);
-        quickPayConfigStorage.setBankbaseUrl(SystemConfig.bankbase_url);
+        quickPayConfigStorage.setBankbaseKey(SystemConfig.BANKBASE_KEY);
+        quickPayConfigStorage.setBankbaseUrl(SystemConfig.BANKBASE_URL);
 
         quickPayService = new QuickPayServiceImpl(quickPayConfigStorage);
         bankDataService = new BankDataServiceImpl(quickPayConfigStorage);
