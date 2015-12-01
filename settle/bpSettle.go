@@ -220,7 +220,7 @@ func doCFCATransCheck() {
 				if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
 					// 找到记录，修改清分状态
 					log.Infof("check success %+v", transSett)
-					transSett.SettFlag = model.SettSuccess
+					// TODO:transSett.SettFlag = model.SettSuccess
 					if err = mongo.TransSettColl.Update(transSett); err != nil {
 						log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Trans.Id)
 					}
@@ -305,8 +305,8 @@ func addTransSett(t *model.Trans, settFlag int8) {
 	// 计算费率
 	sett := &model.TransSett{}
 	sett.Trans = *t
-	sett.SettFlag = settFlag
-	sett.MerFee = int(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
+	// TODO:sett.SettFlag = settFlag
+	sett.MerFee = int64(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
 	sett.MerSettAmt = t.TransAmt - int64(sett.MerFee)
 
 	if err := mongo.TransSettColl.Add(sett); err != nil {

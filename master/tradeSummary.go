@@ -78,11 +78,23 @@ func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
 	s, _ := query.TransStatistics(q)
 
 	// 导出
-	genQueryStatReport(s, q, reportLocale).Write(w)
+	genStatReport(s, q, reportLocale).Write(w)
+}
+
+// tradeSettReport 交易清算汇总报表
+func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
+	// 语言模板
+	reportLocale := GetLocale(q.Locale)
+
+	// 调用core方法统计
+	s, _ := query.TransSettStatistics(q)
+
+	// 导出
+	genStatReport(s, q, reportLocale).Write(w)
 }
 
 // TODO: 优化
-func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate) (file *xlsx.File) {
+func genStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate) (file *xlsx.File) {
 
 	// 语言模板
 	reportLocale := GetLocale(cond.Locale).StatReport

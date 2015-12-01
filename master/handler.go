@@ -50,8 +50,8 @@ func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("SUCCESS"))
 }
 
-// tradeSettleQueryHandle 清算报表查询的
-func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
+// tradeSettleQueryHandle 交易划款报表查询的
+func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -67,8 +67,8 @@ func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// tradeSettleReportHandle 清算交易明细报表
-func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+// tradeTransferReportHandle 交易划款报表明细
+func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
@@ -82,6 +82,67 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 		EndTime:      date,
 		SettRole:     role,
 	}, fn)
+}
+
+// tradeSettleJournalHandle 交易流水，勾兑后的交易
+func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 页面参数
+	date := strings.Replace(r.FormValue("date"), "-", "", -1)
+	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
+	filename := ""
+
+	// session参数
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// 设置交易查询权限
+	q := &model.QueryCondition{
+		IsForReport:  true,
+		StartTime:    date + " 00:00:00", // 北京时间
+		EndTime:      date + " 23:59:59", // 北京时间
+		AgentCode:    curSession.User.AgentCode,
+		MerId:        curSession.User.MerId,
+		SubAgentCode: curSession.User.SubAgentCode,
+		GroupCode:    curSession.User.GroupCode,
+		UtcOffset:    utcOffset,
+		Locale:       curSession.Locale,
+	}
+
+	// 设置返回content
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+
+	// 下载
+	tradeSettJournalReport(w, q)
+
+}
+
+// tradeSettleReportHandle 交易流水汇总，勾兑后的交易
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	date := r.FormValue("date") // 北京时间
+
+	filename := ""
+
+	q := &model.QueryCondition{
+		StartTime: date + " 00:00:00", // 北京时间
+		EndTime:   date + " 23:59:59", // 北京时间
+	}
+
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+
+	// 导出
+	statTradeReport(w, q)
+}
+
+// tradeSettleRefreshHandle 重新勾兑交易数据
+func tradeSettleRefreshHandle(w http.ResponseWriter, r *http.Request) {
+
 }
 
 // respCodeMatchHandle 查找应答码处理器
@@ -917,7 +978,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 	// 密码解密
 	pwd, err := rsaDecryptFromBrowser(user.Password)
-	if err != nil{
+	if err != nil {
 		log.Errorf("escrypt password error %s", err)
 		w.WriteHeader(http.StatusNotImplemented)
 		return
@@ -934,11 +995,11 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
-			Name:    SessionKey,
-			Value:   cValue,
+			Name:     SessionKey,
+			Value:    cValue,
 			HttpOnly: true,
-			Path:    "/master",
-			Expires: cExpires,
+			Path:     "/master",
+			Expires:  cExpires,
 		})
 
 		// 创建session
@@ -990,11 +1051,11 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	// 清除cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:   "QUICKMASTERID",
-		Value:  "",
+		Name:     "QUICKMASTERID",
+		Value:    "",
 		HttpOnly: true,
-		Path:   "/master",
-		MaxAge: -1,
+		Path:     "/master",
+		MaxAge:   -1,
 	})
 
 	sid, err := r.Cookie(SessionKey)

@@ -232,8 +232,15 @@ type ChanMer struct {
 	// 1. 渠道不退手续费，机构承担手续费，统计报表及清算报表中的交易金额 =  负的原交易金额；
 	// 2. 渠道不退手续费，商户承担手续费，统计报表及清算报表中的交易金额 =  负的（原交易金额 – 手续费）；
 	// 3. 渠道不退手续费（预留），机构商户按比例承担手续费，这个模式目前不会有，先不统计在报表里。
-	SchemeType int `bson:"schemeType" json:"schemeType"` // 计费方案
+	SchemeType int          `bson:"schemeType" json:"schemeType"` // 计费方案
+	Sftp       *SftpAccount `bson:"sftp,omitempty" json:"-"`
 	// ...
+}
+
+// SftpAccount 登录sftp的帐号
+type SftpAccount struct {
+	Username string `bson:"username"`
+	Password string `bson:"password"`
 }
 
 type Agent struct {
@@ -415,13 +422,13 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 // TransSett 清算信息
 type TransSett struct {
 	Trans       Trans  `bson:"trans"`       // 清算的交易
-	SettFlag    int8   `bson:"settFlag"`    // 清算标志
+	SettRole    string `bson:"settRole"`    // 清算角色
 	SettDate    string `bson:"settDate"`    // 清算时间
 	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
-	MerFee      int    `bson:"merFee"`      // 商户手续费
+	MerFee      int64  `bson:"merFee"`      // 商户手续费
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
-	ChanFee     int    `bson:"chanFee"`     // 渠道手续费
-	AgentFee    int    `bson:"agentFee"`    // 代理、机构手续费
+	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
+	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
 	BlendType   int    `bson:"blendType"`   // 勾兑状态
 }
 

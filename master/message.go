@@ -120,6 +120,8 @@ type LocaleTemplate struct {
 
 // TransReport 交易明细报表
 type TransReport struct {
+	Yes            string
+	No             string
 	SheetName      string
 	MerId          string
 	MerName        string
@@ -135,6 +137,7 @@ type TransReport struct {
 	Busicd         string
 	OrigOrderNum   string
 	Remark         string
+	IsSettled      string
 	RefundAmt      string
 	Fee            string
 	SettAmt        string

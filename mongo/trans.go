@@ -60,7 +60,7 @@ func (col *transCollection) BatchAdd(ts []*model.Trans) (err error) {
 		if err != nil {
 			return err
 		}
-		log.Infof("insert coupon [%d, %d)", s, e)
+		// log.Infof("insert trans [%d, %d)", s, e)
 	}
 
 	return nil
@@ -247,6 +247,25 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 			"$gt":  time,
 			"$lte": util.NextDay(time),
 		},
+	}
+	err := database.C(col.name).Find(q).All(&ts)
+	return ts, err
+}
+
+// FindToSett 根据渠道时间查找成功交易
+func (col *transCollection) FindToSett(time string) ([]*model.Trans, error) {
+
+	var ts []*model.Trans
+	q := bson.M{
+		"payTime": bson.M{
+			"$gt":  time,
+			"$lte": util.NextDay(time),
+		},
+		"$in": []bson.M{
+			bson.M{"transStatus": model.TransSuccess},
+			bson.M{"refundStatus": model.TransRefunded},
+		},
+		"transAmt": bson.M{"$ne": 0},
 	}
 	err := database.C(col.name).Find(q).All(&ts)
 	return ts, err
