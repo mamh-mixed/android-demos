@@ -24,8 +24,7 @@ public class LoadingDialog {
 
     public void startLoading() {
         dialogView.setVisibility(View.VISIBLE);
-        Animation loadingAnimation = AnimationUtils.loadAnimation(
-                mContext, R.anim.loading_animation);
+        Animation loadingAnimation = AnimationUtils.loadAnimation(mContext, R.anim.loading_animation);
         loadImg.startAnimation(loadingAnimation);
 
 
