@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,8 +22,7 @@ public class AlertDialog {
     private String mMessage;
     private Bitmap mBitmap;
 
-    public AlertDialog(Context context, Handler handler, View view,
-                       String message, Bitmap bitmap) {
+    public AlertDialog(Context context, Handler handler, View view, String message, Bitmap bitmap) {
         mContext = context;
         mHandler = handler;
         dialogView = view;
@@ -43,30 +43,28 @@ public class AlertDialog {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });
 
-        dialogView.findViewById(R.id.alert_ok).setOnClickListener(
-                new OnClickListener() {
+        dialogView.findViewById(R.id.alert_ok).setOnClickListener(new OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        dialogView.setVisibility(View.GONE);
-                        if (mHandler != null) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_CLIENT_ALERT_OK);
-                        }
+            @Override
+            public void onClick(View v) {
+                dialogView.setVisibility(View.GONE);
+                if (mHandler != null) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_CLIENT_ALERT_OK);
+                }
 
-                    }
-                });
+            }
+        });
     }
 
 
     public void show(String message, Bitmap bitmap) {
 
         TextView textView = (TextView) dialogView.findViewById(R.id.alert_message);
-        if (message.length() == 0) {
+        if (TextUtils.isEmpty(message)) {
             message = ShowMoneyApp.getResString(R.string.server_timeout);
         }
         textView.setText(message);
@@ -80,19 +78,17 @@ public class AlertDialog {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });
 
-        dialogView.findViewById(R.id.alert_ok).setOnClickListener(
-                new OnClickListener() {
+        dialogView.findViewById(R.id.alert_ok).setOnClickListener(new OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        dialogView.setVisibility(View.GONE);
+            @Override
+            public void onClick(View v) {
+                dialogView.setVisibility(View.GONE);
 
-                    }
-                });
+            }
+        });
     }
 }

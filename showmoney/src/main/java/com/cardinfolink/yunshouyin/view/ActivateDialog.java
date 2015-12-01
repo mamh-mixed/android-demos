@@ -38,71 +38,61 @@ public class ActivateDialog {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });
-        dialogView.findViewById(R.id.activate_dialog_cancel)
-                .setOnClickListener(new OnClickListener() {
+        dialogView.findViewById(R.id.activate_dialog_cancel).setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialogView.setVisibility(View.GONE);
+                Intent intent = new Intent(mContext, LoginActivity.class);
+                mContext.startActivity(intent);
+                if (!(mContext instanceof LoginActivity)) {
+                    ((Activity) mContext).finish();
+                }
+
+            }
+        });
+
+        dialogView.findViewById(R.id.activate_dialog_ok).setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRequestActivate(SessonData.loginUser.getUsername(), SessonData.loginUser.getPassword()), new CommunicationListener() {
 
                     @Override
-                    public void onClick(View v) {
-                        dialogView.setVisibility(View.GONE);
-                        Intent intent = new Intent(mContext,
-                                LoginActivity.class);
-                        mContext.startActivity(intent);
-                        if (!(mContext instanceof LoginActivity)) {
-                            ((Activity) mContext).finish();
+                    public void onResult(String result) {
+                        String state = JsonUtil.getParam(result, "state");
+                        if (state.equals("success")) {
+
+                            ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    //更新UI
+                                    dialogView.setVisibility(View.GONE);
+                                    Intent intent = new Intent(mContext, LoginActivity.class);
+                                    mContext.startActivity(intent);
+                                    if (!(mContext instanceof LoginActivity)) {
+                                        ((Activity) mContext).finish();
+                                    }
+                                }
+
+                            });
+
                         }
-
                     }
-                });
-
-        dialogView.findViewById(R.id.activate_dialog_ok).setOnClickListener(
-                new OnClickListener() {
 
                     @Override
-                    public void onClick(View v) {
-
-                        HttpCommunicationUtil.sendDataToServer(ParamsUtil
-                                        .getRequestActivate(
-                                                SessonData.loginUser.getUsername(),
-                                                SessonData.loginUser.getPassword()),
-                                new CommunicationListener() {
-
-                                    @Override
-                                    public void onResult(String result) {
-                                        String state = JsonUtil.getParam(
-                                                result, "state");
-                                        if (state.equals("success")) {
-
-                                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                                @Override
-                                                public void run() {
-                                                    //更新UI
-                                                    dialogView.setVisibility(View.GONE);
-                                                    Intent intent = new Intent(mContext,
-                                                            LoginActivity.class);
-                                                    mContext.startActivity(intent);
-                                                    if (!(mContext instanceof LoginActivity)) {
-                                                        ((Activity) mContext).finish();
-                                                    }
-                                                }
-
-                                            });
-
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(String error) {
-
-                                    }
-                                });
-
+                    public void onError(String error) {
 
                     }
                 });
+
+
+            }
+        });
     }
 }
