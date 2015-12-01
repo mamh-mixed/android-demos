@@ -1,8 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../layouts/scaffold-layout.html">
-<link rel="import" href="../../elements/settle-report-list/settle-report-list.html">
+<link rel="import" href="../../elements/transfer-report-list/transfer-report-list.html">
 
-<dom-module id="settle-report-page">
+<dom-module id="transfer-report-page">
   <style>
     :host {
       display: block;
@@ -10,22 +10,20 @@
   </style>
   <template>
     <scaffold-layout route$="[[route]]">
-      <settle-report-list class="content"></settle-report-list>
+      <transfer-report-list class="content"></transfer-report-list>
     </scaffold-layout>
   </template>
   <script>
     (function() {
       Polymer({
-        is: 'settle-report-page',
+        is: 'transfer-report-page',
         properties: {
           route: {
             type: Object,
             value: {
-              name: 'stats.settle.reports',
-              path: '/stats/settle/reports',
-              title: '清算报表下载',
-              isLocale: true,
-              msgId: 'SCANPAY_TRADE_SETTLE_REPORT.TITLE',
+              name: 'stats.transfer.reports',
+              path: '/stats/transfer/reports',
+              title: '划款报表下载',
               subtitle: ''
             }
           },
