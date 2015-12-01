@@ -21,11 +21,11 @@ public class BankBaseUtil {
 
     public static RequestParam getProvince() {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.bankbase_url + "/city/provinces/list.json";
+        String url = SystemConfig.BANKBASE_URL + "/city/provinces/list.json";
         Log.i(TAG, "url = " + requestParam.getUrl());
         List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("appkey", SystemConfig.bankbase_key));
-        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.bankbase_key)));
+        params.add(new BasicNameValuePair("appkey", SystemConfig.BANKBASE_KEY));
+        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.BANKBASE_KEY)));
         url = url + "?" + getValue(params);
         requestParam.setUrl(url);
         Log.i(TAG, "url = " + requestParam.getUrl());
@@ -36,12 +36,12 @@ public class BankBaseUtil {
 
     public static RequestParam getCity(String province) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.bankbase_url + "/city/province/cities.json";
+        String url = SystemConfig.BANKBASE_URL + "/city/province/cities.json";
         Log.i(TAG, "url = " + requestParam.getUrl());
         List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("appkey", SystemConfig.bankbase_key));
+        params.add(new BasicNameValuePair("appkey", SystemConfig.BANKBASE_KEY));
         params.add(new BasicNameValuePair("province", province));
-        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.bankbase_key)));
+        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.BANKBASE_KEY)));
         url = url + "?" + getValue(params);
         requestParam.setUrl(url);
         Log.i(TAG, "url = " + requestParam.getUrl());
@@ -52,11 +52,11 @@ public class BankBaseUtil {
 
     public static RequestParam getBank() {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.bankbase_url + "/bank/ids.json";
+        String url = SystemConfig.BANKBASE_URL + "/bank/ids.json";
         Log.i(TAG, "url = " + requestParam.getUrl());
         List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("appkey", SystemConfig.bankbase_key));
-        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.bankbase_key)));
+        params.add(new BasicNameValuePair("appkey", SystemConfig.BANKBASE_KEY));
+        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.BANKBASE_KEY)));
         url = url + "?" + getValue(params);
         requestParam.setUrl(url);
         Log.i(TAG, "url = " + requestParam.getUrl());
@@ -67,10 +67,10 @@ public class BankBaseUtil {
 
     public static RequestParam getSerach(String city_code, String bank_id) {
         RequestParam requestParam = new RequestParam();
-        String url = SystemConfig.bankbase_url + "/bank/search.json";
+        String url = SystemConfig.BANKBASE_URL + "/bank/search.json";
         Log.i(TAG, "bank_id=" + bank_id);
         List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("appkey", SystemConfig.bankbase_key));
+        params.add(new BasicNameValuePair("appkey", SystemConfig.BANKBASE_KEY));
         if (city_code != null && !city_code.isEmpty()) {
             params.add(new BasicNameValuePair("city_code", city_code));
         }
@@ -79,7 +79,7 @@ public class BankBaseUtil {
             params.add(new BasicNameValuePair("bank_id", bank_id));
         }
         params.add(new BasicNameValuePair("size", "500"));
-        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.bankbase_key)));
+        params.add(new BasicNameValuePair("sig", getSign(params, SystemConfig.BANKBASE_KEY)));
         url = url + "?" + getValue(params);
         requestParam.setUrl(url);
         Log.i(TAG, "url = " + requestParam.getUrl());
@@ -134,7 +134,7 @@ public class BankBaseUtil {
         String sign = "";
         Log.i(TAG, sb.toString());
 
-        sign = hmacSha1(sb.toString(), SystemConfig.bankbase_key);
+        sign = hmacSha1(sb.toString(), SystemConfig.BANKBASE_KEY);
         Log.i(TAG, "sign=" + sign);
         return sign;
     }

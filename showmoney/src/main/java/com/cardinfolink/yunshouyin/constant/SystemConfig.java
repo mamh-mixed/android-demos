@@ -19,7 +19,7 @@ public class SystemConfig {
 
     //公共数据平台秘钥和key
 
-    public static final String bankbase_key = "20e786206dcf4aae8a63fe34553fd274";
-    public static final String bankbase_url = "http://211.144.213.120:443/bdp";
+    public static final String BANKBASE_KEY = "20e786206dcf4aae8a63fe34553fd274";
+    public static final String BANKBASE_URL = "http://211.144.213.120:443/bdp";
 
 }
