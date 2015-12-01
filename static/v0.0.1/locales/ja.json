@@ -443,6 +443,30 @@
     "description": "支付时间",
     "message": "お支払い日時"
   },
+  "SCANPAY_TRADE_SETTLE_REPORT.TITLE": {
+    "description": "清算报表下载",
+    "message": "清算レポートダウンロード"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME": {
+    "description": "扫码支付清算报表",
+    "message": "QRコード清算レポート"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE": {
+    "description": "清算日期",
+    "message": "清算日"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.REDO_SETTLE": {
+    "description": "重跑清算报表",
+    "message": "再度清算"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
+    "description": "下载汇总报表",
+    "message": "ダウンロード統計レポート"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
+    "description": "下载明细报表",
+    "message": "ダウンロード明細レポート"
+  },
   "xxx": {
     "description": "xxx",
     "message": "xxx"

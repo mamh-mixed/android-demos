@@ -36,6 +36,7 @@
       <app-route path="/stats/reports" name="report-list" import="pages/stats/reports-page.html"></app-route>
       <app-route path="/stats/old/reports" name="report-list-old" import="pages/stats/old-system-page.html"></app-route>
       <app-route path="/stats/settle/reports" name="settle-report-list" import="pages/stats/settle-report-page.html"></app-route>
+      <app-route path="/stats/transfer/reports" name="transfer-report-list" import="pages/stats/transfer-report-page.html"></app-route>
       <app-route path="/test/scanpay" name="test-scanpay" import="pages/test/scanpay-page.html"></app-route>
       <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
       <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
@@ -65,7 +66,7 @@
       NOT_FOUNT_PATH,
       LOGIN_PATH
     ];
-    var agentRoutes = ['/trade/list', '/stats/reports', '/system/password/editor'];
+    var agentRoutes = ['/trade/list', '/stats/reports', '/system/password/editor', '/stats/settle/reports'];
 
     Polymer({
       is: 'quickpay-app',
