@@ -183,6 +183,7 @@
         // 修改用户信息
         editorUserHandle: function() {
           this.pageType = 'editor';
+          this.$.userCreate.isUpdate = true;
           this.$.userCreate.open();
         },
         // 发送查询交易的ajax请求

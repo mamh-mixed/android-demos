@@ -31,10 +31,11 @@ func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 	}
 
 	type rec struct {
-		OrderNum  string `json:"orderNum"`
-		TransType int8   `json:"transType"`
-		TransTime string `json:"transTime"`
-		TransAmt  int64  `json:"transAmt"`
+		OrderNum     string `json:"orderNum"`
+		TransType    int8   `json:"transType"`
+		TransTime    string `json:"transTime"`
+		TransAmt     int64  `json:"transAmt"`
+		OrigOrderNum string `json:"origOrderNum,omitempty"`
 	}
 
 	tSize := len(trans)
@@ -68,7 +69,7 @@ func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 				transType = 8
 			}
 
-			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt}
+			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt, t.OrigOrderNum}
 			recs = append(recs, r)
 		}
 		result.Rec = recs

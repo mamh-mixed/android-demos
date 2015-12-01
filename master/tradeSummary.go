@@ -87,7 +87,7 @@ func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
 	reportLocale := GetLocale(q.Locale)
 
 	// 调用core方法统计
-	s, _ := query.TransSettStatistics(q)
+	s := query.TransSettStatistics(q)
 
 	// 导出
 	genStatReport(s, q, reportLocale).Write(w)

@@ -43,23 +43,6 @@ func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// scanpayBillsHandle 清算对账
-func scanpayBillsHandle(w http.ResponseWriter, r *http.Request) {
-
-	bytes, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "read body error", http.StatusNotAcceptable)
-		return
-	}
-
-	retBytes := getBillsCtrl(bytes)
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Write(retBytes)
-
-}
-
 // weixinNotifyHandle 接受微信异步通知
 func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	ret := &weixin.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}

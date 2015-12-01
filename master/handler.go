@@ -137,7 +137,7 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
 	// 导出
-	statTradeReport(w, q)
+	tradeSettReport(w, q)
 }
 
 // tradeSettleRefreshHandle 重新勾兑交易数据
