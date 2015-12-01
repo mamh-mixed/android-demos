@@ -118,6 +118,13 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
 
+	sign := req.Cardbin[0:1]
+	if req.PayType == "4" && sign != "1" {
+		return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
+	} else if req.PayType == "5" && sign != "2" {
+		return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
+	}
+
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
