@@ -341,7 +341,7 @@ func (z *Zone) GetTime(ctime string) string {
 
 	// 假如是东八区北京时间，直接返回
 	if z.UtcOffset == cstOffset {
-		return ctime
+		return ctime + " +0800"
 	}
 
 	// 以服务器时区为准，即东八区

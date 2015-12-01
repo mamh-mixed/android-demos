@@ -77,8 +77,11 @@ func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
 	// 调用core方法统计
 	s, _ := query.TransStatistics(q)
 
-	// 导出
-	genStatReport(s, q, reportLocale).Write(w)
+	// 设置为东八区
+	q.UtcOffset = 60 * 60 * 8
+
+	// TODO 币种处理，导出
+	genStatReport(s, q, reportLocale, reportLocale.Currency).Write(w)
 }
 
 // tradeSettReport 交易清算汇总报表
@@ -89,18 +92,22 @@ func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
 	// 调用core方法统计
 	s := query.TransSettStatistics(q)
 
+	// 设置为东八区
+	q.UtcOffset = 60 * 60 * 8
+
+	// TODO 暂时设置为日币
 	// 导出
-	genStatReport(s, q, reportLocale).Write(w)
+	genStatReport(s, q, reportLocale, "JPY").Write(w)
 }
 
 // TODO: 优化
-func genStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate) (file *xlsx.File) {
+func genStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate, curr string) (file *xlsx.File) {
 
 	// 语言模板
 	reportLocale := GetLocale(cond.Locale).StatReport
 
 	// 币种转换
-	cur := currency.Get(locale.Currency)
+	cur := currency.Get(curr)
 
 	file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
@@ -112,8 +119,14 @@ func genStatReport(result model.Summary, cond *model.QueryCondition, locale *Loc
 	// 表头样式
 	genHead(sheet, row, cell, cond)
 
-	// format
-	floatFormat := locale.ExportF64Format
+	// 金额显示格式
+	var floatFormat = "#,##0"
+	for i := 0; i < cur.Precision; i++ {
+		if i == 0 {
+			floatFormat += "."
+		}
+		floatFormat += "0"
+	}
 
 	// 填充数据
 	for _, d := range result.Data {
@@ -174,7 +187,7 @@ func genStatReport(result model.Summary, cond *model.QueryCondition, locale *Loc
 	cell.SetInt(result.TotalTransNum)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(float64(result.TotalTransAmt), floatFormat)
+	cell.SetFloatWithFormat(cur.F64(result.TotalTransAmt), floatFormat)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(cur.F64(result.TotalFee), floatFormat)

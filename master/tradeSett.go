@@ -5,7 +5,7 @@ import (
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	// "github.com/omigo/log"
+	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"net/http"
 	"time"
@@ -18,9 +18,7 @@ func tradeSettJournalReport(w http.ResponseWriter, cond *model.QueryCondition) {
 
 	// 查询
 	transSetts, _ := mongo.SpTransSettColl.Find(cond)
-	if len(transSetts) == 0 {
-		return
-	}
+	log.Debugf("count : %d", len(transSetts))
 
 	// 生成报表
 	file := settJornalReport(transSetts, rl, &Zone{cond.UtcOffset, time.Local})

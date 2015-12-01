@@ -88,7 +88,7 @@ func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 
 	// 页面参数
-	date := strings.Replace(r.FormValue("date"), "-", "", -1)
+	date := r.FormValue("date")
 	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
 	filename := ""
 
@@ -97,6 +97,20 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error("fail to find session")
 		return
+	}
+
+	// filename
+	switch curSession.UserType {
+	case model.UserTypeCIL, model.UserTypeGenAdmin:
+		filename = "admin_settle_journal.xlsx"
+	case model.UserTypeAgent:
+		filename = "agent_settle_journal.xlsx"
+	case model.UserTypeMerchant:
+		filename = "merchant_settle_journal.xlsx"
+	case model.UserTypeCompany:
+		filename = "company_settle_journal.xlsx"
+	case model.UserTypeShop:
+		filename = "shop_settle_journal.xlsx"
 	}
 
 	// 设置交易查询权限
@@ -108,7 +122,7 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 		MerId:        curSession.User.MerId,
 		SubAgentCode: curSession.User.SubAgentCode,
 		GroupCode:    curSession.User.GroupCode,
-		UtcOffset:    utcOffset,
+		UtcOffset:    utcOffset * 60, // second
 		Locale:       curSession.Locale,
 	}
 
@@ -124,12 +138,39 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 // tradeSettleReportHandle 交易流水汇总，勾兑后的交易
 func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 	date := r.FormValue("date") // 北京时间
-
 	filename := ""
 
+	// session参数
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// filename
+	switch curSession.UserType {
+	case model.UserTypeCIL, model.UserTypeGenAdmin:
+		filename = "admin_settle_summary.xlsx"
+	case model.UserTypeAgent:
+		filename = "agent_settle_summary.xlsx"
+	case model.UserTypeMerchant:
+		filename = "merchant_settle_summary.xlsx"
+	case model.UserTypeCompany:
+		filename = "company_settle_summary.xlsx"
+	case model.UserTypeShop:
+		filename = "shop_settle_summary.xlsx"
+	}
+
+	// condition
 	q := &model.QueryCondition{
-		StartTime: date + " 00:00:00", // 北京时间
-		EndTime:   date + " 23:59:59", // 北京时间
+		IsForReport:  true,
+		StartTime:    date + " 00:00:00", // 北京时间
+		EndTime:      date + " 23:59:59", // 北京时间
+		AgentCode:    curSession.User.AgentCode,
+		MerId:        curSession.User.MerId,
+		SubAgentCode: curSession.User.SubAgentCode,
+		GroupCode:    curSession.User.GroupCode,
+		Locale:       curSession.Locale,
 	}
 
 	// 设置content-type
@@ -142,7 +183,7 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 
 // tradeSettleRefreshHandle 重新勾兑交易数据
 func tradeSettleRefreshHandle(w http.ResponseWriter, r *http.Request) {
-
+	// TODO
 }
 
 // respCodeMatchHandle 查找应答码处理器
