@@ -636,7 +636,6 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
 	}
 	find["merId"] = q.MerId
-	find["busicd"] = q.Busicd
 	find["$or"] = []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}}
 
 	// 过滤掉取消不成功的订单
