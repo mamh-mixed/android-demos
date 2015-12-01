@@ -514,7 +514,8 @@
         decInfo = CURRENCY_DECIMAL_MAP['CNY'];
       }
 
-      return (money / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
+      var amount = (money / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
+      return Util.beautifyAmount(amount);
     },
     transStatusFilter: function(status) {
       var map = {

@@ -104,6 +104,18 @@ DEBEqXeE7Q7WeseaHQIDAQAB\
 			rsa.setPublicKey(publicKey);
 			return rsa.encrypt(plaintext);
 		};
+		// 美化金额，加上逗号，把10000 转成 10,000
+		var beautifyAmount = function(amount) {
+			var x = amount.split('.');
+	        var x1 = x[0];
+	        var x2 = '';
+	        x2 = x.length > 1 ? '.' + x[1] : '';
+	        var rgx = /(\d+)(\d{3})/;
+	        while (rgx.test(x1)) {
+	          x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	        }
+	        return x1 + x2;
+		};
 		return {
 			init: init,
 			fire: fire,
@@ -114,6 +126,7 @@ DEBEqXeE7Q7WeseaHQIDAQAB\
 			toLocaleDateTime: _toLocaleDateTime,
 			toCSTDateTime: _toCSTDateTime,
 			RSAEncrypt: RSAEncrypt,
+			beautifyAmount: beautifyAmount
 		};
 	}());
 

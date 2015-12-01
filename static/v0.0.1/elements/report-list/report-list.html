@@ -442,15 +442,7 @@
           decInfo = CURRENCY_DECIMAL_MAP['CNY'];
         }
         amount = (amount / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
-        var x = amount.split('.');
-        var x1 = x[0];
-        var x2 = '';
-        x2 = x.length > 1 ? '.' + x[1] : '';
-        var rgx = /(\d+)(\d{3})/;
-        while (rgx.test(x1)) {
-          x1 = x1.replace(rgx, '$1' + ',' + '$2');
-        }
-        return x1 + x2;
+        return Util.beautifyAmount(amount);
       },
       // 整理下载报表的url
       _computeDownLoadUrl: function(item) {
