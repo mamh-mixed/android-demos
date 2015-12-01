@@ -21,6 +21,7 @@ const (
 	Qyzf = "QYZF" // 企业付款
 	Jszf = "JSZF"
 	Veri = "VERI" // 卡券核销
+	List = "LIST"
 	// 卡券核销状态
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
@@ -182,7 +183,11 @@ type ScanPayRequest struct {
 
 	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
 	Terminalsn string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
-	CreateTime string `json:"-" url:"-" bson:"-"`                                                          // 卡券交易创建时间
+
+	SettDate     string `json:"settDate" url:"settDate,omitempty" bson:"settDate,omitempty"`
+	NextOrderNum string `json:"nextOrderNum" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
+
+	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
@@ -274,6 +279,11 @@ type ScanPayResponse struct {
 	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty" bson:"veriCode,omitempty"`
 	GoodsInfo       string   `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty" bson:"goodsInfo,omitempty"`
 	Attach          string   `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
+
+	Count        string      `json:"count,omitempty" url:"count,omitempty"`
+	Rec          interface{} `json:"rec,omitempty" url:"-" bson:"-"`
+	RecStr       string      `json:"-" url:"rec,omitempty" bson:"-"`
+	NextOrderNum string      `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"-"`
 
 	ScanCodeId string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty" bson:"scanCodeId,omitempty"` // 扫码号 卡券核销M
 	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
