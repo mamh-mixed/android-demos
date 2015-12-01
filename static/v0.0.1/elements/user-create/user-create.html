@@ -44,7 +44,10 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogAdd">
-      <h2>创建用户</h2>
+      <h2>
+        <span hidden$="{{isUpdate}}" style="font-size: inherit;">创建用户</span>
+        <span hidden$="{{!isUpdate}}" style="font-size: inherit;">编辑用户</span>
+      </h2>
       <paper-dialog-scrollable>
         <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
         <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}"></paper-input>
@@ -73,6 +76,10 @@
         userType: {
           type: Object
         },
+        isUpdate: {
+          type: Boolean,
+          value: false
+        },
         userTypes: {
           type: Array,
           value: [{
@@ -97,6 +104,14 @@
         },
         pageType: String,
         user: Object
+      },
+      listeners: {
+        'iron-overlay-closed': 'listenOverlayClese'
+      },
+      listenOverlayClese: function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.set('isUpdate', false);
       },
       observers: [
         '_userTypesChange(userType)'
