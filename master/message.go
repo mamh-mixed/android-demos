@@ -126,6 +126,7 @@ type TransReport struct {
 	MerName        string
 	OrderNum       string
 	TransAmt       string
+	TransCurr      string
 	MerFee         string
 	ChanCode       string
 	TransTime      string

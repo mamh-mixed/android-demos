@@ -5,7 +5,6 @@ import (
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"net/http"
 	"time"
@@ -18,7 +17,6 @@ func tradeSettJournalReport(w http.ResponseWriter, cond *model.QueryCondition) {
 
 	// 查询
 	transSetts, _ := mongo.SpTransSettColl.Find(cond)
-	log.Debugf("count : %d", len(transSetts))
 
 	// 生成报表
 	file := settJornalReport(transSetts, rl, &Zone{cond.UtcOffset, time.Local})
@@ -72,6 +70,7 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 		MerName      string
 		OrderNum     string
 		TransAmt     string
+		TransCurr    string
 		MerFee       string
 		ChanCode     string
 		TransTime    string
@@ -83,7 +82,7 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 		OrigOrderNum string
 		Remark       string
 		IsSettled    string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark, m.IsSettled}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark, m.IsSettled}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -142,6 +141,9 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 		// 交易金额
 		cell = row.AddCell()
 		cell.SetFloatWithFormat(amt, floatFormat)
+		// 交易币种
+		cell = row.AddCell()
+		cell.Value = v.Currency
 		// 商户手续费
 		cell = row.AddCell()
 		cell.SetFloatWithFormat(cur.F64(ts.MerFee), floatFormat)

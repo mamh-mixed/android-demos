@@ -48,6 +48,7 @@
 		"MerName"        			:"加盟店名称",
 		"OrderNum"       			:"オーダーナンバー",
 		"TransAmt"       			:"取引金額",
+		"TransCurr"					:"取引通貨",
 		"MerFee"					:"加盟店手数料",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間",

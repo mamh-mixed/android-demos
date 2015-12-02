@@ -24,7 +24,11 @@ const (
 )
 
 func init() {
-	needSettles = append(needSettles, &alipayOverseas{At: "02:00:00", sftpAddr: "sftp.alipay.com"})
+	needSettles = append(needSettles,
+		&alipayOverseas{
+			At:       "02:00:00",
+			sftpAddr: "sftp.alipay.com",
+		})
 }
 
 type alipayOverseas struct {

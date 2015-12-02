@@ -48,6 +48,7 @@
 		"MerName"        			:"商户名称",
 		"OrderNum"       			:"订单号",
 		"TransAmt"       			:"交易金额",
+		"TransCurr"					:"交易币种",
 		"MerFee"					:"商户手续费",
 		"ChanCode"       			:"渠道",
 		"TransTime"      			:"交易时间",

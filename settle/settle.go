@@ -16,7 +16,7 @@ type Settle interface {
 // 需要清算
 var needSettles []Settle
 
-// 勾兑
+// DoSettle 勾兑
 func DoSettle(date string) {
 	for _, ns := range needSettles {
 		d := ns.ProcessDuration()
@@ -105,7 +105,7 @@ func DoSpTransSett(date string) (err error) {
 		transSett.Trans = *t
 		transSett.SettDate = date
 		transSett.SettRole = t.SettRole
-		transSett.BlendType = CHAN_LESS
+		transSett.BlendType = CHAN_LESS // 默认是渠道少清的
 
 		// 计算商户手费率
 		if t.TransType == model.PayTrans {
