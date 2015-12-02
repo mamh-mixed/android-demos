@@ -107,6 +107,10 @@
     "description": "修改密码成功",
     "message": "Update password successfully"
   },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
+    "description": "新密码不能和旧密码相同",
+    "message": "EN新密码不能和旧密码相同"
+  },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
     "message": "EN新密码不一致"

@@ -267,7 +267,7 @@
           <div class="middle middle-container center horizontal layout" id="middleContainer">
             <template is="dom-if" if="{{route.isLocale}}">
               <div class="app-name" id="appName">
-                <i18n-msg msgid$="{{route.msgId}}">{{route.title}}</i18n-msg>
+                <i18n-msg msgid$="{{route.msgId}}" style="font-size: inherit;">{{route.title}}</i18n-msg>
               </div>
             </template>
             <template is="dom-if" if="{{!route.isLocale}}">
