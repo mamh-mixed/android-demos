@@ -83,6 +83,10 @@ type configStruct struct {
 		EncryptSignKey    string
 		ChannelId         string
 	}
+
+	Settle struct {
+		OverseasSettPoint string
+	}
 }
 
 // postProcess 后续处理

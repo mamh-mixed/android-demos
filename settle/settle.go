@@ -42,13 +42,12 @@ func RefreshSpTransSett(date string) (err error) {
 		return err
 	}
 
-	// 导数据
+	// 重新执行
 	err = DoSpTransSett(date)
 	if err != nil {
 		return err
 	}
 
-	// TODO:勾兑
 	return nil
 }
 

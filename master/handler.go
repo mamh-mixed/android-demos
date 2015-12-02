@@ -13,6 +13,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/CardInfoLink/quickpay/util"
 
 	"github.com/omigo/log"
@@ -184,6 +185,12 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 // tradeSettleRefreshHandle 重新勾兑交易数据
 func tradeSettleRefreshHandle(w http.ResponseWriter, r *http.Request) {
 	// TODO
+	date := r.FormValue("date")
+	key := r.FormValue("key")
+	if key != "cilxl12345$" {
+		return
+	}
+	settle.RefreshSpTransSett(date)
 }
 
 // respCodeMatchHandle 查找应答码处理器
