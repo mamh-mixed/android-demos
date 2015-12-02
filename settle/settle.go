@@ -7,6 +7,32 @@ import (
 	"time"
 )
 
+// Settle 清算接口
+type Settle interface {
+	ProcessDuration() time.Duration // 何时可以执行
+	Reconciliation(date string)     // 勾兑过程
+}
+
+// 需要清算
+var needSettles []Settle
+
+// 勾兑
+func DoSettle(date string) {
+	for _, ns := range needSettles {
+		d := ns.ProcessDuration()
+		switch d {
+		case 0:
+			go ns.Reconciliation(date)
+		case -1:
+			// ignore
+		default:
+			time.AfterFunc(d, func() {
+				ns.Reconciliation(date)
+			})
+		}
+	}
+}
+
 // RefreshSpTransSett 重新生成数据
 func RefreshSpTransSett(date string) (err error) {
 
@@ -110,7 +136,11 @@ func DoSpTransSett(date string) (err error) {
 	err = mongo.SpTransSettColl.BatchAdd(transSetts)
 	if err != nil {
 		log.Errorf("batch add transSett error: %s", err)
+		return err
 	}
+
+	// 进行勾兑
+	DoSettle(date)
 
 	return err
 }

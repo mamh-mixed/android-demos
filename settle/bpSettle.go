@@ -40,8 +40,12 @@ func processTransSettle() {
 
 	// 凌晨10分时将交易数据copy到清分表
 	// 距离指定的时间
-	dis, _ := util.TimeToGiven("00:10:00")
-	afterFunc(dis*time.Second, "doTransSett")
+	// dis, _ := util.TimeToGiven("00:10:00")
+	// afterFunc(dis*time.Second, "doTransSett")
+
+	// 扫码支付每天定时copy交易到sett表，随后进行勾兑
+	disOs, _ := util.TimeToGiven("00:30:00")
+	afterFunc(disOs*time.Second, "doSpTransSett")
 
 	// 中金渠道
 	// disCfca, _ := util.TimeToGiven("08:00:00")
@@ -128,6 +132,8 @@ func do(method string) {
 		app.NotifySalesman()
 	case "doScanpaySettReport":
 		err = doScanpaySettReport(yesterday)
+	case "doSpTransSett":
+		err = DoSpTransSett(yesterday)
 	default:
 		//..
 	}

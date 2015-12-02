@@ -23,17 +23,48 @@ const (
 	FEE_ERROR = 4
 )
 
+func init() {
+	needSettles = append(needSettles, &alipayOverseas{At: "02:00:00", sftpAddr: "sftp.alipay.com"})
+}
+
 type alipayOverseas struct {
-	Date     string
+	At       string // "02:00:00" 表示凌晨两点才可以拉取数据
 	sftpAddr string
-	Data     [][]string
+}
+
+// ProcessDuration 返回一个当前时间到可执行时间的duration
+func (a *alipayOverseas) ProcessDuration() time.Duration {
+	if a.At == "" {
+		return time.Duration(0)
+	}
+
+	now := time.Now()
+	t, err := time.ParseInLocation("2006-01-02 15:04:05", now.Format("2006-01-02")+" "+a.At, time.Local)
+	if err != nil {
+		log.Errorf("parse time error: %s", err)
+		return time.Duration(-1)
+	}
+
+	// 保险点 增加一小时
+	t = t.Add(1 * time.Hour)
+
+	if now.After(t) {
+		return time.Duration(0)
+	}
+
+	return t.Sub(now)
 }
 
 // download 从sftp下载对账文件到服务器上
-func (a *alipayOverseas) download() {
+func (a *alipayOverseas) download(date string) [][]string {
 	var chanMers []model.ChanMer
 
 	path := "/download/%s_transaction_%s.txt"
+
+	// date yyyymmdd
+	date = strings.Replace(date, "-", "", -1)
+
+	var data [][]string
 	for _, cm := range chanMers {
 		if cm.Sftp != nil {
 
@@ -58,7 +89,7 @@ func (a *alipayOverseas) download() {
 				continue
 			}
 
-			f, err := client.Open(fmt.Sprintf(path, cm.ChanMerId, a.Date))
+			f, err := client.Open(fmt.Sprintf(path, cm.ChanMerId, date))
 			if err != nil {
 				log.Errorf("open file error: %s", err)
 				continue
@@ -71,18 +102,23 @@ func (a *alipayOverseas) download() {
 				if i > 1 {
 					// orderNum|chanOrderNum|amt|fee|time|type|
 					ts := strings.Split(s.Text(), "|")
-					a.Data = append(a.Data, ts)
+					data = append(data, ts)
 				}
 			}
 		} else {
 			log.Warnf("overseas alipay merchant no sftp config, check ... pid=%s", cm.ChanMerId)
 		}
 	}
+	return data
 }
 
 // Reconciliation 海外接口对账函数
-func (a *alipayOverseas) Reconciliation() error {
-	for _, data := range a.Data {
+func (a *alipayOverseas) Reconciliation(date string) {
+
+	// 下载渠道数据
+	recs := a.download(date)
+
+	for _, data := range recs {
 		if len(data) != 8 {
 			log.Errorf("invalid reconciliation data length=%d should be 8", len(data))
 			continue
@@ -135,9 +171,12 @@ func (a *alipayOverseas) Reconciliation() error {
 			ts.BlendType = FEE_ERROR
 		}
 
-		// 更新交易状态
-		mongo.SpTransSettColl.Update(ts)
+		// 时间
+		ts.SettTime = time.Now().Format("2006-01-02 15:04:05")
 
+		// 更新交易状态
+		if err = mongo.SpTransSettColl.Update(ts); err != nil {
+			log.Errorf("fail to update transSett error: %s, orderNum=%s", err, orderNum)
+		}
 	}
-	return nil
 }

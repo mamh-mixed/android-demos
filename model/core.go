@@ -423,7 +423,8 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 type TransSett struct {
 	Trans       Trans  `bson:"trans"`       // 清算的交易
 	SettRole    string `bson:"settRole"`    // 清算角色
-	SettDate    string `bson:"settDate"`    // 清算时间
+	SettDate    string `bson:"settDate"`    // 清算日期
+	SettTime    string `bson:"settTime"`    // 清算具体时间
 	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
 	MerFee      int64  `bson:"merFee"`      // 商户手续费
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额

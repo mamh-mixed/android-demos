@@ -120,6 +120,11 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 
 // genReport 生成报表
 func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate, z *Zone) {
+
+	if len(trans) == 0 {
+		return
+	}
+
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
@@ -128,8 +133,11 @@ func genReport(file *xlsx.File, trans []*model.Trans, locale *LocaleTemplate, z 
 	m := locale.TransReport
 	lALP, lWXP := locale.ChanCode.ALP, locale.ChanCode.WXP
 
+	// TODO 先随机取一条交易的币种确定单位
+	transCurr := trans[0].Currency
+
 	// 币种单位
-	cur := currency.Get(locale.Currency)
+	cur := currency.Get(transCurr)
 
 	// 金额显示格式
 	var floatFormat = "#,##0"

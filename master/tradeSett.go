@@ -28,7 +28,12 @@ func tradeSettJournalReport(w http.ResponseWriter, cond *model.QueryCondition) {
 
 // genReport 生成报表
 func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Zone) (file *xlsx.File) {
+
 	file = xlsx.NewFile()
+	if len(transSetts) == 0 {
+		return
+	}
+
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
@@ -37,11 +42,20 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 	m := locale.TransReport
 	lALP, lWXP := locale.ChanCode.ALP, locale.ChanCode.WXP
 
-	// 币种单位
-	cur := currency.Get(locale.Currency)
+	// TODO 先随机取一条交易的币种确定单位
+	transCurr := transSetts[0].Trans.Currency
 
-	// format
-	floatFormat := locale.ExportF64Format
+	// 币种单位
+	cur := currency.Get(transCurr)
+
+	// 金额显示格式
+	var floatFormat = "#,##0"
+	for i := 0; i < cur.Precision; i++ {
+		if i == 0 {
+			floatFormat += "."
+		}
+		floatFormat += "0"
+	}
 
 	// 可能有多个sheet
 	sheet, _ = file.AddSheet(m.SheetName)
