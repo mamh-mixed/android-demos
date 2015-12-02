@@ -98,30 +98,24 @@ public class MainActivity extends BaseActivity {
     private void initLayout() {
         mMainContent = (LinearLayout) findViewById(R.id.main_content);
 
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mScanCodeView = new ScanCodeView(mContext);
         mScanCodeView.setLayoutParams(layoutParams);
 
         mTransManageView = new TransManageView(mContext);
-        mTransManageView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mTransManageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mPasswordUpdateView = new PasswordUpdateView(mContext);
-        mPasswordUpdateView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mPasswordUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mAccountUpdateView = new AccountUpdateView(mContext);
-        mAccountUpdateView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mLimitIncreaseView = new LimitIncreaseView(mContext);
-        mLimitIncreaseView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mLimitIncreaseView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mWapBillView = new WapView(mContext);
-        mWapBillView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mWapBillView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
 
         mMainContent.addView(mScanCodeView);
@@ -163,13 +157,11 @@ public class MainActivity extends BaseActivity {
 
 
     public void BtnMenuOnClick(View view) {
-
         if (mLeftMenu.isMenuShowing()) {
             mLeftMenu.toggle();
         } else {
             mLeftMenu.showMenu();
         }
-
     }
 
     private void openView(int position) {
@@ -206,12 +198,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.press_again_exit),
-                        Toast.LENGTH_SHORT);
+                String pressText = getResources().getString(R.string.press_again_exit);
+                Toast toast = Toast.makeText(getApplicationContext(), pressText, Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 250);
                 toast.show();
                 exitTime = System.currentTimeMillis();
@@ -275,8 +265,6 @@ public class MainActivity extends BaseActivity {
                 case 5:
                     finish();
                     break;
-
-
             }
 
         }
@@ -292,7 +280,7 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void run() {
-                    Log.d(TAG, " ======================run()");
+                    Log.e(TAG, " =========onRegistered(String s) =============run()");
                 }
             });
         }
