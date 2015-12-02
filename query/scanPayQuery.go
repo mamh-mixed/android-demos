@@ -268,6 +268,36 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 	return ret
 }
 
+// TransSettStatistics 交易清算汇总
+func TransSettStatistics(q *model.QueryCondition) model.Summary {
+	group, all, err := mongo.SpTransSettColl.FindAndGroupBy(q)
+	if err != nil {
+		log.Errorf("find trans error: %s", err)
+	}
+
+	var data = make([]model.Summary, 0)
+
+	// 将数据合并
+	for _, d := range group {
+		s := model.Summary{
+			MerId:     d.MerId,
+			AgentName: d.AgentName,
+			MerName:   d.MerName,
+			GroupName: d.GroupName,
+		}
+
+		// 遍历渠道，合并数据
+		combine(&s, d.Detail)
+		data = append(data, s)
+	}
+
+	// 汇总数据
+	summary := model.Summary{Data: data}
+	combine(&summary, all)
+
+	return summary
+}
+
 // TransStatistics 交易统计
 func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 

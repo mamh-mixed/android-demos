@@ -127,10 +127,9 @@ type Channel struct {
 
 // Mer 按商户分组
 type MerGroup struct {
-	MerId     string `bson:"merId"`
-	TransAmt  int64  `bson:"transAmt"`
-	RefundAmt int64  `bson:"refundAmt"`
-	Fee       int64  `bson:"fee"`
+	MerId    string `bson:"merId"`
+	TransAmt int64  `bson:"transAmt"`
+	Fee      int64  `bson:"fee"`
 }
 
 // TransTypeGroup 按单个商户交易类型分组
