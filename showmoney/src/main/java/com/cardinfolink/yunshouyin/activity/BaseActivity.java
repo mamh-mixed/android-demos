@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.util.Log;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.core.BankDataService;
@@ -12,8 +14,13 @@ import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AlertDialog;
 import com.cardinfolink.yunshouyin.view.LoadingDialog;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.common.message.UmengMessageDeviceConfig;
+import com.umeng.message.IUmengRegisterCallback;
+import com.umeng.message.MsgConstant;
+import com.umeng.message.PushAgent;
 
 public class BaseActivity extends Activity {
+    private static final String TAG = "BaseActivity";
 
     protected LoadingDialog mLoadingDialog;    //显示loading
     protected AlertDialog mAlertDialog;       // 提示消息对话框
@@ -35,7 +42,10 @@ public class BaseActivity extends Activity {
         yunApplication = (ShowMoneyApp) getApplication();
         quickPayService = yunApplication.getQuickPayService();
         bankDataService = yunApplication.getBankDataService();
+
+
     }
+
 
 
     public void startLoading() {
