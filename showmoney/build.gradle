@@ -15,15 +15,21 @@ android {
         buildConfigField 'String', 'ENVIRONMENT', '"pro"'
     }
 
-    productFlavors{
+    productFlavors {
         cardinfolink {
-            manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yunshouyin"]
+            manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
+                                    UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
+                                    UMENG_CHANNEL_VALUE : "yunshouyin",
+                                    PACKAGE             : "com.cardinfolink.yunshouyin"]
             //comment out below for go live
             applicationId "com.cardinfolink.yunshouyin"
             buildConfigField 'String', 'ENVIRONMENT', '"pro"'
         }
-        _test{
-            manifestPlaceholders = [UMENG_APPKEY_VALUE: "55ebd98367e58e0f13002f2a", UMENG_CHANNEL_VALUE: "yunshouyin"]
+        _test {
+            manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
+                                    UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
+                                    UMENG_CHANNEL_VALUE : "yunshouyin",
+                                    PACKAGE             : "com.cardinfolink.yunshouyin.test"]
             //comment out below for go live
             applicationId "com.cardinfolink.yunshouyin.test"
             buildConfigField 'String', 'ENVIRONMENT', '"test"'
@@ -60,7 +66,9 @@ android {
             }
         }
     }
-
+    sourceSets.main {
+        jniLibs.srcDir 'libs'
+    }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -71,7 +79,7 @@ android {
 }
 
 dependencies {
-//    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile project(':cashierSdk')
     compile project(':pulltorefreshlibrary')
@@ -80,6 +88,7 @@ dependencies {
     compile files('libs/core.jar')
     compile files('libs/umeng-analytics-v5.5.3.jar')
     compile files('libs/umeng-update-v2.6.0.1.jar')
+    compile files('libs/com.umeng.message.lib_v2.5.0.jar')
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.code.gson:gson:2.4'
 }

@@ -2,6 +2,8 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,12 +25,18 @@ import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
 import com.cardinfolink.yunshouyin.view.WapView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.umeng.common.message.UmengMessageDeviceConfig;
+import com.umeng.message.IUmengRegisterCallback;
+import com.umeng.message.MsgConstant;
+import com.umeng.message.PushAgent;
 import com.umeng.update.UmengUpdateAgent;
 
 import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
-    SlidingMenu mLeftMenu;
+    private static final String TAG = "MainActivity";
+
+    private SlidingMenu mLeftMenu;
     private ScanCodeView mScanCodeView;
     private TransManageView mTransManageView;
     private PasswordUpdateView mPasswordUpdateView;
@@ -42,14 +50,49 @@ public class MainActivity extends BaseActivity {
     private ArrayAdapter<String> adapter;
     private long exitTime = 0;
 
+
+    private Handler handler = new Handler();
+    private PushAgent mPushAgent;
+    //此处是注册的回调处理
+    //参考集成文档的1.7.10
+    //http://dev.umeng.com/push/android/integration#1_7_10
+    private IUmengRegisterCallback mRegisterCallback = new UmengPushAgengRegisterCallback();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         initLayout();
+        initUmeng();
+    }
+
+
+    private void initUmeng() {
         UmengUpdateAgent.setUpdateOnlyWifi(false);
         UmengUpdateAgent.setUpdateCheckConfig(false);
         UmengUpdateAgent.update(this);
+
+        mPushAgent = PushAgent.getInstance(this);
+        //mPushAgent.setPushCheck(true);    //默认不检查集成配置文件
+        //mPushAgent.setLocalNotificationIntervalLimit(false);  //默认本地通知间隔最少是10分钟
+
+        //应用程序启动统计
+        //参考集成文档的1.5.1.2
+        //http://dev.umeng.com/push/android/integration#1_5_1
+        mPushAgent.setResourcePackageName("com.cardinfolink.yunshouyin");
+        mPushAgent.onAppStart();
+
+        //开启推送并设置注册的回调处理
+        if (!mPushAgent.isEnabled()) {
+            mPushAgent.enable(mRegisterCallback);
+        }
+        String info = String.format("enabled:%s \n isRegistered:%s \n DeviceToken:%s " +
+                        "SdkVersion:%s  \n AppVersionCode:%s \n AppVersionName:%s",
+                mPushAgent.isEnabled(), mPushAgent.isRegistered(),
+                mPushAgent.getRegistrationId(), MsgConstant.SDK_VERSION,
+                UmengMessageDeviceConfig.getAppVersionCode(this), UmengMessageDeviceConfig.getAppVersionName(this));
+        Log.e(TAG, "pushAgeng info :" + info);
     }
 
     private void initLayout() {
@@ -116,7 +159,6 @@ public class MainActivity extends BaseActivity {
         adapter = new ArrayAdapter<String>(this, R.layout.menu_list_item, menuLists);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new MenuOnItemClick());
-
     }
 
 
@@ -137,7 +179,6 @@ public class MainActivity extends BaseActivity {
                 mMainContent.removeAllViews();
                 mMainContent.addView(mScanCodeView);
                 mScanCodeView.clearValue();
-
                 break;
             case 1:
                 mMainContent.removeAllViews();
@@ -147,25 +188,19 @@ public class MainActivity extends BaseActivity {
             case 2:
                 mMainContent.removeAllViews();
                 mMainContent.addView(mPasswordUpdateView);
-
                 break;
             case 3:
                 mMainContent.removeAllViews();
                 mAccountUpdateView = new AccountUpdateView(mContext);
-                mAccountUpdateView.setLayoutParams(new LayoutParams(
-                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+                mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
                 mMainContent.addView(mAccountUpdateView);
                 mAccountUpdateView.getInfo();
-
                 break;
-
-
             case 4:
                 mMainContent.removeAllViews();
                 mMainContent.addView(mWapBillView);
                 mWapBillView.initData();
                 break;
-
         }
     }
 
@@ -202,8 +237,7 @@ public class MainActivity extends BaseActivity {
     private class MenuOnItemClick implements OnItemClickListener {
 
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             SessonData.positionView = position;
             switch (position) {
                 case 0:
@@ -232,20 +266,11 @@ public class MainActivity extends BaseActivity {
                     mAccountUpdateView.getInfo();
                     mLeftMenu.toggle();
                     break;
-
                 case 4:
-
-
                     mMainContent.removeAllViews();
                     mMainContent.addView(mWapBillView);
                     mWapBillView.initData();
                     mLeftMenu.toggle();
-//					 mLeftMenu.toggle();
-//					 Uri uri;
-//					 uri = Uri.parse(SystemConfig.WEB_BILL_URL+"?merchantCode="+SessonData.loginUser.getObjectId());
-//					 Intent  intent = new  Intent(Intent.ACTION_VIEW, uri);
-//					 startActivity(intent);
-
                     break;
                 case 5:
                     finish();
@@ -256,6 +281,21 @@ public class MainActivity extends BaseActivity {
 
         }
 
+    }
+
+
+    private class UmengPushAgengRegisterCallback implements IUmengRegisterCallback {
+
+        @Override
+        public void onRegistered(String s) {
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Log.d(TAG, " ======================run()");
+                }
+            });
+        }
     }
 
 }

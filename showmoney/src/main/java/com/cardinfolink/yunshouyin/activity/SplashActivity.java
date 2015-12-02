@@ -8,6 +8,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.umeng.analytics.MobclickAgent;
 
 public class SplashActivity extends BaseActivity {
+    private static final String TAG = "SplashActivity";
     private final int SPLASH_DISPLAY_LENGHT = 3000; //延迟三秒
 
     @Override
@@ -15,7 +16,6 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_activity);
         MobclickAgent.updateOnlineConfig(mContext);
-
 
         new Handler().postDelayed(new Runnable() {
 
@@ -29,5 +29,6 @@ public class SplashActivity extends BaseActivity {
         }, SPLASH_DISPLAY_LENGHT);
 
     }
+
 
 }
