@@ -5,6 +5,7 @@ import (
 	// "fmt"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/currency"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -26,7 +27,7 @@ const (
 func init() {
 	needSettles = append(needSettles,
 		&alipayOverseas{
-			At:       "02:00:00",
+			At:       goconf.Config.Settle.OverseasSettPoint,
 			sftpAddr: "sftp.alipay.com",
 		})
 }
