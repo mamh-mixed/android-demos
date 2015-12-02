@@ -25,6 +25,11 @@
 			toast.text = text;
 			toast.duration = duration;
 			toast.show();
+
+			setTimeout(function() {
+				toast.text = '';
+				toast.duration = 1;
+			}, duration)
 		};
 		var showLoginDialog = function() {
 			var abc = document.getElementsByTagName('paper-dialog'),
@@ -97,7 +102,6 @@ DEBEqXeE7Q7WeseaHQIDAQAB\
 -----END PUBLIC KEY-----';
 			var rsa = new JSEncrypt();
 			rsa.setPublicKey(publicKey);
-			console.log(this);
 			return rsa.encrypt(plaintext);
 		};
 		return {

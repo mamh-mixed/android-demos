@@ -65,5 +65,8 @@
         "SignKey": "******", // 签名密钥
         "EncryptSignKey": "bNw1qCugpH6J7xILeOLRiHrBJRrEceLmJa0wZ9xA7gcvc7pdiCnH/1OaO2kfTKrZ0L9PtGjj3TilkBvBz7w2x/PkhyhwhGxnxpNzZSBpUNo84gskSRaJSd4Xv/d6VuyMzezUVnmsK2DtqCdcE/90Li22aOyvo5r8yJR8YRcLsEOpR4mh1su7MNkqG6zw3o4R+SEI9htqGCEugJ9b0VxE0es+o3zn0Kb5yr6zDN8fIgv5n7HRTj2ogLGF5SSMYt3bLlAaqNeoseZLursMYynd+XJo+uNq0EYDJfVzhoWtgq/rBUMHvGoIqihNvsrkM/ZJ95ZkgCEBWPEq6FTyDJN1Cg==", // 签名密钥
         "ChannelId": "180210000270000" // 渠道 ID
+    },
+    "Settle":{
+        "OverseasSettPoint":"06:00:00" // 海外接口清算时间点
     }
 }

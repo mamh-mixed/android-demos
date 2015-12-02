@@ -94,9 +94,42 @@ func (col *transSettCollection) Add(t *model.TransSett) error {
 	return database.C(col.name).Insert(t)
 }
 
+// BatchAdd 批量添加
+func (col *transSettCollection) BatchAdd(ts []model.TransSett) (err error) {
+	l := len(ts)
+	var temp []interface{}
+	for _, t := range ts {
+		temp = append(temp, t)
+	}
+
+	// 一次最多一W
+	batch := 10000
+	for s, e := 0, batch; s < l; s, e = e, e+batch {
+		if e > l {
+			e = l
+		}
+		err = database.C(col.name).Insert(temp[s:e]...)
+		if err != nil {
+			return err
+		}
+		// log.Infof("insert transSett [%d, %d)", s, e)
+	}
+	return nil
+}
+
+// BatchRemove 按照时间批量删除，多用于对账数据重新生成
+func (col *transSettCollection) BatchRemove(date string) (err error) {
+
+	q := bson.M{
+		"trans.payTime": bson.M{},
+	}
+	_, err = database.C(col.name).RemoveAll(q)
+	return err
+}
+
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
-func (col *transSettCollection) Find(merId, transDate, nextOrderNum string) ([]model.TransSettInfo, error) {
+func (col *transSettCollection) FindByDate(merId, transDate, nextOrderNum string) ([]model.TransSettInfo, error) {
 
 	var transSettInfo []model.TransSettInfo
 
@@ -149,5 +182,146 @@ func (col *transSettCollection) Update(t *model.TransSett) error {
 		return errors.New("transSett is nil")
 	}
 	t.SettDate = time.Now().Format("2006-01-02 15:04:05")
-	return database.C(col.name).Update(bson.M{"_id": t.Trans.Id}, t)
+	return database.C(col.name).Update(bson.M{"trans.merId": t.Trans.MerId, "trans.orderNum": t.Trans.OrderNum}, t)
+}
+
+// Find
+func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett, error) {
+
+	find := bson.M{}
+	if q.MerId != "" {
+		find["trans.merId"] = q.MerId
+	}
+	if q.AgentCode != "" {
+		find["trans.agentCode"] = q.AgentCode
+	}
+	if q.SubAgentCode != "" {
+		find["trans.subAgentCode"] = q.SubAgentCode
+	}
+	if q.GroupCode != "" {
+		find["trans.groupCode"] = q.GroupCode
+	}
+	if q.StartTime != "" && q.EndTime != "" {
+		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
+	}
+
+	var ts []model.TransSett
+	var err error
+
+	if q.IsForReport {
+		err = database.C(col.name).Find(find).Sort("trans.busicd").Sort("trans.chanCode").All(&ts)
+		return ts, err
+	}
+
+	err = database.C(col.name).Find(find).Sort("-trans.payTime").Skip((q.Page - 1) * q.Size).Limit(q.Size).All(&ts)
+	return ts, err
+}
+
+// FindAndGroupBy 按照商户号分组统计
+func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.TransGroup, []model.Channel, error) {
+
+	var group []model.TransGroup
+
+	find := bson.M{}
+	if q.StartTime != "" && q.EndTime != "" {
+		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
+	}
+	if q.MerId != "" {
+		find["trans.merId"] = q.MerId
+	}
+	if q.AgentCode != "" {
+		find["trans.agentCode"] = q.AgentCode
+	}
+	if q.SubAgentCode != "" {
+		find["trans.subAgentCode"] = q.SubAgentCode
+	}
+	if q.GroupCode != "" {
+		find["trans.groupCode"] = q.GroupCode
+	}
+	find["blendType"] = 0 // match
+
+	pipeline := []bson.M{
+		{"$match": find},
+		{"$group": bson.M{
+			"_id": bson.M{"merId": "$trans.merId", "chanCode": "$trans.chanCode"},
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.transAmt",
+					}},
+				},
+			}},
+			"transNum": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, 1, 0},
+			}}, //只记录支付的笔数
+			"merName":   bson.M{"$last": "$trans.merName"},
+			"agentName": bson.M{"$last": "$trans.agentName"},
+			"groupCode": bson.M{"$last": "$trans.groupCode"},
+			"groupName": bson.M{"$last": "$trans.groupName"},
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$merFee",
+					bson.M{"$subtract": []interface{}{
+						0, "$merFee",
+					}},
+				},
+			}},
+		}},
+		{"$group": bson.M{
+			"_id":       "$_id.merId",
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"transNum":  bson.M{"$sum": "$transNum"},
+			"merName":   bson.M{"$first": "$merName"},
+			"agentName": bson.M{"$first": "$agentName"},
+			"groupCode": bson.M{"$first": "$groupCode"},
+			"groupName": bson.M{"$first": "$groupName"},
+			"detail": bson.M{"$push": bson.M{"chanCode": "$_id.chanCode",
+				"transNum": "$transNum",
+				"transAmt": "$transAmt",
+				"fee":      "$fee",
+			}},
+		}},
+	}
+
+	err := database.C(col.name).Pipe(pipeline).All(&group)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// 按渠道汇总所有符合条件数据
+	var all []model.Channel
+	err = database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{"_id": "$trans.chanCode",
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.transAmt",
+					}},
+				},
+			}},
+			"transNum": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, 1, 0},
+			}}, //只记录支付的笔数
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$merFee",
+					bson.M{"$subtract": []interface{}{
+						0, "$merFee",
+					}},
+				},
+			}},
+		}},
+		{"$project": bson.M{
+			"chanCode": "$_id",
+			"transAmt": 1,
+			"transNum": 1,
+			"fee":      1,
+		}},
+	}).All(&all)
+	return group, all, err
 }

@@ -124,6 +124,7 @@
     }
 
     paper-menu iron-icon,
+    paper-menu i18n-msg,
     paper-menu span {
       pointer-events: none;
     }
@@ -235,7 +236,7 @@
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <a data-route$="{{menu.route}}" href$="{{menu.url}}">
               <iron-icon icon$="{{menu.icon}}"></iron-icon>
-              <i18n-msg msgid$="{{menu.nameCN}}">{{menu.nameCN}}</i18n-msg>
+              <i18n-msg msgid$="{{menu.name}}">{{menu.nameCN}}</i18n-msg>
             </a>
           </template>
         </paper-menu>
@@ -481,6 +482,13 @@
                 "icon": "assignment-returned",
                 "url": "#/stats/settle/reports",
                 "route": "stats.settle.reports"
+              },
+              {
+                "nameCN": "扫码支付划款报表",
+                "nameEN": "",
+                "icon": "assignment-returned",
+                "url": "#/stats/transfer/reports",
+                "route": "stats.transfer.reports"
               }
             ]
           }, {
@@ -576,23 +584,29 @@
 
 
           this.agentMenus = [{
-            "nameCN": "PASSWORDMODIFICATION.TITLE",
-            "nameEN": "密码修改",
+            "name": "PASSWORDMODIFICATION.TITLE",
+            "nameCN": "密码修改",
             "icon": "lock-outline",
             "url": "#/system/password/editor",
             'route': 'system.password.editor'
           }, {
-            "nameCN": "SCANPAY_TRADE_LIST.MENU_NAME",
-            "nameEN": "扫码交易",
+            "name": "SCANPAY_TRADE_LIST.MENU_NAME",
+            "nameCN": "扫码交易",
             "icon": "image:crop-free",
             "url": "#/trade/list",
             "route": "trade.list"
           }, {
-            "nameCN": "SCANPAY_TRADE_STATS.MENU_NAME",
-            "nameEN": "扫码支付交易统计",
+            "name": "SCANPAY_TRADE_STATS.MENU_NAME",
+            "nameCN": "扫码支付交易统计",
             "icon": "print",
             "url": "#/stats/reports",
             "route": "stats.reports"
+          }, {
+            "name": "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME",
+            "nameCN": "扫码支付清算报表",
+            "icon": "assignment-returned",
+            "url": "#/stats/settle/reports",
+            "route": "stats.settle.reports"
           }];
         },
         startWith: function(path, prefix) {
