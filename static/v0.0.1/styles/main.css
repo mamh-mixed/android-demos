@@ -13,7 +13,6 @@ paper-toast#toast {
 }
 
 /* paper-input */
-
 div.search-condition {
   margin: 10px auto;
 }
@@ -36,7 +35,6 @@ div.divider.line {
 }
 
 /* 定义 data-grid 样式 */
-
 .table {
   display: table;
   width: 100%;
@@ -112,7 +110,6 @@ div.divider.line {
 }
 
 /* code 样式 */
-
 pre, code {
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 10px;
@@ -121,7 +118,6 @@ pre, code {
 }
 
 /* mouse */
-
 .hand {
   cursor: pointer;
 }
@@ -130,7 +126,6 @@ pre, code {
 }
 
 /* colors */
-
 .red {
   color: #D50000;
 }
@@ -148,15 +143,14 @@ pre, code {
 }
 
 /* align */
-
 .left {
-  text-align: left!important;
+  text-align: left !important;
 }
 .right {
-  text-align: right!important;
+  text-align: right !important;
 }
 .center {
-  text-align: center!important;
+  text-align: center !important;
 }
 .paper-button-1 {
   display: inline-block;
@@ -192,8 +186,13 @@ a:focus, a:hover {
   text-decoration: underline;
   outline: 0;
 }
-
-
 paper-dialog:not(.paper-date-picker-dialog) .buttons > paper-button:hover {
   background-color: rgba(0, 188, 212, 0.25);
+}
+paper-date-picker {
+  margin-top: 0 !important;
+  padding: 0;
+}
+* > i18n-msg {
+  font-size: inherit;
 }
