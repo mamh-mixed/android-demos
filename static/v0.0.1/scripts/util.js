@@ -66,7 +66,11 @@
 			var aft = moment(org, 'YYYY-MM-DD HH:mm:ss Z').format('YYYY-MM-DD HH:mm:ss');
 			return aft;
 		};
-		// 将本地时间转换成北京时间
+		/**
+		 * [_toCSTDateTime 将本地时间转换成北京时间]
+		 * @param  {[type]} dateTime [string]
+		 * @return {[type]}          [string]
+		 */
 		var _toCSTDateTime = function(dateTime) {
 			if (!dateTime || !moment(dateTime, 'YYYY-MM-DD HH:mm:ss').isValid()) {
 				return dateTime;
