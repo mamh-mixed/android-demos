@@ -32,9 +32,7 @@ const (
 
 var (
 	halfwhite         = []byte{0xc2, 0xa0} // ASCII：32被UTF-8编码之后成为ASCII：194 和 160的组合
-	sysErr            = errors.New("系统错误，请重新上传。")
-	emptyErr          = errors.New("上传表格为空，请检查。")
-	fileErr           = resultBody("无法获取文件，请重新上传。", 1)
+	noSessionFound    = resultBody("无法获取session，请重新上传。", 1)
 	maxFee            = 0.03
 	settFlagArray     = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
 	replaceWhitespace = strings.NewReplacer(" ", "", "\r", "", "\t", "", "\n", "", string(halfwhite), "")
@@ -43,6 +41,23 @@ var (
 
 // importMerchant 接受excel格式文件，导入商户
 func importMerchant(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	curSession, err := Session.Get(r)
+	if err != nil {
+		w.Write(noSessionFound)
+		return
+	}
+
+	// 获取语言
+	locale := GetLocale(curSession.Locale)
+	im := &locale.ImportMessage
+
+	// 文件错误
+	var fileErr = resultBody(im.FileErr, 1)
 
 	// 调用七牛api获取刚上传的图片
 	key := r.FormValue("key")
@@ -87,7 +102,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key}
+	ip := importer{Sheets: file.Sheets, fileName: key, msg: im}
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -106,6 +121,7 @@ type importer struct {
 	cache    *cache
 	fileName string
 	IsDebug  bool // 是否调试模式，如果是，会打印结果，不会入库
+	msg      *ImportMessage
 }
 
 type cache struct {
@@ -138,15 +154,19 @@ type operation struct {
 // DoImport 执行导入操作
 func (i *importer) DoImport() (string, error) {
 	before := time.Now()
+
+	// 如果空，返回
 	if len(i.Sheets) == 0 {
-		return "", emptyErr
+		return "", errors.New(i.msg.EmptyErr)
 	}
+
+	// 初始化map
 	i.rowMap = make(map[string]*rowData)
+
 	// 读取数据
 	if err := i.read(); err != nil {
 		return "", err
 	}
-	log.Debugf("read over, len(row)=%d", len(i.rowData))
 
 	// 成功读取，初始化
 	i.cache = new(cache)
@@ -157,16 +177,15 @@ func (i *importer) DoImport() (string, error) {
 	if err := i.dataHandle(); err != nil {
 		return "", err
 	}
-	log.Debug("data handle over")
 
 	// 数据入库
 	if err := i.persist(); err != nil {
 		i.rollback()
 		log.Errorf("persist error: %s, rollback ...", err)
-		return "", sysErr
+		return "", errors.New(i.msg.SysErr)
 	}
 
-	return fmt.Sprintf("成功处理 %d 行数据，耗时 %s。", len(i.rowData), time.Since(before)), nil
+	return fmt.Sprintf(i.msg.ImportSuccess, len(i.rowData), time.Since(before)), nil
 }
 
 func (i *importer) read() error {
@@ -179,27 +198,29 @@ func (i *importer) read() error {
 
 		err := i.cellMapping(r.Cells)
 		if err != nil {
-			return fmt.Errorf("%d 行：%s", index+1, err)
+			return fmt.Errorf(i.msg.CellMapErr, index+1, err)
 		}
 	}
 	if len(i.rowData) == 0 {
-		return emptyErr
+		return errors.New(i.msg.EmptyErr)
 	}
 	return nil
 }
 
 func (i *importer) dataHandle() error {
 
+	m := i.msg.DataHandleErr
+
 	// 数据合法性验证
 	for index, r := range i.rowData {
 
 		// 先看是否有填门店号
 		if r.MerId == "" {
-			return fmt.Errorf("第 %d 行，门店号为空", index+3)
+			return fmt.Errorf(m.NoMerId, index+3)
 		}
 
 		if !c.MatchString(r.MerId) {
-			return fmt.Errorf("第 %d 行，门店号 %s 格式错误", index+3, r.MerId)
+			return fmt.Errorf(m.MerIdFormatErr, index+3, r.MerId)
 		}
 
 		// 字段内容合法验证
@@ -208,59 +229,59 @@ func (i *importer) dataHandle() error {
 		case "A":
 			// 新增找到用户，报错
 			if err == nil {
-				return fmt.Errorf("门店：%s 已存在", r.MerId)
+				return fmt.Errorf(m.MerIdExist, r.MerId)
 			}
 			// 插入验证
-			if err = insertValidate(r); err != nil {
+			if err = insertValidate(r, i.msg); err != nil {
 				return err
 			}
 		case "U":
 			// 修改不存在用户，报错
 			if err != nil {
-				return fmt.Errorf("门店：%s 不存在", r.MerId)
+				return fmt.Errorf(m.MerIdNotExist, r.MerId)
 			}
-			if err = updateValidate(r); err != nil {
+			if err = updateValidate(r, i.msg); err != nil {
 				return err
 			}
 			r.Mer = mer
 		default:
 			// D 先不做删除
-			return fmt.Errorf("第 %d 行，暂不支持 %s 操作。", index+3, r.Operator)
+			return fmt.Errorf(m.NotSupportOperation, index+3, r.Operator)
 		}
 
 		// 处理费率
 		if r.AlpAcqFee != "" && r.AlpMerFee != "" {
 			var errStr string
-			r.AlpMerFeeF, r.AlpAcqFeeF, errStr = feeParse(r.AlpMerFee, r.AlpAcqFee)
+			r.AlpMerFeeF, r.AlpAcqFeeF, errStr = feeParse(r.AlpMerFee, r.AlpAcqFee, i.msg)
 			if errStr != "" {
-				return fmt.Errorf("支付宝商户(%s): %s", r.AlpMerId, errStr)
+				return fmt.Errorf(m.ALPMerchantErr, r.AlpMerId, errStr)
 			}
 		}
 		if r.WxpAcqFee != "" && r.WxpMerFee != "" {
 			var errStr string
-			r.WxpMerFeeF, r.WxpAcqFeeF, errStr = feeParse(r.WxpMerFee, r.WxpAcqFee)
+			r.WxpMerFeeF, r.WxpAcqFeeF, errStr = feeParse(r.WxpMerFee, r.WxpAcqFee, i.msg)
 			if errStr != "" {
-				return fmt.Errorf("微信商户(%s): %s", r.WxpMerId, errStr)
+				return fmt.Errorf(m.WXPMerchantErr, r.WxpMerId, errStr)
 			}
 		}
 
 		// 处理代理、公司、集团
-		if err = handleDegree(r, i.cache); err != nil {
+		if err = handleDegree(r, i.cache, i.msg); err != nil {
 			return err
 		}
 
 		// 支付宝
-		if err = handleAlpMer(r, i.cache); err != nil {
+		if err = handleAlpMer(r, i.cache, i.msg); err != nil {
 			return err
 		}
 
 		// 微信
-		if err = handleWxpMer(r, i.cache); err != nil {
+		if err = handleWxpMer(r, i.cache, i.msg); err != nil {
 			return err
 		}
 
 		// app
-		if err = handleAppAcct(r); err != nil {
+		if err = handleAppAcct(r, i.msg); err != nil {
 			return err
 		}
 
@@ -273,57 +294,57 @@ func (i *importer) dataHandle() error {
 }
 
 // updateValidate 更新验证
-func updateValidate(r *rowData) error {
-
+func updateValidate(r *rowData, im *ImportMessage) error {
+	m, yes, no := im.ValidateErr, im.Yes, im.No
 	if r.IsNeedSignStr != "" {
-		if r.IsNeedSignStr != "是" && r.IsNeedSignStr != "否" {
-			return fmt.Errorf("是否开启验签：%s 取值错误，应为【是】或【否】", r.IsNeedSignStr)
+		if r.IsNeedSignStr != yes && r.IsNeedSignStr != no {
+			return fmt.Errorf(m.OpenSignValueErr, r.IsNeedSignStr)
 		}
-		if r.IsNeedSignStr == "是" {
+		if r.IsNeedSignStr == yes {
 			if r.SignKey == "" {
-				return fmt.Errorf("门店：%s 开启验签需要填写签名密钥", r.MerId)
+				return fmt.Errorf(m.NoSignKey, r.MerId)
 			}
 			r.IsNeedSign = true
 		}
 	}
 
 	if r.IsAddAcctStr != "" {
-		if r.IsAddAcctStr != "是" && r.IsAddAcctStr != "否" {
-			return fmt.Errorf("是否新增账户信息：%s 取值错误，应为【是】或【否】", r.IsAddAcctStr)
+		if r.IsAddAcctStr != yes && r.IsAddAcctStr != no {
+			return fmt.Errorf(m.AddAcctValueErr, r.IsAddAcctStr)
 		}
-		if r.IsAddAcctStr == "是" {
+		if r.IsAddAcctStr == yes {
 			r.IsAddAcct = true
 		}
 		// 修改时，是或者否都要填
 		if r.AppUsername == "" || r.AppPassword == "" {
-			return fmt.Errorf("门店：%s 新增账户信息用户名或密码为空", r.MerId)
+			return fmt.Errorf(m.UNOrPWDEmptyErr, r.MerId)
 		}
 	}
 
 	if r.IsAgentStr != "" {
-		if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
-			return fmt.Errorf("是否代理商模式：%s 取值错误，应为【是】或【否】", r.IsAgentStr)
+		if r.IsAgentStr != yes && r.IsAgentStr != no {
+			return fmt.Errorf(m.IsAgentStrErr, r.IsAgentStr)
 		}
-		if r.IsAgentStr == "是" {
+		if r.IsAgentStr == yes {
 			r.IsAgent = true
 		}
 
 	}
 	if r.WxpSettFlag != "" {
 		if !util.StringInSlice(r.WxpSettFlag, settFlagArray) {
-			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
+			return fmt.Errorf(m.WXPSettFlagErr, r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpSettFlag != "" {
 		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
-			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
+			return fmt.Errorf(m.ALPSettFlagErr, r.AlpSettFlag)
 		}
 	}
 
 	if r.SignKey != "" {
 		if len(r.SignKey) != 32 {
-			return fmt.Errorf("门店：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+			return fmt.Errorf(m.SignLengthErr, r.MerId, r.SignKey)
 		}
 	}
 
@@ -331,69 +352,77 @@ func updateValidate(r *rowData) error {
 }
 
 // insertValidate 插入验证
-func insertValidate(r *rowData) error {
+func insertValidate(r *rowData, im *ImportMessage) error {
 
+	m, yes, no := im.ValidateErr, im.Yes, im.No
 	if r.MerName == "" {
-		return fmt.Errorf("门店：%s 商户名称为空", r.MerId)
+		return fmt.Errorf(m.NoMerName, r.MerId)
 	}
 
 	if r.AgentCode == "" {
-		return fmt.Errorf("门店：%s 代理代码为空", r.MerId)
+		return fmt.Errorf(m.NoAgentCode, r.MerId)
 	}
 
-	if r.IsNeedSignStr != "是" && r.IsNeedSignStr != "否" {
-		return fmt.Errorf("是否开启验签：%s 取值错误，应为【是】或【否】", r.IsNeedSignStr)
+	if r.IsNeedSignStr != yes && r.IsNeedSignStr != no {
+		return fmt.Errorf(m.OpenSignValueErr, r.IsNeedSignStr)
 	}
 
 	if r.IsAddAcctStr != "" {
-		if r.IsAddAcctStr != "是" && r.IsAddAcctStr != "否" {
-			return fmt.Errorf("是否新增账户信息：%s 取值错误，应为【是】或【否】", r.IsAddAcctStr)
+		if r.IsAddAcctStr != yes && r.IsAddAcctStr != no {
+			return fmt.Errorf(m.AddAcctValueErr, r.IsAddAcctStr)
 		}
-		if r.IsAddAcctStr == "是" {
+		if r.IsAddAcctStr == yes {
 			if r.AppUsername == "" || r.AppPassword == "" {
-				return fmt.Errorf("门店：%s 新增账户信息用户名或密码为空", r.MerId)
+				return fmt.Errorf(m.UNOrPWDEmptyErr, r.MerId)
 			}
 			r.IsAddAcct = true
 		}
 	}
 
-	if r.IsNeedSignStr == "是" {
+	if r.IsNeedSignStr == yes {
 		// if r.SignKey == "" {
 		// 	return fmt.Errorf("商户：%s 开启验签需要填写签名密钥", r.MerId)
 		// }
 		if r.SignKey != "" {
 			if len(r.SignKey) != 32 {
-				return fmt.Errorf("门店：%s 签名密钥长度错误(%s)", r.MerId, r.SignKey)
+				return fmt.Errorf(m.SignLengthErr, r.MerId, r.SignKey)
 			}
 		}
 		r.IsNeedSign = true
 	}
 
 	if r.CommodityName == "" {
-		return fmt.Errorf("门店：%s 商品名称为空", r.MerId)
+		return fmt.Errorf(m.NoCommodityName, r.MerId)
 	}
 
 	if r.WxpSubMerId != "" {
-		if r.IsAgentStr != "是" && r.IsAgentStr != "否" {
-			return fmt.Errorf("是否代理商模式：%s 取值错误，应为【是】或【否】", r.IsAgentStr)
+		if r.IsAgentStr != yes && r.IsAgentStr != no {
+			return fmt.Errorf(m.IsAgentStrErr, r.IsAgentStr)
 		}
-		if r.IsAgentStr == "是" {
+		if r.IsAgentStr == yes {
 			if r.WxpMerId == "" {
-				return fmt.Errorf("门店：%s 代理商模式需要填写微信商户号", r.MerId)
-			}
-			if r.WxpSubMerId == "" {
-				return fmt.Errorf("门店：%s 代理商模式需要填写微信子商户号", r.MerId)
+				return fmt.Errorf(m.NoWXPMer, r.MerId)
 			}
 			r.IsAgent = true
 		}
 		if !util.StringInSlice(r.WxpSettFlag, settFlagArray) {
-			return fmt.Errorf("微信商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.WxpSettFlag)
+			return fmt.Errorf(m.WXPSettFlagErr, r.WxpSettFlag)
 		}
 	}
 
 	if r.AlpMerId != "" {
 		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
-			return fmt.Errorf("支付宝商户是否讯联清算：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]", r.AlpSettFlag)
+			return fmt.Errorf(m.ALPSettFlagErr, r.AlpSettFlag)
+		}
+		if r.IsDomesticStr != "" {
+			if r.IsDomesticStr == no {
+				if r.AlpMerName == "" || r.AlpMerNo == "" {
+					return fmt.Errorf("门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no", r.MerId) //TODO
+				}
+			} else {
+				// 其他情况默认都是国内的
+				r.IsDomestic = true
+			}
 		}
 	}
 
@@ -409,29 +438,30 @@ func insertValidate(r *rowData) error {
 }
 
 // handleAppAcct 处理app账户信息
-func handleAppAcct(r *rowData) error {
+func handleAppAcct(r *rowData, im *ImportMessage) error {
+	m := im.DataHandleErr
 	// 填了是或者否再处理
 	if r.IsAddAcctStr != "" {
 		count, err := mongo.AppUserCol.Count(r.AppUsername)
 		if err != nil {
-			return sysErr
+			return errors.New(im.SysErr)
 		}
 		switch r.Operator {
 		case "A":
 			if r.IsAddAcct {
 				if count > 0 {
-					return fmt.Errorf("门店：%s 账户信息-用户名：%s 已存在", r.MerId, r.AppUsername)
+					return fmt.Errorf(m.UsernameExist, r.MerId, r.AppUsername)
 				}
 			}
 		case "U":
 			if r.IsAddAcct {
 				if count > 0 {
-					return fmt.Errorf("门店：%s 账户信息-用户名：%s 已存在", r.MerId, r.AppUsername)
+					return fmt.Errorf(m.UsernameExist, r.MerId, r.AppUsername)
 				}
 			} else {
 				// 修改密码
 				if count == 0 {
-					return fmt.Errorf("门店：%s 账户信息-用户名：%s 不存在", r.MerId, r.AppUsername)
+					return fmt.Errorf(m.UsernameNotExist, r.MerId, r.AppUsername)
 				}
 			}
 		}
@@ -439,18 +469,22 @@ func handleAppAcct(r *rowData) error {
 	return nil
 }
 
-func handleDegree(r *rowData, c *cache) error {
+func handleDegree(r *rowData, c *cache, im *ImportMessage) error {
+
+	m := im.DataHandleErr
 
 	// 验证代理
 	if r.AgentCode != "" {
 		if _, ok := c.AgentCache[r.AgentCode]; !ok {
 			a, err := mongo.AgentColl.Find(r.AgentCode)
 			if err != nil {
-				return fmt.Errorf("门店：%s 代理代码(%s)不存在", r.MerId, r.AgentCode)
+				return fmt.Errorf(m.AgentNotExist, r.MerId, r.AgentCode)
 			}
 			// 放入缓存
 			c.AgentCache[r.AgentCode] = a
 			r.AgentName = a.AgentName
+		} else {
+			r.AgentName = c.AgentCache[r.AgentCode].AgentName
 		}
 	}
 
@@ -459,16 +493,16 @@ func handleDegree(r *rowData, c *cache) error {
 		if _, ok := c.CompanyCache[r.SubAgentCode]; !ok {
 			s, err := mongo.SubAgentColl.Find(r.SubAgentCode)
 			if err != nil {
-				return fmt.Errorf("门店：%s 公司代码(%s)不存在", r.MerId, r.SubAgentCode)
+				return fmt.Errorf(m.CompanyNotExist, r.MerId, r.SubAgentCode)
 			}
 			switch r.Operator {
 			case "A":
 				if s.AgentCode != r.AgentCode {
-					return fmt.Errorf("门店：%s 公司代码(%s)不属于该代理", r.MerId, r.SubAgentCode)
+					return fmt.Errorf(m.CompanyBelongsErr, r.MerId, r.SubAgentCode)
 				}
 			case "U":
 				if s.AgentCode != r.Mer.AgentCode {
-					return fmt.Errorf("门店：%s 公司代码(%s)不属于该代理(%s)", r.MerId, r.SubAgentCode, r.Mer.AgentCode)
+					return fmt.Errorf(m.CompanyBelongsErr+"(%s)", r.MerId, r.SubAgentCode, r.Mer.AgentCode)
 				}
 			}
 			// 放入缓存
@@ -482,18 +516,18 @@ func handleDegree(r *rowData, c *cache) error {
 		if _, ok := c.GroupCache[r.GroupCode]; !ok {
 			g, err := mongo.GroupColl.Find(r.GroupCode)
 			if err != nil {
-				return fmt.Errorf("门店：%s 集团代码(%s)不存在", r.MerId, r.GroupCode)
+				return fmt.Errorf(m.GroupNotExist, r.MerId, r.GroupCode)
 			}
 
 			// TODO: 先验证是否是属于代理级别的后面加上是否是属于公司级别的
 			switch r.Operator {
 			case "A":
 				if g.AgentCode != r.AgentCode {
-					return fmt.Errorf("门店：%s 商户代码不属于该代理", r.MerId)
+					return fmt.Errorf(m.GroupBelongsErr, r.MerId, r.GroupCode)
 				}
 			case "U":
 				if r.Mer.AgentCode != g.AgentCode {
-					return fmt.Errorf("门店：%s 商户代码(%s)不属于该代理(%s)", r.MerId, r.GroupCode, r.Mer.AgentCode)
+					return fmt.Errorf(m.GroupBelongsErr+"(%s)", r.MerId, r.GroupCode, r.Mer.AgentCode)
 				}
 			}
 			c.GroupCache[r.GroupCode] = g
@@ -504,7 +538,8 @@ func handleDegree(r *rowData, c *cache) error {
 	return nil
 }
 
-func handleAlpMer(r *rowData, c *cache) error {
+func handleAlpMer(r *rowData, c *cache, im *ImportMessage) error {
+	m := im.DataHandleErr
 	// 支付宝渠道商户
 	if r.AlpMerId != "" {
 		if _, ok := c.ChanMerCache[r.AlpMerId]; !ok {
@@ -515,7 +550,13 @@ func handleAlpMer(r *rowData, c *cache) error {
 				// 没找到，那么认为此次操作为新增渠道商户
 				// 验证必填的信息
 				if r.AlpMd5 == "" {
-					return fmt.Errorf("支付宝商户：%s 密钥为空", r.AlpMerId)
+					return fmt.Errorf(m.NoALPKey, r.AlpMerId)
+				}
+				// 海外支付宝商户必填字段
+				if !r.IsDomestic {
+					if r.AlpSchemeType == "" {
+						return fmt.Errorf("format", r.AlpMerId) // TODO
+					}
 				}
 			}
 		}
@@ -526,7 +567,7 @@ func handleAlpMer(r *rowData, c *cache) error {
 			if r.AlpSettFlag != "" && r.AlpMerId == "" {
 				rp := mongo.RouterPolicyColl.Find(r.MerId, "ALP")
 				if rp == nil {
-					return fmt.Errorf("没找到商户：%s，对应的支付宝路由策略，无法变更清算标识。", r.MerId)
+					return fmt.Errorf(m.NoALPRouteToUdpSf, r.MerId)
 				}
 				settFlagHandle(r.AlpSettFlag, rp, r.Mer)
 				// TODO:处理手续费变更
@@ -537,7 +578,8 @@ func handleAlpMer(r *rowData, c *cache) error {
 	return nil
 }
 
-func handleWxpMer(r *rowData, c *cache) error {
+func handleWxpMer(r *rowData, c *cache, im *ImportMessage) error {
+	m := im.DataHandleErr
 	// 微信渠道商户
 	if r.WxpSubMerId != "" {
 		if _, ok := c.ChanMerCache[r.WxpSubMerId]; !ok {
@@ -546,19 +588,19 @@ func handleWxpMer(r *rowData, c *cache) error {
 				// 系统中存在这个渠道商户，校验信息是否对称
 				if r.IsAgent {
 					if !wxpMer.IsAgentMode {
-						return fmt.Errorf("微信商户：%s 并不是受理商模式", r.WxpSubMerId)
+						return fmt.Errorf(m.WXPNotAgentMode, r.WxpSubMerId)
 					} else {
 						if wxpMer.AgentMer == nil {
 							log.Errorf("%s:use agentMode but not supply agentMer,please check.", wxpMer.ChanMerId)
-							return fmt.Errorf("%s", "系统错误配置，请联系管理员。")
+							return fmt.Errorf("%s", m.SysConfigErr)
 						}
 						if wxpMer.AgentMer.ChanMerId != r.WxpMerId {
-							return fmt.Errorf("微信商户：%s 代理商商户号填写错误，应为 %s，实际为 %s", r.WxpSubMerId, wxpMer.AgentMer.ChanMerId, r.WxpMerId)
+							return fmt.Errorf(m.AgentMerInfoErr, r.WxpSubMerId, wxpMer.AgentMer.ChanMerId, r.WxpMerId)
 						}
 					}
 				} else {
 					if wxpMer.IsAgentMode {
-						return fmt.Errorf("微信商户：%s 为受理商模式", r.WxpSubMerId)
+						return fmt.Errorf(m.AgentModeNotMatch, r.WxpSubMerId)
 					}
 				}
 				c.ChanMerCache[r.WxpSubMerId] = wxpMer
@@ -568,7 +610,7 @@ func handleWxpMer(r *rowData, c *cache) error {
 					if _, ok := c.ChanMerCache[r.WxpMerId]; !ok {
 						agent, err := mongo.ChanMerColl.Find("WXP", r.WxpMerId)
 						if err != nil {
-							return fmt.Errorf("微信商户：%s 系统中没有代码为 %s 的代理商商户", r.WxpSubMerId, r.WxpMerId)
+							return fmt.Errorf(m.NoSuchAgentMer, r.WxpSubMerId, r.WxpMerId)
 						}
 						c.ChanMerCache[agent.ChanMerId] = agent
 					}
@@ -576,7 +618,7 @@ func handleWxpMer(r *rowData, c *cache) error {
 				// 不是受理商模式，那么密钥必须要
 				if !r.IsAgent {
 					if r.WxpMd5 == "" {
-						return fmt.Errorf("微信商户：%s 密钥为空", r.WxpSubMerId)
+						return fmt.Errorf(m.NoWXPKey, r.WxpSubMerId)
 					}
 				}
 			}
@@ -588,7 +630,7 @@ func handleWxpMer(r *rowData, c *cache) error {
 			if r.WxpSettFlag != "" && r.WxpMerId == "" {
 				rp := mongo.RouterPolicyColl.Find(r.MerId, "WXP")
 				if rp == nil {
-					return fmt.Errorf("没找到门店：%s，对应的微信路由策略，无法变更清算标识。", r.MerId)
+					return fmt.Errorf(m.NoWXPRouteToUdpSf, r.MerId)
 				}
 				settFlagHandle(r.WxpSettFlag, rp, r.Mer)
 				// TODO:处理手续费
@@ -600,27 +642,28 @@ func handleWxpMer(r *rowData, c *cache) error {
 }
 
 // feeParse 费率转换
-func feeParse(merFee, acqFee string) (mf, af float64, errStr string) {
+func feeParse(merFee, acqFee string, im *ImportMessage) (mf, af float64, errStr string) {
 
+	m := im.DataHandleErr
 	// acqFee
 	af64, err := strconv.ParseFloat(acqFee, 10)
 	if err != nil {
-		errStr = fmt.Sprintf("讯联跟渠道费率格式错误(%s)", acqFee)
+		errStr = fmt.Sprintf(m.CILFeeErr, acqFee)
 		return
 	}
 	if af64 > maxFee {
-		errStr = fmt.Sprintf("讯联跟渠道费率超过最大值 3% (%s)", acqFee)
+		errStr = fmt.Sprintf(m.CILFeeOverMax, acqFee)
 		return
 	}
 
 	// merFee
 	mf64, err := strconv.ParseFloat(merFee, 10)
 	if err != nil {
-		errStr = fmt.Sprintf("商户跟讯联费率格式错误(%s)", merFee)
+		errStr = fmt.Sprintf(m.MerFeeErr, merFee)
 		return
 	}
 	if mf64 > maxFee {
-		errStr = fmt.Sprintf("商户跟讯联费率超过最大值 3% (%s)", merFee)
+		errStr = fmt.Sprintf(m.MerFeeOverMax, merFee)
 	}
 
 	return mf64, af64, errStr
@@ -665,6 +708,18 @@ func (i *importer) doDataWrap() {
 			if r.TitleOne != "" || r.TitleTwo != "" {
 				mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
 				mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+			}
+
+			// 补充境外渠道参数
+			if !r.IsDomestic {
+				o := model.OverseasParams{}
+				o.Bn = r.AlpBusNo
+				o.Mcc = r.AlpMcc
+				o.MerName = r.AlpMerName
+				o.MerNo = r.AlpMerNo
+				o.RegionCode = r.AlpRegCode
+				o.TerId = r.AlpTermNo
+				mer.Options = &o
 			}
 
 			i.A.Mers = append(i.A.Mers, *mer)
@@ -751,6 +806,39 @@ func (i *importer) doDataWrap() {
 				if r.TitleOne != "" || r.TitleTwo != "" {
 					mer.Detail.BillUrl = fmt.Sprintf("%s/trade.html?merchantCode=%s", webAppUrl, mer.UniqueId)
 					mer.Detail.PayUrl = fmt.Sprintf("%s/index.html?merchantCode=%s", webAppUrl, b64Encoding.EncodeToString([]byte(mer.MerId)))
+				}
+			}
+
+			// 修改境外渠道参数
+			if !r.IsDomestic {
+				if mer.Options != nil {
+					if r.AlpBusNo != "" {
+						mer.Options.Bn = r.AlpBusNo
+					}
+					if r.AlpMerNo != "" {
+						mer.Options.MerNo = r.AlpMerNo
+					}
+					if r.AlpMerName != "" {
+						mer.Options.MerName = r.AlpMerName
+					}
+					if r.AlpRegCode != "" {
+						mer.Options.RegionCode = r.AlpRegCode
+					}
+					if r.AlpMcc != "" {
+						mer.Options.Mcc = r.AlpMcc
+					}
+					if r.AlpTermNo != "" {
+						mer.Options.TerId = r.AlpTermNo
+					}
+				} else {
+					o := model.OverseasParams{}
+					o.Bn = r.AlpBusNo
+					o.Mcc = r.AlpMcc
+					o.MerName = r.AlpMerName
+					o.MerNo = r.AlpMerNo
+					o.RegionCode = r.AlpRegCode
+					o.TerId = r.AlpTermNo
+					mer.Options = &o
 				}
 			}
 
@@ -1021,7 +1109,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 		return nil
 	}
 
-	correctCol := 42
+	correctCol := 50
 	// 返回某列完整错误信息
 	if col != correctCol {
 		var order = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -1036,7 +1124,7 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 			}
 			errStr += fmt.Sprintf("( %s=%s ), ", offset, v)
 		}
-		return fmt.Errorf("列数有误，实际应为 %d 行，读取到 %d 行。具体信息为：%s", correctCol, col, errStr)
+		return fmt.Errorf(i.msg.ColNumErr, correctCol, col, errStr)
 	}
 
 	r := &rowData{}
@@ -1080,6 +1168,8 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[14]; cell != nil {
 		r.CommodityName = replaceWhitespace.Replace(cell.Value)
 	}
+
+	// -----支付宝商户begin
 	if cell = cells[15]; cell != nil {
 		r.AlpMerId = replaceWhitespace.Replace(cell.Value)
 	}
@@ -1098,72 +1188,112 @@ func (i *importer) cellMapping(cells []*xlsx.Cell) error {
 	if cell = cells[20]; cell != nil {
 		r.AlpSettFlag = replaceWhitespace.Replace(cell.Value)
 	}
+
+	// ------海外字段begin
 	if cell = cells[21]; cell != nil {
-		r.WxpMerId = replaceWhitespace.Replace(cell.Value)
+		r.AlpSchemeType = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[22]; cell != nil {
-		r.WxpSubMerId = replaceWhitespace.Replace(cell.Value)
+		r.IsDomesticStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[23]; cell != nil {
-		r.IsAgentStr = replaceWhitespace.Replace(cell.Value)
+		r.AlpMerName = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[24]; cell != nil {
-		r.WxpAppId = replaceWhitespace.Replace(cell.Value)
+		r.AlpMerNo = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[25]; cell != nil {
-		r.WxpSubAppId = replaceWhitespace.Replace(cell.Value)
+		r.AlpBusNo = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[26]; cell != nil {
-		r.WxpMd5 = replaceWhitespace.Replace(cell.Value)
+		r.AlpTermNo = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[27]; cell != nil {
-		r.WxpAcqFee = replaceWhitespace.Replace(cell.Value)
+		r.AlpMcc = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[28]; cell != nil {
-		r.WxpMerFee = replaceWhitespace.Replace(cell.Value)
+		r.AlpRegCode = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------海外字段end
+	// -----支付宝商户end
+
+	// ------微信字段begin
 	if cell = cells[29]; cell != nil {
-		r.WxpSettFlag = replaceWhitespace.Replace(cell.Value)
+		r.WxpMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[30]; cell != nil {
-		r.ShopId = replaceWhitespace.Replace(cell.Value)
+		r.WxpSubMerId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[31]; cell != nil {
-		r.GoodsTag = replaceWhitespace.Replace(cell.Value)
+		r.IsAgentStr = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[32]; cell != nil {
-		r.AcctNum = replaceWhitespace.Replace(cell.Value)
+		r.WxpAppId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[33]; cell != nil {
-		r.AcctName = replaceWhitespace.Replace(cell.Value)
+		r.WxpSubAppId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[34]; cell != nil {
-		r.BankId = replaceWhitespace.Replace(cell.Value)
+		r.WxpMd5 = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[35]; cell != nil {
-		r.BankName = replaceWhitespace.Replace(cell.Value)
+		r.WxpAcqFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[36]; cell != nil {
-		r.City = replaceWhitespace.Replace(cell.Value)
+		r.WxpMerFee = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[37]; cell != nil {
-		r.IsAddAcctStr = replaceWhitespace.Replace(cell.Value)
+		r.WxpSettFlag = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------微信字段end
+
+	// ------营销信息begin
 	if cell = cells[38]; cell != nil {
-		r.AppUsername = replaceWhitespace.Replace(cell.Value)
+		r.ShopId = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[39]; cell != nil {
-		r.AppPassword = replaceWhitespace.Replace(cell.Value)
+		r.GoodsTag = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------营销信息end
+
+	// ------清算信息begin
 	if cell = cells[40]; cell != nil {
-		r.TitleOne = replaceWhitespace.Replace(cell.Value)
+		r.AcctNum = replaceWhitespace.Replace(cell.Value)
 	}
 	if cell = cells[41]; cell != nil {
+		r.AcctName = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[42]; cell != nil {
+		r.BankId = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[43]; cell != nil {
+		r.BankName = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[44]; cell != nil {
+		r.City = replaceWhitespace.Replace(cell.Value)
+	}
+	// ------清算信息end
+
+	// ------账户信息begin
+	if cell = cells[45]; cell != nil {
+		r.IsAddAcctStr = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[46]; cell != nil {
+		r.AppUsername = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[47]; cell != nil {
+		r.AppPassword = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[48]; cell != nil {
+		r.TitleOne = replaceWhitespace.Replace(cell.Value)
+	}
+	if cell = cells[49]; cell != nil {
 		r.TitleTwo = replaceWhitespace.Replace(cell.Value)
 	}
+	// ------账户信息end
 
 	if _, ok := i.rowMap[r.MerId]; ok {
-		return fmt.Errorf("门店号(%s)重复", r.MerId)
+		return fmt.Errorf(i.msg.MerIdRepeat, r.MerId)
 	}
 
 	i.rowMap[r.MerId] = r
@@ -1193,32 +1323,43 @@ type rowData struct {
 	AlpAgentCode  string // 支付宝代理代码
 	AlpAcqFee     string // 讯联跟支付宝费率
 	AlpMerFee     string // 商户跟讯联费率
-	AlpSettFlag   string // 是否讯联清算
-	WxpAppId      string // 商户appId
-	WxpMd5        string // 微信密钥
-	WxpMerId      string // 微信商户号
-	WxpSubMerId   string // 微信子商户号
-	IsAgentStr    string // 是否代理商模式
-	WxpSubAppId   string // 子商户AppId
-	WxpAcqFee     string // 讯联跟微信费率
-	WxpMerFee     string // 商户跟讯联费率(微信)
-	WxpSettFlag   string // 是否讯联清算
-	ShopId        string // 门店标识
-	GoodsTag      string // 商品标识
-	AcctNum       string // 开户账户
-	AcctName      string // 开户名称
-	BankId        string // 行号
-	BankName      string // 开户银行名称
-	City          string // 城市
-	IsAddAcctStr  string // 是否新增app账户信息
-	IsAddAcct     bool
-	AppUsername   string // 用户名
-	AppPassword   string // 密码
-	TitleOne      string // 标题一
-	TitleTwo      string // 标题二
+	AlpSettFlag   string // 清算标识
+	AlpSchemeType string // 计费方式
+	IsDomesticStr string // 是否境内渠道
+	// ---支付宝海外接口参数
+	AlpMerName string
+	AlpMerNo   string
+	AlpBusNo   string
+	AlpTermNo  string
+	AlpMcc     string
+	AlpRegCode string
+	// ---
+	WxpAppId     string // 商户appId
+	WxpMd5       string // 微信密钥
+	WxpMerId     string // 微信商户号
+	WxpSubMerId  string // 微信子商户号
+	IsAgentStr   string // 是否代理商模式
+	WxpSubAppId  string // 子商户AppId
+	WxpAcqFee    string // 讯联跟微信费率
+	WxpMerFee    string // 商户跟讯联费率(微信)
+	WxpSettFlag  string // 是否讯联清算
+	ShopId       string // 门店标识
+	GoodsTag     string // 商品标识
+	AcctNum      string // 开户账户
+	AcctName     string // 开户名称
+	BankId       string // 行号
+	BankName     string // 开户银行名称
+	City         string // 城市
+	IsAddAcctStr string // 是否新增app账户信息
+	IsAddAcct    bool
+	AppUsername  string // 用户名
+	AppPassword  string // 密码
+	TitleOne     string // 标题一
+	TitleTwo     string // 标题二
 	// ...
 	IsAgent    bool
 	IsNeedSign bool
+	IsDomestic bool
 	Permission []string
 	AlpAcqFeeF float64
 	AlpMerFeeF float64

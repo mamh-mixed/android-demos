@@ -24,6 +24,11 @@ func (col *sessionCollection) Add(s *model.Session) error {
 	return err
 }
 
+// Update 修改
+func (col *sessionCollection) Update(s *model.Session) error {
+	return database.C(col.name).Update(bson.M{"sessionId": s.SessionID}, s)
+}
+
 // Find 根据sessionID查找
 func (col *sessionCollection) Find(sessionID string) (s *model.Session, err error) {
 

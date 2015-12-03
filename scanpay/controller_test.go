@@ -22,11 +22,11 @@ var (
 		// OrderNum:   "哈哈中文订单号",
 		ScanCodeId: "287528698389366895",
 		AgentCode:  "19992900",
-		Txamt:      "000000000100",
+		Txamt:      "000000000001",
 		Chcd:       "AOS",
 		Busicd:     "PURC",
 		Currency:   "JPY",
-		Mchntid:    "200000000010001",
+		Mchntid:    "200000000010002",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -100,6 +100,13 @@ var (
 		NeedUserInfo: "YES",
 	}
 
+	settQuery = &model.ScanPayRequest{
+		Txndir:   "Q",
+		Busicd:   "LIST",
+		Mchntid:  "100000000000203",
+		SettDate: "2015-12-01",
+	}
+
 	// 卡券核销
 	purchaseCoupons = &model.ScanPayRequest{
 		Txndir:    "Q",
@@ -155,7 +162,7 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(scanPayCancel)
+	err := doOneScanPay(settQuery)
 	if err != nil {
 		t.Error(err)
 	}

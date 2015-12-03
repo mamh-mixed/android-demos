@@ -40,8 +40,12 @@ func processTransSettle() {
 
 	// 凌晨10分时将交易数据copy到清分表
 	// 距离指定的时间
-	dis, _ := util.TimeToGiven("00:10:00")
-	afterFunc(dis*time.Second, "doTransSett")
+	// dis, _ := util.TimeToGiven("00:10:00")
+	// afterFunc(dis*time.Second, "doTransSett")
+
+	// 扫码支付每天定时copy交易到sett表，随后进行勾兑
+	disOs, _ := util.TimeToGiven("00:30:00")
+	afterFunc(disOs*time.Second, "doSpTransSett")
 
 	// 中金渠道
 	// disCfca, _ := util.TimeToGiven("08:00:00")
@@ -128,6 +132,8 @@ func do(method string) {
 		app.NotifySalesman()
 	case "doScanpaySettReport":
 		err = doScanpaySettReport(yesterday)
+	case "doSpTransSett":
+		err = DoSpTransSett(yesterday)
 	default:
 		//..
 	}
@@ -220,7 +226,7 @@ func doCFCATransCheck() {
 				if transSett, err := mongo.TransSettColl.FindByOrderNum(tx.TxSn); err == nil {
 					// 找到记录，修改清分状态
 					log.Infof("check success %+v", transSett)
-					transSett.SettFlag = model.SettSuccess
+					// TODO:transSett.SettFlag = model.SettSuccess
 					if err = mongo.TransSettColl.Update(transSett); err != nil {
 						log.Errorf("fail to update transSett record %s,transSett id : %s", err, transSett.Trans.Id)
 					}
@@ -305,9 +311,9 @@ func addTransSett(t *model.Trans, settFlag int8) {
 	// 计算费率
 	sett := &model.TransSett{}
 	sett.Trans = *t
-	sett.SettFlag = settFlag
+	// TODO:sett.SettFlag = settFlag
 	sett.MerFee = int64(math.Floor(float64(t.TransAmt)*rate + 0.5)) // 四舍五入
-	sett.MerSettAmt = t.TransAmt - sett.MerFee
+	sett.MerSettAmt = t.TransAmt - int64(sett.MerFee)
 
 	if err := mongo.TransSettColl.Add(sett); err != nil {
 		log.Errorf("add trans sett fail : %s, trans id : %s", err, t.Id)

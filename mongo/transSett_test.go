@@ -8,6 +8,17 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestFindAndGroupBy(t *testing.T) {
+	g, a, _ := SpTransSettColl.FindAndGroupBy(&model.QueryCondition{
+		StartTime: "2015-12-01 00:00:00",
+		EndTime:   "2015-12-01 23:59:59",
+		MerId:     "100000000000017",
+	})
+
+	t.Logf("%+v", g)
+	t.Logf("%+v", a)
+}
+
 func TestAtomUpsert(t *testing.T) {
 
 	l := &model.TransSettLog{
@@ -59,7 +70,6 @@ func TestTransSettAdd(t *testing.T) {
 		transSett := &model.TransSett{
 			Trans:      tran,
 			SettDate:   "2015-03-23 23:59:59",
-			SettFlag:   1,
 			MerSettAmt: 100,
 			MerFee:     100,
 		}
@@ -71,7 +81,7 @@ func TestTransSettAdd(t *testing.T) {
 }
 
 func TestTransSettFind(t *testing.T) {
-	trans, err := TransSettColl.Find("001405", "2015-03-23", "")
+	trans, err := TransSettColl.FindByDate("001405", "2015-03-23", "")
 	if len(trans) == 11 {
 		data := trans[:len(trans)-1]
 		log.Debugf("%+v", data)

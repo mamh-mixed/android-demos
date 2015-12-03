@@ -7,6 +7,14 @@ import (
 	// "github.com/omigo/log"
 )
 
+func xTestAddUserFromCSV(t *testing.T) {
+	path := "/Users/zhiruichen/Desktop/user.csv"
+	err := AddUserFromCSV(path)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 // 导入原扫码系统商户 包含商户、渠道商户、路由策略、证书
 // func xTestAddMerFromNodejsDB(t *testing.T) {
 

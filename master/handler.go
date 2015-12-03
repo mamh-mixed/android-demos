@@ -3,6 +3,7 @@ package master
 import (
 	// "bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -12,13 +13,46 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/omigo/log"
-
+	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/CardInfoLink/quickpay/util"
+
+	"github.com/omigo/log"
 )
 
-// tradeSettleQueryHandle 清算报表查询的
-func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
+// appLocaleHandle 网关展示语言
+func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	locale := r.FormValue("locale")
+	log.Debugf("LOCALE is %s", locale)
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+
+	// 查看是否支持该语言
+	if !IsLocaleExist(locale) {
+		log.Warnf("Unsupport language: %s", locale)
+		w.Write([]byte("UNSUPPORT LANGUAGE"))
+		return
+	}
+
+	curSession.Locale = locale
+	err = mongo.SessionColl.Update(curSession)
+	if err != nil {
+		log.Errorf("update session(id=%s) fail:%s", curSession.SessionID, err)
+	}
+
+	w.Write([]byte("SUCCESS"))
+}
+
+// tradeSettleQueryHandle 交易划款报表查询的
+func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -34,8 +68,8 @@ func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// tradeSettleReportHandle 清算交易明细报表
-func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+// tradeTransferReportHandle 交易划款报表明细
+func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
@@ -49,6 +83,79 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 		EndTime:      date,
 		SettRole:     role,
 	}, fn)
+}
+
+// tradeSettleJournalHandle 交易流水，勾兑后的交易
+func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 页面参数
+	date := r.FormValue("date")
+	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
+
+	// session参数
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// 设置交易查询权限
+	q := &model.QueryCondition{
+		IsForReport:  true,
+		StartTime:    date + " 00:00:00", // 北京时间
+		EndTime:      date + " 23:59:59", // 北京时间
+		AgentCode:    curSession.User.AgentCode,
+		MerId:        curSession.User.MerId,
+		SubAgentCode: curSession.User.SubAgentCode,
+		GroupCode:    curSession.User.GroupCode,
+		UtcOffset:    utcOffset * 60, // second
+		Locale:       curSession.Locale,
+		UserType:     curSession.UserType,
+	}
+
+	// 下载
+	tradeSettJournalReport(w, q)
+
+}
+
+// tradeSettleReportHandle 交易流水汇总，勾兑后的交易
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	date := r.FormValue("date") // 北京时间
+
+	// session参数
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// condition
+	q := &model.QueryCondition{
+		IsForReport:  true,
+		StartTime:    date + " 00:00:00", // 北京时间
+		EndTime:      date + " 23:59:59", // 北京时间
+		AgentCode:    curSession.User.AgentCode,
+		MerId:        curSession.User.MerId,
+		SubAgentCode: curSession.User.SubAgentCode,
+		GroupCode:    curSession.User.GroupCode,
+		Locale:       curSession.Locale,
+		UserType:     curSession.UserType,
+	}
+
+	// 导出
+	tradeSettReport(w, q)
+}
+
+// tradeSettleRefreshHandle 重新勾兑交易数据
+func tradeSettleRefreshHandle(w http.ResponseWriter, r *http.Request) {
+	// TODO
+	date := r.FormValue("date")
+	key := r.FormValue("key")
+	if key != "cilxl12345$" {
+		return
+	}
+	log.Infof("process refresh transSettle")
+	go settle.RefreshSpTransSett(date)
 }
 
 // respCodeMatchHandle 查找应答码处理器
@@ -115,7 +222,6 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	transType, _ := strconv.Atoi(params.Get("transType"))
-
 	cond := &model.QueryCondition{
 		MerId:          merId,
 		AgentCode:      params.Get("agentCode"),
@@ -173,8 +279,21 @@ func tradeFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
+	// get session
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// 查询参数
 	params := r.URL.Query()
-	filename := params.Get("filename")
+
+	// 时区偏移量，前端传过来是分
+	utcOffset, err := strconv.Atoi(params.Get("utcOffset"))
+	if err != nil {
+		return
+	}
 
 	var merId = params.Get("merId")
 	cond := &model.QueryCondition{
@@ -192,6 +311,8 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		Page:         1,
 		RefundStatus: model.TransRefunded,
 		TransStatus:  []string{model.TransSuccess},
+		Locale:       curSession.Locale,
+		UtcOffset:    utcOffset * 60,
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
@@ -200,12 +321,11 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		cond.IsAggregateByGroup = isAggreByGroup
 	}
 
-	log.Debugf("tradeReportHandle condition is %#v", cond)
-
-	tradeReport(w, cond, filename)
+	tradeReport(w, cond, "trade_detail.xlsx")
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
+
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	q := &model.QueryCondition{
@@ -238,7 +358,42 @@ func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
-	tradeQueryStatsReport(w, r)
+
+	// 语言环境
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+	params := r.URL.Query()
+
+	// 时区偏移量，前端传过来是分
+	utcOffset, err := strconv.Atoi(params.Get("utcOffset"))
+	if err != nil {
+		return
+	}
+
+	// 查询条件
+	q := &model.QueryCondition{
+		MerId:        params.Get("merId"),
+		AgentCode:    params.Get("agentCode"),
+		SubAgentCode: params.Get("subAgentCode"),
+		MerName:      params.Get("merName"),
+		GroupCode:    params.Get("groupCode"),
+		StartTime:    params.Get("startTime"),
+		EndTime:      params.Get("endTime"),
+		Page:         1,
+		Size:         maxReportRec,
+		Locale:       curSession.Locale,
+		UtcOffset:    utcOffset * 60,
+	}
+
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, "trade_summary.xlsx"))
+
+	// 导出
+	statTradeReport(w, q)
 }
 
 func merchantFindHandle(w http.ResponseWriter, r *http.Request) {
@@ -300,6 +455,11 @@ func merchantFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -317,7 +477,13 @@ func merchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
 func merchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -337,6 +503,10 @@ func merchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	merId := r.FormValue("merId")
 	ret := Merchant.Delete(merId)
@@ -350,6 +520,11 @@ func merchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func routerSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)
@@ -402,6 +577,10 @@ func routerFindOneHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func routerDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	merId := r.FormValue("merId")
 	chanCode := r.FormValue("chanCode")
@@ -466,6 +645,10 @@ func channelFindByMerIdAndCardBrandHandle(w http.ResponseWriter, r *http.Request
 }
 
 func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -485,6 +668,11 @@ func channelMerchantSaveHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func channelMerchantDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	v := r.URL.Query()
 	chanCode := v.Get("chanCode")
 	chanMerId := v.Get("chanMerId")
@@ -514,6 +702,10 @@ func agentFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func agentDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	agentCode := r.FormValue("agentCode")
 	ret := Agent.Delete(agentCode)
@@ -527,6 +719,10 @@ func agentDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func agentSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -563,6 +759,10 @@ func subAgentFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func subAgentDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	subAgentCode := r.FormValue("subAgentCode")
 	ret := SubAgent.Delete(subAgentCode)
@@ -576,6 +776,10 @@ func subAgentDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func subAgentSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -614,6 +818,10 @@ func groupFindHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	groupCode := r.FormValue("groupCode")
 	ret := Group.Delete(groupCode)
@@ -628,6 +836,10 @@ func groupDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupSaveHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -682,6 +894,10 @@ func qiniuDownloadHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func userCreateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -747,7 +963,12 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
+// 登录操作，只允许get请求
 func loginHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -755,6 +976,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(501)
 		return
 	}
+
 	user := &model.User{}
 	err = json.Unmarshal(data, user)
 	if err != nil {
@@ -763,7 +985,17 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Infof("user login,username=%s", user.UserName)
-	ret := User.Login(user.UserName, user.Password)
+
+	// 密码解密
+	pwd, err := rsaDecryptFromBrowser(user.Password)
+	if err != nil {
+		log.Errorf("escrypt password error %s", err)
+		w.WriteHeader(http.StatusNotImplemented)
+		return
+	}
+	log.Debugf("decrypted password is %s", pwd)
+
+	ret := User.Login(user.UserName, pwd)
 
 	if ret.Status == 0 {
 		log.Debugf("create session begin")
@@ -773,10 +1005,11 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
-			Name:    "QUICKMASTERID",
-			Value:   cValue,
-			Path:    "/master",
-			Expires: cExpires,
+			Name:     SessionKey,
+			Value:    cValue,
+			HttpOnly: true,
+			Path:     "/master",
+			Expires:  cExpires,
 		})
 
 		// 创建session
@@ -786,6 +1019,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 			CreateTime: now,
 			UpdateTime: now,
 			Expires:    cExpires,
+			Locale:     DefaultLocale,
 		}
 
 		ret = Session.Save(session)
@@ -827,16 +1061,16 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	// 清除cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:   "QUICKMASTERID",
-		Value:  "",
-		Path:   "/master",
-		MaxAge: -1,
+		Name:     "QUICKMASTERID",
+		Value:    "",
+		HttpOnly: true,
+		Path:     "/master",
+		MaxAge:   -1,
 	})
 
 	sid, err := r.Cookie(SessionKey)
 	if err != nil {
 		log.Errorf("user not login when doing logout operation: %s", err)
-		// http.Error(w, "用户未登录", http.StatusNotAcceptable)
 		return
 	}
 
@@ -860,6 +1094,10 @@ func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -883,6 +1121,10 @@ func userUpdateHandle(w http.ResponseWriter, r *http.Request) {
 
 // userUpdatePwdHandle 修改密码
 func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -905,6 +1147,11 @@ func userUpdatePwdHandle(w http.ResponseWriter, r *http.Request) {
 
 // userDeleteHandle 删除用户
 func userDeleteHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	params := r.URL.Query()
 	userName := params.Get("userName")
 	ret := User.RemoveUser(userName)
@@ -922,6 +1169,11 @@ func userDeleteHandle(w http.ResponseWriter, r *http.Request) {
 
 // userResetPwdHandle 重置密码
 func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	params := r.URL.Query()
 	userName := params.Get("userName")
 	ret := User.ResetPwd(userName)
@@ -975,6 +1227,10 @@ func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -994,6 +1250,10 @@ func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func subAgentUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1013,6 +1273,10 @@ func subAgentUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1032,6 +1296,10 @@ func groupUpdateHandle(w http.ResponseWriter, r *http.Request) {
 }
 
 func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -1049,7 +1317,13 @@ func channelMerchantUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
 func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("Read all body error: %s", err)

@@ -1,12 +1,15 @@
 package mongo
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/omigo/log"
+	"github.com/tealeg/xlsx"
+	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"testing"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func TestBeginWith(t *testing.T) {
@@ -158,4 +161,62 @@ func TestFindTransRefundAmt(t *testing.T) {
 		t.FailNow()
 	}
 	log.Debug(total)
+}
+
+func TestAgentProfit(t *testing.T) {
+	data, err := SpTransColl.ExportAgentProfit("2015-10-31 23:59:59")
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	t.Logf("find %d data", len(data))
+	// t.Logf("%+v", data)
+
+	excel := xlsx.NewFile()
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+
+	sheet, _ := excel.AddSheet("扫码数据统计")
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "交易日期"
+	cell = row.AddCell()
+	cell.Value = "机构代码"
+	cell = row.AddCell()
+	cell.Value = "商户编号"
+	cell = row.AddCell()
+	cell.Value = "交易笔数"
+	cell = row.AddCell()
+	cell.Value = "交易金额"
+	cell = row.AddCell()
+	cell.Value = "交易渠道"
+
+	for _, d := range data {
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = d.ID.Date
+		cell = row.AddCell()
+		cell.Value = d.AgentCode
+		cell = row.AddCell()
+		cell.Value = d.ID.MerId
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("%d", d.TransNum)
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("%0.2f", float64(d.TransAmt-d.RefundAmt)/100)
+		cell = row.AddCell()
+		cell.Value = d.ID.ChanCode
+	}
+
+	var buf []byte
+	bf := bytes.NewBuffer(buf)
+	// 写到buf里
+	excel.Write(bf)
+
+	// 上传到七牛
+	err = qiniu.Put("20151031_trans", int64(bf.Len()), bf)
+	if err != nil {
+		t.Error(err)
+	}
+
 }
