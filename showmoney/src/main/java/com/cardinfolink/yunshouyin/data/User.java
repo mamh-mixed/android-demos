@@ -3,24 +3,27 @@ package com.cardinfolink.yunshouyin.data;
 public class User {
     private String username;
     private String password;
+    private String activate;
+    private String clientid;
+    private String limit = "true";
+    private String createTime;
+    private String signKey;
+    private String inscd;
+    private String objectId;
 
     private String province;
     private String city;
     private String branchBank;
     private String bankNo;
-
     private String bankOpen;
     private String payee;
     private String payeeCard;
     private String phoneNum;
-    private String clientid;
+
     private String limitEmail;
-    private String objectId;
     private boolean isAutoLogin;
     private String limitName;
-
     private String limitPhone;
-    private String limit = "true";
 
     public String getProvince() {
         return province;
@@ -163,4 +166,66 @@ public class User {
     }
 
 
+    public String getActivate() {
+        return activate;
+    }
+
+    public void setActivate(String activate) {
+        this.activate = activate;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getSignKey() {
+        return signKey;
+    }
+
+    public void setSignKey(String signKey) {
+        this.signKey = signKey;
+    }
+
+    public String getInscd() {
+        return inscd;
+    }
+
+    public void setInscd(String inscd) {
+        this.inscd = inscd;
+    }
+
+    public void setIsAutoLogin(boolean isAutoLogin) {
+        this.isAutoLogin = isAutoLogin;
+    }
+
+    @Override
+    public String toString() {
+        return "\nUser{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", activate='" + activate + '\'' +
+                ", clientid='" + clientid + '\'' +
+                ", limit='" + limit + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", signKey='" + signKey + '\'' +
+                ", inscd='" + inscd + '\'' +
+                ", objectId='" + objectId + '\'' +
+                ", province='" + province + '\'' +
+                ", city='" + city + '\'' +
+                ", branchBank='" + branchBank + '\'' +
+                ", bankNo='" + bankNo + '\'' +
+                ", bankOpen='" + bankOpen + '\'' +
+                ", payee='" + payee + '\'' +
+                ", payeeCard='" + payeeCard + '\'' +
+                ", phoneNum='" + phoneNum + '\'' +
+                ", limitEmail='" + limitEmail + '\'' +
+                ", isAutoLogin=" + isAutoLogin +
+                ", limitName='" + limitName + '\'' +
+                ", limitPhone='" + limitPhone + '\'' +
+                "}\n";
+    }
 }
