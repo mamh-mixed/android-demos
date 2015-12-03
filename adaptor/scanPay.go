@@ -97,7 +97,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 
 	// 海外接口没有异步通知，需要设置payTime，默认为createTime
 	if channel.Oversea == c.AreaType {
-		ret.PayTime = t.CreateTime
+		t.PayTime = t.CreateTime
 	}
 
 	return ret
