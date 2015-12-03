@@ -1,19 +1,24 @@
-/*
- * @Author: dmyang
- * @Date:   2015-06-16 15:19:59
- * @Last Modified by:   dmyang
- * @Last Modified time: 2015-08-27 11:16:12
- */
-
 'use strict';
 
 var gulp = require('gulp');
 var webpack = require('webpack');
-
+var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
+var WebpackDevServer = require("webpack-dev-server");
+var stream = require('webpack-stream');
 
 var webpackConf = require('./webpack.config');
 var webpackDevConf = require('./webpack-dev.config');
+
+var path = {
+	HTML: 'src/index.html',
+	ALL: ['src/**/*.html', 'src/**/*.js'],
+	MINIFIED_OUT: 'build.min.js',
+	DEST_SRC: 'dist/src',
+	DEST_BUILD: 'dist/build',
+	DEST: 'dist'
+};
 
 var src = process.cwd() + '/src';
 var assets = process.cwd() + '/assets';
@@ -70,21 +75,13 @@ gulp.task('default', ['pack'], function() {
 
 // deploy assets to remote server
 gulp.task('deploy', function() {
-	var sftp = require('gulp-sftp');
 	var rsync = require('gulp-rsync');
-	// return gulp.src(assets + '/**')
-	//     .pipe(sftp({
-	//         host: '[remote server ip]',
-	//         remotePath: '/www/app/',
-	//         user: 'foo',
-	//         pass: 'bar'
-	//     }));
 	return gulp.src(assets + '/**')
 		.pipe(rsync({
 			root: 'assets',
 			hostname: '139.129.116.65',
-      username: 'weixin',
-      progress: true,
+			username: 'weixin',
+			progress: true,
 			destination: '/home/weixin/cloudCashier/agent'
 		}));
 });
@@ -95,10 +92,11 @@ gulp.task('hmr', function(done) {
 	var WebpackDevServer = require('webpack-dev-server');
 	var compiler = webpack(webpackDevConf);
 	var devSvr = new WebpackDevServer(compiler, {
-		contentBase: webpackConf.output.path,
-		publicPath: webpackDevConf.output.publicPath,
+		contentBase: './src/',
+		publicPath: './assets/',
+		// contentBase: webpackConf.output.path,
+		// publicPath: webpackDevConf.output.publicPath,
 		hot: true,
-		stats: webpackDevConf.devServer.stats,
 	});
 
 	devSvr.listen(8080, '0.0.0.0', function(err) {
@@ -111,3 +109,36 @@ gulp.task('hmr', function(done) {
 		// done();
 	});
 });
+
+gulp.task('webpack', [], function() {
+	return gulp.src(path.ALL)
+		.pipe(sourcemaps.init())
+		.pipe(stream(webpackConfig))
+		.pipe(uglify())
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest(path.DEST_BUILD));
+});
+
+gulp.task("webpack-dev-server", function(callback) {
+	// modify some webpack config options
+	var myConfig = Object.create(webpackConf);
+	myConfig.devtool = "eval";
+	myConfig.debug = true;
+
+	// Start a webpack-dev-server
+	new WebpackDevServer(webpack(myConfig), {
+		publicPath: "/" + myConfig.output.publicPath,
+		stats: {
+			colors: true
+		}
+	}).listen(7080, "localhost", function(err) {
+		if (err) throw new gutil.PluginError("webpack-dev-server", err);
+		gutil.log("[webpack-dev-server]", "http://localhost:7080/webpack-dev-server/index.html");
+	});
+});
+
+gulp.task('watch', function() {
+	gulp.watch(path.ALL, ['webpack']);
+});
+
+gulp.task('dev', ['webpack-dev-server', 'watch']);

@@ -63,7 +63,10 @@ function makeConf(options) {
 			// noParse: ['zepto'],
 			loaders: [{
 				test: /\.(png|jpg)$/,
-				loader: 'url-loader?limit=8192'
+				loader: 'url-loader?mimetype=image/png&limit=8192'
+			}, {
+				test: /\.handlebars$/,
+				loader: "handlebars-template-loader"
 			}, {
 				test: /\.(woff|eot|ttf)$/i,
 				loader: 'url?limit=10000&name=fonts/[hash:8].[name].[ext]'
@@ -72,7 +75,7 @@ function makeConf(options) {
 				loader: 'ejs'
 			}, {
 				test: /\.js$/,
-				exclude: /node_modules/,
+				exclude: /(node_modules|lib)/,
 				loader: 'babel',
 				query: {
 					presets: ['es2015']
@@ -87,7 +90,9 @@ function makeConf(options) {
 			// 	// Modules must be shared between all entries
 			// 	minChunks: chunks.length // 提取所有chunks共同依赖的模块
 			// }),
-			new OpenBrowserPlugin({ url: 'http://localhost:8080/webpack-dev-server/pay.html' })
+			new OpenBrowserPlugin({
+				url: 'http://localhost:8080/webpack-dev-server/pay.html'
+			})
 			// new CommonsChunkPlugin({
 			// 	name: 'common-bc',
 			// 	chunks: ['vendors', 'b', 'c'],
