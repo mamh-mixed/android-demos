@@ -54,10 +54,10 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
-                if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
-                } else {
+                if (stringAsyncTaskResult == null) {
                     quickPayCallbackListener.onSuccess(null);
+                } else if (stringAsyncTaskResult.getException() != null) {
+                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
                 }
             }
         }.execute();
