@@ -32,6 +32,7 @@ type QueryCondition struct {
 	MerName            string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId              string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds             []string `json:"-"`
+	UserType           string
 	Col                string   `json:"-"`
 	BindingId          string   `json:"bindingId"`
 	AgentCode          string   `json:"agentCode,omitempty"`
