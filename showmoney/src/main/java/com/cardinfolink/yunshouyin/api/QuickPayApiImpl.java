@@ -208,39 +208,28 @@ public class QuickPayApiImpl implements QuickPayApi {
     /**
      * errors:
      * user_already_improved
-     *
-     * @param username
-     * @param password
-     * @param province
-     * @param city
-     * @param bank_open
-     * @param branch_bank
-     * @param bankNo
-     * @param payee
-     * @param payee_card
-     * @param phone_num
      */
     @Override
-    public void updateInfo(String username, String password, String province, String city, String bank_open, String branch_bank, String bankNo, String payee, String payee_card, String phone_num) {
+    public void updateInfo(User user) {
         String url = quickPayConfigStorage.getUrl() + "/improveinfo";
 
         Map<String, String> params = new LinkedHashMap<>();
 
-        params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("username", user.getUsername());
+
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
         params.put("password", password);
 
-        params.put("province", province);
-        params.put("city", city);
-        params.put("bank_open", bank_open);
-        params.put("branch_bank", branch_bank);
-        params.put("bankNo", bankNo);
-        params.put("payee", payee);
-        params.put("payee_card", payee_card);
-        params.put("phone_num", phone_num);
+        params.put("province", user.getProvince());
+        params.put("city", user.getCity());
+        params.put("bank_open", user.getBankOpen());
+        params.put("branch_bank", user.getBranchBank());
+        params.put("bankNo", user.getBankNo());
+        params.put("payee", user.getPayee());
+        params.put("payee_card", user.getPayeeCard());
+        params.put("phone_num", user.getPhoneNum());
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, "SHA-1"));
-
 
         try {
             String response = postEngine.post(url, params);
