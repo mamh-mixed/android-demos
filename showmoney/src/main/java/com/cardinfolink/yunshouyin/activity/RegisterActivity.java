@@ -1,13 +1,17 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
@@ -81,64 +85,37 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
         mLoadingDialog.startLoading();
-        final String username = mEmailEdit.getText().toString();
-        final String password = mPasswordEdit.getText().toString();
-        HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRegister(username, password), new CommunicationListener() {
+        final String username = mEmailEdit.getText().toString(); //用户名
+        final String password = mPasswordEdit.getText().toString(); //密码，第一次输入的
+        final String qrPassword = mQrPasswordEdit.getText().toString(); //确认密码，第二次输入的
 
+        quickPayService.registerAsync(username, password, qrPassword, new QuickPayCallbackListener<Void>() {
             @Override
-            public void onResult(final String result) {
+            public void onSuccess(Void data) {
+                //没有返回值的,那边返回的是null.
+                User user = new User();
+                user.setUsername(username);
+                user.setPassword(password);
+                SaveData.setUser(mContext, user);
 
-                String state = JsonUtil.getParam(result, "state");
-                if (state.equals("success")) {
-                    User user = new User();
-                    user.setUsername(username);
-                    user.setPassword(password);
-                    SaveData.setUser(mContext, user);
+                SessonData.loginUser.setUsername(username);
+                SessonData.loginUser.setPassword(password);
 
-                    SessonData.loginUser.setUsername(username);
-                    SessonData.loginUser.setPassword(password);
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            //更新UI
-                            mLoadingDialog.endLoading();
-                            ActivateDialog activate_dialog = new ActivateDialog(mContext, RegisterActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
-                            activate_dialog.show();
-                        }
-
-                    });
-
-                } else {
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            //更新UI
-                            mLoadingDialog.endLoading();
-                            mAlertDialog.show(ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                        }
-
-                    });
-
-                }
+                mLoadingDialog.endLoading();
+                View activateView = findViewById(R.id.activate_dialog);
+                ActivateDialog activateDialog = new ActivateDialog(mContext, activateView, username);
+                activateDialog.show();
             }
 
             @Override
-            public void onError(final String error) {
-                runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        //更新UI
-                        mLoadingDialog.endLoading();
-                        mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                    }
-
-                });
+            public void onFailure(QuickPayException ex) {
+                String errorMsg = ex.getErrorMsg();
+                //更新UI
+                mLoadingDialog.endLoading();
+                Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                mAlertDialog.show(errorMsg, alertBitmap);
             }
         });
-
     }
 
     @SuppressLint("NewApi")
