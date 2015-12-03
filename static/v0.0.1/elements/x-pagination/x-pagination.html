@@ -63,14 +63,14 @@
   </style>
   <template>
     <div class="size">
-      <span>每页显示</span>
+      <i18n-msg msgid="PAGINATION.PER_PAGE_PREFIX"></i18n-msg>
       <select id="size" name="size" value="{{size}}" on-change="changeSize">
         <option>10</option>
         <option selected>20</option>
         <option>50</option>
         <option>100</option>
       </select>
-      <span>条</span>
+      <i18n-msg msgid="PAGINATION.PER_PAGE_SUFFIX"></i18n-msg>
     </div>
 
     <div class="offset">

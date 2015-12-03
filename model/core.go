@@ -133,25 +133,37 @@ const MerStatusNormal = "Normal"
 
 // Merchant 商户基本信息
 type Merchant struct {
-	MerId        string    `bson:"merId,omitempty" json:"merId,omitempty"`               // 商户号
-	UniqueId     string    `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`         // 唯一标识
-	AgentCode    string    `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 公司代码
-	SubAgentCode string    `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 代理/机构代码
-	GroupCode    string    `bson:"groupCode,omitempty" json:"groupCode,omitempty"`       // 集团商户代码
-	MerStatus    string    `bson:"merStatus,omitempty" json:"merStatus,omitempty"`       // 商户状态（Normal，Deleted，Test）
-	AgentName    string    `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理/机构名称
-	SubAgentName string    `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 公司名称
-	GroupName    string    `bson:"groupName,omitempty" json:"groupName,omitempty"`       // 集团/机构名称
-	TransCurr    string    `bson:"transCurr,omitempty" json:"transCurr,omitempty"`       // 商户交易币种
-	SignKey      string    `bson:"signKey,omitempty" json:"signKey,omitempty"`           // 商户签名密钥
-	IsNeedSign   bool      `bson:"isNeedSign" json:"isNeedSign"`                         // 是否开启验签
-	EncryptKey   string    `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"`     // 商户加密密钥
-	Remark       string    `bson:"remark,omitempty" json:"remark,omitempty"`             // 备注信息
-	Permission   []string  `bson:"permission,omitempty" json:"permission,omitempty"`     // 接口权限
-	RefundType   int       `bson:"refundType" json:"refundType"`                         // 0-无限制 1-只能当日退 2-只能隔日退
-	Detail       MerDetail `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
-	CreateTime   string    `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
-	UpdateTime   string    `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
+	MerId        string          `bson:"merId,omitempty" json:"merId,omitempty"`               // 商户号
+	UniqueId     string          `bson:"uniqueId,omitempty" json:"uniqueId,omitempty"`         // 唯一标识
+	AgentCode    string          `bson:"agentCode,omitempty" json:"agentCode,omitempty"`       // 公司代码
+	SubAgentCode string          `bson:"subAgentCode,omitempty" json:"subAgentCode,omitempty"` // 代理/机构代码
+	GroupCode    string          `bson:"groupCode,omitempty" json:"groupCode,omitempty"`       // 集团商户代码
+	MerStatus    string          `bson:"merStatus,omitempty" json:"merStatus,omitempty"`       // 商户状态（Normal，Deleted，Test）
+	AgentName    string          `bson:"agentName,omitempty" json:"agentName,omitempty"`       // 代理/机构名称
+	SubAgentName string          `bson:"subAgentName,omitempty" json:"subAgentName,omitempty"` // 公司名称
+	GroupName    string          `bson:"groupName,omitempty" json:"groupName,omitempty"`       // 集团/机构名称
+	TransCurr    string          `bson:"transCurr,omitempty" json:"transCurr,omitempty"`       // 商户交易币种
+	SignKey      string          `bson:"signKey,omitempty" json:"signKey,omitempty"`           // 商户签名密钥
+	IsNeedSign   bool            `bson:"isNeedSign" json:"isNeedSign"`                         // 是否开启验签
+	EncryptKey   string          `bson:"encryptKey,omitempty" json:"encryptKey,omitempty"`     // 商户加密密钥
+	Remark       string          `bson:"remark,omitempty" json:"remark,omitempty"`             // 备注信息
+	Permission   []string        `bson:"permission,omitempty" json:"permission,omitempty"`     // 接口权限
+	RefundType   int             `bson:"refundType" json:"refundType"`                         // 0-无限制 1-只能当日退 2-只能隔日退
+	Detail       MerDetail       `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
+	CreateTime   string          `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
+	UpdateTime   string          `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
+	JsPayVersion string          `bson:"jsPayVersion,omitempty" json:"jsPayVersion,omitempty"`
+	Options      *OverseasParams `bson:"options,omitempty"`
+}
+
+//  TODO :OverseasParams
+type OverseasParams struct {
+	MerName    string `json:"merchant_name,omitempty" bson:"merName"`
+	MerNo      string `json:"merchant_no,omitempty" bson:"merNo"`
+	Bn         string `json:"business_no,omitempty" bson:"busNo"`
+	TerId      string `json:"terminal_id,omitempty" bson:"termNo"`
+	Mcc        string `json:"mcc,omitempty" bson:"mcc"`
+	RegionCode string `json:"region_code,omitempty" bson:"regCode"`
 }
 
 // MerDetail 商户详细信息
@@ -212,10 +224,23 @@ type ChanMer struct {
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 交易模式 1-商户模式 2-市场模式
-	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段
+	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段0-境内 1-境外
 	CreateTime  string   `bson:"createTime,omitempty" json:"createTime,omitempty"`   // 创建时间
 	UpdateTime  string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`   // 更新时间
+
+	// 0. 渠道退手续费，手续费原路返还，支付宝→机构→商户，统计报表及清算报表中的交易金额 =  负的原交易金额；
+	// 1. 渠道不退手续费，机构承担手续费，统计报表及清算报表中的交易金额 =  负的原交易金额；
+	// 2. 渠道不退手续费，商户承担手续费，统计报表及清算报表中的交易金额 =  负的（原交易金额 – 手续费）；
+	// 3. 渠道不退手续费（预留），机构商户按比例承担手续费，这个模式目前不会有，先不统计在报表里。
+	SchemeType int          `bson:"schemeType" json:"schemeType"` // 计费方案
+	Sftp       *SftpAccount `bson:"sftp,omitempty" json:"-"`
 	// ...
+}
+
+// SftpAccount 登录sftp的帐号
+type SftpAccount struct {
+	Username string `bson:"username"`
+	Password string `bson:"password"`
 }
 
 type Agent struct {
@@ -285,9 +310,9 @@ type Trans struct {
 	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
 	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
 	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
-	SettRole     string        `bson:"settRole,omitempty" json:"-"`                          // 清算角色
-	PayTime      string        `bson:"payTime,omitempty" json:"-"`                           // 支付时间
-	Currency     string        `bson:"currency,omitempty" json:"-"`
+	SettRole     string        `bson:"settRole,omitempty" json:"settRole,omitempty"`         // 清算角色
+	PayTime      string        `bson:"payTime,omitempty" json:"payTime,omitempty"`           // 支付时间
+	Currency     string        `bson:"currency,omitempty" json:"currency"`
 	ExchangeRate string        `bson:"exchangeRate,omitempty" json:"-"`
 
 	// 快捷支付
@@ -325,7 +350,7 @@ type Trans struct {
 	Attach          string `bson:"attach,omitempty" json:"-"`
 
 	// APP
-	TicketNum string `bson:"ticketNum,omitempty" json:"-"` // 关联的小票号
+	TicketNum string `bson:"ticketNum,omitempty" json:"ticketNum,omitempty"` // 关联的小票号
 
 	// 可用于关联查询字段
 	MerName      string `bson:"merName,omitempty" json:"merName,omitempty"` // 商户名称
@@ -397,13 +422,15 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 // TransSett 清算信息
 type TransSett struct {
 	Trans       Trans  `bson:"trans"`       // 清算的交易
-	SettFlag    int8   `bson:"settFlag"`    // 清算标志
-	SettDate    string `bson:"settDate"`    // 清算时间
+	SettRole    string `bson:"settRole"`    // 清算角色
+	SettDate    string `bson:"settDate"`    // 清算日期
+	SettTime    string `bson:"settTime"`    // 清算具体时间
 	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
 	MerFee      int64  `bson:"merFee"`      // 商户手续费
 	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
 	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
 	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
+	BlendType   int    `bson:"blendType"`   // 勾兑状态
 }
 
 // TransSettInfo 清分信息明细

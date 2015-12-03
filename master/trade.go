@@ -2,15 +2,15 @@ package master
 
 import (
 	"fmt"
-	"net/http"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
+	"net/http"
+	"time"
 )
 
 var maxReportRec = 10000
@@ -80,7 +80,18 @@ func tradeQuery(q *model.QueryCondition) (ret *model.ResultBody) {
 	case q.Col == "coupon":
 		return query.CouponTransQuery(q)
 	default:
-		return query.SpTransQuery(q)
+		trans, total := query.SpTransQuery(q)
+		return &model.ResultBody{
+			Status:  0,
+			Message: "查询成功",
+			Data: &model.Pagination{
+				Page:  q.Page,
+				Total: total,
+				Size:  q.Size,
+				Count: len(trans),
+				Data:  trans,
+			},
+		}
 	}
 }
 
@@ -91,21 +102,15 @@ func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 
 // tradeReport 处理查找所有商户的请求
 func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
-	var file = xlsx.NewFile()
+
+	// 语言模板
+	rl := GetLocale(cond.Locale)
 
 	// 查询
-	ret := query.SpTransQuery(cond)
+	trans, _ := query.SpTransQuery(cond)
 
-	// 类型转换
-	if pagination, ok := ret.Data.(*model.Pagination); ok {
-		if trans, ok := pagination.Data.([]*model.Trans); ok {
-			// 生成报表
-			before := time.Now()
-			genReport(cond.MerId, file, trans)
-			after := time.Now()
-			log.Debugf("gen trans report spent %s", after.Sub(before))
-		}
-	}
+	// 生成报表
+	file := genReport(trans, rl, &Zone{cond.UtcOffset, time.Local})
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
@@ -113,14 +118,19 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 }
 
 // genReport 生成报表
-func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
+func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File {
 
+	var file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
+	// 语言
+	m := locale.TransReport
+	lALP, lWXP := locale.ChanCode.ALP, locale.ChanCode.WXP
+
 	// 可能有多个sheet
-	sheet, _ = file.AddSheet("商户交易报表")
+	sheet, _ = file.AddSheet(m.SheetName)
 
 	// 先空3行，最后写入汇总数据
 	for i := 0; i < 3; i++ {
@@ -134,15 +144,18 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 		MerName      string
 		OrderNum     string
 		TransAmt     string
+		MerFee       string
 		ChanCode     string
 		TransTime    string
 		PayTime      string
 		TransStatus  string
+		ChanMerId    string
 		AgentCode    string
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
-	}{"商户号", "商户名称", "订单号", "金额", "渠道", "交易时间", "支付时间", "交易状态", "机构", "终端号", "交易类型", "原订单号"}
+		Remark       string
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -155,124 +168,144 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	// 总交易金额、退款金额
 	var transAmt, refundAmt, fee int64 = 0, 0, 0
 
+	var cur currency.Cur
 	// 生成数据
-	for _, v := range trans {
+	if len(trans) != 0 {
+		// TODO 先随机取一条交易的币种确定单位
+		transCurr := trans[0].Currency
 
-		var amt float64
+		// 币种单位
+		cur = currency.Get(transCurr)
 
-		// 交易金额 = 成功的交易金额
-		// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
-		switch v.TransType {
-		case model.PayTrans:
-			amt = float64(v.TransAmt) / 100
-			if v.ChanCode == channel.ChanCodeAlipay {
-				alpTransAmt += v.TransAmt
-				alpFee += v.Fee
+		// 金额显示格式
+		var floatFormat = "#,##0"
+		for i := 0; i < cur.Precision; i++ {
+			if i == 0 {
+				floatFormat += "."
 			}
-			if v.ChanCode == channel.ChanCodeWeixin {
-				wxpTransAmt += v.TransAmt
-				wxpFee += v.Fee
-			}
-		// 退款、撤销、取消
-		default:
-			amt = -float64(v.TransAmt) / 100
-			if v.ChanCode == channel.ChanCodeAlipay {
-				alpRefundAmt += v.TransAmt
-				alpFee -= v.Fee
-			}
-			if v.ChanCode == channel.ChanCodeWeixin {
-				wxpRefundAmt += v.TransAmt
-				wxpFee -= v.Fee
-			}
+			floatFormat += "0"
 		}
+		for _, v := range trans {
 
-		//商户号，商户名称，订单号，金额，渠道，交易时间，交易状态，终端号，交易类型，原订单号
-		row = sheet.AddRow()
-		// 商户号
-		cell = row.AddCell()
-		cell.Value = v.MerId
-		// 商户名称
-		cell = row.AddCell()
-		cell.Value = v.MerName
-		// 订单号
-		cell = row.AddCell()
-		cell.Value = v.OrderNum
-		// 交易金额
-		cell = row.AddCell()
-		cell.SetFloatWithFormat(float64(amt), floatFormat)
-		// 渠道
-		cell = row.AddCell()
-		switch v.ChanCode {
-		case "WXP":
-			cell.Value = "微信"
-		case "ALP":
-			cell.Value = "支付宝"
-		default:
-			cell.Value = "未知"
-		}
-		// 交易时间
-		cell = row.AddCell()
-		cell.Value = v.CreateTime
-		// 支付时间
-		cell = row.AddCell()
-		cell.Value = v.PayTime
-		// 交易状态
-		cell = row.AddCell()
-		switch v.TransStatus {
-		case model.TransSuccess:
-			cell.Value = "交易成功"
-			if v.RefundStatus == model.TransPartRefunded {
-				cell.Value = "部分退款" + fmt.Sprintf("(-%0.2f)", float64(v.RefundAmt)/100)
+			var amt float64
+
+			// 交易金额 = 成功的交易金额
+			// 手续费 = 支付交易的手续费-（退款、撤销、取消）手续费
+			switch v.TransType {
+			case model.PayTrans:
+				amt = cur.F64(v.TransAmt)
+				if v.ChanCode == channel.ChanCodeAlipay {
+					alpTransAmt += v.TransAmt
+					alpFee += v.Fee
+				}
+				if v.ChanCode == channel.ChanCodeWeixin {
+					wxpTransAmt += v.TransAmt
+					wxpFee += v.Fee
+				}
+			// 退款、撤销、取消
+			default:
+				amt = -cur.F64(v.TransAmt)
+				if v.ChanCode == channel.ChanCodeAlipay {
+					alpRefundAmt += v.TransAmt
+					alpFee -= v.Fee
+				}
+				if v.ChanCode == channel.ChanCodeWeixin {
+					wxpRefundAmt += v.TransAmt
+					wxpFee -= v.Fee
+				}
 			}
-		case model.TransFail:
-			cell.Value = "交易失败"
-		case model.TransHandling:
-			cell.Value = "交易处理中"
-		case model.TransClosed:
-			// 针对退款的交易
-			cell.Value = "交易已退款"
-		default:
-			cell.Value = "未知"
-		}
-		// 机构号
-		cell = row.AddCell()
-		cell.Value = v.AgentCode
-		// 终端号
-		cell = row.AddCell()
-		cell.Value = v.Terminalid
-		// 交易类型
-		cell = row.AddCell()
-		switch v.Busicd {
-		case model.Purc:
-			cell.Value = "下单并支付"
-		case model.Paut:
-			cell.Value = "预下单"
-		case model.Refd:
-			cell.Value = "退款"
-		case model.Void:
-			cell.Value = "撤销"
-		case model.Canc:
-			cell.Value = "取消"
-		case model.Qyzf:
-			cell.Value = "企业付款"
-		case model.Jszf:
-			cell.Value = "公众号支付"
-		default:
-			cell.Value = "未知"
-		}
 
-		// 原订单号
-		cell = row.AddCell()
-		cell.Value = v.OrigOrderNum
+			//商户号，商户名称，订单号，金额，渠道，交易时间，交易状态，终端号，交易类型，原订单号
+			row = sheet.AddRow()
+			// 商户号
+			cell = row.AddCell()
+			cell.Value = v.MerId
+			// 商户名称
+			cell = row.AddCell()
+			cell.Value = v.MerName
+			// 订单号
+			cell = row.AddCell()
+			cell.Value = v.OrderNum
+			// 交易金额
+			cell = row.AddCell()
+			cell.SetFloatWithFormat(amt, floatFormat)
+			// 商户手续费
+			cell = row.AddCell()
+			if v.TransType == model.PayTrans {
+				cell.SetFloatWithFormat(cur.F64(v.Fee), floatFormat)
+			} else {
+				cell.SetFloatWithFormat(cur.F64(-v.Fee), floatFormat)
+			}
+			// 渠道
+			cell = row.AddCell()
+			switch v.ChanCode {
+			case "WXP":
+				cell.Value = lWXP
+			case "ALP":
+				cell.Value = lALP
+			default:
+				cell.Value = locale.ChanCode.Unknown
+			}
+			// 交易时间
+			cell = row.AddCell()
+			cell.Value = z.GetTime(v.CreateTime)
+			// 支付时间，维持北京时间
+			cell = row.AddCell()
+			if v.PayTime == "" {
+				v.PayTime = v.CreateTime
+			}
+			cell.Value = v.PayTime + " +0800"
+			// 交易状态
+			cell = row.AddCell()
+			switch v.TransStatus {
+			case model.TransSuccess:
+				cell.Value = locale.TransStatus.TransSuccess
+			case model.TransFail:
+				cell.Value = locale.TransStatus.TransFail
+			case model.TransHandling:
+				cell.Value = locale.TransStatus.TransHandling
+			case model.TransClosed:
+				// 针对退款的交易
+				cell.Value = locale.TransStatus.TransClosed
+			default:
+				cell.Value = locale.TransStatus.Unknown
+			}
+			// 渠道商户号
+			cell = row.AddCell()
+			cell.Value = v.ChanMerId
+			// 机构号
+			cell = row.AddCell()
+			cell.Value = v.AgentCode
+			// 终端号
+			cell = row.AddCell()
+			cell.Value = v.Terminalid
+			// 交易类型
+			cell = row.AddCell()
+			switch v.Busicd {
+			case model.Purc:
+				cell.Value = locale.BusicdType.Purc
+			case model.Paut:
+				cell.Value = locale.BusicdType.Paut
+			case model.Refd:
+				cell.Value = locale.BusicdType.Refd
+			case model.Void:
+				cell.Value = locale.BusicdType.Void
+			case model.Canc:
+				cell.Value = locale.BusicdType.Canc
+			case model.Qyzf:
+				cell.Value = locale.BusicdType.Qyzf
+			case model.Jszf:
+				cell.Value = locale.BusicdType.Jszf
+			default:
+				cell.Value = locale.BusicdType.Unknown
+			}
 
-	}
-
-	// 利用商户数据，完善报表数据
-	var merName string
-	if merId != "" {
-		mer, err := mongo.MerchantColl.Find(merId)
-		if err == nil {
-			merName = mer.Detail.MerName
+			// 原订单号
+			cell = row.AddCell()
+			cell.Value = v.OrigOrderNum
+			// 备注
+			cell = row.AddCell()
+			cell.Value = v.TicketNum
 		}
 	}
 
@@ -285,33 +318,30 @@ func genReport(merId string, file *xlsx.File, trans []*model.Trans) {
 	rows := sheet.Rows
 	row = rows[0]
 	row.WriteStruct(&summary{
-		"名称：", merName,
-		"支付宝交易金额：", float64(alpTransAmt) / 100,
-		"支付宝退款金额：", -float64(alpRefundAmt) / 100,
-		"支付宝手续费：", float64(alpFee) / 100,
-		"支付宝清算金额：", float64(alpTransAmt-alpRefundAmt-alpFee) / 100,
+		lALP + m.TransAmt + "：", cur.F64(alpTransAmt),
+		lALP + m.RefundAmt + "：", -cur.F64(alpRefundAmt),
+		lALP + m.Fee + "：", cur.F64(alpFee),
+		lALP + m.SettAmt + "：", cur.F64(alpTransAmt - alpRefundAmt - alpFee),
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
-		"", "",
-		"微信交易金额：", float64(wxpTransAmt) / 100,
-		"微信退款金额：", -float64(wxpRefundAmt) / 100,
-		"微信手续费：", float64(wxpFee) / 100,
-		"微信清算金额：", float64(wxpTransAmt-wxpRefundAmt-wxpFee) / 100,
+		lWXP + m.TransAmt + "：", cur.F64(wxpTransAmt),
+		lWXP + m.RefundAmt + "：", -cur.F64(wxpRefundAmt),
+		lWXP + m.Fee + "：", cur.F64(wxpFee),
+		lWXP + m.SettAmt + "：", cur.F64(wxpTransAmt - wxpRefundAmt - wxpFee),
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
-		"总计：", "",
-		"交易总额：", float64(transAmt) / 100,
-		"退款总额：", -float64(refundAmt) / 100,
-		"手续费总额：", float64(fee) / 100,
-		"清算总额：", float64(transAmt-refundAmt-fee) / 100,
+		m.TotalTransAmt + "：", cur.F64(transAmt),
+		m.TotalRefundAmt + "：", -cur.F64(refundAmt),
+		m.TotalFee + "：", cur.F64(fee),
+		m.TotalSettAmt + "：", cur.F64(transAmt - refundAmt - fee),
 	}, -1)
+
+	return file
 }
 
 type summary struct {
-	Cell0 string
-	Cell1 string
 	Cell2 string
 	Cell3 float64
 	Cell4 string
@@ -321,3 +351,42 @@ type summary struct {
 	Cell8 string
 	Cell9 float64
 }
+
+// Zone 代表时区
+type Zone struct {
+	UtcOffset     int            // UTC 的偏移量
+	ParseLocation *time.Location // 原时间时区
+}
+
+// GetTime 获得某个地区时间
+func (z *Zone) GetTime(ctime string) string {
+
+	// 东八区时间偏移量
+	cstOffset := 60 * 60 * 8
+
+	// 假如是东八区北京时间，直接返回
+	if z.UtcOffset == cstOffset {
+		return ctime + " +0800"
+	}
+
+	// 以服务器时区为准，即东八区
+	t, err := time.ParseInLocation("2006-01-02 15:04:05", ctime, z.ParseLocation)
+	if err != nil {
+		log.Errorf("fail to parse time in Local: %s", ctime)
+		return ctime
+	}
+
+	if loc, ok := locationsMap[z.UtcOffset]; ok {
+		t = t.In(loc)
+		return t.Format(layout)
+	}
+
+	loc := time.FixedZone("CUR", z.UtcOffset)
+	locationsMap[z.UtcOffset] = loc
+
+	t = t.In(loc)
+	return t.Format(layout)
+}
+
+var layout = "2006-01-02 15:04:05 -0700"
+var locationsMap = make(map[int]*time.Location)

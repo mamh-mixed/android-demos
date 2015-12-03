@@ -13,75 +13,142 @@
   <template>
     <div class="table data-grid low" id="orderDetail">
       <div class="tr">
-        <div class="td key">门店代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NO">门店代码</i18n-msg>:
+        </div>
         <div class="td">{{item.merId}}</div>
-        <div class="td key">门店名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.MERCHANT_NAME">门店名称</i18n-msg>:
+        </div>
         <div class="td">{{item.merName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">商户代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NO">商户代码</i18n-msg>:
+        </div>
         <div class="td">{{item.groupCode}}</div>
-        <div class="td key">商户名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NAME">商户名称</i18n-msg>:
+        </div>
         <div class="td">{{item.groupName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">公司代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.SUBAGENT_NO">公司代码</i18n-msg>:
+        </div>
         <div class="td">{{item.subAgentCode}}</div>
-        <div class="td key">公司名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.GROUP_NAME">公司名称</i18n-msg>:
+        </div>
         <div class="td">{{item.subAgentName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">代理代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>:
+        </div>
         <div class="td">{{item.agentCode}}</div>
-        <div class="td key">代理名称:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>:
+        </div>
         <div class="td">{{item.agentName}}</div>
       </div>
       <div class="tr">
-        <div class="td key">终端代码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.TERMINAL">终端代码</i18n-msg>:
+        </div>
         <div class="td">{{item.terminalid}}</div>
-        <div class="td key">商户订单:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.ORDER_NO">商户订单</i18n-msg>:
+        </div>
         <div class="td">{{item.orderNum}}</div>
       </div>
       <div class="tr">
-        <div class="td key">交易金额:</div>
-        <div class="td">{{_currencyFilter(item.transAmt)}}</div>
-        <div class="td key">商品明细:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.TRANS_AMOUNT">交易金额</i18n-msg>:
+        </div>
+        <div class="td">{{_currencyFilter(item.transAmt, item.currency)}}</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.GOOD_DETAIL">商品明细</i18n-msg>:
+        </div>
         <div class="td">{{item.goodsInfo}}</div>
       </div>
       <div class="tr">
-        <div class="td key">交易币种:</div>
-        <div class="td">{{item.transCurr}}</div>
-        <div class="td key">交易类型:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.TRANS_CURRENCY">交易币种</i18n-msg>:
+        </div>
+        <div class="td">{{item.currency}}</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.TRANS_TYPE">交易类型</i18n-msg>:
+        </div>
         <div class="td">{{busicdFilter(item.busicd)}}</div>
       </div>
+
       <div class="tr">
-        <div class="td key">交易渠道:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.SETT_ROLE">清算角色</i18n-msg>:
+        </div>
+        <div class="td">{{item.settRole}}</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.TICKET_NUM">小票号</i18n-msg>:
+        </div>
+        <div class="td">{{item.ticketNum}}</div>
+      </div>
+
+      <div class="tr" hidden$="{{!_isPayTrans(item.busicd)}}">
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.PAY_TIME">支付时间</i18n-msg>:
+        </div>
+        <div class="td">{{item.payTime}}</div>
+      </div>
+
+      <div class="tr">
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.CHANNEL">交易渠道</i18n-msg>:
+        </div>
         <div class="td">{{chanFilter(item.chanCode)}}</div>
-        <div class="td key">关联订单:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO">关联订单</i18n-msg>:
+        </div>
         <div class="td">{{item.origOrderNum}}</div>
       </div>
       <div class="tr">
-        <div class="td key">渠道商户:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CHANNEL_MERCHANT">渠道商户</i18n-msg>:
+        </div>
         <div class="td">{{item.chanMerId}}</div>
-        <div class="td key">渠道订单:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CHANNEL_ORDER">渠道订单</i18n-msg>:
+        </div>
         <div class="td">{{item.chanOrderNum}}</div>
       </div>
       <div class="tr">
-        <div class="td key">渠道折扣:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CHANNEL_DISCOUNT">渠道折扣</i18n-msg>:
+        </div>
         <div class="td">{{item.chanDiscount}}</div>
-        <div class="td key">商户折扣:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.MERCHANT_DISCOUNT">商户折扣</i18n-msg>:
+        </div>
         <div class="td">{{item.merDiscount}}</div>
       </div>
       <div class="tr">
-        <div class="td key">应答码:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.RESPONSE_CODE">应答码</i18n-msg>:
+        </div>
         <div class="td">{{item.respcd}}</div>
-        <div class="td key">交易状态:</div>
+        <div class="td key">
+          <i18n-msg msgid="SCANPAY_TRADE_LIST.TRANS_STATUS">交易状态</i18n-msg>:
+        </div>
         <div class="td">{{transStatusFilter(item.transStatus)}}</div>
       </div>
       <div class="tr">
-        <div class="td key">创建时间:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.CREATE_TIME">创建时间</i18n-msg>:
+        </div>
         <div class="td">{{item.transTime}}</div>
-        <div class="td key">修改时间:</div>
+        <div class="td key">
+          <i18n-msg msgid="TRADE_DETAIL.MODIFY_TIME">修改时间</i18n-msg>:
+        </div>
         <div class="td">{{item.updateTime}}</div>
       </div>
     </div>
@@ -110,28 +177,82 @@
       properties: {
         item: Object,
       },
-      _currencyFilter: function(money) {
-        return (money / 100).toFixed(2);
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'trade-detail'
+        });
+      },
+      _currencyFilter: function(money, currency) {
+        if (!currency || currency === '') {
+          currency = 'CNY';
+        }
+
+        var decInfo = CURRENCY_DECIMAL_MAP[currency];
+        if (!decInfo) {
+          decInfo = CURRENCY_DECIMAL_MAP['CNY'];
+        }
+
+        return (money / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
       },
       busicdFilter: function(busicd) {
-        return (busicd + '—' + TRANS_TYPE_MAP[busicd]) || busicd;
+        var el = document.createElement('i18n-msg'),
+          i18nId = 'TRANS_TYPE.' + busicd.toUpperCase(),
+          text = el.getMsg(i18nId);
+
+        if (text && typeof text === 'string') {
+          return busicd + '—' + text;
+        }
+
+        return busicd;
+      },
+      _isPayTrans: function(busicd) {
+        busicd = busicd.toUpperCase();
+        return "PURC" === busicd || "PAUT" === busicd;
       },
       chanFilter: function(chanCode) {
         var map = {
-          'ALP': '支付宝',
-          'WXP': '微信',
-          'ULIVE': '优方'
+          'ALP': {
+            i18nID: 'CHANNEL.ALIPAY',
+            value: '支付宝'
+          },
+          'WXP': {
+            i18nID: 'CHANNEL.WECHAT',
+            value: '微信'
+          }
         };
-        return (chanCode + '—' + map[chanCode]);
+        if (map[chanCode]) {
+          var el = document.createElement('i18n-msg');
+          var i18nId = map[chanCode].i18nID;
+          return chanCode + '－' + el.getMsg(i18nId);
+        }
+        return chanCode;
       },
       transStatusFilter: function(status) {
         var map = {
-          '10': '处理中',
-          '20': '失败',
-          '30': '成功',
-          '40': '已关闭'
+          '10': {
+            i18nID: 'TRANS_STATUS.IN_PROCESS',
+            value: '处理中'
+          },
+          '20': {
+            i18nID: 'TRANS_STATUS.FAIL',
+            value: '失败'
+          },
+          '30': {
+            i18nID: 'TRANS_STATUS.SUCCESS',
+            value: '成功'
+          },
+          '40': {
+            i18nID: 'TRANS_STATUS.CLOSED',
+            value: '已关闭'
+          }
         };
-        return (status + '—' + map[status]);
+
+        if (map[status]) {
+          var el = document.createElement('i18n-msg');
+          var i18nId = map[status].i18nID;
+          return status + '－' + el.getMsg(i18nId);
+        }
+        return status;
       },
     });
   </script>

@@ -60,7 +60,7 @@ func (col *transCollection) BatchAdd(ts []*model.Trans) (err error) {
 		if err != nil {
 			return err
 		}
-		log.Infof("insert coupon [%d, %d)", s, e)
+		// log.Infof("insert trans [%d, %d)", s, e)
 	}
 
 	return nil
@@ -252,6 +252,25 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 	return ts, err
 }
 
+// FindToSett 根据渠道时间查找成功交易
+func (col *transCollection) FindToSett(time string) ([]*model.Trans, error) {
+
+	var ts []*model.Trans
+	q := bson.M{
+		"payTime": bson.M{
+			"$gt":  time,
+			"$lte": util.NextDay(time),
+		},
+		"$or": []bson.M{
+			bson.M{"transStatus": model.TransSuccess},
+			bson.M{"refundStatus": model.TransRefunded},
+		},
+		"transAmt": bson.M{"$ne": 0},
+	}
+	err := database.C(col.name).Find(q).All(&ts)
+	return ts, err
+}
+
 // GetBySettOrder 由结算订单号随机获取一条交易信息
 func (col *transCollection) GetBySettOrder(merId, settOrderNum string) (*model.Trans, error) {
 	q := bson.M{
@@ -426,7 +445,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		{"$match": match},
 	}
 
-	log.Infof("%+v", p)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
@@ -637,7 +655,6 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
 	}
 	find["merId"] = q.MerId
-	find["busicd"] = q.Busicd
 	find["$or"] = []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}}
 
 	// 过滤掉取消不成功的订单
@@ -656,25 +673,37 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
 
 	find := bson.M{
-		"payTime":     bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
-		"transStatus": model.TransSuccess,
-		"transType":   model.PayTrans,
+		"payTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
+		"$or":      []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}},
+		"transAmt": bson.M{"$ne": 0},
 	}
 
 	var result []model.SettRoleGroup
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": bson.M{"merId": "$merId", "settRole": "$settRole"},
-			"transAmt":  bson.M{"$sum": "$transAmt"},
-			"refundAmt": bson.M{"$sum": "$refundAmt"},
-			"netFee":    bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$transType", 1}}, "$transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$transAmt", // 相当于将逆向交易的金额变为负数
+					}},
+				},
+			}},
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$transType", 1}}, "$fee",
+					bson.M{"$subtract": []interface{}{
+						0, "$fee",
+					}},
+				},
+			}},
 		}},
 		{"$group": bson.M{
 			"_id": "$_id.settRole",
 			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
-				"transAmt":  "$transAmt",
-				"refundAmt": "$refundAmt",
-				"fee":       "$netFee",
+				"transAmt": "$transAmt",
+				"fee":      "$fee",
 			}},
 		}},
 		{"$project": bson.M{
@@ -688,4 +717,38 @@ func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGr
 func (col *transCollection) AddSettRole(settRole, merId, orderNum string) error {
 	set := bson.M{"$set": bson.M{"settRole": settRole}}
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)
+}
+
+// ExportAgentProfit 导出分润 // TODO:DELETE
+func (col *transCollection) ExportAgentProfit(bt string) ([]agentProfit, error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{
+			"createTime": bson.M{"$lte": bt},
+			"transType":  1,
+			"$or":        []bson.M{bson.M{"transStatus": "30"}, bson.M{"refundStatus": 1}},
+		}},
+		{"$group": bson.M{
+			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode", "date": bson.M{"$substr": []interface{}{"$createTime", 0, 10}}},
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+			"transNum":  bson.M{"$sum": 1},
+			"agentCode": bson.M{"$last": "$agentCode"},
+		}},
+		{"$sort": bson.M{"_id.date": -1}},
+	}
+	var result []agentProfit
+	err := database.C(col.name).Pipe(pipeline).All(&result)
+	return result, err
+}
+
+type agentProfit struct {
+	ID struct {
+		MerId    string `bson:"merId"`
+		ChanCode string `bson:"chanCode"`
+		Date     string `bson:"date"`
+	} `bson:"_id"`
+	TransAmt  int64  `bson:"transAmt"`
+	RefundAmt int64  `bson:"refundAmt"`
+	TransNum  int    `bson:"transNum"`
+	AgentCode string `bson:"agentCode"`
 }
