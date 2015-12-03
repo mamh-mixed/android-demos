@@ -91,27 +91,12 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 	// 页面参数
 	date := r.FormValue("date")
 	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
-	filename := ""
 
 	// session参数
 	curSession, err := Session.Get(r)
 	if err != nil {
 		log.Error("fail to find session")
 		return
-	}
-
-	// filename
-	switch curSession.UserType {
-	case model.UserTypeCIL, model.UserTypeGenAdmin:
-		filename = "admin_settle_journal.xlsx"
-	case model.UserTypeAgent:
-		filename = "agent_settle_journal.xlsx"
-	case model.UserTypeMerchant:
-		filename = "merchant_settle_journal.xlsx"
-	case model.UserTypeCompany:
-		filename = "company_settle_journal.xlsx"
-	case model.UserTypeShop:
-		filename = "shop_settle_journal.xlsx"
 	}
 
 	// 设置交易查询权限
@@ -125,11 +110,8 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 		GroupCode:    curSession.User.GroupCode,
 		UtcOffset:    utcOffset * 60, // second
 		Locale:       curSession.Locale,
+		UserType:     curSession.UserType,
 	}
-
-	// 设置返回content
-	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
 	// 下载
 	tradeSettJournalReport(w, q)
@@ -139,27 +121,12 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 // tradeSettleReportHandle 交易流水汇总，勾兑后的交易
 func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 	date := r.FormValue("date") // 北京时间
-	filename := ""
 
 	// session参数
 	curSession, err := Session.Get(r)
 	if err != nil {
 		log.Error("fail to find session")
 		return
-	}
-
-	// filename
-	switch curSession.UserType {
-	case model.UserTypeCIL, model.UserTypeGenAdmin:
-		filename = "admin_settle_summary.xlsx"
-	case model.UserTypeAgent:
-		filename = "agent_settle_summary.xlsx"
-	case model.UserTypeMerchant:
-		filename = "merchant_settle_summary.xlsx"
-	case model.UserTypeCompany:
-		filename = "company_settle_summary.xlsx"
-	case model.UserTypeShop:
-		filename = "shop_settle_summary.xlsx"
 	}
 
 	// condition
@@ -172,11 +139,8 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 		SubAgentCode: curSession.User.SubAgentCode,
 		GroupCode:    curSession.User.GroupCode,
 		Locale:       curSession.Locale,
+		UserType:     curSession.UserType,
 	}
-
-	// 设置content-type
-	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
 	// 导出
 	tradeSettReport(w, q)

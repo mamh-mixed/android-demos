@@ -5,6 +5,10 @@
 		"WXP":"微信",
 		"Unknown":"未知"
 	},
+	"ReportName":{
+		"SettleJournal":"对账单",
+		"SettleSummary":"汇总清算文件"
+	},
 	"Role":{
 		"Company" :"公司",
 		"Agent"   :"代理",

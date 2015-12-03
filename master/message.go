@@ -88,6 +88,11 @@ type LocaleTemplate struct {
 		Unknown string
 	}
 
+	ReportName struct {
+		SettleJournal string
+		SettleSummary string
+	}
+
 	// 角色
 	Role struct {
 		Company string

@@ -5,6 +5,10 @@
 		"WXP":"Wechat",
 		"Unknown":"未知"
 	},
+	"ReportName":{
+		"SettleJournal":"照会用明細",
+		"SettleSummary":"統計清算レポート"
+	},
 	"Role":{
 		"Company" :"会社",
 		"Agent"   :"代理",

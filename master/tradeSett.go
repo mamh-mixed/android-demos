@@ -1,6 +1,7 @@
 package master
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
@@ -14,6 +15,26 @@ import (
 func tradeSettJournalReport(w http.ResponseWriter, cond *model.QueryCondition) {
 	// 语言模板
 	rl := GetLocale(cond.Locale)
+
+	var filename string
+	reportName := rl.ReportName.SettleJournal
+	switch cond.UserType {
+	case model.UserTypeCIL, model.UserTypeGenAdmin:
+		filename = reportName
+	case model.UserTypeAgent:
+		filename = rl.Role.Agent + reportName
+	case model.UserTypeMerchant:
+		filename = rl.Role.Group + reportName
+	case model.UserTypeCompany:
+		filename = rl.Role.Company + reportName
+	case model.UserTypeShop:
+		filename = rl.Role.Mer + reportName
+	}
+	filename += ".xlsx"
+
+	// 设置返回content
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
 	// 查询
 	transSetts, _ := mongo.SpTransSettColl.Find(cond)
