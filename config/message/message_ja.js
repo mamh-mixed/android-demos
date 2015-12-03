@@ -1,6 +1,5 @@
 {	
 	"Currency":"JPY",
-	"ExportF64Format":"#,##0",
 	"ChanCode":{
 		"ALP":"アリペイ",
 		"WXP":"Wechat",
@@ -49,6 +48,7 @@
 		"MerName"        			:"加盟店名称",
 		"OrderNum"       			:"オーダーナンバー",
 		"TransAmt"       			:"取引金額",
+		"TransCurr"					:"取引通貨",
 		"MerFee"					:"加盟店手数料",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間",
@@ -59,12 +59,15 @@
 		"Busicd"         			:"取引種類",
 		"OrigOrderNum"   			:"元オーダーナンバー",
 		"Remark" 					:"備考",
+		"IsSettled"					:"是否参与清算",
 		"RefundAmt"      			:"リファンド金額",
 		"Fee"            			:"手数料",
 		"SettAmt"        			:"清算金額",
 		"TotalTransAmt"  			:"取引総額",
 		"TotalRefundAmt" 			:"リファンド総額",
 		"TotalFee"       			:"手数料総額",
-		"TotalSettAmt"   			:"清算総額"
+		"TotalSettAmt"   			:"清算総額",
+		"Yes"						:"は",
+		"No"						:"否"
 	}
 }
