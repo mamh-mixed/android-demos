@@ -6,25 +6,15 @@ import java.math.BigDecimal;
 public class TxamtUtil {
 
     public static String getTxamtUtil(String txamt) {
-        String str = txamt;
         try {
-            double i = Double.parseDouble(str);
-            BigDecimal bg = new BigDecimal(i);
-            double j = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-            j = j * 100;
-            long num = (long) j;
-            str = "" + num;
-            int k = 12 - str.length();
-            String sum = "";
-            for (int l = 0; l < k; l++) {
-                sum = sum + "0";
-            }
-            sum = sum + str;
-            return sum;
-
-
+            // 这里乘以100，只取了小数点后两位。
+            //所以这里乘以了100 然后取成long类型的。最后还要转换成12位的字符串。
+            BigDecimal bg = new BigDecimal(txamt);
+            BigDecimal bg100 = new BigDecimal("100"); //两个BigDecimal相乘，
+            long longNum = bg.multiply(bg100).longValue();
+            String strNum = String.format("%012d", longNum); //这里前面做了限制不能传很大的数过来，最大9位吧
+            return strNum;
         } catch (Exception e) {
-
             e.printStackTrace();
         }
         return null;
