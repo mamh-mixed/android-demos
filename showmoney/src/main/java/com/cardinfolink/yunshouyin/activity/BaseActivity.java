@@ -4,8 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.util.Log;
+import android.view.View;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.core.BankDataService;
@@ -14,10 +13,6 @@ import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AlertDialog;
 import com.cardinfolink.yunshouyin.view.LoadingDialog;
 import com.umeng.analytics.MobclickAgent;
-import com.umeng.common.message.UmengMessageDeviceConfig;
-import com.umeng.message.IUmengRegisterCallback;
-import com.umeng.message.MsgConstant;
-import com.umeng.message.PushAgent;
 
 public class BaseActivity extends Activity {
     private static final String TAG = "BaseActivity";
@@ -35,17 +30,19 @@ public class BaseActivity extends Activity {
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         mContext = this;
-        mLoadingDialog = new LoadingDialog(this, findViewById(R.id.loading_dialog));
-        mAlertDialog = new AlertDialog(this, null, findViewById(R.id.alert_dialog),
-                getResources().getString(R.string.username_password_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+
+        View LoadView = findViewById(R.id.loading_dialog);
+        mLoadingDialog = new LoadingDialog(this, LoadView);
+
+        View alertView = findViewById(R.id.alert_dialog);
+        String alertMsg = getResources().getString(R.string.username_password_error);
+        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+        mAlertDialog = new AlertDialog(this, null, alertView, alertMsg, alertBitmap);
 
         yunApplication = (ShowMoneyApp) getApplication();
         quickPayService = yunApplication.getQuickPayService();
         bankDataService = yunApplication.getBankDataService();
-
-
     }
-
 
 
     public void startLoading() {
