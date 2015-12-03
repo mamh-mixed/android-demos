@@ -210,7 +210,7 @@ public class QuickPayApiImpl implements QuickPayApi {
      * user_already_improved
      */
     @Override
-    public void updateInfo(User user) {
+    public User updateInfo(User user) {
         String url = quickPayConfigStorage.getUrl() + "/improveinfo";
 
         Map<String, String> params = new LinkedHashMap<>();
@@ -235,7 +235,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return;
+                return serverPacket.getUser();
             } else {
                 throw new QuickPayException(serverPacket.getError());
             }
