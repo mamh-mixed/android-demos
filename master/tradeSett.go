@@ -180,6 +180,9 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 			cell.Value = z.GetTime(v.CreateTime)
 			// 支付时间，维持北京时间
 			cell = row.AddCell()
+			if v.PayTime == "" {
+				v.PayTime = v.CreateTime
+			}
 			cell.Value = v.PayTime + " +0800"
 			// 交易状态
 			cell = row.AddCell()
