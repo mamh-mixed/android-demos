@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -81,10 +82,7 @@ public class RegisterNextActivity extends BaseActivity {
     private ArrayAdapter mBranchBankAdapter;
     private SearchAdapter mBranchBankSearchAdapter;
 
-    private String info_province;
-    private String info_city;
-    private String info_openbank;
-    private String info_branch_bank;
+    private Button mRegisterFinished;
 
 
     @Override
@@ -97,12 +95,11 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initLayout() {
+        mRegisterFinished = (Button) findViewById(R.id.btnregister);
 
         mNameEdit = (EditText) findViewById(R.id.info_name);
         mBanknumEdit = (EditText) findViewById(R.id.info_banknum);
         mPhonenumEdit = (EditText) findViewById(R.id.info_phonenum);
-        VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
-
         VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
 
         mProvinceEdit = (AutoCompleteTextView) findViewById(R.id.edit_province);
@@ -110,8 +107,7 @@ public class RegisterNextActivity extends BaseActivity {
         // 适配器
         mProvinceList = new ArrayList<String>();
         mProvinceList.add("开户行所在省份");
-        mProvinceAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mProvinceList);
+        mProvinceAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mProvinceList);
 
         // 设置样式
         mProvinceAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
@@ -131,8 +127,7 @@ public class RegisterNextActivity extends BaseActivity {
         mCityCodeList = new ArrayList<String>();
         mCityList.add("开户行所在城市");
         mCityCodeList.add("");
-        mCityAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mCityList);
+        mCityAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mCityList);
         // 设置样式
         mCityAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -151,8 +146,7 @@ public class RegisterNextActivity extends BaseActivity {
         mBankIdList = new ArrayList<String>();
         mBankIdList.add("");
 
-        mOpenBankAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mOpenBankList);
+        mOpenBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mOpenBankList);
         // 设置样式
         mOpenBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -170,8 +164,7 @@ public class RegisterNextActivity extends BaseActivity {
         mBankNoList = new ArrayList<String>();
         mBankNoList.add("行号");
 
-        mBranchBankAdapter = new ArrayAdapter<String>(mContext,
-                R.layout.spinner_item, mBranchBankList);
+        mBranchBankAdapter = new ArrayAdapter<String>(mContext, R.layout.spinner_item, mBranchBankList);
         // 设置样式
         mBranchBankAdapter.setDropDownViewResource(R.layout.spinner_drop_item);
         // 加载适配器
@@ -180,7 +173,6 @@ public class RegisterNextActivity extends BaseActivity {
         mBranchBankSearchAdapter = new SearchAdapter(mContext, mBranchBankList);
         mBranchBankEdit.setAdapter(mBranchBankSearchAdapter);
         mBranchBankEdit.setThreshold(1);
-
     }
 
 
@@ -190,6 +182,13 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     private void initListener() {
+        mRegisterFinished.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnRegisterFinishedOnClick(v);
+            }
+        });
+
         mProvinceEdit.addTextChangedListener(new RegisterTextWatcher(mProvinceEdit));
 
         mCityEdit.addTextChangedListener(new RegisterTextWatcher(mCityEdit));
@@ -212,7 +211,7 @@ public class RegisterNextActivity extends BaseActivity {
 
     }
 
-    public void BtnRegisterFinishedOnClick(View view) {
+    public void btnRegisterFinishedOnClick(View view) {
         if (validate()) {
             mLoadingDialog.startLoading();
             User user = new User();
@@ -225,8 +224,7 @@ public class RegisterNextActivity extends BaseActivity {
             user.setBranchBank(mBranchBankEdit.getText().toString());
             user.setBankNo(mBankNoList.get(mBranchBankList.indexOf(mBranchBankEdit.getText().toString())));
             user.setPayee(mNameEdit.getText().toString());
-            user.setPayeeCard(mBanknumEdit.getText().toString()
-                    .replace(" ", ""));
+            user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
             user.setPhoneNum(mPhonenumEdit.getText().toString());
 
 
@@ -238,28 +236,18 @@ public class RegisterNextActivity extends BaseActivity {
                         public void onResult(String result) {
                             String state = JsonUtil.getParam(result, "state");
                             if (state.equals("success")) {
-                                String user_json = JsonUtil.getParam(result,
-                                        "user");
-                                SessonData.loginUser.setClientid(JsonUtil
-                                        .getParam(user_json, "clientid"));
-                                SessonData.loginUser.setObjectId(JsonUtil
-                                        .getParam(user_json, "objectId"));
-                                SessonData.loginUser.setLimit(JsonUtil
-                                        .getParam(user_json, "limit"));
+                                String user_json = JsonUtil.getParam(result, "user");
+                                SessonData.loginUser.setClientid(JsonUtil.getParam(user_json, "clientid"));
+                                SessonData.loginUser.setObjectId(JsonUtil.getParam(user_json, "objectId"));
+                                SessonData.loginUser.setLimit(JsonUtil.getParam(user_json, "limit"));
                                 InitData data = new InitData();
-                                data.mchntid = SessonData.loginUser
-                                        .getClientid();// 商户号
-                                data.inscd = JsonUtil.getParam(user_json,
-                                        "inscd");// 机构号
-                                data.signKey = JsonUtil.getParam(user_json,
-                                        "signKey");// 秘钥
-                                data.terminalid = TelephonyManagerUtil
-                                        .getDeviceId(mContext);// 设备号
+                                data.mchntid = SessonData.loginUser.getClientid();// 商户号
+                                data.inscd = JsonUtil.getParam(user_json, "inscd");// 机构号
+                                data.signKey = JsonUtil.getParam(user_json, "signKey");// 秘钥
+                                data.terminalid = TelephonyManagerUtil.getDeviceId(mContext);// 设备号
                                 data.isProduce = SystemConfig.IS_PRODUCE;// 是否生产环境
                                 CashierSdk.init(data);
-                                Intent intent = new Intent(
-                                        RegisterNextActivity.this,
-                                        MainActivity.class);
+                                Intent intent = new Intent(RegisterNextActivity.this, MainActivity.class);
                                 RegisterNextActivity.this.startActivity(intent);
                                 RegisterNextActivity.this.finish();
 
@@ -270,11 +258,7 @@ public class RegisterNextActivity extends BaseActivity {
                                     public void run() {
                                         // 更新UI
                                         mLoadingDialog.endLoading();
-                                        mAlertDialog.show(
-                                                "提交失败!",
-                                                BitmapFactory.decodeResource(
-                                                        mContext.getResources(),
-                                                        R.drawable.wrong));
+                                        mAlertDialog.show("提交失败!", BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                     }
 
                                 });
@@ -289,26 +273,15 @@ public class RegisterNextActivity extends BaseActivity {
                                 public void run() {
                                     // 更新UI
                                     mLoadingDialog.endLoading();
-                                    mAlertDialog.show(error, BitmapFactory
-                                            .decodeResource(
-                                                    mContext.getResources(),
-                                                    R.drawable.wrong));
+                                    mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                                 }
 
                             });
                         }
                     });
 
-            // Intent intent = new
-            // Intent(RegisterNextActivity.this,MainActivity.class);
-            // RegisterNextActivity.this.startActivity(intent);
-            // RegisterNextActivity.this.finish();
         }
 
-        // Intent intent = new
-        // Intent(RegisterNextActivity.this,MainActivity.class);
-        // RegisterNextActivity.this.startActivity(intent);
-        // RegisterNextActivity.this.finish();
     }
 
     @SuppressLint("NewApi")
@@ -322,56 +295,47 @@ public class RegisterNextActivity extends BaseActivity {
         String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");
 
         if (mProvinceEdit.getText().toString().isEmpty()) {
-            alertShow("开户行所在省份不能为空!", BitmapFactory
-                    .decodeResource(this.getResources(), R.drawable.wrong));
+            alertShow("开户行所在省份不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (mCityEdit.getText().toString().isEmpty()) {
-            alertShow("开户行所在城市不能为空!", BitmapFactory
-                    .decodeResource(this.getResources(), R.drawable.wrong));
+            alertShow("开户行所在城市不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (mOpenBankEdit.getText().toString().isEmpty()) {
-            alertShow("开户行不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            alertShow("开户行不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (mBranchBankEdit.getText().toString().isEmpty()) {
-            alertShow("开户支行不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            alertShow("开户支行不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (name.isEmpty()) {
-            alertShow("姓名不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            alertShow("姓名不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (banknum.isEmpty()) {
-            alertShow("银行卡号不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            alertShow("银行卡号不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (!VerifyUtil.checkBankCard(banknum)) {
-            alertShow("请输入正确的银行卡号!", BitmapFactory
-                    .decodeResource(this.getResources(), R.drawable.wrong));
+            alertShow("请输入正确的银行卡号!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (phonenum.isEmpty()) {
-            alertShow("手机号不能为空!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            alertShow("手机号不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
         if (!VerifyUtil.isMobileNO(phonenum)) {
-            alertShow("请输入正确的手机号!", BitmapFactory.decodeResource(
-                    this.getResources(), R.drawable.wrong));
+            alertShow("请输入正确的手机号!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
             return false;
         }
 
