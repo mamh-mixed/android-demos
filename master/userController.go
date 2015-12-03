@@ -258,31 +258,37 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 	}
 
 	// 新密码解密
-	pwd, err = rsaDecryptFromBrowser(userPwd.NewPwd)
+	newPwd, err := rsaDecryptFromBrowser(userPwd.NewPwd)
 	if err != nil {
 		log.Errorf("escrypt password error %s", err)
 		return model.NewResultBody(2, "DECRYPT_ERROR")
 	}
 
-	if len(pwd) < 8 {
-		log.Errorf("new password's length must greater than 8; now is %d", len(pwd))
+	// 不能和旧密码一样
+	if newPwd == pwd {
+		log.Error("new password is equal with old password")
+		return model.NewResultBody(8, "NEW_PASSWORD_IS_EQUAL_WITH_OLD_PASSWORD")
+	}
+
+	if len(newPwd) < 8 {
+		log.Errorf("new password's length must greater than 8; now is %d", len(newPwd))
 		return model.NewResultBody(6, "PASSWORD_LENGTH_NOT_ENOUGH")
 	}
 
 	// 密码复杂度校验
-	if !isPasswordOk(pwd) {
-		log.Errorf("new password is not conplicated enough: %s", pwd)
+	if !isPasswordOk(newPwd) {
+		log.Errorf("new password is not conplicated enough: %s", newPwd)
 		return model.NewResultBody(7, "PASSWORD_NOT_COMPLICATED_ENOUGH")
 	}
 
 	if appUser != nil {
-		pb := md5.Sum([]byte(pwd))
+		pb := md5.Sum([]byte(newPwd))
 		appUser.Password = fmt.Sprintf("%x", string(pb[:]))
 		if err = mongo.AppUserCol.Update(appUser); err != nil {
 			return model.NewResultBody(4, "修改密码失败")
 		}
 	} else {
-		user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+pwd)))
+		user.Password = fmt.Sprintf("%x", sha1.Sum([]byte(model.RAND_PWD+"{"+userPwd.UserName+"}"+newPwd)))
 		if err = mongo.UserColl.Update(user); err != nil {
 			return model.NewResultBody(4, "修改密码失败")
 		}

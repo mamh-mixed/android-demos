@@ -18,18 +18,20 @@
     </style>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
-        <paper-input name="startTime" label="* 交易时间从" on-tap="showStartTimeDialog" value="{{cond.startTime::input}}"></paper-input>
+        <input type="hidden" name="startTime" value="{{cond.startTime::input}}" />
+        <paper-input label="* 交易时间从" on-tap="showStartTimeDialog" value="{{time.startTimeString::input}}"></paper-input>
         <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px" max-date="{{time.endTime}}"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>取消</paper-button>
             <paper-button dialog-confirm>确定</paper-button>
           </div>
         </paper-dialog>
 
-        <paper-input name="endTime" label="* 交易时间到" on-tap="showEndTimeDialog" value="{{cond.endTime::input}}"></paper-input>
+        <input type="hidden" name="endTime" value="{{cond.endTime::input}}" />
+        <paper-input label="* 交易时间到" on-tap="showEndTimeDialog" value="{{time.endTimeString::input}}"></paper-input>
         <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-          <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <paper-date-picker id="endTimePicker" locale="zh-cn" responsive-width="655px" min-date="{{time.startTime}}"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>取消</paper-button>
             <paper-button dialog-confirm>确定</paper-button>
@@ -122,21 +124,38 @@
       };
       Polymer({
         is: 'coupon-wo-list',
-
         properties: {
-          user: Object,
           cond: {
             type: Object,
             value: function() {
               return {
-                startTime: new Date().format('yyyy-MM-dd'),
-                endTime: new Date().format('yyyy-MM-dd'),
                 total: 0,
                 page: 1,
                 size: 20
               };
             }
           },
+          time: {
+            type: Object,
+            value: function() {
+              var startTime = moment();
+              startTime.hour(0);
+              startTime.minute(0);
+              startTime.second(0);
+
+              var endTime = moment();
+              endTime.hour(23);
+              endTime.minute(59);
+              endTime.second(59);
+              return {
+                startTime: startTime.toDate(),
+                startTimeString: moment(startTime).format('YYYY-MM-DD'),
+                endTime: endTime.toDate(),
+                endTimeString: moment(endTime).format('YYYY-MM-DD')
+              }
+            }
+          },
+          user: Object,
           woStatusMapArray: {
             type: Array,
             value: function() {
@@ -152,9 +171,20 @@
             }
           }
         },
+        ready: function() {
+          this.isAdmin = false;
+        },
+        attached: function() {},
         observers: [
-          '_watchUserChanged(user.*)'
+          '_watchUserChanged(user.*)',
+          '_watchTimeChanged(time.startTime, time.endTime)'
         ],
+        _watchTimeChanged: function(startTime, endTime) {
+          this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD'));
+          this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD'));
+          this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD 00:00:00')));
+          this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD 23:59:59')));
+        },
         _watchUserChanged: function(value) {
           // 权限判断
           if (value) {
@@ -165,22 +195,6 @@
               this.isAdmin = false;
             }
           }
-        },
-        ready: function() {
-          // this.woStatusMapArray = [
-          //   {
-          //     key: 'SUCCESS',
-          //     value: '成功'
-          //   },
-          //   {
-          //     key: 'ERROR',
-          //     value: '失败'
-          //   }
-          // ];
-          this.isAdmin = false;
-        },
-        attached: function() {
-
         },
         // 弹窗显示报文信息
         showTradeMessageEvent: function(e) {
@@ -247,14 +261,14 @@
         // 日期、时间控件
         dismissStartTimeDialog: function() {
           var startTime = this.$.startTimePicker.date;
-          this.set('cond.startTime', this.$.startTimePicker.dateFormat(startTime, 'l'));
+          this.set('time.startTime', startTime);
         },
         showStartTimeDialog: function() {
           this.$.startTimeDailog.toggle();
         },
         dismissEndTimeDialog: function() {
           var endTime = this.$.endTimePicker.date;
-          this.set('cond.endTime', this.$.endTimePicker.dateFormat(endTime, 'l'));
+          this.set('time.endTime', endTime);
         },
         showEndTimeDialog: function() {
           this.$.endTimeDailog.toggle();
