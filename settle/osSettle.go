@@ -4,6 +4,7 @@ import (
 	"bufio"
 	// "fmt"
 	"fmt"
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -62,14 +63,18 @@ func (a *alipayOverseas) ProcessDuration() time.Duration {
 
 // download 从sftp下载对账文件到服务器上
 func (a *alipayOverseas) download(date string) [][]string {
-	var chanMers []model.ChanMer
+	var data [][]string
+	// 境外商户
+	chanMers, err := mongo.ChanMerColl.FindByArea(channel.Oversea)
+	if err != nil {
+		log.Errorf("fail to find overseas alp merchant: %s", err)
+		return data
+	}
 
 	path := "/download/%s_transaction_%s.txt"
 
 	// date yyyymmdd
 	date = strings.Replace(date, "-", "", -1)
-
-	var data [][]string
 	for _, cm := range chanMers {
 		if cm.Sftp != nil {
 
