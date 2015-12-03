@@ -90,7 +90,6 @@ function init() {
 		return;
 	}
 	var data = 'merchantCode=' + merchantCode
-		//var url = 'http://test.quick.ipay.so/scanpay/fixed/merInfo';
 	var url = Util.getServer() + '/scanpay/fixed/merInfo';
 	$.ajax({
 		type: 'POST',
@@ -111,17 +110,13 @@ function init() {
 				window.localStorage.setItem('title_one', titleOne);
 			} else {
 				window.alert(data.errorDetail);
-				back();
+				WeixinJSBridge.call('closeWindow');
 			}
 		},
 
 		error: (message) => {
 			window.alert(JSON.stringify(message));
-			back();
+			WeixinJSBridge.call('closeWindow');
 		}
 	});
-}
-
-function back() {
-	WeixinJSBridge.call('closeWindow');
 }

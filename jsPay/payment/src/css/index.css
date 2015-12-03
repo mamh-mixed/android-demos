@@ -233,6 +233,64 @@ input:-moz-placeholder {
   text-decoration: none
 }
 
-.wonsikin {
-  color: red;
+html,body{
+  width: 100%;
+  height: 100%;
+}
+
+.flex-container{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
+.flex-container > .logo-image {
+  /*flex: 1;*/
+  margin: 50px auto;
+}
+
+.flex-container > #titleOne,
+.flex-container > #titleTwo  {
+  /*flex: 1;*/
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.flex-container > #titleTwo {
+  /*flex: 1;*/
+  margin-bottom: 100px;
+}
+
+.flex-container > .search {
+  box-sizing: border-box;
+  width: 300px;
+  height: 40px;
+  font-size: 20px;
+  border-radius: 20px;
+  background-color: #00bcd4;
+  padding: 10px 15px;
+  border: 2px solid #fff;
+  color: #fff;
+  margin-bottom: 40px;
+}
+
+.flex-container > .button {
+  box-sizing: border-box;
+  width: 300px;
+  text-align: center;
+  color: #fff;
+  background-color: #81deeb;
+  height: 40px;
+  border-radius: 20px;
+  line-height: 40px;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.flex-container > .button:hover{
+  text-decoration: none;
 }

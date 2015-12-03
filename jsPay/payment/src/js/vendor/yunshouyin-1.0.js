@@ -372,7 +372,7 @@ License: MIT - http://mrgnrdrck.mit-license.org
 			}
 		}
 
-		XMLHttpReq.open('post', url, false);
+		XMLHttpReq.open('post', url, true);
 		XMLHttpReq.onreadystatechange = function() {
 			if (XMLHttpReq.readyState == 4) {
 				if (XMLHttpReq.status == 200) {
