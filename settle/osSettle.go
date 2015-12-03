@@ -29,7 +29,7 @@ func init() {
 	needSettles = append(needSettles,
 		&alipayOverseas{
 			At:       goconf.Config.Settle.OverseasSettPoint,
-			sftpAddr: "sftp.alipay.com",
+			sftpAddr: "sftp.alipay.com:22",
 		})
 }
 
@@ -50,9 +50,6 @@ func (a *alipayOverseas) ProcessDuration() time.Duration {
 		log.Errorf("parse time error: %s", err)
 		return time.Duration(-1)
 	}
-
-	// 保险点 增加一小时
-	t = t.Add(1 * time.Hour)
 
 	if now.After(t) {
 		return time.Duration(0)
@@ -110,7 +107,7 @@ func (a *alipayOverseas) download(date string) [][]string {
 			// skip 2
 			for i := 0; s.Scan(); i++ {
 				if i > 1 {
-					// orderNum|chanOrderNum|amt|fee|time|type|
+					// Partner_transaction_id|Transaction_id|Transaction_amount|Charge_amount|Currency|Payment_time|Transaction_type|Remark
 					ts := strings.Split(s.Text(), "|")
 					data = append(data, ts)
 				}
