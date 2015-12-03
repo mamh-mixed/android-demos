@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -11,7 +13,9 @@ import android.widget.EditText;
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
@@ -25,6 +29,7 @@ import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
 public class LoginActivity extends BaseActivity {
+    private static final String TAG = "LoginActivity";
 
     private EditText mUsernameEdit;
     private EditText mPasswordEdit;
@@ -46,12 +51,10 @@ public class LoginActivity extends BaseActivity {
         if (user.isAutoLogin()) {
             login();
         }
-
     }
 
 
     public void BtnLoginOnClick(View view) {
-
         login();
     }
 
@@ -74,148 +77,82 @@ public class LoginActivity extends BaseActivity {
 
 
     private void login() {
-        if (validate()) {
-
-            mLoadingDialog.startLoading();
-
-            final String username = mUsernameEdit.getText().toString();
-            final String password = mPasswordEdit.getText().toString();
-            HttpCommunicationUtil.sendDataToServer(ParamsUtil.getLogin(username, password), new CommunicationListener() {
-
-                @SuppressLint("NewApi")
-                @Override
-                public void onResult(final String result) {
-                    String state = JsonUtil.getParam(result, "state");
-
-
-                    if (state.equals("success")) {
-                        User user = new User();
-                        user.setUsername(username);
-
-                        if (mAutoLoginCheckBox.isChecked()) {
-                            user.setAutoLogin(true);
-                            user.setPassword(password);
-                        }
-                        SaveData.setUser(mContext, user);
-                        SessonData.loginUser.setUsername(username);
-                        SessonData.loginUser.setPassword(password);
-                        String user_json = JsonUtil.getParam(result, "user");
-                        SessonData.loginUser.setClientid(JsonUtil.getParam(user_json, "clientid"));
-                        SessonData.loginUser.setObjectId(JsonUtil.getParam(user_json, "objectId"));
-                        SessonData.loginUser.setLimit(JsonUtil.getParam(user_json, "limit"));
-
-                        if (SessonData.loginUser.getClientid() == null || SessonData.loginUser.getClientid().isEmpty()) {
-                            // clientid为空,跳转到完善信息页面
-
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    //更新UI
-                                    mLoadingDialog.endLoading();
-                                    Intent intent = new Intent(mContext, RegisterNextActivity.class);
-                                    mContext.startActivity(intent);
-                                }
-
-                            });
-
-
-                        } else {
-                            InitData data = new InitData();
-                            data.mchntid = SessonData.loginUser.getClientid();// 商户号
-                            data.inscd = JsonUtil.getParam(user_json, "inscd");// 机构号
-                            data.signKey = JsonUtil.getParam(user_json, "signKey");// 秘钥
-                            data.terminalid = TelephonyManagerUtil
-                                    .getDeviceId(mContext);// 设备号
-                            data.isProduce = SystemConfig.IS_PRODUCE;// 是否生产环境
-                            CashierSdk.init(data);
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    //更新UI
-                                    mLoadingDialog.endLoading();
-                                    SessonData.positionView = 0;
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    LoginActivity.this.startActivity(intent);
-                                }
-
-                            });
-
-                        }
-
-
-                    } else {
-
-                        User user = new User();
-                        user.setUsername(username);
-                        user.setPassword(password);
-                        SaveData.setUser(mContext, user);
-                        SessonData.loginUser.setUsername(username);
-                        SessonData.loginUser.setPassword(password);
-                        final String error = JsonUtil.getParam(result, "error");
-                        if (error.equals("user_no_activate")) {
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    //更新UI
-                                    mLoadingDialog.endLoading();
-                                    ActivateDialog activate_dialog = new ActivateDialog(mContext, LoginActivity.this.findViewById(R.id.activate_dialog), SessonData.loginUser.getUsername());
-                                    activate_dialog.show();
-
-                                }
-
-                            });
-                        } else {
-
-
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    //更新UI
-                                    String errorStr = ErrorUtil.getErrorString(error);
-                                    mLoadingDialog.endLoading();
-                                    mAlertDialog.show(errorStr, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                                    if (error.equals("username_password_error")) {
-                                        mPasswordEdit.setText("");
-
-                                    }
-                                }
-
-                            });
-                        }
-
-                    }
-
-
-                }
-
-                @Override
-                public void onError(final String error) {
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            //更新UI
-                            mLoadingDialog.endLoading();
-                            mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                        }
-
-                    });
-
-                }
-            });
+        if (!validate()) {
+            return;
         }
+
+
+        final String username = mUsernameEdit.getText().toString();
+        final String password = mPasswordEdit.getText().toString();
+
+        quickPayService.loginAsync(username, password, new QuickPayCallbackListener<User>() {
+            @Override
+            public void onSuccess(User data) {
+                User user = new User();
+                user.setUsername(username);
+                if (mAutoLoginCheckBox.isChecked()) {
+                    user.setPassword(password);
+                    user.setAutoLogin(true);
+                }
+                SaveData.setUser(mContext, user);
+                SessonData.loginUser.setUsername(username);
+                SessonData.loginUser.setPassword(password);
+                SessonData.loginUser.setClientid(data.getClientid());
+                SessonData.loginUser.setObjectId(data.getObjectId());
+                SessonData.loginUser.setLimit(data.getLimit());
+
+                if (TextUtils.isEmpty(SessonData.loginUser.getClientid())) {
+                    // clientid为空,跳转到完善信息页面
+                    mLoadingDialog.endLoading();
+                    Intent intent = new Intent(mContext, RegisterNextActivity.class);
+                    mContext.startActivity(intent);
+                } else {
+                    InitData initData = new InitData();
+                    initData.setMchntid(data.getClientid());
+                    initData.setInscd(data.getInscd());
+                    initData.setSignKey(data.getSignKey());
+                    initData.setTerminalid(TelephonyManagerUtil.getDeviceId(mContext));
+                    initData.setIsProduce(SystemConfig.IS_PRODUCE);
+                    CashierSdk.init(initData);//初始化sdk
+                    //更新UI
+                    mLoadingDialog.endLoading();
+                    SessonData.positionView = 0;
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    mContext.startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                String errorCode = ex.getErrorCode();
+                String errorMsg = ex.getErrorMsg();
+                Log.e(TAG, "login onFailure: " + errorCode + " = " + errorMsg);
+                User user = new User();
+                user.setUsername(username);
+                user.setPassword(password);
+                SaveData.setUser(mContext, user);
+                if (errorCode.equals("user_no_activate")) {
+                    //更新UI
+                    mLoadingDialog.endLoading();
+                    View view = findViewById(R.id.activate_dialog);
+                    String eMail = SessonData.loginUser.getUsername();
+                    ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
+                    activateDialog.show();
+                } else {
+                    mLoadingDialog.endLoading();
+                    mAlertDialog.show(errorMsg, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                    if (errorCode.equals("username_password_error")) {
+                        mPasswordEdit.setText("");
+                    }
+                }
+            }
+        });
     }
 
     public void BtnRegisterOnClick(View view) {
-
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         LoginActivity.this.startActivity(intent);
-
     }
 
     @Override
@@ -225,8 +162,6 @@ public class LoginActivity extends BaseActivity {
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
-
     }
-
 
 }
