@@ -22,15 +22,15 @@ func readUserCSV(path string) ([]model.User, error) {
 	}
 
 	users := make([]model.User, 0, len(data))
-	// 门店类型	商户编号	门店名称	手机号	对账平台账号	代理编号	公司编号	公司名称	商户编号	商户名称	备注
+	// 门店类型	商户编号	门店名称	手机号	对账平台账号	代理编号	公司编号	商户编号
 	for _, v := range data {
 		u := model.User{}
 		u.UserType = model.UserTypeShop
 		u.MerId = strings.TrimSpace(v[1])
 		u.PhoneNum = strings.TrimSpace(v[3])
 		u.UserName = strings.TrimSpace(v[4])
-		u.AgentCode = strings.TrimSpace(v[5])
-		u.SubAgentCode = strings.TrimSpace(v[6])
+		u.AgentCode = strings.TrimSpace(v[6])
+		u.SubAgentCode = strings.TrimSpace(v[7])
 		u.GroupCode = strings.TrimSpace(v[8])
 		passData := []byte(model.RAND_PWD + "{" + u.UserName + "}" + model.DEFAULT_PWD)
 		u.Password = fmt.Sprintf("%x", sha1.Sum(passData))

@@ -401,9 +401,8 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		log.Error("fail to find session")
 		return
 	}
-
 	params := r.URL.Query()
-	log.Infof("filename = %s", params.Get("filename"))
+
 	// 时区偏移量，前端传过来是分
 	utcOffset, err := strconv.Atoi(params.Get("utcOffset"))
 	if err != nil {

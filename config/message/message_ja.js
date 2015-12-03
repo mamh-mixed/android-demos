@@ -5,6 +5,12 @@
 		"WXP":"Wechat",
 		"Unknown":"未知"
 	},
+	"Role":{
+		"Company" :"会社",
+		"Agent"   :"代理",
+		"Group"   :"加盟店",
+		"Mer"     :"店舗"
+	},
 	"BusicdType":{
 		"Purc":"取引事項",
 		"Paut":"取引予約",
@@ -54,12 +60,13 @@
 		"TransTime"      			:"取引時間",
 		"PayTime"					:"支払い時間",
 		"TransStatus"    			:"取引状態",
+		"ChanMerId"     			:"チャンネル加盟店コード",
 		"AgentCode"      			:"提携先",
 		"TerminalId"     			:"端末番号",
 		"Busicd"         			:"取引種類",
 		"OrigOrderNum"   			:"元オーダーナンバー",
 		"Remark" 					:"備考",
-		"IsSettled"					:"是否参与清算",
+		"IsSettled"					:"清算に参加要否",
 		"RefundAmt"      			:"リファンド金額",
 		"Fee"            			:"手数料",
 		"SettAmt"        			:"清算金額",
