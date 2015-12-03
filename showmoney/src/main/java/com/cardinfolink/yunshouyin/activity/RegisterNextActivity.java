@@ -205,76 +205,50 @@ public class RegisterNextActivity extends BaseActivity {
     }
 
     public void btnRegisterFinishedOnClick(View view) {
-        if (validate()) {
-            mLoadingDialog.startLoading();
-            User user = new User();
-            user.setUsername(SessonData.loginUser.getUsername());
-            user.setPassword(SessonData.loginUser.getPassword());
-            // user.setBankOpen(mOpenBankEdit.getText().toString());
-            user.setProvince(mProvinceEdit.getText().toString());
-            user.setBankOpen(mOpenBankEdit.getText().toString());
-            user.setCity(mCityEdit.getText().toString());
-            user.setBranchBank(mBranchBankEdit.getText().toString());
-            user.setBankNo(mBankNoList.get(mBranchBankList.indexOf(mBranchBankEdit.getText().toString())));
-            user.setPayee(mNameEdit.getText().toString());
-            user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
-            user.setPhoneNum(mPhonenumEdit.getText().toString());
-
-
-            HttpCommunicationUtil.sendDataToServer(
-                    ParamsUtil.getImproveInfo(user),
-                    new CommunicationListener() {
-
-                        @Override
-                        public void onResult(String result) {
-                            String state = JsonUtil.getParam(result, "state");
-                            if (state.equals("success")) {
-                                String user_json = JsonUtil.getParam(result, "user");
-                                SessonData.loginUser.setClientid(JsonUtil.getParam(user_json, "clientid"));
-                                SessonData.loginUser.setObjectId(JsonUtil.getParam(user_json, "objectId"));
-                                SessonData.loginUser.setLimit(JsonUtil.getParam(user_json, "limit"));
-                                InitData data = new InitData();
-                                data.mchntid = SessonData.loginUser.getClientid();// 商户号
-                                data.inscd = JsonUtil.getParam(user_json, "inscd");// 机构号
-                                data.signKey = JsonUtil.getParam(user_json, "signKey");// 秘钥
-                                data.terminalid = TelephonyManagerUtil.getDeviceId(mContext);// 设备号
-                                data.isProduce = SystemConfig.IS_PRODUCE;// 是否生产环境
-                                CashierSdk.init(data);
-                                Intent intent = new Intent(RegisterNextActivity.this, MainActivity.class);
-                                RegisterNextActivity.this.startActivity(intent);
-                                RegisterNextActivity.this.finish();
-
-                            } else {
-                                runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        // 更新UI
-                                        mLoadingDialog.endLoading();
-                                        mAlertDialog.show("提交失败!", BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                                    }
-
-                                });
-                            }
-                        }
-
-                        @Override
-                        public void onError(final String error) {
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    // 更新UI
-                                    mLoadingDialog.endLoading();
-                                    mAlertDialog.show(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                                }
-
-                            });
-                        }
-                    });
-
+        if (!validate()) {
+            return;
         }
+        mLoadingDialog.startLoading();
+        User user = new User();
+        user.setUsername(SessonData.loginUser.getUsername());
+        user.setPassword(SessonData.loginUser.getPassword());
+        user.setProvince(mProvinceEdit.getText().toString());
+        user.setBankOpen(mOpenBankEdit.getText().toString());
+        user.setCity(mCityEdit.getText().toString());
+        user.setBranchBank(mBranchBankEdit.getText().toString());
+        user.setBankNo(mBankNoList.get(mBranchBankList.indexOf(mBranchBankEdit.getText().toString())));
+        user.setPayee(mNameEdit.getText().toString());
+        user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
+        user.setPhoneNum(mPhonenumEdit.getText().toString());
 
+        quickPayService.updateInfoAsync(user, new QuickPayCallbackListener<User>() {
+            @Override
+            public void onSuccess(User data) {
+                SessonData.loginUser.setClientid(data.getClientid());
+                SessonData.loginUser.setObjectId(data.getObjectId());
+                SessonData.loginUser.setLimit(data.getLimit());
+
+                InitData initData = new InitData();
+                initData.setMchntid(data.getClientid());    // 商户号
+                initData.setInscd(data.getInscd());         // 机构号
+                initData.setSignKey(data.getSignKey());     // 秘钥
+                initData.setTerminalid(TelephonyManagerUtil.getDeviceId(mContext));// 设备号
+                initData.setIsProduce(SystemConfig.IS_PRODUCE);// 是否生产环境
+
+                CashierSdk.init(initData);
+                Intent intent = new Intent(RegisterNextActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                String errorMsg = ex.getErrorMsg();
+                Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                mLoadingDialog.endLoading();
+                mAlertDialog.show(errorMsg, alertBitmap);
+            }
+        });
     }
 
     private boolean validate() {
