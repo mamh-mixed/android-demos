@@ -190,7 +190,8 @@ func tradeSettleRefreshHandle(w http.ResponseWriter, r *http.Request) {
 	if key != "cilxl12345$" {
 		return
 	}
-	settle.RefreshSpTransSett(date)
+	log.Infof("process refresh transSettle")
+	go settle.RefreshSpTransSett(date)
 }
 
 // respCodeMatchHandle 查找应答码处理器
