@@ -357,9 +357,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		cond.IsAggregateByGroup = isAggreByGroup
 	}
 
-	log.Debugf("tradeReportHandle condition is %#v", cond)
-
-	tradeReport(w, cond, params.Get("filename"))
+	tradeReport(w, cond, "trade_detail.xlsx")
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
@@ -405,7 +403,7 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	params := r.URL.Query()
-
+	log.Infof("filename = %s", params.Get("filename"))
 	// 时区偏移量，前端传过来是分
 	utcOffset, err := strconv.Atoi(params.Get("utcOffset"))
 	if err != nil {
@@ -429,7 +427,7 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 
 	// 设置content-type
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, params.Get("filename")))
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, "trade_summary.xlsx"))
 
 	// 导出
 	statTradeReport(w, q)
