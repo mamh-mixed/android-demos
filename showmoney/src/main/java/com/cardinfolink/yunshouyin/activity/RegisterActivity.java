@@ -118,35 +118,38 @@ public class RegisterActivity extends BaseActivity {
         });
     }
 
-    @SuppressLint("NewApi")
     private boolean validate() {
-        String email, password, qr_password;
-        email = mEmailEdit.getText().toString();
-        password = mPasswordEdit.getText().toString();
-        qr_password = mQrPasswordEdit.getText().toString();
+        String email = mEmailEdit.getText().toString();
+        String password = mPasswordEdit.getText().toString();
+        String qrPassword = mQrPasswordEdit.getText().toString();
 
-        if (email.isEmpty()) {
-            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        String alertMsg = "";
+        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+        if (TextUtils.isEmpty(email)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty);
+            mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
         if (!checkEmail(email)) {
-            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_email_format_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_format_error);
+            mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
-
-        if (password.isEmpty()) {
-            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(password)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_cannot_empty);
+            mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
         if (password.length() < 6) {
-            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_short_six);
+            mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
-        if (!password.equals(qr_password)) {
-            mAlertDialog.show(ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (!password.equals(qrPassword)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error);
+            mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
-
 
         return true;
     }
