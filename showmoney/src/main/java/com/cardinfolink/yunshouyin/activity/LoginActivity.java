@@ -1,12 +1,13 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
@@ -19,11 +20,6 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ErrorUtil;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
@@ -35,41 +31,69 @@ public class LoginActivity extends BaseActivity {
     private EditText mPasswordEdit;
     private CheckBox mAutoLoginCheckBox;
 
+    private Button mLoginButton;
+    private Button mRegisterButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+
         mUsernameEdit = (EditText) findViewById(R.id.login_username);
         VerifyUtil.addEmailLimit(mUsernameEdit);
+
         mPasswordEdit = (EditText) findViewById(R.id.login_password);
         VerifyUtil.addEmailLimit(mPasswordEdit);
+
         mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
+
+        mLoginButton = (Button) findViewById(R.id.btnlogin);
+        mRegisterButton = (Button) findViewById(R.id.btnsignup);
+
         User user = SaveData.getUser(mContext);
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());
+
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
+
         if (user.isAutoLogin()) {
             login();
         }
+
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "onClick to longin");
+                login();
+            }
+        });
+
+        mRegisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "onClick to register");
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
-
-    public void BtnLoginOnClick(View view) {
-        login();
-    }
-
-    @SuppressLint("NewApi")
     private boolean validate() {
         String username, password;
         username = mUsernameEdit.getText().toString();
         password = mPasswordEdit.getText().toString();
-        if (username.isEmpty()) {
-            mAlertDialog.show(getResources().getString(R.string.alert_error_username_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+
+        Bitmap wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+
+        if (TextUtils.isEmpty(username)) {
+            String alertMsg = getResources().getString(R.string.alert_error_username_cannot_empty);
+            mAlertDialog.show(alertMsg, wrongBitmap);
             return false;
         }
 
-        if (password.isEmpty()) {
-            mAlertDialog.show(getResources().getString(R.string.alert_error_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(password)) {
+            String alertMsg = getResources().getString(R.string.alert_error_password_cannot_empty);
+            mAlertDialog.show(alertMsg, wrongBitmap);
             return false;
         }
         return true;
@@ -80,7 +104,6 @@ public class LoginActivity extends BaseActivity {
         if (!validate()) {
             return;
         }
-
 
         final String username = mUsernameEdit.getText().toString();
         final String password = mPasswordEdit.getText().toString();
@@ -150,10 +173,6 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    public void BtnRegisterOnClick(View view) {
-        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-        LoginActivity.this.startActivity(intent);
-    }
 
     @Override
     protected void onResume() {
