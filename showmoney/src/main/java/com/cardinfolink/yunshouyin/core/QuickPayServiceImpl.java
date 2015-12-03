@@ -55,10 +55,10 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
-                if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
-                } else {
+                if (stringAsyncTaskResult == null) {
                     quickPayCallbackListener.onSuccess(null);
+                } else if (stringAsyncTaskResult.getException() != null) {
+                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
                 }
             }
         }.execute();
@@ -92,7 +92,7 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void activateAsync(final String username, final String password, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
-//TODO: move validation here
+        //TODO: move validation here
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
             @Override
             protected AsyncTaskResult<Void> doInBackground(Void... params) {
@@ -118,7 +118,7 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void updateInfoAsync(final String province, final String city, final String bank_open, final String branch_bank, final String bankNo, final String payee, final String payee_card, final String phone_num, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
-//TODO: move validation here
+        //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
         final String password = "";
@@ -148,7 +148,7 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void increaseLimitAsync(final String payee, final String phone_num, final String email, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
-//TODO: move validation here
+        //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
         final String password = "";
@@ -178,7 +178,7 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void getBankInfoAsync(final QuickPayCallbackListener<BankInfo> quickPayCallbackListener) {
-//TODO: move validation here
+        //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
         final String password = "";
@@ -208,7 +208,7 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void updatePasswordAsync(final String oldPassword, final String newPassword, String newPassword_repeat, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
-//TODO: move validation here
+        //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
         final String password = "";
