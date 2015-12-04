@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"time"
 	//"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 )
@@ -43,14 +45,24 @@ func Reconciliat(startTime string, endTime string) error {
 		return err
 	}
 
+	blendMMap := make(map[string]map[string][]model.TransSett) //外部key为商户号，内部key为订单号
+
+	//BlendRecord(coll)
+
+	merMap := make(map[string]string)
+
 	//报表名称
 	filename := "账务对账报表IC002.xlsx"
 
 	reconciliatMMap := make(map[string]map[string]reconciliatReportData) //外key为机构号，内map的key为渠道编号
 
 	//处理数据
-	for _, trans := range coll {
-		element := trans.Trans
+	for _, v := range coll {
+		element := v.Trans
+		if element.ChanCode == "ALP" {
+			//fmt.Println(element)
+			merMap[element.ChanMerId] = element.MerId
+		}
 		if element.RespCode == "00" { //成功则对账
 			reportDataMap, ret := reconciliatMMap[element.AgentCode]
 			act := float64(element.TransAmt / 100)
@@ -61,6 +73,15 @@ func Reconciliat(startTime string, endTime string) error {
 				continue
 			}
 			acqFee := float64(chanMer.AcqFee) * act
+			blendMap, ret1 := blendMMap[element.ChanMerId]
+			if !ret1 {
+				blendMap = make(map[string][]model.TransSett)
+			}
+			blendArray, ret1 := blendMap[element.ChanOrderNum]
+			if !ret1 {
+				blendArray = make([]model.TransSett, 0)
+			}
+
 			if ret { //如果map存在该机构
 				//清算角色
 				var reportData reconciliatReportData
@@ -80,6 +101,9 @@ func Reconciliat(startTime string, endTime string) error {
 					reportData.orderAcqFee += acqFee
 					reportData.orderAcqAct += (act - acqFee)
 					reportData.orderNum++
+					v.SettFlag = model.SettOK
+					v.SettDate = time.Now().Format("2015-12-03")
+					blendArray = append(blendArray, v)
 				} else if (element.Busicd == "VOID") || (element.Busicd == "REFD") || (element.Busicd == "CANC") {
 					if (element.Busicd == "CANC") && (element.TransAmt == 0) {
 						continue //取消，如果金额为0，是没有支付
@@ -90,6 +114,9 @@ func Reconciliat(startTime string, endTime string) error {
 					reportData.orderAcqFee -= acqFee
 					reportData.orderAcqAct -= (act - acqFee)
 					reportData.orderNum++
+					v.SettFlag = model.SettOK
+					v.SettDate = time.Now().Format("2015-12-03")
+					blendArray = append(blendArray, v)
 				}
 
 				if !ret1 {
@@ -111,6 +138,9 @@ func Reconciliat(startTime string, endTime string) error {
 					reportData.orderAcqFee = acqFee
 					reportData.orderAcqAct = (act - acqFee)
 					reportData.orderNum = 1
+					v.SettFlag = model.SettOK
+					v.SettDate = time.Now().Format("2015-12-03")
+					blendArray = append(blendArray, v)
 				} else if (element.Busicd == "VOID") || (element.Busicd == "REFD") || (element.Busicd == "CANC") {
 					if (element.Busicd == "CANC") && (element.TransAmt == 0) {
 						continue //取消，如果金额为0，是没有支付
@@ -121,13 +151,23 @@ func Reconciliat(startTime string, endTime string) error {
 					reportData.orderAcqFee = acqFee * (-1.0)
 					reportData.orderAcqAct = (act - acqFee) * (-1.0)
 					reportData.orderNum = 1
+					v.SettFlag = model.SettOK
+					v.SettDate = time.Now().Format("2015-12-03")
+					blendArray = append(blendArray, v)
 				}
 
 				reportDataMap[element.SettRole] = reportData
 				reconciliatMMap[element.AgentCode] = reportDataMap
 			}
+
+			if v.SettFlag == model.SettOK {
+				blendMap[element.ChanOrderNum] = blendArray
+				blendMMap[element.ChanMerId] = blendMap
+			}
 		}
 	}
+	//勾兑
+	BlendRecord(blendMMap, merMap, startTime, endTime)
 
 	date := []byte(startTime)[:10]
 
@@ -251,7 +291,7 @@ func genReconciliatReportExcel(data map[string]map[string]reconciliatReportData,
 	for _, elementMap := range data {
 		for _, d := range elementMap {
 			row = sheet.AddRow()
-			row.SetHeightCM(1.48)
+			row.SetHeightCM(1.00)
 			cell = row.AddCell()
 			cell.SetStyle(bodyStyle)
 			cell.Value = d.insCode

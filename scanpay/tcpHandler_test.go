@@ -1,15 +1,17 @@
 package scanpay
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net"
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"io"
+	// "net"
+	"strconv"
+	"testing"
+	// "time"
 )
 
 func TestListenTcp(t *testing.T) {
@@ -24,18 +26,35 @@ func TestListenTcp(t *testing.T) {
 
 func TestDailTcp(t *testing.T) {
 	var err error
-	addr := ":3000"
-	conn, err := net.Dial("tcp", addr)
+	// addr := "overseas.show.money:6000"
+	addr := "52.192.213.82:6000"
 
-	defer conn.Close()
+	config := &tls.Config{}
+	config.InsecureSkipVerify = true
 
+	conn, err := tls.Dial("tcp", addr, config)
 	if err != nil {
 		log.Errorf("can't connect to cil-online tcp://%s: %s", addr, err)
 		return
 	}
+	defer conn.Close()
 	req := new(model.ScanPayRequest)
 	req.Busicd = "PURC"
 	encoded, _ := json.Marshal(req)
 	head := fmt.Sprintf("%04d", len(encoded))
 	io.WriteString(conn, head+string(encoded))
+
+	for {
+		dl := make([]byte, 4)
+		conn.Read(dl)
+		if string(dl) != "" {
+			l, _ := strconv.Atoi(string(dl))
+			bs := make([]byte, l)
+			conn.Read(bs)
+			t.Logf("%s", string(bs))
+			return
+		}
+		return
+	}
+
 }

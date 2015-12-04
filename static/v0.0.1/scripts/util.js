@@ -2,7 +2,11 @@
 (function(window) {
 	var Util = (function() {
 		var init = function() {};
-		var toast = function(text, duration) {
+		var toast = function(text, duration, isLocale) {
+			if (isLocale) {
+				var el = document.createElement('i18n-msg');
+				text = el.getMsg(text);
+			}
 			if (!text || typeof text !== 'string' || text === '') {
 				return;
 			}
@@ -24,10 +28,10 @@
 		};
 		var showLoginDialog = function() {
 			var abc = document.getElementsByTagName('paper-dialog'),
-			a = null;
-			for(var i = 0, l = abc.length; i < l; i++){
+				a = null;
+			for (var i = 0, l = abc.length; i < l; i++) {
 				a = abc[i];
-				if (typeof a.close === 'function'){
+				if (typeof a.close === 'function') {
 					abc[i].close();
 				}
 			}
@@ -48,6 +52,23 @@
 			// returns false when event.preventDefault() is called, true otherwise
 			return node.dispatchEvent(event);
 		};
+		// 将后台传过来的北京时间转换成当地时间
+		var _toLocaleDateTime = function(dateTime) {
+			if (!dateTime || !moment(dateTime, 'YYYY-MM-DD HH:mm:ss').isValid()) {
+				return dateTime;
+			}
+			var org = dateTime + ' +0800';
+			var aft = moment(org, 'YYYY-MM-DD HH:mm:ss Z').format('YYYY-MM-DD HH:mm:ss');
+			return aft;
+		};
+		// 将本地时间转换成北京时间
+		var _toCSTDateTime = function(dateTime) {
+			if (!dateTime || !moment(dateTime, 'YYYY-MM-DD HH:mm:ss').isValid()) {
+				return dateTime;
+			}
+			var aft = moment(dateTime, 'YYYY-MM-DD HH:mm:ss').utcOffset(8).format('YYYY-MM-DD HH:mm:ss');
+			return aft;
+		};
 		var query = function(obj) {
 			var q = '';
 			for (var k in obj) {
@@ -59,13 +80,35 @@
 			}
 			return q.substring(1);
 		};
+		var RSAPublicKey = function() {
+			return '-----BEGIN PUBLIC KEY-----\
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDF4xejo7F1JVPU555mG6Kei8XU\
+2bT+V0Y+DaxzoBChaxYGOtlkf6vCh3y6Op/3OWdZAG8W17S3w9V7Skw0PvFvqqqc\
+8JLlnr9/zDKoit5X17VHX8Ky3jdl7Ll2h3MFghAbzcf0P7CRGxgpTm+lqsPQXETz\
+DEBEqXeE7Q7WeseaHQIDAQAB\
+-----END PUBLIC KEY-----';
+		};
+		var RSAEncrypt = function(plaintext) {
+			var publicKey = '-----BEGIN PUBLIC KEY-----\
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDF4xejo7F1JVPU555mG6Kei8XU\
+2bT+V0Y+DaxzoBChaxYGOtlkf6vCh3y6Op/3OWdZAG8W17S3w9V7Skw0PvFvqqqc\
+8JLlnr9/zDKoit5X17VHX8Ky3jdl7Ll2h3MFghAbzcf0P7CRGxgpTm+lqsPQXETz\
+DEBEqXeE7Q7WeseaHQIDAQAB\
+-----END PUBLIC KEY-----';
+			var rsa = new JSEncrypt();
+			rsa.setPublicKey(publicKey);
+			return rsa.encrypt(plaintext);
+		};
 		return {
 			init: init,
 			fire: fire,
 			toast: toast,
 			query: query,
 			showLoginDialog: showLoginDialog,
-			hideLoginDialog: hideLoginDialog
+			hideLoginDialog: hideLoginDialog,
+			toLocaleDateTime: _toLocaleDateTime,
+			toCSTDateTime: _toCSTDateTime,
+			RSAEncrypt: RSAEncrypt,
 		};
 	}());
 

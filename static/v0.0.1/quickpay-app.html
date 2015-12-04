@@ -4,21 +4,18 @@
 <link rel="import" href="bower_components/app-router/app-router.html">
 <link rel="import" href="layouts/scaffold-layout.html">
 <link rel="import" href="elements/login-form/login-form.html">
+<link rel="import" href="bower_components/i18n-msg/i18n-msg.html">
 <dom-module id="quickpay-app">
   <template>
     <style>
-      :host {
-        display: block;
-      }
-
+    :host {
+      display: block;
+    }
     </style>
-    <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-login-success="handleLoginSuccessEvent" on-logout="handleLogoutEvent"
-    on-toast-open="handleToastOpenEvent" on-page-jump="handlePageJumpEvent">
+    <app-router id="appRouter" init="manual" on-state-change="handleStateChangeEvent" on-activate-route-start="handleActivateRouteStartEvent" on-activate-route-end="handleActivateRouteEndEvent" on-login-success="handleLoginSuccessEvent" on-logout="handleLogoutEvent" on-toast-open="handleToastOpenEvent" on-page-jump="handlePageJumpEvent">
       <app-route path="/" import="pages/user-login.html" bindRouter></app-route>
-
       <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
       <app-route path="/system/password/editor" name="pwdEditor" import="pages/password-editor-page.html"></app-route>
-
       <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
       <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
       <app-route path="/config/groups" name="group-list" import="pages/groups-page.html"></app-route>
@@ -29,20 +26,16 @@
       <app-route path="/config/chanMers" name="channel-merchant-list" import="pages/channel-merchants-page.html"></app-route>
       <app-route path="/config/routes" name="route-list" import="pages/routes-page.html"></app-route>
       <app-route path="/config/route/:merId" name="routeListOfMerchant" import="pages/routes-page.html"></app-route>
-
       <app-route path="/quickPay/merchants" name="quick-merchant-list" import="pages/quick-pay/qp-merchants-page.html"></app-route>
       <app-route path="/quickPay/chanMers" name="quick-chanMer-list" import="pages/quick-pay/qp-channel-merchants-page.html"></app-route>
       <app-route path="/quickPay/routes" name="quick-route-list" import="pages/quick-pay/qp-routes-page.html"></app-route>
       <app-route path="/quickPay/route/:merId" name="quickRouteListOfMerchant" import="pages/quick-pay/qp-routes-page.html"></app-route>
-
       <app-route path="/trade/list" name="trade-list" import="pages/trade/scan-pay-page.html"></app-route>
       <app-route path="/trade/bindingpay/list" name="trade-bindingpay-list" import="pages/trade/binding-pay-page.html"></app-route>
       <app-route path="/trade/coupon/list" name="coupon-list" import="pages/trade/coupon-wo-page.html"></app-route>
-
       <app-route path="/stats/reports" name="report-list" import="pages/stats/reports-page.html"></app-route>
       <app-route path="/stats/old/reports" name="report-list-old" import="pages/stats/old-system-page.html"></app-route>
       <app-route path="/stats/settle/reports" name="settle-report-list" import="pages/stats/settle-report-page.html"></app-route>
-
       <app-route path="/test/scanpay" name="test-scanpay" import="pages/test/scanpay-page.html"></app-route>
       <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
       <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
@@ -50,173 +43,247 @@
       <app-route path="/404" name="not-found" import="pages/common/not-found-page.html"></app-route>
       <app-route path="*" name="not-found" redirect="/404"></app-route>
     </app-router>
-
     <!-- TOAST: 用来实现信息弹出的功能 -->
     <paper-toast id="toast" duration="5000" visible="true" text$="{{toastText}}" style="z-index:1000;"></paper-toast>
     <!-- PAPER-DIALOG: 用来重新登录的对话框 -->
     <paper-dialog id="reloginDialog" modal no-cancel-on-esc-key on-open-dialog-please="handleOpenDialogPleaseEvent" on-close-dialog-please="handleCloseDialogPleaseEvent">
       <login-form style="width:252px;" on-login-success="handleLoginSuccessEvent"></login-form>
     </paper-dialog>
-
-    <iron-localstorage name="SESSIONID" value="{{sessionId}}" on-iron-localstorage-load-empty="handleNotLogin"></iron-localstorage>
     <iron-localstorage name="USERTYPE" value="{{userType}}"></iron-localstorage>
     <iron-localstorage name="CILUSER" value="{{nickName}}"></iron-localstorage>
+    <iron-localstorage name="CIL.CONFIG.LANGUAGE" value="{{language}}"></iron-localstorage>
     <x-ajax id="findSessionAjax" method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleFindSessionResponse"></x-ajax>
     <x-ajax id="deleteSessionAjax" method="GET" url="/master/logout" handle-as="json" debounce-duration="1000" on-response="handleDeleteSessionResponse"></x-ajax>
+    <x-ajax id="localeAjax" method="POST" url="/master/app/locale" handle-as="json" debounce-duration="1000" on-response="handleLocaleResponse"></x-ajax>
   </template>
   <script>
-    (function() {
-      'use strict';
-      var LOGIN_PATH = '/',
-        NOT_FOUNT_PATH = '/404';
-      var notAuthPath = [
-        NOT_FOUNT_PATH,
-        LOGIN_PATH
-      ];
-      var agentRoutes = ['/trade/list', '/stats/reports', '/system/password/editor'];
+  (function() {
+    'use strict';
+    var LOGIN_PATH = '/',
+      NOT_FOUNT_PATH = '/404';
+    var notAuthPath = [
+      NOT_FOUNT_PATH,
+      LOGIN_PATH
+    ];
+    var agentRoutes = ['/trade/list', '/stats/reports', '/system/password/editor'];
 
-      Polymer({
-        is: 'quickpay-app',
+    Polymer({
+      is: 'quickpay-app',
 
-        properties: {
-          route: {
-            type: Object,
-            value: {},
-          },
+      properties: {
+        route: {
+          type: Object,
+          value: {},
         },
-        attached: function() {
-          this.$.appRouter.init();
-        },
-        // 当没有登入的时候，跳转到登入页面
-        handleNotLogin: function() {
-          this.$.appRouter.go('/')
+      },
+      listeners: {
+        'i18n-language-change': 'handleI18nLanguageChangeEvent',
+        'i18n-language-ready': 'handleI18nLanguageChangeEvent',
+        'rerender-i18n': 'handleI18nLanguageChangeEvent',
+        'show-login-dialog': 'handleOpenLoginDialogEvent'
+      },
+      ready: function() {},
+      attached: function() {
+        this.$.appRouter.init();
+        var lan = this.language || window.navigator.language;
+        switch (lan) {
+          case 'ja':
+            I18nMsg.lang = 'ja';
+            break;
+          case 'ja-JP':
+            I18nMsg.lang = 'ja';
+            break;
+          default:
+            I18nMsg.lang = 'zh-CN';
+        }
+      },
+      // 当没有登入的时候，跳转到登入页面
+      handleNotLogin: function() {
+        this.$.appRouter.go('/')
+        return;
+      },
+      // 路由改变事件
+      handleStateChangeEvent: function(e) {
+        // debugger;
+        console.log(e.type, e.detail.path);
+
+        if (e.detail.path !== '/' && e.detail.path[e.detail.path.length - 1] === '/') {
+          this.$.appRouter.go(LOGIN_PATH);
+          e.preventDefault();
+        }
+
+        this.set('route.path', e.detail.path);
+        if (notAuthPath.indexOf(e.detail.path) >= 0) {
           return;
-        },
-        // 路由改变事件
-        handleStateChangeEvent: function(e) {
-          // debugger;
-          console.log(e.type, e.detail.path);
+        }
+        var isAccess = false;
 
-          if (e.detail.path !== '/' && e.detail.path[e.detail.path.length - 1] === '/') {
-            this.$.appRouter.go(LOGIN_PATH);
-            e.preventDefault();
-          }
+        if (this.userType === 'admin' || this.userType === 'genAdmin') {
+          return;
+        }
 
-          this.set('route.path', e.detail.path);
-          if (notAuthPath.indexOf(e.detail.path) >= 0) {
-            return;
-          }
-          var isAccess = false;
+        if (this.userType !== 'agent' && this.userType !== 'group' && this.userType !== 'merchant' && this.userType !== 'subAgent') {
+          this.$.appRouter.go('/');
+          return;
+        }
 
-          if (this.userType === 'admin'||this.userType === 'genAdmin') {
-            return;
+        // 按照不同的用户类型给定不同的菜单权限
+        for (var i = 0; i < agentRoutes.length; i++) {
+          if (agentRoutes[i] === e.detail.path) {
+            isAccess = true;
+            break;
           }
+        }
+        if (!isAccess) {
+          this.$.appRouter.go('/404');
+          e.preventDefault();
+        }
+      },
+      // 新路由进入前
+      handleActivateRouteStartEvent: function(e) {
+        // debugger;
+      },
+      // DOM 已经变成新路由的时候触发的事件
+      handleActivateRouteEndEvent: function(e) {
+        if (e.detail.path === LOGIN_PATH || e.detail.path === NOT_FOUNT_PATH) {
+          return;
+        }
+        // 触发‘menu-render’的事件到菜单的容器，重新渲染菜单
+        Polymer.Base.fire('menu-render', this.userType, {
+          node: document.getElementById('quickPayMenuContainer')
+        });
+      },
+      // 处理子孙元素冒泡的登录成功事件
+      handleLoginSuccessEvent: function(e) {
+        var el = document.createElement('i18n-msg'),
+            text = el.getMsg('LOGIN.SUCCESS');
+        this.set('toastText', text);
+        this.$.toast.show();
 
-          if (this.userType !== 'agent' && this.userType !== 'group' && this.userType !== 'merchant' && this.userType !== 'subAgent') {
-            this.$.appRouter.go('/');
-            return;
-          }
+        // 如果不是中文的话，发送一个切换后台服务器语言的指令
+        this.localeChangeRequest(I18nMsg.lang);
 
-          // 按照不同的用户类型给定不同的菜单权限
-          for (var i = 0; i < agentRoutes.length; i++) {
-            if (agentRoutes[i] === e.detail.path) {
-              isAccess = true;
-              break;
-            }
-          }
-          if (!isAccess) {
-            this.$.appRouter.go('/404');
-            e.preventDefault();
-          }
-        },
-        // 新路由进入前
-        handleActivateRouteStartEvent: function(e) {
-          // debugger;
-        },
-        // DOM 已经变成新路由的时候触发的事件
-        handleActivateRouteEndEvent: function(e) {
-          if (e.detail.path === LOGIN_PATH || e.detail.path === NOT_FOUNT_PATH) {
-            return;
-          }
-          // 触发‘menu-render’的事件到菜单的容器，重新渲染菜单
-          Polymer.Base.fire('menu-render', this.userType, {
+        var loginUser = e.detail.loginUser;
+        this.set('userType', loginUser.userType);
+        this.set('nickName', loginUser.nickName);
+
+        // 当前页面弹窗登录
+        if (e.detail.jumpTo === null && this.route.path !== '/404') {
+          Polymer.Base.fire('menu-render', loginUser.userType, {
             node: document.getElementById('quickPayMenuContainer')
           });
-        },
-        // 处理子孙元素冒泡的登录成功事件
-        handleLoginSuccessEvent: function(e) {
-          var loginUser = e.detail.loginUser;
-          this.set('sessionId', loginUser.sessionId);
-          this.set('userType', loginUser.userType);
-          this.set('nickName', loginUser.nickName);
+          Polymer.Base.fire('nick-name-reload', loginUser.nickName, {
+            node: document.getElementById('cilUserLocalStorageInScaffoldLayout')
+          });
 
-          // 当前页面弹窗登录
-          if (e.detail.jumpTo === null && this.route.path !== '/404') {
-            Polymer.Base.fire('menu-render', loginUser.userType, {
-              node: document.getElementById('quickPayMenuContainer')
-            });
-            Polymer.Base.fire('nick-name-reload', loginUser.nickName, {
-              node: document.getElementById('cilUserLocalStorageInScaffoldLayout')
-            });
-
-            this.$.reloginDialog.close();
-            // 异步操作，保证paper-dialog关闭后再关闭iron-overlay-backdrop。
-            window.setTimeout(function() {
-              var backdrops = document.querySelectorAll('iron-overlay-backdrop');
-              for (var i = 0, l = backdrops.length; i < l; i++) {
-                backdrops[i].close();
-              }
-            }, 0);
-
-            // 如果再次登录的人不是管理员，但是当前页面是管理员的页面，就跳转到普通用户的主页
-            if (this.userType !== 'admin' && agentRoutes.indexOf(this.route.path) < 0) {
-              this.$.appRouter.go('/trade/list');
-            }
-            return;
-          }
-
-          // 登录页面登录后跳转
-          if (typeof e.detail.jumpTo === 'string') {
-            this.$.appRouter.go(e.detail.jumpTo);
-            return;
-          }
-
-        },
-        // 处理子孙元素冒泡的登出事件
-        handleLogoutEvent: function(e) {
-          // 删除后台sesseion信息
-          this.$.deleteSessionAjax.params = {
-            'sessionId': this.sessionId,
-          };
-          this.$.deleteSessionAjax.generateRequest();
-        },
-        handleDeleteSessionResponse: function(e) {
-          // 清除客户端 SessionID
-          document.cookie = 'QUICKMASTERID=; path=/master; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          // 清除localStorage中的信息
-          this.set('sessionId', '');
-          this.set('userType', '');
-          this.set('nickName', '');
-          // 跳转至登录页面
-          this.$.appRouter.go('/');
-        },
-        // 处理子孙元素冒泡的toast open事件
-        handleToastOpenEvent: function(e) {
-          this.set('toastText', e.detail);
-          this.$.toast.show();
-        },
-        // 处理子孙元素冒泡的页面跳转事件
-        handlePageJumpEvent: function(e) {
-          this.$.appRouter.go(e.detail);
-        },
-        handleOpenDialogPleaseEvent: function() {
-          this.$.reloginDialog.open();
-        },
-        handleCloseDialogPleaseEvent: function() {
           this.$.reloginDialog.close();
-        }
-      });
-    })();
+          // 异步操作，保证paper-dialog关闭后再关闭iron-overlay-backdrop。
+          window.setTimeout(function() {
+            var backdrops = document.querySelectorAll('iron-overlay-backdrop');
+            for (var i = 0, l = backdrops.length; i < l; i++) {
+              backdrops[i].remove();
+            }
+          }, 0);
 
+          // 如果再次登录的人不是管理员，但是当前页面是管理员的页面，就跳转到普通用户的主页
+          if (this.userType !== 'admin' && agentRoutes.indexOf(this.route.path) < 0) {
+            this.$.appRouter.go('/trade/list');
+          }
+          return;
+        }
+
+        // 登录页面登录后跳转
+        if (typeof e.detail.jumpTo === 'string') {
+          this.$.appRouter.go(e.detail.jumpTo);
+          return;
+        }
+
+      },
+      // 处理子孙元素冒泡的登出事件
+      handleLogoutEvent: function(e) {
+        // 删除后台sesseion信息
+        this.$.deleteSessionAjax.generateRequest();
+      },
+      handleDeleteSessionResponse: function(e) {
+        // 清除localStorage中的信息
+        this.set('userType', '');
+        this.set('nickName', '');
+        // 跳转至登录页面
+        this.$.appRouter.go('/');
+      },
+      // 处理子孙元素冒泡的toast open事件
+      handleToastOpenEvent: function(e) {
+        this.set('toastText', e.detail);
+        this.$.toast.show();
+      },
+      // 处理子孙元素冒泡的页面跳转事件
+      handlePageJumpEvent: function(e) {
+        this.$.appRouter.go(e.detail);
+      },
+      handleOpenDialogPleaseEvent: function() {
+        this.$.reloginDialog.open();
+      },
+      handleCloseDialogPleaseEvent: function() {
+        this.$.reloginDialog.close();
+      },
+      localeChangeRequest: function(lang) {
+        this.$.localeAjax.params = {
+          "locale": lang
+        };
+        this.$.localeAjax.generateRequest();
+      },
+      handleLocaleResponse: function(e) {
+        console.log(e.detail.response);
+      },
+      handleI18nLanguageChangeEvent: function(e) {
+        // 如果e.type === 'i18n-language-change' 的话，发送一个切换语言的请求
+        if (e && e.type === 'i18n-language-change') {
+          this.localeChangeRequest(e.detail.key);
+        }
+        var i18nMsg = document.createElement('i18n-msg');
+
+        var paperInputs = document.querySelectorAll('paper-input');
+        for (var i = 0, l = paperInputs.length, item; i < l; i++) {
+          var msgId = null;
+          item = paperInputs[i];
+          if (item.hasAttribute('data-msg-id')) {
+            msgId = item.getAttribute('data-msg-id');
+            item.setAttribute('label', i18nMsg.getMsg(msgId));
+          }
+
+          if (item.required) {
+            msgId = item.getAttribute('data-error-msg-id');
+            item.setAttribute('error-message', i18nMsg.getMsg(msgId));
+          }
+          msgId = null;
+        }
+
+        var datePickers = document.querySelectorAll('paper-date-picker');
+        for (var i = 0, l = datePickers.length, item; i < l; i++) {
+          item = datePickers[i];
+          if (item.hasAttribute('data-msg-id')) {
+            var msgId = item.getAttribute('data-msg-id');
+            item.setAttribute('locale', i18nMsg.getMsg(msgId));
+          }
+        }
+
+        var xSelects = document.querySelectorAll('x-select');
+        for (var i = 0, l = xSelects.length, item; i < l; i++) {
+          item = xSelects[i];
+          if (item.hasAttribute('data-msg-id')) {
+            var msgId = item.getAttribute('data-msg-id');
+            item.setAttribute('label', i18nMsg.getMsg(msgId));
+          }
+        }
+      },
+      // 重新登录事件
+      handleOpenLoginDialogEvent: function(e) {
+        if (this.route && this.route.path === '/') {
+          return;
+        }
+        Util.showLoginDialog();
+      }
+    });
+  })();
   </script>
 </dom-module>

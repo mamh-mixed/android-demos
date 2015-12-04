@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/observe-js/observe-js.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
@@ -14,6 +15,7 @@
 <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../elements/choose-language/choose-language.html">
 <link rel="import" href="../elements/x-ajax/x-ajax.html">
 <link rel="import" href="../elements/x-pagination/x-pagination.html">
 <link rel="import" href="../styles/app-theme.html">
@@ -72,6 +74,11 @@
       height: 100%;
     }
 
+    paper-scroll-header-panel /deep/ #headerContainer {
+      transform: inherit!important;
+      transform-style: flat;
+    }
+
     paper-material {
       border-radius: 2px;
       height: 100%;
@@ -117,6 +124,7 @@
     }
 
     paper-menu iron-icon,
+    paper-menu i18n-msg,
     paper-menu span {
       pointer-events: none;
     }
@@ -126,8 +134,8 @@
       padding-right: 20px;
     }
 
-    paper-toolbar.tall .app-name {
-      font-size: 40px;
+    paper-toolbar .app-name {
+      font-size: 20px;
       font-weight: 300;
       -webkit-transform-origin: left center;
       transform-origin: left center;
@@ -163,7 +171,7 @@
       .paper-font-display1 {
         font-size: 12px;
       }
-      paper-toolbar.tall .app-name {
+      paper-toolbar .app-name {
         font-size: 24px;
         font-weight: 400;
       }
@@ -191,14 +199,16 @@
     }
   </style>
   <template>
-    <paper-drawer-panel id="paperDrawerPanel" on-paper-header-transform="paperHeaderTransform" force-narrow$="{{isFullscreen}}" on-paper-responsive-change="paperResponsiveChange">
+    <paper-drawer-panel id="paperDrawerPanel" force-narrow$="{{isFullscreen}}" on-paper-responsive-change="paperResponsiveChange">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
 
         <!-- Drawer Toolbar -->
         <paper-toolbar id="drawerToolbar">
           <img src="../images/logo2.svg" alt="云收银" class="logo">
-          <div class="app-name">云收银管理平台</div>
+          <div class="app-name">
+            <i18n-msg msgid="TITLE">云收银管理平台</i18n-msg>
+          </div>
         </paper-toolbar>
 
         <!-- 菜单列表 -->
@@ -226,37 +236,49 @@
           <template is="dom-repeat" items="{{menus}}" as="menu">
             <a data-route$="{{menu.route}}" href$="{{menu.url}}">
               <iron-icon icon$="{{menu.icon}}"></iron-icon>
-              <span>{{menu.nameCN}}</span>
+              <i18n-msg msgid$="{{menu.nameCN}}">{{menu.nameCN}}</i18n-msg>
             </a>
           </template>
         </paper-menu>
       </paper-scroll-header-panel>
 
       <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+      <paper-scroll-header-panel main fixed>
 
         <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
+        <paper-toolbar id="mainToolbar">
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
-          <div> 当前用户 【
-            <span>{{nickName}}</span> 】</div>
+          <div>
+            <i18n-msg msgid="CURRENTUSER">当前用户</i18n-msg>
+            【
+            <span>{{nickName}}</span> 】
+          </div>
           <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
           <!-- Toolbar icons -->
+          <choose-language id="languageChoose"></choose-language>
           <div hidden$="{{isNarrow}}">
             <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
             <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
           </div>
 
+
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout" id="middleContainer">
-            <div class="app-name" id="appName">{{route.title}}</div>
+            <template is="dom-if" if="{{route.isLocale}}">
+              <div class="app-name" id="appName">
+                <i18n-msg msgid$="{{route.msgId}}">{{route.title}}</i18n-msg>
+              </div>
+            </template>
+            <template is="dom-if" if="{{!route.isLocale}}">
+              <div class="app-name" id="appName">{{route.title}}</div>
+            </template>
           </div>
 
           <!-- Application sub title -->
-          <div class="bottom bottom-container center horizontal layout" id="bottomContainer">
+          <!-- <div class="bottom bottom-container center horizontal layout" id="bottomContainer">
             <div class="bottom-title paper-font-subhead">{{route.subtitle}}</div>
-          </div>
+          </div> -->
 
         </paper-toolbar>
 
@@ -271,359 +293,352 @@
   </template>
   <script>
     (function() {
-    Polymer({
-          is: 'scaffold-layout',
+      Polymer({
+        is: 'scaffold-layout',
 
-          properties: {
-            route: {
-              type: Object,
-            },
-            user: {
-              type: Object,
-              notify: true
-            },
-            isFullscreen: {
-              type: Boolean,
-              value: false
-            },
-            isNarrow: {
-              type: Boolean,
-              value: false
-            },
-            nickName: String
+        properties: {
+          route: {
+            type: Object,
           },
-          ready: function() {
-            // 初始化菜单
-            this.adminMenus = [{
-              "nameCN": "系统管理",
-              "nameEN": "",
-              "icon": "settings",
-              "url": "",
-              "route": "/system",
-              "children": [{
-                "nameCN": "用户",
-                "nameEN": "",
-                "icon": "account-circle",
-                "url": "#/system/users",
-                'route': 'system.users'
-              }, {
-                "nameCN": "密码修改",
-                "nameEN": "",
-                "icon": "lock-outline",
-                "url": "#/system/password/editor",
-                'route': 'system.password.editor'
-              }]
+          user: {
+            type: Object,
+            notify: true
+          },
+          isFullscreen: {
+            type: Boolean,
+            value: false
+          },
+          isNarrow: {
+            type: Boolean,
+            value: false
+          },
+          nickName: String,
+          languages: {
+            type: Array,
+            value: [{
+              key: 'zh-CN',
+              value: '简体中文',
+              activeClass: ''
             }, {
+              key: 'en-US',
+              value: 'English',
+              activeClass: ''
+            }, {
+              key: 'ja',
+              value: '日本語',
+              activeClass: ''
+            }]
+          }
+        },
+        ready: function() {
+          // 初始化菜单
+          this.adminMenus = [{
+            "nameCN": "系统管理",
+            "nameEN": "",
+            "icon": "settings",
+            "url": "",
+            "route": "/system",
+            "children": [{
+              "nameCN": "用户",
+              "nameEN": "",
+              "icon": "account-circle",
+              "url": "#/system/users",
+              'route': 'system.users'
+            }, {
+              "nameCN": "密码修改",
+              "nameEN": "",
+              "icon": "lock-outline",
+              "url": "#/system/password/editor",
+              'route': 'system.password.editor'
+            }]
+          }, {
+            "nameCN": "扫码支付",
+            "nameEN": "",
+            "icon": "image:crop-free",
+            "url": "",
+            "route": "/config",
+            "children": [{
+              "nameCN": "代理",
+              "nameEN": "",
+              "icon": "assignment-ind",
+              "url": "#/config/agents",
+              "route": "config.agents"
+            }, {
+              "nameCN": "公司",
+              "nameEN": "",
+              "icon": "account-box",
+              "url": "#/config/subAgents",
+              "route": "config.subAgents"
+            }, {
+              "nameCN": "商户",
+              "nameEN": "",
+              "icon": "home",
+              "url": "#/config/groups",
+              "route": "config.groups"
+            }, {
+              "nameCN": "门店录入",
+              "nameEN": "",
+              "icon": "create",
+              "url": "#/config/configMer",
+              "route": "config.configMer"
+            }, {
+              "nameCN": "批量导入",
+              "nameEN": "",
+              "icon": "cloud-upload",
+              "url": "#/config/upload",
+              "route": "config.upload"
+            }, {
+              "nameCN": "门店",
+              "nameEN": "",
+              "icon": "store",
+              "url": "#/config/merchants",
+              "route": "config.merchants"
+            }, {
+              "nameCN": "渠道商户",
+              "nameEN": "",
+              "icon": "account-balance",
+              "url": "#/config/chanMers",
+              "route": "config.chanMers"
+            }, {
+              "nameCN": "路由策略",
+              "nameEN": "",
+              "icon": "hardware:device-hub",
+              "url": "#/config/routes",
+              "route": "config.routes"
+            }]
+          }, {
+            "nameCN": "快捷支付",
+            "nameEN": "",
+            "icon": "hardware:phonelink",
+            "url": "",
+            "route": "/quickPay",
+            "children": [{
+              "nameCN": "机构商户",
+              "nameEN": "",
+              "icon": "store",
+              "url": "#/quickPay/merchants",
+              "route": "quickPay.merchants"
+            }, {
+              "nameCN": "渠道商户",
+              "nameEN": "",
+              "icon": "account-balance",
+              "url": "#/quickPay/chanMers",
+              "route": "quickPay.chanMers"
+            }, {
+              "nameCN": "路由策略",
+              "nameEN": "",
+              "icon": "hardware:device-hub",
+              "url": "#/quickPay/routes",
+              "route": "quickPay.routes"
+            }]
+          }, {
+            "nameCN": "交易查询",
+            "nameEN": "",
+            "icon": "payment",
+            "url": "",
+            "route": "/trade",
+            "children": [{
               "nameCN": "扫码支付",
               "nameEN": "",
               "icon": "image:crop-free",
-              "url": "",
-              "route": "/config",
-              "children": [{
-                "nameCN": "代理",
-                "nameEN": "",
-                "icon": "assignment-ind",
-                "url": "#/config/agents",
-                "route": "config.agents"
-              }, {
-                "nameCN": "公司",
-                "nameEN": "",
-                "icon": "account-box",
-                "url": "#/config/subAgents",
-                "route": "config.subAgents"
-              }, {
-                "nameCN": "商户",
-                "nameEN": "",
-                "icon": "home",
-                "url": "#/config/groups",
-                "route": "config.groups"
-              }, {
-                "nameCN": "门店录入",
-                "nameEN": "",
-                "icon": "create",
-                "url": "#/config/configMer",
-                "route": "config.configMer"
-              }, {
-                "nameCN": "批量导入",
-                "nameEN": "",
-                "icon": "cloud-upload",
-                "url": "#/config/upload",
-                "route": "config.upload"
-              }, {
-                "nameCN": "门店",
-                "nameEN": "",
-                "icon": "store",
-                "url": "#/config/merchants",
-                "route": "config.merchants"
-              }, {
-                "nameCN": "渠道商户",
-                "nameEN": "",
-                "icon": "account-balance",
-                "url": "#/config/chanMers",
-                "route": "config.chanMers"
-              }, {
-                "nameCN": "路由策略",
-                "nameEN": "",
-                "icon": "hardware:device-hub",
-                "url": "#/config/routes",
-                "route": "config.routes"
-              }]
+              "url": "#/trade/list",
+              "route": "trade.list"
             }, {
               "nameCN": "快捷支付",
               "nameEN": "",
               "icon": "hardware:phonelink",
-              "url": "",
-              "route": "/quickPay",
-              "children": [{
-                "nameCN": "机构商户",
-                "nameEN": "",
-                "icon": "store",
-                "url": "#/quickPay/merchants",
-                "route": "quickPay.merchants"
-              }, {
-                "nameCN": "渠道商户",
-                "nameEN": "",
-                "icon": "account-balance",
-                "url": "#/quickPay/chanMers",
-                "route": "quickPay.chanMers"
-              }, {
-                "nameCN": "路由策略",
-                "nameEN": "",
-                "icon": "hardware:device-hub",
-                "url": "#/quickPay/routes",
-                "route": "quickPay.routes"
-              }]
+              "url": "#/trade/bindingpay/list",
+              "route": "trade.bindingpay.list"
             }, {
-              "nameCN": "交易查询",
+              "nameCN": "卡券核销",
               "nameEN": "",
-              "icon": "payment",
-              "url": "",
-              "route": "/trade",
-              "children": [{
-                "nameCN": "扫码支付",
-                "nameEN": "",
-                "icon": "image:crop-free",
-                "url": "#/trade/list",
-                "route": "trade.list"
-              }, {
-                "nameCN": "快捷支付",
-                "nameEN": "",
-                "icon": "hardware:phonelink",
-                "url": "#/trade/bindingpay/list",
-                "route": "trade.bindingpay.list"
-              }, {
-                "nameCN": "卡券核销",
-                "nameEN": "",
-                "icon": "card-giftcard",
-                "url": "#/trade/coupon/list",
-                "route": "trade.coupon.list"
-              }]
-            }, {
-              "nameCN": "统计报表",
-              "nameEN": "",
-              "icon": "receipt",
-              "url": "",
-              "route": "/stats",
-              "children": [{
-                  "nameCN": "扫码支付交易统计",
-                  "nameEN": "",
-                  "icon": "print",
-                  "url": "#/stats/reports",
-                  "route": "stats.reports"
-                },
-                /*{
-                  "nameCN": "老系统扫码支付",
-                  "nameEN": "",
-                  "icon": "cloud-download",
-                  "url": "#/stats/old/reports",
-                  "route": "stats.old.reports"
-                }, */
-                {
-                  "nameCN": "扫码支付清算报表",
-                  "nameEN": "",
-                  "icon": "assignment-returned",
-                  "url": "#/stats/settle/reports",
-                  "route": "stats.settle.reports"
-                }
-              ]
-            }, {
-              "nameCN": "内部测试",
-              "nameEN": "",
-              "icon": "bug-report",
-              "url": "",
-              "route": "/test",
-              "children": [{
-                "nameCN": "扫码支付",
-                "nameEN": "",
-                "icon": "image:center-focus-strong",
-                "url": "#/test/scanpay",
-                "route": "test.scanpay"
-              }, {
-                "nameCN": "绑定支付",
-                "nameEN": "",
-                "icon": "image:style",
-                "url": "#/test/bindingpay",
-                "route": "test.bindingpay"
-              }, {
-                "nameCN": "七牛 Ajax 上传文件",
-                "nameEN": "",
-                "icon": "cloud-upload",
-                "url": "#/test/qiniu",
-                "route": "test.qiniu"
-              }, {
-                "nameCN": "HTML5读取文件内容",
-                "nameEN": "",
-                "icon": "hardware:scanner",
-                "url": "#/test/filereader",
-                "route": "test.filereader"
-              }]
-            }];
-            this.genAdminMenus = [{
-              "nameCN": "系统管理",
-              "nameEN": "",
-              "icon": "settings",
-              "url": "",
-              "route": "/system",
-              "children": [{
-                "nameCN": "密码修改",
-                "nameEN": "",
-                "icon": "lock-outline",
-                "url": "#/system/password/editor",
-                'route': 'system.password.editor'
-              }]
-            }, {
-              "nameCN": "交易查询",
-              "nameEN": "",
-              "icon": "payment",
-              "url": "",
-              "route": "/trade",
-              "children": [{
-                "nameCN": "扫码支付",
-                "nameEN": "",
-                "icon": "image:crop-free",
-                "url": "#/trade/list",
-                "route": "trade.list"
-              }, {
-                "nameCN": "快捷支付",
-                "nameEN": "",
-                "icon": "hardware:phonelink",
-                "url": "#/trade/bindingpay/list",
-                "route": "trade.bindingpay.list"
-              }, {
-                "nameCN": "卡券核销",
-                "nameEN": "",
-                "icon": "card-giftcard",
-                "url": "#/trade/coupon/list",
-                "route": "trade.coupon.list"
-              }]
-            }, {
-              "nameCN": "统计报表",
-              "nameEN": "",
-              "icon": "receipt",
-              "url": "",
-              "route": "/stats",
-              "children": [{
+              "icon": "card-giftcard",
+              "url": "#/trade/coupon/list",
+              "route": "trade.coupon.list"
+            }]
+          }, {
+            "nameCN": "统计报表",
+            "nameEN": "",
+            "icon": "receipt",
+            "url": "",
+            "route": "/stats",
+            "children": [{
                 "nameCN": "扫码支付交易统计",
                 "nameEN": "",
                 "icon": "print",
                 "url": "#/stats/reports",
                 "route": "stats.reports"
-              }, {
+              },
+              /*{
+                "nameCN": "老系统扫码支付",
+                "nameEN": "",
+                "icon": "cloud-download",
+                "url": "#/stats/old/reports",
+                "route": "stats.old.reports"
+              }, */
+              {
                 "nameCN": "扫码支付清算报表",
                 "nameEN": "",
                 "icon": "assignment-returned",
                 "url": "#/stats/settle/reports",
                 "route": "stats.settle.reports"
-              }]
+              }
+            ]
+          }, {
+            "nameCN": "内部测试",
+            "nameEN": "",
+            "icon": "bug-report",
+            "url": "",
+            "route": "/test",
+            "children": [{
+              "nameCN": "扫码支付",
+              "nameEN": "",
+              "icon": "image:center-focus-strong",
+              "url": "#/test/scanpay",
+              "route": "test.scanpay"
+            }, {
+              "nameCN": "绑定支付",
+              "nameEN": "",
+              "icon": "image:style",
+              "url": "#/test/bindingpay",
+              "route": "test.bindingpay"
+            }, {
+              "nameCN": "七牛 Ajax 上传文件",
+              "nameEN": "",
+              "icon": "cloud-upload",
+              "url": "#/test/qiniu",
+              "route": "test.qiniu"
+            }, {
+              "nameCN": "HTML5读取文件内容",
+              "nameEN": "",
+              "icon": "hardware:scanner",
+              "url": "#/test/filereader",
+              "route": "test.filereader"
+            }]
+          }];
+          this.genAdminMenus = [{
+            "nameCN": "系统管理",
+            "nameEN": "",
+            "icon": "settings",
+            "url": "",
+            "route": "/system",
+            "children": [{
+              "nameCN": "密码修改",
+              "nameEN": "",
+              "icon": "lock-outline",
+              "url": "#/system/password/editor",
+              'route': 'system.password.editor'
+            }]
+          }, {
+            "nameCN": "交易查询",
+            "nameEN": "",
+            "icon": "payment",
+            "url": "",
+            "route": "/trade",
+            "children": [{
+              "nameCN": "扫码支付",
+              "nameEN": "",
+              "icon": "image:crop-free",
+              "url": "#/trade/list",
+              "route": "trade.list"
+            }, {
+              "nameCN": "快捷支付",
+              "nameEN": "",
+              "icon": "hardware:phonelink",
+              "url": "#/trade/bindingpay/list",
+              "route": "trade.bindingpay.list"
+            }, {
+              "nameCN": "卡券核销",
+              "nameEN": "",
+              "icon": "card-giftcard",
+              "url": "#/trade/coupon/list",
+              "route": "trade.coupon.list"
+            }]
+          }, {
+            "nameCN": "统计报表",
+            "nameEN": "",
+            "icon": "receipt",
+            "url": "",
+            "route": "/stats",
+            "children": [{
+              "nameCN": "扫码支付交易统计",
+              "nameEN": "",
+              "icon": "print",
+              "url": "#/stats/reports",
+              "route": "stats.reports"
+            }, {
+              "nameCN": "扫码支付清算报表",
+              "nameEN": "",
+              "icon": "assignment-returned",
+              "url": "#/stats/settle/reports",
+              "route": "stats.settle.reports"
+            }]
           }];
 
 
-        this.agentMenus = [{
-          "nameCN": "密码修改",
-          "nameEN": "",
-          "icon": "lock-outline",
-          "url": "#/system/password/editor",
-          'route': 'system.password.editor'
-        }, {
-          "nameCN": "扫码交易",
-          "nameEN": "",
-          "icon": "image:crop-free",
-          "url": "#/trade/list",
-          "route": "trade.list"
-        }, {
-          "nameCN": "扫码支付交易统计",
-          "nameEN": "",
-          "icon": "print",
-          "url": "#/stats/reports",
-          "route": "stats.reports"
-        }];
-      },
-      paperHeaderTransform: function(e) {
-        var appName = this.$.appName;
-        var middleContainer = this.$.middleContainer;
-        var bottomContainer = this.$.bottomContainer;
-        var detail = e.detail;
-        var heightDiff = detail.height - detail.condensedHeight;
-        var yRatio = Math.min(1, detail.y / heightDiff);
-        var maxMiddleScale = 0.50; // appName max size when condensed. The smaller the number the smaller the condensed size.
-        var scaleMiddle = Math.max(maxMiddleScale, (heightDiff - detail.y) / (heightDiff / (1 - maxMiddleScale)) + maxMiddleScale);
-        var scaleBottom = 1 - yRatio;
-
-        // Move/translate middleContainer
-        Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
-
-        // Scale bottomContainer and bottom sub title to nothing and back
-        Polymer.Base.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
-
-        // Scale middleContainer appName
-        Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
-      },
-      startWith: function(path, prefix) {
-        if (!path || !prefix) {
-          return false;
+          this.agentMenus = [{
+            "nameCN": "PASSWORDMODIFICATION.TITLE",
+            "nameEN": "密码修改",
+            "icon": "lock-outline",
+            "url": "#/system/password/editor",
+            'route': 'system.password.editor'
+          }, {
+            "nameCN": "SCANPAY_TRADE_LIST.MENU_NAME",
+            "nameEN": "扫码交易",
+            "icon": "image:crop-free",
+            "url": "#/trade/list",
+            "route": "trade.list"
+          }, {
+            "nameCN": "SCANPAY_TRADE_STATS.MENU_NAME",
+            "nameEN": "扫码支付交易统计",
+            "icon": "print",
+            "url": "#/stats/reports",
+            "route": "stats.reports"
+          }];
+        },
+        startWith: function(path, prefix) {
+          if (!path || !prefix) {
+            return false;
+          }
+          return path.substr(0, prefix.length) === prefix;
+        },
+        // 退出
+        handleLogoutTapped: function() {
+          this.$.logoutBtn.hidden = true;
+          // 事件冒泡到顶层处理
+          this.fire('logout');
+        },
+        // 进入全屏模式
+        enterFullscreenMode: function() {
+          this.isFullscreen = true;
+        },
+        // 退出全屏模式
+        exitFullscreenMode: function() {
+          this.isFullscreen = false;
+        },
+        paperResponsiveChange: function(e, detail) {
+          if (!this.isFullscreen) {
+            this.isNarrow = detail.narrow;
+          }
+        },
+        // 监听菜单渲染的事件
+        handleMenuRenderEvent: function(e, detail) {
+          if (detail === 'admin') {
+            this.set('isAdmin', true);
+            this.menus = this.adminMenus;
+            return;
+          } else if (detail === 'genAdmin') {
+            this.set('isAdmin', true);
+            this.menus = this.genAdminMenus;
+            return;
+          }
+          this.set('isAdmin', false);
+          this.menus = this.agentMenus;
+        },
+        handleReloadNickNameEvent: function(e) {
+          this.set('nickName', e.detail);
         }
-        return path.substr(0, prefix.length) === prefix;
-      },
-      // 退出
-      handleLogoutTapped: function() {
-        this.$.logoutBtn.hidden = true;
-        // 事件冒泡到顶层处理
-        this.fire('logout');
-      },
-      // 进入全屏模式
-      enterFullscreenMode: function() {
-        this.isFullscreen = true;
-      },
-      // 退出全屏模式
-      exitFullscreenMode: function() {
-        this.isFullscreen = false;
-      },
-      paperResponsiveChange: function(e, detail) {
-        if (!this.isFullscreen) {
-          this.isNarrow = detail.narrow;
-        }
-      },
-      // 监听菜单渲染的事件
-      handleMenuRenderEvent: function(e, detail) {
-        if (detail === 'admin') {
-          this.set('isAdmin', true);
-          this.menus = this.adminMenus;
-          return;
-        } else if (detail === 'genAdmin') {
-          this.set('isAdmin', true);
-          this.menus = this.genAdminMenus;
-          return;
-        }
-        this.set('isAdmin', false);
-        this.menus = this.agentMenus;
-      },
-      handleReloadNickNameEvent: function(e) {
-        this.set('nickName', e.detail);
-      },
-      testHandler: function() {
-        this.$.cilUserLocalStorageInScaffoldLayout.reload();
-      }
-    });
+      });
     })();
   </script>
 </dom-module>

@@ -68,6 +68,7 @@ gulp.task('minifyJS', ['minifyHTML'], function() {
       '!v0.0.1/**/platinum-push-messaging/service-worker.js',
       '!v0.0.1/bower_components/async/support/sync-package-managers.js',
       '!v0.0.1/bower_components/sw-toolbox/demo/service-worker.js',
+      '!v0.0.1/bower_components/moment/**/*.js',
       '!v0.0.1/**/sw-toolbox/sw-toolbox.js',
       '!v0.0.1/**/demo/**',
       '!v0.0.1/**/test/**',

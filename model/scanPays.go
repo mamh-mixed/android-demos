@@ -59,6 +59,9 @@ type QueryCondition struct {
 	ReqIds             []string
 	TimeType           string
 	SettRole           string `json:"settRole,omitempty"`
+	Locale             string
+	Currency           string
+	UtcOffset          int
 	IsAggregateByGroup bool   `json:"isAggregateByGroup,omitempty"`                             // 是否按照商户号汇总
 	CouponsNo          string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
@@ -78,22 +81,22 @@ type QueryResult struct {
 
 // Summary 商户交易汇总
 type Summary struct {
-	MerId         string  `json:"merId,omitempty"`
-	MerName       string  `json:"merName,omitempty"`
-	AgentName     string  `json:"agentName,omitempty"`
-	GroupName     string  `json:"groupName,omitempty"`
-	TotalTransAmt float32 `json:"totalTransAmt"`
-	TotalTransNum int     `json:"totalTransNum"`
-	TotalFee      float32 `json:"-"`
+	MerId         string `json:"merId,omitempty"`
+	MerName       string `json:"merName,omitempty"`
+	AgentName     string `json:"agentName,omitempty"`
+	GroupName     string `json:"groupName,omitempty"`
+	TotalTransAmt int64  `json:"totalTransAmt"`
+	TotalTransNum int    `json:"totalTransNum"`
+	TotalFee      int64  `json:"-"`
 	Wxp           struct {
-		TransAmt float32 `json:"transAmt"`
-		TransNum int     `json:"transNum"`
-		Fee      float32 `json:"-"`
+		TransAmt int64 `json:"transAmt"`
+		TransNum int   `json:"transNum"`
+		Fee      int64 `json:"-"`
 	} `json:"wxp"`
 	Alp struct {
-		TransAmt float32 `json:"transAmt"`
-		TransNum int     `json:"transNum"`
-		Fee      float32 `json:"-"`
+		TransAmt int64 `json:"transAmt"`
+		TransNum int   `json:"transNum"`
+		Fee      int64 `json:"-"`
 	} `json:"alp"`
 	Data []Summary `json:"data"` // 包含每个商户单独数据
 }
@@ -511,4 +514,18 @@ type RoleSett struct {
 	CreateTime string `json:"createTime" bson:"createTime"`
 	UpdateTime string `json:"updateTime" bson:"updateTime"`
 	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
+}
+
+// 勾兑结构体
+type BlendElement struct {
+	Chcd      string //渠道编号
+	ChcdName  string //渠道名称
+	MerID     string //商户号
+	ChanMerID string //渠道商户号
+	MerName   string //商户名称
+	OrderID   string //渠道订单号
+	OrderTime string //交易时间
+	OrderType string //交易类型
+	OrderAct  string //交易金额
+	IsBlend   bool   //对账标识
 }

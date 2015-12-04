@@ -100,3 +100,24 @@ func (alp *alpDetail) DisCount() (string, string) {
 	}
 	return fmt.Sprintf("%0.2f", merf), fmt.Sprintf("%0.2f", chcdf)
 }
+
+//查询账单接口
+type alpSettleResponse struct {
+	XMLName   xml.Name `xml:"alipay" bson:"-"`
+	IsSuccess string   `xml:"is_success,omitempty"`
+	Sign      string   `xml:"sign,omitempty"`
+	SignType  string   `xml:"sign_type,omitempty"`
+	Error     string   `xml:"error,omitempty"`
+	Request   []Param  `xml:"request>param"`
+	// Alipay
+	Response csv_result `xml:"response,omitempty" bson:"response,omitempty"`
+}
+
+type csv_result struct {
+	Csv_result csv_detail `xml:"csv_result,omitempty"`
+}
+
+type csv_detail struct {
+	Count    string `xml:"count,omitempty" bson:"count,omitempty"`
+	Csv_data string `xml:"csv_data,omitempty" bson:"csv_data,omitempty"`
+}

@@ -79,7 +79,11 @@ func TestProcessQrCodeOfflinePay(t *testing.T) {
 	log.SetOutputLevel(log.Ldebug)
 	log.Infof("%+v", prePay)
 	Convey("支付宝预下单", t, func() {
-		resp, _ := DefaultClient.ProcessQrCodeOfflinePay(prePay)
+		resp, err := DefaultClient.ProcessQrCodeOfflinePay(prePay)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
 		log.Infof("%+v", resp)
 		Convey("期望", func() {
 			So(resp.Respcd, ShouldEqual, "09")
@@ -127,11 +131,12 @@ func TestProcessCancel(t *testing.T) {
 
 func TestProcessSettleEnquiry(t *testing.T) {
 
-	rsp, err := DefaultClient.ProcessSettleEnquiry(settle)
+	modelMMap := make(modelMMap map[string]map[string][]model.BlendElement)
+	_, err := DefaultClient.ProcessSettleEnquiry(settle, modelMMap)
 
 	if err != nil {
 		fmt.Printf("error:, %s", err)
 	}
 
-	fmt.Printf("rsp:%s\n", rsp)
+	//fmt.Printf("rsp:%s\n", rsp)
 }

@@ -22,6 +22,7 @@ var agentURLArr = []string{
 	"/master/trade/stat/report",
 	"/master/trade/findOne",
 	"/master/user/updatePwd",
+	"/master/app/locale",
 }
 
 var genAdminURLArr = []string{
@@ -35,6 +36,7 @@ var genAdminURLArr = []string{
 	"/master/trade/message",
 	"/master/agent/find",
 	"/master/qiniu/download",
+	"/master/app/locale",
 }
 
 // 路径中包含以下关键字，则记录到数据库
@@ -100,6 +102,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/updatePwd", userUpdatePwdHandle)
 	mux.HandleFunc("/master/user/delete", userDeleteHandle)
 	mux.HandleFunc("/master/user/resetPwd", userResetPwdHandle)
+	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	return mux
 }
 
@@ -140,10 +143,11 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		// 将QUICKMASTERID设成失效
 		http.SetCookie(w, &http.Cookie{
-			Name:   "QUICKMASTERID",
-			Value:  "",
-			Path:   "/master",
-			MaxAge: -1,
+			Name:     "QUICKMASTERID",
+			Value:    "",
+			HttpOnly: true,
+			Path:     "/master",
+			MaxAge:   -1,
 		})
 
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
@@ -216,7 +220,7 @@ func authProcess(user *model.User, url string) (err error) {
 
 	if !has {
 		log.Errorf("permission deney: username=%s, url=%s", user.UserName, url)
-		return fmt.Errorf("用户没有权限访问 `%s`", url)
+		return errors.New("Unauthorized")
 	}
 
 	return nil

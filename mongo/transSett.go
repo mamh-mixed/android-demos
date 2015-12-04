@@ -129,6 +129,19 @@ func (col *transSettCollection) FindByOrderNum(sysOrderNum string) (t *model.Tra
 	return
 }
 
+// FindOne 根据交易订单号、渠道订单号查找唯一记录
+func (col *transSettCollection) FindOne(orderNum, chanOrderNum string) (t *model.TransSett, err error) {
+	// 订单是uuid 全局唯一
+	t = new(model.TransSett)
+	q := bson.M{
+		"trans.orderNum":     orderNum,
+		"trans.chanOrderNum": chanOrderNum,
+	}
+	err = database.C(col.name).Find(q).One(t)
+
+	return
+}
+
 // Update 更新
 func (col *transSettCollection) Update(t *model.TransSett) error {
 	if t == nil {

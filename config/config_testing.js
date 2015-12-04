@@ -30,6 +30,11 @@
         "URL": "mongodb://quickpay:******@test.ipay.so:27017,test.ipay.so:27018,test.ipay.so:27019/quickpay",
         "EncryptURL": "GYeB1+/dUEg41y5AOjDWSCjJM7WyxQOazhHTikDZzQ61SzASrOZYyZ1FDLqc6rD4ByM1uY4bAFJGJglJqiGSPDEl73iBH3v9NbEHMDm61DBE+qp5AzD6tqIPDtCbMdjtGuEzMp5TUis1XHWKDuzhfrHGSKYWKBu13XftXFg7tutqTmdHLGbO1iM8C9Dk1b8zGnZCHLqBTJe9U/hoSQslCf8GZjUC5wJoTfD31KP0gL0kJQ8iLLzM4rLtonnDUwSIilHeHrh6Mx9q6Ia7IJveOIHYfQWu668vJyUNVvMoN9XOEVe3u0WUlxs/NvkkhLgNMKkuK00kZvyIkgoXsNbPZw==",
         "DB": "quickpay"
+        // "Encrypt": false, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
+        // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
+        // "URL": "mongodb://quickpay:quickpay@test.overseas.ipay.so:27017,test.overseas.ipay.so:27018,test.overseas.ipay.so:27019/quickpay",
+        // "EncryptURL": "GYeB1+/dUEg41y5AOjDWSCjJM7WyxQOazhHTikDZzQ61SzASrOZYyZ1FDLqc6rD4ByM1uY4bAFJGJglJqiGSPDEl73iBH3v9NbEHMDm61DBE+qp5AzD6tqIPDtCbMdjtGuEzMp5TUis1XHWKDuzhfrHGSKYWKBu13XftXFg7tutqTmdHLGbO1iM8C9Dk1b8zGnZCHLqBTJe9U/hoSQslCf8GZjUC5wJoTfD31KP0gL0kJQ8iLLzM4rLtonnDUwSIilHeHrh6Mx9q6Ia7IJveOIHYfQWu668vJyUNVvMoN9XOEVe3u0WUlxs/NvkkhLgNMKkuK00kZvyIkgoXsNbPZw==",
+        // "DB": "quickpay"
     },
     "CILOnline": {
         "Host": "140.207.50.238",
@@ -48,7 +53,7 @@
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
-        "URL": "https://mapi.alipay.com/gateway.do", // 支付宝扫码支付接口地址
+        "URL": "https://mapi.alipay.com/gateway.do?_input_charset=utf-8", // 支付宝扫码支付接口地址
         "NotifyUrl": "http://test.quick.ipay.so", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
         "AgentId": "12010128a1" // 标识讯联交易
     },
