@@ -217,13 +217,7 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void updatePasswordAsync(final String oldPassword, final String newPassword, String newPassword_repeat, final QuickPayCallbackListener<Void> listener) {
-        //TODO: move validation here
-        //TODO: get username, password from login user
-        final String username = "";
-        final String password = "";
-        // TODO: compare with oldPassword
-
+    public void updatePasswordAsync(final String username, final String oldPassword, final String newPassword, final QuickPayCallbackListener<Void> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
             @Override
             protected AsyncTaskResult<Void> doInBackground(Void... params) {
@@ -231,17 +225,16 @@ public class QuickPayServiceImpl implements QuickPayService {
                     quickPayApi.updatePassword(username, oldPassword, newPassword);
                     return null;
                 } catch (QuickPayException ex) {
-
                     return new AsyncTaskResult<Void>(null, ex);
                 }
             }
 
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> result) {
-                if (result.getException() != null) {
-                    listener.onFailure(result.getException());
-                } else {
+                if (result == null) {//等于null表示成功
                     listener.onSuccess(null);
+                } else if (result.getException() != null) {
+                    listener.onFailure(result.getException());
                 }
             }
         }.execute();
