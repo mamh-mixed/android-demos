@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -15,11 +14,6 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ErrorUtil;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
