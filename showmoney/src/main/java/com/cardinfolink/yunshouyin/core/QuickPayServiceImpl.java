@@ -103,10 +103,10 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> result) {
-                if (result.getException() != null) {
-                    listener.onFailure(result.getException());
-                } else {
+                if (result == null) {
                     listener.onSuccess(null);
+                } else if (result.getException() != null) {
+                    listener.onFailure(result.getException());
                 }
             }
         }.execute();
