@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,12 +23,8 @@ import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ErrorUtil;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.view.RefdDialog;
 
 import java.text.ParseException;
@@ -190,70 +187,32 @@ public class DetailActivity extends BaseActivity {
     //退款按钮的响应事件处理方法
     public void btnRefdOnClick(View view) {
         startLoading();
-        HttpCommunicationUtil.sendDataToServer(
-                ParamsUtil.getRefd(SessonData.loginUser, mTradeBill.orderNum),
-                new CommunicationListener() {
+        final String orderNum = mTradeBill.orderNum;
+        final String amount = mTradeBill.amount;
 
-                    @Override
-                    public void onResult(final String result) {
-                        String state = JsonUtil.getParam(result, "state");
-                        if (state.equals("success")) {
-                            final String refdtotal = JsonUtil.getParam(result, "refdtotal");
-                            runOnUiThread(new Runnable() {
+        quickPayService.getRefdAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
+            @Override
+            public void onSuccess(ServerPacket data) {
+                String refdtotal = data.getRefdtotal();
+                // 更新UI
+                endLoading();
 
-                                @Override
-                                public void run() {
-                                    // 更新UI
-                                    endLoading();
-                                    RefdDialog refd_Dialog = new RefdDialog(
-                                            DetailActivity.this, mHandler,
-                                            findViewById(R.id.refd_dialog),
-                                            mTradeBill.orderNum, refdtotal,
-                                            mTradeBill.amount);
-                                    refd_Dialog.show();
-                                }
+                //退款对话框
+                View refdView = findViewById(R.id.refd_dialog);
 
-                            });
+                RefdDialog refdDialog = new RefdDialog(mContext, mHandler, refdView, orderNum, refdtotal, amount);
+                refdDialog.show();
+            }
 
-                        } else {
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    // 更新UI
-                                    endLoading();
-                                    mAlertDialog.show(ErrorUtil
-                                                    .getErrorString(JsonUtil.getParam(
-                                                            result, "error")),
-                                            BitmapFactory.decodeResource(
-                                                    mContext.getResources(),
-                                                    R.drawable.wrong));
-                                }
-
-                            });
-                        }
-
-                    }
-
-                    @Override
-                    public void onError(final String error) {
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                endLoading();
-                                mAlertDialog.show(error, BitmapFactory
-                                        .decodeResource(
-                                                mContext.getResources(),
-                                                R.drawable.wrong));
-                            }
-
-                        });
-
-                    }
-                });
-
+            @Override
+            public void onFailure(QuickPayException ex) {
+                // 更新UI,显示提示对话框
+                endLoading();
+                String error = ex.getErrorMsg();
+                Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                mAlertDialog.show(error, bitmap);
+            }
+        });
     }
 
     private void initHandler() {
