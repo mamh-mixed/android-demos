@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,12 +12,11 @@ import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
 
 public class ActivateDialog {
     private Context mContext;
@@ -27,7 +27,6 @@ public class ActivateDialog {
         mContext = context;
         dialogView = view;
         mEmali = email;
-
     }
 
     public void show() {
@@ -45,13 +44,7 @@ public class ActivateDialog {
 
             @Override
             public void onClick(View v) {
-                dialogView.setVisibility(View.GONE);
-                Intent intent = new Intent(mContext, LoginActivity.class);
-                mContext.startActivity(intent);
-                if (!(mContext instanceof LoginActivity)) {
-                    ((Activity) mContext).finish();
-                }
-
+                enterLoginActivity();
             }
         });
 
@@ -59,40 +52,38 @@ public class ActivateDialog {
 
             @Override
             public void onClick(View v) {
-
-                HttpCommunicationUtil.sendDataToServer(ParamsUtil.getRequestActivate(SessonData.loginUser.getUsername(), SessonData.loginUser.getPassword()), new CommunicationListener() {
-
+                String username = SessonData.loginUser.getUsername();
+                String password = SessonData.loginUser.getPassword();
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+                    //sessondata如果没有保存的情况下会出现。在loginActivity里没设置的话会出现此问题。
+                    //强制停止应用，再次登录会出现此问题。因为此时
+                    //sessondata是空的没有设置username和password。
+                    enterLoginActivity();
+                    return;
+                }
+                QuickPayService quick = ShowMoneyApp.getInstance().getQuickPayService();
+                quick.activateAsync(username, password, new QuickPayCallbackListener<Void>() {
                     @Override
-                    public void onResult(String result) {
-                        String state = JsonUtil.getParam(result, "state");
-                        if (state.equals("success")) {
-
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    //更新UI
-                                    dialogView.setVisibility(View.GONE);
-                                    Intent intent = new Intent(mContext, LoginActivity.class);
-                                    mContext.startActivity(intent);
-                                    if (!(mContext instanceof LoginActivity)) {
-                                        ((Activity) mContext).finish();
-                                    }
-                                }
-
-                            });
-
-                        }
+                    public void onSuccess(Void data) {
+                        enterLoginActivity();
                     }
 
                     @Override
-                    public void onError(String error) {
+                    public void onFailure(QuickPayException ex) {
 
                     }
                 });
 
-
             }
         });
+    }
+
+    private void enterLoginActivity() {
+        dialogView.setVisibility(View.GONE);
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        mContext.startActivity(intent);
+        if (!(mContext instanceof LoginActivity)) {
+            ((Activity) mContext).finish();
+        }
     }
 }
