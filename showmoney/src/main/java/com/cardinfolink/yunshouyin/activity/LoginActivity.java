@@ -155,6 +155,8 @@ public class LoginActivity extends BaseActivity {
                 user.setUsername(username);
                 user.setPassword(password);
                 SaveData.setUser(mContext, user);
+                SessonData.loginUser.setUsername(username);
+                SessonData.loginUser.setPassword(password);
                 if (errorCode.equals("user_no_activate")) {
                     //更新UI
                     mLoadingDialog.endLoading();
