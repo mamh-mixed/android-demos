@@ -11,10 +11,10 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:onClick="BtnBackOnClick"
             android:padding="20dp"
             android:src="@drawable/back" />
 
@@ -72,7 +72,6 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/white_selector"
-                    android:onClick="BtnRefreshOnClick"
                     android:padding="5dp"
                     android:text="@string/txn_status_refresh"
                     android:textColor="#FFFFFF"
@@ -254,11 +253,10 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/detail_btn_refd"
+                    android:id="@+id/btn_refd"
                     android:layout_width="300dp"
                     android:layout_height="50dp"
                     android:background="@drawable/white_selector"
-                    android:onClick="BtnRefdOnClick"
                     android:text="@string/detail_refd"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp" />
