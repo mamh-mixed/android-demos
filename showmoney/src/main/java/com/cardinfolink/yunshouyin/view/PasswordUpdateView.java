@@ -1,9 +1,10 @@
 package com.cardinfolink.yunshouyin.view;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -15,11 +16,11 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
 import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 
 public class PasswordUpdateView extends LinearLayout {
@@ -128,38 +129,41 @@ public class PasswordUpdateView extends LinearLayout {
     }
 
 
-    @SuppressLint("NewApi")
     private boolean validate() {
-        String oldpwd = mOldPwdEdit.getText().toString().replace(" ", "");
+        String oldpwd = mOldPwdEdit.getText().toString().replace(" ", "");//注意这里把所有的空格都删除了
         String newpwd = mNewPwdEdit.getText().toString().replace(" ", "");
-        ;
         String qrpwd = mQrPwdEdit.getText().toString().replace(" ", "");
-        ;
 
-
-        if (oldpwd.isEmpty()) {
-            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_old_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+        String alertMsg = "";
+        if (TextUtils.isEmpty(oldpwd)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_old_password_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, bitmap);
             return false;
         }
 
         if (oldpwd.length() < 6) {
-            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_old_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_old_password_short_six);
+            mBaseActivity.alertShow(alertMsg, bitmap);
             return false;
         }
 
 
-        if (newpwd.isEmpty()) {
-            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_new_password_cannot_empty), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(newpwd)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, bitmap);
             return false;
         }
 
         if (newpwd.length() < 6) {
-            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_new_password_short_six), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_short_six);
+            mBaseActivity.alertShow(alertMsg, bitmap);
             return false;
         }
 
         if (!qrpwd.equals(newpwd)) {
-            mBaseActivity.alertShow(ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error), BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error);
+            mBaseActivity.alertShow(alertMsg, bitmap);
             return false;
         }
 
