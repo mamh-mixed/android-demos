@@ -23,16 +23,6 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:adjustViewBounds="true"
-            android:text="@string/register_next_directions"
-            android:textColor="#ffffff"
-            android:textSize="15sp" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -53,6 +43,16 @@
                     <requestFocus />
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp"
+                    android:adjustViewBounds="true"
+                    android:text="@string/register_next_directions"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
