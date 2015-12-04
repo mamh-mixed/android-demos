@@ -279,7 +279,9 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             case R.id.btnsm:
                 final double sum = Double.parseDouble(edt_input.getText().toString().substring(1));
                 if (sum <= 0) {
-                    Toast.makeText(mContext, "金额不能为零!", Toast.LENGTH_SHORT).show();
+                    //"金额不能为零!"
+                    String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
+                    Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -292,7 +294,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                         public void onSuccess(String data) {
                             double limitValue = Double.parseDouble(data);
                             if (limitValue >= 500) {
-                                String alertMsg = "当日交易已超过限额,请申请提升限额!";
+                                //"当日交易已超过限额,请申请提升限额!";
+                                String alertMsg = ShowMoneyApp.getResString(R.string.alert_error_limit_error);
                                 View alertView = ((Activity) mContext).findViewById(R.id.alert_dialog);
                                 Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
                                 AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, alertBitmap);
@@ -380,9 +383,10 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
 
         if (result > 99999999) {
-            Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
+            // "金额过大!"
+            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
             num_flag = false;
-
         } else {
             num_flag = true;
         }
