@@ -13,7 +13,7 @@ public interface QuickPayService {
     void activateAsync(String username, String password, QuickPayCallbackListener<Void> listener);
 
     //user logged in
-    void updateInfoAsync(User user, QuickPayCallbackListener<User> listener);
+    void improveInfoAsync(User user, QuickPayCallbackListener<User> listener);
 
     void increaseLimitAsync(String payee, String phone_num, String email, QuickPayCallbackListener<Void> listener);
 

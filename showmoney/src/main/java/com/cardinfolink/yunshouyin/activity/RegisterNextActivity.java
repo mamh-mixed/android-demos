@@ -218,7 +218,7 @@ public class RegisterNextActivity extends BaseActivity {
         user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
         user.setPhoneNum(mPhonenumEdit.getText().toString());
 
-        quickPayService.updateInfoAsync(user, new QuickPayCallbackListener<User>() {
+        quickPayService.improveInfoAsync(user, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
                 SessonData.loginUser.setClientid(data.getClientid());
