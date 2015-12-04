@@ -245,6 +245,43 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+
+    @Override
+    public User updateInfo(User user) {
+        //{"state":"fail","error":"请联系您的服务商为您修改清算信息。","count":0,"size":0,"refdcount":0}
+
+        String url = quickPayConfigStorage.getUrl() + "/updateinfo";
+
+        Map<String, String> params = new LinkedHashMap<>();
+
+        params.put("username", user.getUsername());
+
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        params.put("password", password);
+
+        params.put("province", user.getProvince());
+        params.put("city", user.getCity());
+        params.put("bank_open", user.getBankOpen());
+        params.put("branch_bank", user.getBranchBank());
+        params.put("bankNo", user.getBankNo());
+        params.put("payee", user.getPayee());
+        params.put("payee_card", user.getPayeeCard());
+        params.put("phone_num", user.getPhoneNum());
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params, "SHA-1"));
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket.getUser();
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
     @Override
     public void increaseLimit(String username, String password, String payee, String phone_num, String email) {
         String url = quickPayConfigStorage.getUrl() + "/limitincrease";
