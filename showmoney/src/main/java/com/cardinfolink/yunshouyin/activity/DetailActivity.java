@@ -17,9 +17,12 @@ import com.cardinfolink.cashiersdk.model.OrderData;
 import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
@@ -150,7 +153,6 @@ public class DetailActivity extends BaseActivity {
 
     //刷新按钮点击事件处理方法
     public void btnRefreshOnClick(View view) {
-
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mTradeBill.orderNum;
         startLoading();
@@ -158,46 +160,20 @@ public class DetailActivity extends BaseActivity {
 
             @Override
             public void onResult(ResultData resultData) {
-
-                HttpCommunicationUtil.sendDataToServer(ParamsUtil.getOrder(SessonData.loginUser, mTradeBill.orderNum), new CommunicationListener() {
-
+                quickPayService.getOrderAsync(SessonData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacketOrder>() {
                     @Override
-                    public void onResult(String result) {
-                        String state = JsonUtil.getParam(result, "state");
-                        if (state.equals("success")) {
-                            mTradeBill.response = JsonUtil.getParam(JsonUtil.getParam(result, "txn"), "response");
-
-                        }
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                endLoading();
-                                initData();
-                            }
-
-                        });
-
+                    public void onSuccess(ServerPacketOrder data) {
+                        mTradeBill.response = data.getTxn().getResponse();
+                        endLoading();
+                        initData();
                     }
 
                     @Override
-                    public void onError(String error) {
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                endLoading();
-                                initData();
-                            }
-
-                        });
-
+                    public void onFailure(QuickPayException ex) {
+                        endLoading();
+                        initData();
                     }
                 });
-
-
             }
 
             @Override
