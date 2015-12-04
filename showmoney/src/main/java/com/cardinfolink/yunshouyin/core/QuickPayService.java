@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.core;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
 public interface QuickPayService {
     void registerAsync(String username, String password, String password_repeat, QuickPayCallbackListener<Void> quickPayCallbackListener);
@@ -23,4 +24,6 @@ public interface QuickPayService {
     void getHistoryBillsAsync(String month, long index, String status, QuickPayCallbackListener<ServerPacket> quickPayCallbackListener);
 
     void getTotalAsync(User user, String date, QuickPayCallbackListener<String> listener);
+
+    void getOrderAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacketOrder> listener);
 }

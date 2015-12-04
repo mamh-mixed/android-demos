@@ -10,6 +10,7 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -252,20 +253,41 @@ public class QuickPayServiceImpl implements QuickPayService {
 
 
     @Override
-    public void getTotalAsync(final User user, final String date, final QuickPayCallbackListener<String> listener){
+    public void getTotalAsync(final User user, final String date, final QuickPayCallbackListener<String> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<String>>() {
             @Override
             protected AsyncTaskResult<String> doInBackground(Void... params) {
                 try {
                     String total = quickPayApi.getTotal(user, date);
                     return new AsyncTaskResult<String>(total);
-                }catch (QuickPayException ex){
+                } catch (QuickPayException ex) {
                     return new AsyncTaskResult<String>(ex);
                 }
             }
 
             @Override
             protected void onPostExecute(AsyncTaskResult<String> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void getOrderAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacketOrder> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacketOrder>>() {
+
+            @Override
+            protected AsyncTaskResult<ServerPacketOrder> doInBackground(Void... params) {
+                ServerPacketOrder serverPacket = quickPayApi.getOrder(user, orderNum);
+                return new AsyncTaskResult<ServerPacketOrder>(serverPacket, null);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacketOrder> result) {
                 if (result.getException() != null) {
                     listener.onFailure(result.getException());
                 } else {

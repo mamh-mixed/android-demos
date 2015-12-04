@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.api;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import com.cardinfolink.yunshouyin.model.Txn;
 
 public interface QuickPayApi {
@@ -32,4 +33,6 @@ public interface QuickPayApi {
     ServerPacket getHistoryBills(String username, String password, String clientid, String month, long index, String status);
 
     String getTotal(User user, String date);
+
+    ServerPacketOrder getOrder(User user, String orderNum);
 }
