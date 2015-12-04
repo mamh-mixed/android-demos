@@ -2,7 +2,6 @@
 
 require('../css/trade.css');
 require('./vendor/util');
-var Handlebars = require('./lib/handlebars');
 var orderTemplate = require('../template/order.handlebars');
 
 var $ = require('webpack-zepto');
@@ -31,9 +30,11 @@ let init = function() {
 
 			let orderList = [],
 				htmls = [],
-				txn = data.data;
-			for (var tx of txn) {
-				let order = {};
+				txn = data.data || [];
+
+			for (var i = 0, l = txn.length; i < l; i++) {
+				var tx = txn[i],
+					order = {};
 				order.headimgurl = tx.headimgurl;
 				order.nickname = tx.nickname;
 				order.code = tx.veriCode;
@@ -45,6 +46,10 @@ let init = function() {
 				htmls.push(orderTemplate(order));
 			}
 
+			if (txn.length === 0) {
+				$('#thelist').html('<div style="text-align:center;padding-top:15px;">没有账单信息</div>');
+				return;
+			}
 			$('#thelist').html(htmls.join(''));
 		},
 		error: (message) => {

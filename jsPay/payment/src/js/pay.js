@@ -109,10 +109,10 @@ function init() {
 				document.title = titleOne;
 				window.localStorage.setItem('title_one', titleOne);
 				if (data.succBtnTxt && data.succBtnTxt !== '') {
-					window.sessionStorage.setItem('successButtonText', data.succBtnTxt);
+					window.sessionStorage.setItem('successButtonText', data.succBtnTxt.trim());
 				}
 				if (data.succBtnLink && data.succBtnLink !== '') {
-					window.sessionStorage.setItem('successButtonLink', data.succBtnLink);
+					window.sessionStorage.setItem('successButtonLink', data.succBtnLink.trim());
 				}
 				if (data.isPostAmount) {
 					window.sessionStorage.setItem('isPostAmount', data.isPostAmount);
