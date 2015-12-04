@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,11 @@ import android.widget.Toast;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ErrorUtil;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
+import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 import java.text.SimpleDateFormat;
@@ -283,90 +283,51 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     return;
                 }
 
-                if (SessonData.loginUser.getLimit().equals("true")) {
-                    HttpCommunicationUtil.sendDataToServer(ParamsUtil.getTotal(SessonData.loginUser, (new SimpleDateFormat("yyyyMMdd")).format(new Date())), new CommunicationListener() {
-
+                QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
+                String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
+                User user = SessonData.loginUser;
+                if (user.getLimit().equals("true")) {
+                    quickPayService.getTotalAsync(user, date, new QuickPayCallbackListener<String>() {
                         @Override
-                        public void onResult(String result) {
-                            String state = JsonUtil.getParam(result,
-                                    "state");
-
-                            if (state.equals("success")) {
-
-                                double limitValue = Double
-                                        .parseDouble(JsonUtil.getParam(
-                                                result, "total"));
-                                if (limitValue >= 500) {
-                                    ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-
-                                            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), "当日交易已超过限额,请申请提升限额!", BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                                            alert_Dialog.show();
-
-                                        }
-
-                                    });
-                                } else {
-                                    String chcd = "ALP";
-                                    if (btnweixin.isChecked()) {
-                                        chcd = "WXP";
-                                    } else {
-                                        chcd = "ALP";
-                                    }
-
-                                    if (switch_flag) {
-                                        Intent intent = new Intent(mContext, CaptureActivity.class);
-                                        intent.putExtra("chcd", chcd);
-                                        intent.putExtra("total", "" + sum);
-                                        mContext.startActivity(intent);
-
-                                    } else {
-                                        Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
-                                        intent.putExtra("chcd", chcd);
-                                        intent.putExtra("total", "" + sum);
-                                        mContext.startActivity(intent);
-
-                                    }
-
-                                }
-
+                        public void onSuccess(String data) {
+                            double limitValue = Double.parseDouble(data);
+                            if (limitValue >= 500) {
+                                String alertMsg = "当日交易已超过限额,请申请提升限额!";
+                                View alertView = ((Activity) mContext).findViewById(R.id.alert_dialog);
+                                Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                                AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, alertBitmap);
+                                alertDialog.show();
                             } else {
-                                final String error = JsonUtil.getParam(result, "error");
-                                ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-
-                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                                        alert_Dialog.show();
-
-                                    }
-
-                                });
+                                String chcd = "ALP";
+                                if (btnweixin.isChecked()) {
+                                    chcd = "WXP";
+                                } else {
+                                    chcd = "ALP";
+                                }
+                                if (switch_flag) {
+                                    Intent intent = new Intent(mContext, CaptureActivity.class);
+                                    intent.putExtra("chcd", chcd);
+                                    intent.putExtra("total", "" + sum);
+                                    mContext.startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
+                                    intent.putExtra("chcd", chcd);
+                                    intent.putExtra("total", "" + sum);
+                                    mContext.startActivity(intent);
+                                }
                             }
-
                         }
 
                         @Override
-                        public void onError(final String error) {
-
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-
-                                    AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ErrorUtil.getErrorString(error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                                    alert_Dialog.show();
-
-                                }
-
-                            });
+                        public void onFailure(QuickPayException ex) {
+                            String errorMsg = ex.getErrorMsg();
+                            View alertView = ((Activity) mContext).findViewById(R.id.alert_dialog);
+                            Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, errorMsg, alertBitmap);
+                            alertDialog.show();
                         }
                     });
                 } else {
-
                     String chcd = "ALP";
                     if (btnweixin.isChecked()) {
                         chcd = "WXP";
@@ -385,13 +346,13 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                         intent.putExtra("total", "" + sum);
                         mContext.startActivity(intent);
                     }
-
                 }
 
                 break;
         }
 
     }
+
 
     public void getResult() {
         double result = 0;
