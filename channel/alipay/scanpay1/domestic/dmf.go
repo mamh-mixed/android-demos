@@ -7,6 +7,8 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	// "github.com/omigo/mahonia"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -19,11 +21,12 @@ type alp struct{}
 
 // service
 const (
-	createAndPay = "alipay.acquire.createandpay"
-	preCreate    = "alipay.acquire.precreate"
-	refund       = "alipay.acquire.refund"
-	query        = "alipay.acquire.query"
-	cancel       = "alipay.acquire.cancel"
+	createAndPay  = "alipay.acquire.createandpay"
+	preCreate     = "alipay.acquire.precreate"
+	refund        = "alipay.acquire.refund"
+	query         = "alipay.acquire.query"
+	cancel        = "alipay.acquire.cancel"
+	settleService = "export_trade_account_report"
 )
 
 // params
@@ -223,4 +226,141 @@ func handleItBpay(timeExpired string) string {
 	}
 
 	return fmt.Sprintf("%0.fm", d.Minutes()+1)
+}
+
+func toSettleMap(req *alpRequest) map[string]string {
+	dict := make(map[string]string)
+
+	dict["service"] = req.Service
+	dict["partner"] = req.Partner
+	dict["_input_charset"] = charSet
+	dict["gmt_create_end"] = req.Gmt_create_end
+	dict["gmt_create_start"] = req.Gmt_create_start
+
+	return dict
+}
+
+//账单明细查询
+func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, modelMMap map[string]map[string][]model.BlendElement) error {
+
+	if modelMMap == nil {
+		return errors.New("the map is nil")
+	}
+
+	alpReq := &alpRequest{
+		Partner:          req.ChanMerId,
+		Service:          settleService,
+		Gmt_create_start: req.StartTime,
+		Gmt_create_end:   req.EndTime,
+	}
+
+	alpReq.SpReq = req
+
+	alpRsp, err := sendSettleRequest(alpReq)
+
+	if err != nil {
+		log.Errorf("sendRequest fail, func name is ProcessSettleEnquiry, the settle time start:%s, end:%s, error:%s", req.StartTime, req.EndTime, err)
+		return err
+	}
+
+	err1 := analysisSettleData(alpRsp.Response.Csv_result, alpReq.Partner, modelMMap)
+	/*
+		for _, array := range modelMap {
+			for _, element := range array {
+				fmt.Println("the value is:", element)
+			}
+		}
+	*/
+	if err1 != nil {
+		log.Errorf("settle data change to map error:%s", err)
+		return err1
+	}
+
+	return err
+}
+
+func analysisSettleData(csvData csv_detail, chanMer string, modelMMap map[string]map[string][]model.BlendElement) error { //key订单号
+	dataStr := csvData.Csv_data
+	count, err := strconv.Atoi(csvData.Count)
+	if err != nil {
+		log.Errorf("change data count errDetail:%s", err)
+		return err
+	}
+	istart := strings.LastIndex(dataStr, "[")
+	iend := strings.Index(dataStr, "]")
+	dataArray := []byte(dataStr)
+	stemp := string(dataArray[istart+1 : iend])
+	element := strings.Split(stemp, ",")
+	//检查要取关键位置是否变化 如：外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,
+	if element[0] != "外部订单号" {
+		log.Errorf("the first position is different")
+		err = errors.New("the first position is different")
+		return err
+	}
+	if element[2] != "时间" {
+		log.Errorf("the third position is different")
+		err = errors.New("the third position is different")
+		return err
+	}
+	if element[4] != "支付宝交易号" {
+		log.Errorf("the fifth position is different")
+		err = errors.New("the fifth position is different")
+		return err
+	}
+	if element[8] != "收入（元）" {
+		log.Errorf("the eighth position is different")
+		err = errors.New("the eighth position is different")
+		return err
+	}
+	if element[9] != "支出（元）" {
+		log.Errorf("the ninth position is different")
+		err = errors.New("the ninth position is different")
+		return err
+	}
+	if element[12] != "类型" {
+		log.Errorf("the twelve position is different")
+		err = errors.New("the twelve position is different")
+		return err
+	}
+
+	//elementArray := make([]model.BlendElement)
+	//mmap := make(map[string]map[string][]model.BlendElement)
+
+	modelMap, ret := modelMMap[chanMer]
+	if !ret {
+		modelMap = make(map[string][]model.BlendElement)
+	}
+
+	i := 0
+	for i < count {
+		var elementModel model.BlendElement
+		//element[14*(i+1)]  //订单号
+		elementModel.Chcd = "ALP"
+		elementModel.ChcdName = "支付宝"
+		elementModel.ChanMerID = chanMer
+		elementModel.OrderTime = element[14*(i+1)+2] //时间
+		elementModel.OrderID = element[14*(i+1)+4]   //支付宝交易号
+		elementModel.IsBlend = false
+		elementModel.OrderType = element[14*(i+1)+12]
+		if elementModel.OrderType == "在线支付" {
+			elementModel.OrderAct = element[14*(i+1)+8] //收入
+		} else if elementModel.OrderType == "交易退款" {
+			elementModel.OrderAct = element[14*(i+1)+9] //支出
+		}
+
+		//append(elementArray, elementModel)
+		elementArray, ret := modelMap[elementModel.OrderID]
+		if !ret {
+			elementArray = make([]model.BlendElement, 0)
+		}
+		elementArray = append(elementArray, elementModel)
+		modelMap[elementModel.OrderID] = elementArray
+
+		i += 1
+	}
+
+	//modelMMap := make(map[string]map[string][]model.BlendElement)
+	modelMMap[chanMer] = modelMap
+
+	return nil
 }
