@@ -3,8 +3,10 @@ package com.cardinfolink.yunshouyin.view;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +88,7 @@ public class AccountUpdateView extends LinearLayout {
     public AccountUpdateView(Context context) {
         super(context);
         mContext = context;
+        //此类不是个Activity的子类，所有弄个这个来调用activity里的一些个方法
         mBaseActivity = (BaseActivity) mContext;
 
         bankDataService = ShowMoneyApp.getInstance().getBankDataService();
@@ -354,58 +357,73 @@ public class AccountUpdateView extends LinearLayout {
 
     }
 
-    @SuppressLint("NewApi")
     private boolean validate() {
-        if (mBranchBankList.indexOf(mBranchBankEdit.getText().toString()) < 0) {
-            mBranchBankEdit.setText("");
-        }
-        String openbank = "";
-        String name = mNameEdit.getText().toString().replace(" ", "");
-        String banknum = mBanknumEdit.getText().toString().replace(" ", "");
+        String name = mNameEdit.getText().toString().replace(" ", ""); //姓名
+        String banknum = mBanknumEdit.getText().toString().replace(" ", ""); //银行卡号
         String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");
 
-        if (mProvinceEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户行所在省份不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        String province = mProvinceEdit.getText().toString();
+        String city = mCityEdit.getText().toString();
+        String openbank = mOpenBankEdit.getText().toString();
+        String branchbank = mBranchBankEdit.getText().toString();
+
+        if (mBranchBankList.indexOf(branchbank) < 0) {
+            mBranchBankEdit.setText("");
+        }
+
+        String alertMsg = "";
+        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+        if (TextUtils.isEmpty(province)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_province_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
-        if (mCityEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户行所在城市不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(city)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_city_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
-        if (mOpenBankEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户行不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(openbank)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_bank_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
-        if (mBranchBankEdit.getText().toString().isEmpty()) {
-            mBaseActivity.alertShow("开户支行不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(branchbank)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_bankbranch_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
-        if (name.isEmpty()) {
-            mBaseActivity.alertShow("姓名不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(name)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_name_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
-        if (banknum.isEmpty()) {
-            mBaseActivity.alertShow("银行卡号不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(banknum)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (!VerifyUtil.checkBankCard(banknum)) {
-            mBaseActivity.alertShow("请输入正确的银行卡号!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_format_error);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
-        if (phonenum.isEmpty()) {
-            mBaseActivity.alertShow("手机号不能为空!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+        if (TextUtils.isEmpty(phonenum)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_cannot_empty);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (!VerifyUtil.isMobileNO(phonenum)) {
-            mBaseActivity.alertShow("请输入正确的手机号!", BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong));
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_format_error);
+            mBaseActivity.alertShow(alertMsg, alertBitmap);
             return false;
         }
 
