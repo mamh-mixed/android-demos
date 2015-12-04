@@ -174,8 +174,11 @@ type MerDetail struct {
 	CommodityName string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
 	Area          string   `bson:"area,omitempty" json:"area,omitempty"`
-	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
-	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
+	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`           // 微信扫固定码支付页面的标题1
+	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`           // 微信扫固定码支付页面的标题2
+	SuccBtnTxt    string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`       // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink   string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`     // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount  bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`   // 微信扫固定码支付成功后的按钮连接是否传输金额
 	Province      string   `bson:"province,omitempty" json:"province,omitempty"`           // 商户省份
 	City          string   `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
 	Nation        string   `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
