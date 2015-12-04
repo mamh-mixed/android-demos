@@ -29,10 +29,7 @@ import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.SearchAdapter;
@@ -265,50 +262,59 @@ public class RegisterNextActivity extends BaseActivity {
         String openbank = mOpenBankEdit.getText().toString();
         String branchbank = mBranchBankEdit.getText().toString();
 
+        String alertMsg = "";
         Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
-
         if (TextUtils.isEmpty(province)) {
-            alertShow("开户行所在省份不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_province_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (TextUtils.isEmpty(city)) {
-            alertShow("开户行所在城市不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_city_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (TextUtils.isEmpty(openbank)) {
-            alertShow("开户行不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_bank_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (TextUtils.isEmpty(branchbank)) {
-            alertShow("开户支行不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_bankbranch_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (TextUtils.isEmpty(name)) {
-            alertShow("姓名不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_name_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (TextUtils.isEmpty(banknum)) {
-            alertShow("银行卡号不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (!VerifyUtil.checkBankCard(banknum)) {
-            alertShow("请输入正确的银行卡号!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_format_error);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (TextUtils.isEmpty(phonenum)) {
-            alertShow("手机号不能为空!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
         if (!VerifyUtil.isMobileNO(phonenum)) {
-            alertShow("请输入正确的手机号!", alertBitmap);
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_format_error);
+            alertShow(alertMsg, alertBitmap);
             return false;
         }
 
