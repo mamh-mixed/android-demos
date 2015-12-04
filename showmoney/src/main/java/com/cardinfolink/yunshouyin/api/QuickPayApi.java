@@ -21,7 +21,7 @@ public interface QuickPayApi {
     void activate(String username, String password);
 
     // bank related
-    User updateInfo(User user);
+    User improveInfo(User user);
 
     void increaseLimit(String username, String password, String payee, String phone_num, String email);
 
