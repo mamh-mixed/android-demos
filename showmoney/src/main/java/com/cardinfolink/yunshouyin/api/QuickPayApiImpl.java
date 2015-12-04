@@ -151,7 +151,9 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     @Override
     public void updatePassword(String username, String oldPassword, String newPassword) {
-        String url = quickPayConfigStorage.getUrl() + "/updatepassword";
+        // {"state":"fail","error":"old_password_error","count":0,"size":0,"refdcount":0}
+
+        String url = quickPayConfigStorage.getUrl() + "/updatepassword"; //更新密码
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
