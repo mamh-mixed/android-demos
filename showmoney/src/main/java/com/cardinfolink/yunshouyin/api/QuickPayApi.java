@@ -21,7 +21,10 @@ public interface QuickPayApi {
     BankInfo getBankInfo(String username, String password);
 
 
+    // txn related
     ServerPacket getHistoryBills(String username, String password, String clientid, String month, long index, String status);
 
     ServerPacketOrder getOrder(User user, String orderNum);
+
+    ServerPacket getRefd(User user, String orderNum);
 }

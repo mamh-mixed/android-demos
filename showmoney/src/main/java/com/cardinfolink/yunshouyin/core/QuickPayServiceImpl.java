@@ -39,7 +39,7 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void registerAsync(final String username, final String password, String password_repeat, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
+    public void registerAsync(final String username, final String password, String password_repeat, final QuickPayCallbackListener<Void> listener) {
         //TODO: move validation here
 
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
@@ -57,16 +57,16 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult == null) {
-                    quickPayCallbackListener.onSuccess(null);
+                    listener.onSuccess(null);
                 } else if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 }
             }
         }.execute();
     }
 
     @Override
-    public void loginAsync(final String username, final String password, final QuickPayCallbackListener<User> quickPayCallbackListener) {
+    public void loginAsync(final String username, final String password, final QuickPayCallbackListener<User> listener) {
         //TODO: move validation here
 
         new AsyncTask<Void, Integer, AsyncTaskResult<User>>() {
@@ -83,16 +83,16 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<User> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(stringAsyncTaskResult.getResult());
+                    listener.onSuccess(stringAsyncTaskResult.getResult());
                 }
             }
         }.execute();
     }
 
     @Override
-    public void activateAsync(final String username, final String password, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
+    public void activateAsync(final String username, final String password, final QuickPayCallbackListener<Void> listener) {
         //TODO: move validation here
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
             @Override
@@ -109,16 +109,16 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(null);
+                    listener.onSuccess(null);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void updateInfoAsync(final String province, final String city, final String bank_open, final String branch_bank, final String bankNo, final String payee, final String payee_card, final String phone_num, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
+    public void updateInfoAsync(final String province, final String city, final String bank_open, final String branch_bank, final String bankNo, final String payee, final String payee_card, final String phone_num, final QuickPayCallbackListener<Void> listener) {
         //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
@@ -139,16 +139,16 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(null);
+                    listener.onSuccess(null);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void increaseLimitAsync(final String payee, final String phone_num, final String email, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
+    public void increaseLimitAsync(final String payee, final String phone_num, final String email, final QuickPayCallbackListener<Void> listener) {
         //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
@@ -169,16 +169,16 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(null);
+                    listener.onSuccess(null);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void getBankInfoAsync(final QuickPayCallbackListener<BankInfo> quickPayCallbackListener) {
+    public void getBankInfoAsync(final QuickPayCallbackListener<BankInfo> listener) {
         //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
@@ -199,16 +199,16 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(null);
+                    listener.onSuccess(null);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void updatePasswordAsync(final String oldPassword, final String newPassword, String newPassword_repeat, final QuickPayCallbackListener<Void> quickPayCallbackListener) {
+    public void updatePasswordAsync(final String oldPassword, final String newPassword, String newPassword_repeat, final QuickPayCallbackListener<Void> listener) {
         //TODO: move validation here
         //TODO: get username, password from login user
         final String username = "";
@@ -230,9 +230,9 @@ public class QuickPayServiceImpl implements QuickPayService {
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> stringAsyncTaskResult) {
                 if (stringAsyncTaskResult.getException() != null) {
-                    quickPayCallbackListener.onFailure(stringAsyncTaskResult.getException());
+                    listener.onFailure(stringAsyncTaskResult.getException());
                 } else {
-                    quickPayCallbackListener.onSuccess(null);
+                    listener.onSuccess(null);
                 }
             }
         }.execute();
@@ -277,6 +277,27 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<ServerPacketOrder> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void getRefdAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacket> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
+
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                ServerPacket serverPacket = quickPayApi.getRefd(user, orderNum);//退款
+                return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
                 if (result.getException() != null) {
                     listener.onFailure(result.getException());
                 } else {
