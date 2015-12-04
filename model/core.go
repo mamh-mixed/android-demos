@@ -30,6 +30,7 @@ const (
 	PurchaseCoupons = 8 // 卡券核销
 
 	// settStatus
+	SettOK         = 0 //对账标记
 	SettSuccess    = 1 // 勾兑成功
 	SettSysRemain  = 2 // 系统多出的
 	SettChanRemain = 3 // 渠道多出的
@@ -421,16 +422,16 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 
 // TransSett 清算信息
 type TransSett struct {
-	Trans       Trans  `bson:"trans"`       // 清算的交易
-	SettRole    string `bson:"settRole"`    // 清算角色
-	SettDate    string `bson:"settDate"`    // 清算日期
-	SettTime    string `bson:"settTime"`    // 清算具体时间
-	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
-	MerFee      int64  `bson:"merFee"`      // 商户手续费
-	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
-	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
-	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
-	BlendType   int    `bson:"blendType"`   // 勾兑状态
+	Trans       Trans  `bson:"trans"`              // 清算的交易
+	SettRole    string `bson:"settRole,omitempty"` // 清算角色
+	SettDate    string `bson:"settDate,omitempty"` // 清算日期
+	SettTime    string `bson:"settTime,omitempty"` // 清算具体时间
+	MerSettAmt  int64  `bson:"merSettAmt"`         // 商户清算金额
+	MerFee      int64  `bson:"merFee"`             // 商户手续费
+	ChanSettAmt int64  `bson:"chanSettAmt"`        // 渠道清算金额
+	ChanFee     int64  `bson:"chanFee"`            // 渠道手续费
+	AgentFee    int64  `bson:"agentFee"`           // 代理、机构手续费
+	BlendType   int    `bson:"blendType"`          //勾兑标识
 }
 
 // TransSettInfo 清分信息明细

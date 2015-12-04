@@ -59,6 +59,7 @@ func Execute(req BaseReq, resp BaseResp) error {
 	if err != nil {
 		return err
 	}
+
 	log.Infof("<<< return from weixin: %s", string(ret))
 
 	err = processRespBody(ret, req.GetSignKey(), resp)
@@ -158,4 +159,33 @@ func processRespBody(body []byte, signKey string, resp BaseResp) error {
 	}
 
 	return nil
+}
+
+//结算请求
+func SettleExecute(req BaseReq, resp BaseResp) (string, error) {
+	m := req.GetSpReq()
+	if m == nil {
+		return "", fmt.Errorf("%s", "no params spReq found")
+	}
+
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanReqLogs(req)
+
+	if err := validator.Validate(req); err != nil {
+		log.Errorf("validate error, %s", err)
+		return "", err
+	}
+
+	xmlBytes, err := prepareData(req)
+	if err != nil {
+		return "", err
+	}
+
+	log.Infof(">>> send to weixin: %s", string(xmlBytes))
+	ret, err := send(req.GetHTTPClient(), req.GetURI(), xmlBytes)
+	if err != nil {
+		return "", err
+	}
+
+	return string(ret), err
 }
