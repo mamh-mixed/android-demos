@@ -383,4 +383,32 @@ public class QuickPayApiImpl implements QuickPayApi {
             throw new QuickPayException();
         }
     }
+
+    @Override
+    public String getTotal(User user, String date){
+        //result =={"state":"success","total":"0.00","count":5,"size":0,"refdcount":0}
+
+        String url = quickPayConfigStorage.getUrl() + "/getTotal";
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        params.put("password", password);
+        params.put("clientid", user.getClientid());
+        params.put("date", date);
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params, "SHA-1"));
+
+        try {
+            String response = postEngine.post(url, params);
+
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket.getTotal();
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
 }

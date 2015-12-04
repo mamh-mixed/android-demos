@@ -250,4 +250,28 @@ public class QuickPayServiceImpl implements QuickPayService {
         }.execute();
     }
 
+
+    @Override
+    public void getTotalAsync(final User user, final String date, final QuickPayCallbackListener<String> listener){
+        new AsyncTask<Void, Integer, AsyncTaskResult<String>>() {
+            @Override
+            protected AsyncTaskResult<String> doInBackground(Void... params) {
+                try {
+                    String total = quickPayApi.getTotal(user, date);
+                    return new AsyncTaskResult<String>(total);
+                }catch (QuickPayException ex){
+                    return new AsyncTaskResult<String>(ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<String> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
 }

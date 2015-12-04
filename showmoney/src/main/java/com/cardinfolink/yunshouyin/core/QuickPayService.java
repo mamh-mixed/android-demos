@@ -21,4 +21,6 @@ public interface QuickPayService {
     void updatePasswordAsync(String oldPassword, String newPassword, String newPassword_repeat, QuickPayCallbackListener<Void> quickPayCallbackListener);
 
     void getHistoryBillsAsync(String month, long index, String status, QuickPayCallbackListener<ServerPacket> quickPayCallbackListener);
+
+    void getTotalAsync(User user, String date, QuickPayCallbackListener<String> listener);
 }
