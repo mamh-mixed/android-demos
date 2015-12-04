@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.activity.BaseActivity;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
@@ -32,35 +31,30 @@ import java.util.Date;
 import java.util.List;
 
 public class ScanCodeView extends LinearLayout implements OnClickListener {
-    Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
+    private Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
             btn7, btn8, btn9, btnadd, btnpoint, btnsm, btnclear, btndelete,
             swh;
-    RadioButton btnzhifubao, btnweixin;
-    EditText edt_input;
-    TextView txt_output;
-    boolean clear_flag = true;
-    boolean point_flag = true;
-    boolean add_flag = true;
-    boolean switch_flag = true;
-    boolean num_flag = true;
-    double result = 0;
-    String[] s = new String[100];
+    private RadioButton btnzhifubao, btnweixin;
+    private EditText edt_input;
+    private TextView txt_output;
+    private boolean clear_flag = true;
+    private boolean point_flag = true;
+    private boolean add_flag = true;
+    private boolean switch_flag = true;
+    private boolean num_flag = true;
+    private double result = 0;
+    private String[] s = new String[100];
     private Context mContext;
     private List<Item> items = new ArrayList<Item>();
-    private BaseActivity mBaseActivity;
 
     public ScanCodeView(Context context) {
         super(context);
         mContext = context;
-        mBaseActivity = (BaseActivity) mContext;
-        View contentView = LayoutInflater.from(context).inflate(
-                R.layout.scancode_view, null);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        View contentView = LayoutInflater.from(context).inflate(R.layout.scancode_view, null);
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
         initLayout();
-
     }
 
     public void clearValue() {
@@ -132,33 +126,23 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-
         String x = txt_output.getText().toString();
-
         switch (v.getId()) {
-
             case R.id.btn0:
-
                 if (num_flag) {
-
                     clearzero();
                     txt_output.append("0");
                     add_flag = true;
                     getResult();
-
                 }
-
                 break;
             case R.id.btn1:
-
                 if (num_flag) {
                     clearzero();
                     txt_output.append("1");
                     getResult();
                     add_flag = true;
-
                 }
-
                 break;
             case R.id.btn2:
                 if (num_flag) {
@@ -224,7 +208,6 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 }
                 break;
             case R.id.btnpoint:
-
                 String s1 = x.substring(x.lastIndexOf("+") + 1);
                 if (s1.contains(".")) {
                     break;
@@ -232,41 +215,29 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
                 if (x.contains(".")) {
                     String k = x.substring(x.lastIndexOf("."));
-                    if (k.equals("."))
-
-                    {
+                    if (k.equals(".")) {
                         return;
-
                     } else {
                         clearzero(".");
-                        point_falg(".");
+                        pointFalg(".");
                     }
                 } else {
-
                     clearzero(".");
-                    point_falg(".");
+                    pointFalg(".");
                 }
                 break;
             case R.id.btnadd:
-
                 if (x.contains("+")) {
                     String k = x.substring(x.lastIndexOf("+"));
-
-                    if (k.equals("+"))
-
-                    {
+                    if (k.equals("+")) {
                         return;
                     } else {
                         clearzero("+");
                         add_falg("+");
-
                     }
-
                 } else {
-
                     clearzero("+");
                     add_falg("+");
-
                 }
                 break;
             case R.id.btnclear:
@@ -278,34 +249,19 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 clear_flag = true;
                 break;
             case R.id.btndelete:
-
                 String r = edt_input.getText().toString();
-
                 add_flag = true;
                 if (x.contains(".")) {
                     String k = x.substring(x.lastIndexOf("."));
-                    if (k.equals("."))
-
-                    {
+                    if (k.equals(".")) {
                         point_flag = true;
-
                     }
                 }
                 if (x != null && !x.equals("")) {
                     String k = x.substring(x.lastIndexOf("+") + 1);
-                    // if (x.contains("+")&&k.equals("+")) {
-                    //
-                    // add_flag=true;
-                    //
-                    // }
-
                     txt_output.setText(x.substring(0, x.length() - 1));
                     if (x.contains("+")) {
-                        // String k=x.substring(x.lastIndexOf("+"));
-                        if (k.equals("+"))
-
-                        {
-
+                        if (k.equals("+")) {
                             add_flag = false;
                         } else {
                             add_flag = true;
@@ -313,16 +269,12 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     } else {
                         add_flag = true;
                     }
-
                 }
                 addcheck();
-
                 break;
             case R.id.btnzhifubao:
-
                 break;
             case R.id.btnweixin:
-
                 break;
             case R.id.btnsm:
                 final double sum = Double.parseDouble(edt_input.getText().toString().substring(1));
@@ -427,17 +379,14 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                         intent.putExtra("chcd", chcd);
                         intent.putExtra("total", "" + sum);
                         mContext.startActivity(intent);
-
                     } else {
                         Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
                         intent.putExtra("chcd", chcd);
                         intent.putExtra("total", "" + sum);
                         mContext.startActivity(intent);
-
                     }
 
                 }
-
 
                 break;
         }
@@ -445,7 +394,6 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     }
 
     public void getResult() {
-
         double result = 0;
         String x = txt_output.getText().toString();
         String t = "";
@@ -455,25 +403,20 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             result = Double.parseDouble(x);
             edt_input.setText("=" + String.format("%.2f", result));
         } else {
-
             while (x.contains("+")) {
-
                 t = x.substring(0, x.indexOf("+"));
                 x = x.substring(x.indexOf("+") + 1);
                 s[i] = t;
                 i++;
-
             }
             s[i] = x;
             i++;
             for (int c = 0; c < i; c++) {
-
                 result += Double.parseDouble(s[c]);
             }
             edt_input.setText("=" + String.format("%.2f", result));
         }
 
-        // String r=edt_input.getText().toString();
 
         if (result > 99999999) {
             Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
@@ -486,52 +429,41 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     }
 
     public void getResult(String w) {
-
         double result = 0;
         String x = w;
         String t = "";
         int i = 0;
 
         while (x.contains("+")) {
-
             t = x.substring(0, x.indexOf("+"));
             x = x.substring(x.indexOf("+") + 1);
             s[i] = t;
             i++;
-
         }
         s[i] = x;
         i++;
         for (int c = 0; c < i; c++) {
-
             result += Double.parseDouble(s[c]);
         }
         edt_input.setText("=" + String.format("%.2f", result));
 
-        // String r=edt_input.getText().toString();
         if (result > 99999999) {
             Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
             num_flag = false;
-
         } else {
             num_flag = true;
         }
-
     }
 
     public void clearzero() {
-
         if (clear_flag) {
             txt_output.setText("");
             clear_flag = false;
         }
-
     }
 
     public void clearzero(String z) {
-
         clear_flag = false;
-
     }
 
     public void add_falg(String q) {
@@ -539,25 +471,20 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             String x = txt_output.getText().toString();
             if (x.contains(".")) {
                 String k = x.substring(x.lastIndexOf("."));
-                if (k.equals("."))
-
-                {
+                if (k.equals(".")) {
                     txt_output.setText(x.substring(0, x.length() - 1));
                     txt_output.append(q);
                     add_flag = false;
                     point_flag = true;
-
                 } else {
                     txt_output.append(q);
                     add_flag = false;
                     point_flag = true;
                 }
             } else {
-
                 txt_output.append(q);
                 add_flag = false;
                 point_flag = true;
-
             }
         } else {
             return;
@@ -565,25 +492,21 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     }
 
-    public void point_falg(String q) {
+    public void pointFalg(String q) {
         if (point_flag) {
             String x = txt_output.getText().toString();
             if (x.contains("+")) {
                 String k = x.substring(x.lastIndexOf("+"));
-                if (k.equals("+"))
-
-                {
+                if (k.equals("+")) {
                     txt_output.append("0" + q);
                     point_flag = false;
                     add_flag = true;
                 } else {
-
                     txt_output.append(q);
                     point_flag = false;
                     add_flag = true;
                 }
             } else {
-
                 txt_output.append(q);
                 point_flag = false;
                 add_flag = true;
@@ -598,17 +521,13 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         String x = txt_output.getText().toString();
         if (x.contains("+")) {
             String k = x.substring(x.lastIndexOf("+"));
-            if (k.equals("+"))
-
-            {
+            if (k.equals("+")) {
                 x = x.substring(0, x.lastIndexOf("+"));
                 getResult(x);
                 return;
             }
             getResult();
-
         } else if (x.length() == 0) {
-
             txt_output.setText(0 + "");
             edt_input.setText("=0");
             clear_flag = true;
@@ -619,16 +538,13 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     }
 
     public class Item {
-
         public double value = 0;
         public int type = 0;
 
         public Item(double value, int type) {
             this.value = value;
             this.type = type;
-
         }
-
     }
 
 }
