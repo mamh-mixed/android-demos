@@ -25,7 +25,7 @@ public interface QuickPayApi {
 
     void increaseLimit(String username, String password, String payee, String phone_num, String email);
 
-    BankInfo getBankInfo(String username, String password);
+    BankInfo getBankInfo(User user);
 
 
     // txn related

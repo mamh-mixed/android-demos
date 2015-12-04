@@ -273,12 +273,12 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     @Override
-    public BankInfo getBankInfo(String username, String password) {
+    public BankInfo getBankInfo(User user) {
         String url = quickPayConfigStorage.getUrl() + "/getinfo";
 
         Map<String, String> params = new LinkedHashMap<>();
-        params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
         params.put("password", password);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, "SHA-1"));
