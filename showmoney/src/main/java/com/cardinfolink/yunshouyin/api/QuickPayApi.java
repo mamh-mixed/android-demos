@@ -23,6 +23,9 @@ public interface QuickPayApi {
     // bank related
     User improveInfo(User user);
 
+    User updateInfo(User user); //这个和上面那个improveinfo很容易弄混。
+
+
     void increaseLimit(String username, String password, String payee, String phone_num, String email);
 
     BankInfo getBankInfo(User user);
