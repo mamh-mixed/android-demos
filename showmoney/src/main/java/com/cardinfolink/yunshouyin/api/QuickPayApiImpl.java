@@ -211,7 +211,7 @@ public class QuickPayApiImpl implements QuickPayApi {
      * user_already_improved
      */
     @Override
-    public User updateInfo(User user) {
+    public User improveInfo(User user) {
         String url = quickPayConfigStorage.getUrl() + "/improveinfo";
 
         Map<String, String> params = new LinkedHashMap<>();
