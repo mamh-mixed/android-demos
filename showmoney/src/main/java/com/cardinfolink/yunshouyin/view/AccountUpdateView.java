@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,13 +22,14 @@ import com.cardinfolink.yunshouyin.activity.BaseActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.BankDataService;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.Bank;
+import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
-import com.cardinfolink.yunshouyin.util.BankBaseUtil;
 import com.cardinfolink.yunshouyin.util.CommunicationListener;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
@@ -37,10 +37,6 @@ import com.cardinfolink.yunshouyin.util.JsonUtil;
 import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,7 +50,6 @@ public class AccountUpdateView extends LinearLayout {
     private EditText mNameEdit;
     private EditText mBanknumEdit;
     private EditText mPhonenumEdit;
-
 
     private AutoCompleteTextView mProvinceEdit;
     private Spinner mProvinceSpinner;
@@ -83,23 +78,19 @@ public class AccountUpdateView extends LinearLayout {
     private ArrayAdapter mBranchBankAdapter;
     private SearchAdapter mBranchBankSearchAdapter;
 
-    private String infoProvince;
-    private String infoCity;
-    private String infoOpenbank;
-    private String infoBranchBank;
-
     private Button mSubmitButton;
 
-    private boolean isInit = false;
-
     private BankDataService bankDataService;
-
+    private QuickPayService quickPayService;
 
     public AccountUpdateView(Context context) {
         super(context);
         mContext = context;
         mBaseActivity = (BaseActivity) mContext;
+
         bankDataService = ShowMoneyApp.getInstance().getBankDataService();
+        quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
+
         View contentView = LayoutInflater.from(context).inflate(R.layout.account_update_view, null);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
@@ -199,83 +190,62 @@ public class AccountUpdateView extends LinearLayout {
     }
 
     public void getInfo() {
-
-        HttpCommunicationUtil.sendDataToServer(ParamsUtil.getInfo(SessonData.loginUser), new CommunicationListener() {
-
+        quickPayService.getBankInfoAsync(SessonData.loginUser, new QuickPayCallbackListener<BankInfo>() {
             @Override
-            public void onResult(final String result) {
-                if (JsonUtil.getParam(result, "state").equals("success")) {
-                    ((Activity) mContext).runOnUiThread(new Runnable() {
+            public void onSuccess(BankInfo data) {
+                mProvinceEdit.setText(data.getProvince());
+                mCityEdit.setText(data.getCity());
+                mOpenBankEdit.setText(data.getBankOpen());
+                mBranchBankEdit.setText(data.getBranchBank());
 
+                mNameEdit.setText(data.getPayee());
+                mBanknumEdit.setText(data.getPayeeCard());
+                mPhonenumEdit.setText(data.getPhoneNum());
+
+                mCityList.clear();
+                mCityCodeList.clear();
+                mCityList.add("开户行所在城市");
+                mCityCodeList.add("");
+                if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
+                    String province = mProvinceEdit.getText().toString();
+                    bankDataService.getCity(province, new QuickPayCallbackListener<List<City>>() {
                         @Override
-                        public void run() {
-                            String info = JsonUtil.getParam(result, "info");
+                        public void onSuccess(List<City> dataCity) {
+                            updateCityAdapter(dataCity);
 
-                            infoProvince = JsonUtil.getParam(info, "province");
-                            infoCity = JsonUtil.getParam(info, "city");
-                            infoOpenbank = JsonUtil.getParam(info, "bank_open");
-                            infoBranchBank = JsonUtil.getParam(info, "branch_bank");
+                            bankDataService.getBank(new QuickPayCallbackListener<List<Bank>>() {
+                                @Override
+                                public void onSuccess(List<Bank> dataBank) {
+                                    updateBankAdapter(dataBank);
+                                    String _city = mCityEdit.getText().toString();
+                                    String _bank = mOpenBankEdit.getText().toString();
+                                    int _cityIndex = mCityList.indexOf(_city);
+                                    int _bank_index = mOpenBankList.indexOf(_bank);
 
-                            mProvinceEdit.setText(infoProvince);
-                            mCityEdit.setText(infoCity);
-                            mOpenBankEdit.setText(infoOpenbank);
-                            mBranchBankEdit.setText(infoBranchBank);
-
-                            mNameEdit.setText(JsonUtil.getParam(info, "bank_open"));
-                            mNameEdit.setText(JsonUtil.getParam(info, "payee"));
-                            mBanknumEdit.setText(JsonUtil.getParam(info, "payee_card"));
-                            mPhonenumEdit.setText(JsonUtil.getParam(info, "phone_num"));
-
-
-                            mCityList.clear();
-                            mCityCodeList.clear();
-                            mCityList.add("开户行所在城市");
-                            mCityCodeList.add("");
-                            if (mProvinceList.indexOf(mProvinceEdit.getText().toString()) > 0) {
-                                String province = mProvinceEdit.getText().toString();
-                                bankDataService.getCity(province, new QuickPayCallbackListener<List<City>>() {
-                                    @Override
-                                    public void onSuccess(List<City> dataCity) {
-                                        updateCityAdapter(dataCity);
-
-                                        bankDataService.getBank(new QuickPayCallbackListener<List<Bank>>() {
-                                            @Override
-                                            public void onSuccess(List<Bank> dataBank) {
-                                                updateBankAdapter(dataBank);
-                                                String _city = mCityEdit.getText().toString();
-                                                String _bank = mOpenBankEdit.getText().toString();
-                                                int _cityIndex = mCityList.indexOf(_city);
-                                                int _bank_index = mOpenBankList.indexOf(_bank);
-
-                                                if (_cityIndex > 0 && _bank_index > 0) {
-                                                    String _cityCode = mCityCodeList.get(_cityIndex);
-                                                    String _bankId = mBankIdList.get(_bank_index);
-                                                    bankDataService.getBranchBank(_cityCode, _bankId, new BranchBankQuickPayCallbackListener());
-                                                }
-                                            }
-                                            @Override
-                                            public void onFailure(QuickPayException ex) {
-
-                                            }
-                                        });
+                                    if (_cityIndex > 0 && _bank_index > 0) {
+                                        String _cityCode = mCityCodeList.get(_cityIndex);
+                                        String _bankId = mBankIdList.get(_bank_index);
+                                        bankDataService.getBranchBank(_cityCode, _bankId, new BranchBankQuickPayCallbackListener());
                                     }
+                                }
 
-                                    @Override
-                                    public void onFailure(QuickPayException ex) {
+                                @Override
+                                public void onFailure(QuickPayException ex) {
 
-                                    }
-                                });
-                            }
+                                }
+                            });
                         }
 
+                        @Override
+                        public void onFailure(QuickPayException ex) {
+
+                        }
                     });
-
                 }
-
             }
 
             @Override
-            public void onError(String error) {
+            public void onFailure(QuickPayException ex) {
 
             }
         });
