@@ -44,19 +44,19 @@ License: MIT - http://mrgnrdrck.mit-license.org
 	/**
 	 *
 	 */
-	Util.isEmail = (email) => {
+	Util.isEmail = function(email) {
 		var reg = /^([a-zA-Z0-9._-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
 		return reg.test(email);
 	};
 
-	Util.getUrlParam = (key) => {
+	Util.getUrlParam = function(key) {
 		var reg = new RegExp('(^|&)' + key + '=([^&]*)(&|$)', 'i');
 		var r = window.location.search.substr(1).match(reg);
 		if (r !== null) return window.unescape(r[2]);
 		return null;
 	};
 
-	Util.validatemobile = (mobile) => {
+	Util.validatemobile = function(mobile) {
 		if (mobile.length === 0) {
 			window.alert('请输入手机号码！');
 
@@ -77,7 +77,7 @@ License: MIT - http://mrgnrdrck.mit-license.org
 		return true;
 	};
 
-	Util.getTxamt = (txamt) => {
+	Util.getTxamt = function(txamt) {
 		var str = txamt;
 		var i = parseFloat(str);
 		var j = i.toFixed(2);
@@ -93,7 +93,7 @@ License: MIT - http://mrgnrdrck.mit-license.org
 		return sum;
 	};
 
-	Util.getNormalTxamt = (txamt) => {
+	Util.getNormalTxamt = function(txamt) {
 		var str = txamt;
 		if (str !== undefined) {
 			var sum = '';
@@ -113,7 +113,8 @@ License: MIT - http://mrgnrdrck.mit-license.org
 		}
 	};
 
-	Util.getServer = () => {
+	Util.getServer = function() {
+		// var server = __GATEWATSERVER__;
 		// 测试环境地址
 		var server = 'http://test.quick.ipay.so';
 		// 生产环境地址
@@ -123,7 +124,7 @@ License: MIT - http://mrgnrdrck.mit-license.org
 		return server;
 	};
 
-	Util.luhmCheck = (bankno) => {
+	Util.luhmCheck = function(bankno) {
 		var lastNum = bankno.substr(bankno.length - 1, 1); //取出最后一位（与luhm进行比较）
 
 		var first15Num = bankno.substr(0, bankno.length - 1); //前15或18位

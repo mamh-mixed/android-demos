@@ -7,9 +7,8 @@ body {
 
 /*container*/
 .container .one {
-  margin-top: 150px;
-  position: relative;
-  font-size: 36px;
+  margin-top: 80px;
+  font-size: 34px;
   color: #FFF;
   text-align: center;
   line-height: 40px;
@@ -17,8 +16,6 @@ body {
 
 .container .two {
   margin-top: 50px;
-  position: relative;
-  position: relative;
   font-size: 16px;
   color: #FFF;
   text-align: center;
@@ -26,7 +23,6 @@ body {
 }
 
 .container .three {
-  position: relative;
   font-size: 16px;
   color: #FFF;
   text-align: center;
@@ -48,13 +44,7 @@ input:-moz-placeholder {
   background: #81deeb;
   line-height: 42px;
   text-align: center;
-  margin-top: 180px;
-  position: relative;
-  left: 50%;
-  margin-left: -151px;
-  font-size: 18px;
-  color: #FFF;
-  border: none;
+  margin: 100px auto;
 }
 
 .container .anniu:hover {

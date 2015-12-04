@@ -10,7 +10,8 @@
         "yunshouyin",
         "define",
         "ActiveXObject",
-        "wx"
+        "wx",
+        "__GATEWATSERVER__"
     ],
     "maxerr": 50,
     "globalstrict": true,

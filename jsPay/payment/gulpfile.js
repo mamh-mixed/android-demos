@@ -74,7 +74,19 @@ gulp.task('default', ['pack'], function() {
 });
 
 // deploy assets to remote server
-gulp.task('deploy', function() {
+gulp.task('deploy-test', ['default'], function() {
+	var rsync = require('gulp-rsync');
+	return gulp.src(assets + '/**')
+		.pipe(rsync({
+			root: 'assets',
+			hostname: '139.129.116.65',
+			username: 'weixin',
+			progress: true,
+			destination: '/home/weixin/cloudCashier/agent'
+		}));
+});
+
+gulp.task('deploy-product', ['default'], function() {
 	var rsync = require('gulp-rsync');
 	return gulp.src(assets + '/**')
 		.pipe(rsync({
@@ -131,9 +143,9 @@ gulp.task("webpack-dev-server", function(callback) {
 		stats: {
 			colors: true
 		}
-	}).listen(7080, "localhost", function(err) {
+	}).listen(8080, "localhost", function(err) {
 		if (err) throw new gutil.PluginError("webpack-dev-server", err);
-		gutil.log("[webpack-dev-server]", "http://localhost:7080/webpack-dev-server/index.html");
+		gutil.log("[webpack-dev-server]", "http://localhost:8080/webpack-dev-server/index.html");
 	});
 });
 

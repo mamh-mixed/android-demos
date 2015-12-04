@@ -165,12 +165,14 @@ body {
   background: #00bcd4;
 }
 
+.container {
+  text-align: center;
+}
+
 /*container*/
 .container img {
   margin-top: 50px;
   position: relative;
-  left: 50%;
-  margin-left: -60px;
   margin-bottom: 50px;
 }
 
@@ -182,6 +184,7 @@ body {
 }
 
 .container .search {
+  box-sizing: border-box;
   width: 300px;
   height: 40px;
   border: solid 2px #fff;
@@ -189,10 +192,8 @@ body {
   font-size: 18px;
   color: #fff;
   background: #00bcd4;
-  margin-top: 100px;
-  position: relative;
-  left: 50%;
-  margin-left: -151px;
+  margin: 50px 0 30px;
+  padding: 6px 16px;
 }
 
 input:-moz-placeholder {
@@ -203,21 +204,19 @@ input:-moz-placeholder {
   color: #81deeb
 }
 
-.container .anniu {
-  width: 302px;
-  height: 42px;
-  margin-top: 120px;
-  line-height: 42px;
+.container > .button {
+  display: block;
+  box-sizing: border-box;
+  width: 300px;
   text-align: center;
+  color: #fff;
+  background-color: #81deeb;
+  height: 40px;
   border-radius: 20px;
-  background: #81deeb;
-  margin-top: 40px;
-  position: relative;
-  left: 50%;
-  margin-left: -151px;
-  font-size: 18px;
-  color: #FFF;
-  border: none;
+  line-height: 40px;
+  font-size: 20px;
+  text-decoration: none;
+  margin: 0 auto;
 }
 
 .container .anniu:hover {

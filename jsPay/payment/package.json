@@ -4,9 +4,8 @@
   "description": "Simple Page app boilerplate using webpack",
   "main": "scripts/index.js",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack -d --watch",
-    "production": "NODE_ENV=production webpack -p",
+    "deploy-product": "webpack -p && gulp deploy-product",
+    "deploy-test": "gulp deploy-product",
     "test": "eslint . && webpack -d && webpack -p",
     "dev": "webpack-dev-server --devtool eval --progress --colors --hot --content-base assets",
     "serve": "gulp && anywhere",

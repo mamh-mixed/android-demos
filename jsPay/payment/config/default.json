@@ -1,3 +1,4 @@
 {
-  "REMOTE_URL": "http://nihey.com.br"
+  "TEST_REMOTE_URL": "http://test.quick.ipay.so",
+  "PRODUCT_REMOTE_URL": "https://api.shou.money"
 }

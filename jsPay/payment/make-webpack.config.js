@@ -31,6 +31,15 @@ var excludeFromStats = [
 	/node_modules[\\\/]/
 ];
 
+var config = require('config'),
+gatwayServer = '';
+
+if (process.env.NODE_ENV === 'production'){
+	gatwayServer = config['PRODUCT_REMOTE_URL'];
+} else {
+	gatwayServer = config['TEST_REMOTE_URL'];
+}
+
 function makeConf(options) {
 	options = options || {};
 
@@ -75,7 +84,7 @@ function makeConf(options) {
 				loader: 'ejs'
 			}, {
 				test: /\.js$/,
-				exclude: /(node_modules|lib)/,
+				exclude: /(node_modules|lib|util\.js)/,
 				loader: 'babel',
 				query: {
 					presets: ['es2015']
@@ -91,7 +100,10 @@ function makeConf(options) {
 			// 	minChunks: chunks.length // 提取所有chunks共同依赖的模块
 			// }),
 			new OpenBrowserPlugin({
-				url: 'http://localhost:8080/webpack-dev-server/pay.html'
+				url: 'http://192.168.199.193:8080/webpack-dev-server/pay.html'
+			}),
+			new webpack.DefinePlugin({
+				__GATEWATSERVER__ : gatwayServer
 			})
 			// new CommonsChunkPlugin({
 			// 	name: 'common-bc',
