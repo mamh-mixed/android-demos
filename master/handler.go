@@ -259,6 +259,8 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 
 	transType, _ := strconv.Atoi(params.Get("transType"))
 	cond := &model.QueryCondition{
+		MerName:        params.Get("merName"),
+		Terminalid:     params.Get("terminalId"),
 		MerId:          merId,
 		AgentCode:      params.Get("agentCode"),
 		SubAgentCode:   params.Get("subAgentCode"),

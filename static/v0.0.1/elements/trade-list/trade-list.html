@@ -48,8 +48,10 @@
         <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
         <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
         <paper-input id="merId" label="门店代码" name="merId" value="{{cond.merId::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></paper-input>
+        <paper-input label="门店名称" name="merName" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NAME"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}" data-msg-id="SCANPAY_TRADE_LIST.ORDER_NO"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}" data-msg-id="SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO"></paper-input>
+        <paper-input label="终端号" name="terminalId" value="{{cond.terminalId::input}}" data-msg-id="SCANPAY_TRADE_LIST.TERMINAL"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}" data-msg-id="SCANPAY_TRADE_LIST.RESPONSE_CODE"></paper-input>
         <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型" data-msg-id="SCANPAY_TRADE_LIST.TRANS_TYPE" is-locale></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态" data-msg-id="SCANPAY_TRADE_LIST.TRANS_STATUS" is-locale></x-select>
