@@ -139,6 +139,31 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
+    public void updateInfoAsync(final User user, final QuickPayCallbackListener<User> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<User>>() {
+            @Override
+            protected AsyncTaskResult<User> doInBackground(Void... params) {
+                try {
+                    //注意这里和上面那个improveInfoAsync（）里面的不同。
+                    User newUser = quickPayApi.updateInfo(user);
+                    return new AsyncTaskResult<User>(user, null);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<User>(null, ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<User> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
+
+    @Override
     public void increaseLimitAsync(final String payee, final String phone_num, final String email, final QuickPayCallbackListener<Void> listener) {
         final String username = "";
         final String password = "";
