@@ -19,7 +19,6 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AccountUpdateView;
-import com.cardinfolink.yunshouyin.view.LimitIncreaseView;
 import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
@@ -41,7 +40,6 @@ public class MainActivity extends BaseActivity {
     private TransManageView mTransManageView;
     private PasswordUpdateView mPasswordUpdateView;
     private AccountUpdateView mAccountUpdateView;
-    private LimitIncreaseView mLimitIncreaseView;
     private WapView mWapBillView;
 
     private LinearLayout mMainContent;
@@ -111,9 +109,6 @@ public class MainActivity extends BaseActivity {
         mAccountUpdateView = new AccountUpdateView(mContext);
         mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        mLimitIncreaseView = new LimitIncreaseView(mContext);
-        mLimitIncreaseView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
         mWapBillView = new WapView(mContext);
         mWapBillView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -145,7 +140,6 @@ public class MainActivity extends BaseActivity {
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_transmange));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_passwordupdate));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_accountupdate));
-        //menuLists.add("限额提升");
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_webbill));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_safeexit));
 
