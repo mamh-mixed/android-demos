@@ -11,6 +11,7 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -238,26 +239,48 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void getHistoryBillsAsync(final String month, final long index, final String status, final QuickPayCallbackListener<ServerPacket> quickPayCallbackListener) {
+    public void getHistoryBillsAsync(final String month, final long index, final String status, final QuickPayCallbackListener<ServerPacket> listener) {
         final User loginUser = SessonData.loginUser;
 
-        new AsyncTask<Void, Integer,AsyncTaskResult<ServerPacket>>(){
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
-                try{
-                    ServerPacket serverPacket =  quickPayApi.getHistoryBills(loginUser.getUsername(), loginUser.getPassword(), loginUser.getClientid(), month, index, status);
-                    return new AsyncTaskResult<ServerPacket>(serverPacket,null);
-                }catch (QuickPayException ex){
+                try {
+                    ServerPacket serverPacket = quickPayApi.getHistoryBills(loginUser.getUsername(), loginUser.getPassword(), loginUser.getClientid(), month, index, status);
+                    return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                } catch (QuickPayException ex) {
                     return new AsyncTaskResult<ServerPacket>(null, ex);
                 }
             }
 
             @Override
-            protected void onPostExecute(AsyncTaskResult<ServerPacket> serverPacketAsyncTaskResult) {
-                if (serverPacketAsyncTaskResult.getException() !=null){
-                    quickPayCallbackListener.onFailure(serverPacketAsyncTaskResult.getException());
-                }else {
-                    quickPayCallbackListener.onSuccess(serverPacketAsyncTaskResult.getResult());
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
+
+
+    @Override
+    public void getOrderAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacketOrder> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacketOrder>>() {
+
+            @Override
+            protected AsyncTaskResult<ServerPacketOrder> doInBackground(Void... params) {
+                ServerPacketOrder serverPacket = quickPayApi.getOrder(user, orderNum);
+                return new AsyncTaskResult<ServerPacketOrder>(serverPacket, null);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacketOrder> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
                 }
             }
         }.execute();

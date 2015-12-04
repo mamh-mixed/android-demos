@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import com.cardinfolink.yunshouyin.util.EncoderUtil;
 
 import java.io.IOException;
@@ -161,7 +162,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return ;
+                return;
             } else {
                 throw new QuickPayException(serverPacket.getError());
             }
@@ -204,6 +205,7 @@ public class QuickPayApiImpl implements QuickPayApi {
     /**
      * errors:
      * user_already_improved
+     *
      * @param username
      * @param password
      * @param province
@@ -303,6 +305,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     /**
      * server not support
+     *
      * @param username
      */
     @Override
@@ -330,6 +333,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     /**
      * Not tested, no one use
+     *
      * @param username
      * @param code
      * @param newPassword
@@ -377,6 +381,60 @@ public class QuickPayApiImpl implements QuickPayApi {
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
+
+    @Override
+    public ServerPacketOrder getOrder(User user, String orderNum) {
+        /**
+         * {
+         "state": "success",
+         "count": 0,
+         "size": 0,
+         "refdcount": 0,
+         "txn": {
+         "response": "09",
+         "system_date": "20151204112740",
+         "transStatus": "10",
+         "refundAmt": 0,
+         "m_request": {
+         "busicd": "PAUT",
+         "inscd": "99911888",
+         "txndir": "Q",
+         "terminalid": "000000000000000",
+         "orderNum": "15120322232663574",
+         "mchntid": "999118880000017",
+         "tradeFrom": "android",
+         "txamt": "000000089500",
+         "chcd": "ALP",
+         "currency": "CNY"
+         }
+         }
+         }
+         */
+        String url = quickPayConfigStorage.getUrl() + "/getOrder";
+
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        params.put("password", password);
+        params.put("clientid", user.getClientid());
+        params.put("orderNum", orderNum);
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params, "SHA-1"));
+
+        try {
+            String response = postEngine.post(url, params);
+            //特别注意这里用的是一个新的ServerPacketOrder类来解析json。
+            ServerPacketOrder serverPacket = ServerPacketOrder.getServerPacketOrder(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
             } else {
