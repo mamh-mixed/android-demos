@@ -30,4 +30,6 @@ public interface QuickPayApi {
     // txn related
     // Txn getOrder(String username, String password, String orderNum, String clientId);
     ServerPacket getHistoryBills(String username, String password, String clientid, String month, long index, String status);
+
+    String getTotal(User user, String date);
 }
