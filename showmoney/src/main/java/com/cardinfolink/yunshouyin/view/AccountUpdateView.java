@@ -1,7 +1,5 @@
 package com.cardinfolink.yunshouyin.view;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,11 +30,6 @@ import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
-import com.cardinfolink.yunshouyin.util.CommunicationListener;
-import com.cardinfolink.yunshouyin.util.ErrorUtil;
-import com.cardinfolink.yunshouyin.util.HttpCommunicationUtil;
-import com.cardinfolink.yunshouyin.util.JsonUtil;
-import com.cardinfolink.yunshouyin.util.ParamsUtil;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 
@@ -284,83 +277,56 @@ public class AccountUpdateView extends LinearLayout {
     }
 
     public void finishedOnClick() {
-        if (validate()) {
-            mBaseActivity.startLoading();
-            User user = new User();
-            user.setUsername(SessonData.loginUser.getUsername());
-            user.setPassword(SessonData.loginUser.getPassword());
-            // user.setBankOpen(mOpenBankEdit.getText().toString());
-            user.setProvince(mProvinceEdit.getText().toString());
-            user.setBankOpen(mOpenBankEdit.getText().toString());
-            user.setCity(mCityEdit.getText().toString());
-            user.setBranchBank(mBranchBankEdit.getText().toString());
-            int index = mBranchBankList.indexOf(mBranchBankEdit.getText().toString());
-            if (index >= 0) {
-                user.setBankNo(mBankNoList.get(index));
-            } else {
-                user.setBankNo("");
+        if (!validate()) {
+            return;
+        }
+        mBaseActivity.startLoading();
+        User user = new User();
+        user.setUsername(SessonData.loginUser.getUsername());
+        user.setPassword(SessonData.loginUser.getPassword());
+        user.setProvince(mProvinceEdit.getText().toString());
+        user.setBankOpen(mOpenBankEdit.getText().toString());
+        user.setCity(mCityEdit.getText().toString());
+        user.setBranchBank(mBranchBankEdit.getText().toString());
+        int index = mBranchBankList.indexOf(mBranchBankEdit.getText().toString());
+        if (index >= 0) {
+            user.setBankNo(mBankNoList.get(index));
+        } else {
+            user.setBankNo("");
+        }
+
+        user.setPayee(mNameEdit.getText().toString());
+        user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
+        user.setPhoneNum(mPhonenumEdit.getText().toString());
+
+        quickPayService.updateInfoAsync(user, new QuickPayCallbackListener<User>() {
+            @Override
+            public void onSuccess(User data) {
+                // 更新UI
+                mBaseActivity.endLoading();
+                View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
+                String alertMsg = getResources().getString(R.string.alert_update_success);
+                Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right);
+                AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                alertDialog.show();
             }
 
+            @Override
+            public void onFailure(QuickPayException ex) {
+                String errorMsg = ex.getErrorMsg();
+                mBaseActivity.endLoading();
+                Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                mBaseActivity.alertShow(errorMsg, bitmap);
 
-            user.setPayee(mNameEdit.getText().toString());
-            user.setPayeeCard(mBanknumEdit.getText().toString().replace(" ", ""));
-            user.setPhoneNum(mPhonenumEdit.getText().toString());
-            HttpCommunicationUtil.sendDataToServer(ParamsUtil.getUpdateInfo(user), new CommunicationListener() {
-
-                @Override
-                public void onResult(final String result) {
-                    String state = JsonUtil.getParam(result, "state");
-                    if (state.equals("success")) {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mBaseActivity.endLoading();
-                                AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), getResources().getString(R.string.alert_update_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
-                                alert_Dialog.show();
-                            }
-
-                        });
-
-                    } else {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // 更新UI
-                                mBaseActivity.endLoading();
-                                mBaseActivity.alertShow(ErrorUtil.getErrorString(JsonUtil.getParam(result, "error")), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                            }
-
-                        });
-                    }
-                }
-
-                @Override
-                public void onError(final String error) {
-                    ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            // 更新UI
-                            mBaseActivity.endLoading();
-                            mBaseActivity.alertShow(error, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-                        }
-
-                    });
-                }
-            });
-
-
-        }
+            }
+        });
 
     }
 
     private boolean validate() {
-        String name = mNameEdit.getText().toString().replace(" ", ""); //姓名
-        String banknum = mBanknumEdit.getText().toString().replace(" ", ""); //银行卡号
-        String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");
+        String name = mNameEdit.getText().toString().replace(" ", ""); //姓名,这里把空格统统干掉
+        String banknum = mBanknumEdit.getText().toString().replace(" ", ""); //银行卡号,这里把空格统统干掉
+        String phonenum = mPhonenumEdit.getText().toString().replace(" ", "");//手机号,这里把空格统统干掉
 
         String province = mProvinceEdit.getText().toString();
         String city = mCityEdit.getText().toString();
