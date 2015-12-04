@@ -108,6 +108,15 @@ function init() {
 				$('#titleTwo').text('本店名称-' + titleTwo);
 				document.title = titleOne;
 				window.localStorage.setItem('title_one', titleOne);
+				if (data.succBtnTxt && data.succBtnTxt !== '') {
+					window.sessionStorage.setItem('successButtonText', data.succBtnTxt);
+				}
+				if (data.succBtnLink && data.succBtnLink !== '') {
+					window.sessionStorage.setItem('successButtonLink', data.succBtnLink);
+				}
+				if (data.isPostAmount) {
+					window.sessionStorage.setItem('isPostAmount', data.isPostAmount);
+				}
 			} else {
 				window.alert(data.errorDetail);
 				WeixinJSBridge.call('closeWindow');

@@ -184,9 +184,12 @@ func GetMerInfo(merId string) scanFixedResponse {
 		response.MerID = ""
 		return response
 	}
+	response.AgentCode = m.AgentCode
 	response.TitleOne = m.Detail.TitleOne
 	response.TitleTwo = m.Detail.TitleTwo
-	response.AgentCode = m.AgentCode
+	response.IsPostAmount = m.Detail.IsPostAmount
+	response.SuccBtnLink = m.Detail.SuccBtnLink
+	response.SuccBtnTxt = m.Detail.SuccBtnTxt
 	return response
 }
 
@@ -378,14 +381,17 @@ func combine(s *model.Summary, detail []model.Channel) {
 }
 
 type scanFixedResponse struct {
-	Response    string          `json:"response"`
-	MerID       string          `json:"merID"`
-	AgentCode   string          `json:"inscd,omitempty"`
-	TitleOne    string          `json:"title_one"`
-	TitleTwo    string          `json:"title_two"`
-	ErrorDetail string          `json:"errorDetail,omitempty"`
-	Data        []scanFixedData `json:"data,omitempty"`
-	Count       int             `json:"count,omitempty"`
+	Response     string          `json:"response"`
+	MerID        string          `json:"merID"`
+	AgentCode    string          `json:"inscd,omitempty"`
+	TitleOne     string          `json:"title_one"`              // 微信扫固定码支付页面的标题1
+	TitleTwo     string          `json:"title_two"`              // 微信扫固定码支付页面的标题2
+	SuccBtnTxt   string          `json:"succBtnTxt,omitempty"`   // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink  string          `json:"succBtnLink,omitempty"`  // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount bool            `json:"isPostAmount,omitempty"` // 微信扫固定码支付成功后的按钮连接是否传输金额
+	ErrorDetail  string          `json:"errorDetail,omitempty"`
+	Data         []scanFixedData `json:"data,omitempty"`
+	Count        int             `json:"count,omitempty"`
 }
 
 type scanFixedData struct {

@@ -294,3 +294,7 @@ html,body{
 .flex-container > .button:hover{
   text-decoration: none;
 }
+
+.hidden {
+  display: none!important;
+}
