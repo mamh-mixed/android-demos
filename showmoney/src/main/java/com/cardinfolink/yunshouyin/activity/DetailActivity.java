@@ -33,8 +33,11 @@ import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
 public class DetailActivity extends BaseActivity {
+
     private TradeBill mTradeBill;
+
     private ImageView mPaylogoImage;
+
     private TextView mTradeFromText;
     private TextView mTradeDateText;
     private TextView mTradeStatusText;
@@ -42,9 +45,13 @@ public class DetailActivity extends BaseActivity {
     private TextView mTradeAmountText;
     private TextView mOrderNumText;
     private TextView mGoodInfoText;
-    private Button mRefdButton;
+
+    private Button mRefdButton; //退款按钮
+
     private Handler mHandler;
 
+    private ImageView mBack;    //返回，这个是iamgeview
+    private Button mRefreshButton;  //刷新按钮
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +74,29 @@ public class DetailActivity extends BaseActivity {
         mTradeAmountText = (TextView) findViewById(R.id.tradeamount);
         mOrderNumText = (TextView) findViewById(R.id.ordernum);
         mGoodInfoText = (TextView) findViewById(R.id.goodinfo);
-        mRefdButton = (Button) findViewById(R.id.detail_btn_refd);
+
+        mRefdButton = (Button) findViewById(R.id.btn_refd);
+        mRefdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnRefdOnClick(v);//退款按钮的响应事件处理方法
+            }
+        });
+
+        mBack = (ImageView) findViewById(R.id.iv_back);
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mRefreshButton = (Button) findViewById(R.id.refresh);
+        mRefreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnRefreshOnClick(v);//刷新按钮点击事件处理方法
+            }
+        });
     }
 
     @SuppressLint("NewApi")
@@ -83,7 +112,6 @@ public class DetailActivity extends BaseActivity {
             Date tandeDate = spf1.parse(mTradeBill.tandeDate);
             mTradeDateText.setText(spf2.format(tandeDate));
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         String tradeFrom = "PC";
@@ -97,20 +125,15 @@ public class DetailActivity extends BaseActivity {
 
         mTradeFromText.setText(tradeFrom + busicd);
         String tradeStatus = getResources().getString(R.string.detail_activity_trade_status_success);
-        ;
+
         if (mTradeBill.response.equals("00")) {
             tradeStatus = getResources().getString(R.string.detail_activity_trade_status_success);
-            ;
-            ;
             mTradeStatusText.setTextColor(Color.parseColor("#888888"));
         } else if (mTradeBill.response.equals("09")) {
             tradeStatus = getResources().getString(R.string.detail_activity_trade_status_nopay);
-            ;
-            ;
             mTradeStatusText.setTextColor(Color.RED);
         } else {
             tradeStatus = getResources().getString(R.string.detail_activity_trade_status_fail);
-            ;
             mTradeStatusText.setTextColor(Color.RED);
         }
         mTradeStatusText.setText(tradeStatus);
@@ -118,21 +141,15 @@ public class DetailActivity extends BaseActivity {
         mTradeAmountText.setText("￥" + mTradeBill.amount);
         mOrderNumText.setText(mTradeBill.orderNum);
         mGoodInfoText.setText(mTradeBill.goodsInfo);
-        if (mTradeBill.busicd.equals("REFD")
-                || !mTradeBill.response.equals("00")) {
+        if (mTradeBill.busicd.equals("REFD") || !mTradeBill.response.equals("00")) {
             mRefdButton.setVisibility(View.INVISIBLE);
         } else {
             mRefdButton.setVisibility(View.VISIBLE);
         }
     }
 
-    public void BtnBackOnClick(View view) {
-
-        DetailActivity.this.finish();
-
-    }
-
-    public void BtnRefreshOnClick(View view) {
+    //刷新按钮点击事件处理方法
+    public void btnRefreshOnClick(View view) {
 
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mTradeBill.orderNum;
@@ -194,7 +211,8 @@ public class DetailActivity extends BaseActivity {
     }
 
 
-    public void BtnRefdOnClick(View view) {
+    //退款按钮的响应事件处理方法
+    public void btnRefdOnClick(View view) {
         startLoading();
         HttpCommunicationUtil.sendDataToServer(
                 ParamsUtil.getRefd(SessonData.loginUser, mTradeBill.orderNum),
@@ -204,8 +222,7 @@ public class DetailActivity extends BaseActivity {
                     public void onResult(final String result) {
                         String state = JsonUtil.getParam(result, "state");
                         if (state.equals("success")) {
-                            final String refdtotal = JsonUtil.getParam(result,
-                                    "refdtotal");
+                            final String refdtotal = JsonUtil.getParam(result, "refdtotal");
                             runOnUiThread(new Runnable() {
 
                                 @Override
@@ -274,8 +291,6 @@ public class DetailActivity extends BaseActivity {
                         finish();
                     }
                 }
-
-
                 super.handleMessage(msg);
             }
         };
