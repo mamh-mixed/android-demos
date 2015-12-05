@@ -1,10 +1,10 @@
 package com.cardinfolink.yunshouyin.view;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,13 +28,20 @@ import java.util.Random;
 
 
 public class RefdDialog {
-    EditText refdValue;
-    EditText refdPassword;
+    private EditText refdValue;
+    private EditText refdPassword;
+    private TextView refdTitle;
+
     private Context mContext;
+
     private Handler mHandler;
+
     private View dialogView;
+
     private double maxRefd = 0;
+
     private String mOrderNum;
+
     private BaseActivity mBaseActivity;
 
     public RefdDialog(Context context, Handler handler, View view, String orderNum, String refdTotal, String total) {
@@ -49,19 +56,17 @@ public class RefdDialog {
     }
 
     public void show() {
+        refdTitle = (TextView) dialogView.findViewById(R.id.refd_title);
+        refdTitle.setText(ShowMoneyApp.getResString(R.string.refd_dialog_refd_max) + maxRefd);
 
-        TextView textView = (TextView) dialogView.findViewById(R.id.refd_title);
-        textView.setText(ShowMoneyApp.getResString(R.string.refd_dialog_refd_max) + maxRefd);
         refdValue = (EditText) dialogView.findViewById(R.id.refd_value_edit);
         refdPassword = (EditText) dialogView.findViewById(R.id.refd_password_edit);
-
 
         dialogView.setVisibility(View.VISIBLE);
         dialogView.setOnTouchListener(new OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 return true;
             }
         });
@@ -70,7 +75,6 @@ public class RefdDialog {
 
             @Override
             public void onClick(View v) {
-                //    DeviceManageUtil.hideInput(mContext);
                 dialogView.setVisibility(View.GONE);
                 refdPassword.setText("");
                 refdValue.setText("");
@@ -78,120 +82,136 @@ public class RefdDialog {
         });
 
 
+        //退款
         dialogView.findViewById(R.id.refd_dialog_ok).setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                //	 DeviceManageUtil.hideInput(mContext);
-                dialogView.setVisibility(View.GONE);
-
-                if (check()) {
-                    mBaseActivity.startLoading();
-                    OrderData orderData = new OrderData();
-                    orderData.origOrderNum = mOrderNum;
-                    Date now = new Date();
-                    SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-                    String orderNmuber = spf.format(now);
-                    Random random = new Random();
-                    for (int i = 0; i < 5; i++) {
-                        orderNmuber = orderNmuber + random.nextInt(10);
-                    }
-                    ;
-                    orderData.orderNum = orderNmuber;
-                    orderData.currency = "156";
-                    orderData.txamt = refdValue.getText().toString();
-
-                    CashierSdk.startRefd(orderData, new CashierListener() {
-
-                        @Override
-                        public void onResult(final ResultData resultData) {
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    mBaseActivity.endLoading();
-                                    if (resultData.respcd.equals("00")) {
-                                        AlertDialog alert_Dialog = new AlertDialog(mContext, mHandler, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_success), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
-                                        alert_Dialog.show();
-
-                                    } else if (resultData.respcd.equals("R6")) {
-                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
-                                        alert_Dialog.show();
-                                    } else {
-                                        AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
-                                        alert_Dialog.show();
-                                    }
-
-                                }
-
-                            });
-
-
-                        }
-
-                        @Override
-                        public void onError(int errorCode) {
-                            ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    mBaseActivity.endLoading();
-                                    AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right));
-                                    alert_Dialog.show();
-
-                                }
-
-                            });
-
-
-                        }
-                    });
-
-
-                }
-
-                refdPassword.setText("");
-                refdValue.setText("");
+                refdOnClick(v);
             }
         });
     }
 
-    @SuppressLint("NewApi")
-    private boolean check() {
+    /**
+     * 退款
+     * @param view
+     */
+    private void refdOnClick(View view) {
+        dialogView.setVisibility(View.GONE);
 
-        if (refdValue.getText().toString().isEmpty()) {
-            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-            alert_Dialog.show();
+        if (!validate()) {
+            refdPassword.setText("");
+            refdValue.setText("");
+            return;
+        }
+
+        mBaseActivity.startLoading();
+        OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        Date now = new Date();
+        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
+        String orderNmuber = spf.format(now);
+        Random random = new Random();
+        for (int i = 0; i < 5; i++) {
+            orderNmuber = orderNmuber + random.nextInt(10);
+        }
+        orderData.orderNum = orderNmuber;
+        orderData.currency = "156";
+        orderData.txamt = refdValue.getText().toString();
+
+        CashierSdk.startRefd(orderData, new CashierListener() {
+
+            @Override
+            public void onResult(final ResultData resultData) {
+                mBaseActivity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        mBaseActivity.endLoading();
+                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right);
+                        View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
+                        String alertMsg = "";
+                        if (resultData.respcd.equals("00")) {
+                            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_success);
+                            AlertDialog alertDialog = new AlertDialog(mContext, mHandler, alertView, alertMsg, bitmap);
+                            alertDialog.show();
+                        } else if (resultData.respcd.equals("R6")) {
+                            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd);
+                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                            alertDialog.show();
+                        } else {
+                            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
+                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                            alertDialog.show();
+                        }
+                    }
+
+                });
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                mBaseActivity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        mBaseActivity.endLoading();
+                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                        View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
+                        String alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
+                        AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                        alertDialog.show();
+                    }
+                });
+            }
+        });
+
+        refdPassword.setText("");
+        refdValue.setText("");
+    }
+
+    private boolean validate() {
+        View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
+        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+        String alertMsg = "";
+
+        String refdStr = refdValue.getText().toString();
+        if (TextUtils.isEmpty(refdStr)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            alertDialog.show();
             return false;
         }
 
         double refd = 0;
         try {
-
-            refd = Double.parseDouble(refdValue.getText().toString());
+            refd = Double.parseDouble(refdStr);
         } catch (Exception e) {
-            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-            alert_Dialog.show();
+            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            alertDialog.show();
             return false;
         }
 
         if (refd < 0.01) {
-            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-            alert_Dialog.show();
+            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            alertDialog.show();
             return false;
         }
 
         if (refd > maxRefd) {
-            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-            alert_Dialog.show();
+            alertMsg = String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            alertDialog.show();
             return false;
         }
         if (!refdPassword.getText().toString().equals(SessonData.loginUser.getPassword())) {
-            AlertDialog alert_Dialog = new AlertDialog(mContext, null, ((Activity) mContext).findViewById(R.id.alert_dialog), ShowMoneyApp.getResString(R.string.refd_dialog__password_error), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
-            alert_Dialog.show();
+            alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog__password_error);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            alertDialog.show();
             return false;
         }
-
 
         return true;
     }
