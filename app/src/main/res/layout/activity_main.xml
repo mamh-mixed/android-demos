@@ -15,18 +15,17 @@
 
         <ImageView
             android:id="@+id/img_tab_now"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
-            android:scaleType="matrix"
-            android:src="@drawable/btn_green_pressed" />
+            android:background="#000000" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="#000fff"
             android:layout_alignParentBottom="true"
+            android:background="#eeeeee"
             android:paddingBottom="2dp">
 
             <LinearLayout
@@ -38,11 +37,11 @@
 
                 <ImageView
                     android:id="@+id/img_weixin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:clickable="true"
-                    android:scaleType="matrix"
-                    android:src="@drawable/btn_green_normal" />
+                    android:scaleType="centerInside"
+                    android:src="@drawable/gathering_not_selected" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -61,11 +60,11 @@
 
                 <ImageView
                     android:id="@+id/img_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:clickable="true"
-                    android:scaleType="matrix"
-                    android:src="@drawable/btn_green_pressed" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ticket_not_selected" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -84,11 +83,11 @@
 
                 <ImageView
                     android:id="@+id/img_friends"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:clickable="true"
-                    android:scaleType="matrix"
-                    android:src="@drawable/btn_green_normal" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/bill_not_selected" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -107,11 +106,11 @@
 
                 <ImageView
                     android:id="@+id/img_settings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:clickable="true"
-                    android:scaleType="matrix"
-                    android:src="@drawable/btn_green_normal" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/my_not_selected" />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -103,8 +103,10 @@ public class MainActivity extends Activity {
                 return views.get(position);
             }
         };
-
         mTabPager.setAdapter(mPagerAdapter);
+        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_selected));
+
+
     }
 
     /**
@@ -137,71 +139,55 @@ public class MainActivity extends Activity {
             Animation animation = null;
             switch (arg0) {
                 case 0:
-                    mTab1.setImageDrawable(getResources().getDrawable(
-                            R.drawable.btn_green_normal));
+                    mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_selected));
                     if (currIndex == 1) {
                         animation = new TranslateAnimation(one, 0, 0, 0);
-                        mTab2.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
                     } else if (currIndex == 2) {
                         animation = new TranslateAnimation(two, 0, 0, 0);
-                        mTab3.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
                     } else if (currIndex == 3) {
                         animation = new TranslateAnimation(three, 0, 0, 0);
-                        mTab4.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
                     }
                     break;
                 case 1:
-                    mTab2.setImageDrawable(getResources().getDrawable(
-                            R.drawable.btn_green_pressed));
+                    mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_selected));
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(zero, one, 0, 0);
-                        mTab1.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
                     } else if (currIndex == 2) {
                         animation = new TranslateAnimation(two, one, 0, 0);
-                        mTab3.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
                     } else if (currIndex == 3) {
                         animation = new TranslateAnimation(three, one, 0, 0);
-                        mTab4.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
                     }
                     break;
                 case 2:
-                    mTab3.setImageDrawable(getResources().getDrawable(
-                            R.drawable.btn_green_pressed));
+                    mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_selected));
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(zero, two, 0, 0);
-                        mTab1.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
                     } else if (currIndex == 1) {
                         animation = new TranslateAnimation(one, two, 0, 0);
-                        mTab2.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
                     } else if (currIndex == 3) {
                         animation = new TranslateAnimation(three, two, 0, 0);
-                        mTab4.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
                     }
                     break;
                 case 3:
-                    mTab4.setImageDrawable(getResources().getDrawable(
-                            R.drawable.btn_green_pressed));
+                    mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_selected));
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(zero, three, 0, 0);
-                        mTab1.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
                     } else if (currIndex == 1) {
                         animation = new TranslateAnimation(one, three, 0, 0);
-                        mTab2.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
                     } else if (currIndex == 2) {
                         animation = new TranslateAnimation(two, three, 0, 0);
-                        mTab3.setImageDrawable(getResources().getDrawable(
-                                R.drawable.btn_green_pressed));
+                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
                     }
                     break;
             }
