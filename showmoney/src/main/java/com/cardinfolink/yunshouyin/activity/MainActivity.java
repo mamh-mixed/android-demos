@@ -3,27 +3,26 @@ package com.cardinfolink.yunshouyin.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.view.AccountUpdateView;
-import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
+import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
+import com.cardinfolink.yunshouyin.view.TicketView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
-import com.cardinfolink.yunshouyin.view.WapView;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.umeng.common.message.UmengMessageDeviceConfig;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
@@ -35,19 +34,12 @@ import java.util.ArrayList;
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
 
-    private SlidingMenu mLeftMenu;
     private ScanCodeView mScanCodeView;
     private TransManageView mTransManageView;
-    private PasswordUpdateView mPasswordUpdateView;
-    private AccountUpdateView mAccountUpdateView;
-    private WapView mWapBillView;
+    private TicketView mTicketView;
+    private MySettingView mMySettingView;
 
-    private LinearLayout mMainContent;
-    private ListView mDrawerList;
-    private ArrayList<String> menuLists;
-    private ArrayAdapter<String> adapter;
     private long exitTime = 0;
-
 
     private Handler handler = new Handler();
     private PushAgent mPushAgent;
@@ -56,6 +48,17 @@ public class MainActivity extends BaseActivity {
     //http://dev.umeng.com/push/android/integration#1_7_10
     private IUmengRegisterCallback mRegisterCallback = new UmengPushAgengRegisterCallback();
 
+    private ViewPager mTabPager;//声明对象
+    private ImageView mTabImg;// 动画图片
+    private ImageView mTab1, mTab2, mTab3, mTab4;
+    private int zero = 0;// 动画图片偏移量
+    private int currIndex = 0;// 当前页卡编号
+    private int one;// 单个水平动画位移
+    private int two;
+    private int three;
+
+    // 每个页面的view数据,存放4个界面
+    private ArrayList<View> mViews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,6 @@ public class MainActivity extends BaseActivity {
         initLayout();
         initUmeng();
     }
-
 
     private void initUmeng() {
         UmengUpdateAgent.setUpdateOnlyWifi(false);
@@ -94,100 +96,58 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initLayout() {
-        mMainContent = (LinearLayout) findViewById(R.id.main_content);
-
+        //扫码的界面，第一个界面
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mScanCodeView = new ScanCodeView(mContext);
         mScanCodeView.setLayoutParams(layoutParams);
 
+        //销券的界面，第二个界面
+        mTicketView = new TicketView(mContext);
+        mTicketView.setLayoutParams(layoutParams);
+
+        //账单界面，第三个界面
         mTransManageView = new TransManageView(mContext);
-        mTransManageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mTransManageView.setLayoutParams(layoutParams);
 
-        mPasswordUpdateView = new PasswordUpdateView(mContext);
-        mPasswordUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        //我的设置界面，第四个界面
+        mMySettingView = new MySettingView(mContext);
+        mMySettingView.setLayoutParams(layoutParams);
 
-        mAccountUpdateView = new AccountUpdateView(mContext);
-        mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        // 启动activity时不自动弹出软键盘
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        mWapBillView = new WapView(mContext);
-        mWapBillView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mTabPager = (ViewPager) findViewById(R.id.tabpager);
+        mTabPager.setOnPageChangeListener(new MainPagerOnPageChangeListener());
 
+        mTab1 = (ImageView) findViewById(R.id.img_gathering);
+        mTab2 = (ImageView) findViewById(R.id.img_ticket);
+        mTab3 = (ImageView) findViewById(R.id.img_bill);
+        mTab4 = (ImageView) findViewById(R.id.img_my);
 
-        mMainContent.addView(mScanCodeView);
+        mTabImg = (ImageView) findViewById(R.id.img_tab_now);//动画图片
 
-        mLeftMenu = new SlidingMenu(this);
-        mLeftMenu.setMode(SlidingMenu.LEFT);
-        mLeftMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-        mLeftMenu.setShadowWidthRes(R.dimen.shadow_width);
-        mLeftMenu.setShadowDrawable(R.drawable.shadow);
+        mTab1.setOnClickListener(new MainPagerItemOnClickListener(0));
+        mTab2.setOnClickListener(new MainPagerItemOnClickListener(1));
+        mTab3.setOnClickListener(new MainPagerItemOnClickListener(2));
+        mTab4.setOnClickListener(new MainPagerItemOnClickListener(3));
 
-        // 设置滑动菜单视图的宽度
-        mLeftMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
-        // 设置渐入渐出效果的值
-        mLeftMenu.setFadeDegree(0.35f);
-        /**
-         * SLIDING_WINDOW will include the Title/ActionBar in the content
-         * section of the SlidingMenu, while SLIDING_CONTENT does not.
-         */
-        mLeftMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        // 为侧滑菜单设置布局
-        mLeftMenu.setMenu(R.layout.leftmenu);
+        Display currDisplay = getWindowManager().getDefaultDisplay();// 获取屏幕当前分辨率
+        int displayWidth = currDisplay.getWidth();
+        one = displayWidth / 4; // 设置水平动画平移大小
+        two = one * 2;
+        three = one * 3;
 
-        mDrawerList = (ListView) mLeftMenu.findViewById(R.id.left_drawer);
-        menuLists = new ArrayList<String>();
+         // 每个页面的view数据
+        mViews = new ArrayList<View>();
+        mViews.add(mScanCodeView);
+        mViews.add(mTicketView);
+        mViews.add(mTransManageView);
+        mViews.add(mMySettingView);
 
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_scancode));
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_transmange));
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_passwordupdate));
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_accountupdate));
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_webbill));
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_safeexit));
-
-
-        adapter = new ArrayAdapter<String>(this, R.layout.menu_list_item, menuLists);
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new MenuOnItemClick());
-    }
-
-
-    public void BtnMenuOnClick(View view) {
-        if (mLeftMenu.isMenuShowing()) {
-            mLeftMenu.toggle();
-        } else {
-            mLeftMenu.showMenu();
-        }
-    }
-
-    private void openView(int position) {
-        SessonData.positionView = position;
-        switch (position) {
-            case 0:
-                mMainContent.removeAllViews();
-                mMainContent.addView(mScanCodeView);
-                mScanCodeView.clearValue();
-                break;
-            case 1:
-                mMainContent.removeAllViews();
-                mMainContent.addView(mTransManageView);
-                mTransManageView.refresh();
-                break;
-            case 2:
-                mMainContent.removeAllViews();
-                mMainContent.addView(mPasswordUpdateView);
-                break;
-            case 3:
-                mMainContent.removeAllViews();
-                mAccountUpdateView = new AccountUpdateView(mContext);
-                mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                mMainContent.addView(mAccountUpdateView);
-                mAccountUpdateView.getInfo();
-                break;
-            case 4:
-                mMainContent.removeAllViews();
-                mMainContent.addView(mWapBillView);
-                mWapBillView.initData();
-                break;
-        }
+        // 填充ViewPager的数据适配器
+        PagerAdapter mPagerAdapter = new MainPagerAdapter();
+        mTabPager.setAdapter(mPagerAdapter);
+        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_selected));
     }
 
     @Override
@@ -212,54 +172,124 @@ public class MainActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        openView(SessonData.positionView);
-    }
 
-    private class MenuOnItemClick implements OnItemClickListener {
+    private class MainPagerAdapter extends android.support.v4.view.PagerAdapter{
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            return arg0 == arg1;
+        }
 
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            SessonData.positionView = position;
-            switch (position) {
+        public int getCount() {
+            return mViews.size();
+        }
+
+        @Override
+        public void destroyItem(View container, int position, Object object) {
+            ((ViewPager) container).removeView(mViews.get(position));
+        }
+
+
+        @Override
+        public Object instantiateItem(View container, int position) {
+            ((ViewPager) container).addView(mViews.get(position));
+            return mViews.get(position);
+        }
+    }
+
+    /**
+     * 头标点击监听
+     */
+    private class MainPagerItemOnClickListener implements View.OnClickListener {
+        private int index = 0;
+
+        public MainPagerItemOnClickListener(int i) {
+            index = i;
+        }
+
+        public void onClick(View v) {
+            mTabPager.setCurrentItem(index);
+        }
+    }
+
+
+    /*
+     * 页卡切换监听
+     */
+    private class MainPagerOnPageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        public void onPageSelected(int arg0) {
+            Animation animation = null;
+            switch (arg0) {
                 case 0:
-                    mMainContent.removeAllViews();
-                    mMainContent.addView(mScanCodeView);
+                    mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_selected));
+                    //清空输入的金额
                     mScanCodeView.clearValue();
-                    mLeftMenu.toggle();
+                    if (currIndex == 1) {
+                        animation = new TranslateAnimation(one, 0, 0, 0);
+                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
+                    } else if (currIndex == 2) {
+                        animation = new TranslateAnimation(two, 0, 0, 0);
+                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
+                    } else if (currIndex == 3) {
+                        animation = new TranslateAnimation(three, 0, 0, 0);
+                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
+                    }
                     break;
                 case 1:
-                    mMainContent.removeAllViews();
-                    mMainContent.addView(mTransManageView);
-                    mTransManageView.initData();
-                    mLeftMenu.toggle();
+                    mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_selected));
+                    if (currIndex == 0) {
+                        animation = new TranslateAnimation(zero, one, 0, 0);
+                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
+                    } else if (currIndex == 2) {
+                        animation = new TranslateAnimation(two, one, 0, 0);
+                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
+                    } else if (currIndex == 3) {
+                        animation = new TranslateAnimation(three, one, 0, 0);
+                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
+                    }
                     break;
                 case 2:
-                    mMainContent.removeAllViews();
-                    mMainContent.addView(mPasswordUpdateView);
-                    mLeftMenu.toggle();
+                    mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_selected));
+                    //刷新一下账单列表
+                    mTransManageView.refresh();
+                    if (currIndex == 0) {
+                        animation = new TranslateAnimation(zero, two, 0, 0);
+                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
+                    } else if (currIndex == 1) {
+                        animation = new TranslateAnimation(one, two, 0, 0);
+                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
+                    } else if (currIndex == 3) {
+                        animation = new TranslateAnimation(three, two, 0, 0);
+                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
+                    }
                     break;
                 case 3:
-                    mMainContent.removeAllViews();
-                    mAccountUpdateView = new AccountUpdateView(mContext);
-                    mAccountUpdateView.setLayoutParams(new LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                    mMainContent.addView(mAccountUpdateView);
-                    mAccountUpdateView.getInfo();
-                    mLeftMenu.toggle();
-                    break;
-                case 4:
-                    mMainContent.removeAllViews();
-                    mMainContent.addView(mWapBillView);
-                    mWapBillView.initData();
-                    mLeftMenu.toggle();
-                    break;
-                case 5:
-                    finish();
+                    mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_selected));
+                    if (currIndex == 0) {
+                        animation = new TranslateAnimation(zero, three, 0, 0);
+                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
+                    } else if (currIndex == 1) {
+                        animation = new TranslateAnimation(one, three, 0, 0);
+                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
+                    } else if (currIndex == 2) {
+                        animation = new TranslateAnimation(two, three, 0, 0);
+                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
+                    }
                     break;
             }
+            currIndex = arg0;
+            animation.setFillAfter(true);// True:图片停在动画结束位置
+            animation.setDuration(150);// 动画持续时间
+            mTabImg.startAnimation(animation);// 开始动画
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
 
         }
 
