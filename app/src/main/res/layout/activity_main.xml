@@ -1,0 +1,159 @@
+<!--
+现在Fragment的应用真的是越来越广泛了，之前Android在3.0版本加入Fragment的时候，主要是为了解决Android Pad屏幕
+比较大，空间不能充分利用的问题，但现在即使只是在手机上，也有很多的场景可以运用到Fragment了，今天我们就来学习其中
+一个特别棒的应用技巧。
+
+很多手机应用都会有一个非常类似的功能，即屏幕的下方显示一行Tab标签选项，点击不同的标签就可以切换到不同的界面，如以
+下几个应用所示：
+
+
+
+上面三个应用从左到右分别是QQ、新浪微博和支付宝钱包，可见，这种底部标签式的布局策略真的非常常见。
+
+那么话说回来，这种效果到底是如何的呢？熟悉Android的朋友一定都会知道，很简单嘛，使用TabHost就OK了！但是殊不知，
+TabHost并非是那么的简单，它的可扩展性非常的差，不能随意地定制Tab项显示的内容，而且运行还要依赖
+于ActivityGroup。ActivityGroup原本主要是用于为每一个TabHost的子项管理一个单独的Activity，但目前已经被废
+弃了。为什么呢？当然就是因为Fragment的出现了！查看Android官方文档中ActivityGroup的描述，如下所示：
+
+
+这段布局代码虽然有点长，但其实主要就分为两部分。第一个部分就是FrameLayout，这里只是给FrameLayout的id设置
+成content，并没有在里面添加任何具体的内容，因为具体的内容是要在后面动态进行添加的。第二个部分就是FrameLayout下
+面的LinearLayout，这个LinearLayout中包含的就是整个类似于TabHost的布局。可以看到，我们将这个LinearLayout又等
+分成了四份，每一份中都会显示一个ImageView和一个TextView。ImageView用于显示当前Tab的图标，TextView用于显示当
+前Tab的标题，这个效果就会和QQ非常得类似。
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/tab_bg">
+
+        <RelativeLayout
+            android:id="@+id/message_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/message_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/message_unselected" />
+
+                <TextView
+                    android:id="@+id/message_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="消息"
+                    android:textColor="#82858b" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/contacts_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/contacts_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/contacts_unselected" />
+
+                <TextView
+                    android:id="@+id/contacts_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="联系人"
+                    android:textColor="#82858b" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/news_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/news_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/news_unselected" />
+
+                <TextView
+                    android:id="@+id/news_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="动态"
+                    android:textColor="#82858b" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/setting_layout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/setting_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/setting_unselected" />
+
+                <TextView
+                    android:id="@+id/setting_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="设置"
+                    android:textColor="#82858b" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
