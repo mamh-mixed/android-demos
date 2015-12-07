@@ -10,4 +10,6 @@
         android:layout_height="fill_parent"
         android:scrollbarSize="0dip" />
 
+    <include layout="@layout/showmoney_dialog"></include>
+
 </LinearLayout>

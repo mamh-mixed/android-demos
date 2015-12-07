@@ -32,6 +32,7 @@
             cardinfolink:title="@string/setting_support_channel" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:id="@+id/my_wap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
