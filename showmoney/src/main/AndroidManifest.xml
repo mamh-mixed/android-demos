@@ -105,7 +105,11 @@
             android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name=".activity.AccountInfoActivity"
-            android:label="@string/app_name"/>
+            android:label="@string/app_name" />
+        <activity
+            android:name=".activity.AccountSecurityActivity"
+            android:label="@string/app_name" />
+
 
         <!-- UMENG appkey start -->
         <meta-data
@@ -228,6 +232,7 @@
             </intent-filter>
         </service>
         <!-- umeng push end -->
+
 
     </application>
 
