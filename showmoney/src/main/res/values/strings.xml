@@ -138,4 +138,8 @@
     <string name="txt_history_txns">历史交易</string>
     <string name="txt_query_result">查询结果</string>
 
+    <string name="setting_account">账户与安全</string>
+    <string name="setting_support_channel">支持的渠道</string>
+    <string name="setting_my_web_yunshouyin">我的网页版</string>
+    <string name="setting_about_yunshouyin">关于云收银</string>
 </resources>
