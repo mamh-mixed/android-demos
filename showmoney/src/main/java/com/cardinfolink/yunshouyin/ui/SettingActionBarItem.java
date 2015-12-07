@@ -62,4 +62,7 @@ public class SettingActionBarItem extends RelativeLayout {
         return mTitle.getText().toString();
     }
 
+    public void setLeftTextOnclickListner(OnClickListener l) {
+        mLeftText.setOnClickListener(l);
+    }
 }
