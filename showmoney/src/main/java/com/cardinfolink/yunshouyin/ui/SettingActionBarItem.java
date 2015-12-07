@@ -15,34 +15,40 @@ import com.cardinfolink.yunshouyin.R;
  * Created by mamh on 15-11-1.
  * 自定义的组合控件
  */
-public class SettingClikcView extends RelativeLayout {
-    private ImageView mImageView;
+public class SettingActionBarItem extends RelativeLayout {
+    private TextView mLeftText;
     private TextView mTitle;
+    private TextView mRightText;
 
 
-    public SettingClikcView(Context context) {
+    public SettingActionBarItem(Context context) {
         super(context);
         initView(context);
     }
 
-    public SettingClikcView(Context context, AttributeSet attrs) {
+    public SettingActionBarItem(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
         TypedArray typeArray = context.obtainStyledAttributes(attrs, R.styleable.SettingItemView);
         String title = typeArray.getString(R.styleable.SettingItemView_title);
+        String left = typeArray.getString(R.styleable.SettingItemView_left_text);
+        String right = typeArray.getString(R.styleable.SettingItemView_right_text);
         typeArray.recycle();
         mTitle.setText(title);
+        mLeftText.setText(left);
+        mRightText.setText(right);
     }
 
-    public SettingClikcView(Context context, AttributeSet attrs, int defStyle) {
+    public SettingActionBarItem(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView(context);
     }
 
     private void initView(Context context) {
-        View.inflate(context, R.layout.setting_click_item, this);
-        mImageView = (ImageView) this.findViewById(R.id.iv_setting);
+        View.inflate(context, R.layout.setting_action_bar_item, this);
         mTitle = (TextView) this.findViewById(R.id.tv_title);
+        mLeftText = (TextView) this.findViewById(R.id.tv_left);
+        mRightText = (TextView) this.findViewById(R.id.tv_right);
     }
 
 
