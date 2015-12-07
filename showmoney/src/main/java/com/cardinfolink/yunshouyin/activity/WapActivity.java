@@ -1,25 +1,34 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.activity.BaseActivity;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 
 public class WapActivity extends BaseActivity {
-
+    private static final String TAG = "WapActivity";
+    private SettingActionBarItem mSetting;
     private WebView mWebView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wap_bill_view);
 
+        mSetting = (SettingActionBarItem) findViewById(R.id.sabi_wap);
+        mSetting.setLeftTextOnclickListner(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         mWebView = (WebView) findViewById(R.id.base_webview);
         mWebView.setWebViewClient(new WebViewClient() {
@@ -66,4 +75,9 @@ public class WapActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
