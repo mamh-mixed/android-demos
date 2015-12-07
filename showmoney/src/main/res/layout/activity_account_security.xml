@@ -9,18 +9,18 @@
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:left_text="返回"
-        cardinfolink:title="账户与安全" />
+        cardinfolink:left_text="@string/setting_return"
+        cardinfolink:title="@string/setting_account_and_security" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        cardinfolink:title="账户信息" />
+        cardinfolink:title="@string/setting_account_info" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:title="修改密码" />
+        cardinfolink:title="@string/setting_modify_password" />
 
 </LinearLayout>

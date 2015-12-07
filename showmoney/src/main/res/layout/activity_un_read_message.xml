@@ -9,8 +9,8 @@
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:left_text="全部消息"
-        cardinfolink:title="未读消息列表" />
+        cardinfolink:left_text="@string/setting_all_message"
+        cardinfolink:title="@string/setting_unread_message_list" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,7 +21,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="全部置为已读" />
+            android:text="@string/setting_set_all_message_read" />
 
         <ListView
             android:layout_width="wrap_content"

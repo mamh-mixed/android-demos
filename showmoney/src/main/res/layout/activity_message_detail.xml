@@ -9,8 +9,8 @@
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:left_text="返回"
-        cardinfolink:title="消息详情" />
+        cardinfolink:left_text="@string/setting_return"
+        cardinfolink:title="@string/setting_message_detail" />
 
     <LinearLayout
         android:layout_width="wrap_content"
