@@ -22,7 +22,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-
     <!-- 必选 -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -48,12 +47,9 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-
-
         <activity
             android:name=".activity.SplashActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar">
@@ -63,7 +59,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -75,12 +70,10 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
-
         <activity
             android:name=".activity.RegisterNextActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activity.MainActivity"
             android:launchMode="singleTask"
@@ -110,9 +103,11 @@
             android:process="${applicationId}"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
+        <activity
+            android:name=".activity.AccountInfoActivity"
+            android:label="@string/app_name"/>
 
-
-        <!--UMENG appkey start-->
+        <!-- UMENG appkey start -->
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="${UMENG_APPKEY_VALUE}" />
@@ -122,9 +117,10 @@
         <meta-data
             android:name="UMENG_MESSAGE_SECRET"
             android:value="${UMENG_MESSAGE_SECRET}" />
-        <!-- UMENG end-->
+        <!-- UMENG end -->
 
-        <!-- umeng update start-->
+
+        <!-- umeng update start -->
         <service
             android:name="com.umeng.update.net.DownloadingService"
             android:process=":DownloadingService" />
@@ -132,9 +128,10 @@
         <activity
             android:name="com.umeng.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <!-- umeng update end-->
+        <!-- umeng update end -->
 
-        <!-- umeng push start-->
+
+        <!-- umeng push start -->
         <receiver
             android:name="com.umeng.message.NotificationProxyBroadcastReceiver"
             android:exported="false" />
@@ -149,6 +146,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
@@ -165,6 +163,7 @@
             android:process=":push">
             <intent-filter>
                 <action android:name="org.agoo.android.intent.action.ELECTION_RESULT_V4" />
+
                 <category android:name="umeng" />
             </intent-filter>
         </receiver>
@@ -194,14 +193,13 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="org.agoo.android.intent.action.PING_V4" />
+
                 <category android:name="umeng" />
             </intent-filter>
         </service>
-
         <service
             android:name="com.umeng.message.UmengIntentService"
             android:process=":push" />
-
         <service
             android:name="com.umeng.message.UmengMessageIntentReceiverService"
             android:exported="true"
@@ -213,7 +211,6 @@
                 <action android:name="org.android.agoo.client.ElectionReceiverService" />
             </intent-filter>
         </service>
-
         <service
             android:name="com.umeng.message.UmengMessageCallbackHandlerService"
             android:exported="false">
@@ -230,7 +227,7 @@
                 <action android:name="com.umeng.message.autoupdate.handler.action" />
             </intent-filter>
         </service>
-        <!-- umeng push end-->
+        <!-- umeng push end -->
 
     </application>
 
