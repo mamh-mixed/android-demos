@@ -9,40 +9,40 @@
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:left_text="返回"
-        cardinfolink:title="账户信息" />
+        cardinfolink:left_text="@string/setting_return"
+        cardinfolink:title="@string/setting_account_info" />
 
     <com.cardinfolink.yunshouyin.ui.SettingDetailItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         cardinfolink:detail="Minghui Ma"
-        cardinfolink:title="真实姓名" />
+        cardinfolink:title="@string/setting_real_name" />
 
     <com.cardinfolink.yunshouyin.ui.SettingDetailItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:detail="136xxxxxxx"
-        cardinfolink:title="联系电话" />
+        cardinfolink:title="@string/setting_phone_number" />
 
     <com.cardinfolink.yunshouyin.ui.SettingDetailItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:detail="上海"
-        cardinfolink:title="所在城市" />
+        cardinfolink:title="@string/setting_local_city" />
 
 
     <com.cardinfolink.yunshouyin.ui.SettingDetailItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:detail="中国工商银行"
-        cardinfolink:title="清算银行" />
+        cardinfolink:title="@string/setting_bank_name" />
 
     <com.cardinfolink.yunshouyin.ui.SettingDetailItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:detail="mamh"
-        cardinfolink:title="商户名称" />
+        cardinfolink:title="@string/setting_merchant_name" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="如信息有误请联系你的服务商" />
+            android:text="@string/setting_account_infomation" />
 
     </RelativeLayout>
 

@@ -9,30 +9,30 @@
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:left_text="返回"
-        cardinfolink:title="关于云收银" />
+        cardinfolink:left_text="@string/setting_return"
+        cardinfolink:title="@string/setting_about_yunshouyin" />
 
     <com.cardinfolink.yunshouyin.ui.SettingDetailItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         cardinfolink:detail="2.1"
-        cardinfolink:title="版本号" />
+        cardinfolink:title="@string/setting_version_number" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:right_text="www.shoe.money"
-        cardinfolink:title="产品网站" />
+        cardinfolink:title="@string/setting_product_website" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:title="欢迎页" />
+        cardinfolink:title="@string/setting_welcome_page" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:title="检查系统更新" />
+        cardinfolink:title="@string/setting_check_update" />
 
 </LinearLayout>
