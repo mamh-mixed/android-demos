@@ -32,7 +32,7 @@ import com.cardinfolink.yunshouyin.model.SubBank;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
-import com.cardinfolink.yunshouyin.view.SearchAdapter;
+import com.cardinfolink.yunshouyin.adapter.SearchAdapter;
 
 import java.util.ArrayList;
 import java.util.Iterator;

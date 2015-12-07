@@ -19,6 +19,7 @@ import android.widget.Spinner;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.BaseActivity;
+import com.cardinfolink.yunshouyin.adapter.SearchAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.BankDataService;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
