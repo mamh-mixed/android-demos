@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:left_text="返回"
+        cardinfolink:title="账户信息" />
+
+    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        cardinfolink:detail="Minghui Ma"
+        cardinfolink:title="真实姓名" />
+
+    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:detail="136xxxxxxx"
+        cardinfolink:title="联系电话" />
+
+    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:detail="上海"
+        cardinfolink:title="所在城市" />
+
+
+    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:detail="中国工商银行"
+        cardinfolink:title="清算银行" />
+
+    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:detail="mamh"
+        cardinfolink:title="商户名称" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="如信息有误请联系你的服务商" />
+
+    </RelativeLayout>
+
+</LinearLayout>
