@@ -10,7 +10,7 @@ android {
         minSdkVersion 8
         targetSdkVersion 23
         versionCode 56
-        versionName "2.0"
+        versionName "2.1"
         // 3 options: pro, test, dev
         buildConfigField 'String', 'ENVIRONMENT', '"pro"'
     }
