@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:left_text="返回"
+        cardinfolink:right_text="未读消息(5)"
+        cardinfolink:title="全部消息列表" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全部置为已读" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+        </ListView>
+
+    </LinearLayout>
+
+
+</LinearLayout>
