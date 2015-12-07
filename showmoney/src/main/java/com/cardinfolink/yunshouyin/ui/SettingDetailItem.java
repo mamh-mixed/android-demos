@@ -15,17 +15,17 @@ import com.cardinfolink.yunshouyin.R;
  * Created by mamh on 15-11-1.
  * 自定义的组合控件
  */
-public class SettingDetailView extends RelativeLayout {
+public class SettingDetailItem extends RelativeLayout {
     private TextView mTitle;
     private TextView mDetail;
 
 
-    public SettingDetailView(Context context) {
+    public SettingDetailItem(Context context) {
         super(context);
         initView(context);
     }
 
-    public SettingDetailView(Context context, AttributeSet attrs) {
+    public SettingDetailItem(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
         TypedArray typeArray = context.obtainStyledAttributes(attrs, R.styleable.SettingItemView);
@@ -36,7 +36,7 @@ public class SettingDetailView extends RelativeLayout {
         mDetail.setText(detail);
     }
 
-    public SettingDetailView(Context context, AttributeSet attrs, int defStyle) {
+    public SettingDetailItem(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView(context);
     }
