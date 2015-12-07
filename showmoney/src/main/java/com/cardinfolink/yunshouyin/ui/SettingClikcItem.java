@@ -18,6 +18,7 @@ import com.cardinfolink.yunshouyin.R;
 public class SettingClikcItem extends RelativeLayout {
     private ImageView mImageView;
     private TextView mTitle;
+    private TextView mRightText;
 
 
     public SettingClikcItem(Context context) {
@@ -30,7 +31,9 @@ public class SettingClikcItem extends RelativeLayout {
         initView(context);
         TypedArray typeArray = context.obtainStyledAttributes(attrs, R.styleable.SettingItemView);
         String title = typeArray.getString(R.styleable.SettingItemView_title);
+        String right = typeArray.getString(R.styleable.SettingItemView_right_text);
         typeArray.recycle();
+        mRightText.setText(right);
         mTitle.setText(title);
     }
 
@@ -43,6 +46,7 @@ public class SettingClikcItem extends RelativeLayout {
         View.inflate(context, R.layout.setting_click_item, this);
         mImageView = (ImageView) this.findViewById(R.id.iv_setting);
         mTitle = (TextView) this.findViewById(R.id.tv_title);
+        mRightText = (TextView) this.findViewById(R.id.tv_right);
     }
 
 
