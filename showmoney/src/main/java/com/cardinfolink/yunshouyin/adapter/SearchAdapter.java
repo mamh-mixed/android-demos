@@ -1,4 +1,4 @@
-package com.cardinfolink.yunshouyin.view;
+package com.cardinfolink.yunshouyin.adapter;
 
 import android.content.Context;
 import android.text.TextUtils;
