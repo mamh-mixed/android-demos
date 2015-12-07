@@ -3,6 +3,9 @@
     <declare-styleable name="SettingItemView">
         <attr name="title" format="string"></attr>
         <attr name="detail" format="string"></attr>
+
+        <attr name="left_text" format="string"></attr>
+        <attr name="right_text" format="string"></attr>
     </declare-styleable>
 
 </resources>
