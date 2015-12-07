@@ -6,6 +6,8 @@
 
         <attr name="left_text" format="string"></attr>
         <attr name="right_text" format="string"></attr>
+        <attr name="password_hint" format="string"></attr>
+
     </declare-styleable>
 
 </resources>
