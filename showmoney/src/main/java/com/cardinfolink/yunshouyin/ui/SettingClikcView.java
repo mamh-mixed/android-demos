@@ -28,8 +28,8 @@ public class SettingClikcView extends RelativeLayout {
     public SettingClikcView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
-        TypedArray typeArray = context.obtainStyledAttributes(attrs, R.styleable.SettingClikcView);
-        String title = typeArray.getString(R.styleable.SettingClikcView_title);
+        TypedArray typeArray = context.obtainStyledAttributes(attrs, R.styleable.SettingItemView);
+        String title = typeArray.getString(R.styleable.SettingItemView_title);
         typeArray.recycle();
         mTitle.setText(title);
     }
