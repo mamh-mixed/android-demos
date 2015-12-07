@@ -90,7 +90,11 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
-
+        <activity
+            android:name=".activity.WapActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light.NoTitleBar" />
         <activity
             android:name=".activity.CaptureActivity"
             android:exported="false"
