@@ -81,6 +81,7 @@
         android:orientation="vertical">
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:id="@+id/account_security"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
@@ -88,6 +89,7 @@
             cardinfolink:title="@string/setting_account_and_security" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:id="@+id/support_channel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
@@ -103,6 +105,7 @@
             cardinfolink:title="@string/setting_my_web_yunshouyin" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:id="@+id/about"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
@@ -116,6 +119,7 @@
         android:layout_height="fill_parent">
 
         <Button
+            android:id="@+id/btn_exit"
             android:layout_width="fill_parent"
             android:layout_height="50dp"
             android:layout_centerInParent="true"
