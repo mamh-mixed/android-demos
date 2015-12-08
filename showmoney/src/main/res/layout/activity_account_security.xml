@@ -7,18 +7,21 @@
     android:orientation="vertical">
 
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+        android:id="@+id/sabi_account_security"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:left_text="@string/setting_return"
         cardinfolink:title="@string/setting_account_and_security" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        android:id="@+id/account_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         cardinfolink:title="@string/setting_account_info" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        android:id="@+id/update_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:title="@string/setting_modify_password" />
