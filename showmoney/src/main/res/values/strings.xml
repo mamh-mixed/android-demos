@@ -174,4 +174,6 @@
     <string name="setting_safe_exit">安全退出</string>
     <string name="setting_my">我的</string>
     <string name="setting_increase_limit">提升限额</string>
+    <string name="setting_cloud_use">云收银服务使用协议</string>
+    <string name="setting_cloud_version">上海迅联数据服务有限公司  版权所有</string>
 </resources>

@@ -40,4 +40,28 @@
         android:layout_height="wrap_content"
         cardinfolink:title="@string/setting_check_update" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/setting_cloud_use"
+            android:textColor="#0033ff" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="@string/setting_cloud_version"
+            android:textColor="#999999" />
+
+    </LinearLayout>
+
+
 </LinearLayout>
