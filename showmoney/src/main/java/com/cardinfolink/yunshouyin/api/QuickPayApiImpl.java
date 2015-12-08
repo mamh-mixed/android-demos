@@ -284,17 +284,22 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 提升限额
+     */
     @Override
-    public void increaseLimit(String username, String password, String payee, String phone_num, String email) {
+    public void increaseLimit(User user) {
         String url = quickPayConfigStorage.getUrl() + "/limitincrease";
 
         Map<String, String> params = new LinkedHashMap<>();
-        params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
         params.put("password", password);
-        params.put("payee", payee);
-        params.put("email", email);
-        params.put("phone_num", phone_num);
+
+        params.put("payee", user.getLimitName());
+        params.put("email", user.getLimitEmail());
+        params.put("phone_num", user.getLimitPhone());
+
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, "SHA-1"));
 
