@@ -19,6 +19,7 @@
         android:background="@mipmap/level1">
 
         <ImageView
+            android:id="@+id/icon_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -35,6 +36,7 @@
         android:background="@mipmap/level2">
 
         <ImageView
+            android:id="@+id/icon_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -43,6 +45,7 @@
             android:background="@mipmap/icon_search" />
 
         <ImageView
+            android:id="@+id/icon_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -50,6 +53,7 @@
             android:background="@mipmap/icon_menu" />
 
         <ImageView
+            android:id="@+id/icon_myyouku"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
