@@ -17,7 +17,7 @@ public interface QuickPayService {
 
     void updateInfoAsync(User user, QuickPayCallbackListener<User> listener);
 
-    void increaseLimitAsync(String payee, String phone_num, String email, QuickPayCallbackListener<Void> listener);
+    void increaseLimitAsync(User user, QuickPayCallbackListener<Void> listener);
 
     void getBankInfoAsync(User user, QuickPayCallbackListener<BankInfo> quickPayCallbackListener);
 

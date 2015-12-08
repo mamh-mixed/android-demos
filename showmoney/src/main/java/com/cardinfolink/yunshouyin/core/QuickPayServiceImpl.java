@@ -164,15 +164,13 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void increaseLimitAsync(final String payee, final String phone_num, final String email, final QuickPayCallbackListener<Void> listener) {
-        final String username = "";
-        final String password = "";
+    public void increaseLimitAsync(final User user, final QuickPayCallbackListener<Void> listener) {
 
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
             @Override
             protected AsyncTaskResult<Void> doInBackground(Void... params) {
                 try {
-                    quickPayApi.increaseLimit(username, password, payee, phone_num, email);
+                    quickPayApi.increaseLimit(user);
                     return null;
                 } catch (QuickPayException ex) {
 
@@ -182,10 +180,10 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected void onPostExecute(AsyncTaskResult<Void> result) {
-                if (result.getException() != null) {
-                    listener.onFailure(result.getException());
-                } else {
+                if (result == null) {
                     listener.onSuccess(null);
+                } else if (result.getException() != null) {
+                    listener.onFailure(result.getException());
                 }
             }
         }.execute();
