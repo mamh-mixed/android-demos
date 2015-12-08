@@ -86,6 +86,7 @@ type configStruct struct {
 
 	Settle struct {
 		OverseasSettPoint string
+		DomesticSettPoint string
 	}
 }
 

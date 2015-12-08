@@ -110,14 +110,14 @@ type alpSettleResponse struct {
 	Error     string   `xml:"error,omitempty"`
 	Request   []Param  `xml:"request>param"`
 	// Alipay
-	Response csv_result `xml:"response,omitempty" bson:"response,omitempty"`
+	Response csvResult `xml:"response,omitempty" bson:"response,omitempty"`
 }
 
-type csv_result struct {
-	Csv_result csv_detail `xml:"csv_result,omitempty"`
+type csvResult struct {
+	CsvResult csvDetail `xml:"csv_result,omitempty"`
 }
 
-type csv_detail struct {
-	Count    string `xml:"count,omitempty" bson:"count,omitempty"`
-	Csv_data string `xml:"csv_data,omitempty" bson:"csv_data,omitempty"`
+type csvDetail struct {
+	Count  string `xml:"count,omitempty" bson:"count,omitempty"`
+	CsvStr string `xml:"csv_data,omitempty" bson:"csv_data,omitempty"`
 }

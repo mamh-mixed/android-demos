@@ -3,13 +3,11 @@ package domestic
 // 真实测试，如果参数对的话，是会扣钱的！！！！！
 // ScanCodeId 从手机获取扫条码
 import (
-	"fmt"
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 var pay = &model.ScanPayRequest{
@@ -53,8 +51,8 @@ var refundPay = &model.ScanPayRequest{
 }
 
 var settle = &model.ScanPayRequest{
-	StartTime: "2015-11-27 01:00:00",
-	EndTime:   "2015-11-27 15:00:00",
+	StartTime: "2015-12-07 00:00:00",
+	EndTime:   "2015-12-07 23:59:59",
 	SignKey:   "86l3l20oagn2afs0r0ztkizut1il66ec",
 	ChanMerId: "2088811767473826",
 }
@@ -131,12 +129,12 @@ func TestProcessCancel(t *testing.T) {
 
 func TestProcessSettleEnquiry(t *testing.T) {
 
-	modelMMap := make(modelMMap map[string]map[string][]model.BlendElement)
-	_, err := DefaultClient.ProcessSettleEnquiry(settle, modelMMap)
-
+	recsMap, err := DefaultClient.ProcessSettleEnquiry(settle)
 	if err != nil {
-		fmt.Printf("error:, %s", err)
+		t.Log(err)
+		t.FailNow()
 	}
 
-	//fmt.Printf("rsp:%s\n", rsp)
+	t.Logf("%+v", recsMap)
+
 }

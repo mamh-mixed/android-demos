@@ -147,7 +147,7 @@ func sendSettleRequest(alpReq *alpRequest) (*alpSettleResponse, error) {
 	}
 
 	// 记录日志
-	logs.SpLogs <- req.GetChanReqLogs(alpReq)
+	// logs.SpLogs <- req.GetChanReqLogs(alpReq)
 
 	params := make(map[string]string)
 	params = toSettleMap(alpReq)
@@ -192,7 +192,7 @@ func sendSettleRequest(alpReq *alpRequest) (*alpSettleResponse, error) {
 	}
 
 	// 记录日志
-	logs.SpLogs <- req.GetChanRetLogs(alpResp)
+	// logs.SpLogs <- req.GetChanRetLogs(alpResp)
 
 	return alpResp, nil
 
@@ -207,12 +207,11 @@ func handleSettleResponseBody(reader io.Reader) (*alpSettleResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	log.Debugf("alp response body: %s", string(bs))
 	err = xml.Unmarshal(bs, alpResp)
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("alp response body: \n %+v \n", alpResp)
 	// TODO:验证签名
 
 	return alpResp, nil

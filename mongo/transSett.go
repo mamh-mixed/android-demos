@@ -22,6 +22,8 @@ type transSettLogCollection struct {
 
 var TransSettColl = transSettCollection{"transSett"}
 var SpTransSettColl = transSettCollection{"transSett.sp"}
+
+// settlement log
 var TransSettLogColl = transSettLogCollection{"transSettLog"}
 
 // AtomUpsert mongodb-findAndModify
@@ -176,12 +178,22 @@ func (col *transSettCollection) FindOne(orderNum, chanOrderNum string) (t *model
 	return
 }
 
+// FindOne 根据交易订单号、渠道订单号删除记录
+func (col *transSettCollection) RemoveOne(orderNum, chanOrderNum string) error {
+	// 订单是uuid 全局唯一
+	q := bson.M{
+		"trans.orderNum":     orderNum,
+		"trans.chanOrderNum": chanOrderNum,
+	}
+	return database.C(col.name).Remove(q)
+}
+
 // Update 更新
 func (col *transSettCollection) Update(t *model.TransSett) error {
 	if t == nil {
 		return errors.New("transSett is nil")
 	}
-	t.SettDate = time.Now().Format("2006-01-02 15:04:05")
+	// t.SettDate = time.Now().Format("2006-01-02 15:04:05")
 	return database.C(col.name).Update(bson.M{"trans.merId": t.Trans.MerId, "trans.orderNum": t.Trans.OrderNum}, t)
 }
 
@@ -324,4 +336,10 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 		}},
 	}).All(&all)
 	return group, all, err
+}
+
+func (col *transSettCollection) FindAll() ([]model.TransSett, error) {
+	var result []model.TransSett
+	err := database.C(col.name).Find(nil).All(&result)
+	return result, err
 }

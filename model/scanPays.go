@@ -526,6 +526,14 @@ type RoleSett struct {
 	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
 }
 
+// ChanBlendMap 渠道勾兑数据集合
+// 外部key为渠道商户号，内部key为渠道订单号
+type ChanBlendMap map[string]map[string][]BlendElement
+
+// LocalBlendMap 系统本地勾兑数据集合
+// 外部key为渠道商户号，内部key为渠道订单号
+type LocalBlendMap map[string]map[string][]TransSett
+
 // 勾兑结构体
 type BlendElement struct {
 	Chcd      string //渠道编号
@@ -533,6 +541,7 @@ type BlendElement struct {
 	MerID     string //商户号
 	ChanMerID string //渠道商户号
 	MerName   string //商户名称
+	LocalID   string //
 	OrderID   string //渠道订单号
 	OrderTime string //交易时间
 	OrderType string //交易类型

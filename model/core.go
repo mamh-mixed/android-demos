@@ -428,10 +428,12 @@ type TransSett struct {
 	SettTime    string `bson:"settTime,omitempty"` // 清算具体时间
 	MerSettAmt  int64  `bson:"merSettAmt"`         // 商户清算金额
 	MerFee      int64  `bson:"merFee"`             // 商户手续费
-	ChanSettAmt int64  `bson:"chanSettAmt"`        // 渠道清算金额
-	ChanFee     int64  `bson:"chanFee"`            // 渠道手续费
-	AgentFee    int64  `bson:"agentFee"`           // 代理、机构手续费
-	BlendType   int    `bson:"blendType"`          //勾兑标识
+	AcqFee      int64  `bson:"acqFee"`             // 机构手续费
+	AcqSettAmt  int64  `bson:"acqSettAmt"`
+	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
+	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
+	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
+	BlendType   int    `bson:"blendType"`   //勾兑标识
 }
 
 // TransSettInfo 清分信息明细
