@@ -47,6 +47,6 @@ public class AccountSecurityActivity extends Activity implements View.OnClickLis
                 startActivity(intent);
                 break;
         }
-        finish();//结束当前的activity
+        //finish();//结束当前的activity
     }
 }
