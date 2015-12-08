@@ -367,9 +367,10 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 		var elementModel model.BlendElement
 		elementModel.Chcd = "WXP"
 		elementModel.ChcdName = "微信"
-		elementModel.ChanMerID = dataArray[3] //商户号
-		elementModel.OrderTime = dataArray[0] //时间
-		elementModel.OrderID = dataArray[5]   //微信交易号
+		elementModel.ChanMerID = dataArray[3] // 商户号
+		elementModel.OrderTime = dataArray[0] // 时间
+		elementModel.OrderID = dataArray[5]   // 微信交易号
+		elementModel.LocalID = dataArray[6]   // 商户订单号
 		elementModel.IsBlend = false
 		// init
 		recsMap, ok := cbd[elementModel.ChanMerID]

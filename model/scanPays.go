@@ -541,7 +541,7 @@ type BlendElement struct {
 	MerID     string //商户号
 	ChanMerID string //渠道商户号
 	MerName   string //商户名称
-	LocalID   string //
+	LocalID   string //系统订单号
 	OrderID   string //渠道订单号
 	OrderTime string //交易时间
 	OrderType string //交易类型

@@ -135,7 +135,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		}
 	}
 
-	// TODO:处理没有勾兑上的数据
+	// 处理没有勾兑上的数据
 
 	// upload
 	if len(localMMap) != 0 {

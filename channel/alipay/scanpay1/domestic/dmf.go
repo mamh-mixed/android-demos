@@ -320,7 +320,7 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 
 	for i := 0; i < count; i++ {
 		var elementModel model.BlendElement
-		//element[14*(i+1)]  //订单号
+		elementModel.LocalID = element[14*(i+1)]
 		elementModel.Chcd = "ALP"
 		elementModel.ChcdName = "支付宝"
 		elementModel.ChanMerID = chanMerId
