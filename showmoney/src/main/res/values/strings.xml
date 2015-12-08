@@ -3,9 +3,6 @@
 
     <string name="app_name">云收银</string>
     <string name="copyright">cardinfolink 2015</string>
-    <string name="login_hint_username">请输入用户名</string>
-    <string name="login_hint_password">请输入密码</string>
-    <string name="login_auto_login">自动登录</string>
     <string name="register_register">注册</string>
     <string name="register_next">提交</string>
     <string name="register_hint_qr_password">请确认密码</string>
@@ -95,7 +92,6 @@
     <string name="refd_dialog__password_error">密码错误!</string>
     <string name="scancode_view_create_code">生成二维码</string>
     <string name="scancode_view_scaning_code">开始扫描</string>
-
     <string name="toast_money_cannot_zero">金额不能为零!</string>
     <string name="toast_money_too_large">金额过大!</string>
 
@@ -121,7 +117,6 @@
     <string name="txn_currency">元</string>
     <string name="txn_refund">退款</string>
     <string name="txn_unit">笔</string>
-    <string name="login">登录</string>
     <string name="clear">清空</string>
     <string name="delete">删除</string>
     <string name="begin_scan">开始扫描</string>
@@ -176,4 +171,13 @@
     <string name="setting_increase_limit">提升限额</string>
     <string name="setting_cloud_use">云收银服务使用协议</string>
     <string name="setting_cloud_version">上海迅联数据服务有限公司  版权所有</string>
+
+    <string name="login_hint_username">请输入登录邮箱/手机号</string>
+    <string name="login_hint_password">请输入密码</string>
+    <string name="login_auto_login">自动登录</string>
+    <string name="login">登录</string>
+    <string name="login_register">注册</string>
+    <string name="login_account">账号</string>
+    <string name="login_password">密码</string>
+
 </resources>

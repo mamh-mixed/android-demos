@@ -29,15 +29,14 @@ public class LoginActivity extends BaseActivity {
 
     private EditText mUsernameEdit;
     private EditText mPasswordEdit;
-    private CheckBox mAutoLoginCheckBox;
+    private CheckBox mAutoLogin;
 
     private Button mLoginButton;
-    private Button mRegisterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_activity);
+        setContentView(R.layout.activity_login);
 
         mUsernameEdit = (EditText) findViewById(R.id.login_username);
         VerifyUtil.addEmailLimit(mUsernameEdit);
@@ -45,13 +44,12 @@ public class LoginActivity extends BaseActivity {
         mPasswordEdit = (EditText) findViewById(R.id.login_password);
         VerifyUtil.addEmailLimit(mPasswordEdit);
 
-        mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
+        mAutoLogin = (CheckBox) findViewById(R.id.login_auto);
 
         mLoginButton = (Button) findViewById(R.id.btnlogin);
-        mRegisterButton = (Button) findViewById(R.id.btnsignup);
 
         User user = SaveData.getUser(mContext);
-        mAutoLoginCheckBox.setChecked(user.isAutoLogin());
+        mAutoLogin.setChecked(user.isAutoLogin());
 
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
@@ -68,14 +66,6 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-        mRegisterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "onClick to register");
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private boolean validate() {
@@ -94,6 +84,7 @@ public class LoginActivity extends BaseActivity {
         if (TextUtils.isEmpty(password)) {
             String alertMsg = getResources().getString(R.string.alert_error_password_cannot_empty);
             mAlertDialog.show(alertMsg, wrongBitmap);
+            Log.e(TAG, " validate()" + alertMsg);
             return false;
         }
         return true;
@@ -113,7 +104,7 @@ public class LoginActivity extends BaseActivity {
             public void onSuccess(User data) {
                 User user = new User();
                 user.setUsername(username);
-                if (mAutoLoginCheckBox.isChecked()) {
+                if (mAutoLogin.isChecked()) {
                     user.setPassword(password);
                     user.setAutoLogin(true);
                 }
@@ -180,7 +171,7 @@ public class LoginActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         User user = SaveData.getUser(mContext);
-        mAutoLoginCheckBox.setChecked(user.isAutoLogin());
+        mAutoLogin.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
     }
