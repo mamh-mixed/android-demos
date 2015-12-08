@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.AboutActivity;
 import com.cardinfolink.yunshouyin.activity.AccountSecurityActivity;
+import com.cardinfolink.yunshouyin.activity.LimitIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
 import com.cardinfolink.yunshouyin.activity.WapActivity;
@@ -31,6 +32,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
     private SettingClikcItem mAbout;//关于云收银
 
     private Button mExit;
+    private Button mIncreaseLimit;//提升限额
 
     public MySettingView(Context context) {
         super(context);
@@ -41,6 +43,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         addView(contentView);
 
         mExit = (Button) contentView.findViewById(R.id.btn_exit);
+        mIncreaseLimit = (Button) contentView.findViewById(R.id.btn_limit);
 
         mAccountAndSecurity = (SettingClikcItem) contentView.findViewById(R.id.account_security);
         mSupportChannel = (SettingClikcItem) contentView.findViewById(R.id.support_channel);
@@ -48,6 +51,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mAbout = (SettingClikcItem) contentView.findViewById(R.id.about);
 
         mExit.setOnClickListener(this);
+        mIncreaseLimit.setOnClickListener(this);
         mAccountAndSecurity.setOnClickListener(this);
         mSupportChannel.setOnClickListener(this);
         mMyWap.setOnClickListener(this);
@@ -61,10 +65,13 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         Intent intent = null;
         switch (v.getId()) {
             case R.id.btn_exit:
-                //finish();
                 intent = new Intent(mContext, LoginActivity.class);
                 mContext.startActivity(intent);
-                ((Activity)mContext).finish();
+                ((Activity) mContext).finish();
+                break;
+            case R.id.btn_limit:
+                intent = new Intent(mContext, LimitIncreaseActivity.class);
+                mContext.startActivity(intent);
                 break;
             case R.id.account_security:
                 //账户与安全
