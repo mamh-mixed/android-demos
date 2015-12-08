@@ -2,9 +2,9 @@ package com.cardinfolink.yunshouyin.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,10 +16,12 @@ import com.cardinfolink.yunshouyin.R;
  * Created by mamh on 15-11-1.
  * 自定义的组合控件
  */
-public class SettingPasswordItem extends RelativeLayout {
+public class SettingPasswordItem extends RelativeLayout implements View.OnClickListener {
     private ImageView mImageView;
     private TextView mTitle;
-    private EditText mPassword;
+    private EditTextClear mPassword;
+
+    private boolean mPassowrdIsVisible = false;//初始时 密码是不显示的
 
 
     public SettingPasswordItem(Context context) {
@@ -47,7 +49,9 @@ public class SettingPasswordItem extends RelativeLayout {
         View.inflate(context, R.layout.setting_password_item, this);
         mImageView = (ImageView) this.findViewById(R.id.iv_show);
         mTitle = (TextView) this.findViewById(R.id.tv_title);
-        mPassword = (EditText) this.findViewById(R.id.et_password);
+        mPassword = (EditTextClear) this.findViewById(R.id.et_password);
+
+        mImageView.setOnClickListener(this);//这里设置图片的点击事件
     }
 
 
@@ -69,5 +73,32 @@ public class SettingPasswordItem extends RelativeLayout {
 
     public String getPassword() {
         return mPassword.getText().toString();
+    }
+
+    public void setPasswordIconVisible(boolean visible) {
+        mPassword.setClearIconVisible(visible);
+    }
+
+    public void setShakeAnimation() {
+        mPassword.setShakeAnimation();
+    }
+
+    public void setImageViewOnClickListener(OnClickListener l) {
+        mImageView.setOnClickListener(l);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        //判断来设置密码输入框是否显示密码还是隐藏密码
+        if (mPassowrdIsVisible) {
+            // 隐藏密码
+            mPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            mPassowrdIsVisible = false;
+        } else {
+            //显示
+            mPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            mPassowrdIsVisible = true;
+        }
     }
 }
