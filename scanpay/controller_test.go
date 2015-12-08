@@ -2,6 +2,8 @@ package scanpay
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/rand"
 	"sync"
 	"testing"
 
@@ -108,53 +110,51 @@ var (
 		// Chcd:       "ULIVE",
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
-		OrderNum:   "1447145911569",
-		ScanCodeId: "1801708104000529",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1810700102006068",
 		// VeriTime:   "-1",
 	}
 	// 刷卡电子券核销
 	purchaseActCoupons = &model.ScanPayRequest{
 		Txndir:    "Q",
-		Busicd:    "VERI",
+		Busicd:    "CRVE",
 		AgentCode: "10134001",
 		// Chcd:       "ULIVE",
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
-		OrderNum:   "1447145911569",
-		ScanCodeId: "1801708104000529",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1818303006004106",
 		// VeriTime:   "1",
-		OrigOrderNum: "",
-		Cardbin:      "",
-		Txamt:        "",
-		PayType:      "",
+		OrigOrderNum: "14495386832019727887",
+		Cardbin:      "622525",
+		Txamt:        "000000000100",
+		PayType:      "2",
 	}
 	// 电子券查询
 	queryPurchaseCouponsResult = &model.ScanPayRequest{
 		Txndir:    "Q",
-		Busicd:    "VERI",
+		Busicd:    "QUVE",
 		AgentCode: "10134001",
 		// Chcd:       "ULIVE",
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
-		OrderNum:   "1447145911569",
-		ScanCodeId: "1801708104000529",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1818303006004106",
 		// VeriTime:   "1",
-		OrigOrderNum: "",
-		Txamt:        "",
-		PayType:      "",
+		OrigOrderNum: "14495465722019727887",
 	}
 	// 刷卡电子券撤销
 	undoPurchaseActCoupons = &model.ScanPayRequest{
 		Txndir:    "Q",
-		Busicd:    "VERI",
+		Busicd:    "CAVE",
 		AgentCode: "10134001",
 		// Chcd:       "ULIVE",
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
-		OrderNum:   "1447145911569",
-		ScanCodeId: "1801708104000529",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1818303006004106",
 		// VeriTime:   "-1",
-		OrigOrderNum: "",
+		OrigOrderNum: "14495465722019727887",
 	}
 )
 

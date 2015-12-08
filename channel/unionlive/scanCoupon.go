@@ -135,10 +135,10 @@ func (u *unionliveScanPay) ProcessPurchaseActCoupons(req *model.ScanPayRequest) 
 		SaleMinAmount:   strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
 		SaleDiscount:    strconv.Itoa(unionLiveResp.Body.SaleDiscount),
 		ActualPayAmount: strconv.Itoa(unionLiveResp.Body.ActualPayAmount),
-		Txamt:           req.Txamt,
-		PayType:         req.PayType,
-		Cardbin:         req.Cardbin,
-		OrigOrderNum:    req.OrigOrderNum,
+		// Txamt:           req.Txamt,
+		// PayType:         req.PayType,
+		Cardbin:      req.Cardbin,
+		OrigOrderNum: req.OrigOrderNum,
 	}
 
 	return scanPayResponse, nil
@@ -275,6 +275,9 @@ func (u *unionliveScanPay) ProcessUndoPurchaseActCoupons(req *model.ScanPayReque
 
 // transChanToSysCode 将渠道的错误应答码转为为系统应答码
 func transChanToSysCode(chanReturnCode, chanErrMessage string) (returnCode, errDetail string) {
+	if chanReturnCode == "" {
+		return "", ""
+	}
 	returnCode, ok := ChanSysRespCode[chanReturnCode]
 	if !ok {
 		log.Warnf("chan Returncode(%s) is not in ChanSysRespCode,", chanReturnCode)

@@ -118,12 +118,12 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
 
-	sign := req.Cardbin[0:1]
-	if req.PayType == "4" && sign != "1" {
-		return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
-	} else if req.PayType == "5" && sign != "2" {
-		return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
-	}
+	// sign := req.Cardbin[0:1]
+	// if req.PayType == "4" && sign != "1" {
+	// 	return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
+	// } else if req.PayType == "5" && sign != "2" {
+	// 	return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
+	// }
 
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
@@ -164,6 +164,7 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	req.Terminalsn = req.Terminalid
 	req.Terminalid = c.TerminalId
 	req.OrigOrderNum = t.OrigOrderNum
+	req.OrigChanOrderNum = orig.ChanOrderNum
 
 	// 获得渠道实例，请求
 	client := unionlive.DefaultClient
@@ -242,10 +243,12 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	}
 	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
 	if err != nil {
+		log.Warn("trans CreateTime err")
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 	origSubmitTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
 	if err != nil {
+		log.Warn("trans origSubmitTime err")
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
@@ -256,6 +259,15 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	req.Terminalid = c.TerminalId
 	req.OrigOrderNum = t.OrigOrderNum
 	req.OrigSubmitTime = origSubmitTime.Format("20060102150405")
+	req.IntTxamt = orig.TransAmt
+	if orig.PayType != "" {
+		intPayType, err := strconv.Atoi(orig.PayType)
+		if err != nil {
+			log.Warn("trans payType to int err")
+			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		}
+		req.IntPayType = intPayType
+	}
 
 	// 获得渠道实例，请求
 	client := unionlive.DefaultClient
@@ -416,7 +428,7 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	}
 
 	if ret.ChannelTime != "" {
-		ChannelTime, err := time.ParseInLocation("20060102150405", ret.ExpDate, time.Local)
+		ChannelTime, err := time.ParseInLocation("20060102150405", ret.ChannelTime, time.Local)
 		if err != nil {
 			log.Errorf("format ret.ExpDate err,%s", err)
 			return err

@@ -34,11 +34,9 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 		return fieldEmptyError(sign)
 
 	}
-
 	if matched, err := validateMchntid(req.Mchntid); !matched {
 		return err
 	}
-
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
 		return err
 	}
@@ -49,7 +47,6 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 	if matched, err := validateVeriTime(req); !matched {
 		return err
 	}
-
 	return
 }
 
@@ -144,16 +141,16 @@ func validateQueryPurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPay
 	if matched, err := validateVeriTime(req); !matched {
 		return err
 	}
-	if req.Txamt != "" {
-		if matched, err := validateTxamt(req); !matched {
-			return err
-		}
-	}
-	if req.PayType != "" {
-		if matched, err := validatePayType(req); !matched {
-			return err
-		}
-	}
+	// if req.Txamt != "" {
+	// 	if matched, err := validateTxamt(req); !matched {
+	// 		return err
+	// 	}
+	// }
+	// if req.PayType != "" {
+	// 	if matched, err := validatePayType(req); !matched {
+	// 		return err
+	// 	}
+	// }
 	return
 }
 
@@ -199,10 +196,10 @@ func validateUndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanP
 func validatePayType(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 	intPayType, err := strconv.Atoi(req.PayType)
 	if err != nil {
-		return true, fieldFormatError(payType)
+		return false, fieldFormatError(payType)
 	}
 	req.IntPayType = intPayType
-	return false, nil
+	return true, nil
 }
 
 // validateVeriTime 验证核销次数
@@ -210,22 +207,22 @@ func validateVeriTime(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) 
 	if req.VeriTime != "" {
 		intVeriTime, err := strconv.Atoi(req.VeriTime)
 		if err != nil {
-			return true, fieldFormatError(veriTime)
+			return false, fieldFormatError(veriTime)
 		}
 		if intVeriTime <= 0 {
-			return true, fieldFormatError(veriTime)
+			return false, fieldFormatError(veriTime)
 		}
 		req.IntVeriTime = intVeriTime
 	} else {
 		req.IntVeriTime = 1
 	}
-	return false, nil
+	return true, nil
 }
 
 // validateChcd 验证渠道代码
 func validateChcd(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 	if req.Chcd != "" && req.Chcd != "ULIVE" {
-		return true, fieldContentError(chcd)
+		return false, fieldContentError(chcd)
 	}
-	return false, nil
+	return true, nil
 }

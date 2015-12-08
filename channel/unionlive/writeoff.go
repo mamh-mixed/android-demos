@@ -21,7 +21,7 @@ func Demo() (a interface{}, err error) {
 			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()), // 客户端交易流水号 40 M 客户端的唯一交易流水号
 		},
 		Body: coupon.PurchaseCouponsReqBody{
-			CouponsNo: "1809706004000705", // 优麦圈电子券号 50 M 优麦圈电子券号
+			CouponsNo: "1818303006004106", // 优麦圈电子券号 50 M 优麦圈电子券号
 			TermId:    "00000667",         // 终端编号 8 M 由优麦圈后台分配给该终端的编号
 			// TermSn:    "9e908a255b3e5989", // 终端唯一序列号 100 M 商户终端对应的硬件唯一序列号
 			Amount:    1, // 要验证的次数  10 M 要验证该券码的次数,次数必须大于0
@@ -52,14 +52,14 @@ func QueryPurchaseCouponsResultDemo() (a interface{}, err error) {
 			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
 		},
 		Body: coupon.QueryPurchaseCouponsResultReqBody{
-			CouponsNo: "1802702004000305",
+			CouponsNo: "1818303006004106",
 			TermId:    "00000667",
 			// TermSn:           "9e908a255b3e5989",
 			ExtMercId:        "100000000010001",
 			ExtTermId:        "1000134",
 			Amount:           1,
-			OldClientTraceNo: "1446109183201",
-			OldSubmitTime:    "20151029170019",
+			OldClientTraceNo: "14494757911298498081",
+			OldSubmitTime:    "20151207160951",
 		},
 		SpReq: &model.ScanPayRequest{},
 	}
@@ -108,19 +108,22 @@ func PurchaseActCouponsDemo() (a interface{}, err error) {
 		Header: coupon.PurchaseActCouponsReqHeader{
 			Version:       Version,
 			TransDirect:   TransDirectQ,
-			TransType:     "W394",
+			TransType:     "W452",
 			MerchantId:    "182000001000000",
 			SubmitTime:    time.Now().Format("20060102150405"),
 			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
 		},
 		Body: coupon.PurchaseActCouponsReqBody{
-			CouponsNo:      "1802702004000305",
-			OldHostTraceNo: "",
+			CouponsNo:      "1818303006004106",
+			OldHostTraceNo: "39d2eda6-7ee3-453a-97bb-882238d1b446",
 			TermId:         "00000667",
 			// TermSn:           "9e908a255b3e5989",
-			ExtMercId: "100000000010001",
-			ExtTermId: "1000134",
-			Amount:    1,
+			ExtMercId:   "100000000010001",
+			ExtTermId:   "1000134",
+			Amount:      1,
+			Cardbin:     "622525",
+			TransAmount: 100,
+			PayType:     2,
 		},
 		SpReq: &model.ScanPayRequest{},
 	}
@@ -139,21 +142,21 @@ func UndoPurchaseActCouponsDemo() (a interface{}, err error) {
 		Header: coupon.UndoPurchaseActCouponsReqHeader{
 			Version:       Version,
 			TransDirect:   TransDirectQ,
-			TransType:     "W394",
+			TransType:     "W492",
 			MerchantId:    "182000001000000",
 			SubmitTime:    time.Now().Format("20060102150405"),
 			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
 		},
 		Body: coupon.UndoPurchaseActCouponsReqBody{
-			CouponsNo: "1802702004000305",
+			CouponsNo: "1818303006004106",
 			TermId:    "00000667",
 			// TermSn:           "9e908a255b3e5989",
 			ExtMercId:        "100000000010001",
 			ExtTermId:        "1000134",
 			OldTransAmount:   1,
-			OldSubmitTime:    "",
-			OldClientTraceNo: "",
-			OldHostTraceNo:   "",
+			OldSubmitTime:    "20151207160951",
+			OldClientTraceNo: "14494757911298498081",
+			OldHostTraceNo:   "805024",
 		},
 		SpReq: &model.ScanPayRequest{},
 	}

@@ -255,6 +255,16 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 		ret.ScanCodeId = req.ScanCodeId
 		ret.Terminalid = ""
 	}
+	if ret.PayType == "" {
+		ret.PayType = req.PayType
+	}
+	if ret.PayType == "" {
+		ret.PayType = req.PayType
+	}
+	if ret.Cardbin == "" {
+		ret.Cardbin = req.Cardbin
+	}
+
 	ret.Attach = req.Attach
 }
 
