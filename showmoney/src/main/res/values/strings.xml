@@ -76,6 +76,7 @@
     <string name="alert_error_system_error">对不起,系统出现错误!</string>
     <string name="alert_error_old_password_error">原密码错误!</string>
     <string name="alert_update_success">修改成功!</string>
+    <string name="alert_commit_success">提交完成!</string>
     <string name="alert_error_old_password_cannot_empty">原密码不能为空!</string>
     <string name="alert_error_old_password_short_six">原密码不能少于6位!</string>
     <string name="alert_error_new_password_cannot_empty">新密码不能为空!</string>

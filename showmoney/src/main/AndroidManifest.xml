@@ -127,6 +127,9 @@
         <activity
             android:name=".activity.MessageDetailActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name=".activity.LimitIncreaseActivity"
+            android:label="@string/app_name" />
 
         <!-- UMENG appkey start -->
         <meta-data
