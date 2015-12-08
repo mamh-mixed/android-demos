@@ -23,7 +23,6 @@ import (
 type user struct{}
 
 const (
-	LOGINMAXTIMES = 10    //登陆最大次数为10次，1小时内，连续登陆10次，失败则锁定3小时
 	LOCKTIME      = 30000 //锁定三小时
 	LOGINDIFFTIME = 10000 //1小时以内
 )
@@ -185,7 +184,7 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 					continue
 				} else {
 					count++
-					fmt.Println("the count is :", count)
+					//fmt.Println("the count is :", count)
 					//记录
 					if loginTime == "" {
 						loginTime = timeElement
@@ -193,7 +192,7 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 						loginTime += ","
 						loginTime += timeElement
 					}
-					fmt.Println("the first loginTime is :", loginTime)
+					//fmt.Println("the first loginTime is :", loginTime)
 				}
 			}
 			//判断count是否达到10次
@@ -201,8 +200,8 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 				loginTime += ","
 				loginTime += localTime
 				mongo.AppUserCol.UpdateLoginTime(req.UserName, loginTime, localTime)
-				fmt.Println("the count is 9")
-				fmt.Println("the Transtime is :", localTime)
+				//fmt.Println("the count is 9")
+				//fmt.Println("the Transtime is :", localTime)
 				return model.USER_LOCK //锁定
 			} else {
 				var ret model.AppResult
@@ -222,16 +221,14 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 					loginTime += ","
 					loginTime += localTime
 				}
-
-				fmt.Println("the second logintime is :", loginTime)
-
+				//fmt.Println("the second logintime is :", loginTime)
 				mongo.AppUserCol.UpdateLoginTime(req.UserName, loginTime, "")
 
 				return ret
 			}
 		} else {
 			mongo.AppUserCol.UpdateLoginTime(req.UserName, localTime, "")
-			fmt.Println("the *** logintime is :", localTime)
+			//fmt.Println("the *** logintime is :", localTime)
 		}
 		return model.USERNAME_PASSWORD_ERROR
 	}

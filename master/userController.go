@@ -8,6 +8,14 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"strconv"
+	"strings"
+	"time"
+)
+
+const (
+	LOCKTIME      = 30000 //锁定三小时
+	LOGINDIFFTIME = 10000 //1小时以内
 )
 
 type userController struct{}
@@ -23,6 +31,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 
 	var encryptPass string
 	user, err := mongo.UserColl.FindOneUser(userName, "", "")
+	var isAppUser = false
 	if err != nil {
 
 		// 兼容appUser用户登录
@@ -43,16 +52,148 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 				// AgentCode:    "",
 				// SubAgentCode: "",
 				// GroupCode:    "",
-				MerId: appUser.MerId,
+				MerId:     appUser.MerId,
+				LockTime:  appUser.LockTime,
+				LoginTime: appUser.LoginTime,
 			}
+			isAppUser = true
 		}
 
 	} else {
 		encryptPass = fmt.Sprintf("%x", sha1.Sum([]byte((model.RAND_PWD + "{" + userName + "}" + password))))
 	}
 
+	//判断锁定情况
+	if user.LockTime != "" {
+		localTime := time.Now().Format("2006-01-02 15:04:05")
+		stemp := ""
+		for _, v := range localTime {
+			if (v >= '0') && (v <= '9') {
+				stemp += string(v)
+			}
+		}
+		localTime = stemp
+		date1 := user.LockTime[:8]
+		date2 := localTime[:8]
+		time1 := user.LockTime[8:]
+		time2 := localTime[8:]
+		time1Int, err := strconv.ParseInt(string(time1), 10, 32)
+		if err != nil {
+			log.Errorf("convert string to int error value:%s, error:", time1, err)
+			return model.NewResultBody(3, model.SYSTEM_ERROR.Error)
+		}
+		time2Int, err := strconv.ParseInt(string(time2), 10, 32)
+		if err != nil {
+			log.Errorf("convert string to int error value:%s, error:", time2, err)
+			return model.NewResultBody(3, model.SYSTEM_ERROR.Error)
+		}
+		if string(date1) != string(date2) {
+			time2Int += 240000
+		}
+
+		if (time2Int - time1Int) > LOCKTIME {
+			if isAppUser { //解锁
+				mongo.AppUserCol.UpdateLoginTime(userName, "", "")
+			} else {
+				mongo.UserColl.UpdateLoginTime(userName, "", "")
+			}
+		} else {
+			return model.NewResultBody(3, model.USER_LOCK.Error)
+		}
+	}
+
 	// 校验
 	if encryptPass != user.Password {
+		localTime := time.Now().Format("2006-01-02 15:04:05")
+		stemp := ""
+		for _, v := range localTime {
+			if (v >= '0') && (v <= '9') {
+				stemp += string(v)
+			}
+		}
+		localTime = stemp
+		if user.LoginTime != "" {
+			timeArray := strings.Split(user.LoginTime, ",")
+			var count = 0
+			var loginTime = ""
+			date2 := localTime[:8]
+			time2 := localTime[8:]
+			time2Int, err := strconv.ParseInt(string(time2), 10, 32)
+			if err != nil {
+				log.Errorf("convert string to int is value:%s, error:%s", time2, err)
+				return model.NewResultBody(3, model.SYSTEM_ERROR.Error)
+			}
+			for _, timeElement := range timeArray {
+				date1 := timeElement[:8]
+				time1 := timeElement[8:]
+
+				time1Int, err := strconv.ParseInt(string(time1), 10, 32)
+				if err != nil {
+					log.Errorf("convert string to int is value:%s, error:%s", time1, err)
+					continue
+				}
+
+				if string(date1) != string(date2) { //日期不同，加24小时
+					time2Int += 240000
+				}
+
+				if (time2Int - time1Int) > LOGINDIFFTIME { //超过一小时，舍弃
+					continue
+				} else {
+					count++
+					//记录
+					if loginTime == "" {
+						loginTime = timeElement
+					} else {
+						loginTime += ","
+						loginTime += timeElement
+					}
+				}
+			}
+			//判断count是否达到10次
+			if count == 9 {
+				loginTime += ","
+				loginTime += localTime
+				if isAppUser {
+					mongo.AppUserCol.UpdateLoginTime(userName, loginTime, localTime)
+				} else {
+					mongo.UserColl.UpdateLoginTime(userName, loginTime, localTime)
+				}
+				return model.NewResultBody(3, model.USER_LOCK.Error) //锁定
+			} else {
+				var ret model.ResultBody
+				ret.Status = 3
+				if count == 6 {
+					ret.Message = model.USER_THREE_TIMES.Error
+				} else if count == 7 {
+					ret.Message = model.USER_TWO_TIMES.Error
+				} else if count == 8 {
+					ret.Message = model.USER_ONE_TIMES.Error
+				} else {
+					ret.Message = model.USERNAME_PASSWORD_ERROR.Error
+				}
+
+				if loginTime == "" {
+					loginTime = localTime
+				} else {
+					loginTime += ","
+					loginTime += localTime
+				}
+				if isAppUser {
+					mongo.AppUserCol.UpdateLoginTime(userName, loginTime, "")
+				} else {
+					mongo.UserColl.UpdateLoginTime(userName, loginTime, "")
+				}
+
+				return &ret
+			}
+		} else {
+			if isAppUser {
+				mongo.AppUserCol.UpdateLoginTime(userName, localTime, "")
+			} else {
+				mongo.UserColl.UpdateLoginTime(userName, localTime, "")
+			}
+		}
 		log.Errorf("wrong password, expect %s but get %s", user.Password, encryptPass)
 		return model.NewResultBody(3, "密码错误")
 	}
@@ -106,6 +247,9 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 			return model.NewResultBody(2, "必填项不能为空")
 		}
 	}
+
+	user.LoginTime = ""
+	user.LockTime = ""
 
 	// 用户名不能重复
 	_, err = mongo.UserColl.FindOneUser(user.UserName, "", "")

@@ -37,6 +37,8 @@ type User struct {
 	AreaCode     string `json:"areaCode" bson:"areaCode,omitempty"`               // 地区代码
 	CreateTime   string `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
 	UpdateTime   string `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
+	LoginTime    string `bson:"loginTime,omitempty" json:"loginTime,omitempty"`   // 记录登陆时间
+	LockTime     string `bson:"lockTime,omitempty" json:"lockTime,omitempty"`     // 记录锁定时间
 }
 
 // Session Session表
