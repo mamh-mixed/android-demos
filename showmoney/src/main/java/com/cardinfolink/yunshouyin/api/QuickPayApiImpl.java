@@ -402,16 +402,16 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     @Override
-    public ServerPacket getHistoryBills(String username, String password, String clientid, String month, long index, String status) {
+    public ServerPacket getHistoryBills(User user, String month, String index, String status) {
         String url = quickPayConfigStorage.getUrl() + "/bill";
 
         Map<String, String> params = new LinkedHashMap<>();
-        params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
         params.put("password", password);
-        params.put("clientid", clientid);
+        params.put("clientid", user.getClientid());
         params.put("month", month);
-        params.put("index", "" + index);
+        params.put("index", index);
         params.put("status", status);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, "SHA-1"));
