@@ -250,15 +250,15 @@ func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, cbd model.ChanBlen
 	alpReq := &alpRequest{
 		Partner:          req.ChanMerId,
 		Service:          settleService,
-		Gmt_create_start: req.StartTime,
-		Gmt_create_end:   req.EndTime,
+		Gmt_create_start: req.SettDate + " 00:00:00",
+		Gmt_create_end:   req.SettDate + " 23:59:59",
 	}
 
 	alpReq.SpReq = req
 
 	alpResp, err := sendSettleRequest(alpReq)
 	if err != nil {
-		log.Errorf("sendRequest fail, func name is ProcessSettleEnquiry, the settle time start:%s, end:%s, error:%s", req.StartTime, req.EndTime, err)
+		log.Errorf("sendRequest fail, error:%s", err)
 		return err
 	}
 

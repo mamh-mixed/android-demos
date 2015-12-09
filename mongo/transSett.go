@@ -341,6 +341,47 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 	return group, all, err
 }
 
+// GroupBySettRole 根据清算角色出报表
+func (col *transSettCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
+
+	var result []model.SettRoleGroup
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": bson.M{
+			"settDate": settDate,
+		}},
+		{"$group": bson.M{"_id": bson.M{"merId": "$trans.merId", "settRole": "$trans.settRole"},
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.transAmt", // 相当于将逆向交易的金额变为负数
+					}},
+				},
+			}},
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.fee",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.fee",
+					}},
+				},
+			}},
+		}},
+		{"$group": bson.M{
+			"_id": "$_id.settRole",
+			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
+				"transAmt": "$transAmt",
+				"fee":      "$fee",
+			}},
+		}},
+		{"$project": bson.M{
+			"settRole": "$_id",
+			"mers":     "$detail",
+		}},
+	}).All(&result)
+	return result, err
+}
+
 func (col *transSettCollection) FindAll() ([]model.TransSett, error) {
 	var result []model.TransSett
 	err := database.C(col.name).Find(nil).All(&result)

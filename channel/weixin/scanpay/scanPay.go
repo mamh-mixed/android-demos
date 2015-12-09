@@ -320,7 +320,7 @@ func (sp *WeixinScanPay) ProcessSettleEnquiry(m *model.ScanPayRequest, cbd model
 
 	d := &SettleQueryReq{
 		CommonParams: *getCommonParams(m),
-		SettleDate:   m.SettleDate,
+		SettleDate:   strings.Replace(m.SettDate, "-", "", -1),
 		SettleType:   "ALL",
 	}
 

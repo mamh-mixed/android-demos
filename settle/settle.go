@@ -173,7 +173,7 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 	go SpReconciliatReport(date, transSetts...)
 
 	// 进行勾兑
-	DoSettle(date, immediately)
+	// DoSettle(date, immediately)
 	log.Info("Do SpTransSett success... gen report... do settle...")
 	return err
 }

@@ -185,8 +185,8 @@ type ScanPayRequest struct {
 	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
 	Terminalsn string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
 
-	SettDate     string `json:"settDate" url:"settDate,omitempty" bson:"settDate,omitempty"`
-	NextOrderNum string `json:"nextOrderNum" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
+	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
+	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
 	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 
@@ -213,10 +213,10 @@ type ScanPayRequest struct {
 	IsGBK bool     `json:"-" url:"-" bson:"-"`
 	M     Merchant `json:"-" url:"-" bson:"-"`
 
-	//对账
-	SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
-	StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
-	EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
+	// //对账
+	// SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
+	// StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
+	// EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
