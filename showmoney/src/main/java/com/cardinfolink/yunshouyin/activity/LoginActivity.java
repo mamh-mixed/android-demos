@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
@@ -20,6 +23,7 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
@@ -27,9 +31,12 @@ import com.cardinfolink.yunshouyin.view.ActivateDialog;
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
 
-    private EditText mUsernameEdit;
-    private EditText mPasswordEdit;
+    private EditTextClear mUsernameEdit;
+    private EditTextClear mPasswordEdit;
     private CheckBox mAutoLogin;
+    private TextView mRegister;
+    private ImageView mIncrease;
+    private ImageView mHelp;
 
     private Button mLoginButton;
 
@@ -38,10 +45,56 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mUsernameEdit = (EditText) findViewById(R.id.login_username);
+        mIncrease = (ImageView) findViewById(R.id.iv_increase);
+        mHelp = (ImageView) findViewById(R.id.iv_help);
+
+        mRegister= (TextView) findViewById(R.id.tv_register);
+
+        mUsernameEdit = (EditTextClear) findViewById(R.id.login_username);
+        mUsernameEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(mUsernameEdit.getText())) {
+                    mIncrease.setVisibility(View.VISIBLE);
+                }else{
+                    mIncrease.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
         VerifyUtil.addEmailLimit(mUsernameEdit);
 
-        mPasswordEdit = (EditText) findViewById(R.id.login_password);
+        mPasswordEdit = (EditTextClear) findViewById(R.id.login_password);
+        mPasswordEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(mPasswordEdit.getText())) {
+                    mHelp.setVisibility(View.VISIBLE);
+                }else{
+                    mHelp.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         VerifyUtil.addEmailLimit(mPasswordEdit);
 
         mAutoLogin = (CheckBox) findViewById(R.id.login_auto);
