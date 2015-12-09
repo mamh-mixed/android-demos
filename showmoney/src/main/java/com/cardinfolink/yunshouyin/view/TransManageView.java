@@ -192,17 +192,9 @@ public class TransManageView extends LinearLayout {
                 mBillAdapter.notifyDataSetChanged();
                 mPullToRefreshListView.onRefreshComplete();
 
-
-                mBillTipsText.setText(
-                        tipsYearMonth +
-                                "  " +
-                                getResources().getString(R.string.txn_total_times) + count +
-                                " " +
-                                getResources().getString(R.string.txn_total_amount) + total + getResources().getString(R.string.txn_currency) +
-                                " " +
-                                getResources().getString(R.string.txn_refund) + refdcount
-                                +
-                                getResources().getString(R.string.txn_unit) + "(" + refdtotal + getResources().getString(R.string.txn_currency) + ")");
+                String tipsFormat = getResources().getString(R.string.txn_tips_format);
+                String tipsText = String.format(tipsFormat, tipsYearMonth, count, total, refdcount, refdtotal);
+                mBillTipsText.setText(tipsText);
                 billIndex += size;
             }
 
