@@ -6,7 +6,6 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -38,10 +37,13 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:background="@drawable/login_bg1"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:id="@+id/tv_title"
@@ -56,34 +58,40 @@
 
             <com.cardinfolink.yunshouyin.ui.EditTextClear
                 android:id="@+id/login_username"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_toRightOf="@+id/tv_title"
+                android:background="@null"
                 android:ems="10"
                 android:hint="@string/login_hint_username"
                 android:inputType="text"
                 android:textColor="#000000" />
 
             <ImageView
+                android:id="@+id/iv_increase"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
                 android:src="@drawable/login_increase" />
 
         </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="0.3dp"
+            android:background="@drawable/login_bg2"
+            android:focusable="true"
+
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:id="@+id/tv_title1"
@@ -98,24 +106,26 @@
 
             <com.cardinfolink.yunshouyin.ui.EditTextClear
                 android:id="@+id/login_password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_toRightOf="@+id/tv_title1"
+                android:background="@null"
                 android:ems="10"
                 android:hint="@string/login_hint_password"
                 android:inputType="textPassword"
                 android:textColor="#000000" />
 
             <ImageView
+                android:id="@+id/iv_help"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
                 android:src="@drawable/login_help" />
 
 
@@ -137,6 +147,7 @@
                 android:text="@string/login_auto_login" />
 
             <TextView
+                android:id="@+id/tv_register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -177,6 +188,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="30dp"
                 android:layout_centerInParent="true"
                 android:maxHeight="50dp"
                 android:minHeight="20dp"
