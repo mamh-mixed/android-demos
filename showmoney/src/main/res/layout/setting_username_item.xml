@@ -16,12 +16,13 @@
 
     <com.cardinfolink.yunshouyin.ui.EditTextClear
         android:id="@+id/et_username"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="40dp"
         android:layout_toRightOf="@+id/tv_title"
+        android:background="@null"
         android:hint="请输入登录邮箱"
         android:inputType="text"
         android:textColor="#000000" />
