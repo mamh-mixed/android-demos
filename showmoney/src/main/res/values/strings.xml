@@ -184,4 +184,8 @@
     <string name="login_account">账号</string>
     <string name="login_password">密码</string>
 
+    <string name="reset_hint_username">请填写登录邮箱</string>
+    <string name="reset_account">你的账号</string>
+    <string name="reset_password">重置密码</string>
+    <string name="reset_messsage">其他账号登录请联系你的服务商为你重置密码</string>
 </resources>
