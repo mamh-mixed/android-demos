@@ -65,4 +65,8 @@ public class SettingActionBarItem extends RelativeLayout {
     public void setLeftTextOnclickListner(OnClickListener l) {
         mLeftText.setOnClickListener(l);
     }
+
+    public void setRightTextOnclickListner(OnClickListener l) {
+        mRightText.setOnClickListener(l);
+    }
 }
