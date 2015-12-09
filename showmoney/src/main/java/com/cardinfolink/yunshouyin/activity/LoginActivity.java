@@ -93,6 +93,8 @@ public class LoginActivity extends BaseActivity {
         mLoginButton.setOnClickListener(new LoginOnClickListener());
 
         mHelp.setOnClickListener(new LoginOnClickListener());
+
+        mRegister.setOnClickListener(new LoginOnClickListener());
     }
 
 
@@ -214,6 +216,10 @@ public class LoginActivity extends BaseActivity {
                     break;
                 case R.id.iv_help:
                     mResetDialog.show();
+                    break;
+                case R.id.tv_register:
+                    Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                    startActivity(intent);
                     break;
             }
         }
