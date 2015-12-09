@@ -118,6 +118,7 @@
     <string name="txn_currency">元</string>
     <string name="txn_refund">退款</string>
     <string name="txn_unit">笔</string>
+    <string name="txn_tips_format">%1$s 交易笔数%2$s 交易总金额:%3$s元\n退款笔数%4$s 退款金额:%5$s元</string>
     <string name="clear">清空</string>
     <string name="delete">删除</string>
     <string name="begin_scan">开始扫描</string>
