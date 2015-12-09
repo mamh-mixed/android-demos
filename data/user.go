@@ -12,7 +12,7 @@ func AddUserFromCSV(path string) error {
 	}
 
 	log.Infof("add users len=%d", len(users))
-	// log.Debugf("%+v", users)
+	log.Debugf("%+v", users)
 
 	for _, u := range users {
 		err := mongo.UserColl.Add(&u)

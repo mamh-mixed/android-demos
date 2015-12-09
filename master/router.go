@@ -23,6 +23,8 @@ var commonURLArr = []string{
 	"/master/trade/findOne",
 	"/master/user/updatePwd",
 	"/master/app/locale",
+	"/master/trade/settle/report",
+	"/master/trade/settle/journal",
 }
 
 var genAdminURLArr = []string{
@@ -37,6 +39,8 @@ var genAdminURLArr = []string{
 	"/master/agent/find",
 	"/master/qiniu/download",
 	"/master/app/locale",
+	"/master/trade/settle/report",
+	"/master/trade/settle/journal",
 }
 
 // 路径中包含以下关键字，则记录到数据库
@@ -59,9 +63,12 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/trade/report", tradeReportHandle)
 	mux.HandleFunc("/master/trade/stat", tradeQueryStatsHandle)
 	mux.HandleFunc("/master/trade/stat/report", tradeQueryStatsReportHandle)
-	mux.HandleFunc("/master/trade/settle/query", tradeSettleQueryHandle)
-	mux.HandleFunc("/master/trade/settle/report", tradeSettleReportHandle)
+	mux.HandleFunc("/master/trade/transfer/query", tradeTransferQueryHandle)
+	mux.HandleFunc("/master/trade/transfer/report", tradeTransferReportHandle)
 	mux.HandleFunc("/master/trade/message", tradeMsgHandle)
+	mux.HandleFunc("/master/trade/settle/journal", tradeSettleJournalHandle)
+	mux.HandleFunc("/master/trade/settle/report", tradeSettleReportHandle)
+	mux.HandleFunc("/master/trade/settle/refresh", tradeSettleRefreshHandle)
 	mux.HandleFunc("/master/merchant/find", merchantFindHandle)
 	mux.HandleFunc("/master/merchant/one", merchantFindOneHandle)
 	mux.HandleFunc("/master/merchant/save", merchantSaveHandle)

@@ -13,6 +13,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
+	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/CardInfoLink/quickpay/util"
 
 	"github.com/omigo/log"
@@ -50,8 +51,8 @@ func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("SUCCESS"))
 }
 
-// tradeSettleQueryHandle 清算报表查询的
-func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
+// tradeSettleQueryHandle 交易划款报表查询的
+func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -67,8 +68,8 @@ func tradeSettleQueryHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// tradeSettleReportHandle 清算交易明细报表
-func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+// tradeTransferReportHandle 交易划款报表明细
+func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
@@ -82,6 +83,79 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 		EndTime:      date,
 		SettRole:     role,
 	}, fn)
+}
+
+// tradeSettleJournalHandle 交易流水，勾兑后的交易
+func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 页面参数
+	date := r.FormValue("date")
+	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
+
+	// session参数
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// 设置交易查询权限
+	q := &model.QueryCondition{
+		IsForReport:  true,
+		StartTime:    date + " 00:00:00", // 北京时间
+		EndTime:      date + " 23:59:59", // 北京时间
+		AgentCode:    curSession.User.AgentCode,
+		MerId:        curSession.User.MerId,
+		SubAgentCode: curSession.User.SubAgentCode,
+		GroupCode:    curSession.User.GroupCode,
+		UtcOffset:    utcOffset * 60, // second
+		Locale:       curSession.Locale,
+		UserType:     curSession.UserType,
+	}
+
+	// 下载
+	tradeSettJournalReport(w, q)
+
+}
+
+// tradeSettleReportHandle 交易流水汇总，勾兑后的交易
+func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
+	date := r.FormValue("date") // 北京时间
+
+	// session参数
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
+
+	// condition
+	q := &model.QueryCondition{
+		IsForReport:  true,
+		StartTime:    date + " 00:00:00", // 北京时间
+		EndTime:      date + " 23:59:59", // 北京时间
+		AgentCode:    curSession.User.AgentCode,
+		MerId:        curSession.User.MerId,
+		SubAgentCode: curSession.User.SubAgentCode,
+		GroupCode:    curSession.User.GroupCode,
+		Locale:       curSession.Locale,
+		UserType:     curSession.UserType,
+	}
+
+	// 导出
+	tradeSettReport(w, q)
+}
+
+// tradeSettleRefreshHandle 重新勾兑交易数据
+func tradeSettleRefreshHandle(w http.ResponseWriter, r *http.Request) {
+	// TODO
+	date := r.FormValue("date")
+	key := r.FormValue("key")
+	if key != "cilxl12345$" {
+		return
+	}
+	log.Infof("process refresh transSettle")
+	go settle.RefreshSpTransSett(date)
 }
 
 // respCodeMatchHandle 查找应答码处理器
@@ -247,9 +321,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		cond.IsAggregateByGroup = isAggreByGroup
 	}
 
-	log.Debugf("tradeReportHandle condition is %#v", cond)
-
-	tradeReport(w, cond, params.Get("filename"))
+	tradeReport(w, cond, "trade_detail.xlsx")
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
@@ -293,7 +365,6 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		log.Error("fail to find session")
 		return
 	}
-
 	params := r.URL.Query()
 
 	// 时区偏移量，前端传过来是分
@@ -319,7 +390,7 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 
 	// 设置content-type
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
-	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, params.Get("filename")))
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, "trade_summary.xlsx"))
 
 	// 导出
 	statTradeReport(w, q)

@@ -31,6 +31,12 @@ func (col *chanMerCollection) Find(chanCode, chanMerId string) (c *model.ChanMer
 	return c, nil
 }
 
+func (col *chanMerCollection) FindByArea(areaType int) ([]model.ChanMer, error) {
+	var result []model.ChanMer
+	err := database.C(col.name).Find(bson.M{"areaType": areaType}).All(&result)
+	return result, err
+}
+
 // Add 增加一个渠道商户
 func (col *chanMerCollection) Add(c *model.ChanMer) error {
 	c.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
@@ -214,4 +220,18 @@ func (col *chanMerCollection) Insert(c *model.ChanMer) error {
 	c.UpdateTime = c.CreateTime
 	err := database.C(col.name).Insert(c)
 	return err
+}
+
+// FindWXPAgent 查找微信代理
+func (col *chanMerCollection) FindWXPAgent() ([]model.ChanMer, error) {
+
+	var result []model.ChanMer
+
+	find := bson.M{
+		"chanCode":    "WXP",
+		"isAgentMode": false,
+	}
+	err := database.C(col.name).Find(find).All(&result)
+
+	return result, err
 }

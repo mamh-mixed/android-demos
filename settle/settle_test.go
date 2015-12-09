@@ -8,6 +8,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestDoSpTransSett(t *testing.T) {
+	DoSpTransSett("2015-12-01")
+}
+
 func TestAddTrans(t *testing.T) {
 
 	tran := &model.Trans{
@@ -32,7 +36,7 @@ func TestDoSettWork(t *testing.T) {
 }
 
 func TestDoScanpaySettReport(t *testing.T) {
-	yesterday = "2015-11-06"
+	yesterday = "2015-10-12"
 	err := doScanpaySettReport(yesterday)
 	if err != nil {
 		t.Error(err)

@@ -31,10 +31,11 @@ func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 	}
 
 	type rec struct {
-		OrderNum  string `json:"orderNum"`
-		TransType int8   `json:"transType"`
-		TransTime string `json:"transTime"`
-		TransAmt  int64  `json:"transAmt"`
+		OrderNum     string `json:"orderNum"`
+		TransType    int8   `json:"transType"`
+		TransTime    string `json:"transTime"`
+		TransAmt     int64  `json:"transAmt"`
+		OrigOrderNum string `json:"origOrderNum,omitempty"`
 	}
 
 	tSize := len(trans)
@@ -68,7 +69,7 @@ func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 				transType = 8
 			}
 
-			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt}
+			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt, t.OrigOrderNum}
 			recs = append(recs, r)
 		}
 		result.Rec = recs
@@ -183,9 +184,12 @@ func GetMerInfo(merId string) scanFixedResponse {
 		response.MerID = ""
 		return response
 	}
+	response.AgentCode = m.AgentCode
 	response.TitleOne = m.Detail.TitleOne
 	response.TitleTwo = m.Detail.TitleTwo
-	response.AgentCode = m.AgentCode
+	response.IsPostAmount = m.Detail.IsPostAmount
+	response.SuccBtnLink = m.Detail.SuccBtnLink
+	response.SuccBtnTxt = m.Detail.SuccBtnTxt
 	return response
 }
 
@@ -265,6 +269,36 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 		Data:    trans,
 	}
 	return ret
+}
+
+// TransSettStatistics 交易清算汇总
+func TransSettStatistics(q *model.QueryCondition) model.Summary {
+	group, all, err := mongo.SpTransSettColl.FindAndGroupBy(q)
+	if err != nil {
+		log.Errorf("find trans error: %s", err)
+	}
+
+	var data = make([]model.Summary, 0)
+
+	// 将数据合并
+	for _, d := range group {
+		s := model.Summary{
+			MerId:     d.MerId,
+			AgentName: d.AgentName,
+			MerName:   d.MerName,
+			GroupName: d.GroupName,
+		}
+
+		// 遍历渠道，合并数据
+		combine(&s, d.Detail)
+		data = append(data, s)
+	}
+
+	// 汇总数据
+	summary := model.Summary{Data: data}
+	combine(&summary, all)
+
+	return summary
 }
 
 // TransStatistics 交易统计
@@ -347,14 +381,17 @@ func combine(s *model.Summary, detail []model.Channel) {
 }
 
 type scanFixedResponse struct {
-	Response    string          `json:"response"`
-	MerID       string          `json:"merID"`
-	AgentCode   string          `json:"inscd,omitempty"`
-	TitleOne    string          `json:"title_one"`
-	TitleTwo    string          `json:"title_two"`
-	ErrorDetail string          `json:"errorDetail,omitempty"`
-	Data        []scanFixedData `json:"data,omitempty"`
-	Count       int             `json:"count,omitempty"`
+	Response     string          `json:"response"`
+	MerID        string          `json:"merID"`
+	AgentCode    string          `json:"inscd,omitempty"`
+	TitleOne     string          `json:"title_one"`              // 微信扫固定码支付页面的标题1
+	TitleTwo     string          `json:"title_two"`              // 微信扫固定码支付页面的标题2
+	SuccBtnTxt   string          `json:"succBtnTxt,omitempty"`   // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink  string          `json:"succBtnLink,omitempty"`  // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount bool            `json:"isPostAmount,omitempty"` // 微信扫固定码支付成功后的按钮连接是否传输金额
+	ErrorDetail  string          `json:"errorDetail,omitempty"`
+	Data         []scanFixedData `json:"data,omitempty"`
+	Count        int             `json:"count,omitempty"`
 }
 
 type scanFixedData struct {

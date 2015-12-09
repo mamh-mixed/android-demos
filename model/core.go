@@ -30,6 +30,7 @@ const (
 	PurchaseCoupons = 8 // 卡券核销
 
 	// settStatus
+	SettOK         = 0 //对账标记
 	SettSuccess    = 1 // 勾兑成功
 	SettSysRemain  = 2 // 系统多出的
 	SettChanRemain = 3 // 渠道多出的
@@ -174,8 +175,11 @@ type MerDetail struct {
 	CommodityName string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
 	Area          string   `bson:"area,omitempty" json:"area,omitempty"`
-	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
-	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
+	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`           // 微信扫固定码支付页面的标题1
+	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`           // 微信扫固定码支付页面的标题2
+	SuccBtnTxt    string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`       // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink   string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`     // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount  bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`   // 微信扫固定码支付成功后的按钮连接是否传输金额
 	Province      string   `bson:"province,omitempty" json:"province,omitempty"`           // 商户省份
 	City          string   `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
 	Nation        string   `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
@@ -217,17 +221,30 @@ type ChanMer struct {
 	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
 	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	AcqFee      float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
+	AcqFee      float64  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
 	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
 	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
 	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
 	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 交易模式 1-商户模式 2-市场模式
-	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段
+	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段0-境内 1-境外
 	CreateTime  string   `bson:"createTime,omitempty" json:"createTime,omitempty"`   // 创建时间
 	UpdateTime  string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`   // 更新时间
+
+	// 0. 渠道退手续费，手续费原路返还，支付宝→机构→商户，统计报表及清算报表中的交易金额 =  负的原交易金额；
+	// 1. 渠道不退手续费，机构承担手续费，统计报表及清算报表中的交易金额 =  负的原交易金额；
+	// 2. 渠道不退手续费，商户承担手续费，统计报表及清算报表中的交易金额 =  负的（原交易金额 – 手续费）；
+	// 3. 渠道不退手续费（预留），机构商户按比例承担手续费，这个模式目前不会有，先不统计在报表里。
+	SchemeType int          `bson:"schemeType" json:"schemeType"` // 计费方案
+	Sftp       *SftpAccount `bson:"sftp,omitempty" json:"-"`
 	// ...
+}
+
+// SftpAccount 登录sftp的帐号
+type SftpAccount struct {
+	Username string `bson:"username"`
+	Password string `bson:"password"`
 }
 
 type Agent struct {
@@ -417,15 +434,17 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 
 // TransSett 清算信息
 type TransSett struct {
-	Trans       Trans  `bson:"trans"`       // 清算的交易
-	SettFlag    int8   `bson:"settFlag"`    // 清算标志
-	SettDate    string `bson:"settDate"`    // 清算时间
-	MerSettAmt  int64  `bson:"merSettAmt"`  // 商户清算金额
-	MerFee      int64  `bson:"merFee"`      // 商户手续费
-	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
-	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
-	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
-	BlendType   int    `bson:"blendType"`   // 勾兑状态
+	Trans      Trans  `bson:"trans"`              // 清算的交易
+	SettRole   string `bson:"settRole,omitempty"` // 清算角色
+	SettDate   string `bson:"settDate,omitempty"` // 清算日期
+	SettTime   string `bson:"settTime,omitempty"` // 清算具体时间
+	MerFee     int64  `bson:"merFee"`             // 商户手续费
+	MerSettAmt int64  `bson:"merSettAmt"`         // 商户清算金额
+	AcqFee     int64  `bson:"acqFee"`             // 讯联成本
+	AcqSettAmt int64  `bson:"acqSettAmt"`         // 讯联应收
+	InsFee     int64  `bson:"CILFee"`             // 机构、代理手续费
+	InsSettAmt int64  `bson:"CILSettAmt"`         // 机构、代理应收金额
+	BlendType  int    `bson:"blendType"`          //勾兑标识
 }
 
 // TransSettInfo 清分信息明细

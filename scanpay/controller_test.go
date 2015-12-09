@@ -102,6 +102,13 @@ var (
 		NeedUserInfo: "YES",
 	}
 
+	settQuery = &model.ScanPayRequest{
+		Txndir:   "Q",
+		Busicd:   "LIST",
+		Mchntid:  "100000000000203",
+		SettDate: "2015-12-01",
+	}
+
 	// 卡券核销
 	purchaseCoupons = &model.ScanPayRequest{
 		Txndir:    "Q",
@@ -199,7 +206,7 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(scanPayBarcodePay)
+	err := doOneScanPay(settQuery)
 	if err != nil {
 		t.Error(err)
 	}

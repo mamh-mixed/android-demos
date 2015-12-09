@@ -12,6 +12,7 @@ import (
 const (
 	sysEnv = "QUICKPAY_ENV"
 	pkg    = "github.com/CardInfoLink/quickpay"
+	// pkg = "github.com\\CardInfoLink\\quickpay"
 )
 
 // Hostname 主机名
@@ -63,6 +64,7 @@ func workDir() {
 		fmt.Printf("can not get work directory: %s\n", err)
 		os.Exit(2)
 	}
+
 	if pos := strings.Index(WorkDir, pkg); pos >= 0 {
 		WorkDir = WorkDir[:(pos + len(pkg))]
 	}

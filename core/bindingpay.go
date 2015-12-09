@@ -766,7 +766,7 @@ func ProcessBillingDetails(be *model.BillingDetails) (ret *model.BindingReturn) 
 	ret = mongo.RespCodeColl.Get(successCode)
 
 	//查询
-	rec, err := mongo.TransSettColl.Find(be.MerId, be.SettDate, be.NextOrderNum)
+	rec, err := mongo.TransSettColl.FindByDate(be.MerId, be.SettDate, be.NextOrderNum)
 	if err != nil {
 		log.Errorf("Find transSett records error : %s", err)
 		return

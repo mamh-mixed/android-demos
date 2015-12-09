@@ -1,10 +1,19 @@
 {	
 	"Currency":"JPY",
-	"ExportF64Format":"#,##0",
 	"ChanCode":{
 		"ALP":"アリペイ",
 		"WXP":"Wechat",
 		"Unknown":"未知"
+	},
+	"ReportName":{
+		"SettleJournal":"照会用明細",
+		"SettleSummary":"統計清算レポート"
+	},
+	"Role":{
+		"Company" :"会社",
+		"Agent"   :"代理",
+		"Group"   :"加盟店",
+		"Mer"     :"店舗"
 	},
 	"BusicdType":{
 		"Purc":"取引事項",
@@ -49,22 +58,27 @@
 		"MerName"        			:"加盟店名称",
 		"OrderNum"       			:"オーダーナンバー",
 		"TransAmt"       			:"取引金額",
+		"TransCurr"					:"取引通貨",
 		"MerFee"					:"加盟店手数料",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間",
 		"PayTime"					:"支払い時間",
 		"TransStatus"    			:"取引状態",
+		"ChanMerId"     			:"チャンネル加盟店コード",
 		"AgentCode"      			:"提携先",
 		"TerminalId"     			:"端末番号",
 		"Busicd"         			:"取引種類",
 		"OrigOrderNum"   			:"元オーダーナンバー",
 		"Remark" 					:"備考",
+		"IsSettled"					:"清算に参加要否",
 		"RefundAmt"      			:"リファンド金額",
 		"Fee"            			:"手数料",
 		"SettAmt"        			:"清算金額",
 		"TotalTransAmt"  			:"取引総額",
 		"TotalRefundAmt" 			:"リファンド総額",
 		"TotalFee"       			:"手数料総額",
-		"TotalSettAmt"   			:"清算総額"
+		"TotalSettAmt"   			:"清算総額",
+		"Yes"						:"は",
+		"No"						:"否"
 	}
 }

@@ -80,13 +80,25 @@ func GetLocale(l string) *LocaleTemplate {
 
 // LocaleTemplate 语言模板
 type LocaleTemplate struct {
-	Currency        string
-	ExportF64Format string
+	Currency string
 	// 渠道代号
 	ChanCode struct {
 		ALP     string
 		WXP     string
 		Unknown string
+	}
+
+	ReportName struct {
+		SettleJournal string
+		SettleSummary string
+	}
+
+	// 角色
+	Role struct {
+		Company string
+		Agent   string
+		Group   string
+		Mer     string
 	}
 
 	// 交易类型
@@ -120,21 +132,26 @@ type LocaleTemplate struct {
 
 // TransReport 交易明细报表
 type TransReport struct {
+	Yes            string
+	No             string
 	SheetName      string
 	MerId          string
 	MerName        string
 	OrderNum       string
 	TransAmt       string
+	TransCurr      string
 	MerFee         string
 	ChanCode       string
 	TransTime      string
 	PayTime        string
 	TransStatus    string
+	ChanMerId      string
 	AgentCode      string
 	TerminalId     string
 	Busicd         string
 	OrigOrderNum   string
 	Remark         string
+	IsSettled      string
 	RefundAmt      string
 	Fee            string
 	SettAmt        string

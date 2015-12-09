@@ -1,0 +1,14 @@
+hostname:	 gordberg-p1
+local ip:	 192.168.1.33
+environment:	 develop
+work directory:	 E:\golang\src\github.com\CardInfoLink\quickpay
+config file:	 E:\golang\src\github.com\CardInfoLink\quickpay/config/config_develop.js
+connected to mongodb host `***` and database `quickpay`
+=== RUN   TestProcessSettleEnquiry
+the first value is :﻿交易时间
+error execut 
+--- FAIL: TestProcessSettleEnquiry (0.36s)
+	scanPay_test.go:162: the first position is different
+FAIL
+exit status 1
+FAIL	github.com/CardInfoLink/quickpay/channel/weixin/scanpay	2.290s
