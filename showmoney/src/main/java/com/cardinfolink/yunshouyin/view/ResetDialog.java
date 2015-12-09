@@ -1,13 +1,14 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.activity.ResetPasswordActivity;
 
 public class ResetDialog {
     private Context mContext;
@@ -33,8 +34,9 @@ public class ResetDialog {
 
             @Override
             public void onClick(View v) {
-
-
+                Intent intent = new Intent(mContext, ResetPasswordActivity.class);
+                mContext.startActivity(intent);
+                dialogView.setVisibility(View.GONE);
             }
         });
 
