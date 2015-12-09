@@ -12,7 +12,7 @@ func TestDownloadBill(t *testing.T) {
 
 	p := &DownloadBillReq{
 		CommonParams: testCommonParams,
-		BillDate:     "20151015",
+		BillDate:     "20151123",
 		BillType:     "SUCCESS",
 	}
 

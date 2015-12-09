@@ -3,19 +3,18 @@ package domestic
 // 真实测试，如果参数对的话，是会扣钱的！！！！！
 // ScanCodeId 从手机获取扫条码
 import (
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 var pay = &model.ScanPayRequest{
 	GoodsInfo:  "鞋子,1000,2;衣服,1500,3",
 	OrderNum:   util.SerialNumber(),
-	SignKey:    "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ScanCodeId: "281095002166152011",
+	SignKey:    "86l3l20oagn2afs0r0ztkizut1il66ec",
+	ScanCodeId: "280499860770919934",
 	ActTxamt:   "0.01",
 	Subject:    "讯联测试",
 	ChanMerId:  "2088811767473826",
@@ -45,10 +44,17 @@ var enquiry = &model.ScanPayRequest{
 
 var refundPay = &model.ScanPayRequest{
 	OrderNum:     util.Millisecond(),
-	OrigOrderNum: "e148a25a84f14024511c5f3cde5d4594",
-	SignKey:      "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
+	OrigOrderNum: "00a4371518554214622c801a9a158128",
+	SignKey:      "86l3l20oagn2afs0r0ztkizut1il66ec",
 	ChanMerId:    "2088811767473826",
 	ActTxamt:     "0.01",
+}
+
+var settle = &model.ScanPayRequest{
+	StartTime: "2015-12-08 00:00:00",
+	EndTime:   "2015-12-08 23:59:59",
+	SignKey:   "tt0h6du2jmv89sbwc2wdzeqydbvmt8bj",
+	ChanMerId: "2088701607252123",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
@@ -119,4 +125,16 @@ func TestProcessCancel(t *testing.T) {
 			So(resp.Respcd, ShouldEqual, "00")
 		})
 	})
+}
+
+func TestProcessSettleEnquiry(t *testing.T) {
+	cbd := make(model.ChanBlendMap)
+	err := DefaultClient.ProcessSettleEnquiry(settle, cbd)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	t.Logf("%+v", cbd)
+
 }
