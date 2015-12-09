@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.AboutActivity;
@@ -15,6 +16,7 @@ import com.cardinfolink.yunshouyin.activity.LimitIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
 import com.cardinfolink.yunshouyin.activity.WapActivity;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 
 /**
@@ -34,6 +36,9 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
     private Button mExit;
     private Button mIncreaseLimit;//提升限额
 
+    private TextView mEmail;//账户名
+    private TextView mLimit;//显示限额的一些信息的
+
     public MySettingView(Context context) {
         super(context);
         mContext = context;
@@ -49,6 +54,10 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mSupportChannel = (SettingClikcItem) contentView.findViewById(R.id.support_channel);
         mMyWap = (SettingClikcItem) contentView.findViewById(R.id.my_wap);
         mAbout = (SettingClikcItem) contentView.findViewById(R.id.about);
+
+        mEmail = (TextView) contentView.findViewById(R.id.tv_email);//账户名
+        mEmail.setText(SessonData.loginUser.getUsername());//通过sessonData设置一下用户名
+        mLimit = (TextView) contentView.findViewById(R.id.tv_limit_info);//显示限额的一些信息的
 
         mExit.setOnClickListener(this);
         mIncreaseLimit.setOnClickListener(this);
