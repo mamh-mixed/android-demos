@@ -347,7 +347,7 @@ public class QuickPayApiImpl implements QuickPayApi {
      * @param username
      */
     @Override
-    public void forgetPassword(String username) {
+    public ServerPacket forgetPassword(String username) {
         String url = quickPayConfigStorage.getUrl() + "/forgetpassword";
 
         Map<String, String> params = new LinkedHashMap<>();
@@ -360,7 +360,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             //TODO: issue, what if serverPacket has not state?
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return;
+                return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
             }

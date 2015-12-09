@@ -30,4 +30,6 @@ public interface QuickPayService {
     void getOrderAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacketOrder> listener);
 
     void getRefdAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacket> listener);
+
+    void forgetPasswordAsync(String user, QuickPayCallbackListener<ServerPacket> listener);
 }
