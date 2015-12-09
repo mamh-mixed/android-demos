@@ -175,7 +175,7 @@ func (a *alipayOverseas) Reconciliation(date string) {
 		if currency.Str(t.Currency, t.TransAmt) != data[2] {
 			// 金额不一致
 			ts.BlendType = AMT_ERROR
-		} else if currency.Str(t.Currency, ts.AcqFee) != data[3] {
+		} else if currency.Str(t.Currency, ts.InsFee) != data[3] {
 			// 不管是支付交易还是逆向交易，都是有计算手续费的。
 			// 手续费不一致
 			ts.BlendType = FEE_ERROR

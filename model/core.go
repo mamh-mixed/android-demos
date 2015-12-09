@@ -430,9 +430,9 @@ type TransSett struct {
 	MerSettAmt int64  `bson:"merSettAmt"`         // 商户清算金额
 	AcqFee     int64  `bson:"acqFee"`             // 讯联成本
 	AcqSettAmt int64  `bson:"acqSettAmt"`         // 讯联应收
-	InsFee     int64  `bson:"CILFee"`             // 机构、代理手续费
-	InsSettAmt int64  `bson:"CILSettAmt"`         // 机构、代理应收金额
-	BlendType  int    `bson:"blendType"`          //勾兑标识
+	InsFee     int64  `bson:"InsFee"`             // 机构、代理手续费
+	InsSettAmt int64  `bson:"InsSettAmt"`         // 机构、代理应收金额
+	BlendType  int    `bson:"blendType"`          // 勾兑标识
 }
 
 // TransSettInfo 清分信息明细
