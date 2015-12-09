@@ -62,12 +62,19 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="10dp"
-                android:inputType="text"
                 android:layout_toRightOf="@+id/tv_title"
                 android:ems="10"
                 android:hint="@string/login_hint_username"
+                android:inputType="text"
                 android:textColor="#000000" />
 
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/login_increase" />
 
         </RelativeLayout>
 
@@ -102,6 +109,14 @@
                 android:hint="@string/login_hint_password"
                 android:inputType="textPassword"
                 android:textColor="#000000" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/login_help" />
 
 
         </RelativeLayout>
