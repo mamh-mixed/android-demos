@@ -3,10 +3,19 @@
 
     <string name="app_name">云收银</string>
     <string name="copyright">cardinfolink 2015</string>
+
     <string name="register_register">注册</string>
     <string name="register_next">提交</string>
+    <string name="register_email">登录邮箱</string>
+    <string name="register_invite_code">邀&#x0020;&#x0020;请&#x0020;&#x0020;码</string>
+    <string name="register_optional">可选填</string>
+    <string name="register_password">登录密码</string>
+    <string name="register_hint_password">请填写登录密码</string>
+    <string name="register_qr_password">确认密码</string>
     <string name="register_hint_qr_password">请确认密码</string>
-    <string name="register_hint_email">请输入您的邮箱</string>
+    <string name="register_message">点击“注册”按钮，即表示您同意</string>
+    <string name="register_cloud_version">云收银服务协议</string>
+    <string name="register_hint_email">你的激活码将发送到此邮箱</string>
     <string name="register_next_finished">完成</string>
     <string name="register_next_hint_openbank">请输入您的开户行,精准到支行</string>
     <string name="register_next_hint_name">请输入您的姓名</string>
@@ -15,6 +24,8 @@
     <string name="register_next_directions">       *请完善以下信息，才能正常使用收款功能。我们会将您的收款金额在2个工作日内清算到您的账户中（节假日不清算），费率为0.6%（即每交易100元收取手续费0.6元）。
 
 *云收银将严格遵守国家相关法律法规，承诺不将您的账户信息以任何形式透露给第三方。</string>
+
+
     <string name="detail_refd">交易退款</string>
     <string name="update_password">修改密码</string>
     <string name="update_password_hint_oldpwd">当前密码</string>

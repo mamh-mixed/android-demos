@@ -14,6 +14,8 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
+import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
@@ -22,9 +24,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends BaseActivity {
-    private EditText mEmailEdit;
-    private EditText mPasswordEdit;
-    private EditText mQrPasswordEdit;
+    private SettingInputItem mEmailEdit;
+    private SettingPasswordItem mPasswordEdit;
+    private SettingPasswordItem mQrPasswordEdit;
 
     private Button mRegisterNext;
 
@@ -56,14 +58,11 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void initLayout() {
-        mEmailEdit = (EditText) findViewById(R.id.register_email);
-        VerifyUtil.addEmailLimit(mEmailEdit);
+        mEmailEdit = (SettingInputItem) findViewById(R.id.register_email);
 
-        mPasswordEdit = (EditText) findViewById(R.id.register_password);
-        VerifyUtil.addEmailLimit(mPasswordEdit);
+        mPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_password);
 
-        mQrPasswordEdit = (EditText) findViewById(R.id.register_qr_password);
-        VerifyUtil.addEmailLimit(mQrPasswordEdit);
+        mQrPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_qr_password);
 
         mRegisterNext = (Button) findViewById(R.id.btnregister);
         mRegisterNext.setOnClickListener(new View.OnClickListener() {
@@ -75,14 +74,15 @@ public class RegisterActivity extends BaseActivity {
     }
 
     public void btnRegisterNextOnClick(View view) {
-        if (!validate()) {
+        final String username = mEmailEdit.getText(); //用户名
+        final String password = mPasswordEdit.getPassword(); //密码，第一次输入的
+        final String qrPassword = mQrPasswordEdit.getPassword(); //确认密码，第二次输入的
+
+        if (!validate(username, password, qrPassword)) {
             return;
         }
-        mLoadingDialog.startLoading();
-        final String username = mEmailEdit.getText().toString(); //用户名
-        final String password = mPasswordEdit.getText().toString(); //密码，第一次输入的
-        final String qrPassword = mQrPasswordEdit.getText().toString(); //确认密码，第二次输入的
 
+        mLoadingDialog.startLoading();
         quickPayService.registerAsync(username, password, qrPassword, new QuickPayCallbackListener<Void>() {
             @Override
             public void onSuccess(Void data) {
@@ -112,11 +112,7 @@ public class RegisterActivity extends BaseActivity {
         });
     }
 
-    private boolean validate() {
-        String email = mEmailEdit.getText().toString();
-        String password = mPasswordEdit.getText().toString();
-        String qrPassword = mQrPasswordEdit.getText().toString();
-
+    private boolean validate(String email, String password, String qrPassword) {
         String alertMsg = "";
         Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         if (TextUtils.isEmpty(email)) {
