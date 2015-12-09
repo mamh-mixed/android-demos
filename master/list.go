@@ -45,6 +45,11 @@ func listFind(data []byte, keyword string) (result *model.ResultBody) {
 		return model.NewResultBody(2, "解析失败")
 	}
 
+	if cond.ColName == "" {
+		log.Error("missing collection name")
+		return model.NewResultBody(3, "COLLECTION_NAME_IS_REQUIRED")
+	}
+
 	list, err := cond.Find(keyword)
 	if err != nil {
 		log.Errorf("find list error: %s", err)
