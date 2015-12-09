@@ -6,7 +6,6 @@ import com.cardinfolink.yunshouyin.api.QuickPayApi;
 import com.cardinfolink.yunshouyin.api.QuickPayApiImpl;
 import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
@@ -20,7 +19,7 @@ public class QuickPayServiceImpl implements QuickPayService {
     private QuickPayConfigStorage quickPayConfigStorage;
 
     public QuickPayServiceImpl(QuickPayConfigStorage quickPayConfigStorage) {
-        quickPayApi = new QuickPayApiImpl(quickPayConfigStorage);
+        this.quickPayApi = new QuickPayApiImpl(quickPayConfigStorage);
         this.quickPayConfigStorage = quickPayConfigStorage;
     }
 
@@ -47,7 +46,6 @@ public class QuickPayServiceImpl implements QuickPayService {
                     quickPayApi.register(username, password);
                     return null;
                 } catch (QuickPayException ex) {
-
                     return new AsyncTaskResult<Void>(null, ex);
                 }
             }
@@ -97,7 +95,6 @@ public class QuickPayServiceImpl implements QuickPayService {
                     quickPayApi.activate(username, password);
                     return null;
                 } catch (QuickPayException ex) {
-
                     return new AsyncTaskResult<Void>(null, ex);
                 }
             }
@@ -115,7 +112,6 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void improveInfoAsync(final User user, final QuickPayCallbackListener<User> listener) {
-
         new AsyncTask<Void, Integer, AsyncTaskResult<User>>() {
             @Override
             protected AsyncTaskResult<User> doInBackground(Void... params) {
@@ -165,7 +161,6 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void increaseLimitAsync(final User user, final QuickPayCallbackListener<Void> listener) {
-
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
             @Override
             protected AsyncTaskResult<Void> doInBackground(Void... params) {
@@ -173,7 +168,6 @@ public class QuickPayServiceImpl implements QuickPayService {
                     quickPayApi.increaseLimit(user);
                     return null;
                 } catch (QuickPayException ex) {
-
                     return new AsyncTaskResult<Void>(null, ex);
                 }
             }
@@ -198,7 +192,6 @@ public class QuickPayServiceImpl implements QuickPayService {
                     BankInfo bankInfo = quickPayApi.getBankInfo(user);
                     return new AsyncTaskResult<BankInfo>(bankInfo);
                 } catch (QuickPayException ex) {
-
                     return new AsyncTaskResult<BankInfo>(null, ex);
                 }
             }
@@ -239,14 +232,12 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void getHistoryBillsAsync(final String month, final long index, final String status, final QuickPayCallbackListener<ServerPacket> listener) {
-        final User loginUser = SessonData.loginUser;
-
+    public void getHistoryBillsAsync(final User user, final String month, final String index, final String status, final QuickPayCallbackListener<ServerPacket> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
                 try {
-                    ServerPacket serverPacket = quickPayApi.getHistoryBills(loginUser.getUsername(), loginUser.getPassword(), loginUser.getClientid(), month, index, status);
+                    ServerPacket serverPacket = quickPayApi.getHistoryBills(user, month, index, status);
                     return new AsyncTaskResult<ServerPacket>(serverPacket, null);
                 } catch (QuickPayException ex) {
                     return new AsyncTaskResult<ServerPacket>(null, ex);

@@ -1,7 +1,5 @@
 package com.cardinfolink.yunshouyin.view;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,6 +14,7 @@ import com.cardinfolink.yunshouyin.adapter.BillAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
@@ -36,13 +35,12 @@ public class TransManageView extends LinearLayout {
     private Context mContext;
 
     private PullToRefreshListView mPullToRefreshListView;
-    //private ListView mListView;
     private List<TradeBill> mTradeBillList;
     private TextView mBillTipsText;
 
     private String mMonth;
-    private String tips_year_month;
-    private int bill_index;
+    private String tipsYearMonth;
+    private int billIndex;
     private String mBillStatus;
     private BillAdapter mBillAdapter;
 
@@ -56,22 +54,22 @@ public class TransManageView extends LinearLayout {
         addView(contentView);
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
         mMonth = spf.format(new Date());
-        tips_year_month = (new SimpleDateFormat("yyyy" + getResources().getString(R.string.year) + "MM" + getResources().getString(R.string.month))).format(new Date());
+        tipsYearMonth = (new SimpleDateFormat("yyyy" + getResources().getString(R.string.year) + "MM" + getResources().getString(R.string.month))).format(new Date());
         mTradeBillList = new ArrayList<TradeBill>();
         initLayout();
         initListener();
-        bill_index = 0;
+        billIndex = 0;
         mBillStatus = "all";
     }
 
     public void initData() {
-        bill_index = 0;
+        billIndex = 0;
         mTradeBillList.clear();
         getTradeBill();
     }
 
     public void refresh() {
-        bill_index = 0;
+        billIndex = 0;
         mTradeBillList.clear();
         new Thread(new Runnable() {
 
@@ -115,7 +113,7 @@ public class TransManageView extends LinearLayout {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
                 if (refreshView.isHeaderShown()) {
-                    bill_index = 0;
+                    billIndex = 0;
                     mTradeBillList.clear();
                     getTradeBill();
                 } else {
@@ -128,7 +126,7 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onClick(View v) {
-                bill_index = 0;
+                billIndex = 0;
                 mBillStatus = "all";
                 mTradeBillList.clear();
                 mPullToRefreshListView.setRefreshing();
@@ -139,7 +137,7 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onClick(View v) {
-                bill_index = 0;
+                billIndex = 0;
                 mBillStatus = "success";
                 mTradeBillList.clear();
                 mPullToRefreshListView.setRefreshing();
@@ -150,7 +148,7 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onClick(View v) {
-                bill_index = 0;
+                billIndex = 0;
                 mBillStatus = "fail";
                 mTradeBillList.clear();
                 mPullToRefreshListView.setRefreshing();
@@ -160,7 +158,7 @@ public class TransManageView extends LinearLayout {
 
     private void getTradeBill() {
         QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
-        quickPayService.getHistoryBillsAsync(mMonth, bill_index, mBillStatus, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mMonth, billIndex + "", mBillStatus, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 final int count = data.getCount();
@@ -196,7 +194,7 @@ public class TransManageView extends LinearLayout {
 
 
                 mBillTipsText.setText(
-                        tips_year_month +
+                        tipsYearMonth +
                                 "  " +
                                 getResources().getString(R.string.txn_total_times) + count +
                                 " " +
@@ -205,24 +203,13 @@ public class TransManageView extends LinearLayout {
                                 getResources().getString(R.string.txn_refund) + refdcount
                                 +
                                 getResources().getString(R.string.txn_unit) + "(" + refdtotal + getResources().getString(R.string.txn_currency) + ")");
-                bill_index += size;
+                billIndex += size;
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
-
-                ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                    @SuppressLint("NewApi")
-                    @Override
-                    public void run() {
-                        // 更新UI
-                        mBillAdapter.notifyDataSetChanged();
-                        mPullToRefreshListView.onRefreshComplete();
-
-                    }
-
-                });
+                mBillAdapter.notifyDataSetChanged();
+                mPullToRefreshListView.onRefreshComplete();
             }
         });
     }
