@@ -1,288 +1,230 @@
 package settle
 
 import (
-	"bytes"
-	"fmt"
+	"github.com/CardInfoLink/quickpay/channel/alipay"
+	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
-	"github.com/tealeg/xlsx"
+	"math"
+	"strconv"
 	"strings"
+	"time"
 )
 
-//  reportType
-const (
-	TransferReport       = 1 // 划款报表
-	ReconciliationReport = 2 // 对账报表
-	InsFlowReport        = 3 // 机构流水报表
-	ChanMerReport        = 4 // 渠道商户报表
-	// 分润报表
-)
-
-// DoScanpaySettReport 清算
-func DoScanpaySettReport(settDate string) error {
-	// 对账，入库
-	tss, err := Reconciliation(settDate)
-	if err != nil {
-		return nil
-	}
-
-	// 出报表
-	err = genReport(tss)
-	if err != nil {
-		return nil
-	}
-
-	// 发邮件?
-
-	return nil
+func init() {
+	needSettles = append(needSettles,
+		&scanpayDomestic{
+			At: goconf.Config.Settle.DomesticSettPoint,
+		})
 }
 
-// Reconciliation 对账
-func Reconciliation(settDate string) ([]model.TransSett, error) {
-
-	var reconcilated []*model.Trans
-
-	// TODO: 与渠道对账，然后将交易存进对账交易表里
-
-	ts, _, err := mongo.SpTransColl.Find(&model.QueryCondition{
-		StartTime:    settDate + " 00:00:00",
-		EndTime:      settDate + " 23:59:59",
-		TransStatus:  []string{model.TransSuccess},
-		RefundStatus: model.TransRefunded,
-		IsForReport:  true,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	// 先已我们系统为准，默认都对上
-	reconcilated = append(reconcilated, ts...)
-
-	// 计算费率等，入清算表
-	var tss []model.TransSett
-	for _, t := range reconcilated {
-		ts := model.TransSett{
-			Trans: *t,
-		}
-		// TODO
-		tss = append(tss, ts)
-	}
-
-	return tss, nil
+type scanpayDomestic struct {
+	At string // "02:00:00" 表示凌晨两点才可以拉取数据
 }
 
-func genReport([]model.TransSett) error {
-	return nil
-}
-
-const filePrefix = "sett/report/%s/" // 文件名：sett/report/20151012/IC202_99911888_20151012.xlsx
-
-// doScanpaySettReport 扫码每天出清算报表
-func doScanpaySettReport(settDate string) error {
-
-	data, err := mongo.SpTransColl.GroupBySettRole(settDate)
-	if err != nil {
-		log.Errorf("fail to find trans group by settRole: %s", err)
-		return err
+// ProcessDuration 可执行duration
+func (s scanpayDomestic) ProcessDuration() time.Duration {
+	if s.At == "" {
+		return time.Duration(0)
 	}
 
-	// 报表日期显示格式
-	sd := strings.Replace(settDate, "-", "", -1)
-	filename := filePrefix + "IC202_%s_%s.xlsx"
+	now := time.Now()
+	t, err := time.ParseInLocation("2006-01-02 15:04:05", now.Format("2006-01-02")+" "+s.At, time.Local)
+	if err != nil {
+		log.Errorf("parse time error: %s", err)
+		return time.Duration(-1)
+	}
 
-	// 遍历数据
-	for _, sg := range data {
+	if now.After(t) {
+		return time.Duration(0)
+	}
 
-		key := fmt.Sprintf(filename, sd, sg.SettRole, sd)
+	return t.Sub(now)
+}
 
-		// 查询该角色是否已出过报表
-		rs, err := mongo.RoleSettCol.FindOne(sg.SettRole, settDate)
+// Reconciliation 勾兑
+func (s scanpayDomestic) Reconciliation(date string) {
+
+	// 本地数据集
+	localMMap, alpMers, err := genLocalBlendMap(date)
+	if err != nil {
+		log.Errorf("find transSett error: %s", err)
+		return
+	}
+
+	log.Infof("local MMap length=%s", len(localMMap))
+	log.Infof("found alp mers: %d", len(alpMers))
+
+	// 微信大商户
+	wxpAgent, err := mongo.ChanMerColl.FindWXPAgent() //SettleDate SignKey
+	if err != nil {
+		log.Errorf("search the wxp agent error:%s", err)
+	}
+	chanMMap := make(model.ChanBlendMap)
+	blendDateStr := strings.Replace(date, "-", "", -1)
+	//微信请求
+	wxpreq := new(model.ScanPayRequest)
+	wxpreq.SettleDate = blendDateStr
+	for _, a := range wxpAgent {
+		wxpreq.AppID = a.WxpAppId
+		wxpreq.ChanMerId = a.ChanMerId
+		wxpreq.SignKey = a.SignKey
+		err = scanpay.DefaultWeixinScanPay.ProcessSettleEnquiry(wxpreq, chanMMap)
 		if err != nil {
-			rs = &model.RoleSett{SettRole: sg.SettRole, SettDate: settDate, ReportName: key}
-		}
-
-		rpData := settDataHandle(sg, rs)
-		// 有数据才生成报表
-		if len(rpData) != 0 {
-			// 每一行就是一个报表
-			excel := genSpTransferReportExcel(rpData, sd)
-
-			var buf []byte
-			bf := bytes.NewBuffer(buf)
-			// 写到buf里
-			excel.Write(bf)
-
-			// 上传到七牛
-			err = qiniu.Put(key, int64(bf.Len()), bf)
-			if err != nil {
-				log.Errorf("upload settReport excel err: %s", err)
-				continue
-			}
-			err = mongo.RoleSettCol.Upsert(rs)
-			if err != nil {
-				log.Errorf("roleSett upsert error: %s", err)
-			}
+			log.Errorf("the request error , merid:%s, chanCode:%s", wxpreq.ChanMerId, "WXP")
 		}
 	}
 
-	return nil
-}
-
-type reportData struct {
-	mg model.MerGroup
-	m  model.Merchant
-}
-
-// settDataHandle 清算数据处理
-func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
-
-	var rds []reportData
-	if rs == nil {
-		return rds
-	}
-
-	for _, mg := range sg.MerGroups {
-		m, err := mongo.MerchantColl.Find(mg.MerId)
+	//支付宝
+	alpreq := new(model.ScanPayRequest)
+	alpreq.StartTime = date + " 00:00:00"
+	alpreq.EndTime = date + " 23:59:59"
+	for _, k := range alpMers {
+		c, err := mongo.ChanMerColl.Find("ALP", k)
 		if err != nil {
-			// cmMap[mg.MerId] = 0 // 标识不成功
-			// continue
-			m = &model.Merchant{MerId: mg.MerId} // 兼容老系统数据，可能商户没同步到新系统
+			log.Errorf("find alp mer info error:%s", k)
+			continue
 		}
-		// 补充开户银行和支行
-		if m.Detail.OpenBankName == "" {
-			m.Detail.OpenBankName = m.Detail.BankName
+		alpreq.SignKey = c.SignKey
+		alpreq.ChanMerId = k
+		err = alipay.Domestic.ProcessSettleEnquiry(alpreq, chanMMap)
+		if err != nil {
+			log.Errorf("the request error: %s , merid:%s, chanCode:%s", err, alpreq.ChanMerId, "ALP")
 		}
-		if m.Detail.BankName == "" {
-			m.Detail.BankName = m.Detail.OpenBankName
-		}
-		rds = append(rds, reportData{mg: mg, m: *m})
 	}
 
-	return rds
+	log.Infof("chan MMap length=%d", len(chanMMap))
+
+	// 金额有误交易
+	amtErrorMap := make(map[string]string)
+
+	// 勾兑过程
+	for chanMerId, localOrderMap := range localMMap {
+		chanOrderMap, ok := chanMMap[chanMerId]
+		if ok {
+			for chanOrderNum, transSetts := range localOrderMap { //查找该商户记录
+				blendArray, ok := chanOrderMap[chanOrderNum]
+				if ok {
+					// 查到该商户的记录
+					var blendACT float64 = 0.0
+					var orderACT float64 = 0.0
+					for _, blendRecord := range blendArray { //计算渠道该订单总金额
+						tempAct, err := strconv.ParseFloat(blendRecord.OrderAct, 64)
+						if err == nil {
+							blendACT += tempAct
+						}
+					}
+					for _, orderRecord := range transSetts { //计算本地该订单总金额
+						act := float64(orderRecord.Trans.TransAmt) / 100
+						if orderRecord.Trans.TransType == model.PayTrans {
+							orderACT += act
+						} else {
+							orderACT -= act
+						}
+					}
+
+					// 相等保存
+					if math.Abs(blendACT-orderACT) < 0.001 {
+						for _, transSett := range transSetts {
+							transSett.BlendType = MATCH
+							mongo.SpTransSettColl.Update(&transSett)
+						}
+						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
+						delete(chanOrderMap, chanOrderNum)  //删除渠道记录，剩下的进C002
+					} else {
+						log.Errorf("amt error: expect %0.2f, actual %0.2f, chanOrderNum=%s", orderACT, blendACT, chanOrderNum)
+						// 对上，但金额不一致
+						for _, transSett := range transSetts {
+							transSett.BlendType = AMT_ERROR
+							mongo.SpTransSettColl.Update(&transSett)
+						}
+						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
+					}
+				}
+			}
+
+			// 如果内部map为空，那么删除外部key
+			if len(chanOrderMap) == 0 {
+				delete(chanMMap, chanMerId)
+			}
+			if len(localOrderMap) == 0 {
+				delete(localMMap, chanMerId)
+			}
+		}
+	}
+
+	log.Infof("after blend localMMap length=%d", len(localMMap))
+	log.Infof("after blend chanMMap length=%d", len(chanMMap))
+	log.Infof("after blend errAmtMap length=%d", len(amtErrorMap))
+
+	// 处理没有勾兑上的数据
+	// 渠道少清
+	if len(localMMap) != 0 {
+		// 出报表
+		file401 := "IC401.xlsx"
+		upload(file401, genC001ReportExcel(localMMap, date))
+	}
+
+	// 渠道多清
+	if len(chanMMap) != 0 {
+		for _, v := range localMMap {
+			for ik, iv := range v {
+				// 没勾兑上的里面包含金额错误的
+				if _, ok := amtErrorMap[ik]; ok {
+					// 跳过
+					continue
+				}
+				for _, transSett := range iv {
+					transSett.BlendType = CHAN_MORE
+					// mongo.SpTransSettColl.Update(&transSett)
+				}
+			}
+		}
+		file402 := "IC402.xlsx"
+		upload(file402, genC002ReportExcel(chanMMap, date))
+	}
 }
 
-// genSpTransferReportExcel 划款报表
-func genSpTransferReportExcel(data []reportData, date string) *xlsx.File {
-	var file = xlsx.NewFile()
-	var sheet *xlsx.Sheet
-	var row *xlsx.Row
-	var cell *xlsx.Cell
+// genLocalBlendMap 根据当天交易生成本地勾兑数据集
+func genLocalBlendMap(date string) (lbm model.LocalBlendMap, alpChanMer map[string]string, err error) {
 
-	sheet, _ = file.AddSheet("商户清算划款表")
-
-	// 第一行
-	row = sheet.AddRow()
-	row.SetHeightCM(0.91)
-	cell = row.AddCell()
-	cell.Merge(10, 0) // 11个单元格
-	cell.SetValue("O2O商户划款报表(讯汇通)")
-	style := xlsx.NewStyle()
-
-	style.Alignment = xlsx.Alignment{Horizontal: "center", Vertical: "center"}
-	style.Font = *xlsx.NewFont(20, "宋体")
-	style.ApplyAlignment = true
-	style.ApplyFont = true
-	cell.SetStyle(style)
-
-	// 第二行
-	bodyStyle := xlsx.NewStyle()
-	bodyStyle.Font = xlsx.Font{
-		Size: 10,
-		Name: "Times New Roman",
-		Bold: true,
-	}
-	bodyStyle.Alignment = xlsx.Alignment{Horizontal: "center", Vertical: "center"}
-	bodyStyle.Border = xlsx.Border{
-		Left:        "thin",
-		LeftColor:   "FF999999",
-		Right:       "thin",
-		RightColor:  "FF999999",
-		Top:         "thin",
-		TopColor:    "FF999999",
-		Bottom:      "thin",
-		BottomColor: "FF999999",
-	}
-	bodyStyle.ApplyFont = true
-	bodyStyle.ApplyAlignment = true
-	bodyStyle.ApplyBorder = true
-
-	row = sheet.AddRow()
-	row.SetHeightCM(1.83)
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "行号"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "城市"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "银行名称"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "开户行名称"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "收款方姓名"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "收款方银行账号"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "金额"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "备注"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "商户订单号"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "渠道编号"
-	cell = row.AddCell()
-	cell.SetStyle(bodyStyle)
-	cell.Value = "收支标识"
-
-	// 接下来是数据填充
-	for _, d := range data {
-		row = sheet.AddRow()
-		row.SetHeightCM(1.48)
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.Detail.BankId
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.Detail.City
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.Detail.BankName
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.Detail.OpenBankName
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.Detail.AcctName
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.Detail.AcctNum
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = fmt.Sprintf("%0.2f", float32(d.mg.TransAmt-d.mg.Fee)/100)
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = fmt.Sprintf("%s手续费%0.2f元", date, float32(d.mg.Fee)/100)
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = d.m.MerId
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = "05"
-		cell = row.AddCell()
-		cell.SetStyle(bodyStyle)
-		cell.Value = "0"
+	var transSetts []model.TransSett
+	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date})
+	if err != nil {
+		return
 	}
 
-	return file
+	if len(transSetts) == 0 {
+		return
+	}
+
+	lbm = make(model.LocalBlendMap)
+	alpChanMer = make(map[string]string)
+	for _, ts := range transSetts {
+		if chanOrderMap, ok := lbm[ts.Trans.ChanMerId]; ok {
+			if tss, found := chanOrderMap[ts.Trans.ChanOrderNum]; found {
+				tss = append(tss, ts)
+				chanOrderMap[ts.Trans.ChanOrderNum] = tss
+			} else {
+				chanOrderMap[ts.Trans.ChanOrderNum] = []model.TransSett{ts}
+			}
+		} else {
+			chanOrderMap := make(map[string][]model.TransSett)
+			chanOrderMap[ts.Trans.ChanOrderNum] = []model.TransSett{ts}
+			lbm[ts.Trans.ChanMerId] = chanOrderMap
+		}
+
+		// 存储支付宝发生交易渠道号
+		if ts.Trans.ChanCode == "ALP" {
+			if _, ok := alpChanMer[ts.Trans.ChanMerId]; !ok {
+				alpChanMer[ts.Trans.ChanMerId] = ts.Trans.ChanMerId
+			}
+		}
+
+	}
+
+	return
+
 }

@@ -95,7 +95,10 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		return ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
-	log.Debugf("resp: %+v", ret)
+	// 海外接口没有异步通知，需要设置payTime，默认为createTime
+	if channel.Oversea == c.AreaType {
+		t.PayTime = t.CreateTime
+	}
 
 	return ret
 }

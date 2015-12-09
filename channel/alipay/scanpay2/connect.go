@@ -21,7 +21,7 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	}
 	log.Infof(">>> to alipay message: %s", v.Encode())
 
-	body, err := send(v)
+	body, err := send(v, "")
 	if err != nil {
 		return err
 	}
