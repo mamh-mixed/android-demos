@@ -6,32 +6,24 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
-	"github.com/CardInfoLink/quickpay/goconf"
+	// "github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
+	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"time"
 )
 
-// 勾兑状态
-const (
-	MATCH     = 0
-	CHAN_MORE = 1
-	CHAN_LESS = 2
-	AMT_ERROR = 3
-	FEE_ERROR = 4
-)
-
-func init() {
-	needSettles = append(needSettles,
-		&alipayOverseas{
-			At:       goconf.Config.Settle.OverseasSettPoint,
-			sftpAddr: "sftp.alipay.com:22",
-		})
-}
+// func init() {
+// 	needSettles = append(needSettles,
+// 		&alipayOverseas{
+// 			At:       goconf.Config.Settle.OverseasSettPoint,
+// 			sftpAddr: "sftp.alipay.com:22",
+// 		})
+// }
 
 type alipayOverseas struct {
 	At       string // "02:00:00" 表示凌晨两点才可以拉取数据
@@ -107,7 +99,7 @@ func (a *alipayOverseas) download(date string) [][]string {
 			// skip 2
 			for i := 0; s.Scan(); i++ {
 				if i > 1 {
-					// Partner_transaction_id|Transaction_id|Transaction_amount|Charge_amount|Currency|Payment_time|Transaction_type|Remark
+					// Partner_transaction_id-0|Transaction_id-1|Transaction_amount-2|Charge_amount-3|Currency-4|Payment_time-5|Transaction_type-6|Remark-7
 					ts := strings.Split(s.Text(), "|")
 					data = append(data, ts)
 				}
@@ -135,45 +127,56 @@ func (a *alipayOverseas) Reconciliation(date string) {
 		// 排除可能一时的系统错误导致查询失败
 		var ts *model.TransSett
 		var err error
-		var retry int
-		for {
+
+		// Transaction_type
+		switch data[6] {
+		case "REVERSAL", "CANCEL":
+			// 暂时没有CANCEL支付类型
+			// 该情况下没有原订单，只有撤销和退款的订单
 			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
 			if err != nil {
-				retry++
-				if retry == 2 {
-					// 渠道多清
-					mt := &model.TransSett{}
-					mt.Trans.OrderNum = orderNum
-					mt.Trans.ChanOrderNum = chanOrderNum
-					mt.BlendType = CHAN_MORE
-					// TODO..
-					mongo.SpTransSettColl.Add(mt)
-					break
+				// 没找到，说明原订单没有成功
+				break
+			}
+			// 找到，说明是原订单成功下发起的取消
+			// 删除即可
+			mongo.SpTransSettColl.RemoveOne(orderNum, chanOrderNum)
+		case "PAYMENT", "REFUND":
+			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
+			if err != nil {
+				// 渠道多清
+				mt := &model.TransSett{}
+				mt.Trans.Id = bson.NewObjectId() // 没有ID会报错
+				mt.Trans.OrderNum = orderNum
+				mt.Trans.ChanOrderNum = chanOrderNum
+				mt.Trans.TransAmt = currency.I64(data[4], data[2])
+				mt.Trans.Currency = data[4]
+				mt.Trans.PayTime = data[5]
+				mt.AcqFee = currency.I64(data[4], data[3])
+				mt.BlendType = CHAN_MORE // blendType
+				if data[6] == "PAYMENT" {
+					mt.Trans.Busicd = model.Purc
+					mt.Trans.TransType = model.PayTrans
+				} else {
+					mt.Trans.Busicd = model.Refd
+					mt.Trans.TransType = model.RefundTrans
 				}
-				time.Sleep(100 * time.Millisecond)
+				mongo.SpTransSettColl.Add(mt)
 				continue
 			}
-			break
 		}
+
 		t := ts.Trans
 
 		// 开始勾兑，默认成功
 		ts.BlendType = MATCH
 
-		// 原交易要么成功，要么被退款，都认为是成功的
-		if t.TransStatus != model.TransSuccess || t.RefundStatus != model.TransRefunded {
-			// 渠道多清
-			ts.BlendType = CHAN_MORE
-		}
-
 		// 不管是支付交易还是逆向交易，成功的交易都是有金额的，所以直接比较金额即可。
 		if currency.Str(t.Currency, t.TransAmt) != data[2] {
 			// 金额不一致
 			ts.BlendType = AMT_ERROR
-		}
-
-		// 不管是支付交易还是逆向交易，都是有计算手续费的。
-		if currency.Str(t.Currency, t.Fee) != data[3] {
+		} else if currency.Str(t.Currency, ts.InsFee) != data[3] {
+			// 不管是支付交易还是逆向交易，都是有计算手续费的。
 			// 手续费不一致
 			ts.BlendType = FEE_ERROR
 		}

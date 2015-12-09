@@ -22,6 +22,11 @@ import (
 
 type user struct{}
 
+const (
+	LOCKTIME      = 30000 //锁定三小时
+	LOGINDIFFTIME = 10000 //1小时以内
+)
+
 var (
 	User         user
 	timeReplacer = strings.NewReplacer("-", "", ":", "", " ", "")
@@ -105,8 +110,126 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		}
 		return model.SYSTEM_ERROR
 	}
+
+	//判断锁定情况
+	if user.LockTime != "" {
+		localTime := time.Now().Format("2006-01-02 15:04:05")
+		stemp := ""
+		for _, v := range localTime {
+			if (v >= '0') && (v <= '9') {
+				stemp += string(v)
+			}
+		}
+		localTime = stemp
+		date1 := user.LockTime[:8]
+		date2 := localTime[:8]
+		time1 := user.LockTime[8:]
+		time2 := localTime[8:]
+		time1Int, err := strconv.ParseInt(string(time1), 10, 32)
+		if err != nil {
+			log.Errorf("convert string to int error value:%s, error:", time1, err)
+			return model.SYSTEM_ERROR
+		}
+		time2Int, err := strconv.ParseInt(string(time2), 10, 32)
+		if err != nil {
+			log.Errorf("convert string to int error value:%s, error:", time2, err)
+			return model.SYSTEM_ERROR
+		}
+		if string(date1) != string(date2) {
+			time2Int += 240000
+		}
+
+		if (time2Int - time1Int) > LOCKTIME {
+			mongo.AppUserCol.UpdateLoginTime(req.UserName, "", "") //解锁
+		} else {
+			return model.USER_LOCK
+		}
+	}
 	// 密码是否正确
 	if user.Password != req.Password {
+		localTime := time.Now().Format("2006-01-02 15:04:05")
+		stemp := ""
+		for _, v := range localTime {
+			if (v >= '0') && (v <= '9') {
+				stemp += string(v)
+			}
+		}
+		localTime = stemp
+		if user.LoginTime != "" {
+			timeArray := strings.Split(user.LoginTime, ",")
+			var count = 0
+			var loginTime = ""
+			date2 := localTime[:8]
+			time2 := localTime[8:]
+			time2Int, err := strconv.ParseInt(string(time2), 10, 32)
+			if err != nil {
+				log.Errorf("convert string to int is value:%s, error:%s", time2, err)
+				return model.SYSTEM_ERROR
+			}
+			for _, timeElement := range timeArray {
+				date1 := timeElement[:8]
+				time1 := timeElement[8:]
+
+				time1Int, err := strconv.ParseInt(string(time1), 10, 32)
+				if err != nil {
+					log.Errorf("convert string to int is value:%s, error:%s", time1, err)
+					continue
+				}
+
+				if string(date1) != string(date2) { //日期不同，加24小时
+					time2Int += 240000
+				}
+
+				if (time2Int - time1Int) > LOGINDIFFTIME { //超过一小时，舍弃
+					continue
+				} else {
+					count++
+					//fmt.Println("the count is :", count)
+					//记录
+					if loginTime == "" {
+						loginTime = timeElement
+					} else {
+						loginTime += ","
+						loginTime += timeElement
+					}
+					//fmt.Println("the first loginTime is :", loginTime)
+				}
+			}
+			//判断count是否达到10次
+			if count == 9 {
+				loginTime += ","
+				loginTime += localTime
+				mongo.AppUserCol.UpdateLoginTime(req.UserName, loginTime, localTime)
+				//fmt.Println("the count is 9")
+				//fmt.Println("the Transtime is :", localTime)
+				return model.USER_LOCK //锁定
+			} else {
+				var ret model.AppResult
+				if count == 6 {
+					ret = model.USER_THREE_TIMES
+				} else if count == 7 {
+					ret = model.USER_TWO_TIMES
+				} else if count == 8 {
+					ret = model.USER_ONE_TIMES
+				} else {
+					ret = model.USERNAME_PASSWORD_ERROR
+				}
+
+				if loginTime == "" {
+					loginTime = localTime
+				} else {
+					loginTime += ","
+					loginTime += localTime
+				}
+				//fmt.Println("the second logintime is :", loginTime)
+				mongo.AppUserCol.UpdateLoginTime(req.UserName, loginTime, "")
+
+				return ret
+			}
+		} else {
+			mongo.AppUserCol.UpdateLoginTime(req.UserName, localTime, "")
+			//fmt.Println("the *** logintime is :", localTime)
+		}
 		return model.USERNAME_PASSWORD_ERROR
 	}
 	// 用户是否激活
@@ -262,6 +385,8 @@ func (u *user) activate(req *reqParams) (result model.AppResult) {
 	// 更新activate为已激活
 	user.Activate = "true"
 	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+	user.LoginTime = "" //登录时间
+	user.LockTime = ""  //锁定时间
 	err = mongo.AppUserCol.Upsert(user)
 	if err != nil {
 		log.Errorf("save user err,%s", err)

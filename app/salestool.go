@@ -306,8 +306,17 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 			isEnocdeSuccess = false
 		}
 
+		// 抄送业务人员
+		var cc string
+		luser, err := mongo.UserColl.FindOneUser(appUser.BelongsTo, "", "")
+		if err != nil {
+			log.Errorf("find operator user error: %s", err)
+		} else {
+			cc = luser.Mail
+		}
+
 		// 发email告知用户已开通成功
-		email := &email.Email{To: username, Title: open.Title}
+		email := &email.Email{To: username, Title: open.Title, Cc: cc}
 		if isEnocdeSuccess {
 			jpg64 := base64.StdEncoding.EncodeToString(payBuf.Bytes())
 			image := fmt.Sprintf(`<img src="data:image/jpeg;base64,%s" style=width:213px;height:300px;/>`, jpg64)
