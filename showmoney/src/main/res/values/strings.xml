@@ -188,4 +188,7 @@
     <string name="reset_account">你的账号</string>
     <string name="reset_password">重置密码</string>
     <string name="reset_messsage">其他账号登录请联系你的服务商为你重置密码</string>
+    <string name="reset_forget_account_message">忘记登录账户请联系你的服务商</string>
+    <string name="reset_cancel">取消</string>
+    <string name="reset_i_known">我知道了</string>
 </resources>
