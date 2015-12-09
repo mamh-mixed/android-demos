@@ -12,6 +12,10 @@ import (
 	"testing"
 )
 
+func TestFindToSett(t *testing.T) {
+	SpTransColl.FindToSett("2015-12-07")
+}
+
 func TestBeginWith(t *testing.T) {
 	var target = "GC-12u972398789"
 	var prefix = "GC-"

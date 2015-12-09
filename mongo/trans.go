@@ -257,14 +257,32 @@ func (col *transCollection) FindToSett(time string) ([]*model.Trans, error) {
 
 	var ts []*model.Trans
 	q := bson.M{
-		"payTime": bson.M{
-			"$gt":  time,
-			"$lte": util.NextDay(time),
-		},
 		"$or": []bson.M{
-			bson.M{"transStatus": model.TransSuccess},
-			bson.M{"refundStatus": model.TransRefunded},
+			bson.M{
+				"payTime": bson.M{
+					"$gt":  time,
+					"$lte": util.NextDay(time),
+				},
+				"$or": []bson.M{
+					bson.M{"transStatus": model.TransSuccess},
+					bson.M{"refundStatus": model.TransRefunded},
+				}},
+			// 对没有payTime的逆向交易做兼容
+			bson.M{
+				"createTime": bson.M{
+					"$gt":  time,
+					"$lte": util.NextDay(time),
+				},
+				"payTime": bson.M{"$exists": false},
+				"$or": []bson.M{
+					bson.M{"transStatus": model.TransSuccess},
+					bson.M{"refundStatus": model.TransRefunded},
+				}},
 		},
+		// "$or": []bson.M{
+		// 	bson.M{"transStatus": model.TransSuccess},
+		// 	bson.M{"refundStatus": model.TransRefunded},
+		// },
 		"transAmt": bson.M{"$ne": 0},
 	}
 	err := database.C(col.name).Find(q).All(&ts)
