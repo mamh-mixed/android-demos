@@ -218,7 +218,7 @@ type ChanMer struct {
 	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
 	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
-	AcqFee      float32  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
+	AcqFee      float64  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
 	HttpCert    string   `bson:"httpCert,omitempty" json:"httpCert,omitempty"`       // http cert证书
 	HttpKey     string   `bson:"httpKey,omitempty" json:"httpKey,omitempty"`         // http key 证书
 	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
@@ -422,18 +422,17 @@ func NewTransInfo(t Trans) (info *TransInfo) {
 
 // TransSett 清算信息
 type TransSett struct {
-	Trans       Trans  `bson:"trans"`              // 清算的交易
-	SettRole    string `bson:"settRole,omitempty"` // 清算角色
-	SettDate    string `bson:"settDate,omitempty"` // 清算日期
-	SettTime    string `bson:"settTime,omitempty"` // 清算具体时间
-	MerSettAmt  int64  `bson:"merSettAmt"`         // 商户清算金额
-	MerFee      int64  `bson:"merFee"`             // 商户手续费
-	AcqFee      int64  `bson:"acqFee"`             // 机构手续费
-	AcqSettAmt  int64  `bson:"acqSettAmt"`
-	ChanSettAmt int64  `bson:"chanSettAmt"` // 渠道清算金额
-	ChanFee     int64  `bson:"chanFee"`     // 渠道手续费
-	AgentFee    int64  `bson:"agentFee"`    // 代理、机构手续费
-	BlendType   int    `bson:"blendType"`   //勾兑标识
+	Trans      Trans  `bson:"trans"`              // 清算的交易
+	SettRole   string `bson:"settRole,omitempty"` // 清算角色
+	SettDate   string `bson:"settDate,omitempty"` // 清算日期
+	SettTime   string `bson:"settTime,omitempty"` // 清算具体时间
+	MerFee     int64  `bson:"merFee"`             // 商户手续费
+	MerSettAmt int64  `bson:"merSettAmt"`         // 商户清算金额
+	AcqFee     int64  `bson:"acqFee"`             // 讯联成本
+	AcqSettAmt int64  `bson:"acqSettAmt"`         // 讯联应收
+	InsFee     int64  `bson:"CILFee"`             // 机构、代理手续费
+	InsSettAmt int64  `bson:"CILSettAmt"`         // 机构、代理应收金额
+	BlendType  int    `bson:"blendType"`          //勾兑标识
 }
 
 // TransSettInfo 清分信息明细

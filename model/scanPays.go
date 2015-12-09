@@ -43,6 +43,7 @@ type QueryCondition struct {
 	TransType          int      `json:"transType,omitempty"`
 	StartTime          string   `json:"startTime,omitempty"`
 	EndTime            string   `json:"endTime,omitempty"`
+	Date               string   `json:"date,omitempty"`
 	Busicd             string   `json:"busicd,omitempty"`
 	OrderNum           string   `json:"orderNum,omitempty"`
 	OrigOrderNum       string   `json:"origOrderNum,omitempty"`

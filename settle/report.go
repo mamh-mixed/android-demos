@@ -19,6 +19,9 @@ const (
 
 const filePrefix = "sett/report/%s/" // 文件名：sett/report/20151012/IC202_99911888_20151012.xlsx
 
+// 最外部key为代理号，接下来是渠道，接下来是清算角色，value是角色下数据
+type reconciliationMap map[string]map[string]map[string]*reconciliatReportData
+
 // SpSettReport 扫码清算报表
 func SpSettReport(settDate string) error {
 
@@ -79,7 +82,7 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 	}
 
 	// 外key为机构号，内map的key为渠道编号
-	reconciliatMMap := make(map[string]map[string]*reconciliatReportData)
+	reconciliatMMap := make(reconciliationMap)
 
 	// 处理数据
 	for _, transSett := range transSetts {
@@ -90,57 +93,45 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 			continue
 		}
 
-		// 找到机构
-		if roleDataMap, ok := reconciliatMMap[t.AgentCode]; ok {
-			// 找到对应角色
-			if d, found := roleDataMap[t.SettRole]; found {
-				//下单和预下单相加，退款、取消和撤销相减
-				if t.TransType == model.PayTrans {
-					d.transAmt += t.TransAmt
-					d.MerFee += transSett.MerFee
-					d.MerSettAmt += transSett.MerSettAmt
-					d.AcqFee += transSett.AcqFee
-					d.AcqSettAmt += transSett.AcqSettAmt
-					d.transNum++
+		// 机构
+		if chanDataMap, ok := reconciliatMMap[t.AgentCode]; ok {
+			// 渠道
+			if roleDataMap, ok := chanDataMap[t.ChanCode]; ok {
+				// 角色
+				if d, found := roleDataMap[t.SettRole]; found {
+					//下单和预下单相加，退款、取消和撤销相减
+					if t.TransType == model.PayTrans {
+						d.transAmt += t.TransAmt
+						d.MerFee += transSett.MerFee
+						d.MerSettAmt += transSett.MerSettAmt
+						d.AcqFee += transSett.AcqFee
+						d.AcqSettAmt += transSett.AcqSettAmt
+						d.transNum++
+					} else {
+						d.transAmt -= t.TransAmt
+						d.MerFee -= transSett.MerFee
+						d.MerSettAmt -= transSett.MerSettAmt
+						d.AcqFee -= transSett.AcqFee
+						d.AcqSettAmt -= transSett.AcqSettAmt
+						// d.transNum++
+					}
 				} else {
-					d.transAmt -= t.TransAmt
-					d.MerFee -= transSett.MerFee
-					d.MerSettAmt -= transSett.MerSettAmt
-					d.AcqFee -= transSett.AcqFee
-					d.AcqSettAmt -= transSett.AcqSettAmt
-					d.transNum++
+					// 没找到角色
+					roleDataMap[t.SettRole] = NewReconciliatData(transSett)
 				}
 			} else {
-				// 没找到角色
-				roleDataMap[t.SettRole] = &reconciliatReportData{
-					insCode:    t.AgentCode,
-					insName:    t.AgentName,
-					chcd:       t.ChanCode,
-					role:       t.SettRole,
-					transNum:   0,
-					transAmt:   t.TransAmt,
-					MerFee:     transSett.MerFee,
-					MerSettAmt: transSett.MerSettAmt,
-					AcqFee:     transSett.AcqFee,
-					AcqSettAmt: transSett.AcqSettAmt,
-				}
+				// 没有渠道
+				roleDataMap := make(map[string]*reconciliatReportData)
+				roleDataMap[t.SettRole] = NewReconciliatData(transSett)
+				chanDataMap[t.ChanCode] = roleDataMap
 			}
 		} else {
 			// 还没存在该机构下记录
 			roleDataMap := make(map[string]*reconciliatReportData)
-			roleDataMap[t.SettRole] = &reconciliatReportData{
-				insCode:    t.AgentCode,
-				insName:    t.AgentName,
-				chcd:       t.ChanCode,
-				role:       t.SettRole,
-				transNum:   0,
-				transAmt:   t.TransAmt,
-				MerFee:     transSett.MerFee,
-				MerSettAmt: transSett.MerSettAmt,
-				AcqFee:     transSett.AcqFee,
-				AcqSettAmt: transSett.AcqSettAmt,
-			}
-			reconciliatMMap[t.AgentCode] = roleDataMap
+			roleDataMap[t.SettRole] = NewReconciliatData(transSett)
+			chanDataMap := make(map[string]map[string]*reconciliatReportData)
+			chanDataMap[t.ChanCode] = roleDataMap
+			reconciliatMMap[t.AgentCode] = chanDataMap
 		}
 	}
 
@@ -197,6 +188,21 @@ type reconciliatReportData struct {
 	MerSettAmt int64  //商户应收金额
 	AcqFee     int64  //讯联手续费
 	AcqSettAmt int64  //讯联应收金额
+}
+
+func NewReconciliatData(ts model.TransSett) *reconciliatReportData {
+	return &reconciliatReportData{
+		insCode:    ts.Trans.AgentCode,
+		insName:    ts.Trans.AgentName,
+		chcd:       ts.Trans.ChanCode,
+		role:       ts.Trans.SettRole,
+		transNum:   1,
+		transAmt:   ts.Trans.TransAmt,
+		MerFee:     ts.MerFee,
+		MerSettAmt: ts.MerSettAmt,
+		AcqFee:     ts.AcqFee,
+		AcqSettAmt: ts.AcqSettAmt,
+	}
 }
 
 type errorReportData struct {

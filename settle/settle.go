@@ -87,6 +87,8 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 		return nil
 	}
 
+	log.Infof("%d trans prepare to handle", len(ts))
+
 	// 缓存
 	var chanMersMap = make(map[string]*model.ChanMer)
 	var agentsMap = make(map[string]*model.Agent)
@@ -112,13 +114,14 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 		var agent *model.Agent
 		if a, ok := agentsMap[t.AgentCode]; ok {
 			agent = a
-			agentsMap[t.AgentCode] = a
 		} else {
 			a, err = mongo.AgentColl.Find(t.AgentCode)
 			if err != nil {
-				log.Errorf("chanMer should be found ,but find error: %s", err)
+				log.Errorf("trans skip: agent not found. merId=%s, orderNum=%s", t.MerId, t.OrderNum)
 				continue
 			}
+			agent = a
+			agentsMap[t.AgentCode] = a
 		}
 
 		transSett := model.TransSett{}
@@ -131,12 +134,14 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 		transSett.MerFee = t.Fee
 		transSett.MerSettAmt = t.TransAmt - t.Fee
 
-		// 计算机构手续费
+		// 计算讯联、机构手续费
 		switch t.ChanCode {
 		case channel.ChanCodeAlipay:
-			transSett.AcqFee = int64(math.Floor(float64(t.TransAmt)*agent.AlpCost + 0.5))
+			transSett.AcqFee = 0 // 支付宝默认0
+			transSett.InsFee = int64(math.Floor(float64(t.TransAmt)*agent.AlpCost + 0.5))
 		case channel.ChanCodeWeixin:
-			transSett.AcqFee = int64(math.Floor(float64(t.TransAmt)*agent.WxpCost + 0.5))
+			transSett.AcqFee = int64(math.Floor(float64(t.TransAmt)*0.003 + 0.5)) // 微信默认0.003
+			transSett.InsFee = int64(math.Floor(float64(t.TransAmt)*agent.WxpCost + 0.5))
 		}
 
 		// 逆向交易
@@ -147,14 +152,13 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 			case 2:
 				// 渠道不退手续费，也就是逆向交易的时候没有手续费
 				transSett.MerFee = 0
-				transSett.AcqFee = 0
+				transSett.InsFee = 0
 			}
 		}
 
-		// 机构清算金额
+		// 讯联、机构清算金额
+		transSett.InsSettAmt = t.TransAmt - transSett.InsFee
 		transSett.AcqSettAmt = t.TransAmt - transSett.AcqFee
-
-		// TODO:计算渠道续费
 		transSetts = append(transSetts, transSett)
 	}
 
@@ -170,6 +174,6 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 
 	// 进行勾兑
 	DoSettle(date, immediately)
-
+	log.Info("Do SpTransSett success... gen report... do settle...")
 	return err
 }

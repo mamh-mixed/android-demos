@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
-	"github.com/CardInfoLink/quickpay/goconf"
+	// "github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -17,13 +17,13 @@ import (
 	"time"
 )
 
-func init() {
-	needSettles = append(needSettles,
-		&alipayOverseas{
-			At:       goconf.Config.Settle.OverseasSettPoint,
-			sftpAddr: "sftp.alipay.com:22",
-		})
-}
+// func init() {
+// 	needSettles = append(needSettles,
+// 		&alipayOverseas{
+// 			At:       goconf.Config.Settle.OverseasSettPoint,
+// 			sftpAddr: "sftp.alipay.com:22",
+// 		})
+// }
 
 type alipayOverseas struct {
 	At       string // "02:00:00" 表示凌晨两点才可以拉取数据

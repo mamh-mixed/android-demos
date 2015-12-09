@@ -123,7 +123,7 @@ func (col *transSettCollection) BatchAdd(ts []model.TransSett) (err error) {
 func (col *transSettCollection) BatchRemove(date string) (err error) {
 
 	q := bson.M{
-		"trans.payTime": bson.M{},
+		"settDate": date,
 	}
 	_, err = database.C(col.name).RemoveAll(q)
 	return err
@@ -215,6 +215,9 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	}
 	if q.StartTime != "" && q.EndTime != "" {
 		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
+	}
+	if q.Date != "" {
+		find["settDate"] = q.Date
 	}
 
 	var ts []model.TransSett

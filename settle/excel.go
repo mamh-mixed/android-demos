@@ -27,7 +27,7 @@ func upload(key string, excel *xlsx.File) error {
 }
 
 // genSpTransferSettleReportExcel 对账报表
-func genReconciliatReportExcel(data map[string]map[string]*reconciliatReportData, date string) *xlsx.File {
+func genReconciliatReportExcel(data reconciliationMap, date string) *xlsx.File {
 	var file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
@@ -123,39 +123,41 @@ func genReconciliatReportExcel(data map[string]map[string]*reconciliatReportData
 
 	// 接下来是数据填充
 	for _, elementMap := range data {
-		for _, d := range elementMap {
-			row = sheet.AddRow()
-			row.SetHeightCM(1.00)
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = d.insCode
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = d.insName
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = d.chcd
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = d.role
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = fmt.Sprintf("%d", d.transNum)
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = fmt.Sprintf("%0.2f", float64(d.transAmt/100))
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = fmt.Sprintf("%0.2f", float64(d.MerFee/100))
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = fmt.Sprintf("%0.2f", float64(d.MerSettAmt/100))
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqFee/100))
-			cell = row.AddCell()
-			cell.SetStyle(bodyStyle)
-			cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqSettAmt/100))
+		for _, chanMap := range elementMap {
+			for _, d := range chanMap {
+				row = sheet.AddRow()
+				row.SetHeightCM(1.00)
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = d.insCode
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = d.insName
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = d.chcd
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = d.role
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = fmt.Sprintf("%d", d.transNum)
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.transAmt/100))
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.MerFee/100))
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.MerSettAmt/100))
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqFee/100))
+				cell = row.AddCell()
+				cell.SetStyle(bodyStyle)
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqSettAmt/100))
+			}
 		}
 	}
 

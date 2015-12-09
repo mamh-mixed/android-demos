@@ -47,6 +47,16 @@ func (s scanpayDomestic) ProcessDuration() time.Duration {
 // Reconciliation 勾兑
 func (s scanpayDomestic) Reconciliation(date string) {
 
+	// 本地数据集
+	localMMap, alpMers, err := genLocalBlendMap(date)
+	if err != nil {
+		log.Errorf("find transSett error: %s", err)
+		return
+	}
+
+	log.Infof("local MMap length=%s", len(localMMap))
+	log.Infof("found alp mers: %d", len(alpMers))
+
 	// 微信大商户
 	wxpAgent, err := mongo.ChanMerColl.FindWXPAgent() //SettleDate SignKey
 	if err != nil {
@@ -71,7 +81,6 @@ func (s scanpayDomestic) Reconciliation(date string) {
 	alpreq := new(model.ScanPayRequest)
 	alpreq.StartTime = date + " 00:00:00"
 	alpreq.EndTime = date + " 23:59:59"
-	var alpMers []string
 	for _, k := range alpMers {
 		c, err := mongo.ChanMerColl.Find("ALP", k)
 		if err != nil {
@@ -82,14 +91,14 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		alpreq.ChanMerId = k
 		err = alipay.Domestic.ProcessSettleEnquiry(alpreq, chanMMap)
 		if err != nil {
-			log.Errorf("the request error , merid:%s, chanCode:%s", alpreq.ChanMerId, "ALP")
+			log.Errorf("the request error: %s , merid:%s, chanCode:%s", err, alpreq.ChanMerId, "ALP")
 		}
 	}
-	// 渠道多余
-	chanMoreMap := make(map[string]string)
 
-	// 本地数据集
-	localMMap := make(model.LocalBlendMap) // TODO 整理数据源
+	log.Infof("chan MMap length=%d", len(chanMMap))
+
+	// 金额有误交易
+	amtErrorMap := make(map[string]string)
 
 	// 勾兑过程
 	for chanMerId, localOrderMap := range localMMap {
@@ -108,7 +117,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						}
 					}
 					for _, orderRecord := range transSetts { //计算本地该订单总金额
-						act := float64(orderRecord.Trans.TransAmt / 100)
+						act := float64(orderRecord.Trans.TransAmt) / 100
 						if orderRecord.Trans.TransType == model.PayTrans {
 							orderACT += act
 						} else {
@@ -125,42 +134,97 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
 						delete(chanOrderMap, chanOrderNum)  //删除渠道记录，剩下的进C002
 					} else {
+						log.Errorf("amt error: expect %0.2f, actual %0.2f, chanOrderNum=%s", orderACT, blendACT, chanOrderNum)
 						// 对上，但金额不一致
-						for _, blendRecord := range blendArray {
-							chanMoreMap[blendRecord.OrderID] = blendRecord.ChanMerID
+						for _, transSett := range transSetts {
+							transSett.BlendType = AMT_ERROR
+							mongo.SpTransSettColl.Update(&transSett)
 						}
+						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
 					}
 				}
+			}
+
+			// 如果内部map为空，那么删除外部key
+			if len(chanOrderMap) == 0 {
+				delete(chanMMap, chanMerId)
+			}
+			if len(localOrderMap) == 0 {
+				delete(localMMap, chanMerId)
 			}
 		}
 	}
 
-	// 处理没有勾兑上的数据
+	log.Infof("after blend localMMap length=%d", len(localMMap))
+	log.Infof("after blend chanMMap length=%d", len(chanMMap))
+	log.Infof("after blend errAmtMap length=%d", len(amtErrorMap))
 
-	// upload
+	// 处理没有勾兑上的数据
+	// 渠道少清
 	if len(localMMap) != 0 {
+		// 出报表
 		file401 := "IC401.xlsx"
 		upload(file401, genC001ReportExcel(localMMap, date))
 	}
 
+	// 渠道多清
 	if len(chanMMap) != 0 {
+		for _, v := range localMMap {
+			for ik, iv := range v {
+				// 没勾兑上的里面包含金额错误的
+				if _, ok := amtErrorMap[ik]; ok {
+					// 跳过
+					continue
+				}
+				for _, transSett := range iv {
+					transSett.BlendType = CHAN_MORE
+					// mongo.SpTransSettColl.Update(&transSett)
+				}
+			}
+		}
 		file402 := "IC402.xlsx"
 		upload(file402, genC002ReportExcel(chanMMap, date))
 	}
 }
 
 // genLocalBlendMap 根据当天交易生成本地勾兑数据集
-func genLocalBlendMap(date string) model.LocalBlendMap {
+func genLocalBlendMap(date string) (lbm model.LocalBlendMap, alpChanMer map[string]string, err error) {
 
-	var lbm model.LocalBlendMap
-	_, err := mongo.SpTransSettColl.Find(&model.QueryCondition{
-		StartTime: date + " 00:00:00",
-		EndTime:   date + " 23:59:59",
-	})
+	var transSetts []model.TransSett
+	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date})
 	if err != nil {
-		return lbm
+		return
 	}
 
-	return lbm
+	if len(transSetts) == 0 {
+		return
+	}
+
+	lbm = make(model.LocalBlendMap)
+	alpChanMer = make(map[string]string)
+	for _, ts := range transSetts {
+		if chanOrderMap, ok := lbm[ts.Trans.ChanMerId]; ok {
+			if tss, found := chanOrderMap[ts.Trans.ChanOrderNum]; found {
+				tss = append(tss, ts)
+				chanOrderMap[ts.Trans.ChanOrderNum] = tss
+			} else {
+				chanOrderMap[ts.Trans.ChanOrderNum] = []model.TransSett{ts}
+			}
+		} else {
+			chanOrderMap := make(map[string][]model.TransSett)
+			chanOrderMap[ts.Trans.ChanOrderNum] = []model.TransSett{ts}
+			lbm[ts.Trans.ChanMerId] = chanOrderMap
+		}
+
+		// 存储支付宝发生交易渠道号
+		if ts.Trans.ChanCode == "ALP" {
+			if _, ok := alpChanMer[ts.Trans.ChanMerId]; !ok {
+				alpChanMer[ts.Trans.ChanMerId] = ts.Trans.ChanMerId
+			}
+		}
+
+	}
+
+	return
 
 }

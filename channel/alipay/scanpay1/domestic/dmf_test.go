@@ -51,10 +51,10 @@ var refundPay = &model.ScanPayRequest{
 }
 
 var settle = &model.ScanPayRequest{
-	StartTime: "2015-12-07 00:00:00",
-	EndTime:   "2015-12-07 23:59:59",
-	SignKey:   "86l3l20oagn2afs0r0ztkizut1il66ec",
-	ChanMerId: "2088811767473826",
+	StartTime: "2015-12-08 00:00:00",
+	EndTime:   "2015-12-08 23:59:59",
+	SignKey:   "tt0h6du2jmv89sbwc2wdzeqydbvmt8bj",
+	ChanMerId: "2088701607252123",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
@@ -128,13 +128,13 @@ func TestProcessCancel(t *testing.T) {
 }
 
 func TestProcessSettleEnquiry(t *testing.T) {
-
-	recsMap, err := DefaultClient.ProcessSettleEnquiry(settle)
+	cbd := make(model.ChanBlendMap)
+	err := DefaultClient.ProcessSettleEnquiry(settle, cbd)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	t.Logf("%+v", recsMap)
+	t.Logf("%+v", cbd)
 
 }
