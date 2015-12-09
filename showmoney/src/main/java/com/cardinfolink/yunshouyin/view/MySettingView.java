@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.cardinfolink.yunshouyin.activity.AccountSecurityActivity;
 import com.cardinfolink.yunshouyin.activity.LimitIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
+import com.cardinfolink.yunshouyin.activity.UnReadMessageActivity;
 import com.cardinfolink.yunshouyin.activity.WapActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
@@ -39,6 +41,8 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
     private TextView mEmail;//账户名
     private TextView mLimit;//显示限额的一些信息的
 
+    private ImageView mMessage;
+
     public MySettingView(Context context) {
         super(context);
         mContext = context;
@@ -58,6 +62,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mEmail = (TextView) contentView.findViewById(R.id.tv_email);//账户名
         mEmail.setText(SessonData.loginUser.getUsername());//通过sessonData设置一下用户名
         mLimit = (TextView) contentView.findViewById(R.id.tv_limit_info);//显示限额的一些信息的
+        mMessage = (ImageView) contentView.findViewById(R.id.iv_message);//右上角显示是否有未读消息的图片
 
         mExit.setOnClickListener(this);
         mIncreaseLimit.setOnClickListener(this);
@@ -65,7 +70,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mSupportChannel.setOnClickListener(this);
         mMyWap.setOnClickListener(this);
         mAbout.setOnClickListener(this);
-
+        mMessage.setOnClickListener(this);
     }
 
 
@@ -100,6 +105,11 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
             case R.id.about:
                 //关于云收银
                 intent = new Intent(mContext, AboutActivity.class);
+                mContext.startActivity(intent);
+                break;
+            case R.id.iv_message:
+                //这里要加个判断 是否有 未读消息，有的话跳转未读消息界面。
+                intent = new Intent(mContext, UnReadMessageActivity.class);
                 mContext.startActivity(intent);
                 break;
         }
