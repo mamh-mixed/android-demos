@@ -27,6 +27,7 @@ import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
+import com.cardinfolink.yunshouyin.view.ResetDialog;
 
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
@@ -34,92 +35,66 @@ public class LoginActivity extends BaseActivity {
     private EditTextClear mUsernameEdit;
     private EditTextClear mPasswordEdit;
     private CheckBox mAutoLogin;
-    private TextView mRegister;
-    private ImageView mIncrease;
-    private ImageView mHelp;
+    private TextView mRegister;//用来注册
+    private ImageView mIncrease;//用来添加用户
+    private ImageView mHelp;//显示帮助对话框
 
-    private Button mLoginButton;
+    private Button mLoginButton;//登录按钮
+    private ResetDialog mResetDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        initView();
+        initLisenter();
 
-        mIncrease = (ImageView) findViewById(R.id.iv_increase);
-        mHelp = (ImageView) findViewById(R.id.iv_help);
+        User user = SaveData.getUser(mContext);
+        mAutoLogin.setChecked(user.isAutoLogin());
+        mUsernameEdit.setText(user.getUsername());
+        mPasswordEdit.setText(user.getPassword());
+        if (user.isAutoLogin()) {
+            login();
+        }
+    }
 
-        mRegister= (TextView) findViewById(R.id.tv_register);
+    /**
+     * 初始化各个 组件
+     */
+    private void initView() {
+        mIncrease = (ImageView) findViewById(R.id.iv_increase);//用来添加用户
+        mHelp = (ImageView) findViewById(R.id.iv_help);//显示帮助对话框
+
+        mRegister = (TextView) findViewById(R.id.tv_register);//用来注册
 
         mUsernameEdit = (EditTextClear) findViewById(R.id.login_username);
-        mUsernameEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(mUsernameEdit.getText())) {
-                    mIncrease.setVisibility(View.VISIBLE);
-                }else{
-                    mIncrease.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
         VerifyUtil.addEmailLimit(mUsernameEdit);
 
         mPasswordEdit = (EditTextClear) findViewById(R.id.login_password);
-        mPasswordEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(mPasswordEdit.getText())) {
-                    mHelp.setVisibility(View.VISIBLE);
-                }else{
-                    mHelp.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
         VerifyUtil.addEmailLimit(mPasswordEdit);
+
 
         mAutoLogin = (CheckBox) findViewById(R.id.login_auto);
 
         mLoginButton = (Button) findViewById(R.id.btnlogin);
 
-        User user = SaveData.getUser(mContext);
-        mAutoLogin.setChecked(user.isAutoLogin());
-
-        mUsernameEdit.setText(user.getUsername());
-        mPasswordEdit.setText(user.getPassword());
-
-        if (user.isAutoLogin()) {
-            login();
-        }
-
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "onClick to longin");
-                login();
-            }
-        });
+        mResetDialog = new ResetDialog(this, findViewById(R.id.reset_dialog));
 
     }
+
+    /**
+     * 初始化相应组件的 事件监听
+     */
+    private void initLisenter() {
+        mUsernameEdit.addTextChangedListener(new LoginTextWatcher(mUsernameEdit));
+
+        mPasswordEdit.addTextChangedListener(new LoginTextWatcher(mPasswordEdit));
+
+        mLoginButton.setOnClickListener(new LoginOnClickListener());
+
+        mHelp.setOnClickListener(new LoginOnClickListener());
+    }
+
 
     private boolean validate() {
         String username, password;
@@ -137,7 +112,6 @@ public class LoginActivity extends BaseActivity {
         if (TextUtils.isEmpty(password)) {
             String alertMsg = getResources().getString(R.string.alert_error_password_cannot_empty);
             mAlertDialog.show(alertMsg, wrongBitmap);
-            Log.e(TAG, " validate()" + alertMsg);
             return false;
         }
         return true;
@@ -227,6 +201,60 @@ public class LoginActivity extends BaseActivity {
         mAutoLogin.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
+    }
+
+    private class LoginOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.btnlogin:
+                    Log.e(TAG, "onClick to longin");
+                    login();
+                    break;
+                case R.id.iv_help:
+                    mResetDialog.show();
+                    break;
+            }
+        }
+    }
+
+    private class LoginTextWatcher implements TextWatcher {
+        private View view;
+
+        public LoginTextWatcher(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            switch (view.getId()) {
+                case R.id.login_username:
+                    if (TextUtils.isEmpty(mUsernameEdit.getText())) {
+                        mIncrease.setVisibility(View.VISIBLE);
+                    } else {
+                        mIncrease.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+                case R.id.login_password:
+                    if (TextUtils.isEmpty(mPasswordEdit.getText())) {
+                        mHelp.setVisibility(View.VISIBLE);
+                    } else {
+                        mHelp.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+            }
+        }
     }
 
 }
