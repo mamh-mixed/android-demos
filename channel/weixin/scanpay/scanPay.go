@@ -2,7 +2,6 @@ package scanpay
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -313,10 +312,10 @@ func (sp *WeixinScanPay) ProcessClose(m *model.ScanPayRequest) (ret *model.ScanP
 }
 
 //微信对账接口
-func (sp *WeixinScanPay) ProcessSettleEnquiry(m *model.ScanPayRequest, modelMMap map[string]map[string][]model.BlendElement) error {
+func (sp *WeixinScanPay) ProcessSettleEnquiry(m *model.ScanPayRequest, cbd model.ChanBlendMap) error {
 
-	if modelMMap == nil {
-		return errors.New("the map is nil")
+	if cbd == nil {
+		return fmt.Errorf("%s", "nil map found")
 	}
 
 	d := &SettleQueryReq{
@@ -333,19 +332,16 @@ func (sp *WeixinScanPay) ProcessSettleEnquiry(m *model.ScanPayRequest, modelMMap
 		return err
 	}
 
-	err = analysisSettleData(dataStr, modelMMap)
-	/*
-		for k, _ := range modelMMap {
-			fmt.Println(k)
-		}
-	*/
-	return err
+	analysisSettleData(dataStr, cbd)
+
+	return nil
 }
 
 //分析数据 如：交易时间,公众账号ID,商户号,子商户号,设备号,微信订单号,商户订单号,用户标识,交易类型,交易状态,付款银行,货币种类,总金额,代金券或立减优惠金额,微信退款单号,商户退款单号,退款金额, 代金券或立减优惠退款金额，退款类型，退款状态,商品名称,商户数据包,手续费,费率
-func analysisSettleData(dataStr string, modelMMap map[string]map[string][]model.BlendElement) error { //外部map key为商户号，内部map key为订单号
+func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map key为商户号，内部map key为订单号
+
 	if dataStr == "" {
-		return errors.New("the string is nil")
+		return
 	}
 
 	dataStr = strings.Replace(dataStr, "`", "", -1)
@@ -371,40 +367,42 @@ func analysisSettleData(dataStr string, modelMMap map[string]map[string][]model.
 		var elementModel model.BlendElement
 		elementModel.Chcd = "WXP"
 		elementModel.ChcdName = "微信"
-		elementModel.ChanMerID = dataArray[3] //商户号
-		elementModel.OrderTime = dataArray[0] //时间
-		elementModel.OrderID = dataArray[5]   //微信交易号
+		elementModel.ChanMerID = dataArray[3] // 商户号
+		elementModel.OrderTime = dataArray[0] // 时间
+		elementModel.OrderID = dataArray[5]   // 微信交易号
+		elementModel.LocalID = dataArray[6]   // 商户订单号
 		elementModel.IsBlend = false
-		modelMap, ret := modelMMap[elementModel.ChanMerID]
-		if !ret {
-			modelMap = make(map[string][]model.BlendElement)
+		// init
+		recsMap, ok := cbd[elementModel.ChanMerID]
+		if !ok {
+			recsMap = make(map[string][]model.BlendElement)
 		}
 
 		if dataArray[9] == "SUCCESS" { //交易成功
 			elementModel.OrderAct = dataArray[12] //金额
 			elementModel.OrderType = "交易成功"
-			elementArray, ret := modelMap[elementModel.OrderID]
-			if !ret {
+			elementArray, ok := recsMap[elementModel.OrderID]
+			if !ok {
 				elementArray = make([]model.BlendElement, 0)
 			}
 			elementArray = append(elementArray, elementModel)
-			modelMap[elementModel.OrderID] = elementArray
+			recsMap[elementModel.OrderID] = elementArray
 		} else if dataArray[9] == "REFUND" { //退款
 			if dataArray[19] == "SUCCESS" {
 				elementModel.OrderAct = "-" + dataArray[16]
 				elementModel.OrderType = "退款"
-				elementArray, ret := modelMap[elementModel.OrderID]
-				if !ret {
+				elementArray, ok := recsMap[elementModel.OrderID]
+				if !ok {
 					elementArray = make([]model.BlendElement, 0)
 				}
 				elementArray = append(elementArray, elementModel)
-				modelMap[elementModel.OrderID] = elementArray
+				recsMap[elementModel.OrderID] = elementArray
 			}
 		}
-		modelMMap[elementModel.ChanMerID] = modelMap
-	}
 
-	return nil
+		// back
+		cbd[elementModel.ChanMerID] = recsMap
+	}
 }
 
 func handleExpireTime(expirtTime string) (string, string) {

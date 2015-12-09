@@ -241,10 +241,10 @@ func toSettleMap(req *alpRequest) map[string]string {
 }
 
 //账单明细查询
-func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, modelMMap map[string]map[string][]model.BlendElement) error {
+func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, cbd model.ChanBlendMap) error {
 
-	if modelMMap == nil {
-		return errors.New("the map is nil")
+	if cbd == nil {
+		return fmt.Errorf("%s", "nil map found")
 	}
 
 	alpReq := &alpRequest{
@@ -256,88 +256,74 @@ func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, modelMMap map[stri
 
 	alpReq.SpReq = req
 
-	alpRsp, err := sendSettleRequest(alpReq)
-
+	alpResp, err := sendSettleRequest(alpReq)
 	if err != nil {
 		log.Errorf("sendRequest fail, func name is ProcessSettleEnquiry, the settle time start:%s, end:%s, error:%s", req.StartTime, req.EndTime, err)
 		return err
 	}
 
-	err1 := analysisSettleData(alpRsp.Response.Csv_result, alpReq.Partner, modelMMap)
-	/*
-		for _, array := range modelMap {
-			for _, element := range array {
-				fmt.Println("the value is:", element)
-			}
-		}
-	*/
-	if err1 != nil {
-		log.Errorf("settle data change to map error:%s", err)
-		return err1
+	if alpResp.Error != "" {
+		return fmt.Errorf("%s", alpResp.Error)
 	}
 
-	return err
+	analysisSettleData(alpResp.Response.CsvResult, alpReq.Partner, cbd)
+
+	return nil
 }
 
-func analysisSettleData(csvData csv_detail, chanMer string, modelMMap map[string]map[string][]model.BlendElement) error { //key订单号
-	dataStr := csvData.Csv_data
+func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlendMap) {
+
+	csv := csvData.CsvStr
 	count, err := strconv.Atoi(csvData.Count)
 	if err != nil {
 		log.Errorf("change data count errDetail:%s", err)
-		return err
-	}
-	istart := strings.LastIndex(dataStr, "[")
-	iend := strings.Index(dataStr, "]")
-	dataArray := []byte(dataStr)
-	stemp := string(dataArray[istart+1 : iend])
-	element := strings.Split(stemp, ",")
-	//检查要取关键位置是否变化 如：外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,
-	if element[0] != "外部订单号" {
-		log.Errorf("the first position is different")
-		err = errors.New("the first position is different")
-		return err
-	}
-	if element[2] != "时间" {
-		log.Errorf("the third position is different")
-		err = errors.New("the third position is different")
-		return err
-	}
-	if element[4] != "支付宝交易号" {
-		log.Errorf("the fifth position is different")
-		err = errors.New("the fifth position is different")
-		return err
-	}
-	if element[8] != "收入（元）" {
-		log.Errorf("the eighth position is different")
-		err = errors.New("the eighth position is different")
-		return err
-	}
-	if element[9] != "支出（元）" {
-		log.Errorf("the ninth position is different")
-		err = errors.New("the ninth position is different")
-		return err
-	}
-	if element[12] != "类型" {
-		log.Errorf("the twelve position is different")
-		err = errors.New("the twelve position is different")
-		return err
+		return
 	}
 
-	//elementArray := make([]model.BlendElement)
-	//mmap := make(map[string]map[string][]model.BlendElement)
+	// 截取内容
+	content := string(csv[strings.LastIndex(csv, "[")+1 : strings.Index(csv, "]")])
+	element := strings.Split(content, ",")
 
-	modelMap, ret := modelMMap[chanMer]
-	if !ret {
-		modelMap = make(map[string][]model.BlendElement)
+	// 检查要取关键位置是否变化 如：
+	// 外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,
+	if len(element) > 13 {
+		if element[0] != "外部订单号" {
+			log.Errorf("the first position is different")
+			return
+		}
+		if element[2] != "时间" {
+			log.Errorf("the third position is different")
+			return
+		}
+		if element[4] != "支付宝交易号" {
+			log.Errorf("the fifth position is different")
+			return
+		}
+		if element[8] != "收入（元）" {
+			log.Errorf("the eighth position is different")
+			return
+		}
+		if element[9] != "支出（元）" {
+			log.Errorf("the ninth position is different")
+			return
+		}
+		if element[12] != "类型" {
+			log.Errorf("the twelve position is different")
+			return
+		}
 	}
 
-	i := 0
-	for i < count {
+	recsMap, ok := cbd[chanMerId]
+	if !ok {
+		recsMap = make(map[string][]model.BlendElement)
+	}
+
+	for i := 0; i < count; i++ {
 		var elementModel model.BlendElement
-		//element[14*(i+1)]  //订单号
+		elementModel.LocalID = element[14*(i+1)]
 		elementModel.Chcd = "ALP"
 		elementModel.ChcdName = "支付宝"
-		elementModel.ChanMerID = chanMer
+		elementModel.ChanMerID = chanMerId
 		elementModel.OrderTime = element[14*(i+1)+2] //时间
 		elementModel.OrderID = element[14*(i+1)+4]   //支付宝交易号
 		elementModel.IsBlend = false
@@ -348,19 +334,13 @@ func analysisSettleData(csvData csv_detail, chanMer string, modelMMap map[string
 			elementModel.OrderAct = element[14*(i+1)+9] //支出
 		}
 
-		//append(elementArray, elementModel)
-		elementArray, ret := modelMap[elementModel.OrderID]
-		if !ret {
-			elementArray = make([]model.BlendElement, 0)
+		// 归类
+		if elementArray, ok := recsMap[elementModel.OrderID]; ok {
+			elementArray = append(elementArray, elementModel)
+			recsMap[elementModel.OrderID] = elementArray
+		} else {
+			recsMap[elementModel.OrderID] = []model.BlendElement{elementModel}
 		}
-		elementArray = append(elementArray, elementModel)
-		modelMap[elementModel.OrderID] = elementArray
-
-		i += 1
 	}
-
-	//modelMMap := make(map[string]map[string][]model.BlendElement)
-	modelMMap[chanMer] = modelMap
-
-	return nil
+	cbd[chanMerId] = recsMap
 }

@@ -31,10 +31,11 @@ func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 	}
 
 	type rec struct {
-		OrderNum  string `json:"orderNum"`
-		TransType int8   `json:"transType"`
-		TransTime string `json:"transTime"`
-		TransAmt  int64  `json:"transAmt"`
+		OrderNum     string `json:"orderNum"`
+		TransType    int8   `json:"transType"`
+		TransTime    string `json:"transTime"`
+		TransAmt     int64  `json:"transAmt"`
+		OrigOrderNum string `json:"origOrderNum,omitempty"`
 	}
 
 	tSize := len(trans)
@@ -68,7 +69,7 @@ func GetBills(q *model.QueryCondition) (result *model.QueryResult) {
 				transType = 8
 			}
 
-			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt}
+			r := rec{t.OrderNum, transType, t.CreateTime, t.TransAmt, t.OrigOrderNum}
 			recs = append(recs, r)
 		}
 		result.Rec = recs
@@ -265,6 +266,36 @@ func SpTransFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 		Data:    trans,
 	}
 	return ret
+}
+
+// TransSettStatistics 交易清算汇总
+func TransSettStatistics(q *model.QueryCondition) model.Summary {
+	group, all, err := mongo.SpTransSettColl.FindAndGroupBy(q)
+	if err != nil {
+		log.Errorf("find trans error: %s", err)
+	}
+
+	var data = make([]model.Summary, 0)
+
+	// 将数据合并
+	for _, d := range group {
+		s := model.Summary{
+			MerId:     d.MerId,
+			AgentName: d.AgentName,
+			MerName:   d.MerName,
+			GroupName: d.GroupName,
+		}
+
+		// 遍历渠道，合并数据
+		combine(&s, d.Detail)
+		data = append(data, s)
+	}
+
+	// 汇总数据
+	summary := model.Summary{Data: data}
+	combine(&summary, all)
+
+	return summary
 }
 
 // TransStatistics 交易统计

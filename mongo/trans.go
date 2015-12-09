@@ -60,7 +60,7 @@ func (col *transCollection) BatchAdd(ts []*model.Trans) (err error) {
 		if err != nil {
 			return err
 		}
-		log.Infof("insert coupon [%d, %d)", s, e)
+		// log.Infof("insert trans [%d, %d)", s, e)
 	}
 
 	return nil
@@ -247,6 +247,43 @@ func (col *transCollection) FindByTime(time string) ([]*model.Trans, error) {
 			"$gt":  time,
 			"$lte": util.NextDay(time),
 		},
+	}
+	err := database.C(col.name).Find(q).All(&ts)
+	return ts, err
+}
+
+// FindToSett 根据渠道时间查找成功交易
+func (col *transCollection) FindToSett(time string) ([]*model.Trans, error) {
+
+	var ts []*model.Trans
+	q := bson.M{
+		"$or": []bson.M{
+			bson.M{
+				"payTime": bson.M{
+					"$gt":  time,
+					"$lte": util.NextDay(time),
+				},
+				"$or": []bson.M{
+					bson.M{"transStatus": model.TransSuccess},
+					bson.M{"refundStatus": model.TransRefunded},
+				}},
+			// 对没有payTime的逆向交易做兼容
+			bson.M{
+				"createTime": bson.M{
+					"$gt":  time,
+					"$lte": util.NextDay(time),
+				},
+				"payTime": bson.M{"$exists": false},
+				"$or": []bson.M{
+					bson.M{"transStatus": model.TransSuccess},
+					bson.M{"refundStatus": model.TransRefunded},
+				}},
+		},
+		// "$or": []bson.M{
+		// 	bson.M{"transStatus": model.TransSuccess},
+		// 	bson.M{"refundStatus": model.TransRefunded},
+		// },
+		"transAmt": bson.M{"$ne": 0},
 	}
 	err := database.C(col.name).Find(q).All(&ts)
 	return ts, err
@@ -636,7 +673,6 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 		"createTime": bson.M{"$gte": q.StartTime, "$lt": q.EndTime},
 	}
 	find["merId"] = q.MerId
-	find["busicd"] = q.Busicd
 	find["$or"] = []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}}
 
 	// 过滤掉取消不成功的订单
@@ -655,25 +691,37 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
 
 	find := bson.M{
-		"payTime":     bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
-		"transStatus": model.TransSuccess,
-		"transType":   model.PayTrans,
+		"payTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
+		"$or":      []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}},
+		"transAmt": bson.M{"$ne": 0},
 	}
 
 	var result []model.SettRoleGroup
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": bson.M{"merId": "$merId", "settRole": "$settRole"},
-			"transAmt":  bson.M{"$sum": "$transAmt"},
-			"refundAmt": bson.M{"$sum": "$refundAmt"},
-			"netFee":    bson.M{"$sum": "$netFee"}, // !!!这里计算的是净手续费，不是fee字段。
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$transType", 1}}, "$transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$transAmt", // 相当于将逆向交易的金额变为负数
+					}},
+				},
+			}},
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$transType", 1}}, "$fee",
+					bson.M{"$subtract": []interface{}{
+						0, "$fee",
+					}},
+				},
+			}},
 		}},
 		{"$group": bson.M{
 			"_id": "$_id.settRole",
 			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
-				"transAmt":  "$transAmt",
-				"refundAmt": "$refundAmt",
-				"fee":       "$netFee",
+				"transAmt": "$transAmt",
+				"fee":      "$fee",
 			}},
 		}},
 		{"$project": bson.M{

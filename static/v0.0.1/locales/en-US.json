@@ -107,9 +107,21 @@
     "description": "修改密码成功",
     "message": "Update password successfully"
   },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
+    "description": "新密码不能和旧密码相同",
+    "message": "EN新密码不能和旧密码相同"
+  },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
     "message": "EN新密码不一致"
+  },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
+    "description": "新密码最小长度位",
+    "message": "EN新密码长度不能少于8位"
+  },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
+    "description": "新密码必须复杂点，包含大小写字母和数字",
+    "message": "EN新密码必须包含大小写字母和数字"
   },
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
@@ -434,6 +446,30 @@
   "TRADE_DETAIL.PAY_TIME": {
     "description": "支付时间",
     "message": "EN支付时间"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.TITLE": {
+    "description": "清算报表下载",
+    "message": "EN清算报表下载"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME": {
+    "description": "扫码支付清算报表",
+    "message": "EN扫码支付清算报表"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE": {
+    "description": "清算日期",
+    "message": "EN清算日期"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.REDO_SETTLE": {
+    "description": "重跑清算报表",
+    "message": "EN重跑"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
+    "description": "下载汇总报表",
+    "message": "EN下载汇总报表"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
+    "description": "下载明细报表",
+    "message": "EN下载明细报表"
   },
   "xxx": {
     "description": "xxx",

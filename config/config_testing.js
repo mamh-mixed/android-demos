@@ -70,5 +70,9 @@
         "SignKey": "tommy123", // 签名密钥
         "EncryptSignKey": "IKOxKmCdK86pSgIUUJZFC1wDJBrFxNW7U2x9RuI1tzVi0ubRFqGJ84pAXr5RmoKrPsZeQ+CUOrPlulWrV8BFmyzp9aqu3VuyRfRbONKsgAyz+QIlnRXAQkpNK7raKzH5O+7Arva4TyVY2EaQG6igcRl4Eh79ezpLEaWxtX/EvpXg1jPrIWVBCrYD1qH5kOJHqWHbSiKBO+BKBRy27u0cC70yhWe63sUCoPvsYQg7jl/P3zP8UKn+xz4DFE0JYz81v8ON55F2DKmnOcFj1M2TV4xq5bYy56bQbVrsZxbTLKuw48BOLyM/bUPx2j9zSulhXmKc9eWhi3zFxbdlAdpQPg==", // 签名密钥
         "ChannelId": "182000000000001" // 渠道 ID
+    },
+    "Settle":{
+        "OverseasSettPoint":"", // 海外接口清算时间点
+        "DomesticSettPoint":""
     }
 }

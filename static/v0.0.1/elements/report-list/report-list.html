@@ -31,9 +31,9 @@
   </style>
   <template>
     <div class="condition search-condition">
-      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{time.startTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
+      <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{time.startTimeString::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
       <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-        <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+        <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE" max-date="{{time.endTime}}"></paper-date-picker>
         <div class="buttons">
           <paper-button dialog-dismiss>
             <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
@@ -43,9 +43,9 @@
           </paper-button>
         </div>
       </paper-dialog>
-      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{time.endTime::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
+      <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{time.endTimeString::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
       <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-        <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+        <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE" min-date="{{time.startTime}}"></paper-date-picker>
         <div class="buttons">
           <paper-button dialog-dismiss>
             <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
@@ -257,29 +257,49 @@
       properties: {
         cond: {
           type: Object,
-          value: {}
+          value: function() {
+            return {
+              utcOffset: moment().utcOffset(),
+              page: 1,
+              size: 20,
+              total: 0
+            }
+          }
+        },
+        time: {
+          type: Object,
+          value: function() {
+            var startTime = moment().add(-1, 'd');
+            startTime.hour(0);
+            startTime.minute(0);
+            startTime.second(0);
+
+            var endTime = moment().add(-1, 'd');
+            endTime.hour(23);
+            endTime.minute(59);
+            endTime.second(59);
+            return {
+              startTime: startTime.toDate(),
+              startTimeString: moment(startTime).format('YYYY-MM-DD'),
+              endTime: endTime.toDate(),
+              endTimeString: moment(endTime).format('YYYY-MM-DD')
+            }
+          }
         },
         user: Object,
       },
-      ready: function() {
-        this.time = {
-          startTime: this.getYesterdayISODate(),
-          endTime: this.getYesterdayISODate()
-        };
-        this.cond = {
-          utcOffset: moment().utcOffset(),
-          page: 1,
-          size: 20,
-          total: 0
-        };
-        //   // 加载代理列表
-        //   this.handleQueryAgentsEvent();
-      },
+      ready: function() {},
       attached: function() {
         this.fire('rerender-i18n', {
           from: 'report-list'
         });
       },
+      observers: [
+        '_watchAgentChange(agent.key)',
+        '_watchCondChange(cond.*)',
+        '_watchUserChanged(user.*)',
+        '_watchTimeChanged(time.startTime, time.endTime)'
+      ],
       // 查询交易报表事件
       handleQueryTapped: function() {
         this.set('cond.page', 1);
@@ -288,12 +308,6 @@
       generateAjaxRequest: function() {
         this.records = [];
         var ajax = this.$.queryAjax;
-        if (this.time.startTime && this.time.startTime !== '') {
-          this.cond.startTime = Util.toCSTDateTime(this.time.startTime + '00:00:00');
-        }
-        if (this.time.endTime && this.time.endTime !== '') {
-          this.cond.endTime = Util.toCSTDateTime(this.time.endTime + '23:59:59');
-        }
         ajax.params = this.cond;
         ajax.generateRequest();
       },
@@ -356,11 +370,12 @@
         }
         this.set('user', response.data);
       },
-      observers: [
-        '_watchAgentChange(agent.key)',
-        '_watchCondChange(cond.*)',
-        '_watchUserChanged(user.*)',
-      ],
+      _watchTimeChanged: function(startTime, endTime) {
+        this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD'));
+        this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD'));
+        this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD 00:00:00')));
+        this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD 23:59:59')));
+      },
       _watchCondChange: function() {
         var filename = "Summary_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
         filename = filename.replace(/-/g, '');
@@ -416,16 +431,16 @@
       // 日期、时间控件
       dismissStartTimeDialog: function() {
         var startTime = this.$.startTimePicker.date;
-        this.set('time.startTime', this.$.startTimePicker.dateFormat(startTime, 'YYYY-MM-DD'));
-        this.set('cond.startTime', Util.toCSTDateTime(this.time.startTime + ' 00:00:00'));
+        this.set('time.startTime', startTime);
+        this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD 00:00:00')));
       },
       showStartTimeDialog: function() {
         this.$.startTimeDailog.toggle();
       },
       dismissEndTimeDialog: function() {
         var endTime = this.$.endTimePicker.date;
-        this.set('time.endTime', this.$.endTimePicker.dateFormat(endTime, 'YYYY-MM-DD'));
-        this.set('cond.endTime', Util.toCSTDateTime(this.time.endTime + ' 23:59:59'));
+        this.set('time.endTime', endTime);
+        this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD 23:59:59')));
       },
       showEndTimeDialog: function() {
         this.$.endTimeDailog.toggle();
@@ -442,15 +457,7 @@
           decInfo = CURRENCY_DECIMAL_MAP['CNY'];
         }
         amount = (amount / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
-        var x = amount.split('.');
-        var x1 = x[0];
-        var x2 = '';
-        x2 = x.length > 1 ? '.' + x[1] : '';
-        var rgx = /(\d+)(\d{3})/;
-        while (rgx.test(x1)) {
-          x1 = x1.replace(rgx, '$1' + ',' + '$2');
-        }
-        return x1 + x2;
+        return Util.beautifyAmount(amount);
       },
       // 整理下载报表的url
       _computeDownLoadUrl: function(item) {
@@ -471,7 +478,6 @@
       // 按商户汇总统计的复选框改变事件
       handleIsAggregateByGroupCheckboxChangeEvent: function(e) {
         this.set('cond.isAggregateByGroup', e.target.checked);
-        // this.set('records', []);
         this.handleQueryTapped();
       }
     });

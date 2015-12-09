@@ -1,6 +1,7 @@
 package master
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
@@ -77,18 +78,57 @@ func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
 	// 调用core方法统计
 	s, _ := query.TransStatistics(q)
 
+	// 设置为东八区
+	q.UtcOffset = 60 * 60 * 8
+
+	// TODO 币种处理，导出
+	genStatReport(s, q, reportLocale, reportLocale.Currency).Write(w)
+}
+
+// tradeSettReport 交易清算汇总报表
+func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
+	// 语言模板
+	rl := GetLocale(q.Locale)
+
+	var filename string
+	reportName := rl.ReportName.SettleSummary
+	switch q.UserType {
+	case model.UserTypeCIL, model.UserTypeGenAdmin:
+		filename = reportName
+	case model.UserTypeAgent:
+		filename = rl.Role.Agent + reportName
+	case model.UserTypeMerchant:
+		filename = rl.Role.Group + reportName
+	case model.UserTypeCompany:
+		filename = rl.Role.Company + reportName
+	case model.UserTypeShop:
+		filename = rl.Role.Mer + reportName
+	}
+	filename += ".xlsx"
+
+	// 调用core方法统计
+	s := query.TransSettStatistics(q)
+
+	// 设置为东八区
+	q.UtcOffset = 60 * 60 * 8
+
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+
+	// TODO 暂时设置为日币
 	// 导出
-	genQueryStatReport(s, q, reportLocale).Write(w)
+	genStatReport(s, q, rl, "JPY").Write(w)
 }
 
 // TODO: 优化
-func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate) (file *xlsx.File) {
+func genStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate, curr string) (file *xlsx.File) {
 
 	// 语言模板
 	reportLocale := GetLocale(cond.Locale).StatReport
 
 	// 币种转换
-	cur := currency.Get(locale.Currency)
+	cur := currency.Get(curr)
 
 	file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
@@ -100,8 +140,14 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 	// 表头样式
 	genHead(sheet, row, cell, cond)
 
-	// format
-	floatFormat := locale.ExportF64Format
+	// 金额显示格式
+	var floatFormat = "#,##0"
+	for i := 0; i < cur.Precision; i++ {
+		if i == 0 {
+			floatFormat += "."
+		}
+		floatFormat += "0"
+	}
 
 	// 填充数据
 	for _, d := range result.Data {
@@ -120,7 +166,7 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 		cell.SetFloatWithFormat(float64(d.TotalTransNum), intFormat)
 		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloatWithFormat(cur.F64(d.TotalTransAmt), floatFormat)
+		cell.SetFloatWithFormat(cur.F64(d.TotalTransAmt-d.TotalFee), floatFormat)
 		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
 		cell.SetFloatWithFormat(cur.F64(d.TotalFee), floatFormat)
@@ -129,7 +175,7 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 		cell.SetFloatWithFormat(float64(d.Alp.TransNum), intFormat)
 		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloatWithFormat(cur.F64(d.Alp.TransAmt), floatFormat)
+		cell.SetFloatWithFormat(cur.F64(d.Alp.TransAmt-d.Alp.Fee), floatFormat)
 		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
 		cell.SetFloatWithFormat(cur.F64(d.Alp.Fee), floatFormat)
@@ -138,7 +184,7 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 		cell.SetFloatWithFormat(float64(d.Wxp.TransNum), intFormat)
 		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
-		cell.SetFloatWithFormat(cur.F64(d.Wxp.TransAmt), floatFormat)
+		cell.SetFloatWithFormat(cur.F64(d.Wxp.TransAmt-d.Wxp.Fee), floatFormat)
 		cell.SetStyle(bodyStyle)
 		cell = row.AddCell()
 		cell.SetFloatWithFormat(cur.F64(d.Wxp.Fee), floatFormat)
@@ -162,7 +208,7 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 	cell.SetInt(result.TotalTransNum)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(float64(result.TotalTransAmt), floatFormat)
+	cell.SetFloatWithFormat(cur.F64(result.TotalTransAmt-result.TotalFee), floatFormat)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(cur.F64(result.TotalFee), floatFormat)
@@ -171,7 +217,7 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 	cell.SetFloatWithFormat(float64(result.Alp.TransNum), intFormat)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(cur.F64(result.Alp.TransAmt), floatFormat)
+	cell.SetFloatWithFormat(cur.F64(result.Alp.TransAmt-result.Alp.Fee), floatFormat)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(cur.F64(result.Alp.Fee), floatFormat)
@@ -180,7 +226,7 @@ func genQueryStatReport(result model.Summary, cond *model.QueryCondition, locale
 	cell.SetFloatWithFormat(float64(result.Wxp.TransNum), intFormat)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(cur.F64(result.Wxp.TransAmt), floatFormat)
+	cell.SetFloatWithFormat(cur.F64(result.Wxp.TransAmt-result.Wxp.Fee), floatFormat)
 	cell.SetStyle(bodyStyle)
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(cur.F64(result.Wxp.Fee), floatFormat)

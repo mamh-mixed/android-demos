@@ -3,13 +3,11 @@ package domestic
 // 真实测试，如果参数对的话，是会扣钱的！！！！！
 // ScanCodeId 从手机获取扫条码
 import (
-	"fmt"
-	"testing"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 var pay = &model.ScanPayRequest{
@@ -53,10 +51,10 @@ var refundPay = &model.ScanPayRequest{
 }
 
 var settle = &model.ScanPayRequest{
-	StartTime: "2015-11-27 01:00:00",
-	EndTime:   "2015-11-27 15:00:00",
-	SignKey:   "86l3l20oagn2afs0r0ztkizut1il66ec",
-	ChanMerId: "2088811767473826",
+	StartTime: "2015-12-08 00:00:00",
+	EndTime:   "2015-12-08 23:59:59",
+	SignKey:   "tt0h6du2jmv89sbwc2wdzeqydbvmt8bj",
+	ChanMerId: "2088701607252123",
 }
 
 func TestProcessBarcodePay(t *testing.T) {
@@ -130,13 +128,13 @@ func TestProcessCancel(t *testing.T) {
 }
 
 func TestProcessSettleEnquiry(t *testing.T) {
-
-	modelMMap := make(modelMMap map[string]map[string][]model.BlendElement)
-	_, err := DefaultClient.ProcessSettleEnquiry(settle, modelMMap)
-
+	cbd := make(model.ChanBlendMap)
+	err := DefaultClient.ProcessSettleEnquiry(settle, cbd)
 	if err != nil {
-		fmt.Printf("error:, %s", err)
+		t.Log(err)
+		t.FailNow()
 	}
 
-	//fmt.Printf("rsp:%s\n", rsp)
+	t.Logf("%+v", cbd)
+
 }

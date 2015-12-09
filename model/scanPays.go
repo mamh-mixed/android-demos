@@ -21,6 +21,7 @@ const (
 	Qyzf = "QYZF" // 企业付款
 	Jszf = "JSZF"
 	Veri = "VERI" // 卡券核销
+	List = "LIST"
 	// 卡券核销状态
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
@@ -31,6 +32,7 @@ type QueryCondition struct {
 	MerName            string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId              string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds             []string `json:"-"`
+	UserType           string
 	Col                string   `json:"-"`
 	BindingId          string   `json:"bindingId"`
 	AgentCode          string   `json:"agentCode,omitempty"`
@@ -41,6 +43,7 @@ type QueryCondition struct {
 	TransType          int      `json:"transType,omitempty"`
 	StartTime          string   `json:"startTime,omitempty"`
 	EndTime            string   `json:"endTime,omitempty"`
+	Date               string   `json:"date,omitempty"`
 	Busicd             string   `json:"busicd,omitempty"`
 	OrderNum           string   `json:"orderNum,omitempty"`
 	OrigOrderNum       string   `json:"origOrderNum,omitempty"`
@@ -126,10 +129,9 @@ type Channel struct {
 
 // Mer 按商户分组
 type MerGroup struct {
-	MerId     string `bson:"merId"`
-	TransAmt  int64  `bson:"transAmt"`
-	RefundAmt int64  `bson:"refundAmt"`
-	Fee       int64  `bson:"fee"`
+	MerId    string `bson:"merId"`
+	TransAmt int64  `bson:"transAmt"`
+	Fee      int64  `bson:"fee"`
 }
 
 // TransTypeGroup 按单个商户交易类型分组
@@ -182,7 +184,11 @@ type ScanPayRequest struct {
 
 	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
 	Terminalsn string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
-	CreateTime string `json:"-" url:"-" bson:"-"`                                                          // 卡券交易创建时间
+
+	SettDate     string `json:"settDate" url:"settDate,omitempty" bson:"settDate,omitempty"`
+	NextOrderNum string `json:"nextOrderNum" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
+
+	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
@@ -279,6 +285,11 @@ type ScanPayResponse struct {
 	VeriCode        string   `json:"veriCode,omitempty" url:"veriCode,omitempty" bson:"veriCode,omitempty"`
 	GoodsInfo       string   `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty" bson:"goodsInfo,omitempty"`
 	Attach          string   `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
+
+	Count        string      `json:"count,omitempty" url:"count,omitempty"`
+	Rec          interface{} `json:"rec,omitempty" url:"-" bson:"-"`
+	RecStr       string      `json:"-" url:"rec,omitempty" bson:"-"`
+	NextOrderNum string      `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"-"`
 
 	ScanCodeId string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty" bson:"scanCodeId,omitempty"` // 扫码号 卡券核销M
 	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
@@ -516,6 +527,14 @@ type RoleSett struct {
 	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
 }
 
+// ChanBlendMap 渠道勾兑数据集合
+// 外部key为渠道商户号，内部key为渠道订单号
+type ChanBlendMap map[string]map[string][]BlendElement
+
+// LocalBlendMap 系统本地勾兑数据集合
+// 外部key为渠道商户号，内部key为渠道订单号
+type LocalBlendMap map[string]map[string][]TransSett
+
 // 勾兑结构体
 type BlendElement struct {
 	Chcd      string //渠道编号
@@ -523,6 +542,7 @@ type BlendElement struct {
 	MerID     string //商户号
 	ChanMerID string //渠道商户号
 	MerName   string //商户名称
+	LocalID   string //系统订单号
 	OrderID   string //渠道订单号
 	OrderTime string //交易时间
 	OrderType string //交易类型

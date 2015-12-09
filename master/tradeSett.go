@@ -6,121 +6,49 @@ import (
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/query"
-	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"net/http"
 	"time"
 )
 
-var maxReportRec = 10000
-
-func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
-	ls, total, err := query.GetSpTransLogs(q, msgType)
-	if err != nil {
-		return model.NewResultBody(1, "查询数据库失败")
-	}
-
-	paging := model.Pagination{
-		Page:  q.Page,
-		Total: total,
-		Size:  q.Size,
-		Data:  ls,
-	}
-
-	return &model.ResultBody{
-		Status: 0,
-		Data:   paging,
-	}
-
-}
-
-// tradeSettleReportQuery 清算报表查询
-func tradeSettleReportQuery(role, date string, size, page int) (result *model.ResultBody) {
-	log.Debugf("role=%s; date=%s", role, date)
-
-	if page <= 0 {
-		return model.NewResultBody(400, "page 参数错误")
-	}
-
-	if size == 0 {
-		size = 10
-	}
-
-	results, total, err := mongo.RoleSettCol.PaginationFind(role, date, size, page)
-	if err != nil {
-		log.Errorf("分页查询出错%s", err)
-		return model.NewResultBody(1, "查询失败")
-	}
-
-	// 分页信息
-	pagination := &model.Pagination{
-		Page:  page,
-		Total: total,
-		Size:  size,
-		Count: len(results),
-		Data:  results,
-	}
-
-	result = &model.ResultBody{
-		Status:  0,
-		Message: "查询成功",
-		Data:    pagination,
-	}
-
-	return result
-}
-
-// tradeQuery 交易查询
-func tradeQuery(q *model.QueryCondition) (ret *model.ResultBody) {
-
-	switch {
-	case q.Col == "bp":
-		return query.BpTransQuery(q)
-	case q.Col == "coupon":
-		return query.CouponTransQuery(q)
-	default:
-		trans, total := query.SpTransQuery(q)
-		return &model.ResultBody{
-			Status:  0,
-			Message: "查询成功",
-			Data: &model.Pagination{
-				Page:  q.Page,
-				Total: total,
-				Size:  q.Size,
-				Count: len(trans),
-				Data:  trans,
-			},
-		}
-	}
-}
-
-// tradeQuery 交易查询
-func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
-	return query.SpTransFindOne(q)
-}
-
-// tradeReport 处理查找所有商户的请求
-func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
-
+// tradeSettJournalReport 对账流水下载
+func tradeSettJournalReport(w http.ResponseWriter, cond *model.QueryCondition) {
 	// 语言模板
 	rl := GetLocale(cond.Locale)
 
-	// 查询
-	trans, _ := query.SpTransQuery(cond)
+	var filename string
+	reportName := rl.ReportName.SettleJournal
+	switch cond.UserType {
+	case model.UserTypeCIL, model.UserTypeGenAdmin:
+		filename = reportName
+	case model.UserTypeAgent:
+		filename = rl.Role.Agent + reportName
+	case model.UserTypeMerchant:
+		filename = rl.Role.Group + reportName
+	case model.UserTypeCompany:
+		filename = rl.Role.Company + reportName
+	case model.UserTypeShop:
+		filename = rl.Role.Mer + reportName
+	}
+	filename += ".xlsx"
 
-	// 生成报表
-	file := genReport(trans, rl, &Zone{cond.UtcOffset, time.Local})
-
+	// 设置返回content
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+
+	// 查询
+	transSetts, _ := mongo.SpTransSettColl.Find(cond)
+
+	// 生成报表
+	file := settJornalReport(transSetts, rl, &Zone{cond.UtcOffset, time.Local})
+
 	file.Write(w)
 }
 
 // genReport 生成报表
-func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File {
+func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Zone) (file *xlsx.File) {
 
-	var file = xlsx.NewFile()
+	file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
@@ -144,18 +72,19 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 		MerName      string
 		OrderNum     string
 		TransAmt     string
+		TransCurr    string
 		MerFee       string
 		ChanCode     string
 		TransTime    string
 		PayTime      string
 		TransStatus  string
-		ChanMerId    string
 		AgentCode    string
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
 		Remark       string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
+		IsSettled    string
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark, m.IsSettled}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -170,9 +99,9 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 
 	var cur currency.Cur
 	// 生成数据
-	if len(trans) != 0 {
+	if len(transSetts) != 0 {
 		// TODO 先随机取一条交易的币种确定单位
-		transCurr := trans[0].Currency
+		transCurr := transSetts[0].Trans.Currency
 
 		// 币种单位
 		cur = currency.Get(transCurr)
@@ -185,8 +114,9 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 			}
 			floatFormat += "0"
 		}
-		for _, v := range trans {
+		for _, ts := range transSetts {
 
+			v := ts.Trans
 			var amt float64
 
 			// 交易金额 = 成功的交易金额
@@ -196,22 +126,22 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 				amt = cur.F64(v.TransAmt)
 				if v.ChanCode == channel.ChanCodeAlipay {
 					alpTransAmt += v.TransAmt
-					alpFee += v.Fee
+					alpFee += ts.MerFee
 				}
 				if v.ChanCode == channel.ChanCodeWeixin {
 					wxpTransAmt += v.TransAmt
-					wxpFee += v.Fee
+					wxpFee += ts.MerFee
 				}
 			// 退款、撤销、取消
 			default:
 				amt = -cur.F64(v.TransAmt)
 				if v.ChanCode == channel.ChanCodeAlipay {
 					alpRefundAmt += v.TransAmt
-					alpFee -= v.Fee
+					alpFee -= ts.MerFee
 				}
 				if v.ChanCode == channel.ChanCodeWeixin {
 					wxpRefundAmt += v.TransAmt
-					wxpFee -= v.Fee
+					wxpFee -= ts.MerFee
 				}
 			}
 
@@ -229,13 +159,12 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 			// 交易金额
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(amt, floatFormat)
+			// 交易币种
+			cell = row.AddCell()
+			cell.Value = v.Currency
 			// 商户手续费
 			cell = row.AddCell()
-			if v.TransType == model.PayTrans {
-				cell.SetFloatWithFormat(cur.F64(v.Fee), floatFormat)
-			} else {
-				cell.SetFloatWithFormat(cur.F64(-v.Fee), floatFormat)
-			}
+			cell.SetFloatWithFormat(cur.F64(ts.MerFee), floatFormat)
 			// 渠道
 			cell = row.AddCell()
 			switch v.ChanCode {
@@ -270,9 +199,6 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 			default:
 				cell.Value = locale.TransStatus.Unknown
 			}
-			// 渠道商户号
-			cell = row.AddCell()
-			cell.Value = v.ChanMerId
 			// 机构号
 			cell = row.AddCell()
 			cell.Value = v.AgentCode
@@ -306,6 +232,13 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 			// 备注
 			cell = row.AddCell()
 			cell.Value = v.TicketNum
+			// 是否已清算
+			cell = row.AddCell()
+			if ts.BlendType == 0 {
+				cell.Value = m.Yes
+			} else {
+				cell.Value = m.No
+			}
 		}
 	}
 
@@ -340,53 +273,3 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 
 	return file
 }
-
-type summary struct {
-	Cell2 string
-	Cell3 float64
-	Cell4 string
-	Cell5 float64
-	Cell6 string
-	Cell7 float64
-	Cell8 string
-	Cell9 float64
-}
-
-// Zone 代表时区
-type Zone struct {
-	UtcOffset     int            // UTC 的偏移量
-	ParseLocation *time.Location // 原时间时区
-}
-
-// GetTime 获得某个地区时间
-func (z *Zone) GetTime(ctime string) string {
-
-	// 东八区时间偏移量
-	cstOffset := 60 * 60 * 8
-
-	// 假如是东八区北京时间，直接返回
-	if z.UtcOffset == cstOffset {
-		return ctime + " +0800"
-	}
-
-	// 以服务器时区为准，即东八区
-	t, err := time.ParseInLocation("2006-01-02 15:04:05", ctime, z.ParseLocation)
-	if err != nil {
-		log.Errorf("fail to parse time in Local: %s", ctime)
-		return ctime
-	}
-
-	if loc, ok := locationsMap[z.UtcOffset]; ok {
-		t = t.In(loc)
-		return t.Format(layout)
-	}
-
-	loc := time.FixedZone("CUR", z.UtcOffset)
-	locationsMap[z.UtcOffset] = loc
-
-	t = t.In(loc)
-	return t.Format(layout)
-}
-
-var layout = "2006-01-02 15:04:05 -0700"
-var locationsMap = make(map[int]*time.Location)

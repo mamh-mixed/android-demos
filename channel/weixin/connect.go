@@ -169,7 +169,7 @@ func SettleExecute(req BaseReq, resp BaseResp) (string, error) {
 	}
 
 	// 记录请求渠道日志
-	logs.SpLogs <- m.GetChanReqLogs(req)
+	// logs.SpLogs <- m.GetChanReqLogs(req)
 
 	if err := validator.Validate(req); err != nil {
 		log.Errorf("validate error, %s", err)

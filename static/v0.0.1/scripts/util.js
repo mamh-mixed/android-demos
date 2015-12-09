@@ -25,6 +25,11 @@
 			toast.text = text;
 			toast.duration = duration;
 			toast.show();
+
+			setTimeout(function() {
+				toast.text = '';
+				toast.duration = 1;
+			}, duration)
 		};
 		var showLoginDialog = function() {
 			var abc = document.getElementsByTagName('paper-dialog'),
@@ -61,7 +66,11 @@
 			var aft = moment(org, 'YYYY-MM-DD HH:mm:ss Z').format('YYYY-MM-DD HH:mm:ss');
 			return aft;
 		};
-		// 将本地时间转换成北京时间
+		/**
+		 * [_toCSTDateTime 将本地时间转换成北京时间]
+		 * @param  {[type]} dateTime [string]
+		 * @return {[type]}          [string]
+		 */
 		var _toCSTDateTime = function(dateTime) {
 			if (!dateTime || !moment(dateTime, 'YYYY-MM-DD HH:mm:ss').isValid()) {
 				return dateTime;
@@ -99,6 +108,18 @@ DEBEqXeE7Q7WeseaHQIDAQAB\
 			rsa.setPublicKey(publicKey);
 			return rsa.encrypt(plaintext);
 		};
+		// 美化金额，加上逗号，把10000 转成 10,000
+		var beautifyAmount = function(amount) {
+			var x = amount.split('.');
+	        var x1 = x[0];
+	        var x2 = '';
+	        x2 = x.length > 1 ? '.' + x[1] : '';
+	        var rgx = /(\d+)(\d{3})/;
+	        while (rgx.test(x1)) {
+	          x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	        }
+	        return x1 + x2;
+		};
 		return {
 			init: init,
 			fire: fire,
@@ -109,6 +130,7 @@ DEBEqXeE7Q7WeseaHQIDAQAB\
 			toLocaleDateTime: _toLocaleDateTime,
 			toCSTDateTime: _toCSTDateTime,
 			RSAEncrypt: RSAEncrypt,
+			beautifyAmount: beautifyAmount
 		};
 	}());
 

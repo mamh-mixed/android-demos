@@ -107,9 +107,21 @@
     "description": "修改密码成功",
     "message": "パスワード変更成功"
   },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
+    "description": "新密码不能和旧密码相同",
+    "message": "JA新密码不能和旧密码相同"
+  },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
     "message": "新パスワード不一致"
+  },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
+    "description": "新密码最小长度位",
+    "message": "新パスワードは８文字未満不可"
+  },
+  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
+    "description": "新密码必须复杂点，包含大小写字母和数字",
+    "message": "新パスワードは、半角英数字（大文字と小文字）が含まれている必要がある"
   },
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
@@ -141,7 +153,7 @@
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
-    "message": "店舗カード"
+    "message": "店舗コード"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NAME": {
     "description": "门店名称",
@@ -434,6 +446,30 @@
   "TRADE_DETAIL.PAY_TIME": {
     "description": "支付时间",
     "message": "お支払い日時"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.TITLE": {
+    "description": "清算报表下载",
+    "message": "清算レポートダウンロード"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME": {
+    "description": "扫码支付清算报表",
+    "message": "QRコード清算レポート"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE": {
+    "description": "清算日期",
+    "message": "清算日"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.REDO_SETTLE": {
+    "description": "重跑清算报表",
+    "message": "再度清算"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
+    "description": "下载汇总报表",
+    "message": "ダウンロード統計レポート"
+  },
+  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
+    "description": "下载明细报表",
+    "message": "ダウンロード明細レポート"
   },
   "xxx": {
     "description": "xxx",
