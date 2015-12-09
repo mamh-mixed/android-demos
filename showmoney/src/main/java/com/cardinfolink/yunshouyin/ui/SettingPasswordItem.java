@@ -90,15 +90,22 @@ public class SettingPasswordItem extends RelativeLayout implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        //判断来设置密码输入框是否显示密码还是隐藏密码
-        if (mPassowrdIsVisible) {
-            // 隐藏密码
-            mPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            mPassowrdIsVisible = false;
-        } else {
-            //显示
-            mPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            mPassowrdIsVisible = true;
-        }
+        switch (v.getId()) {
+            case R.id.iv_show:
+                //判断来设置密码输入框是否显示密码还是隐藏密码
+                if (mPassowrdIsVisible) {
+                    // 隐藏密码
+                    mPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                } else {
+                    //显示
+                    mPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                }
+                mPassowrdIsVisible = !mPassowrdIsVisible;
+                break;
+            case R.id.tv_title:
+                break;
+        }//end switch()
     }
+
+
 }
