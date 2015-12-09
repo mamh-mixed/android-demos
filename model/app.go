@@ -32,6 +32,10 @@ var (
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
 	USER_ALREADY_IMPROVED   = NewAppResult(FAIL, "user_already_improved")
 	MERID_NO_EXIST          = NewAppResult(FAIL, "merId_no_exist")
+	USER_LOCK               = NewAppResult(FAIL, "user_lock")
+	USER_THREE_TIMES        = NewAppResult(FAIL, "user_has_three_times")
+	USER_TWO_TIMES          = NewAppResult(FAIL, "user_has_two_times")
+	USER_ONE_TIMES          = NewAppResult(FAIL, "user_has_one_times")
 	CODE_ERROR_CH           = NewAppResult(FAIL, "code码不存在")
 	NO_PAY_MER              = NewAppResult(FAIL, "找不到支付商户")
 	NO_TRANS                = NewAppResult(FAIL, "找不到交易")
@@ -130,6 +134,8 @@ type AppUser struct {
 	MerName        string `json:"merName,omitempty" bson:"merName,omitempty"`
 	BelongsTo      string `json:"-" bson:"belongsTo,omitempty"` // 属于哪个公司人员发展的
 	InvitationCode string `json:"-" bson:"invitationCode,omitempty"`
+	LoginTime      string `json:"loginTime,omitempty" bson:"loginTime,omitempty"` //记录第一次登陆时间
+	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`   //记录锁定时间
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
