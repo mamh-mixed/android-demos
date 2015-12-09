@@ -1,147 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1EBED6">
+    android:background="#ffffff">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <ImageView
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/sabi_register"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxHeight="80dp"
-            android:minHeight="40dp"
-            android:src="@drawable/logo" />
+            cardinfolink:left_text="@string/setting_return"
+            cardinfolink:title="@string/register_register" />
 
-        <TextView
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/register_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:adjustViewBounds="true"
-            android:text="@string/register_register"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="50dp"
+            cardinfolink:title="@string/register_email"
+            cardinfolink:username_hint="@string/register_hint_email" />
 
-
-        <TableLayout
-            android:layout_width="match_parent"
+        <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
+            android:id="@+id/register_password"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="5dp"
+            cardinfolink:password_hint="@string/register_hint_password"
+            cardinfolink:title="@string/register_password" />
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical">
+        <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
+            android:id="@+id/register_qr_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            cardinfolink:password_hint="@string/register_hint_qr_password"
+            cardinfolink:title="@string/register_qr_password" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/email" />
-
-                <EditText
-                    android:id="@+id/register_email"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:hint="@string/register_hint_email"
-                    android:inputType="textEmailAddress"
-                    android:paddingLeft="15dp"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#eeeeee" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/password" />
-
-                <EditText
-                    android:id="@+id/register_password"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:hint="@string/login_hint_password"
-                    android:inputType="textPassword"
-                    android:paddingLeft="15dp"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#eeeeee" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/password" />
-
-                <EditText
-                    android:id="@+id/register_qr_password"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:hint="@string/register_hint_qr_password"
-                    android:inputType="textPassword"
-                    android:paddingLeft="15dp"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#eeeeee" />
-            </TableRow>
-        </TableLayout>
-
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/register_invite_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            cardinfolink:title="@string/register_invite_code"
+            cardinfolink:username_hint="@string/register_optional" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             android:layout_marginTop="30dp"
             android:gravity="center">
 
             <Button
                 android:id="@+id/btnregister"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/register_next"
+                android:background="@drawable/white_selector"
+                android:text="@string/register_register"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/register_message"
+                android:textColor="#999999" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/register_cloud_version"
+                android:textColor="#0033ff" />
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:src="@drawable/logo" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 
