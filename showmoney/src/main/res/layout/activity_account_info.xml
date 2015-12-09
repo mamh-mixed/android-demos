@@ -1,60 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-        android:id="@+id/sabi_account_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        cardinfolink:left_text="@string/setting_return"
-        cardinfolink:title="@string/setting_account_info" />
-
-    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        cardinfolink:detail="Minghui Ma"
-        cardinfolink:title="@string/setting_real_name" />
-
-    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        cardinfolink:detail="136xxxxxxx"
-        cardinfolink:title="@string/setting_phone_number" />
-
-    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        cardinfolink:detail="上海"
-        cardinfolink:title="@string/setting_local_city" />
-
-
-    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        cardinfolink:detail="中国工商银行"
-        cardinfolink:title="@string/setting_bank_name" />
-
-    <com.cardinfolink.yunshouyin.ui.SettingDetailItem
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        cardinfolink:detail="mamh"
-        cardinfolink:title="@string/setting_merchant_name" />
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:orientation="vertical">
 
-        <TextView
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/sabi_account_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/setting_account_infomation" />
+            cardinfolink:left_text="@string/setting_return"
+            cardinfolink:title="@string/setting_account_info" />
 
-    </RelativeLayout>
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            cardinfolink:detail=""
+            cardinfolink:title="@string/setting_real_name" />
 
-</LinearLayout>
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:id="@+id/phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:detail=""
+            cardinfolink:title="@string/setting_phone_number" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:id="@+id/local_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:detail=""
+            cardinfolink:title="@string/setting_local_city" />
+
+
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:id="@+id/bank_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:detail=""
+            cardinfolink:title="@string/setting_bank_name" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:id="@+id/merchant_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:detail=""
+            cardinfolink:title="@string/setting_merchant_name" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/setting_account_infomation" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/showmoney_dialog"></include>
+</RelativeLayout>
