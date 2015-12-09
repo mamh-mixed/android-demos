@@ -917,7 +917,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 
 	// 密码解密
 	pwd, err := rsaDecryptFromBrowser(user.Password)
-	if err != nil{
+	if err != nil {
 		log.Errorf("escrypt password error %s", err)
 		w.WriteHeader(http.StatusNotImplemented)
 		return
@@ -934,11 +934,11 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		cExpires := now.Add(expiredTime)
 
 		http.SetCookie(w, &http.Cookie{
-			Name:    SessionKey,
-			Value:   cValue,
+			Name:     SessionKey,
+			Value:    cValue,
 			HttpOnly: true,
-			Path:    "/master",
-			Expires: cExpires,
+			Path:     "/master",
+			Expires:  cExpires,
 		})
 
 		// 创建session
@@ -990,11 +990,11 @@ func findSessionHandle(w http.ResponseWriter, r *http.Request) {
 func sessionDeleteHandle(w http.ResponseWriter, r *http.Request) {
 	// 清除cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:   "QUICKMASTERID",
-		Value:  "",
+		Name:     "QUICKMASTERID",
+		Value:    "",
 		HttpOnly: true,
-		Path:   "/master",
-		MaxAge: -1,
+		Path:     "/master",
+		MaxAge:   -1,
 	})
 
 	sid, err := r.Cookie(SessionKey)
@@ -1103,9 +1103,21 @@ func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	params := r.URL.Query()
-	userName := params.Get("userName")
-	ret := User.ResetPwd(userName)
+	// params := r.URL.Query()
+	// userName := params.Get("userName")
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+	ret := User.ResetPwd(data, curSession.User)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("mashal data error: %s", err)
@@ -1265,6 +1277,38 @@ func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+// appResetPwdHandle 重置app用户密码
+func appResetPwdHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+	ret := AppUser.ResetPwd(data, curSession.User)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
 	}
 
 	log.Tracef("response message: %s", rdata)

@@ -111,7 +111,7 @@ var (
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
 		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
-		ScanCodeId: "1810700102006068",
+		ScanCodeId: "1817026760000602",
 		// VeriTime:   "-1",
 	}
 	// 刷卡电子券核销

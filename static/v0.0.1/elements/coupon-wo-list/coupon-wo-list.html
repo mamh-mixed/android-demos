@@ -250,6 +250,9 @@
         },
         // 应答码着色
         getRespCodeColor: function(value) {
+          if (!value) {
+            return
+          }
           if (value === '00') {
             return 'green';
           }

@@ -15,7 +15,7 @@ import (
 	"github.com/omigo/log"
 )
 
-var agentURLArr = []string{
+var commonURLArr = []string{
 	"/master/trade/query",
 	"/master/trade/report",
 	"/master/trade/stat",
@@ -103,6 +103,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/delete", userDeleteHandle)
 	mux.HandleFunc("/master/user/resetPwd", userResetPwdHandle)
 	mux.HandleFunc("/master/app/locale", appLocaleHandle)
+	mux.HandleFunc("/master/app/resetPwd", appResetPwdHandle)
 	return mux
 }
 
@@ -208,11 +209,11 @@ func authProcess(user *model.User, url string) (err error) {
 	case model.UserTypeAgent:
 		has = util.StringInSlice(url, agentURLArr)
 	case model.UserTypeCompany:
-		has = util.StringInSlice(url, agentURLArr)
+		has = util.StringInSlice(url, commonURLArr)
 	case model.UserTypeMerchant:
-		has = util.StringInSlice(url, agentURLArr) // 暂时用代理的权限
+		has = util.StringInSlice(url, commonURLArr)
 	case model.UserTypeShop:
-		has = util.StringInSlice(url, agentURLArr) // 暂时用代理的权限
+		has = util.StringInSlice(url, commonURLArr)
 	default:
 		log.Errorf("user type error: %s", user.UserType)
 		return fmt.Errorf("用户类型（%s）配置错误", user.UserType)
