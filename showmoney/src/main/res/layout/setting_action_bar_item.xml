@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="50dp"
     android:background="#ffffff">
 
@@ -10,12 +10,12 @@
         android:layout_height="fill_parent"
         android:layout_alignLeft="@+id/iv_back"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
         android:background="@drawable/setting_item_selector"
         android:drawableLeft="@drawable/setting_return"
         android:drawablePadding="5dp"
         android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="返回"
         android:textColor="#000000"
         android:textSize="15sp" />
@@ -26,7 +26,6 @@
         android:layout_height="fill_parent"
         android:layout_centerInParent="true"
         android:layout_centerVertical="true"
-        android:layout_marginTop="10dp"
         android:gravity="center_vertical"
         android:text="中间标题"
         android:textColor="#000000"
@@ -38,9 +37,9 @@
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
         android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="右边标题"
         android:textColor="#000000"
         android:textSize="15sp" />
