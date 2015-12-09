@@ -5,6 +5,16 @@
 		"WXP":"微信",
 		"Unknown":"未知"
 	},
+	"ReportName":{
+		"SettleJournal":"对账单",
+		"SettleSummary":"汇总清算文件"
+	},
+	"Role":{
+		"Company" :"公司",
+		"Agent"   :"代理",
+		"Group"   :"商户",
+		"Mer"     :"门店"
+	},
 	"BusicdType":{
 		"Purc":"下单并支付",
 		"Paut":"预下单",
@@ -54,6 +64,7 @@
 		"TransTime"      			:"交易时间",
 		"PayTime"					:"支付时间",
 		"TransStatus"    			:"交易状态",
+		"ChanMerId"     			:"渠道商户号",
 		"AgentCode"      			:"机构",
 		"TerminalId"     			:"终端号",
 		"Busicd"         			:"交易类型",

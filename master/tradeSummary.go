@@ -1,6 +1,7 @@
 package master
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
@@ -87,7 +88,23 @@ func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
 // tradeSettReport 交易清算汇总报表
 func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
 	// 语言模板
-	reportLocale := GetLocale(q.Locale)
+	rl := GetLocale(q.Locale)
+
+	var filename string
+	reportName := rl.ReportName.SettleSummary
+	switch q.UserType {
+	case model.UserTypeCIL, model.UserTypeGenAdmin:
+		filename = reportName
+	case model.UserTypeAgent:
+		filename = rl.Role.Agent + reportName
+	case model.UserTypeMerchant:
+		filename = rl.Role.Group + reportName
+	case model.UserTypeCompany:
+		filename = rl.Role.Company + reportName
+	case model.UserTypeShop:
+		filename = rl.Role.Mer + reportName
+	}
+	filename += ".xlsx"
 
 	// 调用core方法统计
 	s := query.TransSettStatistics(q)
@@ -95,9 +112,13 @@ func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
 	// 设置为东八区
 	q.UtcOffset = 60 * 60 * 8
 
+	// 设置content-type
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+
 	// TODO 暂时设置为日币
 	// 导出
-	genStatReport(s, q, reportLocale, "JPY").Write(w)
+	genStatReport(s, q, rl, "JPY").Write(w)
 }
 
 // TODO: 优化

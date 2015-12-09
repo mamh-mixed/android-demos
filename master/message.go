@@ -88,6 +88,19 @@ type LocaleTemplate struct {
 		Unknown string
 	}
 
+	ReportName struct {
+		SettleJournal string
+		SettleSummary string
+	}
+
+	// 角色
+	Role struct {
+		Company string
+		Agent   string
+		Group   string
+		Mer     string
+	}
+
 	// 交易类型
 	BusicdType struct {
 		Purc    string
@@ -132,6 +145,7 @@ type TransReport struct {
 	TransTime      string
 	PayTime        string
 	TransStatus    string
+	ChanMerId      string
 	AgentCode      string
 	TerminalId     string
 	Busicd         string

@@ -131,9 +131,9 @@ func do(method string) {
 	case "doAppToolsSendEmail":
 		app.NotifySalesman()
 	case "doScanpaySettReport":
-		err = doScanpaySettReport(yesterday)
+		err = SpSettReport(yesterday)
 	case "doSpTransSett":
-		err = DoSpTransSett(yesterday)
+		err = DoSpTransSett(yesterday, false)
 	default:
 		//..
 	}

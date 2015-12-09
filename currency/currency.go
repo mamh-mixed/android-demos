@@ -3,6 +3,7 @@ package currency
 import (
 	"fmt"
 	"math"
+	"strconv"
 )
 
 var CurMap map[string]Cur
@@ -41,6 +42,17 @@ func Get(currency string) Cur {
 		return cur
 	}
 	return CurMap["CNY"]
+}
+
+// I64 转换成最小单位的int64
+// CNY-0.01 -> 1 分
+// JPY-1 -> 1 元
+func I64(currency, amt string) int64 {
+	f64, err := strconv.ParseFloat(amt, 64)
+	if err != nil {
+		return 0
+	}
+	return int64(f64 * float64(Get(currency).Precision))
 }
 
 // F64 根据币种转换成实际的金额单位

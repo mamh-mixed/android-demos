@@ -32,6 +32,7 @@ type QueryCondition struct {
 	MerName            string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId              string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds             []string `json:"-"`
+	UserType           string
 	Col                string   `json:"-"`
 	BindingId          string   `json:"bindingId"`
 	AgentCode          string   `json:"agentCode,omitempty"`
@@ -42,6 +43,7 @@ type QueryCondition struct {
 	TransType          int      `json:"transType,omitempty"`
 	StartTime          string   `json:"startTime,omitempty"`
 	EndTime            string   `json:"endTime,omitempty"`
+	Date               string   `json:"date,omitempty"`
 	Busicd             string   `json:"busicd,omitempty"`
 	OrderNum           string   `json:"orderNum,omitempty"`
 	OrigOrderNum       string   `json:"origOrderNum,omitempty"`
@@ -210,6 +212,11 @@ type ScanPayRequest struct {
 	// 访问方式
 	IsGBK bool     `json:"-" url:"-" bson:"-"`
 	M     Merchant `json:"-" url:"-" bson:"-"`
+
+	//对账
+	SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
+	StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
+	EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -518,4 +525,27 @@ type RoleSett struct {
 	CreateTime string `json:"createTime" bson:"createTime"`
 	UpdateTime string `json:"updateTime" bson:"updateTime"`
 	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
+}
+
+// ChanBlendMap 渠道勾兑数据集合
+// 外部key为渠道商户号，内部key为渠道订单号
+type ChanBlendMap map[string]map[string][]BlendElement
+
+// LocalBlendMap 系统本地勾兑数据集合
+// 外部key为渠道商户号，内部key为渠道订单号
+type LocalBlendMap map[string]map[string][]TransSett
+
+// 勾兑结构体
+type BlendElement struct {
+	Chcd      string //渠道编号
+	ChcdName  string //渠道名称
+	MerID     string //商户号
+	ChanMerID string //渠道商户号
+	MerName   string //商户名称
+	LocalID   string //系统订单号
+	OrderID   string //渠道订单号
+	OrderTime string //交易时间
+	OrderType string //交易类型
+	OrderAct  string //交易金额
+	IsBlend   bool   //对账标识
 }
