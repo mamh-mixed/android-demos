@@ -321,4 +321,25 @@ public class QuickPayServiceImpl implements QuickPayService {
             }
         }.execute();
     }
+
+    @Override
+    public void forgetPasswordAsync(final String user, final QuickPayCallbackListener<ServerPacket> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
+
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                ServerPacket serverPacket = quickPayApi.forgetPassword(user);//忘记密码
+                return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
 }

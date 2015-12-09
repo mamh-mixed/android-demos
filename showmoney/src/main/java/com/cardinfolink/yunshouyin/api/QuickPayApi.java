@@ -14,7 +14,7 @@ public interface QuickPayApi {
 
     void updatePassword(String username, String oldPassword, String newPassword);
 
-    void forgetPassword(String username);
+    ServerPacket forgetPassword(String username);
 
     void resetPassword(String username, String code, String newPassword);
 
