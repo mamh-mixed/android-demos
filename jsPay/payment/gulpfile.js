@@ -117,30 +117,6 @@ gulp.task('deploy', ['default'], function() {
 		}));
 });
 
-// run HMR on `cli` mode
-// @see http://webpack.github.io/docs/webpack-dev-server.html
-gulp.task('hmr', function(done) {
-	var WebpackDevServer = require('webpack-dev-server');
-	var compiler = webpack(webpackDevConf);
-	var devSvr = new WebpackDevServer(compiler, {
-		contentBase: './src/',
-		publicPath: './assets/',
-		// contentBase: webpackConf.output.path,
-		// publicPath: webpackDevConf.output.publicPath,
-		hot: true,
-	});
-
-	devSvr.listen(8080, '0.0.0.0', function(err) {
-		if (err) throw new gutil.PluginError('webpack-dev-server', err);
-
-		gutil.log('[webpack-dev-server]',
-			'http://localhost:8080/webpack-dev-server/index.html');
-
-		// keep the devSvr alive
-		// done();
-	});
-});
-
 gulp.task('webpack', [], function() {
 	return gulp.src(path.ALL)
 		.pipe(sourcemaps.init())
