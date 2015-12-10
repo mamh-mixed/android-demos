@@ -14,6 +14,9 @@
     <string name="register_qr_password">确认密码</string>
     <string name="register_hint_qr_password">请确认密码</string>
     <string name="register_message">点击“注册”按钮，即表示您同意</string>
+    <string name="register_message1">还差一步，你就可以正常使用了</string>
+    <string name="register_message2">你还需要完善一下你的收款账户信息。</string>
+    <string name="register_check">查看</string>
     <string name="register_cloud_version">云收银服务协议</string>
     <string name="register_hint_email">你的激活码将发送到此邮箱</string>
     <string name="register_next_finished">完成</string>
@@ -24,7 +27,14 @@
     <string name="register_next_directions">       *请完善以下信息，才能正常使用收款功能。我们会将您的收款金额在2个工作日内清算到您的账户中（节假日不清算），费率为0.6%（即每交易100元收取手续费0.6元）。
 
 *云收银将严格遵守国家相关法律法规，承诺不将您的账户信息以任何形式透露给第三方。</string>
-
+    <string name="register_province_city">开户银行所在省、市（县）</string>
+    <string name="register_bank_branch_bank">开户银行、分行</string>
+    <string name="register_name">真实姓名</string>
+    <string name="register_hint_name">银行账户的姓名</string>
+    <string name="register_hint_bank_number">银行借记卡卡号</string>
+    <string name="register_bank_number">银行账号</string>
+    <string name="register_hint_phone_number">常用手机号码</string>
+    <string name="register_phone_number">手机号码</string>
 
     <string name="detail_refd">交易退款</string>
     <string name="update_password">修改密码</string>

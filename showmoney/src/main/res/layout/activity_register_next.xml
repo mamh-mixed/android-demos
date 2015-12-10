@@ -1,302 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1EBED6">
+    android:background="#ffffff">
 
-    <com.cardinfolink.yunshouyin.view.ReboundScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/action_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:left_text="@string/setting_return" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="@string/register_message1"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/register_message2"
+            android:textColor="#999999"
+            android:textSize="15sp" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="10dp"
+            cardinfolink:title="@string/register_province_city" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingDetailItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            cardinfolink:title="@string/register_bank_branch_bank" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            cardinfolink:hint="@string/register_hint_name"
+            cardinfolink:title="@string/register_name" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:hint="@string/register_hint_bank_number"
+            cardinfolink:title="@string/register_bank_number" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:hint="@string/register_hint_phone_number"
+            cardinfolink:title="@string/register_phone_number" />
+
+        <Button
+            android:id="@+id/btnregister"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/white_selector"
+            android:text="@string/register_next_finished"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:gravity="center_horizontal"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="15dp"
             android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="@string/register_check"
+                android:textColor="#999999" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/register_cloud_version"
+                android:textColor="#0033ff" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:maxHeight="80dp"
-                android:minHeight="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="50dp"
                 android:src="@drawable/logo" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="20dp"
-                android:adjustViewBounds="true"
-                android:text="@string/register_next_directions"
-                android:textColor="#ffffff"
-                android:textSize="15sp" />
+        </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+    </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="0px"
-                    android:layout_height="0px"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true">
-
-                    <requestFocus />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-
-                    <AutoCompleteTextView
-                        android:id="@+id/edit_province"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_weight="5"
-                        android:background="@null"
-                        android:hint="开户行所在省份"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#ffffff"
-                        android:textSize="15sp" />
-
-                    <Spinner
-                        android:id="@+id/spinner_province"
-                        android:layout_width="50dp"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginLeft="26dp"
-                        android:layout_marginRight="15dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/spinner" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/edit_city"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_weight="5"
-                        android:background="@null"
-                        android:hint="开户行所在市(县)"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#ffffff"
-                        android:textSize="15sp" />
-
-                    <Spinner
-                        android:id="@+id/spinner_city"
-                        android:layout_width="50dp"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginLeft="26dp"
-                        android:layout_marginRight="15dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/spinner" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-
-                    <AutoCompleteTextView
-                        android:id="@+id/edit_openbank"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_weight="5"
-                        android:background="@null"
-                        android:hint="请填写开户银行"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#ffffff"
-                        android:textSize="15sp" />
-
-                    <Spinner
-                        android:id="@+id/spinner_openbank"
-                        android:layout_width="50dp"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginLeft="26dp"
-                        android:layout_marginRight="15dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/spinner" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/edit_branchbank"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_weight="5"
-                        android:background="@null"
-                        android:hint="请填写开户支行"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#ffffff"
-                        android:textSize="15sp" />
-
-                    <Spinner
-                        android:id="@+id/spinner_branchbank"
-                        android:layout_width="50dp"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginLeft="26dp"
-                        android:layout_marginRight="15dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/spinner" />
-
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-
-                    <EditText
-                        android:id="@+id/info_name"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:background="@null"
-                        android:hint="@string/register_next_hint_name"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#eeeeee"
-                        android:textSize="15sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-
-                    <EditText
-                        android:id="@+id/info_banknum"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:background="@null"
-                        android:hint="@string/register_next_hint_banknum"
-                        android:inputType="number"
-                        android:maxLength="23"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#eeeeee"
-                        android:textSize="15sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bluemain_bg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-
-                    <EditText
-                        android:id="@+id/info_phonenum"
-                        android:layout_width="fill_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="35dp"
-                        android:background="@null"
-                        android:hint="@string/register_next_hint_phonenum"
-                        android:inputType="number"
-                        android:singleLine="true"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#eeeeee"
-                        android:textSize="15sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="50dp"
-                    android:layout_marginTop="30dp"
-                    android:gravity="center">
-
-                    <Button
-                        android:id="@+id/btnregister"
-                        android:layout_width="300dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/blue_selector"
-                        android:text="@string/register_next_finished"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-
-        </LinearLayout>
-    </com.cardinfolink.yunshouyin.view.ReboundScrollView>
 
     <include layout="@layout/showmoney_dialog"></include>
 
