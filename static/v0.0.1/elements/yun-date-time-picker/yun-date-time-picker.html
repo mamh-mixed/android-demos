@@ -57,6 +57,7 @@
       moment: {
         type: Date,
         notify: true,
+        observer: '_momentChanged'
       },
       dateTime: {
         type: String,
@@ -115,5 +116,10 @@
         this.set('moment', moment(newValue).toDate());
       }
     },
+    _momentChanged: function(m) {
+      if (moment) {
+        this.set('dateTime', moment(m).format('YYYY-MM-DD HH:mm:ss'));
+      }
+    }
   });
 </script>

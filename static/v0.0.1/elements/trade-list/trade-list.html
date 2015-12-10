@@ -229,9 +229,9 @@
             endTime.second(59);
             return {
               startTime: startTime.toDate(),
-              startTimeString: moment(startTime).format('YYYY-MM-DD'),
+              startTimeString: moment(startTime).format('YYYY-MM-DD HH:mm:ss'),
               endTime: endTime.toDate(),
-              endTimeString: moment(endTime).format('YYYY-MM-DD')
+              endTimeString: moment(endTime).format('YYYY-MM-DD HH:mm:ss')
             }
           }
         },
