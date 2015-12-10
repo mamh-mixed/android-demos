@@ -26,6 +26,16 @@ public class MainActivity extends Activity {
 
     };
 
+    //图片标题集合
+    private final String[] imageDescriptions = {
+            "巩俐不低俗，我就不能低俗",
+            "扑树又回来啦！再唱经典老歌引万人大合唱",
+            "揭秘北京电影如何升级",
+            "乐视网TV版大派送",
+            "热血屌丝的反杀"
+    };
+    private ArrayList<ImageView> pointList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,14 +44,40 @@ public class MainActivity extends Activity {
         pointGroup = (LinearLayout) findViewById(R.id.point_group);
         msg = (TextView) findViewById(R.id.msg);
         imageList = new ArrayList<ImageView>();
+        pointList = new ArrayList<ImageView>();
         for (int i = 0; i < imageIds.length; i++) {
             ImageView iv = new ImageView(this);
             iv.setBackgroundResource(imageIds[i]);
             imageList.add(iv);
+            ImageView point = new ImageView(this);
+            point.setBackgroundResource(R.mipmap.ic_launcher);
+            point.setVisibility(View.GONE);
+            pointList.add(point);
+            pointGroup.addView(point);
+
         }
+        msg.setText(imageDescriptions[0]);
+        pointList.get(0).setVisibility(View.VISIBLE);
+
         PagerAdapter adapter = new ViewPagerAdapter();
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                msg.setText(imageDescriptions[position]);
+                pointList.get(position).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
 
