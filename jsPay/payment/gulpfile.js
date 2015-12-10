@@ -100,8 +100,8 @@ gulp.task('deploy', ['default'], function() {
 			'destination': '/home/weixin/cloudCashier/agent'
 		},
 		'product': {
-			'destination': '/home/weixin/cloudCashier/agent'
-				// 'destination': '/home/weixin/cloudCashier/payment'
+			// 'destination': '/home/weixin/cloudCashier/agent'
+			'destination': '/home/weixin/cloudCashier/payment'
 		}
 	};
 

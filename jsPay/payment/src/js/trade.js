@@ -11,7 +11,6 @@ let init = function() {
 	if (merchantCode === null) {
 		return;
 	}
-
 	let data = 'merchantCode=' + merchantCode,
 		url = Util.getServer() + '/scanpay/fixed/orderInfo';
 
