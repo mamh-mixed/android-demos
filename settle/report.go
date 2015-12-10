@@ -138,8 +138,8 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 	if len(reconciliatMMap) != 0 {
 		// 报表日期显示格式
 		sd := strings.Replace(date, "-", "", -1)
-		filename := filePrefix + "IC202_%s.xlsx"
-		upload(fmt.Sprintf(filename, sd), genReconciliatReportExcel(reconciliatMMap, date))
+		filename := filePrefix + "IC002_%s.xlsx"
+		upload(fmt.Sprintf(filename, sd, sd), genReconciliatReportExcel(reconciliatMMap, date))
 	}
 
 	return nil

@@ -395,13 +395,19 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 
 	if q.OrderNum != "" {
-		match["orderNum"] = q.OrderNum
+		match["orderNum"] = bson.RegEx{q.OrderNum, "."}
+	}
+	if q.MerName != "" {
+		match["merName"] = bson.RegEx{q.MerName, "."}
+	}
+	if q.Terminalid != "" {
+		match["terminalid"] = bson.RegEx{q.Terminalid, "."}
 	}
 	if q.Busicd != "" {
 		match["busicd"] = q.Busicd
 	}
 	if q.OrigOrderNum != "" {
-		match["origOrderNum"] = q.OrigOrderNum
+		match["origOrderNum"] = bson.RegEx{q.OrigOrderNum, "."}
 	}
 	if q.AgentCode != "" {
 		match["agentCode"] = q.AgentCode
@@ -410,7 +416,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["subAgentCode"] = q.SubAgentCode
 	}
 	if q.Respcd != "" {
-		match["respCode"] = q.Respcd
+		match["respCode"] = bson.RegEx{q.Respcd, "."}
 	}
 	if q.RespcdNotIn != "" {
 		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}

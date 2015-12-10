@@ -2,6 +2,8 @@ package scanpay
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/rand"
 	"sync"
 	"testing"
 
@@ -115,9 +117,51 @@ var (
 		// Chcd:       "ULIVE",
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
-		OrderNum:   "1447145911569",
-		ScanCodeId: "1801708104000529",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1810195040700062",
 		// VeriTime:   "-1",
+	}
+	// 刷卡电子券核销
+	purchaseActCoupons = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "CRVE",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:    "100000000010001",
+		Terminalid: "30150006",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1810195040700062",
+		// VeriTime:   "1",
+		OrigOrderNum: "14496558282019727887",
+		// Cardbin:      "622525",
+		Txamt:   "000000000000",
+		PayType: "5",
+	}
+	// 电子券查询
+	queryPurchaseCouponsResult = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "QUVE",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:    "100000000010001",
+		Terminalid: "30150006",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1810195040700062",
+		// VeriTime:     "1",
+		OrigOrderNum: "14496558282019727887",
+	}
+	// 刷卡电子券撤销
+	undoPurchaseActCoupons = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "CAVE",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:    "100000000010001",
+		Terminalid: "30150006",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1818303006004106",
+		// VeriTime:   "-1",
+		OrigOrderNum: "14496504331427131847",
 	}
 )
 
@@ -183,6 +227,24 @@ func TestSignMsg(t *testing.T) {
 // 测试卡券核销
 func TestPurchaseCoupons(t *testing.T) {
 	err := doOneScanPay(purchaseCoupons)
+	if err != nil {
+		t.Error(err)
+	}
+}
+func TestPurchaseActCoupons(t *testing.T) {
+	err := doOneScanPay(purchaseActCoupons)
+	if err != nil {
+		t.Error(err)
+	}
+}
+func TestQueryPurchaseCouponsResult(t *testing.T) {
+	err := doOneScanPay(queryPurchaseCouponsResult)
+	if err != nil {
+		t.Error(err)
+	}
+}
+func TestUndoPurchaseActCoupons(t *testing.T) {
+	err := doOneScanPay(undoPurchaseActCoupons)
 	if err != nil {
 		t.Error(err)
 	}
