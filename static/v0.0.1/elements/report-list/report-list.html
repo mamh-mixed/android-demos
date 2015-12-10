@@ -1,13 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../x-select/x-select.html">
 <link rel="import" href="../yun-complete/yun-complete.html">
+<link rel="import" href="../yun-date-time-picker/yun-date-time-picker.html">
 <dom-module id="report-list">
   <style>
     :host {
@@ -32,37 +30,12 @@
     }
   </style>
   <template>
-    <span>{{agent.code}}</span>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/stat" on-iron-form-submit="submitForm" on-iron-form-response="handelQueryResponse">
       <div class="condition search-condition">
-        <input type="hidden" name="startTime" value="{{cond.startTime::input}}" />
-        <paper-input label="开始日期" on-tap="showStartTimeDialog" value="{{time.startTimeString::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM"></paper-input>
-        <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-          <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE" max-date="{{time.endTime}}"></paper-date-picker>
-          <div class="buttons">
-            <paper-button dialog-dismiss>
-              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
-            </paper-button>
-            <paper-button dialog-confirm>
-              <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
-            </paper-button>
-          </div>
-        </paper-dialog>
-
-        <input type="hidden" name="endTime" value="{{cond.endTime::input}}" />
-        <paper-input label="结束日期" on-tap="showEndTimeDialog" value="{{time.endTimeString::input}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO"></paper-input>
-        <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-          <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE" min-date="{{time.startTime}}"></paper-date-picker>
-          <div class="buttons">
-            <paper-button dialog-dismiss>
-              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
-            </paper-button>
-            <paper-button dialog-confirm>
-              <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
-            </paper-button>
-          </div>
-        </paper-dialog>
-
+        <input type="hidden" name="startTime" value="{{cond.startTime}}" />
+        <yun-date-time-picker label="* 开始日期" name="" locale="ja" date-time="{{startTime}}" moment="{{time.startTime}}" max-date="{{time.endTime}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
+        <input type="hidden" name="endTime" value="{{cond.endTime}}" />
+        <yun-date-time-picker label="* 结束日期" name="" locale="ja" date-time="{{endTime}}" moment="{{time.endTime}}" min-date="{{time.startTime}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
         <yun-complete id="agentCode" name="agentCode" label="代理" url="/master/list" col-name="agent" code-field="agentCode" name-field="agentName" limit="6" selected-item="{{agent}}" disabled="{{agentDisabled}}" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></yun-complete>
         <yun-complete id="subAgentCode" name="subAgentCode" label="公司" url="/master/list" col-name="subAgent" code-field="subAgentCode" name-field="subAgentName" limit="6" selected-item="{{subAgent}}" filter-condition="[[subAgentFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></yun-complete>
         <yun-complete id="groupCode" name="groupCode" label="商户" url="/master/list" col-name="group" code-field="groupCode" name-field="groupName" limit="6" selected-item="{{group}}" filter-condition="[[groupFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></yun-complete>
@@ -384,10 +357,10 @@
           this.set('user', response.data);
         },
         _watchTimeChanged: function(startTime, endTime) {
-          this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD'));
-          this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD'));
-          this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD 00:00:00')));
-          this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD 23:59:59')));
+          this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD HH:mm:ss'));
+          this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD HH:mm:ss'));
+          this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD HH:mm:ss')));
+          this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD HH:mm:ss')));
         },
         _watchCondChange: function() {
           var filename = "Summary_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
@@ -430,23 +403,6 @@
           var now = new Date();
           var yesterday = new Date(now.valueOf() - 24 * 60 * 60 * 1000);
           return yesterday.format('yyyy-MM-dd');
-        },
-        // 日期、时间控件
-        dismissStartTimeDialog: function() {
-          var startTime = this.$.startTimePicker.date;
-          this.set('time.startTime', startTime);
-          this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD 00:00:00')));
-        },
-        showStartTimeDialog: function() {
-          this.$.startTimeDailog.toggle();
-        },
-        dismissEndTimeDialog: function() {
-          var endTime = this.$.endTimePicker.date;
-          this.set('time.endTime', endTime);
-          this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD 23:59:59')));
-        },
-        showEndTimeDialog: function() {
-          this.$.endTimeDailog.toggle();
         },
         // 修饰金额的方法
         _computeAmount: function(amount) {

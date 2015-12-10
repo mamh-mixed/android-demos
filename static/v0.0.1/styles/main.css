@@ -198,7 +198,8 @@ a:focus, a:hover {
   text-decoration: underline;
   outline: 0;
 }
-paper-dialog:not(.paper-date-picker-dialog) .buttons > paper-button:hover {
+paper-dialog:not(.paper-date-picker-dialog) .buttons > paper-button:hover,
+paper-dialog:not(.paper-time-picker-dialog) .buttons > paper-button:hover {
   background-color: rgba(0, 188, 212, 0.25);
 }
 paper-date-picker {
