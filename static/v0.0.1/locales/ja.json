@@ -477,63 +477,63 @@
   },
   "USERNAME_NOT_FOUND": {
     "description": "用户名不存在",
-    "message": "JA用户名不存在"
+    "message": "ユーザ名は存在していません"
   },
   "NO_PERMISSION": {
     "description": "用户无权限",
-    "message": "JA用户无权限"
+    "message": "ユーザは権限を持っていません"
   },
   "SHOP_NOT_FOUND": {
     "description": "门店不存在",
-    "message": "JA门店不存在"
+    "message": "店舗は存在していません"
   },
   "PASSWORDRESET.TOAST.RESET_PASSWORD_SUCCESS": {
     "description": "重置密码成功",
-    "message": "JA重置密码成功"
+    "message": "パスワードはリセットされました"
   },
   "USERMANAGEMENT.USERMANAGEMENT": {
     "description": "用户管理",
-    "message": "JA用户管理"
+    "message": "ユーザ管理"
   },
   "USERMANAGEMENT.EMAIL": {
     "description": "邮箱",
-    "message": "JA邮箱"
+    "message": "メールアドレス"
   },
   "USERMANAGEMENT.RELATEDEMAIL": {
     "description": "关联邮箱",
-    "message": "JA关联邮箱"
+    "message": "登録されたメールアドレス"
   },
   "USERMANAGEMENT.TELEPHONENO": {
     "description": "手机号",
-    "message": "JA手机号"
+    "message": "携帯番号"
   },
   "USERMANAGEMENT.USERTYPE": {
     "description": "用户类型",
-    "message": "JA用户类型"
+    "message": "ユーザ種類"
   },
   "USERMANAGEMENT.AREACODE": {
     "description": "地区代码",
-    "message": "JA地区代码"
+    "message": "エリアコード"
   },
   "USERMANAGEMENT.PASSWORDRESET": {
     "description": "密码重置",
-    "message": "JA密码重置"
+    "message": "パスワードのリセット"
   },
   "USERMANAGEMENT.DISPLAYNAME": {
     "description": "显示名",
-    "message": "JA显示名"
+    "message": "表示名"
   },
   "USERMANAGEMENT.VIEWUSERINFO": {
     "description": "查看用户信息",
-    "message": "JA查看用户信息"
+    "message": "ユーザ情報の表示"
   },
   "USERTYPE.ADMIN": {
     "description": "超级管理员",
-    "message": "JA超级管理员"
+    "message": "管理責任者"
   },
   "USERTYPE.GENADMIN": {
     "description": "普通管理员",
-    "message": "JA普通管理员"
+    "message": "一般管理者"
   },
   "USERTYPE.AGENT": {
     "description": "代理",
@@ -541,23 +541,23 @@
   },
   "USERTYPE.SUBAGENT": {
     "description": "公司",
-    "message": "JA公司"
+    "message": "会社"
   },
   "USERTYPE.GROUP": {
     "description": "商户",
-    "message": "JA商户"
+    "message": "加盟店"
   },
   "USERTYPE.MERCHANT": {
     "description": "门店",
-    "message": "JA门店"
+    "message": "店舗"
   },
   "APPUSERMANAGEMENT.APPUSERMANAGEMENT": {
     "description": "APP用户管理",
-    "message": "JAAPP用户管理"
+    "message": "APPユーザ管理"
   },
   "APPUSERMANAGEMENT.TITLE": {
     "description": "APP密码重置",
-    "message": "JAAPP密码重置"
+    "message": "APPパスワードリセット"
   },
   "USERMANAGEMENT.TITLE": {
     "description": "用户管理",
