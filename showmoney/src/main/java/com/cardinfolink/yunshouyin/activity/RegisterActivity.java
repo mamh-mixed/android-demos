@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
@@ -14,16 +13,18 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends BaseActivity {
+
+    private SettingActionBarItem mActionBar;//注册页面的标题栏
     private SettingInputItem mEmailEdit;
     private SettingPasswordItem mPasswordEdit;
     private SettingPasswordItem mQrPasswordEdit;
@@ -54,15 +55,24 @@ public class RegisterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_activity);
         mContext = this;
-        initLayout();
+        initView();
     }
 
-    private void initLayout() {
+    private void initView() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);//注册页面标题栏
         mEmailEdit = (SettingInputItem) findViewById(R.id.register_email);
 
         mPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_password);
 
         mQrPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_qr_password);
+
+        //注册页面标题栏添加返回事件监听
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         mRegisterNext = (Button) findViewById(R.id.btnregister);
         mRegisterNext.setOnClickListener(new View.OnClickListener() {
