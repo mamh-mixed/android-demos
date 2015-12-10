@@ -1,8 +1,10 @@
 'use strict';
 
 var gulp = require('gulp');
+var yargs = require('yargs').argv;
 var webpack = require('webpack');
 var uglify = require('gulp-uglify');
+var gulpIf = require('gulp-if');
 var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
 var WebpackDevServer = require("webpack-dev-server");
@@ -10,6 +12,7 @@ var stream = require('webpack-stream');
 
 var webpackConf = require('./webpack.config');
 var webpackDevConf = require('./webpack-dev.config');
+var webpackPrdConf = require('./webpack-prd.config');
 
 var path = {
 	HTML: 'src/index.html',
@@ -48,13 +51,26 @@ gulp.task('clean', ['hint'], function() {
 
 // run webpack pack
 gulp.task('pack', ['clean'], function(done) {
-	webpack(webpackConf, function(err, stats) {
-		if (err) throw new gutil.PluginError('webpack', err);
-		gutil.log('[webpack]', stats.toString({
-			colors: true
-		}));
-		done();
-	});
+	if (yargs.p) {
+		// 生产打包
+		webpack(webpackPrdConf, function(err, stats) {
+			if (err) throw new gutil.PluginError('webpack', err);
+			gutil.log('[webpack]', stats.toString({
+				colors: true
+			}));
+			done();
+		});
+	} else {
+		// 开发打包
+		webpack(webpackConf, function(err, stats) {
+			if (err) throw new gutil.PluginError('webpack', err);
+			gutil.log('[webpack]', stats.toString({
+				colors: true
+			}));
+			done();
+		});
+	}
+
 });
 
 // html process
@@ -74,27 +90,30 @@ gulp.task('default', ['pack'], function() {
 });
 
 // deploy assets to remote server
-gulp.task('deploy-test', ['default'], function() {
-	var rsync = require('gulp-rsync');
-	return gulp.src(assets + '/**')
-		.pipe(rsync({
-			root: 'assets',
-			hostname: '139.129.116.65',
-			username: 'weixin',
-			progress: true,
-			destination: '/home/weixin/cloudCashier/agent'
-		}));
-});
+// -p 发布到生产环境， 否则发布到测试环境
+gulp.task('deploy', ['default'], function() {
+	var rsync = require('gulp-rsync'),
+		target = yargs.p ? 'product' : 'test';
 
-gulp.task('deploy-product', ['default'], function() {
-	var rsync = require('gulp-rsync');
+	var deployMap = {
+		'test': {
+			'destination': '/home/weixin/cloudCashier/agent'
+		},
+		'product': {
+			'destination': '/home/weixin/cloudCashier/agent'
+				// 'destination': '/home/weixin/cloudCashier/payment'
+		}
+	};
+
+	yargs.p ? console.log('**************DEPLOY TO PRODUCT:: ' + deployMap[target]['destination'] + '*****************') : console.log('**************DEPLOY TO TEST:: ' + deployMap[target]['destination'] + '*****************');
+
 	return gulp.src(assets + '/**')
 		.pipe(rsync({
 			root: 'assets',
 			hostname: '139.129.116.65',
 			username: 'weixin',
 			progress: true,
-			destination: '/home/weixin/cloudCashier/agent'
+			destination: deployMap[target]['destination']
 		}));
 });
 
@@ -125,7 +144,7 @@ gulp.task('hmr', function(done) {
 gulp.task('webpack', [], function() {
 	return gulp.src(path.ALL)
 		.pipe(sourcemaps.init())
-		.pipe(stream(webpackConfig))
+		.pipe(stream(webpackConf))
 		.pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(path.DEST_BUILD));
