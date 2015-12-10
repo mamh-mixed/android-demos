@@ -11,7 +11,10 @@ import android.widget.TextView;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.ForgetPasswordActivity;
 
-public class ResetDialog {
+/**
+ * 提示对话框。hint表示提示的意思，下面两个按钮，上面一段文件的对话框。
+ */
+public class HintDialog {
     private Context mContext;
     private View dialogView;
 
@@ -19,13 +22,13 @@ public class ResetDialog {
     private TextView mOk;
     private TextView mCancel;
 
-    public ResetDialog(Context context, View view) {
+    public HintDialog(Context context, View view) {
         mContext = context;
         dialogView = view;
 
-        mTitle = (TextView) dialogView.findViewById(R.id.reset_messsage);
-        mOk = (TextView) dialogView.findViewById(R.id.reset_dialog_ok);
-        mCancel = (TextView) dialogView.findViewById(R.id.reset_dialog_cancel);
+        mTitle = (TextView) dialogView.findViewById(R.id.hint_messsage);
+        mOk = (TextView) dialogView.findViewById(R.id.hint_dialog_ok);
+        mCancel = (TextView) dialogView.findViewById(R.id.hint_dialog_cancel);
 
         dialogView.setOnTouchListener(new OnTouchListener() {
 

@@ -7,7 +7,7 @@ import android.view.View;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
-import com.cardinfolink.yunshouyin.view.ResetDialog;
+import com.cardinfolink.yunshouyin.view.HintDialog;
 
 /**
  * 这个是忘记密码的界面
@@ -18,7 +18,7 @@ public class ForgetPasswordActivity extends Activity {
 
     private SettingInputItem mEmail;
 
-    private ResetDialog mResetDialog;
+    private HintDialog mHintDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +39,11 @@ public class ForgetPasswordActivity extends Activity {
                 String title = getResources().getString(R.string.forget_account_message);
                 String ok = getResources().getString(R.string.forget_i_known);
                 String cancel = getResources().getString(R.string.forget_cancel);
-                mResetDialog.show(title, ok, cancel);
+                mHintDialog.show(title, ok, cancel);
             }
         });
 
-        mResetDialog = new ResetDialog(this, findViewById(R.id.reset_dialog));
+        mHintDialog = new HintDialog(this, findViewById(R.id.hint_dialog));
 
     }
 
