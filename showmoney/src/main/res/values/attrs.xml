@@ -3,7 +3,7 @@
     <declare-styleable name="SettingItemView">
         <attr name="title" format="string"/>
         <attr name="detail" format="string"/>
-
+        <attr name="hint" format="string"/>
         <attr name="left_text" format="string"/>
         <attr name="right_text" format="string"/>
         <attr name="password_hint" format="string"/>
