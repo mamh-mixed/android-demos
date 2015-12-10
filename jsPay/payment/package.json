@@ -52,12 +52,14 @@
     "md5": "^2.0.0",
     "node-libs-browser": "^0.5.2",
     "open-browser-webpack-plugin": "0.0.1",
+    "string-replace-webpack-plugin": "0.0.2",
     "style-loader": "^0.12.3",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0",
     "webpack-stream": "^2.3.0",
-    "webpack-zepto": "0.0.1"
+    "webpack-zepto": "0.0.1",
+    "yargs": "^3.31.0"
   },
   "devDependencies": {
     "babel-core": "^6.2.1",

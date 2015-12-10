@@ -114,13 +114,11 @@ License: MIT - http://mrgnrdrck.mit-license.org
 	};
 
 	Util.getServer = function() {
-		// var server = __GATEWATSERVER__;
+		var server = 'IN_GOD_WE_TRUST';
 		// 测试环境地址
-		var server = 'http://test.quick.ipay.so';
+		// var server = 'http://test.quick.ipay.so';
 		// 生产环境地址
 		//  var server='https://api.shou.money';
-		// 开发环境地址
-		// var server = 'http://192.168.199.193:6800';
 		return server;
 	};
 

@@ -71,6 +71,7 @@ type QueryCondition struct {
 	IsAggregateByGroup bool   `json:"isAggregateByGroup,omitempty"`                             // 是否按照商户号汇总
 	CouponsNo          string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
+	Terminalid         string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`         // 终端代码
 }
 
 // QueryResult 查询结果值

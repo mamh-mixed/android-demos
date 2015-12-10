@@ -109,7 +109,7 @@
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
     "description": "新密码不能和旧密码相同",
-    "message": "JA新密码不能和旧密码相同"
+    "message": "新パスワードと旧パスワードが一致しません"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
@@ -563,5 +563,4 @@
     "description": "用户管理",
     "message": "JA用户管理"
   }
-
 }

@@ -23,6 +23,7 @@ var commonURLArr = []string{
 	"/master/trade/findOne",
 	"/master/user/updatePwd",
 	"/master/app/locale",
+	"/master/list",
 	"/master/trade/settle/report",
 	"/master/trade/settle/journal",
 }
@@ -39,6 +40,7 @@ var genAdminURLArr = []string{
 	"/master/agent/find",
 	"/master/qiniu/download",
 	"/master/app/locale",
+	"/master/list",
 	"/master/trade/settle/report",
 	"/master/trade/settle/journal",
 }
@@ -111,6 +113,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/user/resetPwd", userResetPwdHandle)
 	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	mux.HandleFunc("/master/app/resetPwd", appResetPwdHandle)
+	mux.HandleFunc("/master/list", kvListHandle)
 	return mux
 }
 
