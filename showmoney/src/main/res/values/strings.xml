@@ -195,11 +195,12 @@
     <string name="login_account">账号</string>
     <string name="login_password">密码</string>
 
-    <string name="reset_hint_username">请填写登录邮箱</string>
-    <string name="reset_account">你的账号</string>
-    <string name="reset_password">重置密码</string>
-    <string name="reset_messsage">其他账号登录请联系你的服务商为你重置密码</string>
-    <string name="reset_forget_account_message">忘记登录账户请联系你的服务商</string>
-    <string name="reset_cancel">取消</string>
-    <string name="reset_i_known">我知道了</string>
+    <!--忘记密码界面用到的字符串文本-->
+    <string name="forget_hint_username">请填写登录邮箱</string>
+    <string name="forget_username">你的账号</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="forget_password_messsage">其他账号登录请联系你的服务商为你重置密码</string>
+    <string name="forget_account_message">忘记登录账户请联系你的服务商</string>
+    <string name="forget_cancel">取消</string>
+    <string name="forget_i_known">我知道了</string>
 </resources>

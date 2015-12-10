@@ -9,7 +9,7 @@ import android.view.View.OnTouchListener;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.activity.ResetPasswordActivity;
+import com.cardinfolink.yunshouyin.activity.ForgetPasswordActivity;
 
 public class ResetDialog {
     private Context mContext;
@@ -52,7 +52,7 @@ public class ResetDialog {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, ResetPasswordActivity.class);
+                Intent intent = new Intent(mContext, ForgetPasswordActivity.class);
                 mContext.startActivity(intent);
                 dialogView.setVisibility(View.GONE);
             }
