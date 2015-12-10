@@ -9,14 +9,21 @@ paper-toast#toast {
   z-index: 10;
 }
 * {
+  font-size: inherit;
+}
+#quickPayMenuContainer paper-item, paper-menu a {
+  font-size: 14px;
+}
+paper-button, iron-dropdown, .paper-button-1 > a, .data-grid {
   font-size: 13px;
 }
 
 /* paper-input */
+
 div.search-condition {
   margin: 10px auto;
 }
-div.search-condition paper-input, div.search-condition x-select {
+div.search-condition paper-input, div.search-condition x-select, div.search-condition yun-complete {
   width: 170px;
   margin-right: 15px;
   display: inline-block;
@@ -35,6 +42,7 @@ div.divider.line {
 }
 
 /* 定义 data-grid 样式 */
+
 .table {
   display: table;
   width: 100%;
@@ -110,6 +118,7 @@ div.divider.line {
 }
 
 /* code 样式 */
+
 pre, code {
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 10px;
@@ -118,6 +127,7 @@ pre, code {
 }
 
 /* mouse */
+
 .hand {
   cursor: pointer;
 }
@@ -126,6 +136,7 @@ pre, code {
 }
 
 /* colors */
+
 .red {
   color: #D50000;
 }
@@ -143,6 +154,7 @@ pre, code {
 }
 
 /* align */
+
 .left {
   text-align: left !important;
 }

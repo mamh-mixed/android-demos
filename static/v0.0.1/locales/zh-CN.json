@@ -474,5 +474,95 @@
   "xxx": {
     "description": "xxx",
     "message": "xxx"
+  },
+  "USERNAME_NOT_FOUND": {
+    "description": "用户名不存在",
+    "message": "用户名不存在"
+  },
+  "NO_PERMISSION": {
+    "description": "用户无权限",
+    "message": "用户无权限"
+  },
+  "SHOP_NOT_FOUND": {
+    "description": "门店不存在",
+    "message": "门店不存在"
+  },
+  "PASSWORDRESET.TOAST.RESET_PASSWORD_SUCCESS": {
+    "description": "重置密码成功",
+    "message": "重置密码成功"
+  },
+  "USERMANAGEMENT.USERMANAGEMENT": {
+    "description": "用户管理",
+    "message": "用户管理"
+  },
+  "USERMANAGEMENT.EMAIL": {
+    "description": "邮箱",
+    "message": "邮箱"
+  },
+  "USERMANAGEMENT.RELATEDEMAIL": {
+    "description": "关联邮箱",
+    "message": "关联邮箱"
+  },
+  "USERMANAGEMENT.TELEPHONENO": {
+    "description": "手机号",
+    "message": "手机号"
+  },
+  "USERMANAGEMENT.USERTYPE": {
+    "description": "用户类型",
+    "message": "用户类型"
+  },
+  "USERMANAGEMENT.AREACODE": {
+    "description": "地区代码",
+    "message": "地区代码"
+  },
+  "USERMANAGEMENT.PASSWORDRESET": {
+    "description": "密码重置",
+    "message": "密码重置"
+  },
+  "USERMANAGEMENT.DISPLAYNAME": {
+    "description": "显示名",
+    "message": "显示名"
+  },
+  "USERMANAGEMENT.VIEWUSERINFO": {
+    "description": "查看用户信息",
+    "message": "查看用户信息"
+  },
+  "USERTYPE.ADMIN": {
+    "description": "超级管理员",
+    "message": "超级管理员"
+  },
+  "USERTYPE.GENADMIN": {
+    "description": "普通管理员",
+    "message": "普通管理员"
+  },
+  "USERTYPE.AGENT": {
+    "description": "代理",
+    "message": "代理"
+  },
+  "USERTYPE.SUBAGENT": {
+    "description": "公司",
+    "message": "公司"
+  },
+  "USERTYPE.GROUP": {
+    "description": "商户",
+    "message": "商户"
+  },
+  "USERTYPE.MERCHANT": {
+    "description": "门店",
+    "message": "门店"
+  },
+  "APPUSERMANAGEMENT.APPUSERMANAGEMENT": {
+    "description": "APP用户管理",
+    "message": "APP用户管理"
+  },
+  "APPUSERMANAGEMENT.TITLE": {
+    "description": "APP密码重置",
+    "message": "APP密码重置"
+  },
+  "USERMANAGEMENT.TITLE": {
+    "description": "用户管理",
+    "message": "用户管理"
   }
+
+
 }

@@ -1,0 +1,345 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../yun-select/yun-expand-animation.html">
+<link rel="import" href="../x-ajax/x-ajax.html">
+<link rel="import" href="./yun-highlight.html">
+
+<dom-module id="yun-complete">
+  <template>
+    <style>
+    :host {
+        display: inline-block;
+      }
+
+      ul.dropdown-content {
+        display: block;
+        position: relative;
+        background-color: #fff;
+        box-shadow: 0px 2px 6px #ccc;
+        margin: 0.25em 0;
+        padding: 0.25em;
+        border-radius: 3px;
+        max-height: 280px;
+      }
+
+      [vertical-align="top"] ul {
+        margin-top: 0;
+      }
+
+      [vertical-align="bottom"] ul {
+        margin-bottom: 0;
+      }
+
+      li {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+
+      a {
+        display: block;
+        position: relative;
+        padding: 0.75em 1em;
+        text-decoration: none;
+        color: var(--default-primary-color);
+      }
+
+      li:not(:last-of-type) {
+        border-bottom: 1px solid #eee;
+      }
+
+      li.active a,
+      li[active] a,
+      li:hover a {
+        background: var(--default-primary-color);
+        color: #fff;
+      }
+
+      paper-input-container {
+        width: 170px;
+        height: 50px;
+      }
+    }
+    </style>
+    <div class="input-group">
+      <paper-input-container disabled$="[[disabled]]">
+        <label>[[label]]</label>
+        <input is="iron-input" id="input" value="{{keyword::input}}" disabled="[[disabled]]" on-tap="handleInputTapEvent" on-focus="handleInputFocusEvent" on-blur="handleInputBlurEvent" on-keydown="handleInputKeyDownEvent" autocomplete="off">
+        <iron-icon icon="search" suffix hidden$="{{isClearActive}}"></iron-icon>
+        <iron-icon icon="clear" suffix on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
+        <input type="hidden" name="[[name]]" value="{{selectedItem.code}}">
+      </paper-input-container>
+    </div>
+    <iron-dropdown id="dropdown" vertical-offset$="{{verticalOffset}}" disabled="[[disabled]]" open-animation-config="[[openAnimationConfig]]" close-animation-config="[[closeAnimationConfig]]" on-iron-overlay-closed="handleOverlayCloseEvent">
+      <ul class="dropdown-content">
+        <li hidden$="{{!isNoData}}" disabled>
+          <a>{{noDataLabel}}</a>
+        </li>
+        <template is="dom-repeat" items="[[list]]">
+          <li on-tap="handleSelectedEvent" active$="{{ _computeActiveLi(index, activeIndex) }}">
+            <a href="javascript:void(0)">
+              <yun-highlight txt="[[_computeResult(item)]]" keyword$="{{keyword}}"></yun-highlight>
+            </a>
+          </li>
+        </template>
+      </ul>
+    </iron-dropdown>
+    <x-ajax id="ajax" url="{{url}}" method="POST" handle-as="json" on-response="handleResponse"></x-ajax>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'yun-complete',
+        properties: {
+          label: String,
+          name: String,
+          disabled: Boolean,
+          noDataLabel: {
+            type: String,
+            value: 'NO DATA'
+          },
+          isNoData: {
+            type: Boolean,
+            value: false
+          },
+          // ajax url
+          url: {
+            type: String,
+            value: ''
+          },
+          // 后台查询的集合名称
+          colName: {
+            type: String
+          },
+          // 键域
+          codeField: {
+            type: String
+          },
+          // 值域
+          nameField: {
+            type: String
+          },
+          // 过滤条件
+          filterCondition: {
+            type: Object,
+            value: {},
+            notify: true
+          },
+          limit: Number,
+          keyword: {
+            type: String,
+            value: '',
+            observer: '_keywordChanged'
+          },
+          isClearActive: {
+            type: Boolean,
+            value: false
+          },
+          openAnimationConfig: {
+            type: Array,
+            value: function() {
+              return [{
+                name: 'fade-in-animation',
+                timing: {
+                  delay: 150,
+                  duration: 50
+                }
+              }, {
+                name: 'yun-expand-animation',
+                timing: {
+                  delay: 150,
+                  duration: 200
+                }
+              }];
+            }
+          },
+          closeAnimationConfig: {
+            type: Array,
+            value: function() {
+              return [{
+                name: 'fade-out-animation',
+                timing: {
+                  duration: 200
+                }
+              }];
+            }
+          },
+          activeIndex: {
+            type: Number,
+            value: 0
+          },
+          isFocus: {
+            type: Boolean,
+            value: false
+          },
+          // 显示值
+          text: {
+            type: String,
+            value: 'Hello'
+          },
+          selectedItem: {
+            type: Object,
+            notify: true
+          }
+        },
+        listeners: {
+          'iron-overlay-closed': 'handleOverlayCloseEvent',
+          'iron-overlay-opened': 'handleOverlayOpenEvent'
+        },
+        _keywordChanged: function(newValue, oldValue) {
+          var keyword = newValue.trim()
+          oldValue = oldValue || '';
+          if (keyword === oldValue.trim() || !this.isFocus) {
+            return;
+          }
+
+          this.sendRequest(keyword);
+        },
+        // input点击事件，第一次
+        handleInputTapEvent: function() {
+          this.set('isFocus', true);
+          this.sendRequest(this.keyword);
+        },
+        // 发送查询的ajax请求
+        sendRequest: function(keyword) {
+          console.log('filter conditon', this.filterCondition);
+          if (this.disabled) {
+            return;
+          }
+          var cond = {
+            colName: this.colName,
+            codeField: this.codeField,
+            nameField: this.nameField,
+            filterMap: this.filterCondition,
+            limit: this.limit
+          };
+
+          keyword = keyword || '';
+          this.$.ajax.body = JSON.stringify(cond);
+          this.$.ajax.params = {
+            keyword: keyword
+          };
+          this.$.ajax.generateRequest();
+        },
+        // ajax请求相应结果
+        handleResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status != 0) {
+            console.warn("got error: ", response.message);
+            return;
+          }
+
+          if (!response.data || typeof response.data !== 'object' || !(response.data instanceof Array) || response.data.length === 0) {
+            console.info("没有数据");
+            this.set('list', []);
+            this.set('isNoData', true);
+            return;
+          }
+
+          this.set('isNoData', false);
+          this.set('list', response.data.slice(0));
+          if (!this.isOpen) {
+            this.set('verticalOffset', this.getBoundingClientRect().height);
+            this.$.dropdown.open();
+          }
+        },
+        handleOverlayCloseEvent: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.set('isOpen', false);
+        },
+        handleOverlayOpenEvent: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.set('isOpen', true);
+          this.set('activeIndex', 0);
+        },
+        _computeResult: function(item) {
+          return item.code + '-' + item.name;
+        },
+        // 当前节点是否active
+        _computeActiveLi: function(curr, active) {
+          return curr === active;
+        },
+        // 后一项
+        next: function(e) {
+          if (this.activeIndex < this.list.length - 1) {
+            this.set('activeIndex', ++this.activeIndex);
+          }
+        },
+        // 前一项
+        prev: function(e) {
+          if (this.activeIndex > 0) {
+            this.set('activeIndex', --this.activeIndex);
+          }
+        },
+        // 选择一项
+        select: function(item) {
+          item = item || this.list[this.activeIndex];
+          if (!item) {
+            return;
+          }
+          var code = item.code;
+          var name = item.name;
+          this.set('selectedItem', {
+            code: code,
+            name: name
+          });
+          this.set('isFocus', false);
+          this.set('keyword', code + '-' + name);
+          this.set('isClearActive', true);
+          this.$.dropdown.close();
+          // input 触发失去焦点事件
+          var evt = document.createEvent('MouseEvent');
+          evt.initEvent('blur', true, true);
+          this.$.input.dispatchEvent(evt);
+        },
+        // 清空文本框内容
+        clear: function() {
+          this.set('isClearActive', false);
+          this.set('keyword', '');
+          this.set('selectedItem', {});
+        },
+        // item选择事件
+        handleSelectedEvent: function(e) {
+          this.select(e.model.item);
+        },
+        // input 的按键事件
+        handleInputKeyDownEvent: function(e) {
+          e.stopPropagation();
+          switch (e.keyCode) {
+            case 13: // enter event
+              console.log(13, 'enter');
+              this.select();
+              // e.preventDefault();
+              break;
+            case 38: // arrow up event
+              console.log(38, 'event up');
+              this.prev();
+              break;
+            case 40: // arrow down event
+              console.log(40, 'event down');
+              this.next();
+              break;
+            default:
+              console.log(e.keyCode);
+          }
+        },
+        // 只展示文本的text的点击事件
+        handleInputFocusEvent: function(e) {
+          this.set('isFocus', true);
+        },
+        handleInputBlurEvent: function() {
+          this.set('isFocus', false);
+        }
+      });
+    })();
+  </script>
+</dom-module>

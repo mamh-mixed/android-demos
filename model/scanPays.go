@@ -20,7 +20,10 @@ const (
 	Canc = "CANC"
 	Qyzf = "QYZF" // 企业付款
 	Jszf = "JSZF"
-	Veri = "VERI" // 卡券核销
+	Veri = "VERI" // 电子券验证/刷卡活动券查询
+	Crve = "CRVE" // 刷卡活动券验证
+	Quve = "QUVE" // 电子券验证结果查询
+	Cave = "CAVE" // 电子券验证撤销
 	List = "LIST"
 	// 卡券核销状态
 	COUPON_WO_SUCCESS = "SUCCESS"
@@ -68,6 +71,7 @@ type QueryCondition struct {
 	IsAggregateByGroup bool   `json:"isAggregateByGroup,omitempty"`                             // 是否按照商户号汇总
 	CouponsNo          string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
+	Terminalid         string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`         // 终端代码
 }
 
 // QueryResult 查询结果值
@@ -180,15 +184,21 @@ type ScanPayRequest struct {
 	Attach       string `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
 	TimeExpire   string `json:"timeExpire,omitempty" url:"timeExpire,omitempty" bson:"timeExpire,omitempty"` // 过期时间
 
-	TradeFrom string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
-
-	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
-	Terminalsn string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
-
+	TradeFrom    string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
 	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
 	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
 	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
+	// 卡券相关字段
+	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
+	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
+	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`          // 银行卡cardbin或者用户标识等 C
+	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 M
+	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原渠道订单号
+	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段原交易提交时间
+	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
+	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
+	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
@@ -255,6 +265,16 @@ func (ret *ScanPayResponse) FillWithRequest(req *ScanPayRequest) {
 		ret.ScanCodeId = req.ScanCodeId
 		ret.Terminalid = ""
 	}
+	if ret.PayType == "" {
+		ret.PayType = req.PayType
+	}
+	if ret.PayType == "" {
+		ret.PayType = req.PayType
+	}
+	if ret.Cardbin == "" {
+		ret.Cardbin = req.Cardbin
+	}
+
 	ret.Attach = req.Attach
 }
 
@@ -286,18 +306,28 @@ type ScanPayResponse struct {
 	GoodsInfo       string   `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty" bson:"goodsInfo,omitempty"`
 	Attach          string   `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
 
-	Count        string      `json:"count,omitempty" url:"count,omitempty"`
+	Count        string      `json:"count,omitempty" url:"count,omitempty" bson:"count,omitempty"`
 	Rec          interface{} `json:"rec,omitempty" url:"-" bson:"-"`
 	RecStr       string      `json:"-" url:"rec,omitempty" bson:"-"`
 	NextOrderNum string      `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"-"`
 
-	ScanCodeId string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty" bson:"scanCodeId,omitempty"` // 扫码号 卡券核销M
-	VeriTime   string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
-	CardId     string `json:"cardId,omitempty" url:"cardId,omitempty" bson:"cardId,omitempty"`             // 卡券类型 C
-	CardInfo   string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`       // 卡券详情 C
-	AvailCount string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"` // 卡券剩余可用次数C
-	ExpDate    string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`          // 卡券有效期 C
-	Authcode   int    `json:"-" url:"-" bson:"-"`                                                          // 授权码
+	ScanCodeId      string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty" bson:"scanCodeId,omitempty"`                // 扫码号 卡券核销M
+	VeriTime        string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`                      // 核销次数 C
+	CardId          string `json:"cardId,omitempty" url:"cardId,omitempty" bson:"cardId,omitempty"`                            // 卡券类型 C
+	CardInfo        string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`                      // 卡券详情 C
+	AvailCount      string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"`                // 卡券剩余可用次数C
+	ExpDate         string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`                         // 卡券有效期 C
+	Authcode        int    `json:"-" url:"-" bson:"-"`                                                                         // 授权码
+	VoucherType     string `json:"voucherType,omitempty" url:"voucherType,omitempty" bson:"voucherType,omitempty"`             // 券类型 C
+	SaleMinAmount   string `json:"saleMinAmount,omitempty" url:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`       // 满足优惠条件的最小金额         C
+	SaleDiscount    string `json:"saleDiscount,omitempty" url:"saleDiscount,omitempty" bson:"saleDiscount,omitempty"`          // 抵扣值 C
+	TransAmount     string `json:"transAmount,omitempty" url:"transAmount,omitempty" bson:"transAmount,omitempty"`             // 交易原始金额 M
+	PayType         string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`                         // 支付方式 M
+	ActualPayAmount string `json:"actualPayAmount,omitempty" url:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"` // 实际支付金额 M
+	ChannelTime     string `json:"-" url:"-" bson:"-"`                                                                         // 渠道处理时间
+	Cardbin         string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`                         // 银行卡cardbin或者用户标识等 C
+	OrigRespcd      string `json:"origRespcd,omitempty" url:"origRespcd,omitempty" bson:"origRespcd,omitempty"`                // 原交易结果 C
+	OrigErrorDetail string `json:"origErrorDetail,omitempty" url:"origErrorDetail,omitempty" bson:"origErrorDetail,omitempty"` // 原错误信息   C
 
 	// 辅助字段
 	ChanRespCode string `json:"-" url:"-" bson:"-"` // 渠道详细应答码

@@ -141,6 +141,10 @@
       transform-origin: left center;
     }
 
+    #mainToolbar {
+      font-size: 13px;
+    }
+
     #mainToolbar .middle-container {
       height: 100%;
       margin-left: 48px;
@@ -350,6 +354,12 @@
               "icon": "lock-outline",
               "url": "#/system/password/editor",
               'route': 'system.password.editor'
+            }, {
+              "nameCN": "APP用户",
+              "nameEN": "",
+              "icon": "perm-identity",
+              "url": "#/system/apps",
+              'route': 'system.apps'
             }]
           }, {
             "nameCN": "扫码支付",
@@ -482,8 +492,7 @@
                 "icon": "assignment-returned",
                 "url": "#/stats/settle/reports",
                 "route": "stats.settle.reports"
-              },
-              {
+              }, {
                 "nameCN": "扫码支付划款报表",
                 "nameEN": "",
                 "icon": "assignment-returned",
@@ -583,12 +592,49 @@
           }];
 
 
-          this.agentMenus = [{
+          this.commonMenus = [{
             "name": "PASSWORDMODIFICATION.TITLE",
             "nameCN": "密码修改",
             "icon": "lock-outline",
             "url": "#/system/password/editor",
             'route': 'system.password.editor'
+          }, {
+            "name": "SCANPAY_TRADE_LIST.MENU_NAME",
+            "nameCN": "扫码交易",
+            "icon": "image:crop-free",
+            "url": "#/trade/list",
+            "route": "trade.list"
+          }, {
+            "name": "SCANPAY_TRADE_STATS.MENU_NAME",
+            "nameCN": "扫码支付交易统计",
+            "icon": "print",
+            "url": "#/stats/reports",
+            "route": "stats.reports"
+          }, {
+            "name": "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME",
+            "nameCN": "扫码支付清算报表",
+            "icon": "assignment-returned",
+            "url": "#/stats/settle/reports",
+            "route": "stats.settle.reports"
+          }];
+          this.agentMenus = [{
+            "name": "USERMANAGEMENT.USERMANAGEMENT",
+            "nameCN": "用户",
+            "icon": "account-circle",
+            "url": "#/system/users",
+            'route': 'system.users'
+          }, {
+            "name": "PASSWORDMODIFICATION.TITLE",
+            "nameCN": "密码修改",
+            "icon": "lock-outline",
+            "url": "#/system/password/editor",
+            'route': 'system.password.editor'
+          }, {
+            "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT", 
+            "nameCN": "APP用户",
+            "icon": "perm-identity",
+            "url": "#/system/apps",
+            'route': 'system.apps'
           }, {
             "name": "SCANPAY_TRADE_LIST.MENU_NAME",
             "nameCN": "扫码交易",
@@ -644,9 +690,13 @@
             this.set('isAdmin', true);
             this.menus = this.genAdminMenus;
             return;
+          } else if (detail === 'agent') {
+            this.set('isAdmin', false);
+            this.menus = this.agentMenus;
+            return;
           }
           this.set('isAdmin', false);
-          this.menus = this.agentMenus;
+          this.menus = this.commonMenus;
         },
         handleReloadNickNameEvent: function(e) {
           this.set('nickName', e.detail);
