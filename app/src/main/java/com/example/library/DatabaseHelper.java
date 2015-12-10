@@ -6,11 +6,28 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
     private static final String DB_NAME = "eating.db";
-    private static final String createdailyeat = "CREATE TABLE 'ew_dailyeat' ('dailyeat_id' INTEGER NOT NULL,'dailyeat_meals' TEXT,'dailyeat_datetime' TEXT,'dailyeat_restaurant_id' INTEGER,'dailyeat_menu_id' INTEGER,'dailyeat_description' TEXT);";
-    private static final String createrestaurant = "CREATE TABLE 'ew_restaurant' ('restaurant_id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,'restaurant_name' TEXT,'restaurant_address' TEXT,'restaurant_phone' TEXT,'restaurant_description' TEXT);";
-    private static final String createmenu = "CREATE TABLE 'ew_menu' ('menu_id'  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,'menu_name' TEXT,'restaurant_id' INTEGER, 'menu_description' TEXT);";
+
+    private static final String CREATEDAILYEAT = "CREATE TABLE 'ew_dailyeat' " +
+            "('dailyeat_id' INTEGER NOT NULL," +
+            "'dailyeat_meals' TEXT," +
+            "'dailyeat_datetime' TEXT," +
+            "'dailyeat_restaurant_id' INTEGER," +
+            "'dailyeat_menu_id' INTEGER," +
+            "'dailyeat_description' TEXT);";
+
+    private static final String CREATERESTAURANT = "CREATE TABLE 'ew_restaurant' " +
+            "('restaurant_id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+            "'restaurant_name' TEXT," +
+            "'restaurant_address' TEXT," +
+            "'restaurant_phone' TEXT," +
+            "'restaurant_description' TEXT);";
+
+    private static final String CREATEMENU = "CREATE TABLE 'ew_menu'" +
+            " ('menu_id'  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+            "'menu_name' TEXT," +
+            "'restaurant_id' INTEGER," +
+            " 'menu_description' TEXT);";
 
     private static final int VERSION = 1;
 
@@ -45,17 +62,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * create database tables
      */
     private void createTables(SQLiteDatabase db) {
-        db.execSQL(createdailyeat);
+        db.execSQL(CREATEDAILYEAT);
 
-        db.execSQL(createrestaurant);
+        db.execSQL(CREATERESTAURANT);
 
-        db.execSQL(createmenu);
+        db.execSQL(CREATEMENU);
     }
 
     /*
      * insert some datas to tables
      */
     private void insertIntoTables(SQLiteDatabase db) {
-        db.execSQL("insert into ew_restaurant(restaurant_name,restaurant_address,restaurant_phone,restaurant_description) values(\"���㷻����\",\"�ֶ������潭·135Ū88��(��ʢ��·)\",\"(021)33922848\",\"��ǩ����ʳ ���� �Ž�\")");
+        db.execSQL("insert into ew_restaurant(restaurant_name,restaurant_address,restaurant_phone,restaurant_description) " +
+                "values(\"���㷻����\",\"�ֶ������潭·135Ū88��(��ʢ��·)\",\"(021)33922848\",\"��ǩ����ʳ ���� �Ž�\")");
     }
 }
