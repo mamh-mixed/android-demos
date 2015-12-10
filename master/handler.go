@@ -75,13 +75,8 @@ func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
 
 	tradeReport(w, &model.QueryCondition{
-		IsForReport:  true,
-		TimeType:     "payTime",
-		TransStatus:  []string{model.TransSuccess},
-		RefundStatus: model.TransRefunded,
-		StartTime:    date,
-		EndTime:      date,
-		SettRole:     role,
+		Date:     date,
+		SettRole: role,
 	}, fn)
 }
 
@@ -102,8 +97,7 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 	// 设置交易查询权限
 	q := &model.QueryCondition{
 		IsForReport:  true,
-		StartTime:    date + " 00:00:00", // 北京时间
-		EndTime:      date + " 23:59:59", // 北京时间
+		Date:         date, // 北京时间
 		AgentCode:    curSession.User.AgentCode,
 		MerId:        curSession.User.MerId,
 		SubAgentCode: curSession.User.SubAgentCode,
@@ -132,8 +126,7 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 	// condition
 	q := &model.QueryCondition{
 		IsForReport:  true,
-		StartTime:    date + " 00:00:00", // 北京时间
-		EndTime:      date + " 23:59:59", // 北京时间
+		Date:         date, // 北京时间
 		AgentCode:    curSession.User.AgentCode,
 		MerId:        curSession.User.MerId,
 		SubAgentCode: curSession.User.SubAgentCode,
