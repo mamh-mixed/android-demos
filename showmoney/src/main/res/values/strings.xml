@@ -203,4 +203,9 @@
     <string name="forget_account_message">忘记登录账户请联系你的服务商</string>
     <string name="forget_cancel">取消</string>
     <string name="forget_i_known">我知道了</string>
+
+    <!--激活界面用的的文本字符串-->
+    <string name="activate_message">激活码已发送到此邮箱:\n\n</string>
+    <string name="activate_after">稍后激活</string>
+    <string name="activate_had_activated">已激活</string>
 </resources>
