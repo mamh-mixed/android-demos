@@ -126,7 +126,7 @@
             android:name=".activity.LimitIncreaseActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.ResetPasswordActivity"
+            android:name=".activity.ForgetPasswordActivity"
             android:label="@string/app_name" />
 
         <!-- UMENG appkey start -->
