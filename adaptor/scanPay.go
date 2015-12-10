@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/channel/unionlive"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -494,22 +493,22 @@ func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
 }
 
 // ProcessPurchaseCoupons 卡券核销
-func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 上送参数
-	req.SysOrderNum = t.SysOrderNum
-	// req.Subject = mer.Detail.CommodityName
-	req.ChanMerId = c.ChanMerId
-	req.Terminalsn = req.Terminalid
-	req.Terminalid = c.TerminalId
-
-	// 获得渠道实例，请求
-	client := unionlive.DefaultClient
-	ret, err := client.ProcessPurchaseCoupons(req)
-	if err != nil {
-		log.Errorf("process PurchaseCoupons error:%s", err)
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
-
-	return ret
-}
+// func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+//
+// 	// 上送参数
+// 	req.SysOrderNum = t.SysOrderNum
+// 	// req.Subject = mer.Detail.CommodityName
+// 	req.ChanMerId = c.ChanMerId
+// 	req.Terminalsn = req.Terminalid
+// 	req.Terminalid = c.TerminalId
+//
+// 	// 获得渠道实例，请求
+// 	client := unionlive.DefaultClient
+// 	ret, err := client.ProcessPurchaseCoupons(req)
+// 	if err != nil {
+// 		log.Errorf("process PurchaseCoupons error:%s", err)
+// 		return ReturnWithErrorCode("SYSTEM_ERROR")
+// 	}
+//
+// 	return ret
+// }

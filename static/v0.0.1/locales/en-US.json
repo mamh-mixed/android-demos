@@ -474,5 +474,94 @@
   "xxx": {
     "description": "xxx",
     "message": "xxx"
+  },
+  "USERNAME_NOT_FOUND": {
+    "description": "用户名不存在",
+    "message": "username not found"
+  },
+  "NO_PERMISSION": {
+    "description": "用户无权限",
+    "message": "no permission"
+  },
+  "SHOP_NOT_FOUND": {
+    "description": "门店不存在",
+    "message": "shop not found"
+  },
+  "PASSWORDRESET.TOAST.RESET_PASSWORD_SUCCESS": {
+    "description": "重置密码成功",
+    "message": "reset password success"
+  },
+  "USERMANAGEMENT.USERMANAGEMENT": {
+    "description": "用户管理",
+    "message": "user management"
+  },
+  "USERMANAGEMENT.EMAIL": {
+    "description": "邮箱",
+    "message": "email"
+  },
+  "USERMANAGEMENT.RELATEDEMAIL": {
+    "description": "关联邮箱",
+    "message": "related email"
+  },
+  "USERMANAGEMENT.TELEPHONENO": {
+    "description": "手机号",
+    "message": "telephone no"
+  },
+  "USERMANAGEMENT.USERTYPE": {
+    "description": "用户类型",
+    "message": "user type"
+  },
+  "USERMANAGEMENT.AREACODE": {
+    "description": "地区代码",
+    "message": "area code"
+  },
+  "USERMANAGEMENT.PASSWORDRESET": {
+    "description": "密码重置",
+    "message": "reset password"
+  },
+  "USERMANAGEMENT.DISPLAYNAME": {
+    "description": "显示名",
+    "message": "DISPLAY NAME"
+  },
+  "USERMANAGEMENT.VIEWUSERINFO": {
+    "description": "查看用户信息",
+    "message": "VIEW USER INFORMATION"
+  },
+  "USERTYPE.ADMIN": {
+    "description": "超级管理员",
+    "message": "EN超级管理员"
+  },
+  "USERTYPE.GENADMIN": {
+    "description": "普通管理员",
+    "message": "EN普通管理员"
+  },
+  "USERTYPE.AGENT": {
+    "description": "代理",
+    "message": "EN代理"
+  },
+  "USERTYPE.SUBAGENT": {
+    "description": "公司",
+    "message": "EN公司"
+  },
+  "USERTYPE.GROUP": {
+    "description": "商户",
+    "message": "EN商户"
+  },
+  "USERTYPE.MERCHANT": {
+    "description": "门店",
+    "message": "EN门店"
+  },
+  "APPUSERMANAGEMENT.APPUSERMANAGEMENT": {
+    "description": "APP用户管理",
+    "message": "app user management"
+  },
+  "APPUSERMANAGEMENT.TITLE": {
+    "description": "APP密码重置",
+    "message": "EN APP密码重置"
+  },
+  "USERMANAGEMENT.TITLE": {
+    "description": "用户管理",
+    "message": "EN用户管理"
   }
+
 }
