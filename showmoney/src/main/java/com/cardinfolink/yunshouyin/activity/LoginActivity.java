@@ -215,6 +215,14 @@ public class LoginActivity extends BaseActivity {
                     login();
                     break;
                 case R.id.iv_help:
+                    mHintDialog.setOkOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(LoginActivity.this, ForgetPasswordActivity.class);
+                            startActivity(intent);
+                            mHintDialog.hide();
+                        }
+                    });
                     mHintDialog.show();
                     break;
                 case R.id.tv_register:
