@@ -108,7 +108,10 @@ public class RegisterActivity extends BaseActivity {
                 mLoadingDialog.endLoading();
                 View activateView = findViewById(R.id.activate_dialog);
                 ActivateDialog activateDialog = new ActivateDialog(mContext, activateView, username);
-                activateDialog.show();
+                activateDialog.setBodyText(getResources().getString(R.string.activate_message)+ username);
+                activateDialog.setCancelText(getResources().getString(R.string.activate_after));
+                activateDialog.setOkText(getResources().getString(R.string.activate_had_activated));
+                activateDialog.show();//显示激活对话框，这里文本都是自定义的。
             }
 
             @Override
