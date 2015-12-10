@@ -129,3 +129,17 @@ func (col *userCollection) Remove(userName string) (err error) {
 	err = database.C(col.name).Remove(bo)
 	return err
 }
+
+//修改锁定和登陆时间
+func (col *userCollection) UpdateLoginTime(userName, loginTime, lockTime string) error {
+	bo := bson.M{
+		"userName": userName,
+	}
+
+	update := bson.M{
+		"$set": bson.M{"loginTime": loginTime,
+			"lockTime": lockTime},
+	}
+	err := database.C(col.name).Update(bo, update)
+	return err
+}

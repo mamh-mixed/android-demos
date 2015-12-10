@@ -22,6 +22,8 @@ type transSettLogCollection struct {
 
 var TransSettColl = transSettCollection{"transSett"}
 var SpTransSettColl = transSettCollection{"transSett.sp"}
+
+// settlement log
 var TransSettLogColl = transSettLogCollection{"transSettLog"}
 
 // AtomUpsert mongodb-findAndModify
@@ -121,7 +123,7 @@ func (col *transSettCollection) BatchAdd(ts []model.TransSett) (err error) {
 func (col *transSettCollection) BatchRemove(date string) (err error) {
 
 	q := bson.M{
-		"trans.payTime": bson.M{},
+		"settDate": date,
 	}
 	_, err = database.C(col.name).RemoveAll(q)
 	return err
@@ -176,12 +178,22 @@ func (col *transSettCollection) FindOne(orderNum, chanOrderNum string) (t *model
 	return
 }
 
+// FindOne 根据交易订单号、渠道订单号删除记录
+func (col *transSettCollection) RemoveOne(orderNum, chanOrderNum string) error {
+	// 订单是uuid 全局唯一
+	q := bson.M{
+		"trans.orderNum":     orderNum,
+		"trans.chanOrderNum": chanOrderNum,
+	}
+	return database.C(col.name).Remove(q)
+}
+
 // Update 更新
 func (col *transSettCollection) Update(t *model.TransSett) error {
 	if t == nil {
 		return errors.New("transSett is nil")
 	}
-	t.SettDate = time.Now().Format("2006-01-02 15:04:05")
+	// t.SettDate = time.Now().Format("2006-01-02 15:04:05")
 	return database.C(col.name).Update(bson.M{"trans.merId": t.Trans.MerId, "trans.orderNum": t.Trans.OrderNum}, t)
 }
 
@@ -203,6 +215,9 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	}
 	if q.StartTime != "" && q.EndTime != "" {
 		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
+	}
+	if q.Date != "" {
+		find["settDate"] = q.Date
 	}
 
 	var ts []model.TransSett
@@ -324,4 +339,51 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 		}},
 	}).All(&all)
 	return group, all, err
+}
+
+// GroupBySettRole 根据清算角色出报表
+func (col *transSettCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
+
+	var result []model.SettRoleGroup
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": bson.M{
+			"settDate": settDate,
+		}},
+		{"$group": bson.M{"_id": bson.M{"merId": "$trans.merId", "settRole": "$trans.settRole"},
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.transAmt", // 相当于将逆向交易的金额变为负数
+					}},
+				},
+			}},
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.fee",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.fee",
+					}},
+				},
+			}},
+		}},
+		{"$group": bson.M{
+			"_id": "$_id.settRole",
+			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
+				"transAmt": "$transAmt",
+				"fee":      "$fee",
+			}},
+		}},
+		{"$project": bson.M{
+			"settRole": "$_id",
+			"mers":     "$detail",
+		}},
+	}).All(&result)
+	return result, err
+}
+
+func (col *transSettCollection) FindAll() ([]model.TransSett, error) {
+	var result []model.TransSett
+	err := database.C(col.name).Find(nil).All(&result)
+	return result, err
 }

@@ -221,3 +221,17 @@ func (col *chanMerCollection) Insert(c *model.ChanMer) error {
 	err := database.C(col.name).Insert(c)
 	return err
 }
+
+// FindWXPAgent 查找微信代理
+func (col *chanMerCollection) FindWXPAgent() ([]model.ChanMer, error) {
+
+	var result []model.ChanMer
+
+	find := bson.M{
+		"chanCode":    "WXP",
+		"isAgentMode": false,
+	}
+	err := database.C(col.name).Find(find).All(&result)
+
+	return result, err
+}

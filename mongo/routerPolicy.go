@@ -165,3 +165,15 @@ func (c *routerPolicyCollection) Update(rp *model.RouterPolicy) error {
 	}
 	return database.C(c.name).Update(cond, rp)
 }
+
+// Find 根据渠道商户Id和渠道chanCode获取路由信息
+func (c *routerPolicyCollection) FindByChanMerId(chanMerId, chanCode string) (r *model.RouterPolicy) {
+	r = &model.RouterPolicy{}
+	q := bson.M{"chanMerId": chanMerId, "chanCode": chanCode}
+	err := database.C(c.name).Find(q).One(r)
+	if err != nil {
+		// log.Errorf("FindRouter Error message is: %s", err)
+		return nil
+	}
+	return r
+}

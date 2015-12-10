@@ -8,8 +8,8 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func TestDoSpTransSett(t *testing.T) {
-	DoSpTransSett("2015-12-01")
+func TestGenReport(t *testing.T) {
+	SpSettReport("2015-12-08")
 }
 
 func TestAddTrans(t *testing.T) {
@@ -28,17 +28,4 @@ func TestAddTrans(t *testing.T) {
 	// 测试计算费率
 	addTransSett(tran, model.SettSuccess)
 	// mongo.TransColl.Add(tran)
-}
-
-func TestDoSettWork(t *testing.T) {
-	yesterday = "2015-05-22"
-	doTransSett()
-}
-
-func TestDoScanpaySettReport(t *testing.T) {
-	yesterday = "2015-11-06"
-	err := doScanpaySettReport(yesterday)
-	if err != nil {
-		t.Error(err)
-	}
 }

@@ -99,3 +99,16 @@ func (col *appUserCollection) FindCountByUserName(userName string) (num int, err
 	}
 	return num, nil
 }
+
+func (col *appUserCollection) UpdateLoginTime(userName, loginTime, lockTime string) error {
+	bo := bson.M{
+		"username": userName,
+	}
+
+	update := bson.M{
+		"$set": bson.M{"loginTime": loginTime,
+			"lockTime": lockTime},
+	}
+	err := database.C(col.name).Update(bo, update)
+	return err
+}

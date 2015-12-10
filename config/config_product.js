@@ -67,6 +67,7 @@
         "ChannelId": "180210000270000" // 渠道 ID
     },
     "Settle":{
-        "OverseasSettPoint":"06:00:00" // 海外接口清算时间点
+        "OverseasSettPoint":"06:00:00", // 海外接口清算时间点
+        "DomesticSettPoint":"10:00:00"
     }
 }
