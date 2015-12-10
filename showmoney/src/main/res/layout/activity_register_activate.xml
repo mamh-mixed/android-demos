@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-            android:id="@+id/sabi_register"
+            android:id="@+id/action_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:left_text="@string/setting_return" />
@@ -38,7 +38,7 @@
 
 
         <Button
-            android:id="@+id/btnregister"
+            android:id="@+id/btnnext"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="30dp"
