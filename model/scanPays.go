@@ -197,8 +197,8 @@ type ScanPayRequest struct {
 	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
 
-	SettDate     string `json:"settDate" url:"settDate,omitempty" bson:"settDate,omitempty"`
-	NextOrderNum string `json:"nextOrderNum" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
+	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
+	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
@@ -306,7 +306,7 @@ type ScanPayResponse struct {
 	GoodsInfo       string   `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty" bson:"goodsInfo,omitempty"`
 	Attach          string   `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
 
-	Count        string      `json:"count,omitempty" url:"count,omitempty"`
+	Count        string      `json:"count,omitempty" url:"count,omitempty" bson:"count,omitempty"`
 	Rec          interface{} `json:"rec,omitempty" url:"-" bson:"-"`
 	RecStr       string      `json:"-" url:"rec,omitempty" bson:"-"`
 	NextOrderNum string      `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"-"`
