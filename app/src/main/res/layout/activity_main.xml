@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" >
+        </TabWidget>
+
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <!-- 001 -->
+
+            <LinearLayout
+                android:id="@+id/LinearLayout001"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin" >
+
+                <ExpandableListView
+                    android:id="@+id/result_expandablelistview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:cacheColorHint="@null"
+                    android:childIndicatorLeft="0dp"
+                    android:dividerHeight="0dp"
+                    android:groupIndicator="@null"
+                    android:scrollbarAlwaysDrawHorizontalTrack="true" >
+                </ExpandableListView>
+            </LinearLayout>
+
+            <!-- 002 -->
+
+            <LinearLayout
+                android:id="@+id/LinearLayout002"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+            </LinearLayout>
+
+            <!-- 003 -->
+
+            <LinearLayout
+                android:id="@+id/LinearLayout003"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:text="@string/add_del_update_serachText" />
+                </LinearLayout>
+
+                <com.example.library.CornerListView
+                    android:id="@+id/add_del_update_serach_cornerListView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:background="@drawable/cornerlistview_bg_shape"
+                    android:cacheColorHint="@null" />
+            </LinearLayout>
+        </FrameLayout>
+    </RelativeLayout>
+
+</TabHost>

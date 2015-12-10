@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <RadioGroup
+        android:id="@+id/dialog_radiogroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription=""
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/dialog_breakfast_radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_breakfast_radiogroup_text" />
+
+        <RadioButton
+            android:id="@+id/dialog_lunch_radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_lunch_radiogroup_text" />
+
+        <RadioButton
+            android:id="@+id/dialog_supper_radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_supper_radiogroup_text" />
+
+        <RadioButton
+            android:id="@+id/dialog_other_radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_other_radiogroup_text" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_eatornot_text" />
+
+</LinearLayout>
