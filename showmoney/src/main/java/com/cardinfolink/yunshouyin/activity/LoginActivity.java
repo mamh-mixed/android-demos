@@ -27,7 +27,7 @@ import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
-import com.cardinfolink.yunshouyin.view.ResetDialog;
+import com.cardinfolink.yunshouyin.view.HintDialog;
 
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
@@ -40,7 +40,7 @@ public class LoginActivity extends BaseActivity {
     private ImageView mHelp;//显示帮助对话框
 
     private Button mLoginButton;//登录按钮
-    private ResetDialog mResetDialog;
+    private HintDialog mHintDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class LoginActivity extends BaseActivity {
 
         mLoginButton = (Button) findViewById(R.id.btnlogin);
 
-        mResetDialog = new ResetDialog(this, findViewById(R.id.reset_dialog));
+        mHintDialog = new HintDialog(this, findViewById(R.id.hint_dialog));
 
     }
 
@@ -215,7 +215,7 @@ public class LoginActivity extends BaseActivity {
                     login();
                     break;
                 case R.id.iv_help:
-                    mResetDialog.show();
+                    mHintDialog.show();
                     break;
                 case R.id.tv_register:
                     Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);

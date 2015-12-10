@@ -629,8 +629,9 @@
     </RelativeLayout>
 
 
+    <!-- 用来提示 信息的对话框，上面一段文本，下面两个按钮-->
     <RelativeLayout
-        android:id="@+id/reset_dialog"
+        android:id="@+id/hint_dialog"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#40000000"
@@ -645,7 +646,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/reset_messsage"
+                android:id="@+id/hint_messsage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
@@ -661,7 +662,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/reset_dialog_cancel"
+                    android:id="@+id/hint_dialog_cancel"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="10dp"
@@ -671,7 +672,7 @@
                     android:textSize="17sp" />
 
                 <TextView
-                    android:id="@+id/reset_dialog_ok"
+                    android:id="@+id/hint_dialog_ok"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
@@ -684,6 +685,7 @@
 
         </LinearLayout>
     </RelativeLayout>
+    <!--end 用来提示 信息的对话框，上面一段文本，下面两个按钮-->
 
 
 </RelativeLayout>
