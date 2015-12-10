@@ -25,7 +25,7 @@ func initRespCode() {
 	SysRespCode["C5"] = "未到卡券使用时间"
 	SysRespCode["C6"] = "商户不能使用该卡券"
 	// SysRespCode["58"] = "未知应答"
-	SysRespCode["09"] = "处理中"
+	SysRespCode["09"] = "刷卡券"
 	SysRespCode["37"] = "礼包券"
 
 	ChanSysRespCode = make(map[string]string)

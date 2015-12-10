@@ -48,7 +48,7 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 	// 处理结果返回
 	scanPayResponse := &model.ScanPayResponse{
 		Txndir:          unionLiveResp.Header.Transdirect,
-		Busicd:          model.Veri,
+		Busicd:          req.Busicd,
 		Respcd:          returncode,
 		AgentCode:       req.AgentCode,
 		Chcd:            req.Chcd,
@@ -64,11 +64,11 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		ChanRespCode:    unionLiveResp.Header.Returncode,
 		ChannelOrderNum: unionLiveResp.Header.Hosttraceno,
 		// Terminalid:      req.Terminalsn,
-		Authcode:      unionLiveResp.Body.Authcode,
-		ChannelTime:   unionLiveResp.Header.Hosttime,
-		VoucherType:   strconv.Itoa(unionLiveResp.Body.VoucherType),
-		SaleMinAmount: strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
-		SaleDiscount:  strconv.Itoa(unionLiveResp.Body.SaleDiscount),
+		Authcode:    unionLiveResp.Body.Authcode,
+		ChannelTime: unionLiveResp.Header.Hosttime,
+		// VoucherType:   strconv.Itoa(unionLiveResp.Body.VoucherType),
+		// SaleMinAmount: strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
+		// SaleDiscount:  strconv.Itoa(unionLiveResp.Body.SaleDiscount),
 	}
 
 	return scanPayResponse, nil
@@ -254,7 +254,7 @@ func (u *unionliveScanPay) ProcessUndoPurchaseActCoupons(req *model.ScanPayReque
 	// 处理结果返回
 	scanPayResponse := &model.ScanPayResponse{
 		Txndir:          unionLiveResp.Header.TransDirect,
-		Busicd:          model.Veri,
+		Busicd:          req.Busicd,
 		Respcd:          returncode,
 		AgentCode:       req.AgentCode,
 		Chcd:            req.Chcd,

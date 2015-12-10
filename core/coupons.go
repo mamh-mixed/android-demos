@@ -410,8 +410,10 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.ActualPayAmount = ret.ActualPayAmount
 
 	//更新核销状态
-	if ret.Respcd == "00" || ret.Respcd == "36" || ret.Respcd == "37" {
+	if ret.Respcd == "00" {
 		t.WriteoffStatus = model.COUPON_WO_SUCCESS
+	} else if ret.Respcd == "09" || ret.Respcd == "37" {
+		t.WriteoffStatus = "QUERYSUCCESS"
 	} else {
 		t.WriteoffStatus = model.COUPON_WO_ERROR
 	}
