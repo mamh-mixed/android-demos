@@ -213,6 +213,9 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	if q.GroupCode != "" {
 		find["trans.groupCode"] = q.GroupCode
 	}
+	if q.SettRole != "" {
+		find["settRole"] = q.SettRole
+	}
 	if q.StartTime != "" && q.EndTime != "" {
 		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
