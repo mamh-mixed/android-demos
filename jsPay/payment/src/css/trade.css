@@ -1,0 +1,534 @@
+/* 清除内外边距 */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+blockquote,
+
+/* structural elements 结构元素 */
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+
+/* list elements 列表元素 */
+pre,
+
+/* text formatting elements 文本格式元素 */
+fieldset,
+lengend,
+button,
+input,
+textarea,
+
+/* form elements 表单元素 */
+th,
+td {
+
+  /* table elements 表格元素 */
+  margin: 0;
+  padding: 0;
+}
+
+/* 设置默认字体 */
+body,
+button,
+input,
+select,
+textarea {
+
+  /* for ie */
+
+  /*font: 12px/1 Tahoma, Helvetica, Arial, "宋体", sans-serif;*/
+  font: 12px/1 Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif; /* 用 ascii 字符表示，使得在任何编码下都无问题 */
+}
+
+h1 {
+  font-size: 18px; /* 18px / 12px = 1.5 */
+}
+
+h2 {
+  font-size: 16px;
+}
+
+h3 {
+  font-size: 14px;
+}
+
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+
+address,
+cite,
+dfn,
+em,
+var {
+  font-style: normal;
+}
+
+/* 将斜体扶正 */
+code,
+kbd,
+pre,
+samp,
+tt {
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* 统一等宽字体 */
+small {
+  font-size: 12px;
+}
+
+/* 小于 12px 的中文很难阅读，让 small 正常化 */
+
+/* 重置列表元素 */
+ul,
+ol {
+  list-style: none;
+}
+
+/* 重置文本格式元素 */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+abbr[title],
+acronym[title] {
+
+  /* 注：1.ie6 不支持 abbr; 2.这里用了属性选择符，ie6 下无效果 */
+  border-bottom: 1px dotted;
+  cursor: help;
+}
+
+q:before,
+q:after {
+  content: '';
+}
+
+/* 重置表单元素 */
+legend {
+  color: #000;
+}
+
+/* for ie6 */
+fieldset,
+img {
+  border: none;
+}
+
+/* img 搭车：让链接里的 img 无边框 */
+
+/* 注：optgroup 无法扶正 */
+button,
+input,
+select,
+textarea {
+  font-size: 100%; /* 使得表单元素在 ie 下能继承字体大小 */
+}
+
+/* 重置表格元素 */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* 重置 hr */
+hr {
+  border: none;
+  height: 1px;
+}
+
+/* 让非ie浏览器默认也显示垂直滚动条，防止因滚动条引起的闪烁 */
+html {
+  overflow-y: scroll;
+}
+
+@charset "UTF-8";
+
+/*body*/
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: none;
+}
+
+body {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/*header*/
+.header {
+  height: 180px;
+  background: #00bcd4;
+  padding-top: 50px;
+}
+
+.header h3 {
+  font-size: 32px;
+  color: #FFF;
+  text-align: center;
+  line-height: 40px;
+  margin-bottom: 40px;
+}
+
+.header ul {
+  width: 50%;
+  height: 40px;
+  border: solid 2px #fff;
+  border-radius: 10px;
+  background: #00bcd4;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.header ul li a {
+  width: 33.33333333%;
+  float: left;
+  margin: 0 auto;
+  line-height: 36px;
+  text-align: center;
+  color: #fff;
+  font-size: 16px;
+}
+
+.header ul li a:hover {
+  color: #00bcd4;
+  background: #FFF;
+  text-decoration: none;
+}
+
+/*content*/
+.content p {
+  height: 20px;
+  background: #ccc;
+  font-size: 12px;
+  color: #000;
+  line-height: 20px;
+  text-align: center;
+}
+
+/*footer*/
+.footer .one {
+  height: 100px;
+  background: #fff;
+  padding-top: 15px;
+}
+
+.footer .one  > .image-container {
+  float: left;
+  width: 100px;
+  text-align: center;
+}
+
+.footer .one  > .image-container > img {
+  width: 70px;
+  height: 70px;
+}
+
+.one > .content-container {
+  border-bottom: 1px solid #999;
+  margin-left: 100px;
+}
+
+.footer > .one > .content-container> .left {
+  display: inline-block;
+  width: 50%;
+}
+
+.left > h4 {
+  height: 20px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.left > .first {
+  height: 20px;
+  line-height: 20px;
+  color: #999;
+}
+
+.left > .floor {
+  display: inline-block;
+  width: 100%;
+  height: 30px;
+}
+
+.floor > div {
+  display: inline-block;
+  float: left;
+  margin-right: 5px;
+}
+
+.floor > div > img {
+  width: 30px;
+  height: 30px;
+}
+
+.floor > div:first-child > img {
+  width: 21px;
+}
+
+.floor > .second {
+  line-height: 30px;
+  color: #f00;
+}
+
+.one > .content-container> .right {
+  display: inline-block;
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+
+.right > div {
+  height: 35px;
+  line-height: 35px;
+}
+
+.captha > span {
+  border: 2px solid #00bcd4;
+  padding: 5px;
+  border-radius: 8px;
+  color: #00bcd4;
+}
+
+.right > .amount {
+  font-size: 32px;
+}
+
+.footer .two {
+  height: 100px;
+  background: #fff;
+  padding-top: 15px;
+}
+
+.footer .two  > .image-container {
+  float: left;
+  width: 100px;
+  text-align: center;
+}
+
+.footer .two  > .image-container > img {
+  width: 70px;
+  height: 70px;
+}
+
+.two > .content-container {
+  border-bottom: 1px solid #999;
+  margin-left: 100px;
+}
+
+.footer > .two > .content-container> .left {
+  display: inline-block;
+  width: 50%;
+}
+
+.left > h4 {
+  height: 20px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.left > .first {
+  height: 20px;
+  line-height: 20px;
+  color: #999;
+}
+
+.left > .next {
+  display: inline-block;
+  width: 100%;
+  height: 30px;
+}
+
+.next > div {
+  display: inline-block;
+  float: left;
+  margin-right: 5px;
+}
+
+.next > div > img {
+  width: 30px;
+  height: 30px;
+}
+
+.next > div:first-child > img {
+  width: 32px;
+}
+
+.next > .second {
+  line-height: 30px;
+  color: #333;
+}
+
+.two > .content-container> .right {
+  display: inline-block;
+  float: right;
+  width: 45%;
+  text-align: right;
+  margin-right: 5px;
+}
+
+.right > div {
+  height: 35px;
+  line-height: 35px;
+}
+
+.captha > span {
+  border: 2px solid #00bcd4;
+  padding: 5px;
+  border-radius: 8px;
+  color: #00bcd4;
+}
+
+.right > .amount {
+  font-size: 32px;
+}
+
+.footer .three {
+  height: 100px;
+  background: #fff;
+  padding-top: 15px;
+}
+
+.footer .three  > .image-container {
+  float: left;
+  width: 100px;
+  text-align: center;
+}
+
+.footer .three  > .image-container > img {
+  width: 70px;
+  height: 70px;
+}
+
+.three > .content-container {
+  border-bottom: 1px solid #999;
+  margin-left: 100px;
+}
+
+.footer > .three > .content-container> .left {
+  display: inline-block;
+  width: 50%;
+}
+
+.left > h4 {
+  height: 20px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.left > .first {
+  height: 20px;
+  line-height: 20px;
+  color: #999;
+}
+
+.left > .then {
+  display: inline-block;
+  width: 100%;
+  height: 30px;
+}
+
+.then > div {
+  display: inline-block;
+  float: left;
+  margin-right: 5px;
+}
+
+.then > div > img {
+  width: 30px;
+  height: 30px;
+}
+
+.then > div:first-child > img {
+  width: 32px;
+}
+
+.then > .second {
+  line-height: 30px;
+  color: #F00;
+}
+
+.three > .content-container> .right {
+  display: inline-block;
+  float: right;
+  width: 50%;
+  text-align: right;
+}
+
+.right > div {
+  height: 35px;
+  line-height: 35px;
+}
+
+.captha > span {
+  border: 2px solid #00bcd4;
+  padding: 5px;
+  border-radius: 8px;
+  color: #00bcd4;
+}
+
+.right > .amount {
+  font-size: 32px;
+}
+
+@media (max-width:350px) {
+  .footer .two > .image-container {
+    width: 80px;
+    margin-top: 10px;
+  }
+
+  .footer .two > .image-container > img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .two > .content-container {
+    margin-left: 80px;
+  }
+
+  .footer > .two > .content-container> .left {
+    width: 53%;
+  }
+
+  .left > .next {
+    height: 28px;
+  }
+
+  .next > div > img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .two > .content-container> .right {
+    width: 40%;
+  }
+
+  .two > .content-container {
+    padding: 3px;
+  }
+
+}
+
+/* CSS Document */
