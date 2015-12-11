@@ -82,12 +82,12 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		time2 := localTime[8:]
 		time1Int, err := strconv.ParseInt(string(time1), 10, 32)
 		if err != nil {
-			log.Errorf("convert string to int error value:%s, error:", time1, err)
+			log.Errorf("convert string to int error value:%s, error:%s", time1, err)
 			return model.NewResultBody(3, model.SYSTEM_ERROR.Error)
 		}
 		time2Int, err := strconv.ParseInt(string(time2), 10, 32)
 		if err != nil {
-			log.Errorf("convert string to int error value:%s, error:", time2, err)
+			log.Errorf("convert string to int error value:%s, error:%s", time2, err)
 			return model.NewResultBody(3, model.SYSTEM_ERROR.Error)
 		}
 		if string(date1) != string(date2) {
@@ -199,6 +199,13 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		}
 		log.Errorf("wrong password, expect %s but get %s", user.Password, encryptPass)
 		return model.NewResultBody(3, "密码错误")
+	}
+
+	//密码正确，清空登陆记录
+	if isAppUser {
+		mongo.AppUserCol.UpdateLoginTime(userName, "", "")
+	} else {
+		mongo.UserColl.UpdateLoginTime(userName, "", "")
 	}
 
 	// 隐藏密码
