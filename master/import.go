@@ -102,10 +102,9 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key, msg: im, IsDebug: true}
+	ip := importer{Sheets: file.Sheets, fileName: key, msg: im}
 	info, err := ip.DoImport()
 	if err != nil {
-		log.Infof("%s", err)
 		w.Write(resultBody(err.Error(), 2))
 		return
 	}
