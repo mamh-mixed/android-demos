@@ -201,6 +201,13 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		return model.NewResultBody(3, "密码错误")
 	}
 
+	//密码正确，清空登陆记录
+	if isAppUser {
+		mongo.AppUserCol.UpdateLoginTime(userName, "", "")
+	} else {
+		mongo.UserColl.UpdateLoginTime(userName, "", "")
+	}
+
 	// 隐藏密码
 	user.Password = ""
 
