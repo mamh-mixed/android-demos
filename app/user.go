@@ -591,38 +591,43 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 
 	result = model.NewAppResult(model.SUCCESS, "")
 
-	startDate, endDate := "", ""
+	dsDate, deDate, ssDate, seDate := "", "", "", ""
+	// 按month来统计
+	ym := req.Month
+	yearNum, _ := strconv.Atoi(ym[:4])
+	month := ym[4:6]
+	day := ""
+	if month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12" {
+		day = "31"
+	} else if month == "02" {
+		if (yearNum%4 == 0 && yearNum%100 != 0) || yearNum%400 == 0 {
+			day = "29"
+		} else {
+			day = "28"
+		}
+	} else {
+		day = "30"
+	}
+	ssDate = ym[:4] + "-" + ym[4:6] + "-" + "01" + " 00:00:00"
+	seDate = ym[:4] + "-" + ym[4:6] + "-" + day + " 23:59:59"
+
+	// 按送的日期天数拉取数据
 	if req.Date != "" {
 		day, _ := strconv.Atoi(req.Date)
 		now := time.Now()
-		startDate = now.Add(-time.Hour * 24 * time.Duration(day)).Format("2006-01-02")
-		endDate = now.Format("2006-01-02")
+		dsDate = now.Add(-time.Hour*24*time.Duration(day)).Format("2006-01-02") + " 00:00:00"
+		deDate = now.Format("2006-01-02") + " 23:59:59"
 	} else {
-		// 按month来
-		ym := req.Month
-		yearNum, _ := strconv.Atoi(ym[:4])
-		month := ym[4:6]
-		day := ""
-		if month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12" {
-			day = "31"
-		} else if month == "02" {
-			if (yearNum%4 == 0 && yearNum%100 != 0) || yearNum%400 == 0 {
-				day = "29"
-			} else {
-				day = "28"
-			}
-		} else {
-			day = "30"
-		}
-		startDate = ym[:4] + "-" + ym[4:6] + "-" + "01"
-		endDate = ym[:4] + "-" + ym[4:6] + "-" + day
+		// 没送天数的话，默认当月
+		dsDate = ssDate
+		deDate = seDate
 	}
 
 	index, _ := strconv.Atoi(req.Index)
 	q := &model.QueryCondition{
 		MerId:     user.MerId,
-		StartTime: startDate + " 00:00:00",
-		EndTime:   endDate + " 23:59:59",
+		StartTime: dsDate,
+		EndTime:   deDate,
 		Size:      15,
 		Page:      1,
 		Skip:      index,
@@ -656,8 +661,8 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	var transCount, refundCount int
 	typeGroup, err := mongo.SpTransColl.MerBills(&model.QueryCondition{
 		MerId:        user.MerId,
-		StartTime:    q.StartTime,
-		EndTime:      q.EndTime,
+		StartTime:    ssDate,
+		EndTime:      seDate,
 		RefundStatus: model.TransRefunded,
 		TransStatus:  []string{model.TransSuccess},
 	})
