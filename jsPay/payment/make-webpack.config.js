@@ -12,6 +12,7 @@
 
 var path = require('path');
 var fs = require('fs');
+var yargs = require('yargs').argv;
 
 var webpack = require('webpack');
 var _ = require('lodash');
@@ -19,6 +20,7 @@ var _ = require('lodash');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
+var StringReplacePlugin = require("string-replace-webpack-plugin");
 
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
@@ -32,9 +34,9 @@ var excludeFromStats = [
 ];
 
 var config = require('config'),
-gatwayServer = '';
+	gatwayServer = '';
 
-if (process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production') {
 	gatwayServer = config['PRODUCT_REMOTE_URL'];
 } else {
 	gatwayServer = config['TEST_REMOTE_URL'];
@@ -43,9 +45,18 @@ if (process.env.NODE_ENV === 'production'){
 function makeConf(options) {
 	options = options || {};
 
+	var urlMap = require('./config/default.json');
+
 	var debug = options.debug !== undefined ? options.debug : true;
 	var entries = genEntries();
 	var chunks = Object.keys(entries);
+
+	var serverUrl = '';
+	if (options.product) {
+		serverUrl = urlMap['PRODUCT_REMOTE_URL'];
+	} else {
+		serverUrl = urlMap['TEST_REMOTE_URL'];
+	}
 	var config = {
 		entry: entries,
 
@@ -71,6 +82,17 @@ function makeConf(options) {
 		module: {
 			// noParse: ['zepto'],
 			loaders: [{
+				test: /util\.js$/,
+				loader: StringReplacePlugin.replace({
+					replacements: [{
+						pattern: /IN_GOD_WE_TRUST/,
+						replacement: function(match, p1, offset, string) {
+							// console.log('******', match, '1', p1, '2', offset, '3', string);
+							return serverUrl;
+						}
+					}]
+				})
+			}, {
 				test: /\.(png|jpg)$/,
 				loader: 'url-loader?mimetype=image/png&limit=8192'
 			}, {
@@ -103,8 +125,9 @@ function makeConf(options) {
 				url: 'http://192.168.199.193:8080/webpack-dev-server/pay.html'
 			}),
 			new webpack.DefinePlugin({
-				__GATEWATSERVER__ : gatwayServer
-			})
+				__GATEWATSERVER__: gatwayServer
+			}),
+			new StringReplacePlugin()
 			// new CommonsChunkPlugin({
 			// 	name: 'common-bc',
 			// 	chunks: ['vendors', 'b', 'c'],
@@ -121,6 +144,15 @@ function makeConf(options) {
 			port: 8000
 		},
 	};
+
+	if (options.minify) {
+		// 发布到生产上的代码要压缩
+		config.plugins.push(
+			new webpack.optimize.UglifyJsPlugin()
+		);
+
+		config.devtool = 'source-map';
+	}
 
 	if (debug) {
 		// 开发阶段，css直接内嵌

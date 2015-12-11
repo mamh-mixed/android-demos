@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<dom-module id="yun-highlight">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'yun-highlight',
+        properties: {
+          txt: String,
+          keyword: {
+            type: String,
+            observer: '_keywordChanged'
+          }
+        },
+        attached: function() {
+          this._render();
+        },
+        _render: function() {
+          this.innerHTML = this.highlight();
+        },
+        highlight: function() {
+          if (!this.txt) {
+            return;
+          }
+          if (!this.keyword || this.keyword === '') {
+            return this.txt;
+          }
+          var query = this.keyword.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+          return this.txt.replace(new RegExp('(' + query + ')', 'ig'), function($1, match) {
+            return '<strong>' + match + '</strong>'
+          });
+        },
+        _keywordChanged: function(newValue, oldValue) {
+          this._render();
+        }
+      });
+    })();
+  </script>
+</dom-module>

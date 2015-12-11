@@ -1,55 +1,35 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../x-select/x-select.html">
 <link rel="import" href="../x-form/x-form.html">
+<link rel="import" href="../yun-complete/yun-complete.html">
+<link rel="import" href="../yun-date-time-picker/yun-date-time-picker.html">
 <link rel="import" href="../trade-view/trade-view.html">
 <link rel="import" href="../trade-message/trade-message.html">
 <link rel="import" href="../merchant-view/merchant-view.html">
 <dom-module id="trade-list">
   <style>
-  :host {
-    display: block;
-  }
+    :host {
+      display: block;
+    }
   </style>
   <template>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
         <input type="hidden" name="startTime" value="{{cond.startTime::input}}" />
-        <paper-input label="* 交易时间从" on-tap="showStartTimeDialog" value="{{time.startTimeString::input}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_FROM"></paper-input>
-        <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-          <paper-date-picker id="startTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE" max-date="{{time.endTime}}"></paper-date-picker>
-          <div class="buttons">
-            <paper-button dialog-dismiss>
-              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
-            </paper-button>
-            <paper-button dialog-confirm>
-              <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
-            </paper-button>
-          </div>
-        </paper-dialog>
-
+        <yun-date-time-picker label="* 交易时间从" name="" locale="ja" date-time="{{startTime}}" moment="{{time.startTime}}" max-date="{{time.endTime}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_FROM" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
         <input type="hidden" name="endTime" value="{{cond.endTime::input}}" />
-        <paper-input label="* 交易时间到" on-tap="showEndTimeDialog" value="{{time.endTimeString::input}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_TO"></paper-input>
-        <paper-dialog with-backdrop id="endTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEndTimeDialog">
-          <paper-date-picker id="endTimePicker" locale="en" responsive-width="655px" data-msg-id="DATE_PICKER.LOCALE" min-date="{{time.startTime}}"></paper-date-picker>
-          <div class="buttons">
-            <paper-button dialog-dismiss>
-              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
-            </paper-button>
-            <paper-button dialog-confirm>
-              <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
-            </paper-button>
-          </div>
-        </paper-dialog>
-        <x-select items="[[agents]]" name="agentCode" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" id="agentCode" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
-        <paper-input id="subAgentCode" label="公司代码" name="subAgentCode" value="{{cond.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
-        <paper-input id="groupCode" label="商户代码" name="groupCode" value="{{cond.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
-        <paper-input id="merId" label="门店代码" name="merId" value="{{cond.merId::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></paper-input>
+        <yun-date-time-picker label="* 交易时间到" name="" locale="ja" date-time="{{endTime}}" moment="{{time.endTime}}" min-date="{{time.startTime}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_TO" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
+        <yun-complete id="agentCode" name="agentCode" label="代理" url="/master/list" col-name="agent" code-field="agentCode" name-field="agentName" limit="6" selected-item="{{agent}}" disabled="{{agentDisabled}}" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></yun-complete>
+        <yun-complete id="subAgentCode" name="subAgentCode" label="公司" url="/master/list" col-name="subAgent" code-field="subAgentCode" name-field="subAgentName" limit="6" selected-item="{{subAgent}}" filter-condition="[[subAgentFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></yun-complete>
+        <yun-complete id="groupCode" name="groupCode" label="商户" url="/master/list" col-name="group" code-field="groupCode" name-field="groupName" limit="6" selected-item="{{group}}" filter-condition="[[groupFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></yun-complete>
+        <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></yun-complete>
+        <paper-input label="门店名称" name="merName" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NAME"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}" data-msg-id="SCANPAY_TRADE_LIST.ORDER_NO"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}" data-msg-id="SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO"></paper-input>
+        <paper-input label="终端号" name="terminalId" value="{{cond.terminalId::input}}" data-msg-id="SCANPAY_TRADE_LIST.TERMINAL"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}" data-msg-id="SCANPAY_TRADE_LIST.RESPONSE_CODE"></paper-input>
         <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型" data-msg-id="SCANPAY_TRADE_LIST.TRANS_TYPE" is-locale></x-select>
         <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态" data-msg-id="SCANPAY_TRADE_LIST.TRANS_STATUS" is-locale></x-select>
@@ -173,450 +153,442 @@
     <trade-view id="tradeView" item="{{transItem}}" user="{{user}}"></trade-view>
     <trade-message id="tradeMessage" item="{{transItem}}" user="{{user}}"></trade-message>
     <merchant-view id="merchantView" mer-id="{{merId}}" on-editor="handleItemEditedEvent"></merchant-view>
-    <x-ajax id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
     <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
     <iron-localstorage name="USERTYPE" value="{{userType}}" on-iron-localstorage-load="handleUserType" on-iron-localstorage-load-empty="handleNoUserType"></iron-localstorage>
   </template>
   <script>
-  var TRANS_TYPE_MAP = {
-    'PURC': '下单支付',
-    'PAUT': '预下单',
-    'VOID': '撤销',
-    'REFD': '退款',
-    'VERI': '卡券核销',
-    'CANC': '取消',
-    //   'purc': '下单支付',
-    //   'paut': '预下单',
-    //   'void': '撤销',
-    //   'refd': '退款',
-    //   'veri': '卡券核销',
-    //   'canc': '取消',
-    'QYZF': '企业付款',
-    'JSZF': '公众号支付'
-  };
-  // 币种精度表
-  var CURRENCY_DECIMAL_MAP = {
-    'GBP': {
-      key: 'GBP',
-      currency: 'British Sterling',
-      decimal: 2
-    },
-    'HKD': {
-      key: 'HKD',
-      currency: 'Hong Kong Dollar',
-      decimal: 2
-    },
-    'CNY': {
-      key: 'CNY',
-      currency: 'Chinese RMB',
-      decimal: 2
-    },
-    'JPY': {
-      key: 'JPY',
-      currency: 'Japanese Yen',
-      decimal: 0
-    },
-    'USD': {
-      key: 'USD',
-      currency: 'U.S. Dollar',
-      decimal: 2
-    }
-  };
-  Polymer({
-    is: 'trade-list',
-    properties: {
-      cond: {
-        type: Object,
-        value: function() {
-          return {
-            utcOffset: moment().utcOffset(),
-            total: 0,
-            page: 1,
-            size: 20
-          };
-        }
+    var TRANS_TYPE_MAP = {
+      'PURC': '下单支付',
+      'PAUT': '预下单',
+      'VOID': '撤销',
+      'REFD': '退款',
+      'VERI': '卡券核销',
+      'CANC': '取消',
+      //   'purc': '下单支付',
+      //   'paut': '预下单',
+      //   'void': '撤销',
+      //   'refd': '退款',
+      //   'veri': '卡券核销',
+      //   'canc': '取消',
+      'QYZF': '企业付款',
+      'JSZF': '公众号支付'
+    };
+    // 币种精度表
+    var CURRENCY_DECIMAL_MAP = {
+      'GBP': {
+        key: 'GBP',
+        currency: 'British Sterling',
+        decimal: 2
       },
-      time: {
-        type: Object,
-        value: function() {
-          var startTime = moment();
-          startTime.hour(0);
-          startTime.minute(0);
-          startTime.second(0);
-
-          var endTime = moment();
-          endTime.hour(23);
-          endTime.minute(59);
-          endTime.second(59);
-          return {
-            startTime: startTime.toDate(),
-            startTimeString: moment(startTime).format('YYYY-MM-DD'),
-            endTime: endTime.toDate(),
-            endTimeString: moment(endTime).format('YYYY-MM-DD')
+      'HKD': {
+        key: 'HKD',
+        currency: 'Hong Kong Dollar',
+        decimal: 2
+      },
+      'CNY': {
+        key: 'CNY',
+        currency: 'Chinese RMB',
+        decimal: 2
+      },
+      'JPY': {
+        key: 'JPY',
+        currency: 'Japanese Yen',
+        decimal: 0
+      },
+      'USD': {
+        key: 'USD',
+        currency: 'U.S. Dollar',
+        decimal: 2
+      }
+    };
+    Polymer({
+      is: 'trade-list',
+      properties: {
+        cond: {
+          type: Object,
+          value: function() {
+            return {
+              utcOffset: moment().utcOffset(),
+              total: 0,
+              page: 1,
+              size: 20
+            };
           }
-        }
-      },
-      isDatagramAccessible: {
-        type: Boolean,
-        value: false
-      },
-      dataRoute: {
-        type: String,
-        value: 'trade.list',
-        notify: true
-      },
-      trades: {
-        type: Array,
-        value: []
-      },
-      busicd: {
-        type: Object
-      },
-      busicds: {
-        type: Array,
-        value: (function() {
-          var busicds = [],
-            map = {};
-          for (var k in TRANS_TYPE_MAP) {
-            if (!map[k.toUpperCase()]) {
-              map[k.toUpperCase()] = TRANS_TYPE_MAP[k];
+        },
+        time: {
+          type: Object,
+          value: function() {
+            var startTime = moment();
+            startTime.hour(0);
+            startTime.minute(0);
+            startTime.second(0);
+
+            var endTime = moment();
+            endTime.hour(23);
+            endTime.minute(59);
+            endTime.second(59);
+            return {
+              startTime: startTime.toDate(),
+              startTimeString: moment(startTime).format('YYYY-MM-DD HH:mm:ss'),
+              endTime: endTime.toDate(),
+              endTimeString: moment(endTime).format('YYYY-MM-DD HH:mm:ss')
             }
           }
-          Object.keys(map).forEach(function(v) {
-            busicds.push({
-              key: v,
-              value: ('TRANS_TYPE.' + v.toUpperCase())
+        },
+        isDatagramAccessible: {
+          type: Boolean,
+          value: false
+        },
+        dataRoute: {
+          type: String,
+          value: 'trade.list',
+          notify: true
+        },
+        trades: {
+          type: Array,
+          value: []
+        },
+        busicd: {
+          type: Object
+        },
+        busicds: {
+          type: Array,
+          value: (function() {
+            var busicds = [],
+              map = {};
+            for (var k in TRANS_TYPE_MAP) {
+              if (!map[k.toUpperCase()]) {
+                map[k.toUpperCase()] = TRANS_TYPE_MAP[k];
+              }
+            }
+            Object.keys(map).forEach(function(v) {
+              busicds.push({
+                key: v,
+                value: ('TRANS_TYPE.' + v.toUpperCase())
+              });
             });
-          });
-          return busicds;
-        })()
+            return busicds;
+          })()
+        },
+        transStatus: {
+          type: Object
+        },
+        transStatusMap: {
+          type: Array,
+          value: [{
+            key: '10',
+            value: 'TRANS_STATUS.IN_PROCESS',
+            valueCN: '处理中'
+          }, {
+            key: '20',
+            value: 'TRANS_STATUS.FAIL',
+            valueCN: '失败'
+          }, {
+            key: '30',
+            value: 'TRANS_STATUS.SUCCESS',
+            valueCN: '成功'
+          }, {
+            key: '40',
+            value: 'TRANS_STATUS.CLOSED',
+            valueCN: '已关闭'
+          }, ]
+        },
+        user: Object,
       },
-      transStatus: {
-        type: Object
-      },
-      transStatusMap: {
-        type: Array,
-        value: [{
-          key: '10',
-          value: 'TRANS_STATUS.IN_PROCESS',
-          valueCN: '处理中'
-        }, {
-          key: '20',
-          value: 'TRANS_STATUS.FAIL',
-          valueCN: '失败'
-        }, {
-          key: '30',
-          value: 'TRANS_STATUS.SUCCESS',
-          valueCN: '成功'
-        }, {
-          key: '40',
-          value: 'TRANS_STATUS.CLOSED',
-          valueCN: '已关闭'
-        }, ]
-      },
-      user: Object,
-    },
-    ready: function() {
-      this.busicd = {};
-      this.trades = [];
-      this.transStatus = {};
-      this.refundStatusMap = {
-        0: 'SCANPAY_TRADE_LIST.NO_REFUND',
-        1: 'SCANPAY_TRADE_LIST.ALREADY_REFUND',
-        2: 'SCANPAY_TRADE_LIST.PART_REFUND',
-        3: 'SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT',
-        4: 'SCANPAY_TRADE_LIST.CLOSE_BY_SYSTEM_AS_OVERTIME'
-      };
-      this.isAdmin = false;
-    },
-    attached: function() {
-      this.fire('rerender-i18n', {
-        from: 'trade-list'
-      });
-    },
-    observers: [
-      '_watchAgentChange(agent.key)',
-      '_watchBusicdChange(busicd.key)',
-      '_watchCondChange(cond.*)',
-      '_watchTransStatusChange(transStatus.key)',
-      '_watchUserChanged(user.*)',
-      '_watchTimeChanged(time.startTime, time.endTime)'
-    ],
-    _watchTimeChanged: function(startTime, endTime) {
-      this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD'));
-      this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD'));
-      this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD 00:00:00')));
-      this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD 23:59:59')));
-    },
-    _watchAgentChange: function(key) {
-      this.set('cond.agentCode', key);
-    },
-    _watchBusicdChange: function(key) {
-      this.cond.busicd = key;
-    },
-    _watchCondChange: function(newValue) {
-      if (newValue.path !== 'cond.page') {
-        this.set('cond.page', 1);
-      }
-
-      var filename = "Trans_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
-      filename = filename.replace(/-/g, '');
-      this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=' + filename;
-    },
-    // 交易状态选择框改变
-    _watchTransStatusChange: function(key) {
-      this.cond.transStatus = key;
-    },
-    _watchUserChanged: function(value) {
-      // 权限判断
-      if (value) {
-        var user = value.base;
-        if (user.userType === 'agent') {
-          this.set('cond.agentCode', user.agentCode);
-          this.agent = {
-            key: user.agentCode,
-            value: user.agentCode,
-          };
-          this.agentDisabled = true;
-        } else if (user.userType === 'subAgent') {
-          this.set('cond.subAgentCode', user.subAgentCode);
-          this.agentDisabled = true;
-          this.$.subAgentCode.setAttribute('disabled', true);
-        } else if (user.userType === 'group') {
-          this.set('cond.groupCode', user.groupCode);
-          this.agentDisabled = true;
-          this.$.subAgentCode.setAttribute('disabled', true);
-          this.$.groupCode.setAttribute('disabled', true);
-        } else if (user.userType === 'merchant') {
-          this.set('cond.merId', user.merId);
-          this.agentDisabled = true;
-          this.$.subAgentCode.setAttribute('disabled', true);
-          this.$.groupCode.setAttribute('disabled', true);
-          this.$.merId.setAttribute('disabled', true);
-        } else if (user.userType === 'admin') {
-          this.isAdmin = true;
-          this.agentDisabled = false;
-          this.$.subAgentCode.removeAttribute('disabled');
-          this.$.groupCode.removeAttribute('disabled');
-          this.$.merId.removeAttribute('disabled');
-          this.$.queryAgentAjax.generateRequest();
-        } else if (user.userType === 'genAdmin') {
-          this.isAdmin = false;
-          this.$.queryAgentAjax.generateRequest();
-        }
-      }
-    },
-    handleUserType: function() {
-      if (this.userType === 'admin' || this.userType === 'genAdmin') {
-        this.isDatagramAccessible = true;
-        return;
-      }
-      this.isDatagramAccessible = false;
-    },
-    handleNoUserType: function() {
-      this.isDatagramAccessible = false;
-    },
-    // 日期、时间控件
-    dismissStartTimeDialog: function() {
-      var startTime = this.$.startTimePicker.date;
-      this.set('time.startTime', startTime);
-    },
-    showStartTimeDialog: function() {
-      this.$.startTimeDailog.toggle();
-    },
-    dismissEndTimeDialog: function() {
-      var endTime = this.$.endTimePicker.date;
-      this.set('time.endTime', endTime);
-    },
-    showEndTimeDialog: function() {
-      this.$.endTimeDailog.toggle();
-    },
-    queryAction: function() {
-      this.$.formSearch.submit();
-    },
-    // 发送查询交易的ajax请求
-    submitForm: function() {
-      this.trades = [];
-    },
-    // 代理列表响应
-    handleQueryAgentsResponse: function(e) {
-      var response = e.detail.response;
-      if (response.status !== 0) {
-        Util.toast('SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL', 3000, true);
-        return;
-      }
-
-      var pagination = response.data;
-      if (pagination.count <= 0) {
-        Util.toast('SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS', 3000, true);
-        return;
-      }
-
-      var agents = response.data.data.slice(0);
-      this.set('agents', agents.map(function(item) {
-        return {
-          key: item.agentCode,
-          value: item.agentName
+      ready: function() {
+        this.busicd = {};
+        this.trades = [];
+        this.transStatus = {};
+        this.refundStatusMap = {
+          0: 'SCANPAY_TRADE_LIST.NO_REFUND',
+          1: 'SCANPAY_TRADE_LIST.ALREADY_REFUND',
+          2: 'SCANPAY_TRADE_LIST.PART_REFUND',
+          3: 'SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT',
+          4: 'SCANPAY_TRADE_LIST.CLOSE_BY_SYSTEM_AS_OVERTIME'
         };
-      }));
-    },
-    // 当前用户查询的响应事件
-    handleQueryCurrentUserResponse: function(e) {
-      var response = e.detail.response;
-      if (response.status !== 0) {
-        Util.toast(response.message, 3000);
-        return;
-      }
+        this.isAdmin = false;
 
-      this.set('user', response.data);
-    },
-    // ajax请求响应处理
-    handleSearchResponse: function(e) {
-      var response = e.detail;
-      if (response.status !== 0) {
-        if (response.message) {
+        // 过滤条件初始化
+        this.set('subAgentFilterCondition', {});
+        this.set('groupFilterCondition', {});
+        this.set('merchantFilterCondition', {});
+      },
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'trade-list'
+        });
+      },
+      observers: [
+        '_watchAgentChange(agent.code)',
+        '_watchSubAgentChange(subAgent.code)',
+        '_watchGroupChange(group.code)',
+        '_watchMerchantChange(merchant.code)',
+        '_watchBusicdChange(busicd.key)',
+        '_watchCondChange(cond.*)',
+        '_watchTransStatusChange(transStatus.key)',
+        '_watchUserChanged(user.*)',
+        '_watchTimeChanged(time.startTime, time.endTime)'
+      ],
+      _watchTimeChanged: function(startTime, endTime) {
+        this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD HH:mm:ss'));
+        this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD HH:mm:ss'));
+        this.set('cond.startTime', Util.toCSTDateTime(moment(this.time.startTime).format('YYYY-MM-DD HH:mm:ss')));
+        this.set('cond.endTime', Util.toCSTDateTime(moment(this.time.endTime).format('YYYY-MM-DD HH:mm:ss')));
+      },
+      _watchAgentChange: function(key) {
+        this.set('cond.agentCode', key);
+        this.set('subAgentFilterCondition.agentCode', key);
+        this.set('groupFilterCondition.agentCode', key);
+        this.set('merchantFilterCondition.agentCode', key);
+
+        this.$.subAgentCode.clear();
+        this.$.groupCode.clear();
+        this.$.merId.clear();
+      },
+      _watchSubAgentChange: function(key) {
+        this.set('cond.subAgentCode', key);
+        this.set('groupFilterCondition.subAgentCode', key);
+        this.set('merchantFilterCondition.subAgentCode', key);
+        this.$.groupCode.clear();
+        this.$.merId.clear();
+      },
+      _watchGroupChange: function(key) {
+        this.set('cond.groupCode', key);
+        this.set('merchantFilterCondition.groupCode', key);
+        this.$.merId.clear();
+      },
+      _watchMerchantChange: function(key) {
+        this.set('cond.merId', key);
+      },
+      _watchBusicdChange: function(key) {
+        this.cond.busicd = key;
+      },
+      _watchCondChange: function(newValue) {
+        if (newValue.path !== 'cond.page') {
+          this.set('cond.page', 1);
+        }
+
+        var filename = "Trans_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
+        filename = filename.replace(/-/g, '');
+        this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=' + filename;
+      },
+      // 交易状态选择框改变
+      _watchTransStatusChange: function(key) {
+        this.cond.transStatus = key;
+      },
+      _watchUserChanged: function(value) {
+        // 权限判断
+        if (value) {
+          var user = value.base;
+          if (user.userType === 'agent') {
+            this.set('cond.agentCode', user.agentCode);
+            this.agent = {
+              code: user.agentCode,
+              value: user.agentCode,
+            };
+            this.agentDisabled = true;
+          } else if (user.userType === 'subAgent') {
+            this.set('cond.subAgentCode', user.subAgentCode);
+            this.set('subAgent.code', user.subAgentCode);
+            this.agentDisabled = true;
+            this.$.subAgentCode.setAttribute('disabled', true);
+          } else if (user.userType === 'group') {
+            this.set('cond.groupCode', user.groupCode);
+            this.set('group.code', user.groupCode);
+            this.agentDisabled = true;
+            this.$.subAgentCode.setAttribute('disabled', true);
+            this.$.groupCode.setAttribute('disabled', true);
+          } else if (user.userType === 'merchant') {
+            this.set('cond.merId', user.merId);
+            this.agentDisabled = true;
+            this.$.subAgentCode.setAttribute('disabled', true);
+            this.$.groupCode.setAttribute('disabled', true);
+            this.$.merId.setAttribute('disabled', true);
+          } else if (user.userType === 'admin') {
+            this.isAdmin = true;
+            this.agentDisabled = false;
+            this.$.subAgentCode.removeAttribute('disabled');
+            this.$.groupCode.removeAttribute('disabled');
+            this.$.merId.removeAttribute('disabled');
+          } else if (user.userType === 'genAdmin') {
+            this.isAdmin = false;
+          }
+        }
+      },
+      handleUserType: function() {
+        if (this.userType === 'admin' || this.userType === 'genAdmin') {
+          this.isDatagramAccessible = true;
+          return;
+        }
+        this.isDatagramAccessible = false;
+      },
+      handleNoUserType: function() {
+        this.isDatagramAccessible = false;
+      },
+      queryAction: function() {
+        this.$.formSearch.submit();
+      },
+      // 发送查询交易的ajax请求
+      submitForm: function() {
+        this.trades = [];
+      },
+      // 当前用户查询的响应事件
+      handleQueryCurrentUserResponse: function(e) {
+        var response = e.detail.response;
+        if (response.status !== 0) {
           Util.toast(response.message, 3000);
+          return;
+        }
+
+        this.set('user', response.data);
+      },
+      // ajax请求响应处理
+      handleSearchResponse: function(e) {
+        var response = e.detail;
+        if (response.status !== 0) {
+          if (response.message) {
+            Util.toast(response.message, 3000);
+          } else {
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
+
+          }
+          this.set('cond.total', 0);
+          this.set('cond.page', 0);
+          return;
+        }
+
+        var pagination = response.data;
+        if (!pagination.data || pagination.data.length === 0) {
+          Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
+          this.set('cond.total', 0);
+          this.set('cond.page', 0);
+          return;
+        }
+
+        var items = pagination.data.slice(0);
+        this.trades = [];
+        // 如果没有币种，默认为人民币
+        for (var i = 0, l = items.length; i < l; i++) {
+          var item = items[i];
+          if (!item.currency) {
+            item.currency = 'CNY';
+          }
+          item.payTime = Util.toLocaleDateTime(item.payTime);
+          item.transTime = Util.toLocaleDateTime(item.transTime);
+          item.updateTime = Util.toLocaleDateTime(item.updateTime);
+          this.push('trades', item);
+        }
+
+        this.set('cond.total', pagination.total);
+        this.set('cond.page', pagination.page);
+      },
+      chanFilter: function(chanCode) {
+        var map = {
+          'ALP': {
+            i18nID: 'CHANNEL.ALIPAY',
+            value: '支付宝'
+          },
+          'WXP': {
+            i18nID: 'CHANNEL.WECHAT',
+            value: '微信'
+          }
+        };
+        if (map[chanCode]) {
+          return map[chanCode].i18nID;
+        }
+        return chanCode;
+      },
+      busicdFilter: function(busicd) {
+        return 'TRANS_TYPE.' + busicd.toUpperCase();
+      },
+      _currencyFilter: function(money, currency) {
+        if (!currency || currency === '') {
+          currency = 'CNY';
+        }
+
+        var decInfo = CURRENCY_DECIMAL_MAP[currency];
+        if (!decInfo) {
+          decInfo = CURRENCY_DECIMAL_MAP['CNY'];
+        }
+
+        var amount = (money / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
+        return Util.beautifyAmount(amount);
+      },
+      transStatusFilter: function(status) {
+        var map = {
+          '10': {
+            i18nID: 'TRANS_STATUS.IN_PROCESS',
+            value: '处理中'
+          },
+          '20': {
+            i18nID: 'TRANS_STATUS.FAIL',
+            value: '失败'
+          },
+          '30': {
+            i18nID: 'TRANS_STATUS.SUCCESS',
+            value: '成功'
+          },
+          '40': {
+            i18nID: 'TRANS_STATUS.CLOSED',
+            value: '已关闭'
+          }
+        };
+        if (map[status]) {
+          return map[status].i18nID;
+        }
+        return status;
+      },
+      addOneFilter: function(index) {
+        return index + 1;
+      },
+      // 应答码着色
+      getRespCodeColor: function(value) {
+        if (value === '00') {
+          return 'green';
+        }
+        if (value === '96') {
+          return 'red';
+        }
+        return 'primary';
+      },
+      showTradeViewHandler: function(e) {
+        this.transItem = e.model.item;
+        this.$.tradeView.open();
+      },
+      refundStatusFilter: function(status) {
+        var map = {
+          1: 'SCANPAY_TRADE_LIST.ALREADY_REFUND',
+          2: 'SCANPAY_TRADE_LIST.PART_REFUND'
+        };
+        return map[status];
+      },
+      isCloseTrans: function(status) {
+        return status === '40';
+      },
+      _computeTransCloseReason: function(status) {
+        return this.refundStatusMap[status];
+      },
+      isShowTooltip: function(value) {
+        if (value === '00') {
+          return true;
         } else {
-          Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
-
+          return false;
         }
-        this.set('cond.total', 0);
-        this.set('cond.page', 0);
-        return;
-      }
-
-      var pagination = response.data;
-      if (!pagination.data || pagination.data.length === 0) {
-        Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
-        this.set('cond.total', 0);
-        this.set('cond.page', 0);
-        return;
-      }
-
-      var items = pagination.data.slice(0);
-      this.trades = [];
-      // 如果没有币种，默认为人民币
-      for (var i = 0, l = items.length; i < l; i++) {
-        var item = items[i];
-        if (!item.currency) {
-          item.currency = 'CNY';
+      },
+      showTradeMessageEvent: function(e) {
+        this.transItem = e.model.item;
+        this.$.tradeMessage.open();
+      },
+      // 弹框显示门店详情
+      showMerchantViewHandler: function(e) {
+        if (this.user.userType === 'admin') {
+          this.merId = e.model.item.merId;
+          this.$.merchantView.open();
         }
-        item.payTime = Util.toLocaleDateTime(item.payTime);
-        item.transTime = Util.toLocaleDateTime(item.transTime);
-        item.updateTime = Util.toLocaleDateTime(item.updateTime);
-        this.push('trades', item);
-      }
-
-      this.set('cond.total', pagination.total);
-      this.set('cond.page', pagination.page);
-    },
-    chanFilter: function(chanCode) {
-      var map = {
-        'ALP': {
-          i18nID: 'CHANNEL.ALIPAY',
-          value: '支付宝'
-        },
-        'WXP': {
-          i18nID: 'CHANNEL.WECHAT',
-          value: '微信'
-        }
-      };
-      if (map[chanCode]) {
-        return map[chanCode].i18nID;
-      }
-      return chanCode;
-    },
-    busicdFilter: function(busicd) {
-      return 'TRANS_TYPE.' + busicd.toUpperCase();
-    },
-    _currencyFilter: function(money, currency) {
-      if (!currency || currency === '') {
-        currency = 'CNY';
-      }
-
-      var decInfo = CURRENCY_DECIMAL_MAP[currency];
-      if (!decInfo) {
-        decInfo = CURRENCY_DECIMAL_MAP['CNY'];
-      }
-
-      var amount = (money / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
-      return Util.beautifyAmount(amount);
-    },
-    transStatusFilter: function(status) {
-      var map = {
-        '10': {
-          i18nID: 'TRANS_STATUS.IN_PROCESS',
-          value: '处理中'
-        },
-        '20': {
-          i18nID: 'TRANS_STATUS.FAIL',
-          value: '失败'
-        },
-        '30': {
-          i18nID: 'TRANS_STATUS.SUCCESS',
-          value: '成功'
-        },
-        '40': {
-          i18nID: 'TRANS_STATUS.CLOSED',
-          value: '已关闭'
-        }
-      };
-      if (map[status]) {
-        return map[status].i18nID;
-      }
-      return status;
-    },
-    addOneFilter: function(index) {
-      return index + 1;
-    },
-    // 应答码着色
-    getRespCodeColor: function(value) {
-      if (value === '00') {
-        return 'green';
-      }
-      if (value === '96') {
-        return 'red';
-      }
-      return 'primary';
-    },
-    showTradeViewHandler: function(e) {
-      this.transItem = e.model.item;
-      this.$.tradeView.open();
-    },
-    refundStatusFilter: function(status) {
-      var map = {
-        1: 'SCANPAY_TRADE_LIST.ALREADY_REFUND',
-        2: 'SCANPAY_TRADE_LIST.PART_REFUND'
-      };
-      return map[status];
-    },
-    isCloseTrans: function(status) {
-      return status === '40';
-    },
-    _computeTransCloseReason: function(status) {
-      return this.refundStatusMap[status];
-    },
-    isShowTooltip: function(value) {
-      if (value === '00') {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    showTradeMessageEvent: function(e) {
-      this.transItem = e.model.item;
-      this.$.tradeMessage.open();
-    },
-    // 弹框显示门店详情
-    showMerchantViewHandler: function(e) {
-      if (this.user.userType === 'admin') {
-        this.merId = e.model.item.merId;
-        this.$.merchantView.open();
-      }
-    },
-    handleItemEditedEvent: function() {
-      document.querySelector('#appRouter').go('/config/merchant/' + this.merId);
-    },
-  });
+      },
+      handleItemEditedEvent: function() {
+        document.querySelector('#appRouter').go('/config/merchant/' + this.merId);
+      },
+    });
   </script>
 </dom-module>
