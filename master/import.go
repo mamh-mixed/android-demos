@@ -102,9 +102,10 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key, msg: im}
+	ip := importer{Sheets: file.Sheets, fileName: key, msg: im, IsDebug: true}
 	info, err := ip.DoImport()
 	if err != nil {
+		log.Infof("%s", err)
 		w.Write(resultBody(err.Error(), 2))
 		return
 	}
@@ -555,7 +556,7 @@ func handleAlpMer(r *rowData, c *cache, im *ImportMessage) error {
 				// 海外支付宝商户必填字段
 				if !r.IsDomestic {
 					if r.AlpSchemeType == "" {
-						return fmt.Errorf("format", r.AlpMerId) // TODO
+						return fmt.Errorf("支付宝商户：%s 非境内商户需要填写计费方案", r.AlpMerId) // TODO
 					}
 				}
 			}
