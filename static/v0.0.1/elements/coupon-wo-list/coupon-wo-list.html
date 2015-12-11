@@ -40,6 +40,7 @@
 
         <paper-input id="merId" label="门店代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
+        <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
         <paper-input label="卡券号" name="couponsNo" value="{{cond.couponNum::input}}"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
         <x-select items="[[woStatusMapArray]]" name="writeoffStatus" selected-item="{{woStatus}}" label="核销状态"></x-select>

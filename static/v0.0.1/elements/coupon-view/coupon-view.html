@@ -98,12 +98,6 @@
             <div class="tr">
               <div class="td key">关联订单:</div>
               <div class="td">{{item.origOrderNum}}</div>
-              <div class="td key">实际支付金额:</div>
-              <div class="td">{{moneyFilter(item.actualPayAmount)}}</div>
-            </div>
-            <div class="tr">
-              <div class="td key">原始交易金额:</div>
-              <div class="td">{{moneyFilter(item.transAmt)}}</div>
               <div class="td key">cardbin:</div>
               <div class="td">{{item.cardbin}}</div>
             </div>
@@ -114,10 +108,20 @@
               <div class="td">{{voucherTypeFilter(item.voucherType)}}</div>
             </div>
             <div class="tr">
+              <div class="td key">原始交易金额:</div>
+              <div class="td">{{moneyFilter(item.transAmt)}}</div>
+              <div class="td key">实际支付金额:</div>
+              <div class="td">{{moneyFilter(item.actualPayAmount)}}</div>
+            </div>
+            <div class="tr">
               <div class="td key">最小金额:</div>
               <div class="td">{{moneyFilter(item.saleMinAmount)}}</div>
               <div class="td key">抵扣值:</div>
               <div class="td">{{moneyFilter(item.saleDiscount)}}</div>
+            </div>
+            <div class="tr">
+              <div class="td key">原应答码:</div>
+              <div class="td">{{item.origRespcd}}</div>
             </div>
           </div>
       </paper-dialog-scrollable>
@@ -127,12 +131,6 @@
     </paper-dialog>
   </template>
   <script>
-    var TRANS_TYPE_MAP = {
-      'VERI': '卡券核销/查询',
-      'CRVE': '刷卡核销',
-      'QUVE': '验券查询',
-      'CAVE': '撤销',
-    };
     Polymer({
       is: 'coupon-view',
 
@@ -141,6 +139,15 @@
       },
       open: function() {
         this.$.dialogView.open();
+        debugger;
+      },
+      ready: function() {
+        this.transTypeMap = {
+          'VERI': '卡券核销/查询',
+          'CRVE': '刷卡核销',
+          'QUVE': '验券查询',
+          'CAVE': '撤销',
+        };
       },
       // 关闭事件
       handleClose: function() {
@@ -155,7 +162,7 @@
         return (status + '—' + map[status]);
       },
       busicdFilter: function(busicd) {
-        return (busicd + '—' + TRANS_TYPE_MAP[busicd]) || busicd;
+        return (busicd + '—' + this.transTypeMap[busicd]) || busicd;
       },
       chanFilter: function(chanCode) {
         var map = {
@@ -166,15 +173,15 @@
         return (chanCode + '—' + map[chanCode]);
       },
       moneyFilter: function(money) {
-        if (!money || money == ""){
-            return "";
+        if (!money || money === '') {
+          return '';
         }
         var amount = (money / Math.pow(10, 2)).toFixed(2);
         return Util.beautifyAmount(amount);
       },
       voucherTypeFilter: function(voucherType) {
-        if (!voucherType || voucherType == "") {
-          return "";
+        if (!voucherType || voucherType === '') {
+          return '';
         }
         var map = {
           '1': '普通满减券',
@@ -194,8 +201,8 @@
         return (voucherType + '—' + map[voucherType]);
       },
       payTypeFilter: function(payType) {
-        if (!payType || payType == "") {
-          return "";
+        if (!payType || payType === '') {
+          return '';
         }
         var map = {
           '2': '银行卡支付',

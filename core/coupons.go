@@ -38,6 +38,7 @@ func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		CouponsNo:   req.ScanCodeId,
 		VeriTime:    req.VeriTime,
+		TransAmt:    req.IntTxamt,
 	}
 
 	// 补充关联字段
@@ -400,6 +401,8 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.SaleMinAmount = ret.SaleMinAmount
 	t.SaleDiscount = ret.SaleDiscount
 	t.ActualPayAmount = ret.ActualPayAmount
+	t.OrigRespCode = ret.OrigRespcd
+	t.OrigErrorDetail = ret.OrigErrorDetail
 
 	//更新核销状态
 	if ret.Respcd == "00" {
