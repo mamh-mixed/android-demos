@@ -279,10 +279,13 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 		log.Errorf("change data count errDetail:%s", err)
 		return
 	}
-
 	// 截取内容
-	content := string(csv[strings.LastIndex(csv, "[")+1 : strings.Index(csv, "]")])
-	element := strings.Split(content, ",")
+	if strings.Contains(csv, "<![CDATA[") {
+		csv = csv[9 : len(csv)-3]
+		log.Debugf("csv content: %s", csv)
+	}
+
+	element := strings.Split(csv, ",")
 
 	// 检查要取关键位置是否变化 如：
 	// 外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,
