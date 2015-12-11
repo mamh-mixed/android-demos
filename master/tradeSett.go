@@ -96,6 +96,8 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 	var wxpTransAmt, wxpRefundAmt, wxpFee int64 = 0, 0, 0
 	// 总交易金额、退款金额
 	var transAmt, refundAmt, fee int64 = 0, 0, 0
+	// 参与清算总额
+	var alpSettAmt, wxpSettAmt int64 = 0, 0
 
 	var cur currency.Cur
 	// 生成数据
@@ -127,10 +129,16 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 				if v.ChanCode == channel.ChanCodeAlipay {
 					alpTransAmt += v.TransAmt
 					alpFee += ts.MerFee
+					if ts.BlendType == 0 {
+						alpSettAmt += (v.TransAmt - ts.MerFee)
+					}
 				}
 				if v.ChanCode == channel.ChanCodeWeixin {
 					wxpTransAmt += v.TransAmt
 					wxpFee += ts.MerFee
+					if ts.BlendType == 0 {
+						wxpSettAmt += (v.TransAmt - ts.MerFee)
+					}
 				}
 			// 退款、撤销、取消
 			default:
@@ -138,10 +146,16 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 				if v.ChanCode == channel.ChanCodeAlipay {
 					alpRefundAmt += v.TransAmt
 					alpFee -= ts.MerFee
+					if ts.BlendType == 0 {
+						alpSettAmt -= (v.TransAmt - ts.MerFee)
+					}
 				}
 				if v.ChanCode == channel.ChanCodeWeixin {
 					wxpRefundAmt += v.TransAmt
 					wxpFee -= ts.MerFee
+					if ts.BlendType == 0 {
+						wxpSettAmt -= (v.TransAmt - ts.MerFee)
+					}
 				}
 			}
 
@@ -253,21 +267,21 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 		lALP + m.TransAmt + "：", cur.F64(alpTransAmt),
 		lALP + m.RefundAmt + "：", -cur.F64(alpRefundAmt),
 		lALP + m.Fee + "：", cur.F64(alpFee),
-		lALP + m.SettAmt + "：", cur.F64(alpTransAmt - alpRefundAmt - alpFee),
+		lALP + m.SettAmt + "：", cur.F64(alpSettAmt),
 	}, -1)
 	row = rows[1]
 	row.WriteStruct(&summary{
 		lWXP + m.TransAmt + "：", cur.F64(wxpTransAmt),
 		lWXP + m.RefundAmt + "：", -cur.F64(wxpRefundAmt),
 		lWXP + m.Fee + "：", cur.F64(wxpFee),
-		lWXP + m.SettAmt + "：", cur.F64(wxpTransAmt - wxpRefundAmt - wxpFee),
+		lWXP + m.SettAmt + "：", cur.F64(wxpSettAmt),
 	}, -1)
 	row = rows[2]
 	row.WriteStruct(&summary{
 		m.TotalTransAmt + "：", cur.F64(transAmt),
 		m.TotalRefundAmt + "：", -cur.F64(refundAmt),
 		m.TotalFee + "：", cur.F64(fee),
-		m.TotalSettAmt + "：", cur.F64(transAmt - refundAmt - fee),
+		m.TotalSettAmt + "：", cur.F64(alpSettAmt + wxpSettAmt),
 	}, -1)
 
 	return file
