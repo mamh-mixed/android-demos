@@ -3,7 +3,7 @@ package settle
 import (
 	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
-	"github.com/CardInfoLink/quickpay/goconf"
+	// "github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -12,12 +12,12 @@ import (
 	"time"
 )
 
-func init() {
-	needSettles = append(needSettles,
-		&scanpayDomestic{
-			At: goconf.Config.Settle.DomesticSettPoint,
-		})
-}
+// func init() {
+// 	needSettles = append(needSettles,
+// 		&scanpayDomestic{
+// 			At: goconf.Config.Settle.DomesticSettPoint,
+// 		})
+// }
 
 type scanpayDomestic struct {
 	At string // "02:00:00" 表示凌晨两点才可以拉取数据

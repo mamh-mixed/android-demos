@@ -169,7 +169,7 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 	}
 
 	// 报表引用数据流整理
-	go SpSettReport(date)
+	// go SpSettReport(date)
 	go SpReconciliatReport(date, transSetts...)
 
 	// 进行勾兑
