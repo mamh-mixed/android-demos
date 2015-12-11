@@ -85,7 +85,7 @@
 	},
 	"LOGIN.TOAST.ACCOUNT_LOCKED": {
 		"description": "密码锁住",
-		"message": "アカウントがロックされたため、解除するには３時間後"
+		"message": "アカウントがロックされたため、管理員までご連絡ください"
 	},
 	"PASSWORDMODIFICATION.TITLE": {
 		"description": "修改密码标题",
