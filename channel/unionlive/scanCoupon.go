@@ -29,9 +29,10 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 			CouponsNo: req.ScanCodeId,
 			TermId:    req.Terminalid,
 			// TermSn:    req.Terminalsn,
-			ExtMercId: req.Mchntid,
-			ExtTermId: req.Terminalsn,
-			Amount:    req.IntVeriTime,
+			ExtMercId:   req.Mchntid,
+			ExtTermId:   req.Terminalsn,
+			Amount:      req.IntVeriTime,
+			TransAmount: req.IntTxamt,
 		},
 		SpReq: req,
 	}
@@ -44,6 +45,11 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 
 	// 将渠道的错误应答码转为为系统应答码
 	returncode, errDetail := transChanToSysCode(unionLiveResp.Header.Returncode, unionLiveResp.Header.Returnmessage)
+
+	actualPayAmount := strconv.Itoa(unionLiveResp.Body.Price)
+	if req.Txamt == "" {
+		actualPayAmount = ""
+	}
 
 	// 处理结果返回
 	scanPayResponse := &model.ScanPayResponse{
@@ -64,11 +70,13 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		ChanRespCode:    unionLiveResp.Header.Returncode,
 		ChannelOrderNum: unionLiveResp.Header.Hosttraceno,
 		// Terminalid:      req.Terminalsn,
-		Authcode:      unionLiveResp.Body.Authcode,
-		ChannelTime:   unionLiveResp.Header.Hosttime,
-		VoucherType:   strconv.Itoa(unionLiveResp.Body.VoucherType),
-		SaleMinAmount: strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
-		SaleDiscount:  strconv.Itoa(unionLiveResp.Body.SaleDiscount),
+		Authcode:        unionLiveResp.Body.Authcode,
+		ChannelTime:     unionLiveResp.Header.Hosttime,
+		VoucherType:     strconv.Itoa(unionLiveResp.Body.VoucherType),
+		SaleMinAmount:   strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
+		SaleDiscount:    strconv.Itoa(unionLiveResp.Body.SaleDiscount),
+		ActualPayAmount: actualPayAmount,
+		Txamt:           req.Txamt,
 	}
 
 	return scanPayResponse, nil
