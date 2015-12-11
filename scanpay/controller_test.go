@@ -118,7 +118,7 @@ var (
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
 		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
-		ScanCodeId: "1810195040700062",
+		ScanCodeId: "1810068090608100",
 		// VeriTime:   "-1",
 	}
 	// 刷卡电子券核销
@@ -130,12 +130,12 @@ var (
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
 		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
-		ScanCodeId: "1810195040700062",
+		ScanCodeId: "1810068090608100",
 		// VeriTime:   "1",
-		OrigOrderNum: "14496558282019727887",
-		// Cardbin:      "622525",
-		Txamt:   "000000000000",
-		PayType: "5",
+		OrigOrderNum: "14498033611298498081",
+		Cardbin:      "622525",
+		Txamt:        "000000021000",
+		PayType:      "2",
 	}
 	// 电子券查询
 	queryPurchaseCouponsResult = &model.ScanPayRequest{
@@ -146,9 +146,9 @@ var (
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
 		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
-		ScanCodeId: "1810195040700062",
+		ScanCodeId: "1810068090608100",
 		// VeriTime:     "1",
-		OrigOrderNum: "14496558282019727887",
+		OrigOrderNum: "14498046792019727887",
 	}
 	// 刷卡电子券撤销
 	undoPurchaseActCoupons = &model.ScanPayRequest{
@@ -159,9 +159,9 @@ var (
 		Mchntid:    "100000000010001",
 		Terminalid: "30150006",
 		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
-		ScanCodeId: "1818303006004106",
+		ScanCodeId: "1810068090608100",
 		// VeriTime:   "-1",
-		OrigOrderNum: "14496504331427131847",
+		OrigOrderNum: "14498037322019727887",
 	}
 )
 

@@ -135,10 +135,10 @@ func (u *unionliveScanPay) ProcessPurchaseActCoupons(req *model.ScanPayRequest) 
 		SaleMinAmount:   strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
 		SaleDiscount:    strconv.Itoa(unionLiveResp.Body.SaleDiscount),
 		ActualPayAmount: strconv.Itoa(unionLiveResp.Body.ActualPayAmount),
-		// Txamt:           req.Txamt,
-		// PayType:         req.PayType,
-		Cardbin:      req.Cardbin,
-		OrigOrderNum: req.OrigOrderNum,
+		Txamt:           req.Txamt,
+		PayType:         req.PayType,
+		Cardbin:         req.Cardbin,
+		OrigOrderNum:    req.OrigOrderNum,
 	}
 
 	return scanPayResponse, nil
@@ -206,8 +206,6 @@ func (u *unionliveScanPay) ProcessQueryPurchaseCouponsResult(req *model.ScanPayR
 		VoucherType:     strconv.Itoa(unionLiveResp.Body.VoucherType),
 		SaleMinAmount:   strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
 		SaleDiscount:    strconv.Itoa(unionLiveResp.Body.SaleDiscount),
-		Txamt:           req.Txamt,
-		PayType:         req.PayType,
 		ActualPayAmount: strconv.Itoa(unionLiveResp.Body.ActualPayAmount),
 		OrigOrderNum:    req.OrigOrderNum,
 		OrigRespcd:      origReturnCode,
