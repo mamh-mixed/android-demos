@@ -142,6 +142,12 @@
             type: Boolean,
             value: false
           },
+          list: {
+            type: Array,
+            value: function() {
+              return new Array();
+            }
+          },
           openAnimationConfig: {
             type: Array,
             value: function() {
@@ -209,7 +215,6 @@
         },
         // 发送查询的ajax请求
         sendRequest: function(keyword) {
-          console.log('filter conditon', this.filterCondition);
           if (this.disabled) {
             return;
           }
@@ -230,6 +235,7 @@
         },
         // ajax请求相应结果
         handleResponse: function(e) {
+          this.splice('list', 0, this.list.length);
           var response = e.detail.response;
           if (response.status != 0) {
             console.warn("got error: ", response.message);
@@ -237,14 +243,19 @@
           }
 
           if (!response.data || typeof response.data !== 'object' || !(response.data instanceof Array) || response.data.length === 0) {
-            console.info("没有数据");
-            this.set('list', []);
             this.set('isNoData', true);
+            if (!this.$.dropdown.opened) {
+              this.$.dropdown.open();
+            }
             return;
           }
 
           this.set('isNoData', false);
-          this.set('list', response.data.slice(0));
+          var news = response.data.slice(0);
+
+          for (var i = 0, l = news.length; i < l; i++) {
+            this.push('list', news[i]);
+          }
           if (!this.isOpen) {
             this.set('verticalOffset', this.getBoundingClientRect().height);
             this.$.dropdown.open();
@@ -316,16 +327,13 @@
           e.stopPropagation();
           switch (e.keyCode) {
             case 13: // enter event
-              console.log(13, 'enter');
               this.select();
               // e.preventDefault();
               break;
             case 38: // arrow up event
-              console.log(38, 'event up');
               this.prev();
               break;
             case 40: // arrow down event
-              console.log(40, 'event down');
               this.next();
               break;
             default:
