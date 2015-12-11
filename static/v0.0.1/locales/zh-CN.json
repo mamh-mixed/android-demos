@@ -1,568 +1,584 @@
 {
-  "TITLE": {
-    "description": "...",
-    "message": "云收银管理平台"
-  },
-  "CURRENTUSER": {
-    "description": "...",
-    "message": "当前用户"
-  },
-  "BUTTON.SAVE": {
-    "description": "保存按钮",
-    "message": "保存"
-  },
-  "BUTTON.QUERY": {
-    "description": "查询按钮",
-    "message": "查询"
-  },
-  "BUTTON.CONFIRM": {
-    "description": "确认按钮",
-    "message": "确认"
-  },
-  "BUTTON.CANCEL": {
-    "description": "取消按钮",
-    "message": "取消"
-  },
-  "BUTTON.DOWNLOADREPORT": {
-    "description": "下载报表按钮",
-    "message": "下载报表"
-  },
-  "BUTTON.CLOSE": {
-    "description": "关闭按钮",
-    "message": "关闭"
-  },
-  "PAGINATION.PER_PAGE_PREFIX": {
-    "description": "每页显示前缀",
-    "message": "每页显示"
-  },
-  "PAGINATION.PER_PAGE_SUFFIX": {
-    "description": "每页显示后缀",
-    "message": "条"
-  },
-  "DATE_PICKER.LOCALE": {
-    "description": "日历国际化",
-    "message": "zh-cn"
-  },
-  "LOGIN.USERNAME": {
-    "description": "用户名",
-    "message": "用户名"
-  },
-  "LOGIN.PASSWORD": {
-    "description": "密码",
-    "message": "密码"
-  },
-  "LOGIN.BUTTON": {
-    "description": "登录按钮",
-    "message": "登录"
-  },
-  "LOGIN.SUCCESS": {
-    "description": "登录成功",
-    "message": "登录成功"
-  },
-  "LOGIN.HINT": {
-    "description": "登录页提示",
-    "message": "如果您还没有用户名、密码，请联系讯联数据运营中心为您分配"
-  },
-  "LOGIN.TOAST.LOGIN_FAIL": {
-    "description": "登录失败提示",
-    "message": "用户名或密码不能为空"
-  },
-  "LOGIN.TOAST.LOGIN_ERROR": {
-    "description": "用户名或密码错误",
-    "message": "用户名或密码错误"
-  },
-  "PASSWORDMODIFICATION.TITLE": {
-    "description": "修改密码标题",
-    "message": "修改密码"
-  },
-  "PASSWORDMODIFICATION.USERNAME": {
-    "description": "用户名",
-    "message": "用户名"
-  },
-  "PASSWORDMODIFICATION.OLDPASSWORD": {
-    "description": "原密码",
-    "message": "原密码"
-  },
-  "PASSWORDMODIFICATION.NEWPASSWORD": {
-    "description": "新密码",
-    "message": "新密码"
-  },
-  "PASSWORDMODIFICATION.CONFIRMPASSWORD": {
-    "description": "重复新密码",
-    "message": "重复新密码"
-  },
-  "PASSWORDMODIFICATION.REQUIREDITEM": {
-    "description": "必填项",
-    "message": "必填项"
-  },
-  "PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS": {
-    "description": "必填项不能为空",
-    "message": "必填项不能为空"
-  },
-  "PASSWORDMODIFICATION.TOAST.OLD_PASSWORD_NOT_MATCH": {
-    "description": "原密码错误",
-    "message": "原密码错误"
-  },
-  "PASSWORDMODIFICATION.TOAST.MIDIFICATION_PASSWORD_SUCCESS": {
-    "description": "修改密码成功",
-    "message": "修改密码成功"
-  },
-  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
-    "description": "新密码不能和旧密码相同",
-    "message": "新密码不能和旧密码相同"
-  },
-  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
-    "description": "新密码不一致",
-    "message": "新密码不一致"
-  },
-  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
-    "description": "新密码最小长度位",
-    "message": "新密码长度不能少于8位"
-  },
-  "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
-    "description": "新密码必须复杂点，包含大小写字母和数字",
-    "message": "新密码必须包含大小写字母和数字"
-  },
-  "SCANPAY_TRADE_LIST.MENU_NAME": {
-    "description": "扫码交易菜单名",
-    "message": "扫码交易"
-  },
-  "SCANPAY_TRADE_LIST.TITLE": {
-    "description": "扫码支付交易查询",
-    "message": "扫码支付交易查询"
-  },
-  "SCANPAY_TRADE_LIST.DATE_FROM": {
-    "description": "交易时间从",
-    "message": "交易时间从"
-  },
-  "SCANPAY_TRADE_LIST.DATE_TO": {
-    "description": "交易时间到",
-    "message": "交易时间到"
-  },
-  "SCANPAY_TRADE_LIST.AGENT": {
-    "description": "代理",
-    "message": "代理"
-  },
-  "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
-    "description": "公司代码",
-    "message": "公司代码"
-  },
-  "SCANPAY_TRADE_LIST.GROUP_NO": {
-    "description": "商户代码",
-    "message": "商户代码"
-  },
-  "SCANPAY_TRADE_LIST.MERCHANT_NO": {
-    "description": "门店代码",
-    "message": "门店代码"
-  },
-  "SCANPAY_TRADE_LIST.MERCHANT_NAME": {
-    "description": "门店名称",
-    "message": "门店名称"
-  },
-  "SCANPAY_TRADE_LIST.ORDER_NO": {
-    "description": "订单号",
-    "message": "订单号"
-  },
-  "SCANPAY_TRADE_LIST.TERMINAL": {
-    "description": "终端",
-    "message": "终端"
-  },
-  "SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO": {
-    "description": "关联订单号",
-    "message": "关联订单号"
-  },
-  "SCANPAY_TRADE_LIST.RESPONSE_CODE": {
-    "description": "应答码",
-    "message": "应答码"
-  },
-  "SCANPAY_TRADE_LIST.TRANS_TYPE": {
-    "description": "交易类型",
-    "message": "交易类型"
-  },
-  "SCANPAY_TRADE_LIST.TRANS_STATUS": {
-    "description": "交易状态",
-    "message": "交易状态"
-  },
-  "SCANPAY_TRADE_LIST.INDEX": {
-    "description": "序号",
-    "message": "序号"
-  },
-  "SCANPAY_TRADE_LIST.AMOUNT": {
-    "description": "金额",
-    "message": "金额"
-  },
-  "SCANPAY_TRADE_LIST.CURRENCY": {
-    "description": "币种",
-    "message": "币种"
-  },
-  "SCANPAY_TRADE_LIST.CHANNEL": {
-    "description": "渠道",
-    "message": "渠道"
-  },
-  "SCANPAY_TRADE_LIST.REFUND": {
-    "description": "退款",
-    "message": "退款"
-  },
-  "SCANPAY_TRADE_LIST.NO_REFUND": {
-    "description": "无退款",
-    "message": "无退款"
-  },
-  "SCANPAY_TRADE_LIST.ALREADY_REFUND": {
-    "description": "已退款",
-    "message": "已退款"
-  },
-  "SCANPAY_TRADE_LIST.PART_REFUND": {
-    "description": "部分退款",
-    "message": "部分退款"
-  },
-  "SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT": {
-    "description": "商户发起关闭",
-    "message": "商户发起关闭"
-  },
-  "SCANPAY_TRADE_LIST.CLOSE_BY_SYSTEM_AS_OVERTIME": {
-    "description": "交易超时系统关闭",
-    "message": "交易超时系统关闭"
-  },
-  "SCANPAY_TRADE_LIST.TRANS_TIME": {
-    "description": "交易时间",
-    "message": "交易时间"
-  },
-  "SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL": {
-    "description": "加载代理列表失败",
-    "message": "加载代理列表失败"
-  },
-  "SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS": {
-    "description": "没有代理数据",
-    "message": "没有代理数据"
-  },
-  "SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR": {
-    "description": "系统错误",
-    "message": "系统错误"
-  },
-  "SCANPAY_TRADE_LIST.TOAST.NOT_FOUND": {
-    "description": "没有找到符合条件的数据",
-    "message": "没有找到符合条件的数据"
-  },
-  "TRANS_TYPE.PURC": {
-    "description": "下单支付",
-    "message": "下单支付"
-  },
-  "TRANS_TYPE.PAUT": {
-    "description": "预下单",
-    "message": "预下单"
-  },
-  "TRANS_TYPE.VOID": {
-    "description": "撤销",
-    "message": "撤销"
-  },
-  "TRANS_TYPE.REFD": {
-    "description": "退款",
-    "message": "退款"
-  },
-  "TRANS_TYPE.VERI": {
-    "description": "卡券核销",
-    "message": "卡券核销"
-  },
-  "TRANS_TYPE.CANC": {
-    "description": "取消",
-    "message": "取消"
-  },
-  "TRANS_TYPE.QYZF": {
-    "description": "企业付款",
-    "message": "企业付款"
-  },
-  "TRANS_TYPE.JSZF": {
-    "description": "公众号支付",
-    "message": "公众号支付"
-  },
-  "TRANS_STATUS.IN_PROCESS": {
-    "description": "处理中",
-    "message": "处理中"
-  },
-  "TRANS_STATUS.FAIL": {
-    "description": "失败",
-    "message": "失败"
-  },
-  "TRANS_STATUS.SUCCESS": {
-    "description": "成功",
-    "message": "成功"
-  },
-  "TRANS_STATUS.CLOSED": {
-    "description": "已关闭",
-    "message": "已关闭"
-  },
-  "CHANNEL.WECHAT": {
-    "description": "微信渠道",
-    "message": "微信"
-  },
-  "CHANNEL.ALIPAY": {
-    "description": "支付宝渠道",
-    "message": "支付宝"
-  },
-  "CHANNEL.UNKNOWN": {
-    "description": "未知渠道",
-    "message": "未知"
-  },
-  "SCANPAY_TRADE_STATS.MENU_NAME": {
-    "description": "扫码支付交易统计菜单名",
-    "message": "扫码支付交易统计"
-  },
-  "SCANPAY_TRADE_STATS.TITLE": {
-    "description": "扫码支付交易统计标题",
-    "message": "交易报表下载"
-  },
-  "SCANPAY_TRADE_STATS.DATE_FROM": {
-    "description": "开始日期",
-    "message": "开始日期"
-  },
-  "SCANPAY_TRADE_STATS.DATE_TO": {
-    "description": "结束日期",
-    "message": "结束日期"
-  },
-  "SCANPAY_TRADE_STATS.AGENT": {
-    "description": "代理",
-    "message": "代理"
-  },
-  "SCANPAY_TRADE_STATS.SUBAGENT_NO": {
-    "description": "公司代码",
-    "message": "公司代码"
-  },
-  "SCANPAY_TRADE_STATS.GROUP_NO": {
-    "description": "商户代码",
-    "message": "商户代码"
-  },
-  "SCANPAY_TRADE_STATS.GROUP_NAME": {
-    "description": "商户名称",
-    "message": "商户名称"
-  },
-  "SCANPAY_TRADE_STATS.MERCHANT_NO": {
-    "description": "门店代码",
-    "message": "门店代码"
-  },
-  "SCANPAY_TRADE_STATS.MERCHANT_NAME": {
-    "description": "门店名称",
-    "message": "门店名称"
-  },
-  "SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP": {
-    "description": "按商户汇总",
-    "message": "按商户汇总"
-  },
-  "SCANPAY_TRADE_STATS.SUMMARY": {
-    "description": "汇总",
-    "message": "汇总"
-  },
-  "SCANPAY_TRADE_STATS.TRANS_COUNT": {
-    "description": "（交易）笔数",
-    "message": "笔数"
-  },
-  "SCANPAY_TRADE_STATS.AMOUNT": {
-    "description": "金额",
-    "message": "金额"
-  },
-  "SCANPAY_TRADE_STATS.AGENT_NAME": {
-    "description": "代理名称",
-    "message": "代理名称"
-  },
-  "SCANPAY_TRADE_STATS.DOWNLOAD": {
-    "description": "下载",
-    "message": "下载"
-  },
-  "SCANPAY_TRADE_STATS.DOWNLOAD_DETAIL": {
-    "description": "下载明细",
-    "message": "下载明细"
-  },
-  "SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY": {
-    "description": "下载汇总",
-    "message": "下载汇总"
-  },
-  "TRADE_VIEW.HEADER": {
-    "description": "交易明细",
-    "message": "交易明细"
-  },
-  "TRADE_VIEW.HEADER_VOID_ORDER": {
-    "description": "撤销订单",
-    "message": "撤销订单"
-  },
-  "TRADE_VIEW.HEADER_CANCEL_ORDER": {
-    "description": "取消订单",
-    "message": "取消订单"
-  },
-  "TRADE_VIEW.HEADER_REFUND_ORDER": {
-    "description": "退款订单",
-    "message": "退款订单"
-  },
-  "TRADE_DETAIL.GROUP_NAME": {
-    "description": "公司名称",
-    "message": "公司名称"
-  },
-  "TRADE_DETAIL.AGENT_NO": {
-    "description": "代理代码",
-    "message": "代理代码"
-  },
-  "TRADE_DETAIL.TRANS_AMOUNT": {
-    "description": "交易金额",
-    "message": "交易金额"
-  },
-  "TRADE_DETAIL.GOOD_DETAIL": {
-    "description": "商品明细",
-    "message": "商品明细"
-  },
-  "TRADE_DETAIL.TRANS_CURRENCY": {
-    "description": "交易币种",
-    "message": "交易币种"
-  },
-  "TRADE_DETAIL.CHANNEL_MERCHANT": {
-    "description": "渠道商户",
-    "message": "渠道商户"
-  },
-  "TRADE_DETAIL.CHANNEL_ORDER": {
-    "description": "渠道订单",
-    "message": "渠道订单"
-  },
-  "TRADE_DETAIL.CHANNEL_DISCOUNT": {
-    "description": "渠道折扣",
-    "message": "渠道折扣"
-  },
-  "TRADE_DETAIL.MERCHANT_DISCOUNT": {
-    "description": "商户折扣",
-    "message": "商户折扣"
-  },
-  "TRADE_DETAIL.CREATE_TIME": {
-    "description": "创建时间",
-    "message": "创建时间"
-  },
-  "TRADE_DETAIL.MODIFY_TIME": {
-    "description": "修改时间",
-    "message": "修改时间"
-  },
-  "TRADE_DETAIL.SETT_ROLE": {
-    "description": "清算角色",
-    "message": "清算角色"
-  },
-  "TRADE_DETAIL.TICKET_NUM": {
-    "description": "小票号",
-    "message": "小票号"
-  },
-  "TRADE_DETAIL.PAY_TIME": {
-    "description": "支付时间",
-    "message": "支付时间"
-  },
-  "SCANPAY_TRADE_SETTLE_REPORT.TITLE": {
-    "description": "清算报表下载",
-    "message": "清算报表下载"
-  },
-  "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME": {
-    "description": "扫码支付清算报表",
-    "message": "扫码支付清算报表"
-  },
-  "SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE": {
-    "description": "清算日期",
-    "message": "清算日期"
-  },
-  "SCANPAY_TRADE_SETTLE_REPORT.REDO_SETTLE": {
-    "description": "重跑清算报表",
-    "message": "重跑"
-  },
-  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
-    "description": "下载汇总报表",
-    "message": "下载汇总报表"
-  },
-  "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
-    "description": "下载明细报表",
-    "message": "下载明细报表"
-  },
-  "xxx": {
-    "description": "xxx",
-    "message": "xxx"
-  },
-  "USERNAME_NOT_FOUND": {
-    "description": "用户名不存在",
-    "message": "用户名不存在"
-  },
-  "NO_PERMISSION": {
-    "description": "用户无权限",
-    "message": "用户无权限"
-  },
-  "SHOP_NOT_FOUND": {
-    "description": "门店不存在",
-    "message": "门店不存在"
-  },
-  "PASSWORDRESET.TOAST.RESET_PASSWORD_SUCCESS": {
-    "description": "重置密码成功",
-    "message": "重置密码成功"
-  },
-  "USERMANAGEMENT.USERMANAGEMENT": {
-    "description": "用户管理",
-    "message": "用户管理"
-  },
-  "USERMANAGEMENT.EMAIL": {
-    "description": "邮箱",
-    "message": "邮箱"
-  },
-  "USERMANAGEMENT.RELATEDEMAIL": {
-    "description": "关联邮箱",
-    "message": "关联邮箱"
-  },
-  "USERMANAGEMENT.TELEPHONENO": {
-    "description": "手机号",
-    "message": "手机号"
-  },
-  "USERMANAGEMENT.USERTYPE": {
-    "description": "用户类型",
-    "message": "用户类型"
-  },
-  "USERMANAGEMENT.AREACODE": {
-    "description": "地区代码",
-    "message": "地区代码"
-  },
-  "USERMANAGEMENT.PASSWORDRESET": {
-    "description": "密码重置",
-    "message": "密码重置"
-  },
-  "USERMANAGEMENT.DISPLAYNAME": {
-    "description": "显示名",
-    "message": "显示名"
-  },
-  "USERMANAGEMENT.VIEWUSERINFO": {
-    "description": "查看用户信息",
-    "message": "查看用户信息"
-  },
-  "USERTYPE.ADMIN": {
-    "description": "超级管理员",
-    "message": "超级管理员"
-  },
-  "USERTYPE.GENADMIN": {
-    "description": "普通管理员",
-    "message": "普通管理员"
-  },
-  "USERTYPE.AGENT": {
-    "description": "代理",
-    "message": "代理"
-  },
-  "USERTYPE.SUBAGENT": {
-    "description": "公司",
-    "message": "公司"
-  },
-  "USERTYPE.GROUP": {
-    "description": "商户",
-    "message": "商户"
-  },
-  "USERTYPE.MERCHANT": {
-    "description": "门店",
-    "message": "门店"
-  },
-  "APPUSERMANAGEMENT.APPUSERMANAGEMENT": {
-    "description": "APP用户管理",
-    "message": "APP用户管理"
-  },
-  "APPUSERMANAGEMENT.TITLE": {
-    "description": "APP密码重置",
-    "message": "APP密码重置"
-  },
-  "USERMANAGEMENT.TITLE": {
-    "description": "用户管理",
-    "message": "用户管理"
-  }
+	"TITLE": {
+		"description": "...",
+		"message": "云收银管理平台"
+	},
+	"CURRENTUSER": {
+		"description": "...",
+		"message": "当前用户"
+	},
+	"BUTTON.SAVE": {
+		"description": "保存按钮",
+		"message": "保存"
+	},
+	"BUTTON.QUERY": {
+		"description": "查询按钮",
+		"message": "查询"
+	},
+	"BUTTON.CONFIRM": {
+		"description": "确认按钮",
+		"message": "确认"
+	},
+	"BUTTON.CANCEL": {
+		"description": "取消按钮",
+		"message": "取消"
+	},
+	"BUTTON.DOWNLOADREPORT": {
+		"description": "下载报表按钮",
+		"message": "下载报表"
+	},
+	"BUTTON.CLOSE": {
+		"description": "关闭按钮",
+		"message": "关闭"
+	},
+	"PAGINATION.PER_PAGE_PREFIX": {
+		"description": "每页显示前缀",
+		"message": "每页显示"
+	},
+	"PAGINATION.PER_PAGE_SUFFIX": {
+		"description": "每页显示后缀",
+		"message": "条"
+	},
+	"DATE_PICKER.LOCALE": {
+		"description": "日历国际化",
+		"message": "zh-cn"
+	},
+	"LOGIN.USERNAME": {
+		"description": "用户名",
+		"message": "用户名"
+	},
+	"LOGIN.PASSWORD": {
+		"description": "密码",
+		"message": "密码"
+	},
+	"LOGIN.BUTTON": {
+		"description": "登录按钮",
+		"message": "登录"
+	},
+	"LOGIN.SUCCESS": {
+		"description": "登录成功",
+		"message": "登录成功"
+	},
+	"LOGIN.HINT": {
+		"description": "登录页提示",
+		"message": "如果您还没有用户名、密码，请联系讯联数据运营中心为您分配"
+	},
+	"LOGIN.TOAST.LOGIN_FAIL": {
+		"description": "登录失败提示",
+		"message": "用户名或密码不能为空"
+	},
+	"LOGIN.TOAST.LOGIN_ERROR": {
+		"description": "用户名或密码错误",
+		"message": "用户名或密码错误"
+	},
+	"LOGIN.TOAST.PWD_LAST_THREE_TRY": {
+		"description": "还剩3次输错密码的机会",
+		"message": "密码错误，再输错三次密码当前账户将被锁住"
+	},
+	"LOGIN.TOAST.PWD_LAST_TWO_TRY": {
+		"description": "还剩2次输错密码的机会",
+		"message": "密码错误，再输错两次密码当前账户将被锁住"
+	},
+	"LOGIN.TOAST.PWD_LAST_ONE_TRY": {
+		"description": "还剩1次输错密码的机会",
+		"message": "密码错误，再输错一次密码当前账户将被锁住"
+	},
+	"LOGIN.TOAST.ACCOUNT_LOCKED": {
+		"description": "密码锁住",
+		"message": "您的帐号已经被锁住，请一个小时后再重试或者联系管理员帮您解锁"
+	},
+	"PASSWORDMODIFICATION.TITLE": {
+		"description": "修改密码标题",
+		"message": "修改密码"
+	},
+	"PASSWORDMODIFICATION.USERNAME": {
+		"description": "用户名",
+		"message": "用户名"
+	},
+	"PASSWORDMODIFICATION.OLDPASSWORD": {
+		"description": "原密码",
+		"message": "原密码"
+	},
+	"PASSWORDMODIFICATION.NEWPASSWORD": {
+		"description": "新密码",
+		"message": "新密码"
+	},
+	"PASSWORDMODIFICATION.CONFIRMPASSWORD": {
+		"description": "重复新密码",
+		"message": "重复新密码"
+	},
+	"PASSWORDMODIFICATION.REQUIREDITEM": {
+		"description": "必填项",
+		"message": "必填项"
+	},
+	"PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS": {
+		"description": "必填项不能为空",
+		"message": "必填项不能为空"
+	},
+	"PASSWORDMODIFICATION.TOAST.OLD_PASSWORD_NOT_MATCH": {
+		"description": "原密码错误",
+		"message": "原密码错误"
+	},
+	"PASSWORDMODIFICATION.TOAST.MIDIFICATION_PASSWORD_SUCCESS": {
+		"description": "修改密码成功",
+		"message": "修改密码成功"
+	},
+	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
+		"description": "新密码不能和旧密码相同",
+		"message": "新密码不能和旧密码相同"
+	},
+	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
+		"description": "新密码不一致",
+		"message": "新密码不一致"
+	},
+	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
+		"description": "新密码最小长度位",
+		"message": "新密码长度不能少于8位"
+	},
+	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
+		"description": "新密码必须复杂点，包含大小写字母和数字",
+		"message": "新密码必须包含大小写字母和数字"
+	},
+	"SCANPAY_TRADE_LIST.MENU_NAME": {
+		"description": "扫码交易菜单名",
+		"message": "扫码交易"
+	},
+	"SCANPAY_TRADE_LIST.TITLE": {
+		"description": "扫码支付交易查询",
+		"message": "扫码支付交易查询"
+	},
+	"SCANPAY_TRADE_LIST.DATE_FROM": {
+		"description": "交易时间从",
+		"message": "交易时间从"
+	},
+	"SCANPAY_TRADE_LIST.DATE_TO": {
+		"description": "交易时间到",
+		"message": "交易时间到"
+	},
+	"SCANPAY_TRADE_LIST.AGENT": {
+		"description": "代理",
+		"message": "代理"
+	},
+	"SCANPAY_TRADE_LIST.SUBAGENT_NO": {
+		"description": "公司代码",
+		"message": "公司代码"
+	},
+	"SCANPAY_TRADE_LIST.GROUP_NO": {
+		"description": "商户代码",
+		"message": "商户代码"
+	},
+	"SCANPAY_TRADE_LIST.MERCHANT_NO": {
+		"description": "门店代码",
+		"message": "门店代码"
+	},
+	"SCANPAY_TRADE_LIST.MERCHANT_NAME": {
+		"description": "门店名称",
+		"message": "门店名称"
+	},
+	"SCANPAY_TRADE_LIST.ORDER_NO": {
+		"description": "订单号",
+		"message": "订单号"
+	},
+	"SCANPAY_TRADE_LIST.TERMINAL": {
+		"description": "终端",
+		"message": "终端"
+	},
+	"SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO": {
+		"description": "关联订单号",
+		"message": "关联订单号"
+	},
+	"SCANPAY_TRADE_LIST.RESPONSE_CODE": {
+		"description": "应答码",
+		"message": "应答码"
+	},
+	"SCANPAY_TRADE_LIST.TRANS_TYPE": {
+		"description": "交易类型",
+		"message": "交易类型"
+	},
+	"SCANPAY_TRADE_LIST.TRANS_STATUS": {
+		"description": "交易状态",
+		"message": "交易状态"
+	},
+	"SCANPAY_TRADE_LIST.INDEX": {
+		"description": "序号",
+		"message": "序号"
+	},
+	"SCANPAY_TRADE_LIST.AMOUNT": {
+		"description": "金额",
+		"message": "金额"
+	},
+	"SCANPAY_TRADE_LIST.CURRENCY": {
+		"description": "币种",
+		"message": "币种"
+	},
+	"SCANPAY_TRADE_LIST.CHANNEL": {
+		"description": "渠道",
+		"message": "渠道"
+	},
+	"SCANPAY_TRADE_LIST.REFUND": {
+		"description": "退款",
+		"message": "退款"
+	},
+	"SCANPAY_TRADE_LIST.NO_REFUND": {
+		"description": "无退款",
+		"message": "无退款"
+	},
+	"SCANPAY_TRADE_LIST.ALREADY_REFUND": {
+		"description": "已退款",
+		"message": "已退款"
+	},
+	"SCANPAY_TRADE_LIST.PART_REFUND": {
+		"description": "部分退款",
+		"message": "部分退款"
+	},
+	"SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT": {
+		"description": "商户发起关闭",
+		"message": "商户发起关闭"
+	},
+	"SCANPAY_TRADE_LIST.CLOSE_BY_SYSTEM_AS_OVERTIME": {
+		"description": "交易超时系统关闭",
+		"message": "交易超时系统关闭"
+	},
+	"SCANPAY_TRADE_LIST.TRANS_TIME": {
+		"description": "交易时间",
+		"message": "交易时间"
+	},
+	"SCANPAY_TRADE_LIST.TOAST.LOAD_AGENTS_FAIL": {
+		"description": "加载代理列表失败",
+		"message": "加载代理列表失败"
+	},
+	"SCANPAY_TRADE_LIST.TOAST.EMPTY_ANGETS": {
+		"description": "没有代理数据",
+		"message": "没有代理数据"
+	},
+	"SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR": {
+		"description": "系统错误",
+		"message": "系统错误"
+	},
+	"SCANPAY_TRADE_LIST.TOAST.NOT_FOUND": {
+		"description": "没有找到符合条件的数据",
+		"message": "没有找到符合条件的数据"
+	},
+	"TRANS_TYPE.PURC": {
+		"description": "下单支付",
+		"message": "下单支付"
+	},
+	"TRANS_TYPE.PAUT": {
+		"description": "预下单",
+		"message": "预下单"
+	},
+	"TRANS_TYPE.VOID": {
+		"description": "撤销",
+		"message": "撤销"
+	},
+	"TRANS_TYPE.REFD": {
+		"description": "退款",
+		"message": "退款"
+	},
+	"TRANS_TYPE.VERI": {
+		"description": "卡券核销",
+		"message": "卡券核销"
+	},
+	"TRANS_TYPE.CANC": {
+		"description": "取消",
+		"message": "取消"
+	},
+	"TRANS_TYPE.QYZF": {
+		"description": "企业付款",
+		"message": "企业付款"
+	},
+	"TRANS_TYPE.JSZF": {
+		"description": "公众号支付",
+		"message": "公众号支付"
+	},
+	"TRANS_STATUS.IN_PROCESS": {
+		"description": "处理中",
+		"message": "处理中"
+	},
+	"TRANS_STATUS.FAIL": {
+		"description": "失败",
+		"message": "失败"
+	},
+	"TRANS_STATUS.SUCCESS": {
+		"description": "成功",
+		"message": "成功"
+	},
+	"TRANS_STATUS.CLOSED": {
+		"description": "已关闭",
+		"message": "已关闭"
+	},
+	"CHANNEL.WECHAT": {
+		"description": "微信渠道",
+		"message": "微信"
+	},
+	"CHANNEL.ALIPAY": {
+		"description": "支付宝渠道",
+		"message": "支付宝"
+	},
+	"CHANNEL.UNKNOWN": {
+		"description": "未知渠道",
+		"message": "未知"
+	},
+	"SCANPAY_TRADE_STATS.MENU_NAME": {
+		"description": "扫码支付交易统计菜单名",
+		"message": "扫码支付交易统计"
+	},
+	"SCANPAY_TRADE_STATS.TITLE": {
+		"description": "扫码支付交易统计标题",
+		"message": "交易报表下载"
+	},
+	"SCANPAY_TRADE_STATS.DATE_FROM": {
+		"description": "开始日期",
+		"message": "开始日期"
+	},
+	"SCANPAY_TRADE_STATS.DATE_TO": {
+		"description": "结束日期",
+		"message": "结束日期"
+	},
+	"SCANPAY_TRADE_STATS.AGENT": {
+		"description": "代理",
+		"message": "代理"
+	},
+	"SCANPAY_TRADE_STATS.SUBAGENT_NO": {
+		"description": "公司代码",
+		"message": "公司代码"
+	},
+	"SCANPAY_TRADE_STATS.GROUP_NO": {
+		"description": "商户代码",
+		"message": "商户代码"
+	},
+	"SCANPAY_TRADE_STATS.GROUP_NAME": {
+		"description": "商户名称",
+		"message": "商户名称"
+	},
+	"SCANPAY_TRADE_STATS.MERCHANT_NO": {
+		"description": "门店代码",
+		"message": "门店代码"
+	},
+	"SCANPAY_TRADE_STATS.MERCHANT_NAME": {
+		"description": "门店名称",
+		"message": "门店名称"
+	},
+	"SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP": {
+		"description": "按商户汇总",
+		"message": "按商户汇总"
+	},
+	"SCANPAY_TRADE_STATS.SUMMARY": {
+		"description": "汇总",
+		"message": "汇总"
+	},
+	"SCANPAY_TRADE_STATS.TRANS_COUNT": {
+		"description": "（交易）笔数",
+		"message": "笔数"
+	},
+	"SCANPAY_TRADE_STATS.AMOUNT": {
+		"description": "金额",
+		"message": "金额"
+	},
+	"SCANPAY_TRADE_STATS.AGENT_NAME": {
+		"description": "代理名称",
+		"message": "代理名称"
+	},
+	"SCANPAY_TRADE_STATS.DOWNLOAD": {
+		"description": "下载",
+		"message": "下载"
+	},
+	"SCANPAY_TRADE_STATS.DOWNLOAD_DETAIL": {
+		"description": "下载明细",
+		"message": "下载明细"
+	},
+	"SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY": {
+		"description": "下载汇总",
+		"message": "下载汇总"
+	},
+	"TRADE_VIEW.HEADER": {
+		"description": "交易明细",
+		"message": "交易明细"
+	},
+	"TRADE_VIEW.HEADER_VOID_ORDER": {
+		"description": "撤销订单",
+		"message": "撤销订单"
+	},
+	"TRADE_VIEW.HEADER_CANCEL_ORDER": {
+		"description": "取消订单",
+		"message": "取消订单"
+	},
+	"TRADE_VIEW.HEADER_REFUND_ORDER": {
+		"description": "退款订单",
+		"message": "退款订单"
+	},
+	"TRADE_DETAIL.GROUP_NAME": {
+		"description": "公司名称",
+		"message": "公司名称"
+	},
+	"TRADE_DETAIL.AGENT_NO": {
+		"description": "代理代码",
+		"message": "代理代码"
+	},
+	"TRADE_DETAIL.TRANS_AMOUNT": {
+		"description": "交易金额",
+		"message": "交易金额"
+	},
+	"TRADE_DETAIL.GOOD_DETAIL": {
+		"description": "商品明细",
+		"message": "商品明细"
+	},
+	"TRADE_DETAIL.TRANS_CURRENCY": {
+		"description": "交易币种",
+		"message": "交易币种"
+	},
+	"TRADE_DETAIL.CHANNEL_MERCHANT": {
+		"description": "渠道商户",
+		"message": "渠道商户"
+	},
+	"TRADE_DETAIL.CHANNEL_ORDER": {
+		"description": "渠道订单",
+		"message": "渠道订单"
+	},
+	"TRADE_DETAIL.CHANNEL_DISCOUNT": {
+		"description": "渠道折扣",
+		"message": "渠道折扣"
+	},
+	"TRADE_DETAIL.MERCHANT_DISCOUNT": {
+		"description": "商户折扣",
+		"message": "商户折扣"
+	},
+	"TRADE_DETAIL.CREATE_TIME": {
+		"description": "创建时间",
+		"message": "创建时间"
+	},
+	"TRADE_DETAIL.MODIFY_TIME": {
+		"description": "修改时间",
+		"message": "修改时间"
+	},
+	"TRADE_DETAIL.SETT_ROLE": {
+		"description": "清算角色",
+		"message": "清算角色"
+	},
+	"TRADE_DETAIL.TICKET_NUM": {
+		"description": "小票号",
+		"message": "小票号"
+	},
+	"TRADE_DETAIL.PAY_TIME": {
+		"description": "支付时间",
+		"message": "支付时间"
+	},
+	"SCANPAY_TRADE_SETTLE_REPORT.TITLE": {
+		"description": "清算报表下载",
+		"message": "清算报表下载"
+	},
+	"SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME": {
+		"description": "扫码支付清算报表",
+		"message": "扫码支付清算报表"
+	},
+	"SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE": {
+		"description": "清算日期",
+		"message": "清算日期"
+	},
+	"SCANPAY_TRADE_SETTLE_REPORT.REDO_SETTLE": {
+		"description": "重跑清算报表",
+		"message": "重跑"
+	},
+	"SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
+		"description": "下载汇总报表",
+		"message": "下载汇总报表"
+	},
+	"SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
+		"description": "下载明细报表",
+		"message": "下载明细报表"
+	},
+	"xxx": {
+		"description": "xxx",
+		"message": "xxx"
+	},
+	"USERNAME_NOT_FOUND": {
+		"description": "用户名不存在",
+		"message": "用户名不存在"
+	},
+	"NO_PERMISSION": {
+		"description": "用户无权限",
+		"message": "用户无权限"
+	},
+	"SHOP_NOT_FOUND": {
+		"description": "门店不存在",
+		"message": "门店不存在"
+	},
+	"PASSWORDRESET.TOAST.RESET_PASSWORD_SUCCESS": {
+		"description": "重置密码成功",
+		"message": "重置密码成功"
+	},
+	"USERMANAGEMENT.USERMANAGEMENT": {
+		"description": "用户管理",
+		"message": "用户管理"
+	},
+	"USERMANAGEMENT.EMAIL": {
+		"description": "邮箱",
+		"message": "邮箱"
+	},
+	"USERMANAGEMENT.RELATEDEMAIL": {
+		"description": "关联邮箱",
+		"message": "关联邮箱"
+	},
+	"USERMANAGEMENT.TELEPHONENO": {
+		"description": "手机号",
+		"message": "手机号"
+	},
+	"USERMANAGEMENT.USERTYPE": {
+		"description": "用户类型",
+		"message": "用户类型"
+	},
+	"USERMANAGEMENT.AREACODE": {
+		"description": "地区代码",
+		"message": "地区代码"
+	},
+	"USERMANAGEMENT.PASSWORDRESET": {
+		"description": "密码重置",
+		"message": "密码重置"
+	},
+	"USERMANAGEMENT.DISPLAYNAME": {
+		"description": "显示名",
+		"message": "显示名"
+	},
+	"USERMANAGEMENT.VIEWUSERINFO": {
+		"description": "查看用户信息",
+		"message": "查看用户信息"
+	},
+	"USERTYPE.ADMIN": {
+		"description": "超级管理员",
+		"message": "超级管理员"
+	},
+	"USERTYPE.GENADMIN": {
+		"description": "普通管理员",
+		"message": "普通管理员"
+	},
+	"USERTYPE.AGENT": {
+		"description": "代理",
+		"message": "代理"
+	},
+	"USERTYPE.SUBAGENT": {
+		"description": "公司",
+		"message": "公司"
+	},
+	"USERTYPE.GROUP": {
+		"description": "商户",
+		"message": "商户"
+	},
+	"USERTYPE.MERCHANT": {
+		"description": "门店",
+		"message": "门店"
+	},
+	"APPUSERMANAGEMENT.APPUSERMANAGEMENT": {
+		"description": "APP用户管理",
+		"message": "APP用户管理"
+	},
+	"APPUSERMANAGEMENT.TITLE": {
+		"description": "APP密码重置",
+		"message": "APP密码重置"
+	},
+	"USERMANAGEMENT.TITLE": {
+		"description": "用户管理",
+		"message": "用户管理"
+	}
 
 
 }

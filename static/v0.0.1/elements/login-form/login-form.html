@@ -9,72 +9,72 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <dom-module id="login-form">
   <style>
-  :host {
-    display: block;
-    text-align: left;
-    --paper-input-container-input: {
-      font-size: 16px;
+    :host {
+      display: block;
+      text-align: left;
+      --paper-input-container-input: {
+        font-size: 16px;
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
+      --paper-input-container-label: {
+        font-size: 14px;
+      }
+      ;
+      /* 必须有分号，否则压缩后，无法正常渲染 */
     }
-    ;
-    /* 必须有分号，否则压缩后，无法正常渲染 */
-    --paper-input-container-label: {
-      font-size: 14px;
+
+    .logo {
+      text-align: center;
     }
-    ;
-    /* 必须有分号，否则压缩后，无法正常渲染 */
-  }
-  
-  .logo {
-    text-align: center;
-  }
-  
-  .circle {
-    margin: 10px auto;
-    border-radius: 48px;
-  }
-  
-  paper-button {
-    width: 80%;
-    margin-top: 30px;
-    background: #ff4081;
-    color: #ffffff;
-  }
-  
-  .login-inner {
-    width: 70%;
-    margin: 0 auto;
-    @apply(--layout-vertical);
-    @apply(--layout-center);
-    @apply(--layout-center-justified);
-    height: 100%;
-  }
-  
-  .login-inner > #loginForm {
-    width: 100%;
-  }
-  
-  #loginForm > h1 {
-    font-size: 30px;
-  }
-  
-  #loginForm > paper-button {
-    margin: 30px 12.5%;
-  }
-  
-  .row {
-    @apply(--layout-horizontal);
-    @apply(--layout-center);
-  }
-  
-  .row > iron-icon {
-    @apply(--layout-self-end);
-    margin-right: 10px;
-  }
-  
-  .row > paper-input {
-    @apply(--layout-self-end);
-    @apply(--layout-flex);
-  }
+
+    .circle {
+      margin: 10px auto;
+      border-radius: 48px;
+    }
+
+    paper-button {
+      width: 80%;
+      margin-top: 30px;
+      background: #ff4081;
+      color: #ffffff;
+    }
+
+    .login-inner {
+      width: 70%;
+      margin: 0 auto;
+      @apply(--layout-vertical);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+      height: 100%;
+    }
+
+    .login-inner > #loginForm {
+      width: 100%;
+    }
+
+    #loginForm > h1 {
+      font-size: 30px;
+    }
+
+    #loginForm > paper-button {
+      margin: 30px 12.5%;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+
+    .row > iron-icon {
+      @apply(--layout-self-end);
+      margin-right: 10px;
+    }
+
+    .row > paper-input {
+      @apply(--layout-self-end);
+      @apply(--layout-flex);
+    }
   </style>
   <template>
     <div class="logo">
@@ -104,88 +104,105 @@
   </template>
   <script src="../../scripts/util.js"></script>
   <script>
-  (function() {
-    Polymer({
-      is: 'login-form',
+    (function() {
+      Polymer({
+        is: 'login-form',
 
-      properties: {
-        // isRedirect 如果为TRUE，登入成功后会跳转到首页
-        redirect: {
-          type: Boolean,
-          value: false
-        },
-        target: {
-          type: Object,
-          value: function() {
-            return this.$.loginForm;
+        properties: {
+          // isRedirect 如果为TRUE，登入成功后会跳转到首页
+          redirect: {
+            type: Boolean,
+            value: false
+          },
+          target: {
+            type: Object,
+            value: function() {
+              return this.$.loginForm;
+            }
+          },
+          // 父辈传来的router对象，用来做跳转的
+          router: {
+            type: Object,
+            notify: true
           }
         },
-        // 父辈传来的router对象，用来做跳转的
-        router: {
-          type: Object,
-          notify: true
-        }
-      },
-      ready: function() {
-        this.user = {};
-      },
-      attached: function() {
-        this.fire('rerender-i18n', {
-          from: 'password-editor'
-        });
-      },
-      loginTapHandle: function() {
-        if (this.isloginConfigEmpty()) {
-          Util.toast('LOGIN.TOAST.LOGIN_FAIL', 3000, true);
-          return;
-        }
+        ready: function() {
+          this.user = {};
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'password-editor'
+          });
+        },
+        loginTapHandle: function() {
+          if (this.isloginConfigEmpty()) {
+            Util.toast('LOGIN.TOAST.LOGIN_FAIL', 3000, true);
+            return;
+          }
 
-        // 密码加密后再传输到后台
-        var login = {
-          userName: this.user.userName,
-          password: Util.RSAEncrypt(this.user.password)
-        };
+          // 密码加密后再传输到后台
+          var login = {
+            userName: this.user.userName,
+            password: Util.RSAEncrypt(this.user.password)
+          };
 
-        var loginAjax = this.$.loginAjax;
-        loginAjax.body = JSON.stringify(login);
-        loginAjax.generateRequest();
-      },
-      isloginConfigEmpty: function() {
-        if (this.$.userName.validate() && this.$.pwd.validate()) {
-          return false;
-        } else {
-          return true;
-        }
-      },
-      handleLoginResponse: function(e) {
-        var response = e.detail.response;
-        if (response.status !== 0) {
-          Util.toast('LOGIN.TOAST.LOGIN_ERROR', 3000, true);
-          return;
-        }
-        this.user = {
-          userName: '',
-          password: ''
-        };
+          var loginAjax = this.$.loginAjax;
+          loginAjax.body = JSON.stringify(login);
+          loginAjax.generateRequest();
+        },
+        isloginConfigEmpty: function() {
+          if (this.$.userName.validate() && this.$.pwd.validate()) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        handleLoginResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            var message = response.message.toUpperCase();
+            switch (message) {
+              case 'USER_HAS_THREE_TIMES':
+                Util.toast('LOGIN.TOAST.PWD_LAST_THREE_TRY', 2500, true);
+                break;
+              case 'USER_HAS_TWO_TIMES':
+                Util.toast('LOGIN.TOAST.PWD_LAST_TWO_TRY', 3000, true);
+                break;
+              case 'USER_HAS_ONE_TIMES':
+                Util.toast('LOGIN.TOAST.PWD_LAST_ONE_TRY', 3500, true);
+                break;
+              case 'USER_LOCK':
+                Util.toast('LOGIN.TOAST.ACCOUNT_LOCKED', 3500, true);
+                break;
+              default:
+                Util.toast('LOGIN.TOAST.LOGIN_ERROR', 3000, true);
+            }
 
-        var detail = {
-          loginUser: response.data,
-          jumpTo: null
-        };
-        if (this.redirect) {
-          detail.jumpTo = '/trade/list';
-        }
+            return;
+          }
+          this.user = {
+            userName: '',
+            password: ''
+          };
 
-        // 事件冒泡到顶层
-        this.fire('login-success', detail, {
-          bubbles: false // 默认为true，默认情况下，login-success会在quickpay-app里面触发两次
-        });
-      },
-      // 表单内点击回车键事件
-      handleEnterKeyPresse: function(e) {
-        this.loginTapHandle();
-      },
-    });
-  })();
+          var detail = {
+            loginUser: response.data,
+            jumpTo: null
+          };
+          if (this.redirect) {
+            detail.jumpTo = '/trade/list';
+          }
+
+          // 事件冒泡到顶层
+          this.fire('login-success', detail, {
+            bubbles: false // 默认为true，默认情况下，login-success会在quickpay-app里面触发两次
+          });
+        },
+        // 表单内点击回车键事件
+        handleEnterKeyPresse: function(e) {
+          this.loginTapHandle();
+        },
+      });
+    })();
   </script>
 </dom-module>

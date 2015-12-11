@@ -291,6 +291,19 @@
               item.setAttribute('label', i18nMsg.getMsg(msgId));
             }
           }
+
+          var yunDateTimePickers = document.querySelectorAll('yun-date-time-picker');
+          for (var i = 0, l = yunDateTimePickers.length, item; i < l; i++) {
+            item = yunDateTimePickers[i];
+            if (item.hasAttribute('data-msg-id')) {
+              var msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('label', i18nMsg.getMsg(msgId));
+            }
+            if (item.hasAttribute('locale-msg-id')) {
+              var msgId = item.getAttribute('locale-msg-id');
+              item.setAttribute('locale', i18nMsg.getMsg(msgId));
+            }
+          }
         },
         // 重新登录事件
         handleOpenLoginDialogEvent: function(e) {

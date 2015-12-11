@@ -15,36 +15,6 @@ import (
 	"github.com/omigo/log"
 )
 
-var commonURLArr = []string{
-	"/master/trade/query",
-	"/master/trade/report",
-	"/master/trade/stat",
-	"/master/trade/stat/report",
-	"/master/trade/findOne",
-	"/master/user/updatePwd",
-	"/master/app/locale",
-	"/master/list",
-	"/master/trade/settle/report",
-	"/master/trade/settle/journal",
-}
-
-var genAdminURLArr = []string{
-	"/master/trade/query",
-	"/master/trade/report",
-	"/master/trade/stat",
-	"/master/trade/stat/report",
-	"/master/trade/findOne",
-	"/master/user/updatePwd",
-	"/master/trade/settle/report",
-	"/master/trade/message",
-	"/master/agent/find",
-	"/master/qiniu/download",
-	"/master/app/locale",
-	"/master/list",
-	"/master/trade/settle/report",
-	"/master/trade/settle/journal",
-}
-
 // 路径中包含以下关键字，则记录到数据库
 var logKeysArr = []string{
 	"create",

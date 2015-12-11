@@ -45,6 +45,7 @@ input:-moz-placeholder {
   line-height: 42px;
   text-align: center;
   margin: 100px auto;
+  font-size: 20px;
 }
 
 .container .anniu:hover {
