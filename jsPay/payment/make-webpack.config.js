@@ -145,7 +145,7 @@ function makeConf(options) {
 		},
 	};
 
-	if (options.product) {
+	if (options.minify) {
 		// 发布到生产上的代码要压缩
 		config.plugins.push(
 			new webpack.optimize.UglifyJsPlugin()
