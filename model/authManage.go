@@ -25,7 +25,7 @@ type User struct {
 	Password     string `json:"password" bson:"password"`
 	Mail         string `json:"mail" bson:"mail"`
 	PhoneNum     string `json:"phoneNum" bson:"phoneNum"`
-	UserType     string `json:"userType" bson:"userType"`
+	UserType     string `json:"userType" bson:"userType"` // 用户类型： admin,genAdmin,agent, subAgent, group, merchant
 	AgentCode    string `json:"agentCode" bson:"agentCode"`
 	SubAgentCode string `json:"subAgentCode" bson:"subAgentCode"`
 	// AgentName string `json:"agentName" bson:"agentName"`

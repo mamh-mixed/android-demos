@@ -85,7 +85,7 @@
 	},
 	"LOGIN.TOAST.ACCOUNT_LOCKED": {
 		"description": "密码锁住",
-		"message": "您的帐号已经被锁住，请一个小时后再重试或者联系管理员帮您解锁"
+		"message": "您的帐号已经被锁住，请联系管理员帮您解锁或者三个小时后再重新登录"
 	},
 	"PASSWORDMODIFICATION.TITLE": {
 		"description": "修改密码标题",
