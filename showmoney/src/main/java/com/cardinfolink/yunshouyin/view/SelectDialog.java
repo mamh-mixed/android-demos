@@ -5,6 +5,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
@@ -14,6 +16,9 @@ import com.cardinfolink.yunshouyin.R;
  * 上面两个按钮，中间一个搜索提示框，下面两个齿轮组件。
  */
 public class SelectDialog {
+    private TranslateAnimation mShowAnimation;//显示的动画，
+    private TranslateAnimation mHideAnimation;//隐藏的动画
+
     private Context mContext;
     private View dialogView;
 
@@ -51,12 +56,33 @@ public class SelectDialog {
         mOkOnClickListener = mCancelOnClickListener;
         mOk.setOnClickListener(mOkOnClickListener);
 
+        mShowAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF,
+                0.0f,
+                Animation.RELATIVE_TO_SELF,
+                0.0f,
+                Animation.RELATIVE_TO_SELF,
+                1.0f,
+                Animation.RELATIVE_TO_SELF,
+                0.0f);
+        mHideAnimation = new TranslateAnimation(
+                Animation.RELATIVE_TO_SELF,
+                0.0f,
+                Animation.RELATIVE_TO_SELF,
+                0.0f,
+                Animation.RELATIVE_TO_SELF,
+                0.0f,
+                Animation.RELATIVE_TO_SELF,
+                1.0f);
+        mShowAnimation.setDuration(800);
+        mHideAnimation.setDuration(800);
     }
 
     /**
      * 默认显示的对话框，按钮也是默认的行为。
      */
     public void show() {
+        dialogView.startAnimation(mShowAnimation);
         dialogView.setVisibility(View.VISIBLE);
     }
 
@@ -89,6 +115,7 @@ public class SelectDialog {
     }
 
     public void hide() {
+        dialogView.startAnimation(mHideAnimation);
         dialogView.setVisibility(View.GONE);
     }
 
