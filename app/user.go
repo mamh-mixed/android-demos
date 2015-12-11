@@ -232,6 +232,10 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		}
 		return model.USERNAME_PASSWORD_ERROR
 	}
+
+	//密码正确，清空登陆记录
+	mongo.AppUserCol.UpdateLoginTime(req.UserName, "", "")
+
 	// 用户是否激活
 	if user.Activate == "false" {
 		return model.USER_NO_ACTIVATE
