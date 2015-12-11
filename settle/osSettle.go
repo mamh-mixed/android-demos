@@ -154,6 +154,7 @@ func (a *alipayOverseas) Reconciliation(date string) {
 				}
 			}
 		case "PAYMENT", "REFUND":
+			// 退款时，chanOrderNum 为 origOrderNum
 			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
 			if err != nil {
 				// 渠道多清
