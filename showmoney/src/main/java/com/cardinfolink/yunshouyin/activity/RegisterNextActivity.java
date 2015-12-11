@@ -1,45 +1,15 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 
-import com.cardinfolink.cashiersdk.model.InitData;
-import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.constant.SystemConfig;
-import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.data.User;
-import com.cardinfolink.yunshouyin.model.Bank;
-import com.cardinfolink.yunshouyin.model.City;
-import com.cardinfolink.yunshouyin.model.Province;
-import com.cardinfolink.yunshouyin.model.SubBank;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
-import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
-import com.cardinfolink.yunshouyin.util.VerifyUtil;
-import com.cardinfolink.yunshouyin.adapter.SearchAdapter;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.cardinfolink.yunshouyin.view.SelectDialog;
 
 public class RegisterNextActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "RegisterNextActivity";
@@ -50,6 +20,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private SettingClikcItem mSetBank;//点击设置银行信息，主行，或分行
 
     private Button mRegisterFinished;
+
+    private SelectDialog selectDialog;
 
 
     @Override
@@ -72,6 +44,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mSetProvinceCity.setOnClickListener(this);
         mSetBank.setOnClickListener(this);
         mRegisterFinished.setOnClickListener(this);
+
+        selectDialog = new SelectDialog(this, findViewById(R.id.select_dialog));
     }
 
 
@@ -83,10 +57,14 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.province_city:
                 Log.e(TAG, " onclick province_city");
+                selectDialog.show();
                 break;
             case R.id.bank:
+
                 Log.e(TAG, " onclick bank");
                 break;
         }
     }
+
+
 }
