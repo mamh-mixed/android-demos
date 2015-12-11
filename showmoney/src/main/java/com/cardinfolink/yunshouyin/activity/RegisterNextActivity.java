@@ -29,6 +29,7 @@ import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
+import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
@@ -40,6 +41,8 @@ import java.util.List;
 
 public class RegisterNextActivity extends BaseActivity {
     private static final String TAG = "RegisterNextActivity";
+
+    private SettingActionBarItem mActionBar;
 
     private EditText mNameEdit;
     private EditText mBanknumEdit;
@@ -79,9 +82,17 @@ public class RegisterNextActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_next);
-        initLayout();
-        initListener();
-        initData();
+
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        //initLayout();
+        //initListener();
+        //initData();
     }
 
     private void initLayout() {
