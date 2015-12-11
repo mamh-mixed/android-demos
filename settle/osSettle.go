@@ -136,7 +136,7 @@ func (a *alipayOverseas) Reconciliation(date string) {
 			// 该情况下没有原订单，只有撤销和退款的订单
 			// 渠道流水中的订单，假如取消的这笔原订单是成功的，那么给出的是原订单号和渠道订单号
 			// 假如原订单不是成功的，那么给出的是取消这笔的订单号和渠道订单号
-			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
+			tss, err := mongo.SpTransSettColl.FindOrders(orderNum, chanOrderNum)
 			if err != nil {
 				// 没找到，说明原订单没有成功
 				// 不处理即可
@@ -144,7 +144,15 @@ func (a *alipayOverseas) Reconciliation(date string) {
 			}
 			// 找到，说明是原订单成功下发起的取消
 			// 那么比较金额即可，手续费都重置为0
-			mongo.SpTransSettColl.RemoveOne(orderNum, chanOrderNum)
+			for _, ts := range tss {
+				ts.BlendType = MATCH
+				ts.InsFee = 0
+				ts.SettTime = time.Now().Format("2006-01-02 15:04:05")
+				// 更新交易状态
+				if err = mongo.SpTransSettColl.Update(&ts); err != nil {
+					log.Errorf("fail to update transSett error: %s, orderNum=%s", err, orderNum)
+				}
+			}
 		case "PAYMENT", "REFUND":
 			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
 			if err != nil {

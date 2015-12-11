@@ -178,6 +178,21 @@ func (col *transSettCollection) FindOne(orderNum, chanOrderNum string) (t *model
 	return
 }
 
+// FindOrders 根据交易订单号、渠道订单号查询相应的订单和源订单号匹配的交易
+func (col *transSettCollection) FindOrders(orderNum, chanOrderNum string) ([]model.TransSett, error) {
+	// 订单是uuid 全局唯一
+	var tss []model.TransSett
+	q := bson.M{
+		"$or": []bson.M{
+			bson.M{"trans.orderNum": orderNum, "trans.chanOrderNum": chanOrderNum},
+			bson.M{"trans.origOrderNum": orderNum, "trans.chanOrderNum": chanOrderNum},
+		},
+	}
+	err := database.C(col.name).Find(q).All(&tss)
+
+	return tss, err
+}
+
 // FindOne 根据交易订单号、渠道订单号删除记录
 func (col *transSettCollection) RemoveOne(orderNum, chanOrderNum string) error {
 	// 订单是uuid 全局唯一
