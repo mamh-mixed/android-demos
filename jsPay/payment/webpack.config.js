@@ -9,4 +9,5 @@
 
 var genConf = require('./make-webpack.config');
 
-module.exports = genConf({debug: false});
+// minify 表示js压缩
+module.exports = genConf({debug: false, minify: true});
