@@ -122,6 +122,7 @@ func (a *alipayOverseas) Reconciliation(date string) {
 			log.Errorf("invalid reconciliation data length=%d should be 8", len(data))
 			continue
 		}
+		log.Debugf("handle record: %s", data)
 		orderNum, chanOrderNum := data[0], data[1]
 
 		// 排除可能一时的系统错误导致查询失败
@@ -181,16 +182,18 @@ func (a *alipayOverseas) Reconciliation(date string) {
 
 			// 开始勾兑，默认成功
 			ts.BlendType = MATCH
-
+			// 机构手续费以支付宝给的为准
+			ts.InsFee = currency.I64(t.Currency, data[3])
 			// 不管是支付交易还是逆向交易，成功的交易都是有金额的，所以直接比较金额即可。
 			if currency.Str(t.Currency, t.TransAmt) != data[2] {
 				// 金额不一致
 				ts.BlendType = AMT_ERROR
-			} else if currency.Str(t.Currency, ts.InsFee) != data[3] {
-				// 不管是支付交易还是逆向交易，都是有计算手续费的。
-				// 手续费不一致
-				ts.BlendType = FEE_ERROR
 			}
+			// else if currency.Str(t.Currency, ts.InsFee) != data[3] {
+			// 	// 不管是支付交易还是逆向交易，都是有计算手续费的。
+			// 	// 手续费不一致
+			// 	ts.BlendType = FEE_ERROR
+			// }
 
 			// 时间
 			ts.SettTime = time.Now().Format("2006-01-02 15:04:05")

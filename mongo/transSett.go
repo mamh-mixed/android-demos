@@ -217,7 +217,7 @@ func (col *transSettCollection) Update(t *model.TransSett) error {
 		return errors.New("transSett is nil")
 	}
 	// t.SettDate = time.Now().Format("2006-01-02 15:04:05")
-	return database.C(col.name).Update(bson.M{"trans.merId": t.Trans.MerId, "trans.orderNum": t.Trans.OrderNum}, t)
+	return database.C(col.name).Update(bson.M{"trans._id": t.Trans.Id}, t)
 }
 
 // Find
