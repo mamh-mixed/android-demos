@@ -64,11 +64,11 @@ func (u *unionliveScanPay) ProcessPurchaseCoupons(req *model.ScanPayRequest) (*m
 		ChanRespCode:    unionLiveResp.Header.Returncode,
 		ChannelOrderNum: unionLiveResp.Header.Hosttraceno,
 		// Terminalid:      req.Terminalsn,
-		Authcode:    unionLiveResp.Body.Authcode,
-		ChannelTime: unionLiveResp.Header.Hosttime,
-		// VoucherType:   strconv.Itoa(unionLiveResp.Body.VoucherType),
-		// SaleMinAmount: strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
-		// SaleDiscount:  strconv.Itoa(unionLiveResp.Body.SaleDiscount),
+		Authcode:      unionLiveResp.Body.Authcode,
+		ChannelTime:   unionLiveResp.Header.Hosttime,
+		VoucherType:   strconv.Itoa(unionLiveResp.Body.VoucherType),
+		SaleMinAmount: strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
+		SaleDiscount:  strconv.Itoa(unionLiveResp.Body.SaleDiscount),
 	}
 
 	return scanPayResponse, nil
