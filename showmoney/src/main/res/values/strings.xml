@@ -157,6 +157,8 @@
     <string name="txt_query_result">查询结果</string>
     <string name="txt_reset_messsage">如果你忘记密码请点击重置密码</string>
     <string name="txt_reset">重置密码</string>
+    <string name="txt_search">搜索</string>
+    <string name="txt_hint_search">请输入搜索的内容</string>
 
     <string name="setting_support_channel">支持的渠道</string>
     <string name="setting_my_web_yunshouyin">我的网页版</string>
