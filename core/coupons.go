@@ -127,7 +127,7 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	}
 
 	//从原始交易中获取订单号，赋值给该请求的原始订单号字段。
-	// t.OrigOrderNum = orig.OrderNum
+	t.OrigOrderNum = orig.OrderNum
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
