@@ -174,17 +174,12 @@ func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
 	q := &model.QueryCondition{
 		MerId:    params.Get("merId"),
 		OrderNum: params.Get("orderNum"),
+		ReqIds:   params["reqIds"],
 		Page:     page,
 		Size:     size,
 	}
 
-	reqIds := params.Get("reqIds")
-	if strings.Contains(reqIds, ",") {
-		q.ReqIds = strings.Split(reqIds, ",")
-	}
-
 	ret := getTradeMsg(q, msgType)
-
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Error(err)
