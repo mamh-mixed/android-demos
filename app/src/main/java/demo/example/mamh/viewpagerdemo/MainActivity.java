@@ -68,8 +68,11 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
+                //求余
+                position = position % imageList.size();
+
                 msg.setText(imageDescriptions[position]);
-                for(ImageView iv: pointList){
+                for (ImageView iv : pointList) {
                     iv.setImageResource(R.drawable.presence_offline);
                 }
                 pointList.get(position).setImageResource(R.drawable.presence_online);
@@ -87,6 +90,8 @@ public class MainActivity extends Activity {
     private class ViewPagerAdapter extends PagerAdapter {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            position = position % imageList.size();                //求余
+
             //实例化某个条目
             //获得相应位置上的item
             //container view的容器，viewpager自身
@@ -104,7 +109,7 @@ public class MainActivity extends Activity {
         @Override
         public int getCount() {
             //告诉viewpager 有多少个条目。多少个页面
-            return imageList.size();
+            return Integer.MAX_VALUE;
         }
 
         @Override
