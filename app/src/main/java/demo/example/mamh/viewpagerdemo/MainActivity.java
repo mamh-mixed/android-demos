@@ -60,6 +60,7 @@ public class MainActivity extends Activity {
 
         PagerAdapter adapter = new ViewPagerAdapter();
         viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % imageList.size()));//设置为双向的无限循环
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
