@@ -3,38 +3,38 @@ package com.mrwujay.cascade.model;
 import java.util.List;
 
 public class ProvinceModel {
-	private String name;
-	private List<CityModel> cityList;
-	
-	public ProvinceModel() {
-		super();
-	}
+    private String name;
+    private List<CityModel> cityList;
 
-	public ProvinceModel(String name, List<CityModel> cityList) {
-		super();
-		this.name = name;
-		this.cityList = cityList;
-	}
+    public ProvinceModel() {
+        super();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public ProvinceModel(String name, List<CityModel> cityList) {
+        super();
+        this.name = name;
+        this.cityList = cityList;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<CityModel> getCityList() {
-		return cityList;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setCityList(List<CityModel> cityList) {
-		this.cityList = cityList;
-	}
+    public List<CityModel> getCityList() {
+        return cityList;
+    }
 
-	@Override
-	public String toString() {
-		return "ProvinceModel [name=" + name + ", cityList=" + cityList + "]";
-	}
-	
+    public void setCityList(List<CityModel> cityList) {
+        this.cityList = cityList;
+    }
+
+    @Override
+    public String toString() {
+        return "ProvinceModel [name=" + name + ", cityList=" + cityList + "]";
+    }
+
 }

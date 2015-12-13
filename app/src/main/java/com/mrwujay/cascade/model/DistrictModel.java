@@ -1,38 +1,38 @@
 package com.mrwujay.cascade.model;
 
 public class DistrictModel {
-	private String name;
-	private String zipcode;
-	
-	public DistrictModel() {
-		super();
-	}
+    private String name;
+    private String zipcode;
 
-	public DistrictModel(String name, String zipcode) {
-		super();
-		this.name = name;
-		this.zipcode = zipcode;
-	}
+    public DistrictModel() {
+        super();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public DistrictModel(String name, String zipcode) {
+        super();
+        this.name = name;
+        this.zipcode = zipcode;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getZipcode() {
-		return zipcode;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
-	}
+    public String getZipcode() {
+        return zipcode;
+    }
 
-	@Override
-	public String toString() {
-		return "DistrictModel [name=" + name + ", zipcode=" + zipcode + "]";
-	}
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    @Override
+    public String toString() {
+        return "DistrictModel [name=" + name + ", zipcode=" + zipcode + "]";
+    }
 
 }
