@@ -50,14 +50,13 @@ public class MainActivity extends Activity {
             iv.setBackgroundResource(imageIds[i]);
             imageList.add(iv);
             ImageView point = new ImageView(this);
-            point.setBackgroundResource(R.mipmap.ic_launcher);
-            point.setVisibility(View.GONE);
+            point.setBackgroundResource(R.drawable.presence_offline);
             pointList.add(point);
             pointGroup.addView(point);
-
         }
+
         msg.setText(imageDescriptions[0]);
-        pointList.get(0).setVisibility(View.VISIBLE);
+        pointList.get(viewPager.getCurrentItem()).setImageResource(R.drawable.presence_online);
 
         PagerAdapter adapter = new ViewPagerAdapter();
         viewPager.setAdapter(adapter);
@@ -70,7 +69,10 @@ public class MainActivity extends Activity {
             @Override
             public void onPageSelected(int position) {
                 msg.setText(imageDescriptions[position]);
-                pointList.get(position).setVisibility(View.VISIBLE);
+                for(ImageView iv: pointList){
+                    iv.setImageResource(R.drawable.presence_offline);
+                }
+                pointList.get(position).setImageResource(R.drawable.presence_online);
             }
 
             @Override
