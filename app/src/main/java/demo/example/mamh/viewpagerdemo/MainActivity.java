@@ -2,6 +2,8 @@ package demo.example.mamh.viewpagerdemo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
 
 public class MainActivity extends Activity {
 
@@ -35,6 +38,9 @@ public class MainActivity extends Activity {
             "热血屌丝的反杀"
     };
     private ArrayList<ImageView> pointList;
+
+    private Handler handler;
+    private boolean isRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +91,35 @@ public class MainActivity extends Activity {
             }
         });
 
+
+        /**
+         * 自动循环：图片每隔2秒自动的切换一下图片
+         * 1.定时器 timer
+         * 2.开子线程。while ture 循环
+         * 3.colckManager
+         * 4.hander 发送延时消息
+         *
+         */
+        handler = new ViewPagerHandler();
+        isRunning = true;
+        handler.sendEmptyMessageDelayed(0, 2000);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isRunning = false;
+    }
+
+    private class ViewPagerHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+            if (isRunning) {
+                handler.sendEmptyMessageDelayed(0, 2000);
+            }
+        }
     }
 
 
