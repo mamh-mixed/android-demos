@@ -19,6 +19,8 @@ import (
 	"github.com/omigo/log"
 )
 
+var maxReportRec = 10000
+
 // appLocaleHandle 网关展示语言
 func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
