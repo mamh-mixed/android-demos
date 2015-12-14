@@ -1,9 +1,10 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 var RoleSettCol = roleSettCollection{name: "roleSett"}
@@ -31,7 +32,7 @@ func (r *roleSettCollection) Upsert(rs *model.RoleSett) error {
 }
 
 // PaginationFind 分页查找清算数据
-func (r *roleSettCollection) PaginationFind(role, date string, size, page int) (results []model.RoleSett, total int, err error) {
+func (r *roleSettCollection) PaginationFind(role, date string, reportType, size, page int) (results []model.RoleSett, total int, err error) {
 	results = make([]model.RoleSett, 0)
 
 	match := bson.M{}
@@ -41,6 +42,10 @@ func (r *roleSettCollection) PaginationFind(role, date string, size, page int) (
 
 	if date != "" {
 		match["settDate"] = date
+	}
+
+	if reportType != 0 {
+		match["reportType"] = reportType
 	}
 
 	total, err = database.C(r.name).Find(match).Count()
