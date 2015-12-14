@@ -21,12 +21,13 @@ func Demo() (a interface{}, err error) {
 			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()), // 客户端交易流水号 40 M 客户端的唯一交易流水号
 		},
 		Body: coupon.PurchaseCouponsReqBody{
-			CouponsNo: "1818303006004106", // 优麦圈电子券号 50 M 优麦圈电子券号
+			CouponsNo: "1816086060100100", // 优麦圈电子券号 50 M 优麦圈电子券号
 			TermId:    "00000667",         // 终端编号 8 M 由优麦圈后台分配给该终端的编号
 			// TermSn:    "9e908a255b3e5989", // 终端唯一序列号 100 M 商户终端对应的硬件唯一序列号
-			Amount:    1, // 要验证的次数  10 M 要验证该券码的次数,次数必须大于0
-			ExtMercId: "100000000010001",
-			ExtTermId: "1000134",
+			Amount:      1, // 要验证的次数  10 M 要验证该券码的次数,次数必须大于0
+			ExtMercId:   "100000000010001",
+			ExtTermId:   "1000134",
+			TransAmount: 21000,
 		},
 		SpReq: &model.ScanPayRequest{},
 	}

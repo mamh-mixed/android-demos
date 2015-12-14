@@ -40,9 +40,11 @@
 
         <paper-input id="merId" label="门店代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
+        <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
         <paper-input label="卡券号" name="couponsNo" value="{{cond.couponNum::input}}"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
         <x-select items="[[woStatusMapArray]]" name="writeoffStatus" selected-item="{{woStatus}}" label="核销状态"></x-select>
+        <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型"></x-select>
         <paper-input id="payType" name="pay" value="coupon" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
       </div>
@@ -109,19 +111,15 @@
     (function() {
       'use strict';
       var TRANS_TYPE_MAP = {
-        'PURC': '下单支付',
-        'PAUT': '预下单',
-        'VOID': '撤销',
-        'REFD': '退款',
-        'VERI': '卡券核销',
-        'CANC': '取消',
-        'QYZF': '企业付款',
-        'JSZF': '公众号支付'
+        'VERI': '卡券核销/查询',
+        'CRVE': '刷卡核销',
+        'QUVE': '验券查询',
+        'CAVE': '卡券撤销',
       };
       var WO_STATUS_MAP = {
         'SUCCESS': '成功',
         'ERROR': '失败',
-        'QUERYSUCCESS':'查询成功',
+        'PROCESS': '处理中',
       };
       Polymer({
         is: 'coupon-wo-list',
@@ -170,7 +168,27 @@
               })
               return arr;
             }
-          }
+          },
+          busicd: {
+            type: Object
+          },
+          busicds: {
+            type: Array,
+            value: (function() {
+              var busicds = [],
+                obj = {};
+              for (var k in TRANS_TYPE_MAP) {
+                if (!obj[k.toUpperCase()]) {
+                  obj[k.toUpperCase()] = TRANS_TYPE_MAP[k];
+                  busicds.push({
+                    key: k.toUpperCase(),
+                    value: (k.toUpperCase() + ' ' + TRANS_TYPE_MAP[k])
+                  });
+                }
+              }
+              return busicds;
+            })()
+          },
         },
         ready: function() {
           this.isAdmin = false;
@@ -178,7 +196,8 @@
         attached: function() {},
         observers: [
           '_watchUserChanged(user.*)',
-          '_watchTimeChanged(time.startTime, time.endTime)'
+          '_watchTimeChanged(time.startTime, time.endTime)',
+          '_watchBusicdChange(busicd.key)',
         ],
         _watchTimeChanged: function(startTime, endTime) {
           this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD'));
@@ -196,6 +215,9 @@
               this.isAdmin = false;
             }
           }
+        },
+        _watchBusicdChange: function(key) {
+          this.cond.busicd = key;
         },
         // 弹窗显示报文信息
         showTradeMessageEvent: function(e) {

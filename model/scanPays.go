@@ -28,6 +28,7 @@ const (
 	// 卡券核销状态
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
+	COUPON_WO_PROCESS = "PROCESS"
 )
 
 // QueryCondition 扫码交易查询字段
