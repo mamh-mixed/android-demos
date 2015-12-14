@@ -27,7 +27,6 @@ var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 
 var srcDir = path.resolve(process.cwd(), 'src');
 var build = 'assets/';
-var sourceMap = require('./src/sourcemap.json');
 
 var excludeFromStats = [
 	/node_modules[\\\/]/
@@ -122,7 +121,7 @@ function makeConf(options) {
 			// 	minChunks: chunks.length // 提取所有chunks共同依赖的模块
 			// }),
 			new OpenBrowserPlugin({
-				url: 'http://localhost:8080/webpack-dev-server/pay.html'
+				url: 'http://localhost:8080/webpack-dev-server/index.html'
 			}),
 			new webpack.DefinePlugin({
 				__GATEWATSERVER__: gatwayServer
