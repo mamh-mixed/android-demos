@@ -57,7 +57,7 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		GoodsGag:   m.GoodsTag,   // 商品标记
 		// Detail:     m.WxpMarshalGoods(), // 商品详情
 		// Attach:     m.Attach,         // 附加数据
-		// FeeType:    m.CurrType,       // 货币类型
+		FeeType: m.Currency, // 货币类型
 	}
 
 	p := &PayResp{}
