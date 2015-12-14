@@ -43,8 +43,8 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		Partner:        req.ChanMerId,
 		Service:        createAndPay,
 		NotifyUrl:      alipayNotifyUrl,
-		OutTradeNo:     req.OrderNum,    // 送的是原订单号，不转换
-		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
+		OutTradeNo:     req.OrderNum,                      // 送的是原订单号，不转换
+		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		Subject:        req.Subject,
 		GoodsDetail:    req.AlpMarshalGoods(),
 		ProductCode:    "BARCODE_PAY_OFFLINE",
@@ -76,7 +76,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		OutTradeNo:     req.OrderNum, // 送的是原订单号，不转换,
 		Subject:        req.Subject,
 		GoodsDetail:    req.AlpMarshalGoods(),
-		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
+		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
 		ExtendParams:   req.ExtendParams,
