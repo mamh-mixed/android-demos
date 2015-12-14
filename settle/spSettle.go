@@ -9,7 +9,6 @@ import (
 	"github.com/omigo/log"
 	"math"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -63,35 +62,33 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		log.Errorf("search the wxp agent error:%s", err)
 	}
 	chanMMap := make(model.ChanBlendMap)
-	blendDateStr := strings.Replace(date, "-", "", -1)
 	//微信请求
-	wxpreq := new(model.ScanPayRequest)
-	wxpreq.SettleDate = blendDateStr
 	for _, a := range wxpAgent {
-		wxpreq.AppID = a.WxpAppId
-		wxpreq.ChanMerId = a.ChanMerId
-		wxpreq.SignKey = a.SignKey
-		err = scanpay.DefaultWeixinScanPay.ProcessSettleEnquiry(wxpreq, chanMMap)
+		err = scanpay.DefaultWeixinScanPay.ProcessSettleEnquiry(&model.ScanPayRequest{
+			AppID:     a.WxpAppId,
+			ChanMerId: a.ChanMerId,
+			SignKey:   a.SignKey,
+			SettDate:  date,
+		}, chanMMap)
 		if err != nil {
-			log.Errorf("the request error , merid:%s, chanCode:%s", wxpreq.ChanMerId, "WXP")
+			log.Errorf("the request error , merid:%s, chanCode:%s", a.ChanMerId, "WXP")
 		}
 	}
 
 	//支付宝
-	alpreq := new(model.ScanPayRequest)
-	alpreq.StartTime = date + " 00:00:00"
-	alpreq.EndTime = date + " 23:59:59"
 	for _, k := range alpMers {
 		c, err := mongo.ChanMerColl.Find("ALP", k)
 		if err != nil {
 			log.Errorf("find alp mer info error:%s", k)
 			continue
 		}
-		alpreq.SignKey = c.SignKey
-		alpreq.ChanMerId = k
-		err = alipay.Domestic.ProcessSettleEnquiry(alpreq, chanMMap)
+		err = alipay.Domestic.ProcessSettleEnquiry(&model.ScanPayRequest{
+			SignKey:   c.SignKey,
+			ChanMerId: k,
+			SettDate:  date,
+		}, chanMMap)
 		if err != nil {
-			log.Errorf("the request error: %s , merid:%s, chanCode:%s", err, alpreq.ChanMerId, "ALP")
+			log.Errorf("the request error: %s , merid:%s, chanCode:%s", err, c.ChanMerId, "ALP")
 		}
 	}
 

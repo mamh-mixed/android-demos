@@ -21,11 +21,11 @@ func (lc *logsCollection) Add(l *model.SpTransLogs) error {
 }
 
 // FindOne 查找一条记录
-func (lc *logsCollection) FindOne(q *model.QueryCondition) (*model.SpTransLogs, error) {
-	var result = new(model.SpTransLogs)
-	err := database.C(lc.name).Find(lc.query(q)).One(result)
-	return result, err
-}
+// func (lc *logsCollection) FindOne(q *model.QueryCondition) (*model.SpTransLogs, error) {
+// 	var result = new(model.SpTransLogs)
+// 	err := database.C(lc.name).Find(lc.query(q)).One(result)
+// 	return result, err
+// }
 
 // Find 查找莫个订单的日志
 func (lc *logsCollection) Find(q *model.QueryCondition) ([]model.SpTransLogs, error) {
@@ -59,26 +59,13 @@ func (lc *logsCollection) query(q *model.QueryCondition) bson.M {
 	query := bson.M{}
 	if len(q.ReqIds) > 0 {
 		query["reqId"] = bson.M{"$in": q.ReqIds}
-	}
-
-	if q.Direction != "" {
-		query["direction"] = q.Direction
-	}
-
-	if q.MerId != "" {
-		query["merId"] = q.MerId
-	}
-
-	if q.Busicd != "" {
-		query["transType"] = q.Busicd
-	}
-
-	if q.OrderNum != "" {
-		query["$or"] = []bson.M{bson.M{"orderNum": q.OrderNum}, bson.M{"origOrderNum": q.OrderNum, "transType": model.Inqy}}
-	}
-
-	if q.OrigOrderNum != "" {
-		query["origOrderNum"] = q.OrigOrderNum
+	} else {
+		on, oon := bson.M{}, bson.M{}
+		on["merId"], oon["merId"] = q.MerId, q.MerId
+		on["orderNum"], oon["origOrderNum"] = q.OrderNum, q.OrderNum
+		query["$or"] = []bson.M{
+			on, oon,
+		}
 	}
 	return query
 }

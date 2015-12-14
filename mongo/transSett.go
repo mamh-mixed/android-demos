@@ -166,16 +166,39 @@ func (col *transSettCollection) FindByOrderNum(sysOrderNum string) (t *model.Tra
 }
 
 // FindOne 根据交易订单号、渠道订单号查找唯一记录
-func (col *transSettCollection) FindOne(orderNum, chanOrderNum string) (t *model.TransSett, err error) {
+func (col *transSettCollection) FindOne(orderNum, relatedOrderNum string) (t *model.TransSett, err error) {
 	// 订单是uuid 全局唯一
 	t = new(model.TransSett)
 	q := bson.M{
-		"trans.orderNum":     orderNum,
-		"trans.chanOrderNum": chanOrderNum,
+		"$or": []bson.M{
+			bson.M{
+				"trans.orderNum":     orderNum,
+				"trans.chanOrderNum": relatedOrderNum,
+			},
+			bson.M{
+				"trans.orderNum":     orderNum,
+				"trans.origOrderNum": relatedOrderNum,
+			},
+		},
 	}
 	err = database.C(col.name).Find(q).One(t)
 
 	return
+}
+
+// FindOrders 根据交易订单号、渠道订单号查询相应的订单和源订单号匹配的交易
+func (col *transSettCollection) FindOrders(orderNum, chanOrderNum string) ([]model.TransSett, error) {
+	// 订单是uuid 全局唯一
+	var tss []model.TransSett
+	q := bson.M{
+		"$or": []bson.M{
+			bson.M{"trans.orderNum": orderNum, "trans.chanOrderNum": chanOrderNum},
+			bson.M{"trans.origOrderNum": orderNum, "trans.chanOrderNum": chanOrderNum},
+		},
+	}
+	err := database.C(col.name).Find(q).All(&tss)
+
+	return tss, err
 }
 
 // FindOne 根据交易订单号、渠道订单号删除记录
@@ -194,7 +217,7 @@ func (col *transSettCollection) Update(t *model.TransSett) error {
 		return errors.New("transSett is nil")
 	}
 	// t.SettDate = time.Now().Format("2006-01-02 15:04:05")
-	return database.C(col.name).Update(bson.M{"trans.merId": t.Trans.MerId, "trans.orderNum": t.Trans.OrderNum}, t)
+	return database.C(col.name).Update(bson.M{"trans._id": t.Trans.Id}, t)
 }
 
 // Find
@@ -212,6 +235,9 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	}
 	if q.GroupCode != "" {
 		find["trans.groupCode"] = q.GroupCode
+	}
+	if q.SettRole != "" {
+		find["settRole"] = q.SettRole
 	}
 	if q.StartTime != "" && q.EndTime != "" {
 		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
@@ -339,6 +365,47 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 		}},
 	}).All(&all)
 	return group, all, err
+}
+
+// GroupBySettRole 根据清算角色出报表
+func (col *transSettCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
+
+	var result []model.SettRoleGroup
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": bson.M{
+			"settDate": settDate,
+		}},
+		{"$group": bson.M{"_id": bson.M{"merId": "$trans.merId", "settRole": "$trans.settRole"},
+			"transAmt": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.transAmt",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.transAmt", // 相当于将逆向交易的金额变为负数
+					}},
+				},
+			}},
+			"fee": bson.M{"$sum": bson.M{
+				"$cond": []interface{}{
+					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$trans.fee",
+					bson.M{"$subtract": []interface{}{
+						0, "$trans.fee",
+					}},
+				},
+			}},
+		}},
+		{"$group": bson.M{
+			"_id": "$_id.settRole",
+			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
+				"transAmt": "$transAmt",
+				"fee":      "$fee",
+			}},
+		}},
+		{"$project": bson.M{
+			"settRole": "$_id",
+			"mers":     "$detail",
+		}},
+	}).All(&result)
+	return result, err
 }
 
 func (col *transSettCollection) FindAll() ([]model.TransSett, error) {
