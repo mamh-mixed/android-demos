@@ -128,6 +128,7 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 	return response
 }
 
+// GetSpTransLogs 扫码支付交易报文查询
 func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, int, error) {
 
 	var spLogs []model.SpTransLogs
