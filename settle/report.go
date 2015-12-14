@@ -10,10 +10,11 @@ import (
 
 //  reportType
 const (
-	TransferReport       = 1 // 划款报表
-	ReconciliationReport = 2 // 对账报表
-	InsFlowReport        = 3 // 机构流水报表
-	ChanMerReport        = 4 // 渠道商户报表
+	TransferReport         = 1 // 划款报表
+	ReconciliationReport   = 2 // 对账报表
+	InsFlowReport          = 3 // 机构流水报表
+	ChanMerReport          = 4 // 渠道商户报表
+	ReconciliationNotEqual = 5 // 对账不平报表
 	// 分润报表
 )
 
