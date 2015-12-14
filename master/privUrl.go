@@ -44,4 +44,6 @@ var agentURLArr = []string{
 	"/master/app/locale",
 	"/master/app/resetPwd",
 	"/master/list",
+	"/master/trade/settle/report",
+	"/master/trade/settle/journal",
 }

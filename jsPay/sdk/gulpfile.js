@@ -97,11 +97,11 @@ gulp.task('deploy', ['default'], function() {
 
 	var deployMap = {
 		'test': {
-			'destination': '/home/weixin/cloudCashier/agent'
+			'destination': '/home/weixin/cloudCashier/sdk'
 		},
 		'product': {
-			// 'destination': '/home/weixin/cloudCashier/agent'
-			'destination': '/home/weixin/cloudCashier/payment'
+			// 'destination': '/home/weixin/cloudCashier/jssdk'
+			'destination': '/home/weixin/cloudCashier/sdk'
 		}
 	};
 
