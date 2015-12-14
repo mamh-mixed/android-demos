@@ -10,7 +10,7 @@ func init() {
 	go persistSpLogs()
 }
 
-var SpLogs = make(chan *model.SpTransLogs, 1e5)
+var SpLogs = make(chan *model.SpTransLogs, 1e6)
 
 // persistSpLogs 持久化扫码交易日志
 func persistSpLogs() {
@@ -21,19 +21,10 @@ func persistSpLogs() {
 			switch l.MsgType {
 			case 1:
 				mongo.SpMerLogsCol.Add(l)
-			case 2:
+			case 2, 3:
+				// 2 渠道同步返回报文
+				// 3 渠道异步返回报文
 				mongo.SpChanLogsCol.Add(l)
-			case 3:
-				// 异步消息通知，先关联reqId
-				pl, err := mongo.SpChanLogsCol.FindOne(&model.QueryCondition{MerId: l.MerId, Busicd: l.TransType, OrderNum: l.OrderNum})
-				if err != nil {
-					log.Errorf("find paut logs error: %s, find condition: %v", err, l)
-					continue
-				}
-				// 关联reqId
-				l.ReqId = pl.ReqId
-				mongo.SpChanLogsCol.Add(l)
-
 			default:
 				log.Warnf("unknown msgType: %d", l.MsgType)
 			}

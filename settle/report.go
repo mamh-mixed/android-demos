@@ -25,7 +25,7 @@ type reconciliationMap map[string]map[string]map[string]*reconciliatReportData
 // SpSettReport 扫码清算报表
 func SpSettReport(settDate string) error {
 
-	data, err := mongo.SpTransColl.GroupBySettRole(settDate)
+	data, err := mongo.SpTransSettColl.GroupBySettRole(settDate)
 	if err != nil {
 		log.Errorf("fail to find trans group by settRole: %s", err)
 		return err
@@ -136,9 +136,10 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 	}
 
 	if len(reconciliatMMap) != 0 {
-		// 报表名称
-		filename := "账务对账报表IC002.xlsx"
-		upload(filename, genReconciliatReportExcel(reconciliatMMap, date))
+		// 报表日期显示格式
+		sd := strings.Replace(date, "-", "", -1)
+		filename := filePrefix + "IC002_%s.xlsx"
+		upload(fmt.Sprintf(filename, sd, sd), genReconciliatReportExcel(reconciliatMMap, date))
 	}
 
 	return nil

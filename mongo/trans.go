@@ -693,51 +693,6 @@ func (col *transCollection) FindByNextRecord(q *model.QueryCondition) ([]model.T
 	return result, err
 }
 
-// GroupBySettRole 根据清算角色出报表
-func (col *transCollection) GroupBySettRole(settDate string) ([]model.SettRoleGroup, error) {
-
-	find := bson.M{
-		"payTime":  bson.M{"$gte": settDate + " 00:00:00", "$lt": settDate + " 23:59:59"},
-		"$or":      []bson.M{bson.M{"transStatus": model.TransSuccess}, bson.M{"refundStatus": model.TransRefunded}},
-		"transAmt": bson.M{"$ne": 0},
-	}
-
-	var result []model.SettRoleGroup
-	err := database.C(col.name).Pipe([]bson.M{
-		{"$match": find},
-		{"$group": bson.M{"_id": bson.M{"merId": "$merId", "settRole": "$settRole"},
-			"transAmt": bson.M{"$sum": bson.M{
-				"$cond": []interface{}{
-					bson.M{"$eq": []interface{}{"$transType", 1}}, "$transAmt",
-					bson.M{"$subtract": []interface{}{
-						0, "$transAmt", // 相当于将逆向交易的金额变为负数
-					}},
-				},
-			}},
-			"fee": bson.M{"$sum": bson.M{
-				"$cond": []interface{}{
-					bson.M{"$eq": []interface{}{"$transType", 1}}, "$fee",
-					bson.M{"$subtract": []interface{}{
-						0, "$fee",
-					}},
-				},
-			}},
-		}},
-		{"$group": bson.M{
-			"_id": "$_id.settRole",
-			"detail": bson.M{"$push": bson.M{"merId": "$_id.merId",
-				"transAmt": "$transAmt",
-				"fee":      "$fee",
-			}},
-		}},
-		{"$project": bson.M{
-			"settRole": "$_id",
-			"mers":     "$detail",
-		}},
-	}).All(&result)
-	return result, err
-}
-
 func (col *transCollection) AddSettRole(settRole, merId, orderNum string) error {
 	set := bson.M{"$set": bson.M{"settRole": settRole}}
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)

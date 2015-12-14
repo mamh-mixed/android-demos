@@ -156,19 +156,19 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 	d := &PrePayReq{
 		CommonParams: *getCommonParams(m),
 
-		DeviceInfo:     m.DeviceInfo,        // 设备号
-		Body:           m.WxpMarshalGoods(), // 商品描述
-		Attach:         m.SysOrderNum,       // 附加数据 这里送系统订单号
-		OutTradeNo:     m.OrderNum,          // 商户订单号
-		TotalFee:       m.ActTxamt,          // 总金额
-		SpbillCreateIP: util.LocalIP,        // 终端IP
-		TimeStart:      startTime,           // 交易起始时间
-		TimeExpire:     endTime,             // 交易结束时间
-		NotifyURL:      weixinNotifyURL,     // 通知地址
-		TradeType:      tradeType,           // 交易类型
-		ProductID:      "",                  // 商品ID
-		Openid:         m.OpenId,            // 用户标识
-		GoodsGag:       m.GoodsTag,          // 商品标记
+		DeviceInfo:     m.DeviceInfo,                  // 设备号
+		Body:           m.WxpMarshalGoods(),           // 商品描述
+		Attach:         m.SysOrderNum + "," + m.ReqId, // 格式：系统订单号,日志Id
+		OutTradeNo:     m.OrderNum,                    // 商户订单号
+		TotalFee:       m.ActTxamt,                    // 总金额
+		SpbillCreateIP: util.LocalIP,                  // 终端IP
+		TimeStart:      startTime,                     // 交易起始时间
+		TimeExpire:     endTime,                       // 交易结束时间
+		NotifyURL:      weixinNotifyURL,               // 通知地址
+		TradeType:      tradeType,                     // 交易类型
+		ProductID:      "",                            // 商品ID
+		Openid:         m.OpenId,                      // 用户标识
+		GoodsGag:       m.GoodsTag,                    // 商品标记
 		// FeeType:        m.CurrType,                         // 货币类型
 		// Detail:         m.WxpMarshalGoods(),                // 商品详情
 	}
@@ -320,7 +320,7 @@ func (sp *WeixinScanPay) ProcessSettleEnquiry(m *model.ScanPayRequest, cbd model
 
 	d := &SettleQueryReq{
 		CommonParams: *getCommonParams(m),
-		SettleDate:   m.SettleDate,
+		SettleDate:   strings.Replace(m.SettDate, "-", "", -1),
 		SettleType:   "ALL",
 	}
 
