@@ -116,8 +116,10 @@ func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 
-	// TODO 暂时设置为日币
 	// 导出
+	// TODO 暂时设置为日币
+	q.StartTime = q.Date + " 00:00:00"
+	q.EndTime = q.Date + " 23:59:59"
 	genStatReport(s, q, rl, "JPY").Write(w)
 }
 

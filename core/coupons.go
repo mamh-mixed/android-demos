@@ -38,6 +38,7 @@ func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		CouponsNo:   req.ScanCodeId,
 		VeriTime:    req.VeriTime,
+		TransAmt:    req.IntTxamt,
 	}
 
 	// 补充关联字段
@@ -63,6 +64,7 @@ func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
 	if err != nil {
+		log.Errorf("format submitTime err,%s", err)
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 	req.CreateTime = submitTime.Format("20060102150405")
@@ -118,13 +120,6 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
 
-	// sign := req.Cardbin[0:1]
-	// if req.PayType == "4" && sign != "1" {
-	// 	return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
-	// } else if req.PayType == "5" && sign != "2" {
-	// 	return adaptor.LogicErrorHandler(t, "CODE_CHAN_NOT_MATCH")
-	// }
-
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
@@ -155,6 +150,7 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	}
 	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
 	if err != nil {
+		log.Errorf("format submitTime err,%s", err)
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
@@ -163,7 +159,6 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	req.ChanMerId = c.ChanMerId
 	req.Terminalsn = req.Terminalid
 	req.Terminalid = c.TerminalId
-	req.OrigOrderNum = t.OrigOrderNum
 	req.OrigChanOrderNum = orig.ChanOrderNum
 
 	// 获得渠道实例，请求
@@ -206,9 +201,6 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 		CouponsNo:    req.ScanCodeId,
 		VeriTime:     req.VeriTime,
 		OrigOrderNum: req.OrigOrderNum,
-		Cardbin:      req.Cardbin,
-		TransAmt:     req.IntTxamt,
-		PayType:      req.PayType,
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
@@ -243,12 +235,12 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	}
 	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
 	if err != nil {
-		log.Warn("trans CreateTime err")
+		log.Errorf("format submitTime err,%s", err)
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 	origSubmitTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
 	if err != nil {
-		log.Warn("trans origSubmitTime err")
+		log.Errorf("format origSubmitTime err,%s", err)
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
@@ -257,13 +249,12 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	req.ChanMerId = c.ChanMerId
 	req.Terminalsn = req.Terminalid
 	req.Terminalid = c.TerminalId
-	req.OrigOrderNum = t.OrigOrderNum
 	req.OrigSubmitTime = origSubmitTime.Format("20060102150405")
 	req.IntTxamt = orig.TransAmt
 	if orig.PayType != "" {
 		intPayType, err := strconv.Atoi(orig.PayType)
 		if err != nil {
-			log.Warn("trans payType to int err")
+			log.Errorf("format payType to int err,%s", err)
 			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 		}
 		req.IntPayType = intPayType
@@ -359,7 +350,6 @@ func UndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespon
 	req.ChanMerId = c.ChanMerId
 	req.Terminalsn = req.Terminalid
 	req.Terminalid = c.TerminalId
-	req.OrigOrderNum = t.OrigOrderNum
 	req.OrigSubmitTime = origSubmitTime.Format("20060102150405")
 	req.OrigChanOrderNum = orig.ChanOrderNum
 	req.OrigVeriTime = origVeriTime
@@ -408,12 +398,14 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.SaleMinAmount = ret.SaleMinAmount
 	t.SaleDiscount = ret.SaleDiscount
 	t.ActualPayAmount = ret.ActualPayAmount
+	t.OrigRespCode = ret.OrigRespcd
+	t.OrigErrorDetail = ret.OrigErrorDetail
 
 	//更新核销状态
 	if ret.Respcd == "00" {
 		t.WriteoffStatus = model.COUPON_WO_SUCCESS
-	} else if ret.Respcd == "09" || ret.Respcd == "37" {
-		t.WriteoffStatus = "QUERYSUCCESS"
+	} else if ret.Respcd == "09" {
+		t.WriteoffStatus = model.COUPON_WO_PROCESS
 	} else {
 		t.WriteoffStatus = model.COUPON_WO_ERROR
 	}

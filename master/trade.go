@@ -13,8 +13,6 @@ import (
 	"time"
 )
 
-var maxReportRec = 10000
-
 func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
 	ls, total, err := query.GetSpTransLogs(q, msgType)
 	if err != nil {
