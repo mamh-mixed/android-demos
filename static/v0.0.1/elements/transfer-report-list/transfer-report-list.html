@@ -47,7 +47,7 @@
               <div class="td">{{item.reportName}}</div>
               <div class="td center">
                 <a on-tap="handleDownloadReportEvent">报表</a> |
-                <a href="/master/trade/transfer/report?date={{item.settDate}}&role={{item.settRole}}">明细</a>
+                <a href="/master/trade/transfer/report?date={{item.settDate}}&role={{item.settRole}}&utcOffset={{cond.utcOffset}}">明细</a>
               </div>
             </div>
           </template>
@@ -82,6 +82,7 @@
               var yesterdayTime = now.getTime() - 1000 * 60 * 60 * 24;
               return {
                 date: new Date(yesterdayTime).format('yyyy-MM-dd'),
+                utcOffset: moment().utcOffset(),
                 role: '',
                 total: 0,
                 page: 1,

@@ -267,9 +267,6 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 	if q.Date != "" {
 		find["settDate"] = q.Date
 	}
-	if q.StartTime != "" && q.EndTime != "" {
-		find["trans.payTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
-	}
 	if q.MerId != "" {
 		find["trans.merId"] = q.MerId
 	}

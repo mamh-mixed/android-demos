@@ -72,11 +72,13 @@ func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
+	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
 
 	tradeReport(w, &model.QueryCondition{
-		Date:     date,
-		SettRole: role,
+		Date:      date,
+		SettRole:  role,
+		UtcOffset: utcOffset * 60, // second
 	}, fn)
 }
 
