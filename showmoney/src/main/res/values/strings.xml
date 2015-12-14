@@ -55,8 +55,8 @@
     <string name="press_again_exit">再按一次退出程序！</string>
     <string name="username_exist">用户名已存在！</string>
     <string name="activate_sentto_email">激活链接将发送到该邮箱:\n\n</string>
-    <string name="create_qrcode_activity_open_wx">请打开微信\n扫一扫</string>
-    <string name="create_qrcode_activity_open_ali">请打开支付宝钱包\n扫一扫</string>
+    <string name="create_qrcode_activity_open_wx">请顾客打开微信“扫一扫”</string>
+    <string name="create_qrcode_activity_open_ali">请顾客打开支付宝钱包“扫一扫”</string>
     <string name="create_qrcode_activity_amount">本次收款金额：￥</string>
     <string name="detail_activity_busicd_pay">支付</string>
     <string name="detail_activity_busicd_refd">退款</string>
