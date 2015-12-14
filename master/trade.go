@@ -2,6 +2,9 @@ package master
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
@@ -9,8 +12,6 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
-	"net/http"
-	"time"
 )
 
 func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
@@ -35,8 +36,8 @@ func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
 }
 
 // tradeSettleReportQuery 清算报表查询
-func tradeSettleReportQuery(role, date string, size, page int) (result *model.ResultBody) {
-	log.Debugf("role=%s; date=%s", role, date)
+func tradeSettleReportQuery(role, date string, reportType int, size, page int) (result *model.ResultBody) {
+	log.Debugf("reportType:%s;role=%s; date=%s", reportType, role, date)
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
@@ -46,7 +47,7 @@ func tradeSettleReportQuery(role, date string, size, page int) (result *model.Re
 		size = 10
 	}
 
-	results, total, err := mongo.RoleSettCol.PaginationFind(role, date, size, page)
+	results, total, err := mongo.RoleSettCol.PaginationFind(role, date, reportType, size, page)
 	if err != nil {
 		log.Errorf("分页查询出错%s", err)
 		return model.NewResultBody(1, "查询失败")

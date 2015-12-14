@@ -57,9 +57,10 @@ func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
+	reportType, _ := strconv.Atoi(r.FormValue("reportType"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := tradeSettleReportQuery(role, date, size, page)
+	ret := tradeSettleReportQuery(role, date, reportType, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -309,7 +310,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		UtcOffset:    utcOffset * 60,
 	}
 
-	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不���功的话���不处理，默认为false
 	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
 	if err == nil {
 		cond.IsAggregateByGroup = isAggreByGroup
@@ -957,7 +958,7 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 登录操作，只允许get请求
+// 登录操作���只允许get请���
 func loginHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
