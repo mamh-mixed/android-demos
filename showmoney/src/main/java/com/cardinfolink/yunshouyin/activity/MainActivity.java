@@ -21,7 +21,6 @@ import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
-import com.cardinfolink.yunshouyin.view.WapView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.umeng.common.message.UmengMessageDeviceConfig;
 import com.umeng.message.IUmengRegisterCallback;
@@ -39,7 +38,6 @@ public class MainActivity extends BaseActivity {
     private TransManageView mTransManageView;
     private PasswordUpdateView mPasswordUpdateView;
 
-    private WapView mWapBillView;
 
     private LinearLayout mMainContent;
     private ListView mDrawerList;
@@ -105,11 +103,6 @@ public class MainActivity extends BaseActivity {
         mPasswordUpdateView = new PasswordUpdateView(mContext);
         mPasswordUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-
-        mWapBillView = new WapView(mContext);
-        mWapBillView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-
         mMainContent.addView(mScanCodeView);
 
         mLeftMenu = new SlidingMenu(this);
@@ -136,10 +129,7 @@ public class MainActivity extends BaseActivity {
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_scancode));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_transmange));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_passwordupdate));
-
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_webbill));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_safeexit));
-
 
         adapter = new ArrayAdapter<String>(this, R.layout.menu_list_item, menuLists);
         mDrawerList.setAdapter(adapter);
@@ -171,14 +161,6 @@ public class MainActivity extends BaseActivity {
             case 2:
                 mMainContent.removeAllViews();
                 mMainContent.addView(mPasswordUpdateView);
-                break;
-            case 3:
-
-                break;
-            case 4:
-                mMainContent.removeAllViews();
-                mMainContent.addView(mWapBillView);
-                mWapBillView.initData();
                 break;
         }
     }
@@ -235,15 +217,6 @@ public class MainActivity extends BaseActivity {
                     mLeftMenu.toggle();
                     break;
                 case 3:
-
-                    break;
-                case 4:
-                    mMainContent.removeAllViews();
-                    mMainContent.addView(mWapBillView);
-                    mWapBillView.initData();
-                    mLeftMenu.toggle();
-                    break;
-                case 5:
                     finish();
                     break;
             }
