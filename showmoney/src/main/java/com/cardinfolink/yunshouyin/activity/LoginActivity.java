@@ -68,14 +68,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-        mRegisterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "onClick to register");
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
+
     }
 
     private boolean validate() {
@@ -126,9 +119,7 @@ public class LoginActivity extends BaseActivity {
 
                 if (TextUtils.isEmpty(SessonData.loginUser.getClientid())) {
                     // clientid为空,跳转到完善信息页面
-                    mLoadingDialog.endLoading();
-                    Intent intent = new Intent(mContext, RegisterNextActivity.class);
-                    mContext.startActivity(intent);
+
                 } else {
                     InitData initData = new InitData();
                     initData.setMchntid(data.getClientid());

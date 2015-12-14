@@ -65,16 +65,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
-        <activity
-            android:name=".activity.RegisterActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" />
-
-        <activity
-            android:name=".activity.RegisterNextActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.MainActivity"
