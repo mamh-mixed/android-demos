@@ -135,6 +135,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						// 对上，但金额不一致
 						for _, transSett := range transSetts {
 							transSett.BlendType = AMT_ERROR
+							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							mongo.SpTransSettColl.Update(&transSett)
 						}
 						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
@@ -160,8 +161,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 	// 渠道少清
 	if len(localMMap) != 0 {
 		// 出报表
-		file401 := "IC401.xlsx"
-		upload(file401, genC001ReportExcel(localMMap, date))
+		upload(getReportName(ChanLessReport), genC001ReportExcel(localMMap, date))
 	}
 
 	// 渠道多清
@@ -179,8 +179,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 				}
 			}
 		}
-		file402 := "IC402.xlsx"
-		upload(file402, genC002ReportExcel(chanMMap, date))
+		upload(getReportName(ChanMoreReport), genC002ReportExcel(chanMMap, date))
 	}
 }
 

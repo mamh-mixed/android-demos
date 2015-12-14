@@ -10,11 +10,12 @@ import (
 
 //  reportType
 const (
-	TransferReport         = 1 // 划款报表
-	ReconciliationReport   = 2 // 对账报表
-	InsFlowReport          = 3 // 机构流水报表
-	ChanMerReport          = 4 // 渠道商户报表
-	ReconciliationNotEqual = 5 // 对账不平报表
+	TransferReport       = 1 // 划款报表
+	ReconciliationReport = 2 // 对账报表
+	InsFlowReport        = 3 // 机构流水报表
+	ChanMerReport        = 4 // 渠道商户报表
+	ChanLessReport       = 5 // 对账不平报表-渠道少的
+	ChanMoreReport       = 6 // 对账不平报表-渠道多的
 	// 分润报表
 )
 
@@ -22,6 +23,25 @@ const filePrefix = "sett/report/%s/" // 文件名：sett/report/20151012/IC202_9
 
 // 最外部key为代理号，接下来是渠道，接下来是清算角色，value是角色下数据
 type reconciliationMap map[string]map[string]map[string]*reconciliatReportData
+
+func getReportName(reportType int) string {
+	var name string
+	switch reportType {
+	case TransferReport:
+		name = "IC202_%s_%s.xlsx"
+	case ReconciliationReport:
+		name = "IC002_%s.xlsx"
+	case InsFlowReport:
+		name = ""
+	case ChanMerReport:
+		name = ""
+	case ChanLessReport:
+		name = "IC401_%s.xlsx"
+	case ChanMoreReport:
+		name = "IC402_%s.xlsx"
+	}
+	return filePrefix + name
+}
 
 // SpSettReport 扫码清算报表
 func SpSettReport(settDate string) error {
@@ -34,12 +54,11 @@ func SpSettReport(settDate string) error {
 
 	// 报表日期显示格式
 	sd := strings.Replace(settDate, "-", "", -1)
-	filename := filePrefix + "IC202_%s_%s.xlsx"
 
 	// 遍历数据
 	for _, sg := range data {
 
-		key := fmt.Sprintf(filename, sd, sg.SettRole, sd)
+		key := fmt.Sprintf(getReportName(TransferReport), sd, sg.SettRole, sd)
 
 		// 查询该角色是否已出过报表
 		rs, err := mongo.RoleSettCol.FindOne(sg.SettRole, settDate)
@@ -69,10 +88,7 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 
 	// 判断数据源
 	if len(transSetts) == 0 {
-		tss, err := mongo.SpTransSettColl.Find(&model.QueryCondition{
-			StartTime: date + " 00:00:00",
-			EndTime:   date + " 23:59:59",
-		})
+		tss, err := mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date})
 		if err != nil {
 			return err
 		}
@@ -139,8 +155,7 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 	if len(reconciliatMMap) != 0 {
 		// 报表日期显示格式
 		sd := strings.Replace(date, "-", "", -1)
-		filename := filePrefix + "IC002_%s.xlsx"
-		upload(fmt.Sprintf(filename, sd, sd), genReconciliatReportExcel(reconciliatMMap, date))
+		upload(fmt.Sprintf(getReportName(ReconciliationReport), sd, sd), genReconciliatReportExcel(reconciliatMMap, date))
 	}
 
 	return nil
