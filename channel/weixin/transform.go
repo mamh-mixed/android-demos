@@ -28,12 +28,21 @@ func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (stat
 			}
 			return success.ISO8583Code, success.ISO8583Msg, success.ErrorCode
 		}
+	} else {
+		// 通讯失败，返回处理中
+		return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
+	}
+
+	// 微信系统错误、银行错误
+	if errCode == "SYSTEMERROR" || errCode == "BANKERROR" {
+		// 默认为处理中
+		return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
 	}
 
 	// 来到这一般是参数不完整，通讯失败
-	if errCode == "" {
-		return systemError.ISO8583Code, systemError.ISO8583Msg, systemError.ErrorCode
-	}
+	// if errCode == "" {
+	// 	return systemError.ISO8583Code, systemError.ISO8583Msg, systemError.ErrorCode
+	// }
 	// if returnCode == "FAIL" {
 	// 	log.Error("weixin request fail, return code is FAIL")
 	// 	return unknownError.ISO8583Code, unknownError.ISO8583Msg

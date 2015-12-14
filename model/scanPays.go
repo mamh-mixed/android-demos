@@ -185,12 +185,14 @@ type ScanPayRequest struct {
 	Attach       string `json:"attach,omitempty" url:"attach,omitempty" bson:"attach,omitempty"`
 	TimeExpire   string `json:"timeExpire,omitempty" url:"timeExpire,omitempty" bson:"timeExpire,omitempty"` // 过期时间
 
-	TradeFrom string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
+	TradeFrom    string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
+	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
+	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
+	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 	// 卡券相关字段
 	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
 	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
-	CreateTime       string `json:"-" url:"-" bson:"-"`                                                          // 卡券交易创建时间
 	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`          // 银行卡cardbin或者用户标识等 C
 	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 M
 	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原渠道订单号
@@ -198,9 +200,6 @@ type ScanPayRequest struct {
 	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
 	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
-
-	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
-	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
@@ -225,10 +224,10 @@ type ScanPayRequest struct {
 	IsGBK bool     `json:"-" url:"-" bson:"-"`
 	M     Merchant `json:"-" url:"-" bson:"-"`
 
-	//对账
-	SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
-	StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
-	EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
+	// //对账
+	// SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
+	// StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
+	// EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
 }
 
 // FillWithRequest 如果空白，默认将原信息返回

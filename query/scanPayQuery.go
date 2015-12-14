@@ -141,30 +141,11 @@ func GetSpTransLogs(q *model.QueryCondition, msgType int) ([]model.SpTransLogs, 
 		if err != nil {
 			return nil, 0, err
 		}
-
-		// 先查来的报文
-		q.Direction = "in"
-		inSpLogs, err := mongo.SpMerLogsCol.Find(q)
+		// detail
+		spLogs, err = mongo.SpMerLogsCol.Find(q)
 		if err != nil {
 			return nil, 0, err
 		}
-		spLogs = append(spLogs, inSpLogs...)
-
-		// 再查返回的报文
-		if len(inSpLogs) > 0 {
-			q.Direction = "out"
-			var reqIds []string
-			for _, l := range inSpLogs {
-				reqIds = append(reqIds, l.ReqId)
-			}
-			q.ReqIds = reqIds
-			outSpLogs, err := mongo.SpMerLogsCol.Find(q)
-			if err != nil {
-				return nil, 0, err
-			}
-			spLogs = append(spLogs, outSpLogs...)
-		}
-
 	case 2:
 		spLogs, err = mongo.SpChanLogsCol.Find(q)
 		total = len(spLogs)

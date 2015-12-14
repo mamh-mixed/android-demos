@@ -154,8 +154,8 @@ func TestProcessSettleEnquiry(t *testing.T) {
 			lCxbgNyTgFhC6N+1YhY1QKOvjjPS+tHAhMR0FnH9gUW1RtBQLUxpfFM=
 			-----END RSA PRIVATE KEY-----`)*/
 	spReq.SettleDate = "20151015"
-
-	_, err := DefaultWeixinScanPay.ProcessSettleEnquiry(spReq)
+	cbd := make(model.ChanBlendMap)
+	err := DefaultWeixinScanPay.ProcessSettleEnquiry(spReq, cbd)
 	if err != nil {
 		log.Debug("test")
 		fmt.Printf("error execut \n")
