@@ -48,7 +48,7 @@ public class LoginActivity extends BaseActivity {
         mAutoLoginCheckBox = (CheckBox) findViewById(R.id.checkbox_auto_login);
 
         mLoginButton = (Button) findViewById(R.id.btnlogin);
-        mRegisterButton = (Button) findViewById(R.id.btnsignup);
+
 
         User user = SaveData.getUser(mContext);
         mAutoLoginCheckBox.setChecked(user.isAutoLogin());

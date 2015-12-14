@@ -110,22 +110,14 @@
 
             <Button
                 android:id="@+id/btnlogin"
-                android:layout_width="150dp"
+                android:layout_width="250dp"
                 android:layout_height="50dp"
                 android:background="@drawable/blue_selector"
                 android:text="@string/login"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/btnsignup"
-                android:layout_width="150dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="25dp"
-                android:background="@drawable/blue_selector"
-                android:text="注册"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
+
         </LinearLayout>
 
     </LinearLayout>
