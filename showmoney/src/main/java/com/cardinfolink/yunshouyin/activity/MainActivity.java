@@ -226,59 +226,59 @@ public class MainActivity extends BaseActivity {
             Animation animation = null;
             switch (arg0) {
                 case 0:
-                    mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_selected));
+                    mTab1.setImageResource(R.drawable.gathering_selected);
                     //清空输入的金额
                     mScanCodeView.clearValue();
                     if (currIndex == 1) {
                         animation = new TranslateAnimation(one, 0, 0, 0);
-                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
+                        mTab2.setImageResource(R.drawable.ticket_not_selected);
                     } else if (currIndex == 2) {
                         animation = new TranslateAnimation(two, 0, 0, 0);
-                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
+                        mTab3.setImageResource(R.drawable.bill_not_selected);
                     } else if (currIndex == 3) {
                         animation = new TranslateAnimation(three, 0, 0, 0);
-                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
+                        mTab4.setImageResource(R.drawable.my_not_selected);
                     }
                     break;
                 case 1:
-                    mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_selected));
+                    mTab2.setImageResource(R.drawable.ticket_selected);
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(zero, one, 0, 0);
-                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
+                        mTab1.setImageResource(R.drawable.gathering_not_selected);
                     } else if (currIndex == 2) {
                         animation = new TranslateAnimation(two, one, 0, 0);
-                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
+                        mTab3.setImageResource(R.drawable.bill_not_selected);
                     } else if (currIndex == 3) {
                         animation = new TranslateAnimation(three, one, 0, 0);
-                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
+                        mTab4.setImageResource(R.drawable.my_not_selected);
                     }
                     break;
                 case 2:
-                    mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_selected));
+                    mTab3.setImageResource(R.drawable.bill_selected);
                     //刷新一下账单列表
                     mTransManageView.refresh();
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(zero, two, 0, 0);
-                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
+                        mTab1.setImageResource(R.drawable.gathering_not_selected);
                     } else if (currIndex == 1) {
                         animation = new TranslateAnimation(one, two, 0, 0);
-                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
+                        mTab2.setImageResource(R.drawable.ticket_not_selected);
                     } else if (currIndex == 3) {
                         animation = new TranslateAnimation(three, two, 0, 0);
-                        mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_not_selected));
+                        mTab4.setImageResource(R.drawable.my_not_selected);
                     }
                     break;
                 case 3:
-                    mTab4.setImageDrawable(getResources().getDrawable(R.drawable.my_selected));
+                    mTab4.setImageResource(R.drawable.my_selected);
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(zero, three, 0, 0);
-                        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_not_selected));
+                        mTab1.setImageResource(R.drawable.gathering_not_selected);
                     } else if (currIndex == 1) {
                         animation = new TranslateAnimation(one, three, 0, 0);
-                        mTab2.setImageDrawable(getResources().getDrawable(R.drawable.ticket_not_selected));
+                        mTab2.setImageResource(R.drawable.ticket_not_selected);
                     } else if (currIndex == 2) {
                         animation = new TranslateAnimation(two, three, 0, 0);
-                        mTab3.setImageDrawable(getResources().getDrawable(R.drawable.bill_not_selected));
+                        mTab3.setImageResource(R.drawable.bill_not_selected);
                     }
                     break;
             }
