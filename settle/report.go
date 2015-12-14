@@ -152,6 +152,14 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 		}
 	}
 
+	// for _, v := range reconciliatMMap {
+	// 	for _, v1 := range v {
+	// 		for k, v2 := range v1 {
+	// 			log.Debugf("key=%s,value=%+v", k, v2)
+	// 		}
+	// 	}
+	// }
+
 	if len(reconciliatMMap) != 0 {
 		// 报表日期显示格式
 		sd := strings.Replace(date, "-", "", -1)

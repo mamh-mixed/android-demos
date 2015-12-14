@@ -126,6 +126,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 					if math.Abs(blendACT-orderACT) < 0.001 {
 						for _, transSett := range transSetts {
 							transSett.BlendType = MATCH
+							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							mongo.SpTransSettColl.Update(&transSett)
 						}
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
