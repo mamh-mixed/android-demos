@@ -28,6 +28,7 @@ func getRsRecord(reportType int, date string) *model.RoleSett {
 	rs := &model.RoleSett{
 		ReportName: filePrefix,
 		ReportType: reportType,
+		SettDate:   date,
 	}
 	fd := strings.Replace(date, "-", "", -1)
 	prefix := fmt.Sprintf(filePrefix, fd)

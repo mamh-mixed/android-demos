@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -22,6 +23,7 @@ func (r *roleSettCollection) Upsert(rs *model.RoleSett) error {
 		"settRole":   rs.SettRole,
 		"settDate":   rs.SettDate,
 	}
+	log.Debugf("save ... %+v", rs)
 	_, err := database.C(r.name).Upsert(find, rs)
 	return err
 }
