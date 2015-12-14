@@ -25,7 +25,7 @@
                 android:src="@drawable/logo" />
 
             <ImageView
-                android:id="@+id/load_img"
+                android:id="@+id/iv_loading"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_alignParentRight="true"

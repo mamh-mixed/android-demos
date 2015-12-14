@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -38,6 +40,7 @@ public class LoginActivity extends BaseActivity {
     private TextView mRegister;//用来注册
     private ImageView mIncrease;//用来添加用户
     private ImageView mHelp;//显示帮助对话框
+    private ImageView mLoad;//loading的图片
 
     private Button mLoginButton;//登录按钮
     private HintDialog mHintDialog;
@@ -54,8 +57,21 @@ public class LoginActivity extends BaseActivity {
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
         if (user.isAutoLogin()) {
+            startLoading();
             login();
         }
+    }
+
+
+    public void startLoading() {
+        Animation loadingAnimation = AnimationUtils.loadAnimation(mContext, R.anim.loading_animation);
+        mLoad.startAnimation(loadingAnimation);
+        mLoad.setVisibility(View.VISIBLE);
+    }
+
+    public void endLoading() {
+        mLoad.clearAnimation();
+        mLoad.setVisibility(View.GONE);
     }
 
     /**
@@ -79,6 +95,8 @@ public class LoginActivity extends BaseActivity {
         mLoginButton = (Button) findViewById(R.id.btnlogin);
 
         mHintDialog = new HintDialog(this, findViewById(R.id.hint_dialog));
+
+        mLoad = (ImageView) findViewById(R.id.iv_loading);
 
     }
 
@@ -131,6 +149,8 @@ public class LoginActivity extends BaseActivity {
         quickPayService.loginAsync(username, password, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
+                endLoading();
+
                 User user = new User();
                 user.setUsername(username);
                 if (mAutoLogin.isChecked()) {
@@ -146,7 +166,6 @@ public class LoginActivity extends BaseActivity {
 
                 if (TextUtils.isEmpty(SessonData.loginUser.getClientid())) {
                     // clientid为空,跳转到完善信息页面
-                    mLoadingDialog.endLoading();
                     Intent intent = new Intent(mContext, RegisterNextActivity.class);
                     mContext.startActivity(intent);
                 } else {
@@ -158,7 +177,6 @@ public class LoginActivity extends BaseActivity {
                     initData.setIsProduce(SystemConfig.IS_PRODUCE);
                     CashierSdk.init(initData);//初始化sdk
                     //更新UI
-                    mLoadingDialog.endLoading();
                     SessonData.positionView = 0;
                     Intent intent = new Intent(mContext, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -168,6 +186,7 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onFailure(QuickPayException ex) {
+                endLoading();
                 String errorCode = ex.getErrorCode();
                 String errorMsg = ex.getErrorMsg();
                 Log.e(TAG, "login onFailure: " + errorCode + " = " + errorMsg);
@@ -179,13 +198,11 @@ public class LoginActivity extends BaseActivity {
                 SessonData.loginUser.setPassword(password);
                 if (errorCode.equals("user_no_activate")) {
                     //更新UI
-                    mLoadingDialog.endLoading();
                     View view = findViewById(R.id.activate_dialog);
                     String eMail = SessonData.loginUser.getUsername();
                     ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
                     activateDialog.show();
                 } else {
-                    mLoadingDialog.endLoading();
                     mAlertDialog.show(errorMsg, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
                     if (errorCode.equals("username_password_error")) {
                         mPasswordEdit.setText("");
@@ -212,6 +229,7 @@ public class LoginActivity extends BaseActivity {
             switch (v.getId()) {
                 case R.id.btnlogin:
                     Log.e(TAG, "onClick to longin");
+                    startLoading();
                     login();
                     break;
                 case R.id.iv_help:
