@@ -86,13 +86,11 @@ public class CreateQRcodeActivity extends BaseActivity {
                 Message msg = new Message();
                 msg.what = 1;
                 mHandler.sendMessageDelayed(msg, 0);
-
             }
 
             @Override
             public void onError(int errorCode) {
                 Log.i(TAG, "errorCode: " + errorCode);
-
             }
         });
     }
