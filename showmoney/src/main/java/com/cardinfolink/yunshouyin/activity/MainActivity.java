@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.view.AccountUpdateView;
 import com.cardinfolink.yunshouyin.view.PasswordUpdateView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
@@ -39,7 +38,7 @@ public class MainActivity extends BaseActivity {
     private ScanCodeView mScanCodeView;
     private TransManageView mTransManageView;
     private PasswordUpdateView mPasswordUpdateView;
-    private AccountUpdateView mAccountUpdateView;
+
     private WapView mWapBillView;
 
     private LinearLayout mMainContent;
@@ -106,8 +105,6 @@ public class MainActivity extends BaseActivity {
         mPasswordUpdateView = new PasswordUpdateView(mContext);
         mPasswordUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        mAccountUpdateView = new AccountUpdateView(mContext);
-        mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mWapBillView = new WapView(mContext);
         mWapBillView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -139,7 +136,7 @@ public class MainActivity extends BaseActivity {
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_scancode));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_transmange));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_passwordupdate));
-        menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_accountupdate));
+
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_webbill));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_safeexit));
 
@@ -176,11 +173,7 @@ public class MainActivity extends BaseActivity {
                 mMainContent.addView(mPasswordUpdateView);
                 break;
             case 3:
-                mMainContent.removeAllViews();
-                mAccountUpdateView = new AccountUpdateView(mContext);
-                mAccountUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                mMainContent.addView(mAccountUpdateView);
-                mAccountUpdateView.getInfo();
+
                 break;
             case 4:
                 mMainContent.removeAllViews();
@@ -242,13 +235,7 @@ public class MainActivity extends BaseActivity {
                     mLeftMenu.toggle();
                     break;
                 case 3:
-                    mMainContent.removeAllViews();
-                    mAccountUpdateView = new AccountUpdateView(mContext);
-                    mAccountUpdateView.setLayoutParams(new LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-                    mMainContent.addView(mAccountUpdateView);
-                    mAccountUpdateView.getInfo();
-                    mLeftMenu.toggle();
+
                     break;
                 case 4:
                     mMainContent.removeAllViews();
