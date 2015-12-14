@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,7 @@ import com.cardinfolink.cashiersdk.model.OrderData;
 import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
@@ -144,9 +146,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
         rightArrow = findViewById(R.id.right_around_arrow);//右边的布局
         bottomArrow = findViewById(R.id.bottom_around_arrow);//下面的布局
 
-        mKeyBoard = (ImageView) findViewById(R.id.iv_keyboard);
-        mScanQR = (ImageView) findViewById(R.id.scan_qr);
-        mScanCodePay = (ImageView) findViewById(R.id.scancodepay);
+        mKeyBoard = (ImageView) findViewById(R.id.iv_keyboard);//左下角返回或者进入键盘界面的按钮
+        mScanQR = (ImageView) findViewById(R.id.scan_qr);//右下角进入照相机扫码的按钮
+        mScanCodePay = (ImageView) findViewById(R.id.scancodepay);//右下角进入二维码界面的按钮
 
         mQRImage = (ImageView) findViewById(R.id.iv_center);
 
@@ -194,6 +196,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
 
         mKeyBoard.setOnClickListener(this);
         mScanCodePay.setOnClickListener(this);
+        mScanQR.setOnClickListener(this);
 
         mLeftImage.setOnClickListener(this);
         mRightImage.setOnClickListener(this);
@@ -388,6 +391,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
                         }
                     });
                 }
+                break;
+            case R.id.scan_qr:
+                //进入照相机扫码界面
+                Intent intent = new Intent(mContext, CaptureActivity.class);
+                intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
+                intent.putExtra("total", "" + sum);
+                mContext.startActivity(intent);
                 break;
             case R.id.iv_keyboard:
                 showKeyBoard();//显示键盘界面
