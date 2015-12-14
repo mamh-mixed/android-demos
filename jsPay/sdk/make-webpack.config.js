@@ -27,7 +27,6 @@ var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 
 var srcDir = path.resolve(process.cwd(), 'src');
 var build = 'assets/';
-var sourceMap = require('./src/sourcemap.json');
 
 var excludeFromStats = [
 	/node_modules[\\\/]/

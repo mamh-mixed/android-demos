@@ -84,9 +84,7 @@ function utf8to16(str) {　　
 (function($) {
 	$(function() {
 
-		let code = Util.getUrlParam('code'),
-			orderData = Util.getUrlParam('data'),
-			url = Util.getServer() + '/scanpay/unified';
+		let [code, orderData, url] = [Util.getUrlParam('code'), Util.getUrlParam('data'), Util.getServer() + '/scanpay/unified'];
 
 		if (orderData === null) {
 			window.alert('没有订单信息');
@@ -94,15 +92,25 @@ function utf8to16(str) {　　
 		}
 
 		orderData = utf8to16(base64decode(orderData));
-		let order = JSON.parse(orderData),
-			frontUrl = order.frontUrl,
-			errorData =
-			'attach=' + order.attach +
-			'&txamt=' + order.txamt +
-			'&goodsInfo=' + order.goodsInfo +
-			'&orderCurrency=' + order.orderCurrency +
-			'&orderNum=' + order.orderNum +
-			'&state=1';
+		var order = null;
+
+		try {
+			order = JSON.parse(orderData);
+		} catch (e) {
+			window.alert('不合法的JSON字符串');
+			return;
+		}
+
+		let [frontUrl, errorData] = [
+			order.frontUrl, [
+				'attach=' + order.attach,
+				'txamt=' + order.txamt,
+				'goodsInfo=' + order.goodsInfo,
+				'orderCurrency=' + order.orderCurrency,
+				'orderNum=' + order.orderNum,
+				'state=1'
+			].join('&')
+		];
 
 
 		if (!code) {
@@ -143,19 +151,25 @@ function utf8to16(str) {　　
 					return;
 				}
 
-				let aaa = payJson.config,
-					bbb = payJson.chooseWXPay;
+				let {
+					config: aaa,
+					chooseWXPay: bbb
+				} = payJson;
 
-				let configAppId = aaa.appId,
-					configTimestamp = aaa.timestamp,
-					configNonceStr = aaa.nonceStr,
-					configSignature = aaa.signature;
+				let {
+					appId: configAppId,
+					timestamp: configTimestamp,
+					nonceStr: configNonceStr,
+					signature: configSignature
+				} = aaa;
 
-				let chooseWxPayTimestamp = bbb.timeStamp,
-					chooseWxPayNonceStr = bbb.nonceStr,
-					chooseWxPayPackage = bbb.package,
-					chooseWxPaySignType = bbb.signType,
-					chooseWxPayPaySign = bbb.paySign;
+				let {
+					timeStamp: chooseWxPayTimestamp,
+					nonceStr: chooseWxPayNonceStr,
+					package: chooseWxPayPackage,
+					signType: chooseWxPaySignType,
+					paySign: chooseWxPayPaySign
+				} = bbb;
 
 				let post = [
 					'attach=' + data.attach,
