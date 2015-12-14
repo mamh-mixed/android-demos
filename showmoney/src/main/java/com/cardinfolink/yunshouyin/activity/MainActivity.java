@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mTabPager = (ViewPager) findViewById(R.id.tabpager);
-        mTabPager.setOnPageChangeListener(new MainPagerOnPageChangeListener());
+        mTabPager.addOnPageChangeListener(new MainPagerOnPageChangeListener());
 
         mTab1 = (ImageView) findViewById(R.id.img_gathering);
         mTab2 = (ImageView) findViewById(R.id.img_ticket);
