@@ -15,6 +15,7 @@ func upload(key string, excel *xlsx.File) error {
 	if excel == nil {
 		return nil
 	}
+
 	bf := bytes.NewBuffer([]byte{})
 	//写到buf里
 	excel.Write(bf)

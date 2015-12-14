@@ -95,26 +95,27 @@
             type: Array,
             value: [{
               key: 1,
-              value: '划款'
+              value: '划款报表'
             }, {
               key: 2,
-              value: '对账'
-            }, {
-              key: 3,
-              value: '机构流水'
-            }, {
-              key: 4,
-              value: '渠道商户'
-            }, {
-              key: 5,
-              value: '对账不平-渠道少的'
-            }, {
-              key: 6,
-              value: '对账不平-渠道多的'
-            }, {
-              key: 7,
-              value: '分润'
+              value: '机构对账报表'
             }]
+            // , {
+            //   key: 3,
+            //   value: '机构流水'
+            // }, {
+            //   key: 4,
+            //   value: '渠道商户'
+            // }, {
+            //   key: 5,
+            //   value: '对账不平-渠道少的'
+            // }, {
+            //   key: 6,
+            //   value: '对账不平-渠道多的'
+            // }, {
+            //   key: 7,
+            //   value: '分润'
+            // }
           },
           reportType: Object
         },
@@ -128,8 +129,8 @@
         },
         ready: function() {
           this.reportTypeMap = {
-            1: '划款',
-            2: '对账',
+            1: '划款报表',
+            2: '机构对账报表',
             3: '机构流水',
             4: '渠道商户',
             5: '对账不平-渠道少的',

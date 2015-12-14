@@ -24,23 +24,34 @@ const filePrefix = "sett/report/%s/" // 文件名：sett/report/20151012/IC202_9
 // 最外部key为代理号，接下来是渠道，接下来是清算角色，value是角色下数据
 type reconciliationMap map[string]map[string]map[string]*reconciliatReportData
 
-func getReportName(reportType int) string {
-	var name string
+func getRsRecord(reportType int, date string) *model.RoleSett {
+	rs := &model.RoleSett{
+		ReportName: filePrefix,
+		ReportType: reportType,
+	}
+	fd := strings.Replace(date, "-", "", -1)
+	prefix := fmt.Sprintf(filePrefix, fd)
 	switch reportType {
 	case TransferReport:
-		name = "IC202_%s_%s.xlsx"
+		// multi role
+		rs.ReportName = prefix + "IC202_%s_" + fd + ".xlsx"
 	case ReconciliationReport:
-		name = "IC002_%s.xlsx"
+		rs.ReportName = prefix + "IC002_" + fd + ".xlsx"
+		rs.SettRole = "ALL"
 	case InsFlowReport:
-		name = ""
+		// TODO
+		rs.ReportName = ""
 	case ChanMerReport:
-		name = ""
+		// TODO
+		rs.ReportName = ""
 	case ChanLessReport:
-		name = "IC401_%s.xlsx"
+		rs.ReportName = prefix + "IC401_" + fd + ".xlsx"
+		rs.SettRole = "ALL"
 	case ChanMoreReport:
-		name = "IC402_%s.xlsx"
+		rs.ReportName = prefix + "IC402_" + fd + ".xlsx"
+		rs.SettRole = "ALL"
 	}
-	return filePrefix + name
+	return rs
 }
 
 // SpSettReport 扫码清算报表
@@ -57,20 +68,16 @@ func SpSettReport(settDate string) error {
 
 	// 遍历数据
 	for _, sg := range data {
+		// 记录
+		rs := getRsRecord(TransferReport, settDate)
+		rs.ReportName = fmt.Sprintf(rs.ReportName, sg.SettRole)
+		rs.SettRole = sg.SettRole
 
-		key := fmt.Sprintf(getReportName(TransferReport), sd, sg.SettRole, sd)
-
-		// 查询该角色是否已出过报表
-		rs, err := mongo.RoleSettCol.FindOne(sg.SettRole, settDate)
-		if err != nil {
-			rs = &model.RoleSett{SettRole: sg.SettRole, SettDate: settDate, ReportName: key}
-		}
-
-		rpData := settDataHandle(sg, rs)
+		rpData := settDataHandle(sg)
 		// 有数据才生成报表
 		if len(rpData) != 0 {
 			// 生成报表上传
-			if err = upload(key, genSpTransferReportExcel(rpData, sd)); err != nil {
+			if err = upload(rs.ReportName, genSpTransferReportExcel(rpData, sd)); err != nil {
 				continue
 			}
 			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
@@ -161,22 +168,22 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 	// }
 
 	if len(reconciliatMMap) != 0 {
-		// 报表日期显示格式
-		sd := strings.Replace(date, "-", "", -1)
-		upload(fmt.Sprintf(getReportName(ReconciliationReport), sd, sd), genReconciliatReportExcel(reconciliatMMap, date))
+		// 上传并记录
+		rs := getRsRecord(ReconciliationReport, date)
+		if err := upload(rs.ReportName, genReconciliatReportExcel(reconciliatMMap, date)); err == nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
 	}
 
 	return nil
 }
 
 // settDataHandle 清算数据处理
-func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
+func settDataHandle(sg model.SettRoleGroup) []reportData {
 
 	var rds []reportData
-	if rs == nil {
-		return rds
-	}
-
 	for _, mg := range sg.MerGroups {
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {

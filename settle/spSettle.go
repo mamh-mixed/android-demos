@@ -161,8 +161,13 @@ func (s scanpayDomestic) Reconciliation(date string) {
 	// 处理没有勾兑上的数据
 	// 渠道少清
 	if len(localMMap) != 0 {
-		// 出报表
-		upload(getReportName(ChanLessReport), genC001ReportExcel(localMMap, date))
+		// 上传并记录
+		rs := getRsRecord(ChanLessReport, date)
+		if err = upload(rs.ReportName, genC001ReportExcel(localMMap, date)); err == nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
 	}
 
 	// 渠道多清
@@ -180,7 +185,12 @@ func (s scanpayDomestic) Reconciliation(date string) {
 				}
 			}
 		}
-		upload(getReportName(ChanMoreReport), genC002ReportExcel(chanMMap, date))
+		rs := getRsRecord(ChanMoreReport, date)
+		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err != nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
 	}
 }
 
