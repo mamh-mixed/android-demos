@@ -201,9 +201,6 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 		CouponsNo:    req.ScanCodeId,
 		VeriTime:     req.VeriTime,
 		OrigOrderNum: req.OrigOrderNum,
-		Cardbin:      req.Cardbin,
-		TransAmt:     req.IntTxamt,
-		PayType:      req.PayType,
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)

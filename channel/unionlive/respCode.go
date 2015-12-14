@@ -18,12 +18,15 @@ func initRespCode() {
 	SysRespCode["96"] = "系统错误"
 	SysRespCode["H5"] = "格式错误"
 	SysRespCode["03"] = "商户错误"
+	SysRespCode["C0"] = "字段不能为空"
 	SysRespCode["C1"] = "卡券已被核销"
 	SysRespCode["C2"] = "卡券已过期"
 	SysRespCode["C3"] = "无效的卡券"
 	SysRespCode["C4"] = "券状态异常"
 	SysRespCode["C5"] = "未到卡券使用时间"
 	SysRespCode["C6"] = "商户不能使用该卡券"
+	SysRespCode["C7"] = "金额达不到满足优惠条件的最小金额"
+	SysRespCode["C8"] = "不能用此支付类型"
 	// SysRespCode["58"] = "未知应答"
 	SysRespCode["09"] = "刷卡券"
 
@@ -47,6 +50,16 @@ func initRespCode() {
 	ChanSysRespCode["1107"] = "C5" //该券在XX后才能使用
 	ChanSysRespCode["1105"] = "C6" //商户不能使用该码
 	ChanSysRespCode["1102"] = "C1" //可用次数不足
+	ChanSysRespCode["3115"] = "C1" //此类型的券不能再次验券
+	ChanSysRespCode["3116"] = "C0" //原交易后台交易流水号不能为空
+	ChanSysRespCode["3117"] = "C0" //原验证交易提交时间格式不正确
+	ChanSysRespCode["3118"] = "C7" //金额达不到满足优惠条件的最小金额
+	ChanSysRespCode["3119"] = "C0" //没有对应的礼包券券号信息
+	ChanSysRespCode["3120"] = "C5" //此时间段不能验证
+	ChanSysRespCode["3121"] = "C0" //原验证交易客户端流水号不能为空
+	ChanSysRespCode["3122"] = "96" //原验证交易验证的次数不能为空
+	ChanSysRespCode["3123"] = "C0" //未找到原验证记录
+	ChanSysRespCode["3124"] = "C8" //不能用此支付类型
 	ChanSysRespCode["1101"] = "C1"
 	ChanSysRespCode["1563"] = "96" //无效的终端
 	ChanSysRespCode["36"] = "09"   // 刷卡活动券
