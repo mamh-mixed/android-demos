@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
-	// "github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
@@ -17,13 +17,13 @@ import (
 	"time"
 )
 
-// func init() {
-// 	needSettles = append(needSettles,
-// 		&alipayOverseas{
-// 			At:       goconf.Config.Settle.OverseasSettPoint,
-// 			sftpAddr: "sftp.alipay.com:22",
-// 		})
-// }
+func init() {
+	needSettles = append(needSettles,
+		&alipayOverseas{
+			At:       goconf.Config.Settle.OverseasSettPoint,
+			sftpAddr: "sftp.alipay.com:22",
+		})
+}
 
 type alipayOverseas struct {
 	At       string // "02:00:00" 表示凌晨两点才可以拉取数据
@@ -122,6 +122,7 @@ func (a *alipayOverseas) Reconciliation(date string) {
 			log.Errorf("invalid reconciliation data length=%d should be 8", len(data))
 			continue
 		}
+		log.Debugf("handle record: %s", data)
 		orderNum, chanOrderNum := data[0], data[1]
 
 		// 排除可能一时的系统错误导致查询失败
@@ -131,17 +132,30 @@ func (a *alipayOverseas) Reconciliation(date string) {
 		// Transaction_type
 		switch data[6] {
 		case "REVERSAL", "CANCEL":
+			// 只能当天
 			// 暂时没有CANCEL支付类型
 			// 该情况下没有原订单，只有撤销和退款的订单
-			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
+			// 渠道流水中的订单，假如取消的这笔原订单是成功的，那么给出的是原订单号和渠道订单号
+			// 假如原订单不是成功的，那么给出的是取消这笔的订单号和渠道订单号
+			tss, err := mongo.SpTransSettColl.FindOrders(orderNum, chanOrderNum)
 			if err != nil {
 				// 没找到，说明原订单没有成功
+				// 不处理即可
 				break
 			}
 			// 找到，说明是原订单成功下发起的取消
-			// 删除即可
-			mongo.SpTransSettColl.RemoveOne(orderNum, chanOrderNum)
+			// 那么比较金额即可，手续费都重置为0
+			for _, ts := range tss {
+				ts.BlendType = MATCH
+				ts.InsFee = 0
+				ts.SettTime = time.Now().Format("2006-01-02 15:04:05")
+				// 更新交易状态
+				if err = mongo.SpTransSettColl.Update(&ts); err != nil {
+					log.Errorf("fail to update transSett error: %s, orderNum=%s", err, orderNum)
+				}
+			}
 		case "PAYMENT", "REFUND":
+			// 退款时，chanOrderNum 为 origOrderNum
 			ts, err = mongo.SpTransSettColl.FindOne(orderNum, chanOrderNum)
 			if err != nil {
 				// 渠道多清
@@ -164,29 +178,30 @@ func (a *alipayOverseas) Reconciliation(date string) {
 				mongo.SpTransSettColl.Add(mt)
 				continue
 			}
-		}
+			t := ts.Trans
 
-		t := ts.Trans
+			// 开始勾兑，默认成功
+			ts.BlendType = MATCH
+			// 机构手续费以支付宝给的为准
+			ts.InsFee = currency.I64(t.Currency, data[3])
+			// 不管是支付交易还是逆向交易，成功的交易都是有金额的，所以直接比较金额即可。
+			if currency.Str(t.Currency, t.TransAmt) != data[2] {
+				// 金额不一致
+				ts.BlendType = AMT_ERROR
+			}
+			// else if currency.Str(t.Currency, ts.InsFee) != data[3] {
+			// 	// 不管是支付交易还是逆向交易，都是有计算手续费的。
+			// 	// 手续费不一致
+			// 	ts.BlendType = FEE_ERROR
+			// }
 
-		// 开始勾兑，默认成功
-		ts.BlendType = MATCH
+			// 时间
+			ts.SettTime = time.Now().Format("2006-01-02 15:04:05")
 
-		// 不管是支付交易还是逆向交易，成功的交易都是有金额的，所以直接比较金额即可。
-		if currency.Str(t.Currency, t.TransAmt) != data[2] {
-			// 金额不一致
-			ts.BlendType = AMT_ERROR
-		} else if currency.Str(t.Currency, ts.InsFee) != data[3] {
-			// 不管是支付交易还是逆向交易，都是有计算手续费的。
-			// 手续费不一致
-			ts.BlendType = FEE_ERROR
-		}
-
-		// 时间
-		ts.SettTime = time.Now().Format("2006-01-02 15:04:05")
-
-		// 更新交易状态
-		if err = mongo.SpTransSettColl.Update(ts); err != nil {
-			log.Errorf("fail to update transSett error: %s, orderNum=%s", err, orderNum)
+			// 更新交易状态
+			if err = mongo.SpTransSettColl.Update(ts); err != nil {
+				log.Errorf("fail to update transSett error: %s, orderNum=%s", err, orderNum)
+			}
 		}
 	}
 }

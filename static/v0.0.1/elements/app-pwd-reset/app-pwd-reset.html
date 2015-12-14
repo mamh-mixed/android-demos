@@ -1,0 +1,114 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<dom-module id="app-pwd-reset">
+  <style>
+    :host {
+      display: block;
+    }
+
+    .content {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+  <template>
+    <div class="content">
+      <paper-input id="userName" label="用户名" value="{{userName::input}}" required error-message="必填项" data-msg-id="PASSWORDMODIFICATION.USERNAME" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+      <paper-input id="newPwd" label="新密码" value="{{newPwd::input}}" type="password" required error-message="必填项" data-msg-id="PASSWORDMODIFICATION.NEWPASSWORD" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+      <paper-input id="newPwdRepeat" label="重复新密码" value="{{newPwdRepeat::input}}" type="password" required error-message="必填项" data-msg-id="PASSWORDMODIFICATION.CONFIRMPASSWORD" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+      <paper-button class="paper-button-1" style="color:#ffffff;margin-top:20px;" on-tap="handleSaveTapped">
+        <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+      </paper-button>
+    </div>
+    <x-ajax id="resetPwdAjax" method="POST" url="/master/app/resetPwd" handle-as="json" on-response="handleSaveResponse"></x-ajax>
+  </template>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'app-pwd-reset',
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'app-pwd-reset'
+          });
+        },
+        isUserConfigEmpty: function() {
+          if (this.$.userName.validate() && this.$.newPwd.validate() && this.$.newPwdRepeat.validate()) {
+            return false;
+          } else {
+            return true;
+          }
+        },
+        // 保存
+        handleSaveTapped: function() {
+          // 去掉空字符串
+          if (this.newPwd && this.newPwd != "") {
+            this.set('newPwd', this.newPwd.trim());
+          }
+          if (this.isUserConfigEmpty()) {
+            Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000, true);
+            return;
+          }
+
+          if (this.newPwd !== this.newPwdRepeat) {
+            Util.toast('PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH', 3000, true);
+            return;
+          }
+
+          // 新密码复杂度校验
+          if (this.newPwd.length < 8) {
+            Util.toast('PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH', 5000, true);
+            return;
+          }
+
+          if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d#\$@\.\_]{8,50}$/.test(this.newPwd)) {
+            Util.toast('PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED', 5000, true);
+            return;
+          }
+
+          // 密码加密
+          var data = {
+            userName: this.userName,
+            newPwd: Util.RSAEncrypt(this.newPwd)
+          };
+          this.$.resetPwdAjax.body = JSON.stringify(data);
+          this.$.resetPwdAjax.generateRequest();
+
+        },
+        // 更新密码后响应事件
+        handleSaveResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            switch (response.message) {
+              case 'USERNAME_NOT_FOUND':
+                Util.toast('USERNAME_NOT_FOUND', 3000, true);
+                return;
+                break;
+              case 'NO_PERMISSION':
+                Util.toast('NO_PERMISSION', 3000, true);
+                return;
+                break;
+              case 'SHOP_NOT_FOUND':
+                Util.toast('SHOP_NOT_FOUND', 3000, true);
+                return;
+                break;
+              case 'PASSWORD_LENGTH_NOT_ENOUGH':
+                Util.toast('PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH', 3000, true);
+                return;
+                break;
+              case 'PASSWORD_NOT_COMPLICATED_ENOUGH':
+                Util.toast('PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED', 3000, true);
+                return;
+                break;
+              default:
+                Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
+                return
+            }
+          }
+          Util.toast('PASSWORDRESET.TOAST.RESET_PASSWORD_SUCCESS', 3000, true);
+        },
+      });
+    })();
+  </script>
+</dom-module>

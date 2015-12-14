@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../x-select/x-select.html">
+<link rel="import" href="../password-reset/password-reset.html">
 
 <dom-module id="user-view">
 
@@ -18,65 +19,120 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogView">
-      <h2>查看用户信息</h2>
+      <h2>
+        <i18n-msg msgid="USERMANAGEMENT.VIEWUSERINFO">查看用户信息</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="data-grid table low">
           <div class="tr">
-            <div class="td">用户名:</div>
+            <div class="td">
+              <i18n-msg msgid="LOGIN.USERNAME">用户名:</i18n-msg>
+            </div>
             <div class="td">{{item.userName}}</div>
           </div>
           <div class="tr">
-            <div class="td">显示名:</div>
+            <div class="td">
+              <i18n-msg msgid="USERMANAGEMENT.DISPLAYNAME">显示名:</i18n-msg>
+            </div>
             <div class="td">{{item.nickName}}</div>
           </div>
           <div class="tr">
-            <div class="td">邮箱:</div>
+            <div class="td">
+              <i18n-msg msgid="USERMANAGEMENT.EMAIL">邮箱:</i18n-msg>
+            </div>
             <div class="td">{{item.mail}}</div>
           </div>
           <div class="tr">
-            <div class="td">手机号:</div>
+            <div class="td">
+              <i18n-msg msgid="USERMANAGEMENT.TELEPHONENO">手机号:</i18n-msg>
+            </div>
             <div class="td">{{item.phoneNum}}</div>
           </div>
           <div class="tr">
-            <div class="td">用户类型:</div>
-            <div class="td">{{getUserType(item.userType)}}</div>
+            <div class="td">
+              <i18n-msg msgid="USERMANAGEMENT.USERTYPE">用户类型:</i18n-msg>
+            </div>
+            <div class="td">
+                <span>{{getUserType(item.userType)}}</span>
+            </div>
           </div>
           <div class="tr">
-            <div class="td">代理代码:</div>
+            <div class="td">
+              <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码:</i18n-msg>
+            </div>
             <div class="td">{{item.agentCode}}</div>
           </div>
           <div class="tr">
-            <div class="td">公司代码:</div>
+            <div class="td">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.SUBAGENT_NO">公司代码</i18n-msg>
+            </div>
             <div class="td">{{item.subAgentCode}}</div>
           </div>
           <div class="tr">
-            <div class="td">商户代码:</div>
+            <div class="td">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.GROUP_NO">商户代码</i18n-msg>
+            </div>
             <div class="td">{{item.groupCode}}</div>
           </div>
           <div class="tr">
-            <div class="td">门店代码:</div>
+            <div class="td">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.MERCHANT_NO">门店代码</i18n-msg>
+            </div>
             <div class="td">{{item.merId}}</div>
           </div>
         </div>
       </paper-dialog-scrollable>
-      <div class="buttons horizontal layout center">
+      <div class="buttons horizontal layout center" id="adminBtns">
         <span hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个用户吗?</span>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
         <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleResetPwdTapped">重置密码</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleResetPwdTapped">
+          <i18n-msg msgid="USERMANAGEMENT.PASSWORDRESET">重置密码</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">
+          <i18n-msg msgid="BUTTON.CLOSE">关闭</i18n-msg>
+        </paper-button>
+      </div>
+      <div class="buttons horizontal layout center" id="agentBtns" hidden>
+        <paper-button on-tap="handleResetPwdTapped">
+          <i18n-msg msgid="USERMANAGEMENT.PASSWORDRESET">重置密码</i18n-msg>
+        </paper-button>
+        <paper-button on-tap="handleClose">
+          <i18n-msg msgid="BUTTON.CLOSE">关闭</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="deleteUserAjax" method="POST" url="/master/user/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
-    <x-ajax id="resetPwdAjax" method="POST" url="/master/user/resetPwd" handle-as="json" on-response="handleResetPwdResponse"></x-ajax>
+    <!-- <x-ajax id="resetPwdAjax" method="POST" url="/master/user/resetPwd" handle-as="json" on-response="handleResetPwdResponse"></x-ajax> -->
+    <password-reset id="resetPwd" user-name="{{item.userName}}"></password-reset>
   </template>
   <script>
     Polymer({
       is: 'user-view',
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'user-view'
+        });
+      },
       properties: {
         item: Object,
+        curUser: Object,
+      },
+      observers: [
+        '_watchCurUserChanged(curUser.*)',
+      ],
+      _watchCurUserChanged: function(value) {
+        if (value) {
+          var user = value.base;
+          if (user.userType === 'agent') {
+            this.$.adminBtns.setAttribute('disabled', true);
+            this.$.adminBtns.setAttribute('hidden', true);
+            this.$.agentBtns.removeAttribute('hidden');
+          }
+        }
+
       },
       open: function() {
         this.$.dialogView.open();
@@ -87,11 +143,12 @@
       },
       ready: function() {
         this.userTypeMap = {
-          admin: '讯联',
-          agent: '代理',
-          subAgent: '公司',
-          group: '商户',
-          merchant: '门店'
+          admin: 'USERTYPE.ADMIN',
+          genAdmin: 'USERTYPE.GENADMIN',
+          agent: 'USERTYPE.AGENT',
+          subAgent: 'USERTYPE.SUBAGENT',
+          group: 'USERTYPE.GROUP',
+          merchant: 'USERTYPE.MERCHANT',
         };
       },
       // 关闭事件
@@ -105,10 +162,12 @@
       },
       // 重置密码
       handleResetPwdTapped: function() {
-        this.$.resetPwdAjax.params = {
-          userName: this.item.userName
-        }
-        this.$.resetPwdAjax.generateRequest();
+        // this.$.resetPwdAjax.params = {
+        //   userName: this.item.userName
+        // }
+        // this.$.resetPwdAjax.generateRequest();
+        this.handleClose();
+        this.$.resetPwd.open();
       },
       // 删除事件
       deleteTap: function() {
@@ -138,7 +197,11 @@
         this.fire('delete-ok');
       },
       getUserType: function(key) {
-        return this.userTypeMap[key];
+        // return this.userTypeMap[key];
+        var el = document.createElement('i18n-msg'),
+          i18nId = 'USERTYPE.' + key.toUpperCase(),
+          text = el.getMsg(i18nId);
+        return text;
       },
       // 重置密码响应事件
       handleResetPwdResponse: function(e) {

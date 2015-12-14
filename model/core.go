@@ -175,8 +175,11 @@ type MerDetail struct {
 	CommodityName string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
 	ShortName     string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
 	Area          string   `bson:"area,omitempty" json:"area,omitempty"`
-	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`
-	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`
+	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`           // 微信扫固定码支付页面的标题1
+	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`           // 微信扫固定码支付页面的标题2
+	SuccBtnTxt    string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`       // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink   string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`     // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount  bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`   // 微信扫固定码支付成功后的按钮连接是否传输金额
 	Province      string   `bson:"province,omitempty" json:"province,omitempty"`           // 商户省份
 	City          string   `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
 	Nation        string   `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
@@ -366,14 +369,25 @@ type Trans struct {
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
 
 	//卡券字段
-	CouponsNo      string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`                              // 卡券号
-	Prodname       string `bson:"prodname,omitempty" json:"prodname,omitempty"`                                // 卡券名称
-	WriteoffStatus string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`                    // 核销状态
-	VeriTime       string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
-	CardInfo       string `json:"cardInfo,omitempty" url:"cardInfo,omitempty" bson:"cardInfo,omitempty"`       // 卡券详情 C
-	AvailCount     string `json:"availCount,omitempty" url:"availCount,omitempty" bson:"availCount,omitempty"` // 卡券剩余可用次数C
-	ExpDate        string `json:"expDate,omitempty" url:"expDate,omitempty" bson:"expDate,omitempty"`          // 卡券有效期 C
-	Authcode       int    `json:"authcode,omitempty" url:"authcode,omitempty" bson:"authcode,omitempty"`       // 卡券有效期 C
+	CouponsNo       string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`              // 卡券号
+	Prodname        string `bson:"prodname,omitempty" json:"prodname,omitempty"`                // 卡券名称
+	WriteoffStatus  string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`    // 核销状态
+	VeriTime        string `json:"veriTime,omitempty" bson:"veriTime,omitempty"`                // 核销次数
+	CardInfo        string `json:"cardInfo,omitempty"  bson:"cardInfo,omitempty"`               // 卡券详情
+	AvailCount      string `json:"availCount,omitempty"  bson:"availCount,omitempty"`           // 卡券剩余可用次数
+	ExpDate         string `json:"expDate,omitempty"  bson:"expDate,omitempty"`                 // 卡券有效期
+	Authcode        int    `json:"authcode,omitempty"  bson:"authcode,omitempty"`               // 卡券有效期
+	VoucherType     string `json:"voucherType,omitempty"  bson:"voucherType,omitempty"`         // 券类型
+	SaleMinAmount   string `json:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`      // 满足优惠条件的最小金额
+	SaleDiscount    string `json:"saleDiscount,omitempty"  bson:"saleDiscount,omitempty"`       // 抵扣值
+	Cardbin         string `json:"cardbin,omitempty" bson:"cardbin,omitempty"`                  // 银行卡cardbin或者用户标识等
+	TransAmount     string `json:"transAmount,omitempty"  bson:"transAmount,omitempty"`         // 交易原始金额
+	PayType         string `json:"payType,omitempty"  bson:"payType,omitempty"`                 // 支付方式
+	ActualPayAmount string `json:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"`  // 实际支付金额
+	ChannelTime     string `json:"channelTime,omitempty"  bson:"channelTime,omitempty"`         // 渠道处理时间
+	OrigRespCode    string `bson:"origRespCode,omitempty" json:"origRespcd,omitempty"`          // 网关应答码
+	OrigErrorDetail string `json:"origErrorDetail,omitempty"  bson:"origErrorDetail,omitempty"` // 原错误信息   C
+
 }
 
 // SummarySettData 交易汇总

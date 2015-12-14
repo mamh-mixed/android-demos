@@ -555,7 +555,7 @@ func handleAlpMer(r *rowData, c *cache, im *ImportMessage) error {
 				// 海外支付宝商户必填字段
 				if !r.IsDomestic {
 					if r.AlpSchemeType == "" {
-						return fmt.Errorf("format", r.AlpMerId) // TODO
+						return fmt.Errorf("支付宝商户：%s 非境内商户需要填写计费方案", r.AlpMerId) // TODO
 					}
 				}
 			}

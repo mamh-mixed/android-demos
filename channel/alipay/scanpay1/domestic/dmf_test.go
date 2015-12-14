@@ -51,10 +51,9 @@ var refundPay = &model.ScanPayRequest{
 }
 
 var settle = &model.ScanPayRequest{
-	StartTime: "2015-12-08 00:00:00",
-	EndTime:   "2015-12-08 23:59:59",
-	SignKey:   "tt0h6du2jmv89sbwc2wdzeqydbvmt8bj",
-	ChanMerId: "2088701607252123",
+	SettDate:  "2015-12-10",
+	SignKey:   "wg5txarw1shatk0boc61di3971lgl8xe",
+	ChanMerId: "2088121476326615",
 }
 
 func TestProcessBarcodePay(t *testing.T) {

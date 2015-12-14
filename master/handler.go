@@ -19,6 +19,8 @@ import (
 	"github.com/omigo/log"
 )
 
+var maxReportRec = 10000
+
 // appLocaleHandle 网关展示语言
 func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
@@ -55,9 +57,10 @@ func appLocaleHandle(w http.ResponseWriter, r *http.Request) {
 func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
+	reportType, _ := strconv.Atoi(r.FormValue("reportType"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
-	ret := tradeSettleReportQuery(role, date, size, page)
+	ret := tradeSettleReportQuery(role, date, reportType, size, page)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -72,16 +75,13 @@ func tradeTransferQueryHandle(w http.ResponseWriter, r *http.Request) {
 func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	role := r.FormValue("role")
 	date := r.FormValue("date")
+	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
 
 	tradeReport(w, &model.QueryCondition{
-		IsForReport:  true,
-		TimeType:     "payTime",
-		TransStatus:  []string{model.TransSuccess},
-		RefundStatus: model.TransRefunded,
-		StartTime:    date,
-		EndTime:      date,
-		SettRole:     role,
+		Date:      date,
+		SettRole:  role,
+		UtcOffset: utcOffset * 60, // second
 	}, fn)
 }
 
@@ -102,8 +102,7 @@ func tradeSettleJournalHandle(w http.ResponseWriter, r *http.Request) {
 	// 设置交易查询权限
 	q := &model.QueryCondition{
 		IsForReport:  true,
-		StartTime:    date + " 00:00:00", // 北京时间
-		EndTime:      date + " 23:59:59", // 北京时间
+		Date:         date, // 北京时间
 		AgentCode:    curSession.User.AgentCode,
 		MerId:        curSession.User.MerId,
 		SubAgentCode: curSession.User.SubAgentCode,
@@ -132,8 +131,7 @@ func tradeSettleReportHandle(w http.ResponseWriter, r *http.Request) {
 	// condition
 	q := &model.QueryCondition{
 		IsForReport:  true,
-		StartTime:    date + " 00:00:00", // 北京时间
-		EndTime:      date + " 23:59:59", // 北京时间
+		Date:         date, // 北京时间
 		AgentCode:    curSession.User.AgentCode,
 		MerId:        curSession.User.MerId,
 		SubAgentCode: curSession.User.SubAgentCode,
@@ -181,17 +179,12 @@ func tradeMsgHandle(w http.ResponseWriter, r *http.Request) {
 	q := &model.QueryCondition{
 		MerId:    params.Get("merId"),
 		OrderNum: params.Get("orderNum"),
+		ReqIds:   params["reqIds"],
 		Page:     page,
 		Size:     size,
 	}
 
-	reqIds := params.Get("reqIds")
-	if strings.Contains(reqIds, ",") {
-		q.ReqIds = strings.Split(reqIds, ",")
-	}
-
 	ret := getTradeMsg(q, msgType)
-
 	retBytes, err := json.Marshal(ret)
 	if err != nil {
 		log.Error(err)
@@ -223,6 +216,8 @@ func tradeQueryHandle(w http.ResponseWriter, r *http.Request) {
 
 	transType, _ := strconv.Atoi(params.Get("transType"))
 	cond := &model.QueryCondition{
+		MerName:        params.Get("merName"),
+		Terminalid:     params.Get("terminalId"),
 		MerId:          merId,
 		AgentCode:      params.Get("agentCode"),
 		SubAgentCode:   params.Get("subAgentCode"),
@@ -315,7 +310,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		UtcOffset:    utcOffset * 60,
 	}
 
-	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为false
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不���功的话���不处理，默认为false
 	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
 	if err == nil {
 		cond.IsAggregateByGroup = isAggreByGroup
@@ -963,7 +958,7 @@ func userFindHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(retBytes)
 }
 
-// 登录操作，只允许get请求
+// 登录操作���只允许get请���
 func loginHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -1174,9 +1169,21 @@ func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	params := r.URL.Query()
-	userName := params.Get("userName")
-	ret := User.ResetPwd(userName)
+	// params := r.URL.Query()
+	// userName := params.Get("userName")
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+	ret := User.ResetPwd(data, curSession.User)
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		log.Errorf("mashal data error: %s", err)
@@ -1336,6 +1343,38 @@ func routerUpdateHandle(w http.ResponseWriter, r *http.Request) {
 	rdata, err := json.Marshal(ret)
 	if err != nil {
 		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+// appResetPwdHandle 重置app用户密码
+func appResetPwdHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+	ret := AppUser.ResetPwd(data, curSession.User)
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		log.Errorf("mashal data error: %s", err)
+		w.WriteHeader(501)
+		w.Write([]byte("mashal data error"))
+		return
 	}
 
 	log.Tracef("response message: %s", rdata)

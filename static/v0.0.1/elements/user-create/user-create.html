@@ -84,11 +84,11 @@
           type: Array,
           value: [{
             key: 'admin',
-            value: '讯联'
+            value: '超级管理员'
           }, {
             key: 'genAdmin',
             value: '普通管理员'
-          },{
+          }, {
             key: 'agent',
             value: '代理'
           }, {
@@ -103,7 +103,7 @@
           }, ]
         },
         pageType: String,
-        user: Object
+        user: Object,
       },
       listeners: {
         'iron-overlay-closed': 'listenOverlayClese'
@@ -114,7 +114,7 @@
         this.set('isUpdate', false);
       },
       observers: [
-        '_userTypesChange(userType)'
+        '_userTypesChange(userType)',
       ],
       _userTypesChange: function(value) {
         value = value || {};
@@ -134,7 +134,7 @@
         if (value.key === 'subAgent') {
           this.set('user.groupCode', '');
           this.set('user.merId', '');
-          this.$.agentCode.removeAttribute('hidden');
+          this.$.agentCode.setAttribute('hidden', true);
           this.$.subAgentCode.removeAttribute('hidden');
           this.$.groupCode.setAttribute('hidden', true);
           this.$.merId.setAttribute('hidden', true);
@@ -143,17 +143,17 @@
 
         if (value.key === 'group') {
           this.set('user.merName', '');
-          this.$.agentCode.removeAttribute('hidden');
+          this.$.agentCode.setAttribute('hidden', true);
           this.$.groupCode.removeAttribute('hidden');
-          this.$.subAgentCode.removeAttribute('hidden');
+          this.$.subAgentCode.setAttribute('hidden', true);
           this.$.merId.setAttribute('hidden', true);
           return;
         }
 
         if (value.key === 'merchant') {
-          this.$.agentCode.removeAttribute('hidden');
-          this.$.groupCode.removeAttribute('hidden');
-          this.$.subAgentCode.removeAttribute('hidden');
+          this.$.agentCode.setAttribute('hidden', true);
+          this.$.groupCode.setAttribute('hidden', true);
+          this.$.subAgentCode.setAttribute('hidden', true);
           this.$.merId.removeAttribute('hidden');
           return;
         }
@@ -174,7 +174,7 @@
           this.user = {};
           this.userType = {
             key: 'admin',
-            value: '讯联'
+            value: '超级管理员'
           };
           this.$.userName.removeAttribute('disabled');
         } else if (this.pageType === 'editor') {
@@ -191,12 +191,12 @@
       },
       ready: function() {
         this.userTypeMap = {
-          admin: '讯联',
+          admin: '超级管理员',
           genAdmin: '普通管理员',
           agent: '代理',
           subAgent: '公司',
           group: '商户',
-          merchant: '门店'
+          merchant: '门店',
         };
       },
       isUserConfigEmpty: function() {
@@ -206,15 +206,24 @@
               return false;
             }
           } else if (this.userType.key === 'subAgent') {
-            if (this.$.agentCode.validate() && this.$.subAgentCode.validate()) {
+            // if (this.$.agentCode.validate() && this.$.subAgentCode.validate()) {
+            //   return false;
+            // }
+            if (this.$.subAgentCode.validate()) {
               return false;
             }
           } else if (this.userType.key === 'group') {
-            if (this.$.agentCode.validate() && this.$.subAgentCode.validate() && this.$.groupCode.validate()) {
+            // if (this.$.agentCode.validate() && this.$.subAgentCode.validate() && this.$.groupCode.validate()) {
+            //   return false;
+            // }
+            if (this.$.groupCode.validate()) {
               return false;
             }
           } else if (this.userType.key === 'merchant') {
-            if (this.$.agentCode.validate() && this.$.subAgentCode.validate() && this.$.groupCode.validate() && this.$.merId.validate()) {
+            // if (this.$.agentCode.validate() && this.$.subAgentCode.validate() && this.$.groupCode.validate() && this.$.merId.validate()) {
+            //   return false;
+            // }
+            if (this.$.merId.validate()) {
               return false;
             }
           } else {
@@ -260,7 +269,7 @@
         Util.toast(response.message, 1000);
         this.fire('saved');
         this.set('user', {});
-      }
+      },
     });
   </script>
 </dom-module>

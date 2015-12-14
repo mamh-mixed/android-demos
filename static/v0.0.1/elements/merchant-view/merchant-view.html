@@ -184,6 +184,18 @@
                   <div class="td">{{item.detail.titleTwo}}</div>
                 </div>
                 <div class="tr">
+                  <div class="td key">成功跳转文本</div>
+                  <div class="td">{{item.detail.succBtnTxt}}</div>
+                  <div class="td key">成功跳转连接</div>
+                  <div class="td">{{item.detail.succBtnLink}}</div>
+                </div>
+                <div class="tr">
+                  <div class="td key">是否传送金额</div>
+                  <div class="td">
+                    <paper-checkbox checked$="{{item.detail.isPostAmount}}" disabled></paper-checkbox>
+                  </div>
+                </div>
+                <div class="tr">
                   <div class="td key">门店状态</div>
                   <div class="td">{{getMerStatus(item.merStatus)}}</div>
                   <div class="td key">唯一码</div>
@@ -321,7 +333,16 @@
             value: '取消'
           }, {
             key: 'VERI',
-            value: '卡券核销'
+            value: '卡券核销/查询'
+          }, {
+            key: 'CRVE',
+            value: '刷卡核销'
+          }, {
+            key: 'QUVE',
+            value: '验券查询'
+          }, {
+            key: 'CAVE',
+            value: '卡券撤销'
           }]
         },
         item: Object,

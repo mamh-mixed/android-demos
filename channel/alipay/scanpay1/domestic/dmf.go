@@ -43,8 +43,8 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		Partner:        req.ChanMerId,
 		Service:        createAndPay,
 		NotifyUrl:      alipayNotifyUrl,
-		OutTradeNo:     req.OrderNum,    // 送的是原订单号，不转换
-		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
+		OutTradeNo:     req.OrderNum,                      // 送的是原订单号，不转换
+		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		Subject:        req.Subject,
 		GoodsDetail:    req.AlpMarshalGoods(),
 		ProductCode:    "BARCODE_PAY_OFFLINE",
@@ -76,7 +76,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		OutTradeNo:     req.OrderNum, // 送的是原订单号，不转换,
 		Subject:        req.Subject,
 		GoodsDetail:    req.AlpMarshalGoods(),
-		PassbackParams: req.SysOrderNum, // 传系统订单号，异步通知时可用
+		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
 		ExtendParams:   req.ExtendParams,
@@ -279,10 +279,13 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 		log.Errorf("change data count errDetail:%s", err)
 		return
 	}
-
 	// 截取内容
-	content := string(csv[strings.LastIndex(csv, "[")+1 : strings.Index(csv, "]")])
-	element := strings.Split(content, ",")
+	if strings.Contains(csv, "<![CDATA[") {
+		csv = csv[9 : len(csv)-3]
+		log.Debugf("csv content: %s", csv)
+	}
+
+	element := strings.Split(csv, ",")
 
 	// 检查要取关键位置是否变化 如：
 	// 外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,

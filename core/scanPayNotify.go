@@ -27,13 +27,13 @@ func ProcessAlipayNotify(params url.Values) error {
 	notifyAction := params.Get("notify_action_type")
 	// 交易订单号
 	orderNum := params.Get("out_trade_no")
-	// 系统订单号
-	sysOrderNum := params.Get("extra_common_param")
+	// 系统订单号、异步通知日志关联ID
+	sysOrderNum, logReqId := parseAttach(params.Get("extra_common_param"))
 
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
-		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		log.Errorf("fail to find trans by sysOrderNum=%s, error: %s", sysOrderNum, err)
 		return err
 	}
 
@@ -61,6 +61,7 @@ func ProcessAlipayNotify(params url.Values) error {
 
 	// 异步通知数据进入日志
 	logs.SpLogs <- &model.SpTransLogs{
+		ReqId:        logReqId,
 		Direction:    "in",
 		MerId:        t.MerId,
 		OrderNum:     t.OrderNum,
@@ -161,12 +162,12 @@ func ProcessAlipayNotify(params url.Values) error {
 
 // ProcessWeixinNotify 微信异步通知处理(预下单)
 func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
-	// 上送的订单号
-	sysOrderNum := req.Attach
+	// 上送的订单号、日志关联ID
+	sysOrderNum, logReqId := parseAttach(req.Attach)
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
-		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		log.Errorf("fail to find trans by sysOrderNum=%s, error: %s", sysOrderNum, err)
 		return err
 	}
 
@@ -194,6 +195,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 
 	// 异步通知数据进入日志
 	logs.SpLogs <- &model.SpTransLogs{
+		ReqId:        logReqId,
 		Direction:    "in",
 		MerId:        t.MerId,
 		OrderNum:     t.OrderNum,
@@ -346,4 +348,18 @@ func copyNotifyProperties(ret *model.ScanPayResponse, t *model.Trans) {
 	ret.Txamt = fmt.Sprintf("%012d", t.TransAmt)
 	ret.Attach = t.Attach
 	ret.GoodsInfo = t.GoodsInfo
+}
+
+func parseAttach(attach string) (sysOrderNum string, logReqId string) {
+	data := strings.Split(attach, ",")
+	switch len(data) {
+	case 0:
+		// ignore
+	case 1:
+		sysOrderNum = data[0]
+	case 2:
+		sysOrderNum = data[0]
+		logReqId = data[1]
+	}
+	return
 }
