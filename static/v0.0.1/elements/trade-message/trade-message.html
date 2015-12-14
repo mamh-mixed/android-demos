@@ -105,13 +105,21 @@
 
           this.messages = merMessages;
 
+          this.reqIds = new Array();
+          for (m in this.messages){
+              if (this.messages[m].direction === "in"){
+                  this.reqIds.push(this.messages[m].reqId)
+              }
+          }
+        
           // 查询渠道报文
           this.$.chanMessageQueryAjax.params = {
-            'merId': this.item.merId,
-            'orderNum': this.item.orderNum,
+            // 'merId': this.item.merId,
+            // 'orderNum': this.item.orderNum,
             'msgType': '2',
-            'reqIds': this.reqArray
+            'reqIds': this.reqIds
           };
+
           this.$.chanMessageQueryAjax.generateRequest();
 
           this.set('cond.total', response.data.total);

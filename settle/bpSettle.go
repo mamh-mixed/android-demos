@@ -43,7 +43,7 @@ func processTransSettle() {
 	// dis, _ := util.TimeToGiven("00:10:00")
 	// afterFunc(dis*time.Second, "doTransSett")
 
-	// 扫码支付每天定时copy交易到sett表，随后进行勾兑
+	// 扫码支付每天定时copy交易到sett表，随后进行勾兑，出报表
 	disOs, _ := util.TimeToGiven("00:30:00")
 	afterFunc(disOs*time.Second, "doSpTransSett")
 
@@ -56,8 +56,8 @@ func processTransSettle() {
 	// afterFunc(disCfca*time.Second, "doCILTransCheck")
 
 	// 扫码每天出报表
-	disReport, _ := util.TimeToGiven("08:00:00")
-	afterFunc(disReport*time.Second, "doScanpaySettReport")
+	// disReport, _ := util.TimeToGiven("08:00:00")
+	// afterFunc(disReport*time.Second, "doScanpaySettReport")
 
 	// app用户每天发邮件
 	appEmail, _ := util.TimeToGiven("23:00:00")

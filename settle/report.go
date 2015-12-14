@@ -14,6 +14,8 @@ const (
 	ReconciliationReport = 2 // 对账报表
 	InsFlowReport        = 3 // 机构流水报表
 	ChanMerReport        = 4 // 渠道商户报表
+	ChanLessReport       = 5 // 对账不平报表-渠道少的
+	ChanMoreReport       = 6 // 对账不平报表-渠道多的
 	// 分润报表
 )
 
@@ -21,6 +23,37 @@ const filePrefix = "sett/report/%s/" // 文件名：sett/report/20151012/IC202_9
 
 // 最外部key为代理号，接下来是渠道，接下来是清算角色，value是角色下数据
 type reconciliationMap map[string]map[string]map[string]*reconciliatReportData
+
+func getRsRecord(reportType int, date string) *model.RoleSett {
+	rs := &model.RoleSett{
+		ReportName: filePrefix,
+		ReportType: reportType,
+		SettDate:   date,
+	}
+	fd := strings.Replace(date, "-", "", -1)
+	prefix := fmt.Sprintf(filePrefix, fd)
+	switch reportType {
+	case TransferReport:
+		// multi role
+		rs.ReportName = prefix + "IC202_%s_" + fd + ".xlsx"
+	case ReconciliationReport:
+		rs.ReportName = prefix + "IC002_" + fd + ".xlsx"
+		rs.SettRole = "ALL"
+	case InsFlowReport:
+		// TODO
+		rs.ReportName = ""
+	case ChanMerReport:
+		// TODO
+		rs.ReportName = ""
+	case ChanLessReport:
+		rs.ReportName = prefix + "IC401_" + fd + ".xlsx"
+		rs.SettRole = "ALL"
+	case ChanMoreReport:
+		rs.ReportName = prefix + "IC402_" + fd + ".xlsx"
+		rs.SettRole = "ALL"
+	}
+	return rs
+}
 
 // SpSettReport 扫码清算报表
 func SpSettReport(settDate string) error {
@@ -33,24 +66,19 @@ func SpSettReport(settDate string) error {
 
 	// 报表日期显示格式
 	sd := strings.Replace(settDate, "-", "", -1)
-	filename := filePrefix + "IC202_%s_%s.xlsx"
 
 	// 遍历数据
 	for _, sg := range data {
+		// 记录
+		rs := getRsRecord(TransferReport, settDate)
+		rs.ReportName = fmt.Sprintf(rs.ReportName, sg.SettRole)
+		rs.SettRole = sg.SettRole
 
-		key := fmt.Sprintf(filename, sd, sg.SettRole, sd)
-
-		// 查询该角色是否已出过报表
-		rs, err := mongo.RoleSettCol.FindOne(sg.SettRole, settDate)
-		if err != nil {
-			rs = &model.RoleSett{SettRole: sg.SettRole, SettDate: settDate, ReportName: key}
-		}
-
-		rpData := settDataHandle(sg, rs)
+		rpData := settDataHandle(sg)
 		// 有数据才生成报表
 		if len(rpData) != 0 {
 			// 生成报表上传
-			if err = upload(key, genSpTransferReportExcel(rpData, sd)); err != nil {
+			if err = upload(rs.ReportName, genSpTransferReportExcel(rpData, sd)); err != nil {
 				continue
 			}
 			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
@@ -68,10 +96,7 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 
 	// 判断数据源
 	if len(transSetts) == 0 {
-		tss, err := mongo.SpTransSettColl.Find(&model.QueryCondition{
-			StartTime: date + " 00:00:00",
-			EndTime:   date + " 23:59:59",
-		})
+		tss, err := mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date})
 		if err != nil {
 			return err
 		}
@@ -135,24 +160,31 @@ func SpReconciliatReport(date string, transSetts ...model.TransSett) error {
 		}
 	}
 
+	// for _, v := range reconciliatMMap {
+	// 	for _, v1 := range v {
+	// 		for k, v2 := range v1 {
+	// 			log.Debugf("key=%s,value=%+v", k, v2)
+	// 		}
+	// 	}
+	// }
+
 	if len(reconciliatMMap) != 0 {
-		// 报表日期显示格式
-		sd := strings.Replace(date, "-", "", -1)
-		filename := filePrefix + "IC202_%s.xlsx"
-		upload(fmt.Sprintf(filename, sd), genReconciliatReportExcel(reconciliatMMap, date))
+		// 上传并记录
+		rs := getRsRecord(ReconciliationReport, date)
+		if err := upload(rs.ReportName, genReconciliatReportExcel(reconciliatMMap, date)); err == nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
 	}
 
 	return nil
 }
 
 // settDataHandle 清算数据处理
-func settDataHandle(sg model.SettRoleGroup, rs *model.RoleSett) []reportData {
+func settDataHandle(sg model.SettRoleGroup) []reportData {
 
 	var rds []reportData
-	if rs == nil {
-		return rds
-	}
-
 	for _, mg := range sg.MerGroups {
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {

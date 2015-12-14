@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../layouts/scaffold-layout.html">
+<link rel="import" href="../elements/app-pwd-reset/app-pwd-reset.html">
+
+<dom-module id="apps-page">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <template>
+      <scaffold-layout route$="[[route]]">
+      <app-pwd-reset class="content"></app-pwd-reset>
+    </scaffold-layout>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'apps-page',
+        properties: {
+          route: {
+            type: Object,
+            value: {
+              name: 'system.apps',
+              path: '/system/apps',
+              title: 'APP密码重置',
+              subtitle: 'APP密码重置',
+              isLocale: true,
+              msgId: 'APPUSERMANAGEMENT.TITLE'
+            }
+          }
+        },
+      });
+    })();
+  </script>
+</dom-module>

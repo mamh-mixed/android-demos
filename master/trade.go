@@ -2,6 +2,9 @@ package master
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
 	"github.com/CardInfoLink/quickpay/model"
@@ -9,15 +12,12 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
-	"net/http"
-	"time"
 )
-
-var maxReportRec = 10000
 
 func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
 	ls, total, err := query.GetSpTransLogs(q, msgType)
 	if err != nil {
+		log.Errorf("query log err: %s", err)
 		return model.NewResultBody(1, "查询数据库失败")
 	}
 
@@ -36,8 +36,8 @@ func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
 }
 
 // tradeSettleReportQuery 清算报表查询
-func tradeSettleReportQuery(role, date string, size, page int) (result *model.ResultBody) {
-	log.Debugf("role=%s; date=%s", role, date)
+func tradeSettleReportQuery(role, date string, reportType, size, page int) (result *model.ResultBody) {
+	log.Debugf("reportType=%d; role=%s; date=%s", reportType, role, date)
 
 	if page <= 0 {
 		return model.NewResultBody(400, "page 参数错误")
@@ -47,7 +47,7 @@ func tradeSettleReportQuery(role, date string, size, page int) (result *model.Re
 		size = 10
 	}
 
-	results, total, err := mongo.RoleSettCol.PaginationFind(role, date, size, page)
+	results, total, err := mongo.RoleSettCol.PaginationFind(role, date, reportType, size, page)
 	if err != nil {
 		log.Errorf("分页查询出错%s", err)
 		return model.NewResultBody(1, "查询失败")
@@ -107,10 +107,10 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	rl := GetLocale(cond.Locale)
 
 	// 查询
-	trans, _ := query.SpTransQuery(cond)
+	transSetts, _ := mongo.SpTransSettColl.Find(cond)
 
 	// 生成报表
-	file := genReport(trans, rl, &Zone{cond.UtcOffset, time.Local})
+	file := settJornalReport2(transSetts, rl, &Zone{cond.UtcOffset, time.Local})
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))

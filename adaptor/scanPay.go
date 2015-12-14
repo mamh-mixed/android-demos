@@ -3,12 +3,12 @@ package adaptor
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/channel/unionlive"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"strings"
+	"time"
 )
 
 var agentId = goconf.Config.AlipayScanPay.AgentId
@@ -185,6 +185,22 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	sp := channel.GetScanPayChan(orig.ChanCode, c.AreaType)
 	if sp == nil {
 		return ReturnWithErrorCode("NO_CHANNEL")
+	}
+
+	// 如果是海外支付宝，做一个退款接口到撤销接口的转换，以抵消手续费
+	if c.AreaType == channel.Oversea && orig.ChanCode == channel.ChanCodeAlipay {
+		// 全额退款
+		if orig.TransAmt == req.IntTxamt {
+			// 当天
+			if strings.HasPrefix(orig.PayTime, time.Now().Format("2006-01-02")) {
+				ret, err = sp.ProcessCancel(req)
+				if err != nil {
+					log.Errorf("process cancel error:%s", err)
+					return ReturnWithErrorCode("SYSTEM_ERROR")
+				}
+				return ret
+			}
+		}
 	}
 
 	ret, err = sp.ProcessRefund(req)
@@ -494,22 +510,22 @@ func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
 }
 
 // ProcessPurchaseCoupons 卡券核销
-func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-
-	// 上送参数
-	req.SysOrderNum = t.SysOrderNum
-	// req.Subject = mer.Detail.CommodityName
-	req.ChanMerId = c.ChanMerId
-	req.Terminalsn = req.Terminalid
-	req.Terminalid = c.TerminalId
-
-	// 获得渠道实例，请求
-	client := unionlive.DefaultClient
-	ret, err := client.ProcessPurchaseCoupons(req)
-	if err != nil {
-		log.Errorf("process PurchaseCoupons error:%s", err)
-		return ReturnWithErrorCode("SYSTEM_ERROR")
-	}
-
-	return ret
-}
+// func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+//
+// 	// 上送参数
+// 	req.SysOrderNum = t.SysOrderNum
+// 	// req.Subject = mer.Detail.CommodityName
+// 	req.ChanMerId = c.ChanMerId
+// 	req.Terminalsn = req.Terminalid
+// 	req.Terminalid = c.TerminalId
+//
+// 	// 获得渠道实例，请求
+// 	client := unionlive.DefaultClient
+// 	ret, err := client.ProcessPurchaseCoupons(req)
+// 	if err != nil {
+// 		log.Errorf("process PurchaseCoupons error:%s", err)
+// 		return ReturnWithErrorCode("SYSTEM_ERROR")
+// 	}
+//
+// 	return ret
+// }

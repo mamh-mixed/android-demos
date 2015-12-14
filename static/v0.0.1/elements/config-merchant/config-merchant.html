@@ -195,10 +195,18 @@
         </div>
         <div class="row">
           <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
+          <paper-radio-button id="isNeedPostAmountAfterSuccess" checked$="{{merchant.detail.isPostAmount}}" on-change="handleIsNeedPostAmountChangeEvent" style="width:800px;"> 支付成功后是否传送金额到自定义连接</paper-radio-button>
         </div>
         <div class="row">
           <paper-input label="标题一" value="{{merchant.detail.titleOne::input}}"></paper-input>
           <paper-input label="标题二" value="{{merchant.detail.titleTwo::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="支付成功后的按钮文本" value="{{merchant.detail.succBtnTxt::input}}"></paper-input>
+          <paper-input label="支付成功后的按钮连接" value="{{merchant.detail.succBtnLink::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="JS支付版本" value="{{merchant.jsPayVersion::input}}"></paper-input>
         </div>
         <div class="row">
           <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required></x-select>
@@ -371,6 +379,9 @@
           }, {
             key: '1276970101',
             value: '商圈 1276970101'
+          }, {
+            key: '1294619701',
+            value: '微信海外 1294619701'
           }]
         },
         wbigchanMerId: {
@@ -923,7 +934,19 @@
           isChecked: false
         }, {
           key: 'VERI',
-          value: '卡券核销',
+          value: '核销/查询',
+          isChecked: false
+        }, {
+          key: 'CRVE',
+          value: '刷卡核销',
+          isChecked: false
+        }, {
+          key: 'QUVE',
+          value: '验券查询',
+          isChecked: false
+        }, {
+          key: 'CAVE',
+          value: '卡券撤销',
           isChecked: false
         }];
         this.merStatus = {
@@ -1276,6 +1299,10 @@
       // 是否需要验签的改变事件
       handleIsNeedSignChangeEvent: function() {
         this.set('merchant.isNeedSign', this.$.isNeedSignCheck.checked);
+      },
+      // 支付成功后是否需要传输金额到自定义连接里面的改变事件
+      handleIsNeedPostAmountChangeEvent: function() {
+        this.set('merchant.detail.isPostAmount', this.$.isNeedPostAmountAfterSuccess.checked);
       },
       // 接口权限中的复选框组的改变事件
       handlePermissionChangeEvent: function(e) {

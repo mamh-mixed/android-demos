@@ -1,0 +1,125 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-time-picker/paper-time-picker.html">
+
+<dom-module id="yun-date-time-picker">
+  <style>
+    :host {
+      display: inline-block;
+    }
+
+    #timePicker {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <template>
+    <paper-input label="[[label]]" name="[[name]]" on-tap="showDateDialog" value="{{dateTime}}"></paper-input>
+    <paper-dialog with-backdrop id="dateDialog" class="paper-date-picker-dialog">
+      <paper-date-picker id="datePicker" date="{{date}}" locale$="{{locale}}" responsive-width="655px" min-date="{{minDate}}" max-date="{{maxDate}}"></paper-date-picker>
+      <div class="buttons">
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button dialog-confirm on-tap="showTimeDialog">
+          <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+        </paper-button>
+      </div>
+    </paper-dialog>
+    <paper-dialog id="timeDialog" modal class="paper-time-picker-dialog">
+      <paper-time-picker id="timePicker" locale$="{{locale}}" time="{{time}}"></paper-time-picker>
+      <div class="buttons">
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button dialog-confirm>
+          <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+        </paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+
+    is: 'yun-date-time-picker',
+
+    properties: {
+      name: String,
+      label: String,
+      locale: {
+        type: String,
+        value: 'en'
+      },
+      moment: {
+        type: Date,
+        notify: true,
+        observer: '_momentChanged'
+      },
+      dateTime: {
+        type: String,
+        notify: true,
+        observer: '_dateTimeChanged'
+      },
+      date: {
+        type: Date,
+        observer: '_dateChanged'
+      },
+      time: {
+        type: Date,
+        observer: '_timeChanged'
+      },
+      maxDate: {
+        type: Date,
+        value: null
+      },
+      minDate: {
+        type: Date,
+        value: null
+      }
+    },
+    attached: function() {
+    },
+    // 日期控件打开
+    showDateDialog: function() {
+      this.$.dateDialog.toggle();
+    },
+    // 时间控件打开
+    showTimeDialog: function() {
+      this.$.timeDialog.toggle();
+    },
+    _dateChanged: function(newValue, oldValue) {
+      if (!this.moment) {
+        this.set('moment', new Date());
+      }
+      this.moment.setFullYear(newValue.getFullYear());
+      this.moment.setMonth(newValue.getMonth());
+      this.moment.setDate(newValue.getDate());
+      this.set('dateTime', moment(this.moment).format('YYYY-MM-DD HH:mm:ss'));
+      this.set('moment', this.moment);
+    },
+    _timeChanged: function(newValue, oldValue) {
+      var time = moment(newValue, 'hh:mm a').toDate();
+      if (!this.moment) {
+        this.set('moment', new Date());
+      }
+      this.moment.setHours(time.getHours());
+      this.moment.setMinutes(time.getMinutes());
+      this.moment.setSeconds(0);
+      this.set('dateTime', moment(this.moment).format('YYYY-MM-DD HH:mm:ss'));
+    },
+    _dateTimeChanged: function(newValue, oldValue) {
+      if (newValue && newValue !== '') {
+        this.set('moment', moment(newValue).toDate());
+      }
+    },
+    _momentChanged: function(m) {
+      if (moment) {
+        this.set('dateTime', moment(m).format('YYYY-MM-DD HH:mm:ss'));
+      }
+    }
+  });
+</script>
