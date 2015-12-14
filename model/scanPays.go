@@ -556,6 +556,7 @@ type RoleSett struct {
 	CreateTime string `json:"createTime" bson:"createTime"`
 	UpdateTime string `json:"updateTime" bson:"updateTime"`
 	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
+	ReportType int `json:"reportType" bson:"reportType"`
 }
 
 // ChanBlendMap 渠道勾兑数据集合
