@@ -223,12 +223,14 @@ public class MainActivity extends BaseActivity {
         }
 
         public void onPageSelected(int arg0) {
+            //清空输入的金额
+            mScanCodeView.clearValue();
+            mScanCodeView.showKeyBoard();
             Animation animation = null;
             switch (arg0) {
                 case 0:
                     mTab1.setImageResource(R.drawable.gathering_selected);
-                    //清空输入的金额
-                    mScanCodeView.clearValue();
+
                     if (currIndex == 1) {
                         animation = new TranslateAnimation(one, 0, 0, 0);
                         mTab2.setImageResource(R.drawable.ticket_not_selected);
