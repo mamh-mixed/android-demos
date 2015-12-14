@@ -32,7 +32,7 @@ func (r *roleSettCollection) Upsert(rs *model.RoleSett) error {
 }
 
 // PaginationFind 分页查找清算数据
-func (r *roleSettCollection) PaginationFind(role, date string, reportType int, size, page int) (results []model.RoleSett, total int, err error) {
+func (r *roleSettCollection) PaginationFind(role, date string, reportType, size, page int) (results []model.RoleSett, total int, err error) {
 	results = make([]model.RoleSett, 0)
 
 	match := bson.M{}

@@ -36,7 +36,7 @@ func getTradeMsg(q *model.QueryCondition, msgType int) (ret *model.ResultBody) {
 }
 
 // tradeSettleReportQuery 清算报表查询
-func tradeSettleReportQuery(role, date string, reportType int, size, page int) (result *model.ResultBody) {
+func tradeSettleReportQuery(role, date string, reportType, size, page int) (result *model.ResultBody) {
 	log.Debugf("reportType=%d; role=%s; date=%s", reportType, role, date)
 
 	if page <= 0 {
