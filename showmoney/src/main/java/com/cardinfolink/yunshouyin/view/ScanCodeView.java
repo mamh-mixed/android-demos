@@ -157,6 +157,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     clearzero();
                     txt_output.append("3");
                     getResult();
+                    add_flag = true;
                 }
                 break;
             case R.id.btn4:
