@@ -135,6 +135,10 @@
 		"description": "新密码最小长度位",
 		"message": "新パスワードは８文字未満不可"
 	},
+	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LONGEST_LENGTH": {
+		"description": "新密码最大长度位",
+		"message": "新パスワードは２０文字以上不可"
+	},
 	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
 		"description": "新密码必须复杂点，包含大小写字母和数字",
 		"message": "新パスワードは、半角英数字（大文字と小文字）が含まれている必要がある"
