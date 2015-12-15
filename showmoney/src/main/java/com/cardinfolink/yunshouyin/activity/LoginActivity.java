@@ -140,6 +140,7 @@ public class LoginActivity extends BaseActivity {
 
     private void login() {
         if (!validate()) {
+            endLoading();
             return;
         }
 
