@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -46,7 +47,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Random;
 
-public class ScanCodeView extends LinearLayout implements View.OnClickListener {
+public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
     private static final int MAX_MONEY = 99999999;//能够进行交易的最大金额数
     private static final int MAX_LIMIT_MONEY = 500;//单日限额的最大金额数
@@ -117,6 +118,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
 
     private SharedPreferences sp;
 
+    private int mLastDownY = 0;
 
     public ScanCodeView(Context context) {
         super(context);
@@ -204,6 +206,21 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
 
         mLeftImage.setOnClickListener(this);
         mRightImage.setOnClickListener(this);
+
+        btn0.setOnTouchListener(this);
+        btn1.setOnTouchListener(this);
+        btn2.setOnTouchListener(this);
+        btn3.setOnTouchListener(this);
+        btn4.setOnTouchListener(this);
+        btn5.setOnTouchListener(this);
+        btn6.setOnTouchListener(this);
+        btn7.setOnTouchListener(this);
+        btn8.setOnTouchListener(this);
+        btn9.setOnTouchListener(this);
+        btnadd.setOnTouchListener(this);
+        btnpoint.setOnTouchListener(this);
+        btnclear.setOnTouchListener(this);
+        btndelete.setOnTouchListener(this);
     }
 
     private void initAnimation() {
@@ -359,7 +376,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
                     Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(sum > MAX_MONEY){
+                if (sum > MAX_MONEY) {
                     //金额太大了
                     String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
                     Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
@@ -557,6 +574,57 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
         }
     }
 
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        final double sum = Double.parseDouble(input.getText().toString().substring(1));
+
+        int currentY = 0;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mLastDownY = (int) event.getY();
+                return false;
+            case MotionEvent.ACTION_UP:
+                currentY = (int) event.getY();
+                int dy = currentY - mLastDownY;
+                if (dy < 0) {
+                    if (Math.abs(dy) > keyboardView.getHeight() / 2) {
+                        if (sum <= 0) {
+                            //"金额不能为零!"
+                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
+                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                        if (sum > MAX_MONEY) {
+                            //金额太大了
+                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+
+                        if (mCHCD.equals(CHCD_TYPE[0])) {
+                            setLeft();//微信
+                        } else {
+                            setRight();//支付宝
+                        }
+
+                        startLoading();//load 二维码是的动画
+
+                        //生成二维码比较慢？？？！！！
+                        checkLimit(new StrategyInterface() {
+                            @Override
+                            public void run() {
+                                createQRcode(String.valueOf(sum), mCHCD);
+                            }
+                        });
+
+                        showScanCode();//显示二维码界面
+                    }
+                }
+                break;
+        }
+        return false;
+    }
 
     public void getResult() {
         double result = 0;
