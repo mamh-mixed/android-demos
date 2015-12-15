@@ -85,9 +85,7 @@
           'rerender-i18n': 'handleI18nLanguageChangeEvent',
           'show-login-dialog': 'handleOpenLoginDialogEvent'
         },
-        ready: function() {},
-        attached: function() {
-          this.$.appRouter.init();
+        ready: function() {
           var lan = this.language || window.navigator.language;
           switch (lan) {
             case 'ja':
@@ -100,6 +98,9 @@
               I18nMsg.lang = 'zh-CN';
           }
         },
+        attached: function() {
+          this.$.appRouter.init();
+        },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
           this.$.appRouter.go('/')
@@ -107,7 +108,6 @@
         },
         // 路由改变事件
         handleStateChangeEvent: function(e) {
-          // debugger;
           console.log(e.type, e.detail.path);
 
           if (e.detail.path !== '/' && e.detail.path[e.detail.path.length - 1] === '/') {
