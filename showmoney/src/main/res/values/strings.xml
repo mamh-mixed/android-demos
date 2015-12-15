@@ -97,6 +97,12 @@
     <string name="scancode_view_scaning_code">开始扫描</string>
     <string name="scancode_view_scaning_pay_zhifubao">支付宝</string>
     <string name="scancode_view_scaning_pay_weixin">微信支付</string>
+    <string name="create_qrcode_search_deal">交易查询</string>
+    <string name="scancode_qrcode">二维码或条码</string>
+    <string name="create_code_scan_text">请客户使用手机扫描</string>
+    <string name="create_code_scan_pay">扫码支付</string>
+    <string name="create_code_scan_pay_money">本次收款金额：NT$ 12.56</string>
+
 
     <string name="toast_money_cannot_zero">金额不能为零!</string>
     <string name="toast_money_too_large">金额过大!</string>

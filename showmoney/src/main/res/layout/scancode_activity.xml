@@ -64,7 +64,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="40dp"
-        android:text="二维码或条码"
+        android:text="@string/scancode_qrcode"
         android:textColor="#ffffff"
         android:textSize="14sp"
 
