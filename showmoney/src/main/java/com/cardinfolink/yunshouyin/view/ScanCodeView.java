@@ -367,7 +367,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
                 }
                 //进入照相机扫码界面
                 intent = new Intent(mContext, CaptureActivity.class);
-                intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
+                //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
                 intent.putExtra("total", "" + sum);
                 mContext.startActivity(intent);
                 break;
