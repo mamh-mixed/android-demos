@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -89,11 +88,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
     private ImageView mLeftImage;//切换按钮 支付宝还是微信的切换按钮
     private ImageView mRightImage;//切换按钮 支付宝还是微信的切换按钮
     private TextView mLeftText;
-    ;//切换按钮 下面的文本
+    //切换按钮 下面的文本
     private TextView mRightText;
-    ;//切换按钮 下面的文本
+    //切换按钮 下面的文本
 
-    private double result = 0;
     private Context mContext;
 
     private boolean clearFlag = true;
@@ -114,7 +112,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
     private ResultData mResultData;
     private Handler mHandler;
 
-    SharedPreferences sp;
+    private SharedPreferences sp;
 
 
     public ScanCodeView(Context context) {
@@ -440,6 +438,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
                     clearZero();
                     output.append("3");
                     getResult();
+                    addFlag = true;
                 }
                 break;
             case R.id.tv_four:
