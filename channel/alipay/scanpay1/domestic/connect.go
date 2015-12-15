@@ -54,7 +54,6 @@ func sendRequest(alpReq *alpRequest) (*alpResponse, error) {
 	// 重试
 	for {
 		count++
-		log.Infof("%s", requestURL)
 		res, err = http.PostForm(requestURL, values)
 		if err != nil {
 			log.Errorf("connect %s fail : %s, retry ... %d", requestURL, err, count)
@@ -172,7 +171,6 @@ func sendSettleRequest(alpReq *alpRequest) (*alpSettleResponse, error) {
 	// 重试
 	for {
 		count++
-		log.Infof("%s", requestURL)
 		res, err = http.PostForm(requestURL, values)
 		if err != nil {
 			log.Errorf("connect %s fail : %s, retry ... %d", requestURL, err, count)

@@ -46,7 +46,7 @@ func scanpayUnifiedHandle(w http.ResponseWriter, r *http.Request) {
 // weixinNotifyHandle 接受微信异步通知
 func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	ret := &weixin.WeixinNotifyResp{ReturnCode: "SUCCESS", ReturnMsg: "OK"}
-
+	var unescaped string
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Errorf("read http body error: %s", err)
@@ -55,7 +55,7 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Infof("weixin notify: %s", data)
 		// 微信有时会返回转义后的 xml，json 解析前必须解转义
-		unescaped, err := url.QueryUnescape(string(data))
+		unescaped, err = url.QueryUnescape(string(data))
 		if err != nil {
 			log.Errorf("unescape xml error: %s", err)
 			ret.ReturnCode = "FAIL"
@@ -68,7 +68,9 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 				ret.ReturnCode = "FAIL"
 				ret.ReturnMsg = "报文读取错误"
 			} else {
-				err = weixinNotifyCtrl(&req)
+				if err = weixinNotifyCtrl(&req); err != nil {
+					log.Errorf("handle weixin notify error: %s, req: %+v", err, req)
+				}
 			}
 		}
 	}
@@ -78,14 +80,12 @@ func weixinNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	retBytes, err := xml.Marshal(ret)
-
 	if err != nil {
 		log.Errorf("read http body error: %s", err)
 		http.Error(w, "system error", http.StatusInternalServerError)
 		return
 	}
 
-	log.Infof("return weixin: %s", retBytes)
 	w.Write(retBytes)
 }
 
@@ -96,7 +96,7 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
-	log.Infof("alipay notify(GBK): %s", data)
+	log.Infof("alipay notify: %s", data)
 
 	// log.Debugf("before decoder: %s", string(data))
 	// gbk-utf8
@@ -110,20 +110,18 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 
 	vs, err := url.ParseQuery(unescape)
 	if err != nil {
-		log.Infof("return alipay: %s", err)
+		log.Infof("handle alipay notify error: %s", err)
 		http.Error(w, err.Error(), http.StatusNotAcceptable)
 		return
 	}
 
 	// 处理异步通知
-	err = alipayNotifyCtrl(vs)
-	if err != nil {
-		log.Info("return alipay: fail")
+	if err = alipayNotifyCtrl(vs); err != nil {
+		log.Errorf("handle alipay notify error: %s, req: %+v", err, vs)
 		http.Error(w, "fail", http.StatusOK)
 		return
 	}
 
-	log.Info("return alipay: success")
 	http.Error(w, "success", http.StatusOK)
 }
 

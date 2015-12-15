@@ -33,7 +33,7 @@ func ProcessAlipayNotify(params url.Values) error {
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
-		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		log.Errorf("fail to find trans by sysOrderNum=%s, error: %s", sysOrderNum, err)
 		return err
 	}
 
@@ -167,7 +167,7 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 	// 系统订单号是全局唯一
 	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
 	if err != nil {
-		log.Errorf("fail to find trans by sysOrderNum=%s", sysOrderNum)
+		log.Errorf("fail to find trans by sysOrderNum=%s, error: %s", sysOrderNum, err)
 		return err
 	}
 

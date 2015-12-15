@@ -553,10 +553,8 @@ type RoleSett struct {
 	SettRole   string `json:"settRole" bson:"settRole"`
 	SettDate   string `json:"settDate" bson:"settDate"`
 	ReportName string `json:"reportName" bson:"reportName"`
-	CreateTime string `json:"createTime" bson:"createTime"`
 	UpdateTime string `json:"updateTime" bson:"updateTime"`
-	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
-	ReportType int `json:"reportType" bson:"reportType"`
+	ReportType int    `json:"reportType" bson:"reportType"`
 }
 
 // ChanBlendMap 渠道勾兑数据集合
