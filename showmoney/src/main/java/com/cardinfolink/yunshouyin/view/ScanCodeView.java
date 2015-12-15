@@ -47,7 +47,8 @@ import java.util.Hashtable;
 import java.util.Random;
 
 public class ScanCodeView extends LinearLayout implements View.OnClickListener {
-
+    private static final String TAG = "ScanCodeView";
+    private static final int MAX_MONEY = 99999999;//能够进行交易的最大金额数
 
     private TranslateAnimation mShowAnimation;
     private TranslateAnimation mHideAnimation;
@@ -587,7 +588,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
         }
 
 
-        if (result > 99999999) {
+        if (result > MAX_MONEY) {
             // "金额过大!"
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
             Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
@@ -617,8 +618,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
         }
         input.setText("=" + String.format("%.2f", result));
 
-        if (result > 99999999) {
-            Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
+        if (result > MAX_MONEY) {
+            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
             numFlag = false;
         } else {
             numFlag = true;
