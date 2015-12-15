@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -76,22 +76,18 @@ public class CreateQRcodeActivity extends BaseActivity {
 
         initListener();
 
-
         CashierSdk.startPrePay(orderData, new CashierListener() {
 
             @Override
             public void onResult(ResultData resultData) {
-                Log.i(TAG, resultData.qrcode);
                 mResultData = resultData;
                 Message msg = new Message();
                 msg.what = 1;
                 mHandler.sendMessageDelayed(msg, 0);
-
             }
 
             @Override
             public void onError(int errorCode) {
-                Log.i(TAG, "errorCode: " + errorCode);
 
             }
         });
@@ -152,7 +148,6 @@ public class CreateQRcodeActivity extends BaseActivity {
         Bitmap icon = null;
         if (mResultData.chcd.equals("WXP")) {
             icon = BitmapFactory.decodeResource(getResources(), R.drawable.wpay);
-
             mScanText.setText(getResources().getString(R.string.create_qrcode_activity_open_wx));
         } else {
             icon = BitmapFactory.decodeResource(getResources(), R.drawable.apay);
@@ -160,10 +155,13 @@ public class CreateQRcodeActivity extends BaseActivity {
         }
         Bitmap bitmap;
         try {
-            bitmap = cretaeBitmap(mResultData.qrcode, icon);
-            mQrcodeImage.setImageBitmap(bitmap);
+            if (!TextUtils.isEmpty(mResultData.qrcode)) {
+                bitmap = cretaeBitmap(mResultData.qrcode, icon);
+                mQrcodeImage.setImageBitmap(bitmap);
+            } else {
+                mScanText.setText(mResultData.errorDetail);
+            }
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -235,18 +233,15 @@ public class CreateQRcodeActivity extends BaseActivity {
 
 
     public Bitmap cretaeBitmap(String str, Bitmap icon) throws WriterException {
-
         icon = Untilly.zoomBitmap(icon, IMAGE_HALFWIDTH);
         Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         hints.put(EncodeHintType.MARGIN, 1);
-        // ���ɶ�ά����,����ʱָ����С,��Ҫ������ͼƬ�Ժ��ٽ�������,������ģ������ʶ��ʧ��
         BitMatrix matrix = new MultiFormatWriter().encode(str,
                 BarcodeFormat.QR_CODE, 300, 300, hints);
         int width = matrix.getWidth();
         int height = matrix.getHeight();
-        // ��ά����תΪһά��������,Ҳ����һֱ��������
         int halfW = width / 2;
         int halfH = height / 2;
         int[] pixels = new int[width * height];
@@ -260,7 +255,7 @@ public class CreateQRcodeActivity extends BaseActivity {
                 } else {
                     if (matrix.get(x, y)) {
                         pixels[y * width + x] = FOREGROUND_COLOR;
-                    } else { // ����Ϣ�������ص�Ϊ��ɫ
+                    } else {
                         pixels[y * width + x] = BACKGROUND_COLOR;
                     }
                 }
