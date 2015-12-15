@@ -102,10 +102,16 @@ public class DetailActivity extends BaseActivity {
 
     @SuppressLint("NewApi")
     private void initData() {
-        if (mTradeBill.chcd.equals("WXP")) {
-            mPaylogoImage.setImageResource(R.drawable.wpay);
+        if (!TextUtils.isEmpty(mTradeBill.chcd)) {
+            //有chcd渠道的话,这里设置不同渠道的图片
+            if ("WXP".equals(mTradeBill.chcd)) {
+                mPaylogoImage.setImageResource(R.drawable.wpay);
+            } else {
+                mPaylogoImage.setImageResource(R.drawable.apay);
+            }
         } else {
-            mPaylogoImage.setImageResource(R.drawable.apay);
+            //如果没有chcd渠道的话,这里设置为一个错误的图片
+            mPaylogoImage.setImageResource(R.drawable.wrong);
         }
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
         SimpleDateFormat spf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -116,6 +122,7 @@ public class DetailActivity extends BaseActivity {
             e.printStackTrace();
         }
         String tradeFrom = "PC";
+
         if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
             tradeFrom = mTradeBill.tradeFrom;
         }
@@ -139,7 +146,7 @@ public class DetailActivity extends BaseActivity {
         }
         mTradeStatusText.setText(tradeStatus);
         mConsumerAccount.setText(mTradeBill.consumerAccount);
-        mTradeAmountText.setText("￥" + mTradeBill.amount);
+        mTradeAmountText.setText("NT$" + mTradeBill.amount);
         mOrderNumText.setText(mTradeBill.orderNum);
         mGoodInfoText.setText(mTradeBill.goodsInfo);
         if (mTradeBill.busicd.equals("REFD") || !mTradeBill.response.equals("00")) {
@@ -150,6 +157,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     //刷新按钮点击事件处理方法
+
     public void btnRefreshOnClick(View view) {
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mTradeBill.orderNum;
