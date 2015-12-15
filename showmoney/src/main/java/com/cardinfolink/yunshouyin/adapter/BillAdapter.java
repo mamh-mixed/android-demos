@@ -98,10 +98,16 @@ public class BillAdapter extends BaseAdapter {
         }
 
         final TradeBill bill = tradeBillList.get(position);
-        if (bill.chcd.equals("WXP")) {
-            holder.paylogo.setImageResource(R.drawable.wpay);
+        if (!TextUtils.isEmpty(bill.chcd)) {
+            //有chcd渠道的话,这里设置不同渠道的图片
+            if (bill.chcd.equals("WXP")) {
+                holder.paylogo.setImageResource(R.drawable.wpay);
+            } else {
+                holder.paylogo.setImageResource(R.drawable.apay);
+            }
         } else {
-            holder.paylogo.setImageResource(R.drawable.apay);
+            //如果没有chcd渠道的话,这里设置为一个错误的图片
+            holder.paylogo.setImageResource(R.drawable.wrong);
         }
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
         SimpleDateFormat spf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

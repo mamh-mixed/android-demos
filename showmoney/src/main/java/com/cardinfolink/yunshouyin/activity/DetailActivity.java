@@ -102,10 +102,16 @@ public class DetailActivity extends BaseActivity {
 
     @SuppressLint("NewApi")
     private void initData() {
-        if (mTradeBill.chcd.equals("WXP")) {
-            mPaylogoImage.setImageResource(R.drawable.wpay);
+        if (!TextUtils.isEmpty(mTradeBill.chcd)) {
+            //有chcd渠道的话,这里设置不同渠道的图片
+            if ("WXP".equals(mTradeBill.chcd)) {
+                mPaylogoImage.setImageResource(R.drawable.wpay);
+            } else {
+                mPaylogoImage.setImageResource(R.drawable.apay);
+            }
         } else {
-            mPaylogoImage.setImageResource(R.drawable.apay);
+            //如果没有chcd渠道的话,这里设置为一个错误的图片
+            mPaylogoImage.setImageResource(R.drawable.wrong);
         }
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
         SimpleDateFormat spf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
