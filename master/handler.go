@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -78,7 +79,7 @@ func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
 
-	tradeReport(w, &model.QueryCondition{
+	tradeTransferReport(w, &model.QueryCondition{
 		Date:      date,
 		SettRole:  role,
 		UtcOffset: utcOffset * 60, // second
@@ -290,30 +291,51 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var merId = params.Get("merId")
 	cond := &model.QueryCondition{
-		MerId:        merId,
-		Busicd:       params.Get("busicd"),
-		AgentCode:    params.Get("agentCode"),
-		SubAgentCode: params.Get("subAgentCode"),
-		GroupCode:    params.Get("groupCode"),
-		StartTime:    params.Get("startTime"),
-		EndTime:      params.Get("endTime"),
-		OrderNum:     params.Get("orderNum"),
-		OrigOrderNum: params.Get("origOrderNum"),
-		Size:         maxReportRec,
-		IsForReport:  true,
-		Page:         1,
-		RefundStatus: model.TransRefunded,
-		TransStatus:  []string{model.TransSuccess},
-		Locale:       curSession.Locale,
-		UtcOffset:    utcOffset * 60,
+		MerName:        params.Get("merName"),
+		Terminalid:     params.Get("terminalId"),
+		MerId:          params.Get("merId"),
+		AgentCode:      params.Get("agentCode"),
+		SubAgentCode:   params.Get("subAgentCode"),
+		GroupCode:      params.Get("groupCode"),
+		Respcd:         params.Get("respcd"),
+		Busicd:         params.Get("busicd"),
+		StartTime:      params.Get("startTime"),
+		EndTime:        params.Get("endTime"),
+		OrderNum:       params.Get("orderNum"),
+		OrigOrderNum:   params.Get("origOrderNum"),
+		Col:            params.Get("pay"),
+		BindingId:      params.Get("bindingId"),
+		CouponsNo:      params.Get("couponsNo"),
+		WriteoffStatus: params.Get("writeoffStatus"),
+		Page:           1,
+		Locale:         curSession.Locale,
+		UtcOffset:      utcOffset * 60,
+		IsForReport:    true,
+	}
+
+	transStatus := params.Get("transStatus")
+	if transStatus != "" {
+		cond.TransStatus = []string{transStatus}
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不���功的话���不处理，默认为false
 	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
 	if err == nil {
 		cond.IsAggregateByGroup = isAggreByGroup
+	}
+
+	var merId = params.Get("merId")
+	if !isAggreByGroup {
+		cond.MerId = merId
+	} else {
+		// 按照商户号分组的，如果 ‘merId’ 以 ‘GC-’ 开头的，只取 ‘GC-’ 之后的部分，放置到 ‘merId’ 之中
+		// 否则把 ‘merId’ 赋值给 groupCode
+		if matched, _ := regexp.MatchString(`^GC-`, merId); !matched {
+			cond.GroupCode = merId
+		} else {
+			cond.MerId = merId[3:]
+		}
 	}
 
 	tradeReport(w, cond, "trade_detail.xlsx")
@@ -381,6 +403,12 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		Size:         maxReportRec,
 		Locale:       curSession.Locale,
 		UtcOffset:    utcOffset * 60,
+	}
+
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
+	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
+	if err == nil {
+		q.IsAggregateByGroup = isAggreByGroup
 	}
 
 	// 设置content-type

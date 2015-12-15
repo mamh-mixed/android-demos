@@ -461,9 +461,9 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 
 	// 如果报表的话，将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
-	if q.IsForReport {
-		match["transAmt"] = bson.M{"$ne": 0}
-	}
+	// if q.IsForReport {
+	// 	match["transAmt"] = bson.M{"$ne": 0}
+	// }
 
 	p := []bson.M{
 		{"$match": match},

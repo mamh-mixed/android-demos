@@ -620,6 +620,11 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 		return model.NewResultBody(6, "PASSWORD_LENGTH_NOT_ENOUGH")
 	}
 
+	if len(newPwd) >= 20 {
+		log.Errorf("new password's length must less than 21; now is %d", len(newPwd))
+		return model.NewResultBody(6, "PASSWORD_LENGTH_TWO_LONG")
+	}
+
 	// 密码复杂度校验
 	if !isPasswordOk(newPwd) {
 		log.Errorf("new password is not conplicated enough: %s", newPwd)
