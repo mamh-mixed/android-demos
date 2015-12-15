@@ -135,6 +135,10 @@
 		"description": "新密码最小长度位",
 		"message": "新密碼長度不能少於8比特"
 	},
+	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LONGEST_LENGTH": {
+		"description": "新密码最大长度位",
+		"message": "新密碼長度不能超過20比特"
+	},
 	"PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
 		"description": "新密码必须复杂点，包含大小写字母和数字",
 		"message": "新密碼必須包含大小寫字母和數位"
@@ -165,7 +169,11 @@
 	},
 	"SCANPAY_TRADE_LIST.GROUP_NO": {
 		"description": "商户代码",
+<<<<<<< HEAD
 		"message": "商戶程式碼"
+=======
+		"message": "商戶程式碼
+>>>>>>> w-wsj-1215
 	},
 	"SCANPAY_TRADE_LIST.MERCHANT_NO": {
 		"description": "门店代码",
@@ -579,4 +587,9 @@
 		"description": "用户管理",
 		"message": "用戶管理"
 	}
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> w-wsj-1215
 }

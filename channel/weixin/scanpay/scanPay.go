@@ -55,9 +55,9 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		// 非必填
 		DeviceInfo: m.DeviceInfo, // 设备号
 		GoodsGag:   m.GoodsTag,   // 商品标记
+		FeeType:    m.Currency,   // 货币类型
 		// Detail:     m.WxpMarshalGoods(), // 商品详情
 		// Attach:     m.Attach,         // 附加数据
-		FeeType: m.Currency, // 货币类型
 	}
 
 	p := &PayResp{}
@@ -205,7 +205,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		TotalFee:      m.TotalTxamt,   // 总金额
 		RefundFee:     m.ActTxamt,     // 退款金额
 		OpUserId:      m.ChanMerId,    // 操作员
-		// RefundFeeType: m.CurrType,     // 货币种类
+		FeeType:       m.Currency,     // 货币种类
 	}
 
 	p := &RefundResp{}
@@ -264,6 +264,7 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 
 		TransactionId: "",             // 微信订单号
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
+		FeeType:       m.Currency,     // 货币种类
 	}
 
 	p := &ReverseResp{}
