@@ -53,6 +53,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
     private TranslateAnimation mHideAnimation;
 
     private TextView mScanTitle;//二维码界面中间上边的 标题文本
+    private TextView mAccount;//显示账号的
 
     private TextView btn0;
     private TextView btn1;
@@ -137,6 +138,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
      * 初始化各个组件
      */
     private void initView() {
+        mAccount = (TextView) findViewById(R.id.tv_account);//显示账号的
+        mAccount.setText(SessonData.loginUser.getUsername());
+
         scanCodeView = findViewById(R.id.ll_qrcode);
         keyboardView = findViewById(R.id.ll_keyboard);
 
