@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -115,7 +116,7 @@ public class DetailActivity extends BaseActivity {
             e.printStackTrace();
         }
         String tradeFrom = "PC";
-        if (!mTradeBill.tradeFrom.isEmpty()) {
+        if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
             tradeFrom = mTradeBill.tradeFrom;
         }
         String busicd = getResources().getString(R.string.detail_activity_busicd_pay);

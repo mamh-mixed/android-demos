@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,7 +113,7 @@ public class BillAdapter extends BaseAdapter {
             e.printStackTrace();
         }
         String tradeFrom = "PC";
-        if (!bill.tradeFrom.isEmpty()) {
+        if (!TextUtils.isEmpty(bill.tradeFrom)) {
             tradeFrom = bill.tradeFrom;
         }
 
