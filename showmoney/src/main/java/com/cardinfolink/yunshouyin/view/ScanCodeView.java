@@ -350,32 +350,26 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
     public void onClick(View v) {
         String outputText = output.getText().toString();
         final double sum = Double.parseDouble(input.getText().toString().substring(1));
+        Intent intent;
         switch (v.getId()) {
             case R.id.scancodepay:
-
-                if (mCHCD.equals(CHCD_TYPE[0])) {
-                    setLeft();//微信
-                } else {
-                    setRight();//支付宝
-                }
-
                 if (sum <= 0) {
                     //"金额不能为零!"
                     String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
                     Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                startLoading();//load 二维码是的动画
-
-                //生成二维码比较慢？？？！！！
-                checkLimit(new StrategyInterface() {
-                    @Override
-                    public void run() {
-                        createQRcode(String.valueOf(sum), mCHCD);
-                    }
-                });
-
-                showScanCode();//显示二维码界面
+                if(sum > MAX_MONEY){
+                    //金额太大了
+                    String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+                    Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //进入照相机扫码界面
+                intent = new Intent(mContext, CaptureActivity.class);
+                intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
+                intent.putExtra("total", "" + sum);
+                mContext.startActivity(intent);
                 break;
             case R.id.iv_left:
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
@@ -407,7 +401,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
                 break;
             case R.id.scan_qr:
                 //进入照相机扫码界面
-                Intent intent = new Intent(mContext, CaptureActivity.class);
+                intent = new Intent(mContext, CaptureActivity.class);
                 intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
                 intent.putExtra("total", "" + sum);
                 mContext.startActivity(intent);
