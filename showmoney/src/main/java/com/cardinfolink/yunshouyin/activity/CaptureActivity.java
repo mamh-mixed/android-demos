@@ -63,7 +63,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private Handler mHandler;
     private TradingCustomDialog mCustomDialog;
     private String total;
-    private String chcd;
     private String mOrderNum;
     private ResultData mResultData;
 
@@ -76,7 +75,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         setContentView(R.layout.scancode_activity);
         Intent intent = getIntent();
         total = intent.getStringExtra("total");
-        chcd = intent.getStringExtra("chcd");
+        //这里不需要传人支付类型了，服务器判断。
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
         mOrderNum = spf.format(now);
@@ -96,8 +95,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     private void initLayout() {
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-        mCustomDialog = new TradingCustomDialog(mContext, mHandler,
-                findViewById(R.id.trading_custom_dialog), mOrderNum);
+        mCustomDialog = new TradingCustomDialog(mContext, mHandler, findViewById(R.id.trading_custom_dialog), mOrderNum);
 
     }
 
@@ -115,15 +113,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
             @Override
             public void onClick(View v) {
                 if (CameraManager.get().isFlashlight()) {
-                    GradientDrawable myGrad = (GradientDrawable) v
-                            .getBackground();
+                    GradientDrawable myGrad = (GradientDrawable) v.getBackground();
                     myGrad.setColor(Color.parseColor("#222222"));
                     CameraManager.get().closeFlashlight();
-
                 } else {
-
-                    GradientDrawable myGrad = (GradientDrawable) v
-                            .getBackground();
+                    GradientDrawable myGrad = (GradientDrawable) v.getBackground();
                     myGrad.setColor(Color.parseColor("#444444"));
                     CameraManager.get().openFlashlight();
 
@@ -143,15 +137,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         orderData.orderNum = mOrderNum;
                         orderData.txamt = total;
                         orderData.currency = "156";
-                        orderData.chcd = chcd;
                         orderData.scanCodeId = (String) msg.obj;
                         // /orderData.scanCodeId="13241252555";
                         CashierSdk.startPay(orderData, new CashierListener() {
 
                             @Override
                             public void onResult(ResultData resultData) {
-
-
                                 mResultData = resultData;
                                 if (mResultData.respcd.equals("00")) {
                                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
