@@ -300,7 +300,7 @@
             android:checked="true"
             android:gravity="center"
             android:padding="7dp"
-            android:text="支付宝  "
+            android:text="@string/scancode_view_scaning_pay_zhifubao"
             android:textColor="#FFFFFF" />
 
         <RadioButton
@@ -313,7 +313,7 @@
             android:button="@null"
             android:gravity="center"
             android:padding="7dp"
-            android:text="微信支付"
+            android:text="@string/scancode_view_scaning_pay_weixin"
             android:textColor="#FFFFFF" />
     </RadioGroup>
 

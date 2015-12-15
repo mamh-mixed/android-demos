@@ -95,6 +95,9 @@
     <string name="refd_dialog__password_error">密碼錯誤!</string>
     <string name="scancode_view_create_code">生成二維碼</string>
     <string name="scancode_view_scaning_code">開始掃描</string>
+    <string name="scancode_view_scaning_pay_zhifubao">支付寶</string>
+    <string name="scancode_view_scaning_pay_weixin">微信支付</string>
+
 
     <string name="toast_money_cannot_zero">金額不能為零!</string>
     <string name="toast_money_too_large">金額過大!</string>
