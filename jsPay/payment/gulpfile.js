@@ -10,7 +10,7 @@ var gutil = require('gulp-util');
 var WebpackDevServer = require("webpack-dev-server");
 var stream = require('webpack-stream');
 
-var webpackConf = require('./webpack.config');
+var webpackConf = require('./webpack.config'); // 测试环境
 var webpackDevConf = require('./webpack-dev.config');
 var webpackPrdConf = require('./webpack-prd.config');
 
@@ -121,7 +121,7 @@ gulp.task('webpack', [], function() {
 	return gulp.src(path.ALL)
 		.pipe(sourcemaps.init())
 		.pipe(stream(webpackConf))
-		.pipe(uglify())
+		// .pipe(uglify())
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(path.DEST_BUILD));
 });

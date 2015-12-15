@@ -28,6 +28,7 @@ const (
 	// 卡券核销状态
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
+	COUPON_WO_PROCESS = "PROCESS"
 )
 
 // QueryCondition 扫码交易查询字段
@@ -552,9 +553,8 @@ type RoleSett struct {
 	SettRole   string `json:"settRole" bson:"settRole"`
 	SettDate   string `json:"settDate" bson:"settDate"`
 	ReportName string `json:"reportName" bson:"reportName"`
-	CreateTime string `json:"createTime" bson:"createTime"`
 	UpdateTime string `json:"updateTime" bson:"updateTime"`
-	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
+	ReportType int    `json:"reportType" bson:"reportType"`
 }
 
 // ChanBlendMap 渠道勾兑数据集合

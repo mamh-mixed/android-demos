@@ -8,6 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"strings"
+	"time"
 )
 
 var agentId = goconf.Config.AlipayScanPay.AgentId

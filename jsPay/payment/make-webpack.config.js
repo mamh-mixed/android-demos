@@ -122,7 +122,7 @@ function makeConf(options) {
 			// 	minChunks: chunks.length // 提取所有chunks共同依赖的模块
 			// }),
 			new OpenBrowserPlugin({
-				url: 'http://192.168.199.193:8080/webpack-dev-server/pay.html'
+				url: 'http://localhost:8080/webpack-dev-server/pay.html'
 			}),
 			new webpack.DefinePlugin({
 				__GATEWATSERVER__: gatwayServer

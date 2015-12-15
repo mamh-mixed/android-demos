@@ -1,7 +1,6 @@
 package scanpay
 
 import (
-	"regexp"
 	"strconv"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -47,6 +46,11 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 	}
 	if matched, err := validateVeriTime(req); !matched {
 		return err
+	}
+	if req.Txamt != "" {
+		if matched, err := validateTxamt(req); !matched {
+			return err
+		}
 	}
 	return
 }
@@ -94,7 +98,7 @@ func validatePurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	if matched, err := validateVeriTime(req); !matched {
 		return err
 	}
-	if matched, err := validateCouponTxamt(req); !matched {
+	if matched, err := validateTxamt(req); !matched {
 		return err
 	}
 	if matched, err := validatePayType(req); !matched {
@@ -225,28 +229,5 @@ func validateChcd(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 	if req.Chcd != "" && req.Chcd != "ULIVE" {
 		return false, fieldContentError(chcd)
 	}
-	return true, nil
-}
-
-// validateTxamt 验证金额
-func validateCouponTxamt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
-
-	if matched, _ := regexp.MatchString(`^\d{12}$`, req.Txamt); !matched {
-		return false, fieldFormatError(txamt)
-	}
-
-	// 转换金额
-	toInt, err := strconv.ParseInt(req.Txamt, 10, 64)
-	if err != nil {
-		return false, fieldFormatError(txamt)
-	}
-
-	// 金额范围
-	// || toInt > maxTxamt 不限制金额，就按12位最大值来
-	// if toInt == minTxamt {
-	// 	return false, fieldFormatError(txamt)
-	// }
-
-	req.IntTxamt = toInt
 	return true, nil
 }

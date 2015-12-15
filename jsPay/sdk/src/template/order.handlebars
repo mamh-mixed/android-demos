@@ -1,0 +1,28 @@
+<div class="two">
+  <div class="image-container">
+    <img src="{{headimgurl}}">
+  </div>
+  <div class="content-container">
+    <div class="left">
+      <h4>{{nickname}}</h4>
+      <p class="first">{{transtime}}</p>
+      <div class="next">
+        <div>
+          <img src="../img/wei.png">
+        </div>
+        <div>
+          <img src="../img/wechat.png" />
+        </div>
+        <div class="second">
+          <div {{#if fail}} style="color:#ff0000" {{/if}}>{{status}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="captha">
+        <span>校验码：{{code}}</span>
+      </div>
+      <div class="amount">￥{{amount}}</div>
+    </div>
+  </div>
+</div>

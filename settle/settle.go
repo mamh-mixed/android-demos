@@ -124,6 +124,19 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 			agentsMap[t.AgentCode] = a
 		}
 
+		// TODO DELETE:
+		// 兼容逆向交易没有存渠道订单号
+		// 勾兑时用到
+		if t.TransType != model.PayTrans {
+			if t.ChanOrderNum == "" {
+				// 查找原订单
+				ot, err := mongo.SpTransColl.FindOne(t.MerId, t.OrigOrderNum)
+				if err == nil {
+					t.ChanOrderNum = ot.ChanOrderNum
+				}
+			}
+		}
+
 		transSett := model.TransSett{}
 		transSett.Trans = *t
 		transSett.SettDate = date
