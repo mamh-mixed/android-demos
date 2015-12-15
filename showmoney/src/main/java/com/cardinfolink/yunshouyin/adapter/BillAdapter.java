@@ -135,7 +135,7 @@ public class BillAdapter extends BaseAdapter {
             holder.billTradeStatus.setTextColor(Color.RED);
         }
         holder.billTradeStatus.setText(tradeStatus);
-        holder.billTradeAmount.setText("￥" + bill.amount);
+        holder.billTradeAmount.setText("NT$" + bill.amount);
         holder.billTradeDeatil.setOnClickListener(new View.OnClickListener() {
 
             @Override
