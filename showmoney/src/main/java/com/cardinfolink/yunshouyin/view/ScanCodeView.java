@@ -49,6 +49,7 @@ import java.util.Random;
 public class ScanCodeView extends LinearLayout implements View.OnClickListener {
     private static final String TAG = "ScanCodeView";
     private static final int MAX_MONEY = 99999999;//能够进行交易的最大金额数
+    private static final int MAX_LIMIT_MONEY = 500;//单日限额的最大金额数
 
     private TranslateAnimation mShowAnimation;
     private TranslateAnimation mHideAnimation;
@@ -281,7 +282,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
                 @Override
                 public void onSuccess(String data) {
                     double limitValue = Double.parseDouble(data);
-                    if (limitValue >= 500) {
+                    if (limitValue >= MAX_LIMIT_MONEY) {
                         //"当日交易已超过限额,请申请提升限额!";
                         String alertMsg = ShowMoneyApp.getResString(R.string.alert_error_limit_error);
                         View alertView = ((Activity) mContext).findViewById(R.id.alert_dialog);
