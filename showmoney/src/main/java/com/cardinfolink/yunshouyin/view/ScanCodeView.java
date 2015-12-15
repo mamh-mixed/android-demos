@@ -226,19 +226,28 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener {
     }
 
     public void showKeyBoard() {
-        keyboardView.startAnimation(mShowAnimation);
-        keyboardView.setVisibility(VISIBLE);
-
-        scanCodeView.startAnimation(mHideAnimation);
-        scanCodeView.setVisibility(GONE);
+        //键盘不是显示的话就调用这个if里面的，让键盘界面显示
+        if (keyboardView.getVisibility() != VISIBLE) {
+            keyboardView.startAnimation(mShowAnimation);
+            keyboardView.setVisibility(VISIBLE);
+        }
+        //同时要隐藏二维码界面
+        if (scanCodeView.getVisibility() != GONE) {
+            scanCodeView.startAnimation(mHideAnimation);
+            scanCodeView.setVisibility(GONE);
+        }
     }
 
     public void showScanCode() {
-        keyboardView.startAnimation(mHideAnimation);
-        keyboardView.setVisibility(GONE);
-
-        scanCodeView.startAnimation(mShowAnimation);
-        scanCodeView.setVisibility(VISIBLE);
+        //键盘 显示的话就调用这个if里面的，让键盘界面隐藏
+        if (keyboardView.getVisibility() != GONE) {
+            keyboardView.startAnimation(mHideAnimation);
+            keyboardView.setVisibility(GONE);
+        }
+        if (scanCodeView.getVisibility() != VISIBLE) {
+            scanCodeView.startAnimation(mShowAnimation);
+            scanCodeView.setVisibility(VISIBLE);
+        }
     }
 
     public void clearValue() {
