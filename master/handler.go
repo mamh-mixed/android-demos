@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -290,9 +291,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var merId = params.Get("merId")
 	cond := &model.QueryCondition{
-		MerId:        merId,
 		Busicd:       params.Get("busicd"),
 		AgentCode:    params.Get("agentCode"),
 		SubAgentCode: params.Get("subAgentCode"),
@@ -315,6 +314,21 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		cond.IsAggregateByGroup = isAggreByGroup
 	}
+
+	var merId = params.Get("merId")
+	if !isAggreByGroup {
+		cond.MerId = merId
+	} else {
+		// 按照商户号分组的，如果 ‘merId’ 以 ‘GC-’ 开头的，只取 ‘GC-’ 之后的部分，放置到 ‘merId’ 之中
+		// 否则把 ‘merId’ 赋值给 groupCode
+		if matched, _ := regexp.MatchString(`^GC-`, merId); !matched {
+			cond.GroupCode = merId
+		} else {
+			cond.MerId = merId[3:]
+		}
+	}
+
+	log.Debugf("condition is %+v", cond)
 
 	tradeReport(w, cond, "trade_detail.xlsx")
 }
@@ -381,6 +395,12 @@ func tradeQueryStatsReportHandle(w http.ResponseWriter, r *http.Request) {
 		Size:         maxReportRec,
 		Locale:       curSession.Locale,
 		UtcOffset:    utcOffset * 60,
+	}
+
+	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不成功的话就不处理，默认为空
+	isAggreByGroup, err := strconv.ParseBool(r.FormValue("isAggregateByGroup"))
+	if err == nil {
+		q.IsAggregateByGroup = isAggreByGroup
 	}
 
 	// 设置content-type
