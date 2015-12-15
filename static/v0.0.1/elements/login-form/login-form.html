@@ -124,15 +124,32 @@
           router: {
             type: Object,
             notify: true
+          },
+          user: {
+            type: Object,
+            value: {
+              userName: '',
+              password: ''
+            }
           }
         },
-        ready: function() {
-          this.user = {};
-        },
+        ready: function() {},
         attached: function() {
           this.fire('rerender-i18n', {
             from: 'password-editor'
           });
+        },
+        observers: [
+          '_watchLoginChange(user.userName, user.password)'
+        ],
+        _watchLoginChange: function(username, password) {
+          if (username.length > 20) {
+            this.set('user.userName', username.substr(0, 20));
+          }
+
+          if (password.length > 20) {
+            this.set('user.password', password.substr(0, 20));
+          }
         },
         loginTapHandle: function() {
           if (this.isloginConfigEmpty()) {
