@@ -28,6 +28,9 @@ import java.util.Random;
 
 
 public class RefdDialog {
+    private Bitmap wronBitmap;
+    private Bitmap rightBitmap;
+
     private EditText refdValue;
     private EditText refdPassword;
     private TextView refdTitle;
@@ -53,6 +56,10 @@ public class RefdDialog {
         maxRefd = Double.parseDouble(total) - Double.parseDouble(refdTotal);
         BigDecimal b = new BigDecimal(maxRefd);
         maxRefd = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+        rightBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right);
+        wronBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+
     }
 
     public void show() {
@@ -94,6 +101,7 @@ public class RefdDialog {
 
     /**
      * 退款
+     *
      * @param view
      */
     private void refdOnClick(View view) {
@@ -128,20 +136,19 @@ public class RefdDialog {
                     @Override
                     public void run() {
                         mBaseActivity.endLoading();
-                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right);
                         View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
                         String alertMsg = "";
                         if (resultData.respcd.equals("00")) {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_success);
-                            AlertDialog alertDialog = new AlertDialog(mContext, mHandler, alertView, alertMsg, bitmap);
+                            AlertDialog alertDialog = new AlertDialog(mContext, mHandler, alertView, alertMsg, rightBitmap);
                             alertDialog.show();
                         } else if (resultData.respcd.equals("R6")) {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd);
-                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
                             alertDialog.show();
                         } else {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
-                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
                             alertDialog.show();
                         }
                     }
@@ -156,10 +163,9 @@ public class RefdDialog {
                     @Override
                     public void run() {
                         mBaseActivity.endLoading();
-                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
                         View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
                         String alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
-                        AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+                        AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
                         alertDialog.show();
                     }
                 });
@@ -172,13 +178,12 @@ public class RefdDialog {
 
     private boolean validate() {
         View alertView = mBaseActivity.findViewById(R.id.alert_dialog);
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
         String alertMsg = "";
 
         String refdStr = refdValue.getText().toString();
         if (TextUtils.isEmpty(refdStr)) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
             alertDialog.show();
             return false;
         }
@@ -188,27 +193,27 @@ public class RefdDialog {
             refd = Double.parseDouble(refdStr);
         } catch (Exception e) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
             alertDialog.show();
             return false;
         }
 
         if (refd < 0.01) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
             alertDialog.show();
             return false;
         }
 
         if (refd > maxRefd) {
             alertMsg = String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
             alertDialog.show();
             return false;
         }
         if (!refdPassword.getText().toString().equals(SessonData.loginUser.getPassword())) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog__password_error);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
+            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, wronBitmap);
             alertDialog.show();
             return false;
         }
