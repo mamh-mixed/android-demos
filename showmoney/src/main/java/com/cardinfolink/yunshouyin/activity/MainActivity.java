@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -122,6 +124,7 @@ public class MainActivity extends BaseActivity {
         mLeftMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         // 为侧滑菜单设置布局
         mLeftMenu.setMenu(R.layout.leftmenu);
+        mLeftMenu.setOnOpenListener(new SlidingMenuOnOpenListener());
 
         mDrawerList = (ListView) mLeftMenu.findViewById(R.id.left_drawer);
         menuLists = new ArrayList<String>();
@@ -138,6 +141,8 @@ public class MainActivity extends BaseActivity {
 
 
     public void BtnMenuOnClick(View view) {
+        hideInput();
+
         if (mLeftMenu.isMenuShowing()) {
             mLeftMenu.toggle();
         } else {
@@ -197,6 +202,8 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            hideInput();
+
             SessonData.positionView = position;
             switch (position) {
                 case 0:
@@ -240,4 +247,16 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private class SlidingMenuOnOpenListener implements SlidingMenu.OnOpenListener {
+
+        @Override
+        public void onOpen() {
+            hideInput();
+        }
+    }
+
+    private void hideInput() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }
