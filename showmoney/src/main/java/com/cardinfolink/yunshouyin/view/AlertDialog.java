@@ -60,6 +60,25 @@ public class AlertDialog {
         });
     }
 
+    public void show(OnClickListener listener) {
+        TextView textView = (TextView) dialogView.findViewById(R.id.alert_message);
+        textView.setText(mMessage);
+        ImageView imageView = (ImageView) dialogView.findViewById(R.id.alert_img);
+        if (mBitmap != null) {
+            imageView.setImageBitmap(mBitmap);
+        }
+        dialogView.setVisibility(View.VISIBLE);
+
+        dialogView.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+        dialogView.findViewById(R.id.alert_ok).setOnClickListener(listener);//自定义 按钮的行为。
+    }
 
     public void show(String message, Bitmap bitmap) {
 
