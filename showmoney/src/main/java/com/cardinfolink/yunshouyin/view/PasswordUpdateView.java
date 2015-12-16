@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
@@ -12,6 +13,7 @@ import android.widget.LinearLayout;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.BaseActivity;
+import com.cardinfolink.yunshouyin.activity.SplashActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
@@ -80,10 +82,17 @@ public class PasswordUpdateView extends LinearLayout {
                 String alertMsg = getResources().getString(R.string.alert_update_success);
                 Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right);
                 AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-                alertDialog.show();
                 mOldPwdEdit.setText("");
                 mNewPwdEdit.setText("");
                 mQrPwdEdit.setText("");
+                //更新密码之后就退出登录。
+                alertDialog.show(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBaseActivity.startActivity(new Intent(mBaseActivity, SplashActivity.class));
+                        mBaseActivity.finish();
+                    }
+                });
             }
 
             @Override
