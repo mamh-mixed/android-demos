@@ -278,7 +278,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             case R.id.btnweixin:
                 break;
             case R.id.btnsm:
-                final double sum = Double.parseDouble(edt_input.getText().toString().substring(1));
+                final String sumString = edt_input.getText().toString().substring(1);//传递时候用string类型
+                final double sum = Double.parseDouble(sumString);//比较大小用double类型
                 if (sum <= 0) {
                     //"金额不能为零!"
                     String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
@@ -316,12 +317,12 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                 if (switch_flag) {
                                     Intent intent = new Intent(mContext, CaptureActivity.class);
                                     intent.putExtra("chcd", chcd);
-                                    intent.putExtra("total", "" + sum);
+                                    intent.putExtra("total", sumString);
                                     mContext.startActivity(intent);
                                 } else {
                                     Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
                                     intent.putExtra("chcd", chcd);
-                                    intent.putExtra("total", "" + sum);
+                                    intent.putExtra("total",sumString);
                                     mContext.startActivity(intent);
                                 }
                             }
@@ -347,12 +348,12 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     if (switch_flag) {
                         Intent intent = new Intent(mContext, CaptureActivity.class);
                         intent.putExtra("chcd", chcd);
-                        intent.putExtra("total", "" + sum);
+                        intent.putExtra("total", sumString);
                         mContext.startActivity(intent);
                     } else {
                         Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
                         intent.putExtra("chcd", chcd);
-                        intent.putExtra("total", "" + sum);
+                        intent.putExtra("total", sumString);
                         mContext.startActivity(intent);
                     }
                 }
