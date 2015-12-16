@@ -16,11 +16,11 @@ android {
     }
 
     productFlavors {
-        cardinfolink {
+        taiwan {
             manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
                                     UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
-                                    UMENG_CHANNEL_VALUE : "yunshouyin",
-                                    PACKAGE             : "com.cardinfolink.yunshouyin"]
+                                    UMENG_CHANNEL_VALUE : "taiwan",
+                                    PACKAGE             : "com.cardinfolink.yunshouyin.taiwan"]
             //comment out below for go live
             applicationId "com.cardinfolink.yunshouyin"
             buildConfigField 'String', 'ENVIRONMENT', '"pro"'
@@ -28,10 +28,10 @@ android {
         _test {
             manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
                                     UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
-                                    UMENG_CHANNEL_VALUE : "yunshouyin",
-                                    PACKAGE             : "com.cardinfolink.yunshouyin.test"]
+                                    UMENG_CHANNEL_VALUE : "taiwan",
+                                    PACKAGE             : "com.cardinfolink.yunshouyin.taiwan.test"]
             //comment out below for go live
-            applicationId "com.cardinfolink.yunshouyin.test"
+            applicationId "com.cardinfolink.yunshouyin.taiwan.test"
             buildConfigField 'String', 'ENVIRONMENT', '"test"'
         }
     }
