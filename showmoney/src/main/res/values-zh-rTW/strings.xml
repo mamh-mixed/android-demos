@@ -78,6 +78,11 @@
     <string name="alert_error_username_exist">用户名已存在!</string>
     <string name="alert_error_system_error">對不起，系統出現錯誤!</string>
     <string name="alert_error_old_password_error">原密碼錯誤!</string>
+    <string name="alert_error_user_has_three_times">您還有三次機會!</string>
+    <string name="alert_error_user_has_two_times">您還有二次機會!</string>
+    <string name="alert_error_user_has_one_times">您還有壹次機會!</string>
+    <string name="alert_error_network">網絡錯誤,請檢查網絡是否連接</string>
+
     <string name="alert_update_success">修改成功!</string>
     <string name="alert_error_old_password_cannot_empty">原密碼不能為空!</string>
     <string name="alert_error_old_password_short_six">原密碼不能少於6比特!</string>

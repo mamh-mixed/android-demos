@@ -30,7 +30,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="30dp"
                 android:gravity="center_horizontal"
-                android:text="@string/create_code_scan_pay"
+                android:text="@string/main_activity_menu_scancode"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
         </RelativeLayout>
