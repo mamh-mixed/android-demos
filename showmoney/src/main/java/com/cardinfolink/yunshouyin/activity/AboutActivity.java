@@ -12,6 +12,10 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 import com.cardinfolink.yunshouyin.ui.SettingDetailItem;
+import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.UmengUpdateListener;
+import com.umeng.update.UpdateResponse;
+import com.umeng.update.UpdateStatus;
 
 public class AboutActivity extends Activity implements View.OnClickListener {
 
@@ -78,8 +82,36 @@ public class AboutActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.update:
                 //检查更新
-                Toast.makeText(this, "检测更新", Toast.LENGTH_SHORT).show();
+                checkUpdate();
                 break;
         }
+    }
+
+    private void checkUpdate() {
+        UmengUpdateAgent.setUpdateAutoPopup(false);
+        UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
+            @Override
+            public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
+                String toastMsg;
+                switch (updateStatus) {
+                    case UpdateStatus.Yes: // has update
+                        UmengUpdateAgent.showUpdateDialog(AboutActivity.this, updateInfo);
+                        break;
+                    case UpdateStatus.No: // has no update
+                        toastMsg = getResources().getString(R.string.setting_no_update);
+                        Toast.makeText(AboutActivity.this, toastMsg, Toast.LENGTH_SHORT).show();
+                        break;
+                    case UpdateStatus.NoneWifi: // none wifi
+                        toastMsg = getResources().getString(R.string.setting_no_wifi_no_update);
+                        Toast.makeText(AboutActivity.this, toastMsg, Toast.LENGTH_SHORT).show();
+                        break;
+                    case UpdateStatus.Timeout: // time out
+                        toastMsg = getResources().getString(R.string.setting_update_timeout);
+                        Toast.makeText(AboutActivity.this, toastMsg, Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+        UmengUpdateAgent.update(this);
     }
 }
