@@ -134,7 +134,7 @@
     <string name="txn_currency">元</string>
     <string name="txn_refund">退款</string>
     <string name="txn_unit">筆</string>
-    <string name="login">登入</string>
+    <string name="login">登錄</string>
     <string name="clear">清空</string>
     <string name="delete">删除</string>
     <string name="begin_scan">開始掃描</string>
