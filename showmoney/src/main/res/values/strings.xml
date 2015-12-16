@@ -37,15 +37,20 @@
     <string name="press_again_exit">再按一次退出程序！</string>
     <string name="username_exist">用户名已存在！</string>
     <string name="activate_sentto_email">激活链接将发送到该邮箱:\n\n</string>
-    <string name="create_qrcode_activity_open_wx">请打开微信\n扫一扫</string>
-    <string name="create_qrcode_activity_open_ali">请打开支付宝钱包\n扫一扫</string>
+
+    <string name="create_qrcode_activity_scancode">扫码支付</string>
+    <string name="create_qrcode_activity_open_wx">请顾客打开微信“扫一扫”</string>
+    <string name="create_qrcode_activity_open_ali">请顾客打开支付宝钱包“扫一扫”</string>
+    <string name="create_qrcode_activity_open_message">请客户使用手机扫描</string>
     <string name="create_qrcode_activity_amount">本次收款金额：￥</string>
+    <string name="create_qrcode_activity_trade_search">交易查询</string>
+
     <string name="detail_activity_busicd_pay">支付</string>
     <string name="detail_activity_busicd_refd">退款</string>
     <string name="detail_activity_trade_status_success">交易成功</string>
     <string name="detail_activity_trade_status_fail">交易失败</string>
     <string name="detail_activity_trade_status_nopay">正在处理</string>
-    <string name="main_activity_menu_scancode">扫码支付</string>
+
     <string name="main_activity_menu_transmange">交易管理</string>
     <string name="main_activity_menu_passwordupdate">密码修改</string>
     <string name="main_activity_menu_accountupdate">账户修改</string>
@@ -78,6 +83,11 @@
     <string name="alert_error_username_exist">用户名已存在!</string>
     <string name="alert_error_system_error">对不起,系统出现错误!</string>
     <string name="alert_error_old_password_error">原密码错误!</string>
+    <string name="alert_error_user_has_three_times">您还有三次机会!</string>
+    <string name="alert_error_user_has_two_times">您还有二次机会!</string>
+    <string name="alert_error_user_has_one_times">您还有一次机会!</string>
+    <string name="alert_error_network">网络错误,请检查网络是否连接</string>
+    <string name="alert_error_user_locked">用户被禁用</string>
     <string name="alert_update_success">修改成功!</string>
     <string name="alert_error_old_password_cannot_empty">原密码不能为空!</string>
     <string name="alert_error_old_password_short_six">原密码不能少于6位!</string>

@@ -31,7 +31,15 @@ public class ErrorUtil {
         if (error.equals("old_password_error")) {
             return ShowMoneyApp.getResString(R.string.alert_error_old_password_error);
         }
-
+        if (error.equals("user_has_three_times")) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_has_three_times);
+        }
+        if (error.equals("user_has_two_times")) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_has_two_times);
+        }
+        if (error.equals("user_has_one_times")) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_has_one_times);
+        }
         return error;
 
     }
