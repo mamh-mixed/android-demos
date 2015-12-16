@@ -45,6 +45,18 @@ public class AboutActivity extends Activity implements View.OnClickListener {
         mWebsite.setOnClickListener(this);
         mWelcome.setOnClickListener(this);
         mUpdate.setOnClickListener(this);
+
+        setVersionName();//获取versionName的值并设置到mVersion里面
+    }
+
+    private void setVersionName() {
+        try {
+            String pkName = getPackageName();
+            String versionName = getPackageManager().getPackageInfo(pkName, 0).versionName;
+            mVersion.setDetail(versionName);
+        } catch (Exception e) {
+            mVersion.setDetail("");
+        }
     }
 
     @Override
