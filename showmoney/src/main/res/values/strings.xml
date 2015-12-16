@@ -51,6 +51,7 @@
     <string name="detail_activity_trade_status_fail">交易失败</string>
     <string name="detail_activity_trade_status_nopay">正在处理</string>
 
+    <string name="main_activity_menu_scancode">扫码支付</string>
     <string name="main_activity_menu_transmange">交易管理</string>
     <string name="main_activity_menu_passwordupdate">密码修改</string>
     <string name="main_activity_menu_accountupdate">账户修改</string>
