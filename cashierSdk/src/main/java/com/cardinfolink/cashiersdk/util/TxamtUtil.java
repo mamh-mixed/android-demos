@@ -33,16 +33,10 @@ public class TxamtUtil {
                     c = str.charAt(index);
                 }
                 sum = str.substring(index);
-                double i = Double.parseDouble(sum);
-                i = i / 100;
-                BigDecimal bg = new BigDecimal(i);
-                double j = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                sum = "" + j;
-                return sum;
-
-
+                BigDecimal bg = new BigDecimal(sum);
+                BigDecimal bg100 = new BigDecimal("100");
+                return bg.divide(bg100).toString();
             } catch (Exception e) {
-
                 e.printStackTrace();
             }
         }
