@@ -35,19 +35,33 @@
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/agent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
+        <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}" data-msg-id="SCANPAY_TRADE_STATS.AGENT_NAME"></paper-input>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">
+          <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+        </paper-button>
       </div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
-            <div class="th">序号</div>
-            <div class="th">代理代码</div>
-            <div class="th left">代理名称</div>
-            <div class="th right">微信成本</div>
-            <div class="th right">支付宝成本</div>
-            <div class="th">操作</div>
+            <div class="th">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th">
+              <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>
+            </div>
+            <div class="th left">
+              <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>
+            </div>
+            <div class="th right">
+              <i18n-msg msgid="AGENT.WXP_COST">微信成本</i18n-msg>
+            </div>
+            <div class="th right">
+              <i18n-msg msgid="AGENT.ALP_COST">支付宝成本</i18n-msg>
+            </div>
+            <div class="th">
+              <i18n-msg msgid="AGENT.OPERATION">操作</i18n-msg>
+            </div>
           </div>
         </div>
         <div class="tbody">
@@ -116,6 +130,9 @@
           };
         },
         attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'agent-list'
+          });
           if (this.autoLoading) {
             this.handleQueryTapped();
           }
@@ -133,7 +150,7 @@
         handleQueryResponse: function(e) {
           var response = e.detail;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
@@ -144,7 +161,7 @@
           this.set('cond.page', pagination.page);
 
           if (this.agents.length === 0) {
-            Util.toast('没有数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           }
         },
 

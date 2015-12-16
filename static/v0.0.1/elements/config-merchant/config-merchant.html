@@ -133,178 +133,211 @@
   </style>
   <template>
     <paper-tabs selected="{{idx}}">
-      <paper-tab>门店信息</paper-tab>
-      <paper-tab>支付宝</paper-tab>
-      <paper-tab>微信</paper-tab>
-      <paper-tab>QQ 钱包</paper-tab>
-      <paper-tab>优方</paper-tab>
+      <paper-tab>
+        <i18n-msg msgid="MERCHANT_INPUT.TAB_MERCHANT_INFO">门店信息</i18n-msg>
+      </paper-tab>
+      <paper-tab>
+        <i18n-msg msgid="MERCHANT_INPUT.TAB_ALIPAY">支付宝</i18n-msg>
+      </paper-tab>
+      <paper-tab>
+        <i18n-msg msgid="MERCHANT_INPUT.TAB_WXP">微信</i18n-msg>
+      </paper-tab>
+      <paper-tab>
+        <i18n-msg msgid="MERCHANT_INPUT.TAB_QQ_WALLET">QQ 钱包</i18n-msg>
+      </paper-tab>
+      <paper-tab>
+        <i18n-msg msgid="MERCHANT_INPUT.TAB_ULIVE">优方</i18n-msg>
+      </paper-tab>
     </paper-tabs>
 
     <iron-pages selected="{{idx}}">
       <section alias="merchant">
         <div class="row">
-          <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
-          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
+          <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
         </div>
         <div class="row">
-          <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
-          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}"></paper-input>
+          <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司" data-msg-id="GROUP.SUB_AGENT"></x-select>
+          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
         </div>
         <div class="row">
-          <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
-          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户" data-msg-id="GROUP.GROUP"></x-select>
+          <paper-input label="商户代码" value="{{merchant.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
-          <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="merName" label="门店名称" value="{{merchant.detail.merName::input}}" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NAME" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
-          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent" style="width:800px;"> 是否开启验签</paper-radio-button>
+          <paper-radio-button id="isNeedSignCheck" checked$="{{merchant.isNeedSign}}" on-change="handleIsNeedSignChangeEvent" style="width:800px;">
+            <i18n-msg msgid="MERCHANT.IS_NEED_SIGN_CHECK">是否开启验签</i18n-msg>
+          </paper-radio-button>
           <div class="col">
             <div class="layout horizontal center">
-              <paper-input class="flex left" id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项"></paper-input>
-              <paper-button class="cycan" raised on-tap="handleRefreshSignKeyTapped">刷新</paper-button>
+              <paper-input class="flex left" id="signKey" label="门店签名密钥" value="{{merchant.signKey::input}}" error-message="必填项" data-msg-id="MERCHANT.SIGNKEY" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+              <paper-button class="cycan" raised on-tap="handleRefreshSignKeyTapped">
+                <i18n-msg msgid="BUTTON.REFRESH">刷新</i18n-msg>
+              </paper-button>
             </div>
           </div>
         </div>
 
         <div class="row">
-          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}"></paper-input>
-          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}"></paper-input>
+          <paper-input label="开户账户" value="{{merchant.detail.acctNum::input}}" data-msg-id="MERCHANT.ACCTNUM"></paper-input>
+          <paper-input label="开户姓名" value="{{merchant.detail.acctName::input}}" data-msg-id="MERCHANT.ACCTNAME"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="开户行号" value="{{merchant.detail.bankId::input}}"></paper-input>
-          <paper-input label="支行名称" value="{{merchant.detail.openBankName::input}}"></paper-input>
+          <paper-input label="开户行号" value="{{merchant.detail.bankId::input}}" data-msg-id="MERCHANT.BANKID"></paper-input>
+          <paper-input label="支行名称" value="{{merchant.detail.openBankName::input}}" data-msg-id="MERCHANT.OPENBANKNAME"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="开户行名称" value="{{merchant.detail.bankName::input}}"></paper-input>
-          <paper-input label="门店交易币种" value="{{merchant.transCurr::input}}"></paper-input>
+          <paper-input label="开户行名称" value="{{merchant.detail.bankName::input}}" data-msg-id="MERCHANT.BANKNAME"></paper-input>
+          <paper-input label="门店交易币种" value="{{merchant.transCurr::input}}" data-msg-id="MERCHANT.TRANSCURR"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="省份" value="{{merchant.detail.province::input}}"></paper-input>
-          <paper-input label="城市" value="{{merchant.detail.city::input}}"></paper-input>
+          <paper-input label="省份" value="{{merchant.detail.province::input}}" data-msg-id="MERCHANT.PROVINCE"></paper-input>
+          <paper-input label="城市" value="{{merchant.detail.city::input}}" data-msg-id="MERCHANT.CITY"></paper-input>
         </div>
 
         <div class="row">
-          <paper-input id="commodityName" label="商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项"></paper-input>
-          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}"></paper-input>
+          <paper-input id="commodityName" label="商品名称" value="{{merchant.detail.commodityName::input}}" required error-message="必填项" data-msg-id="MERCHANT.COMMODITYNAME" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input label="商品标签" value="{{merchant.detail.goodsTag::input}}" data-msg-id="MERCHANT.GOODSTAG"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}"></paper-input>
-          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}"></paper-input>
+          <paper-input label="门店类型" value="{{merchant.detail.shopType::input}}" data-msg-id="MERCHANT.SHOPTYPE"></paper-input>
+          <paper-input label="门店ID" value="{{merchant.detail.shopID::input}}" data-msg-id="MERCHANT.SHOPID"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}"></paper-input>
-          <paper-radio-button id="isNeedPostAmountAfterSuccess" checked$="{{merchant.detail.isPostAmount}}" on-change="handleIsNeedPostAmountChangeEvent" style="width:800px;"> 支付成功后是否传送金额到自定义连接</paper-radio-button>
+          <paper-input label="品牌编号" value="{{merchant.detail.brandNum::input}}" data-msg-id="MERCHANT.BRANDNUM"></paper-input>
+          <paper-radio-button id="isNeedPostAmountAfterSuccess" checked$="{{merchant.detail.isPostAmount}}" on-change="handleIsNeedPostAmountChangeEvent" style="width:800px;">
+            <i18n-msg msgid="MERCHANT.ISPOSTAMOUNT">支付成功后是否传送金额到自定义连接</i18n-msg>
+          </paper-radio-button>
         </div>
         <div class="row">
-          <paper-input label="标题一" value="{{merchant.detail.titleOne::input}}"></paper-input>
-          <paper-input label="标题二" value="{{merchant.detail.titleTwo::input}}"></paper-input>
+          <paper-input label="标题一" value="{{merchant.detail.titleOne::input}}" data-msg-id="MERCHANT.TITLEONE"></paper-input>
+          <paper-input label="标题二" value="{{merchant.detail.titleTwo::input}}" data-msg-id="MERCHANT.TITLETWO"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="支付成功后的按钮文本" value="{{merchant.detail.succBtnTxt::input}}"></paper-input>
-          <paper-input label="支付成功后的按钮连接" value="{{merchant.detail.succBtnLink::input}}"></paper-input>
+          <paper-input label="支付成功后的按钮文本" value="{{merchant.detail.succBtnTxt::input}}" data-msg-id="MERCHANT.SUCC_BTN_TXT"></paper-input>
+          <paper-input label="支付成功后的按钮连接" value="{{merchant.detail.succBtnLink::input}}" data-msg-id="MERCHANT.SUCC_BTN_LINK"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="JS支付版本" value="{{merchant.jsPayVersion::input}}"></paper-input>
+          <paper-input label="JS支付版本" value="{{merchant.jsPayVersion::input}}" data-msg-id="MERCHANT.JS_PAY_VERSION"></paper-input>
         </div>
         <div class="row">
-          <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required></x-select>
-          <paper-input label="备注信息" value="{{merchant.remark::input}}"></paper-input>
+          <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required data-msg-id="MERCHANT.MER_STATUS" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM" is-locale></x-select>
+          <paper-input label="备注信息" value="{{merchant.remark::input}}" data-msg-id="MERCHANT.REMARK"></paper-input>
         </div>
         <div>
-          <label for="permissionGroup">接口权限：</label>
+          <label for="permissionGroup">
+            <i18n-msg msgid="MERCHANT.PERMISSION_GROUP">接口权限</i18n-msg>：</label>
           <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
             <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
-              <span>{{item.value}}</span>
+              <span>
+                  <i18n-msg msgid$="{{getPermission(item.key)}}">{{item.value}}</i18n-msg>
+              </span>
             </paper-checkbox>
           </template>
         </div>
 
         <div class="row button">
-          <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">保存门店信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveMerchantTapped">
+            <i18n-msg msgid="{{BUTTON.SAVE_MERCHANT}}">保存门店信息</i18n-msg>
+          </paper-button>
         </div>
       </section>
 
       <section alias="alipay">
         <div class="row">
-          <paper-input id="achanMerId" label="Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项" on-blur="_partnerIdChange"></paper-input>
-          <paper-input label="支付宝商户名称" value="{{alipay.chanMerName::input}}"></paper-input>
+          <paper-input id="achanMerId" label="Partner ID" value="{{alipay.chanMerId::input}}" required error-message="必填项" on-blur="_partnerIdChange" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input label="支付宝商户名称" value="{{alipay.chanMerName::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alipayRoute.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="amerFee" label="门店跟讯联费率" value="{{alipayRoute.merFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="aacqFee" label="讯联跟渠道费率" value="{{alipayRoute.acqFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.ACQFEE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="amerFee" label="门店跟讯联费率" value="{{alipayRoute.merFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.MERFEE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
-          <x-select id="asettFlag" items="[[settFlags]]" selected-item="{{asettFlag}}" class="validate-container" label="清算标识" required error-message="必填项"></x-select>
-          <paper-input id="asettRole" label="清算角色" value="{{alipayRoute.settRole::input}}" required error-message="必填项"></paper-input>
+          <x-select id="asettFlag" items="[[settFlags]]" selected-item="{{asettFlag}}" class="validate-container" label="清算标识" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SETTFLAG" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM" is-locale></x-select>
+          <paper-input id="asettRole" label="清算角色" value="{{alipayRoute.settRole::input}}" required error-message="必填项" data-msg-id="ROUTE_POLICY.SETTROLE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
-          <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
+          <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SIGN_CERT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.AGENT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
         </div>
         <div class="row button">
-          <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveALPTapped">
+            <i18n-msg msgid="BUTTON.SAVE_ALP">保存支付宝信息</i18n-msg>
+          </paper-button>
         </div>
       </section>
 
       <section alias="tenpay">
         <div class="row">
-          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项" on-blur="_wchanMerIdChange"></paper-input>
-          <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
+          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项" on-blur="_wchanMerIdChange" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input label="微信商户名称" value="{{weixin.chanMerName::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
         </div>
         <div class="row">
-          <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent"> 是否代理商模式</paper-radio-button>
-          <x-select id="bigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
+          <paper-radio-button id="isAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent">
+            <i18n-msg msgid="CHAN_MERCHANT.IS_AGENT_MODE">是否代理商模式</i18n-msg>
+          </paper-radio-button>
+          <x-select id="bigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]" data-msg-id="CHAN_MERCHANT.BIG_MERCHANT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
         </div>
         <div class="row">
-          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixinRoute.acqFee::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wmerFee" label="门店跟讯联费率" value="{{weixinRoute.merFee::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixinRoute.acqFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.ACQFEE"></paper-input>
+          <paper-input id="wmerFee" label="门店跟讯联费率" value="{{weixinRoute.merFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.MERFEE"></paper-input>
         </div>
         <div class="row">
-          <x-select id="wsettFlag" items="[[settFlags]]" selected-item="{{wsettFlag}}" class="validate-container" label="清算标识" required error-message="必填项"></x-select>
-          <paper-input id="wsettRole" label="清算角色" value="{{weixinRoute.settRole::input}}" required error-message="必填项"></paper-input>
+          <x-select id="wsettFlag" items="[[settFlags]]" selected-item="{{wsettFlag}}" class="validate-container" label="清算标识" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SETTFLAG" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
+          <paper-input id="wsettRole" label="清算角色" value="{{weixinRoute.settRole::input}}" required error-message="必填项" data-msg-id="ROUTE_POLICY.SETTROLE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="wxpAppId" label="微信 AppId" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
-          <paper-input id="wsignCert" label="签名密钥" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
+          <paper-input id="wxpAppId" label="微信 AppId" value="{{weixin.wxpAppId::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.WXP_APP_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="wsignCert" label="签名密钥" value="{{weixin.signCert::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.SIGN_CERT_WXP" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
 
         <div class="row">
           <section>
-            <label id="httpCertL">请选择.pem文件的HTTP证书</label>
+            <label id="httpCertL">
+              <i18n-msg msgid="CHAN_MERCHANT.HTTP_CERT_LABEL">请选择.pem文件的HTTP证书</i18n-msg>
+            </label>
             <paper-input id="httpCert" type="file" on-change="handleWeixinHttpCertFile"></paper-input>
-            <paper-textarea class="monospace" id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项"></paper-textarea>
+            <paper-textarea class="monospace" id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.HTTP_CERT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-textarea>
           </section>
           <section>
-            <label id="httpKeyL">请选择.pem文件的HTTP密钥</label>
+            <label id="httpKeyL">
+              <i18n-msg msgid="CHAN_MERCHANT.HTTP_KEY_LABEL">请选择.pem文件的HTTP密钥</i18n-msg>
+            </label>
             <paper-input id="httpKey" type="file" on-change="handleWeixinHttpKeyFile"></paper-input>
-            <paper-textarea class="monospace" id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
+            <paper-textarea class="monospace" id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.HTTP_KEY" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-textarea>
           </section>
         </div>
 
         <div class="row button">
-          <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">保存微信信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveWXPTapped">
+            <i18n-msg msgid="BUTTON.SAVE_WXP">保存微信信息</i18n-msg>
+          </paper-button>
         </div>
       </section>
 
       <section alias="comingsoon">
         <div class="row">
-          <paper-input label="即将上线。。。" value=""></paper-input>
+          <paper-input label="即将上线。。。" value="" data-msg-id="CHAN_MERCHANT.COMMING_SOON"></paper-input>
         </div>
       </section>
 
       <section alias="ulive">
         <div class="row">
-          <paper-input id="uliveChanMerId" label="渠道商户号" value="{{ulive.chanMerId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="uliveChanMerName" label="渠道商户名称" value="{{ulive.chanMerName::input}}"></paper-input>
+          <paper-input id="uliveChanMerId" label="渠道商户号" value="{{ulive.chanMerId::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="uliveChanMerName" label="渠道商户名称" value="{{ulive.chanMerName::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}"></paper-input>
+          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}" data-msg-id="CHAN_MERCHANT.TERMINAL_ID"></paper-input>
           <paper-input label="Input label" hidden></paper-input>
         </div>
         <div class="row button">
-          <paper-button class="colorful" raised on-tap="handleSaveUliveapped">保存优方信息</paper-button>
+          <paper-button class="colorful" raised on-tap="handleSaveUliveapped">
+            <i18n-msg msgid="BUTTON.SAVE_ULIVE">保存优方信息</i18n-msg>
+          </paper-button>
         </div>
       </section>
     </iron-pages>
@@ -341,6 +374,11 @@
     }
     Polymer({
       is: 'config-merchant',
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'config-merchant'
+        });
+      },
       properties: {
         merId: {
           type: String,
@@ -361,13 +399,13 @@
           type: Array,
           value: [{
             key: 'Normal',
-            value: '正常门店'
+            value: 'MERCHANT.NORMAL'
           }, {
             key: 'Test',
-            value: '测试门店'
+            value: 'MERCHANT.TEST'
           }, {
             key: 'Deleted',
-            value: '已删除门店'
+            value: 'MERCHANT_DELETED'
           }]
         },
         // 微信大商户集合，目前是2个
@@ -673,7 +711,7 @@
       handleQueryMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('查询机构商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_MERCHANT_ERROR', 3000, true);
           return;
         }
 
@@ -725,7 +763,7 @@
       handleAlpChanMerResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
-          Util.toast('查询支付宝渠道商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_ALP_ERROR', 3000, true);
           return;
         }
 
@@ -745,7 +783,7 @@
       handleWxpChanMerResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
-          Util.toast('查询微信渠道商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_WXP_ERROR', 3000, true);
           this.set('weixin.httpCert', '');
           this.set('weixin.httpKey', '');
           return;
@@ -781,7 +819,7 @@
       handleUliveChanMerResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
-          Util.toast('查询优方渠道商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_ULIVE_ERROR', 3000, true);
           return;
         }
 
@@ -792,7 +830,7 @@
       handleFindRouterAlpResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('查询支付宝路由信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_ALP_ROUTE_ERROR', 3000, true);
           return;
         }
         this.set('alipayRoute', response.data);
@@ -807,7 +845,7 @@
       handleFindRouterWeixinResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('查询微信路由信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_WXP_ROUTE_ERROR', 3000, true);
           return;
         }
         this.set('weixinRoute', response.data);
@@ -902,56 +940,57 @@
         this.update = false;
         this.permissionArray = [{
           key: 'PURC',
-          value: '下单支付',
+          value: 'MERCHANT.PURC',
           isChecked: false
         }, {
           key: 'PAUT',
-          value: '预下单',
+          value: 'MERCHANT.PAUT',
           isChecked: false
         }, {
           key: 'INQY',
-          value: '查询订单',
+          value: 'MERCHANT.INQY',
           isChecked: false
         }, {
           key: 'CANC',
-          value: '取消',
+          value: 'MERCHANT.CANC',
           isChecked: false
         }, {
           key: 'VOID',
-          value: '撤销',
+          value: 'MERCHANT.VOID',
           isChecked: false
         }, {
           key: 'REFD',
-          value: '退款',
+          value: 'MERCHANT.REFD',
           isChecked: false
         }, {
           key: 'QYZF',
-          value: '企业付款',
+          value: 'MERCHANT.QYZF',
           isChecked: false
         }, {
           key: 'JSZF',
-          value: '公众号支付',
+          value: 'MERCHANT.JSZF',
           isChecked: false
         }, {
           key: 'VERI',
-          value: '核销/查询',
+          value: 'MERCHANT.VERI',
           isChecked: false
         }, {
           key: 'CRVE',
-          value: '刷卡核销',
+          value: 'MERCHANT.CRVE',
           isChecked: false
         }, {
           key: 'QUVE',
-          value: '验券查询',
+          value: 'MERCHANT.QUVE',
           isChecked: false
         }, {
           key: 'CAVE',
-          value: '卡券撤销',
+          value: 'MERCHANT.CAVE',
           isChecked: false
         }];
+        var i18nMsg = document.createElement('i18n-msg');
         this.merStatus = {
           key: 'Normal',
-          value: '正常门店'
+          value: i18nMsg.getMsg('MERCHANT.NORMAL')
         };
       },
       // 查询渠道商户的响应事件，这里是查找大商户
@@ -1045,16 +1084,16 @@
       // 保存商户的按钮事件
       handleSaveMerchantTapped: function() {
         if (this.isMerchantConfigEmpty()) {
-          Util.toast('必填项不能为空', 3000);
+          Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000, true);
           return;
         }
         if (this.merchant.signKey && this.merchant.signKey.length < 8) {
-          Util.toast('签名密钥长度不能小于8位', 3000);
+          Util.toast('MERCHANT.SIGN_KEY_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
           return;
         }
         if (this.update) {
           if (this.merchant.signKey !== this.oldSignKey && this.merchant.signKey.indexOf('*') !== -1) {
-            Util.toast('门店签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+            Util.toast('MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('merchant.signKey', this.oldSignKey)
             return;
           }
@@ -1062,7 +1101,7 @@
           this.$.updateMerchantAjax.generateRequest();
         } else {
           if (this.merchant.signKey.indexOf('*') !== -1) {
-            Util.toast('门店签名密钥不能包含 *', 3000);
+            Util.toast('MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
           this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
@@ -1100,7 +1139,7 @@
       // 保存优方的渠道信息
       handleSaveUliveapped: function() {
         if (this.isUliveConfigEmpty()) {
-          Util.toast('必填项不能为空', 3000);
+          Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000, true);
           return;
         }
 
@@ -1128,29 +1167,29 @@
       // 保存支付宝信息的按钮事件
       handleSaveALPTapped: function() {
         if (this.isALPConfigEmpty()) {
-          Util.toast('必填项不能为空', 3000);
+          Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000, true);
           return;
         }
         if (this.alipay.signCert && this.alipay.signCert.length < 8) {
-          Util.toast('MD5 KEY长度不能小于8位', 3000);
+          Util.toast('SUB_MERCHANT.SIGN_CERT_ALP_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
           return;
         }
         if (this.alpUpdate) {
           if (this.alipay.signCert !== this.oldAlpSignCert && this.alipay.signCert.indexOf('*') !== -1) {
-            Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
+            Util.toast('SUB_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('alipay.signCert', this.oldAlpSignCert)
             return;
           }
         } else {
           if (this.alipay.signCert.indexOf('*') !== -1) {
-            Util.toast('MD5 KEY不能包含 *', 3000);
+            Util.toast('SUB_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
         }
         var acqFee = parseFloat(this.alipayRoute.acqFee),
           merFee = parseFloat(this.alipayRoute.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
-          Util.toast('支付宝渠道的费率必须是数字', 3000);
+          Util.toast('SUB_MERCHANT.FEE_IS_NUMBER', 3000, true);
           return;
         }
         // this.set('alipay.acqFee', acqFee);
@@ -1190,55 +1229,55 @@
       // 保存微信信息的按钮事件
       handleSaveWXPTapped: function() {
         if (this.isWXPConfigEmpty()) {
-          Util.toast('必填项不能为空', 3000);
+          Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000, true);
           return;
         }
         if (this.weixin.signCert && this.weixin.signCert.length < 8) {
-          Util.toast('签名密钥长度不能小于8位', 3000);
+          Util.toast('MERCHANT.SIGN_CERT_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
           return;
         }
         if (this.weixin.httpCert && this.weixin.httpCert !== '' && this.weixin.httpCert.length < 8) {
-          Util.toast('HTTP证书长度不能小于8位', 3000);
+          Util.toast('SUB_MERCHANT.SIGN_CERT_WXP_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
           return;
         }
         if (this.weixin.httpKey && this.weixin.httpKey !== '' && this.weixin.httpKey.length < 8) {
-          Util.toast('HTTP密钥长度不能小于8位', 3000);
+          Util.toast('SUB_MERCHANT.SIGN_KEY_ALP_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
           return;
         }
         if (this.wxpUpdate) {
           if (this.weixin.signCert !== this.oldWxpSignCert && this.weixin.signCert.indexOf('*') !== -1) {
-            Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+            Util.toast('MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('weixin.signCert', this.oldWxpSignCert)
             return;
           }
           if (this.weixin.httpCert !== this.oldWxpHttpCert && this.weixin.httpCert.indexOf('*') !== -1) {
-            Util.toast('HTTP证书不能包含 *,已恢复为原HTTP证书', 3000);
+            Util.toast('SUB_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('weixin.httpCert', this.oldWxpHttpCert)
             return;
           }
           if (this.weixin.httpKey !== this.oldWxpHttpKey && this.weixin.httpKey.indexOf('*') !== -1) {
-            Util.toast('HTTP密钥不能包含 *,已恢复为原HTTP密钥', 3000);
+            Util.toast('SUB_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('weixin.httpKey', this.oldWxpHttpKey)
             return;
           }
         } else {
           if (this.weixin.signCert.indexOf('*') !== -1) {
-            Util.toast('签名密钥不能包含 *', 3000);
+            Util.toast('MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
           if (this.weixin.httpCert.indexOf('*') !== -1) {
-            Util.toast('HTTP证书不能包含 *', 3000);
+            Util.toast('SUB_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
           if (this.weixin.httpKey.indexOf('*') !== -1) {
-            Util.toast('HTTP密钥不能包含 *', 3000);
+            Util.toast('SUB_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
         }
         var acqFee = parseFloat(this.weixinRoute.acqFee),
           merFee = parseFloat(this.weixinRoute.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
-          Util.toast('支付宝渠道的费率必须是数字', 3000);
+          Util.toast('SUB_MERCHANT.FEE_IS_NUMBER', 3000, true);
           return;
         }
         // this.set('weixin.acqFee', acqFee);
@@ -1247,7 +1286,7 @@
         // 如果勾选了代理商模式，就直接填充上大商户的信息
         if (this.weixin.isAgentMode) {
           if (!this.bigMerchant) {
-            Util.toast(this.wbigchanMerId.key + '大商户信息为空', 3000);
+            Util.toast(this.wbigchanMerId.key + ' big merchant info is empty', 3000);
             return;
           }
           this.set('weixin.agentMer', this.bigMerchant);
@@ -1342,14 +1381,14 @@
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN CERTIFICATE/.test(this.result) === false) {
-                Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
+                Util.toast('SUB_MERCHANT.HTTP_CERT_FORMAT_ERROR', 3000, true);
                 return;
               }
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
           } else {
-            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+            Util.toast('SUB_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
           }
         }
       },
@@ -1362,14 +1401,14 @@
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
-                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
+                Util.toast('SUB_MERCHANT.HTTP_KEY_FORMAT_ERROR', 3000, true);
                 return;
               }
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
           } else {
-            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+            Util.toast('SUB_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
           }
         }
       },
@@ -1377,13 +1416,13 @@
       handleQueryAgentsResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('加载代理列表失败', 3000);
+          Util.toast('SUB_MERCHANT.LOAD_AGENT_LIST_ERROR', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
-          Util.toast('没有代理数据', 2000);
+          Util.toast('SUB_MERCHANT.NO_AGENT_DATA', 2000, true);
           return;
         }
 
@@ -1401,14 +1440,14 @@
         this.set('subAgents', []);
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('加载公司列表失败', 3000);
+          Util.toast('SUB_MERCHANT.LOAD_SUB_AGENT_LIST_ERROR', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
           this.set('subAgent', {});
-          Util.toast('没有公司数据', 2000);
+          Util.toast('SUB_MERCHANT.NO_SUB_AGENT_DATA', 2000, true);
           return;
         }
 
@@ -1440,14 +1479,14 @@
         this.set('groups', []);
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('加载商户列表失败', 3000);
+          Util.toast('SUB_MERCHANT.LOAD_GROUP_LIST_ERROR', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
           this.set('group', {});
-          Util.toast('没有商户数据', 2000);
+          Util.toast('SUB_MERCHANT.NO_GROUP_DATA', 2000, true);
           return;
         }
         var groups = response.data.data.slice(0);
@@ -1476,6 +1515,9 @@
       handleRefreshSignKeyTapped: function() {
         this.set('merchant.signKey', generateMixed(32));
       },
+      getPermission:function(value){
+          return 'MERCHANT.'+value;
+      }
     });
   </script>
 </dom-module>

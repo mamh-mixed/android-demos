@@ -18,7 +18,7 @@ func (a *agent) FindOne(agentCode string) (result *model.ResultBody) {
 
 	agent, err := mongo.AgentColl.Find(agentCode)
 	if err != nil {
-		log.Errorf("查询代理(%s)出错:%s", agentCode, err)
+		log.Errorf("select agent (%s)error:%s", agentCode, err)
 		return model.NewResultBody(1, "查询失败")
 	}
 
@@ -76,8 +76,8 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 		return model.NewResultBody(2, "解析失败")
 	}
 	if a.AgentCode == "" {
-		log.Error("没有AgentCode")
-		return model.NewResultBody(3, "缺失必要元素AgentCode")
+		log.Error("Required fields can not be empty")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	isExist := true
 	// 查看agentCode是否存在
@@ -86,28 +86,28 @@ func (i *agent) Save(data []byte) (result *model.ResultBody) {
 		if err.Error() == "not found" {
 			isExist = false
 		} else {
-			return model.NewResultBody(4, "查询数据库失败")
+			return model.NewResultBody(4, "SELECT_ERROR")
 		}
 
 	}
 	if isExist {
-		return model.NewResultBody(1, "代理代码已存在")
+		return model.NewResultBody(1, "AGENT_CODE_EXIST")
 	}
 
 	if a.AgentName == "" {
-		log.Error("没有AgentName")
-		return model.NewResultBody(3, "缺失必要元素AgentName")
+		log.Error("no AgentName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err = mongo.AgentColl.Insert(a)
 	if err != nil {
-		log.Errorf("新增代理失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("create agent error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "CREATE_AGENT_SUCCESS",
 		Data:    a,
 	}
 
@@ -120,28 +120,28 @@ func (i *agent) Update(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, a)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if a.AgentCode == "" {
-		log.Error("没有AgentCode")
-		return model.NewResultBody(3, "缺失必要元素AgentCode")
+		log.Error("no AgentCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if a.AgentName == "" {
-		log.Error("没有AgentName")
-		return model.NewResultBody(3, "缺失必要元素AgentName")
+		log.Error("no AgentName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err = mongo.AgentColl.Update(a)
 	if err != nil {
-		log.Errorf("新增代理失败:%s", err)
+		log.Errorf("update agent error:%s", err)
 		return model.NewResultBody(1, err.Error())
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "UPDATE_AGENT_SUCCESS",
 		Data:    a,
 	}
 
@@ -154,13 +154,13 @@ func (a *agent) Delete(agentCode string) (result *model.ResultBody) {
 	err := mongo.AgentColl.Remove(agentCode)
 
 	if err != nil {
-		log.Errorf("删除代理失败: %s", err)
-		return model.NewResultBody(1, "删除代理失败")
+		log.Errorf("delete agent error: %s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "删除成功",
+		Message: "DELETE_AGENT_SUCCESS",
 	}
 
 	return result

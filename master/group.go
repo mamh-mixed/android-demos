@@ -74,12 +74,12 @@ func (i *group) Save(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, g)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if g.GroupCode == "" {
-		log.Error("没有GroupCode")
-		return model.NewResultBody(3, "缺失必要元素GroupCode")
+		log.Error("no GroupCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	isExist := true
@@ -89,27 +89,27 @@ func (i *group) Save(data []byte) (result *model.ResultBody) {
 		if err.Error() == "not found" {
 			isExist = false
 		} else {
-			return model.NewResultBody(4, "查询数据库失败")
+			return model.NewResultBody(4, "SELECT_ERROR")
 		}
 	}
 	if isExist {
-		return model.NewResultBody(1, "商户代码已存在")
+		return model.NewResultBody(1, "GROUP_CODE_EXIST")
 	}
 
 	if g.GroupName == "" {
-		log.Error("没有GroupName")
-		return model.NewResultBody(3, "缺失必要元素GroupName")
+		log.Error("no GroupName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err = mongo.GroupColl.Insert(g)
 	if err != nil {
-		log.Errorf("新增集团商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("create group error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "CREATE_GROUP_SUCCESS",
 		Data:    g,
 	}
 
@@ -122,13 +122,13 @@ func (g *group) Delete(groupCode string) (result *model.ResultBody) {
 	err := mongo.GroupColl.Remove(groupCode)
 
 	if err != nil {
-		log.Errorf("删除集团商户失败: %s", err)
-		return model.NewResultBody(1, "删除集团商户失败")
+		log.Errorf("delete group error: %s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "删除成功",
+		Message: "DELETE_GROUP_SUCCESS",
 	}
 
 	return result
@@ -140,28 +140,28 @@ func (i *group) Update(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, g)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if g.GroupCode == "" {
-		log.Error("没有GroupCode")
-		return model.NewResultBody(3, "缺失必要元素GroupCode")
+		log.Error("NO GroupCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if g.GroupName == "" {
-		log.Error("没有GroupName")
-		return model.NewResultBody(3, "缺失必要元素GroupName")
+		log.Error("NO GroupName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err = mongo.GroupColl.Update(g)
 	if err != nil {
-		log.Errorf("新增集团商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("update group error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "UPDATE_GROUP_SUCCESS",
 		Data:    g,
 	}
 

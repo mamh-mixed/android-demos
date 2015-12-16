@@ -31,47 +31,59 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogAdd">
-      <h2>创建商户</h2>
+      <h2>
+          <i18n-msg msgid="GROUP.CREATE_GROUP">创建商户</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agent" on-item-selected="handleAgentSelectedEvent"></x-select>
+          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agent" on-item-selected="handleAgentSelectedEvent" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
         </div>
         <div class="row">
-          <x-select items="[[subAgents]]" selected-item="{{subAgent}}" label="公司" id="subAgent" disabled$="{{isSubAgentDisabled}}"></x-select>
+          <x-select items="[[subAgents]]" selected-item="{{subAgent}}" label="公司" id="subAgent" disabled$="{{isSubAgentDisabled}}" data-msg-id="GROUP.SUB_AGENT"></x-select>
         </div>
         <div class="row">
-          <paper-input label="商户代码" value="{{group.groupCode::input}}"></paper-input>
+          <paper-input label="商户代码" value="{{group.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商户名称" value="{{group.groupName::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{group.groupName::input}}" data-msg-id="SCANPAY_TRADE_STATS.GROUP_NAME"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">
+            <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
 
     <paper-dialog with-backdrop id="dialogEdit">
-      <h2>编辑商户</h2>
+      <h2>
+          <i18n-msg msgid="GROUP.EDITOR_GROUP">编辑商户</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode1" on-item-selected="handleAgentSelectedEvent"></x-select>
+          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode1" on-item-selected="handleAgentSelectedEvent" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
         </div>
         <div class="row">
-          <x-select items="[[subAgents]]" selected-item="{{subAgent}}" label="公司" id="subAgent" disabled$="{{isSubAgentDisabled}}"></x-select>
+          <x-select items="[[subAgents]]" selected-item="{{subAgent}}" label="公司" id="subAgent" disabled$="{{isSubAgentDisabled}}" data-msg-id="GROUP.SUB_AGENT"></x-select>
         </div>
         <div class="row">
           <!-- 这里的paperInput不能设置disabled，否则在火狐下会报错。 more info： https://github.com/PolymerElements/iron-input/issues/47 20151128-->
-          <paper-input label="商户代码" value="[[group.groupCode]]"></paper-input>
+          <paper-input label="商户代码" value="[[group.groupCode]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="商户名称" value="{{group.groupName::input}}"></paper-input>
+          <paper-input label="商户名称" value="{{group.groupName::input}}" data-msg-id="SCANPAY_TRADE_STATS.GROUP_NAME"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleUpdateTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleUpdateTapped">
+            <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax auto id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
@@ -91,6 +103,11 @@
         },
         ready: function() {
           this.group = {};
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'group-editor'
+          });
         },
         attributeChanged: function(attribute) {
           if (attribute === 'group') {
@@ -136,9 +153,10 @@
         handleSaveGroupResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('GROUP.'+response.message, 3000,true);
             return;
           }
+          Util.toast('GROUP.'+response.message, 3000,true);
           this.agent = {};
           this.subAgent = {};
           this.$.dialogAdd.close();
@@ -155,9 +173,10 @@
         handleUpdateGroupResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('GROUP.'+response.message, 3000,true);
             return;
           }
+          Util.toast('GROUP.'+response.message, 3000,true);
           this.agent = {};
           this.subAgent = {};
           this.$.dialogAdd.close();
@@ -169,13 +188,13 @@
         handleQueryAgentsResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
           var pagination = response.data;
           if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             return;
           }
 
@@ -191,13 +210,13 @@
         handleQuerySubAgentsResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
           var pagination = response.data;
           if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             this.set('isSubAgentDisabled', true);
             return;
           }

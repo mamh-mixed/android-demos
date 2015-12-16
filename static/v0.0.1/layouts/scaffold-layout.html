@@ -222,13 +222,13 @@
             <paper-submenu opened="{{ startWith(route.path, menu.route) }}">
               <paper-item class="menu-trigger">
                 <iron-icon icon$="{{menu.icon}}"></iron-icon>
-                <span>{{menu.nameCN}}</span>
+                <i18n-msg msgid$="{{menu.name}}">{{menu.nameCN}}</i18n-msg>
               </paper-item>
               <paper-menu class="menu-content sublist" attr-for-selected="data-route" selected="{{route.name}}">
                 <template is="dom-repeat" items="{{menu.children}}" as="subMenu">
                   <a data-route$="{{subMenu.route}}" href$="{{subMenu.url}}">
                     <iron-icon icon$="{{subMenu.icon}}"></iron-icon>
-                    <span>{{subMenu.nameCN}}</span>
+                    <i18n-msg msgid$="{{subMenu.name}}">{{subMenu.nameCN}}</i18n-msg>
                   </a>
                 </template>
               </paper-menu>
@@ -337,81 +337,81 @@
         ready: function() {
           // 初始化菜单
           this.adminMenus = [{
+            "name": "SYSTEM_MANAGEMENT.MENUE_NAME",
             "nameCN": "系统管理",
-            "nameEN": "",
             "icon": "settings",
             "url": "",
             "route": "/system",
             "children": [{
+              "name": "USERMANAGEMENT.USERMANAGEMENT",
               "nameCN": "用户",
-              "nameEN": "",
               "icon": "account-circle",
               "url": "#/system/users",
               'route': 'system.users'
             }, {
+              "name": "PASSWORDMODIFICATION.TITLE",
               "nameCN": "密码修改",
-              "nameEN": "",
               "icon": "lock-outline",
               "url": "#/system/password/editor",
               'route': 'system.password.editor'
             }, {
+              "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT",
               "nameCN": "APP用户",
-              "nameEN": "",
               "icon": "perm-identity",
               "url": "#/system/apps",
               'route': 'system.apps'
             }]
           }, {
+            "name": "SCANPAY.MENUE_NAME",
             "nameCN": "扫码支付",
-            "nameEN": "",
             "icon": "image:crop-free",
             "url": "",
             "route": "/config",
             "children": [{
+              "name": "AGENT.MENUE_NAME",
               "nameCN": "代理",
-              "nameEN": "",
               "icon": "assignment-ind",
               "url": "#/config/agents",
               "route": "config.agents"
             }, {
+              "name": "SUBAGENT.MENUE_NAME",
               "nameCN": "公司",
-              "nameEN": "",
               "icon": "account-box",
               "url": "#/config/subAgents",
               "route": "config.subAgents"
             }, {
+              "name": "GROUP.MENUE_NAME",
               "nameCN": "商户",
-              "nameEN": "",
               "icon": "home",
               "url": "#/config/groups",
               "route": "config.groups"
             }, {
+              "name": "MERCHANT_INPUT.MENUE_NAME",
               "nameCN": "门店录入",
-              "nameEN": "",
               "icon": "create",
               "url": "#/config/configMer",
               "route": "config.configMer"
             }, {
+              "name": "BATCH_IMPORT.MENUE_NAME",
               "nameCN": "批量导入",
-              "nameEN": "",
               "icon": "cloud-upload",
               "url": "#/config/upload",
               "route": "config.upload"
             }, {
+              "name": "MERCHANT.MENUE_NAME",
               "nameCN": "门店",
-              "nameEN": "",
               "icon": "store",
               "url": "#/config/merchants",
               "route": "config.merchants"
             }, {
+              "name": "CHAN_MERCHANT.MENUE_NAME",
               "nameCN": "渠道商户",
-              "nameEN": "",
               "icon": "account-balance",
               "url": "#/config/chanMers",
               "route": "config.chanMers"
             }, {
+              "name": "ROUTE_POLICY.MENUE_NAME",
               "nameCN": "路由策略",
-              "nameEN": "",
               "icon": "hardware:device-hub",
               "url": "#/config/routes",
               "route": "config.routes"
@@ -630,7 +630,7 @@
             "url": "#/system/password/editor",
             'route': 'system.password.editor'
           }, {
-            "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT", 
+            "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT",
             "nameCN": "APP用户",
             "icon": "perm-identity",
             "url": "#/system/apps",
