@@ -285,7 +285,12 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                if (sum > 99999999) {
+                    // "金额过大!"
+                    String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+                    Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
                 String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
                 User user = SessonData.loginUser;
