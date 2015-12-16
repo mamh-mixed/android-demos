@@ -1,8 +1,10 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -50,17 +52,22 @@ public class AboutActivity extends Activity implements View.OnClickListener {
         Intent intent = null;
         switch (v.getId()) {
             case R.id.website:
-                Toast.makeText(this, "产品网站", Toast.LENGTH_SHORT).show();
+                String urlStr = mWebsite.getRightText();
+                if (!TextUtils.isEmpty(urlStr)) {
+                    Uri uri = Uri.parse(urlStr);
+                    intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
                 break;
             case R.id.welcome:
                 intent = new Intent(AboutActivity.this, SplashActivity.class);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.update:
                 //检查更新
                 Toast.makeText(this, "检测更新", Toast.LENGTH_SHORT).show();
                 break;
         }
-        finish();
     }
 }
