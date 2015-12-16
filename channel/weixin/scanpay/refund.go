@@ -25,6 +25,7 @@ type RefundReq struct {
 	OutTradeNo    string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`        // 商户订单号
 	OutRefundNo   string `xml:"out_refund_no" url:"out_refund_no" validate:"nonzero"`      // 商户退款单号
 	TotalFee      string `xml:"total_fee" url:"total_fee" validate:"nonzero"`              // 总金额
+	FeeType       string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`               // 标价币种
 	RefundFee     string `xml:"refund_fee" url:"refund_fee" validate:"nonzero"`            // 退款金额
 	RefundFeeType string `xml:"refund_fee_type,omitempty" url:"refund_fee_type,omitempty"` // 货币种类
 	OpUserId      string `xml:"op_user_id" url:"op_user_id" validate:"nonzero"`            // 操作员
