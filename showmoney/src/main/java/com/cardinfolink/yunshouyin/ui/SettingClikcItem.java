@@ -60,4 +60,12 @@ public class SettingClikcItem extends RelativeLayout {
         return mTitle.getText().toString();
     }
 
+    public void setRightText(String text) {
+        mRightText.setText(text);
+    }
+
+    public String getRightText() {
+        return mRightText.getText().toString();
+    }
+
 }
