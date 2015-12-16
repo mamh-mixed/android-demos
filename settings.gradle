@@ -1,4 +1,5 @@
 include ':cashierSdk'
+include ':wheellibrary'
 include ':pulltorefreshlibrary'
 include ':menulibrary'
 include ':showmoney'
