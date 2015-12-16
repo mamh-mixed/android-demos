@@ -45,7 +45,6 @@
             android:drawableLeft="@drawable/setting_my"
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
-            android:text="邮箱地址"
             android:textSize="10sp" />
 
         <TextView
@@ -55,7 +54,6 @@
             android:layout_below="@id/tv_email"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="10dp"
-            android:text="当前账户收款限额 500/天"
             android:textSize="10sp" />
 
         <Button
@@ -66,7 +64,8 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
             android:background="@drawable/setting_limit_button_selector"
-            android:text="@string/setting_increase_limit" />
+            android:text="@string/setting_increase_limit"
+            android:visibility="invisible"/>
 
     </RelativeLayout>
 

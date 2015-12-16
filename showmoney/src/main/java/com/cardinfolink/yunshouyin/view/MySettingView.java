@@ -18,8 +18,16 @@ import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
 import com.cardinfolink.yunshouyin.activity.UnReadMessageActivity;
 import com.cardinfolink.yunshouyin.activity.WapActivity;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 第四个界面，就是设置界面
@@ -52,7 +60,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         addView(contentView);
 
         mExit = (Button) contentView.findViewById(R.id.btn_exit);
-        mIncreaseLimit = (Button) contentView.findViewById(R.id.btn_limit);
+        mIncreaseLimit = (Button) contentView.findViewById(R.id.btn_limit);//只有限额的用户会显示这个按钮
 
         mAccountAndSecurity = (SettingClikcItem) contentView.findViewById(R.id.account_security);
         mSupportChannel = (SettingClikcItem) contentView.findViewById(R.id.support_channel);
@@ -61,6 +69,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
 
         mEmail = (TextView) contentView.findViewById(R.id.tv_email);//账户名
         mEmail.setText(SessonData.loginUser.getUsername());//通过sessonData设置一下用户名
+
         mLimit = (TextView) contentView.findViewById(R.id.tv_limit_info);//显示限额的一些信息的
         mMessage = (ImageView) contentView.findViewById(R.id.iv_message);//右上角显示是否有未读消息的图片
 
@@ -71,8 +80,40 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mMyWap.setOnClickListener(this);
         mAbout.setOnClickListener(this);
         mMessage.setOnClickListener(this);
+
+        checkLimit();//发送http请求来检查当日的限额数。
     }
 
+    private void checkLimit() {
+        QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
+        String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
+        User user = SessonData.loginUser;
+        if (user.getLimit().equals("true")) {//这里等于true表示这个用户有限额。
+            quickPayService.getTotalAsync(user, date, new QuickPayCallbackListener<String>() {
+                @Override
+                public void onSuccess(String data) {
+                    //如果有限额的话
+                    double limit = Double.parseDouble(data);
+                    if (limit > 0) {//大于零表示有限额了
+                        String limitMsg = getResources().getString(R.string.setting_limit_message);
+                        limitMsg = String.format(limitMsg, data);
+                        mLimit.setText(limitMsg);//这里设置限额多少的提示文本
+                        mIncreaseLimit.setVisibility(VISIBLE);//把提升限额的按钮显示出来
+                    }else{
+                        //这里表示没有限额
+                    }
+
+                }
+
+                @Override
+                public void onFailure(QuickPayException ex) {
+                    mLimit.setText(ex.getErrorMsg());
+                }
+            });
+        }else{
+            //else这里表示用户没有限额
+        }
+    }
 
     @Override
     public void onClick(View v) {
