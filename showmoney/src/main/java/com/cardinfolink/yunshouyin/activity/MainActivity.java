@@ -1,10 +1,12 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -49,18 +51,15 @@ public class MainActivity extends BaseActivity {
     private void initLayout() {
         mMainContent = (LinearLayout) findViewById(R.id.main_content);
 
-        LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mScanCodeView = new ScanCodeView(mContext);
         mScanCodeView.setLayoutParams(layoutParams);
 
         mTransManageView = new TransManageView(mContext);
-        mTransManageView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mTransManageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mPasswordUpdateView = new PasswordUpdateView(mContext);
-        mPasswordUpdateView.setLayoutParams(new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mPasswordUpdateView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mMainContent.addView(mScanCodeView);
 
@@ -81,6 +80,7 @@ public class MainActivity extends BaseActivity {
         mLeftMenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         // 为侧滑菜单设置布局
         mLeftMenu.setMenu(R.layout.leftmenu);
+        mLeftMenu.setOnOpenListener(new SlidingMenuOnOpenListener());
 
         mDrawerList = (ListView) mLeftMenu.findViewById(R.id.left_drawer);
         menuLists = new ArrayList<String>();
@@ -90,22 +90,19 @@ public class MainActivity extends BaseActivity {
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_passwordupdate));
         menuLists.add(ShowMoneyApp.getResString(R.string.main_activity_menu_safeexit));
 
-
         adapter = new ArrayAdapter<String>(this, R.layout.menu_list_item, menuLists);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new MenuOnItemClick());
-
     }
 
 
     public void BtnMenuOnClick(View view) {
-
+        hideInput();
         if (mLeftMenu.isMenuShowing()) {
             mLeftMenu.toggle();
         } else {
             mLeftMenu.showMenu();
         }
-
     }
 
     private void openView(int position) {
@@ -115,7 +112,6 @@ public class MainActivity extends BaseActivity {
                 mMainContent.removeAllViews();
                 mMainContent.addView(mScanCodeView);
                 mScanCodeView.clearValue();
-
                 break;
             case 1:
                 mMainContent.removeAllViews();
@@ -125,19 +121,15 @@ public class MainActivity extends BaseActivity {
             case 2:
                 mMainContent.removeAllViews();
                 mMainContent.addView(mPasswordUpdateView);
-
                 break;
         }
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        getResources().getString(R.string.press_again_exit),
-                        Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.press_again_exit), Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER, 0, 250);
                 toast.show();
                 exitTime = System.currentTimeMillis();
@@ -163,8 +155,8 @@ public class MainActivity extends BaseActivity {
     private class MenuOnItemClick implements OnItemClickListener {
 
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            hideInput();
             SessonData.positionView = position;
             switch (position) {
                 case 0:
@@ -187,12 +179,22 @@ public class MainActivity extends BaseActivity {
                 case 3:
                     finish();
                     break;
-
-
             }
 
         }
 
     }
 
+    private class SlidingMenuOnOpenListener implements SlidingMenu.OnOpenListener {
+
+        @Override
+        public void onOpen() {
+            hideInput();
+        }
+    }
+
+    private void hideInput() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }
