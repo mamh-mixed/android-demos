@@ -25,7 +25,7 @@
         android:id="@+id/website"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cardinfolink:right_text="www.shoe.money"
+        cardinfolink:right_text="http://www.show.money"
         cardinfolink:title="@string/setting_product_website" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
