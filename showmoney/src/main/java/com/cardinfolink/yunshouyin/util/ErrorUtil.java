@@ -40,6 +40,9 @@ public class ErrorUtil {
         if (error.equals("user_has_one_times")) {
             return ShowMoneyApp.getResString(R.string.alert_error_user_has_one_times);
         }
+        if (error.equals("user_lock")) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_lock);
+        }
         return error;
 
     }

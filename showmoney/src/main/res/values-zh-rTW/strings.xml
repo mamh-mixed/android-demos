@@ -82,6 +82,7 @@
     <string name="alert_error_user_has_two_times">您還有二次機會!</string>
     <string name="alert_error_user_has_one_times">您還有壹次機會!</string>
     <string name="alert_error_network">網絡錯誤,請檢查網絡是否連接</string>
+    <string name="alert_error_user_lock">賬號鎖定3小時，需立即解鎖請聯繫管理員</string>
 
     <string name="alert_update_success">修改成功!</string>
     <string name="alert_error_old_password_cannot_empty">原密碼不能為空!</string>
