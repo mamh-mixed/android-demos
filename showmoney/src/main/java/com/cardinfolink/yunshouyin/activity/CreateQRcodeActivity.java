@@ -98,9 +98,7 @@ public class CreateQRcodeActivity extends BaseActivity {
         mPayMoneyText = (TextView) findViewById(R.id.pay_money);
         mPayMoneyText.setText(getResources().getString(R.string.create_qrcode_activity_amount) + total);
         mScanText = (TextView) findViewById(R.id.scan_text);
-        mCustomDialog = new TradingCustomDialog(mContext, mHandler,
-                findViewById(R.id.trading_custom_dialog), mOrderNum);
-
+        mCustomDialog = new TradingCustomDialog(mContext, mHandler, findViewById(R.id.trading_custom_dialog), mOrderNum);
     }
 
     private void initListener() {
@@ -155,11 +153,13 @@ public class CreateQRcodeActivity extends BaseActivity {
         }
         Bitmap bitmap;
         try {
+            //创建二维码图片
             if (!TextUtils.isEmpty(mResultData.qrcode)) {
                 bitmap = cretaeBitmap(mResultData.qrcode, icon);
                 mQrcodeImage.setImageBitmap(bitmap);
             } else {
                 mScanText.setText(mResultData.errorDetail);
+                mQrcodeImage.setImageResource(R.drawable.wrong);
             }
         } catch (WriterException e) {
             e.printStackTrace();
@@ -177,6 +177,8 @@ public class CreateQRcodeActivity extends BaseActivity {
                         if (mResultData != null) {
                             if (mResultData.respcd.equals("00") || mResultData.respcd.equals("09")) {
                                 updateLayout();
+                            } else {
+                                updateLayout();
                             }
                         }
                         break;
@@ -185,7 +187,6 @@ public class CreateQRcodeActivity extends BaseActivity {
                     case 2: {
                         if (mResultData != null) {
                             if (mResultData.respcd.equals("00")) {
-
                                 CreateQRcodeActivity.this.finish();
                             } else {
 
