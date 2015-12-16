@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,12 +82,10 @@ public class CreateQRcodeActivity extends BaseActivity {
 
             @Override
             public void onResult(ResultData resultData) {
-                Log.i(TAG, resultData.qrcode);
                 mResultData = resultData;
                 Message msg = new Message();
                 msg.what = 1;
                 mHandler.sendMessageDelayed(msg, 0);
-
             }
 
             @Override
@@ -102,9 +101,7 @@ public class CreateQRcodeActivity extends BaseActivity {
         mPayMoneyText = (TextView) findViewById(R.id.pay_money);
         mPayMoneyText.setText(getResources().getString(R.string.create_qrcode_activity_amount) + total);
         mScanText = (TextView) findViewById(R.id.scan_text);
-        mCustomDialog = new TradingCustomDialog(mContext, mHandler,
-                findViewById(R.id.trading_custom_dialog), mOrderNum);
-
+        mCustomDialog = new TradingCustomDialog(mContext, mHandler, findViewById(R.id.trading_custom_dialog), mOrderNum);
     }
 
     private void initListener() {
@@ -152,7 +149,6 @@ public class CreateQRcodeActivity extends BaseActivity {
         Bitmap icon = null;
         if (mResultData.chcd.equals("WXP")) {
             icon = BitmapFactory.decodeResource(getResources(), R.drawable.wpay);
-
             mScanText.setText(getResources().getString(R.string.create_qrcode_activity_open_wx));
         } else {
             icon = BitmapFactory.decodeResource(getResources(), R.drawable.apay);
@@ -160,10 +156,14 @@ public class CreateQRcodeActivity extends BaseActivity {
         }
         Bitmap bitmap;
         try {
-            bitmap = cretaeBitmap(mResultData.qrcode, icon);
-            mQrcodeImage.setImageBitmap(bitmap);
+            //创建二维码图片
+            if (!TextUtils.isEmpty(mResultData.qrcode)) {
+                bitmap = cretaeBitmap(mResultData.qrcode, icon);
+                mQrcodeImage.setImageBitmap(bitmap);
+            } else {
+                mQrcodeImage.setImageResource(R.drawable.wrong);
+            }
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -187,7 +187,6 @@ public class CreateQRcodeActivity extends BaseActivity {
                     case 2: {
                         if (mResultData != null) {
                             if (mResultData.respcd.equals("00")) {
-
                                 CreateQRcodeActivity.this.finish();
                             } else {
 
