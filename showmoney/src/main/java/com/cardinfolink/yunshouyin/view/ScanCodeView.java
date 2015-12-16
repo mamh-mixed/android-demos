@@ -207,6 +207,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mLeftImage.setOnClickListener(this);
         mRightImage.setOnClickListener(this);
 
+        //这里添加上滑的事件
         btn0.setOnTouchListener(this);
         btn1.setOnTouchListener(this);
         btn2.setOnTouchListener(this);
@@ -281,8 +282,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
 
-    private interface StrategyInterface {
-        void run();
+    private interface CheckLimitInterface {
+        void start();
     }
 
     /**
@@ -290,7 +291,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      *
      * @param captureOrCreate
      */
-    private void checkLimit(final StrategyInterface captureOrCreate) {
+    private void checkLimit(final CheckLimitInterface captureOrCreate) {
         QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
         String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
         User user = SessonData.loginUser;
@@ -307,7 +308,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, alertBitmap);
                         alertDialog.show();
                     } else {
-                        captureOrCreate.run();//这里调用扫码还是生成二维码
+                        captureOrCreate.start();//这里调用扫码还是生成二维码
                     }
                 }
 
@@ -323,7 +324,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 }
             });
         } else {
-            captureOrCreate.run();//这里调用扫码还是生成二维码
+            captureOrCreate.start();//这里调用扫码还是生成二维码
         }
     }
 
@@ -353,21 +354,73 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
 
     public void startLoading() {
+        //二维码的loading的动画
         mQRImage.setImageResource(R.drawable.loading);
         Animation loadingAnimation = AnimationUtils.loadAnimation(mContext, R.anim.loading_animation);
         mQRImage.startAnimation(loadingAnimation);
     }
 
     public void endLoading() {
+        //二维码的loading的动画
         mQRImage.clearAnimation();
     }
 
 
     @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        final double sum = Double.parseDouble(input.getText().toString().substring(1));
+
+        int currentY = 0;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mLastDownY = (int) event.getY();
+                return false;
+            case MotionEvent.ACTION_UP:
+                currentY = (int) event.getY();
+                int dy = currentY - mLastDownY;
+                if (dy < 0) {
+                    if (Math.abs(dy) > keyboardView.getHeight() / 2) {
+                        if (sum <= 0) {
+                            //"金额不能为零!"
+                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
+                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                        if (sum > MAX_MONEY) {
+                            //金额太大了
+                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+
+                        if (mCHCD.equals(CHCD_TYPE[0])) {
+                            setLeft();//微信
+                        } else {
+                            setRight();//支付宝
+                        }
+
+                        startLoading();//load 二维码是的动画
+
+                        //生成二维码比较慢？？？！！！
+                        checkLimit(new CheckLimitInterface() {
+                            @Override
+                            public void start() {
+                                createQRcode(String.valueOf(sum), mCHCD);
+                            }
+                        });
+
+                        showScanCode();//显示二维码界面
+                    }
+                }
+                break;
+        }
+        return false;
+    }
+
+    @Override
     public void onClick(View v) {
         String outputText = output.getText().toString();
         final double sum = Double.parseDouble(input.getText().toString().substring(1));
-        Intent intent;
         switch (v.getId()) {
             case R.id.scancodepay:
                 if (sum <= 0) {
@@ -382,11 +435,18 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //进入照相机扫码界面
-                intent = new Intent(mContext, CaptureActivity.class);
-                //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
-                intent.putExtra("total", "" + sum);
-                mContext.startActivity(intent);
+
+                checkLimit(new CheckLimitInterface() {
+                    @Override
+                    public void start() {
+                        //进入照相机扫码界面
+                        Intent intent = new Intent(mContext, CaptureActivity.class);
+                        //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
+                        intent.putExtra("total", String.valueOf(sum));
+                        mContext.startActivity(intent);
+                    }
+                });
+
                 break;
             case R.id.iv_left:
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
@@ -394,9 +454,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     setLeft();
                     startLoading();
 
-                    checkLimit(new StrategyInterface() {
+                    checkLimit(new CheckLimitInterface() {
                         @Override
-                        public void run() {
+                        public void start() {
+                            //这里 生成二维码
                             createQRcode(String.valueOf(sum), mCHCD);
                         }
                     });
@@ -408,20 +469,26 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     setRight();
                     startLoading();
 
-                    checkLimit(new StrategyInterface() {
+                    checkLimit(new CheckLimitInterface() {
                         @Override
-                        public void run() {
+                        public void start() {
+                            //这里 生成二维码
                             createQRcode(String.valueOf(sum), mCHCD);
                         }
                     });
                 }
                 break;
             case R.id.scan_qr:
-                //进入照相机扫码界面
-                intent = new Intent(mContext, CaptureActivity.class);
-                intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
-                intent.putExtra("total", "" + sum);
-                mContext.startActivity(intent);
+                checkLimit(new CheckLimitInterface() {
+                    @Override
+                    public void start() {
+                        //进入照相机扫码界面
+                        Intent intent = new Intent(mContext, CaptureActivity.class);
+                        intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
+                        intent.putExtra("total", "" + sum);
+                        mContext.startActivity(intent);
+                    }
+                });
                 break;
             case R.id.iv_keyboard:
                 showKeyBoard();//显示键盘界面
@@ -574,57 +641,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         }
     }
 
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        final double sum = Double.parseDouble(input.getText().toString().substring(1));
-
-        int currentY = 0;
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mLastDownY = (int) event.getY();
-                return false;
-            case MotionEvent.ACTION_UP:
-                currentY = (int) event.getY();
-                int dy = currentY - mLastDownY;
-                if (dy < 0) {
-                    if (Math.abs(dy) > keyboardView.getHeight() / 2) {
-                        if (sum <= 0) {
-                            //"金额不能为零!"
-                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
-                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-                        if (sum > MAX_MONEY) {
-                            //金额太大了
-                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
-                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-
-                        if (mCHCD.equals(CHCD_TYPE[0])) {
-                            setLeft();//微信
-                        } else {
-                            setRight();//支付宝
-                        }
-
-                        startLoading();//load 二维码是的动画
-
-                        //生成二维码比较慢？？？！！！
-                        checkLimit(new StrategyInterface() {
-                            @Override
-                            public void run() {
-                                createQRcode(String.valueOf(sum), mCHCD);
-                            }
-                        });
-
-                        showScanCode();//显示二维码界面
-                    }
-                }
-                break;
-        }
-        return false;
-    }
 
     public void getResult() {
         double result = 0;
