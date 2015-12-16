@@ -30,7 +30,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="30dp"
                 android:gravity="center_horizontal"
-                android:text="扫码支付"
+                android:text="@string/create_qrcode_activity_scancode"
                 android:textColor="#ffffff"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -42,7 +42,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="30dp"
             android:gravity="center_horizontal"
-            android:text="请客户使用手机扫描"
+            android:text="@string/create_qrcode_activity_open_message"
             android:textSize="18sp" />
 
         <ImageView
@@ -58,7 +58,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
-            android:text="本次收款金额：￥12.56"
+            android:text="@string/create_qrcode_activity_amount"
             android:textSize="22sp" />
 
         <LinearLayout
@@ -75,7 +75,7 @@
                 android:background="@drawable/dialog_button_color"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="交易查询"
+                android:text="@string/create_qrcode_activity_trade_search"
                 android:textColor="#ffffff"
                 android:textSize="15sp" />
         </LinearLayout>

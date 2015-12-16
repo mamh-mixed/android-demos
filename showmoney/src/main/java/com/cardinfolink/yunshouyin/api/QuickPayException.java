@@ -1,7 +1,9 @@
 package com.cardinfolink.yunshouyin.api;
 
 
+import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 public class QuickPayException extends RuntimeException {
     //post error
@@ -20,9 +22,16 @@ public class QuickPayException extends RuntimeException {
     public QuickPayException(String errorCode) {
         super(errorCode);
         this.errorCode = errorCode;
+        //这里把error code转换为文本可读的错误消息提示
         this.errorMsg = ErrorUtil.getErrorString(errorCode);
     }
 
+    /**
+     * 这个暂时代码里没用到这样的构造函数
+     *
+     * @param errorCode
+     * @param errorMsg
+     */
     public QuickPayException(String errorCode, String errorMsg) {
         super(errorCode);
         this.errorCode = errorCode;
@@ -31,11 +40,14 @@ public class QuickPayException extends RuntimeException {
 
     /**
      * default is network exception
+     * 默认显示的出错信息。
+     * <string name="alert_error_network">网络错误,请检查网络是否连接</string>
+     * 这个版本加入的多语言的支持，所以把这个字段移到了strings.xml文件里了
      */
     public QuickPayException() {
         super(NETWORK_ERROR);
         this.errorCode = NETWORK_ERROR;
-        this.errorMsg = "网络错误,请检查网络是否连接";
+        this.errorMsg = ShowMoneyApp.getResString(R.string.alert_error_network);
     }
 
     public String getErrorCode() {
