@@ -349,6 +349,22 @@ func updateValidate(r *rowData, im *ImportMessage) error {
 		}
 	}
 
+	if r.AlpMerId != "" {
+		// 默认是境内商户
+		if r.IsDomesticStr == no {
+			// 海外支付宝商户必填字段
+			if r.AlpMerName == "" || r.AlpMerNo == "" {
+				return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
+			}
+			if r.AlpSchemeType == "" {
+				return fmt.Errorf(m.NoSchemeType, r.MerId)
+			}
+		} else {
+			// 其他情况默认都是国内的
+			r.IsDomestic = true
+		}
+	}
+
 	return nil
 }
 
