@@ -11,6 +11,8 @@ var commonURLArr = []string{
 	"/master/list",
 	"/master/trade/settle/report",
 	"/master/trade/settle/journal",
+	"/master/excrat/query",
+	"/master/excrat/create",
 }
 
 var genAdminURLArr = []string{
@@ -28,6 +30,8 @@ var genAdminURLArr = []string{
 	"/master/list",
 	"/master/trade/settle/report",
 	"/master/trade/settle/journal",
+	"/master/excrat/query",
+	"/master/excrat/create",
 }
 
 var agentURLArr = []string{
@@ -46,4 +50,6 @@ var agentURLArr = []string{
 	"/master/list",
 	"/master/trade/settle/report",
 	"/master/trade/settle/journal",
+	"/master/excrat/query",
+	"/master/excrat/create",
 }

@@ -1,0 +1,35 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../layouts/scaffold-layout.html">
+<link rel="import" href="../../elements/exchange-rate-list/exchange-rate-list.html">
+
+<dom-module id="exchange-rate-page">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <template>
+    <scaffold-layout route$="[[route]]">
+      <exchange-rate-list class="content"></exchange-rate-list>
+    </scaffold-layout>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'exchange-rate-page',
+        properties: {
+          route: {
+            type: Object,
+            value: {
+              name: 'system.exchangerate',
+              path: '/system/exchangerate',
+              title: '汇率表',
+              isLocale: true,
+              msgId: 'EXCHANGE_RATE.TITLE'
+            }
+          }
+        },
+      });
+    })();
+  </script>
+</dom-module>

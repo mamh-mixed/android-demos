@@ -1,0 +1,321 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../x-form/x-form.html">
+<link rel="import" href="../x-pagination/x-pagination.html">
+<link rel="import" href="../exchange-rate-editor/exchange-rate-editor.html">
+<link rel="import" href="../d2d-ratio-range-editor/d2d-ratio-range-editor.html">
+
+<dom-module id="exchange-rate-list">
+  <style>
+    :host {
+      display: block;
+      --dark-primary-color: #05B0CF;
+    }
+
+    * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    paper-button.colorful {
+      background: var(--dark-primary-color);
+      color: var(--text-primary-color);
+    }
+
+    paper-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 10%;
+    }
+
+    iron-icon {
+      cursor: pointer;
+    }
+
+    paper-icon-button[suffix] {
+      padding: 0;
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+  <template>
+    <form is="x-form" id="formQuery" method="GET" action="/master/excrat/query" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
+      <div class="search-condition">
+        <paper-input name="localCurrency" label="基准币种" value="{{cond.localCurrency::input}}" data-msg-id="EXCHANGE_RATE.LOCAL_CURRENCY"></paper-input>
+        <paper-input name="targetCurrency" label="比较币种" value="{{cond.targetCurrency::input}}" data-msg-id="EXCHANGE_RATE.TARGET_CURRENCY"></paper-input>
+        <paper-input name="rate" label="汇率" value="{{cond.rate::input}}" data-msg-id="EXCHANGE_RATE.RATE"></paper-input>
+        <paper-input name="enforceUser" label="生效用户" value="{{cond.enforceUser::input}}" data-msg-id="EXCHANGE_RATE.ENFORCE_USER"></paper-input>
+        <paper-input name="createTime" label="录入时间" value="{{cond.createTime::input}}" data-msg-id="EXCHANGE_RATE.CREATE_TIME">
+          <paper-icon-button suffix icon="today" on-tap="showCreateTimeDialog"></paper-icon-button>
+        </paper-input>
+        <paper-dialog with-backdrop id="createTimeDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissCreateTimeDialog">
+          <paper-date-picker id="createTimePicker" locale="zh-cn" responsive-width="655px" locale-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>
+              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+            </paper-button>
+            <paper-button dialog-confirm>
+              <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+            </paper-button>
+          </div>
+        </paper-dialog>
+        <paper-input name="enforceTime" label="生效时间" value="{{cond.enforceTime::input}}" data-msg-id="EXCHANGE_RATE.ENFORCE_TIME">
+          <paper-icon-button suffix icon="today" on-tap="showEnforceTimeDialog"></paper-icon-button>
+        </paper-input>
+        <paper-dialog with-backdrop id="enforceTimeDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissEnforceTimeDialog">
+          <paper-date-picker id="enforceTimePicker" locale="zh-cn" responsive-width="655px" locale-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>
+              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+            </paper-button>
+            <paper-button dialog-confirm>
+              <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+            </paper-button>
+          </div>
+        </paper-dialog>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <template is="dom-if" if="{{isAdmin}}">
+          <paper-button class="colorful" raised on-tap="handleD2dRatioRangeTapped">编辑汇率环比值上下浮动范围</paper-button>
+        </template>
+      </div>
+      <div class="data-grid table">
+        <div class="thead">
+          <div class="tr">
+            <div class="th left">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th left">
+              <i18n-msg msgid="EXCHANGE_RATE.LOCAL_CURRENCY">基准币种</i18n-msg>
+            </div>
+            <div class="th left">
+              <i18n-msg msgid="EXCHANGE_RATE.TARGET_CURRENCY">比较币种</i18n-msg>
+            </div>
+            <div class="th right">
+              <i18n-msg msgid="EXCHANGE_RATE.RATE">汇率</i18n-msg>
+            </div>
+            <div class="th">
+              <i18n-msg msgid="EXCHANGE_RATE.CREATE_TIME">录入时间</i18n-msg>
+            </div>
+            <div class="th left">
+              <i18n-msg msgid="EXCHANGE_RATE.CREATE_USER">录入用户</i18n-msg>
+            </div>
+            <div class="th">
+              <i18n-msg msgid="EXCHANGE_RATE.ENFORCE_TIME">生效时间</i18n-msg </div>
+            </div>
+            <div class="th left">
+              <i18n-msg msgid="EXCHANGE_RATE.ENFORCE_USER">生效用户</i18n-msg </div>
+            </div>
+            <div class="th">
+              <i18n-msg msgid="EXCHANGE_RATE.STATUS">状态</i18n-msg </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbody">
+          <template is="dom-repeat" items="{{list}}">
+            <div class="tr">
+              <div class="td">
+                <span>{{addOneFilter(index)}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.localCurrency}}</span>
+              </div>
+              <div class="td">
+                <span>{{item.targetCurrency}}</span>
+              </div>
+              <div class="td right">{{item.rate}}</div>
+              <div class="td center">{{item.createTime}}</div>
+              <div class="td">{{item.createUser}}</div>
+              <div class="td center">{{ _makeUpEnforcementTime(item)}}</div>
+              <div class="td">{{item.enforceUser}}</div>
+              <div class="td center">
+                <template is="dom-if" if="{{item.isEnforced}}">
+                  <i18n-msg class="green" msgid="SCANPAY_TRADE_LIST.ALREADY_ENFORCED">已生效</i18n-msg>
+                </template>
+                <template is="dom-if" if="{{!item.isEnforced}}">
+                  <i18n-msg class="primary" msgid="SCANPAY_TRADE_LIST.NOT_ENFORCED">未生效</i18n-msg>
+                  <iron-icon icon="spellcheck" on-tap="handleRateEnforcedChecked" item="{{item}}" index="{{index}}" hidden$="{{!isAdmin}}"></iron-icon>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="tfoot">
+          <div class="tr pagination">
+            <x-pagination total="{{cond.total}}" size="{{cond.size}}" page="{{cond.page}}" on-page-change="generateAjaxRequest"></x-pagination>
+          </div>
+        </div>
+      </div>
+    </form>
+    <paper-fab icon="create" title="create" tabindex="0" on-tap="handleCreateFabTapped"></paper-fab>
+
+    <paper-dialog id="actions" style="width: 250px;">
+      <h2>
+        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_TITLE">激活汇率</i18n-msg>
+      </h2>
+      <p>
+        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT">是否要激活汇率？</i18n-msg>
+      </p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button dialog-confirm autofocus on-tap="handeRequestActivateRateEvent">
+          <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+        </paper-button>
+      </div>
+    </paper-dialog>
+    <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
+    <x-ajax id="activateRateAjax" method="POST" url="/master/excrat/activate" handle-as="json" debounce-duration="1000" on-response="handleActivateRateResponse"></x-ajax>
+    <exchange-rate-editor id="newItem" on-saved="handleSaveSuccessEvent"></exchange-rate-editor>
+    <d2d-ratio-range-editor id="rangeEditor"></d2d-ratio-range-editor>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'exchange-rate-list',
+        properties: {
+          isAdmin: {
+            type: Boolean,
+            value: false
+          }
+        },
+        ready: function() {
+          this.agents = [];
+          this.cond = {
+            page: 1,
+            size: 20,
+            total: 0
+          };
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'exchange-rate-list'
+          });
+        },
+        // 发送查询交易的ajax请求
+        handleQueryTapped: function() {
+          this.set('cond.page', 1);
+          this.generateAjaxRequest();
+        },
+        generateAjaxRequest: function() {
+          this.list = [];
+          this.$.formQuery.submit();
+        },
+        // ajax请求响应处理
+        handleQueryResponse: function(e) {
+          var response = e.detail;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+
+          var pagination = response.data;
+          this.list = pagination.data.slice(0);
+
+          this.set('cond.total', pagination.total);
+          this.set('cond.page', pagination.page);
+
+          if (this.list.length === 0) {
+            Util.toast('没有数据', 2000);
+          }
+        },
+        // 审核汇率，使生效，打开弹窗先
+        handleRateEnforcedChecked: function(e) {
+          this.item = e.model.item;
+          this.index = e.model.index;
+          this.$.actions.open();
+        },
+        // 确认汇率生效
+        handeRequestActivateRateEvent: function(e) {
+          var data = {
+            eId: this.item.eId
+          };
+
+          this.$.activateRateAjax.body = JSON.stringify(data);
+          this.$.activateRateAjax.generateRequest();
+        },
+        // 激活汇率响应事件
+        handleActivateRateResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            switch (response.message) {
+              case 'JSON_RESOLVE_FAIL':
+                Util.toast('TOAST.JSON_RESOLVE_FAIL', 2500, true);
+                break;
+              case 'MISSING_REQUIRED_ITEM':
+                Util.toast('TOAST.MISSING_REQUIRED_ITEM', 2500, true);
+                break;
+              case 'ACTIVATE_FAIL':
+                Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_FAIL', 2500, true);
+                break;
+              default:
+                Util.toast('TOAST.SYSTEM_ERROR', 2500, true);
+            }
+            return;
+          }
+
+          this.splice('list', this.index, 1, response.data);
+          Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS', 2000, true);
+        },
+        // 新增汇率事件
+        handleCreateFabTapped: function() {
+          this.$.newItem.open();
+        },
+        // 编辑汇率环比值上下浮动范围
+        handleD2dRatioRangeTapped: function() {
+          this.$.rangeEditor.open();
+        },
+        // 新代理保存成功事件，刷新列表
+        handleSaveSuccessEvent: function(e) {
+          this.unshift('list', e.detail);
+        },
+        addOneFilter: function(index) {
+          return index + 1;
+        },
+        // 发送查询交易的ajax请求
+        submitForm: function() {
+          this.list = [];
+          this.set('cond.total', 0);
+        },
+        // 创建日期控件
+        dismissCreateTimeDialog: function() {
+          var date = this.$.createTimePicker.date;
+          this.set('cond.createTime', this.$.createTimePicker.dateFormat(date, 'YYYY-MM-DD'));
+        },
+        showCreateTimeDialog: function() {
+          this.$.createTimeDialog.toggle();
+        },
+        // 生效日期控件
+        dismissEnforceTimeDialog: function() {
+          var date = this.$.enforceTimePicker.date;
+          this.set('cond.enforceTime', this.$.enforceTimePicker.dateFormat(date, 'YYYY-MM-DD'));
+        },
+        showEnforceTimeDialog: function() {
+          this.$.enforceTimeDialog.toggle();
+        },
+        _makeUpEnforcementTime: function(item) {
+          if (item.isEnforced) {
+            return item.actualEnforcementTime;
+          }
+          return item.planEnforcementTime;
+        },
+        // 当前用户查询的响应事件
+        handleQueryCurrentUserResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 3000);
+            return;
+          }
+          this.set('isAdmin', response.data.userType === 'admin' ? true : false);
+        },
+
+      });
+    })();
+  </script>
+</dom-module>
