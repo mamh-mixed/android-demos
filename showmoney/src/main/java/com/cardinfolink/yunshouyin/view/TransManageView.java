@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -185,7 +186,9 @@ public class TransManageView extends LinearLayout {
                         tradeBill.tradeFrom = req.getTradeFrom();
                         tradeBill.goodsInfo = req.getGoodsInfo();
                     }
-                    mTradeBillList.add(tradeBill);
+                    if (!TextUtils.isEmpty(tradeBill.chcd)) {
+                        mTradeBillList.add(tradeBill);
+                    }
                 }
                 // 更新UI
                 mBillAdapter.setData(mTradeBillList);
