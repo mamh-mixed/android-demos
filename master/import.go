@@ -891,6 +891,10 @@ func (i *importer) doDataWrap() {
 				alpChanMer.ChanCode = "ALP"
 				alpChanMer.SignKey = r.AlpMd5
 				alpChanMer.AgentCode = r.AlpAgentCode
+				if !r.IsDomestic {
+					alpChanMer.AreaType = channel.Oversea
+					alpChanMer.SchemeType, _ = strconv.Atoi(r.AlpSchemeType)
+				}
 
 				// TODO:DELETE
 				// alpChanMer.AcqFee = r.AlpAcqFeeF
