@@ -582,5 +582,129 @@
 	"USERMANAGEMENT.TITLE": {
 		"description": "用户管理",
 		"message": "用戶管理"
+	},
+	"EXCHANGE_RATE.TITLE": {
+		"description": "汇率表抬头",
+		"message": "TW汇率管理"
+	},
+	"EXCHANGE_RATE.LOCAL_CURRENCY": {
+		"description": "基准币种",
+		"message": "TW基准币种"
+	},
+	"EXCHANGE_RATE.TARGET_CURRENCY": {
+		"description": "比较币种",
+		"message": "TW比较币种"
+	},
+	"EXCHANGE_RATE.RATE": {
+		"description": "汇率",
+		"message": "TW汇率"
+	},
+	"EXCHANGE_RATE.CREATE_TIME": {
+		"description": "录入时间",
+		"message": "TW录入时间"
+	},
+	"EXCHANGE_RATE.CREATE_USER": {
+		"description": "录入用户",
+		"message": "TW录入用户"
+	},
+	"EXCHANGE_RATE.ENFORCE_TIME": {
+		"description": "生效时间",
+		"message": "TW生效时间"
+	},
+	"EXCHANGE_RATE.PLAN_ENFORCE_TIME": {
+		"description": "计划生效时间",
+		"message": "TW计划生效时间"
+	},
+	"EXCHANGE_RATE.ENFORCE_USER": {
+		"description": "生效用户",
+		"message": "TW生效用户"
+	},
+	"EXCHANGE_RATE.STATUS": {
+		"description": "汇率生效状态",
+		"message": "TW状态"
+	},
+	"EXCHANGE_RATE.NEW_RATE_TITLE": {
+		"description": "录入汇率抬头",
+		"message": "TW录入汇率"
+	},
+	"EXCHANGE_RATE.ENFORCE": {
+		"description": "使汇率状态生效",
+		"message": "TW使生效"
+	},
+	"EXCHANGE_RATE.NOT_ENFORCED": {
+		"description": "汇率状态未生效",
+		"message": "TW未生效"
+	},
+	"EXCHANGE_RATE.ALREADY_ENFORCED": {
+		"description": "汇率状态已生效",
+		"message": "TW已生效"
+	},
+	"EXCHANGE_RATE.ACTIVATE_RATE_TITLE": {
+		"description": "激活汇率弹窗的抬头",
+		"message": "TW激活汇率"
+	},
+	"EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT": {
+		"description": "激活汇率弹窗的内容",
+		"message": "TW是否要激活汇率？"
+	},
+	"EXCHANGE_RATE.TOAST.ACTIVATE_FAIL": {
+		"description": "激活失败",
+		"message": "TW激活失败"
+	},
+	"EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS": {
+		"description": "激活成功",
+		"message": "TW激活成功"
+	},
+	"EXCHANGE_RATE.TOAST.NAN_ERROR": {
+		"description": "非数字错误",
+		"message": "TW请输入正确的汇率"
+	},
+	"EXCHANGE_RATE.TOAST.RATE_MUST_GREATER_THAN_ZERO": {
+		"description": "汇率值必须大于零",
+		"message": "TW汇率值必须大于零"
+	},
+	"EXCHANGE_RATE.TOAST.D2D_RATIO_OUT_OF_RANGE": {
+		"description": "汇率环比超出范围",
+		"message": "TW汇率环比超出范围，请检查是否输错汇率值"
+	},
+	"EXCHANGE_RATE.D2D_RATIO_RANGE_TITLE": {
+		"description": "汇率环比编辑页面抬头",
+		"message": "TW汇率环比值有效浮动范围"
+	},
+	"EXCHANGE_RATE.RATE_FLOATING_UPPER": {
+		"description": "汇率环比值上边界",
+		"message": "TW汇率环比值上边界"
+	},
+	"EXCHANGE_RATE.RATE_FLOATING_LOWER": {
+		"description": "汇率环比值下边界",
+		"message": "TW汇率环比值下边界"
+	},
+	"EXCHANGE_RATE.TOAST.FIND_RATE_FLOATING_RANGE_ERROR": {
+		"description": "查询汇率环比值浮动有效范围失败",
+		"message": "TW查询汇率环比值浮动有效范围失败"
+	},
+	"TOAST.JSON_RESOLVE_FAIL": {
+		"description": "JSON 解析失败",
+		"message": "TWJSON 解析失败"
+	},
+	"TOAST.MISSING_REQUIRED_ITEM": {
+		"description": "缺失必要元素",
+		"message": "TW缺失必要元素"
+	},
+	"TOAST.SAVE_FAIL": {
+		"description": "保存失败",
+		"message": "TW保存失败"
+	},
+	"TOAST.SAVE_SUCCESS": {
+		"description": "保存成功",
+		"message": "TW保存成功"
+	},
+	"TOAST.DATE_TIME_FORMAT_INVALID": {
+		"description": "日期时间格式不合法",
+		"message": "TW日期时间格式不合法"
+	},
+	"TOAST.SYSTEM_ERROR": {
+		"description": "系统错误",
+		"message": "TW系统错误"
 	}
 }
