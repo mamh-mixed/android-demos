@@ -221,6 +221,13 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 	// 查询 session 是否过期，如果接近失效则给此 session 延期，如果已经过期则返回失败
 	session, err = mongo.SessionColl.Find(c.Value)
 	if err != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "QUICKMASTERID",
+			Value:    "",
+			HttpOnly: true,
+			Path:     "*",
+			MaxAge:   -1,
+		})
 		log.Debugf("session(%s) not exist: %s", c.Value, err)
 		return nil, err
 	}
@@ -232,19 +239,28 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 
 	// 会话已过期
 	if subTime < 0 {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "QUICKMASTERID",
+			Value:    "",
+			HttpOnly: true,
+			Path:     "*",
+			MaxAge:   -1,
+		})
 		log.Infof("session(%s) expired", c.Value)
 		return nil, errors.New("会话已过期")
 	}
 
 	// 会话接近失效，延长会话失效时间
 	if subTime < refreshTime {
-		session.Expires = session.Expires.Add(expiredTime)
+		session.Expires = session.Expires.Add(refreshTime)
 		session.UpdateTime = now
 		err = mongo.SessionColl.Add(session)
 		if err != nil {
 			log.Errorf("update session err,%s", err)
 		} else {
 			c.Expires = session.Expires
+			c.HttpOnly = true
+			c.Path = "/master"
 			http.SetCookie(w, c)
 		}
 		log.Infof("prolong session(%s) to %s", c.Value, session.Expires)
