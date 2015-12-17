@@ -61,6 +61,7 @@
     <string name="alert_error_email_format_error">邮箱格式不正确!</string>
     <string name="alert_error_password_short_six">密码不能小于六位</string>
     <string name="alert_error_qrpassword_error">"确认密码不一致!"</string>
+    <string name="alert_error_newpassword_equal_oldpassword">"新密码不能与原密码相同!"</string>
     <string name="alert_error_province_cannot_empty">开户行所在省份不能为空!</string>
     <string name="alert_error_city_cannot_empty">开户行所在城市不能为空!</string>
     <string name="alert_error_bank_cannot_empty">开户行不能为空!</string>

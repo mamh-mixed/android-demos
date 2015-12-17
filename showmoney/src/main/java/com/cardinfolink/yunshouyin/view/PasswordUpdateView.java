@@ -144,6 +144,11 @@ public class PasswordUpdateView extends LinearLayout {
             mBaseActivity.alertShow(alertMsg, bitmap);
             return false;
         }
+        if (oldpwd.equals(newpwd)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_newpassword_equal_oldpassword);
+            mBaseActivity.alertShow(alertMsg, bitmap);
+            return false;
+        }
 
         return true;
     }

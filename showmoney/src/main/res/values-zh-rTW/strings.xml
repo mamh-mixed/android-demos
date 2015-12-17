@@ -89,6 +89,7 @@
     <string name="alert_error_old_password_short_six">原密碼不能少於6比特!</string>
     <string name="alert_error_new_password_cannot_empty">新密碼不能為空!</string>
     <string name="alert_error_new_password_short_six">新密碼不能少於6比特!</string>
+    <string name="alert_error_newpassword_equal_oldpassword">"新密碼不能與原密碼相同!"</string>
     <string name="alert_error_limit_error">"當日交易已超過限額，請申請提升限額!"</string>
     <string name="refd_dialog_refd_max">本次可退款額度：NT＄</string>
     <string name="refd_dialog_refd_success">退款成功!</string>
