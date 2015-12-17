@@ -21,21 +21,18 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     private long amount;
 
-    Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
+    private Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
             btn7, btn8, btn9, btn00,
             btnsm, btnclear;
 
     int[] numberBtnArr;
 
-    EditText edt_input;
+    private EditText edtInput;
 
     public ScanCodeView(Context context) {
         super(context);
-        View contentView = LayoutInflater.from(context).inflate(
-                R.layout.scancode_view, null);
-
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        View contentView = LayoutInflater.from(context).inflate(R.layout.scancode_view, null);
+        LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
         initLayout();
@@ -69,7 +66,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         btnsm = (Button) findViewById(R.id.btnsm);
         btnclear = (Button) findViewById(R.id.btnclear);
 
-        edt_input = (EditText) findViewById(R.id.edt_input);
+        edtInput = (EditText) findViewById(R.id.edt_input);
 
         btn00.setOnClickListener(this);
         btn0.setOnClickListener(this);
@@ -89,7 +86,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     public void clearValue() {
         amount = 0;
-        edt_input.setText(getDisplayAmount());
+        edtInput.setText(getDisplayAmount());
     }
 
     @Override
@@ -105,7 +102,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                     return;
                 }
                 amount = tempAmount;
-                edt_input.setText(getDisplayAmount());
+                edtInput.setText(getDisplayAmount());
                 return;
             }
         }
@@ -117,7 +114,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 return;
             }
             amount = tempAmount;
-            edt_input.setText(getDisplayAmount());
+            edtInput.setText(getDisplayAmount());
             return;
         }
 
