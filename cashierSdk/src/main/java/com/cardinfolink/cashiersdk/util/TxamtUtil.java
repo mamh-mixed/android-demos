@@ -22,27 +22,12 @@ public class TxamtUtil {
 
 
     public static String getNormal(String txamt) {
-        String str = txamt;
-        if (str != null) {
+        if (txamt != null) {
             try {
-                String sum = "";
-                int index = 0;
-                char c = str.charAt(index);
-                while (c == '0') {
-                    index++;
-                    c = str.charAt(index);
-                }
-                sum = str.substring(index);
-                double i = Double.parseDouble(sum);
-                i = i / 100;
-                BigDecimal bg = new BigDecimal(i);
-                double j = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                sum = "" + j;
-                return sum;
-
-
+                BigDecimal bg = new BigDecimal(txamt);
+                BigDecimal bg100 = new BigDecimal("100");
+                return bg.divide(bg100).toString();
             } catch (Exception e) {
-
                 e.printStackTrace();
             }
         }
