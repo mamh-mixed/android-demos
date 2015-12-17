@@ -31,44 +31,74 @@
     <form is="x-form" id="formQuery" method="GET" action="/master/merchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
 
-        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
-        <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input>
-        <paper-input name="subAgentCode" id="subAgentCode" label="公司代码" value="{{cond.subAgentCode::input}}"></paper-input>
-        <paper-input name="subAgentName" id="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}"></paper-input>
-        <paper-input name="groupCode" id="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
-        <paper-input name="merId" id="merId" label="门店代码" value="{{cond.merId::input}}"></paper-input>
-        <paper-input name="merName" id="merName" label="门店名称" value="{{cond.merName::input}}"></paper-input>
-        <paper-input name="acctNum" id="acctNum" label="开户账户" value="{{cond.acctNum::input}}"></paper-input>
-        <paper-input name="goodsTag" id="goodsTag" label="商品标签" value="{{cond.goodsTag::input}}"></paper-input>
-        <paper-input name="commodityName" id="commodityName" label="商品名称" value="{{cond.commodityName::input}}"></paper-input>
-        <paper-input name="createTime" label="创建日期" on-tap="showStartTimeDialog" value="{{cond.createTime::input}}"></paper-input>
+        <paper-input name="agentCode" id="agentCode" label="代理代码" value="{{cond.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
+        <paper-input name="agentName" id="agentName" label="代理名称" value="{{cond.agentName::input}}" data-msg-id="SCANPAY_TRADE_STATS.AGENT_NAME"></paper-input>
+        <paper-input name="subAgentCode" id="subAgentCode" label="公司代码" value="{{cond.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
+        <paper-input name="subAgentName" id="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}" data-msg-id="TRADE_DETAIL.GROUP_NAME"></paper-input>
+        <paper-input name="groupCode" id="groupCode" label="商户代码" value="{{cond.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
+        <paper-input name="groupName" id="groupName" label="商户名称" value="{{cond.groupName::input}}" data-msg-id="SCANPAY_TRADE_STATS.GROUP_NAME"></paper-input>
+        <paper-input name="merId" id="merId" label="门店代码" value="{{cond.merId::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></paper-input>
+        <paper-input name="merName" id="merName" label="门店名称" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NAME"></paper-input>
+        <paper-input name="acctNum" id="acctNum" label="开户账户" value="{{cond.acctNum::input}}" data-msg-id="MERCHANT.ACCTNUM"></paper-input>
+        <paper-input name="goodsTag" id="goodsTag" label="商品标签" value="{{cond.goodsTag::input}}" data-msg-id="MERCHANT.GOODSTAG"></paper-input>
+        <paper-input name="commodityName" id="commodityName" label="商品名称" value="{{cond.commodityName::input}}" data-msg-id="MERCHANT.COMMODITYNAME"></paper-input>
+        <paper-input name="createTime" label="创建日期" on-tap="showStartTimeDialog" value="{{cond.createTime::input}}" data-msg-id="BUTTON.CREATE_DATE"></paper-input>
         <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px" locale-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
           <div class="buttons">
-            <paper-button dialog-dismiss>取消</paper-button>
-            <paper-button dialog-confirm>确定</paper-button>
+            <paper-button dialog-dismiss>
+                <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+            </paper-button>
+            <paper-button dialog-confirm>
+                <i18n-msg msgid="BUTTON.CONFIRM">确认</i18n-msg>
+            </paper-button>
           </div>
         </paper-dialog>
-        <paper-checkbox name="isNeedSign" checked="{{cond.isNeedSign::change}}" style="margin-left:15px;">开启验签</paper-checkbox>
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-checkbox name="isNeedSign" checked="{{cond.isNeedSign::change}}" style="margin-left:15px;">
+            <i18n-msg msgid="MERCHANT.SIGN_CHECK">开启验签</i18n-msg>
+        </paper-checkbox>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">
+            <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+        </paper-button>
         <div class="paper-button-1" style="margin-top:20px;">
-          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{exportUri}}">导出</a>
+          <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href="{{exportUri}}">
+              <i18n-msg msgid="BUTTON.EXPORT">导出</i18n-msg>
+          </a>
         </div>
       </div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
-            <div class="th">序号</div>
-            <div class="th left">门店代码</div>
-            <div class="th left">门店名称</div>
-            <div class="th left">代理代码</div>
-            <div class="th left">公司代码</div>
-            <div class="th left">商户代码</div>
-            <div class="th left">开户账号</div>
-            <div class="th left">商品标签</div>
-            <div class="th left">商品名称</div>
-            <div class="th left">开启验签</div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.MERCHANT_NO">门店代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.MERCHANT_NAME">门店名称</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.SUBAGENT_NO">公司代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.GROUP_NO">商户代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="MERCHANT.ACCTNUM">开户账号</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="MERCHANT.GOODSTAG">商品标签</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="MERCHANT.COMMODITYNAME">商品名称</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="MERCHANT.SIGN_CHECK">开启验签</i18n-msg>
+            </div>
           </div>
         </div>
         <div class="tbody">
@@ -140,6 +170,9 @@
           };
         },
         attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'merchant-list'
+          });
           if (this.autoLoading) {
             this.handleQueryTapped();
           }
@@ -168,7 +201,7 @@
         handleQueryResponse: function(e) {
           var response = e.detail;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
@@ -179,7 +212,7 @@
           this.set('cond.page', pagination.page);
 
           if (this.merchants.length === 0) {
-            Util.toast('没有数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           }
         },
         // 新增机构商户事件

@@ -93,10 +93,18 @@
   <template>
     <paper-dialog with-backdrop id="dialogView">
       <paper-tabs selected="{{idx}}">
-        <paper-tab>门店信息</paper-tab>
-        <paper-tab>支付宝</paper-tab>
-        <paper-tab>微信</paper-tab>
-        <paper-tab>优方</paper-tab>
+        <paper-tab>
+          <i18n-msg msgid="MERCHANT_INPUT.TAB_MERCHANT_INFO">门店信息</i18n-msg>
+        </paper-tab>
+        <paper-tab>
+          <i18n-msg msgid="MERCHANT_INPUT.TAB_ALIPAY">支付宝</i18n-msg>
+        </paper-tab>
+        <paper-tab>
+          <i18n-msg msgid="MERCHANT_INPUT.TAB_WXP">微信</i18n-msg>
+        </paper-tab>
+        <paper-tab>
+          <i18n-msg msgid="MERCHANT_INPUT.TAB_ULIVE">优方</i18n-msg>
+        </paper-tab>
       </paper-tabs>
       <paper-dialog-scrollable>
         <iron-pages selected="{{idx}}">
@@ -104,121 +112,195 @@
             <div class="table low">
               <div class="tbody">
                 <div class="tr">
-                  <div class="th key">门店代码</div>
+                  <div class="th key">
+                    <i18n-msg msgid="SCANPAY_TRADE_LIST.MERCHANT_NO">门店代码</i18n-msg>
+                  </div>
                   <div class="td">{{item.merId}}</div>
-                  <div class="th key">门店名称</div>
+                  <div class="th key">
+                    <i18n-msg msgid="SCANPAY_TRADE_LIST.MERCHANT_NAME">门店名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.merName}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">代理代码</div>
+                  <div class="td key">
+                    <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>
+                  </div>
                   <div class="td">{{item.agentCode}}</div>
-                  <div class="td key">代理名称</div>
+                  <div class="td key">
+                    <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.agentName}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">公司代码</div>
+                  <div class="td key">
+                    <i18n-msg msgid="SCANPAY_TRADE_LIST.SUBAGENT_NO">公司代码</i18n-msg>
+                  </div>
                   <div class="td">{{item.subAgentCode}}</div>
-                  <div class="td key">公司名称</div>
+                  <div class="td key">
+                    <i18n-msg msgid="TRADE_DETAIL.GROUP_NAME">公司名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.subAgentName}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">商户代码</div>
+                  <div class="td key">
+                    <i18n-msg msgid="SCANPAY_TRADE_LIST.GROUP_NO">商户代码</i18n-msg>
+                  </div>
                   <div class="td">{{item.groupCode}}</div>
-                  <div class="td key">商户名称</div>
+                  <div class="td key">
+                    <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NAME">商户名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.groupName}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key"> 开启验签</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.SIGN_CHECK">开启验签</i18n-msg>
+                  </div>
                   <div class="td">
                     <paper-checkbox checked$="{{item.isNeedSign}}" disabled></paper-checkbox>
                   </div>
-                  <div class="td key">签名密钥</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.SIGNKEY">签名密钥</i18n-msg>
+                  </div>
                   <div class="td" colspan="3" style="word-break:break-all;">{{item.signKey}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">开户姓名</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.ACCTNAME">开户姓名</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.acctName}}</div>
-                  <div class="td key">开户账户</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.ACCTNUM">开户账户</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.acctNum}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">支行名称</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.OPENBANKNAME">支行名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.openBankName}}</div>
-                  <div class="td key">开户行名称</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.BANKNAME">开户行名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.bankName}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">交易币种</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.TRANSCURR">交易币种</i18n-msg>
+                  </div>
                   <div class="td">{{item.transCurr}}</div>
-                  <div class="td key">开户行号</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.BANKID">开户行号</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.bankId}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">省份</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.PROVINCE">省份</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.province}}</div>
-                  <div class="td key">城市</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.CITY">城市</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.city}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">门店类型</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.SHOPTYPE">门店类型</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.shopType}}</div>
-                  <div class="td key">门店 ID</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.SHOPID">门店 ID</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.shopID}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">商品标签</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.GOODSTAG">商品标签</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.goodsTag}}</div>
-                  <div class="td key">商品名称</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.COMMODITYNAME">商品名称</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.commodityName}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">品牌编号</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.BRANDNUM">品牌编号</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.brandNum}}</div>
-                  <div class="td key">备注</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.REMARK">备注</i18n-msg>
+                  </div>
                   <div class="td" style="word-break:break-all;">{{item.remark}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">标题一</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.TITLEONE">标题一</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.titleOne}}</div>
-                  <div class="td key">标题二</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.TITLETWO">标题二</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.titleTwo}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">成功跳转文本</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.SUCC_BTN_TXT">成功跳转文本</i18n-msg>
+                  </div>
                   <div class="td">{{item.detail.succBtnTxt}}</div>
-                  <div class="td key">成功跳转连接</div>
-                  <div class="td">{{item.detail.succBtnLink}}</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.SUCC_BTN_TXT">成功跳转连接</i18n-msg>
+                  </div>
+                  <div class="td">{{item.detail.SUCC_BTN_LINK}}</div>
                 </div>
                 <div class="tr">
-                  <div class="td key">是否传送金额</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.ISPOSTAMOUNT">是否传送金额</i18n-msg>
+                  </div>
                   <div class="td">
                     <paper-checkbox checked$="{{item.detail.isPostAmount}}" disabled></paper-checkbox>
                   </div>
                 </div>
                 <div class="tr">
-                  <div class="td key">门店状态</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.MER_STATUS">门店状态</i18n-msg>
+                  </div>
                   <div class="td">{{getMerStatus(item.merStatus)}}</div>
-                  <div class="td key">唯一码</div>
+                  <div class="td key">
+                    <i18n-msg msgid="MERCHANT.UNIQUEID">唯一码</i18n-msg>
+                  </div>
                   <div class="td">{{item.uniqueId}}</div>
                 </div>
                 <div class="tr">
-                  <div class="th key">创建时间</div>
+                  <div class="th key">
+                    <i18n-msg msgid="TRADE_DETAIL.CREATE_TIME">创建时间</i18n-msg>
+                  </div>
                   <div class="td">{{item.createTime}}</div>
-                  <div class="th key">更新时间</div>
+                  <div class="th key">
+                    <i18n-msg msgid="TRADE_DETAIL.MODIFY_TIME">更新时间</i18n-msg>
+                  </div>
                   <div class="td">{{item.updateTime}}</div>
                 </div>
               </div>
             </div>
             <dl>
-              <dt class="key">账单URL</dt>
+              <dt class="key">
+                <i18n-msg msgid="MERCHANT.BILL_URL">账单URL</i18n-msg>
+              </dt>
               <dd>{{item.detail.billUrl}}</dd>
-              <dt class="key">支付URL</dt>
+              <dt class="key">
+                <i18n-msg msgid="MERCHANT.PAY_URL">支付URL</i18n-msg>
+              </dt>
               <dd>{{item.detail.payUrl}}</dd>
-              <dt class="key">授权接口</dt>
+              <dt class="key">
+                <i18n-msg msgid="MERCHANT.PERMISSION_GROUP">授权接口</i18n-msg>
+              </dt>
               <dd class="checkbox-group">
                 <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}" as="perm">
                   <paper-checkbox checked$="{{perm.isChecked}}" disabled>
-                    <span>{{perm.value}}</span>
+                    <span>
+                      <i18n-msg msgid$="{{getPermission(perm.key)}}">{{perm.value}}</i18n-msg>
+                    </span>
                   </paper-checkbox>
                 </template>
               </dd>
@@ -227,15 +309,23 @@
           <section alias="alipay">
             <paper-dialog-scrollable>
               <dl id="alp">
-                <dt>渠道代码:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>:
+                </dt>
                 <dd>{{alipay.chanCode}}</dd>
-                <dt>商户代码:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>:
+                </dt>
                 <dd>{{alipay.chanMerId}}</dd>
-                <dt>商户名称:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_NAME">商户名称</i18n-msg>:
+                </dt>
                 <dd>{{alipay.chanMerName}}</dd>
                 <dt>MD5 KEY:</dt>
                 <dd>{{alipay.signCert}}</dd>
-                <dt>代理代码:</dt>
+                <dt>
+                  <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>:
+                </dt>
                 <dd>{{alipay.agentCode}}</dd>
               </dl>
             </paper-dialog-scrollable>
@@ -243,27 +333,45 @@
           <section alias="weixin">
             <paper-dialog-scrollable>
               <dl id="wxp">
-                <dt>渠道代码:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>:
+                </dt>
                 <dd>{{weixin.chanCode}}</dd>
-                <dt>商户代码:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>:
+                </dt>
                 <dd>{{weixin.chanMerId}}</dd>
-                <dt>商户名称:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_NAME">商户名称</i18n-msg>:
+                </dt>
                 <dd>{{weixin.chanMerName}}</dd>
-                <dt>是否代理商模式:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.IS_AGENT_MODE">是否代理商模式</i18n-msg>:
+                </dt>
                 <dd>
                   <paper-checkbox checked$="{{weixin.isAgentMode}}" disabled></paper-checkbox>
                 </dd>
-                <dt>大商户号:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.BIG_MERCHANT">大商户号</i18n-msg>:
+                </dt>
                 <dd>{{weixin.agentMer.chanMerId}}</dd>
-                <dt>微信 APPID:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.WXP_APP_ID">微信 APPID</i18n-msg>:
+                </dt>
                 <dd>{{weixin.wxpAppId}}</dd>
-                <dt>签名密钥:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.SIGN_CERT_WXP">签名密钥</i18n-msg>:
+                </dt>
                 <dd>{{weixin.signCert}}</dd>
-                <dt>HTTP 证书:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.HTTP_CERT">HTTP 证书</i18n-msg>:
+                </dt>
                 <dd class="cert">
                   <pre>{{weixin.httpCert}}</pre>
                 </dd>
-                <dt>HTTP 密钥:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.HTTP_KEY">HTTP 密钥</i18n-msg>:
+                </dt>
                 <dd class="cert">
                   <pre>{{weixin.httpKey}}</pre>
                 </dd>
@@ -273,26 +381,48 @@
           <section alias="ulive">
             <paper-dialog-scrollable>
               <dl id="ulive">
-                <dt>渠道代码:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>:
+                </dt>
                 <dd>{{ulive.chanCode}}</dd>
-                <dt>商户代码:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>:
+                </dt>
                 <dd>{{ulive.chanMerId}}</dd>
-                <dt>商户名称:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_NAME">商户名称</i18n-msg>:
+                </dt>
                 <dd>{{ulive.chanMerName}}</dd>
-                <dt>终端号:</dt>
+                <dt>
+                  <i18n-msg msgid="CHAN_MERCHANT.TERMINAL_ID">终端号</i18n-msg>:
+                </dt>
                 <dd>{{ulive.terminalId}}</dd>
               </dl>
             </paper-dialog-scrollable>
           </section>
       </paper-dialog-scrollable>
       <div class="buttons layout center">
-        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个门店吗?</label>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleViewRouteTapped">查看路由</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">关闭</paper-button>
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">
+          <i18n-msg msgid="CHAN_MERCHANT.TERMINAL_ID">您确定要删除这个门店吗?</i18n-msg>
+        </label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">
+          <i18n-msg msgid="BUTTON.CONFIRM">确认</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">
+          <i18n-msg msgid="BUTTON.DELETE">删除</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">
+          <i18n-msg msgid="BUTTON.EDITOR">编辑</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleViewRouteTapped">
+          <i18n-msg msgid="BUTTON.VIEW_ROUTE">查看路由</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose">
+          <i18n-msg msgid="BUTTON.CLOSE">关闭</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="deleteMerAjax" method="POST" url="/master/merchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
@@ -304,45 +434,50 @@
   <script>
     Polymer({
       is: 'merchant-view',
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'merchant-view'
+        });
+      },
       properties: {
         permissionArray: {
           type: Array,
           value: [{
             key: 'PURC',
-            value: '下单支付'
+            value: 'TRANS_TYPE.PURC'
           }, {
             key: 'PAUT',
-            value: '预下单'
+            value: 'TRANS_TYPE.PAUT'
           }, {
             key: 'QYZF',
-            value: '企业付款'
+            value: 'TRANS_TYPE.QYZF'
           }, {
             key: 'JSZF',
-            value: '公众号支付'
+            value: 'TRANS_TYPE.JSZF'
           }, {
             key: 'INQY',
-            value: '查询订单'
+            value: 'TRANS_TYPE.INQY'
           }, {
             key: 'VOID',
-            value: '撤销'
+            value: 'TRANS_TYPE.VOID'
           }, {
             key: 'REFD',
-            value: '退款'
+            value: 'TRANS_TYPE.REFD'
           }, {
             key: 'CANC',
-            value: '取消'
+            value: 'TRANS_TYPE.CANC'
           }, {
             key: 'VERI',
-            value: '卡券核销/查询'
+            value: 'TRANS_TYPE.VERI'
           }, {
             key: 'CRVE',
-            value: '刷卡核销'
+            value: 'TRANS_TYPE.CRVE'
           }, {
             key: 'QUVE',
-            value: '验券查询'
+            value: 'TRANS_TYPE.QUVE'
           }, {
             key: 'CAVE',
-            value: '卡券撤销'
+            value: 'TRANS_TYPE.CAVE'
           }]
         },
         item: Object,
@@ -416,10 +551,11 @@
         }
       },
       _computeYesOrNo: function(flag) {
+        var i18nMsg = document.createElement('i18n-msg');
         if (flag) {
-          return '是';
+          return i18nMsg.getMsg('MERCHANT.YES');
         }
-        return '否';
+        return i18nMsg.getMsg('MERCHANT.NO');
       },
       // 关闭事件
       handleClose: function() {
@@ -427,12 +563,13 @@
       },
       //   将商户状态转换为中文
       getMerStatus: function(status) {
+        var i18nMsg = document.createElement('i18n-msg');
         if (status === 'Normal') {
-          return '正常';
+          return i18nMsg.getMsg('MERCHANT.NORMAL');
         } else if (status === 'Test') {
-          return '测试商户';
+          return i18nMsg.getMsg('MERCHANT.TEST');
         } else if (status === 'Deleted') {
-          return '已删除商户';
+          return i18nMsg.getMsg('MERCHANT.DELETED');
         } else {
           return status;
         }
@@ -464,10 +601,10 @@
       handleDeleteResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('MERCHANT.'+response.message, 3000,true);
           return;
         }
-        Util.toast(response.message, 3000);
+        Util.toast('MERCHANT.'+response.message, 3000,true);
         this.$.dialogView.close();
         this.fire('delete-ok');
       },
@@ -475,7 +612,7 @@
       handleQueryMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('查询机构商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_MERCHANT_ERROR', 3000, true);
           return;
         }
 
@@ -503,7 +640,7 @@
       handleAlpChanMerResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
-          Util.toast('查询支付宝渠道商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_ALP_ERROR', 3000, true);
           return;
         }
 
@@ -513,7 +650,7 @@
       handleWxpChanMerResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
-          Util.toast('查询微信渠道商户信息失败', 3000);
+          Util.toast('MERCHANT_INPUT.SELECT_WXP_ERROR', 3000, true);
           this.set('weixin.httpCert', '');
           this.set('weixin.httpKey', '');
           return;
@@ -531,13 +668,16 @@
       handleUliveChanMerResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
-          Util.toast('查询优方渠道商户信息失败', 3000);
+           Util.toast('MERCHANT_INPUT.SELECT_ULIVE_ERROR', 3000, true);
           return;
         }
 
         this.set('ulive', response.data);
         this.set('ulive.chanCode', 'ULIVE');
       },
+      getPermission: function(value) {
+        return 'TRANS_TYPE.' + value;
+      }
     });
   </script>
 </dom-module>

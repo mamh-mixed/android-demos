@@ -888,8 +888,8 @@
     "message": "查询支付宝渠道信息失败"
   },
   "MERCHANT_INPUT.SELECT_ULIVE_ERROR": {
-    "description": "查询支付宝路由信息失败",
-    "message": "查询支付宝路由信息失败"
+    "description": "查询优方信息失败",
+    "message": "查询优方信息失败"
   },
   "MERCHANT_INPUT.SELECT_WXP_ROUTE_ERROR": {
     "description": "查询微信路由信息失败",
@@ -1036,8 +1036,8 @@
     "message": "门店状态"
   },
   "CHAN_MERCHANT.CHAN_MER_ID": {
-    "description": "商户编号",
-    "message": "商户编号"
+    "description": "商户代码",
+    "message": "商户代码"
   },
   "CHAN_MERCHANT.CHAN_MER_NAME": {
     "description": "商户名称",
@@ -1103,11 +1103,11 @@
     "description": "清算角色",
     "message": "清算角色"
   },
-  "MERCHANT.SIGN_KEY_LENGTH_CANNOT_LESS_EIGHT": {
+  "MERCHANT.SIGN_KEY_LOWEST_LENGTH": {
     "description": "签名密钥长度不能小于8位",
     "message": "签名密钥长度不能小于8位"
   },
-  "MERCHANT.SIGN_CERT_LENGTH_CANNOT_LESS_EIGHT": {
+  "MERCHANT.SIGN_CERT_LOWEST_LENGTH": {
     "description": "签名密钥长度不能小于8位",
     "message": "签名密钥长度不能小于8位"
   },
@@ -1119,132 +1119,444 @@
     "description": "签名密钥不能包含 *",
     "message": "签名密钥不能包含 *"
   },
-  "SUB_MERCHANT.SIGN_CERT_ALP_LENGTH_CANNOT_LESS_EIGHT": {
+  "CHAN_MERCHANT.SIGN_CERT_ALP_LOWEST_LENGTH": {
     "description": "MD5 KEY长度不能小于8位",
     "message": "MD5 KEY长度不能小于8位"
   },
-  "SUB_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR_AND_RESTORE": {
+  "CHAN_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR_AND_RESTORE": {
     "description": "MD5 KEY不能包含 *,已恢复为原MD5 KEY",
     "message": "MD5 KEY不能包含 *,已恢复为原MD5 KEY"
   },
-  "SUB_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR": {
+  "CHAN_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR": {
     "description": "MD5 KEY不能包含 *",
     "message": "MD5 KEY不能包含 *"
   },
-  "SUB_MERCHANT.FEE_IS_NUMBER": {
+  "CHAN_MERCHANT.FEE_IS_NUMBER": {
     "description": "费率必须是数字",
     "message": "费率必须是数字"
   },
-  "SUB_MERCHANT.SIGN_CERT_WXP_LENGTH_CANNOT_LESS_EIGHT": {
+  "CHAN_MERCHANT.SIGN_CERT_WXP_LOWEST_LENGTH": {
     "description": "HTTP证书长度不能小于8位",
     "message": "HTTP证书长度不能小于8位"
   },
-  "SUB_MERCHANT.SIGN_KEY_ALP_LENGTH_CANNOT_LESS_EIGHT": {
+  "CHAN_MERCHANT.SIGN_KEY_ALP_LOWEST_LENGTH": {
     "description": "MD5 KEY长度不能小于8位",
     "message": "MD5 KEY长度不能小于8位"
   },
-  "SUB_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE": {
+  "CHAN_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE": {
     "description": "HTTP证书不能包含 *,已恢复为原HTTP证书",
     "message": "HTTP证书不能包含 *,已恢复为原HTTP证书"
   },
-  "SUB_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR": {
+  "CHAN_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR": {
     "description": "HTTP证书不能包含 *",
     "message": "HTTP证书不能包含 *"
   },
-  "SUB_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE": {
+  "CHAN_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE": {
     "description": "HTTP密钥不能包含 *,已恢复为原HTTP密钥",
     "message": "HTTP密钥不能包含 *,已恢复为原HTTP密钥"
   },
-  "SUB_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR": {
+  "CHAN_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR": {
     "description": "HTTP密钥不能包含 *",
     "message": "HTTP密钥不能包含 *"
   },
-  "SUB_MERCHANT.HTTP_CERT_FORMAT_ERROR": {
+  "CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR": {
     "description": "文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头",
     "message": "文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头"
   },
-  "SUB_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM": {
+  "CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM": {
     "description": "文件格式错误，只能上传 PEM 格式的文件",
     "message": "文件格式错误，只能上传 PEM 格式的文件"
   },
-  "SUB_MERCHANT.HTTP_KEY_FORMAT_ERROR": {
-    "description": "文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头",
-    "message": "文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头"
+  "CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR": {
+    "description": "文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头",
+    "message": "文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头"
   },
-  "SUB_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM": {
+  "CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM": {
     "description": "文件格式错误，只能上传 PEM 格式的文件",
     "message": "文件格式错误，只能上传 PEM 格式的文件"
   },
-  "SUB_MERCHANT.LOAD_AGENT_LIST_ERROR": {
+  "CHAN_MERCHANT.LOAD_AGENT_LIST_ERROR": {
     "description": "加载代理列表失败",
     "message": "加载代理列表失败"
   },
-  "SUB_MERCHANT.NO_AGENT_DATA": {
+  "CHAN_MERCHANT.NO_AGENT_DATA": {
     "description": "没有代理数据",
     "message": "没有代理数据"
   },
-  "SUB_MERCHANT.LOAD_SUB_AGENT_LIST_ERROR": {
+  "CHAN_MERCHANT.LOAD_SUB_AGENT_LIST_ERROR": {
     "description": "加载公司列表失败",
     "message": "加载公司列表失败"
   },
-  "SUB_MERCHANT.NO_SUB_AGENT_DATA": {
+  "CHAN_MERCHANT.NO_SUB_AGENT_DATA": {
     "description": "没有公司数据",
     "message": "没有公司数据"
   },
-  "SUB_MERCHANT.LOAD_GROUP_LIST_ERROR": {
+  "CHAN_MERCHANT.LOAD_GROUP_LIST_ERROR": {
     "description": "加载商户列表失败",
     "message": "加载商户列表失败"
   },
-  "SUB_MERCHANT.NO_GROUP_DATA": {
+  "CHAN_MERCHANT.NO_GROUP_DATA": {
     "description": "没有商户数据",
     "message": "没有商户数据"
   },
-  "MERCHANT.PURC": {
-    "description": "下单支付",
-    "message": "下单支付"
+  "TRANS_TYPE.INQY": {
+    "description": "查询",
+    "message": "查询"
   },
-  "MERCHANT.PAUT": {
-    "description": "预下单",
-    "message": "预下单"
-  },
-  "MERCHANT.INQY": {
-    "description": "查询订单",
-    "message": "查询订单"
-  },
-  "MERCHANT.CANC": {
-    "description": "取消",
-    "message": "取消"
-  },
-  "MERCHANT.VOID": {
-    "description": "撤销",
-    "message": "撤销"
-  },
-  "MERCHANT.REFD": {
-    "description": "退款",
-    "message": "退款"
-  },
-  "MERCHANT.QYZF": {
-    "description": "企业付款",
-    "message": "企业付款"
-  },
-  "MERCHANT.JSZF": {
-    "description": "公众号支付",
-    "message": "公众号支付"
-  },
-  "MERCHANT.VERI": {
-    "description": "核销/查询",
-    "message": "核销/查询"
-  },
-  "MERCHANT.CRVE": {
+  "TRANS_TYPE.CRVE": {
     "description": "刷卡核销",
     "message": "刷卡核销"
   },
-  "MERCHANT.QUVE": {
+  "TRANS_TYPE.QUVE": {
     "description": "验券查询",
     "message": "验券查询"
   },
-  "MERCHANT.CAVE": {
+  "TRANS_TYPE.CAVE": {
     "description": "卡券撤销",
     "message": "卡券撤销"
+  },
+  "BUTTON.PICK_FILE": {
+    "description": "选择文件",
+    "message": "选择文件"
+  },
+  "BUTTON.CREATE_DATE": {
+    "description": "创建日期",
+    "message": "创建日期"
+  },
+  "MERCHANT.SIGN_CHECK": {
+    "description": "开启验签",
+    "message": "开启验签"
+  },
+  "BUTTON.EXPORT": {
+    "description": "导出",
+    "message": "导出"
+  },
+  "MERCHANT.UNIQUEID": {
+    "description": "唯一码",
+    "message": "唯一码"
+  },
+  "MERCHANT.BILL_URL": {
+    "description": "账单URL",
+    "message": "账单URL"
+  },
+  "MERCHANT.PAY_URL": {
+    "description": "支付URL",
+    "message": "支付URL"
+  },
+  "CHAN_MERCHANT.CHAN_CODE": {
+    "description": "渠道代码",
+    "message": "渠道代码"
+  },
+  "MERCHANT.IF_DELETE_MERCHANT": {
+    "description": "您确定要删除这个门店吗?",
+    "message": "您确定要删除这个门店吗?"
+  },
+  "BUTTON.VIEW_ROUTE": {
+    "description": "查看路由",
+    "message": "查看路由"
+  },
+  "MERCHANT.YES": {
+    "description": "是",
+    "message": "是"
+  },
+  "MERCHANT.NO": {
+    "description": "否",
+    "message": "否"
+  },
+  "CHAN_MERCHANT.VIEW_CHAN_MERCHANT": {
+    "description": "查看渠道商户信息",
+    "message": "查看渠道商户信息"
+  },
+  "CHAN_MERCHANT.IF_CHAN_MERCHANT": {
+    "description": "您确定要删除这个商户吗?",
+    "message": "您确定要删除这个商户吗?"
+  },
+  "CHANNEL.ULIVE": {
+    "description": "优方渠道",
+    "message": "优方"
+  },
+  "CHAN_MERCHANT.TOAST.SELECT_CHANNEL": {
+    "description": "请选择渠道",
+    "message": "请选择渠道"
+  },
+  "CHAN_MERCHANT.TOAST.HTTP_KEY_LOWEST_LENGTH": {
+    "description": "HTTP密钥长度不能小于8位",
+    "message": "HTTP密钥长度不能小于8位"
+  },
+  "ROUTE_POLICY.CHAN_MER_ID": {
+    "description": "渠道商户代码",
+    "message": "渠道商户代码"
+  },
+  "ROUTE_POLICY.CARD_BRAND": {
+    "description": "卡品牌",
+    "message": "卡品牌"
+  },
+  "CARD_BRAND.CUP": {
+    "description": "银联国内卡",
+    "message": "银联国内卡"
+  },
+  "CARD_BRAND.UPI": {
+    "description": "银联国际卡",
+    "message": "银联国际卡"
+  },
+  "CARD_BRAND.VIS": {
+    "description": "VISA 卡",
+    "message": "VISA 卡"
+  },
+  "CARD_BRAND.MCC": {
+    "description": "万事达卡",
+    "message": "万事达卡"
+  },
+  "CARD_BRAND.JCB": {
+    "description": "JCB 卡",
+    "message": "JCB 卡"
+  },
+  "CARD_BRAND.ALP": {
+    "description": "支付宝",
+    "message": "支付宝"
+  },
+  "CARD_BRAND.WXP": {
+    "description": "微信",
+    "message": "微信"
+  },
+  "CARD_BRAND.ULIVE": {
+    "description": "优方",
+    "message": "优方"
+  },
+  "ROUTE_POLICY.DELETE_ROUTE_PILICY": {
+    "description": "删除路由策略",
+    "message": "删除路由策略"
+  },
+  "ROUTE_POLICY.IF_DELETE_ROUTE_PILICY": {
+    "description": "是否删除此路由策略?",
+    "message": "是否删除此路由策略?"
+  },
+  "MERCHANT.JSON_ERROR": {
+    "description": "JSON解析失败",
+    "message": "JSON解析失败"
+  },
+  "MERCHANT.REQUIRED_FILED_NOT_BE_EMPTY": {
+    "description": "必填项不能为空",
+    "message": "必填项不能为空"
+  },
+  "MERCHANT.SELECT_ERROR": {
+    "description": "查询失败",
+    "message": "查询失败"
+  },
+  "MERCHANT.MER_ID_EXIST": {
+    "description": "商户代码已存在",
+    "message": "商户代码已存在"
+  },
+  "MERCHANT.ERROR": {
+    "description": "错误",
+    "message": "错误"
+  },
+  "MERCHANT.CREATE_MERCHANT_SUCCESS": {
+    "description": "创建门店成功",
+    "message": "创建门店成功"
+  },
+  "MERCHANT.UPDATE_MERCHANT_SUCCESS": {
+    "description": "修改门店成功",
+    "message": "修改门店成功"
+  },
+  "MERCHANT.DELETE_MERCHANT_SUCCESS": {
+    "description": "删除门店成功",
+    "message": "删除门店成功"
+  },
+  "CHAN_MERCHANT.JSON_ERROR": {
+    "description": "JSON解析失败",
+    "message": "JSON解析失败"
+  },
+  "CHAN_MERCHANT.REQUIRED_FILED_NOT_BE_EMPTY": {
+    "description": "必填项不能为空",
+    "message": "必填项不能为空"
+  },
+  "CHAN_MERCHANT.SELECT_ERROR": {
+    "description": "查询失败",
+    "message": "查询失败"
+  },
+  "CHAN_MERCHANT.ERROR": {
+    "description": "错误",
+    "message": "错误"
+  },
+  "CHAN_MERCHANT.CREATE_MERCHANT_SUCCESS": {
+    "description": "创建渠道商户成功",
+    "message": "创建渠道商户成功"
+  },
+  "CHAN_MERCHANT.UPDATE_MERCHANT_SUCCESS": {
+    "description": "修改渠道商户成功",
+    "message": "修改渠道商户成功"
+  },
+  "CHAN_MERCHANT.DELETE_MERCHANT_SUCCESS": {
+    "description": "删除渠道商户成功",
+    "message": "删除渠道商户成功"
+  },
+  "CHAN_MERCHANT.SIGN_KEY_LOWEST_LENGTH": {
+    "description": "签名密钥长度不能小于8",
+    "message": "签名密钥长度不能小于8"
+  },
+  "CHAN_MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR": {
+    "description": "SignKey不能包含*",
+    "message": "SignKey不能包含*"
+  },
+  "CHAN_MERCHANT.HTTP_CERT_CANNOT_CONTAIN_STAR": {
+    "description": "Http证书不能包含*",
+    "message": "Http证书不能包含*"
+  },
+  "CHAN_MERCHANT.HTTP_KEY_CANNOT_CONTAIN_STAR": {
+    "description": "Http密钥不能包含*",
+    "message": "Http密钥不能包含*"
+  },
+  "ROUTE_POLICY.JSON_ERROR": {
+    "description": "JSON解析失败",
+    "message": "保存路由信息失败,JSON解析失败"
+  },
+  "ROUTE_POLICY.REQUIRED_FILED_NOT_BE_EMPTY": {
+    "description": "必填项不能为空",
+    "message": "保存路由信息失败,必填项不能为空"
+  },
+  "ROUTE_POLICY.SELECT_ERROR": {
+    "description": "查询失败",
+    "message": "保存路由信息失败,查询失败"
+  },
+  "ROUTE_POLICY.ERROR": {
+    "description": "错误",
+    "message": "保存路由信息失败,保存错误"
+  },
+  "ROUTE_POLICY.CREATE_ROUTE_POLICY_SUCCESS": {
+    "description": "创建路由成功",
+    "message": "创建路由成功"
+  },
+  "ROUTE_POLICY.UPDATE_ROUTE_POLICY_SUCCESS": {
+    "description": "修改路由成功",
+    "message": "修改路由成功"
+  },
+  "ROUTE_POLICY.DELETE_ROUTE_POLICY_SUCCESS": {
+    "description": "删除路由成功",
+    "message": "删除路由成功"
+  },
+  "ROUTE_POLICY.NO_MER_ID": {
+    "description": "门店代码不存在",
+    "message": "门店代码不存在"
+  },
+  "ROUTE_POLICY.AGENT_CODE_ERROR": {
+    "description": "代理代码错误",
+    "message": "代理代码错误"
+  },
+  "ROUTE_POLICY.SUB_AGENT_CODE_ERROR": {
+    "description": "公司代码错误",
+    "message": "公司代码错误"
+  },
+  "ROUTE_POLICY.GROUP_CODE_ERROR": {
+    "description": "商户代码错误",
+    "message": "商户代码错误"
+  },
+  "ROUTE_POLICY.SETT_FLAG_NOT_MATCH_SETT_ROLE": {
+    "description": "清算标识与清算角色不匹配",
+    "message": "清算标识与清算角色不匹配"
+  },
+  "CHAN_MERCHANT.CREATE_MERCHANT": {
+    "description": "创建渠道商户",
+    "message": "创建渠道商户"
+  },
+  "CHAN_MERCHANT.EDITOR_MERCHANT": {
+    "description": "编辑渠道商户",
+    "message": "编辑渠道商户"
+  },
+  "TRANSFER_REPORT.REPORT_TYPE": {
+    "description": "报表类型",
+    "message": "报表类型"
+  },
+  "TRANSFER_REPORT.REPORT_NAME": {
+    "description": "报表名称",
+    "message": "报表名称"
+  },
+  "TRANSFER_REPORT.REPORT": {
+    "description": "报表",
+    "message": "报表"
+  },
+  "TRANSFER_REPORT.REPORT_DETAIL": {
+    "description": "明细",
+    "message": "明细"
+  },
+  "REPORT_TYPE.TRANSFER_MONEY": {
+    "description": "划款",
+    "message": "划款"
+  },
+  "REPORT_TYPE.RECONCILIATION": {
+    "description": "对账",
+    "message": "对账"
+  },
+  "REPORT_TYPE.AGENT_WATER": {
+    "description": "机构流水",
+    "message": "机构流水"
+  },
+  "REPORT_TYPE.CHAN_MERCHANT": {
+    "description": "渠道商户",
+    "message": "渠道商户"
+  },
+  "REPORT_TYPE.RECONCILIATION_INJUSTICE_LESS_CHAN_MER": {
+    "description": "对账不平-渠道少的",
+    "message": "对账不平-渠道少的"
+  },
+  "REPORT_TYPE.RECONCILIATION_INJUSTICE_MORE_CHAN_MER": {
+    "description": "对账不平-渠道多的",
+    "message": "对账不平-渠道多的"
+  },
+  "REPORT_TYPE.PROFIT": {
+    "description": "分润",
+    "message": "分润"
+  },
+  "TRADE_QUERY.MENUE_NAME": {
+    "description": "交易查询",
+    "message": "交易查询"
+  },
+  "STATS_REPORT.MENUE_NAME": {
+    "description": "统计报表",
+    "message": "统计报表"
+  },
+  "SCANPAY_TRADE_TRANSFER_REPORT.MENU_NAME": {
+    "description": "扫码支付划款报表",
+    "message": "扫码支付划款报表"
+  },
+  "AGENT.TITLE": {
+    "description": "代理/机构",
+    "message": "代理/机构"
+  },
+  "SUB_AGENT.TITLE": {
+    "description": "公司",
+    "message": "公司"
+  },
+  "GROUP.TITLE": {
+    "description": "商户",
+    "message": "商户"
+  },
+  "MERCHANT_INPUT.TITLE": {
+    "description": "配置扫码支付门店信息和渠道",
+    "message": "配置扫码支付门店信息和渠道"
+  },
+  "BATCH_IMPORT.TITLE": {
+    "description": "批量导入",
+    "message": "批量导入"
+  },
+  "MERCHANT_INPUT.TITLE": {
+    "description": "配置扫码支付门店信息和渠道",
+    "message": "配置扫码支付门店信息和渠道"
+  },
+  "MERCHANT.TITLE": {
+    "description": "门店",
+    "message": "门店"
+  },
+  "CHAN_MERCHANT.TITLE": {
+    "description": "渠道商户",
+    "message": "渠道商户"
+  },
+  "ROUTE_POLICY.TITLE": {
+    "description": "路由策略",
+    "message": "路由策略"
+  },
+  "SCANPAY_TRADE_TRANSFER_REPORT.TITLE": {
+    "description": "划款报表下载",
+    "message": "划款报表下载"
   }
 }

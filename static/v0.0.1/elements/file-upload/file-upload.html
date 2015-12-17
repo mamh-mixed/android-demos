@@ -44,7 +44,9 @@
   </style>
   <template>
     <div id="fileArea">
-      <paper-button class="colorful" id="pickfiles">选择文件</paper-button>
+      <paper-button class="colorful" id="pickfiles">
+        <i18n-msg msgid="BUTTON.PICK_FILE">选择文件</i18n-msg>
+      </paper-button>
     </div>
     <div class="uploadStatus">
       <div id="name" class="row">
@@ -71,6 +73,11 @@
 
       Polymer({
         is: 'file-upload',
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'file-upload'
+          });
+        },
         ready: function() {
           var _this = this;
 
@@ -134,9 +141,9 @@
           var response = e.detail.response;
           this.message = response.message
           if (response.status !== 0) {
-              this.$.responseMessageSpan.className = 'red';
-          }else{
-              this.$.responseMessageSpan.className = 'green';
+            this.$.responseMessageSpan.className = 'red';
+          } else {
+            this.$.responseMessageSpan.className = 'green';
           }
         },
       });

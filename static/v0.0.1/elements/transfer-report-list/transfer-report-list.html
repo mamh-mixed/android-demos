@@ -14,30 +14,48 @@
     </style>
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/transfer/query" on-iron-form-submit="submitForm" on-iron-form-response="handleSearchResponse">
       <div class="search-condition">
-        <paper-input name="date" label="清算日期" on-tap="showSettDateDialog" value="{{cond.date::input}}"></paper-input>
+        <paper-input name="date" label="清算日期" on-tap="showSettDateDialog" value="{{cond.date::input}}" data-msg-id="SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE"></paper-input>
         <paper-dialog with-backdrop id="settDateDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissSettDateDialog">
           <paper-date-picker id="settDatePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
           <div class="buttons">
-            <paper-button dialog-dismiss>取消</paper-button>
-            <paper-button dialog-confirm>确定</paper-button>
+            <paper-button dialog-dismiss>
+                <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+            </paper-button>
+            <paper-button dialog-confirm>
+                 <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+            </paper-button>
           </div>
         </paper-dialog>
 
         <!-- <x-select items="[[settRoles]]" name="settRole" selected-item="{{settRole}}" label="清算角色" disabled="{{agentDisabled}}" id="agentCode"></x-select> -->
-        <x-select id="reportType" items="[[reportTypes]]" name="reportType" selected-item="{{reportType}}" label="报表类型"></x-select>
-        <paper-input label="清算角色" name="role" value="{{cond.role::input}}"></paper-input>
+        <x-select id="reportType" items="[[reportTypes]]" name="reportType" selected-item="{{reportType}}" label="报表类型" data-msg-id="TRANSFER_REPORT.REPORT_TYPE" is-locale></x-select>
+        <paper-input label="清算角色" name="role" value="{{cond.role::input}}" data-msg-id="TRADE_DETAIL.SETT_ROLE"></paper-input>
 
-        <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
+        <paper-button class="colorful" raised on-tap="queryAction">
+            <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+        </paper-button>
       </div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
-            <div class="th">序号</div>
-            <div class="th">清算日期</div>
-            <div class="th">报表类型</div>
-            <div class="th left">清算角色</div>
-            <div class="th left">报表名称</div>
-            <div class="th">下载</div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE">清算日期</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="TRANSFER_REPORT.REPORT_TYPE">报表类型</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="TRADE_DETAIL.SETT_ROLE">清算角色</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="TRANSFER_REPORT.REPORT_NAME">报表名称</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_STATS.DOWNLOAD">下载</i18n-msg>
+            </div>
           </div>
         </div>
         <div class='tbody'>
@@ -49,9 +67,13 @@
               <div class="td">{{item.settRole}}</div>
               <div class="td">{{item.reportName}}</div>
               <div class="td center">
-                <a on-tap="handleDownloadReportEvent">报表</a>
+                <a on-tap="handleDownloadReportEvent">
+                    <i18n-msg msgid="TRANSFER_REPORT.REPORT">报表</i18n-msg>
+                </a>
                 <label hidden$="{{isHiddenDetail(item.reportType)}}">|</label>
-                <a href="/master/trade/transfer/report?date={{item.settDate}}&role={{item.settRole}}&utcOffset={{cond.utcOffset}}" hidden$="{{isHiddenDetail(item.reportType)}}">明细</a>
+                <a href="/master/trade/transfer/report?date={{item.settDate}}&role={{item.settRole}}&utcOffset={{cond.utcOffset}}" hidden$="{{isHiddenDetail(item.reportType)}}">
+                    <i18n-msg msgid="TRANSFER_REPORT.REPORT_DETAIL">明细</i18n-msg>
+                </a>
               </div>
             </div>
           </template>
@@ -70,7 +92,6 @@
       'use strict';
       Polymer({
         is: 'transfer-report-list',
-
         properties: {
           reports: {
             type: Array,
@@ -95,25 +116,25 @@
             type: Array,
             value: [{
               key: 1,
-              value: '划款'
+              value: 'REPORT_TYPE.TRANSFER_MONEY'
             }, {
               key: 2,
-              value: '对账'
+              value: 'REPORT_TYPE.RECONCILIATION'
             }, {
               key: 3,
-              value: '机构流水'
+              value: 'REPORT_TYPE.AGENT_WATER'
             }, {
               key: 4,
-              value: '渠道商户'
+              value: 'REPORT_TYPE.CHAN_MERCHANT'
             }, {
               key: 5,
-              value: '对账不平-渠道少的'
+              value: 'REPORT_TYPE.RECONCILIATION_INJUSTICE_LESS_CHAN_MER'
             }, {
               key: 6,
-              value: '对账不平-渠道多的'
+              value: 'REPORT_TYPE.RECONCILIATION_INJUSTICE_MORE_CHAN_MER'
             }, {
               key: 7,
-              value: '分润'
+              value: 'REPORT_TYPE.PROFIT'
             }]
           },
           reportType: Object
@@ -128,17 +149,19 @@
         },
         ready: function() {
           this.reportTypeMap = {
-            1: '划款',
-            2: '对账',
-            3: '机构流水',
-            4: '渠道商户',
-            5: '对账不平-渠道少的',
-            6: '对账不平-渠道多的',
-            7: '分润'
+            1: 'REPORT_TYPE.TRANSFER_MONEY',
+            2: 'REPORT_TYPE.RECONCILIATION',
+            3: 'REPORT_TYPE.AGENT_WATER',
+            4: 'REPORT_TYPE.CHAN_MERCHANT',
+            5: 'REPORT_TYPE.RECONCILIATION_INJUSTICE_LESS_CHAN_MER',
+            6: 'REPORT_TYPE.RECONCILIATION_INJUSTICE_MORE_CHAN_MER',
+            7: 'REPORT_TYPE.PROFIT'
           };
         },
         attached: function() {
-
+            this.fire('rerender-i18n', {
+              from: 'transfer-report-list'
+            });
         },
         handleDownloadReportEvent: function(e) {
           var item = e.model.item;
@@ -173,7 +196,7 @@
         handleSearchResponse: function(e) {
           var response = e.detail;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
           var pagination = e.detail.data;
@@ -183,7 +206,7 @@
           this.set('cond.page', pagination.page);
 
           if (this.reports.length === 0) {
-            Util.toast('没有数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           }
         },
         addOneFilter: function(index) {
@@ -204,7 +227,8 @@
           return true;
         },
         reportTypeFilter: function(reportType) {
-          return this.reportTypeMap[reportType];
+          var i18nMsg = document.createElement('i18n-msg');
+          return i18nMsg.getMsg(this.reportTypeMap[reportType]);
         }
       });
     })();

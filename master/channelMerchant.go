@@ -91,22 +91,22 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, c)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if c.ChanCode == "" {
-		log.Error("没有chanCode")
-		return model.NewResultBody(3, "缺失必要元素chanCode")
+		log.Error("no chanCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if c.ChanMerId == "" {
-		log.Error("没有chanMerId")
-		return model.NewResultBody(3, "缺失必要元素chanMerId")
+		log.Error("no chanMerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if c.SignKey != "" && len(c.SignKey) < 8 {
 		log.Debugf("签名密钥长度不能小于8，signKey=%s", c.SignKey)
-		return model.NewResultBody(3, "签名密钥长度不能小于8")
+		return model.NewResultBody(3, "SIGN_KEY_LOWEST_LENGTH")
 	}
 	// if c.SignKey != "" {
 	isCreate := false
@@ -116,18 +116,18 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 			isCreate = true
 		} else {
 			log.Errorf("find database err,%s", err)
-			return model.NewResultBody(1, "查找数据库失败")
+			return model.NewResultBody(1, "ERROR")
 		}
 	}
 	if isCreate {
 		if strings.Contains(c.SignKey, "*") {
-			return model.NewResultBody(4, "SignKey不能包含*")
+			return model.NewResultBody(4, "CHAN_MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR")
 		}
 		if strings.Contains(c.HttpCert, "*") {
-			return model.NewResultBody(4, "Http证书不能包含*")
+			return model.NewResultBody(4, "CHAN_MERCHANT.HTTP_CERT_CANNOT_CONTAIN_STAR")
 		}
 		if strings.Contains(c.HttpKey, "*") {
-			return model.NewResultBody(4, "Http密钥不能包含*")
+			return model.NewResultBody(4, "CHAN_MERCHANT.HTTP_KEY_CANNOT_CONTAIN_STAR")
 		}
 		if strings.Contains(c.PrivateKey, "*") {
 			return model.NewResultBody(4, "商户私钥不能包含*")
@@ -158,7 +158,7 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 		bigChannel, err := mongo.ChanMerColl.Find(c.AgentMer.ChanCode, c.AgentMer.ChanMerId)
 		if err != nil {
 			log.Errorf("find database err,%s", err)
-			return model.NewResultBody(1, "查找数据库失败")
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		c.AgentMer.SignKey = bigChannel.SignKey
 		c.AgentMer.HttpCert = bigChannel.HttpCert
@@ -168,13 +168,13 @@ func (i *chanMer) Save(data []byte) (result *model.ResultBody) {
 
 	err = mongo.ChanMerColl.Add(c)
 	if err != nil {
-		log.Errorf("新增渠道商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("create chan merchant error:%s", err)
+		return model.NewResultBody(1, "ERRORDefaultLocale")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "CREATE_CHAN_MERCHANT_SUCCESS",
 		Data:    c,
 	}
 
@@ -211,18 +211,18 @@ func (i *chanMer) Match(chanCode, chanMerId, chanMerName string, maxSize int) (r
 // Delete 删除渠道商户
 func (i *chanMer) Delete(chanCode, chanMerId string) (result *model.ResultBody) {
 	if chanCode == "" || chanMerId == "" {
-		return model.NewResultBody(2, "chanCode和chanMerId不能为空")
+		return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	err := mongo.ChanMerColl.Remove(chanCode, chanMerId)
 
 	if err != nil {
-		log.Errorf("删除渠道商户失败: %s", err)
-		return model.NewResultBody(1, "删除渠道商户失败")
+		log.Errorf("delete chan merchant error: %s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "删除成功",
+		Message: "DELETE_CHAN_MERCHANT_SUCCESS",
 	}
 
 	return result
@@ -276,27 +276,27 @@ func (i *chanMer) Update(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, c)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if c.ChanCode == "" {
 		log.Error("没有chanCode")
-		return model.NewResultBody(3, "缺失必要元素chanCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if c.ChanMerId == "" {
 		log.Error("没有chanMerId")
-		return model.NewResultBody(3, "缺失必要元素chanMerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if c.SignKey != "" && len(c.SignKey) < 8 {
 		log.Debugf("签名密钥长度不能小于8，signKey=%s", c.SignKey)
-		return model.NewResultBody(3, "签名密钥长度不能小于8")
+		return model.NewResultBody(3, "CHAN_MERCHANT.SIGN_KEY_LOWEST_LENGTH")
 	}
 	channel, err := mongo.ChanMerColl.Find(c.ChanCode, c.ChanMerId)
 	if err != nil {
 		log.Errorf("find database err,%s", err)
-		return model.NewResultBody(1, "查找数据库失败")
+		return model.NewResultBody(1, "SELECT_ERROR")
 	}
 
 	log.Debugf("newSignCert:%s,oldSignCert:%s", c.SignKey, channel.SignKey)
@@ -319,7 +319,7 @@ func (i *chanMer) Update(data []byte) (result *model.ResultBody) {
 		bigChannel, err := mongo.ChanMerColl.Find(c.AgentMer.ChanCode, c.AgentMer.ChanMerId)
 		if err != nil {
 			log.Errorf("find database err,%s", err)
-			return model.NewResultBody(1, "查找数据库失败")
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		c.AgentMer.SignKey = bigChannel.SignKey
 		c.AgentMer.HttpCert = bigChannel.HttpCert
@@ -329,13 +329,13 @@ func (i *chanMer) Update(data []byte) (result *model.ResultBody) {
 
 	err = mongo.ChanMerColl.Update(c)
 	if err != nil {
-		log.Errorf("更新渠道商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("update chan merchant error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "UPDATE_CHAN_MERCHANT_SUCCESS",
 		Data:    c,
 	}
 

@@ -940,51 +940,51 @@
         this.update = false;
         this.permissionArray = [{
           key: 'PURC',
-          value: 'MERCHANT.PURC',
+          value: 'TRANS_TYPE.PURC',
           isChecked: false
         }, {
           key: 'PAUT',
-          value: 'MERCHANT.PAUT',
+          value: 'TRANS_TYPE.PAUT',
           isChecked: false
         }, {
           key: 'INQY',
-          value: 'MERCHANT.INQY',
+          value: 'TRANS_TYPE.INQY',
           isChecked: false
         }, {
           key: 'CANC',
-          value: 'MERCHANT.CANC',
+          value: 'TRANS_TYPE.CANC',
           isChecked: false
         }, {
           key: 'VOID',
-          value: 'MERCHANT.VOID',
+          value: 'TRANS_TYPE.VOID',
           isChecked: false
         }, {
           key: 'REFD',
-          value: 'MERCHANT.REFD',
+          value: 'TRANS_TYPE.REFD',
           isChecked: false
         }, {
           key: 'QYZF',
-          value: 'MERCHANT.QYZF',
+          value: 'TRANS_TYPE.QYZF',
           isChecked: false
         }, {
           key: 'JSZF',
-          value: 'MERCHANT.JSZF',
+          value: 'TRANS_TYPE.JSZF',
           isChecked: false
         }, {
           key: 'VERI',
-          value: 'MERCHANT.VERI',
+          value: 'TRANS_TYPE.VERI',
           isChecked: false
         }, {
           key: 'CRVE',
-          value: 'MERCHANT.CRVE',
+          value: 'TRANS_TYPE.CRVE',
           isChecked: false
         }, {
           key: 'QUVE',
-          value: 'MERCHANT.QUVE',
+          value: 'TRANS_TYPE.QUVE',
           isChecked: false
         }, {
           key: 'CAVE',
-          value: 'MERCHANT.CAVE',
+          value: 'TRANS_TYPE.CAVE',
           isChecked: false
         }];
         var i18nMsg = document.createElement('i18n-msg');
@@ -1088,7 +1088,7 @@
           return;
         }
         if (this.merchant.signKey && this.merchant.signKey.length < 8) {
-          Util.toast('MERCHANT.SIGN_KEY_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
+          Util.toast('MERCHANT.SIGN_KEY_LOWEST_LENGTH', 3000, true);
           return;
         }
         if (this.update) {
@@ -1112,21 +1112,21 @@
       handleSaveMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('MERCHANT.'+response.message, 3000,true);
           return;
         }
 
-        Util.toast(response.message, 1000);
+        Util.toast('MERCHANT.'+response.message, 1000,true);
       },
       // 更新商户的ajax响应事件
       handleUpdateMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('MERCHANT.'+response.message, 3000,true);
           return;
         }
 
-        Util.toast(response.message, 1000);
+        Util.toast('MERCHANT.'+response.message, 1000,true);
       },
       // 判断优方渠道信息是否必填项都填写了，返回false表示都填写了
       isUliveConfigEmpty: function() {
@@ -1171,25 +1171,25 @@
           return;
         }
         if (this.alipay.signCert && this.alipay.signCert.length < 8) {
-          Util.toast('SUB_MERCHANT.SIGN_CERT_ALP_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
+          Util.toast('CHAN_MERCHANT.SIGN_CERT_ALP_LOWEST_LENGTH', 3000, true);
           return;
         }
         if (this.alpUpdate) {
           if (this.alipay.signCert !== this.oldAlpSignCert && this.alipay.signCert.indexOf('*') !== -1) {
-            Util.toast('SUB_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
+            Util.toast('CHAN_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('alipay.signCert', this.oldAlpSignCert)
             return;
           }
         } else {
           if (this.alipay.signCert.indexOf('*') !== -1) {
-            Util.toast('SUB_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR', 3000, true);
+            Util.toast('CHAN_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
         }
         var acqFee = parseFloat(this.alipayRoute.acqFee),
           merFee = parseFloat(this.alipayRoute.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
-          Util.toast('SUB_MERCHANT.FEE_IS_NUMBER', 3000, true);
+          Util.toast('CHAN_MERCHANT.FEE_IS_NUMBER', 3000, true);
           return;
         }
         // this.set('alipay.acqFee', acqFee);
@@ -1233,15 +1233,15 @@
           return;
         }
         if (this.weixin.signCert && this.weixin.signCert.length < 8) {
-          Util.toast('MERCHANT.SIGN_CERT_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
+          Util.toast('MERCHANT.SIGN_CERT_LOWEST_LENGTH', 3000, true);
           return;
         }
         if (this.weixin.httpCert && this.weixin.httpCert !== '' && this.weixin.httpCert.length < 8) {
-          Util.toast('SUB_MERCHANT.SIGN_CERT_WXP_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
+          Util.toast('CHAN_MERCHANT.SIGN_CERT_WXP_LOWEST_LENGTH', 3000, true);
           return;
         }
         if (this.weixin.httpKey && this.weixin.httpKey !== '' && this.weixin.httpKey.length < 8) {
-          Util.toast('SUB_MERCHANT.SIGN_KEY_ALP_LENGTH_CANNOT_LESS_EIGHT', 3000, true);
+          Util.toast('CHAN_MERCHANT.SIGN_KEY_ALP_LOWEST_LENGTH', 3000, true);
           return;
         }
         if (this.wxpUpdate) {
@@ -1251,12 +1251,12 @@
             return;
           }
           if (this.weixin.httpCert !== this.oldWxpHttpCert && this.weixin.httpCert.indexOf('*') !== -1) {
-            Util.toast('SUB_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
+            Util.toast('CHAN_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('weixin.httpCert', this.oldWxpHttpCert)
             return;
           }
           if (this.weixin.httpKey !== this.oldWxpHttpKey && this.weixin.httpKey.indexOf('*') !== -1) {
-            Util.toast('SUB_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
+            Util.toast('CHAN_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
             this.set('weixin.httpKey', this.oldWxpHttpKey)
             return;
           }
@@ -1266,18 +1266,18 @@
             return;
           }
           if (this.weixin.httpCert.indexOf('*') !== -1) {
-            Util.toast('SUB_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR', 3000, true);
+            Util.toast('CHAN_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
           if (this.weixin.httpKey.indexOf('*') !== -1) {
-            Util.toast('SUB_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR', 3000, true);
+            Util.toast('CHAN_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR', 3000, true);
             return;
           }
         }
         var acqFee = parseFloat(this.weixinRoute.acqFee),
           merFee = parseFloat(this.weixinRoute.merFee);
         if (isNaN(acqFee) || isNaN(merFee)) {
-          Util.toast('SUB_MERCHANT.FEE_IS_NUMBER', 3000, true);
+          Util.toast('CHAN_MERCHANT.FEE_IS_NUMBER', 3000, true);
           return;
         }
         // this.set('weixin.acqFee', acqFee);
@@ -1315,21 +1315,21 @@
       handleSaveRouterResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('保存路由信息失败:' + response.message, 3000);
+          Util.toast('ROUTE_POLICY.' + response.message, 3000,true);
           return;
         }
 
-        Util.toast(response.message, 1000);
+        Util.toast('ROUTE_POLICY.'+response.message, 1000,true);
       },
       // 保存渠道商户ajax请求响应事件
       handleSaveChannelMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('CHAN_MERCHANT.'+response.message, 3000,true);
           return;
         }
 
-        Util.toast(response.message, 1000);
+        Util.toast('CHAN_MERCHANT.'+response.message, 1000,true);
       },
       // 是否代理商模式的改变事件
       handleIsAgentChangeEvent: function() {
@@ -1381,14 +1381,14 @@
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN CERTIFICATE/.test(this.result) === false) {
-                Util.toast('SUB_MERCHANT.HTTP_CERT_FORMAT_ERROR', 3000, true);
+                Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR', 3000, true);
                 return;
               }
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
           } else {
-            Util.toast('SUB_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
+            Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
           }
         }
       },
@@ -1401,14 +1401,14 @@
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
-                Util.toast('SUB_MERCHANT.HTTP_KEY_FORMAT_ERROR', 3000, true);
+                Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR', 3000, true);
                 return;
               }
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
           } else {
-            Util.toast('SUB_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
+            Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
           }
         }
       },
@@ -1416,13 +1416,13 @@
       handleQueryAgentsResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('SUB_MERCHANT.LOAD_AGENT_LIST_ERROR', 3000, true);
+          Util.toast('CHAN_MERCHANT.LOAD_AGENT_LIST_ERROR', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
-          Util.toast('SUB_MERCHANT.NO_AGENT_DATA', 2000, true);
+          Util.toast('CHAN_MERCHANT.NO_AGENT_DATA', 2000, true);
           return;
         }
 
@@ -1440,14 +1440,14 @@
         this.set('subAgents', []);
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('SUB_MERCHANT.LOAD_SUB_AGENT_LIST_ERROR', 3000, true);
+          Util.toast('CHAN_MERCHANT.LOAD_SUB_AGENT_LIST_ERROR', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
           this.set('subAgent', {});
-          Util.toast('SUB_MERCHANT.NO_SUB_AGENT_DATA', 2000, true);
+          Util.toast('CHAN_MERCHANT.NO_SUB_AGENT_DATA', 2000, true);
           return;
         }
 
@@ -1479,14 +1479,14 @@
         this.set('groups', []);
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('SUB_MERCHANT.LOAD_GROUP_LIST_ERROR', 3000, true);
+          Util.toast('CHAN_MERCHANT.LOAD_GROUP_LIST_ERROR', 3000, true);
           return;
         }
 
         var pagination = response.data;
         if (pagination.count <= 0) {
           this.set('group', {});
-          Util.toast('SUB_MERCHANT.NO_GROUP_DATA', 2000, true);
+          Util.toast('CHAN_MERCHANT.NO_GROUP_DATA', 2000, true);
           return;
         }
         var groups = response.data.data.slice(0);
@@ -1516,7 +1516,7 @@
         this.set('merchant.signKey', generateMixed(32));
       },
       getPermission:function(value){
-          return 'MERCHANT.'+value;
+          return 'TRANS_TYPE.'+value;
       }
     });
   </script>
