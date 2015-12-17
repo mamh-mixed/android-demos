@@ -145,7 +145,16 @@ func (a *alipayOverseas) Reconciliation(date string) {
 			}
 			// 找到，说明是原订单成功下发起的取消
 			// 那么比较金额即可，手续费都重置为0
+			// 退回手续费
+			var payMerFee int64
 			for _, ts := range tss {
+				switch ts.Trans.TransType {
+				case model.PayTrans:
+					payMerFee = ts.MerFee
+				default:
+					// 退回手续费
+					ts.MerFee = payMerFee
+				}
 				ts.BlendType = MATCH
 				ts.InsFee = 0
 				ts.SettTime = time.Now().Format("2006-01-02 15:04:05")
