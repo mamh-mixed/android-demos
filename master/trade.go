@@ -161,6 +161,7 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 		MerName      string
 		OrderNum     string
 		TransAmt     string
+		TransCurr    string
 		MerFee       string
 		ChanCode     string
 		TransTime    string
@@ -172,7 +173,7 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 		Busicd       string
 		OrigOrderNum string
 		Remark       string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -246,6 +247,12 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 			// 交易金额
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(amt, floatFormat)
+			// 交易币种
+			cell = row.AddCell()
+			cell.Value = v.Currency
+			if v.Currency == "" {
+				cell.Value = "CNY"
+			}
 			// 商户手续费
 			cell = row.AddCell()
 			if v.TransType == model.PayTrans {
