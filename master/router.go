@@ -218,6 +218,7 @@ func sessionProcess(w http.ResponseWriter, r *http.Request) (session *model.Sess
 			return nil, err
 		}
 	}
+	log.Debugf("==================sessionId=%s", c.Value)
 	// 查询 session 是否过期，如果接近失效则给此 session 延期，如果已经过期则返回失败
 	session, err = mongo.SessionColl.Find(c.Value)
 	if err != nil {
