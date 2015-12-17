@@ -26,26 +26,22 @@ import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class ScanCodeView extends LinearLayout implements OnClickListener {
     private Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
             btn7, btn8, btn9, btnadd, btnpoint, btnsm, btnclear, btndelete,
             swh;
     private RadioButton btnzhifubao, btnweixin;
-    private EditText edt_input;
-    private TextView txt_output;
-    private boolean clear_flag = true;
-    private boolean point_flag = true;
-    private boolean add_flag = true;
-    private boolean switch_flag = true;
-    private boolean num_flag = true;
-    private double result = 0;
+    private EditText input;
+    private TextView output;
+    private boolean clearFlag = true;
+    private boolean pointFlag = true;
+    private boolean addFlag = true;
+    private boolean switchFlag = true;
+    private boolean numFlag = true;
     private String[] s = new String[100];
     private Context mContext;
-    private List<Item> items = new ArrayList<Item>();
 
     public ScanCodeView(Context context) {
         super(context);
@@ -58,12 +54,12 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     }
 
     public void clearValue() {
-        num_flag = true;
-        edt_input.setText("=0");
-        txt_output.setText("0");
-        add_flag = true;
-        point_flag = true;
-        clear_flag = true;
+        numFlag = true;
+        input.setText("=0");
+        output.setText("0");
+        addFlag = true;
+        pointFlag = true;
+        clearFlag = true;
     }
 
     private void initLayout() {
@@ -86,8 +82,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         btnclear = (Button) findViewById(R.id.btnclear);
         btndelete = (Button) findViewById(R.id.btndelete);
 
-        edt_input = (EditText) findViewById(R.id.edt_input);
-        txt_output = (TextView) findViewById(R.id.txt_output);
+        input = (EditText) findViewById(R.id.edt_input);
+        output = (TextView) findViewById(R.id.txt_output);
 
         btn0.setOnClickListener(this);
         btn1.setOnClickListener(this);
@@ -111,12 +107,12 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
             @Override
             public void onClick(View v) {
-                if (switch_flag) {
+                if (switchFlag) {
                     btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_create_code));
-                    switch_flag = false;
+                    switchFlag = false;
                 } else {
                     btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
-                    switch_flag = true;
+                    switchFlag = true;
                 }
 
             }
@@ -126,159 +122,159 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        String x = txt_output.getText().toString();
+        String outputStr = output.getText().toString();
         switch (v.getId()) {
             case R.id.btn0:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("0");
-                    add_flag = true;
+                    output.append("0");
+                    addFlag = true;
                     getResult();
                 }
                 break;
             case R.id.btn1:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("1");
+                    output.append("1");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn2:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("2");
+                    output.append("2");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn3:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("3");
+                    output.append("3");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn4:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("4");
+                    output.append("4");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn5:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("5");
+                    output.append("5");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn6:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("6");
+                    output.append("6");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn7:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("7");
+                    output.append("7");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btn8:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("8");
-                    add_flag = true;
+                    output.append("8");
+                    addFlag = true;
                     getResult();
                 }
                 break;
             case R.id.btn9:
-                if (num_flag) {
+                if (numFlag) {
                     clearzero();
-                    txt_output.append("9");
+                    output.append("9");
                     getResult();
-                    add_flag = true;
+                    addFlag = true;
                 }
                 break;
             case R.id.btnpoint:
-                String s1 = x.substring(x.lastIndexOf("+") + 1);
+                String s1 = outputStr.substring(outputStr.lastIndexOf("+") + 1);
                 if (s1.contains(".")) {
                     break;
                 }
 
-                if (x.contains(".")) {
-                    String k = x.substring(x.lastIndexOf("."));
+                if (outputStr.contains(".")) {
+                    String k = outputStr.substring(outputStr.lastIndexOf("."));
                     if (k.equals(".")) {
                         return;
                     } else {
                         clearzero(".");
-                        pointFalg(".");
+                        pointFlag(".");
                     }
                 } else {
                     clearzero(".");
-                    pointFalg(".");
+                    pointFlag(".");
                 }
                 break;
             case R.id.btnadd:
-                if (x.contains("+")) {
-                    String k = x.substring(x.lastIndexOf("+"));
+                if (outputStr.contains("+")) {
+                    String k = outputStr.substring(outputStr.lastIndexOf("+"));
                     if (k.equals("+")) {
                         return;
                     } else {
                         clearzero("+");
-                        add_falg("+");
+                        addFlag("+");
                     }
                 } else {
                     clearzero("+");
-                    add_falg("+");
+                    addFlag("+");
                 }
                 break;
             case R.id.btnclear:
-                num_flag = true;
-                edt_input.setText("=0");
-                txt_output.setText("0");
-                add_flag = true;
-                point_flag = true;
-                clear_flag = true;
+                numFlag = true;
+                input.setText("=0");
+                output.setText("0");
+                addFlag = true;
+                pointFlag = true;
+                clearFlag = true;
                 break;
             case R.id.btndelete:
-                String r = edt_input.getText().toString();
-                add_flag = true;
-                if (x.contains(".")) {
-                    String k = x.substring(x.lastIndexOf("."));
+                String r = input.getText().toString();
+                addFlag = true;
+                if (outputStr.contains(".")) {
+                    String k = outputStr.substring(outputStr.lastIndexOf("."));
                     if (k.equals(".")) {
-                        point_flag = true;
+                        pointFlag = true;
                     }
                 }
-                if (x != null && !x.equals("")) {
-                    String k = x.substring(x.lastIndexOf("+") + 1);
-                    txt_output.setText(x.substring(0, x.length() - 1));
-                    if (x.contains("+")) {
+                if (outputStr != null && !outputStr.equals("")) {
+                    String k = outputStr.substring(outputStr.lastIndexOf("+") + 1);
+                    output.setText(outputStr.substring(0, outputStr.length() - 1));
+                    if (outputStr.contains("+")) {
                         if (k.equals("+")) {
-                            add_flag = false;
+                            addFlag = false;
                         } else {
-                            add_flag = true;
+                            addFlag = true;
                         }
                     } else {
-                        add_flag = true;
+                        addFlag = true;
                     }
                 }
-                addcheck();
+                addCheck();
                 break;
             case R.id.btnzhifubao:
                 break;
             case R.id.btnweixin:
                 break;
             case R.id.btnsm:
-                final String sumString = edt_input.getText().toString().substring(1);//传递时候用string类型
+                final String sumString = input.getText().toString().substring(1);//传递时候用string类型
                 final double sum = Double.parseDouble(sumString);//比较大小用double类型
                 if (sum <= 0) {
                     //"金额不能为零!"
@@ -314,7 +310,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                 } else {
                                     chcd = "ALP";
                                 }
-                                if (switch_flag) {
+                                if (switchFlag) {
                                     Intent intent = new Intent(mContext, CaptureActivity.class);
                                     intent.putExtra("chcd", chcd);
                                     intent.putExtra("total", sumString);
@@ -345,7 +341,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                         chcd = "ALP";
                     }
 
-                    if (switch_flag) {
+                    if (switchFlag) {
                         Intent intent = new Intent(mContext, CaptureActivity.class);
                         intent.putExtra("chcd", chcd);
                         intent.putExtra("total", sumString);
@@ -366,13 +362,13 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     public void getResult() {
         double result = 0;
-        String x = txt_output.getText().toString();
+        String x = output.getText().toString();
         String t = "";
         int i = 0;
 
         if (x.indexOf("+") == -1) {
             result = Double.parseDouble(x);
-            edt_input.setText("=" + String.format("%.2f", result));
+            input.setText("=" + String.format("%.2f", result));
         } else {
             while (x.contains("+")) {
                 t = x.substring(0, x.indexOf("+"));
@@ -385,7 +381,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             for (int c = 0; c < i; c++) {
                 result += Double.parseDouble(s[c]);
             }
-            edt_input.setText("=" + String.format("%.2f", result));
+            input.setText("=" + String.format("%.2f", result));
         }
 
 
@@ -393,9 +389,9 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             // "金额过大!"
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
             Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-            num_flag = false;
+            numFlag = false;
         } else {
-            num_flag = true;
+            numFlag = true;
         }
 
     }
@@ -417,46 +413,46 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         for (int c = 0; c < i; c++) {
             result += Double.parseDouble(s[c]);
         }
-        edt_input.setText("=" + String.format("%.2f", result));
+        input.setText("=" + String.format("%.2f", result));
 
         if (result > 99999999) {
             Toast.makeText(mContext, "金额过大!", Toast.LENGTH_SHORT).show();
-            num_flag = false;
+            numFlag = false;
         } else {
-            num_flag = true;
+            numFlag = true;
         }
     }
 
     public void clearzero() {
-        if (clear_flag) {
-            txt_output.setText("");
-            clear_flag = false;
+        if (clearFlag) {
+            output.setText("");
+            clearFlag = false;
         }
     }
 
     public void clearzero(String z) {
-        clear_flag = false;
+        clearFlag = false;
     }
 
-    public void add_falg(String q) {
-        if (add_flag) {
-            String x = txt_output.getText().toString();
+    public void addFlag(String q) {
+        if (addFlag) {
+            String x = output.getText().toString();
             if (x.contains(".")) {
                 String k = x.substring(x.lastIndexOf("."));
                 if (k.equals(".")) {
-                    txt_output.setText(x.substring(0, x.length() - 1));
-                    txt_output.append(q);
-                    add_flag = false;
-                    point_flag = true;
+                    output.setText(x.substring(0, x.length() - 1));
+                    output.append(q);
+                    addFlag = false;
+                    pointFlag = true;
                 } else {
-                    txt_output.append(q);
-                    add_flag = false;
-                    point_flag = true;
+                    output.append(q);
+                    addFlag = false;
+                    pointFlag = true;
                 }
             } else {
-                txt_output.append(q);
-                add_flag = false;
-                point_flag = true;
+                output.append(q);
+                addFlag = false;
+                pointFlag = true;
             }
         } else {
             return;
@@ -464,24 +460,24 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     }
 
-    public void pointFalg(String q) {
-        if (point_flag) {
-            String x = txt_output.getText().toString();
+    public void pointFlag(String q) {
+        if (pointFlag) {
+            String x = output.getText().toString();
             if (x.contains("+")) {
                 String k = x.substring(x.lastIndexOf("+"));
                 if (k.equals("+")) {
-                    txt_output.append("0" + q);
-                    point_flag = false;
-                    add_flag = true;
+                    output.append("0" + q);
+                    pointFlag = false;
+                    addFlag = true;
                 } else {
-                    txt_output.append(q);
-                    point_flag = false;
-                    add_flag = true;
+                    output.append(q);
+                    pointFlag = false;
+                    addFlag = true;
                 }
             } else {
-                txt_output.append(q);
-                point_flag = false;
-                add_flag = true;
+                output.append(q);
+                pointFlag = false;
+                addFlag = true;
             }
         } else {
             return;
@@ -489,8 +485,8 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
 
     }
 
-    public void addcheck() {
-        String x = txt_output.getText().toString();
+    public void addCheck() {
+        String x = output.getText().toString();
         if (x.contains("+")) {
             String k = x.substring(x.lastIndexOf("+"));
             if (k.equals("+")) {
@@ -500,23 +496,13 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
             }
             getResult();
         } else if (x.length() == 0) {
-            txt_output.setText(0 + "");
-            edt_input.setText("=0");
-            clear_flag = true;
+            output.setText(0 + "");
+            input.setText("=0");
+            clearFlag = true;
         } else {
             getResult(x);
         }
 
-    }
-
-    public class Item {
-        public double value = 0;
-        public int type = 0;
-
-        public Item(double value, int type) {
-            this.value = value;
-            this.type = type;
-        }
     }
 
 }
