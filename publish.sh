@@ -2,7 +2,7 @@
 
 set -e
 
-prog="quickpay"
+prog="quickpay.exe"
 
 shortcut=("dev" "test" "app1" "app2")
 envs=("develop" "testing" "product" "product")
@@ -58,28 +58,28 @@ function main() {
     gulpPackage $version
     echo
 
-    workdir="/opt/$prog"
+    # workdir="/opt/$prog"
 
     # 发布
-    echo ">>> Rsync executable program..."
-    deploy $host $workdir $version
-    echo
+    # echo ">>> Rsync executable program..."
+    # deploy $host $workdir $version
+    # echo
     # 重启
-    echo ">>> Restart program and tail log..."
-    restart $host $workdir $version
-    echo
+    # echo ">>> Restart program and tail log..."
+    # restart $host $workdir $version
+    # echo
 
-    rm -rf distrib/
-    echo ">>> Publish done."
+    # rm -rf distrib/
+    # echo ">>> Publish done."
 }
 
 function goBuild() {
     prog=$1
     env=$2
     echo "Running go generate..."
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go generate
+    CGO_ENABLED=0 GOOS=windows GOARCH=386 go generate
     echo "Building $prog..."
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o distrib/"$prog" main.go
+    CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -v -o distrib/"$prog" main.go
     cp -r config distrib/
     mkdir -p distrib/app/material
     cp -r app/material/ distrib/app/material

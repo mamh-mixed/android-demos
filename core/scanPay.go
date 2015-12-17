@@ -1087,6 +1087,11 @@ func findAndLockTrans(merId, orderNum string) (orig *model.Trans, err error) {
 	return
 }
 
+// 动态货币装换
+func doDcc(req *model.ScanPayRequest) {
+
+}
+
 // updateTrans 更新交易信息
 func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	// 根据请求结果更新

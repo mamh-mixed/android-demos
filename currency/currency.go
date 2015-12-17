@@ -34,6 +34,7 @@ func initAvailableCurrency() {
 	CurMap["EUR"] = Cur{"EUR", 2}
 	CurMap["KRW"] = Cur{"KRW", 0}
 	CurMap["CNY"] = Cur{"CNY", 2}
+	CurMap["TWD"] = Cur{"TWD", 2}
 }
 
 // Get 得到一种币种

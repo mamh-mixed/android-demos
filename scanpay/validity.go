@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	minTxamt = 0
+	minTxamt = 50 // 新台币50分
 	maxTxamt = 1e10 - 1
 )
 
