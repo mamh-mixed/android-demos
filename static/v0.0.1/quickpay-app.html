@@ -78,6 +78,10 @@
             type: Object,
             value: {},
           },
+          language: {
+            type: String,
+            observer: '_watchLanguageChanged'
+          }
         },
         listeners: {
           'i18n-language-change': 'handleI18nLanguageChangeEvent',
@@ -275,6 +279,10 @@
               var msgId = item.getAttribute('data-msg-id');
               item.setAttribute('locale', i18nMsg.getMsg(msgId));
             }
+            if (item.hasAttribute('locale-msg-id')) {
+              var msgId = item.getAttribute('locale-msg-id');
+              item.setAttribute('locale', i18nMsg.getMsg(msgId));
+            }
           }
 
           var xSelects = document.querySelectorAll('x-select');
@@ -314,6 +322,11 @@
             return;
           }
           Util.showLoginDialog();
+        },
+        _watchLanguageChanged: function(newVal) {
+          if (newVal && newVal !== '') {
+            I18nMsg.lang = newVal;
+          }
         }
       });
     })();
