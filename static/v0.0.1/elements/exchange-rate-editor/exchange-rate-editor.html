@@ -127,6 +127,17 @@
             return;
           }
 
+          if (this.item.localCurrency === this.item.targetCurrency) {
+            Util.toast('EXCHANGE_RATE.TOAST.TWO_CURRENCY_CAN_NOT_CONSISTENT', 2500, true);
+            return;
+          }
+
+          var currencyPattern = /^[A-Z]{3}$/;
+          if (!(currencyPattern.test(this.item.localCurrency) && currencyPattern.test(this.item.targetCurrency))) {
+            Util.toast('EXCHANGE_RATE.TOAST.ERROR_CURRENCY_CODE', 2500, true);
+            return;
+          }
+
           var rate = parseFloat(this.item.rate);
           if (isNaN(rate)) {
             Util.toast('EXCHANGE_RATE.TOAST.NAN_ERROR', 2500, true);
