@@ -8,6 +8,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// 录入、复核汇率
 type exchangeRateManageCollection struct {
 	name string
 }
@@ -32,12 +33,12 @@ func (c *exchangeRateManageCollection) PaginationFind(cond *model.ExchangeRateMa
 		match["rate"] = cond.Rate
 	}
 
-	if cond.EnforceUser != "" {
-		match["enforceUser"] = cond.EnforceUser
+	if cond.CheckedUser != "" {
+		match["checkedUser"] = cond.CheckedUser
 	}
 
-	if cond.IsEnforced {
-		match["isEnforced"] = cond.IsEnforced
+	if cond.Status != "" {
+		match["status"] = cond.Status
 	}
 
 	if cond.CreateTime != "" {
@@ -47,10 +48,10 @@ func (c *exchangeRateManageCollection) PaginationFind(cond *model.ExchangeRateMa
 		}
 	}
 
-	if cond.ActualEnforcementTime != "" {
-		match["actualEnforcementTime"] = bson.M{
-			"$gt":  cond.ActualEnforcementTime,
-			"$lte": util.NextDay(cond.ActualEnforcementTime),
+	if cond.PlanEnforcementTime != "" {
+		match["planEnforcementTime"] = bson.M{
+			"$gt":  cond.PlanEnforcementTime,
+			"$lte": util.NextDay(cond.PlanEnforcementTime),
 		}
 	}
 

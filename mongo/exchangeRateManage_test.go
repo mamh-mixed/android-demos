@@ -12,7 +12,7 @@ func TestExchangeRatePaginationFind(t *testing.T) {
 	cond := &model.ExchangeRateManage{
 		LocalCurrency:  "JPY",
 		TargetCurrency: "CNY",
-		IsEnforced:     true,
+		Status:         model.ER_CHECKED,
 	}
 
 	size, page := 20, 1

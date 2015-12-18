@@ -99,17 +99,17 @@
             <div class="th right">
               <i18n-msg msgid="EXCHANGE_RATE.RATE">汇率</i18n-msg>
             </div>
-            <div class="th">
-              <i18n-msg msgid="EXCHANGE_RATE.CREATE_TIME">录入时间</i18n-msg>
-            </div>
             <div class="th left">
               <i18n-msg msgid="EXCHANGE_RATE.CREATE_USER">录入用户</i18n-msg>
+            </div>
+            <div class="th">
+              <i18n-msg msgid="EXCHANGE_RATE.CREATE_TIME">录入时间</i18n-msg>
             </div>
             <div class="th">
               <i18n-msg msgid="EXCHANGE_RATE.ENFORCE_TIME">生效时间</i18n-msg </div>
             </div>
             <div class="th left">
-              <i18n-msg msgid="EXCHANGE_RATE.ENFORCE_USER">生效用户</i18n-msg </div>
+              <i18n-msg msgid="EXCHANGE_RATE.ENFORCE_USER">复核用户</i18n-msg </div>
             </div>
             <div class="th">
               <i18n-msg msgid="EXCHANGE_RATE.STATUS">状态</i18n-msg </div>
@@ -129,17 +129,20 @@
                 <span>{{item.targetCurrency}}</span>
               </div>
               <div class="td right">{{item.rate}}</div>
-              <div class="td center">{{item.createTime}}</div>
               <div class="td">{{item.createUser}}</div>
-              <div class="td center">{{ _makeUpEnforcementTime(item)}}</div>
-              <div class="td">{{item.enforceUser}}</div>
+              <div class="td center">{{item.createTime}}</div>
+              <div class="td center">{{item.planEnforcementTime}}</div>
+              <div class="td">{{item.checkedUser}}</div>
               <div class="td center">
-                <template is="dom-if" if="{{item.isEnforced}}">
-                  <i18n-msg class="green" msgid="SCANPAY_TRADE_LIST.ALREADY_ENFORCED">已生效</i18n-msg>
+                <template is="dom-if" if="{{_computedStatus(item.status, 'CHECKED')}}">
+                  <i18n-msg class="primary" msgid="EXCHANGE_RATE.ALREADY_CHECKED">已审核</i18n-msg>
                 </template>
-                <template is="dom-if" if="{{!item.isEnforced}}">
-                  <i18n-msg class="primary" msgid="SCANPAY_TRADE_LIST.NOT_ENFORCED">未生效</i18n-msg>
+                <template is="dom-if" if="{{_computedStatus(item.status, 'UNCHECKED')}}">
+                  <i18n-msg class="yellow" msgid="EXCHANGE_RATE.NOT_CHECKED">未审核</i18n-msg>
                   <iron-icon icon="spellcheck" on-tap="handleRateEnforcedChecked" item="{{item}}" index="{{index}}" hidden$="{{!isAdmin}}"></iron-icon>
+                </template>
+                <template is="dom-if" if="{{_computedStatus(item.status, 'ACTIVATED')}}">
+                  <i18n-msg class="green" msgid="EXCHANGE_RATE.ALREADY_ACTIVATED">已生效</i18n-msg>
                 </template>
               </div>
             </div>
@@ -254,6 +257,12 @@
               case 'ACTIVATE_FAIL':
                 Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_FAIL', 2500, true);
                 break;
+              case 'ENFORCEMENT_TIME_OUTDATE':
+                Util.toast('EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE', 2500, true);
+                break;
+              case 'UNSUPPORT_TIME_FORMAT':
+                Util.toast('TOAST.INVALID_DATE_TIME_FORMAT', 2500, true);
+                break;
               default:
                 Util.toast('TOAST.SYSTEM_ERROR', 2500, true);
             }
@@ -273,7 +282,11 @@
         },
         // 新代理保存成功事件，刷新列表
         handleSaveSuccessEvent: function(e) {
-          this.unshift('list', e.detail);
+          if (this.list && this.list.length > 0) {
+            this.unshift('list', e.detail);
+          } else {
+            this.handleQueryTapped();
+          }
         },
         addOneFilter: function(index) {
           return index + 1;
@@ -299,11 +312,8 @@
         showEnforceTimeDialog: function() {
           this.$.enforceTimeDialog.toggle();
         },
-        _makeUpEnforcementTime: function(item) {
-          if (item.isEnforced) {
-            return item.actualEnforcementTime;
-          }
-          return item.planEnforcementTime;
+        _computedStatus: function(key, target) {
+          return key === target;
         },
         // 当前用户查询的响应事件
         handleQueryCurrentUserResponse: function(e) {

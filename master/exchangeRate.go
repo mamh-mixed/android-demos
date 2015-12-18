@@ -26,12 +26,12 @@ func excratQueryHandle(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.FormValue("page"))
 
 	cond := &model.ExchangeRateManage{
-		LocalCurrency:         localCurr,
-		TargetCurrency:        targetCurr,
-		CreateTime:            createTime,
-		ActualEnforcementTime: enforcementTime,
-		EnforceUser:           enforceUser,
-		Rate:                  rate,
+		LocalCurrency:       localCurr,
+		TargetCurrency:      targetCurr,
+		CreateTime:          createTime,
+		PlanEnforcementTime: enforcementTime,
+		CheckedUser:         enforceUser,
+		Rate:                rate,
 	}
 
 	ret := ExcRat.Find(cond, size, page)
@@ -247,34 +247,48 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 		return result
 	}
 
-	// 校验阈值
-	checkCond := &model.ExchangeRateManage{
-		LocalCurrency:  t.LocalCurrency,
-		TargetCurrency: t.TargetCurrency,
-		IsEnforced:     true,
-	}
-
-	log.Debugf("************ checkCond is %#v", checkCond)
-
-	olds, _, err := mongo.ExchangeRateManageColl.PaginationFind(checkCond, 10, 1)
+	// 校验日期时间格式
+	planTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.PlanEnforcementTime, time.Local)
 	if err != nil {
-		log.Errorf("FIND OLD RATES(%s<=>%s) ERROR: %s", checkCond.LocalCurrency, checkCond.TargetCurrency, err)
-		return model.NewResultBody(2, "SAVE_RATE_FAIL")
+		log.Errorf("Unsupport time format: %s.Time format must be 'YYYY-MM-DD hh:mm:ss'", t.PlanEnforcementTime)
+		return model.NewResultBody(2, "UNSUPPORT_TIME_FORMAT")
 	}
 
-	if len(olds) > 0 {
+	// 生效时点必须在未来
+	if planTime.Before(time.Now()) {
+		log.Errorf("Exchange rate enforcement time must be in the future.But now(%s) is %s", time.Now(), planTime)
+		return model.NewResultBody(2, "ENFORCEMENT_TIME_OUTDATE")
+	}
+
+	// 查询当前生效的汇率
+	currPair := t.LocalCurrency + "<=>" + t.TargetCurrency
+
+	enforceRate, err := mongo.ExchangeRateColl.FindOne(currPair)
+	// 新增汇率是否已经生效
+	rateExist := true
+	if err != nil {
+		if err.Error() != "not found" {
+			log.Errorf("FIND OLD RATES(%s) ERROR: %s", currPair, err)
+			return model.NewResultBody(2, "SAVE_RATE_FAIL")
+		}
+
+		rateExist = false
+	}
+
+	// 新录入的汇率关联的币种已经存在已激活汇率中，校验阈值
+	if rateExist {
 		// 校验是否超过阈值
-		lastRate := olds[0].Rate
 		sysConst, err := mongo.SysConstColl.Find()
 		if err != nil {
 			log.Errorf("FIND SYSTEM CONSTANT ERROR: %s", err)
 			return model.NewResultBody(2, "SAVE_RATE_FAIL")
 		}
 
-		d2dRatio := t.Rate / lastRate
-		log.Debugf("**************%f=%f/%f********", d2dRatio, t.Rate, lastRate)
+		// 环比值
+		d2dRatio := t.Rate / enforceRate.Rate
+		log.Debugf("**************%f=%f/%f********", d2dRatio, t.Rate, enforceRate.Rate)
 		if d2dRatio < sysConst.RateFloatingLower || d2dRatio > sysConst.RateFloatingUpper {
-			log.Errorf("D2D_RATIO(%f=%f/%f) OUT OF ALLOW RANGE[%f, %f]", d2dRatio, t.Rate, lastRate, sysConst.RateFloatingLower, sysConst.RateFloatingUpper)
+			log.Errorf("D2D_RATIO(%f=%f/%f) OUT OF ALLOW RANGE[%f, %f]", d2dRatio, t.Rate, enforceRate.Rate, sysConst.RateFloatingLower, sysConst.RateFloatingUpper)
 			return model.NewResultBody(3, "OUT_OF_RANGE")
 		}
 	}
@@ -283,7 +297,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 	t.CreateUser = username
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	t.UpdateUser = username
-
+	t.Status = model.ER_UNCHECKED
 	t.EId = util.SerialNumber()
 
 	err = mongo.ExchangeRateManageColl.Add(t)
@@ -300,7 +314,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 	return result
 }
 
-// FindOne 查找一个
+// Activate 汇率审核通过，建立定时任务让汇率生效
 func (e *exchangeRate) Activate(data []byte, username string) (result *model.ResultBody) {
 	t := new(model.ExchangeRateManage)
 	err := json.Unmarshal(data, t)
@@ -319,24 +333,67 @@ func (e *exchangeRate) Activate(data []byte, username string) (result *model.Res
 		return result
 	}
 
+	// 查找要审核的汇率记录
 	rate, err := mongo.ExchangeRateManageColl.FindOne(t.EId)
 	if err != nil {
-		log.Errorf("查找汇率（%s）失败： %s", t.EId, err)
+		log.Errorf("Find exchange Rate（%s）FAIL： %s", t.EId, err)
 		return model.NewResultBody(401, "ACTIVATE_FAIL")
 	}
 
-	rate.IsEnforced = true
-	rate.EnforceUser = username
+	// 计划生效时点必须在将来
+	planTime, err := time.ParseInLocation("2006-01-02 15:04:05", rate.PlanEnforcementTime, time.Local)
+	if err != nil {
+		log.Errorf("Unsupport time format: %s format must be 'YYYY-MM-DD hh:mm:ss'", rate.PlanEnforcementTime)
+		return model.NewResultBody(2, "UNSUPPORT_TIME_FORMAT")
+	}
+
+	// 生效时点必须在未来
+	if planTime.Before(time.Now()) {
+		log.Errorf("Exchange rate enforcement time must be in the future.But now(%s) is %s", time.Now(), planTime)
+		return model.NewResultBody(2, "ENFORCEMENT_TIME_OUTDATE")
+	}
+
+	// 更新汇率管理表中的记录
+	rate.Status = model.ER_CHECKED
+	rate.CheckedUser = username
+	rate.CheckedTime = time.Now().Format("2006-01-02 15:04:05")
 	rate.UpdateUser = username
 	rate.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
-	rate.ActualEnforcementTime = time.Now().Format("2006-01-02 15:04:05")
-
 	err = mongo.ExchangeRateManageColl.Update(rate)
 	if err != nil {
-		log.Errorf("更新汇率（%s）失败： %s", t.EId, err)
+		log.Errorf("Update exchange rate（%s）fail： %s", t.EId, err)
 		return model.NewResultBody(401, "ACTIVATE_FAIL")
 	}
 
+	// 定时任务，到时候激活。既把当前记录存储到汇率表中
+	d := planTime.Sub(time.Now())
+	go func() {
+		log.Infof("The rate of %s<=>%s will be activate after %s", rate.LocalCurrency, rate.TargetCurrency, d)
+		time.AfterFunc(d, func() {
+			log.Infof("******Exchange rate check pass: %#v*****", rate)
+			// 待存储数据库的已激活的数据
+			acRt := &model.ExchangeRate{
+				CurrencyPair:    rate.LocalCurrency + "<=>" + rate.TargetCurrency,
+				Rate:            rate.Rate,
+				EnforcementTime: time.Now().Format("2006-01-02 15:04:05"),
+				EnforceUser:     rate.CheckedUser,
+			}
+
+			err = mongo.ExchangeRateColl.Upsert(acRt)
+			if err != nil {
+				log.Errorf("Activate exchange rate when upsert into database error: %s", err)
+				// TODO 汇率激活失败应该有个处理机制
+			} else {
+				rate.Status = model.ER_ACTIVATED
+				rate.UpdateUser = acRt.EnforceUser
+				rate.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+				err = mongo.ExchangeRateManageColl.Update(rate)
+				if err != nil {
+					// TODO 汇率更新失败应该有个处理机制
+				}
+			}
+		})
+	}()
 	result = &model.ResultBody{
 		Status:  0,
 		Message: "ACTIVATE_SUCCESS",
