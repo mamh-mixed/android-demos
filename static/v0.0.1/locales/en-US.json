@@ -1691,6 +1691,14 @@
     "description": "查询汇率环比值浮动有效范围失败",
     "message": "EN查询汇率环比值浮动有效范围失败"
   },
+  "EXCHANGE_RATE.TOAST.TWO_CURRENCY_CAN_NOT_CONSISTENT": {
+    "description": "基准币种和目标币种不能相同",
+    "message": "EN基准币种和目标币种不能相同"
+  },
+  "EXCHANGE_RATE.TOAST.ERROR_CURRENCY_CODE": {
+    "description": "币种代码错误，应该三位大写英文字符",
+    "message": "EN不合法的币种代码"
+  },
   "TOAST.JSON_RESOLVE_FAIL": {
     "description": "JSON 解析失败",
     "message": "ENJSON 解析失败"

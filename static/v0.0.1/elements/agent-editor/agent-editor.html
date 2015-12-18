@@ -64,7 +64,7 @@
       <paper-dialog-scrollable>
         <div class="row">
           <!-- 这里的paperInput不能设置disabled，否则在火狐下会报错。 more info： https://github.com/PolymerElements/iron-input/issues/47 20151128-->
-          <paper-input label="代理代码" value="[[agent.agentCode]]" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
+          <paper-input label="代理代码" value="[[agent.agentCode]]" data-msg-id="TRADE_DETAIL.AGENT_NO" readonly></paper-input>
         </div>
         <div class="row">
           <paper-input label="代理名称" value="{{agent.agentName::input}}" data-msg-id="SCANPAY_TRADE_STATS.AGENT_NAME"></paper-input>
