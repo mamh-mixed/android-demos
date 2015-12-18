@@ -102,9 +102,9 @@
         <paper-tab>
           <i18n-msg msgid="MERCHANT_INPUT.TAB_WXP">微信</i18n-msg>
         </paper-tab>
-        <paper-tab>
+        <!-- <paper-tab>
           <i18n-msg msgid="MERCHANT_INPUT.TAB_ULIVE">优方</i18n-msg>
-        </paper-tab>
+        </paper-tab> -->
       </paper-tabs>
       <paper-dialog-scrollable>
         <iron-pages selected="{{idx}}">
@@ -378,7 +378,7 @@
               </dl>
             </paper-dialog-scrollable>
           </section>
-          <section alias="ulive">
+          <!-- <section alias="ulive">
             <paper-dialog-scrollable>
               <dl id="ulive">
                 <dt>
@@ -399,7 +399,7 @@
                 <dd>{{ulive.terminalId}}</dd>
               </dl>
             </paper-dialog-scrollable>
-          </section>
+          </section> -->
       </paper-dialog-scrollable>
       <div class="buttons layout center">
         <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">
@@ -466,19 +466,21 @@
           }, {
             key: 'CANC',
             value: 'TRANS_TYPE.CANC'
-          }, {
-            key: 'VERI',
-            value: 'TRANS_TYPE.VERI'
-          }, {
-            key: 'CRVE',
-            value: 'TRANS_TYPE.CRVE'
-          }, {
-            key: 'QUVE',
-            value: 'TRANS_TYPE.QUVE'
-          }, {
-            key: 'CAVE',
-            value: 'TRANS_TYPE.CAVE'
-          }]
+          }
+        //   , {
+        //     key: 'VERI',
+        //     value: 'TRANS_TYPE.VERI'
+        //   }, {
+        //     key: 'CRVE',
+        //     value: 'TRANS_TYPE.CRVE'
+        //   }, {
+        //     key: 'QUVE',
+        //     value: 'TRANS_TYPE.QUVE'
+        //   }, {
+        //     key: 'CAVE',
+        //     value: 'TRANS_TYPE.CAVE'
+        //   }
+      ]
         },
         item: Object,
         merId: String,
