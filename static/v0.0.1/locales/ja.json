@@ -1219,7 +1219,7 @@
     "description": "选择文件",
     "message": "JA选择文件"
   },
-  "BUTTON.CreateDate": {
+  "BUTTON.CREATE_DATE": {
     "description": "创建日期",
     "message": "JA创建日期"
   },
@@ -1558,5 +1558,29 @@
   "SCANPAY_TRADE_TRANSFER_REPORT.TITLE": {
     "description": "划款报表下载",
     "message": "JA划款报表下载"
+  },
+  "TRADE_MESSAGE.MERCHANT": {
+    "description": "商户",
+    "message": "JA商户"
+  },
+  "TRADE_MESSAGE.CHANNEL": {
+    "description": "渠道",
+    "message": "JA渠道"
+  },
+  "TRADE_MESSAGE.CHANNEL_TO_CLOUD_CASHIER_ASY": {
+    "description": "渠道 ==> 云收银 （异步通知）",
+    "message": "JA渠道 ==> 云收银 （异步通知）"
+  },
+  "TRADE_MESSAGE.TO_CLOUD_CASHIER": {
+    "description": " ==> 云收银",
+    "message": "JA ==> 云收银"
+  },
+  "TRADE_MESSAGE.CLOUD_CASHIER_TO": {
+    "description": "云收银 ==> ",
+    "message": "JA云收银 ==> "
+  },
+  "TRADE_MESSAGE.TRADE_MESSAGE_TITLE": {
+    "description": "交易报文",
+    "message": "JA交易报文"
   }
 }

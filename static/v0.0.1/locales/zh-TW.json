@@ -1214,5 +1214,373 @@
   "TRANS_TYPE.CAVE": {
     "description": "卡券撤销",
     "message": "卡券撤銷"
+  },
+  "BUTTON.PICK_FILE": {
+    "description": "选择文件",
+    "message": "選擇檔案"
+  },
+  "BUTTON.CREATE_DATE": {
+    "description": "创建日期",
+    "message": "創建日期"
+  },
+  "MERCHANT.SIGN_CHECK": {
+    "description": "开启验签",
+    "message": "開啟驗簽"
+  },
+  "BUTTON.EXPORT": {
+    "description": "导出",
+    "message": "匯出"
+  },
+  "MERCHANT.UNIQUEID": {
+    "description": "唯一码",
+    "message": "唯一碼"
+  },
+  "MERCHANT.BILL_URL": {
+    "description": "账单URL",
+    "message": "帳單URL"
+  },
+  "MERCHANT.PAY_URL": {
+    "description": "支付URL",
+    "message": "支付URL"
+  },
+  "CHAN_MERCHANT.CHAN_CODE": {
+    "description": "渠道代码",
+    "message": "通路程式碼"
+  },
+  "MERCHANT.IF_DELETE_MERCHANT": {
+    "description": "您确定要删除这个门店吗?",
+    "message": "您確定要删除這個門店嗎?"
+  },
+  "BUTTON.VIEW_ROUTE": {
+    "description": "查看路由",
+    "message": "查看路由"
+  },
+  "MERCHANT.YES": {
+    "description": "是",
+    "message": "是"
+  },
+  "MERCHANT.NO": {
+    "description": "否",
+    "message": "否"
+  },
+  "CHAN_MERCHANT.VIEW_CHAN_MERCHANT": {
+    "description": "查看渠道商户信息",
+    "message": "查看通路商戶資訊"
+  },
+  "CHAN_MERCHANT.IF_CHAN_MERCHANT": {
+    "description": "您确定要删除这个商户吗?",
+    "message": "您確定要删除這個商戶嗎?"
+  },
+  "CHANNEL.ULIVE": {
+    "description": "优方渠道",
+    "message": "優方"
+  },
+  "CHAN_MERCHANT.TOAST.SELECT_CHANNEL": {
+    "description": "请选择渠道",
+    "message": "請選擇通路"
+  },
+  "CHAN_MERCHANT.TOAST.HTTP_KEY_LOWEST_LENGTH": {
+    "description": "HTTP密钥长度不能小于8位",
+    "message": "HTTP金鑰長度不能小於8比特"
+  },
+  "ROUTE_POLICY.CHAN_MER_ID": {
+    "description": "渠道商户代码",
+    "message": "通路商戶程式碼"
+  },
+  "ROUTE_POLICY.CARD_BRAND": {
+    "description": "卡品牌",
+    "message": "卡品牌"
+  },
+  "CARD_BRAND.CUP": {
+    "description": "银联国内卡",
+    "message": "銀聯國內卡"
+  },
+  "CARD_BRAND.UPI": {
+    "description": "银联国际卡",
+    "message": "銀聯國際卡"
+  },
+  "CARD_BRAND.VIS": {
+    "description": "VISA 卡",
+    "message": "VISA 卡"
+  },
+  "CARD_BRAND.MCC": {
+    "description": "万事达卡",
+    "message": "萬事達卡"
+  },
+  "CARD_BRAND.JCB": {
+    "description": "JCB 卡",
+    "message": "JCB 卡"
+  },
+  "CARD_BRAND.ALP": {
+    "description": "支付宝",
+    "message": "支付寶"
+  },
+  "CARD_BRAND.WXP": {
+    "description": "微信",
+    "message": "微信"
+  },
+  "CARD_BRAND.ULIVE": {
+    "description": "优方",
+    "message": "優方"
+  },
+  "ROUTE_POLICY.DELETE_ROUTE_PILICY": {
+    "description": "删除路由策略",
+    "message": "删除路由策略"
+  },
+  "ROUTE_POLICY.IF_DELETE_ROUTE_PILICY": {
+    "description": "是否删除此路由策略?",
+    "message": "是否删除此路由策略?"
+  },
+  "MERCHANT.JSON_ERROR": {
+    "description": "JSON解析失败",
+    "message": "JSON解析失敗"
+  },
+  "MERCHANT.REQUIRED_FILED_NOT_BE_EMPTY": {
+    "description": "必填项不能为空",
+    "message": "必填項不能為空"
+  },
+  "MERCHANT.SELECT_ERROR": {
+    "description": "查询失败",
+    "message": "査詢失敗"
+  },
+  "MERCHANT.MER_ID_EXIST": {
+    "description": "商户代码已存在",
+    "message": "商戶程式碼已存在"
+  },
+  "MERCHANT.ERROR": {
+    "description": "错误",
+    "message": "錯誤"
+  },
+  "MERCHANT.CREATE_MERCHANT_SUCCESS": {
+    "description": "创建门店成功",
+    "message": "創建門店成功"
+  },
+  "MERCHANT.UPDATE_MERCHANT_SUCCESS": {
+    "description": "修改门店成功",
+    "message": "修改門店成功"
+  },
+  "MERCHANT.DELETE_MERCHANT_SUCCESS": {
+    "description": "删除门店成功",
+    "message": "删除門店成功"
+  },
+  "CHAN_MERCHANT.JSON_ERROR": {
+    "description": "JSON解析失败",
+    "message": "JSON解析失敗"
+  },
+  "CHAN_MERCHANT.REQUIRED_FILED_NOT_BE_EMPTY": {
+    "description": "必填项不能为空",
+    "message": "必填項不能為空"
+  },
+  "CHAN_MERCHANT.SELECT_ERROR": {
+    "description": "查询失败",
+    "message": "査詢失敗"
+  },
+  "CHAN_MERCHANT.ERROR": {
+    "description": "错误",
+    "message": "錯誤"
+  },
+  "CHAN_MERCHANT.CREATE_MERCHANT_SUCCESS": {
+    "description": "创建渠道商户成功",
+    "message": "創建通路商戶成功"
+  },
+  "CHAN_MERCHANT.UPDATE_MERCHANT_SUCCESS": {
+    "description": "修改渠道商户成功",
+    "message": "修改通路商戶成功"
+  },
+  "CHAN_MERCHANT.DELETE_MERCHANT_SUCCESS": {
+    "description": "删除渠道商户成功",
+    "message": "删除通路商戶成功"
+  },
+  "CHAN_MERCHANT.SIGN_KEY_LOWEST_LENGTH": {
+    "description": "签名密钥长度不能小于8",
+    "message": "簽名金鑰長度不能小於8"
+  },
+  "CHAN_MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR": {
+    "description": "SignKey不能包含*",
+    "message": "SignKey不能包含*"
+  },
+  "CHAN_MERCHANT.HTTP_CERT_CANNOT_CONTAIN_STAR": {
+    "description": "Http证书不能包含*",
+    "message": "Http證書不能包含*"
+  },
+  "CHAN_MERCHANT.HTTP_KEY_CANNOT_CONTAIN_STAR": {
+    "description": "Http密钥不能包含*",
+    "message": "Http金鑰不能包含*"
+  },
+  "ROUTE_POLICY.JSON_ERROR": {
+    "description": "JSON解析失败",
+    "message": "保存路由資訊失敗,JSON解析失敗"
+  },
+  "ROUTE_POLICY.REQUIRED_FILED_NOT_BE_EMPTY": {
+    "description": "必填项不能为空",
+    "message": "保存路由資訊失敗, 必填項不能為空"
+  },
+  "ROUTE_POLICY.SELECT_ERROR": {
+    "description": "查询失败",
+    "message": "保存路由資訊失敗, 査詢失敗"
+  },
+  "ROUTE_POLICY.ERROR": {
+    "description": "错误",
+    "message": "保存路由資訊失敗, 保存錯誤"
+  },
+  "ROUTE_POLICY.CREATE_ROUTE_POLICY_SUCCESS": {
+    "description": "创建路由成功",
+    "message": "創建路由成功"
+  },
+  "ROUTE_POLICY.UPDATE_ROUTE_POLICY_SUCCESS": {
+    "description": "修改路由成功",
+    "message": "修改路由成功"
+  },
+  "ROUTE_POLICY.DELETE_ROUTE_POLICY_SUCCESS": {
+    "description": "删除路由成功",
+    "message": "删除路由成功"
+  },
+  "ROUTE_POLICY.NO_MER_ID": {
+    "description": "门店代码不存在",
+    "message": "門店程式碼不存在"
+  },
+  "ROUTE_POLICY.AGENT_CODE_ERROR": {
+    "description": "代理代码错误",
+    "message": "代理程式碼錯誤"
+  },
+  "ROUTE_POLICY.SUB_AGENT_CODE_ERROR": {
+    "description": "公司代码错误",
+    "message": "公司程式碼錯誤"
+  },
+  "ROUTE_POLICY.GROUP_CODE_ERROR": {
+    "description": "商户代码错误",
+    "message": "商戶程式碼錯誤"
+  },
+  "ROUTE_POLICY.SETT_FLAG_NOT_MATCH_SETT_ROLE": {
+    "description": "清算标识与清算角色不匹配",
+    "message": "清算標識與清算角色不匹配"
+  },
+  "CHAN_MERCHANT.CREATE_MERCHANT": {
+    "description": "创建渠道商户",
+    "message": "創建通路商戶"
+  },
+  "CHAN_MERCHANT.EDITOR_MERCHANT": {
+    "description": "编辑渠道商户",
+    "message": "編輯通路商戶"
+  },
+  "TRANSFER_REPORT.REPORT_TYPE": {
+    "description": "报表类型",
+    "message": "報表類型"
+  },
+  "TRANSFER_REPORT.REPORT_NAME": {
+    "description": "报表名称",
+    "message": "報表名稱"
+  },
+  "TRANSFER_REPORT.REPORT": {
+    "description": "报表",
+    "message": "報表"
+  },
+  "TRANSFER_REPORT.REPORT_DETAIL": {
+    "description": "明细",
+    "message": "明細"
+  },
+  "REPORT_TYPE.TRANSFER_MONEY": {
+    "description": "划款",
+    "message": "劃款"
+  },
+  "REPORT_TYPE.RECONCILIATION": {
+    "description": "对账",
+    "message": "對賬"
+  },
+  "REPORT_TYPE.AGENT_WATER": {
+    "description": "机构流水",
+    "message": "機构流水"
+  },
+  "REPORT_TYPE.CHAN_MERCHANT": {
+    "description": "渠道商户",
+    "message": "通路商戶"
+  },
+  "REPORT_TYPE.RECONCILIATION_INJUSTICE_LESS_CHAN_MER": {
+    "description": "对账不平-渠道少的",
+    "message": "對賬不平-通路少的"
+  },
+  "REPORT_TYPE.RECONCILIATION_INJUSTICE_MORE_CHAN_MER": {
+    "description": "对账不平-渠道多的",
+    "message": "對賬不平-通路多的"
+  },
+  "REPORT_TYPE.PROFIT": {
+    "description": "分润",
+    "message": "分潤"
+  },
+  "TRADE_QUERY.MENUE_NAME": {
+    "description": "交易查询",
+    "message": "交易査詢"
+  },
+  "STATS_REPORT.MENUE_NAME": {
+    "description": "统计报表",
+    "message": "統計報表"
+  },
+  "SCANPAY_TRADE_TRANSFER_REPORT.MENU_NAME": {
+    "description": "扫码支付划款报表",
+    "message": "掃碼支付劃款報表"
+  },
+  "AGENT.TITLE": {
+    "description": "代理/机构",
+    "message": "代理/機构"
+  },
+  "SUB_AGENT.TITLE": {
+    "description": "公司",
+    "message": "公司"
+  },
+  "GROUP.TITLE": {
+    "description": "商户",
+    "message": "商戶"
+  },
+  "MERCHANT_INPUT.TITLE": {
+    "description": "配置扫码支付门店信息和渠道",
+    "message": "配寘掃碼支付門店資訊和通路"
+  },
+  "BATCH_IMPORT.TITLE": {
+    "description": "批量导入",
+    "message": "批量導入"
+  },
+  "MERCHANT_INPUT.TITLE": {
+    "description": "配置扫码支付门店信息和渠道",
+    "message": "配寘掃碼支付門店資訊和通路"
+  },
+  "MERCHANT.TITLE": {
+    "description": "门店",
+    "message": "門店"
+  },
+  "CHAN_MERCHANT.TITLE": {
+    "description": "渠道商户",
+    "message": "通路商戶"
+  },
+  "ROUTE_POLICY.TITLE": {
+    "description": "路由策略",
+    "message": "路由策略"
+  },
+  "SCANPAY_TRADE_TRANSFER_REPORT.TITLE": {
+    "description": "划款报表下载",
+    "message": "劃款報表下載"
+  },
+  "TRADE_MESSAGE.MERCHANT": {
+    "description": "商户",
+    "message": "商戶"
+  },
+  "TRADE_MESSAGE.CHANNEL": {
+    "description": "渠道",
+    "message": "通路"
+  },
+  "TRADE_MESSAGE.CHANNEL_TO_CLOUD_CASHIER_ASY": {
+    "description": "渠道 ==> 云收银 （异步通知）",
+    "message": "通路 ==> 雲收銀 （異步通知）"
+  },
+  "TRADE_MESSAGE.TO_CLOUD_CASHIER": {
+    "description": " ==> 云收银",
+    "message": " ==> 雲收銀 "
+  },
+  "TRADE_MESSAGE.CLOUD_CASHIER_TO": {
+    "description": "云收银 ==> ",
+    "message": "雲收銀 ==> "
+  },
+  "TRADE_MESSAGE.TRADE_MESSAGE_TITLE": {
+    "description": "交易报文",
+    "message": "交易報文"
   }
 }

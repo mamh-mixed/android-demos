@@ -44,7 +44,7 @@
         <paper-input name="commodityName" id="commodityName" label="商品名称" value="{{cond.commodityName::input}}" data-msg-id="MERCHANT.COMMODITYNAME"></paper-input>
         <paper-input name="createTime" label="创建日期" on-tap="showStartTimeDialog" value="{{cond.createTime::input}}" data-msg-id="BUTTON.CREATE_DATE"></paper-input>
         <paper-dialog with-backdrop id="startTimeDailog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissStartTimeDialog">
-          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px" locale-msg-id="DATE_PICKER.LOCALE"></paper-date-picker>
+          <paper-date-picker id="startTimePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>
                 <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>

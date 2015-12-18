@@ -1558,5 +1558,29 @@
   "SCANPAY_TRADE_TRANSFER_REPORT.TITLE": {
     "description": "划款报表下载",
     "message": "划款报表下载"
+  },
+  "TRADE_MESSAGE.MERCHANT": {
+    "description": "商户",
+    "message": "商户"
+  },
+  "TRADE_MESSAGE.CHANNEL": {
+    "description": "渠道",
+    "message": "渠道"
+  },
+  "TRADE_MESSAGE.CHANNEL_TO_CLOUD_CASHIER_ASY": {
+    "description": "渠道 ==> 云收银 （异步通知）",
+    "message": "渠道 ==> 云收银 （异步通知）"
+  },
+  "TRADE_MESSAGE.TO_CLOUD_CASHIER": {
+    "description": " ==> 云收银",
+    "message": " ==> 云收银"
+  },
+  "TRADE_MESSAGE.CLOUD_CASHIER_TO": {
+    "description": "云收银 ==> ",
+    "message": "云收银 ==> "
+  },
+  "TRADE_MESSAGE.TRADE_MESSAGE_TITLE": {
+    "description": "交易报文",
+    "message": "交易报文"
   }
 }

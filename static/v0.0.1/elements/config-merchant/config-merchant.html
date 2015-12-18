@@ -234,7 +234,7 @@
           <template id="permissionRepeatDom" is="dom-repeat" items="{{permissionArray}}">
             <paper-checkbox checked$="{{item.isChecked}}" on-change="handlePermissionChangeEvent">
               <span>
-                  <i18n-msg msgid$="{{getPermission(item.key)}}">{{item.value}}</i18n-msg>
+                <i18n-msg msgid$="{{getPermission(item.key)}}">{{item.value}}</i18n-msg>
               </span>
             </paper-checkbox>
           </template>
@@ -257,7 +257,7 @@
           <paper-input id="amerFee" label="门店跟讯联费率" value="{{alipayRoute.merFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.MERFEE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
-          <x-select id="asettFlag" items="[[settFlags]]" selected-item="{{asettFlag}}" class="validate-container" label="清算标识" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SETTFLAG" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM" is-locale></x-select>
+          <x-select id="asettFlag" items="[[settFlags]]" selected-item="{{asettFlag}}" class="validate-container" label="清算标识" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SETTFLAG" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
           <paper-input id="asettRole" label="清算角色" value="{{alipayRoute.settRole::input}}" required error-message="必填项" data-msg-id="ROUTE_POLICY.SETTROLE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
@@ -283,8 +283,8 @@
           <x-select id="bigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]" data-msg-id="CHAN_MERCHANT.BIG_MERCHANT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
         </div>
         <div class="row">
-          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixinRoute.acqFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.ACQFEE"></paper-input>
-          <paper-input id="wmerFee" label="门店跟讯联费率" value="{{weixinRoute.merFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.MERFEE"></paper-input>
+          <paper-input id="wacqFee" label="讯联跟渠道费率" value="{{weixinRoute.acqFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.ACQFEE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="wmerFee" label="门店跟讯联费率" value="{{weixinRoute.merFee::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.MERFEE" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
         <div class="row">
           <x-select id="wsettFlag" items="[[settFlags]]" selected-item="{{wsettFlag}}" class="validate-container" label="清算标识" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SETTFLAG" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
@@ -405,7 +405,7 @@
             value: 'MERCHANT.TEST'
           }, {
             key: 'Deleted',
-            value: 'MERCHANT_DELETED'
+            value: 'MERCHANT.DELETED'
           }]
         },
         // 微信大商户集合，目前是2个
@@ -751,13 +751,17 @@
         }
 
         // 显示商户的状态
-        for (var k in this.merStatusMap) {
-          var merStatusItem = this.merStatusMap[k];
-          if (item.merStatus === merStatusItem.key) {
-            this.set('merStatus', merStatusItem);
-            break;
-          }
-        }
+        var tempMerStatusMap = {
+          'Normal': 'MERCHANT.NORMAL',
+          'Test': 'MERCHANT.TEST',
+          'Deleted': 'MERCHANT.DELETED'
+        };
+        var i18nMsg = document.createElement('i18n-msg');
+        this.merStatus = {
+          key: item.merStatus,
+          value: i18nMsg.getMsg(tempMerStatusMap[item.merStatus])
+        };
+
       },
       // 编辑的时候查询支付宝路由渠道商户请求的响应事件
       handleAlpChanMerResponse: function(e) {
@@ -1112,21 +1116,21 @@
       handleSaveMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('MERCHANT.'+response.message, 3000,true);
+          Util.toast('MERCHANT.' + response.message, 3000, true);
           return;
         }
 
-        Util.toast('MERCHANT.'+response.message, 1000,true);
+        Util.toast('MERCHANT.' + response.message, 1000, true);
       },
       // 更新商户的ajax响应事件
       handleUpdateMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('MERCHANT.'+response.message, 3000,true);
+          Util.toast('MERCHANT.' + response.message, 3000, true);
           return;
         }
 
-        Util.toast('MERCHANT.'+response.message, 1000,true);
+        Util.toast('MERCHANT.' + response.message, 1000, true);
       },
       // 判断优方渠道信息是否必填项都填写了，返回false表示都填写了
       isUliveConfigEmpty: function() {
@@ -1315,21 +1319,21 @@
       handleSaveRouterResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('ROUTE_POLICY.' + response.message, 3000,true);
+          Util.toast('ROUTE_POLICY.' + response.message, 3000, true);
           return;
         }
 
-        Util.toast('ROUTE_POLICY.'+response.message, 1000,true);
+        Util.toast('ROUTE_POLICY.' + response.message, 1000, true);
       },
       // 保存渠道商户ajax请求响应事件
       handleSaveChannelMerchantResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast('CHAN_MERCHANT.'+response.message, 3000,true);
+          Util.toast('CHAN_MERCHANT.' + response.message, 3000, true);
           return;
         }
 
-        Util.toast('CHAN_MERCHANT.'+response.message, 1000,true);
+        Util.toast('CHAN_MERCHANT.' + response.message, 1000, true);
       },
       // 是否代理商模式的改变事件
       handleIsAgentChangeEvent: function() {
@@ -1515,8 +1519,8 @@
       handleRefreshSignKeyTapped: function() {
         this.set('merchant.signKey', generateMixed(32));
       },
-      getPermission:function(value){
-          return 'TRANS_TYPE.'+value;
+      getPermission: function(value) {
+        return 'TRANS_TYPE.' + value;
       }
     });
   </script>

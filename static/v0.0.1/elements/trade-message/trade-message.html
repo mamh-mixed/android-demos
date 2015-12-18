@@ -39,10 +39,11 @@
       div.buttons {
         color: black;
       }
-
     </style>
     <paper-dialog with-backdrop id="tradeMessageDialogView">
-      <h2>交易报文</h2>
+      <h2>
+          <i18n-msg msgid="TRADE_MESSAGE.TRADE_MESSAGE_TITLE">交易报文</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <dl>
           <template is="dom-repeat" items="{{messages}}" as="m">
@@ -68,7 +69,11 @@
     (function() {
       Polymer({
         is: 'trade-message',
-
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'trade-message'
+          });
+        },
         properties: {
           item: Object,
           user: Object,
@@ -106,12 +111,12 @@
           this.messages = merMessages;
 
           this.reqIds = new Array();
-          for (m in this.messages){
-              if (this.messages[m].direction === "in"){
-                  this.reqIds.push(this.messages[m].reqId)
-              }
+          for (m in this.messages) {
+            if (this.messages[m].direction === "in") {
+              this.reqIds.push(this.messages[m].reqId)
+            }
           }
-        
+
           // 查询渠道报文
           this.$.chanMessageQueryAjax.params = {
             // 'merId': this.item.merId,
@@ -179,7 +184,7 @@
             }
           }
 
-          window.setTimeout(function(){
+          window.setTimeout(function() {
             this.$.tradeMessageDialogView.notifyResize();
           }.bind(this), 0);
 
@@ -217,22 +222,24 @@
           return "";
         },
         getMessageDirection: function(m) {
+          var i18nMsg = document.createElement('i18n-msg');
           var dir = "";
           if (m.msgType === 1) {
-            dir = '商户';
+            dir = i18nMsg.getMsg('TRADE_MESSAGE.MERCHANT');
           } else if (m.msgType === 2) {
-            dir = '渠道';
+            dir = i18nMsg.getMsg('TRADE_MESSAGE.CHANNEL');
           } else if (m.msgType === 3) {
-            return '渠道 ==> 云收银 （异步通知）';
+            return i18nMsg.getMsg('TRADE_MESSAGE.CHANNEL_TO_CLOUD_CASHIER_ASY');
           } else {
             console.log("未知 msgType（" + m.msgType + "）");
             return "";
           }
 
           if (m.direction === 'in') {
-            dir += " ==> 云收银";
+            dir += i18nMsg.getMsg('TRADE_MESSAGE.TO_CLOUD_CASHIER');
           } else if (m.direction === 'out') {
-            dir = "云收银 ==> " + dir;
+            var msg = i18nMsg.getMsg('TRADE_MESSAGE.CLOUD_CASHIER_TO')
+            dir = msg + dir;
           } else {
             console.log("未知 direction（" + m.direction + "）");
             return "";
@@ -242,6 +249,5 @@
         }
       });
     })();
-
   </script>
 </dom-module>
