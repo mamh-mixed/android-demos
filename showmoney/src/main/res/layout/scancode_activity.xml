@@ -14,6 +14,7 @@
  limitations under the License.
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,36 +27,28 @@
 
     <com.cardinfolink.yunshouyin.view.ViewfinderView
         android:id="@+id/viewfinder_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/transparent" />
-
-
-    <ImageView
-        android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/back_color"
-        android:scaleType="centerInside"
-        android:src="@drawable/back"
+        android:background="@color/transparent" />
 
-        />
+    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+        android:id="@+id/sabi_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:left_text="@string/setting_return" />
 
 
     <ImageView
         android:id="@+id/flashlight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/sabi_back"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/flashlight_color"
         android:scaleType="centerInside"
-        android:src="@drawable/flashlight"
-
-        />
+        android:src="@drawable/flashlight" />
 
 
     <TextView
@@ -66,9 +59,7 @@
         android:layout_marginBottom="40dp"
         android:text="二维码或条码"
         android:textColor="#ffffff"
-        android:textSize="14sp"
-
-        />
+        android:textSize="14sp" />
 
     <include layout="@layout/showmoney_dialog"></include>
 

@@ -28,6 +28,7 @@ import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
+import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.view.TradingCustomDialog;
 import com.cardinfolink.yunshouyin.view.ViewfinderView;
 import com.google.zxing.BarcodeFormat;
@@ -65,6 +66,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private String total;
     private String mOrderNum;
     private ResultData mResultData;
+    private SettingActionBarItem mActionBar;
 
     /**
      * Called when the activity is first created.
@@ -100,13 +102,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
     private void initListener() {
-        findViewById(R.id.back).setOnClickListener(new OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.sabi_back);
+        mActionBar.setLeftTextOnclickListner(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                CaptureActivity.this.finish();
+                finish();
             }
         });
+        mActionBar.setBackgroundColor(Color.BLACK);
+        mActionBar.setLeftTextColor(Color.WHITE);
 
         findViewById(R.id.flashlight).setOnClickListener(new OnClickListener() {
 
