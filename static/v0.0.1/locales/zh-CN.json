@@ -208,12 +208,12 @@
     "message": "序号"
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
-    "description": "金额",
-    "message": "金额"
+    "description": "交易金额",
+    "message": "交易金额"
   },
   "SCANPAY_TRADE_LIST.CURRENCY": {
-    "description": "币种",
-    "message": "币种"
+    "description": "交易币种",
+    "message": "交易币种"
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
@@ -1706,5 +1706,21 @@
   "TOAST.SYSTEM_ERROR": {
     "description": "系统错误",
     "message": "系统错误"
+  },
+  "SCANPAY_TRADE_LIST.SETT_CURR_AMT": {
+    "description": "清算金额",
+    "message": "清算金额"
+  },
+  "SCANPAY_TRADE_LIST.SETT_CURR": {
+    "description": "清算币种",
+    "message": "清算币种"
+  },
+  "SCANPAY_TRADE_LIST.DEBIT_CURR_AMT": {
+    "description": "扣帐金额",
+    "message": "扣款帐额"
+  },
+  "SCANPAY_TRADE_LIST.DEBIT_CURR": {
+    "description": "扣帐币种",
+    "message": "扣帐币种"
   }
 }

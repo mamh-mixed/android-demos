@@ -67,11 +67,23 @@
               <i18n-msg msgid="SCANPAY_TRADE_LIST.TRANS_TYPE">交易类型</i18n-msg>
             </div>
             <div class="th right">
-              <i18n-msg msgid="SCANPAY_TRADE_LIST.AMOUNT">金额</i18n-msg>
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.AMOUNT">交易金额</i18n-msg>
             </div>
             <div class="th center">
-              <i18n-msg msgid="SCANPAY_TRADE_LIST.CURRENCY">币种</i18n-msg>
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.CURRENCY">交易币种</i18n-msg>
             </div>
+            <div class="th right">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.SETT_CURR_AMT">清算金额</i18n-msg>
+            </div>
+            <div class="th center">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.SETT_CURR">清算币种</i18n-msg>
+            </div>
+            <!-- <div class="th right">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.DEBIT_CURR_AMT">扣帐金额</i18n-msg>
+            </div>
+            <div class="th center">
+              <i18n-msg msgid="SCANPAY_TRADE_LIST.DEBIT_CURR">扣帐币种</i18n-msg>
+            </div> -->
             <div class="th left">
               <i18n-msg msgid="SCANPAY_TRADE_LIST.CHANNEL">渠道</i18n-msg>
             </div>
@@ -115,6 +127,18 @@
               <div class="td center">
                 <span>{{item.currency}}</span>
               </div>
+              <div class="td right">
+                <span>{{_currencyFilter(item.settCurrAmt, item.settCurr)}}</span>
+              </div>
+              <div class="td center">
+                <span>{{item.settCurr}}</span>
+              </div>
+              <!-- <div class="td right">
+                <span>{{_currencyFilter(item.debitCurrAmt, item.debitCurr)}}</span>
+              </div>
+              <div class="td center">
+                <span>{{item.debitCurr}}</span>
+              </div> -->
               <div class="td">
                 <i18n-msg msgid$="{{chanFilter(item.chanCode)}}">{{chanFilter(item.chanCode)}}</i18n-msg>
               </div>
@@ -198,6 +222,11 @@
       'USD': {
         key: 'USD',
         currency: 'U.S. Dollar',
+        decimal: 2
+      },
+      'TWD': {
+        key: 'TWD',
+        currency: 'TWD Dollar',
         decimal: 2
       }
     };
