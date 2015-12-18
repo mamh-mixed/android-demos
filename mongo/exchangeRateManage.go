@@ -8,15 +8,15 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type exchangeRateCollection struct {
+type exchangeRateManageCollection struct {
 	name string
 }
 
-var ExchangeRateColl = exchangeRateCollection{"exchangeRate"}
+var ExchangeRateManageColl = exchangeRateManageCollection{"exchangeRateManage"}
 
 // PaginationFind 分页查找
-func (c *exchangeRateCollection) PaginationFind(cond *model.ExchangeRate, size, page int) (results []model.ExchangeRate, total int, err error) {
-	results = make([]model.ExchangeRate, 0)
+func (c *exchangeRateManageCollection) PaginationFind(cond *model.ExchangeRateManage, size, page int) (results []model.ExchangeRateManage, total int, err error) {
+	results = make([]model.ExchangeRateManage, 0)
 
 	match := bson.M{}
 
@@ -80,24 +80,24 @@ func (c *exchangeRateCollection) PaginationFind(cond *model.ExchangeRate, size, 
 }
 
 // FindOne 查找一个
-func (c *exchangeRateCollection) FindOne(eId string) (rate *model.ExchangeRate, err error) {
+func (c *exchangeRateManageCollection) FindOne(eId string) (rate *model.ExchangeRateManage, err error) {
 	cond := bson.M{
 		"eId": eId,
 	}
 
-	rate = new(model.ExchangeRate)
+	rate = new(model.ExchangeRateManage)
 	err = database.C(c.name).Find(cond).One(rate)
 	return rate, err
 }
 
 // Add 新增一条费率记录
-func (c *exchangeRateCollection) Add(rate *model.ExchangeRate) (err error) {
+func (c *exchangeRateManageCollection) Add(rate *model.ExchangeRateManage) (err error) {
 	err = database.C(c.name).Insert(rate)
 	return err
 }
 
 // Update 更新
-func (c *exchangeRateCollection) Update(rate *model.ExchangeRate) (err error) {
+func (c *exchangeRateManageCollection) Update(rate *model.ExchangeRateManage) (err error) {
 	b := bson.M{
 		"eId": rate.EId,
 	}

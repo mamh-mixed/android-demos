@@ -9,7 +9,7 @@ import (
 )
 
 func TestExchangeRatePaginationFind(t *testing.T) {
-	cond := &model.ExchangeRate{
+	cond := &model.ExchangeRateManage{
 		LocalCurrency:  "JPY",
 		TargetCurrency: "CNY",
 		IsEnforced:     true,
@@ -17,7 +17,7 @@ func TestExchangeRatePaginationFind(t *testing.T) {
 
 	size, page := 20, 1
 
-	results, total, err := ExchangeRateColl.PaginationFind(cond, size, page)
+	results, total, err := ExchangeRateManageColl.PaginationFind(cond, size, page)
 	if err != nil {
 		t.Logf("FAIL %s", err)
 	}
@@ -26,7 +26,7 @@ func TestExchangeRatePaginationFind(t *testing.T) {
 }
 
 func TestAddExchangeRate(t *testing.T) {
-	rate := &model.ExchangeRate{
+	rate := &model.ExchangeRateManage{
 		EId:            util.SerialNumber(),
 		LocalCurrency:  "TWD",
 		TargetCurrency: "USD",
@@ -39,6 +39,6 @@ func TestAddExchangeRate(t *testing.T) {
 		// ActualEnforcementTime: "",
 	}
 
-	err := ExchangeRateColl.Add(rate)
+	err := ExchangeRateManageColl.Add(rate)
 	t.Logf("error is %s", err)
 }

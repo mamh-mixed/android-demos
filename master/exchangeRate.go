@@ -25,7 +25,7 @@ func excratQueryHandle(w http.ResponseWriter, r *http.Request) {
 	size, _ := strconv.Atoi(r.FormValue("size"))
 	page, _ := strconv.Atoi(r.FormValue("page"))
 
-	cond := &model.ExchangeRate{
+	cond := &model.ExchangeRateManage{
 		LocalCurrency:         localCurr,
 		TargetCurrency:        targetCurr,
 		CreateTime:            createTime,
@@ -212,7 +212,7 @@ func (e *exchangeRate) UpdateD2dRatio(data []byte, username string) (result *mod
 
 // Add 新增一个
 func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBody) {
-	t := new(model.ExchangeRate)
+	t := new(model.ExchangeRateManage)
 	err := json.Unmarshal(data, t)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
@@ -248,7 +248,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 	}
 
 	// 校验阈值
-	checkCond := &model.ExchangeRate{
+	checkCond := &model.ExchangeRateManage{
 		LocalCurrency:  t.LocalCurrency,
 		TargetCurrency: t.TargetCurrency,
 		IsEnforced:     true,
@@ -256,7 +256,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 
 	log.Debugf("************ checkCond is %#v", checkCond)
 
-	olds, _, err := mongo.ExchangeRateColl.PaginationFind(checkCond, 10, 1)
+	olds, _, err := mongo.ExchangeRateManageColl.PaginationFind(checkCond, 10, 1)
 	if err != nil {
 		log.Errorf("FIND OLD RATES(%s<=>%s) ERROR: %s", checkCond.LocalCurrency, checkCond.TargetCurrency, err)
 		return model.NewResultBody(2, "SAVE_RATE_FAIL")
@@ -286,7 +286,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 
 	t.EId = util.SerialNumber()
 
-	err = mongo.ExchangeRateColl.Add(t)
+	err = mongo.ExchangeRateManageColl.Add(t)
 	if err != nil {
 		log.Errorf("ADD_RATE_ERROR: %s", err)
 		return model.NewResultBody(2, "SAVE_RATE_FAIL")
@@ -302,7 +302,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 
 // FindOne 查找一个
 func (e *exchangeRate) Activate(data []byte, username string) (result *model.ResultBody) {
-	t := new(model.ExchangeRate)
+	t := new(model.ExchangeRateManage)
 	err := json.Unmarshal(data, t)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
@@ -319,7 +319,7 @@ func (e *exchangeRate) Activate(data []byte, username string) (result *model.Res
 		return result
 	}
 
-	rate, err := mongo.ExchangeRateColl.FindOne(t.EId)
+	rate, err := mongo.ExchangeRateManageColl.FindOne(t.EId)
 	if err != nil {
 		log.Errorf("查找汇率（%s）失败： %s", t.EId, err)
 		return model.NewResultBody(401, "ACTIVATE_FAIL")
@@ -331,7 +331,7 @@ func (e *exchangeRate) Activate(data []byte, username string) (result *model.Res
 	rate.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	rate.ActualEnforcementTime = time.Now().Format("2006-01-02 15:04:05")
 
-	err = mongo.ExchangeRateColl.Update(rate)
+	err = mongo.ExchangeRateManageColl.Update(rate)
 	if err != nil {
 		log.Errorf("更新汇率（%s）失败： %s", t.EId, err)
 		return model.NewResultBody(401, "ACTIVATE_FAIL")
@@ -347,7 +347,7 @@ func (e *exchangeRate) Activate(data []byte, username string) (result *model.Res
 }
 
 // Find 分页查询
-func (e *exchangeRate) Find(cond *model.ExchangeRate, size, page int) (result *model.ResultBody) {
+func (e *exchangeRate) Find(cond *model.ExchangeRateManage, size, page int) (result *model.ResultBody) {
 	if page < 0 {
 		return model.NewResultBody(400, "page 参数错误")
 	}
@@ -360,7 +360,7 @@ func (e *exchangeRate) Find(cond *model.ExchangeRate, size, page int) (result *m
 		size = 10
 	}
 
-	results, total, err := mongo.ExchangeRateColl.PaginationFind(cond, size, page)
+	results, total, err := mongo.ExchangeRateManageColl.PaginationFind(cond, size, page)
 	if err != nil {
 		log.Errorf("查询汇率列表出错:%s", err)
 		return model.NewResultBody(1, "查询失败")

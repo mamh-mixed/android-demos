@@ -536,8 +536,9 @@ type Task struct {
 	UpdateTime string        `bson:"updateTime"`
 }
 
-// 汇率表
-type ExchangeRate struct {
+// 汇率管理表
+// 录入汇率复核汇率
+type ExchangeRateManage struct {
 	EId                   string  `json:"eId" bson:"eId"`                                     // 主键
 	LocalCurrency         string  `json:"localCurrency" bson:"localCurrency"`                 // 当地币种
 	TargetCurrency        string  `json:"targetCurrency" bson:"targetCurrency"`               // 目标币种
@@ -548,7 +549,7 @@ type ExchangeRate struct {
 	CreateUser            string  `json:"createUser" bson:"createUser"`                       // 创建者
 	UpdateTime            string  `json:"updateTime" bson:"updateTime"`                       // 修改时间
 	UpdateUser            string  `json:"updateUser" bson:"updateUser"`                       // 变更者
-	EnforceUser           string  `json:"enforceUser" bson:"enforceUser"`                     // 生效用户
+	EnforceUser           string  `json:"enforceUser" bson:"enforceUser"`                     // 复核用户
 	IsEnforced            bool    `json:"isEnforced" bson:"isEnforced"`                       // 是否生效
 }
 
