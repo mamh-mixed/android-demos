@@ -128,34 +128,44 @@
             reflectToAttribute: true,
             observer: '_merIdChandged'
           },
-          cardBrands: {
-            type: Array,
-            value: [{
-              key: 'CUP',
-              value: 'CARD_BRAND.CUP'
-            }, {
-              key: 'UPI',
-              value: 'CARD_BRAND.UPI'
-            }, {
-              key: 'VIS',
-              value: 'CARD_BRAND.VIS'
-            }, {
-              key: 'MCC',
-              value: 'CARD_BRAND.MCC'
-            }, {
-              key: 'JCB',
-              value: 'CARD_BRAND.JCB'
-            }, {
-              key: 'ALP',
-              value: 'CARD_BRAND.ALP'
-            }, {
-              key: 'WXP',
-              value: 'CARD_BRAND.WXP'
-            }, {
-              key: 'ULIVE',
-              value: 'CARD_BRAND.ULIVE'
-            }]
-          },
+        //   cardBrands: {
+        //     type: Array,
+        //     value: [{
+        //       key: 'CUP',
+        //       value: 'CARD_BRAND.CUP'
+        //     }, {
+        //       key: 'UPI',
+        //       value: 'CARD_BRAND.UPI'
+        //     }, {
+        //       key: 'VIS',
+        //       value: 'CARD_BRAND.VIS'
+        //     }, {
+        //       key: 'MCC',
+        //       value: 'CARD_BRAND.MCC'
+        //     }, {
+        //       key: 'JCB',
+        //       value: 'CARD_BRAND.JCB'
+        //     }, {
+        //       key: 'ALP',
+        //       value: 'CARD_BRAND.ALP'
+        //     }, {
+        //       key: 'WXP',
+        //       value: 'CARD_BRAND.WXP'
+        //     }, {
+        //       key: 'ULIVE',
+        //       value: 'CARD_BRAND.ULIVE'
+        //     }]
+        //   },
+        cardBrands: {
+          type: Array,
+          value: [{
+            key: 'ALP',
+            value: 'CARD_BRAND.ALP'
+          }, {
+            key: 'WXP',
+            value: 'CARD_BRAND.WXP'
+          }]
+        },
           chanCodes: {
             type: Array,
             value: [{
@@ -164,10 +174,12 @@
             }, {
               key: 'WXP',
               value: 'WXP'
-            }, {
-              key: 'ULIVE',
-              value: 'ULIVE'
-            }]
+            }
+            // , {
+            //   key: 'ULIVE',
+            //   value: 'ULIVE'
+            // }
+        ]
           },
         },
         _merIdChandged: function(value) {
