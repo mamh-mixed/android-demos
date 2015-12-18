@@ -169,7 +169,7 @@
 	},
 	"SCANPAY_TRADE_LIST.GROUP_NO": {
 		"description": "商户代码",
-		"message": "商戶程式碼
+		"message": "商戶程式碼"
 	},
 	"SCANPAY_TRADE_LIST.MERCHANT_NO": {
 		"description": "门店代码",
