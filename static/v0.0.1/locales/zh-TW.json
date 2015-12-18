@@ -1592,8 +1592,8 @@
     "message": "基準幣種"
   },
   "EXCHANGE_RATE.TARGET_CURRENCY": {
-    "description": "比较币种",
-    "message": "比較幣種"
+    "description": "目標币种",
+    "message": "目標幣種"
   },
   "EXCHANGE_RATE.RATE": {
     "description": "汇率",
@@ -1616,8 +1616,8 @@
     "message": "計畫生效時間"
   },
   "EXCHANGE_RATE.ENFORCE_USER": {
-    "description": "生效用户",
-    "message": "生效用戶"
+    "description": "复核用户",
+    "message": "复核用戶"
   },
   "EXCHANGE_RATE.STATUS": {
     "description": "汇率生效状态",

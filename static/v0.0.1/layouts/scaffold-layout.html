@@ -337,208 +337,204 @@
         ready: function() {
           // 初始化菜单
           this.adminMenus = [{
-            "name": "SYSTEM_MANAGEMENT.MENUE_NAME",
-            "nameCN": "系统管理",
-            "icon": "settings",
-            "url": "",
-            "route": "/system",
-            "children": [{
-              "name": "USERMANAGEMENT.USERMANAGEMENT",
-              "nameCN": "用户",
-              "icon": "account-circle",
-              "url": "#/system/users",
-              'route': 'system.users'
-            }, {
-              "name": "PASSWORDMODIFICATION.TITLE",
-              "nameCN": "密码修改",
-              "icon": "lock-outline",
-              "url": "#/system/password/editor",
-              'route': 'system.password.editor'
-            }, {
-              "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT",
-              "nameCN": "APP用户",
-              "icon": "perm-identity",
-              "url": "#/system/apps",
-              'route': 'system.apps'
-            }, {
-              "name": "EXCHANGE_RATE.TITLE",
-              "nameCN": "汇率管理",
-              "nameEN": "",
-              "icon": "polymer",
-              "url": "#/system/exchangerate",
-              'route': 'system.exchangerate'
-            }]
-          }, {
-            "name": "SCANPAY.MENUE_NAME",
-            "nameCN": "扫码支付",
-            "icon": "image:crop-free",
-            "url": "",
-            "route": "/config",
-            "children": [{
-              "name": "AGENT.MENUE_NAME",
-              "nameCN": "代理",
-              "icon": "assignment-ind",
-              "url": "#/config/agents",
-              "route": "config.agents"
-            }, {
-              "name": "SUBAGENT.MENUE_NAME",
-              "nameCN": "公司",
-              "icon": "account-box",
-              "url": "#/config/subAgents",
-              "route": "config.subAgents"
-            }, {
-              "name": "GROUP.MENUE_NAME",
-              "nameCN": "商户",
-              "icon": "home",
-              "url": "#/config/groups",
-              "route": "config.groups"
-            }, {
-              "name": "MERCHANT_INPUT.MENUE_NAME",
-              "nameCN": "门店录入",
-              "icon": "create",
-              "url": "#/config/configMer",
-              "route": "config.configMer"
-            }, {
-              "name": "BATCH_IMPORT.MENUE_NAME",
-              "nameCN": "批量导入",
-              "icon": "cloud-upload",
-              "url": "#/config/upload",
-              "route": "config.upload"
-            }, {
-              "name": "MERCHANT.MENUE_NAME",
-              "nameCN": "门店",
-              "icon": "store",
-              "url": "#/config/merchants",
-              "route": "config.merchants"
-            }, {
-              "name": "CHAN_MERCHANT.MENUE_NAME",
-              "nameCN": "渠道商户",
-              "icon": "account-balance",
-              "url": "#/config/chanMers",
-              "route": "config.chanMers"
-            }, {
-              "name": "ROUTE_POLICY.MENUE_NAME",
-              "nameCN": "路由策略",
-              "icon": "hardware:device-hub",
-              "url": "#/config/routes",
-              "route": "config.routes"
-            }]
-          }, {
-            "nameCN": "快捷支付",
-            "nameEN": "",
-            "icon": "hardware:phonelink",
-            "url": "",
-            "route": "/quickPay",
-            "children": [{
-              "nameCN": "机构商户",
-              "nameEN": "",
-              "icon": "store",
-              "url": "#/quickPay/merchants",
-              "route": "quickPay.merchants"
-            }, {
-              "nameCN": "渠道商户",
-              "nameEN": "",
-              "icon": "account-balance",
-              "url": "#/quickPay/chanMers",
-              "route": "quickPay.chanMers"
-            }, {
-              "nameCN": "路由策略",
-              "nameEN": "",
-              "icon": "hardware:device-hub",
-              "url": "#/quickPay/routes",
-              "route": "quickPay.routes"
-            }]
-          }, {
-            "name": 'TRADE_QUERY.MENUE_NAME',
-            "nameCN": "交易查询",
-            "icon": "payment",
-            "url": "",
-            "route": "/trade",
-            "children": [{
-              "name": "SCANPAY_TRADE_LIST.MENU_NAME",
-              "nameCN": "扫码交易",
-              "icon": "image:crop-free",
-              "url": "#/trade/list",
-              "route": "trade.list"
-            }, {
-              "nameCN": "快捷支付",
-              "nameEN": "",
-              "icon": "hardware:phonelink",
-              "url": "#/trade/bindingpay/list",
-              "route": "trade.bindingpay.list"
-            }, {
-              "nameCN": "卡券核销",
-              "nameEN": "",
-              "icon": "card-giftcard",
-              "url": "#/trade/coupon/list",
-              "route": "trade.coupon.list"
-            }]
-          }, {
-            "name": "STATS_REPORT.MENUE_NAME",
-            "nameCN": "统计报表",
-            "icon": "receipt",
-            "url": "",
-            "route": "/stats",
-            "children": [{
-                "name": "SCANPAY_TRADE_STATS.MENU_NAME",
-                "nameCN": "扫码支付交易统计",
-                "icon": "print",
-                "url": "#/stats/reports",
-                "route": "stats.reports"
-              },
-              /*{
-                "nameCN": "老系统扫码支付",
-                "nameEN": "",
-                "icon": "cloud-download",
-                "url": "#/stats/old/reports",
-                "route": "stats.old.reports"
-              }, */
-              {
-                "name": "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME",
-                "nameCN": "扫码支付清算报表",
-                "icon": "assignment-returned",
-                "url": "#/stats/settle/reports",
-                "route": "stats.settle.reports"
+              "name": "SYSTEM_MANAGEMENT.MENUE_NAME",
+              "nameCN": "系统管理",
+              "icon": "settings",
+              "url": "",
+              "route": "/system",
+              "children": [{
+                "name": "USERMANAGEMENT.USERMANAGEMENT",
+                "nameCN": "用户",
+                "icon": "account-circle",
+                "url": "#/system/users",
+                'route': 'system.users'
               }, {
-                "name": "SCANPAY_TRADE_TRANSFER_REPORT.MENU_NAME",
-                "nameCN": "扫码支付划款报表",
-                "icon": "assignment-returned",
-                "url": "#/stats/transfer/reports",
-                "route": "stats.transfer.reports"
-              }
-            ]
-          }, {
-            "nameCN": "内部测试",
-            "nameEN": "",
-            "icon": "bug-report",
-            "url": "",
-            "route": "/test",
-            "children": [{
+                "name": "PASSWORDMODIFICATION.TITLE",
+                "nameCN": "密码修改",
+                "icon": "lock-outline",
+                "url": "#/system/password/editor",
+                'route': 'system.password.editor'
+              }, {
+                "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT",
+                "nameCN": "APP用户",
+                "icon": "perm-identity",
+                "url": "#/system/apps",
+                'route': 'system.apps'
+              }, {
+                "name": "EXCHANGE_RATE.TITLE",
+                "nameCN": "汇率管理",
+                "nameEN": "",
+                "icon": "polymer",
+                "url": "#/system/exchangerate",
+                'route': 'system.exchangerate'
+              }]
+            }, {
+              "name": "SCANPAY.MENUE_NAME",
               "nameCN": "扫码支付",
-              "nameEN": "",
-              "icon": "image:center-focus-strong",
-              "url": "#/test/scanpay",
-              "route": "test.scanpay"
+              "icon": "image:crop-free",
+              "url": "",
+              "route": "/config",
+              "children": [{
+                "name": "AGENT.MENUE_NAME",
+                "nameCN": "代理",
+                "icon": "assignment-ind",
+                "url": "#/config/agents",
+                "route": "config.agents"
+              }, {
+                "name": "SUBAGENT.MENUE_NAME",
+                "nameCN": "公司",
+                "icon": "account-box",
+                "url": "#/config/subAgents",
+                "route": "config.subAgents"
+              }, {
+                "name": "GROUP.MENUE_NAME",
+                "nameCN": "商户",
+                "icon": "home",
+                "url": "#/config/groups",
+                "route": "config.groups"
+              }, {
+                "name": "MERCHANT_INPUT.MENUE_NAME",
+                "nameCN": "门店录入",
+                "icon": "create",
+                "url": "#/config/configMer",
+                "route": "config.configMer"
+              }, {
+                "name": "BATCH_IMPORT.MENUE_NAME",
+                "nameCN": "批量导入",
+                "icon": "cloud-upload",
+                "url": "#/config/upload",
+                "route": "config.upload"
+              }, {
+                "name": "MERCHANT.MENUE_NAME",
+                "nameCN": "门店",
+                "icon": "store",
+                "url": "#/config/merchants",
+                "route": "config.merchants"
+              }, {
+                "name": "CHAN_MERCHANT.MENUE_NAME",
+                "nameCN": "渠道商户",
+                "icon": "account-balance",
+                "url": "#/config/chanMers",
+                "route": "config.chanMers"
+              }, {
+                "name": "ROUTE_POLICY.MENUE_NAME",
+                "nameCN": "路由策略",
+                "icon": "hardware:device-hub",
+                "url": "#/config/routes",
+                "route": "config.routes"
+              }]
+            },
+            //   {
+            //     "nameCN": "快捷支付",
+            //     "nameEN": "",
+            //     "icon": "hardware:phonelink",
+            //     "url": "",
+            //     "route": "/quickPay",
+            //     "children": [{
+            //       "nameCN": "机构商户",
+            //       "nameEN": "",
+            //       "icon": "store",
+            //       "url": "#/quickPay/merchants",
+            //       "route": "quickPay.merchants"
+            //     }, {
+            //       "nameCN": "渠道商户",
+            //       "nameEN": "",
+            //       "icon": "account-balance",
+            //       "url": "#/quickPay/chanMers",
+            //       "route": "quickPay.chanMers"
+            //     }, {
+            //       "nameCN": "路由策略",
+            //       "nameEN": "",
+            //       "icon": "hardware:device-hub",
+            //       "url": "#/quickPay/routes",
+            //       "route": "quickPay.routes"
+            //     }]
+            //   },
+            {
+              "name": 'TRADE_QUERY.MENUE_NAME',
+              "nameCN": "交易查询",
+              "icon": "payment",
+              "url": "",
+              "route": "/trade",
+              "children": [{
+                  "name": "SCANPAY_TRADE_LIST.MENU_NAME",
+                  "nameCN": "扫码交易",
+                  "icon": "image:crop-free",
+                  "url": "#/trade/list",
+                  "route": "trade.list"
+                }
+                // , { // "nameCN": "快捷支付", // "nameEN": "", // "icon": "hardware:phonelink", // "url": "#/trade/bindingpay/list", // "route": "trade.bindingpay.list" // }, { // "nameCN": "卡券核销", // "nameEN": "", // "icon": "card-giftcard", // "url": "#/trade/coupon/list",
+                // "route": "trade.coupon.list" // }
+              ]
             }, {
-              "nameCN": "绑定支付",
-              "nameEN": "",
-              "icon": "image:style",
-              "url": "#/test/bindingpay",
-              "route": "test.bindingpay"
+              "name": "STATS_REPORT.MENUE_NAME",
+              "nameCN": "统计报表",
+              "icon": "receipt",
+              "url": "",
+              "route": "/stats",
+              "children": [{
+                  "name": "SCANPAY_TRADE_STATS.MENU_NAME",
+                  "nameCN": "扫码支付交易统计",
+                  "icon": "print",
+                  "url": "#/stats/reports",
+                  "route": "stats.reports"
+                },
+                /*{
+                  "nameCN": "老系统扫码支付",
+                  "nameEN": "",
+                  "icon": "cloud-download",
+                  "url": "#/stats/old/reports",
+                  "route": "stats.old.reports"
+                }, */
+                {
+                  "name": "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME",
+                  "nameCN": "扫码支付清算报表",
+                  "icon": "assignment-returned",
+                  "url": "#/stats/settle/reports",
+                  "route": "stats.settle.reports"
+                }, {
+                  "name": "SCANPAY_TRADE_TRANSFER_REPORT.MENU_NAME",
+                  "nameCN": "扫码支付划款报表",
+                  "icon": "assignment-returned",
+                  "url": "#/stats/transfer/reports",
+                  "route": "stats.transfer.reports"
+                }
+              ]
             }, {
-              "nameCN": "七牛 Ajax 上传文件",
+              "nameCN": "内部测试",
               "nameEN": "",
-              "icon": "cloud-upload",
-              "url": "#/test/qiniu",
-              "route": "test.qiniu"
-            }, {
-              "nameCN": "HTML5读取文件内容",
-              "nameEN": "",
-              "icon": "hardware:scanner",
-              "url": "#/test/filereader",
-              "route": "test.filereader"
-            }]
-          }];
+              "icon": "bug-report",
+              "url": "",
+              "route": "/test",
+              "children": [{
+                  "nameCN": "扫码支付",
+                  "nameEN": "",
+                  "icon": "image:center-focus-strong",
+                  "url": "#/test/scanpay",
+                  "route": "test.scanpay"
+                }
+                //   , {
+                //     "nameCN": "绑定支付",
+                //     "nameEN": "",
+                //     "icon": "image:style",
+                //     "url": "#/test/bindingpay",
+                //     "route": "test.bindingpay"
+                //   }, {
+                //     "nameCN": "七牛 Ajax 上传文件",
+                //     "nameEN": "",
+                //     "icon": "cloud-upload",
+                //     "url": "#/test/qiniu",
+                //     "route": "test.qiniu"
+                //   }, {
+                //     "nameCN": "HTML5读取文件内容",
+                //     "nameEN": "",
+                //     "icon": "hardware:scanner",
+                //     "url": "#/test/filereader",
+                //     "route": "test.filereader"
+                //   }
+              ]
+            }
+          ];
           this.genAdminMenus = [{
             "name": "SYSTEM_MANAGEMENT.MENUE_NAME",
             "nameCN": "系统管理",
@@ -564,19 +560,21 @@
               "icon": "image:crop-free",
               "url": "#/trade/list",
               "route": "trade.list"
-            }, {
-              "nameCN": "快捷支付",
-              "nameEN": "",
-              "icon": "hardware:phonelink",
-              "url": "#/trade/bindingpay/list",
-              "route": "trade.bindingpay.list"
-            }, {
-              "nameCN": "卡券核销",
-              "nameEN": "",
-              "icon": "card-giftcard",
-              "url": "#/trade/coupon/list",
-              "route": "trade.coupon.list"
-            }]
+            }
+            // , {
+            //   "nameCN": "快捷支付",
+            //   "nameEN": "",
+            //   "icon": "hardware:phonelink",
+            //   "url": "#/trade/bindingpay/list",
+            //   "route": "trade.bindingpay.list"
+            // }, {
+            //   "nameCN": "卡券核销",
+            //   "nameEN": "",
+            //   "icon": "card-giftcard",
+            //   "url": "#/trade/coupon/list",
+            //   "route": "trade.coupon.list"
+            // }
+        ]
           }, {
             "name": "STATS_REPORT.MENUE_NAME",
             "nameCN": "统计报表",

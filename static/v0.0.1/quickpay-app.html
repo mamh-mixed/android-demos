@@ -272,6 +272,21 @@
             }
             msgId = null;
           }
+          var paperTextareas = document.querySelectorAll('paper-textarea');
+          for (var i = 0, l = paperTextareas.length, item; i < l; i++) {
+            var msgId = null;
+            item = paperTextareas[i];
+            if (item.hasAttribute('data-msg-id')) {
+              msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('label', i18nMsg.getMsg(msgId));
+            }
+
+            if (item.required) {
+              msgId = item.getAttribute('data-error-msg-id');
+              item.setAttribute('error-message', i18nMsg.getMsg(msgId));
+            }
+            msgId = null;
+          }
 
           var datePickers = document.querySelectorAll('paper-date-picker');
           for (var i = 0, l = datePickers.length, item; i < l; i++) {

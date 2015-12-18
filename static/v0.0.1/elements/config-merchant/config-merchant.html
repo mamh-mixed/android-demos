@@ -142,12 +142,12 @@
       <paper-tab>
         <i18n-msg msgid="MERCHANT_INPUT.TAB_WXP">微信</i18n-msg>
       </paper-tab>
-      <paper-tab>
+      <!-- <paper-tab>
         <i18n-msg msgid="MERCHANT_INPUT.TAB_QQ_WALLET">QQ 钱包</i18n-msg>
       </paper-tab>
       <paper-tab>
         <i18n-msg msgid="MERCHANT_INPUT.TAB_ULIVE">优方</i18n-msg>
-      </paper-tab>
+      </paper-tab> -->
     </paper-tabs>
 
     <iron-pages selected="{{idx}}">
@@ -319,7 +319,7 @@
         </div>
       </section>
 
-      <section alias="comingsoon">
+      <!-- <section alias="comingsoon">
         <div class="row">
           <paper-input label="即将上线。。。" value="" data-msg-id="CHAN_MERCHANT.COMMING_SOON"></paper-input>
         </div>
@@ -339,7 +339,7 @@
             <i18n-msg msgid="BUTTON.SAVE_ULIVE">保存优方信息</i18n-msg>
           </paper-button>
         </div>
-      </section>
+      </section> -->
     </iron-pages>
     <x-ajax id="saveMerchantAjax" method="POST" url="/master/merchant/save" handle-as="json" debounce-duration="1000" on-response="handleSaveMerchantResponse"></x-ajax>
     <x-ajax id="updateMerchantAjax" method="POST" url="/master/merchant/update" handle-as="json" debounce-duration="1000" on-response="handleUpdateMerchantResponse"></x-ajax>
