@@ -1631,15 +1631,11 @@
     "description": "使汇率状态生效",
     "message": "使生效"
   },
-  "EXCHANGE_RATE.NOT_CHECKED": {
-    "description": "汇率状态未审核",
-    "message": "未審核"
+  "EXCHANGE_RATE.NOT_ENFORCED": {
+    "description": "汇率状态未生效",
+    "message": "未生效"
   },
-  "EXCHANGE_RATE.ALREADY_CHECKED": {
-    "description": "汇率状态已审核",
-    "message": "已審核"
-  },
-  "EXCHANGE_RATE.ALREADY_ACTIVATED": {
+  "EXCHANGE_RATE.ALREADY_ENFORCED": {
     "description": "汇率状态已生效",
     "message": "已生效"
   },
@@ -1652,16 +1648,12 @@
     "message": "是否要啟動匯率？"
   },
   "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL": {
-    "description": "审核失败",
-    "message": "審核失敗"
+    "description": "激活失败",
+    "message": "啟動失敗"
   },
   "EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS": {
-    "description": "審核成功",
-    "message": "審核成功"
-  },
-  "EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE": {
-    "description": "汇率计划生效时点已经过时了",
-    "message": "匯率生效時點過時，請重新錄入匯率"
+    "description": "激活成功",
+    "message": "啟動失敗"
   },
   "EXCHANGE_RATE.TOAST.NAN_ERROR": {
     "description": "非数字错误",
@@ -1691,14 +1683,6 @@
     "description": "查询汇率环比值浮动有效范围失败",
     "message": "査詢匯率環比值浮動有效範圍失敗"
   },
-  "EXCHANGE_RATE.TOAST.TWO_CURRENCY_CAN_NOT_CONSISTENT": {
-    "description": "基准币种和目标币种不能相同",
-    "message": "基準幣種和目標幣種不能相同"
-  },
-  "EXCHANGE_RATE.TOAST.ERROR_CURRENCY_CODE": {
-    "description": "币种代码错误，应该三位大写英文字符",
-    "message": "不合法的幣種代碼"
-  },
   "TOAST.JSON_RESOLVE_FAIL": {
     "description": "JSON 解析失败",
     "message": "JSON 解析失敗"
@@ -1722,10 +1706,6 @@
   "TOAST.SYSTEM_ERROR": {
     "description": "系统错误",
     "message": "系統錯誤"
-  },
-  "TOAST.INVALID_DATE_TIME_FORMAT": {
-    "description": "不支持的日期时间格式",
-    "message": "日期時間格式有誤，必須是‘YYYY-MM-DD hh:mm:ss’"
   },
   "SCANPAY_TRADE_LIST.SETT_CURR_AMT": {
     "description": "清算金额",
