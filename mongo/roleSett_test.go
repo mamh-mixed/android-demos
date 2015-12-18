@@ -16,11 +16,11 @@ func TestFindOneRoleSettCol(t *testing.T) {
 }
 
 func TestPaginationFindRoleSettCol(t *testing.T) {
-	role, date := "ALP", ""
+	role, date, reportType := "ALP", "", 1
 
 	size, page := 10, 1
 
-	result, total, err := RoleSettCol.PaginationFind(role, date, size, page)
+	result, total, err := RoleSettCol.PaginationFind(role, date, reportType, size, page)
 	if err != nil {
 		t.Errorf("test FAIL: %s", err)
 	}
