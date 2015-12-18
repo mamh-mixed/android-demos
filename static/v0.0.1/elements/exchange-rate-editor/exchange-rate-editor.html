@@ -10,7 +10,6 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        width: 400px;
       }
     }
 
@@ -164,9 +163,16 @@
               case 'SAVE_RATE_FAIL':
                 Util.toast('TOAST.SAVE_FAIL', 2500, true);
                 break;
+              case 'UNSUPPORT_TIME_FORMAT':
+                Util.toast('TOAST.INVALID_DATE_TIME_FORMAT', 2500, true);
+                break;
               case 'OUT_OF_RANGE':
                 // 超出范围
                 Util.toast('EXCHANGE_RATE.TOAST.D2D_RATIO_OUT_OF_RANGE', 2500, true);
+                break;
+              case 'ENFORCEMENT_TIME_OUTDATE':
+                // 汇率生效时点过时
+                Util.toast('EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE', 2500, true);
                 break;
               default:
                 Util.toast('TOAST.SYSTEM_ERROR', 2500, true);

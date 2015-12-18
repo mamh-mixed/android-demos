@@ -1,44 +1,42 @@
 package mongo
 
 import (
+	"github.com/CardInfoLink/quickpay/model"
 	"testing"
 	"time"
-
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/util"
 )
 
-func TestExchangeRatePaginationFind(t *testing.T) {
+func TestUpdateExchangeRate(t *testing.T) {
 	cond := &model.ExchangeRate{
-		LocalCurrency:  "JPY",
-		TargetCurrency: "CNY",
-		IsEnforced:     true,
+		CurrencyPair:    "JPY<=>CNY",
+		Rate:            1.33,
+		EnforcementTime: time.Now().Format("2006-01-02 15:04:05"),
+		EnforceUser:     "admin",
 	}
 
-	size, page := 20, 1
-
-	results, total, err := ExchangeRateColl.PaginationFind(cond, size, page)
+	err := ExchangeRateColl.Upsert(cond)
 	if err != nil {
-		t.Logf("FAIL %s", err)
+		t.Logf("error is %s", err)
+		t.FailNow()
 	}
-
-	t.Logf("total is %d, result is %#v", total, results)
 }
 
-func TestAddExchangeRate(t *testing.T) {
-	rate := &model.ExchangeRate{
-		EId:            util.SerialNumber(),
-		LocalCurrency:  "TWD",
-		TargetCurrency: "USD",
-		// Rate:                0.0306,
-		PlanEnforcementTime: "2015-12-15 00:00:00",
-		CreateTime:          time.Now().Format("2006-01-02 15:04:05"),
-		CreateUser:          "admin",
-		UpdateTime:          time.Now().Format("2006-01-02 15:04:05"),
-		UpdateUser:          "admin",
-		// ActualEnforcementTime: "",
+func TestFindExchangeRate(t *testing.T) {
+	currPair := "TWD<=>CNY"
+
+	result, err := ExchangeRateColl.FindOne(currPair)
+	if err != nil {
+		t.Logf("error is %s", err)
+		t.FailNow()
 	}
 
-	err := ExchangeRateColl.Add(rate)
-	t.Logf("error is %s", err)
+	t.Logf("result is %#v", result)
+}
+
+func TestTimeLocal(t *testing.T) {
+	t.Logf("local is %s", time.Local)
+
+	tm, err := time.ParseInLocation("2006-01-02 15:04:05", "2015-12-18 00:00:00", time.Local)
+
+	t.Logf("time is %s, error is %s", tm, err)
 }

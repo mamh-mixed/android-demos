@@ -1631,11 +1631,15 @@
     "description": "使汇率状态生效",
     "message": "使生效"
   },
-  "EXCHANGE_RATE.NOT_ENFORCED": {
-    "description": "汇率状态未生效",
-    "message": "未生效"
+  "EXCHANGE_RATE.NOT_CHECKED": {
+    "description": "汇率状态未审核",
+    "message": "未审核"
   },
-  "EXCHANGE_RATE.ALREADY_ENFORCED": {
+  "EXCHANGE_RATE.ALREADY_CHECKED": {
+    "description": "汇率状态已审核",
+    "message": "已审核"
+  },
+  "EXCHANGE_RATE.ALREADY_ACTIVATED": {
     "description": "汇率状态已生效",
     "message": "已生效"
   },
@@ -1649,11 +1653,15 @@
   },
   "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL": {
     "description": "激活失败",
-    "message": "激活失败"
+    "message": "审核失败"
   },
   "EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS": {
     "description": "激活成功",
-    "message": "激活成功"
+    "message": "审核成功"
+  },
+  "EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE": {
+    "description": "汇率计划生效时点已经过时了",
+    "message": "汇率生效时点过时，请重新录入汇率"
   },
   "EXCHANGE_RATE.TOAST.NAN_ERROR": {
     "description": "非数字错误",
@@ -1706,6 +1714,10 @@
   "TOAST.SYSTEM_ERROR": {
     "description": "系统错误",
     "message": "系统错误"
+  },
+  "TOAST.INVALID_DATE_TIME_FORMAT": {
+    "description": "不支持的日期时间格式",
+    "message": "日期时间格式有误，必须是‘YYYY-MM-DD hh:mm:ss’"
   },
   "SCANPAY_TRADE_LIST.SETT_CURR_AMT": {
     "description": "清算金额",
