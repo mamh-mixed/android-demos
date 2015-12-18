@@ -157,7 +157,7 @@
         handleSaveSubAgentResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('SUB_AGNET.'+response.message, 3000, true);
+            Util.toast('SUB_AGENT.'+response.message, 3000, true);
             return;
           }
           Util.toast('SUB_AGENT.'+response.message, 3000, true);

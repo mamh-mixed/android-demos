@@ -768,8 +768,8 @@
     "message": "編輯公司"
   },
   "SUB_AGENT.IF_DELETE_SUB_AGENT": {
-    "description": "是否删除此代理?",
-    "message": "是否删除此代理?"
+    "description": "是否删除此公司?",
+    "message": "是否删除此公司?"
   },
   "SUB_AGENT.REQUIRED_FILED_NOT_BE_EMPTY": {
     "description": "必填项不能为空",
