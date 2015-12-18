@@ -32,41 +32,53 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogAdd">
-      <h2>创建公司</h2>
+      <h2>
+           <i18n-msg msgid="SUB_AGENT.CREATE_SUB_AGENT">创建公司</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode1"></x-select>
+          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode1" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
         </div>
         <div class="row">
-          <paper-input label="公司代码" value="{{subAgent.subAgentCode::input}}"></paper-input>
+          <paper-input label="公司代码" value="{{subAgent.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
+          <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}" data-msg-id="TRADE_DETAIL.GROUP_NAME"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">
+            <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
 
     <paper-dialog with-backdrop id="dialogEdit">
-      <h2>编辑公司</h2>
+      <h2>
+           <i18n-msg msgid="SUB_AGENT.EDITOR_SUB_AGENT">编辑公司</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode2"></x-select>
+          <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" id="agentCode2" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
         </div>
         <div class="row">
           <!-- 这里的paperInput不能设置disabled，否则在火狐下会报错。 more info： https://github.com/PolymerElements/iron-input/issues/47 20151128-->
-          <paper-input label="公司代码" value="[[subAgent.subAgentCode]]"></paper-input>
+          <paper-input label="公司代码" value="[[subAgent.subAgentCode]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
+          <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}" data-msg-id="TRADE_DETAIL.GROUP_NAME"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleUpdateTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleUpdateTapped">
+            <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax auto id="queryAgentAjax" params='{"page":"1", "size":"1000"}' method="GET" url="/master/agent/find" handle-as="json" debounce-duration="1000" on-response="handleQueryAgentsResponse"></x-ajax>
@@ -84,6 +96,11 @@
         },
         ready: function() {
           this.subAgent = {};
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'sub-agent-editor'
+          });
         },
         attributeChanged: function(attribute) {
           if (attribute === 'sub-agent') {
@@ -106,13 +123,13 @@
         handleQueryAgentsResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
           var pagination = response.data;
           if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             return;
           }
 
@@ -140,9 +157,10 @@
         handleSaveSubAgentResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SUB_AGENT.'+response.message, 3000, true);
             return;
           }
+          Util.toast('SUB_AGENT.'+response.message, 3000, true);
           this.agent = {};
           this.$.dialogAdd.close();
           this.$.dialogEdit.close();
@@ -158,9 +176,10 @@
         handleUpdateSubAgentResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SUB_AGENT.'+response.message, 3000, true);
             return;
           }
+          Util.toast('SUB_AGENT.'+response.message, 3000, true);
           this.agent = {};
           this.$.dialogAdd.close();
           this.$.dialogEdit.close();

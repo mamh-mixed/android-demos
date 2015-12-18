@@ -27,18 +27,27 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogDelete">
-      <h2>删除【
-        <span>{{group.groupName}}</span>】商户</h2>
+      <h2>
+        <i18n-msg msgid="AGENT.DELETE">删除</i18n-msg>【
+        <span>{{group.groupName}}</span>】
+        <i18n-msg msgid="GROUP.GROUP">商户</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
           <iron-icon icon="report-problem"></iron-icon>
           &nbsp;&nbsp;&nbsp;
-          <span>是否删除此商户?</span>
+          <span>
+            <i18n-msg msgid="GROUP.IF_DELETE_GROUP">是否删除此商户?</i18n-msg>
+          </span>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>否</paper-button>
-        <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleDeleteTapped">
+          <i18n-msg msgid="BUTTON.CONFIRM">确认</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="deleteAjax" method="POST" url="/master/group/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
@@ -56,6 +65,11 @@
         open: function() {
           this.$.dialogDelete.open();
         },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'group-delete'
+          });
+        },
         // 点击确定删除事件
         handleDeleteTapped: function() {
           this.$.deleteAjax.params = {
@@ -67,9 +81,10 @@
         handleDeleteResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('GROUP.' + response.message, 3000, true);
             return;
           }
+          Util.toast('GROUP.' + response.message, 3000, true);
           this.$.dialogDelete.close();
           this.fire('saved');
         }

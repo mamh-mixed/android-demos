@@ -27,17 +27,25 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogDelete">
-      <h2>删除路由策略</h2>
+      <h2>
+        <i18n-msg msgid="ROUTE_POLICY.DELETE_ROUTE_PILICY">删除路由策略</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
           <iron-icon icon="report-problem"></iron-icon>
           &nbsp;&nbsp;&nbsp;
-          <span>是否删除此路由策略?</span>
+          <span>
+            <i18n-msg msgid="ROUTE_POLICY.IF_DELETE_ROUTE_PILICY">是否删除此路由策略?</i18n-msg>
+          </span>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>否</paper-button>
-        <paper-button autofocus on-tap="handleDeleteTapped">是</paper-button>
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleDeleteTapped">
+          <i18n-msg msgid="BUTTON.CONFIRM">确认</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="deleteAjax" method="POST" url="/master/router/delete" handle-as="json" debounce-duration="1000" on-response="handleDeleteResponse"></x-ajax>
@@ -46,7 +54,11 @@
     (function() {
       Polymer({
         is: 'route-delete',
-
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'route-delete'
+          });
+        },
         properties: {
           route: {
             type: Object
@@ -68,9 +80,10 @@
         handleDeleteResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('ROUTE_POLICY.'+response.message, 3000,true);
             return;
           }
+          Util.toast('ROUTE_POLICY.'+response.message, 3000,true);
           this.$.dialogDelete.close();
           this.fire('saved');
         }

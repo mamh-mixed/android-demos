@@ -72,49 +72,49 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, r)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if r.MerId == "" {
-		log.Error("MerId")
-		return model.NewResultBody(3, "缺失必要元素 merId")
+		log.Error("NO MerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if r.ChanCode == "" {
-		log.Error("没有 ChanCode")
-		return model.NewResultBody(3, "缺失必要元素 chanCode")
+		log.Error("NO ChanCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if r.ChanMerId == "" {
-		log.Error("没有 ChanMerId")
-		return model.NewResultBody(3, "缺失必要元素 chanMerId")
+		log.Error("NO ChanMerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if r.CardBrand == "" {
-		log.Error("没有 CardBrand")
-		return model.NewResultBody(3, "缺失必要元素 cardBrand")
+		log.Error("NO CardBrand")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	merchant, err := mongo.MerchantColl.FindNotInCache(r.MerId)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.NewResultBody(4, "merId不存在")
+			return model.NewResultBody(4, "NO_MER_ID")
 		} else {
-			return model.NewResultBody(1, "查询数据库失败")
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 	}
 	// 对清算标识与清算角色做校验
 	if r.SettFlag == model.SR_AGENT {
 		if r.SettRole != merchant.AgentCode {
-			return model.NewResultBody(5, "agentCode错误")
+			return model.NewResultBody(5, "AGENT_CODE_ERROR")
 		}
 	} else if r.SettFlag == model.SR_COMPANY {
 		if r.SettRole != merchant.SubAgentCode {
-			return model.NewResultBody(5, "subAgentCode错误")
+			return model.NewResultBody(5, "SUB_AGENT_CODE_ERROR")
 		}
 	} else if r.SettFlag == model.SR_GROUP {
 		if r.SettRole != merchant.GroupCode {
-			return model.NewResultBody(5, "groupCode错误")
+			return model.NewResultBody(5, "GROUP_CODE_ERROR")
 		}
 	} else if r.SettFlag == model.SR_CIL {
 		if r.SettRole != "CIL" {
@@ -122,21 +122,21 @@ func (i *routerPolicy) Save(data []byte) (result *model.ResultBody) {
 		}
 	} else if r.SettFlag == model.SR_CHANNEL {
 		if r.SettFlag == "ALP" && r.SettRole != "ALP" {
-			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+			return model.NewResultBody(5, "SETT_FLAG_NOT_MATCH_SETT_ROLE")
 		} else if r.SettFlag == "WXP" && r.SettRole != "WXP" {
-			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+			return model.NewResultBody(5, "SETT_FLAG_NOT_MATCH_SETT_ROLE")
 		}
 	}
 
 	err = mongo.RouterPolicyColl.Insert(r)
 	if err != nil {
-		log.Errorf("保存路由信息失败:%s", err)
-		return model.NewResultBody(1, "保存路由信息失败")
+		log.Errorf("create route policy error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "保存成功",
+		Message: "CREATE_ROUTE_POLICY_SUCCESS",
 		Data:    r,
 	}
 
@@ -149,13 +149,13 @@ func (i *routerPolicy) Delete(merId, chanCode, cardBrand string) (result *model.
 	err := mongo.RouterPolicyColl.Remove(merId, chanCode, cardBrand)
 
 	if err != nil {
-		log.Errorf("删除路由失败: %s", err)
-		return model.NewResultBody(1, "删除路由失败")
+		log.Errorf("delete route policy error: %s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "删除成功",
+		Message: "DELETE_ROUTE_POLICY_ERROR",
 	}
 
 	return result
@@ -166,71 +166,71 @@ func (i *routerPolicy) Update(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, r)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if r.MerId == "" {
 		log.Error("MerId")
-		return model.NewResultBody(3, "缺失必要元素 merId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if r.ChanCode == "" {
-		log.Error("没有 ChanCode")
-		return model.NewResultBody(3, "缺失必要元素 chanCode")
+		log.Error("NO ChanCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if r.ChanMerId == "" {
-		log.Error("没有 ChanMerId")
-		return model.NewResultBody(3, "缺失必要元素 chanMerId")
+		log.Error("NO ChanMerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if r.CardBrand == "" {
-		log.Error("没有 CardBrand")
-		return model.NewResultBody(3, "缺失必要元素 cardBrand")
+		log.Error("NO CardBrand")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	merchant, err := mongo.MerchantColl.FindNotInCache(r.MerId)
 	if err != nil {
 		if err.Error() == "not found" {
-			return model.NewResultBody(4, "merId不存在")
+			return model.NewResultBody(4, "NO_MER_ID")
 		} else {
-			return model.NewResultBody(1, "查询数据库失败")
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 	}
 	// 对清算标识与清算角色做校验
 	if r.SettFlag == model.SR_AGENT {
 		if r.SettRole != merchant.AgentCode {
-			return model.NewResultBody(5, "agentCode错误")
+			return model.NewResultBody(5, "AGENT_CODE_ERROR")
 		}
 	} else if r.SettFlag == model.SR_COMPANY {
 		if r.SettRole != merchant.SubAgentCode {
-			return model.NewResultBody(5, "subAgentCode错误")
+			return model.NewResultBody(5, "SUB_AGENT_CODE_ERROR")
 		}
 	} else if r.SettFlag == model.SR_GROUP {
 		if r.SettRole != merchant.GroupCode {
-			return model.NewResultBody(5, "groupCode错误")
+			return model.NewResultBody(5, "GROUP_CODE_ERROR")
 		}
 	} else if r.SettFlag == model.SR_CIL {
 		if r.SettRole != "CIL" {
-			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+			return model.NewResultBody(5, "SETT_FLAG_NOT_MATCH_SETT_ROLE")
 		}
 	} else if r.SettFlag == model.SR_CHANNEL {
 		if r.SettFlag == "ALP" && r.SettRole != "ALP" {
-			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+			return model.NewResultBody(5, "SETT_FLAG_NOT_MATCH_SETT_ROLE")
 		} else if r.SettFlag == "WXP" && r.SettRole != "WXP" {
-			return model.NewResultBody(5, "清算标识与清算角色不匹配")
+			return model.NewResultBody(5, "SETT_FLAG_NOT_MATCH_SETT_ROLE")
 		}
 	}
 
 	err = mongo.RouterPolicyColl.Update(r)
 	if err != nil {
-		log.Errorf("保存路由信息失败:%s", err)
-		return model.NewResultBody(1, "保存路由信息失败")
+		log.Errorf("update route policy error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "保存成功",
+		Message: "UPDATE_ROUTE_POLICY_SUCCESS",
 		Data:    r,
 	}
 

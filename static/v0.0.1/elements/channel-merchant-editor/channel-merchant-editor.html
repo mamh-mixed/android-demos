@@ -65,42 +65,52 @@
     <paper-dialog with-backdrop id="dialogAdd">
       <h2 id="header"></h2>
       <paper-dialog-scrollable>
-        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道代码" class="validate-container" required style="width:100%;" disabled="[[chanCodeDisabled]]"></x-select>
+        <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道代码" class="validate-container" required style="width:100%;" disabled="[[chanCodeDisabled]]" data-msg-id="CHAN_MERCHANT.CHAN_CODE" is-locale></x-select>
         <!-- <paper-input label="机构代码" value="{{chanMer.agentCode::input}}"></paper-input>
           <paper-input label="终端代码" value="{{chanMer.terminalId::input}}"></paper-input> -->
         <div id="alp">
-          <paper-input id="achanMerId" label="Partner ID" value="{{alp.chanMerId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="achanMerName" label="商户名称" value="{{alp.chanMerName::input}}" error-message="必填项"></paper-input>
-          <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
-          <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
+          <paper-input id="achanMerId" label="Partner ID" value="{{alp.chanMerId::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="achanMerName" label="商户名称" value="{{alp.chanMerName::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
+          <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.SIGN_CERT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.AGENT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
         </div>
         <div id="wxp">
-          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}"></paper-input>
-          <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;"> 是否代理商模式</paper-radio-button>
-          <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]"></x-select>
-          <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项"></paper-input>
-          <paper-input id="wsignCert" label="签名密钥" value="{{weixin.signCert::input}}" error-message="必填项"></paper-input>
+          <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="wchanMerName" label="商户名称" value="{{weixin.chanMerName::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
+          <paper-radio-button id="wisAgentMode" checked$="{{weixin.isAgentMode}}" on-change="handleIsAgentChangeEvent" style="margin-top:20px;">
+              <i18n-msg msgid="CHAN_MERCHANT.IS_AGENT_MODE">是否代理商模式</i18n-msg>
+          </paper-radio-button>
+          <x-select id="wbigChanMerId" items="[[wbigchanMerIds]]" selected-item="{{wbigchanMerId}}" class="validate-container" label="大商户号" required error-message="必填项" disabled="[[wbigchanMerIdDisabled]]" data-msg-id="CHAN_MERCHANT.BIG_MERCHANT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></x-select>
+          <paper-input id="wxpAppId" label="微信支付App Id" value="{{weixin.wxpAppId::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.WXP_APP_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="wsignCert" label="签名密钥" value="{{weixin.signCert::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.SIGN_CERT_WXP" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
           <div class="row">
             <paper-input id="httpCert" label="HTTP 证书" type="file" on-change="handleWeixinHttpCertFile" style="margin-left:0px;"></paper-input>
-            <label id="httpCertL" style="margin-top:20px;">请选择.pem文件的HTTP证书</label>
+            <label id="httpCertL" style="margin-top:20px;">
+                <i18n-msg msgid="CHAN_MERCHANT.HTTP_CERT_LABEL">请选择.pem文件的HTTP证书</i18n-msg>
+            </label>
           </div>
-          <paper-textarea id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项"></paper-textarea>
+          <paper-textarea id="httpCertTArea" label="HTTP 证书" value="{{weixin.httpCert::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.HTTP_CERT" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-textarea>
           <div class="row">
             <paper-input id="httpKey" label="HTTP 密钥" type="file" on-change="handleWeixinHttpKeyFile" style="margin-left:0px;"></paper-input>
-            <label id="httpKeyL" style="margin-top:20px;">请选择.pem文件的HTTP密钥</label>
+            <label id="httpKeyL" style="margin-top:20px;">
+                <i18n-msg msgid="CHAN_MERCHANT.HTTP_KEY_LABEL">请选择.pem文件的HTTP密钥</i18n-msg>
+            </label>
           </div>
-          <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项"></paper-textarea>
+          <paper-textarea id="httpKeyTArea" label="HTTP 密钥" value="{{weixin.httpKey::input}}" error-message="必填项" data-msg-id="CHAN_MERCHANT.HTTP_KEY" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-textarea>
         </div>
         <div id="ulive">
-          <paper-input id="uliveChanMerId" label="渠道商户号" value="{{ulive.chanMerId::input}}" required error-message="必填项"></paper-input>
-          <paper-input id="uliveChanMerName" label="渠道商户名称" value="{{ulive.chanMerName::input}}"></paper-input>
-          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="uliveChanMerId" label="渠道商户号" value="{{ulive.chanMerId::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+          <paper-input id="uliveChanMerName" label="渠道商户名称" value="{{ulive.chanMerName::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
+          <paper-input id="uliveTerminalId" label="终端号" value="{{ulive.terminalId::input}}" required error-message="必填项" data-msg-id="CHAN_MERCHANT.TERMINAL_ID" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button on-tap="handleSaveTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button on-tap="handleSaveTapped">
+            <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
   </template>
@@ -117,13 +127,13 @@
             type: Array,
             value: [{
               key: 'ALP',
-              value: 'ALP 支付宝'
+              value: 'CHANNEL.ALIPAY'
             }, {
               key: 'WXP',
-              value: 'WXP 微信'
+              value: 'CHANNEL.WECHAT'
             }, {
               key: 'ULIVE',
-              value: 'ULIVE 优方'
+              value: 'CHANNEL.ULIVE'
             }]
           },
           bigMerchant: {
@@ -221,12 +231,13 @@
           }
         },
         open: function() {
+          var i18nMsg = document.createElement('i18n-msg');
           this.$.dialogAdd.open();
           if (this.pageType === 'create') {
-            this.$.header.textContent = '创建渠道商户';
+            this.$.header.textContent = i18nMsg.getMsg('CHAN_MERCHANT.CREATE_MERCHANT');
             this.channel = {
               key: 'ALP',
-              value: 'ALP 支付宝'
+              value: i18nMsg.getMsg('CHANNEL.ALIPAY')
             };
             this.alp = {};
             this.weixin = {
@@ -255,15 +266,15 @@
               value: '讯联 12010128a1',
             };
           } else {
-            this.$.header.textContent = '编辑渠道商户';
+            this.$.header.textContent = i18nMsg.getMsg('CHAN_MERCHANT.EDITOR_MERCHANT');
             var map = {
-              'ALP': 'ALP 支付宝',
-              'WXP': 'WXP 微信',
-              'ULIVE': 'ULIVE 优方'
+              'ALP': 'CHANNEL.ALIPAY',
+              'WXP': 'CHANNEL.WECHAT',
+              'ULIVE': 'CHANNEL.ULIVE'
             };
             this.channel = {
               key: this.chanMer.chanCode,
-              value: map[this.chanMer.chanCode]
+              value: i18nMsg.getMsg(map[this.chanMer.chanCode])
             };
             // this.$.chanCode.childNodes[1].children[1].disab
             this.chanCodeDisabled = true;
@@ -349,11 +360,11 @@
           if (this.channel) {
             if (this.channel.key === 'ALP' && !this.isALPConfigEmpty()) {
               if (this.alp.signCert && this.alp.signCert.length < 8) {
-                Util.toast('MD5 KEY长度不能小于8位', 3000);
+                 Util.toast('CHAN_MERCHANT.SIGN_KEY_ALP_LOWEST_LENGTH', 3000, true);
                 return;
               }
               if (this.alp.signCert !== this.oldAlpSignCert && this.alp.signCert.indexOf('*') !== -1) {
-                Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
+                Util.toast('CHAN_MERCHANT.SIGN_CERT_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
                 this.set('alp.signCert', this.oldAlpSignCert)
                 return;
               }
@@ -361,29 +372,29 @@
               this.chanMer = this.alp;
             } else if (this.channel.key === 'WXP' && !this.isWXPConfigEmpty()) {
               if (this.weixin.signCert && this.weixin.signCert.length < 8) {
-                Util.toast('签名密钥长度不能小于8位', 3000);
+                Util.toast('MERCHANT.SIGN_CERT_LOWEST_LENGTH', 3000, true);
                 return;
               }
               if (this.weixin.httpCert && this.weixin.httpCert !== '' && this.weixin.httpCert.length < 8) {
-                Util.toast('HTTP证书长度不能小于8位', 3000);
+                Util.toast('CHAN_MERCHANT.SIGN_CERT_WXP_LOWEST_LENGTH', 3000, true);
                 return;
               }
               if (this.weixin.httpKey && this.weixin.httpKey !== '' && this.weixin.httpKey.length < 8) {
-                Util.toast('HTTP密钥长度不能小于8位', 3000);
+                Util.toast('CHAN_MERCHANT.TOAST.HTTP_KEY_LOWEST_LENGTH', 3000,true);
                 return;
               }
               if (this.weixin.signCert !== this.oldWxpSignCert && this.weixin.signCert.indexOf('*') !== -1) {
-                Util.toast('签名密钥不能包含 *,已恢复为原签名密钥', 3000);
+                Util.toast('MERCHANT.SIGN_KEY_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
                 this.set('weixin.signCert', this.oldWxpSignCert)
                 return;
               }
               if (this.weixin.httpCert !== this.oldWxpHttpCert && this.weixin.httpCert.indexOf('*') !== -1) {
-                Util.toast('HTTP证书不能包含 *,已恢复为原HTTP证书', 3000);
+                Util.toast('CHAN_MERCHANT.SIGN_CERT_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
                 this.set('weixin.httpCert', this.oldWxpHttpCert)
                 return;
               }
               if (this.weixin.httpKey !== this.oldWxpHttpKey && this.weixin.httpKey.indexOf('*') !== -1) {
-                Util.toast('HTTP密钥不能包含 *,已恢复为原HTTP密钥', 3000);
+                Util.toast('CHAN_MERCHANT.SIGN_KEY_WXP_CANNOT_CONTAIN_STAR_AND_RESTORE', 3000, true);
                 this.set('weixin.httpKey', this.oldWxpHttpKey)
                 return;
               }
@@ -391,7 +402,7 @@
               // 如果勾选了代理商模式，就直接填充上大商户的信息
               if (this.weixin.isAgentMode) {
                 if (!this.bigMerchant) {
-                  Util.toast(this.wbigchanMerId.key + '大商户信息为空', 3000);
+                  Util.toast(this.wbigchanMerId.key + 'big merchant is empty', 3000);
                   return;
                 }
                 this.set('weixin.agentMer', this.bigMerchant);
@@ -402,12 +413,12 @@
             } else if (this.channel.key === 'ULIVE' && !this.isUliveConfigEmpty()) {
               this.chanMer = this.ulive;
             } else {
-              Util.toast('必填项不能为空', 3000);
+              Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000,true);
               return;
             }
 
           } else {
-            Util.toast('请选择渠道', 3000);
+            Util.toast('CHAN_MERCHANT.TOAST.SELECT_CHANNEL', 3000,true);
             return;
           }
           this.$.saveAjax.body = JSON.stringify(this.chanMer);
@@ -417,11 +428,11 @@
         handleSaveChannelMerchantResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('CHAN_MERCHANT.'+response.message, 3000,true);
             return;
           }
           this.$.dialogAdd.close();
-          Util.toast(response.message, 1000);
+          Util.toast('CHAN_MERCHANT.'+response.message, 1000,true);
           this.fire('saved');
           this.set('chanMer', {});
         },
@@ -435,14 +446,14 @@
               var reader = new FileReader();
               reader.onload = function() {
                 if (/BEGIN CERTIFICATE/.test(this.result) === false) {
-                  Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
+                 Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR', 3000, true);
                   return;
                 }
                 _this.set('weixin.httpCert', this.result);
               };
               reader.readAsText(file);
             } else {
-              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+              Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
             }
           }
         },
@@ -455,14 +466,14 @@
               var reader = new FileReader();
               reader.onload = function() {
                 if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
-                  Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN RSA PRIVATE KEY----- 开头', 3000);
+                  Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR', 3000, true);
                   return;
                 }
                 _this.set('weixin.httpKey', this.result);
               };
               reader.readAsText(file);
             } else {
-              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+              Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
             }
           }
         },

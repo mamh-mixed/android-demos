@@ -225,7 +225,7 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 	err := json.Unmarshal(data, user)
 	if err != nil {
 		log.Errorf("json unmsrshal err,%s", err)
-		return model.NewResultBody(1, "json失败")
+		return model.NewResultBody(1, "JSON_ERROR")
 	}
 	// 设置默认密码
 	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
@@ -233,64 +233,64 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 
 	// 判断必填项是否为空
 	if user.UserName == "" {
-		log.Errorf("必填项不能为空")
-		return model.NewResultBody(2, "必填项不能为空")
+		log.Errorf("Required fields can not be empty")
+		return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	if user.UserType == model.UserTypeAgent {
 		if user.AgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		_, err := mongo.AgentColl.Find(user.AgentCode)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此代理代码")
+				return model.NewResultBody(3, "NO_AGENTCODE")
 			}
-			log.Errorf("查询代理(%s)出错:%s", user.AgentCode, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select agent(%s) error:%s", user.AgentCode, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 	} else if user.UserType == model.UserTypeCompany {
 		if user.SubAgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		subAgent, err := mongo.SubAgentColl.Find(user.SubAgentCode)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此公司代码")
+				return model.NewResultBody(3, "NO_SUNAGENTCODE")
 			}
-			log.Errorf("查询二级代理(%s)出错:%s", user.SubAgentCode, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select subagent(%s)error:%s", user.SubAgentCode, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		user.AgentCode = subAgent.AgentCode
 
 	} else if user.UserType == model.UserTypeMerchant {
 		if user.GroupCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		group, err := mongo.GroupColl.Find(user.GroupCode)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此商户代码")
+				return model.NewResultBody(3, "NO_GROUPCODE")
 			}
-			log.Errorf("查询集团(%s)出错: %s", user.GroupCode, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select group(%s)error: %s", user.GroupCode, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		user.AgentCode = group.AgentCode
 		user.SubAgentCode = group.SubAgentCode
 	} else if user.UserType == model.UserTypeShop {
 		if user.MerId == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		merchant, err := mongo.MerchantColl.FindNotInCache(user.MerId)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此门店代码")
+				return model.NewResultBody(3, "NO_MERCHANTID")
 			}
-			log.Errorf("查询一个商户(%s)出错: %s", user.MerId, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select merchant(%s)err: %s", user.MerId, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		user.AgentCode = merchant.AgentCode
 		user.SubAgentCode = merchant.SubAgentCode
@@ -303,8 +303,8 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 	// 用户名不能重复
 	_, err = mongo.UserColl.FindOneUser(user.UserName, "", "")
 	if err == nil {
-		log.Errorf("用户名已存在,userName=%s", user.UserName)
-		return model.NewResultBody(3, "用户名已存在")
+		log.Errorf("username exists,userName=%s", user.UserName)
+		return model.NewResultBody(3, "USERNAME_EXIST")
 	}
 	// 邮箱不能重复
 	// _, err = mongo.UserColl.FindOneUser("", user.Mail, "")
@@ -321,12 +321,12 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 
 	err = mongo.UserColl.Add(user)
 	if err != nil {
-		log.Errorf("创建用户失败,%s", err)
-		return model.NewResultBody(6, "创建用户失败")
+		log.Errorf("create user error,%s", err)
+		return model.NewResultBody(6, "ERROR")
 	}
 	ret = &model.ResultBody{
 		Status:  0,
-		Message: "创建用户成功",
+		Message: "CREATE_USER_SUCCESS",
 	}
 	return ret
 }
@@ -338,71 +338,71 @@ func (u *userController) UpdateUser(data []byte) (ret *model.ResultBody) {
 	err := json.Unmarshal(data, user)
 	if err != nil {
 		log.Errorf("json unmsrshal err,%s", err)
-		return model.NewResultBody(1, "json失败")
+		return model.NewResultBody(1, "JSON_ERROR")
 	}
 	if user.UserName == "" || user.Password == "" {
-		log.Errorf("用户名和密码不能为空")
-		return model.NewResultBody(2, "用户名和密码不能为空")
+		log.Errorf("Required fields can not be empty")
+		return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	if user.UserName == "" {
-		log.Errorf("必填项不能为空")
-		return model.NewResultBody(2, "必填项不能为空")
+		log.Errorf("Required fields can not be empty")
+		return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	if user.UserType == model.UserTypeAgent {
 		if user.AgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		_, err := mongo.AgentColl.Find(user.AgentCode)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此代理代码")
+				return model.NewResultBody(3, "NO_AGENTCODE")
 			}
-			log.Errorf("查询代理(%s)出错:%s", user.AgentCode, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select agent(%s) error:%s", user.AgentCode, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 	} else if user.UserType == model.UserTypeCompany {
 		if user.SubAgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		subAgent, err := mongo.SubAgentColl.Find(user.SubAgentCode)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此公司代码")
+				return model.NewResultBody(3, "NO_SUNAGENTCODE")
 			}
-			log.Errorf("查询二级代理(%s)出错:%s", user.SubAgentCode, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select subAgent(%s)error:%s", user.SubAgentCode, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		user.AgentCode = subAgent.AgentCode
 
 	} else if user.UserType == model.UserTypeMerchant {
 		if user.GroupCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		group, err := mongo.GroupColl.Find(user.GroupCode)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此商户代码")
+				return model.NewResultBody(3, "NO_GROUPCODE")
 			}
-			log.Errorf("查询集团(%s)出错: %s", user.GroupCode, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select group(%s)error: %s", user.GroupCode, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 		user.AgentCode = group.AgentCode
 		user.SubAgentCode = group.SubAgentCode
 	} else if user.UserType == model.UserTypeShop {
 		if user.MerId == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
+			log.Errorf("Required fields can not be empty")
+			return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 		}
 		merchant, err := mongo.MerchantColl.FindNotInCache(user.MerId)
 		if err != nil {
 			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此门店代码")
+				return model.NewResultBody(3, "NO_MERCHANTID")
 			}
-			log.Errorf("查询一个商户(%s)出错: %s", user.MerId, err)
-			return model.NewResultBody(1, "查询失败")
+			log.Errorf("select merchant(%s)error: %s", user.MerId, err)
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 
 		user.AgentCode = merchant.AgentCode
@@ -413,12 +413,12 @@ func (u *userController) UpdateUser(data []byte) (ret *model.ResultBody) {
 
 	err = mongo.UserColl.Update(user)
 	if err != nil {
-		log.Errorf("更新用户失败,%s", err)
-		return model.NewResultBody(5, "更新用户失败")
+		log.Errorf("update user error,%s", err)
+		return model.NewResultBody(5, "ERROR")
 	}
 	ret = &model.ResultBody{
 		Status:  0,
-		Message: "更新用户成功",
+		Message: "UPDATE_USER_SUCCESS",
 	}
 	return ret
 }
@@ -436,8 +436,8 @@ func (u *userController) Find(user *model.User, size, page int) (ret *model.Resu
 
 	users, total, err := mongo.UserColl.PaginationFind(user, size, page)
 	if err != nil {
-		log.Errorf("查询所有用户出错:%s", err)
-		return model.NewResultBody(1, "查询失败")
+		log.Errorf("select all user err:%s", err)
+		return model.NewResultBody(1, "SELECT_ERROR")
 	}
 
 	// 分页信息
@@ -461,17 +461,17 @@ func (u *userController) Find(user *model.User, size, page int) (ret *model.Resu
 // 删除用户
 func (u *userController) RemoveUser(userName string) (ret *model.ResultBody) {
 	if userName == "" {
-		log.Debugf("用户名不能为空")
-		return model.NewResultBody(1, "用户名不能为空")
+		log.Debugf("Required fields can not be empty")
+		return model.NewResultBody(1, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	err := mongo.UserColl.Remove(userName)
 	if err != nil {
-		log.Debugf("删除用户失败，%s", err)
-		return model.NewResultBody(2, "删除用户失败")
+		log.Debugf("delete user error，%s", err)
+		return model.NewResultBody(2, "ERROR")
 	}
 	ret = &model.ResultBody{
 		Status:  0,
-		Message: "删除用户成功",
+		Message: "DELETE_USER_SUCCESS",
 	}
 	return ret
 }

@@ -83,11 +83,21 @@
         </div>
       </paper-dialog-scrollable>
       <div class="buttons horizontal layout center" id="adminBtns">
-        <span hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个用户吗?</span>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
+        <span hidden$="{{!deleteFlag}}" style="color:#FF0000;">
+            <i18n-msg msgid="USERMANAGEMENT.IF_DELETE_USER">您确定要删除这个用户吗?</i18n-msg>
+        </span>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">
+            <i18n-msg msgid="BUTTON.CONFIRM">确认</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">
+            <i18n-msg msgid="BUTTON.DELETE">删除</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">
+            <i18n-msg msgid="BUTTON.EDITOR">编辑</i18n-msg>
+        </paper-button>
         <paper-button hidden$="{{deleteFlag}}" on-tap="handleResetPwdTapped">
           <i18n-msg msgid="USERMANAGEMENT.PASSWORDRESET">重置密码</i18n-msg>
         </paper-button>
@@ -189,10 +199,10 @@
       handleDeleteResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('USERMANAGEMENT.' + response.message, 3000, true);
           return;
         }
-        Util.toast(response.message, 3000);
+        Util.toast('USERMANAGEMENT.' + response.message, 3000, true);
         this.$.dialogView.close();
         this.fire('delete-ok');
       },
