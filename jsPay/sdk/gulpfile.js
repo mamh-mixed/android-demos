@@ -37,7 +37,6 @@ gulp.task('hint', function() {
 		])
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'));
-	// .pipe(jshint.reporter(stylish));
 });
 
 // clean assets
@@ -100,8 +99,7 @@ gulp.task('deploy', ['default'], function() {
 			'destination': '/home/weixin/cloudCashier/sdk'
 		},
 		'product': {
-			// 'destination': '/home/weixin/cloudCashier/jssdk'
-			'destination': '/home/weixin/cloudCashier/sdk'
+			'destination': '/home/weixin/cloudCashier/jssdk'
 		}
 	};
 

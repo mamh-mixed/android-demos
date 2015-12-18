@@ -1,0 +1,184 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="exchange-rate-editor">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 400px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row paper-input {
+      min-width: 328px;
+    }
+
+    .row paper-input:first-child {
+      margin-right: 20px;
+    }
+  </style>
+  <template>
+    <paper-dialog with-backdrop id="paperDialog">
+      <h2>
+        <i18n-msg msgid="EXCHANGE_RATE.NEW_RATE_TITLE">录入汇率</i18n-msg>
+      </h2>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <paper-input id="localCurrency" label="基准币种" value="{{item.localCurrency::input}}" data-msg-id="EXCHANGE_RATE.LOCAL_CURRENCY" required maxlength="3" error-message="必填项" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input id="targetCurrency" label="比较币种" value="{{item.targetCurrency::input}}" data-msg-id="EXCHANGE_RATE.TARGET_CURRENCY" required maxlength="3" error-message="必填项" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input id="rate" label="汇率" value="{{item.rate::input}}" data-msg-id="EXCHANGE_RATE.RATE" required error-message="必填项" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input label="计划生效时间" value="{{item.planEnforcementTime::input}}" data-msg-id="EXCHANGE_RATE.PLAN_ENFORCE_TIME" required></paper-input>
+        </div>
+        <div class="row">
+          <paper-date-picker id="enforceTimePicker" locale="zh-cn" responsive-width="500px" locale-msg-id="DATE_PICKER.LOCALE" date="{{date}}" force-narrow></paper-date-picker>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">
+          <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
+      </div>
+    </paper-dialog>
+    <x-ajax id="saveAjax" method="POST" url="/master/excrat/create" handle-as="json" debounce-duration="1000" on-response="handleSaveResponse"></x-ajax>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'exchange-rate-editor',
+
+        properties: {
+          item: {
+            type: Object,
+            value: function() {
+              return {
+                localCurrency: '',
+                targetCurrency: ''
+              };
+            }
+          },
+          date: {
+            type: Date,
+            // notify: true,
+            observer: '_watchDateChange'
+          },
+        },
+        observers: [
+          '_watchLocalCurrencyChange(item.localCurrency)',
+          '_watchTargetCurrencyChange(item.targetCurrency)'
+        ],
+        _watchLocalCurrencyChange: function(local) {
+          if (!local || typeof local !== 'string') {
+            return;
+          }
+          this.set('item.localCurrency', local.toUpperCase());
+        },
+        _watchTargetCurrencyChange: function(target) {
+          if (!target || typeof target !== 'string') {
+            return;
+          }
+          this.set('item.targetCurrency', target.toUpperCase());
+        },
+        _watchDateChange: function(newVal) {
+          this.set('item.planEnforcementTime', moment(newVal).format('YYYY-MM-DD 00:00:00'));
+        },
+        ready: function() {
+          this.set('item', {});
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'exchange-rate-editor'
+          });
+        },
+        validateRequestData: function() {
+          if (this.$.localCurrency.validate() && this.$.targetCurrency.validate() && this.$.rate.validate()) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        open: function() {
+          this.$.paperDialog.open();
+          this.set('item', {});
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          if (!this.validateRequestData()) {
+            return;
+          }
+
+          var rate = parseFloat(this.item.rate);
+          if (isNaN(rate)) {
+            Util.toast('EXCHANGE_RATE.TOAST.NAN_ERROR', 2500, true);
+            return;
+          }
+
+          if (rate <= 0) {
+            Util.toast('EXCHANGE_RATE.TOAST.RATE_MUST_GREATER_THAN_ZERO', 2500, true);
+            return;
+          }
+
+          if (!(/^[1-2][0-9][0-9][0-9]-[0-1]{0,1}[0-9]-[0-3]{0,1}[0-9]([ \t\n\x0B\f\r])(([0-1]{1}[0-9]{1})|([2]{1}[0-4]{1}))([:])(([0-5]{1}[0-9]{1}|[6]{1}[0]{1}))([:])((([0-5]{1}[0-9]{1}|[6]{1}[0]{1})))$/.test(this.item.planEnforcementTime))) {
+            Util.toast('TOAST.DATE_TIME_FORMAT_INVALID', 2500, true);
+            return;
+          }
+
+          this.set('item.rate', rate);
+          this.set('item.localCurrency', this.item.localCurrency.trim());
+          this.set('item.targetCurrency', this.item.targetCurrency.trim());
+          this.$.saveAjax.body = JSON.stringify(this.item);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            switch (response.message) {
+              case 'JSON_RESOLVE_FAIL':
+                Util.toast('TOAST.JSON_RESOLVE_FAIL', 2500, true);
+                break;
+              case 'MISSING_REQUIRED_ITEM':
+                Util.toast('TOAST.MISSING_REQUIRED_ITEM', 2500, true);
+                break;
+              case 'SAVE_RATE_FAIL':
+                Util.toast('TOAST.SAVE_FAIL', 2500, true);
+                break;
+              case 'OUT_OF_RANGE':
+                // 超出范围
+                Util.toast('EXCHANGE_RATE.TOAST.D2D_RATIO_OUT_OF_RANGE', 2500, true);
+                break;
+              default:
+                Util.toast('TOAST.SYSTEM_ERROR', 2500, true);
+            }
+            return;
+          }
+          this.$.paperDialog.close();
+          Util.toast('TOAST.SAVE_SUCCESS', 2000, true);
+          this.fire('saved', response.data);
+          this.set('item', {});
+        },
+      });
+    })();
+  </script>
+</dom-module>

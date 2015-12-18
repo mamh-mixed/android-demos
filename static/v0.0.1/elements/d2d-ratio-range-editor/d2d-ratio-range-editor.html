@@ -1,0 +1,143 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="d2d-ratio-range-editor">
+  <style>
+    :host {
+      display: block;
+      --paper-dialog-scrollable: {
+        width: 368px;
+        min-height: 150px;
+      }
+    }
+
+    paper-dialog {
+      background-color: #ffffff;
+    }
+
+    .row {
+      @apply(--layout-horizontal);
+    }
+
+    .row paper-input {
+      min-width: 300px;
+    }
+
+    .row paper-input:first-child {
+      margin-right: 20px;
+    }
+  </style>
+  <template>
+    <paper-dialog with-backdrop id="paperDialog">
+      <h2>
+        <i18n-msg msgid="EXCHANGE_RATE.D2D_RATIO_RANGE_TITLE">录入汇率</i18n-msg>
+      </h2>
+      <paper-dialog-scrollable>
+        <div class="row">
+          <paper-input id="rateFloatingUpper" label="汇率环比值上边界" value="{{item.rateFloatingUpper::input}}" data-msg-id="EXCHANGE_RATE.RATE_FLOATING_UPPER" required error-message="必填项" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        </div>
+        <div class="row">
+          <paper-input id="rateFloatingLower" label="汇率环比值下边界" value="{{item.rateFloatingLower::input}}" data-msg-id="EXCHANGE_RATE.RATE_FLOATING_LOWER" required error-message="必填项" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        </div>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">
+          <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
+      </div>
+    </paper-dialog>
+    <x-ajax id="saveAjax" method="POST" url="/master/excrat/range/update" handle-as="json" debounce-duration="1000" on-response="handleSaveResponse"></x-ajax>
+    <x-ajax auto method="GET" url="/master/excrat/range/find" handle-as="json" debounce-duration="1000" on-response="handleFindResponse"></x-ajax>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'd2d-ratio-range-editor',
+
+        properties: {
+          item: {
+            type: Object,
+            value: function() {
+              return {};
+            }
+          },
+        },
+        ready: function() {
+          this.set('item', {});
+        },
+        attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'exchange-rate-editor'
+          });
+        },
+        validateRequestData: function() {
+          if (this.$.rateFloatingUpper.validate() && this.$.rateFloatingLower.validate()) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        open: function() {
+          this.$.paperDialog.open();
+        },
+        // 点击保存事件
+        handleSaveTapped: function() {
+          if (!this.validateRequestData()) {
+            return;
+          }
+
+          var upperRate = parseFloat(this.item.rateFloatingUpper),
+            lowerRate = parseFloat(this.item.rateFloatingLower);
+          if (isNaN(upperRate) || isNaN(lowerRate)) {
+            Util.toast('EXCHANGE_RATE.TOAST.NAN_ERROR', 2500, true);
+            return;
+          }
+
+          this.set('item.rateFloatingUpper', upperRate);
+          this.set('item.rateFloatingLower', lowerRate);
+          this.$.saveAjax.body = JSON.stringify(this.item);
+          this.$.saveAjax.generateRequest();
+        },
+        // 保存事件响应结果
+        handleSaveResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            switch (response.message) {
+              case 'JSON_RESOLVE_FAIL':
+                Util.toast('TOAST.JSON_RESOLVE_FAIL', 2500, true);
+                break;
+              case 'SAVE_FAIL':
+                Util.toast('TOAST.SAVE_FAIL', 2500, true);
+                break;
+              default:
+                Util.toast('TOAST.SYSTEM_ERROR', 2500, true);
+            }
+            return;
+          }
+          this.$.paperDialog.close();
+          Util.toast('TOAST.SAVE_SUCCESS', 2000, true);
+        },
+        handleFindResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 2500, true);
+            return;
+          }
+
+          if (!response.data) {
+            return;
+          }
+
+          this.set('item', response.data);
+        }
+      });
+    })();
+  </script>
+</dom-module>

@@ -535,3 +535,28 @@ type Task struct {
 	CreateTime string        `bson:"createTime"`
 	UpdateTime string        `bson:"updateTime"`
 }
+
+// 汇率表
+type ExchangeRate struct {
+	EId                   string  `json:"eId" bson:"eId"`                                     // 主键
+	LocalCurrency         string  `json:"localCurrency" bson:"localCurrency"`                 // 当地币种
+	TargetCurrency        string  `json:"targetCurrency" bson:"targetCurrency"`               // 目标币种
+	Rate                  float64 `json:"rate" bson:"rate"`                                   // 汇率
+	PlanEnforcementTime   string  `json:"planEnforcementTime" bson:"planEnforcementTime"`     // 计划生效时点
+	ActualEnforcementTime string  `json:"actualEnforcementTime" bson:"actualEnforcementTime"` // 实际生效时点
+	CreateTime            string  `json:"createTime" bson:"createTime"`                       // 创建时间
+	CreateUser            string  `json:"createUser" bson:"createUser"`                       // 创建者
+	UpdateTime            string  `json:"updateTime" bson:"updateTime"`                       // 修改时间
+	UpdateUser            string  `json:"updateUser" bson:"updateUser"`                       // 变更者
+	EnforceUser           string  `json:"enforceUser" bson:"enforceUser"`                     // 生效用户
+	IsEnforced            bool    `json:"isEnforced" bson:"isEnforced"`                       // 是否生效
+}
+
+// SystemConstant 系统常量
+type SystemConstant struct {
+	ID                string  `json:"-" bson:"id"`                                // ID
+	RateFloatingUpper float64 `json:"rateFloatingUpper" bson:"rateFloatingUpper"` // 汇率浮动上边界值
+	RateFloatingLower float64 `json:"rateFloatingLower" bson:"rateFloatingLower"` // 汇率浮动下边界值
+	UpdateTime        string  `json:"-" bson:"updateTime"`                        // 修改时间
+	UpdateUser        string  `json:"-" bson:"updateUser"`                        // 变更者
+}
