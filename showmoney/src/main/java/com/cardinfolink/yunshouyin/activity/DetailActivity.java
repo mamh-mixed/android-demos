@@ -128,10 +128,13 @@ public class DetailActivity extends BaseActivity {
         String busicd = getResources().getString(R.string.detail_activity_busicd_pay);
         if (mTradeBill.busicd.equals("REFD")) {
             busicd = getResources().getString(R.string.detail_activity_busicd_refd);
+        } else if ("CANC".equals(mTradeBill.busicd)) {
+            //取消订单
+            busicd = getResources().getString(R.string.detail_activity_busicd_canc);
         }
 
         mTradeFromText.setText(tradeFrom + busicd);
-        String tradeStatus = getResources().getString(R.string.detail_activity_trade_status_success);
+        String tradeStatus = "";
 
         if (mTradeBill.response.equals("00")) {
             tradeStatus = getResources().getString(R.string.detail_activity_trade_status_success);
@@ -148,7 +151,7 @@ public class DetailActivity extends BaseActivity {
         mTradeAmountText.setText("￥" + mTradeBill.amount);
         mOrderNumText.setText(mTradeBill.orderNum);
         mGoodInfoText.setText(mTradeBill.goodsInfo);
-        if (mTradeBill.busicd.equals("REFD") || !mTradeBill.response.equals("00")) {
+        if (mTradeBill.busicd.equals("REFD") || mTradeBill.busicd.equals("CANC") || !mTradeBill.response.equals("00")) {
             mRefdButton.setVisibility(View.INVISIBLE);
         } else {
             mRefdButton.setVisibility(View.VISIBLE);

@@ -125,7 +125,11 @@ public class BillAdapter extends BaseAdapter {
 
         String busicd = transManageView.getResources().getString(R.string.detail_activity_busicd_pay);
         if (bill.busicd.equals("REFD")) {
+            //退款的
             busicd = transManageView.getResources().getString(R.string.detail_activity_busicd_refd);
+        }else if("CANC".equals(bill.busicd)){
+            //取消订单
+            busicd = transManageView.getResources().getString(R.string.detail_activity_busicd_canc);
         }
 
         holder.billTradeFrom.setText(tradeFrom + busicd);
