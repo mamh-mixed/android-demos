@@ -788,14 +788,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     }
 
-
     /**
-     * 生成二维码入口，从这里进的
+     * 生成账单号
+     * 时间加上一个随机数
      *
-     * @param total
-     * @param chcd
+     * @return
      */
-    private void createQRcode(String total, String chcd) {
+    private String geneOrderNumber() {
         String mOrderNum;
 
         Date now = new Date();
@@ -805,8 +804,20 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         for (int i = 0; i < 5; i++) {
             mOrderNum = mOrderNum + random.nextInt(10);
         }
+        return mOrderNum;
+    }
+
+    /**
+     * 生成二维码入口，从这里进的
+     * 生成二维码，也就是 调用了 预下单 的接口
+     *
+     * @param total
+     * @param chcd
+     */
+    private void createQRcode(String total, String chcd) {
+
         final OrderData orderData = new OrderData();
-        orderData.orderNum = mOrderNum;
+        orderData.orderNum = geneOrderNumber();
         orderData.txamt = total;
         orderData.currency = "156";
         orderData.chcd = chcd;
