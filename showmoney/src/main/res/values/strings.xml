@@ -63,6 +63,7 @@
     <string name="create_qrcode_activity_amount">本次收款金额：￥</string>
     <string name="create_qrcode_activity_trade_search">交易查询</string>
 
+    <string name="detail_activity_busicd_canc">取消订单</string>
     <string name="detail_activity_busicd_pay">支付</string>
     <string name="detail_activity_busicd_refd">退款</string>
     <string name="detail_activity_trade_status_success">交易成功</string>
