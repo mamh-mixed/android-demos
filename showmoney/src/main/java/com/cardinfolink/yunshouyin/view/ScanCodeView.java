@@ -115,6 +115,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private static final int BACKGROUND_COLOR = 0xffffffff;
     private ResultData mResultData;
     private Handler mHandler;
+    private OrderData originOrder;//原始订单,取消订单时会用到
 
     private SharedPreferences sp;
 
@@ -449,11 +450,12 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
                 break;
             case R.id.iv_left:
+                //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
                     mCHCD = CHCD_TYPE[0];//切换了支付方式 ，就赋值给mCHCD
                     setLeft();
                     startLoading();
-
+                    cancelOrder();//取消订单
                     checkLimit(new CheckLimitInterface() {
                         @Override
                         public void start() {
@@ -464,11 +466,12 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 }
                 break;
             case R.id.iv_right:
+                //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[1])) {
                     mCHCD = CHCD_TYPE[1];//切换了支付方式 ，就赋值给mCHCD
                     setRight();
                     startLoading();
-
+                    cancelOrder();//取消订单
                     checkLimit(new CheckLimitInterface() {
                         @Override
                         public void start() {
@@ -479,6 +482,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 }
                 break;
             case R.id.scan_qr:
+                cancelOrder();//取消订单
+                showKeyBoard();
+
                 checkLimit(new CheckLimitInterface() {
                     @Override
                     public void start() {
@@ -491,6 +497,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 });
                 break;
             case R.id.iv_keyboard:
+                cancelOrder();//取消订单
                 showKeyBoard();//显示键盘界面
                 break;
             case R.id.tv_zero:
@@ -815,12 +822,17 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      * @param chcd
      */
     private void createQRcode(String total, String chcd) {
-
         final OrderData orderData = new OrderData();
         orderData.orderNum = geneOrderNumber();
         orderData.txamt = total;
         orderData.currency = "156";
         orderData.chcd = chcd;
+
+        originOrder = new OrderData();
+        originOrder.origOrderNum = orderData.orderNum;//保存为原始订单
+        originOrder.txamt = total;
+        originOrder.currency = "156";
+        originOrder.chcd = chcd;
 
         initHandler();//初始化handler
 
@@ -842,6 +854,27 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         });
     }
 
+    /**
+     * 取消订单
+     */
+    public void cancelOrder() {
+        if (originOrder == null) {
+            return;
+        }
+        originOrder.orderNum = geneOrderNumber();//新生成一个订单号
+        CashierSdk.startCanc(originOrder, new CashierListener() {
+            @Override
+            public void onResult(ResultData resultData) {
+                originOrder = null;
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                originOrder = null;
+            }
+        });
+
+    }
 
     /**
      * 更新二维码图片
