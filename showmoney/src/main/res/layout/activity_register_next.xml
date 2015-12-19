@@ -46,19 +46,21 @@
             cardinfolink:title="@string/register_bank_branch_bank" />
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             cardinfolink:hint="@string/register_hint_name"
             cardinfolink:title="@string/register_name" />
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/bank_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:hint="@string/register_hint_bank_number"
             cardinfolink:title="@string/register_bank_number" />
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/phone_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:hint="@string/register_hint_phone_number"
@@ -118,6 +120,7 @@
         </RelativeLayout>
 
     </LinearLayout>
+
     <include layout="@layout/select_dialog"></include>
 
 
