@@ -18,24 +18,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <SurfaceView
-        android:id="@+id/preview_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center" />
-
-    <com.cardinfolink.yunshouyin.view.ViewfinderView
-        android:id="@+id/viewfinder_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent" />
-
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
         android:id="@+id/sabi_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:left_text="@string/setting_return" />
+
+    <SurfaceView
+        android:id="@+id/preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/sabi_back"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center" />
+
+    <com.cardinfolink.yunshouyin.view.ViewfinderView
+        android:id="@+id/viewfinder_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/sabi_back"
+        android:layout_centerInParent="true"
+        android:background="@color/transparent" />
 
 
     <ImageView
@@ -50,16 +53,6 @@
         android:scaleType="centerInside"
         android:src="@drawable/flashlight" />
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
-        android:text="二维码或条码"
-        android:textColor="#ffffff"
-        android:textSize="14sp" />
 
     <include layout="@layout/showmoney_dialog"></include>
 
