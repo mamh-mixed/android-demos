@@ -56,74 +56,108 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogView">
-      <h2>查看渠道商户信息</h2>
+      <h2>
+          <i18n-msg msgid="CHAN_MERCHANT.VIEW_CHAN_MERCHANT">查看渠道商户信息</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <dl id="alp" hidden>
-          <dt>渠道代码:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>:
+          </dt>
           <dd>{{item.chanCode}}</dd>
-          <dt>商户代码:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>:
+          </dt>
           <dd>{{item.chanMerId}}</dd>
-          <dt>商户名称:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_NAME">商户名称</i18n-msg>:
+          </dt>
           <dd>{{item.chanMerName}}</dd>
-          <!-- <div class="tr">
-              <dt>渠道费率:</dt>
-              <dd>{{item.acqFee}}</dd>
-              <dt>商户费率:</dt>
-              <dd>{{item.merFee}}</dd>
-            </div> -->
           <dt>MD5 KEY:</dt>
           <dd>{{item.signCert}}</dd>
-          <dt>代理代码:</dt>
+          <dt>
+              <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>:
+          </dt>
           <dd>{{item.agentCode}}</dd>
         </dl>
         <dl id="wxp" hidden>
-          <dt>渠道代码:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>:
+          </dt>
           <dd>{{item.chanCode}}</dd>
-          <dt>商户代码:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>:
+          </dt>
           <dd>{{item.chanMerId}}</dd>
-          <dt>商户名称:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_NAME">商户名称</i18n-msg>:
+          </dt>
           <dd>{{item.chanMerName}}</dd>
-          <dt>是否代理商模式:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.IS_AGENT_MODE">是否代理商模式</i18n-msg>:
+          </dt>
           <dd>
             <paper-checkbox checked$="{{item.isAgentMode}}" disabled></paper-checkbox>
           </dd>
-          <dt>大商户号:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.BIG_MERCHANT">大商户号</i18n-msg>:
+          </dt>
           <dd>{{item.agentMer.chanMerId}}</dd>
-          <!-- <div class="tr">
-              <dt>渠道费率:</dt>
-              <dd>{{item.acqFee}}</dd>
-              <dt>商户费率:</dt>
-              <dd>{{item.merFee}}</dd>
-            </div> -->
-          <dt>微信 APPID:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.WXP_APP_ID">微信 APPID</i18n-msg>:
+          </dt>
           <dd>{{item.wxpAppId}}</dd>
-          <dt>签名密钥:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.SIGN_CERT_WXP">签名密钥</i18n-msg>:
+          </dt>
           <dd>{{item.signCert}}</dd>
-          <dt>HTTP 证书:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.HTTP_CERT">HTTP 证书</i18n-msg>:
+          </dt>
           <dd>
             <pre>{{item.httpCert}}</pre>
           </dd>
-          <dt>HTTP 密钥:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.HTTP_KEY">HTTP 密钥</i18n-msg>:
+          </dt>
           <dd>
             <pre>{{item.httpKey}}</pre>
           </dd>
         </dl>
         <dl id="ulive" hidden>
-          <dt>渠道代码:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>:
+          </dt>
           <dd>{{item.chanCode}}</dd>
-          <dt>商户代码:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>:
+          </dt>
           <dd>{{item.chanMerId}}</dd>
-          <dt>终端号:</dt>
+          <dt>
+              <i18n-msg msgid="CHAN_MERCHANT.TERMINAL_ID">终端号</i18n-msg>:
+          </dt>
           <dd>{{item.terminalId}}</dd>
         </dl>
       </paper-dialog-scrollable>
       <div class="buttons layout center">
-        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">您确定要删除这个商户吗?</label>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">取消</paper-button>
-        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">确定</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">删除</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">编辑</paper-button>
-        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose" style="margin-right:50px;">关闭</paper-button>
+        <label hidden$="{{!deleteFlag}}" style="color:#FF0000;">
+            <i18n-msg msgid="CHAN_MERCHANT.IF_CHAN_MERCHANT">您确定要删除这个商户吗?</i18n-msg>
+        </label>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="cancelDeleteTap">
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{!deleteFlag}}" on-tap="confirmDeleteTap">
+             <i18n-msg msgid="BUTTON.CONFIRM">确认</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="deleteTap">
+            <i18n-msg msgid="BUTTON.DELETE">删除</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleItemEditedEvent">
+            <i18n-msg msgid="BUTTON.EDITOR">编辑</i18n-msg>
+        </paper-button>
+        <paper-button hidden$="{{deleteFlag}}" on-tap="handleClose" style="margin-right:50px;">
+             <i18n-msg msgid="BUTTON.CLOSE">关闭</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="deleteMerAjax" method="POST" url="/master/channelMerchant/delete" handle-as="json" on-response="handleDeleteResponse"></x-ajax>
@@ -131,7 +165,11 @@
   <script>
     Polymer({
       is: 'channel-merchant-view',
-
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'channel-merchant-view'
+        });
+      },
       properties: {
         foo: {
           type: String,
@@ -191,10 +229,10 @@
       handleDeleteResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('CHAN_MERCHANT.'+response.message, 3000,true);
           return;
         }
-        Util.toast(response.message, 3000);
+        Util.toast('CHAN_MERCHANT.'+response.message, 3000,true);
         this.$.dialogView.close();
         this.fire('delete-ok');
       },

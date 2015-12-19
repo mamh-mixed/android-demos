@@ -28,25 +28,43 @@
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/group/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="groupCode" label="商户代码" value="{{cond.groupCode::input}}"></paper-input>
-        <paper-input name="groupName" label="商户名称" value="{{cond.groupName::input}}"></paper-input>
-        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}"></paper-input>
+        <paper-input name="groupCode" label="商户代码" value="{{cond.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
+        <paper-input name="groupName" label="商户名称" value="{{cond.groupName::input}}" data-msg-id="SCANPAY_TRADE_STATS.GROUP_NAME"></paper-input>
+        <paper-input name="agentCode" label="代理代码" value="{{cond.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
         <!-- <paper-input name="agentName" label="代理名称" value="{{cond.agentName::input}}"></paper-input> -->
-        <x-select items="[[agents]]" selected-item="{{agent}}" label="代理"></x-select>
+        <x-select items="[[agents]]" selected-item="{{agent}}" label="代理" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
 
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">
+            <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+        </paper-button>
       </div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
-            <div class="th">序号</div>
-            <div class="th left">商户代码</div>
-            <div class="th left">商户名称</div>
-            <div class="th left">代理代码</div>
-            <div class="th left">代理名称</div>
-            <div class="th left">公司代码</div>
-            <div class="th left">公司名称</div>
-            <div class="th">操作</div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.GROUP_NO">商户代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_STATS.GROUP_NAME">商户名称</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.SUBAGENT_NO">公司代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="TRADE_DETAIL.GROUP_NAME">公司名称</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="AGENT.OPERATION">操作</i18n-msg>
+            </div>
           </div>
         </div>
         <div class="tbody">
@@ -129,6 +147,9 @@
 
         },
         attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'group-list'
+          });
           if (this.autoLoading) {
             this.handleQueryTapped();
           }
@@ -146,7 +167,7 @@
         handleQueryResponse: function(e) {
           var response = e.detail;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
@@ -157,7 +178,7 @@
           this.set('cond.page', pagination.page);
 
           if (this.groups.length === 0) {
-            Util.toast('没有数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           }
         },
 
@@ -173,13 +194,13 @@
         handleQueryAgentsResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
           var pagination = response.data;
           if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             return;
           }
 
@@ -236,9 +257,10 @@
         handleDeleteResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('GROUP.'+response.message, 3000,true);
             return;
           }
+          Util.toast('GROUP.'+response.message, 3000);
           this.handleQueryTapped();
         },
 

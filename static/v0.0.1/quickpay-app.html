@@ -18,6 +18,7 @@
       <app-route path="/system/users" name="user-list" import="pages/users-page.html"></app-route>
       <app-route path="/system/password/editor" name="pwdEditor" import="pages/password-editor-page.html"></app-route>
       <app-route path="/system/apps" name="app-list" import="pages/apps-page.html"></app-route>
+      <app-route path="/system/exchangerate" name="exchangeRateList" import="pages/system/exchange-rate-page.html"></app-route>
       <app-route path="/config/agents" name="agentList" import="pages/agents-page.html"></app-route>
       <app-route path="/config/subAgents" name="subAgentList" import="pages/sub-agents-page.html"></app-route>
       <app-route path="/config/groups" name="group-list" import="pages/groups-page.html"></app-route>
@@ -78,6 +79,10 @@
             type: Object,
             value: {},
           },
+          language: {
+            type: String,
+            observer: '_watchLanguageChanged'
+          }
         },
         listeners: {
           'i18n-language-change': 'handleI18nLanguageChangeEvent',
@@ -93,6 +98,9 @@
               break;
             case 'ja-JP':
               I18nMsg.lang = 'ja';
+              break;
+            case 'zh-TW':
+              I18nMsg.lang = 'zh-TW';
               break;
             default:
               I18nMsg.lang = 'zh-CN';
@@ -264,12 +272,31 @@
             }
             msgId = null;
           }
+          var paperTextareas = document.querySelectorAll('paper-textarea');
+          for (var i = 0, l = paperTextareas.length, item; i < l; i++) {
+            var msgId = null;
+            item = paperTextareas[i];
+            if (item.hasAttribute('data-msg-id')) {
+              msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('label', i18nMsg.getMsg(msgId));
+            }
+
+            if (item.required) {
+              msgId = item.getAttribute('data-error-msg-id');
+              item.setAttribute('error-message', i18nMsg.getMsg(msgId));
+            }
+            msgId = null;
+          }
 
           var datePickers = document.querySelectorAll('paper-date-picker');
           for (var i = 0, l = datePickers.length, item; i < l; i++) {
             item = datePickers[i];
             if (item.hasAttribute('data-msg-id')) {
               var msgId = item.getAttribute('data-msg-id');
+              item.setAttribute('locale', i18nMsg.getMsg(msgId));
+            }
+            if (item.hasAttribute('locale-msg-id')) {
+              var msgId = item.getAttribute('locale-msg-id');
               item.setAttribute('locale', i18nMsg.getMsg(msgId));
             }
           }
@@ -311,6 +338,11 @@
             return;
           }
           Util.showLoginDialog();
+        },
+        _watchLanguageChanged: function(newVal) {
+          if (newVal && newVal !== '') {
+            I18nMsg.lang = newVal;
+          }
         }
       });
     })();

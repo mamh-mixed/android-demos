@@ -30,47 +30,59 @@
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogAdd">
-      <h2>创建代理</h2>
+      <h2>
+          <i18n-msg msgid="AGENT.CREATE_AGENT">创建代理</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
-          <paper-input label="代理代码" value="{{agent.agentCode::input}}"></paper-input>
+          <paper-input label="代理代码" value="{{agent.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
+          <paper-input label="代理名称" value="{{agent.agentName::input}}" data-msg-id="SCANPAY_TRADE_STATS.AGENT_NAME"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="微信成本" value="{{agent.wxpCost::input}}"></paper-input>
+          <paper-input label="微信成本" value="{{agent.wxpCost::input}}" data-msg-id="AGENT.WXP_COST"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="支付宝成本" value="{{agent.alpCost::input}}"></paper-input>
+          <paper-input label="支付宝成本" value="{{agent.alpCost::input}}" data-msg-id="AGENT.ALP_COST"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleSaveTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleSaveTapped">
+          <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
 
     <paper-dialog with-backdrop id="dialogEdit">
-      <h2>编辑代理</h2>
+      <h2>
+        <i18n-msg msgid="AGENT.EDITOR_AGENT">编辑代理</i18n-msg>
+      </h2>
       <paper-dialog-scrollable>
         <div class="row">
           <!-- 这里的paperInput不能设置disabled，否则在火狐下会报错。 more info： https://github.com/PolymerElements/iron-input/issues/47 20151128-->
-          <paper-input label="代理代码" value="[[agent.agentCode]]"></paper-input>
+          <paper-input label="代理代码" value="[[agent.agentCode]]" data-msg-id="TRADE_DETAIL.AGENT_NO" readonly></paper-input>
         </div>
         <div class="row">
-          <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
+          <paper-input label="代理名称" value="{{agent.agentName::input}}" data-msg-id="SCANPAY_TRADE_STATS.AGENT_NAME"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="微信成本" value="{{agent.wxpCost::input}}"></paper-input>
+          <paper-input label="微信成本" value="{{agent.wxpCost::input}}" data-msg-id="AGENT.WXP_COST"></paper-input>
         </div>
         <div class="row">
-          <paper-input label="支付宝成本" value="{{agent.alpCost::input}}"></paper-input>
+          <paper-input label="支付宝成本" value="{{agent.alpCost::input}}" data-msg-id="AGENT.ALP_COST"></paper-input>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button autofocus on-tap="handleUpdateTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+            <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button autofocus on-tap="handleUpdateTapped">
+            <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="saveAjax" method="POST" url="/master/agent/save" handle-as="json" debounce-duration="1000" on-response="handleSaveAgentResponse"></x-ajax>
@@ -107,14 +119,15 @@
         handleSaveAgentResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('AGENT'+response.message, 3000,true);
             return;
           }
+          Util.toast('AGENT.'+response.message, 3000,true);
           this.$.dialogAdd.close();
           this.$.dialogEdit.close();
           this.fire('saved');
           this.set('agent', {});
-      },
+        },
         // 点击保存事件
         handleUpdateTapped: function() {
           this.set('agent.wxpCost', parseFloat(this.agent.wxpCost));
@@ -126,9 +139,10 @@
         handleUpdateAgentResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('AGENT'+response.message, 3000,true);
             return;
           }
+          Util.toast('AGENT.'+response.message, 3000,true);
           this.$.dialogAdd.close();
           this.$.dialogEdit.close();
           this.fire('saved');

@@ -25,22 +25,34 @@
     <form is="x-form" id="formQuery" method="GET" action="/master/channelMerchant/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
         <!-- <paper-input name="chanCode" label="渠道代码" value="{{cond.chanCode::input}}"></paper-input> -->
-        <paper-input name="chanMerId" label="商户代码" value="{{cond.chanMerId::input}}"></paper-input>
-        <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}"></paper-input>
-        <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码"></x-select>
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-input name="chanMerId" label="商户代码" value="{{cond.chanMerId::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_ID"></paper-input>
+        <paper-input name="chanMerName" label="商户名称" value="{{cond.chanMerName::input}}" data-msg-id="CHAN_MERCHANT.CHAN_MER_NAME"></paper-input>
+        <x-select name="chanCode" id="chanCode" items="[[chanCodes]]" selected-item="{{chanCode}}" label="渠道代码" data-msg-id="CHAN_MERCHANT.CHAN_CODE"></x-select>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">
+            <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+        </paper-button>
       </div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
-            <div class="th">序号</div>
-            <div class="th left">商户代码</div>
-            <div class="th left">商户名称</div>
-            <div class="th">渠道代码</div>
-            <div class="th right">渠道费率</div>
-            <div class="th right">商户费率</div>
-            <div class="th right">清算标识</div>
-            <div class="th left">清算角色</div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="CHAN_MERCHANT.CHAN_MER_ID">商户名称</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="CHAN_MERCHANT.CHAN_CODE">渠道代码</i18n-msg>
+            </div>
+            <div class="th right">
+                <i18n-msg msgid="CHAN_MERCHANT.ACQFEE">渠道费率</i18n-msg>
+            </div>
+            <div class="th right">
+                <i18n-msg msgid="CHAN_MERCHANT.MERFEE">商户费率</i18n-msg>
+            </div>
             <!-- <div class="th">签名证书</div> -->
             <!-- <div class="th" class="center">操作</div> -->
           </div>
@@ -65,12 +77,6 @@
               </div>
               <div class="td right">
                 <span>{{item.merFee}}</span>
-              </div>
-              <div class="td right">
-                <span>{{item.settFlag}}</span>
-              </div>
-              <div class="td">
-                <span>{{item.settRole}}</span>
               </div>
             </div>
           </template>
@@ -108,10 +114,12 @@
           }, {
             key: 'WXP',
             value: 'WXP'
-          }, {
-            key: 'ULIVE',
-            value: 'ULIVE'
-          }]
+          }
+        //   , {
+        //     key: 'ULIVE',
+        //     value: 'ULIVE'
+        //   }
+      ]
         },
       },
       ready: function() {
@@ -123,6 +131,9 @@
         };
       },
       attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'channel-merchant-list'
+        });
         if (this.autoLoading) {
           this.handleQueryTapped();
         }
@@ -141,7 +152,7 @@
       handleQueryResponse: function(e) {
         var response = e.detail;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+         Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           return;
         }
 
@@ -152,7 +163,7 @@
         this.set('cond.page', pagination.page);
 
         if (this.merchants.length === 0) {
-          Util.toast('没有数据', 2000);
+         Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
         }
       },
       // 清除商户选中的标志

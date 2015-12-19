@@ -84,9 +84,9 @@ type RefundQueryResp struct {
 	CouponRefundFee2_1     string `xml:"coupon_refund_fee_2_1,omitempty" url:"coupon_refund_fee_2_1,omitempty"`           // 单个代金券或立减优惠支付金额
 	CouponRefundFee2_2     string `xml:"coupon_refund_fee_2_2,omitempty" url:"coupon_refund_fee_2_2,omitempty"`           // 单个代金券或立减优惠支付金额
 	CouponRefundFee2_3     string `xml:"coupon_refund_fee_2_3,omitempty" url:"coupon_refund_fee_2_3,omitempty"`           // 单个代金券或立减优惠支付金额
-	CouponRefundFee3_1     string `xml:"coupon_refund_fee_2_1,omitempty" url:"coupon_refund_fee_3_1,omitempty"`           // 单个代金券或立减优惠支付金额
-	CouponRefundFee3_2     string `xml:"coupon_refund_fee_2_2,omitempty" url:"coupon_refund_fee_3_2,omitempty"`           // 单个代金券或立减优惠支付金额
-	CouponRefundFee3_3     string `xml:"coupon_refund_fee_2_3,omitempty" url:"coupon_refund_fee_3_3,omitempty"`           // 单个代金券或立减优惠支付金额
+	CouponRefundFee3_1     string `xml:"coupon_refund_fee_3_1,omitempty" url:"coupon_refund_fee_3_1,omitempty"`           // 单个代金券或立减优惠支付金额
+	CouponRefundFee3_2     string `xml:"coupon_refund_fee_3_2,omitempty" url:"coupon_refund_fee_3_2,omitempty"`           // 单个代金券或立减优惠支付金额
+	CouponRefundFee3_3     string `xml:"coupon_refund_fee_3_3,omitempty" url:"coupon_refund_fee_3_3,omitempty"`           // 单个代金券或立减优惠支付金额
 	RefundStatus0          string `xml:"refund_status_0,omitempty" url:"refund_status_0,omitempty"`                       // 退款状态
 	RefundStatus1          string `xml:"refund_status_1,omitempty" url:"refund_status_1,omitempty"`                       // 退款状态
 	RefundStatus2          string `xml:"refund_status_2,omitempty" url:"refund_status_2,omitempty"`                       // 退款状态

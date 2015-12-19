@@ -4,18 +4,18 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
+	"github.com/CardInfoLink/quickpay/model"
 )
 
 func TestRefundQuery(t *testing.T) {
+	spReq := &model.ScanPayRequest{}
+
 	d := &RefundQueryReq{
 		CommonParams: testCommonParams,
-
-		DeviceInfo:    "xxx",           // 设备号
-		TransactionId: "",              // 微信订单号
-		OutTradeNo:    "1441615439898", // 商户订单号
-		OutRefundNo:   "",              // 商户退款单号
-		RefundId:      "",              // 微信退款单号
+		OutTradeNo:   "1449905521311", // 商户订单号
+		OutRefundNo:  "1450147846523", // 商户退款单号
 	}
+	d.CommonParams.Req = spReq
 
 	r := &RefundQueryResp{}
 	err := weixin.Execute(d, r)

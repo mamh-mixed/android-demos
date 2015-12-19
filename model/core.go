@@ -58,6 +58,11 @@ const (
 	SR_COMPANY = "COMPANY"
 	SR_AGENT   = "AGENT"
 	SR_GROUP   = "GROUP"
+
+	// 汇率状态
+	ER_UNCHECKED = "UNCHECKED"
+	ER_CHECKED   = "CHECKED"
+	ER_ACTIVATED = "ACTIVATED"
 )
 
 // cache name
@@ -534,4 +539,38 @@ type Task struct {
 	F          func()        `bson:"-"`
 	CreateTime string        `bson:"createTime"`
 	UpdateTime string        `bson:"updateTime"`
+}
+
+// 汇率管理表
+// 录入汇率复核汇率
+type ExchangeRateManage struct {
+	EId                 string  `json:"eId" bson:"eId"`                                 // 主键
+	LocalCurrency       string  `json:"localCurrency" bson:"localCurrency"`             // 基准币种
+	TargetCurrency      string  `json:"targetCurrency" bson:"targetCurrency"`           // 目标币种
+	Rate                float64 `json:"rate" bson:"rate"`                               // 汇率
+	PlanEnforcementTime string  `json:"planEnforcementTime" bson:"planEnforcementTime"` // 计划生效时点
+	CreateTime          string  `json:"createTime" bson:"createTime"`                   // 创建时间
+	CreateUser          string  `json:"createUser" bson:"createUser"`                   // 创建者
+	UpdateTime          string  `json:"updateTime" bson:"updateTime"`                   // 修改时间
+	UpdateUser          string  `json:"updateUser" bson:"updateUser"`                   // 变更者
+	CheckedUser         string  `json:"checkedUser" bson:"checkedUser"`                 // 复核用户
+	CheckedTime         string  `json:"checkedTime" bson:"checkedTime"`                 // 复核时点
+	Status              string  `json:"status" bson:"status"`                           // 状态
+}
+
+// 生效汇率管理，一对兑换币种有且只有一条记录
+type ExchangeRate struct {
+	CurrencyPair    string  `json:"currencyPair" bson:"currencyPair"`       // 币种对，基准币种<=>目标币种
+	Rate            float64 `json:"rate" bson:"rate"`                       // 汇率
+	EnforcementTime string  `json:"enforcementTime" bson:"enforcementTime"` // 实际生效时点
+	EnforceUser     string  `json:"enforceUser" bson:"enforceUser"`         // 复核用户
+}
+
+// SystemConstant 系统常量
+type SystemConstant struct {
+	ID                string  `json:"-" bson:"id"`                                // ID
+	RateFloatingUpper float64 `json:"rateFloatingUpper" bson:"rateFloatingUpper"` // 汇率浮动上边界值
+	RateFloatingLower float64 `json:"rateFloatingLower" bson:"rateFloatingLower"` // 汇率浮动下边界值
+	UpdateTime        string  `json:"-" bson:"updateTime"`                        // 修改时间
+	UpdateUser        string  `json:"-" bson:"updateUser"`                        // 变更者
 }

@@ -73,12 +73,12 @@ func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, s)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if s.SubAgentCode == "" {
-		log.Error("没有SubAgentCode")
-		return model.NewResultBody(3, "缺失必要元素SubAgentCode")
+		log.Error("no SubAgentCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	isExist := true
 	_, err = mongo.SubAgentColl.Find(s.SubAgentCode)
@@ -86,37 +86,37 @@ func (i *subAgent) Save(data []byte) (result *model.ResultBody) {
 		if err.Error() == "not found" {
 			isExist = false
 		} else {
-			return model.NewResultBody(1, "查询数据库失败")
+			return model.NewResultBody(1, "SELECT_ERROR")
 		}
 
 	}
 	if isExist {
-		return model.NewResultBody(1, "公司代码已存在")
+		return model.NewResultBody(1, "SUB_AGENT_CODE_EXIST")
 	}
 	if s.SubAgentName == "" {
-		log.Error("没有SubAgentName")
-		return model.NewResultBody(3, "缺失必要元素SubAgentName")
+		log.Error("no SubAgentName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if s.AgentCode == "" {
-		log.Error("没有AgentCode")
-		return model.NewResultBody(3, "缺失必要元素AgentCode")
+		log.Error("no AgentCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if s.AgentName == "" {
-		log.Error("没有AgentName")
-		return model.NewResultBody(3, "缺失必要元素AgentName")
+		log.Error("no AgentName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err = mongo.SubAgentColl.Insert(s)
 	if err != nil {
-		log.Errorf("新增二级代理失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("create subAgent error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "CREATE_SUB_AGENT_SUCCESS",
 		Data:    s,
 	}
 
@@ -129,13 +129,13 @@ func (s *subAgent) Delete(subAgentCode string) (result *model.ResultBody) {
 	err := mongo.SubAgentColl.Remove(subAgentCode)
 
 	if err != nil {
-		log.Errorf("删除二级代理失败: %s", err)
-		return model.NewResultBody(1, "删除二级代理失败")
+		log.Errorf("delete subAgent error: %s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "删除成功",
+		Message: "DELETE_SUB_AGENT_SUCCESS",
 	}
 
 	return result
@@ -147,38 +147,38 @@ func (i *subAgent) Update(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, s)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if s.SubAgentCode == "" {
-		log.Error("没有SubAgentCode")
-		return model.NewResultBody(3, "缺失必要元素SubAgentCode")
+		log.Error("no SubAgentCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if s.SubAgentName == "" {
-		log.Error("没有SubAgentName")
-		return model.NewResultBody(3, "缺失必要元素SubAgentName")
+		log.Error("no SubAgentName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if s.AgentCode == "" {
-		log.Error("没有AgentCode")
-		return model.NewResultBody(3, "缺失必要元素AgentCode")
+		log.Error("no AgentCode")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	if s.AgentName == "" {
 		log.Error("没有AgentName")
-		return model.NewResultBody(3, "缺失必要元素AgentName")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err = mongo.SubAgentColl.Update(s)
 	if err != nil {
-		log.Errorf("新增二级代理失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("update subAgent error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "UPDATE_SUB_AGENT_SUCCESS",
 		Data:    s,
 	}
 

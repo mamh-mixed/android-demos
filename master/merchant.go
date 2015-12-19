@@ -91,17 +91,17 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, m)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if m.MerId == "" {
-		log.Error("没有MerId")
-		return model.NewResultBody(3, "缺失必要元素merId")
+		log.Error("no MerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	// 签名密钥和加密密钥长度不能小于8
 	if m.SignKey != "" && len(m.SignKey) < 8 {
-		return model.NewResultBody(3, "签名密钥长度不能小于8")
+		return model.NewResultBody(3, "SIGN_KEY_LOWEST_LENGTH")
 	}
 	if m.EncryptKey != "" && len(m.EncryptKey) < 8 {
 		return model.NewResultBody(3, "加密密钥长度不能小于8")
@@ -114,10 +114,10 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 	num, err := mongo.MerchantColl.FindCountByMerId(m.MerId)
 	if err != nil {
 		log.Errorf("find database err,%s", err)
-		return model.NewResultBody(4, "系统错误")
+		return model.NewResultBody(4, "SELECT_ERROR")
 	}
 	if num != 0 {
-		return model.NewResultBody(5, "merId已存在")
+		return model.NewResultBody(5, "MER_ID_EXIST")
 	}
 
 	if m.EncryptKey == "" {
@@ -133,13 +133,13 @@ func (i *merchant) Save(data []byte) (result *model.ResultBody) {
 
 	err = mongo.MerchantColl.Insert(m)
 	if err != nil {
-		log.Errorf("新增商户失败:%s", err)
-		return model.NewResultBody(1, err.Error())
+		log.Errorf("create merchant error:%s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "CREATE_MERCHANT_SUCCESS",
 		Data:    m,
 	}
 
@@ -151,16 +151,16 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 	err := json.Unmarshal(data, m)
 	if err != nil {
 		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
-		return model.NewResultBody(2, "解析失败")
+		return model.NewResultBody(2, "JSON_ERROR")
 	}
 
 	if m.MerId == "" {
-		log.Error("没有MerId")
-		return model.NewResultBody(3, "缺失必要元素merId")
+		log.Error("NO MerId")
+		return model.NewResultBody(3, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 	// 签名密钥和加密密钥长度不能小于8
 	if m.SignKey != "" && len(m.SignKey) < 8 {
-		return model.NewResultBody(3, "签名密钥长度不能小于8")
+		return model.NewResultBody(3, "SIGN_KEY_LOWEST_LENGTH")
 	}
 	if m.EncryptKey != "" && len(m.EncryptKey) < 8 {
 		return model.NewResultBody(3, "加密密钥长度不能小于8")
@@ -173,8 +173,8 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 	merchant, err := mongo.MerchantColl.FindNotInCache(m.MerId)
 
 	if err != nil {
-		log.Errorf("查询一个商户(%s)出错: %s", m.MerId, err)
-		return model.NewResultBody(1, "查询失败")
+		log.Errorf("select merchant (%s)error: %s", m.MerId, err)
+		return model.NewResultBody(1, "SELECT_ERROR")
 	}
 
 	log.Debugf("newSignKey:%s,oldSignKey:%s", m.SignKey, merchant.SignKey)
@@ -207,13 +207,13 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 
 	err = mongo.MerchantColl.Update(m)
 	if err != nil {
-		log.Errorf("更新商户失败:%s", err)
+		log.Errorf("update merchant error:%s", err)
 		return model.NewResultBody(1, err.Error())
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "操作成功",
+		Message: "UPDATE_MERCHANT_SUCCESS",
 		Data:    m,
 	}
 
@@ -224,20 +224,20 @@ func (i *merchant) Update(data []byte) (result *model.ResultBody) {
 func (i *merchant) Delete(merId string) (result *model.ResultBody) {
 	log.Debugf("delete merchant by merId,merId=%s", merId)
 	if merId == "" {
-		log.Errorf("merId为空")
-		return model.NewResultBody(2, "merId不能为空")
+		log.Errorf("no merId")
+		return model.NewResultBody(2, "REQUIRED_FILED_NOT_BE_EMPTY")
 	}
 
 	err := mongo.MerchantColl.Remove(merId)
 
 	if err != nil {
-		log.Errorf("删除机构商户失败: %s", err)
-		return model.NewResultBody(1, "删除机构商户失败")
+		log.Errorf("delete merchant error: %s", err)
+		return model.NewResultBody(1, "ERROR")
 	}
 
 	result = &model.ResultBody{
 		Status:  0,
-		Message: "删除成功",
+		Message: "DELETE_MERCHANT_ERROR",
 	}
 
 	return result
@@ -262,7 +262,7 @@ func (m *merchant) Export(w http.ResponseWriter, merchant model.Merchant, pay, f
 
 	merchants, total, err := mongo.MerchantColl.PaginationFind(merchant, pay, createStartTime, createEndTime, size, page)
 	if err != nil {
-		log.Errorf("查询所有商户出错:%s", err)
+		log.Errorf("select all merchants error:%s", err)
 		return
 	}
 	log.Debugf("total:%d", total)

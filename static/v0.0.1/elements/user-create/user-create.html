@@ -45,25 +45,33 @@
   <template>
     <paper-dialog with-backdrop id="dialogAdd">
       <h2>
-        <span hidden$="{{isUpdate}}" style="font-size: inherit;">创建用户</span>
-        <span hidden$="{{!isUpdate}}" style="font-size: inherit;">编辑用户</span>
+        <span hidden$="{{isUpdate}}" style="font-size: inherit;">
+          <i18n-msg msgid="USERMANAGEMENT.CREATEUSER">创建用户</i18n-msg>
+        </span>
+        <span hidden$="{{!isUpdate}}" style="font-size: inherit;">
+          <i18n-msg msgid="USERMANAGEMENT.EDITORUSER">编辑用户</i18n-msg>
+        </span>
       </h2>
       <paper-dialog-scrollable>
-        <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项"></paper-input>
-        <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}"></paper-input>
-        <paper-input id="mail" label="邮箱" value="{{user.mail::input}}"></paper-input>
-        <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}"></paper-input>
-        <paper-input id="areaCode" label="地区编号" value="{{user.areaCode::input}}"></paper-input>
-        <paper-input id="relatedEmail" label="关联邮箱" value="{{user.relatedEmail::input}}"></paper-input>
-        <x-select id="merStatus" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型"></x-select>
-        <paper-input id="agentCode" label="代理代码" value="{{user.agentCode::input}}" required error-message="必填项"></paper-input>
-        <paper-input id="subAgentCode" label="公司代码" value="{{user.subAgentCode::input}}" required error-message="必填项"></paper-input>
-        <paper-input id="groupCode" label="商户代码" value="{{user.groupCode::input}}" required error-message="必填项"></paper-input>
-        <paper-input id="merId" label="门店代码" value="{{user.merId::input}}" required error-message="必填项"></paper-input>
+        <paper-input id="userName" label="用户名" value="{{user.userName::input}}" required error-message="必填项" data-msg-id="PASSWORDMODIFICATION.USERNAME" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        <paper-input id="nickName" label="显示名" value="{{user.nickName::input}}" data-msg-id="USERMANAGEMENT.DISPLAYNAME"></paper-input>
+        <paper-input id="mail" label="邮箱" value="{{user.mail::input}}" data-msg-id="USERMANAGEMENT.EMAIL"></paper-input>
+        <paper-input id="phoneNum" label="手机号" value="{{user.phoneNum::input}}" data-msg-id="USERMANAGEMENT.TELEPHONENO"></paper-input>
+        <paper-input id="areaCode" label="地区编号" value="{{user.areaCode::input}}" data-msg-id="USERMANAGEMENT.AREACODE"></paper-input>
+        <paper-input id="relatedEmail" label="关联邮箱" value="{{user.relatedEmail::input}}" data-msg-id="USERMANAGEMENT.RELATEDEMAIL"></paper-input>
+        <x-select id="merStatus" items="[[userTypes]]" selected-item="{{userType}}" label="用户类型" data-msg-id="USERMANAGEMENT.USERTYPE" is-locale></x-select>
+        <paper-input id="agentCode" label="代理代码" value="{{user.agentCode::input}}" required error-message="必填项" data-msg-id="TRADE_DETAIL.AGENT_NO" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        <paper-input id="subAgentCode" label="公司代码" value="{{user.subAgentCode::input}}" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        <paper-input id="groupCode" label="商户代码" value="{{user.groupCode::input}}" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
+        <paper-input id="merId" label="门店代码" value="{{user.merId::input}}" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
       </paper-dialog-scrollable>
       <div class="buttons">
-        <paper-button dialog-dismiss>取消</paper-button>
-        <paper-button on-tap="handleSaveTapped">保存</paper-button>
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button on-tap="handleSaveTapped">
+          <i18n-msg msgid="BUTTON.SAVE">保存</i18n-msg>
+        </paper-button>
       </div>
     </paper-dialog>
     <x-ajax id="saveAjax" method="POST" url="/master/user/create" handle-as="json" on-response="handleSaveResponse"></x-ajax>
@@ -72,6 +80,11 @@
   <script>
     Polymer({
       is: 'user-create',
+      attached: function() {
+        this.fire('rerender-i18n', {
+          from: 'user-create'
+        });
+      },
       properties: {
         userType: {
           type: Object
@@ -84,22 +97,22 @@
           type: Array,
           value: [{
             key: 'admin',
-            value: '超级管理员'
+            value: 'USERTYPE.ADMIN'
           }, {
             key: 'genAdmin',
-            value: '普通管理员'
+            value: 'USERTYPE.GENADMIN'
           }, {
             key: 'agent',
-            value: '代理'
+            value: 'USERTYPE.AGENT'
           }, {
             key: 'subAgent',
-            value: '公司'
+            value: 'USERTYPE.SUBAGENT'
           }, {
             key: 'group',
-            value: '商户'
+            value: 'USERTYPE.GROUP'
           }, {
             key: 'merchant',
-            value: '门店'
+            value: 'USERTYPE.MERCHANT'
           }, ]
         },
         pageType: String,
@@ -169,19 +182,21 @@
         this.$.merId.setAttribute('hidden', true);
       },
       open: function() {
+        var i18nMsg = document.createElement('i18n-msg');
         this.$.dialogAdd.open();
         if (this.pageType === 'create') {
+
           this.user = {};
           this.userType = {
             key: 'admin',
-            value: '超级管理员'
+            value: i18nMsg.getMsg('USERTYPE.ADMIN')
           };
           this.$.userName.removeAttribute('disabled');
         } else if (this.pageType === 'editor') {
           this.$.userName.setAttribute('disabled', true);
           this.userType = {
             key: this.user.userType,
-            value: this.userTypeMap[this.user.userType]
+            value: i18nMsg.getMsg(this.userTypeMap[this.user.userType])
           };
         }
 
@@ -191,12 +206,12 @@
       },
       ready: function() {
         this.userTypeMap = {
-          admin: '超级管理员',
-          genAdmin: '普通管理员',
-          agent: '代理',
-          subAgent: '公司',
-          group: '商户',
-          merchant: '门店',
+          admin: 'USERTYPE.ADMIN',
+          genAdmin: 'USERTYPE.GENADMIN',
+          agent: 'USERTYPE.AGENT',
+          subAgent: 'USERTYPE.SUBAGENT',
+          group: 'USERTYPE.GROUP',
+          merchant: 'USERTYPE.MERCHANT',
         };
       },
       isUserConfigEmpty: function() {
@@ -235,7 +250,7 @@
       // 保存
       handleSaveTapped: function() {
         if (this.isUserConfigEmpty()) {
-          Util.toast('必填项不能为空', 1000);
+          Util.toast('PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS', 3000, true);
           return;
         }
         if (this.pageType === 'create') {
@@ -250,11 +265,11 @@
       handleSaveResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('USERMANAGEMENT.' + response.message, 3000, true);
           return;
         }
         this.$.dialogAdd.close();
-        Util.toast(response.message, 1000);
+        Util.toast('USERMANAGEMENT.' + response.message, 3000, true);
         this.fire('saved');
         this.set('user', {});
       },
@@ -262,11 +277,11 @@
       handleUpdateResponse: function(e) {
         var response = e.detail.response;
         if (response.status !== 0) {
-          Util.toast(response.message, 3000);
+          Util.toast('USERMANAGEMENT.' + response.message, 3000, true);
           return;
         }
         this.$.dialogAdd.close();
-        Util.toast(response.message, 1000);
+        Util.toast('USERMANAGEMENT.' + response.message, 3000, true);
         this.fire('saved');
         this.set('user', {});
       },

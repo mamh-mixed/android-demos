@@ -34,20 +34,34 @@
   <template>
     <form is="x-form" id="formQuery" method="GET" action="/master/subAgent/find" on-iron-form-submit="submitForm" on-iron-form-response="handleQueryResponse">
       <div class="search-condition">
-        <paper-input name="subAgentCode" label="公司代码" value="{{cond.subAgenCode::input}}"></paper-input>
-        <paper-input name="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}"></paper-input>
-        <x-select items="[[agents]]" name="agentCode" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" id="agentCode"></x-select>
-        <paper-button class="colorful" raised on-tap="handleQueryTapped">查询</paper-button>
+        <paper-input name="subAgentCode" label="公司代码" value="{{cond.subAgenCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
+        <paper-input name="subAgentName" label="公司名称" value="{{cond.subAgentName::input}}" data-msg-id="TRADE_DETAIL.GROUP_NAME"></paper-input>
+        <x-select items="[[agents]]" name="agentCode" selected-item="{{agent}}" label="代理" disabled="{{agentDisabled}}" id="agentCode" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
+        <paper-button class="colorful" raised on-tap="handleQueryTapped">
+            <i18n-msg msgid="BUTTON.QUERY">查询</i18n-msg>
+        </paper-button>
       </div>
       <div class="data-grid table">
         <div class="thead">
           <div class="tr">
-            <div class="th">序号</div>
-            <div class="th">公司代码</div>
-            <div class="th left">公司名称</div>
-            <div class="th">代理代码</div>
-            <div class="th left">代理名称</div>
-            <div class="th">操作</div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.INDEX">序号</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="SCANPAY_TRADE_LIST.SUBAGENT_NO">公司代码</i18n-msg>
+            </div>
+            <div class="th left">
+                <i18n-msg msgid="TRADE_DETAIL.GROUP_NAME">公司名称</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="TRADE_DETAIL.AGENT_NO">代理代码</i18n-msg>
+            </div>
+            <div class="th left">
+                 <i18n-msg msgid="SCANPAY_TRADE_STATS.AGENT_NAME">代理名称</i18n-msg>
+            </div>
+            <div class="th">
+                <i18n-msg msgid="AGENT.OPERATION">操作</i18n-msg>
+            </div>
           </div>
         </div>
         <div class="tbody">
@@ -127,6 +141,9 @@
           this.subAgents = [];
         },
         attached: function() {
+          this.fire('rerender-i18n', {
+            from: 'sub-agent-list'
+          });
           if (this.autoLoading) {
             this.handleQueryTapped();
           }
@@ -141,13 +158,13 @@
         handleQueryAgentsResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
-            Util.toast('加载代理列表失败', 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
           var pagination = response.data;
           if (pagination.count <= 0) {
-            Util.toast('没有代理数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             return;
           }
 
@@ -172,7 +189,7 @@
         handleQueryResponse: function(e) {
           var response = e.detail;
           if (response.status !== 0) {
-            Util.toast(response.message, 3000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             return;
           }
 
@@ -183,7 +200,7 @@
           this.set('cond.page', pagination.page);
 
           if (this.subAgents.length === 0) {
-            Util.toast('没有数据', 2000);
+            Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
           }
         },
 
