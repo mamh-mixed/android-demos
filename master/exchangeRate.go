@@ -45,7 +45,39 @@ func excratQueryHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// excratCheckHandle 复核
+// excratActivateHandle 汇率立即生效
+func excratActivateHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+
+	ret := ExcRat.RateActivate(data, curSession.User.UserName)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("marshal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+// excratCheckHandle 汇率复核
 func excratCheckHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -309,6 +341,63 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 		Message: "SAVE_RATE_SUCCESS",
 		Data:    t,
 	}
+	return result
+}
+
+// RateActivate 处理汇率立即生效的方法
+func (e *exchangeRate) RateActivate(data []byte, username string) (result *model.ResultBody) {
+	t := new(model.ExchangeRateManage)
+	err := json.Unmarshal(data, t)
+	if err != nil {
+		log.Errorf("json(%s) unmarshal error: %s", string(data), err)
+		return model.NewResultBody(2, "TOAST.JSON_RESOLVE_FAIL")
+	}
+
+	if t.EId == "" {
+		log.Error("缺失必要参数 eID")
+		result = &model.ResultBody{
+			Status:  400,
+			Message: "TOAST.MISSING_REQUIRED_ITEM",
+			Data:    "eId",
+		}
+		return result
+	}
+
+	// 查找要立即生效的汇率记录
+	rate, err := mongo.ExchangeRateManageColl.FindOne(t.EId)
+	if err != nil {
+		log.Errorf("Find exchange Rate（%s）FAIL： %s", t.EId, err)
+		return model.NewResultBody(401, "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL")
+	}
+
+	// 待存入的有效汇率表中的数据
+	acRt := &model.ExchangeRate{
+		CurrencyPair:    rate.LocalCurrency + "<=>" + rate.TargetCurrency,
+		Rate:            rate.Rate,
+		EnforcementTime: time.Now().Format("2006-01-02 15:04:05"),
+		EnforceUser:     username,
+	}
+	err = mongo.ExchangeRateColl.Upsert(acRt)
+	if err != nil {
+		log.Errorf("Activate exchange rate when upsert into database error: %s", err)
+		return model.NewResultBody(2, "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL")
+	}
+
+	// 更新到汇率管理表中
+	rate.Status = model.ER_ACTIVATED
+	rate.UpdateUser = acRt.EnforceUser
+	rate.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+	err = mongo.ExchangeRateManageColl.Update(rate)
+	if err != nil {
+		log.Errorf("Update rate into exchangeRateManage error: %s", err)
+	}
+
+	result = &model.ResultBody{
+		Status:  0,
+		Message: "EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS",
+		Data:    rate,
+	}
+
 	return result
 }
 

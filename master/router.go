@@ -33,7 +33,8 @@ func Route() (mux *MyServeMux) {
 	mux = NewMyServeMux()
 
 	mux.HandleFunc("/master/excrat/query", excratQueryHandle)
-	mux.HandleFunc("/master/excrat/check", excratCheckHandle) // admin
+	mux.HandleFunc("/master/excrat/check", excratCheckHandle)       // admin
+	mux.HandleFunc("/master/excrat/activate", excratActivateHandle) // admin
 	mux.HandleFunc("/master/excrat/create", excratCreateHandle)
 	mux.HandleFunc("/master/excrat/range/update", excratRangeUpdateHandle) // admin
 	mux.HandleFunc("/master/excrat/range/find", excratRangeFindHandle)     // admin
