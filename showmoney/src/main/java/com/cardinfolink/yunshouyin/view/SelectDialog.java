@@ -26,6 +26,7 @@ public class SelectDialog {
     private WheelView mWheelRight;//右边的滚轮组件显示城市，显示分行
 
     private OnWheelScrollListener mOnWheelScrollLeftListener;
+    private OnWheelScrollListener mOnWheelScrollRightListener;
 
     private TranslateAnimation mShowAnimation;//显示的动画，
     private TranslateAnimation mHideAnimation;//隐藏的动画
@@ -51,8 +52,7 @@ public class SelectDialog {
 
         mWheelLeft = (WheelView) dialogView.findViewById(R.id.wheel_left);
         mWheelRight = (WheelView) dialogView.findViewById(R.id.wheel_right);
-        mWheelLeft.setCyclic(true);
-        mWheelRight.setCyclic(true);
+
         dialogView.setOnTouchListener(new OnTouchListener() {
 
             @Override
@@ -184,6 +184,12 @@ public class SelectDialog {
         mWheelLeft.removeScrollingListener(mOnWheelScrollLeftListener);
         mWheelLeft.addScrollingListener(listener);
         mOnWheelScrollLeftListener = listener;
+    }
+
+    public void addRightScrollingListener(OnWheelScrollListener listener) {
+        mWheelRight.removeScrollingListener(mOnWheelScrollRightListener);
+        mWheelRight.addScrollingListener(listener);
+        mOnWheelScrollRightListener = listener;
     }
 
     public void setWheelLeftAdapter(AbstractWheelTextAdapter adapter) {
