@@ -10,6 +10,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.ui.EditTextClear;
 
 import kankan.wheel.widget.OnWheelChangedListener;
 import kankan.wheel.widget.OnWheelScrollListener;
@@ -34,6 +35,7 @@ public class SelectDialog {
 
     private TextView mOk;
     private TextView mCancel;
+    private EditTextClear mSearch;
 
     private OnClickListener mOkOnClickListener;
     private OnClickListener mCancelOnClickListener;
@@ -44,6 +46,9 @@ public class SelectDialog {
 
         mOk = (TextView) dialogView.findViewById(R.id.select_dialog_ok);
         mCancel = (TextView) dialogView.findViewById(R.id.select_dialog_cancel);
+
+        mSearch = (EditTextClear) dialogView.findViewById(R.id.select_search);
+
         mWheelLeft = (WheelView) dialogView.findViewById(R.id.wheel_left);
         mWheelRight = (WheelView) dialogView.findViewById(R.id.wheel_right);
         mWheelLeft.setCyclic(true);
@@ -203,6 +208,11 @@ public class SelectDialog {
 
     public void setWheelRightCurrentItem(int index) {
         mWheelRight.setCurrentItem(index);
+    }
+
+
+    public void setSearchText(String text) {
+        mSearch.setText(text);
     }
 
 
