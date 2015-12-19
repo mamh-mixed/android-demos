@@ -16,6 +16,7 @@ const NotifyURL = "/scanpay/upNotify/weixin"
 type BaseReq interface {
 	SetSign(sign string) // 设置签名 setter
 	GetSignKey() string  // 取商户（可能是大商户）签名密钥
+	GetSignType() string // 取签名方式
 	GetURI() string      // GetURI 取接口地址
 	GetHTTPClient() *http.Client
 	GetSpReq() *model.ScanPayRequest
@@ -32,6 +33,7 @@ type CommonParams struct {
 	SubMchId string `xml:"sub_mch_id,omitempty" url:"sub_mch_id,omitempty"` // 微信支付分配的子商户号，开发者模式下必填
 	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`    // 随机字符串
 	Sign     string `xml:"sign" url:"-"`                                    // 签名
+	SignType string `xml:"sign_type" url:"-"`                               // 签名方式
 
 	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero" bson:"-"`
 
@@ -48,6 +50,11 @@ func (c *CommonParams) SetSign(sign string) {
 // GetSignKey signKey getter
 func (c *CommonParams) GetSignKey() string {
 	return c.WeixinMD5Key
+}
+
+// GetSignType signType getter
+func (c *CommonParams) GetSignType() string {
+	return c.SignType
 }
 
 // GetSpReq 请求对象
