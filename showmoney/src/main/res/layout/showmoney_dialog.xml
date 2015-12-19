@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 激活对话框 -->
     <RelativeLayout
         android:id="@+id/activate_dialog"
         android:layout_width="fill_parent"
@@ -11,11 +12,9 @@
         android:visibility="gone">
 
         <LinearLayout
-
             android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
-
             android:background="@drawable/dialog_color"
             android:gravity="center_horizontal"
             android:orientation="vertical">
@@ -36,7 +35,6 @@
 
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -49,7 +47,6 @@
                     android:layout_marginBottom="10dp"
                     android:text="@string/activate_sentto_email"
                     android:textSize="17sp" />
-
 
             </LinearLayout>
 
@@ -68,9 +65,7 @@
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
                     android:text="@string/txt_cancel"
-                    android:textSize="17sp"
-
-                    />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/activate_dialog_ok"
@@ -85,8 +80,9 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
+    <!--end 激活对话框 -->
 
-
+    <!--refd_dialog 退款对话框 -->
     <RelativeLayout
         android:id="@+id/refd_dialog"
         android:layout_width="fill_parent"
@@ -95,11 +91,9 @@
         android:visibility="gone">
 
         <LinearLayout
-
             android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
-
             android:background="@drawable/dialog_color"
             android:gravity="center_horizontal"
             android:orientation="vertical">
@@ -128,14 +122,12 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
-
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/txt_input_refund_amount"
@@ -147,16 +139,13 @@
                         android:layout_height="30dp"
                         android:background="#dddddd"
                         android:inputType="numberDecimal"
-                        android:textSize="17sp"
-
-                        />
+                        android:textSize="17sp" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -164,14 +153,12 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
                     <TextView
-
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/txt_input_login_pwd"
@@ -183,9 +170,7 @@
                         android:layout_height="30dp"
                         android:background="#dddddd"
                         android:inputType="textPassword"
-                        android:textSize="17sp"
-
-                        />
+                        android:textSize="17sp" />
 
                 </LinearLayout>
 
@@ -206,9 +191,7 @@
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
                     android:text="@string/txt_cancel"
-                    android:textSize="17sp"
-
-                    />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/refd_dialog_ok"
@@ -223,8 +206,9 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
+    <!--refd_dialog 退款对话框 -->
 
-
+    <!--alert_dialog 警告对话框 -->
     <RelativeLayout
         android:id="@+id/alert_dialog"
         android:layout_width="fill_parent"
@@ -233,7 +217,6 @@
         android:visibility="gone">
 
         <LinearLayout
-
             android:layout_width="220dp"
             android:layout_height="180dp"
             android:layout_centerInParent="true"
@@ -250,14 +233,11 @@
                     android:id="@+id/alert_img"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_centerInParent="true"
-
-                    />
+                    android:layout_centerInParent="true" />
             </RelativeLayout>
 
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -295,7 +275,9 @@
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
+    <!--alert_dialog 警告对话框 -->
 
+    <!-- loading 对话框 -->
     <RelativeLayout
         android:id="@+id/loading_dialog"
         android:layout_width="fill_parent"
@@ -311,8 +293,9 @@
             android:src="@drawable/loading" />
 
     </RelativeLayout>
+    <!-- loading 对话框 -->
 
-
+    <!-- trading_custom_dialog 对话框-->
     <RelativeLayout
         android:id="@+id/trading_custom_dialog"
         android:layout_width="fill_parent"
@@ -321,6 +304,7 @@
         android:background="#40000000"
         android:visibility="gone">
 
+        <!-- 读取交易 loading 的对话框 -->
         <LinearLayout
             android:id="@+id/trading_custom_dialog_loading"
             android:layout_width="300dp"
@@ -352,7 +336,6 @@
                 android:orientation="vertical">
 
                 <TextView
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -384,9 +367,7 @@
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
                     android:text="@string/txt_query_result"
-                    android:textSize="17sp"
-
-                    />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/close"
@@ -402,8 +383,9 @@
             </LinearLayout>
 
         </LinearLayout>
+        <!-- 读取交易 loading 的对话框 -->
 
-
+        <!-- 交易未支付 对话框 -->
         <LinearLayout
             android:id="@+id/trading_custom_dialog_nopay"
             android:layout_width="300dp"
@@ -433,7 +415,6 @@
                 android:orientation="vertical">
 
                 <TextView
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -458,9 +439,7 @@
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
                     android:text="@string/txt_query_result"
-                    android:textSize="17sp"
-
-                    />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/nopay_close"
@@ -476,8 +455,9 @@
             </LinearLayout>
 
         </LinearLayout>
+        <!-- 交易未支付 对话框 -->
 
-
+        <!-- 交易成功 上边一个图片，中间显示文本，下边两个按钮 对话框 -->
         <LinearLayout
             android:id="@+id/trading_custom_dialog_success"
             android:layout_width="300dp"
@@ -502,14 +482,12 @@
 
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <TextView
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -534,9 +512,7 @@
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
                     android:text="@string/txt_history_txns"
-                    android:textSize="17sp"
-
-                    />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/success_dialog_back"
@@ -550,8 +526,9 @@
 
             </LinearLayout>
         </LinearLayout>
+        <!-- 交易成功 对话框 -->
 
-
+        <!-- 本次交易出错 上边一个图片，中间显示文本，下边两个按钮对话框 -->
         <LinearLayout
             android:id="@+id/trading_custom_dialog_fail"
             android:layout_width="300dp"
@@ -576,14 +553,12 @@
 
 
             <LinearLayout
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <TextView
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -608,9 +583,7 @@
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
                     android:text="@string/txt_query_result"
-                    android:textSize="17sp"
-
-                    />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/fail_dialog_back"
@@ -624,9 +597,10 @@
 
             </LinearLayout>
         </LinearLayout>
-
+        <!-- 本次交易出错 对话框 -->
 
     </RelativeLayout>
+    <!-- trading_custom_dialog 对话框-->
 
 
     <!-- 用来提示 信息的对话框，上面一段文本，下面两个按钮-->
@@ -649,8 +623,8 @@
                 android:id="@+id/hint_messsage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginTop="30dp"
                 android:text="@string/txt_reset_messsage"
                 android:textSize="17sp" />
 
