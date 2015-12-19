@@ -261,14 +261,12 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 	}
 
 	// 查询当前生效的汇率
-	currPair := t.LocalCurrency + "<=>" + t.TargetCurrency
-
-	enforceRate, err := mongo.ExchangeRateColl.FindOne(currPair)
+	enforceRate, err := mongo.ExchangeRateColl.FindRate(t.LocalCurrency, t.TargetCurrency)
 	// 新增汇率是否已经生效
 	rateExist := true
 	if err != nil {
 		if err.Error() != "not found" {
-			log.Errorf("FIND OLD RATES(%s) ERROR: %s", currPair, err)
+			log.Errorf("FIND OLD RATES(%s<=>%s) ERROR: %s", t.LocalCurrency, t.TargetCurrency, err)
 			return model.NewResultBody(2, "SAVE_RATE_FAIL")
 		}
 
