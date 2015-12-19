@@ -58,7 +58,7 @@
         </div>
         <div class="row">
           <!-- 这里的paperInput不能设置disabled，否则在火狐下会报错。 more info： https://github.com/PolymerElements/iron-input/issues/47 20151128-->
-          <paper-input label="公司代码" value="[[subAgent.subAgentCode]]"></paper-input>
+          <paper-input label="公司代码" value="[[subAgent.subAgentCode]]" readonly></paper-input>
         </div>
         <div class="row">
           <paper-input label="公司名称" value="{{subAgent.subAgentName::input}}"></paper-input>
