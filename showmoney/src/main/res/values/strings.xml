@@ -239,6 +239,9 @@
     <string name="activate_after">稍后激活</string>
     <string name="activate_had_activated">已激活</string>
     <string name="activate_your_not_activate">你注册的账号尚未激活</string>
+    <string name="activate_your_had_activate">你注册的账号已经激活</string>
     <string name="activate_message1">如果长时间没有收到邮件，请检查你的邮箱垃圾箱</string>
     <string name="activate_i_had_activated">我已经激活了</string>
+    <string name="activate_had_not_activated">未激活！</string>
+
 </resources>
