@@ -56,6 +56,8 @@
     <string name="username_exist">用户名已存在！</string>
     <string name="activate_sentto_email">激活链接将发送到该邮箱:\n\n</string>
 
+    <string name="viewfinder_message">将二维码/条形码放入框内</string>
+
     <string name="create_qrcode_activity_scancode">扫码支付</string>
     <string name="create_qrcode_activity_open_wx">请顾客打开微信“扫一扫”</string>
     <string name="create_qrcode_activity_open_ali">请顾客打开支付宝钱包“扫一扫”</string>
