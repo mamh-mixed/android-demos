@@ -86,4 +86,9 @@ public class SettingInputItem extends RelativeLayout {
     public void setImageViewDrawable(Drawable d) {
         mImageView.setImageDrawable(d);
     }
+
+    public void setInputType(int type) {
+        mText.setInputType(type);
+    }
+
 }
