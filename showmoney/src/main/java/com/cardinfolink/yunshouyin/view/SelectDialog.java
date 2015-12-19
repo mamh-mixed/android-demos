@@ -11,11 +11,21 @@ import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 
+import kankan.wheel.widget.OnWheelChangedListener;
+import kankan.wheel.widget.OnWheelScrollListener;
+import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
+
 /**
  * 提示对话框。SelectDialog，为选择省份城市 特定的对话框
  * 上面两个按钮，中间一个搜索提示框，下面两个齿轮组件。
  */
 public class SelectDialog {
+    private WheelView mWheelLeft;//左边的滚轮组件，显示省份，显示银行
+    private WheelView mWheelRight;//右边的滚轮组件显示城市，显示分行
+
+    private OnWheelScrollListener mOnWheelScrollLeftListener;
+
     private TranslateAnimation mShowAnimation;//显示的动画，
     private TranslateAnimation mHideAnimation;//隐藏的动画
 
@@ -34,7 +44,10 @@ public class SelectDialog {
 
         mOk = (TextView) dialogView.findViewById(R.id.select_dialog_ok);
         mCancel = (TextView) dialogView.findViewById(R.id.select_dialog_cancel);
-
+        mWheelLeft = (WheelView) dialogView.findViewById(R.id.wheel_left);
+        mWheelRight = (WheelView) dialogView.findViewById(R.id.wheel_right);
+        mWheelLeft.setCyclic(true);
+        mWheelRight.setCyclic(true);
         dialogView.setOnTouchListener(new OnTouchListener() {
 
             @Override
@@ -119,6 +132,7 @@ public class SelectDialog {
         dialogView.setVisibility(View.GONE);
     }
 
+
     /**
      * 设置对话框的 显示的文本
      *
@@ -160,4 +174,36 @@ public class SelectDialog {
         mCancelOnClickListener = l;
         mCancel.setOnClickListener(l);
     }
+
+    public void addLeftScrollingListener(OnWheelScrollListener listener) {
+        mWheelLeft.removeScrollingListener(mOnWheelScrollLeftListener);
+        mWheelLeft.addScrollingListener(listener);
+        mOnWheelScrollLeftListener = listener;
+    }
+
+    public void setWheelLeftAdapter(AbstractWheelTextAdapter adapter) {
+        mWheelLeft.setViewAdapter(adapter);
+    }
+
+    public void setWheelRigthAdapter(AbstractWheelTextAdapter adapter) {
+        mWheelRight.setViewAdapter(adapter);
+    }
+
+    public int getWheelLeftCurrentItem() {
+        return mWheelLeft.getCurrentItem();
+    }
+
+    public int getWheelRightCurrentItem() {
+        return mWheelRight.getCurrentItem();
+    }
+
+    public void setWheelLeftCurrentItem(int index) {
+        mWheelLeft.setCurrentItem(index);
+    }
+
+    public void setWheelRightCurrentItem(int index) {
+        mWheelRight.setCurrentItem(index);
+    }
+
+
 }
