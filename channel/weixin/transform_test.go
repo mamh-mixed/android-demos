@@ -8,7 +8,7 @@ import (
 
 func xTestTransform(t *testing.T) {
 	returnCode, resultCode, errCode, errCodeDes := "SUCCESS", "FAIL", "OUT_TRADE_NO_USED", ""
-	status, msg := Transform("prePay", returnCode, resultCode, errCode, errCodeDes)
+	status, msg, _ := Transform("prePay", returnCode, resultCode, errCode, errCodeDes)
 	Convey("应该返回非空的应答码", t, func() {
 		So(status, ShouldNotEqual, "")
 	})
@@ -20,7 +20,7 @@ func xTestTransform(t *testing.T) {
 	t.Logf("response code is %s; response message is %s", status, msg)
 
 	returnCode, resultCode, errCode, errCodeDes = "SUCCESS", "FAIL", "ORDERPAID", "商户订单已支付"
-	status, msg = transform("prePay", returnCode, resultCode, errCode, errCodeDes)
+	status, msg, _ = Transform("prePay", returnCode, resultCode, errCode, errCodeDes)
 	Convey("应该返回非空的应答码", t, func() {
 		So(status, ShouldNotEqual, "")
 	})

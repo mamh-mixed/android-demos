@@ -1717,15 +1717,11 @@
   },
   "TOAST.DATE_TIME_FORMAT_INVALID": {
     "description": "日期时间格式不合法",
-    "message": "EN日期时间格式不合法"
+    "message": "EN日期时间格式不合法,必须是‘YYYY-MM-DD hh:mm:ss’"
   },
   "TOAST.SYSTEM_ERROR": {
     "description": "系统错误",
     "message": "EN系统错误"
-  },
-  "TOAST.INVALID_DATE_TIME_FORMAT": {
-    "description": "不支持的日期时间格式",
-    "message": "EN日期时间格式有误，必须是‘YYYY-MM-DD hh:mm:ss’"
   },
   "SCANPAY_TRADE_LIST.SETT_CURR_AMT": {
     "description": "清算金额",

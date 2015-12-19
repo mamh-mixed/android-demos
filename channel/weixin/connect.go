@@ -2,7 +2,9 @@ package weixin
 
 import (
 	"bytes"
+	"crypto/hmac"
 	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/xml"
 	"fmt"
@@ -79,8 +81,22 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 	buf.WriteString("&key=" + d.GetSignKey())
 	// log.Debugf("%s", buf.String())
 
-	sign := md5.Sum(buf.Bytes())
-	d.SetSign(strings.ToUpper(hex.EncodeToString(sign[:])))
+	// 根据signType不同执行不同的签名
+	var sign string
+	switch d.GetSignType() {
+	case "HMAC-SHA256":
+		// HMAC-SHA256 签名
+		mac := hmac.New(sha256.New, []byte(d.GetSignKey()))
+		mac.Write(buf.Bytes())
+		signByte := mac.Sum(nil)
+		sign = hex.EncodeToString(signByte[:])
+		log.Debugf("HMAC-SHA256 sign info is %s", sign)
+	default:
+		signByte := md5.Sum(buf.Bytes())
+		sign = hex.EncodeToString(signByte[:])
+		log.Debugf("MD5 sign info is %s", sign)
+	}
+	d.SetSign(strings.ToUpper(sign))
 
 	xmlBytes, err = xml.Marshal(d)
 	if err != nil {

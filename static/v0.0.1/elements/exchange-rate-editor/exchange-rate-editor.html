@@ -9,8 +9,7 @@
   <style>
     :host {
       display: block;
-      --paper-dialog-scrollable: {
-      }
+      --paper-dialog-scrollable: {}
     }
 
     paper-dialog {
@@ -175,7 +174,7 @@
                 Util.toast('TOAST.SAVE_FAIL', 2500, true);
                 break;
               case 'UNSUPPORT_TIME_FORMAT':
-                Util.toast('TOAST.INVALID_DATE_TIME_FORMAT', 2500, true);
+                Util.toast('TOAST.DATE_TIME_FORMAT_INVALID', 2500, true);
                 break;
               case 'OUT_OF_RANGE':
                 // 超出范围
