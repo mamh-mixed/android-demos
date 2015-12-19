@@ -245,7 +245,7 @@ public class LoginActivity extends BaseActivity {
                     mHintDialog.show();
                     break;
                 case R.id.tv_register:
-                    Intent intent = new Intent(LoginActivity.this, RegisterNextActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                     startActivity(intent);
                     break;
             }
