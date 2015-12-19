@@ -1643,21 +1643,37 @@
     "description": "汇率状态已生效",
     "message": "已生效"
   },
+  "EXCHANGE_RATE.CHECK_RATE_TITLE": {
+    "description": "汇率复核弹窗的抬头",
+    "message": "匯率复核"
+  },
+  "EXCHANGE_RATE.CHECK_RATE_MODAL_CONTENT": {
+    "description": "汇率复核弹窗的内容",
+    "message": "是否要通過匯率复核？"
+  },
   "EXCHANGE_RATE.ACTIVATE_RATE_TITLE": {
-    "description": "激活汇率弹窗的抬头",
-    "message": "啟動匯率"
+    "description": "立即激活汇率弹窗的抬头",
+    "message": "立即激活匯率"
   },
   "EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT": {
-    "description": "激活汇率弹窗的内容",
-    "message": "是否要啟動匯率？"
+    "description": "立即激活汇率弹窗的内容",
+    "message": "是否要立即激活匯率？"
   },
-  "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL": {
-    "description": "激活失败",
+  "EXCHANGE_RATE.TOAST.CHECK_FAIL": {
+    "description": "审核失败",
     "message": "審核失敗"
   },
-  "EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS": {
-    "description": "激活成功",
+  "EXCHANGE_RATE.TOAST.CHECK_SUCCESS": {
+    "description": "审核成功",
     "message": "審核成功"
+  },
+  "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL": {
+    "description": "立即生效失败",
+    "message": "立即生效失敗"
+  },
+  "EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS": {
+    "description": "立即生效成功",
+    "message": "立即生效成功"
   },
   "EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE": {
     "description": "汇率计划生效时点已经过时了",

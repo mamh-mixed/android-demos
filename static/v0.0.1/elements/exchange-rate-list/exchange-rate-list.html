@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
@@ -134,12 +135,13 @@
               <div class="td center">{{item.planEnforcementTime}}</div>
               <div class="td">{{item.checkedUser}}</div>
               <div class="td center">
-                <template is="dom-if" if="{{_computedStatus(item.status, 'CHECKED')}}">
-                  <i18n-msg class="primary" msgid="EXCHANGE_RATE.ALREADY_CHECKED">已审核</i18n-msg>
-                </template>
                 <template is="dom-if" if="{{_computedStatus(item.status, 'UNCHECKED')}}">
                   <i18n-msg class="yellow" msgid="EXCHANGE_RATE.NOT_CHECKED">未审核</i18n-msg>
                   <iron-icon icon="spellcheck" on-tap="handleRateEnforcedChecked" item="{{item}}" index="{{index}}" hidden$="{{!isAdmin}}"></iron-icon>
+                </template>
+                <template is="dom-if" if="{{_computedStatus(item.status, 'CHECKED')}}">
+                  <i18n-msg class="primary" msgid="EXCHANGE_RATE.ALREADY_CHECKED">已审核</i18n-msg>
+                  <iron-icon icon="av:play-arrow" on-tap="handleRateActivateEvent" item="{{item}}" index="{{index}}" hidden$="{{!isAdmin}}"></iron-icon>
                 </template>
                 <template is="dom-if" if="{{_computedStatus(item.status, 'ACTIVATED')}}">
                   <i18n-msg class="green" msgid="EXCHANGE_RATE.ALREADY_ACTIVATED">已生效</i18n-msg>
@@ -159,10 +161,27 @@
 
     <paper-dialog id="actions" style="width: 250px;">
       <h2>
-        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_TITLE">激活汇率</i18n-msg>
+        <i18n-msg msgid="EXCHANGE_RATE.CHECK_RATE_TITLE">汇率复核</i18n-msg>
       </h2>
       <p>
-        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT">是否要激活汇率？</i18n-msg>
+        <i18n-msg msgid="EXCHANGE_RATE.CHECK_RATE_MODAL_CONTENT">是否要通过汇率复核？</i18n-msg>
+      </p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>
+          <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+        </paper-button>
+        <paper-button dialog-confirm autofocus on-tap="handeRequestCheckRateEvent">
+          <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
+        </paper-button>
+      </div>
+    </paper-dialog>
+
+    <paper-dialog id="activateRateDialog" style="width: 250px;">
+      <h2>
+        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_TITLE">汇率激活</i18n-msg>
+      </h2>
+      <p>
+        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT">是否要立即激活汇率？</i18n-msg>
       </p>
       <div class="buttons">
         <paper-button dialog-dismiss>
@@ -173,7 +192,9 @@
         </paper-button>
       </div>
     </paper-dialog>
+
     <x-ajax id="queryCurrentUserAjax" auto method="GET" url="/master/session/find" handle-as="json" debounce-duration="1000" on-response="handleQueryCurrentUserResponse"></x-ajax>
+    <x-ajax id="checkRateAjax" method="POST" url="/master/excrat/check" handle-as="json" debounce-duration="1000" on-response="handleCheckRateResponse"></x-ajax>
     <x-ajax id="activateRateAjax" method="POST" url="/master/excrat/activate" handle-as="json" debounce-duration="1000" on-response="handleActivateRateResponse"></x-ajax>
     <exchange-rate-editor id="newItem" on-saved="handleSaveSuccessEvent"></exchange-rate-editor>
     <d2d-ratio-range-editor id="rangeEditor"></d2d-ratio-range-editor>
@@ -228,13 +249,13 @@
             Util.toast('没有数据', 2000);
           }
         },
-        // 审核汇率，使生效，打开弹窗先
-        handleRateEnforcedChecked: function(e) {
+        // 汇率复核通过的记录，提供立马生效的功能
+        handleRateActivateEvent: function(e) {
           this.item = e.model.item;
           this.index = e.model.index;
-          this.$.actions.open();
+          this.$.activateRateDialog.open();
         },
-        // 确认汇率生效
+        // 汇率立马生效请求
         handeRequestActivateRateEvent: function(e) {
           var data = {
             eId: this.item.eId
@@ -243,8 +264,34 @@
           this.$.activateRateAjax.body = JSON.stringify(data);
           this.$.activateRateAjax.generateRequest();
         },
-        // 激活汇率响应事件
+        // 汇率生效响应事件
         handleActivateRateResponse: function(e) {
+          var response = e.detail.response;
+          if (response.status !== 0) {
+            Util.toast(response.message, 2500, true);
+            return;
+          }
+
+          this.splice('list', this.index, 1, response.data);
+          Util.toast('EXCHANGE_RATE.TOAST.CHECK_SUCCESS', 2000, true);
+        },
+        // 审核汇率，使生效，打开弹窗先
+        handleRateEnforcedChecked: function(e) {
+          this.item = e.model.item;
+          this.index = e.model.index;
+          this.$.actions.open();
+        },
+        // 汇率复核通过
+        handeRequestCheckRateEvent: function(e) {
+          var data = {
+            eId: this.item.eId
+          };
+
+          this.$.checkRateAjax.body = JSON.stringify(data);
+          this.$.checkRateAjax.generateRequest();
+        },
+        // 激活汇率响应事件
+        handleCheckRateResponse: function(e) {
           var response = e.detail.response;
           if (response.status !== 0) {
             switch (response.message) {
@@ -255,7 +302,7 @@
                 Util.toast('TOAST.MISSING_REQUIRED_ITEM', 2500, true);
                 break;
               case 'ACTIVATE_FAIL':
-                Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_FAIL', 2500, true);
+                Util.toast('EXCHANGE_RATE.TOAST.CHECK_FAIL', 2500, true);
                 break;
               case 'ENFORCEMENT_TIME_OUTDATE':
                 Util.toast('EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE', 2500, true);
@@ -270,7 +317,7 @@
           }
 
           this.splice('list', this.index, 1, response.data);
-          Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS', 2000, true);
+          Util.toast('EXCHANGE_RATE.TOAST.CHECK_SUCCESS', 2000, true);
         },
         // 新增汇率事件
         handleCreateFabTapped: function() {
