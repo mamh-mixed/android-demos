@@ -45,8 +45,8 @@ func excratQueryHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(rdata)
 }
 
-// excratActivateHandle 激活
-func excratActivateHandle(w http.ResponseWriter, r *http.Request) {
+// excratCheckHandle 复核
+func excratCheckHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
@@ -66,7 +66,7 @@ func excratActivateHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ret := ExcRat.Activate(data, curSession.User.UserName)
+	ret := ExcRat.RateCheck(data, curSession.User.UserName)
 
 	rdata, err := json.Marshal(ret)
 	if err != nil {
@@ -312,8 +312,8 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 	return result
 }
 
-// Activate 汇率审核通过，建立定时任务让汇率生效
-func (e *exchangeRate) Activate(data []byte, username string) (result *model.ResultBody) {
+// RateCheck 汇率审核通过，建立定时任务让汇率生效
+func (e *exchangeRate) RateCheck(data []byte, username string) (result *model.ResultBody) {
 	t := new(model.ExchangeRateManage)
 	err := json.Unmarshal(data, t)
 	if err != nil {

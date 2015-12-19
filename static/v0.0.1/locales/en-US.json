@@ -1643,19 +1643,19 @@
     "description": "汇率状态已生效",
     "message": "EN已生效"
   },
-  "EXCHANGE_RATE.ACTIVATE_RATE_TITLE": {
-    "description": "激活汇率弹窗的抬头",
-    "message": "EN激活汇率"
+  "EXCHANGE_RATE.CHECK_RATE_TITLE": {
+    "description": "汇率复核弹窗的抬头",
+    "message": "EN汇率复核"
   },
-  "EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT": {
-    "description": "激活汇率弹窗的内容",
-    "message": "EN是否要激活汇率？"
+  "EXCHANGE_RATE.CHECK_RATE_MODAL_CONTENT": {
+    "description": "汇率复核弹窗的内容",
+    "message": "EN是否要通过汇率复核？"
   },
-  "EXCHANGE_RATE.TOAST.ACTIVATE_FAIL": {
+  "EXCHANGE_RATE.TOAST.CHECK_FAIL": {
     "description": "审核失败",
     "message": "EN审核失败"
   },
-  "EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS": {
+  "EXCHANGE_RATE.TOAST.CHECK_SUCCESS": {
     "description": "审核成功",
     "message": "EN审核成功"
   },

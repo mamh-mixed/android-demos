@@ -159,10 +159,10 @@
 
     <paper-dialog id="actions" style="width: 250px;">
       <h2>
-        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_TITLE">激活汇率</i18n-msg>
+        <i18n-msg msgid="EXCHANGE_RATE.CHECK_RATE_TITLE">汇率复核</i18n-msg>
       </h2>
       <p>
-        <i18n-msg msgid="EXCHANGE_RATE.ACTIVATE_RATE_MODAL_CONTENT">是否要激活汇率？</i18n-msg>
+        <i18n-msg msgid="EXCHANGE_RATE.CHECK_RATE_MODAL_CONTENT">是否要通过汇率复核？</i18n-msg>
       </p>
       <div class="buttons">
         <paper-button dialog-dismiss>
@@ -255,7 +255,7 @@
                 Util.toast('TOAST.MISSING_REQUIRED_ITEM', 2500, true);
                 break;
               case 'ACTIVATE_FAIL':
-                Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_FAIL', 2500, true);
+                Util.toast('EXCHANGE_RATE.TOAST.CHECK_FAIL', 2500, true);
                 break;
               case 'ENFORCEMENT_TIME_OUTDATE':
                 Util.toast('EXCHANGE_RATE.TOAST.ENFORCEMENT_TIME_OUTDATE', 2500, true);
@@ -270,7 +270,7 @@
           }
 
           this.splice('list', this.index, 1, response.data);
-          Util.toast('EXCHANGE_RATE.TOAST.ACTIVATE_SUCCESS', 2000, true);
+          Util.toast('EXCHANGE_RATE.TOAST.CHECK_SUCCESS', 2000, true);
         },
         // 新增汇率事件
         handleCreateFabTapped: function() {
