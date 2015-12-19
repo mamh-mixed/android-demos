@@ -116,6 +116,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         updateBankData();//去获取银行信息
 
         selectDialog.addLeftScrollingListener(new BankOnWheelScrollListener());
+        selectDialog.addRightScrollingListener(new SubBankOnWheelScrollListener());
 
         selectDialog.setOkOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,6 +158,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         updateProvinceData();
 
         selectDialog.addLeftScrollingListener(new ProvinceOnWheelScrollListener());
+        selectDialog.addRightScrollingListener(new CityOnWheelScrollListener());
 
         //点击确定按钮 就把滚轮当前的 值设置到相应的位置
         selectDialog.setOkOnClickListener(new View.OnClickListener() {
@@ -299,11 +301,28 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         public void onScrollingFinished(WheelView wheel) {
             //滚动结束调用跟新城市的方法
             Province currentProvince = provinceList.get(wheel.getCurrentItem());
-
+            selectDialog.setSearchText(currentProvince.getProvinceName());
             if (provinceCityMap != null && provinceCityMap.get(currentProvince) != null) {
                 selectDialog.setWheelRigthAdapter(new RegisterWheelAdapter<City>(mContext, provinceCityMap.get(currentProvince)));
             } else {
                 updateCityData(currentProvince);
+            }
+        }
+    }
+
+    private class CityOnWheelScrollListener implements OnWheelScrollListener {
+        @Override
+        public void onScrollingStarted(WheelView wheel) {
+
+        }
+
+        @Override
+        public void onScrollingFinished(WheelView wheel) {
+            try {
+                City currentCity = cityList.get(wheel.getCurrentItem());
+                selectDialog.setSearchText(currentCity.getCityName());
+            } catch (Exception e) {
+
             }
         }
     }
@@ -321,11 +340,29 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         @Override
         public void onScrollingFinished(WheelView wheel) {
             Bank currentBank = bankList.get(wheel.getCurrentItem());
+            selectDialog.setSearchText(currentBank.getBankName());
             String mapKey = mCityCode + SEPARATOR + currentBank.getBankName();
             if (bankSubBankMap != null && bankSubBankMap.get(mapKey) != null) {
                 selectDialog.setWheelRigthAdapter(new RegisterWheelAdapter<SubBank>(mContext, bankSubBankMap.get(mapKey)));
             } else {
                 updateSubBankData(currentBank);
+            }
+        }
+    }
+
+    private class SubBankOnWheelScrollListener implements OnWheelScrollListener {
+        @Override
+        public void onScrollingStarted(WheelView wheel) {
+
+        }
+
+        @Override
+        public void onScrollingFinished(WheelView wheel) {
+            try {
+                SubBank currentSubBank = subbankList.get(wheel.getCurrentItem());
+                selectDialog.setSearchText(currentSubBank.getBankName());
+            } catch (Exception e) {
+
             }
         }
     }
