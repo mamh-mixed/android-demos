@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +18,7 @@ public class SettingActionBarItem extends RelativeLayout {
     private TextView mLeftText;
     private TextView mTitle;
     private TextView mRightText;
+    private RelativeLayout relativeLayout;
 
 
     public SettingActionBarItem(Context context) {
@@ -49,6 +49,7 @@ public class SettingActionBarItem extends RelativeLayout {
         mTitle = (TextView) this.findViewById(R.id.tv_title);
         mLeftText = (TextView) this.findViewById(R.id.tv_left);
         mRightText = (TextView) this.findViewById(R.id.tv_right);
+        relativeLayout = (RelativeLayout) this.findViewById(R.id.rl_action_bar);
     }
 
 
@@ -57,6 +58,17 @@ public class SettingActionBarItem extends RelativeLayout {
             mTitle.setText(title);
         }
     }
+
+    public void setBackgroundColor(int color) {
+        relativeLayout.setBackgroundColor(color);
+        mLeftText.setBackgroundColor(color);
+        mRightText.setBackgroundColor(color);
+    }
+
+    public void setLeftTextColor(int color) {
+        mLeftText.setTextColor(color);
+    }
+
 
     public String getTitle() {
         return mTitle.getText().toString();
