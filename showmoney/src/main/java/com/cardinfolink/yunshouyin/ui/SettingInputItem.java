@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -90,5 +91,10 @@ public class SettingInputItem extends RelativeLayout {
     public void setInputType(int type) {
         mText.setInputType(type);
     }
+
+    public void addTextChangedListener(TextWatcher watcher) {
+        mText.addTextChangedListener(watcher);
+    }
+
 
 }
