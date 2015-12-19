@@ -19,11 +19,14 @@
         android:id="@+id/tv_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tv_title"
         android:layout_alignRight="@+id/iv_setting"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="10dp"
-        android:text=""
+        android:gravity="right"
+        android:text="右边的文本"
         android:textColor="#000000" />
 
     <ImageView
