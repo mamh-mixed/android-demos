@@ -1,22 +1,35 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.cardinfolink.cashiersdk.model.InitData;
+import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
 import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
+import com.cardinfolink.yunshouyin.ui.SettingInputItem;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
+import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.SelectDialog;
 
 import java.util.ArrayList;
@@ -36,8 +49,11 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
     private SettingClikcItem mSetProvinceCity;//点击去设置省市信息
     private SettingClikcItem mSetBank;//点击设置银行信息，主行，或分行
+    private SettingInputItem mName;//姓名
+    private SettingInputItem mBankNumber;//银行卡号
+    private SettingInputItem mPhone;//手机号
 
-    private Button mRegisterFinished;
+    private Button mRegisterFinished;//注册按钮，
 
     private SelectDialog selectDialog;
 
@@ -47,10 +63,12 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
     private String mProvinceName;//保存设置的省份，调用银行时候会检查这个是否有值
     private String mCityCode;
+    private String mCityName;
 
     private List<Bank> bankList = new ArrayList<Bank>();//Bank的list
     private List<SubBank> subbankList = new ArrayList<SubBank>();//SubBank 的list
-
+    private String mBankName;
+    private String mSubBankName;
     private static final String SEPARATOR = "__";//分隔符
 
     //这个maps的可以是 mCityCode + SEPARATOR + currentBank.getBankName()
@@ -73,6 +91,15 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mSetProvinceCity = (SettingClikcItem) findViewById(R.id.province_city);
         mSetBank = (SettingClikcItem) findViewById(R.id.bank);
 
+        mName = (SettingInputItem) findViewById(R.id.name);//姓名
+
+        mBankNumber = (SettingInputItem) findViewById(R.id.bank_number);//银行卡号
+        mBankNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
+        //// TODO: mamh  缺少一个这个 VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
+
+        mPhone = (SettingInputItem) findViewById(R.id.phone_number);//手机号
+        mPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+
         mSetProvinceCity.setOnClickListener(this);
         mSetBank.setOnClickListener(this);
         mRegisterFinished.setOnClickListener(this);
@@ -86,6 +113,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         switch (v.getId()) {
             case R.id.btnregister:
                 Log.e(TAG, " onclick register");
+                register();//调用注册的方法
                 break;
             case R.id.province_city:
                 Log.e(TAG, " onclick province_city");
@@ -97,6 +125,121 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                 break;
         }
     }
+
+    private void register() {
+        String name = mName.getText().replace(" ", ""); //姓名
+        String banknum = mBankNumber.getText().replace(" ", ""); //银行卡号
+        String phonenum = mPhone.getText().replace(" ", "");
+
+        String province = mProvinceName;
+        String city = mCityName;
+
+        String bank = mBankName;
+        String subbank = mSubBankName;
+
+        if (!validate(name, banknum, phonenum, province, city, bank, subbank)) {
+            return;
+        }
+
+        mLoadingDialog.startLoading();
+        User user = new User();
+        user.setUsername(SessonData.loginUser.getUsername());
+        user.setUsername(SessonData.loginUser.getPassword());
+        user.setProvince(province);
+        user.setCity(city);
+        user.setBankOpen(bank);
+        user.setBranchBank(subbank);
+        user.setPayee(name);//姓名
+        user.setPayeeCard(banknum);//银行卡号
+        user.setPhoneNum(phonenum);
+        quickPayService.improveInfoAsync(user, new QuickPayCallbackListener<User>() {
+            @Override
+            public void onSuccess(User data) {
+                SessonData.loginUser.setClientid(data.getClientid());
+                SessonData.loginUser.setObjectId(data.getObjectId());
+                SessonData.loginUser.setLimit(data.getLimit());
+
+                InitData initData = new InitData();
+                initData.setMchntid(data.getClientid());    // 商户号
+                initData.setInscd(data.getInscd());         // 机构号
+                initData.setSignKey(data.getSignKey());     // 秘钥
+                initData.setTerminalid(TelephonyManagerUtil.getDeviceId(mContext));// 设备号
+                initData.setIsProduce(SystemConfig.IS_PRODUCE);// 是否生产环境
+
+                CashierSdk.init(initData);
+                Intent intent = new Intent(RegisterNextActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                String errorMsg = ex.getErrorMsg();
+                Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                mLoadingDialog.endLoading();
+                mAlertDialog.show(errorMsg, alertBitmap);
+            }
+        });
+
+    }
+
+    private boolean validate(String name, String banknum, String phonenum,
+                             String province, String city, String bank, String subbank) {
+
+
+        String alertMsg = "";
+        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+        if (TextUtils.isEmpty(province)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_province_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (TextUtils.isEmpty(city)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_city_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (TextUtils.isEmpty(bank)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_bank_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (TextUtils.isEmpty(name)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_name_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (TextUtils.isEmpty(banknum)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (!VerifyUtil.checkBankCard(banknum)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_format_error);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (TextUtils.isEmpty(phonenum)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_cannot_empty);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        if (!VerifyUtil.isMobileNO(phonenum)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_format_error);
+            alertShow(alertMsg, alertBitmap);
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * 显示银行 银行支行 滚轮的界面
@@ -127,13 +270,16 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
                 String bankName = bankList.get(bankIndex).getBankName();
                 mSetBank.setTitle(bankName);
+                mBankName = bankName;
 
                 List<SubBank> list = bankSubBankMap.get(mCityCode + SEPARATOR + bankName);
                 if (list != null && subbankIndex >= 0 && subbankIndex < list.size()) {
                     String subbankName = list.get(subbankIndex).getBankName();
                     mSetBank.setRightText(subbankName);
+                    mSubBankName = subbankName;
                 } else {
                     mSetBank.setRightText("");
+                    mSubBankName = null;
                 }
 
                 selectDialog.hide();
@@ -178,10 +324,12 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                 if (list != null && cityIndex >= 0 && cityIndex < list.size()) {
                     String cityName = list.get(cityIndex).getCityName();
                     mCityCode = list.get(cityIndex).getCityCode();//保存一下citycode，之后获取银行信息的时候会用到
+                    mCityName = cityName;
                     mSetProvinceCity.setRightText(cityName);
                 } else {
                     mSetProvinceCity.setRightText("");
                     mCityCode = null;//这里设置为空
+                    mCityName = null;
                 }
 
                 mSetBank.setTitle(getResources().getString(R.string.register_bank_branch_bank));
