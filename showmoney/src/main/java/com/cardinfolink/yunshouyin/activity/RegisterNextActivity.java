@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,6 +47,8 @@ import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
 
 public class RegisterNextActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "RegisterNextActivity";
+    private static final int MAX_BANK_NUMBER_LENGTH = 23;//银行卡号的最大允许的长度
+    private static final int MAX_PHONE_NUMBER_LENTH = 11;//大陆手机号的最大长度
 
     private SettingActionBarItem mActionBar;
 
@@ -94,11 +99,13 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mName = (SettingInputItem) findViewById(R.id.name);//姓名
 
         mBankNumber = (SettingInputItem) findViewById(R.id.bank_number);//银行卡号
-        mBankNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
-        //// TODO: mamh  缺少一个这个 VerifyUtil.bankCardNumAddSpace(mBanknumEdit);
+        mBankNumber.setInputType(InputType.TYPE_CLASS_NUMBER);//限制银行卡号输入法只能是数字
+        mBankNumber.setTextFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_BANK_NUMBER_LENGTH)});//限制输入长度
+        VerifyUtil.bankCardNumAddSpace(mBankNumber.getmText());
 
         mPhone = (SettingInputItem) findViewById(R.id.phone_number);//手机号
         mPhone.setInputType(InputType.TYPE_CLASS_PHONE);
+        mPhone.setTextFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_PHONE_NUMBER_LENTH)});//限制输入长度
 
         mSetProvinceCity.setOnClickListener(this);
         mSetBank.setOnClickListener(this);
