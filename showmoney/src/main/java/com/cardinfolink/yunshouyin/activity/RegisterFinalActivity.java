@@ -57,10 +57,9 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
             case R.id.btnlimit:
                 SessonData.loginUser.setAutoLogin(true);
                 SaveData.setUser(RegisterFinalActivity.this, SessonData.loginUser);
-
-                intent = new Intent(RegisterFinalActivity.this, LimitIncreaseActivity.class);
+                //提升限额,进入到 提升限额的界面，提升用户 选择商户类型
+                intent = new Intent(RegisterFinalActivity.this, StartIncreaseActivity.class);
                 startActivity(intent);
-                //提升限额
                 finish();
                 break;
         }
