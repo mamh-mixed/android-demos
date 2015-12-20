@@ -14,6 +14,7 @@ import (
 	// "github.com/CardInfoLink/quickpay/data"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
+	"github.com/CardInfoLink/quickpay/push"
 	"github.com/CardInfoLink/quickpay/scanpay"
 	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/omigo/log"
@@ -38,6 +39,7 @@ func main() {
 
 	crontab.Start() // 定时任务
 	// http.HandleFunc("/import", data.Import)
+	startPush()
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))
@@ -80,4 +82,8 @@ func startMaster() {
 
 func startApp() {
 	http.Handle("/app/", app.Route())
+}
+
+func startPush() {
+	go push.PushMessage()
 }

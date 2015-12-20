@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/push"
 	"github.com/omigo/log"
 	"net/http"
 	"net/url"
@@ -40,11 +41,16 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := User.login(&reqParams{
-		UserName:  r.FormValue("username"),
-		Password:  r.FormValue("password"),
-		Transtime: r.FormValue("transtime"),
-	})
+	req := new(reqParams)
+	req.UserName = r.FormValue("username")
+	req.Password = r.FormValue("password")
+	req.Transtime = r.FormValue("transtime")
+	user := new(model.AppUser)
+	user.Device_type = r.FormValue("device_type")
+	user.Device_token = r.FormValue("device_token")
+	req.AppUser = user
+
+	result := User.login(req)
 
 	w.Write(jsonMarshal(result))
 }
@@ -295,6 +301,27 @@ func ticketHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// pullInfoHandle 推送消息接口
+func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	rsp := new(push.PushInfoRsp)
+	if !checkSign(r) {
+		rsp.Error = model.SIGN_FAIL.Error
+		w.Write(jsonPushshal(rsp))
+		return
+	}
+
+	rsp = push.PushInfos(&model.PushMessageRsp{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Index:    r.FormValue("index"),
+		Size:     r.FormValue("size"),
+		LastTime: r.FormValue("lasttime"),
+	})
+
+	w.Write(jsonPushshal(rsp))
+}
+
 func checkSign(r *http.Request) bool {
 
 	sign := r.FormValue("sign")
@@ -334,6 +361,16 @@ func signContent(values url.Values) string {
 }
 
 func jsonMarshal(result model.AppResult) []byte {
+	data, err := json.Marshal(result)
+	if err != nil {
+		log.Error("json marshal error: %s", err)
+		return []byte(model.JSON_ERROR)
+	}
+	log.Debugf("response message: %s", string(data))
+	return data
+}
+
+func jsonPushshal(result *push.PushInfoRsp) []byte {
 	data, err := json.Marshal(result)
 	if err != nil {
 		log.Error("json marshal error: %s", err)

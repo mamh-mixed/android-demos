@@ -234,7 +234,13 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 	}
 
 	//密码正确，清空登陆记录
-	mongo.AppUserCol.UpdateLoginTime(req.UserName, "", "")
+	//mongo.AppUserCol.UpdateLoginTime(req.UserName, "", "")
+	var userInfo model.AppUser
+	userInfo.LoginTime = ""
+	userInfo.LockTime = ""
+	userInfo.Device_type = req.AppUser.Device_type
+	userInfo.Device_token = req.AppUser.Device_token
+	mongo.AppUserCol.UpdateAppUser(&userInfo, mongo.UPDATE_DEVICE_LOCK_INFO)
 
 	// 用户是否激活
 	if user.Activate == "false" {
