@@ -177,7 +177,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                 initData.setIsProduce(SystemConfig.IS_PRODUCE);// 是否生产环境
 
                 CashierSdk.init(initData);
-                Intent intent = new Intent(RegisterNextActivity.this, MainActivity.class);
+                Intent intent = new Intent(RegisterNextActivity.this, RegisterFinalActivity.class);
                 startActivity(intent);
                 finish();
             }
