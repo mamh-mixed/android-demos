@@ -74,6 +74,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private List<SubBank> subbankList = new ArrayList<SubBank>();//SubBank 的list
     private String mBankName;
     private String mSubBankName;
+    private String mBankNo;//sb.getOneBankNo() + "|" + sb.getTwoBankNo()
     private static final String SEPARATOR = "__";//分隔符
 
     //这个maps的可以是 mCityCode + SEPARATOR + currentBank.getBankName()
@@ -143,6 +144,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
         String bank = mBankName;
         String subbank = mSubBankName;
+        String bankNo = mBankNo;
 
         if (!validate(name, banknum, phonenum, province, city, bank, subbank)) {
             return;
@@ -151,11 +153,12 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mLoadingDialog.startLoading();
         User user = new User();
         user.setUsername(SessonData.loginUser.getUsername());
-        user.setUsername(SessonData.loginUser.getPassword());
+        user.setPassword(SessonData.loginUser.getPassword());
         user.setProvince(province);
         user.setCity(city);
         user.setBankOpen(bank);
         user.setBranchBank(subbank);
+        user.setBankNo(bankNo);//注意这里 是两个 bankNo 拼接的
         user.setPayee(name);//姓名
         user.setPayeeCard(banknum);//银行卡号
         user.setPhoneNum(phonenum);
@@ -192,7 +195,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
     private boolean validate(String name, String banknum, String phonenum,
                              String province, String city, String bank, String subbank) {
-
+        //注意这里 subbank没有检查，因为支行可能是空的
 
         String alertMsg = "";
         Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
@@ -279,14 +282,18 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                 mSetBank.setTitle(bankName);
                 mBankName = bankName;
 
+
                 List<SubBank> list = bankSubBankMap.get(mCityCode + SEPARATOR + bankName);
                 if (list != null && subbankIndex >= 0 && subbankIndex < list.size()) {
-                    String subbankName = list.get(subbankIndex).getBankName();
+                    SubBank subBank = list.get(subbankIndex);
+                    String subbankName = subBank.getBankName();
                     mSetBank.setRightText(subbankName);
                     mSubBankName = subbankName;
+                    mBankNo = subBank.getOneBankNo() + "|" + subBank.getTwoBankNo();
                 } else {
                     mSetBank.setRightText("");
                     mSubBankName = null;
+                    mBankNo = null;
                 }
 
                 selectDialog.hide();
