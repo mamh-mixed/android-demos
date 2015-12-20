@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
@@ -96,5 +97,8 @@ public class SettingInputItem extends RelativeLayout {
         mText.addTextChangedListener(watcher);
     }
 
+    public void setTextFilters(InputFilter[] filters) {
+        mText.setFilters(filters);
+    }
 
 }
