@@ -45,15 +45,27 @@
             android:text="@string/increase_choose_type"
             android:textSize="15sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="10dp"
-            android:text="@string/increase_message"
-            android:textSize="15sp" />
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/increase_message"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/iv_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/login_help" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -105,5 +117,7 @@
         </RelativeLayout>
 
     </LinearLayout>
+
+    <include layout="@layout/showmoney_dialog"/>
 
 </RelativeLayout>
