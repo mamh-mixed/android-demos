@@ -297,32 +297,38 @@ type SettSchemeCd struct {
 // Trans 支付、退款交易记录
 type Trans struct {
 	// 基本字段
-	Id           bson.ObjectId `bson:"_id" json:"-"`
-	OrderNum     string        `bson:"orderNum,omitempty" json:"orderNum"`                   // 商户订单流水号、退款流水号
-	SysOrderNum  string        `bson:"sysOrderNum,omitempty" json:"-"`                       // 系统订单流水号、退款流水号
-	ChanOrderNum string        `bson:"chanOrderNum,omitempty" json:"chanOrderNum,omitempty"` // 渠道返回订单流水号
-	OrigOrderNum string        `bson:"origOrderNum,omitempty" json:"origOrderNum,omitempty"` // 源订单号 当交易类型为退款/撤销/关单时
-	RespCode     string        `bson:"respCode,omitempty" json:"respcd,omitempty"`           // 网关应答码
-	MerId        string        `bson:"merId,omitempty" json:"merId"`                         // 商户号
-	TransAmt     int64         `bson:"transAmt" json:"transAmt"`                             // 交易金额 没有即为0
-	TransStatus  string        `bson:"transStatus,omitempty" json:"transStatus"`             // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
-	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
-	ChanMerId    string        `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`       // 渠道商户号
-	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   // 渠道代码
-	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      // 渠道应答码
-	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      // 交易创建时间 yyyy-mm-dd hh:mm:ss
-	UpdateTime   string        `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus int8          `bson:"refundStatus,omitempty" json:"refundStatus"`           // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
-	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         // 已退款金额
-	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
-	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
-	NetFee       int64         `bson:"netFee" json:"-"`                                      // 净手续费 方便计算费率
-	TradeFrom    string        `bson:"tradeFrom,omitempty" json:"-"`                         // 交易来源
-	LockFlag     int           `bson:"lockFlag" json:"-"`                                    // 是否加锁 1-锁住 0-无锁
-	SettRole     string        `bson:"settRole,omitempty" json:"settRole,omitempty"`         // 清算角色
-	PayTime      string        `bson:"payTime,omitempty" json:"payTime,omitempty"`           // 支付时间
-	Currency     string        `bson:"currency,omitempty" json:"currency"`
-	ExchangeRate string        `bson:"exchangeRate,omitempty" json:"-"`
+	Id                bson.ObjectId `bson:"_id" json:"-"`
+	OrderNum          string        `bson:"orderNum,omitempty" json:"orderNum"`                             // 商户订单流水号、退款流水号
+	SysOrderNum       string        `bson:"sysOrderNum,omitempty" json:"-"`                                 // 系统订单流水号、退款流水号
+	ChanOrderNum      string        `bson:"chanOrderNum,omitempty" json:"chanOrderNum,omitempty"`           // 渠道返回订单流水号
+	OrigOrderNum      string        `bson:"origOrderNum,omitempty" json:"origOrderNum,omitempty"`           // 源订单号 当交易类型为退款/撤销/关单时
+	RespCode          string        `bson:"respCode,omitempty" json:"respcd,omitempty"`                     // 网关应答码
+	MerId             string        `bson:"merId,omitempty" json:"merId"`                                   // 商户号
+	TransAmt          int64         `bson:"transAmt" json:"transAmt"`                                       // 交易金额 没有即为0
+	TransStatus       string        `bson:"transStatus,omitempty" json:"transStatus"`                       // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
+	TransType         int8          `bson:"transType,omitempty" json:"transType"`                           // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
+	ChanMerId         string        `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`                 // 渠道商户号
+	ChanCode          string        `bson:"chanCode,omitempty" json:"chanCode"`                             // 渠道代码
+	ChanRespCode      string        `bson:"chanRespCode,omitempty" json:"-"`                                // 渠道应答码
+	CreateTime        string        `bson:"createTime,omitempty" json:"transTime,omitempty"`                // 交易创建时间 yyyy-mm-dd hh:mm:ss
+	UpdateTime        string        `bson:"updateTime,omitempty" json:"updateTime,omitempty"`               // 交易更新时间 yyyy-mm-dd hh:mm:ss
+	RefundStatus      int8          `bson:"refundStatus,omitempty" json:"refundStatus"`                     // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	RefundAmt         int64         `bson:"refundAmt,omitempty" json:"-"`                                   // 已退款金额
+	SettRefundAmt     int64         `bson:"settRefundAmt,omitempty" json:"-"`                               // 清算币种下的已退款金额
+	Remark            string        `bson:"remark,omitempty" json:"-"`                                      // 备注
+	Fee               int64         `bson:"fee" json:"-"`                                                   // 手续费
+	NetFee            int64         `bson:"netFee" json:"-"`                                                // 净手续费 方便计算费率
+	TradeFrom         string        `bson:"tradeFrom,omitempty" json:"-"`                                   // 交易来源
+	LockFlag          int           `bson:"lockFlag" json:"-"`                                              // 是否加锁 1-锁住 0-无锁
+	SettRole          string        `bson:"settRole,omitempty" json:"settRole,omitempty"`                   // 清算角色
+	PayTime           string        `bson:"payTime,omitempty" json:"payTime,omitempty"`                     // 支付时间
+	Currency          string        `bson:"currency,omitempty" json:"currency"`                             // 交易币种
+	SettCurr          string        `bson:"settCurr,omitempty" json:"settCurr,omitempty"`                   // 清算币种
+	SettCurrAmt       int64         `bson:"settCurrAmt,omitempty" json:"settCurrAmt,omitempty"`             // 清算币种下的交易金额
+	SettExchangeRate  float64       `bson:"settExchangeRate,omitempty" json:"settExchangeRate,omitempty"`   // 清算汇率
+	DebitCurr         string        `bson:"debitCurr,omitempty" json:"debitCurr,omitempty"`                 // 扣账币种
+	DebitCurrAmt      int64         `bson:"debitCurrAmt,omitempty" json:"debitCurrAmt,omitempty"`           // 扣账金额
+	DebitExchangeRate float64       `bson:"debitExchangeRate,omitempty" json:"debitExchangeRate,omitempty"` // 扣账币种汇率
 
 	// 快捷支付
 	AcctNum       string `bson:"acctNum,omitempty" json:"-"`                     // 交易账户

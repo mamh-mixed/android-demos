@@ -225,18 +225,20 @@ type ImportMessage struct {
 		MerFeeOverMax       string
 	}
 	ValidateErr struct {
-		NoMerName        string
-		NoSignKey        string
-		NoAgentCode      string
-		OpenSignValueErr string
-		AddAcctValueErr  string
-		UNOrPWDEmptyErr  string
-		SignLengthErr    string
-		NoCommodityName  string
-		IsAgentStrErr    string
-		NoWXPMer         string
-		WXPSettFlagErr   string
-		ALPSettFlagErr   string
+		NoMerName         string
+		NoSignKey         string
+		NoAgentCode       string
+		OpenSignValueErr  string
+		AddAcctValueErr   string
+		UNOrPWDEmptyErr   string
+		SignLengthErr     string
+		NoCommodityName   string
+		IsAgentStrErr     string
+		NoWXPMer          string
+		WXPSettFlagErr    string
+		ALPSettFlagErr    string
+		NoOverseasChanMer string
+		NoSchemeType      string
 	}
 }
 

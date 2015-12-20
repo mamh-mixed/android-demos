@@ -167,8 +167,8 @@ type ScanPayRequest struct {
 	Chcd         string `json:"chcd,omitempty" url:"chcd,omitempty" bson:"chcd,omitempty"`                         // 渠道机构
 	Mchntid      string `json:"mchntid,omitempty" url:"mchntid,omitempty" bson:"mchntid,omitempty"`                // 商户号
 	Terminalid   string `json:"terminalid,omitempty" url:"terminalid,omitempty" bson:"terminalid,omitempty"`       // 终端号
-	Txamt        string `json:"txamt,omitempty" url:"txamt,omitempty" bson:"txamt,omitempty"`                      // 订单金额
-	Currency     string `json:"currency,omitempty" url:"currency,omitempty" bson:"currency,omitempty"`             // 币种
+	Txamt        string `json:"txamt,omitempty" url:"txamt,omitempty" bson:"txamt,omitempty"`                      // 交易金额
+	Currency     string `json:"currency,omitempty" url:"currency,omitempty" bson:"currency,omitempty"`             // 交易币种
 	GoodsInfo    string `json:"goodsInfo,omitempty" url:"goodsInfo,omitempty" bson:"goodsInfo,omitempty"`          // 商品详情
 	OrderNum     string `json:"orderNum,omitempty" url:"orderNum,omitempty" bson:"orderNum,omitempty"`             // 订单号
 	OrigOrderNum string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty" bson:"origOrderNum,omitempty"` // 原订单号
@@ -188,6 +188,8 @@ type ScanPayRequest struct {
 	TradeFrom    string `json:"tradeFrom,omitempty" url:"tradeFrom,omitempty" bson:"tradeFrom,omitempty"` // 交易来源
 	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
 	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
+
+	SettCur string `json:"-" url:"-" bson:"settCur,omitempty"` // 清算币种
 
 	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 	// 卡券相关字段
@@ -223,11 +225,6 @@ type ScanPayRequest struct {
 	// 访问方式
 	IsGBK bool     `json:"-" url:"-" bson:"-"`
 	M     Merchant `json:"-" url:"-" bson:"-"`
-
-	// //对账
-	// SettleDate string `json:"settleDate,omitempty" url:"settleDate,omitempty" bson:"settleDate,omitempty"` // 对账日期 微信
-	// StartTime  string `json:"startTime,omitempty" url:"startTime,omitempty" bson:"startTime,omitempty"`    // 对账开始时间 支付宝
-	// EndTime    string `json:"endTime,omitempty" url:"endTime,omitempty" bson:"endTime,omitempty"`          // 对账结束时间 支付宝
 }
 
 // FillWithRequest 如果空白，默认将原信息返回
@@ -553,10 +550,8 @@ type RoleSett struct {
 	SettRole   string `json:"settRole" bson:"settRole"`
 	SettDate   string `json:"settDate" bson:"settDate"`
 	ReportName string `json:"reportName" bson:"reportName"`
-	CreateTime string `json:"createTime" bson:"createTime"`
 	UpdateTime string `json:"updateTime" bson:"updateTime"`
-	// ContainMers []MerSettStatus `json:"containMers" bson:"containMers"`
-	ReportType int `json:"reportType" bson:"reportType"`
+	ReportType int    `json:"reportType" bson:"reportType"`
 }
 
 // ChanBlendMap 渠道勾兑数据集合

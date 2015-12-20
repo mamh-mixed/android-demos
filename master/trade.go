@@ -107,6 +107,23 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	rl := GetLocale(cond.Locale)
 
 	// 查询
+	trans, _ := query.SpTransQuery(cond)
+
+	// 生成报表
+	file := genReport(trans, rl, &Zone{cond.UtcOffset, time.Local})
+
+	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
+	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
+	file.Write(w)
+}
+
+// tradeTransferReport 处理查找所有商户的请求
+func tradeTransferReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
+
+	// 语言模板
+	rl := GetLocale(cond.Locale)
+
+	// 查询
 	transSetts, _ := mongo.SpTransSettColl.Find(cond)
 
 	// 生成报表

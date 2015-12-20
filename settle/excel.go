@@ -15,6 +15,7 @@ func upload(key string, excel *xlsx.File) error {
 	if excel == nil {
 		return nil
 	}
+
 	bf := bytes.NewBuffer([]byte{})
 	//写到buf里
 	excel.Write(bf)
@@ -144,19 +145,19 @@ func genReconciliatReportExcel(data reconciliationMap, date string) *xlsx.File {
 				cell.Value = fmt.Sprintf("%d", d.transNum)
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
-				cell.Value = fmt.Sprintf("%0.2f", float64(d.transAmt/100))
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.transAmt)/100)
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
-				cell.Value = fmt.Sprintf("%0.2f", float64(d.MerFee/100))
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.MerFee)/100)
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
-				cell.Value = fmt.Sprintf("%0.2f", float64(d.MerSettAmt/100))
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.MerSettAmt)/100)
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
-				cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqFee/100))
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqFee)/100)
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
-				cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqSettAmt/100))
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.AcqSettAmt)/100)
 			}
 		}
 	}

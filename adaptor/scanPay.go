@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/dcc"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
+	"math"
 	"strings"
 	"time"
 )
@@ -27,8 +29,9 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	// 目前暂时不支付支付宝
-	// case channel.ChanCodeAlipay:
-	// 	req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+	case channel.ChanCodeAlipay:
+		// 	req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		return ReturnWithErrorCode("NO_ROUTERPOLICY") // not support alipay
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
@@ -66,17 +69,25 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
-		if channel.Oversea == c.AreaType {
-			req.ExtendParams, err = genOverseaExtendInfo(req.M)
-			if err != nil {
-				return ReturnWithErrorCode("SYSTEM_ERROR")
-			}
-		} else {
-			req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-			req.ExtendParams = genExtendParams(req.M, chanMer)
-		}
+		// if channel.Oversea == c.AreaType {
+		// 	req.ExtendParams, err = genOverseaExtendInfo(req.M)
+		// 	if err != nil {
+		// 		return ReturnWithErrorCode("SYSTEM_ERROR")
+		// 	}
+		// } else {
+		// 	req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		// 	req.ExtendParams = genExtendParams(req.M, chanMer)
+		// }
+		return ReturnWithErrorCode("NO_ROUTERPOLICY") // not support alipay
 	case channel.ChanCodeWeixin:
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		// 交易币种转换成清算币种
+		settAmt, settRate, err := dcc.Do(t.TransAmt)
+		if err != nil {
+			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
+		}
+		t.SettCurrAmt = settAmt
+		t.SettExchangeRate = settRate
+		req.ActTxamt = fmt.Sprintf("%d", settAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
@@ -121,10 +132,17 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
-		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-		req.ExtendParams = genExtendParams(req.M, chanMer)
+		// req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		// req.ExtendParams = genExtendParams(req.M, chanMer)
+		return ReturnWithErrorCode("NO_ROUTERPOLICY") // not support alipay
 	case channel.ChanCodeWeixin:
-		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
+		// 交易币种转换成清算币种
+		settAmt, settRate, err := dcc.Do(t.TransAmt)
+		if err != nil {
+			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
+		}
+		t.SettCurrAmt = settAmt
+		t.SettExchangeRate = settRate
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
@@ -171,6 +189,39 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
 	case channel.ChanCodeWeixin:
+		settRefundAmt := int64(math.Floor(float64(req.IntTxamt)*orig.SettExchangeRate + 0.5))
+		// 清算币种判断业务逻辑
+		// 配合core层的逻辑，计算清算币种退款金额
+		switch orig.RefundStatus {
+		case model.TransPartRefunded:
+			// 因为汇率问题，所以导致清算金额和交易金额不一致
+			// 所以部分退款分多种情况
+			hasRefundAmt := settRefundAmt + orig.SettRefundAmt
+			// 1) 清算金额上次已退完
+			// 直接返回成功即可
+			if orig.SettCurrAmt-orig.SettRefundAmt == 0 {
+				return ReturnWithErrorCode("SUCCESS")
+			}
+			// 2) 本次清算金额刚好已退完或者也是部分退完
+			// 则退款金额透传即可
+			if orig.SettCurrAmt-hasRefundAmt >= 0 {
+				req.IntTxamt = settRefundAmt
+				orig.SettRefundAmt = hasRefundAmt
+			}
+			// 3) 本次退款金额与历史退款金额超过原交易清算金额
+			// 则实际退款金额为原交易清算金额-历史已退款金额
+			if hasRefundAmt > orig.SettCurrAmt {
+				req.IntTxamt = orig.SettCurrAmt - orig.SettRefundAmt
+				orig.SettRefundAmt = orig.SettCurrAmt
+			}
+		// 有标记为全额退款或者从取消接口过来时全额退款
+		case model.TransRefunded, 0:
+			// 此种情况下对交易币种来说已经全额退款
+			// 直接忽略实际退款金额，只要把清算金额可退的钱全部退完即可
+			req.IntTxamt = orig.SettCurrAmt - orig.SettRefundAmt
+			orig.SettRefundAmt = orig.SettCurrAmt
+		}
+
 		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
@@ -283,7 +334,7 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
 		req.AppID = chanMer.WxpAppId
-		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.TotalTxamt = fmt.Sprintf("%d", orig.SettCurrAmt)
 		req.ActTxamt = req.TotalTxamt
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
