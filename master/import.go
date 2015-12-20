@@ -7,19 +7,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/channel"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
-	"github.com/tealeg/xlsx"
 	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/CardInfoLink/quickpay/channel"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
+	"github.com/tealeg/xlsx"
 )
 
 // settRole
@@ -60,28 +60,18 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 	// 文件错误
 	var fileErr = resultBody(im.FileErr, 1)
 
-	// 调用七牛api获取刚上传的图片
-	key := r.FormValue("key")
-	resp, err := http.Get(qiniu.MakePrivateUrl(key))
+	fileTemp, header, err := r.FormFile("file")
 	if err != nil {
-		log.Errorf("get file from qiniu err: %s", err)
-		w.Write(fileErr)
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
 		return
 	}
 
-	defer resp.Body.Close()
+	defer fileTemp.Close()
 
-	ebytes, err := ioutil.ReadAll(resp.Body)
+	ebytes, err := ioutil.ReadAll(fileTemp)
 	if err != nil {
 		log.Errorf("read body err: %s", err)
-		w.Write(fileErr)
-		return
-	}
-
-	// 判断内容类型
-	contentType := resp.Header.Get("content-type")
-	if contentType == "application/json" {
-		log.Errorf("get file from qiniu err: %s", string(ebytes))
 		w.Write(fileErr)
 		return
 	}
@@ -102,7 +92,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		w.Write(fileErr)
 		return
 	}
-
+	key := header.Filename
 	ip := importer{Sheets: file.Sheets, fileName: key, msg: im}
 	info, err := ip.DoImport()
 	if err != nil {
