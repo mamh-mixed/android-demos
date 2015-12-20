@@ -2,7 +2,6 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -78,14 +77,12 @@ public class RegisterActivateActivity extends BaseActivity {
         quickPayService.loginAsync(username, password, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
-                //这里不太可能调到这里吧，刚刚注册的一个账号不至于能登录成功的。信息没有完善应该是登录失败的。
-                //这里暂时不管。。。。。
-                if (TextUtils.isEmpty(SessonData.loginUser.getClientid())) {
-                    isActivate = true;
-                    // clientid为空,跳转到完善信息页面
-                    mNext.setText(getResources().getString(R.string.activate_i_had_activated));
-                    mActivateMessage.setText(getResources().getString(R.string.activate_your_had_activate));
-                }
+                isActivate = true;
+
+                // clientid为空,跳转到完善信息页面
+                mNext.setText(getResources().getString(R.string.activate_i_had_activated));
+                mActivateMessage.setText(getResources().getString(R.string.activate_your_had_activate));
+
             }
 
             @Override
