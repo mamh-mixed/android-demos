@@ -79,7 +79,7 @@ func tradeTransferReportHandle(w http.ResponseWriter, r *http.Request) {
 	utcOffset, _ := strconv.Atoi(r.FormValue("utcOffset"))
 	fn := strings.Replace(date, "-", "", -1) + "_" + role + ".xlsx"
 
-	tradeReport(w, &model.QueryCondition{
+	tradeTransferReport(w, &model.QueryCondition{
 		Date:      date,
 		SettRole:  role,
 		UtcOffset: utcOffset * 60, // second
@@ -292,21 +292,37 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cond := &model.QueryCondition{
-		Busicd:       params.Get("busicd"),
-		AgentCode:    params.Get("agentCode"),
-		SubAgentCode: params.Get("subAgentCode"),
-		GroupCode:    params.Get("groupCode"),
-		StartTime:    params.Get("startTime"),
-		EndTime:      params.Get("endTime"),
-		OrderNum:     params.Get("orderNum"),
-		OrigOrderNum: params.Get("origOrderNum"),
-		Size:         maxReportRec,
-		IsForReport:  true,
-		Page:         1,
-		RefundStatus: model.TransRefunded,
-		TransStatus:  []string{model.TransSuccess},
-		Locale:       curSession.Locale,
-		UtcOffset:    utcOffset * 60,
+		MerName:        params.Get("merName"),
+		Terminalid:     params.Get("terminalId"),
+		MerId:          params.Get("merId"),
+		AgentCode:      params.Get("agentCode"),
+		SubAgentCode:   params.Get("subAgentCode"),
+		GroupCode:      params.Get("groupCode"),
+		Respcd:         params.Get("respcd"),
+		Busicd:         params.Get("busicd"),
+		StartTime:      params.Get("startTime"),
+		EndTime:        params.Get("endTime"),
+		OrderNum:       params.Get("orderNum"),
+		OrigOrderNum:   params.Get("origOrderNum"),
+		Col:            params.Get("pay"),
+		BindingId:      params.Get("bindingId"),
+		CouponsNo:      params.Get("couponsNo"),
+		WriteoffStatus: params.Get("writeoffStatus"),
+		Page:           1,
+		Locale:         curSession.Locale,
+		UtcOffset:      utcOffset * 60,
+		IsForReport:    true,
+	}
+
+	transStatus := params.Get("transStatus")
+	if transStatus != "" {
+		cond.TransStatus = []string{transStatus}
+	}
+
+	// 报表需求来自汇总
+	if params.Get("from") == "summary" {
+		cond.TransStatus = []string{model.TransSuccess}
+		cond.RefundStatus = model.TransRefunded
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不���功的话���不处理，默认为false
@@ -327,8 +343,6 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 			cond.MerId = merId[3:]
 		}
 	}
-
-	log.Debugf("condition is %+v", cond)
 
 	tradeReport(w, cond, "trade_detail.xlsx")
 }

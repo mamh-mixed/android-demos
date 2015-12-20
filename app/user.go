@@ -257,6 +257,8 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		user.SignKey = merchant.SignKey
 		user.UniqueId = merchant.UniqueId
 		user.AgentCode = merchant.AgentCode
+		user.PayUrl = merchant.Detail.PayUrl
+		user.MerName = merchant.Detail.MerName
 	}
 
 	result = model.AppResult{

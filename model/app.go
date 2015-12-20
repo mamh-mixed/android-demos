@@ -147,7 +147,8 @@ type AppUser struct {
 	// 商户里的不存
 	SignKey   string   `json:"signKey,omitempty" bson:"-"`
 	AgentCode string   `json:"inscd,omitempty" bson:"-"`
-	UniqueId  string   `json:"objectId,omitempty" bson:"-"` // 不存
+	UniqueId  string   `json:"objectId,omitempty" bson:"-"`
+	PayUrl    string   `json:"payUrl,omitempty" bson:"-"`
 	Images    []string `json:"images,omitempty" bson:"-"`
 }
 

@@ -427,7 +427,7 @@
           }
           obj.merId = item.merId;
           obj.filename = filename;
-          return '/master/trade/report?' + Util.query(obj);
+          return '/master/trade/report?' + Util.query(obj)+'&from=summary';
         },
         addOneFilter: function(index) {
           return index + 1;
