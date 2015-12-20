@@ -137,7 +137,7 @@
             "NoSchemeType": "門店：%s 支付寶境外商戶必須填寫計費方案"
         }
     },
-    "Merchant": {
+    "MerchantExport": {
         "Title": "商戶表",
         "MerId": "商戶號",
         "MerName": "商戶名稱",

@@ -81,7 +81,7 @@
         "Yes": "は",
         "No": "否"
     },
-    "Merchant": {
+    "MerchantExport": {
         "Title": "JA商户表",
         "MerId": "加盟店コード",
         "MerName": "加盟店名称",

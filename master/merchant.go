@@ -273,13 +273,12 @@ func (m *merchant) Export(w http.ResponseWriter, merchant model.Merchant, pay, f
 }
 
 func exportMerchant(file *xlsx.File, merchants []*model.Merchant, locale string) {
-	merchantLocale := GetLocale(locale).Merchant
+	merchantLocale := GetLocale(locale).MerchantExport
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
 	// 可能有多个sheet
-	// sheet, _ = file.AddSheet("商户表")
 	sheet, _ = file.AddSheet(merchantLocale.Title)
 	// 生成title
 	row = sheet.AddRow()
@@ -290,7 +289,6 @@ func exportMerchant(file *xlsx.File, merchants []*model.Merchant, locale string)
 		SignKey    string
 		BillUrl    string
 		PayUrl     string
-		// }{"商户号", "商户名称", "是否验签", "签名密钥", "账单链接", "支付链接"}
 	}{merchantLocale.MerId, merchantLocale.MerName, merchantLocale.IsNeedSign, merchantLocale.SignKey, merchantLocale.BillUrl, merchantLocale.PayUrl}
 	row.WriteStruct(headRow, -1)
 	for _, v := range merchants {

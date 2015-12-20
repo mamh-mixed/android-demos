@@ -126,10 +126,10 @@ type LocaleTemplate struct {
 	}
 
 	// 统计报表
-	StatReport    StatReport
-	ImportMessage ImportMessage
-	TransReport   TransReport
-	Merchant      MerchantExport
+	StatReport     StatReport
+	ImportMessage  ImportMessage
+	TransReport    TransReport
+	MerchantExport MerchantExport
 }
 
 // TransReport 交易明细报表
