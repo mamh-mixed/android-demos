@@ -18,6 +18,7 @@
     <string name="register_message2">你还需要完善一下你的收款账户信息。</string>
     <string name="register_welcome_message">欢迎进入 互联网 + 收款时代</string>
     <string name="register_limit_message">恭喜，你已经可以收款了。目前限额500元/日，\n提升限额马上免费体验收款无上限！</string>
+    <string name="register_use_now">立即使用</string>
     <string name="register_check">查看</string>
     <string name="register_cloud_version">云收银服务协议</string>
     <string name="register_hint_email">你的激活码将发送到此邮箱</string>
