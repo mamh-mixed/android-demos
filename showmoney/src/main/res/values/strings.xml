@@ -46,9 +46,16 @@
     <string name="update_password_hint_qr_newpwd">确认新密码</string>
     <string name="update_account">账号修改</string>
     <string name="qr_update">确认修改</string>
+
+    <string name="increase_choose_type">请选择你的商户类型</string>
+    <string name="increase_message">你可能需要准备一些先关材料</string>
+    <string name="increase_company">我是企业</string>
+    <string name="increase_personal">我是个体</string>
+    <string name="increase_limit">提升限额</string>
     <string name="limit_increase">限额提升</string>
     <string name="limit_increase_directions">       *为确保账户安全，请确认以下信息才能正常提升您的收款额度。我们会有工作人员在3个工作日内电话与您联系，感谢配合。\n
         *云收银将严格遵守国家相关法律法规，承诺不将您的账户信息以任何形式透露给第三方。</string>
+
     <string name="qr_commit">确认提交</string>
     <string name="dialog_trade_success">交易成功\n感谢购买！</string>
     <string name="dialog_trade_nopay">交易未支付,请支付后查询！</string>
