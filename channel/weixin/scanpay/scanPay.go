@@ -13,6 +13,10 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 )
 
+const (
+	defaultCur = "USD" // 美元
+)
+
 // WeixinScanPay 微信扫码支付
 type WeixinScanPay struct{}
 
@@ -57,9 +61,9 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 		// 非必填
 		DeviceInfo: m.DeviceInfo, // 设备号
 		GoodsGag:   m.GoodsTag,   // 商品标记
-		FeeType:    m.Currency,   // 货币类型
 		// Detail:     m.WxpMarshalGoods(), // 商品详情
 		// Attach:     m.Attach,         // 附加数据
+		FeeType: defaultCur, // 货币类型
 	}
 
 	p := &PayResp{}
@@ -171,7 +175,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		ProductID:      "",                            // 商品ID
 		Openid:         m.OpenId,                      // 用户标识
 		GoodsGag:       m.GoodsTag,                    // 商品标记
-		// FeeType:        m.CurrType,                         // 货币类型
+		FeeType:        defaultCur,                    // 货币类型
 		// Detail:         m.WxpMarshalGoods(),                // 商品详情
 	}
 
@@ -207,7 +211,7 @@ func (sp *WeixinScanPay) ProcessRefund(m *model.ScanPayRequest) (ret *model.Scan
 		TotalFee:      m.TotalTxamt,   // 总金额
 		RefundFee:     m.ActTxamt,     // 退款金额
 		OpUserId:      m.ChanMerId,    // 操作员
-		FeeType:       m.Currency,     // 货币种类
+		RefundFeeType: defaultCur,     // 货币种类
 	}
 
 	p := &RefundResp{}

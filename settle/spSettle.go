@@ -126,6 +126,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 					if math.Abs(blendACT-orderACT) < 0.001 {
 						for _, transSett := range transSetts {
 							transSett.BlendType = MATCH
+							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							mongo.SpTransSettColl.Update(&transSett)
 						}
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
@@ -135,6 +136,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						// 对上，但金额不一致
 						for _, transSett := range transSetts {
 							transSett.BlendType = AMT_ERROR
+							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							mongo.SpTransSettColl.Update(&transSett)
 						}
 						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
@@ -159,9 +161,13 @@ func (s scanpayDomestic) Reconciliation(date string) {
 	// 处理没有勾兑上的数据
 	// 渠道少清
 	if len(localMMap) != 0 {
-		// 出报表
-		file401 := "IC401.xlsx"
-		upload(file401, genC001ReportExcel(localMMap, date))
+		// 上传并记录
+		rs := getRsRecord(ChanLessReport, date)
+		if err = upload(rs.ReportName, genC001ReportExcel(localMMap, date)); err == nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
 	}
 
 	// 渠道多清
@@ -179,8 +185,12 @@ func (s scanpayDomestic) Reconciliation(date string) {
 				}
 			}
 		}
-		file402 := "IC402.xlsx"
-		upload(file402, genC002ReportExcel(chanMMap, date))
+		rs := getRsRecord(ChanMoreReport, date)
+		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err != nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
 	}
 }
 
