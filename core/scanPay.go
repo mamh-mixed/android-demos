@@ -509,13 +509,9 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			orig.RefundStatus = model.TransRefunded
 			orig.TransStatus = model.TransClosed
 			orig.RefundAmt = refundAmt
-			// 不更新原订单应答码。在查询时做处理，只更新交易的状态。
-			// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
-			// orig.ErrorDetail = adaptor.CloseMsg
-			// orig.Fee = 0 // 被全额退款时，手续费清零
 		} else {
-			orig.RefundStatus = model.TransPartRefunded
-			orig.RefundAmt = refundAmt // 这个字段的作用主要是为了方便报表时计算部分退款，为了一致性，撤销，取消接口也都统一加上，虽然并没啥作用
+			// 还是部分退款，更新退款金额即可。
+			orig.RefundAmt = refundAmt
 		}
 	}
 
@@ -544,6 +540,8 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 补充支付时间
 	ret.PayTime = refund.CreateTime
+	// 清算退款金额
+	refund.SettCurrAmt = req.IntTxamt
 
 	// 更新这笔交易
 	updateTrans(refund, ret)
@@ -711,6 +709,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	copyProperties(cancel, orig)
 	// 撤销交易，金额=原交易金额
 	cancel.TransAmt = orig.TransAmt
+	cancel.SettCurrAmt = orig.SettCurrAmt
 
 	rp := mongo.RouterPolicyColl.Find(orig.MerId, orig.ChanCode)
 	if rp == nil {
@@ -868,6 +867,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			// 这样做方便于报表导出计算
 			closed.TransAmt = orig.TransAmt
 			orig.RefundAmt = orig.TransAmt
+			closed.SettCurrAmt = orig.SettCurrAmt
 			closed.Fee = int64(math.Floor(float64(closed.TransAmt)*rp.MerFee + 0.5))
 			orig.NetFee = orig.NetFee - closed.Fee // 重新计算原订单的手续费
 			orig.RefundStatus = model.TransRefunded
@@ -876,8 +876,6 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 更新原交易信息
 		orig.TransStatus = model.TransClosed
 		mongo.SpTransColl.UpdateAndUnlock(orig)
-		// orig.RespCode = adaptor.CloseCode // 订单已关闭或取消
-		// orig.ErrorDetail = adaptor.CloseMsg
 	}
 
 	// 补充支付时间
@@ -1087,11 +1085,6 @@ func findAndLockTrans(merId, orderNum string) (orig *model.Trans, err error) {
 	return
 }
 
-// 动态货币装换
-func doDcc(req *model.ScanPayRequest) {
-
-}
-
 // updateTrans 更新交易信息
 func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	// 根据请求结果更新
@@ -1101,15 +1094,11 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	t.MerDiscount = ret.MerDiscount
 	t.RespCode = ret.Respcd
 	t.ErrorDetail = ret.ErrorDetail
-
 	if ret.ConsumerAccount != "" {
 		t.ConsumerAccount = ret.ConsumerAccount
 	}
 	if ret.ConsumerId != "" {
 		t.ConsumerId = ret.ConsumerId
-	}
-	if ret.Rate != "" {
-		t.ExchangeRate = ret.Rate
 	}
 	if ret.PayTime != "" {
 		t.PayTime = dateFormat(ret.PayTime)
@@ -1142,6 +1131,8 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.ConsumerAccount = orig.ConsumerAccount
 	current.SettRole = orig.SettRole
 	current.ChanOrderNum = orig.ChanOrderNum
+	current.SettExchangeRate = orig.SettExchangeRate
+	current.SettCurr = orig.SettCurr
 }
 
 func signWithMD5(s interface{}, key string) string {

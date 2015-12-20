@@ -261,7 +261,7 @@ func (e *exchangeRate) Add(data []byte, username string) (result *model.ResultBo
 	}
 
 	// 查询当前生效的汇率
-	enforceRate, err := mongo.ExchangeRateColl.FindRate(t.LocalCurrency, t.TargetCurrency)
+	enforceRate, err := mongo.ExchangeRateColl.FindOne(t.LocalCurrency, t.TargetCurrency)
 	// 新增汇率是否已经生效
 	rateExist := true
 	if err != nil {

@@ -16,6 +16,7 @@ iso8583Code,iso8583Msg,errorCode,isUseISO,respCode,respMsg
 61,退款失敗，商家帳戶餘額不足,NOT_ENOUGH_BALANCE,true,,
 64,退款金額超過原訂單金額,TRADE_AMT_INCONSISTENT,true,,
 91,外部系統錯誤,CHAN_UNKNOWN_ERROR,false,,
+95,匯率轉換失敗,RATE_TRANSFROM_ERROR,true,,
 96,系統錯誤,SYSTEM_ERROR,true,,
 98,交易超時,TRADE_OVERTIME,true,,
 H1,商戶無此交易通路許可權,NO_CHANMER,true,,

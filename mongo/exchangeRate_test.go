@@ -25,7 +25,7 @@ func TestFindExchangeRate(t *testing.T) {
 	// currPair := "TWD<=>CNY"
 	localCurr, targetCurr := "JPY", "CNY"
 
-	result, err := ExchangeRateColl.FindRate(localCurr, targetCurr)
+	result, err := ExchangeRateColl.FindOne(localCurr, targetCurr)
 	if err != nil {
 		t.Logf("error is %s", err)
 		t.FailNow()

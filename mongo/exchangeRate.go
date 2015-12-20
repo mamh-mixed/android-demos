@@ -19,7 +19,7 @@ func (c *exchangeRateCollection) Upsert(cond *model.ExchangeRate) (err error) {
 }
 
 // FindRate 查找一对货币的汇率
-func (c *exchangeRateCollection) FindRate(localCurrency, targetCurrency string) (rate *model.ExchangeRate, err error) {
+func (c *exchangeRateCollection) FindOne(localCurrency, targetCurrency string) (rate *model.ExchangeRate, err error) {
 	rate, currencyPair := new(model.ExchangeRate), localCurrency+"<=>"+targetCurrency
 
 	err = database.C(c.name).Find(bson.M{"currencyPair": currencyPair}).One(rate)
