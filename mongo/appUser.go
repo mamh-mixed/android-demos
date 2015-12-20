@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+const (
+	UPDATE_LOCK_TIME        = 0
+	UPDATE_DEVICE_INFO      = 1
+	UPDATE_DEVICE_LOCK_INFO = 2
+)
+
 type appUserCollection struct {
 	name string
 }
@@ -109,6 +115,40 @@ func (col *appUserCollection) UpdateLoginTime(userName, loginTime, lockTime stri
 		"$set": bson.M{"loginTime": loginTime,
 			"lockTime": lockTime},
 	}
+	err := database.C(col.name).Update(bo, update)
+	return err
+}
+
+func (col *appUserCollection) UpdateAppUser(user *model.AppUser, oprType int) error {
+
+	bo := bson.M{
+		"username": user.UserName,
+	}
+	update := bson.M{}
+
+	switch oprType {
+	case UPDATE_LOCK_TIME:
+		update = bson.M{
+			"$set": bson.M{
+				"loginTime": user.LoginTime,
+				"lockTime":  user.LockTime},
+		}
+	case UPDATE_DEVICE_INFO:
+		update = bson.M{
+			"$set": bson.M{
+				"device_type":  user.Device_type,
+				"device_token": user.Device_token},
+		}
+	case UPDATE_DEVICE_LOCK_INFO:
+		update = bson.M{
+			"$set": bson.M{
+				"loginTime":    user.LockTime,
+				"lockTime":     user.LockTime,
+				"device_type":  user.Device_type,
+				"device_token": user.Device_token},
+		}
+	}
+
 	err := database.C(col.name).Update(bo, update)
 	return err
 }
