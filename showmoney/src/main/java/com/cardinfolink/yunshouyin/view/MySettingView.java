@@ -81,36 +81,17 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mAbout.setOnClickListener(this);
         mMessage.setOnClickListener(this);
 
-        checkLimit();//发送http请求来检查当日的限额数。
+        checkLimit();
     }
 
     private void checkLimit() {
-        QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
-        String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
         User user = SessonData.loginUser;
         if (user.getLimit().equals("true")) {//这里等于true表示这个用户有限额。
-            quickPayService.getTotalAsync(user, date, new QuickPayCallbackListener<String>() {
-                @Override
-                public void onSuccess(String data) {
-                    //如果有限额的话
-                    double limit = Double.parseDouble(data);
-                    if (limit > 0) {//大于零表示有限额了
-                        String limitMsg = getResources().getString(R.string.setting_limit_message);
-                        limitMsg = String.format(limitMsg, data);
-                        mLimit.setText(limitMsg);//这里设置限额多少的提示文本
-                        mIncreaseLimit.setVisibility(VISIBLE);//把提升限额的按钮显示出来
-                    }else{
-                        //这里表示没有限额
-                    }
-
-                }
-
-                @Override
-                public void onFailure(QuickPayException ex) {
-                    mLimit.setText(ex.getErrorMsg());
-                }
-            });
-        }else{
+            String limitMsg = getResources().getString(R.string.setting_limit_message);
+            limitMsg = String.format(limitMsg, "500");//当天限额 默认是500元
+            mLimit.setText(limitMsg);//这里设置限额多少的提示文本
+            mIncreaseLimit.setVisibility(VISIBLE);//把提升限额的按钮显示出来
+        } else {
             //else这里表示用户没有限额
         }
     }
