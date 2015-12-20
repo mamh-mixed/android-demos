@@ -52,7 +52,6 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
             case R.id.btnnow:
                 login();//注意 这里和loginActivity里面的login（）方法不太一样的
 
-                finish();
                 //立即使用
                 break;
             case R.id.btnlimit:
@@ -98,6 +97,7 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
                 Intent intent = new Intent(mContext, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 mContext.startActivity(intent);
+                finish();
             }
 
             @Override
