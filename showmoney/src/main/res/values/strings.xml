@@ -254,4 +254,14 @@
     <string name="activate_i_had_activated">我已经激活了</string>
     <string name="activate_had_not_activated">未激活！</string>
 
+    <!-- pay result 界面用到的文本 -->
+    <string name="pay_result_success">支付成功</string>
+    <string name="pay_result_fail">支付失败</string>
+    <string name="pay_result_explain">您的余额不足 !</string>
+    <string name="pay_account">收银人员</string>
+    <string name="pay_channel">支付渠道</string>
+    <string name="pay_datetime">交易时间</string>
+    <string name="pay_order_number">订单编号</string>
+    <string name="pay_total_state_success">成功收款</string>
+    <string name="pay_total_state_fail">失败收款</string>
 </resources>
