@@ -134,6 +134,10 @@
         <activity
             android:name=".activity.RegisterFinalActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name=".activity.StartIncreaseActivity"
+            android:label="@string/app_name" />
+
 
         <!-- UMENG appkey start -->
         <meta-data
@@ -256,7 +260,6 @@
             </intent-filter>
         </service>
         <!-- umeng push end -->
-
 
     </application>
 
