@@ -50,6 +50,7 @@ public class RegisterActivateActivity extends BaseActivity {
                 if (isActivate) {
                     Intent intent = new Intent(RegisterActivateActivity.this, RegisterNextActivity.class);
                     startActivity(intent);
+                    finish();
                 } else {
                     checkActivate(username, password);
                 }
