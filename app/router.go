@@ -30,5 +30,8 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/tools/activate", UserActivate)
 	mux.HandleFunc("/app/tools/download", GetDownloadUrl)
 
+	//推送api
+	mux.HandleFunc("/app/pullinfo", pullInfoHandle)
+
 	return mux
 }
