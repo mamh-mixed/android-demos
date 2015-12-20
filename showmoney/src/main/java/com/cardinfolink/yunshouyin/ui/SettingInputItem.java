@@ -101,4 +101,7 @@ public class SettingInputItem extends RelativeLayout {
         mText.setFilters(filters);
     }
 
+    public EditTextClear getmText() {
+        return mText;
+    }
 }
