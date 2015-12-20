@@ -136,5 +136,16 @@
 			"NoOverseasChanMer" :"门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no",
 			"NoSchemeType"		:"门店：%s 支付宝境外商户必须填写计费方案"
 		}
+	},
+	"MerchantExport":{
+		"Title":"商户表",
+		"MerId":"商户编号",
+		"MerName":"商户名",
+		"IsNeedSign":"是否验签",
+		"SignKey":"签名密钥",
+		"BillUrl":"账单链接",
+		"PayUrl":"支付链接",
+		"Yes":"是",
+		"No":"否"
 	}
 }

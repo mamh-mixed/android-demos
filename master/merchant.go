@@ -255,7 +255,7 @@ func ProcessSensitiveInfo(value string) string {
 	}
 }
 
-func (m *merchant) Export(w http.ResponseWriter, merchant model.Merchant, pay, filename, createStartTime, createEndTime string) {
+func (m *merchant) Export(w http.ResponseWriter, merchant model.Merchant, pay, filename, createStartTime, createEndTime string, session *model.Session) {
 	size := 10000
 	page := 1
 	var file = xlsx.NewFile()
@@ -266,20 +266,20 @@ func (m *merchant) Export(w http.ResponseWriter, merchant model.Merchant, pay, f
 		return
 	}
 	log.Debugf("total:%d", total)
-	exportMerchant(file, merchants)
+	exportMerchant(file, merchants, session.Locale)
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
 	file.Write(w)
 }
 
-func exportMerchant(file *xlsx.File, merchants []*model.Merchant) {
+func exportMerchant(file *xlsx.File, merchants []*model.Merchant, locale string) {
+	merchantLocale := GetLocale(locale).MerchantExport
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
 	// 可能有多个sheet
-	sheet, _ = file.AddSheet("商户表")
-
+	sheet, _ = file.AddSheet(merchantLocale.Title)
 	// 生成title
 	row = sheet.AddRow()
 	headRow := &struct {
@@ -289,7 +289,7 @@ func exportMerchant(file *xlsx.File, merchants []*model.Merchant) {
 		SignKey    string
 		BillUrl    string
 		PayUrl     string
-	}{"商户号", "商户名称", "是否验签", "签名密钥", "账单链接", "支付链接"}
+	}{merchantLocale.MerId, merchantLocale.MerName, merchantLocale.IsNeedSign, merchantLocale.SignKey, merchantLocale.BillUrl, merchantLocale.PayUrl}
 	row.WriteStruct(headRow, -1)
 	for _, v := range merchants {
 		// 商户号 商户名称 是否签名 签名密钥
@@ -301,11 +301,11 @@ func exportMerchant(file *xlsx.File, merchants []*model.Merchant) {
 		cell = row.AddCell()
 		cell.Value = v.Detail.MerName
 
-		isNeedSign := "是"
+		isNeedSign := merchantLocale.Yes
 		if !v.IsNeedSign {
-			isNeedSign = "否"
+			isNeedSign = merchantLocale.No
 		}
-		//  是否验签
+		//  是否���签
 		cell = row.AddCell()
 		cell.Value = isNeedSign
 

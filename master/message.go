@@ -3,12 +3,13 @@ package master
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
 )
 
 var avaiableLocale = make(map[string]*LocaleTemplate)
@@ -125,9 +126,10 @@ type LocaleTemplate struct {
 	}
 
 	// 统计报表
-	StatReport    StatReport
-	ImportMessage ImportMessage
-	TransReport   TransReport
+	StatReport     StatReport
+	ImportMessage  ImportMessage
+	TransReport    TransReport
+	MerchantExport MerchantExport
 }
 
 // TransReport 交易明细报表
@@ -238,4 +240,16 @@ type ImportMessage struct {
 		NoOverseasChanMer string
 		NoSchemeType      string
 	}
+}
+
+type MerchantExport struct {
+	Title      string
+	MerId      string
+	MerName    string
+	IsNeedSign string
+	SignKey    string
+	BillUrl    string
+	PayUrl     string
+	Yes        string
+	No         string
 }
