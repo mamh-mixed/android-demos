@@ -1218,6 +1218,12 @@ func userResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 
 // 商户导出
 func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
+	// 语言环境
+	curSession, err := Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		return
+	}
 	filename := r.FormValue("filename")
 	createTime := r.FormValue("createTime")
 	createStartTime := ""
@@ -1250,7 +1256,7 @@ func merchantExportHandle(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	Merchant.Export(w, merchant, pay, filename, createStartTime, createEndTime)
+	Merchant.Export(w, merchant, pay, filename, createStartTime, createEndTime, curSession)
 }
 
 func agentUpdateHandle(w http.ResponseWriter, r *http.Request) {
