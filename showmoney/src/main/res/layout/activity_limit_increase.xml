@@ -40,6 +40,24 @@
             cardinfolink:hint="@string/limit_increase_shop_address_hint"
             cardinfolink:title="@string/limit_increase_shop_address" />
 
+        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:right_text="@string/limit_increase_update_licence"
+            cardinfolink:title="@string/limit_increase_card_positive" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:right_text="@string/limit_increase_update_licence"
+            cardinfolink:title="@string/limit_increase_card_negaitive" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:right_text="@string/limit_increase_update_licence"
+            cardinfolink:title="@string/limit_increase_business_licence" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,6 +67,7 @@
             android:layout_marginTop="60dp"
             android:text="@string/limit_increase_directions"
             android:textSize="13sp" />
+
 
         <Button
             android:id="@+id/btnperson"

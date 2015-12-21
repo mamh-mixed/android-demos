@@ -61,6 +61,10 @@
     <string name="limit_increase_finish">完成</string>
     <string name="limit_increase">限额提升</string>
     <string name="limit_increase_directions">请确保上传的照片清晰完整且所有信息均真实有效</string>
+    <string name="limit_increase_update_licence">上传证件</string>
+    <string name="limit_increase_card_positive">法人身份证正面</string>
+    <string name="limit_increase_card_negaitive">法人身份证反面</string>
+    <string name="limit_increase_business_licence">营业执照</string>
 
     <string name="qr_commit">确认提交</string>
     <string name="dialog_trade_success">交易成功\n感谢购买！</string>
