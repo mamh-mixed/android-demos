@@ -172,7 +172,7 @@
     <string name="txt_input_refund_amount">请输入退款金额：</string>
     <string name="txt_input_login_pwd">请输入登录密码：</string>
     <string name="txt_confirm">确认</string>
-    <string name="txt_txn_pending_msg">交易读取中，请稍后。。。</string>
+    <string name="txt_txn_pending_msg">正在处理您的交易，请稍后</string>
     <string name="txt_please_activate">请激活帐号</string>
     <string name="txt_cancel">取消</string>
     <string name="txt_close">关闭</string>
