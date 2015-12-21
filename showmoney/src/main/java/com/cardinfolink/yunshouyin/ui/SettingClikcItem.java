@@ -68,4 +68,8 @@ public class SettingClikcItem extends RelativeLayout {
         return mRightText.getText().toString();
     }
 
+    public void setImageResource(int id) {
+        mImageView.setImageResource(id);
+    }
+
 }
