@@ -29,7 +29,8 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
-import com.cardinfolink.yunshouyin.view.TradingCustomDialog;
+import com.cardinfolink.yunshouyin.view.HintDialog;
+import com.cardinfolink.yunshouyin.view.TradingLoadDialog;
 import com.cardinfolink.yunshouyin.view.ViewfinderView;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -62,7 +63,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private boolean playBeep;
     private boolean vibrate;
     private Handler mHandler;
-    private TradingCustomDialog mCustomDialog;
+
+    private TradingLoadDialog mTradingLoadDialog;//交易的load的对话框
+    private HintDialog mHintDialog;//显示一些提示信息 下面两个按钮的 对话框
+
     private String total;
     private String mOrderNum;
     private ResultData mResultData;
@@ -85,20 +89,21 @@ public class CaptureActivity extends BaseActivity implements Callback {
         for (int i = 0; i < 5; i++) {
             mOrderNum = mOrderNum + random.nextInt(10);
         }
+
         CameraManager.init(getApplication());
+
         initHandler();
         initLayout();
         initListener();
 
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
-
     }
 
     private void initLayout() {
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-        mCustomDialog = new TradingCustomDialog(mContext, mHandler, findViewById(R.id.trading_custom_dialog), mOrderNum);
-
+        mTradingLoadDialog = new TradingLoadDialog(mContext, mHandler, findViewById(R.id.trading_load_dialog), mOrderNum);
+        mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
     }
 
     private void initListener() {
@@ -125,7 +130,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     GradientDrawable myGrad = (GradientDrawable) v.getBackground();
                     myGrad.setColor(Color.parseColor("#444444"));
                     CameraManager.get().openFlashlight();
-
                 }
             }
         });
@@ -137,7 +141,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case Msg.MSG_FROM_SCANCODE_SUCCESS: {
-                        mCustomDialog.loading();
+                        mTradingLoadDialog.loading();
                         final OrderData orderData = new OrderData();
                         orderData.orderNum = mOrderNum;
                         orderData.txamt = total;
@@ -173,15 +177,15 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
-                        mCustomDialog.success();
+                        showPaySuccessDialog();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
-                        mCustomDialog.fail();
+                        showPayFailDialog();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
-                        mCustomDialog.nopay();
+                        showNopayDialog();
                         break;
                     }
                     case Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY: {
@@ -195,6 +199,156 @@ public class CaptureActivity extends BaseActivity implements Callback {
             }
         };
     }
+
+
+    /**
+     * 未付款的对话框
+     * <p/>
+     * 这两个完全一样的对话框可以复用一样的layout文件。
+     * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
+     * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
+     * <p/>
+     * 未付款对话框，上面文本，下面一个按钮的对话框
+     */
+    public void showNopayDialog() {
+        //左边的对话框
+        mHintDialog.setCancelText(mContext.getResources().getString(R.string.txt_query_result));//查询结果
+        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                OrderData orderData = new OrderData();
+                orderData.origOrderNum = mOrderNum;
+                CashierSdk.startQy(orderData, new CashierListener() {
+
+                    @Override
+                    public void onResult(ResultData resultData) {
+
+                        if (resultData.respcd.equals("00")) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                        } else if (resultData.respcd.equals("09")) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
+                        } else {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                        }
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+                    }
+
+                });
+            }
+        });
+        //右边的对话框
+        mHintDialog.setOkText(mContext.getString(R.string.txt_close));//关闭
+        mHintDialog.setOkOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mHintDialog.hide();
+            }
+        });
+
+        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
+        //isLoading = false;
+        //loadDialogView.setVisibility(View.GONE);//先要把loading的对话框隐藏了
+
+        mHintDialog.show();
+    }
+
+
+    /**
+     * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
+     */
+    public void showPaySuccessDialog() {
+        //左边按钮
+        mHintDialog.setCancelText(mContext.getString(R.string.txt_history_txns));//历史交易
+        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
+            }
+        });
+
+
+        //右边按钮
+        mHintDialog.setOkText(mContext.getString(R.string.txt_return));//返回
+        mHintDialog.setOkOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mHandler.sendEmptyMessage(Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY);
+            }
+        });
+
+        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
+        //isLoading = false;
+        //loadDialogView.setVisibility(View.GONE);
+
+        mHintDialog.show();
+    }
+
+    /**
+     * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
+     */
+    public void showPayFailDialog() {
+        //左边按钮
+        mHintDialog.setCancelText(mContext.getString(R.string.txt_query_result));//查询结果
+        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
+            }
+        });
+
+        //右边按钮
+        mHintDialog.setOkText(mContext.getString(R.string.txt_return));//返回
+        mHintDialog.setOkOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mHandler.sendEmptyMessage(Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY);
+            }
+        });
+        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
+        //isLoading = false;
+        //loadDialogView.setVisibility(View.GONE);
+
+        mHintDialog.show();
+    }
+
+    /**
+     * 服务器超时对话框，中间文本，下面两个按钮
+     */
+    public void showPayTimeoutDialog() {
+        //返回
+        mHintDialog.setCancelText(mContext.getString(R.string.txt_return));
+        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
+            }
+        });
+
+        //去账单
+        mHintDialog.setOkText(mContext.getString(R.string.txt_goto_bill));
+        mHintDialog.setOkOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO 去账单
+            }
+        });
+        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
+        //isLoading = false;
+        //loadDialogView.setVisibility(View.GONE);
+
+        mHintDialog.show();
+    }
+
 
     @Override
     protected void onResume() {
@@ -250,8 +404,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
     }
 
@@ -261,13 +414,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
             hasSurface = true;
             initCamera(holder);
         }
-
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         hasSurface = false;
-
     }
 
     public ViewfinderView getViewfinderView() {
@@ -302,11 +453,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setOnCompletionListener(beepListener);
 
-            AssetFileDescriptor file = getResources().openRawResourceFd(
-                    R.raw.beep);
+            AssetFileDescriptor file = getResources().openRawResourceFd(R.raw.beep);
             try {
-                mediaPlayer.setDataSource(file.getFileDescriptor(),
-                        file.getStartOffset(), file.getLength());
+                mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
                 file.close();
                 mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
                 mediaPlayer.prepare();
