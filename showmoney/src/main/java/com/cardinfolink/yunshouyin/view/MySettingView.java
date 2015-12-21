@@ -13,21 +13,14 @@ import android.widget.TextView;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.AboutActivity;
 import com.cardinfolink.yunshouyin.activity.AccountSecurityActivity;
-import com.cardinfolink.yunshouyin.activity.LimitIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
+import com.cardinfolink.yunshouyin.activity.StartIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.UnReadMessageActivity;
 import com.cardinfolink.yunshouyin.activity.WapActivity;
-import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
-import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * 第四个界面，就是设置界面
@@ -106,7 +99,8 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
                 ((Activity) mContext).finish();
                 break;
             case R.id.btn_limit:
-                intent = new Intent(mContext, LimitIncreaseActivity.class);
+                //调用StartIncreaseActivity界面，用户选择个体用户，还是企业用户，之后完成上传照片的步骤
+                intent = new Intent(mContext, StartIncreaseActivity.class);
                 mContext.startActivity(intent);
                 break;
             case R.id.account_security:
