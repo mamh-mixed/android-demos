@@ -9,15 +9,15 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 public class MyChannelActivity extends Activity {
 
-    private SettingActionBarItem mMyChannel;
+    private SettingActionBarItem mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_channel);
 
-        mMyChannel = (SettingActionBarItem) findViewById(R.id.sabi_my_channel);
-        mMyChannel.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
