@@ -32,6 +32,8 @@ public class TradingCustomDialog {
     private TextView mSecondText;
     private String mOrderNum;
 
+    private TextView mCancelBill;
+
     public TradingCustomDialog(Context context, Handler handler, View view, String orderNum) {
         mContext = context;
         mHandler = handler;
@@ -49,6 +51,10 @@ public class TradingCustomDialog {
         mSuccessView = dialogView.findViewById(R.id.trading_custom_dialog_success);
         mFailView = dialogView.findViewById(R.id.trading_custom_dialog_fail);
         mNoPayView = dialogView.findViewById(R.id.trading_custom_dialog_nopay);
+
+        //loading  对话框里面的 取消订单 的 按钮
+        mCancelBill = (TextView) mLoadView.findViewById(R.id.cancel);
+
     }
 
     private void initListener() {
@@ -58,34 +64,6 @@ public class TradingCustomDialog {
             public void onClick(View v) {
 
                 mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
-            }
-        });
-
-        mLoadView.findViewById(R.id.query).setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                OrderData orderData = new OrderData();
-                orderData.origOrderNum = mOrderNum;
-                CashierSdk.startQy(orderData, new CashierListener() {
-
-                    @Override
-                    public void onResult(ResultData resultData) {
-                        if (resultData.respcd.equals("00")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                        } else if (resultData.respcd.equals("09")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
-                        } else {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
-                        }
-                    }
-
-                    @Override
-                    public void onError(int errorCode) {
-                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
-                    }
-
-                });
             }
         });
 
@@ -175,11 +153,36 @@ public class TradingCustomDialog {
     public void loading() {
         dialogView.setVisibility(View.VISIBLE);
         mLoadView.setVisibility(View.VISIBLE);
-        Animation loadingAnimation = AnimationUtils.loadAnimation(
-                mContext, R.anim.loading_animation);
+        Animation loadingAnimation = AnimationUtils.loadAnimation(mContext, R.anim.loading_animation);
         ImageView loadView = (ImageView) mLoadView.findViewById(R.id.trading_custom_dialog_load_img);
         mSecondText = (TextView) mLoadView.findViewById(R.id.second);
         loadView.startAnimation(loadingAnimation);
+
+        //取消订单
+        mCancelBill.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OrderData orderData = new OrderData();
+                orderData.origOrderNum = mOrderNum;
+                CashierSdk.startCanc(orderData, new CashierListener() {
+                    @Override
+                    public void onResult(ResultData resultData) {
+                        if (resultData.respcd.equals("00")) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS);
+                        } else if (resultData.respcd.equals("09")) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_DOING);
+                        } else {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL);
+                        }
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+                    }
+                });
+            }
+        });
 
         isLoading = true;
         second = 0;
@@ -212,7 +215,9 @@ public class TradingCustomDialog {
                 switch (msg.what) {
                     case Msg.MSG_FROM_DIGLOG_SECOND: {
                         mSecondText.setText(second + "S");
-
+                        if (second > 45) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+                        }
                     }
                 }
                 super.handleMessage(msg);
@@ -233,4 +238,5 @@ public class TradingCustomDialog {
         mLoadView.setVisibility(View.GONE);
         mFailView.setVisibility(View.VISIBLE);
     }
+
 }
