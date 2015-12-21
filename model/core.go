@@ -170,42 +170,49 @@ type OverseasParams struct {
 // MerDetail 商户详细信息
 type MerDetail struct {
 	// MerId         string `bson:"merId,omitempty"`         // 商户号
-	MerName       string   `bson:"merName,omitempty" json:"merName,omitempty"`             // 商户名称
-	GoodsTag      string   `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
-	CommodityName string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
-	ShortName     string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
-	Area          string   `bson:"area,omitempty" json:"area,omitempty"`
-	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`           // 微信扫固定码支付页面的标题1
-	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`           // 微信扫固定码支付页面的标题2
-	SuccBtnTxt    string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`       // 微信扫固定码支付成功后的按钮text
-	SuccBtnLink   string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`     // 微信扫固定码支付成功后的按钮连接
-	IsPostAmount  bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`   // 微信扫固定码支付成功后的按钮连接是否传输金额
-	Province      string   `bson:"province,omitempty" json:"province,omitempty"`           // 商户省份
-	City          string   `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
-	Nation        string   `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
-	MerType       string   `bson:"merType,omitempty" json:"merType,omitempty"`             // 商户类型
-	BillingScheme string   `bson:"billingScheme,omitempty" json:"billingScheme,omitempty"` // 商户计费方案代码
-	SettCurr      string   `bson:"SettCurr,omitempty" json:"SettCurr,omitempty"`           // 商户清算币种
-	AcctName      string   `bson:"acctName,omitempty" json:"acctName,omitempty"`           // 商户账户名称
-	AcctNum       string   `bson:"acctNum,omitempty" json:"acctNum,omitempty"`             // 商户账户
-	Corp          string   `bson:"corp,omitempty" json:"corp,omitempty"`                   // 法人代表
-	Master        string   `bson:"master,omitempty" json:"master,omitempty"`               // 商户负责人
-	Contact       string   `bson:"contact,omitempty" json:"contact,omitempty"`             // 商户联系人
-	ContactTel    string   `bson:"contactTel,omitempty" json:"contactTel,omitempty"`       // 商户联系电话
-	Fax           string   `bson:"fax,omitempty" json:"fax,omitempty"`                     // 商户传真
-	Email         string   `bson:"email,omitempty" json:"email,omitempty"`                 // 商户邮箱
-	Addr          string   `bson:"addr,omitempty" json:"addr,omitempty"`                   // 商户地址
-	Postcode      string   `bson:"postcode,omitempty" json:"postcode,omitempty"`           // 商户邮编
-	Password      string   `bson:"password,omitempty" json:"password,omitempty"`           // 商户密码
-	ShopID        string   `bson:"shopID,omitempty" json:"shopID,omitempty"`               // 门店id
-	ShopType      string   `bson:"shopType,omitempty" json:"shopType,omitempty"`           // 门店类型
-	BrandNum      string   `bson:"brandNum,omitempty" json:"brandNum,omitempty"`           // 品牌编号
-	BankId        string   `bson:"bankId,omitempty" json:"bankId,omitempty"`               // 行号
-	OpenBankName  string   `bson:"openBankName,omitempty" json:"openBankName,omitempty"`   // 开户银行名称
-	BankName      string   `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 银行名称
-	BillUrl       string   `bson:"billUrl,omitempty" json:"billUrl,omitempty"`             // 扫固定码URL,获取账单
-	PayUrl        string   `bson:"payUrl,omitempty" json:"payUrl,omitempty"`               // 扫固定码URL,支付地址
-	Images        []string `bson:"images,omitempty" json:"images,omitempty"`               // 有关商户的一些图片路径
+	MerName          string   `bson:"merName,omitempty" json:"merName,omitempty"`             // 商户名称
+	GoodsTag         string   `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
+	CommodityName    string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
+	ShortName        string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
+	Area             string   `bson:"area,omitempty" json:"area,omitempty"`
+	TitleOne         string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`                 // 微信扫固定码支付页面的标题1
+	TitleTwo         string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`                 // 微信扫固定码支付页面的标题2
+	SuccBtnTxt       string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`             // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink      string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`           // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount     bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`         // 微信扫固定码支付成功后的按钮连接是否传输金额
+	Province         string   `bson:"province,omitempty" json:"province,omitempty"`                 // 商户省份
+	City             string   `bson:"city,omitempty" json:"city,omitempty"`                         // 商户城市
+	Nation           string   `bson:"nation,omitempty" json:"nation,omitempty"`                     // 商户国家
+	MerType          string   `bson:"merType,omitempty" json:"merType,omitempty"`                   // 商户类型
+	BillingScheme    string   `bson:"billingScheme,omitempty" json:"billingScheme,omitempty"`       // 商户计费方案代码
+	SettCurr         string   `bson:"SettCurr,omitempty" json:"SettCurr,omitempty"`                 // 商户清算币种
+	AcctName         string   `bson:"acctName,omitempty" json:"acctName,omitempty"`                 // 商户账户名称
+	AcctNum          string   `bson:"acctNum,omitempty" json:"acctNum,omitempty"`                   // 商户账户
+	Corp             string   `bson:"corp,omitempty" json:"corp,omitempty"`                         // 法人代表
+	Master           string   `bson:"master,omitempty" json:"master,omitempty"`                     // 商户负责人
+	Contact          string   `bson:"contact,omitempty" json:"contact,omitempty"`                   // 商户联系人
+	ContactTel       string   `bson:"contactTel,omitempty" json:"contactTel,omitempty"`             // 商户联系电话
+	Fax              string   `bson:"fax,omitempty" json:"fax,omitempty"`                           // 商户传真
+	Email            string   `bson:"email,omitempty" json:"email,omitempty"`                       // 商户邮箱
+	Addr             string   `bson:"addr,omitempty" json:"addr,omitempty"`                         // 商户地址
+	Postcode         string   `bson:"postcode,omitempty" json:"postcode,omitempty"`                 // 商户邮编
+	Password         string   `bson:"password,omitempty" json:"password,omitempty"`                 // 商户密码
+	ShopID           string   `bson:"shopID,omitempty" json:"shopID,omitempty"`                     // 门店id
+	ShopType         string   `bson:"shopType,omitempty" json:"shopType,omitempty"`                 // 门店类型
+	BrandNum         string   `bson:"brandNum,omitempty" json:"brandNum,omitempty"`                 // 品牌编号
+	BankId           string   `bson:"bankId,omitempty" json:"bankId,omitempty"`                     // 行号
+	OpenBankName     string   `bson:"openBankName,omitempty" json:"openBankName,omitempty"`         // 开户银行名称
+	BankName         string   `bson:"bankName,omitempty" json:"bankName,omitempty"`                 // 银行名称
+	BillUrl          string   `bson:"billUrl,omitempty" json:"billUrl,omitempty"`                   // 扫固定码URL,获取账单
+	PayUrl           string   `bson:"payUrl,omitempty" json:"payUrl,omitempty"`                     // 扫固定码URL,支付地址
+	Images           []string `bson:"images,omitempty" json:"images,omitempty"`                     // 有关商户的一些图片路径
+	CertName         string   `bson:"certName,omitempty" json:"certName,omitempty"`                 // 证书上的店铺名字
+	CertAddr         string   `bson:"certAddr,omitempty" json:"certAddr,omitempty"`                 // 证书上的店铺地址
+	LegalCertPos     string   `bson:"legalCertPos,omitempty" json:"legalCertPos,omitempty"`         // 法人证书正面
+	LegalCertOpp     string   `bson:"legalCertOpp,omitempty" json:"legalCertOpp,omitempty"`         // 法人证书反面
+	BusinessLicense  string   `bson:"businessLicense,omitempty" json:"businessLicense,omitempty"`   // 营业执照
+	TaxRegistCert    string   `bson:"taxRegistCert,omitempty" json:"taxRegistCert,omitempty"`       // 税务登记证
+	OrganizeCodeCert string   `bson:"organizeCodeCert,omitempty" json:"organizeCodeCert,omitempty"` // 组织机构代码证书
 }
 
 // ChanMer 渠道商户
