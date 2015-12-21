@@ -21,7 +21,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.Untilly;
-import com.cardinfolink.yunshouyin.view.TradingCustomDialog;
+import com.cardinfolink.yunshouyin.view.TradingLoadDialog;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -47,7 +47,7 @@ public class CreateQRcodeActivity extends BaseActivity {
     private TextView mPayMoneyText;
     private String mOrderNum;
     private TextView mScanText;
-    private TradingCustomDialog mCustomDialog;
+    private TradingLoadDialog mCustomDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +100,8 @@ public class CreateQRcodeActivity extends BaseActivity {
         mPayMoneyText = (TextView) findViewById(R.id.pay_money);
         mPayMoneyText.setText(getResources().getString(R.string.create_qrcode_activity_amount) + total);
         mScanText = (TextView) findViewById(R.id.scan_text);
-        mCustomDialog = new TradingCustomDialog(mContext, mHandler,
-                findViewById(R.id.trading_custom_dialog), mOrderNum);
+        mCustomDialog = new TradingLoadDialog(mContext, mHandler,
+                findViewById(R.id.trading_load_dialog), mOrderNum);
 
     }
 
@@ -203,11 +203,11 @@ public class CreateQRcodeActivity extends BaseActivity {
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
 
-                        mCustomDialog.success();
+                        //mCustomDialog.success();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
-                        mCustomDialog.fail();
+                        //mCustomDialog.fail();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
