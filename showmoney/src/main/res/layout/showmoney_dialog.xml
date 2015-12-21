@@ -360,13 +360,13 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/query"
+                    android:id="@+id/cancel"
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/dialog_button_color"
                     android:gravity="center"
-                    android:text="@string/txt_query_result"
+                    android:text="@string/detail_activity_busicd_canc"
                     android:textSize="17sp" />
 
                 <TextView
