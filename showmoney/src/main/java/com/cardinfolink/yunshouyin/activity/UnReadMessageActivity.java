@@ -12,7 +12,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 public class UnReadMessageActivity extends Activity {
 
-    private SettingActionBarItem mUnreadMessage;
+    private SettingActionBarItem mActionBar;
 
     private Button mSetAllMessageRead;
 
@@ -23,8 +23,8 @@ public class UnReadMessageActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_un_read_message);
 
-        mUnreadMessage = (SettingActionBarItem) findViewById(R.id.sabi_unread_message);
-        mUnreadMessage.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UnReadMessageActivity.this, MessageActivity.class);
