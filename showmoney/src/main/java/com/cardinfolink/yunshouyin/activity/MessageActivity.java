@@ -12,7 +12,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 public class MessageActivity extends Activity {
 
-    private SettingActionBarItem mAllMessage;
+    private SettingActionBarItem mActionBar;
 
     private Button mSetAllMessageRead;
 
@@ -24,15 +24,15 @@ public class MessageActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-        mAllMessage = (SettingActionBarItem) findViewById(R.id.sabi_all_message);
-        mAllMessage.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //返回
                 finish();
             }
         });
-        mAllMessage.setRightTextOnclickListner(new View.OnClickListener() {
+        mActionBar.setRightTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //进入未读消息界面
