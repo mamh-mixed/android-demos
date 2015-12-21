@@ -52,9 +52,15 @@
     <string name="increase_company">我是企业</string>
     <string name="increase_personal">我是个体</string>
     <string name="increase_limit">提升限额</string>
+
+    <string name="limit_increase_message">个体工商户 提交材料</string>
+    <string name="limit_increase_shop_name_hint">输入执照上的注册名称</string>
+    <string name="limit_increase_shop_name">店铺名称</string>
+    <string name="limit_increase_shop_address_hint">输入执照上的注册地址</string>
+    <string name="limit_increase_shop_address">店铺地址</string>
+    <string name="limit_increase_finish">完成</string>
     <string name="limit_increase">限额提升</string>
-    <string name="limit_increase_directions">       *为确保账户安全，请确认以下信息才能正常提升您的收款额度。我们会有工作人员在3个工作日内电话与您联系，感谢配合。\n
-        *云收银将严格遵守国家相关法律法规，承诺不将您的账户信息以任何形式透露给第三方。</string>
+    <string name="limit_increase_directions">请确保上传的照片清晰完整且所有信息均真实有效</string>
 
     <string name="qr_commit">确认提交</string>
     <string name="dialog_trade_success">交易成功\n感谢购买！</string>
