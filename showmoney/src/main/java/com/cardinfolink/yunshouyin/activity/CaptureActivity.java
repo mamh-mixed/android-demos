@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -42,6 +43,7 @@ import java.util.Random;
 import java.util.Vector;
 
 public class CaptureActivity extends BaseActivity implements Callback {
+    private static final String TAG = "CaptureActivity";
 
     private static final float BEEP_VOLUME = 0.10f;
     private static final long VIBRATE_DURATION = 200L;
@@ -71,6 +73,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private String mOrderNum;
     private ResultData mResultData;
     private SettingActionBarItem mActionBar;
+    private String mCurrentTime;
+
+    private boolean isPolling = false;
+    private int pollingCount = 0;
+    private Intent intent;
+    private Bundle bun;
 
     /**
      * Called when the activity is first created.
@@ -84,7 +92,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
         //这里不需要传人支付类型了，服务器判断。
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
+
+        mCurrentTime = mOrderNum = spf.format(now);
         Random random = new Random();
         for (int i = 0; i < 5; i++) {
             mOrderNum = mOrderNum + random.nextInt(10);
@@ -152,18 +161,22 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
                             @Override
                             public void onResult(ResultData resultData) {
+                                Log.e(TAG, "====" + resultData);
+
                                 mResultData = resultData;
                                 if (mResultData.respcd.equals("00")) {
                                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
                                 } else if (mResultData.respcd.equals("09")) {
                                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
                                 } else {
+                                    //返回14 表示 条码错误或过期
                                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
                                 }
                             }
 
                             @Override
                             public void onError(int errorCode) {
+                                Log.e(TAG, "=========" + errorCode + "--------------");
                                 mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
                             }
 
@@ -177,6 +190,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
+                        isPolling = false;
                         showPaySuccessDialog();
                         break;
                     }
@@ -194,6 +208,33 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         finish();
                         break;
                     }
+                    case Msg.MSG_FROM_SEARCHING_POLLING: {
+                        String title = String.format(getString(R.string.txt_wait_user_input_password), pollingCount);
+                        mHintDialog.setTitle(title);
+                        if (pollingCount > 5) { //显示交易结果
+                            isPolling = false;
+                        }
+                        searchBill();
+                        break;
+                    }
+                    case Msg.MSG_FROM_SERVER_TIMEOUT: {
+                        showPayTimeoutDialog();
+                        break;
+                    }
+                    case Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS: {
+                        //关单成功
+                        showCancelBillSuccess();
+                        break;
+                    }
+                    case Msg.MSG_FROM_SERVER_CLOSEBILL_DOING: {
+                        //关单返回09，
+                        break;
+                    }
+                    case Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL: {
+                        //关单失败
+                        showPayTimeoutDialog();
+                        break;
+                    }
                 }
                 super.handleMessage(msg);
             }
@@ -203,16 +244,22 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     /**
      * 未付款的对话框
-     * <p/>
+     * <p>
      * 这两个完全一样的对话框可以复用一样的layout文件。
      * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
      * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
-     * <p/>
+     * <p>
      * 未付款对话框，上面文本，下面一个按钮的对话框
      */
     public void showNopayDialog() {
+        //关闭计时器
+        mTradingLoadDialog.hide();
+
+        pollingCount = 0;
+        String title = String.format(getString(R.string.txt_wait_user_input_password), pollingCount);
+        mHintDialog.setTitle(title);
         //左边的对话框
-        mHintDialog.setCancelText(mContext.getResources().getString(R.string.txt_query_result));//查询结果
+        mHintDialog.setCancelText(mContext.getResources().getString(R.string.txt_query_manual));//手动查询
         mHintDialog.setCancelOnClickListener(new OnClickListener() {
 
             @Override
@@ -224,7 +271,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     @Override
                     public void onResult(ResultData resultData) {
 
-                        if (resultData.respcd.equals("00")) {
+                        mResultData = resultData;
+                        if (mResultData.respcd.equals("00")) {
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
                         } else if (resultData.respcd.equals("09")) {
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
@@ -242,89 +290,124 @@ public class CaptureActivity extends BaseActivity implements Callback {
             }
         });
         //右边的对话框
-        mHintDialog.setOkText(mContext.getString(R.string.txt_close));//关闭
+        mHintDialog.setOkText(mContext.getString(R.string.txt_cancel_trade));//取消交易
         mHintDialog.setOkOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                isPolling = false;//结束轮询
                 mHintDialog.hide();
+                OrderData orderData = new OrderData();
+                orderData.origOrderNum = mOrderNum;
+                CashierSdk.startCanc(orderData, new CashierListener() {
+
+                    @Override
+                    public void onResult(ResultData resultData) {
+                        if (resultData.respcd.equals("00")) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS);
+                        } else if (resultData.respcd.equals("09")) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_DOING);
+                        } else {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL);
+                        }
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+                    }
+
+                });
             }
         });
 
-        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
-        //isLoading = false;
-        //loadDialogView.setVisibility(View.GONE);//先要把loading的对话框隐藏了
-
         mHintDialog.show();
+
+
+        //开启一个线程轮询服务器5次
+        isPolling = true;
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (isPolling) {
+                    try {
+                        Thread.sleep(5000);
+                        pollingCount++;
+                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
+                        Log.e(TAG, "======MSG_FROM_SEARCHING_POLLING===================================");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
+    /**
+     * 查询订单
+     */
+    public void searchBill() {
+        OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        CashierSdk.startQy(orderData, new CashierListener() {
+
+            @Override
+            public void onResult(ResultData resultData) {
+                Log.e(TAG, "======searchBill=====onResult=====" + resultData.respcd + "===");
+                if (resultData.respcd.equals("00")) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                }
+            }
+
+            @Override
+            public void onError(int errorCode) {
+            }
+
+        });
+    }
 
     /**
      * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
      */
     public void showPaySuccessDialog() {
-        //左边按钮
-        mHintDialog.setCancelText(mContext.getString(R.string.txt_history_txns));//历史交易
-        mHintDialog.setCancelOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
-            }
-        });
-
-
-        //右边按钮
-        mHintDialog.setOkText(mContext.getString(R.string.txt_return));//返回
-        mHintDialog.setOkOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mHandler.sendEmptyMessage(Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY);
-            }
-        });
-
-        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
-        //isLoading = false;
-        //loadDialogView.setVisibility(View.GONE);
-
-        mHintDialog.show();
+        intent = new Intent();
+        bun = new Bundle();
+        bun.putString("txamt", mResultData.txamt);
+        bun.putString("orderNum", mResultData.orderNum);
+        bun.putString("chcd", mResultData.chcd);
+        bun.putString("mCurrentTime", mCurrentTime);
+        bun.putBoolean("result", true);
+        intent.putExtras(bun);
+        intent.setClass(CaptureActivity.this, PayResultActivity.class);
+        startActivity(intent);
     }
 
     /**
      * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
      */
     public void showPayFailDialog() {
-        //左边按钮
-        mHintDialog.setCancelText(mContext.getString(R.string.txt_query_result));//查询结果
-        mHintDialog.setCancelOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
-            }
-        });
-
-        //右边按钮
-        mHintDialog.setOkText(mContext.getString(R.string.txt_return));//返回
-        mHintDialog.setOkOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mHandler.sendEmptyMessage(Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY);
-            }
-        });
-        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
-        //isLoading = false;
-        //loadDialogView.setVisibility(View.GONE);
-
-        mHintDialog.show();
+        intent = new Intent();
+        bun = new Bundle();
+        bun.putString("txamt", mResultData.txamt);
+        bun.putString("orderNum", mResultData.orderNum);
+        bun.putString("chcd", mResultData.chcd);
+        bun.putString("mCurrentTime", mCurrentTime);
+        bun.putBoolean("result", false);
+        intent.putExtras(bun);
+        intent.setClass(CaptureActivity.this, PayResultActivity.class);
+        startActivity(intent);
     }
 
     /**
      * 服务器超时对话框，中间文本，下面两个按钮
      */
     public void showPayTimeoutDialog() {
+        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
+        mTradingLoadDialog.hide();
+
+        mHintDialog.setTitle(mContext.getString(R.string.dialog_trade_fail_timerout));
         //返回
         mHintDialog.setCancelText(mContext.getString(R.string.txt_return));
         mHintDialog.setCancelOnClickListener(new OnClickListener() {
@@ -342,13 +425,21 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 //TODO 去账单
             }
         });
-        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
-        //isLoading = false;
-        //loadDialogView.setVisibility(View.GONE);
 
         mHintDialog.show();
     }
 
+    /**
+     * 取消订单成功
+     */
+    public void showCancelBillSuccess() {
+        //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
+        mTradingLoadDialog.hide();
+
+        mHintDialog.setText("该订单已取消，若顾客已支付成功，会自动退款。", "确认", " 确认");
+
+        mHintDialog.show();
+    }
 
     @Override
     protected void onResume() {
@@ -437,10 +528,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void handleDecode(final Result obj, Bitmap barcode) {
         inactivityTimer.onActivity();
         playBeepSoundAndVibrate();
+        //从这里发送了扫二维码成功，之后就要调用sdk里面的付款了
         Message msg = mHandler.obtainMessage(Msg.MSG_FROM_SCANCODE_SUCCESS);
         msg.obj = obj.getText().toString();
         mHandler.sendMessageDelayed(msg, 0);
-
     }
 
     private void initBeepSound() {
