@@ -15,15 +15,15 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 public class WapActivity extends BaseActivity {
     private static final String TAG = "WapActivity";
-    private SettingActionBarItem mSetting;
+    private SettingActionBarItem mActionBar;
     private WebView mWebView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wap_bill_view);
 
-        mSetting = (SettingActionBarItem) findViewById(R.id.sabi_wap);
-        mSetting.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
