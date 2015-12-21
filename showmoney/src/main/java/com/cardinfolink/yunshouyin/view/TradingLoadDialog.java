@@ -114,6 +114,15 @@ public class TradingLoadDialog {
     }
 
 
+    public void hide() {
+        isLoading = false;
+        dialogView.setVisibility(View.GONE);
+    }
+
+    public void stopLoading() {
+        isLoading = false;
+    }
+
     private void initHandler() {
         dialogHandler = new Handler() {
             @Override
