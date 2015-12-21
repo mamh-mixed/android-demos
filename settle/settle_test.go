@@ -12,6 +12,14 @@ func TestGenReport(t *testing.T) {
 	SpSettReport("2015-12-08")
 }
 
+func TestSpReconciliatReport(t *testing.T) {
+	SpReconciliatReport("2015-12-10")
+}
+
+func TestSpSettReport(t *testing.T) {
+	SpSettReport("2015-12-10")
+}
+
 func TestAddTrans(t *testing.T) {
 
 	tran := &model.Trans{

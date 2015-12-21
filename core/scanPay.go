@@ -1136,6 +1136,7 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.SubAgentName = orig.SubAgentName
 	current.ConsumerAccount = orig.ConsumerAccount
 	current.SettRole = orig.SettRole
+	current.ChanOrderNum = orig.ChanOrderNum
 }
 
 func signWithMD5(s interface{}, key string) string {

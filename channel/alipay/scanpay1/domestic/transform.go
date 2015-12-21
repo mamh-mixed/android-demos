@@ -151,6 +151,7 @@ func refundHandle(ret *model.ScanPayResponse, alipay alpDetail) {
 	switch alipay.ResultCode {
 	case "SUCCESS":
 		ret.ChanRespCode = alipay.ResultCode
+		ret.ChannelOrderNum = alipay.TradeNo
 		ret.Respcd = success.ISO8583Code
 		ret.ErrorDetail = success.ISO8583Msg
 		ret.ErrorCode = success.ErrorCode

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
@@ -32,7 +33,7 @@ const (
 
 var (
 	halfwhite         = []byte{0xc2, 0xa0} // ASCII：32被UTF-8编码之后成为ASCII：194 和 160的组合
-	noSessionFound    = resultBody("无法获取session，请重新上传。", 1)
+	noSessionFound    = resultBody("no session found, please retry.", 1)
 	maxFee            = 0.03
 	settFlagArray     = []string{SR_GROUP, SR_CHANNEL, SR_CIL, SR_AGENT, SR_COMPANY}
 	replaceWhitespace = strings.NewReplacer(" ", "", "\r", "", "\t", "", "\n", "", string(halfwhite), "")
@@ -348,6 +349,22 @@ func updateValidate(r *rowData, im *ImportMessage) error {
 		}
 	}
 
+	if r.AlpMerId != "" {
+		// 默认是境内商户
+		if r.IsDomesticStr == no {
+			// 海外支付宝商户必填字段
+			if r.AlpMerName == "" || r.AlpMerNo == "" {
+				return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
+			}
+			if r.AlpSchemeType == "" {
+				return fmt.Errorf(m.NoSchemeType, r.MerId)
+			}
+		} else {
+			// 其他情况默认都是国内的
+			r.IsDomestic = true
+		}
+	}
+
 	return nil
 }
 
@@ -416,8 +433,12 @@ func insertValidate(r *rowData, im *ImportMessage) error {
 		}
 		if r.IsDomesticStr != "" {
 			if r.IsDomesticStr == no {
+				// 海外支付宝商户必填字段
 				if r.AlpMerName == "" || r.AlpMerNo == "" {
-					return fmt.Errorf("门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no", r.MerId) //TODO
+					return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
+				}
+				if r.AlpSchemeType == "" {
+					return fmt.Errorf(m.NoSchemeType, r.MerId)
 				}
 			} else {
 				// 其他情况默认都是国内的
@@ -551,12 +572,6 @@ func handleAlpMer(r *rowData, c *cache, im *ImportMessage) error {
 				// 验证必填的信息
 				if r.AlpMd5 == "" {
 					return fmt.Errorf(m.NoALPKey, r.AlpMerId)
-				}
-				// 海外支付宝商户必填字段
-				if !r.IsDomestic {
-					if r.AlpSchemeType == "" {
-						return fmt.Errorf("支付宝商户：%s 非境内商户需要填写计费方案", r.AlpMerId) // TODO
-					}
 				}
 			}
 		}
@@ -876,6 +891,10 @@ func (i *importer) doDataWrap() {
 				alpChanMer.ChanCode = "ALP"
 				alpChanMer.SignKey = r.AlpMd5
 				alpChanMer.AgentCode = r.AlpAgentCode
+				if !r.IsDomestic {
+					alpChanMer.AreaType = channel.Oversea
+					alpChanMer.SchemeType, _ = strconv.Atoi(r.AlpSchemeType)
+				}
 
 				// TODO:DELETE
 				// alpChanMer.AcqFee = r.AlpAcqFeeF

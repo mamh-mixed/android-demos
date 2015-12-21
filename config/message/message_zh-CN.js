@@ -132,7 +132,9 @@
 			"IsAgentStrErr"   :"是否代理商模式：%s 取值错误，应为【是】或【否】",
 			"NoWXPMer"        :"门店：%s 代理商模式需要填写微信商户号",
 			"WXPSettFlagErr"  :"微信商户清算标识：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]",
-			"ALPSettFlagErr"  :"支付宝商户清算标识：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]"
+			"ALPSettFlagErr"  :"支付宝商户清算标识：%s 取值错误，应为[CIL,CHANNEL,AGENT,COMPANY,GROUP]",
+			"NoOverseasChanMer" :"门店：%s 支付宝境外商户必须填写 merchant_name 和 merchant_no",
+			"NoSchemeType"		:"门店：%s 支付宝境外商户必须填写计费方案"
 		}
 	}
 }

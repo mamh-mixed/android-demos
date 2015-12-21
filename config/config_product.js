@@ -53,8 +53,8 @@
         "AgentId": "12010128a1" // 标识讯联交易
     },
     "MobileApp": {
-        "WXPMerId": "1279123101",
-        "ALPMerId": "2088701607252123",
+        "WXPMerId": "1295117001",
+        "ALPMerId": "2088411862197603",
         "WebAppUrl": "http://qrcode.cardinfolink.net/payment"
     },
     "UnionLive": {
