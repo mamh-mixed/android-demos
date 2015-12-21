@@ -53,6 +53,7 @@
     <string name="increase_personal">我是个体</string>
     <string name="increase_limit">提升限额</string>
 
+    <string name="limit_increase_message1">企业商户 提交材料</string>
     <string name="limit_increase_message">个体工商户 提交材料</string>
     <string name="limit_increase_shop_name_hint">输入执照上的注册名称</string>
     <string name="limit_increase_shop_name">店铺名称</string>
@@ -65,6 +66,8 @@
     <string name="limit_increase_card_positive">法人身份证正面</string>
     <string name="limit_increase_card_negaitive">法人身份证反面</string>
     <string name="limit_increase_business_licence">营业执照</string>
+    <string name="limit_increase_tax">税务登记证</string>
+    <string name="limit_increase_organization">组织机构代码证</string>
 
     <string name="qr_commit">确认提交</string>
     <string name="dialog_trade_success">交易成功\n感谢购买！</string>
