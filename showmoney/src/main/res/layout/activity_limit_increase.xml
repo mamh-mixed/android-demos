@@ -1,152 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ccee11">
+    android:background="#ffffff">
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:gravity="center_horizontal"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/action_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:left_text="@string/setting_return" />
+
+        <TextView
+            android:id="@+id/increase_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="50dp"
+            android:text="@string/limit_increase_message"
+            android:textSize="25sp" />
+
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:hint="@string/limit_increase_shop_name_hint"
+            cardinfolink:title="@string/limit_increase_shop_name" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:hint="@string/limit_increase_shop_address_hint"
+            cardinfolink:title="@string/limit_increase_shop_address" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:adjustViewBounds="true"
-            android:text="@string/limit_increase"
-            android:textColor="#ffffff"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:adjustViewBounds="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="60dp"
             android:text="@string/limit_increase_directions"
-            android:textColor="#ffffff"
-            android:textSize="15sp" />
+            android:textSize="13sp" />
 
-        <TableLayout
+        <Button
+            android:id="@+id/btnperson"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp">
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/white_selector"
+            android:text="@string/limit_increase_finish"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/phone" />
-
-                <EditText
-                    android:id="@+id/limitincrease_phone"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:hint="@string/register_next_hint_phonenum"
-                    android:inputType="number"
-                    android:paddingLeft="15dp"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#eeeeee" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/name" />
-
-                <EditText
-                    android:id="@+id/limitincrease_name"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:hint="@string/register_next_hint_name"
-                    android:paddingLeft="15dp"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#eeeeee" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/bluemain_bg"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="15dp"
-                    android:src="@drawable/email" />
-
-                <EditText
-                    android:id="@+id/limitincrease_email"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dp"
-                    android:background="@null"
-                    android:ems="10"
-                    android:hint="@string/register_hint_email"
-                    android:inputType="textEmailAddress"
-                    android:paddingLeft="15dp"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#eeeeee" />
-            </TableRow>
-        </TableLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/limitincrease_btnsubmit"
-                android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:background="@drawable/white_selector"
-                android:text="@string/qr_commit"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-
-        </LinearLayout>
 
     </LinearLayout>
 
-    <include layout="@layout/showmoney_dialog"></include>
+    <include layout="@layout/showmoney_dialog" />
 
 </RelativeLayout>
