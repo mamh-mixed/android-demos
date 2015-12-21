@@ -200,7 +200,7 @@
           'iron-overlay-opened': 'handleOverlayOpenEvent'
         },
         _keywordChanged: function(newValue, oldValue) {
-          var keyword = newValue.trim()
+          var keyword = newValue.trim();
           oldValue = oldValue || '';
           if (keyword === oldValue.trim() || !this.isFocus) {
             return;
@@ -245,7 +245,7 @@
           if (!response.data || typeof response.data !== 'object' || !(response.data instanceof Array) || response.data.length === 0) {
             this.set('isNoData', true);
             if (!this.$.dropdown.opened) {
-              this.$.dropdown.open();
+              this._openDropdown();
             }
             return;
           }
@@ -257,8 +257,7 @@
             this.push('list', news[i]);
           }
           if (!this.isOpen) {
-            this.set('verticalOffset', this.getBoundingClientRect().height);
-            this.$.dropdown.open();
+            this._openDropdown();
           }
         },
         handleOverlayCloseEvent: function(e) {
@@ -278,6 +277,10 @@
         // 当前节点是否active
         _computeActiveLi: function(curr, active) {
           return curr === active;
+        },
+        _openDropdown: function() {
+          this.set('verticalOffset', this.getBoundingClientRect().height);
+          this.$.dropdown.open();
         },
         // 后一项
         next: function(e) {
