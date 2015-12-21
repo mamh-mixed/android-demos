@@ -48,5 +48,6 @@ public class Msg {
     public static final int MSG_FROM_SERVER_CLOSEBILL_SUCCESS = 500;
     public static final int MSG_FROM_SERVER_CLOSEBILL_DOING = 501;
     public static final int MSG_FROM_SERVER_CLOSEBILL_FAIL = 502;
+    public static final int MSG_FROM_SEARCHING_POLLING=503;
 
 }
