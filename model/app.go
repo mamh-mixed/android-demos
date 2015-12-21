@@ -68,6 +68,7 @@ type AppResult struct {
 	Users        []*AppUser  `json:"users,omitempty"`
 	TotalAmt     string      `json:"total,omitempty"`
 	Count        int         `json:"count"`
+	TotalRecord  int         `json:"totalRecord"`
 	Size         int         `json:"size"`
 	RefdCount    int         `json:"refdcount"`
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`

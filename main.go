@@ -36,10 +36,8 @@ func main() {
 	startSettle()     // 清分任务
 	startMaster()     // 管理平台
 	startApp()        // 云收银APP用户、交易查询等
-
-	crontab.Start() // 定时任务
-	// http.HandleFunc("/import", data.Import)
-	startPush()
+	startPush()       // 推送消息
+	startContab()     // 定时任务
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))
@@ -86,4 +84,8 @@ func startApp() {
 
 func startPush() {
 	go push.PushMessage()
+}
+
+func startContab() {
+	crontab.Start()
 }

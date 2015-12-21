@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 )
 
 var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"
@@ -149,6 +150,11 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	size, err := strconv.Atoi(r.FormValue("size"))
+	if err != nil {
+		size = 15
+	}
+
 	result := User.getUserBill(&reqParams{
 		UserName:    r.FormValue("username"),
 		Password:    r.FormValue("password"),
@@ -158,6 +164,7 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		Transtime:   r.FormValue("transtime"),
 		Index:       r.FormValue("index"),
 		OrderDetail: r.FormValue("order_detail"),
+		Size:        size,
 	})
 
 	w.Write(jsonMarshal(result))
@@ -401,6 +408,7 @@ type reqParams struct {
 	Index          string
 	Date           string
 	Month          string
+	Size           int
 	Province       string
 	City           string
 	BranchBank     string

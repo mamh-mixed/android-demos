@@ -16,30 +16,31 @@ const (
 var PushChan = make(chan *model.PushMessageReq, buffer_size) //缓存大小，channel没有内容时，阻塞，直到有内容写入
 
 func PushMessage() {
-	for true {
+	for {
 		req := <-PushChan
 		if req == nil {
-			log.Errorf("the element from PushChan is nil")
+			// log.Errorf("the element from PushChan is nil")
 			continue
 		}
 		userModel, err := mongo.AppUserCol.FindOne(req.UserName)
-		if err != nil { //查到该app用户的信息
-			if (userModel.Device_type != "") && (userModel.Device_token != "") {
-				req.Device_token = userModel.Device_token
-				if userModel.Device_type == ios {
-					ApnsPush.APush(req)
-				} else if userModel.Device_type == android {
-					UmengPush.UPush(req)
-				} else {
-					log.Errorf("the Device_type is diff, Device_type:%s", userModel.Device_type)
-				}
-			} else {
-				log.Errorf("the app Device_type or Device_token is nil")
-			}
-		} else {
+		if err != nil {
 			log.Errorf("find app user error, err:%s", err)
+			continue
 		}
 
+		//查到该app用户的信息
+		if (userModel.Device_type != "") && (userModel.Device_token != "") {
+			req.Device_token = userModel.Device_token
+			if userModel.Device_type == ios {
+				ApnsPush.APush(req)
+			} else if userModel.Device_type == android {
+				UmengPush.UPush(req)
+			} else {
+				log.Errorf("the Device_type is diff, Device_type:%s", userModel.Device_type)
+			}
+		} else {
+			log.Errorf("the app Device_type or Device_token is nil")
+		}
 	}
 }
 
