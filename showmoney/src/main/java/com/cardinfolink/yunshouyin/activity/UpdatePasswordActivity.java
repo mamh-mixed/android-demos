@@ -17,7 +17,7 @@ import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 public class UpdatePasswordActivity extends BaseActivity {
 
-    private SettingActionBarItem mUpdatePassword;//修改密码界面的 标题栏
+    private SettingActionBarItem mActionBar;//修改密码界面的 标题栏
 
     private SettingPasswordItem mOriginPassword;//原始密码
     private SettingPasswordItem mNewPassword;//新密码
@@ -33,8 +33,8 @@ public class UpdatePasswordActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_password);
         //修改密码界面的 标题栏
-        mUpdatePassword = (SettingActionBarItem) findViewById(R.id.sabi_update_password);
-        mUpdatePassword.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
