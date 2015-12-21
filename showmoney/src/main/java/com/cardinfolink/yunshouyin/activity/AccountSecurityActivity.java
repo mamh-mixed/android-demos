@@ -13,7 +13,7 @@ public class AccountSecurityActivity extends Activity implements View.OnClickLis
 
     private SettingClikcItem mAccountInfo;
     private SettingClikcItem mUpdatePassword;
-    private SettingActionBarItem mAccountSecurity;
+    private SettingActionBarItem mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +25,8 @@ public class AccountSecurityActivity extends Activity implements View.OnClickLis
         mAccountInfo.setOnClickListener(this);
         mUpdatePassword.setOnClickListener(this);
 
-        mAccountSecurity = (SettingActionBarItem) findViewById(R.id.sabi_account_security);
-        mAccountSecurity.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
