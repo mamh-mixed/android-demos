@@ -19,7 +19,7 @@ import com.umeng.update.UpdateStatus;
 
 public class AboutActivity extends Activity implements View.OnClickListener {
 
-    private SettingActionBarItem mAbount;//关于云收银的 action bar
+    private SettingActionBarItem mActionBar;//关于云收银的 action bar
 
     private SettingDetailItem mVersion;//显示版本信息的 item
 
@@ -32,8 +32,8 @@ public class AboutActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        mAbount = (SettingActionBarItem) findViewById(R.id.sabi_about);
-        mAbount.setLeftTextOnclickListner(new View.OnClickListener() {
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
