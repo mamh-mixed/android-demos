@@ -322,8 +322,8 @@ func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
 	rsp = push.PushInfos(&model.PushMessageRsp{
 		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
-		Index:    r.FormValue("index"),
-		Size:     r.FormValue("size"),
+		//Index:    r.FormValue("index"),
+		//Size:     r.FormValue("size"),
 		LastTime: r.FormValue("lasttime"),
 	})
 
