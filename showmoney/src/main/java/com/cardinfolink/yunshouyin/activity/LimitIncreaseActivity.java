@@ -1,15 +1,20 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
@@ -48,6 +53,9 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private static final int PICK_B_REQUEST = 3;//营业执照
     private static final int PICK_TAX_REQUEST = 4;//税务
     private static final int PICK_O_REQUEST = 5;//组织机构
+
+    private MerchantPhoto[] imageList = new MerchantPhoto[5];
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,8 +105,6 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         mFinish.setOnClickListener(this);//完成按钮
 
         selectPic = new SelectPicDialog(this, findViewById(R.id.select_pic_dialog));
-
-
     }
 
 
@@ -192,41 +198,103 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             case PICK_ID_P_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mCardPositive.setRightText(selectedStr);
+                    imageList[0] = getMerchantPhoto(data);
                 } else {
                     mCardPositive.setRightText(unselectedStr);
+                    imageList[0] = null;
                 }
                 break;
             case PICK_ID_N_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mCardNegative.setRightText(selectedStr);
+                    imageList[1] = getMerchantPhoto(data);
                 } else {
                     mCardNegative.setRightText(unselectedStr);
+                    imageList[1] = null;
                 }
                 break;
             case PICK_B_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mBusiness.setRightText(selectedStr);
+                    imageList[2] = getMerchantPhoto(data);
                 } else {
                     mBusiness.setRightText(unselectedStr);
+                    imageList[2] = null;
                 }
                 break;
             case PICK_TAX_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mTax.setRightText(selectedStr);
+                    imageList[3] = getMerchantPhoto(data);
                 } else {
                     mTax.setRightText(unselectedStr);
+                    imageList[3] = null;
                 }
                 break;
             case PICK_O_REQUEST:
                 if (resultCode == RESULT_OK) {
                     mOrganization.setRightText(selectedStr);
+                    imageList[4] = getMerchantPhoto(data);
                 } else {
                     mOrganization.setRightText(unselectedStr);
+                    imageList[4] = null;
                 }
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private MerchantPhoto getMerchantPhoto(Intent data) {
+        if (Build.VERSION.SDK_INT >= 19) {
+            // 4.4以上使用
+            return handleImageOnKitKat(data);
+        } else {
+            return handleImageBeforeKitKat(data);
+        }
+    }
+
+    private MerchantPhoto handleImageBeforeKitKat(Intent data) {
+        if (data != null) {
+            Uri uri = data.getData();
+            String imagePath = getImagePath(uri, null);
+            return new MerchantPhoto(uri, imagePath);
+        }
+        return null;
+    }
+
+    private MerchantPhoto handleImageOnKitKat(Intent data) {
+        if (data != null) {
+            String imagePath = null;
+            Uri uri = data.getData();
+            if (DocumentsContract.isDocumentUri(this, uri)) {
+                String docId = DocumentsContract.getDocumentId(uri);
+                if ("com.android.providers.media.documents".equals(uri.getAuthority())) {
+                    String id = docId.split(":")[1];
+                    String selection = MediaStore.Images.Media._ID + "=" + id;
+                    imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+                } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
+                    Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                    imagePath = getImagePath(contentUri, null);
+                }
+            } else if ("content".equalsIgnoreCase(uri.getScheme())) {
+                imagePath = getImagePath(uri, null);
+            }
+
+            return new MerchantPhoto(uri, imagePath);
+        }
+        return null;
+    }
+
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
 
 }
