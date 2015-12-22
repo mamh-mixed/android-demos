@@ -176,13 +176,12 @@ type PushMessageRsp struct {
 	Title    string `json:"title,omitempty" bson:"title,omitempty"`
 	Message  string `json:"message,omitempty" bson:"message,omitempty"`
 	PushTime string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
-	Index    string `json:"index,omitempty" bson:"index,omitempty"`
-	Size     string `json:"size,omitempty" bson:"size,omitempty"`
 	LastTime string `json:"lastTime,omitempty" bson:"lastTime,omitempty"`
 }
 
 //推送表结构
 type PushInfo struct {
+	ID       string `json:"id,omitempty" bson:"_id,omitempty"`
 	UserName string `json:"username,omitempty" bson:"username,omitempty"`
 	Title    string `json:"title,omitempty" bson:"title,omitempty"`
 	Message  string `json:"message,omitempty" bson:"message,omitempty"`

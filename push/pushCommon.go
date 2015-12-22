@@ -81,6 +81,7 @@ func PushInfos(req *model.PushMessageRsp) (rsp *PushInfoRsp) {
 	infos, err := mongo.PushMessageColl.FindByUser(req)
 	if err != nil {
 		infos = make([]*model.PushInfo, 0)
+
 	}
 
 	rsp.Count = len(infos)
