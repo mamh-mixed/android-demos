@@ -29,24 +29,28 @@
 
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/merchant_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:hint="@string/limit_increase_shop_name_hint"
             cardinfolink:title="@string/limit_increase_shop_name" />
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/merchant_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:hint="@string/limit_increase_shop_address_hint"
             cardinfolink:title="@string/limit_increase_shop_address" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:id="@+id/id_card_positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_card_positive" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+            android:id="@+id/id_card_negaitive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             cardinfolink:right_text="@string/limit_increase_update_licence"
@@ -85,7 +89,7 @@
 
 
         <Button
-            android:id="@+id/btnperson"
+            android:id="@+id/btnfinish"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
