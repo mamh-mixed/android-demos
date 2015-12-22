@@ -248,24 +248,17 @@ func updateSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.updateSettInfo(&reqParams{
-		UserName:         r.FormValue("username"),
-		Password:         r.FormValue("password"),
-		BankOpen:         r.FormValue("bank_open"),
-		Payee:            r.FormValue("payee"),
-		PayeeCard:        r.FormValue("payee_card"),
-		PhoneNum:         r.FormValue("phone_num"),
-		Transtime:        r.FormValue("transtime"),
-		Province:         r.FormValue("province"),
-		City:             r.FormValue("city"),
-		BranchBank:       r.FormValue("branch_bank"),
-		BankNo:           r.FormValue("bankNo"),
-		CertName:         r.FormValue("certName"),
-		CertAddr:         r.FormValue("certAddr"),
-		LegalCertPos:     r.FormValue("legalCertPos"),
-		LegalCertOpp:     r.FormValue("legalCertOpp"),
-		BusinessLicense:  r.FormValue("businessLicense"),
-		TaxRegistCert:    r.FormValue("taxRegistCert"),
-		OrganizeCodeCert: r.FormValue("organizeCodeCert"),
+		UserName:   r.FormValue("username"),
+		Password:   r.FormValue("password"),
+		BankOpen:   r.FormValue("bank_open"),
+		Payee:      r.FormValue("payee"),
+		PayeeCard:  r.FormValue("payee_card"),
+		PhoneNum:   r.FormValue("phone_num"),
+		Transtime:  r.FormValue("transtime"),
+		Province:   r.FormValue("province"),
+		City:       r.FormValue("city"),
+		BranchBank: r.FormValue("branch_bank"),
+		BankNo:     r.FormValue("bankNo"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -357,6 +350,28 @@ func getQiniuTokenHandle(w http.ResponseWriter, r *http.Request) {
 	})
 
 	result.UploadToken = qiniu.GetUploadtoken()
+
+	w.Write(jsonMarshal(result))
+}
+
+//修改证书信息
+func improveCertInfoHandle(w http.ResponseWriter, r *http.Request) {
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.improveCertInfo(&reqParams{
+		UserName:         r.FormValue("username"),
+		Password:         r.FormValue("password"),
+		CertName:         r.FormValue("certName"),
+		CertAddr:         r.FormValue("certAddr"),
+		LegalCertPos:     r.FormValue("legalCertPos"),
+		LegalCertOpp:     r.FormValue("legalCertOpp"),
+		BusinessLicense:  r.FormValue("businessLicense"),
+		TaxRegistCert:    r.FormValue("taxRegistCert"),
+		OrganizeCodeCert: r.FormValue("organizeCodeCert"),
+	})
 
 	w.Write(jsonMarshal(result))
 }
