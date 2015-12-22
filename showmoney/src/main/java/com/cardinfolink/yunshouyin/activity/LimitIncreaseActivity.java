@@ -3,23 +3,36 @@ package com.cardinfolink.yunshouyin.activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.core.QiniuCallbackListener;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.view.SelectPicDialog;
+import com.qiniu.android.http.ResponseInfo;
+
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,7 +40,7 @@ import com.cardinfolink.yunshouyin.view.SelectPicDialog;
  */
 public class LimitIncreaseActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "LimitIncreaseActivity";
-
+    private static final String QINIU_FORMAT = "app/%s/%s";
     private static final String TYPE = "type";
     private static final int PERSON = 0;
     private static final int COMPANY = 1;
@@ -36,8 +49,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private SettingClikcItem mTax;//税务
     private SettingClikcItem mOrganization;//组织结构照片
 
-    private SettingInputItem mMerchant;//商铺名称
-    private SettingInputItem mMerchantAddress;//商铺地址
+    private SettingInputItem mShopName;//商铺名称
+    private SettingInputItem mShopAddress;//商铺地址
     private SettingClikcItem mCardPositive;//身份证 正面
     private SettingClikcItem mCardNegative;//身份证 反面
     private SettingClikcItem mBusiness;//营业执照
@@ -55,8 +68,9 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private static final int PICK_TAX_REQUEST = 4;//税务
     private static final int PICK_O_REQUEST = 5;//组织机构
 
-    private MerchantPhoto[] imageList = new MerchantPhoto[5];
-
+    //这里创建一个list。来保存商户要上传的照片，个体的是三张，企业是五张
+    private List<MerchantPhoto> imageList = new ArrayList<MerchantPhoto>();
+    private Map<Integer, MerchantPhoto> imageMap = new Hashtable<Integer, MerchantPhoto>();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +85,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         });
 
         //需要输入内容的
-        mMerchant = (SettingInputItem) findViewById(R.id.merchant_name);//商铺名称
-        mMerchantAddress = (SettingInputItem) findViewById(R.id.merchant_address);//商铺地址
+        mShopName = (SettingInputItem) findViewById(R.id.merchant_name);//商铺名称
+        mShopAddress = (SettingInputItem) findViewById(R.id.merchant_address);//商铺地址
 
         //上传图片
         mCardPositive = (SettingClikcItem) findViewById(R.id.id_card_positive);//身份证 正面
@@ -190,40 +204,109 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     }
 
-    private void uploadPhoto() {
+    private boolean validate(String shopName, String shopAddress) {
+        //先检查是否都填写了
+
+        Bitmap wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         //先检验 是否都选择好照片了
         String unselected = getResources().getString(R.string.limit_increase_unselected);
-        String toastMsg = "";
-        if (imageList[0] == null) {
-            toastMsg = mCardPositive.getTitle() + unselected;
-            Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
-            return;
+        String alertMsg = "";
+
+        if (TextUtils.isEmpty(shopName)) {
+            alertMsg = getResources().getString(R.string.alert_error__shop_name_cannot_empty);//店铺名称不能为空
+            mAlertDialog.show(alertMsg, wrongBitmap);
+            return false;
         }
-        if (imageList[1] == null) {
-            toastMsg = mCardNegative.getTitle() + unselected;
-            Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
-            return;
+
+        if (TextUtils.isEmpty(shopAddress)) {
+            alertMsg = getResources().getString(R.string.alert_error__shop_address_cannot_empty);//店铺地址不能为空
+            mAlertDialog.show(alertMsg, wrongBitmap);
+            return false;
         }
-        if (imageList[2] == null) {
-            toastMsg = mBusiness.getTitle() + unselected;
-            Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
+
+        if (imageMap.get(PICK_ID_P_REQUEST) == null) {
+            // 身份证 正面
+            alertMsg = mCardPositive.getTitle() + unselected;
+            mAlertDialog.show(alertMsg, wrongBitmap);
+            return false;
+        }
+
+        if (imageMap.get(PICK_ID_N_REQUEST) == null) {
+            // 身份证 反面
+            alertMsg = mCardNegative.getTitle() + unselected;
+            mAlertDialog.show(alertMsg, wrongBitmap);
+            return false;
+        }
+
+        if (imageMap.get(PICK_B_REQUEST) == null) {
+            // 营业执照
+            alertMsg = mBusiness.getTitle() + unselected;
+            mAlertDialog.show(alertMsg, wrongBitmap);
+            return false;
+        }
+
+        if (mType == COMPANY) {//当是企业用户的时候要多判断这两个
+            if (imageMap.get(PICK_TAX_REQUEST) == null) {
+                ////税务
+                alertMsg = mTax.getTitle() + unselected;
+                mAlertDialog.show(alertMsg, wrongBitmap);
+                return false;
+            }
+            if (imageMap.get(PICK_O_REQUEST) == null) {
+                //组织机构
+                alertMsg = mOrganization.getTitle() + unselected;
+                mAlertDialog.show(alertMsg, wrongBitmap);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void uploadPhoto() {
+        String shopName = mShopName.getText();//商户名称
+        String shopAddress = mShopAddress.getText();//商户地址
+
+        List<MerchantPhoto> list = new ArrayList<>();
+        if (!validate(shopName, shopAddress)) {
+            //先检查是否都填写了
             return;
         }
 
-        if (mType == COMPANY) {
-            //企业商户
-            if (imageList[3] == null) {
-                toastMsg = mTax.getTitle() + unselected;
-                Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (imageList[4] == null) {
-                toastMsg = mOrganization.getTitle() + unselected;
-                Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
+        Date now = new Date();
+        SimpleDateFormat yyMMdd = new SimpleDateFormat("yyyyMMdd");
+        String clientId = SessonData.loginUser.getClientid();
+        final String qiniuKeyPattern = String.format(QINIU_FORMAT, yyMMdd.format(now), clientId) + "/%s.%s";
 
+        startLoading();
+
+        qiniuMultiUploadService.upload(list, qiniuKeyPattern, new QiniuCallbackListener() {
+            @Override
+            public void onComplete(String key, ResponseInfo info, JSONObject response) {
+                endLoading();
+                mCardPositive.setRightText("上传成功");
+                mCardNegative.setRightText("上传成功");
+                mBusiness.setRightText("上传成功");
+                mTax.setRightText("上传成功");
+                mOrganization.setRightText("上传成功");
+
+            }
+
+            @Override
+            public void onFailure(Exception ex) {
+                endLoading();
+                mCardPositive.setRightText("上传失败");
+                mCardNegative.setRightText("上传失败");
+                mBusiness.setRightText("上传失败");
+                mTax.setRightText("上传失败");
+                mOrganization.setRightText("上传失败");
+            }
+
+            @Override
+            public void onProgress(String key, double percent) {
+
+            }
+        });
 
     }
 
@@ -233,49 +316,50 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         String selectedStr = getString(R.string.limit_increase_selected);//已选择
         String unselectedStr = getString(R.string.limit_increase_update_licence);//上传证件,相当于提示 用户 未选择图片
         switch (requestCode) {
-            case PICK_ID_P_REQUEST:
+            case PICK_ID_P_REQUEST:            // 身份证 正面
                 if (resultCode == RESULT_OK) {
                     mCardPositive.setRightText(selectedStr);
-                    imageList[0] = getMerchantPhoto(data);
+                    imageMap.put(PICK_ID_P_REQUEST, getMerchantPhoto(data));
                 } else {
                     mCardPositive.setRightText(unselectedStr);
-                    imageList[0] = null;
+                    //这里取消选择的照片，这里设置为null，当在使用的时候要检查是否为null
+                    imageMap.put(PICK_ID_P_REQUEST, null);//取消选择的照片
                 }
                 break;
-            case PICK_ID_N_REQUEST:
+            case PICK_ID_N_REQUEST://身份证 反面
                 if (resultCode == RESULT_OK) {
                     mCardNegative.setRightText(selectedStr);
-                    imageList[1] = getMerchantPhoto(data);
+                    imageMap.put(PICK_ID_N_REQUEST, getMerchantPhoto(data));
                 } else {
                     mCardNegative.setRightText(unselectedStr);
-                    imageList[1] = null;
+                    imageMap.put(PICK_ID_N_REQUEST, null);//取消选择的照片
                 }
                 break;
-            case PICK_B_REQUEST:
+            case PICK_B_REQUEST://营业执照
                 if (resultCode == RESULT_OK) {
                     mBusiness.setRightText(selectedStr);
-                    imageList[2] = getMerchantPhoto(data);
+                    imageMap.put(PICK_B_REQUEST, getMerchantPhoto(data));
                 } else {
                     mBusiness.setRightText(unselectedStr);
-                    imageList[2] = null;
+                    imageMap.put(PICK_B_REQUEST, null);//取消选择的照片
                 }
                 break;
-            case PICK_TAX_REQUEST:
+            case PICK_TAX_REQUEST://税务
                 if (resultCode == RESULT_OK) {
                     mTax.setRightText(selectedStr);
-                    imageList[3] = getMerchantPhoto(data);
+                    imageMap.put(PICK_TAX_REQUEST, getMerchantPhoto(data));
                 } else {
                     mTax.setRightText(unselectedStr);
-                    imageList[3] = null;
+                    imageMap.put(PICK_TAX_REQUEST, null);//取消选择的照片
                 }
                 break;
-            case PICK_O_REQUEST:
+            case PICK_O_REQUEST://组织机构
                 if (resultCode == RESULT_OK) {
                     mOrganization.setRightText(selectedStr);
-                    imageList[4] = getMerchantPhoto(data);
+                    imageMap.put(PICK_O_REQUEST, getMerchantPhoto(data));
                 } else {
                     mOrganization.setRightText(unselectedStr);
-                    imageList[4] = null;
+                    imageMap.put(PICK_O_REQUEST, null);//取消选择的照片
                 }
                 break;
         }

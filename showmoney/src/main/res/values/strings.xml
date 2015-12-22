@@ -59,6 +59,7 @@
     <string name="limit_increase_shop_name">店铺名称</string>
     <string name="limit_increase_shop_address_hint">输入执照上的注册地址</string>
     <string name="limit_increase_shop_address">店铺地址</string>
+
     <string name="limit_increase_finish">完成</string>
     <string name="limit_increase">限额提升</string>
     <string name="limit_increase_directions">请确保上传的照片清晰完整且所有信息均真实有效</string>
@@ -105,10 +106,12 @@
     <string name="main_activity_menu_accountupdate">账户修改</string>
     <string name="main_activity_menu_webbill">网页账单</string>
     <string name="main_activity_menu_safeexit">安全退出</string>
+
     <string name="spinner_select_province">开户行所在省份</string>
     <string name="spinner_select_city">开户行所在城市</string>
     <string name="spinner_select_bank">请选择开户银行</string>
     <string name="spinner_select_bankbranch">请选择开户支行</string>
+
     <string name="alert_error_username_cannot_empty">用户名不能为空!</string>
     <string name="alert_error_password_cannot_empty">密码不能为空!</string>
     <string name="alert_error_email_cannot_empty">邮箱不能为空!</string>
@@ -144,6 +147,10 @@
     <string name="alert_error_new_password_cannot_empty">新密码不能为空!</string>
     <string name="alert_error_new_password_short_six">新密码不能少于6位!</string>
     <string name="alert_error_limit_error">"当日交易已超过限额,请申请提升限额!"</string>
+    <string name="alert_error__shop_name_cannot_empty">店铺名称不能为空</string>
+    <string name="alert_error__shop_address_cannot_empty">店铺地址不能为空</string>
+
+
     <string name="refd_dialog_refd_max">本次可退款额度：¥</string>
     <string name="refd_dialog_refd_success">退款成功!</string>
     <string name="refd_dialog_nextday_not_refd">隔日不能退款!</string>
