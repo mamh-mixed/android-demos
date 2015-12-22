@@ -53,11 +53,12 @@ func TestTransFindAndGroupBy(t *testing.T) {
 func TestFindTransQuery(t *testing.T) {
 
 	q := &model.QueryCondition{
-		StartTime: "2015-09-01 00:00:00",
-		EndTime:   "2015-09-30 23:59:59",
-		// MerId:       "100000000000203",
-		Page: 1,
-		Size: 10,
+		StartTime: "2015-12-01 00:00:00",
+		EndTime:   "2015-12-31 23:59:59",
+		MerId:     "999118880000018",
+		Skip:      0,
+		Page:      1,
+		Size:      100,
 		// TransStatus: []string{model.TransSuccess},
 	}
 
@@ -68,6 +69,7 @@ func TestFindTransQuery(t *testing.T) {
 	}
 
 	t.Logf("total : %d", total)
+	t.Logf("act total: %d", len(transInfo))
 	for _, v := range transInfo {
 		t.Logf("%s,%s", v.OrderNum, v.CreateTime)
 	}

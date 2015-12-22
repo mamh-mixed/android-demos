@@ -984,6 +984,11 @@ func CloseOrder() {
 	}
 }
 
+// 针对09的交易，系统跟踪查询
+func refresh(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) {
+
+}
+
 // RefreshOrder 刷新支付交易，针对下单需要输入密码的
 func RefreshOrder() {
 	log.Info("process refreshOrder ...")

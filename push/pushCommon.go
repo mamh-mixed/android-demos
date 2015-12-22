@@ -4,43 +4,24 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
+	"strings"
 	"time"
 )
 
 const (
-	ios         = "iOS"
-	android     = "Android"
+	IOS         = "ios"
+	ANDROID     = "android"
 	buffer_size = 1024
 )
 
-var PushChan = make(chan *model.PushMessageReq, buffer_size) //缓存大小，channel没有内容时，阻塞，直到有内容写入
-
-func PushMessage() {
-	for {
-		req := <-PushChan
-		if req == nil {
-			// log.Errorf("the element from PushChan is nil")
-			continue
-		}
-		userModel, err := mongo.AppUserCol.FindOne(req.UserName)
-		if err != nil {
-			log.Errorf("find app user error, err:%s", err)
-			continue
-		}
-
-		//查到该app用户的信息
-		if (userModel.Device_type != "") && (userModel.Device_token != "") {
-			req.Device_token = userModel.Device_token
-			if userModel.Device_type == ios {
-				ApnsPush.APush(req)
-			} else if userModel.Device_type == android {
-				UmengPush.UPush(req)
-			} else {
-				log.Errorf("the Device_type is diff, Device_type:%s", userModel.Device_type)
-			}
-		} else {
-			log.Errorf("the app Device_type or Device_token is nil")
-		}
+func Do(req *model.PushMessageReq) {
+	switch strings.ToLower(req.To) {
+	case IOS:
+		ApnsPush.APush(req)
+	case ANDROID:
+		UmengPush.UPush(req)
+	default:
+		log.Errorf("prepare to push,but unknown to=%s", req.To)
 	}
 }
 
@@ -55,6 +36,7 @@ func SavePushMessage(req *model.PushMessageReq) error {
 }
 
 func PushInfos(req *model.PushMessageRsp) (rsp *PushInfoRsp) {
+	rsp = new(PushInfoRsp)
 	rsp.Error = "true"
 	if req.UserName == "" || req.Password == "" {
 		rsp.Error = model.PARAMS_EMPTY.Error

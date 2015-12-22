@@ -168,6 +168,8 @@ type PushMessageReq struct {
 	Title        string
 	Message      string
 	Device_token string
+	From         string
+	To           string
 }
 
 //推送应答

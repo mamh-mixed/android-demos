@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/push"
+	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 	"net/http"
 	"net/url"
@@ -254,17 +255,24 @@ func updateSettInfoHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.updateSettInfo(&reqParams{
-		UserName:   r.FormValue("username"),
-		Password:   r.FormValue("password"),
-		BankOpen:   r.FormValue("bank_open"),
-		Payee:      r.FormValue("payee"),
-		PayeeCard:  r.FormValue("payee_card"),
-		PhoneNum:   r.FormValue("phone_num"),
-		Transtime:  r.FormValue("transtime"),
-		Province:   r.FormValue("province"),
-		City:       r.FormValue("city"),
-		BranchBank: r.FormValue("branch_bank"),
-		BankNo:     r.FormValue("bankNo"),
+		UserName:         r.FormValue("username"),
+		Password:         r.FormValue("password"),
+		BankOpen:         r.FormValue("bank_open"),
+		Payee:            r.FormValue("payee"),
+		PayeeCard:        r.FormValue("payee_card"),
+		PhoneNum:         r.FormValue("phone_num"),
+		Transtime:        r.FormValue("transtime"),
+		Province:         r.FormValue("province"),
+		City:             r.FormValue("city"),
+		BranchBank:       r.FormValue("branch_bank"),
+		BankNo:           r.FormValue("bankNo"),
+		CertName:         r.FormValue("certName"),
+		CertAddr:         r.FormValue("certAddr"),
+		LegalCertPos:     r.FormValue("legalCertPos"),
+		LegalCertOpp:     r.FormValue("legalCertOpp"),
+		BusinessLicense:  r.FormValue("businessLicense"),
+		TaxRegistCert:    r.FormValue("taxRegistCert"),
+		OrganizeCodeCert: r.FormValue("organizeCodeCert"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -329,6 +337,37 @@ func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonPushshal(rsp))
 }
 
+//重置密码
+func forgetPasswordHandle(w http.ResponseWriter, r *http.Request) {
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.forgetPassword(&reqParams{
+		UserName: r.FormValue("username"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+//获取七牛token
+func getQiniuTokenHandle(w http.ResponseWriter, r *http.Request) {
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.getQiniuToken(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+	})
+
+	result.UploadToken = qiniu.GetUploadtoken()
+
+	w.Write(jsonMarshal(result))
+}
+
 func checkSign(r *http.Request) bool {
 
 	sign := r.FormValue("sign")
@@ -388,39 +427,46 @@ func jsonPushshal(result *push.PushInfoRsp) []byte {
 }
 
 type reqParams struct {
-	OrderDetail    string
-	UserName       string
-	InvitationCode string
-	Password       string
-	Transtime      string
-	Sign           string
-	Code           string
-	BankOpen       string
-	Payee          string
-	PayeeCard      string
-	PhoneNum       string
-	Email          string
-	OldPassword    string
-	NewPassword    string
-	OrderNum       string
-	BusinessType   string
-	Status         string
-	Index          string
-	Date           string
-	Month          string
-	Size           int
-	Province       string
-	City           string
-	BranchBank     string
-	BankNo         string
-	Remark         string
-	SubAgentCode   string
-	MerName        string
-	Images         []string
-	UserFrom       int
-	BelongsTo      string
-	Limit          string
-	TicketNum      string
-	AppUser        *model.AppUser
-	m              *model.Merchant
+	OrderDetail      string
+	UserName         string
+	InvitationCode   string
+	Password         string
+	Transtime        string
+	Sign             string
+	Code             string
+	BankOpen         string
+	Payee            string
+	PayeeCard        string
+	PhoneNum         string
+	Email            string
+	OldPassword      string
+	NewPassword      string
+	OrderNum         string
+	BusinessType     string
+	Status           string
+	Index            string
+	Date             string
+	Size             int
+	Month            string
+	Province         string
+	City             string
+	BranchBank       string
+	BankNo           string
+	Remark           string
+	SubAgentCode     string
+	MerName          string
+	Images           []string
+	UserFrom         int
+	BelongsTo        string
+	Limit            string
+	TicketNum        string
+	CertName         string
+	CertAddr         string
+	LegalCertPos     string
+	LegalCertOpp     string
+	BusinessLicense  string
+	TaxRegistCert    string
+	OrganizeCodeCert string
+	AppUser          *model.AppUser
+	m                *model.Merchant
 }
