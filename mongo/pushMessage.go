@@ -3,6 +3,7 @@ package mongo
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"
+	"strconv"
 )
 
 type pushMessage struct {
@@ -30,10 +31,6 @@ func (col *pushMessage) FindByUser(t *model.PushMessageRsp) (results []*model.Pu
 	match["username"] = t.UserName
 	match["pushtime"] = bson.M{"$gte": t.LastTime}
 
-	cond := []bson.M{
-		{"$match": match},
-	}
-
 	if t.Index == "" {
 		t.Index = "0"
 	}
@@ -42,15 +39,17 @@ func (col *pushMessage) FindByUser(t *model.PushMessageRsp) (results []*model.Pu
 		t.Size = "10"
 	}
 
-	sort := bson.M{"$sort": bson.M{"pushtime": -1}}
+	index, err := strconv.Atoi(t.Index)
+	if err != nil {
+		index = 0
+	}
 
-	skip := bson.M{"$skip": t.Index}
+	size, err := strconv.Atoi(t.Size)
+	if err != nil {
+		size = 10
+	}
 
-	limit := bson.M{"$limit": t.Size}
-
-	cond = append(cond, sort, skip, limit)
-
-	err = database.C(col.name).Pipe(cond).All(&results)
+	err = database.C(col.name).Find(match).Sort("-pushtime").Skip(index).Limit(size).All(&results)
 
 	return results, err
 }

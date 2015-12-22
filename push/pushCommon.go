@@ -54,7 +54,7 @@ func SavePushMessage(req *model.PushMessageReq) error {
 }
 
 func PushInfos(req *model.PushMessageRsp) (rsp *PushInfoRsp) {
-	rsp.Error = "true"
+	rsp = new(PushInfoRsp)
 	if req.UserName == "" || req.Password == "" {
 		rsp.Error = model.PARAMS_EMPTY.Error
 		return rsp
@@ -79,7 +79,6 @@ func PushInfos(req *model.PushMessageRsp) (rsp *PushInfoRsp) {
 	}
 
 	infos, err := mongo.PushMessageColl.FindByUser(req)
-
 	if err != nil {
 		infos = make([]*model.PushInfo, 0)
 	}
