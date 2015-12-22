@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -77,8 +76,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     private boolean isPolling = false;
     private int pollingCount = 0;
-    private Intent intent;
-    private Bundle bun;
+
 
     /**
      * Called when the activity is first created.
@@ -92,8 +90,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
         //这里不需要传人支付类型了，服务器判断。
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-
-        mCurrentTime = mOrderNum = spf.format(now);
+        mOrderNum = spf.format(now);
+        SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        mCurrentTime = mspf.format(now);
         Random random = new Random();
         for (int i = 0; i < 5; i++) {
             mOrderNum = mOrderNum + random.nextInt(10);
@@ -161,7 +160,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
                             @Override
                             public void onResult(ResultData resultData) {
-                                Log.e(TAG, "====" + resultData);
 
                                 mResultData = resultData;
                                 if (mResultData.respcd.equals("00")) {
@@ -176,7 +174,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
                             @Override
                             public void onError(int errorCode) {
-                                Log.e(TAG, "=========" + errorCode + "--------------");
                                 mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
                             }
 
@@ -186,16 +183,15 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     }
 
                     case Msg.MSG_FROM_DIGLOG_CLOSE: {
-                        CaptureActivity.this.finish();
+                        finish();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
-                        isPolling = false;
-                        showPaySuccessDialog();
+                        enterPaySuccessActivity();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
-                        showPayFailDialog();
+                        enterPayFailActivity();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
@@ -211,9 +207,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     case Msg.MSG_FROM_SEARCHING_POLLING: {
                         String title = String.format(getString(R.string.txt_wait_user_input_password), pollingCount);
                         mHintDialog.setTitle(title);
-                        if (pollingCount > 5) { //显示交易结果
-                            isPolling = false;
-                        }
+
                         searchBill();
                         break;
                     }
@@ -244,11 +238,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     /**
      * 未付款的对话框
-     * <p>
+     * <p/>
      * 这两个完全一样的对话框可以复用一样的layout文件。
      * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
      * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
-     * <p>
+     * <p/>
      * 未付款对话框，上面文本，下面一个按钮的对话框
      */
     public void showNopayDialog() {
@@ -264,6 +258,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
             @Override
             public void onClick(View v) {
+                isPolling = false;//结束轮询
                 OrderData orderData = new OrderData();
                 orderData.origOrderNum = mOrderNum;
                 CashierSdk.startQy(orderData, new CashierListener() {
@@ -334,8 +329,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     try {
                         Thread.sleep(5000);
                         pollingCount++;
+                        if (pollingCount > 5) {
+                            isPolling = false;
+                        }
                         mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
-                        Log.e(TAG, "======MSG_FROM_SEARCHING_POLLING===================================");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -354,7 +351,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
             @Override
             public void onResult(ResultData resultData) {
-                Log.e(TAG, "======searchBill=====onResult=====" + resultData.respcd + "===");
                 if (resultData.respcd.equals("00")) {
                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
                 }
@@ -363,41 +359,55 @@ public class CaptureActivity extends BaseActivity implements Callback {
             @Override
             public void onError(int errorCode) {
             }
-
         });
     }
 
-    /**
-     * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
-     */
-    public void showPaySuccessDialog() {
 
-        intent = new Intent();
-        bun = new Bundle();
+    /**
+     * 跳转到交易成功的界面
+     */
+    public void enterPaySuccessActivity() {
+        isPolling = false;
+        mTradingLoadDialog.hide();
+
+        Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
+        Bundle bun = new Bundle();
         bun.putString("txamt", mResultData.txamt);
         bun.putString("orderNum", mResultData.orderNum);
         bun.putString("chcd", mResultData.chcd);
         bun.putString("mCurrentTime", mCurrentTime);
         bun.putBoolean("result", true);
+
         intent.putExtras(bun);
+
         intent.setClass(CaptureActivity.this, PayResultActivity.class);
+
         startActivity(intent);
+
+        finish();
     }
 
     /**
-     * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
+     * 跳转到交易失败的界面
      */
-    public void showPayFailDialog() {
-        intent = new Intent();
-        bun = new Bundle();
+    public void enterPayFailActivity() {
+        isPolling = false;
+        mTradingLoadDialog.hide();
+        Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
+        Bundle bun = new Bundle();
+
         bun.putString("txamt", mResultData.txamt);
         bun.putString("orderNum", mResultData.orderNum);
         bun.putString("chcd", mResultData.chcd);
+        bun.putString("errorDetail", mResultData.errorDetail);
         bun.putString("mCurrentTime", mCurrentTime);
         bun.putBoolean("result", false);
+
         intent.putExtras(bun);
-        intent.setClass(CaptureActivity.this, PayResultActivity.class);
+
         startActivity(intent);
+
+        finish();
     }
 
     /**
