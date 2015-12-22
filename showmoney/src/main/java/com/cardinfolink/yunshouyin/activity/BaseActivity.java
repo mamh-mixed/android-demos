@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.core.BankDataService;
+import com.cardinfolink.yunshouyin.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AlertDialog;
@@ -24,6 +25,7 @@ public class BaseActivity extends Activity {
     protected BankDataService bankDataService;
     protected ShowMoneyApp yunApplication;
 
+    protected QiniuMultiUploadService qiniuMultiUploadService;
 
     //重载 setContentView 初始化 mLoadingDialog,mAlertDialog
     @Override
@@ -42,6 +44,8 @@ public class BaseActivity extends Activity {
         yunApplication = (ShowMoneyApp) getApplication();
         quickPayService = yunApplication.getQuickPayService();
         bankDataService = yunApplication.getBankDataService();
+        qiniuMultiUploadService = yunApplication.getQiniuMultiUploadService();
+
     }
 
 

@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.core;
 
-import android.os.Looper;
 import android.util.Log;
 
 import com.cardinfolink.yunshouyin.api.QuickPayException;
@@ -49,7 +48,7 @@ public class QiniuMultiUploadService {
             @Override
             public void onSuccess(final String data) {
                 //进入后台线程
-                //upload(0, data);
+                upload(0, data);
             }
 
             @Override
@@ -65,12 +64,6 @@ public class QiniuMultiUploadService {
      * @param index
      */
     public void upload(final int index, final String uploadToken) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Log.d(TAG, "uploadImageToQiniu" + " is in main thread");
-        } else {
-            Log.d(TAG, "uploadImageToQiniu" + " is in background thread");
-        }
-
         if (index == imageList.size()) {
             // oncomplete在后台线程
             listener.onComplete();
@@ -88,36 +81,27 @@ public class QiniuMultiUploadService {
 
             merchantPhoto.setQiniuKey(qiniuKey);
 
-            uploadManager.put(filename, qiniuKey, uploadToken,
-                    new UpCompletionHandler() {
-                        /**
-                         * 此方法进入了主线程
-                         * @param key
-                         * @param info
-                         * @param response
-                         */
+            uploadManager.put(filename, qiniuKey, uploadToken, new UpCompletionHandler() {
+                /**
+                 * 此方法进入了主线程
+                 * @param key
+                 * @param info
+                 * @param response
+                 */
+                @Override
+                public void complete(String key, ResponseInfo info, JSONObject response) {
+                    if (!info.isOK()) {
+                        listener.onFailure(new QuickPayException());
+                    }
+
+                    new Thread(new Runnable() {
                         @Override
-                        public void complete(String key, ResponseInfo info, JSONObject response) {
-                            Log.i(TAG, key + ",\r\n " + info + ",\r\n " + response);
-                            if (!info.isOK()) {
-                                listener.onFailure(new QuickPayException());
-                            }
-                            if (Looper.myLooper() == Looper.getMainLooper()) {
-                                Log.d(TAG, "7ncomplete" + " is in main thread");
-                            } else {
-                                Log.d(TAG, "7ncomplete" + " is in background thread");
-                            }
-                            new Thread(new Runnable() {
-                                /**
-                                 * 再次进入后台线程
-                                 */
-                                @Override
-                                public void run() {
-                                    upload(index + 1, uploadToken);
-                                }
-                            }).start();
+                        public void run() {
+                            upload(index + 1, uploadToken);
                         }
-                    }, null);
+                    }).start();
+                }
+            }, null);
         } catch (Exception ex) {
             // onFailure 在后台线程
             listener.onFailure(ex);
