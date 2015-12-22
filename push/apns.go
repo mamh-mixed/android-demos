@@ -28,6 +28,7 @@ func (*apnsPush) APush(req *model.PushMessageReq) error {
 	payload := apns.NewPayload()
 	payload.Alert = dict
 	payload.Category = req.Message
+	payload.Sound = "push.mp3"
 
 	pn := apns.NewPushNotification()
 	pn.DeviceToken = req.DeviceToken
