@@ -70,8 +70,8 @@
       <paper-input-container disabled$="[[disabled]]">
         <label>[[label]]</label>
         <input is="iron-input" id="input" value="{{keyword::input}}" disabled="[[disabled]]" on-tap="handleInputTapEvent" on-focus="handleInputFocusEvent" on-blur="handleInputBlurEvent" on-keydown="handleInputKeyDownEvent" autocomplete="off">
-        <iron-icon icon="search" suffix hidden$="{{isClearActive}}"></iron-icon>
-        <iron-icon icon="clear" suffix on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
+        <iron-icon icon="search" suffix hidden$="{{hasKeyword}}"></iron-icon>
+        <iron-icon icon="clear" suffix on-tap="clear" hidden$="{{!hasKeyword}}"></iron-icon>
         <input type="hidden" name="[[name]]" value="{{selectedItem.code}}">
       </paper-input-container>
     </div>
@@ -138,7 +138,11 @@
             value: '',
             observer: '_keywordChanged'
           },
-          isClearActive: {
+          hasKeyword: {
+            type: String,
+            value: false
+          },
+          isSelected: {
             type: Boolean,
             value: false
           },
@@ -202,6 +206,11 @@
         _keywordChanged: function(newValue, oldValue) {
           var keyword = newValue.trim();
           oldValue = oldValue || '';
+          if (newValue && newValue !== '') {
+            this.hasKeyword = true;
+          } else {
+            this.hasKeyword = false;
+          }
           if (keyword === oldValue.trim() || !this.isFocus) {
             return;
           }
@@ -308,7 +317,7 @@
           });
           this.set('isFocus', false);
           this.set('keyword', code + '-' + name);
-          this.set('isClearActive', true);
+          // this.set('isSelected', true);
           this.$.dropdown.close();
           // input 触发失去焦点事件
           var evt = document.createEvent('MouseEvent');
@@ -317,7 +326,7 @@
         },
         // 清空文本框内容
         clear: function() {
-          this.set('isClearActive', false);
+          // this.set('isSelected', false);
           this.set('keyword', '');
           this.set('selectedItem', {});
         },
@@ -327,7 +336,6 @@
         },
         // input 的按键事件
         handleInputKeyDownEvent: function(e) {
-          e.stopPropagation();
           switch (e.keyCode) {
             case 13: // enter event
               this.select();
