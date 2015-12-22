@@ -20,6 +20,8 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/updateinfo", updateSettInfoHandle)
 	mux.HandleFunc("/app/getinfo", getSettInfoHandle)
 	mux.HandleFunc("/app/ticket", ticketHandle)
+	mux.HandleFunc("/app/forgetpassword", forgetPasswordHandle)
+	mux.HandleFunc("/app/getQiniuToken", getQiniuTokenHandle)
 
 	// 地推工具api
 	mux.HandleFunc("/app/tools/login", CompanyLogin)

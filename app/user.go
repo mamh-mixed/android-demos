@@ -973,6 +973,27 @@ func (u *user) updateSettInfo(req *reqParams) (result model.AppResult) {
 	if req.PhoneNum != "" {
 		m.Detail.ContactTel = req.PhoneNum
 	}
+	if req.CertName != "" {
+		m.Detail.CertName = req.CertName
+	}
+	if req.CertAddr != "" {
+		m.Detail.CertAddr = req.CertAddr
+	}
+	if req.LegalCertPos != "" {
+		m.Detail.LegalCertPos = req.LegalCertPos
+	}
+	if req.LegalCertOpp != "" {
+		m.Detail.LegalCertOpp = req.LegalCertOpp
+	}
+	if req.BusinessLicense != "" {
+		m.Detail.BusinessLicense = req.BusinessLicense
+	}
+	if req.TaxRegistCert != "" {
+		m.Detail.TaxRegistCert = req.TaxRegistCert
+	}
+	if req.OrganizeCodeCert != "" {
+		m.Detail.OrganizeCodeCert = req.OrganizeCodeCert
+	}
 	if len(req.Images) > 0 {
 		m.Detail.Images = req.Images
 	}
@@ -1030,6 +1051,96 @@ func (u *user) ticketHandle(req *reqParams) (result model.AppResult) {
 
 	return model.SUCCESS1
 
+}
+
+//重置密码,未完善，todo 诗景
+func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
+
+	log.Debugf("userName=%s", req.UserName)
+	// 参数不能为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	_, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		log.Errorf("find database err,%s", err)
+		if err.Error() == "not found" {
+			return model.USERNAME_EXIST
+		}
+		return model.SYSTEM_ERROR
+	}
+
+	// hostAddress := goconf.Config.App.NotifyURL
+
+	email := &email.Email{
+		To:    req.UserName,
+		Title: resetPassword.Title,
+		Body:  fmt.Sprintf(resetPassword.Body, "test", "test"),
+	}
+
+	e := &model.Email{
+		UserName:  req.UserName,
+		Success:   false,
+		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
+	}
+
+	// 保存email信息
+	err = mongo.EmailCol.Upsert(e)
+	if err != nil {
+		log.Errorf("save email err: %s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 异步发送邮件
+	go func() {
+		err := email.Send()
+		if err != nil {
+			log.Errorf("send email fail: %s", err)
+			return
+		}
+
+		// update
+		e.Success = true
+		mongo.EmailCol.Upsert(e)
+	}()
+
+	return model.SUCCESS1
+}
+
+//获取七牛token
+func (u *user) getQiniuToken(req *reqParams) (result model.AppResult) {
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
+
+	// 用户名不为空
+	if req.UserName == "" || req.Password == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	return model.SUCCESS1
 }
 
 func transToTxn(t *model.Trans) *model.AppTxn {
