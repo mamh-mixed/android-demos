@@ -18,9 +18,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
  * Created by charles on 2015/12/20.
  */
 public class PayResultActivity extends Activity {
-
     private SettingActionBarItem mActionBar;
-
 
     private TextView mPayResult;
     private ImageView mPayResultPhoto;
@@ -54,15 +52,15 @@ public class PayResultActivity extends Activity {
         String chcd = "";
         Boolean result = false;
         String currentTime = "";
-
+        String resultExplain = "";
         if (bundle != null) {
             txamt = bundle.getString("txamt");
             orderNum = bundle.getString("orderNum");
             chcd = bundle.getString("chcd");
             currentTime = bundle.getString("mCurrentTime");
             result = bundle.getBoolean("result");
+            resultExplain = bundle.getString("errorDetail");
         }
-        Log.e("xxxxxxxxxxxxxxxx", "=========" + txamt + "================");
 
         mPayResult = (TextView) findViewById(R.id.tv_pay_result);
         mPayResultPhoto = (ImageView) findViewById(R.id.iv_pay_result);
@@ -79,7 +77,7 @@ public class PayResultActivity extends Activity {
             mPayResult.setText(R.string.pay_result_success);
             mPayResult.setTextColor(Color.BLUE);
             mPayResultPhoto.setImageResource(R.drawable.right);
-            mResultExplain.setVisibility(View.GONE);
+            mResultExplain.setText("");
             mReceiveMoneyStatus.setTextColor(Color.BLUE);
             mReceiveMoney.setTextColor(Color.BLUE);
             mReceiveMoneyStatus.setText(R.string.pay_total_state_success);
@@ -87,7 +85,7 @@ public class PayResultActivity extends Activity {
             mPayResult.setText(R.string.pay_result_fail);
             mPayResult.setTextColor(Color.RED);
             mPayResultPhoto.setImageResource(R.drawable.wrong);
-            mResultExplain.setVisibility(View.VISIBLE);
+            mResultExplain.setText(resultExplain);
             mReceiveMoneyStatus.setTextColor(Color.RED);
             mReceiveMoney.setTextColor(Color.RED);
             mReceiveMoneyStatus.setText(R.string.pay_total_state_fail);
