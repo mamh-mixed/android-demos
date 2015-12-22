@@ -24,9 +24,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class QuickPayApiImpl implements QuickPayApi {
+    private static final String TAG = "QuickPayApiImpl";
+
     private static final String QUICK_PAY_SUCCESS = "success";
 
-    private static final String TAG = "QuickPayApiImpl";
     protected QuickPayConfigStorage quickPayConfigStorage;
     protected PostEngine postEngine;
 
@@ -80,9 +81,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             }
         }
         toSign.append(quickPayConfigStorage.getAppKey());
-//        Log.d(TAG, "Raw string: " + toSign.toString());
         String sign = EncoderUtil.Encrypt(toSign.toString(), signType);
-//        Log.d(TAG, "Signed string: " + sign);
         return sign;
     }
 
@@ -529,6 +528,27 @@ public class QuickPayApiImpl implements QuickPayApi {
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
+    @Override
+    public String getUploadToken(User user) {
+        //送username，password
+        String url = quickPayConfigStorage.getUrl() + "/getQiniuToken";
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        params.put("password", password);
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket.getUploadToken();
             } else {
                 throw new QuickPayException(serverPacket.getError());
             }
