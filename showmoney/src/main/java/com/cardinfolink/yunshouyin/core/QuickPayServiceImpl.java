@@ -323,12 +323,12 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void forgetPasswordAsync(final String user, final QuickPayCallbackListener<ServerPacket> listener) {
+    public void forgetPasswordAsync(final String username, final QuickPayCallbackListener<ServerPacket> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
 
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
-                ServerPacket serverPacket = quickPayApi.forgetPassword(user);//忘记密码
+                ServerPacket serverPacket = quickPayApi.forgetPassword(username);//忘记密码
                 return new AsyncTaskResult<ServerPacket>(serverPacket, null);
             }
 
@@ -341,5 +341,28 @@ public class QuickPayServiceImpl implements QuickPayService {
                 }
             }
         }.execute();
+    }
+
+    @Override
+    public void getUploadTokenAsync(final User user, final QuickPayCallbackListener<String> listener) {
+
+        new AsyncTask<Void, Integer, AsyncTaskResult<String>>() {
+
+            @Override
+            protected AsyncTaskResult<String> doInBackground(Void... params) {
+                String token = quickPayApi.getUploadToken(user);//获取token
+                return new AsyncTaskResult<String>(token);
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<String> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+
     }
 }

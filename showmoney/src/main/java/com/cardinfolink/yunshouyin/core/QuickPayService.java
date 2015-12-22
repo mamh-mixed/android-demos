@@ -32,4 +32,7 @@ public interface QuickPayService {
     void getRefdAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacket> listener);
 
     void forgetPasswordAsync(String user, QuickPayCallbackListener<ServerPacket> listener);
+
+    //获取七牛上传图片时用的token
+    void getUploadTokenAsync(User user, QuickPayCallbackListener<String> listener);
 }

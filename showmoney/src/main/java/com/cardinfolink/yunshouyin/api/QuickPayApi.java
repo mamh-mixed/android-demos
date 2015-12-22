@@ -39,4 +39,8 @@ public interface QuickPayApi {
     ServerPacketOrder getOrder(User user, String orderNum);
 
     ServerPacket getRefd(User user, String orderNum);
+
+    //获取七牛的token的方法
+    String getUploadToken(User user);
+
 }
