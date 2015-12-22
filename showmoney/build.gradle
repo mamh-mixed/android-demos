@@ -94,6 +94,8 @@ dependencies {
     compile files('libs/com.umeng.message.lib_v2.5.0.jar')
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.code.gson:gson:2.4'
+    compile 'com.qiniu:qiniu-android-sdk:7.0.+'
+
 }
 
 def releaseTime() {
