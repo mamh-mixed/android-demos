@@ -17,6 +17,8 @@ public class ServerPacket {
     private BankInfo info;
     private Txn[] txn;
 
+    private String uploadToken;
+
     public static ServerPacket getServerPacketFrom(String json) {
         try {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
@@ -105,5 +107,14 @@ public class ServerPacket {
 
     public void setTxn(Txn[] txn) {
         this.txn = txn;
+    }
+
+
+    public String getUploadToken() {
+        return uploadToken;
+    }
+
+    public void setUploadToken(String uploadToken) {
+        this.uploadToken = uploadToken;
     }
 }
