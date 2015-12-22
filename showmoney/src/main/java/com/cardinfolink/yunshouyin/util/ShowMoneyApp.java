@@ -18,6 +18,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.BankDataService;
 import com.cardinfolink.yunshouyin.core.BankDataServiceImpl;
+import com.cardinfolink.yunshouyin.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.core.QuickPayServiceImpl;
 import com.umeng.message.PushAgent;
@@ -35,6 +36,7 @@ public class ShowMoneyApp extends Application {
     private QuickPayConfigStorage quickPayConfigStorage;
     private QuickPayService quickPayService;
     private BankDataService bankDataService;
+    private QiniuMultiUploadService qiniuMultiUploadService;
 
     private PushAgent mPushAgent;
 
@@ -54,6 +56,10 @@ public class ShowMoneyApp extends Application {
 
     public BankDataService getBankDataService() {
         return bankDataService;
+    }
+
+    public QiniuMultiUploadService getQiniuMultiUploadService() {
+        return qiniuMultiUploadService;
     }
 
     @Override
@@ -101,6 +107,7 @@ public class ShowMoneyApp extends Application {
 
         quickPayService = new QuickPayServiceImpl(quickPayConfigStorage);
         bankDataService = new BankDataServiceImpl(quickPayConfigStorage);
+        qiniuMultiUploadService = new QiniuMultiUploadService(quickPayService);
 
 
     }
