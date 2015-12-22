@@ -23,10 +23,11 @@ type apnsPush struct{}
 func (*apnsPush) APush(req *model.PushMessageReq) error {
 	dict := apns.NewAlertDictionary()
 	dict.Title = req.Title
-	dict.Body = req.Message
+	// dict.Body = req.Message
 
 	payload := apns.NewPayload()
 	payload.Alert = dict
+	payload.Category = req.Message
 
 	pn := apns.NewPushNotification()
 	pn.DeviceToken = req.Device_token

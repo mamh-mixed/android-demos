@@ -8,17 +8,11 @@ import (
 	"time"
 )
 
-const (
-	IOS         = "ios"
-	ANDROID     = "android"
-	buffer_size = 1024
-)
-
 func Do(req *model.PushMessageReq) {
 	switch strings.ToLower(req.To) {
-	case IOS:
+	case model.IOS:
 		ApnsPush.APush(req)
-	case ANDROID:
+	case model.Android:
 		UmengPush.UPush(req)
 	default:
 		log.Errorf("prepare to push,but unknown to=%s", req.To)

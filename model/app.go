@@ -168,7 +168,7 @@ type PushMessageReq struct {
 	Title        string
 	Message      string
 	Device_token string
-	From         string
+	MsgType      string
 	To           string
 }
 
