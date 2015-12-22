@@ -238,8 +238,8 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 	var userInfo model.AppUser
 	userInfo.LoginTime = ""
 	userInfo.LockTime = ""
-	userInfo.Device_type = req.AppUser.Device_type
-	userInfo.Device_token = req.AppUser.Device_token
+	userInfo.DeviceType = req.AppUser.DeviceType
+	userInfo.DeviceToken = req.AppUser.DeviceToken
 	mongo.AppUserCol.UpdateAppUser(&userInfo, mongo.UPDATE_DEVICE_LOCK_INFO)
 
 	// 用户是否激活

@@ -30,7 +30,7 @@ func (*apnsPush) APush(req *model.PushMessageReq) error {
 	payload.Category = req.Message
 
 	pn := apns.NewPushNotification()
-	pn.DeviceToken = req.Device_token
+	pn.DeviceToken = req.DeviceToken
 	pn.AddPayload(payload)
 
 	client := apns.NewClient(gateWay, fmt.Sprintf(pemDir, util.WorkDir, certPem), fmt.Sprintf(pemDir, util.WorkDir, keyFile))

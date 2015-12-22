@@ -50,9 +50,9 @@ func pushMsg() {
 
 				// 逐个推
 				for _, user := range appUsers {
-					req.Device_token = user.Device_token
-					req.To = user.Device_type
-					if req.Device_token != "" {
+					req.DeviceToken = user.DeviceToken
+					req.To = user.DeviceType
+					if req.DeviceToken != "" {
 						push.Do(req)
 					}
 				}
@@ -65,9 +65,9 @@ func pushMsg() {
 					return
 				}
 				// 组装报文推送
-				req.Device_token = appUser.Device_token
-				req.To = appUser.Device_type
-				if req.Device_token != "" {
+				req.DeviceToken = appUser.DeviceToken
+				req.To = appUser.DeviceType
+				if req.DeviceToken != "" {
 					push.Do(req)
 				}
 			case MsgType_C:

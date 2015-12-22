@@ -23,6 +23,7 @@ func SavePushMessage(req *model.PushMessageReq) error {
 	rsp := new(model.PushMessageRsp)
 	rsp.UserName = req.UserName
 	rsp.Title = req.Title
+	rsp.DeviceToken = req.DeviceToken
 	rsp.Message = req.Message
 	rsp.PushTime = time.Now().Format("2006-01-02 15:04:05")
 

@@ -40,7 +40,7 @@ func (*umeng) UPush(req *model.PushMessageReq) error {
 	params := UmengMessage{
 		Appkey:        appkey,
 		Timestamp:     time.Now().Unix(),
-		Device_tokens: req.Device_token,
+		Device_tokens: req.DeviceToken,
 		Type:          message_type,
 		Payload: UmengPayload{
 			Body:         umengBody,

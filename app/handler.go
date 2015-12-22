@@ -48,8 +48,8 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	req.Password = r.FormValue("password")
 	req.Transtime = r.FormValue("transtime")
 	user := new(model.AppUser)
-	user.Device_type = r.FormValue("device_type")
-	user.Device_token = r.FormValue("device_token")
+	user.DeviceType = r.FormValue("device_type")
+	user.DeviceToken = r.FormValue("device_token")
 	req.AppUser = user
 
 	result := User.login(req)

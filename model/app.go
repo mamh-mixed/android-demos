@@ -135,10 +135,10 @@ type AppUser struct {
 	MerName        string `json:"merName,omitempty" bson:"merName,omitempty"`
 	BelongsTo      string `json:"-" bson:"belongsTo,omitempty"` // 属于哪个公司人员发展的
 	InvitationCode string `json:"-" bson:"invitationCode,omitempty"`
-	LoginTime      string `json:"loginTime,omitempty" bson:"loginTime,omitempty"`       //记录第一次登陆时间
-	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`         //记录锁定时间
-	Device_type    string `json:"device_type,omitempty" bson:"device_type,omitempty"`   //设备类型
-	Device_token   string `json:"device_token,omitempty" bson:"device_token,omitempty"` //app唯一标识
+	LoginTime      string `json:"loginTime,omitempty" bson:"loginTime,omitempty"`     //记录第一次登陆时间
+	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`       //记录锁定时间
+	DeviceType     string `json:"deviceType,omitempty" bson:"deviceType,omitempty"`   //设备类型
+	DeviceToken    string `json:"deviceToken,omitempty" bson:"deviceToken,omitempty"` //app唯一标识
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
@@ -163,23 +163,24 @@ type Email struct {
 
 //推送请求
 type PushMessageReq struct {
-	MerID        string
-	UserName     string //app的终端号为用户名
-	Title        string
-	Message      string
-	Device_token string
-	MsgType      string
-	To           string
+	MerID       string
+	UserName    string //app的终端号为用户名
+	Title       string
+	Message     string
+	DeviceToken string
+	MsgType     string
+	To          string
 }
 
 //推送应答
 type PushMessageRsp struct {
-	UserName string `json:"username,omitempty" bson:"username,omitempty"`
-	Password string `json:"password,omitempty" bson:"password,omitempty"`
-	Title    string `json:"title,omitempty" bson:"title,omitempty"`
-	Message  string `json:"message,omitempty" bson:"message,omitempty"`
-	PushTime string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
-	LastTime string `json:"lastTime,omitempty" bson:"lastTime,omitempty"`
+	UserName    string `json:"username,omitempty" bson:"username,omitempty"`
+	DeviceToken string `json:"-" bson:"deviceToken,omitempty"`
+	Password    string `json:"password,omitempty" bson:"password,omitempty"`
+	Title       string `json:"title,omitempty" bson:"title,omitempty"`
+	Message     string `json:"message,omitempty" bson:"message,omitempty"`
+	PushTime    string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
+	LastTime    string `json:"-" bson:"-"`
 }
 
 //推送表结构

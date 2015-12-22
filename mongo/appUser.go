@@ -143,16 +143,16 @@ func (col *appUserCollection) UpdateAppUser(user *model.AppUser, oprType int) er
 	case UPDATE_DEVICE_INFO:
 		update = bson.M{
 			"$set": bson.M{
-				"device_type":  user.Device_type,
-				"device_token": user.Device_token},
+				"deviceType":  user.DeviceType,
+				"deviceToken": user.DeviceToken},
 		}
 	case UPDATE_DEVICE_LOCK_INFO:
 		update = bson.M{
 			"$set": bson.M{
-				"loginTime":    user.LockTime,
-				"lockTime":     user.LockTime,
-				"device_type":  user.Device_type,
-				"device_token": user.Device_token},
+				"loginTime":   user.LockTime,
+				"lockTime":    user.LockTime,
+				"deviceType":  user.DeviceType,
+				"deviceToken": user.DeviceToken},
 		}
 	}
 

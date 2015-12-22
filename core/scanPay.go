@@ -20,7 +20,7 @@ import (
 	"github.com/omigo/log"
 )
 
-var MsgQueue = make(chan *model.Trans, 1e4)
+var MsgQueue = make(chan *model.Trans, 1e6)
 
 var (
 	closeInterval   = time.Duration(goconf.Config.App.OrderCloseTime)
@@ -1016,7 +1016,9 @@ func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
 			continue
 		case adaptor.SuccessCode:
 			// 进入消息推送队列
-			MsgQueue <- t
+			if t.TradeFrom == model.IOS || t.TradeFrom == model.Android {
+				MsgQueue <- t
+			}
 			fallthrough
 		default:
 			// 更新交易状态
