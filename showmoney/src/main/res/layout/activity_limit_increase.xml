@@ -105,4 +105,5 @@
 
     <include layout="@layout/showmoney_dialog" />
 
+    <include layout="@layout/select_picture_dialog" />
 </RelativeLayout>
