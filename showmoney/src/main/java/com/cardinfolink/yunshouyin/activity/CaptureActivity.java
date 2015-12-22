@@ -207,7 +207,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     case Msg.MSG_FROM_SEARCHING_POLLING: {
                         String title = String.format(getString(R.string.txt_wait_user_input_password), pollingCount);
                         mHintDialog.setTitle(title);
-
                         searchBill();
                         break;
                     }
@@ -269,28 +268,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             @Override
             public void onClick(View v) {
                 isPolling = false;//结束轮询
-                mHintDialog.hide();
-                OrderData orderData = new OrderData();
-                orderData.origOrderNum = mOrderNum;
-                CashierSdk.startCanc(orderData, new CashierListener() {
-
-                    @Override
-                    public void onResult(ResultData resultData) {
-                        if (resultData.respcd.equals("00")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS);
-                        } else if (resultData.respcd.equals("09")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_DOING);
-                        } else {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL);
-                        }
-                    }
-
-                    @Override
-                    public void onError(int errorCode) {
-                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
-                    }
-
-                });
+                cancelBill();
             }
         });
 
@@ -310,13 +288,43 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         if (pollingCount > 5) {
                             isPolling = false;
                         }
-                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
+                        if (isPolling) {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }).start();
+    }
+
+
+    /**
+     * 取消订单
+     */
+    private void cancelBill() {
+        OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        CashierSdk.startCanc(orderData, new CashierListener() {
+
+            @Override
+            public void onResult(ResultData resultData) {
+                if (resultData.respcd.equals("00")) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS);
+                } else if (resultData.respcd.equals("09")) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_DOING);
+                } else {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL);
+                }
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+            }
+
+        });
     }
 
     /**
@@ -332,9 +340,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 mResultData = resultData;
                 if (resultData.respcd.equals("00")) {
                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                } else if(resultData.respcd.equals("09")){
+                } else if (resultData.respcd.equals("09")) {
                     //09 状态
-                }else{
+                } else {
                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
                 }
             }
@@ -429,10 +437,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void showCancelBillSuccess() {
         //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
         mTradingLoadDialog.hide();
-
         mHintDialog.setText("该订单已取消，若顾客已支付成功，会自动退款。", "确认", " 确认");
 
-        mHintDialog.show();
     }
 
     @Override
