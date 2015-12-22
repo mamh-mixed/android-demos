@@ -285,8 +285,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     try {
                         Thread.sleep(5000);
                         pollingCount++;
-                        if (pollingCount > 5) {
+                        if (pollingCount >=9) {
                             isPolling = false;
+                            cancelBill();
                         }
                         if (isPolling) {
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
