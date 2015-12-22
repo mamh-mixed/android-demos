@@ -259,29 +259,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             @Override
             public void onClick(View v) {
                 isPolling = false;//结束轮询
-                OrderData orderData = new OrderData();
-                orderData.origOrderNum = mOrderNum;
-                CashierSdk.startQy(orderData, new CashierListener() {
-
-                    @Override
-                    public void onResult(ResultData resultData) {
-
-                        mResultData = resultData;
-                        if (mResultData.respcd.equals("00")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                        } else if (resultData.respcd.equals("09")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
-                        } else {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
-                        }
-                    }
-
-                    @Override
-                    public void onError(int errorCode) {
-                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
-                    }
-
-                });
+                searchBill();
             }
         });
         //右边的对话框
@@ -351,13 +329,19 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
             @Override
             public void onResult(ResultData resultData) {
+                mResultData = resultData;
                 if (resultData.respcd.equals("00")) {
                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                } else if(resultData.respcd.equals("09")){
+                    //09 状态
+                }else{
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
                 }
             }
 
             @Override
             public void onError(int errorCode) {
+
             }
         });
     }
