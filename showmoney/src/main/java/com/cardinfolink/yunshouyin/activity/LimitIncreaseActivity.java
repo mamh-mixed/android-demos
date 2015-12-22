@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
@@ -123,7 +124,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onClick(View v) {
                         //取得相片后返回本画面
-                        String title = getResources().getString(R.string.limit_increase_card_positive);
+                        String title = mCardPositive.getTitle();
                         startActivityForResult(Intent.createChooser(intent, title), PICK_ID_P_REQUEST);
                         selectPic.hide();
                     }
@@ -136,7 +137,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onClick(View v) {
                         //取得相片后返回本画面
-                        String title = getResources().getString(R.string.limit_increase_card_negaitive);
+                        String title = mCardNegative.getTitle();
                         startActivityForResult(Intent.createChooser(intent, title), PICK_ID_N_REQUEST);
                         selectPic.hide();
                     }
@@ -149,7 +150,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onClick(View v) {
                         //取得相片后返回本画面
-                        String title = getResources().getString(R.string.limit_increase_business_licence);
+                        String title = mBusiness.getTitle();
                         startActivityForResult(Intent.createChooser(intent, title), PICK_B_REQUEST);
                         selectPic.hide();
                     }
@@ -162,7 +163,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onClick(View v) {
                         //取得相片后返回本画面
-                        String title = getResources().getString(R.string.limit_increase_tax);
+                        String title = mTax.getTitle();
                         startActivityForResult(Intent.createChooser(intent, title), PICK_TAX_REQUEST);
                         selectPic.hide();
                     }
@@ -175,7 +176,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onClick(View v) {
                         //取得相片后返回本画面
-                        String title = getResources().getString(R.string.limit_increase_organization);
+                        String title = mOrganization.getTitle();
                         startActivityForResult(Intent.createChooser(intent, title), PICK_O_REQUEST);
                         selectPic.hide();
                     }
@@ -183,15 +184,52 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 selectPic.show();
                 break;
             case R.id.btnfinish:
+                uploadPhoto();
                 break;
         }
+
+    }
+
+    private void uploadPhoto() {
+        //先检验 是否都选择好照片了
+        String unselected = getResources().getString(R.string.limit_increase_unselected);
+        String toastMsg = "";
+        if (imageList[0] == null) {
+            toastMsg = mCardPositive.getTitle() + unselected;
+            Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (imageList[1] == null) {
+            toastMsg = mCardNegative.getTitle() + unselected;
+            Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (imageList[2] == null) {
+            toastMsg = mBusiness.getTitle() + unselected;
+            Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (mType == COMPANY) {
+            //企业商户
+            if (imageList[3] == null) {
+                toastMsg = mTax.getTitle() + unselected;
+                Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (imageList[4] == null) {
+                toastMsg = mOrganization.getTitle() + unselected;
+                Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
 
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e(TAG, "===========================onActivityResult+++++++++++++++++++++++++++" + resultCode);
         String selectedStr = getString(R.string.limit_increase_selected);//已选择
         String unselectedStr = getString(R.string.limit_increase_update_licence);//上传证件,相当于提示 用户 未选择图片
         switch (requestCode) {
