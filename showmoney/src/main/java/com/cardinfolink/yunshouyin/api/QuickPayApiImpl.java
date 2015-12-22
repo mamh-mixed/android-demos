@@ -538,12 +538,24 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     @Override
     public String getUploadToken(User user) {
+        /**
+         * {
+         "state": "success",
+         "count": 0,
+         "totalRecord": 0,
+         "size": 0,
+         "refdcount": 0,
+         "uploadToken": "-OOrgfZJbxz29kiW6HQsJ_OQJcjX6gaPRDf6xOcc:8qhOkFfrq8whZ9QeekRCAh0gIPI=:eyJzY29wZSI6InRlc3QiLCJkZWFkbGluZSI6MTQ1MDc4NDExOSwiZW5kVXNlciI6InVzZXJJZCJ9"
+         }
+         */
         //送username，password
         String url = quickPayConfigStorage.getUrl() + "/getQiniuToken";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
         params.put("password", password);
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params, "SHA-1"));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
