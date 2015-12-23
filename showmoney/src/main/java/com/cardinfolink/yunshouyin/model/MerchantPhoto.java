@@ -7,10 +7,23 @@ import android.net.Uri;
  * 商户上传的照片
  */
 public class MerchantPhoto {
+
     private Uri imageUri;
     private String qiniuKey;
     private String fileType;
     private String filename;
+
+
+    /**
+     * merName(店铺名称),
+     * merAddr（店铺地址）,
+     * legalCertPos（法人证书正面）,
+     * legalCertOpp（法人证书反面）,
+     * businessLicense（营业执照）,
+     * taxRegistCert（税务登记证）,
+     * organizeCodeCert（组织机构代码证）
+     */
+    private String imageName;//标记区别 图片的名字
 
     public MerchantPhoto(Uri imageUri, String filename) {
         this.imageUri = imageUri;
@@ -47,6 +60,14 @@ public class MerchantPhoto {
 
     public void setFileType(String fileType) {
         this.fileType = fileType;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 }
 
