@@ -182,8 +182,13 @@ func DoSpTransSett(date string, immediately bool) (err error) {
 	}
 
 	// 报表引用数据流整理
-	go SpSettReport(date)
 	go SpReconciliatReport(date, transSetts...)
+
+	// 一小时后出划款报表
+	// 主要是解决数据库主从节点数据延迟问题
+	time.AfterFunc(1*time.Hour, func() {
+		SpSettReport(date)
+	})
 
 	// 进行勾兑
 	DoSettle(date, immediately)

@@ -56,6 +56,13 @@ func (col *appUserCollection) BatchAdd(users []model.AppUser) (err error) {
 	return database.C(col.name).Insert(temp...)
 }
 
+// FindByMerId 根据关联的merId查找
+func (col *appUserCollection) FindByMerId(merId string) ([]*model.AppUser, error) {
+	var appUsers []*model.AppUser
+	err := database.C(col.name).Find(bson.M{"merId": merId}).All(&appUsers)
+	return appUsers, err
+}
+
 func (col *appUserCollection) FindOne(userName string) (user *model.AppUser, err error) {
 	bo := bson.M{
 		"username": userName,
@@ -136,16 +143,16 @@ func (col *appUserCollection) UpdateAppUser(user *model.AppUser, oprType int) er
 	case UPDATE_DEVICE_INFO:
 		update = bson.M{
 			"$set": bson.M{
-				"device_type":  user.Device_type,
-				"device_token": user.Device_token},
+				"deviceType":  user.DeviceType,
+				"deviceToken": user.DeviceToken},
 		}
 	case UPDATE_DEVICE_LOCK_INFO:
 		update = bson.M{
 			"$set": bson.M{
-				"loginTime":    user.LockTime,
-				"lockTime":     user.LockTime,
-				"device_type":  user.Device_type,
-				"device_token": user.Device_token},
+				"loginTime":   user.LockTime,
+				"lockTime":    user.LockTime,
+				"deviceType":  user.DeviceType,
+				"deviceToken": user.DeviceToken},
 		}
 	}
 

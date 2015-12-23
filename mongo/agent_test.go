@@ -86,3 +86,12 @@ func TestAgentRemove(t *testing.T) {
 	}
 	log.Debugf("remove agent success %s", agentCode)
 }
+
+func TestAppUserUpdate(t *testing.T) {
+	user, _ := AppUserCol.FindOne("453481716@qq.com")
+	user.DeviceToken = "test"
+	err := AppUserCol.UpdateAppUser(user, UPDATE_DEVICE_LOCK_INFO)
+	if err != nil {
+		t.Log(err)
+	}
+}

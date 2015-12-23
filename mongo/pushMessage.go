@@ -26,8 +26,9 @@ func (col *pushMessage) Insert(t *model.PushMessageRsp) error {
 func (col *pushMessage) FindByUser(t *model.PushMessageRsp) (results []*model.PushInfo, err error) {
 	results = make([]*model.PushInfo, 0)
 
-	con := bson.M{
-		"pushtime": bson.M{"$gt": t.LastTime},
+	con := bson.M{}
+	if t.LastTime != "" {
+		con["pushtime"] = bson.M{"$gt": t.LastTime}
 	}
 
 	con["username"] = t.UserName

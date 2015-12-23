@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 )
 
 var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"
@@ -47,8 +48,8 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	req.Password = r.FormValue("password")
 	req.Transtime = r.FormValue("transtime")
 	user := new(model.AppUser)
-	user.Device_type = r.FormValue("device_type")
-	user.Device_token = r.FormValue("device_token")
+	user.DeviceType = r.FormValue("device_type")
+	user.DeviceToken = r.FormValue("device_token")
 	req.AppUser = user
 
 	result := User.login(req)
@@ -150,6 +151,11 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	size, err := strconv.Atoi(r.FormValue("size"))
+	if err != nil {
+		size = 15
+	}
+
 	result := User.getUserBill(&reqParams{
 		UserName:    r.FormValue("username"),
 		Password:    r.FormValue("password"),
@@ -159,6 +165,7 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		Transtime:   r.FormValue("transtime"),
 		Index:       r.FormValue("index"),
 		OrderDetail: r.FormValue("order_detail"),
+		Size:        size,
 	})
 
 	w.Write(jsonMarshal(result))
@@ -454,6 +461,7 @@ type reqParams struct {
 	Status           string
 	Index            string
 	Date             string
+	Size             int
 	Month            string
 	Province         string
 	City             string

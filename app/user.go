@@ -238,8 +238,8 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 	var userInfo model.AppUser
 	userInfo.LoginTime = ""
 	userInfo.LockTime = ""
-	userInfo.Device_type = req.AppUser.Device_type
-	userInfo.Device_token = req.AppUser.Device_token
+	userInfo.DeviceType = req.AppUser.DeviceType
+	userInfo.DeviceToken = req.AppUser.DeviceToken
 	userInfo.UserName = req.UserName
 	mongo.AppUserCol.UpdateAppUser(&userInfo, mongo.UPDATE_DEVICE_LOCK_INFO)
 
@@ -637,7 +637,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		MerId:     user.MerId,
 		StartTime: dsDate,
 		EndTime:   deDate,
-		Size:      15,
+		Size:      req.Size,
 		Page:      1,
 		Skip:      index,
 	}
@@ -655,7 +655,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		q.RespcdNotIn = "00"
 	}
 
-	trans, _, err := mongo.SpTransColl.Find(q)
+	trans, total, err := mongo.SpTransColl.Find(q)
 	if err != nil {
 		log.Errorf("find user trans error: %s", err)
 		return model.SYSTEM_ERROR
@@ -699,6 +699,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	result.Size = len(trans)
 	result.RefdCount = refundCount
 	result.Count = transCount
+	result.TotalRecord = total
 
 	// TODO:先用该字段做判断是日币还是元
 	if req.OrderDetail == "pay" {
