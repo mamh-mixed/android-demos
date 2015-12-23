@@ -632,12 +632,12 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		deDate = seDate
 	}
 
-	index, _ := strconv.Atoi(req.Index)
+	index, size := pagingParams(req)
 	q := &model.QueryCondition{
 		MerId:     user.MerId,
 		StartTime: dsDate,
 		EndTime:   deDate,
-		Size:      req.Size,
+		Size:      size,
 		Page:      1,
 		Skip:      index,
 	}
@@ -1034,6 +1034,52 @@ func (u *user) ticketHandle(req *reqParams) (result model.AppResult) {
 
 }
 
+// findOrderHandle 条件组合查找
+func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
+
+	// 参数不能为空
+	if req.UserName == "" {
+		return model.PARAMS_EMPTY
+	}
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	index, size := pagingParams(req)
+	q := &model.QueryCondition{
+		OrderNum: req.OrderNum,
+		ChanCode: req.ChanCode,
+		Skip:     index,
+		Size:     size,
+		Page:     1,
+	}
+
+	// TODO
+	switch req.Status {
+	case "10":
+	}
+
+	trans, _, err := mongo.SpTransColl.Find(q)
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	var txns = make([]*model.AppTxn, len(trans))
+	for _, t := range trans {
+		txns = append(txns, transToTxn(t))
+	}
+
+	result = model.SUCCESS1
+	result.Txn = txns
+	return
+}
+
 //重置密码,未完善，todo 诗景
 func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 字段长度验证
@@ -1050,11 +1096,7 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 根据用户名查找用户
 	_, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
-		log.Errorf("find database err,%s", err)
-		if err.Error() == "not found" {
-			return model.USERNAME_EXIST
-		}
-		return model.SYSTEM_ERROR
+		return model.USERNAME_PASSWORD_ERROR
 	}
 
 	// hostAddress := goconf.Config.App.NotifyURL
@@ -1313,4 +1355,15 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 		break
 	}
 	return nil
+}
+
+// 解析分页参数
+func pagingParams(req *reqParams) (index, size int) {
+	var err error
+	index, _ = strconv.Atoi(req.Index) // 默认0
+	size, err = strconv.Atoi(req.Size) // 默认15
+	if err != nil {
+		size = 15
+	}
+	return
 }

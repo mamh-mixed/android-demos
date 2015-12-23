@@ -9,6 +9,11 @@ import (
 )
 
 func Do(req *model.PushMessageReq) {
+
+	if err := SavePushMessage(req); err != nil {
+		log.Errorf("save push message error: %s", err)
+	}
+
 	switch strings.ToLower(req.To) {
 	case model.IOS:
 		ApnsPush.APush(req)

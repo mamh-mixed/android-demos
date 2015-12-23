@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
-	"strconv"
 )
 
 var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"
@@ -151,11 +150,6 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	size, err := strconv.Atoi(r.FormValue("size"))
-	if err != nil {
-		size = 15
-	}
-
 	result := User.getUserBill(&reqParams{
 		UserName:    r.FormValue("username"),
 		Password:    r.FormValue("password"),
@@ -165,7 +159,7 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		Transtime:   r.FormValue("transtime"),
 		Index:       r.FormValue("index"),
 		OrderDetail: r.FormValue("order_detail"),
-		Size:        size,
+		Size:        r.FormValue("size"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -304,6 +298,27 @@ func ticketHandle(w http.ResponseWriter, r *http.Request) {
 		Password:  r.FormValue("password"),
 		OrderNum:  r.FormValue("ordernum"),
 		TicketNum: r.FormValue("receiptnum"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// findOrderHandle 订单模糊搜索
+func findOrderHandle(w http.ResponseWriter, r *http.Request) {
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.findOrderHandle(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		OrderNum:  r.FormValue("ordernum"),
+		ChanCode:  r.FormValue("chanCode"),
+		TradeFrom: r.FormValue("tradeFrom"),
+		Status:    r.FormValue("orderStatus"),
+		Index:     r.FormValue("index"),
+		Size:      r.FormValue("size"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -461,7 +476,7 @@ type reqParams struct {
 	Status           string
 	Index            string
 	Date             string
-	Size             int
+	Size             string
 	Month            string
 	Province         string
 	City             string
@@ -482,6 +497,8 @@ type reqParams struct {
 	BusinessLicense  string
 	TaxRegistCert    string
 	OrganizeCodeCert string
+	ChanCode         string
+	TradeFrom        string
 	AppUser          *model.AppUser
 	m                *model.Merchant
 }
