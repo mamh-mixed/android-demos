@@ -70,9 +70,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private static final int PICK_TAX_REQUEST = 4;//税务
     private static final int PICK_O_REQUEST = 5;//组织机构
 
-    //这里创建一个list。来保存商户要上传的照片，个体的是三张，企业是五张
-    private List<MerchantPhoto> imageList = new ArrayList<MerchantPhoto>();
-    private Map<Integer, MerchantPhoto> imageMap = new Hashtable<Integer, MerchantPhoto>();
+    //这里创建一个map。来保存商户要上传的照片，个体的是三张，企业是五张
+    private Map<Integer, MerchantPhoto> imageMap = new Hashtable<Integer, MerchantPhoto>(5);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,76 +126,30 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        final Intent intent = new Intent();
-        // 开启Pictures画面Type设定为image
-        intent.setType("image/*");
-        // 使用Intent.ACTION_GET_CONTENT这个Action
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-
         switch (v.getId()) {
             case R.id.id_card_positive:
                 //身份证 正面
-                selectPic.setPickPhotoOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //取得相片后返回本画面
-                        String title = mCardPositive.getTitle();
-                        startActivityForResult(Intent.createChooser(intent, title), PICK_ID_P_REQUEST);
-                        selectPic.hide();
-                    }
-                });
+                setPickPhotoOnClickListener(mCardPositive.getTitle(), PICK_ID_P_REQUEST);
                 selectPic.show();
                 break;
             case R.id.id_card_negaitive:
                 //身份证 反面
-                selectPic.setPickPhotoOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //取得相片后返回本画面
-                        String title = mCardNegative.getTitle();
-                        startActivityForResult(Intent.createChooser(intent, title), PICK_ID_N_REQUEST);
-                        selectPic.hide();
-                    }
-                });
+                setPickPhotoOnClickListener(mCardNegative.getTitle(), PICK_ID_N_REQUEST);
                 selectPic.show();
                 break;
             case R.id.business:
                 //营业执照
-                selectPic.setPickPhotoOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //取得相片后返回本画面
-                        String title = mBusiness.getTitle();
-                        startActivityForResult(Intent.createChooser(intent, title), PICK_B_REQUEST);
-                        selectPic.hide();
-                    }
-                });
+                setPickPhotoOnClickListener(mBusiness.getTitle(), PICK_B_REQUEST);
                 selectPic.show();
                 break;
             case R.id.tax:
                 //税务
-                selectPic.setPickPhotoOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //取得相片后返回本画面
-                        String title = mTax.getTitle();
-                        startActivityForResult(Intent.createChooser(intent, title), PICK_TAX_REQUEST);
-                        selectPic.hide();
-                    }
-                });
+                setPickPhotoOnClickListener(mTax.getTitle(), PICK_TAX_REQUEST);
                 selectPic.show();
                 break;
             case R.id.organization:
                 //组织机构
-                selectPic.setPickPhotoOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //取得相片后返回本画面
-                        String title = mOrganization.getTitle();
-                        startActivityForResult(Intent.createChooser(intent, title), PICK_O_REQUEST);
-                        selectPic.hide();
-                    }
-                });
+                setPickPhotoOnClickListener(mOrganization.getTitle(), PICK_O_REQUEST);
                 selectPic.show();
                 break;
             case R.id.btnfinish:
@@ -204,6 +157,25 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 break;
         }
 
+    }
+
+    //设置选择照片 按钮的监听事件，不同的 title，不同的rquestCode
+    private void setPickPhotoOnClickListener(final String title, final int requestCode) {
+        final Intent intent = new Intent();
+        // 开启Pictures画面Type设定为image
+        intent.setType("image/*");
+        // 使用Intent.ACTION_GET_CONTENT这个Action
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        //组织机构
+        selectPic.setPickPhotoOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //取得相片后返回本画面
+                startActivityForResult(Intent.createChooser(intent, title), requestCode);
+                selectPic.hide();
+            }
+        });
     }
 
     private boolean validate(String shopName, String shopAddress) {
@@ -390,7 +362,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 } else {
                     mCardPositive.setRightText(unselectedStr);
                     //这里取消选择的照片，这里设置为null，当在使用的时候要检查是否为null
-                    imageMap.put(PICK_ID_P_REQUEST, null);//取消选择的照片
+                    imageMap.remove(PICK_ID_P_REQUEST);//取消选择的照片，也就是删除map中对应key的value
                 }
                 break;
             case PICK_ID_N_REQUEST://身份证 反面
@@ -399,7 +371,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     imageMap.put(PICK_ID_N_REQUEST, getMerchantPhoto(data));
                 } else {
                     mCardNegative.setRightText(unselectedStr);
-                    imageMap.put(PICK_ID_N_REQUEST, null);//取消选择的照片
+                    imageMap.remove(PICK_ID_N_REQUEST);//取消选择的照片也就是删除map中对应key的value
                 }
                 break;
             case PICK_B_REQUEST://营业执照
@@ -408,7 +380,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     imageMap.put(PICK_B_REQUEST, getMerchantPhoto(data));
                 } else {
                     mBusiness.setRightText(unselectedStr);
-                    imageMap.put(PICK_B_REQUEST, null);//取消选择的照片
+                    imageMap.remove(PICK_B_REQUEST);//取消选择的照片也就是删除map中对应key的value
                 }
                 break;
             case PICK_TAX_REQUEST://税务
@@ -417,7 +389,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     imageMap.put(PICK_TAX_REQUEST, getMerchantPhoto(data));
                 } else {
                     mTax.setRightText(unselectedStr);
-                    imageMap.put(PICK_TAX_REQUEST, null);//取消选择的照片
+                    imageMap.remove(PICK_TAX_REQUEST);//取消选择的照片也就是删除map中对应key的value
                 }
                 break;
             case PICK_O_REQUEST://组织机构
@@ -426,7 +398,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                     imageMap.put(PICK_O_REQUEST, getMerchantPhoto(data));
                 } else {
                     mOrganization.setRightText(unselectedStr);
-                    imageMap.put(PICK_O_REQUEST, null);//取消选择的照片
+                    imageMap.remove(PICK_O_REQUEST);//取消选择的照片也就是删除map中对应key的value
                 }
                 break;
         }
