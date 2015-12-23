@@ -33,13 +33,14 @@ func pushMsg() {
 		}
 
 		req := pushMsgReq(t)
+
 		// 单独的goruntine处理
 		// 防止发推送时卡住
 		go func() {
 			var appUser *model.AppUser
 			var err error
 			// 判断消息类型
-			switch strings.ToLower(req.MsgType) {
+			switch req.MsgType {
 			case MsgType_A:
 				// 此类为A类消息，向所有用户推
 				appUsers, err := mongo.AppUserCol.FindByMerId(req.MerID)
@@ -49,10 +50,13 @@ func pushMsg() {
 				}
 
 				// 逐个推
-				for _, user := range appUsers {
-					req.DeviceToken = user.DeviceToken
-					req.To = user.DeviceType
+				for _, u := range appUsers {
+					req.DeviceToken = u.DeviceToken
+					req.To = u.DeviceType
+					req.UserName = u.UserName
 					if req.DeviceToken != "" {
+						log.Debugf("push to user=%s,token=%s", u.UserName, u.DeviceToken)
+						push.SavePushMessage(req)
 						push.Do(req)
 					}
 				}
@@ -68,6 +72,8 @@ func pushMsg() {
 				req.DeviceToken = appUser.DeviceToken
 				req.To = appUser.DeviceType
 				if req.DeviceToken != "" {
+					log.Debugf("push to user=%s,token=%s", appUser.UserName, appUser.DeviceToken)
+					push.SavePushMessage(req)
 					push.Do(req)
 				}
 			case MsgType_C:

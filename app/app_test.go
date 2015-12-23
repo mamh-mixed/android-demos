@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
@@ -433,4 +434,12 @@ func TestTickHandle(t *testing.T) {
 
 	bs, _ := json.Marshal(result)
 	t.Logf("%s", string(bs))
+}
+
+func TestPush(t *testing.T) {
+	StartPush()
+	tran, _ := mongo.SpTransColl.FindOne("999118880000017", "15122219215453089")
+	core.MsgQueue <- tran
+
+	time.Sleep(10 * time.Second)
 }
