@@ -285,82 +285,98 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         qiniuMultiUploadService.upload(imageMap, qiniuKeyPattern, new QiniuCallbackListener() {
             @Override
             public void onComplete(String key, ResponseInfo info, JSONObject response, int photoKey) {
-                endLoading();
-                switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
-                    case PICK_ID_P_REQUEST: // 身份证 正面
-                        mCardPositive.setRightText("上传成功");
-                        break;
-                    case PICK_ID_N_REQUEST://身份证 反面
-                        mCardNegative.setRightText("上传成功");
-                        break;
-                    case PICK_B_REQUEST://营业执照
-                        mBusiness.setRightText("上传成功");
-                        break;
-                    case PICK_TAX_REQUEST://税务
-                        mTax.setRightText("上传成功");
-                        break;
-                    case PICK_O_REQUEST://组织机构
-                        mOrganization.setRightText("上传成功");
-                        break;
-                }
-
+                updateUploadSuccess(key, info, response, photoKey);
             }
 
             @Override
             public void onFailure(QuickPayException ex, int photoKey) {
-                endLoading();
-                switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
-                    case PICK_ID_P_REQUEST: // 身份证 正面
-                        mCardPositive.setRightText("上传失败");
-                        break;
-                    case PICK_ID_N_REQUEST://身份证 反面
-                        mCardNegative.setRightText("上传失败");
-                        break;
-                    case PICK_B_REQUEST://营业执照
-                        mBusiness.setRightText("上传失败");
-                        break;
-                    case PICK_TAX_REQUEST://税务
-                        mTax.setRightText("上传失败");
-                        break;
-                    case PICK_O_REQUEST://组织机构
-                        mOrganization.setRightText("上传失败");
-                        break;
-                    default:
-                        ex.getErrorMsg();
-                        String alertMsg = ex.getErrorMsg();
-                        Bitmap wrongBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.wrong);
-                        mAlertDialog.show(alertMsg, wrongBitmap);
-                        break;
-                }
+                //失败时根据photoKey来更新不同的ui组件
+                updateUploadFailure(ex, photoKey);
             }
 
             @Override
             public void onProgress(String key, double percent, int photoKey) {
-                NumberFormat fmt = NumberFormat.getPercentInstance();
-                fmt.setMaximumFractionDigits(2);//最多两位百分小数，如25.23%
-                String percentString = fmt.format(percent);
-                switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
-                    case PICK_ID_P_REQUEST: // 身份证 正面
-                        mCardPositive.setRightText(percentString);
-                        break;
-                    case PICK_ID_N_REQUEST://身份证 反面
-                        mCardNegative.setRightText(percentString);
-                        break;
-                    case PICK_B_REQUEST://营业执照
-                        mBusiness.setRightText(percentString);
-                        break;
-                    case PICK_TAX_REQUEST://税务
-                        mTax.setRightText(percentString);
-                        break;
-                    case PICK_O_REQUEST://组织机构
-                        mOrganization.setRightText(percentString);
-                        break;
-                }
+                updateUploadProgress(key, percent, photoKey);
             }
         });
 
     }
 
+    private void updateUploadSuccess(String key, ResponseInfo info, JSONObject response, int photoKey) {
+        endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
+
+        String successStr = getString(R.string.limit_increase_upload_success);
+        switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
+            case PICK_ID_P_REQUEST: // 身份证 正面
+                mCardPositive.setRightText(successStr);
+                break;
+            case PICK_ID_N_REQUEST://身份证 反面
+                mCardNegative.setRightText(successStr);
+                break;
+            case PICK_B_REQUEST://营业执照
+                mBusiness.setRightText(successStr);
+                break;
+            case PICK_TAX_REQUEST://税务
+                mTax.setRightText(successStr);
+                break;
+            case PICK_O_REQUEST://组织机构
+                mOrganization.setRightText(successStr);
+                break;
+        }
+    }
+
+    private void updateUploadFailure(QuickPayException ex, int photoKey) {
+        endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
+        String failStr = getString(R.string.limit_increase_upload_fail);
+
+        switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
+            case PICK_ID_P_REQUEST: // 身份证 正面
+                mCardPositive.setRightText(failStr);
+                break;
+            case PICK_ID_N_REQUEST://身份证 反面
+                mCardNegative.setRightText(failStr);
+                break;
+            case PICK_B_REQUEST://营业执照
+                mBusiness.setRightText(failStr);
+                break;
+            case PICK_TAX_REQUEST://税务
+                mTax.setRightText(failStr);
+                break;
+            case PICK_O_REQUEST://组织机构
+                mOrganization.setRightText(failStr);
+                break;
+            default:
+                ex.getErrorMsg();
+                String alertMsg = ex.getErrorMsg();
+                Bitmap wrongBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.wrong);
+                mAlertDialog.show(alertMsg, wrongBitmap);
+                break;
+        }
+    }
+
+    //更新上传进度，根据不同的photokey来更新不同的ui组件
+    private void updateUploadProgress(String key, double percent, int photoKey) {
+        NumberFormat fmt = NumberFormat.getPercentInstance();
+        fmt.setMaximumFractionDigits(2);//最多两位百分小数，如25.23%
+        String percentString = fmt.format(percent);
+        switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
+            case PICK_ID_P_REQUEST: // 身份证 正面
+                mCardPositive.setRightText(percentString);
+                break;
+            case PICK_ID_N_REQUEST://身份证 反面
+                mCardNegative.setRightText(percentString);
+                break;
+            case PICK_B_REQUEST://营业执照
+                mBusiness.setRightText(percentString);
+                break;
+            case PICK_TAX_REQUEST://税务
+                mTax.setRightText(percentString);
+                break;
+            case PICK_O_REQUEST://组织机构
+                mOrganization.setRightText(percentString);
+                break;
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
