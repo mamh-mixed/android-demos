@@ -62,9 +62,6 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
 		return err
 	}
-	if matched, err := validateSign(req.Sign); !matched {
-		return err
-	}
 	return
 }
 
@@ -124,9 +121,6 @@ func validatePurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRe
 		return err
 	}
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
-		return err
-	}
-	if matched, err := validateSign(req.Sign); !matched {
 		return err
 	}
 	if matched, err := validateOrigOrderNum(req.OrigOrderNum); !matched {
@@ -195,9 +189,6 @@ func validateQueryPurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPay
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
 		return err
 	}
-	if matched, err := validateSign(req.Sign); !matched {
-		return err
-	}
 	if matched, err := validateOrigOrderNum(req.OrigOrderNum); !matched {
 		return err
 	}
@@ -245,9 +236,6 @@ func validateUndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanP
 		return err
 	}
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
-		return err
-	}
-	if matched, err := validateSign(req.Sign); !matched {
 		return err
 	}
 	if matched, err := validateOrigOrderNum(req.OrigOrderNum); !matched {
@@ -317,14 +305,6 @@ func validateScanCodeId(scanCodeIdValue string) (bool, *model.ScanPayResponse) {
 
 	if len(scanCodeIdValue) > 32 {
 		return false, fieldFormatError(scanCodeId)
-	}
-	return true, nil
-}
-
-func validateSign(signValue string) (bool, *model.ScanPayResponse) {
-
-	if len(signValue) > 128 {
-		return false, fieldFormatError(sign)
 	}
 	return true, nil
 }
