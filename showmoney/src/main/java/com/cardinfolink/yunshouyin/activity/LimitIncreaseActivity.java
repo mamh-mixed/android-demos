@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -75,6 +76,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private Map<Integer, MerchantPhoto> imageMap = new Hashtable<Integer, MerchantPhoto>(5);
     private boolean isAllUploadSuccess = false;
 
+    Bitmap wrongBitmap;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +126,9 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         mFinish.setOnClickListener(this);//完成按钮
 
         selectPic = new SelectPicDialog(this, findViewById(R.id.select_pic_dialog));
+
+        wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+
     }
 
 
@@ -184,7 +189,6 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private boolean validate(String shopName, String shopAddress) {
         //先检查是否都填写了
 
-        Bitmap wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         //先检验 是否都选择好照片了
         String unselected = getResources().getString(R.string.limit_increase_unselected);
         String alertMsg = "";
@@ -299,24 +303,30 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
             case PICK_ID_P_REQUEST: // 身份证 正面
                 mCardPositive.setRightText(successStr);
+                Log.e(TAG, " upload success == 身份证 正面 ");
                 break;
             case PICK_ID_N_REQUEST://身份证 反面
                 mCardNegative.setRightText(successStr);
+                Log.e(TAG, " upload success == 身份证 反面 ");
                 break;
             case PICK_B_REQUEST://营业执照
                 mBusiness.setRightText(successStr);
+                Log.e(TAG, " upload success == 营业执照 ");
                 break;
             case PICK_TAX_REQUEST://税务
                 mTax.setRightText(successStr);
+                Log.e(TAG, " upload success == 税务 ");
                 break;
             case PICK_O_REQUEST://组织机构
                 mOrganization.setRightText(successStr);
+                Log.e(TAG, " upload success == 组织机构 ");
                 break;
         }
 
         //因为是有五个线程同时在上传，这时候走到这里表明有一个上传成功了。
         //判断一下是否都上传成功了，都上传成功了 才能进行下一步。1.关闭load。
         if (checkAllUploadSuccess()) {
+            Log.e(TAG, " all upload success");
             endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
             isAllUploadSuccess = true;
 
@@ -345,14 +355,38 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onSuccess(Void data) {
                 //improve成功，接下来 activateUser激活
+                activateUser();
+                Log.e(TAG, " improveCertInfoAsync  onSuccess");
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
-
+                Log.e(TAG, "improveCertInfoAsync onFailure");
+                alertShow(ex.getErrorMsg(), wrongBitmap);
             }
         });
 
+    }
+
+    private void activateUser() {
+        String username = SessonData.loginUser.getUsername();
+        String password = SessonData.loginUser.getPassword();
+        // 3.激活
+        quickPayService.activateAsync(username, password, new QuickPayCallbackListener<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                Log.e(TAG, " activateAsync  onSuccess");
+                Intent intent = new Intent(LimitIncreaseActivity.this, FinalIncreaseActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                Log.e(TAG, " activateAsync  onFailure");
+                alertShow(ex.getErrorMsg(), wrongBitmap);
+            }
+        });
     }
 
     private void updateUploadFailure(QuickPayException ex, int photoKey) {
@@ -362,23 +396,29 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
             case PICK_ID_P_REQUEST: // 身份证 正面
                 mCardPositive.setRightText(failStr);
+                Log.e(TAG, " upload Failure == 身份证 正面 ");
                 break;
             case PICK_ID_N_REQUEST://身份证 反面
                 mCardNegative.setRightText(failStr);
+                Log.e(TAG, " upload Failure == 身份证 反面 ");
                 break;
             case PICK_B_REQUEST://营业执照
                 mBusiness.setRightText(failStr);
+                Log.e(TAG, " upload Failure == 营业执照 ");
                 break;
             case PICK_TAX_REQUEST://税务
                 mTax.setRightText(failStr);
+                Log.e(TAG, " upload Failure == 税务 ");
                 break;
             case PICK_O_REQUEST://组织机构
                 mOrganization.setRightText(failStr);
+                Log.e(TAG, " upload Failure == 组织机构 ");
                 break;
             default:
+                Log.e(TAG, " upload Failure ==  default ");
+
                 ex.getErrorMsg();
                 String alertMsg = ex.getErrorMsg();
-                Bitmap wrongBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.wrong);
                 mAlertDialog.show(alertMsg, wrongBitmap);
                 break;
         }
