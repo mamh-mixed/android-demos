@@ -20,6 +20,8 @@ import (
 	"github.com/omigo/log"
 )
 
+var MsgQueue = make(chan *model.Trans, 1e6)
+
 var (
 	closeInterval   = time.Duration(goconf.Config.App.OrderCloseTime)
 	refreshInterval = time.Duration(goconf.Config.App.OrderRefreshTime)
@@ -337,6 +339,9 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	ret = adaptor.ProcessBarcodePay(t, c, req)
+	if ret.Respcd == adaptor.InprocessCode {
+		go refresh(req, c)
+	}
 
 	// 渠道
 	ret.Chcd = req.Chcd
@@ -981,6 +986,45 @@ func CloseOrder() {
 
 		// 其他情况
 		updateTrans(t, ret)
+	}
+}
+
+// 针对09的交易，系统跟踪查询
+// 会阻塞，需要单独运行在goruntine里
+func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
+	var interval = []time.Duration{3, 10, 60, 180}
+	for _, d := range interval {
+		// 等一等
+		time.Sleep(time.Second * d)
+		// 重新锁住并刷新交易
+		t, err := findAndLockTrans(req.Mchntid, req.OrderNum)
+		if err != nil {
+			// 其他请求在获取该交易
+			log.Warnf("refresh warn: %s", err)
+			continue
+		}
+		// 查询
+		ret := adaptor.ProcessEnquiry(t, c, &model.ScanPayRequest{
+			ReqId:        req.ReqId, // 关联ReqId，在交易报文里可以看到
+			OrigOrderNum: req.OrderNum,
+		})
+		// 处理
+		switch ret.Respcd {
+		case adaptor.InprocessCode:
+			// 记得解锁
+			mongo.SpTransColl.Unlock(req.Mchntid, req.OrderNum)
+			continue
+		case adaptor.SuccessCode:
+			// 进入消息推送队列
+			if t.TradeFrom == model.IOS || t.TradeFrom == model.Android {
+				MsgQueue <- t
+			}
+			fallthrough
+		default:
+			// 更新交易状态
+			updateTrans(t, ret)
+		}
+		break
 	}
 }
 

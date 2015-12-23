@@ -235,6 +235,10 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 	// 如果交易状态不是关闭，才去更新，否则认为该笔交易已被正确关闭
 	// 该异步通知只送往商户，不做更新。
 	if t.TransStatus != model.TransClosed {
+		if t.Busicd == model.Jszf && t.TradeFrom == model.Wap {
+			// 进入消息推送队列
+			MsgQueue <- t
+		}
 		if err = updateTrans(t, ret); err != nil {
 			// 如果更新失败，则认为没有处理过
 			return err

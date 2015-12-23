@@ -26,31 +26,14 @@ func (col *pushMessage) Insert(t *model.PushMessageRsp) error {
 func (col *pushMessage) FindByUser(t *model.PushMessageRsp) (results []*model.PushInfo, err error) {
 	results = make([]*model.PushInfo, 0)
 
-	match := bson.M{}
-	match["username"] = t.UserName
-	match["pushtime"] = bson.M{"$gte": t.LastTime}
-
-	cond := []bson.M{
-		{"$match": match},
+	con := bson.M{}
+	if t.LastTime != "" {
+		con["pushtime"] = bson.M{"$gt": t.LastTime}
 	}
 
-	if t.Index == "" {
-		t.Index = "0"
-	}
+	con["username"] = t.UserName
 
-	if t.Size == "" {
-		t.Size = "10"
-	}
-
-	sort := bson.M{"$sort": bson.M{"pushtime": -1}}
-
-	skip := bson.M{"$skip": t.Index}
-
-	limit := bson.M{"$limit": t.Size}
-
-	cond = append(cond, sort, skip, limit)
-
-	err = database.C(col.name).Pipe(cond).All(&results)
+	err = database.C(col.name).Find(con).All(&results)
 
 	return results, err
 }

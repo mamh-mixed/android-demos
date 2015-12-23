@@ -29,6 +29,10 @@ const (
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
 	COUPON_WO_PROCESS = "PROCESS"
+	// 交易来源
+	Wap     = "wap"
+	IOS     = "ios"
+	Android = "android"
 )
 
 // QueryCondition 扫码交易查询字段

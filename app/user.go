@@ -238,8 +238,9 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 	var userInfo model.AppUser
 	userInfo.LoginTime = ""
 	userInfo.LockTime = ""
-	userInfo.Device_type = req.AppUser.Device_type
-	userInfo.Device_token = req.AppUser.Device_token
+	userInfo.DeviceType = req.AppUser.DeviceType
+	userInfo.DeviceToken = req.AppUser.DeviceToken
+	userInfo.UserName = req.UserName
 	mongo.AppUserCol.UpdateAppUser(&userInfo, mongo.UPDATE_DEVICE_LOCK_INFO)
 
 	// 用户是否激活
@@ -636,7 +637,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		MerId:     user.MerId,
 		StartTime: dsDate,
 		EndTime:   deDate,
-		Size:      15,
+		Size:      req.Size,
 		Page:      1,
 		Skip:      index,
 	}
@@ -654,7 +655,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		q.RespcdNotIn = "00"
 	}
 
-	trans, _, err := mongo.SpTransColl.Find(q)
+	trans, total, err := mongo.SpTransColl.Find(q)
 	if err != nil {
 		log.Errorf("find user trans error: %s", err)
 		return model.SYSTEM_ERROR
@@ -698,6 +699,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 	result.Size = len(trans)
 	result.RefdCount = refundCount
 	result.Count = transCount
+	result.TotalRecord = total
 
 	// TODO:先用该字段做判断是日币还是元
 	if req.OrderDetail == "pay" {
@@ -973,27 +975,6 @@ func (u *user) updateSettInfo(req *reqParams) (result model.AppResult) {
 	if req.PhoneNum != "" {
 		m.Detail.ContactTel = req.PhoneNum
 	}
-	if req.CertName != "" {
-		m.Detail.CertName = req.CertName
-	}
-	if req.CertAddr != "" {
-		m.Detail.CertAddr = req.CertAddr
-	}
-	if req.LegalCertPos != "" {
-		m.Detail.LegalCertPos = req.LegalCertPos
-	}
-	if req.LegalCertOpp != "" {
-		m.Detail.LegalCertOpp = req.LegalCertOpp
-	}
-	if req.BusinessLicense != "" {
-		m.Detail.BusinessLicense = req.BusinessLicense
-	}
-	if req.TaxRegistCert != "" {
-		m.Detail.TaxRegistCert = req.TaxRegistCert
-	}
-	if req.OrganizeCodeCert != "" {
-		m.Detail.OrganizeCodeCert = req.OrganizeCodeCert
-	}
 	if len(req.Images) > 0 {
 		m.Detail.Images = req.Images
 	}
@@ -1139,6 +1120,78 @@ func (u *user) getQiniuToken(req *reqParams) (result model.AppResult) {
 	if req.Password != user.Password {
 		return model.USERNAME_PASSWORD_ERROR
 	}
+
+	return model.SUCCESS1
+}
+
+//完善证书信息
+func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
+
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
+
+	var user *model.AppUser
+	var err error
+
+	// 云收银app
+	if req.AppUser == nil {
+		// 用户名不为空
+		if req.UserName == "" || req.Password == "" {
+			return model.PARAMS_EMPTY
+		}
+		// 根据用户名查找用户
+		user, err = mongo.AppUserCol.FindOne(req.UserName)
+		if err != nil {
+			if err.Error() == "not found" {
+				return model.USERNAME_PASSWORD_ERROR
+			}
+			log.Errorf("find database err,%s", err)
+			return model.SYSTEM_ERROR
+		}
+
+		// 密码不对
+		if req.Password != user.Password {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+	} else {
+		// 从销售工具接口过来的
+		user = req.AppUser
+	}
+
+	m, err := mongo.MerchantColl.Find(user.MerId)
+	if err != nil {
+		return model.MERID_NO_EXIST
+	}
+
+	if req.CertName != "" {
+		m.Detail.CertName = req.CertName
+	}
+	if req.CertAddr != "" {
+		m.Detail.CertAddr = req.CertAddr
+	}
+	if req.LegalCertPos != "" {
+		m.Detail.LegalCertPos = req.LegalCertPos
+	}
+	if req.LegalCertOpp != "" {
+		m.Detail.LegalCertOpp = req.LegalCertOpp
+	}
+	if req.BusinessLicense != "" {
+		m.Detail.BusinessLicense = req.BusinessLicense
+	}
+	if req.TaxRegistCert != "" {
+		m.Detail.TaxRegistCert = req.TaxRegistCert
+	}
+	if req.OrganizeCodeCert != "" {
+		m.Detail.OrganizeCodeCert = req.OrganizeCodeCert
+	}
+
+	if err = mongo.MerchantColl.Update(m); err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	req.m = m
 
 	return model.SUCCESS1
 }

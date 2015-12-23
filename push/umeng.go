@@ -40,7 +40,7 @@ func (*umeng) UPush(req *model.PushMessageReq) error {
 	params := UmengMessage{
 		Appkey:        appkey,
 		Timestamp:     time.Now().Unix(),
-		Device_tokens: req.Device_token,
+		Device_tokens: req.DeviceToken,
 		Type:          message_type,
 		Payload: UmengPayload{
 			Body:         umengBody,
@@ -77,13 +77,6 @@ func (*umeng) UPush(req *model.PushMessageReq) error {
 	}
 
 	defer res.Body.Close()
-
-	err = SavePushMessage(req)
-
-	if err != nil {
-		log.Errorf("add push message to table fail %s", err)
-		return err
-	}
 
 	bs, err := ioutil.ReadAll(res.Body)
 	if err != nil {
