@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	defaultCur = "USD" // 美元
+	defaultCur = "HKD" // 美元
 )
 
 // WeixinScanPay 微信扫码支付
