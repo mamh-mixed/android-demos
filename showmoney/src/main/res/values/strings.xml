@@ -71,6 +71,8 @@
     <string name="limit_increase_organization">组织机构代码证</string>
     <string name="limit_increase_selected">已选择</string>
     <string name="limit_increase_unselected">未选择</string>
+    <string name="limit_increase_upload_success">上传成功</string>
+    <string name="limit_increase_upload_fail">上传失败</string>
 
     <string name="qr_commit">确认提交</string>
     <string name="dialog_trade_success">交易成功\n感谢购买！</string>
