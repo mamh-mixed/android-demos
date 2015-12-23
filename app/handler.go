@@ -323,6 +323,22 @@ func findOrderHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// updateMessageHandle 更新消息状态
+func updateMessageHandle(w http.ResponseWriter, r *http.Request) {
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.updateMessageHandle(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Message:  r.FormValue("message"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 // pullInfoHandle 推送消息接口
 func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
 
@@ -488,6 +504,7 @@ type reqParams struct {
 	RecType          string
 	LastTime         string
 	MaxTime          string
+	Message          string
 	AppUser          *model.AppUser
 	m                *model.Merchant
 }

@@ -30,6 +30,7 @@ var (
 	USERNAME_NO_EXIST       = NewAppResult(FAIL, "username_no_exist")
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
+	PARAMS_FORMAT_ERROR     = NewAppResult(FAIL, "params_format_error")
 	USER_ALREADY_IMPROVED   = NewAppResult(FAIL, "user_already_improved")
 	MERID_NO_EXIST          = NewAppResult(FAIL, "merId_no_exist")
 	USER_LOCK               = NewAppResult(FAIL, "user_lock")
@@ -180,7 +181,13 @@ type PushMessage struct {
 	Title       string `json:"title,omitempty" bson:"title,omitempty"`
 	Message     string `json:"message,omitempty" bson:"message,omitempty"`
 	PushTime    string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
+	UpdateTime  string `json:"updateTime,omitempty" bson:"updateTime,omitempty"`
 	DeviceToken string `json:"-" bson:"deviceToken,omitempty"`
+	// 0: unread, undeleted
+	// 1: read, undeleted
+	// 2: unread, deleted
+	// 3: read, deleted
+	Status int `json:"status" bson:"status"`
 
 	LastTime string `json:"-" bson:"-"`
 	MaxTime  string `json:"-" bson:"-"`

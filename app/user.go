@@ -3,14 +3,8 @@ package app
 import (
 	cr "crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"io"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -19,6 +13,12 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"io"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type user struct{}
@@ -1038,18 +1038,9 @@ func (u *user) ticketHandle(req *reqParams) (result model.AppResult) {
 // findOrderHandle 条件组合查找
 func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
 
-	// 参数不能为空
-	if req.UserName == "" {
-		return model.PARAMS_EMPTY
-	}
-	// 根据用户名查找用户
-	user, err := mongo.AppUserCol.FindOne(req.UserName)
-	if err != nil {
-		return model.USERNAME_PASSWORD_ERROR
-	}
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+	user, errResult := checkPWD(req)
+	if errResult != nil {
+		return *errResult
 	}
 
 	index, size := pagingParams(req)
@@ -1081,6 +1072,36 @@ func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
 	result.Txn = txns
 	result.Count = total
 	return
+}
+
+// updateMessageHandle 更新推送信息状态
+func (u *user) updateMessageHandle(req *reqParams) (result model.AppResult) {
+
+	_, errResult := checkPWD(req)
+	if errResult != nil {
+		return *errResult
+	}
+
+	type msg struct {
+		MsgId  string `json:"msgId"`
+		Status int    `json:"status"`
+	}
+
+	var ms []msg
+	err := json.Unmarshal([]byte(req.Message), &ms)
+	if err != nil {
+		log.Errorf("unmarshal message=%s error: %s", req.Message, err)
+		return model.PARAMS_FORMAT_ERROR
+	}
+
+	// update
+	for _, m := range ms {
+		if err = mongo.PushMessageColl.UpdateStatusByID(m.MsgId, m.Status); err != nil {
+			log.Errorf("update push message fail, MsgId=%s, error: %s", m.MsgId, err)
+		}
+	}
+
+	return model.SUCCESS1
 }
 
 // 重置密码,未完善 TODO 诗景
@@ -1146,24 +1167,8 @@ func (u *user) getQiniuToken(req *reqParams) (result model.AppResult) {
 		return result
 	}
 
-	// 用户名不为空
-	if req.UserName == "" || req.Password == "" {
-		return model.PARAMS_EMPTY
-	}
-
-	// 根据用户名查找用户
-	user, err := mongo.AppUserCol.FindOne(req.UserName)
-	if err != nil {
-		if err.Error() == "not found" {
-			return model.USERNAME_PASSWORD_ERROR
-		}
-		log.Errorf("find database err,%s", err)
-		return model.SYSTEM_ERROR
-	}
-
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+	if _, err := checkPWD(req); err != nil {
+		return *err
 	}
 
 	return model.SUCCESS1
@@ -1182,24 +1187,11 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 
 	// 云收银app
 	if req.AppUser == nil {
-		// 用户名不为空
-		if req.UserName == "" || req.Password == "" {
-			return model.PARAMS_EMPTY
-		}
-		// 根据用户名查找用户
-		user, err = mongo.AppUserCol.FindOne(req.UserName)
+		appUser, err := checkPWD(req)
 		if err != nil {
-			if err.Error() == "not found" {
-				return model.USERNAME_PASSWORD_ERROR
-			}
-			log.Errorf("find database err,%s", err)
-			return model.SYSTEM_ERROR
+			return *err
 		}
-
-		// 密码不对
-		if req.Password != user.Password {
-			return model.USERNAME_PASSWORD_ERROR
-		}
+		user = appUser
 	} else {
 		// 从销售工具接口过来的
 		user = req.AppUser
@@ -1243,19 +1235,9 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 
 // findPushMessage 查询某个用户下的推送消息
 func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
-	if req.UserName == "" || req.Password == "" {
-		return model.PARAMS_EMPTY
-	}
 
-	// 根据用户名查找用户
-	user, err := mongo.AppUserCol.FindOne(req.UserName)
-	if err != nil {
-		return model.USERNAME_PASSWORD_ERROR
-	}
-
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+	if _, errResult := checkPWD(req); errResult != nil {
+		return *errResult
 	}
 
 	size, _ := strconv.Atoi(req.Size)
@@ -1395,6 +1377,23 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 		break
 	}
 	return nil
+}
+
+func checkPWD(req *reqParams) (user *model.AppUser, errResult *model.AppResult) {
+	// 参数不能为空
+	if req.UserName == "" || req.Password == "" {
+		return nil, &model.PARAMS_EMPTY
+	}
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		return nil, &model.USERNAME_PASSWORD_ERROR
+	}
+	// 密码不对
+	if req.Password != user.Password {
+		return nil, &model.USERNAME_PASSWORD_ERROR
+	}
+	return user, nil
 }
 
 // 解析分页参数
