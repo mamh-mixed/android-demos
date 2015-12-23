@@ -74,6 +74,7 @@ type AppResult struct {
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`
 	SettInfo     *SettInfo   `json:"info,omitempty"`
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
+	Message      interface{} `json:"message,omitempty"`
 	UploadToken  string      `json:"uploadToken,omitempty"`
 	AccessToken  string      `json:"accessToken,omitempty"`
 	DownloadUrl  string      `json:"downloadUrl,omitempty"`
@@ -161,7 +162,7 @@ type Email struct {
 	Timestamp string `json:"timestamp,omitempty" bson:"timestamp,omitempty"`
 }
 
-//推送请求
+// 推送请求
 type PushMessageReq struct {
 	MerID       string
 	UserName    string //app的终端号为用户名
@@ -172,22 +173,16 @@ type PushMessageReq struct {
 	To          string
 }
 
-//推送应答
-type PushMessageRsp struct {
+// 推送消息体
+type PushMessage struct {
+	MsgId       string `json:"msgId" bson:"msgId"`
 	UserName    string `json:"username,omitempty" bson:"username,omitempty"`
-	DeviceToken string `json:"-" bson:"deviceToken,omitempty"`
-	Password    string `json:"password,omitempty" bson:"password,omitempty"`
 	Title       string `json:"title,omitempty" bson:"title,omitempty"`
 	Message     string `json:"message,omitempty" bson:"message,omitempty"`
 	PushTime    string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
-	LastTime    string `json:"-" bson:"-"`
-}
+	DeviceToken string `json:"-" bson:"deviceToken,omitempty"`
 
-//推送表结构
-type PushInfo struct {
-	ID       string `json:"id,omitempty" bson:"_id,omitempty"`
-	UserName string `json:"username,omitempty" bson:"username,omitempty"`
-	Title    string `json:"title,omitempty" bson:"title,omitempty"`
-	Message  string `json:"message,omitempty" bson:"message,omitempty"`
-	PushTime string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
+	LastTime string `json:"-" bson:"-"`
+	MaxTime  string `json:"-" bson:"-"`
+	Size     int    `json:"-" bson:"-"`
 }

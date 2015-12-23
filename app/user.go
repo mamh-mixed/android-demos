@@ -1238,6 +1238,43 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 	return model.SUCCESS1
 }
 
+// findPushMessage 查询某个用户下的推送消息
+func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
+	if req.UserName == "" || req.Password == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	size, _ := strconv.Atoi(req.Size)
+	messages, err := mongo.PushMessageColl.Find(&model.PushMessage{
+		UserName: req.UserName,
+		LastTime: req.LastTime,
+		MaxTime:  req.MaxTime,
+		Size:     size,
+	})
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	if len(messages) == 0 {
+		messages = make([]model.PushMessage, 0)
+	}
+
+	result.Count = len(messages)
+	result.Message = messages
+	return result
+}
+
 func transToTxn(t *model.Trans) *model.AppTxn {
 	txn := &model.AppTxn{
 		Response:        t.RespCode,

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/push"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 	"net/http"
@@ -327,22 +326,20 @@ func findOrderHandle(w http.ResponseWriter, r *http.Request) {
 // pullInfoHandle 推送消息接口
 func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
 
-	rsp := new(push.PushInfoRsp)
 	if !checkSign(r) {
-		rsp.Error = model.SIGN_FAIL.Error
-		w.Write(jsonPushshal(rsp))
+		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
 
-	rsp = push.PushInfos(&model.PushMessageRsp{
+	result := User.findPushMessage(&reqParams{
 		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
-		//Index:    r.FormValue("index"),
-		//Size:     r.FormValue("size"),
+		Size:     r.FormValue("size"),
 		LastTime: r.FormValue("lasttime"),
+		MaxTime:  r.FormValue("maxtime"),
 	})
 
-	w.Write(jsonPushshal(rsp))
+	w.Write(jsonMarshal(result))
 }
 
 //重置密码
@@ -446,16 +443,6 @@ func jsonMarshal(result model.AppResult) []byte {
 	return data
 }
 
-func jsonPushshal(result *push.PushInfoRsp) []byte {
-	data, err := json.Marshal(result)
-	if err != nil {
-		log.Error("json marshal error: %s", err)
-		return []byte(model.JSON_ERROR)
-	}
-	log.Debugf("response message: %s", string(data))
-	return data
-}
-
 type reqParams struct {
 	OrderDetail      string
 	UserName         string
@@ -499,6 +486,8 @@ type reqParams struct {
 	OrganizeCodeCert string
 	ChanCode         string
 	TradeFrom        string
+	LastTime         string
+	MaxTime          string
 	AppUser          *model.AppUser
 	m                *model.Merchant
 }

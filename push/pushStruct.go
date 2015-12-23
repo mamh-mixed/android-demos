@@ -31,9 +31,3 @@ type UmengRspData struct {
 	Error_code    string `json:"error_code,omitempty" bson:"error_code,omitempty"`
 	Thirdparty_id string `json:"thirdparty_id,omitempty" bson:"thirdparty_id,omitempty"`
 }
-
-type PushInfoRsp struct {
-	Count   int         `json:"count"`
-	Error   string      `json:"error"`
-	Message interface{} `json:"message,omitempty"`
-}
