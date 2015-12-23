@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,10 +31,8 @@ import org.json.JSONObject;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 
@@ -72,6 +71,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     //这里创建一个map。来保存商户要上传的照片，个体的是三张，企业是五张
     private Map<Integer, MerchantPhoto> imageMap = new Hashtable<Integer, MerchantPhoto>(5);
+    private boolean isAllUploadSuccess = false;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,6 +246,13 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             //先检查是否都填写了
             return;
         }
+        if (isAllUploadSuccess) {
+            //组织机构
+            String alertMsg = "都上传成功了，不要再次上传了";
+            Bitmap wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
+            mAlertDialog.show(alertMsg, wrongBitmap);
+            return;
+        }
 
         Date now = new Date();
         SimpleDateFormat yyMMdd = new SimpleDateFormat("yyyyMMdd");
@@ -274,9 +282,19 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     }
 
-    private void updateUploadSuccess(String key, ResponseInfo info, JSONObject response, int photoKey) {
-        endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
 
+    private boolean checkAllUploadSuccess() {
+        //这里遍历map，判断是否都上传成功了,这里只是遍历一下value
+        for (MerchantPhoto merchantPhoto : imageMap.values()) {
+            //如果发现qiniuKey是null就表明还没有上传成功
+            if (merchantPhoto.getQiniuKey() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void updateUploadSuccess(String key, ResponseInfo info, JSONObject response, int photoKey) {
         String successStr = getString(R.string.limit_increase_upload_success);
         switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
             case PICK_ID_P_REQUEST: // 身份证 正面
@@ -295,7 +313,15 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 mOrganization.setRightText(successStr);
                 break;
         }
+
+        //因为是有五个线程同时在上传，这时候走到这里表明有一个上传成功了。
+        //判断一下是否都上传成功了，都上传成功了 才能进行下一步。1.关闭load。
+        if (checkAllUploadSuccess()) {
+            endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
+            isAllUploadSuccess = true;
+        }
     }
+
 
     private void updateUploadFailure(QuickPayException ex, int photoKey) {
         endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
@@ -414,7 +440,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    private MerchantPhoto handleImageBeforeKitKat(Intent data) {
+    public MerchantPhoto handleImageBeforeKitKat(Intent data) {
         if (data != null) {
             Uri uri = data.getData();
             String imagePath = getImagePath(uri, null);
@@ -423,7 +449,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         return null;
     }
 
-    private MerchantPhoto handleImageOnKitKat(Intent data) {
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public MerchantPhoto handleImageOnKitKat(Intent data) {
         if (data != null) {
             String imagePath = null;
             Uri uri = data.getData();
