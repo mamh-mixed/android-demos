@@ -298,4 +298,9 @@
     <string name="pay_order_number">订单编号</string>
     <string name="pay_total_state_success">成功收款</string>
     <string name="pay_total_state_fail">失败收款</string>
+
+    <!--  卡卷要用到的文本 -->
+    <string name="coupon_title_first">券码核销</string>
+    <string name="coupon_reminder">输入券码</string>
+    <string name="coupon_confirm">核销</string>
 </resources>

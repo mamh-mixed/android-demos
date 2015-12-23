@@ -2,17 +2,97 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1EBED6"
+    android:background="#ffffff"
     android:orientation="vertical">
 
-    <TextView
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/setting_my" />
+
+            <TextView
+                android:id="@+id/tv_coupon_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:text="用户账号"
+                android:textColor="#0099cc"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:text="@string/coupon_title_first"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/iv_coupon_info"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/setting_news" />
+    </RelativeLayout>
+
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:text="销券的界面"
-        android:textColor="#FFFFFF"
-        android:textSize="22dp" />
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:src="@drawable/ticket_selected" />
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="60dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_input_coupon_code"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_textview_cartl"
+            android:hint="@string/coupon_reminder" />
+
+        <ImageView
+            android:id="@+id/iv_scan_code"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:layout_weight="0"
+            android:background="@drawable/shape_textview_cartl"
+            android:src="@drawable/ticket_camera" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bt_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/white_selector"
+        android:text="@string/coupon_confirm" />
 
 </LinearLayout>
