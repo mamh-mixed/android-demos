@@ -350,8 +350,12 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected AsyncTaskResult<String> doInBackground(Void... params) {
-                String token = quickPayApi.getUploadToken(user);//获取token
-                return new AsyncTaskResult<String>(token);
+                try {
+                    String token = quickPayApi.getUploadToken(user);//获取token
+                    return new AsyncTaskResult<String>(token);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<String>(ex);
+                }
             }
 
             @Override
