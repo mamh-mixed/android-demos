@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.core;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.cardinfolink.yunshouyin.api.QuickPayException;
@@ -7,7 +8,9 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 
 import org.json.JSONObject;
 
@@ -19,9 +22,9 @@ public class QiniuMultiUploadService {
 
     private QuickPayService quickPayService;
     private UploadManager uploadManager = new UploadManager();
-    private List<MerchantPhoto> imageList;
-    private QiniuCallbackListener listener;
-    private String qiniuKeyPattern;
+    private List<MerchantPhoto> mImageList;
+    private QiniuCallbackListener mListener;
+    private String mQiniuKeyPattern;
 
     public QiniuMultiUploadService(QuickPayService quickPayService) {
         this.quickPayService = quickPayService;
@@ -40,22 +43,51 @@ public class QiniuMultiUploadService {
             return;
         }
 
-        this.imageList = imageList;
-        this.listener = listener;
-        this.qiniuKeyPattern = qiniuKeyPattern;
+        this.mImageList = imageList;
+        this.mListener = listener;
+        this.mQiniuKeyPattern = qiniuKeyPattern;
 
         quickPayService.getUploadTokenAsync(SessonData.loginUser, new QuickPayCallbackListener<String>() {
             @Override
-            public void onSuccess(final String data) {
+            public void onSuccess(final String uploadToken) {
                 //进入后台线程
-                upload(0, data);
+                uploadAsync(uploadToken);
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
-
+                mListener.onFailure(ex);
             }
         });
+    }
+
+    public void uploadAsync(final String uploadToken) {
+        for (MerchantPhoto merchantPhoto : mImageList) {
+            String filename = merchantPhoto.getFilename();
+            //NOTE: 文件可能没有后缀名
+            String fileType = filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : "";
+            String qiniuKey = String.format(mQiniuKeyPattern, UUID.randomUUID().toString().replace("-", ""), fileType);
+
+            merchantPhoto.setQiniuKey(qiniuKey);
+
+            uploadManager.put(filename, qiniuKey, uploadToken,
+                    new UpCompletionHandler() {
+                        @Override
+                        public void complete(String key, ResponseInfo info, JSONObject response) {
+                            if (info.isOK()) {
+                                Log.e(TAG, "===" + response.toString());
+                                mListener.onComplete(key, info, response);
+                            } else {
+                                mListener.onFailure(new QuickPayException());
+                            }
+                        }
+                    },
+                    new UploadOptions(null, null, false, new UpProgressHandler() {
+                        public void progress(String key, double percent) {
+                            mListener.onProgress(key, percent);
+                        }
+                    }, null));
+        }
     }
 
     /**
@@ -64,20 +96,17 @@ public class QiniuMultiUploadService {
      * @param index
      */
     public void upload(final int index, final String uploadToken) {
-        if (index == imageList.size()) {
+        if (index == mImageList.size()) {
             // oncomplete在后台线程
-            listener.onComplete();
+            mListener.onComplete(null, null, null);
             return;
         }
         try {
-            MerchantPhoto merchantPhoto = imageList.get(index);
+            MerchantPhoto merchantPhoto = mImageList.get(index);
             String filename = merchantPhoto.getFilename();
             //NOTE: 文件可能没有后缀名
             String fileType = filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : "";
-            String qiniuKey = String.format(qiniuKeyPattern, UUID.randomUUID().toString().replace("-", ""), fileType);
-
-            Log.d(TAG, filename);
-            Log.d(TAG, qiniuKey);
+            String qiniuKey = String.format(mQiniuKeyPattern, UUID.randomUUID().toString().replace("-", ""), fileType);
 
             merchantPhoto.setQiniuKey(qiniuKey);
 
@@ -91,7 +120,7 @@ public class QiniuMultiUploadService {
                 @Override
                 public void complete(String key, ResponseInfo info, JSONObject response) {
                     if (!info.isOK()) {
-                        listener.onFailure(new QuickPayException());
+                        mListener.onFailure(new QuickPayException());
                     }
 
                     new Thread(new Runnable() {
@@ -104,7 +133,7 @@ public class QiniuMultiUploadService {
             }, null);
         } catch (Exception ex) {
             // onFailure 在后台线程
-            listener.onFailure(ex);
+            mListener.onFailure(ex);
         }
     }
 }
