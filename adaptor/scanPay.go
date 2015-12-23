@@ -145,6 +145,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		t.SettCurr = "USD"
 		t.SettCurrAmt = settAmt
 		t.SettExchangeRate = settRate
+		req.ActTxamt = fmt.Sprintf("%d", settAmt)
 		req.AppID = chanMer.WxpAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
