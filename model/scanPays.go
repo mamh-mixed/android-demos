@@ -47,7 +47,7 @@ type QueryCondition struct {
 	SubAgentCode       string   `json:"subAgentCode,omitempty"`
 	GroupCode          string   `json:"groupCode,omitempty"`
 	TransStatus        []string `json:"transStatus,omitempty"`
-	RefundStatus       int      `json:"refundStatus,omitempty"`
+	RefundStatus       []int    `json:"refundStatus,omitempty"`
 	TransType          int      `json:"transType,omitempty"`
 	StartTime          string   `json:"startTime,omitempty"`
 	EndTime            string   `json:"endTime,omitempty"`
@@ -63,7 +63,7 @@ type QueryCondition struct {
 	IsForReport        bool     `json:"-"`
 	Respcd             string   `json:"respcd" url:"respcd"`
 	RespcdNotIn        string   `json:"respcdNotIn"`
-	TradeFrom          string   `json:"tradeFrom,omitempty"`
+	TradeFrom          []string `json:"tradeFrom,omitempty"`
 	Skip               int      `json:"skip,omitempty"`
 	ChanCode           string   `json:"chanCode,omitempty"`
 	Direction          string

@@ -310,14 +310,14 @@ func findOrderHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := User.findOrderHandle(&reqParams{
-		UserName:  r.FormValue("username"),
-		Password:  r.FormValue("password"),
-		OrderNum:  r.FormValue("ordernum"),
-		ChanCode:  r.FormValue("chanCode"),
-		TradeFrom: r.FormValue("tradeFrom"),
-		Status:    r.FormValue("orderStatus"),
-		Index:     r.FormValue("index"),
-		Size:      r.FormValue("size"),
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		OrderNum: r.FormValue("ordernum"),
+		PayType:  r.FormValue("payType"),
+		RecType:  r.FormValue("recType"),
+		Status:   r.FormValue("txnStatus"),
+		Index:    r.FormValue("index"),
+		Size:     r.FormValue("size"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -342,7 +342,7 @@ func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
-//重置密码
+// 重置密码
 func forgetPasswordHandle(w http.ResponseWriter, r *http.Request) {
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
@@ -484,8 +484,8 @@ type reqParams struct {
 	BusinessLicense  string
 	TaxRegistCert    string
 	OrganizeCodeCert string
-	ChanCode         string
-	TradeFrom        string
+	PayType          string
+	RecType          string
 	LastTime         string
 	MaxTime          string
 	AppUser          *model.AppUser

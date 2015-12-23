@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -672,7 +673,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		MerId:        user.MerId,
 		StartTime:    ssDate,
 		EndTime:      seDate,
-		RefundStatus: model.TransRefunded,
+		RefundStatus: []int{model.TransRefunded},
 		TransStatus:  []string{model.TransSuccess},
 	})
 	if err != nil {
@@ -1053,34 +1054,36 @@ func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
 
 	index, size := pagingParams(req)
 	q := &model.QueryCondition{
-		OrderNum: req.OrderNum,
-		ChanCode: req.ChanCode,
-		Skip:     index,
-		Size:     size,
-		Page:     1,
+		OrderNum:  req.OrderNum,
+		TransType: model.PayTrans, // 只是支付交易
+		MerId:     user.MerId,
+		Skip:      index,
+		Size:      size,
+		Page:      1,
 	}
 
-	// TODO
-	switch req.Status {
-	case "10":
-	}
-
-	trans, _, err := mongo.SpTransColl.Find(q)
+	// 初始化查询参数
+	findOrderParams(req, q)
+	trans, total, err := mongo.SpTransColl.Find(q)
 	if err != nil {
 		return model.SYSTEM_ERROR
 	}
 
-	var txns = make([]*model.AppTxn, len(trans))
+	var txns []*model.AppTxn
 	for _, t := range trans {
 		txns = append(txns, transToTxn(t))
 	}
 
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
 	result = model.SUCCESS1
 	result.Txn = txns
+	result.Count = total
 	return
 }
 
-//重置密码,未完善，todo 诗景
+// 重置密码,未完善 TODO 诗景
 func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 字段长度验证
 	if result, ok := requestDataValidate(req); !ok {
@@ -1403,4 +1406,48 @@ func pagingParams(req *reqParams) (index, size int) {
 		size = 15
 	}
 	return
+}
+
+func findOrderParams(req *reqParams, q *model.QueryCondition) {
+	recType, _ := strconv.Atoi(req.RecType)
+	payType, _ := strconv.Atoi(req.PayType)
+	transStatus, _ := strconv.Atoi(req.Status)
+
+	switch recType {
+	case 1:
+		q.TradeFrom = []string{model.IOS, model.Android}
+	case 2, 8:
+		// 暂时没有
+	case 4:
+		q.TradeFrom = []string{model.Wap}
+	case 3:
+		q.TradeFrom = []string{model.IOS, model.Android}
+	case 5:
+		q.TradeFrom = []string{model.IOS, model.Android, model.Wap}
+	case 15:
+		// ignore
+	}
+
+	switch payType {
+	case 1:
+		q.ChanCode = channel.ChanCodeAlipay
+	case 2:
+		q.ChanCode = channel.ChanCodeWeixin
+	case 3:
+		// ignore
+	}
+
+	switch transStatus {
+	case 1:
+		q.TransStatus = []string{model.TransSuccess}
+	case 2:
+		q.RefundStatus = []int{model.TransPartRefunded}
+	case 4:
+		q.RefundStatus = []int{model.TransRefunded}
+	case 6:
+		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
+	case 7:
+		q.TransStatus = []string{model.TransSuccess}
+		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
+	}
 }
