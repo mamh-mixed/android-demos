@@ -19,7 +19,9 @@ import android.widget.TextView;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QiniuCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
@@ -246,11 +248,9 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             //先检查是否都填写了
             return;
         }
+
         if (isAllUploadSuccess) {
-            //组织机构
-            String alertMsg = "都上传成功了，不要再次上传了";
-            Bitmap wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            //都上传成功了 updateUser
             return;
         }
 
@@ -265,7 +265,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         qiniuMultiUploadService.upload(imageMap, qiniuKeyPattern, new QiniuCallbackListener() {
             @Override
             public void onComplete(String key, ResponseInfo info, JSONObject response, int photoKey) {
-                updateUploadSuccess(key, info, response, photoKey);
+                updateUploadSuccess(photoKey);
             }
 
             @Override
@@ -294,7 +294,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         return true;
     }
 
-    private void updateUploadSuccess(String key, ResponseInfo info, JSONObject response, int photoKey) {
+    private void updateUploadSuccess(int photoKey) {
         String successStr = getString(R.string.limit_increase_upload_success);
         switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
             case PICK_ID_P_REQUEST: // 身份证 正面
@@ -319,9 +319,41 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         if (checkAllUploadSuccess()) {
             endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
             isAllUploadSuccess = true;
+
+            improveCertInfo();
         }
     }
 
+    private void improveCertInfo() {
+        /**
+         * merName(店铺名称),
+         * merAddr（店铺地址）,
+         * legalCertPos（法人证书正面）,
+         * legalCertOpp（法人证书反面）,
+         * businessLicense（营业执照）,
+         * taxRegistCert（税务登记证）,
+         * organizeCodeCert（组织机构代码证）
+         */
+        Map<String, String> map = new Hashtable<>();
+        for (MerchantPhoto merchantPhoto : imageMap.values()) {
+            //这里要不要判断一下是否为空呢？？？
+            map.put(merchantPhoto.getImageName(), merchantPhoto.getQiniuKey());
+        }
+
+        User user = SessonData.loginUser;
+        quickPayService.improveCertInfoAsync(user, map, new QuickPayCallbackListener<Void>() {
+            @Override
+            public void onSuccess(Void data) {
+                //improve成功，接下来 activateUser激活
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+
+            }
+        });
+
+    }
 
     private void updateUploadFailure(QuickPayException ex, int photoKey) {
         endLoading();//这个要判断一下是否map中图片都上传失败，或者成功，然后才能结束loading的动画。
@@ -385,6 +417,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     mCardPositive.setRightText(selectedStr);
                     imageMap.put(PICK_ID_P_REQUEST, getMerchantPhoto(data));
+                    imageMap.get(PICK_ID_P_REQUEST).setImageName("legalCertPos");//标记一下这个图片的名称
                 } else {
                     mCardPositive.setRightText(unselectedStr);
                     //这里取消选择的照片，这里设置为null，当在使用的时候要检查是否为null
@@ -395,6 +428,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     mCardNegative.setRightText(selectedStr);
                     imageMap.put(PICK_ID_N_REQUEST, getMerchantPhoto(data));
+                    imageMap.get(PICK_ID_N_REQUEST).setImageName("legalCertOpp");//标记一下这个图片的名称
                 } else {
                     mCardNegative.setRightText(unselectedStr);
                     imageMap.remove(PICK_ID_N_REQUEST);//取消选择的照片也就是删除map中对应key的value
@@ -404,6 +438,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     mBusiness.setRightText(selectedStr);
                     imageMap.put(PICK_B_REQUEST, getMerchantPhoto(data));
+                    imageMap.get(PICK_B_REQUEST).setImageName("businessLicense");//标记一下这个图片的名称
                 } else {
                     mBusiness.setRightText(unselectedStr);
                     imageMap.remove(PICK_B_REQUEST);//取消选择的照片也就是删除map中对应key的value
@@ -413,6 +448,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     mTax.setRightText(selectedStr);
                     imageMap.put(PICK_TAX_REQUEST, getMerchantPhoto(data));
+                    imageMap.get(PICK_TAX_REQUEST).setImageName("taxRegistCert");//标记一下这个图片的名称
                 } else {
                     mTax.setRightText(unselectedStr);
                     imageMap.remove(PICK_TAX_REQUEST);//取消选择的照片也就是删除map中对应key的value
@@ -422,6 +458,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 if (resultCode == RESULT_OK) {
                     mOrganization.setRightText(selectedStr);
                     imageMap.put(PICK_O_REQUEST, getMerchantPhoto(data));
+                    imageMap.get(PICK_O_REQUEST).setImageName("organizeCodeCert");//标记一下这个图片的名称
                 } else {
                     mOrganization.setRightText(unselectedStr);
                     imageMap.remove(PICK_O_REQUEST);//取消选择的照片也就是删除map中对应key的value
