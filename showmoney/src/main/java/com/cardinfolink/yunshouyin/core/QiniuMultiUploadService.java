@@ -1,5 +1,7 @@
 package com.cardinfolink.yunshouyin.core;
 
+import android.util.Log;
+
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
@@ -83,7 +85,7 @@ public class QiniuMultiUploadService {
                     if (info.isOK()) {
                         merchantPhoto.setQiniuKey(qiniuKey);
                         merchantPhoto.setFileType(fileType);
-                        mListener.onComplete(mQiniuKeyPattern, photoKey);
+                        mListener.onComplete(key, info, response, photoKey);
                     } else {
                         merchantPhoto.setQiniuKey(null);
                         merchantPhoto.setFileType(null);
