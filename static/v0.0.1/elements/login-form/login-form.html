@@ -197,10 +197,8 @@
 
             return;
           }
-          this.user = {
-            userName: '',
-            password: ''
-          };
+          this.set('user.userName', '');
+          this.set('user.password', '');
 
           var detail = {
             loginUser: response.data,
