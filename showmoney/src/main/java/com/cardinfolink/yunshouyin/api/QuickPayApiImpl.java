@@ -569,4 +569,40 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    @Override
+    public void improveCertInfo(User user, Map<String, String> imageMap) {
+        /**
+         * 送username，password
+         * merName(店铺名称),
+         * merAddr（店铺地址）,
+         * legalCertPos（法人证书正面）,
+         * legalCertOpp（法人证书反面）,
+         * businessLicense（营业执照）,
+         * taxRegistCert（税务登记证）,
+         * organizeCodeCert（组织机构代码证）
+         */
+        String url = quickPayConfigStorage.getUrl() + "/improveCertInfo";
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        params.put("password", password);
+        params.put("transtime", getTransTime());
+        //把名字对应值都放入到params里面
+        for (Map.Entry<String, String> map : imageMap.entrySet()) {
+            params.put(map.getKey(), map.getValue());
+        }
+        params.put("sign", createSign(params, "SHA-1"));
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
 }

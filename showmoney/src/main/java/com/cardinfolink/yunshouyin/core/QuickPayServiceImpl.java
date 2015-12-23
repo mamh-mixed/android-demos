@@ -11,6 +11,7 @@ import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -368,5 +369,30 @@ public class QuickPayServiceImpl implements QuickPayService {
             }
         }.execute();
 
+    }
+
+    @Override
+    public void improveCertInfoAsync(final User user, final Map<String, String> imageMap, final QuickPayCallbackListener<Void> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
+
+            @Override
+            protected AsyncTaskResult<Void> doInBackground(Void... params) {
+                try {
+                    quickPayApi.improveCertInfo(user, imageMap);
+                    return null;
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<Void>(ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<Void> result) {
+                if (result == null) {//这里为null表示成功
+                    listener.onSuccess(null);
+                } else {
+                    listener.onFailure(result.getException());
+                }
+            }
+        }.execute();
     }
 }
