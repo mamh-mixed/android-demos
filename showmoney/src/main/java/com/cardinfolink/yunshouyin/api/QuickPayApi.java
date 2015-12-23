@@ -6,6 +6,8 @@ import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import com.cardinfolink.yunshouyin.model.Txn;
 
+import java.util.Map;
+
 public interface QuickPayApi {
     // user related
     void register(String username, String password);
@@ -43,4 +45,5 @@ public interface QuickPayApi {
     //获取七牛的token的方法
     String getUploadToken(User user);
 
+    void improveCertInfo(User user, Map<String, String> imageMap);
 }

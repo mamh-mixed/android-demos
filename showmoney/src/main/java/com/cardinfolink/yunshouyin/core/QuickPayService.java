@@ -5,6 +5,8 @@ import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
+import java.util.Map;
+
 public interface QuickPayService {
     void registerAsync(String username, String password, String password_repeat, QuickPayCallbackListener<Void> listener);
 
@@ -35,4 +37,6 @@ public interface QuickPayService {
 
     //获取七牛上传图片时用的token
     void getUploadTokenAsync(User user, QuickPayCallbackListener<String> listener);
+
+    void improveCertInfoAsync(User user, Map<String, String> imageMap, QuickPayCallbackListener<Void> listener);
 }
