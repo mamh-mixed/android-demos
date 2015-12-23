@@ -21,6 +21,11 @@ func New(localCurr, targetCurr string) Dcc {
 	return Dcc{localCurr: localCurr, targetCurr: targetCurr}
 }
 
+// NewUSD 对美元
+func NewUSD(localCurr string) Dcc {
+	return Dcc{localCurr: localCurr, targetCurr: "USD"}
+}
+
 // Do 汇率转换
 func Do(txamt int64) (amt int64, rate float64, err error) {
 	return defaultDcc.Do(txamt)
@@ -50,6 +55,7 @@ func (d Dcc) Do(txamt int64) (amt int64, rate float64, err error) {
 			}
 			continue
 		}
+		break
 	}
 	rate = er.Rate
 	amt = int64(math.Floor(float64(txamt)*rate + 0.5))

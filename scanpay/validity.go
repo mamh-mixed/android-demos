@@ -16,6 +16,7 @@ const (
 
 // fieldName
 const (
+	curr       = "currency"
 	txamt      = "txamt"
 	orderNum   = "orderNum 或 origOrderNum"
 	agentCode  = "inscd"
@@ -55,6 +56,8 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 		return fieldEmptyError(txamt)
 	case req.ScanCodeId == "":
 		return fieldEmptyError(scanCodeId)
+	case req.Currency == "":
+		return fieldEmptyError(curr)
 	}
 
 	// 验证格式
@@ -91,6 +94,8 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
 		return fieldEmptyError(txamt)
+	case req.Currency == "":
+		return fieldEmptyError(curr)
 	}
 
 	// 验证格式
