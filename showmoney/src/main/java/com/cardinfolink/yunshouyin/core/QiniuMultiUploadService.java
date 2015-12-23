@@ -66,26 +66,29 @@ public class QiniuMultiUploadService {
     public void upload(final String uploadToken) {
         for (Map.Entry<Integer, MerchantPhoto> map : photoMap.entrySet()) {
             final int photoKey = map.getKey();
-            MerchantPhoto merchantPhoto = map.getValue();
+            final MerchantPhoto merchantPhoto = map.getValue();
             if (merchantPhoto == null) {
-                //这里判断一下是不是null
+                //这里判断一下是不是null,hashTable 的value不能是null
                 continue;
             }
 
             String filename = merchantPhoto.getFilename();
             //NOTE: 文件可能没有后缀名
-            String fileType = filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : "";
-            String qiniuKey = String.format(mQiniuKeyPattern, UUID.randomUUID().toString().replace("-", ""), fileType);
+            final String fileType = filename.lastIndexOf(".") >= 0 ? filename.substring(filename.lastIndexOf(".") + 1) : "";
+            final String qiniuKey = String.format(mQiniuKeyPattern, UUID.randomUUID().toString().replace("-", ""), fileType);
 
-            merchantPhoto.setQiniuKey(qiniuKey);
 
             //上传完成的 回调
             UpCompletionHandler completionHandler = new UpCompletionHandler() {
                 @Override
                 public void complete(String key, ResponseInfo info, JSONObject response) {
                     if (info.isOK()) {
+                        merchantPhoto.setQiniuKey(qiniuKey);
+                        merchantPhoto.setFileType(fileType);
                         mListener.onComplete(key, info, response, photoKey);
                     } else {
+                        merchantPhoto.setQiniuKey(null);
+                        merchantPhoto.setFileType(null);
                         mListener.onFailure(new QuickPayException(), photoKey);
                     }
                 }
