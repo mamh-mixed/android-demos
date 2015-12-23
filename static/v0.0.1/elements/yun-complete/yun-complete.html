@@ -211,7 +211,13 @@
           } else {
             this.hasKeyword = false;
           }
-          if (keyword === oldValue.trim() || !this.isFocus) {
+
+          if (newValue.length < oldValue.length) {
+            this.isSelected = false;
+            this.set('selectedItem', {});
+          }
+
+          if (keyword === oldValue.trim() || this.isSelected || !this.isFocus) {
             return;
           }
 
@@ -219,7 +225,6 @@
         },
         // input点击事件，第一次
         handleInputTapEvent: function() {
-          this.set('isFocus', true);
           this.sendRequest(this.keyword);
         },
         // 发送查询的ajax请求
@@ -305,6 +310,7 @@
         },
         // 选择一项
         select: function(item) {
+          this.set('isSelected', true);
           item = item || this.list[this.activeIndex];
           if (!item) {
             return;
@@ -315,18 +321,10 @@
             code: code,
             name: name
           });
-          this.set('isFocus', false);
           this.set('keyword', code + '-' + name);
-          // this.set('isSelected', true);
-          this.$.dropdown.close();
-          // input 触发失去焦点事件
-          var evt = document.createEvent('MouseEvent');
-          evt.initEvent('blur', true, true);
-          this.$.input.dispatchEvent(evt);
         },
         // 清空文本框内容
         clear: function() {
-          // this.set('isSelected', false);
           this.set('keyword', '');
           this.set('selectedItem', {});
         },
@@ -339,7 +337,6 @@
           switch (e.keyCode) {
             case 13: // enter event
               this.select();
-              // e.preventDefault();
               break;
             case 38: // arrow up event
               this.prev();
@@ -351,12 +348,16 @@
               console.log(e.keyCode);
           }
         },
-        // 只展示文本的text的点击事件
+        // 文本框获得焦点事件
         handleInputFocusEvent: function(e) {
           this.set('isFocus', true);
         },
         handleInputBlurEvent: function() {
+          this.$.dropdown.close();
           this.set('isFocus', false);
+          if (!this.isSelected) {
+            this.clear();
+          }
         }
       });
     })();
