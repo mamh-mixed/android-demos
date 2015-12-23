@@ -79,22 +79,30 @@ public class QiniuMultiUploadService {
 
             merchantPhoto.setQiniuKey(qiniuKey);
 
-            uploadManager.put(filename, qiniuKey, uploadToken,
-                    new UpCompletionHandler() {
-                        @Override
-                        public void complete(String key, ResponseInfo info, JSONObject response) {
-                            if (info.isOK()) {
-                                mListener.onComplete(key, info, response, photoKey);
-                            } else {
-                                mListener.onFailure(new QuickPayException(), photoKey);
-                            }
-                        }
-                    },
-                    new UploadOptions(null, null, false, new UpProgressHandler() {
-                        public void progress(String key, double percent) {
-                            mListener.onProgress(key, percent, photoKey);//photoKey标记是正在上传的哪个照片
-                        }
-                    }, null));
+            //上传完成的 回调
+            UpCompletionHandler completionHandler = new UpCompletionHandler() {
+                @Override
+                public void complete(String key, ResponseInfo info, JSONObject response) {
+                    if (info.isOK()) {
+                        mListener.onComplete(key, info, response, photoKey);
+                    } else {
+                        mListener.onFailure(new QuickPayException(), photoKey);
+                    }
+                }
+            };
+
+            //上传正在进行中的回调
+            UpProgressHandler upProgressHandler = new UpProgressHandler() {
+                public void progress(String key, double percent) {
+                    mListener.onProgress(key, percent, photoKey);//photoKey标记是正在上传的哪个照片
+                }
+            };
+
+            //上传的 选项
+            UploadOptions uploadOptions = new UploadOptions(null, null, false, upProgressHandler, null);
+
+            //这里开始真正的上传
+            uploadManager.put(filename, qiniuKey, uploadToken, completionHandler, uploadOptions);
         }
     }
 }
