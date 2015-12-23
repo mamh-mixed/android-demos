@@ -58,19 +58,21 @@ public class StartIncreaseActivity extends BaseActivity implements View.OnClickL
             case R.id.iv_help:
                 //显示一个提示信息的对话框
                 mHintDialog.show();
-                mHintDialog.setTitle("个体工商户 所需材料\n法人身份证\n营业执照\n\n企业商户 所需材料\n法人身份证\n企业营业执照\n税务登记证\n组织机构代码证");
-                mHintDialog.setOkText("我知道了");
+                mHintDialog.setTitle(getString(R.string.increase_message1));
+                mHintDialog.setOkText(getString(R.string.increase_i_know));
                 break;
             case R.id.btnperson:
                 //个体用户
                 intent = new Intent(StartIncreaseActivity.this, LimitIncreaseActivity.class);
                 intent.putExtra(TYPE, PERSON);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.btncompany:
                 intent = new Intent(StartIncreaseActivity.this, LimitIncreaseActivity.class);
                 intent.putExtra(TYPE, COMPANY);
                 startActivity(intent);
+                finish();
                 //企业用户
                 break;
         }
