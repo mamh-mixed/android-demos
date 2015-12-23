@@ -78,6 +78,10 @@
             type: Object,
             value: {},
           },
+          language: {
+            type: String,
+            observer: '_watchLanguageChanged'
+          }
         },
         listeners: {
           'i18n-language-change': 'handleI18nLanguageChangeEvent',
@@ -100,6 +104,22 @@
         },
         attached: function() {
           this.$.appRouter.init();
+
+          setTimeout(function() {
+            var srcs = [
+              'elements/trade-list/trade-list.html',
+              'elements/trade-detail/trade-detail.html',
+              'elements/trade-view/trade-view.html',
+              'elements/trade-message/trade-message.html'
+            ];
+
+            srcs.forEach(function(src) {
+              var iframe = document.createElement('iframe');
+              iframe.style = 'display: none;';
+              iframe.src = src;
+              document.body.appendChild(iframe);
+            });
+          }, 1);
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
@@ -272,6 +292,10 @@
               var msgId = item.getAttribute('data-msg-id');
               item.setAttribute('locale', i18nMsg.getMsg(msgId));
             }
+            if (item.hasAttribute('locale-msg-id')) {
+              var msgId = item.getAttribute('locale-msg-id');
+              item.setAttribute('locale', i18nMsg.getMsg(msgId));
+            }
           }
 
           var xSelects = document.querySelectorAll('x-select');
@@ -311,6 +335,11 @@
             return;
           }
           Util.showLoginDialog();
+        },
+        _watchLanguageChanged: function(newVal) {
+          if (newVal && newVal !== '') {
+            I18nMsg.lang = newVal;
+          }
         }
       });
     })();
