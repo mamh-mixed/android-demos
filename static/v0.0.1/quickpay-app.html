@@ -119,8 +119,8 @@
 
             srcs.forEach(function(src) {
               var iframe = document.createElement('iframe');
-              iframe.style = 'display: none;';
-              iframe.src = src;
+              iframe.setAttribute('style', 'display: none;');
+              iframe.setAttribute('src', src);
               document.body.appendChild(iframe);
             });
           }, 1);
