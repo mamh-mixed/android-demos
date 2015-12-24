@@ -166,8 +166,12 @@
     <string name="refd_dialog_amount_foramt_error">金额格式错误</string>
     <string name="refd_dialog_amount_not_exceeds_max">金额不能超过%s元</string>
     <string name="refd_dialog__password_error">密码错误!</string>
+
     <string name="scancode_view_create_code">生成二维码</string>
     <string name="scancode_view_scaning_code">开始扫描</string>
+    <string name="scancode_view_no_pay">顾客未付款</string>
+    <string name="scancode_view_pay_success">顾客付款成功</string>
+
     <string name="toast_money_cannot_zero">金额不能为零!</string>
     <string name="toast_money_too_large">金额过大!</string>
 
@@ -208,7 +212,7 @@
     <string name="txt_close">关闭</string>
     <string name="txt_return">返回</string>
     <string name="txt_goto_bill">去账单</string>
-    <string name="txt_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。45秒后不成功将取消该笔交易。</string>
+    <string name="txt_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
     <string name="txt_history_txns">历史交易</string>
     <string name="txt_query_result">查询结果</string>
     <string name="txt_reset_messsage">如果你忘记密码请点击重置密码</string>
