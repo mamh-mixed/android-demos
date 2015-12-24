@@ -71,7 +71,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="5dp"
-                    android:background="@drawable/white_selector"
+                    android:background="@drawable/blue_selector"
                     android:padding="5dp"
                     android:text="@string/txn_status_refresh"
                     android:textColor="#FFFFFF"
@@ -256,7 +256,7 @@
                     android:id="@+id/btn_refd"
                     android:layout_width="300dp"
                     android:layout_height="50dp"
-                    android:background="@drawable/white_selector"
+                    android:background="@drawable/blue_selector"
                     android:text="@string/detail_refd"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp" />

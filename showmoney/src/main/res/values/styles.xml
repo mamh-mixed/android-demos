@@ -31,7 +31,7 @@
 
 
     <style name="MyToggleButton" parent="@android:style/Widget.CompoundButton">
-        <item name="android:button">@drawable/setting_switch</item>
+        <item name="android:button">@drawable/switch_selector</item>
     </style>
 
 

@@ -53,7 +53,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="80dp"
-            android:background="@drawable/white_selector"
+            android:background="@drawable/blue_selector"
             android:text="@string/activate_had_not_activated"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />

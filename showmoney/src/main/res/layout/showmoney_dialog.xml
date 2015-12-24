@@ -15,7 +15,7 @@
             android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/dialog_color"
+            android:background="@drawable/dialog_bg"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -62,7 +62,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_cancel"
                     android:textSize="17sp" />
@@ -72,7 +72,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_confirm"
                     android:textSize="17sp" />
@@ -94,7 +94,7 @@
             android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/dialog_color"
+            android:background="@drawable/dialog_bg"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -188,7 +188,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_cancel"
                     android:textSize="17sp" />
@@ -198,7 +198,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_confirm"
                     android:textSize="17sp" />
@@ -220,7 +220,7 @@
             android:layout_width="220dp"
             android:layout_height="180dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/dialog_color"
+            android:background="@drawable/dialog_bg"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -267,7 +267,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_confirm"
                     android:textSize="17sp" />
@@ -309,7 +309,7 @@
             android:layout_width="300dp"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/dialog_color"
+            android:background="@drawable/dialog_bg"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -363,7 +363,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/detail_activity_busicd_canc"
                     android:textSize="17sp" />
@@ -391,7 +391,7 @@
             android:layout_width="320dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/dialog_color"
+            android:background="@drawable/dialog_bg"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -416,7 +416,7 @@
                     android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_cancel"
                     android:textSize="17sp" />
@@ -427,7 +427,7 @@
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginBottom="20dp"
-                    android:background="@drawable/dialog_button_color"
+                    android:background="@drawable/dialog_button_selector"
                     android:gravity="center"
                     android:text="@string/txt_reset"
                     android:textSize="17sp" />

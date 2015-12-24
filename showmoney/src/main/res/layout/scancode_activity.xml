@@ -49,7 +49,7 @@
         android:layout_below="@id/sabi_back"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/flashlight_color"
+        android:background="@drawable/flashlight_bg"
         android:scaleType="centerInside"
         android:src="@drawable/flashlight" />
 

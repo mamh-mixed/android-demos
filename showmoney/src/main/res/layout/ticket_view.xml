@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_textview_cartl"
+            android:background="@drawable/ticket_edittext_bg"
             android:hint="@string/coupon_reminder" />
 
         <ImageView
@@ -81,7 +81,7 @@
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_weight="0"
-            android:background="@drawable/shape_textview_cartl"
+            android:background="@drawable/ticket_edittext_bg"
             android:src="@drawable/ticket_camera" />
     </LinearLayout>
 
@@ -92,7 +92,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="60dp"
-        android:background="@drawable/white_selector"
+        android:background="@drawable/blue_selector"
         android:text="@string/coupon_confirm" />
 
 </LinearLayout>
