@@ -84,7 +84,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.scancode_activity);
+        setContentView(R.layout.activity_capture);
         Intent intent = getIntent();
         total = intent.getStringExtra("total");
         //这里不需要传人支付类型了，服务器判断。

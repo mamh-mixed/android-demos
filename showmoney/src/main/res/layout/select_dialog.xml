@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--专门用来选择省份城市银行的一个界面，带有两个滚轮的界面-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/select_dialog"
     android:layout_width="match_parent"

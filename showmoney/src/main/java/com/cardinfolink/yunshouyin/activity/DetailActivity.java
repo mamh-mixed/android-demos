@@ -57,7 +57,7 @@ public class DetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.detail_activity);
+        setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
         Bundle billBundle = intent.getBundleExtra("BillBundle");
         mTradeBill = (TradeBill) billBundle.get("TradeBill");

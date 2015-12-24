@@ -52,7 +52,7 @@ public class CreateQRcodeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_qrcode);
+        setContentView(R.layout.activity_create_qrcode);
         Intent intent = getIntent();
         total = intent.getStringExtra("total");
         chcd = intent.getStringExtra("chcd");
