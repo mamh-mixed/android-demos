@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -367,6 +368,45 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mQRImage.clearAnimation();
     }
 
+    private boolean validate(double sum) {
+        if (sum <= 0) {
+            //"金额不能为零!"
+            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
+            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (sum > MAX_MONEY) {
+            //金额太大了
+            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void startQRPay(final double sum) {
+        if (!validate(sum)) {
+            return;
+        }
+
+        if (mCHCD.equals(CHCD_TYPE[0])) {
+            setLeft();//微信
+        } else {
+            setRight();//支付宝
+        }
+
+        startLoading();//load 二维码是的动画
+
+        //生成二维码比较慢？？？！！！
+        checkLimit(new CheckLimitInterface() {
+            @Override
+            public void start() {
+                createOrder(String.valueOf(sum), mCHCD);
+            }
+        });
+
+        showScanCode();//显示二维码界面
+    }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -382,41 +422,33 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 int dy = currentY - mLastDownY;
                 if (dy < 0) {
                     if (Math.abs(dy) > keyboardView.getHeight() / 2) {
-                        if (sum <= 0) {
-                            //"金额不能为零!"
-                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
-                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-                        if (sum > MAX_MONEY) {
-                            //金额太大了
-                            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
-                            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-
-                        if (mCHCD.equals(CHCD_TYPE[0])) {
-                            setLeft();//微信
-                        } else {
-                            setRight();//支付宝
-                        }
-
-                        startLoading();//load 二维码是的动画
-
-                        //生成二维码比较慢？？？！！！
-                        checkLimit(new CheckLimitInterface() {
-                            @Override
-                            public void start() {
-                                createQRcode(String.valueOf(sum), mCHCD);
-                            }
-                        });
-
-                        showScanCode();//显示二维码界面
+                        startQRPay(sum);
                     }
                 }
                 break;
         }
         return false;
+    }
+
+    private void startCapturePay(final double sum) {
+        if (!validate(sum)) {
+            return;
+        }
+
+        checkLimit(new CheckLimitInterface() {
+            @Override
+            public void start() {
+                //进入照相机扫码界面
+                Intent intent = new Intent(mContext, CaptureActivity.class);
+                //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
+                Bundle bundle = new Bundle();
+                bundle.putString("chcd", mCHCD); //这里要传人 支付类型，是微信还是支付宝
+                bundle.putString("total", "" + sum);
+                bundle.putString("original", "scancodeview");
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -425,84 +457,28 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         final double sum = Double.parseDouble(input.getText().toString().substring(1));
         switch (v.getId()) {
             case R.id.scancodepay:
-                if (sum <= 0) {
-                    //"金额不能为零!"
-                    String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
-                    Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (sum > MAX_MONEY) {
-                    //金额太大了
-                    String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
-                    Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                checkLimit(new CheckLimitInterface() {
-                    @Override
-                    public void start() {
-                        //进入照相机扫码界面
-                        Intent intent = new Intent(mContext, CaptureActivity.class);
-                        //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
-                        Bundle bundle=new Bundle();
-                        bundle.putString("chcd", mCHCD); //这里要传人 支付类型，是微信还是支付宝
-                        bundle.putString("total", "" + sum);
-                        bundle.putString("original","scancodeview");
-                        intent.putExtras(bundle);
-                        mContext.startActivity(intent);
-                    }
-                });
-
+                startCapturePay(sum);
                 break;
             case R.id.iv_left:
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
-                    mCHCD = CHCD_TYPE[0];//切换了支付方式 ，就赋值给mCHCD
-                    setLeft();
-                    startLoading();
+                    mCHCD = CHCD_TYPE[0];
                     cancelOrder();//取消订单
-                    checkLimit(new CheckLimitInterface() {
-                        @Override
-                        public void start() {
-                            //这里 生成二维码
-                            createQRcode(String.valueOf(sum), mCHCD);
-                        }
-                    });
+                    startQRPay(sum);
                 }
                 break;
             case R.id.iv_right:
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[1])) {
-                    mCHCD = CHCD_TYPE[1];//切换了支付方式 ，就赋值给mCHCD
-                    setRight();
-                    startLoading();
+                    mCHCD = CHCD_TYPE[1];
                     cancelOrder();//取消订单
-                    checkLimit(new CheckLimitInterface() {
-                        @Override
-                        public void start() {
-                            //这里 生成二维码
-                            createQRcode(String.valueOf(sum), mCHCD);
-                        }
-                    });
+                    startQRPay(sum);
                 }
                 break;
             case R.id.scan_qr:
                 cancelOrder();//取消订单
                 showKeyBoard();
-
-                checkLimit(new CheckLimitInterface() {
-                    @Override
-                    public void start() {
-                        //进入照相机扫码界面
-                        Intent intent = new Intent(mContext, CaptureActivity.class);
-                        Bundle bundle=new Bundle();
-                        bundle.putString("chcd", mCHCD); //这里要传人 支付类型，是微信还是支付宝
-                        bundle.putString("total", "" + sum);
-                        bundle.putString("original","scancodeview");
-                        intent.putExtras(bundle);
-                        mContext.startActivity(intent);
-                    }
-                });
+                startCapturePay(sum);
                 break;
             case R.id.iv_keyboard:
                 cancelOrder();//取消订单
@@ -829,7 +805,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      * @param total
      * @param chcd
      */
-    private void createQRcode(String total, String chcd) {
+    private void createOrder(String total, String chcd) {
         final OrderData orderData = new OrderData();
         orderData.orderNum = geneOrderNumber();
         orderData.txamt = total;
@@ -873,7 +849,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         CashierSdk.startCanc(originOrder, new CashierListener() {
             @Override
             public void onResult(ResultData resultData) {
-                originOrder = null;
+                if (resultData != null && originOrder != null && resultData.origOrderNum.equals(originOrder.origOrderNum)) {
+                    Log.e(TAG, " cancel success");
+                    originOrder = null;
+                }
             }
 
             @Override
