@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ import com.qiniu.android.http.ResponseInfo;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,26 +139,31 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.id_card_positive:
                 //身份证 正面
+                setTakePhotoOnClickListener(PICK_ID_P_REQUEST);
                 setPickPhotoOnClickListener(mCardPositive.getTitle(), PICK_ID_P_REQUEST);
                 selectPic.show();
                 break;
             case R.id.id_card_negaitive:
                 //身份证 反面
+                setTakePhotoOnClickListener(PICK_ID_N_REQUEST);
                 setPickPhotoOnClickListener(mCardNegative.getTitle(), PICK_ID_N_REQUEST);
                 selectPic.show();
                 break;
             case R.id.business:
                 //营业执照
+                setTakePhotoOnClickListener(PICK_B_REQUEST);
                 setPickPhotoOnClickListener(mBusiness.getTitle(), PICK_B_REQUEST);
                 selectPic.show();
                 break;
             case R.id.tax:
                 //税务
+                setTakePhotoOnClickListener(PICK_TAX_REQUEST);
                 setPickPhotoOnClickListener(mTax.getTitle(), PICK_TAX_REQUEST);
                 selectPic.show();
                 break;
             case R.id.organization:
                 //组织机构
+                setTakePhotoOnClickListener(PICK_O_REQUEST);
                 setPickPhotoOnClickListener(mOrganization.getTitle(), PICK_O_REQUEST);
                 selectPic.show();
                 break;
@@ -164,6 +171,27 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 uploadPhoto();
                 break;
         }
+
+    }
+
+
+    private void setTakePhotoOnClickListener(final int requestCode) {
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File imageFile = new File(dir, "yunshouyin_" + requestCode + "_.jpg");
+        if (imageFile.exists()) {
+            imageFile.delete();
+        }
+        Uri uri = Uri.fromFile(imageFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
+        selectPic.setTakePhotoOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(intent, requestCode);
+                selectPic.hide();
+            }
+        });
 
     }
 
@@ -456,7 +484,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             case PICK_ID_P_REQUEST:            // 身份证 正面
                 if (resultCode == RESULT_OK) {
                     mCardPositive.setRightText(selectedStr);
-                    imageMap.put(PICK_ID_P_REQUEST, getMerchantPhoto(data));
+                    imageMap.put(PICK_ID_P_REQUEST, getMerchantPhoto(requestCode, data));
                     imageMap.get(PICK_ID_P_REQUEST).setImageName("legalCertPos");//标记一下这个图片的名称
                 } else {
                     mCardPositive.setRightText(unselectedStr);
@@ -467,7 +495,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             case PICK_ID_N_REQUEST://身份证 反面
                 if (resultCode == RESULT_OK) {
                     mCardNegative.setRightText(selectedStr);
-                    imageMap.put(PICK_ID_N_REQUEST, getMerchantPhoto(data));
+                    imageMap.put(PICK_ID_N_REQUEST, getMerchantPhoto(requestCode, data));
                     imageMap.get(PICK_ID_N_REQUEST).setImageName("legalCertOpp");//标记一下这个图片的名称
                 } else {
                     mCardNegative.setRightText(unselectedStr);
@@ -477,7 +505,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             case PICK_B_REQUEST://营业执照
                 if (resultCode == RESULT_OK) {
                     mBusiness.setRightText(selectedStr);
-                    imageMap.put(PICK_B_REQUEST, getMerchantPhoto(data));
+                    imageMap.put(PICK_B_REQUEST, getMerchantPhoto(requestCode, data));
                     imageMap.get(PICK_B_REQUEST).setImageName("businessLicense");//标记一下这个图片的名称
                 } else {
                     mBusiness.setRightText(unselectedStr);
@@ -487,7 +515,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             case PICK_TAX_REQUEST://税务
                 if (resultCode == RESULT_OK) {
                     mTax.setRightText(selectedStr);
-                    imageMap.put(PICK_TAX_REQUEST, getMerchantPhoto(data));
+                    imageMap.put(PICK_TAX_REQUEST, getMerchantPhoto(requestCode, data));
                     imageMap.get(PICK_TAX_REQUEST).setImageName("taxRegistCert");//标记一下这个图片的名称
                 } else {
                     mTax.setRightText(unselectedStr);
@@ -497,7 +525,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             case PICK_O_REQUEST://组织机构
                 if (resultCode == RESULT_OK) {
                     mOrganization.setRightText(selectedStr);
-                    imageMap.put(PICK_O_REQUEST, getMerchantPhoto(data));
+                    imageMap.put(PICK_O_REQUEST, getMerchantPhoto(requestCode, data));
                     imageMap.get(PICK_O_REQUEST).setImageName("organizeCodeCert");//标记一下这个图片的名称
                 } else {
                     mOrganization.setRightText(unselectedStr);
@@ -506,6 +534,17 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private MerchantPhoto getMerchantPhoto(int requestCode, Intent data) {
+        if (data == null) {//等于null说明是拍照得来的
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File imageFile = new File(dir, "yunshouyin_" + requestCode + "_.jpg");
+            Uri uri = Uri.fromFile(imageFile);
+            return new MerchantPhoto(uri, imageFile.getAbsolutePath());
+        } else {
+            return getMerchantPhoto(data);
+        }
     }
 
     private MerchantPhoto getMerchantPhoto(Intent data) {
