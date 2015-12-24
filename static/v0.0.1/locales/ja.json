@@ -11,6 +11,10 @@
     "description": "保存按钮",
     "message": "保存"
   },
+  "BUTTON.UPDATE": {
+    "description": "更新按钮",
+    "message": "更新"
+  },
   "BUTTON.QUERY": {
     "description": "查询按钮",
     "message": "検索"
@@ -29,11 +33,11 @@
   },
   "BUTTON.CLOSE": {
     "description": "关闭按钮",
-    "message": "クローズ"
+    "message": "閉じる"
   },
   "PAGINATION.PER_PAGE_PREFIX": {
     "description": "每页显示前缀",
-    "message": "ページ各に"
+    "message": "ページ毎"
   },
   "PAGINATION.PER_PAGE_SUFFIX": {
     "description": "每页显示后缀",
@@ -93,19 +97,19 @@
   },
   "PASSWORDMODIFICATION.USERNAME": {
     "description": "用户名",
-    "message": "ユーザー"
+    "message": "ユーザー名"
   },
   "PASSWORDMODIFICATION.OLDPASSWORD": {
     "description": "原密码",
-    "message": "元パスワード"
+    "message": "現在のパスワード"
   },
   "PASSWORDMODIFICATION.NEWPASSWORD": {
     "description": "新密码",
-    "message": "新パスワード"
+    "message": "新しいパスワード"
   },
   "PASSWORDMODIFICATION.CONFIRMPASSWORD": {
     "description": "重复新密码",
-    "message": "重複新パスワード"
+    "message": "パスワードの確認入力"
   },
   "PASSWORDMODIFICATION.REQUIREDITEM": {
     "description": "必填项",
@@ -117,7 +121,7 @@
   },
   "PASSWORDMODIFICATION.TOAST.OLD_PASSWORD_NOT_MATCH": {
     "description": "原密码错误",
-    "message": "元パスワードエラー"
+    "message": "現在のパスワードエラー"
   },
   "PASSWORDMODIFICATION.TOAST.MIDIFICATION_PASSWORD_SUCCESS": {
     "description": "修改密码成功",
@@ -125,51 +129,63 @@
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
     "description": "新密码不能和旧密码相同",
-    "message": "新パスワードと旧パスワードが一致しません"
+    "message": "新しいパスワードと現在のパスワードが一致しません"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
-    "message": "新パスワード不一致"
+    "message": "新しいパスワード不一致"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
     "description": "新密码最小长度位",
-    "message": "新パスワードは８文字未満不可"
+    "message": "新しいパスワードは８文字未満不可"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LONGEST_LENGTH": {
     "description": "新密码最大长度位",
-    "message": "新パスワードは２０文字以上不可"
+    "message": "新しいパスワードは２０文字以上不可"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_BE_COMPLICATED": {
     "description": "新密码必须复杂点，包含大小写字母和数字",
-    "message": "新パスワードは、半角英数字（大文字と小文字）が含まれている必要がある"
+    "message": "新しいパスワードは、半角英数字（大文字と小文字）が含まれている必要がある"
   },
   "SCANPAY_TRADE_LIST.MENU_NAME": {
     "description": "扫码交易菜单名",
-    "message": "QRコード取引"
+    "message": "QRコード取引照会"
   },
   "SCANPAY_TRADE_LIST.TITLE": {
     "description": "扫码支付交易查询",
-    "message": "QRコード取引検索"
+    "message": "QRコード取引照会"
   },
   "SCANPAY_TRADE_LIST.DATE_FROM": {
     "description": "交易时间从",
-    "message": "開始取引時間"
+    "message": "取引時間（From）"
   },
   "SCANPAY_TRADE_LIST.DATE_TO": {
     "description": "交易时间到",
-    "message": "完了取引時間"
+    "message": "取引時間（To）"
   },
   "SCANPAY_TRADE_LIST.AGENT": {
     "description": "代理",
     "message": "代理"
   },
+  "SCANPAY_TRADE_LIST.SUBAGENT": {
+    "description": "公司",
+    "message": "会社"
+  },
   "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
     "description": "公司代码",
     "message": "会社コード"
   },
+  "SCANPAY_TRADE_LIST.GROUP": {
+    "description": "商户代码",
+    "message": "代表店舗"
+  },
   "SCANPAY_TRADE_LIST.GROUP_NO": {
     "description": "商户代码",
-    "message": "加盟店コード"
+    "message": "代表店舗コード"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT": {
+    "description": "门店",
+    "message": "店舗"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
@@ -181,15 +197,15 @@
   },
   "SCANPAY_TRADE_LIST.ORDER_NO": {
     "description": "订单号",
-    "message": "オーダーナンバー"
+    "message": "取引番号"
   },
   "SCANPAY_TRADE_LIST.TERMINAL": {
     "description": "终端",
-    "message": "端末"
+    "message": "端末番号"
   },
   "SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO": {
     "description": "关联订单号",
-    "message": "関連オーダーナンバー"
+    "message": "元取引番号"
   },
   "SCANPAY_TRADE_LIST.RESPONSE_CODE": {
     "description": "应答码",
@@ -203,9 +219,13 @@
     "description": "交易状态",
     "message": "取引状態"
   },
+  "SCANPAY_TRADE_LIST.DOWNLOADREPORT": {
+    "description": "下载报表",
+    "message": "取引明細ダウンロード"
+  },
   "SCANPAY_TRADE_LIST.INDEX": {
     "description": "序号",
-    "message": "番号"
+    "message": "No"
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "交易金额",
@@ -217,7 +237,7 @@
   },
   "SCANPAY_TRADE_LIST.CHANNEL": {
     "description": "渠道",
-    "message": "チャンネル"
+    "message": "決済種別"
   },
   "SCANPAY_TRADE_LIST.REFUND": {
     "description": "退款",
@@ -237,7 +257,7 @@
   },
   "SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT": {
     "description": "商户发起关闭",
-    "message": "加盟店アクションクローズ"
+    "message": "代表店舗アクションクローズ"
   },
   "SCANPAY_TRADE_LIST.CLOSE_BY_SYSTEM_AS_OVERTIME": {
     "description": "交易超时系统关闭",
@@ -265,7 +285,7 @@
   },
   "TRANS_TYPE.PURC": {
     "description": "下单支付",
-    "message": "取引実行"
+    "message": "売上"
   },
   "TRANS_TYPE.PAUT": {
     "description": "预下单",
@@ -277,7 +297,7 @@
   },
   "TRANS_TYPE.REFD": {
     "description": "退款",
-    "message": "リファンド"
+    "message": "取消"
   },
   "TRANS_TYPE.VERI": {
     "description": "卡券核销",
@@ -285,11 +305,11 @@
   },
   "TRANS_TYPE.CANC": {
     "description": "取消",
-    "message": "取消"
+    "message": "キャンセル"
   },
   "TRANS_TYPE.QYZF": {
     "description": "企业付款",
-    "message": "会社清算"
+    "message": "会社精算"
   },
   "TRANS_TYPE.JSZF": {
     "description": "公众号支付",
@@ -313,11 +333,11 @@
   },
   "CHANNEL.WECHAT": {
     "description": "微信渠道",
-    "message": "Wechat"
+    "message": "WeChat"
   },
   "CHANNEL.ALIPAY": {
     "description": "支付宝渠道",
-    "message": "アリペイ"
+    "message": "Alipay"
   },
   "CHANNEL.UNKNOWN": {
     "description": "未知渠道",
@@ -325,19 +345,19 @@
   },
   "SCANPAY_TRADE_STATS.MENU_NAME": {
     "description": "扫码支付交易统计菜单名",
-    "message": "QRコード取引統計"
+    "message": "QRコード取引集計"
   },
   "SCANPAY_TRADE_STATS.TITLE": {
     "description": "扫码支付交易统计标题",
-    "message": "取引レポートダウンロード"
+    "message": "QRコード取引集計"
   },
   "SCANPAY_TRADE_STATS.DATE_FROM": {
     "description": "开始日期",
-    "message": "開始日"
+    "message": "取引時間（From）"
   },
   "SCANPAY_TRADE_STATS.DATE_TO": {
     "description": "结束日期",
-    "message": "終了日"
+    "message": "取引時間（To）"
   },
   "SCANPAY_TRADE_STATS.AGENT": {
     "description": "代理",
@@ -349,11 +369,11 @@
   },
   "SCANPAY_TRADE_STATS.GROUP_NO": {
     "description": "商户代码",
-    "message": "加盟店コード"
+    "message": "代表店舗コード"
   },
   "SCANPAY_TRADE_STATS.GROUP_NAME": {
     "description": "商户名称",
-    "message": "加盟店名称"
+    "message": "代表店舗名称"
   },
   "SCANPAY_TRADE_STATS.MERCHANT_NO": {
     "description": "门店代码",
@@ -365,11 +385,11 @@
   },
   "SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP": {
     "description": "按商户汇总",
-    "message": "加盟店統計"
+    "message": "代表店舗集計"
   },
   "SCANPAY_TRADE_STATS.SUMMARY": {
     "description": "汇总",
-    "message": "統計"
+    "message": "合計"
   },
   "SCANPAY_TRADE_STATS.TRANS_COUNT": {
     "description": "（交易）笔数",
@@ -389,15 +409,15 @@
   },
   "SCANPAY_TRADE_STATS.DOWNLOAD_DETAIL": {
     "description": "下载明细",
-    "message": "明細ダウンロード"
+    "message": "取引集計ダウンロード"
   },
   "SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY": {
     "description": "下载汇总",
-    "message": "統計ダウンロード"
+    "message": "取引サマリダウンロード"
   },
   "TRADE_VIEW.HEADER": {
     "description": "交易明细",
-    "message": "取引明細"
+    "message": "取引詳細"
   },
   "TRADE_VIEW.HEADER_VOID_ORDER": {
     "description": "撤销订单",
@@ -433,11 +453,11 @@
   },
   "TRADE_DETAIL.CHANNEL_MERCHANT": {
     "description": "渠道商户",
-    "message": "チャンネル加盟店"
+    "message": "チャンネル代表店舗"
   },
   "TRADE_DETAIL.CHANNEL_ORDER": {
     "description": "渠道订单",
-    "message": "チャンネルオーダー"
+    "message": "決済種別取引番号"
   },
   "TRADE_DETAIL.CHANNEL_DISCOUNT": {
     "description": "渠道折扣",
@@ -445,7 +465,7 @@
   },
   "TRADE_DETAIL.MERCHANT_DISCOUNT": {
     "description": "商户折扣",
-    "message": "加盟店値引き"
+    "message": "代表店舗値引き"
   },
   "TRADE_DETAIL.CREATE_TIME": {
     "description": "创建时间",
@@ -457,7 +477,7 @@
   },
   "TRADE_DETAIL.SETT_ROLE": {
     "description": "清算角色",
-    "message": "清算の役割"
+    "message": "精算の役割"
   },
   "TRADE_DETAIL.TICKET_NUM": {
     "description": "小票号",
@@ -469,27 +489,27 @@
   },
   "SCANPAY_TRADE_SETTLE_REPORT.TITLE": {
     "description": "清算报表下载",
-    "message": "清算レポートダウンロード"
+    "message": "QRコードサマリレポート"
   },
   "SCANPAY_TRADE_SETTLE_REPORT.MENU_NAME": {
     "description": "扫码支付清算报表",
-    "message": "QRコード清算レポート"
+    "message": "QRコードサマリレポート"
   },
   "SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE": {
     "description": "清算日期",
-    "message": "清算日"
+    "message": "取引日"
   },
   "SCANPAY_TRADE_SETTLE_REPORT.REDO_SETTLE": {
     "description": "重跑清算报表",
-    "message": "再度清算"
+    "message": "再度精算"
   },
   "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
     "description": "下载汇总报表",
-    "message": "ダウンロード統計レポート"
+    "message": "取引サマリダウンロード"
   },
   "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
     "description": "下载明细报表",
-    "message": "ダウンロード明細レポート"
+    "message": "取引集計ダウンロード"
   },
   "xxx": {
     "description": "xxx",
@@ -525,7 +545,7 @@
   },
   "USERMANAGEMENT.TELEPHONENO": {
     "description": "手机号",
-    "message": "携帯番号"
+    "message": "電話番号"
   },
   "USERMANAGEMENT.USERTYPE": {
     "description": "用户类型",
@@ -537,7 +557,7 @@
   },
   "USERMANAGEMENT.PASSWORDRESET": {
     "description": "密码重置",
-    "message": "パスワードのリセット"
+    "message": "パスワード初期化"
   },
   "USERMANAGEMENT.DISPLAYNAME": {
     "description": "显示名",
@@ -545,7 +565,7 @@
   },
   "USERMANAGEMENT.VIEWUSERINFO": {
     "description": "查看用户信息",
-    "message": "ユーザ情報の表示"
+    "message": "ユーザ情報"
   },
   "USERTYPE.ADMIN": {
     "description": "超级管理员",
@@ -565,7 +585,7 @@
   },
   "USERTYPE.GROUP": {
     "description": "商户",
-    "message": "加盟店"
+    "message": "代表店舗"
   },
   "USERTYPE.MERCHANT": {
     "description": "门店",
@@ -573,11 +593,11 @@
   },
   "APPUSERMANAGEMENT.APPUSERMANAGEMENT": {
     "description": "APP用户管理",
-    "message": "APPユーザ管理"
+    "message": "QR決済アプリ管理"
   },
   "APPUSERMANAGEMENT.TITLE": {
     "description": "APP密码重置",
-    "message": "APPパスワードリセット"
+    "message": "QR決済アプリ管理"
   },
   "USERMANAGEMENT.TITLE": {
     "description": "用户管理",
@@ -650,10 +670,6 @@
   "USERMANAGEMENT.SURE_DELETE_USER": {
     "description": "您确定要删除这个用户吗?",
     "message": "JA您确定要删除这个用户吗?"
-  },
-  "BUTTON.CONFIRM": {
-    "description": "确认按钮",
-    "message": "JA确认"
   },
   "SYSTEM_MANAGEMENT.MENUE_NAME": {
     "description": "系统管理",

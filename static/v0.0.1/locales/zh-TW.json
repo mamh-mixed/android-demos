@@ -11,6 +11,10 @@
     "description": "保存按钮",
     "message": "保存"
   },
+  "BUTTON.UPDATE": {
+    "description": "更新按钮",
+    "message": "更新"
+  },
   "BUTTON.QUERY": {
     "description": "查询按钮",
     "message": "査詢"
@@ -163,13 +167,25 @@
     "description": "代理",
     "message": "代理"
   },
+  "SCANPAY_TRADE_LIST.SUBAGENT": {
+    "description": "公司",
+    "message": "公司"
+  },
   "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
     "description": "公司代码",
     "message": "公司程式碼"
   },
+  "SCANPAY_TRADE_LIST.GROUP": {
+    "description": "商户",
+    "message": "商戶"
+  },
   "SCANPAY_TRADE_LIST.GROUP_NO": {
     "description": "商户代码",
     "message": "商戶程式碼"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT": {
+    "description": "门店",
+    "message": "門店"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
@@ -206,6 +222,10 @@
   "SCANPAY_TRADE_LIST.INDEX": {
     "description": "序号",
     "message": "序號"
+  },
+  "SCANPAY_TRADE_LIST.DOWNLOADREPORT": {
+    "description": "下载报表",
+    "message": "下載交易報表"
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "交易金额",
@@ -650,10 +670,6 @@
   "USERMANAGEMENT.IF_DELETE_USER": {
     "description": "您确定要删除这个用户吗?",
     "message": "您確定要删除這個用戶嗎?"
-  },
-  "BUTTON.CONFIRM": {
-    "description": "确认按钮",
-    "message": "確認"
   },
   "SYSTEM_MANAGEMENT.MENUE_NAME": {
     "description": "系统管理",
