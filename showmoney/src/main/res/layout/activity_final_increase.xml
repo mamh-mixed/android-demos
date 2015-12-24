@@ -18,14 +18,21 @@
             cardinfolink:left_text="@string/setting_return" />
 
         <TextView
-            android:id="@+id/increase_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="60dp"
+            android:text="@string/increase_message2"
             android:textSize="25sp" />
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/increase_message3"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btnfinish"
@@ -35,7 +42,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="60dp"
             android:background="@drawable/white_selector"
-            android:text="@string/limit_increase_finish"
+            android:text="@string/increase_i_know"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
 
