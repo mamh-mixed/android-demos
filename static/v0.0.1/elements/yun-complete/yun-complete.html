@@ -309,7 +309,7 @@
           }
         },
         // 选择一项
-        select: function(item) {
+        select: function(item, triggerBlur) {
           this.set('isSelected', true);
           item = item || this.list[this.activeIndex];
           if (!item) {
@@ -322,6 +322,12 @@
             name: name
           });
           this.set('keyword', code + '-' + name);
+
+          if (triggerBlur) {
+            var evt = document.createEvent('MouseEvent');
+            evt.initEvent('blur', true, true);
+            this.$.input.dispatchEvent(evt);
+          }
         },
         // 清空文本框内容
         clear: function() {
@@ -330,7 +336,7 @@
         },
         // item选择事件
         handleSelectedEvent: function(e) {
-          this.select(e.model.item);
+          this.select(e.model.item, true);
         },
         // input 的按键事件
         handleInputKeyDownEvent: function(e) {
