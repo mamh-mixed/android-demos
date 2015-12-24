@@ -8,7 +8,7 @@ import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import java.util.Map;
 
 public interface QuickPayService {
-    void registerAsync(String username, String password, String password_repeat, QuickPayCallbackListener<Void> listener);
+    void registerAsync(String username, String password, String invite, QuickPayCallbackListener<Void> listener);
 
     void loginAsync(String username, String password, QuickPayCallbackListener<User> listener);
 

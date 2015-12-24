@@ -12,6 +12,8 @@ public interface QuickPayApi {
     // user related
     void register(String username, String password);
 
+    void register(String username, String password, String invite);
+
     User login(String username, String password);
 
     void updatePassword(String username, String oldPassword, String newPassword);

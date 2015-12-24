@@ -85,6 +85,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         return sign;
     }
 
+
     /**
      * errors:
      * username_exist
@@ -94,12 +95,22 @@ public class QuickPayApiImpl implements QuickPayApi {
      */
     @Override
     public void register(String username, String password) {
+        register(username, password, null);
+    }
+
+    @Override
+    public void register(String username, String password, String invite) {
         String url = quickPayConfigStorage.getUrl() + "/register";
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
         password = EncoderUtil.Encrypt(password, "MD5");
         params.put("password", password);
+
+        if (!TextUtils.isEmpty(invite)) {
+            params.put("invitation_code", invite);
+        }
+
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, "SHA-1"));
 
