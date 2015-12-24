@@ -91,5 +91,6 @@
 
     <!--这个对话的布局要放在相对布局里面！！！因为它用到了这个：   android:gravity="center_horizontal"-->
     <include layout="@layout/showmoney_dialog"/>
+    <include layout="@layout/activate_dialog"/>
 
 </RelativeLayout>

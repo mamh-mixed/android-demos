@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 激活对话框 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activate_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#40000000"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/dialog_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/txt_please_activate"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/activate_sentto_email"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/activate_dialog_cancel"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/dialog_button_selector"
+                android:gravity="center"
+                android:text="@string/txt_cancel"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/activate_dialog_ok"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/dialog_button_selector"
+                android:gravity="center"
+                android:text="@string/txt_confirm"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout><!--end 激活对话框 -->
+
+
