@@ -1,7 +1,7 @@
 {
   "TITLE": {
     "description": "...",
-    "message": "雲キャッシャー管理システム"
+    "message": "取引管理システム"
   },
   "CURRENTUSER": {
     "description": "...",
@@ -61,7 +61,7 @@
   },
   "LOGIN.HINT": {
     "description": "登录页提示",
-    "message": "ユーザー未登録、Cardinfolink に連絡してください"
+    "message": "ユーザーが未登録です。NTTデータにご連絡ください。"
   },
   "LOGIN.TOAST.LOGIN_FAIL": {
     "description": "登录失败提示",

@@ -109,6 +109,9 @@
         attached: function() {
           this.$.appRouter.init();
 
+          // 设置HTML title
+          this._renderHtmlTitle();
+
           setTimeout(function() {
             var srcs = [
               'elements/trade-list/trade-list.html',
@@ -266,11 +269,18 @@
         handleLocaleResponse: function(e) {
           console.log(e.detail.response);
         },
+        _renderHtmlTitle: function() {
+          var i18nMsg = document.createElement('i18n-msg');
+          i18nMsg.setAttribute('msgid', 'TITLE');
+          document.title = i18nMsg.getMsg();
+        },
         handleI18nLanguageChangeEvent: function(e) {
           // 如果e.type === 'i18n-language-change' 的话，发送一个切换语言的请求
           if (e && e.type === 'i18n-language-change') {
             this.localeChangeRequest(e.detail.key);
           }
+
+          this._renderHtmlTitle();
           var i18nMsg = document.createElement('i18n-msg');
 
           var paperInputs = document.querySelectorAll('paper-input');
