@@ -550,6 +550,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         Message msg = mHandler.obtainMessage(Msg.MSG_FROM_SCANCODE_SUCCESS);
         msg.obj = obj.getText().toString();
         mHandler.sendMessageDelayed(msg, 0);
+        CameraManager.get().stopPreview();//停止camera的preview
     }
 
     private void initBeepSound() {
