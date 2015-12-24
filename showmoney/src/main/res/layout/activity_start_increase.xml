@@ -118,6 +118,8 @@
 
     </LinearLayout>
 
-    <include layout="@layout/showmoney_dialog"/>
+    <include layout="@layout/showmoney_dialog" />
+
+    <include layout="@layout/hint_dialog" />
 
 </RelativeLayout>
