@@ -29,7 +29,7 @@ public class RegisterActivity extends BaseActivity {
     private SettingInputItem mEmailEdit;
     private SettingPasswordItem mPasswordEdit;
     private SettingPasswordItem mQrPasswordEdit;
-
+    private SettingInputItem mInviteCode;//邀请码
     private Button mRegisterNext;
 
     /**
@@ -67,6 +67,8 @@ public class RegisterActivity extends BaseActivity {
 
         mQrPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_qr_password);
 
+        mInviteCode = (SettingInputItem) findViewById(R.id.register_invite_code);//邀请码
+
         //注册页面标题栏添加返回事件监听
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
@@ -88,13 +90,14 @@ public class RegisterActivity extends BaseActivity {
         final String username = mEmailEdit.getText(); //用户名
         final String password = mPasswordEdit.getPassword(); //密码，第一次输入的
         final String qrPassword = mQrPasswordEdit.getPassword(); //确认密码，第二次输入的
+        final String invite = mInviteCode.getText();//邀请码
 
         if (!validate(username, password, qrPassword)) {
             return;
         }
 
         mLoadingDialog.startLoading();
-        quickPayService.registerAsync(username, password, qrPassword, new QuickPayCallbackListener<Void>() {
+        quickPayService.registerAsync(username, password, invite, new QuickPayCallbackListener<Void>() {
             @Override
             public void onSuccess(Void data) {
                 //没有返回值的,那边返回的是null.
