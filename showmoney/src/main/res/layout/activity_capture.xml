@@ -54,7 +54,10 @@
         android:src="@drawable/flashlight" />
 
 
-    <include layout="@layout/showmoney_dialog"/>
-    <include layout="@layout/trading_load_dialog"/>
+    <include layout="@layout/showmoney_dialog" />
+
+    <include layout="@layout/trading_load_dialog" />
+
+    <include layout="@layout/hint_dialog" />
 
 </RelativeLayout>
