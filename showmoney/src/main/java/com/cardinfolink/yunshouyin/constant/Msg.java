@@ -50,4 +50,7 @@ public class Msg {
     public static final int MSG_FROM_SERVER_CLOSEBILL_FAIL = 502;
     public static final int MSG_FROM_SEARCHING_POLLING=503;
 
+    public static final int MSG_CREATE_QR_SUCCESS = 600;
+    public static final int MSG_CREATE_QR_FAIL = 601;
+
 }
