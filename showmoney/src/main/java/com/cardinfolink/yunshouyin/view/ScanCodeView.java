@@ -29,6 +29,7 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
+import com.cardinfolink.yunshouyin.activity.PayResultActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
@@ -91,6 +92,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private ImageView mScanQR;//右下进入照相机扫码的界面
     private ImageView mQRImage;
 
+    private ImageView mUpdate;
+
     private ImageView mLeftImage;//切换按钮 支付宝还是微信的切换按钮
     private ImageView mRightImage;//切换按钮 支付宝还是微信的切换按钮
     private TextView mLeftText;
@@ -117,7 +120,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private static final int BACKGROUND_COLOR = 0xffffffff;
     private ResultData mResultData;
     private Handler mHandler;
-    private OrderData originOrder;//原始订单,取消订单时会用到
+    private String mOrderNum;//原始订单,取消订单时会用到
 
     private SharedPreferences sp;
 
@@ -161,6 +164,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         mQRImage = (ImageView) findViewById(R.id.iv_center);
 
+        mUpdate = (ImageView) findViewById(R.id.iv_update);
         mLeftImage = (ImageView) findViewById(R.id.iv_left);
         mRightImage = (ImageView) findViewById(R.id.iv_right);
 
@@ -359,13 +363,21 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     public void startLoading() {
         //二维码的loading的动画
         mQRImage.setImageResource(R.drawable.loading);
+        startLoading(mQRImage);
+    }
+
+    public void startLoading(View view) {
         Animation loadingAnimation = AnimationUtils.loadAnimation(mContext, R.anim.loading_animation);
-        mQRImage.startAnimation(loadingAnimation);
+        view.startAnimation(loadingAnimation);
+    }
+
+    public void endLoading(View view) {
+        view.clearAnimation();
     }
 
     public void endLoading() {
         //二维码的loading的动画
-        mQRImage.clearAnimation();
+        endLoading(mQRImage);
     }
 
     private boolean validate(double sum) {
@@ -633,6 +645,287 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
 
+    /**
+     * 生成二维码入口，从这里进的
+     * 生成二维码，也就是 调用了 预下单 的接口
+     *
+     * @param total
+     * @param chcd
+     */
+    private void createOrder(String total, String chcd) {
+        final OrderData orderData = new OrderData();
+        orderData.orderNum = geneOrderNumber();
+        orderData.txamt = total;
+        orderData.currency = "156";
+        orderData.chcd = chcd;
+
+        mOrderNum = orderData.orderNum;//保存为原始订单
+
+        initHandler();//初始化handler
+
+        startLoading();
+
+        CashierSdk.startPrePay(orderData, new CashierListener() {
+            @Override
+            public void onResult(ResultData resultData) {
+                mResultData = resultData;
+                Message msg = new Message();
+                msg.what = Msg.MSG_CREATE_QR_SUCCESS;
+                mHandler.sendMessageDelayed(msg, 0);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                Message msg = new Message();
+                msg.what = Msg.MSG_CREATE_QR_FAIL;
+                mHandler.sendMessageDelayed(msg, 0);
+            }
+        });
+    }
+
+
+    /**
+     * 查询订单
+     */
+    public void searchBill() {
+        OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        CashierSdk.startQy(orderData, new CashierListener() {
+
+            @Override
+            public void onResult(ResultData resultData) {
+                mResultData = resultData;
+                if (resultData.respcd.equals("00")) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                } else if (resultData.respcd.equals("09")) {
+                    //09 状态
+                } else {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                }
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+    }
+
+    /**
+     * 取消订单
+     */
+    public void cancelOrder() {
+        if (mOrderNum == null) {
+            return;
+        }
+        OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        orderData.orderNum = geneOrderNumber();//新生成一个订单号
+        CashierSdk.startCanc(orderData, new CashierListener() {
+            @Override
+            public void onResult(ResultData resultData) {
+                if (resultData.respcd.equals("00")) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS);
+                    if (resultData != null && resultData.origOrderNum.equals(mOrderNum)) {
+                        Log.e(TAG, " cancel success");
+                        mOrderNum = null;
+                    }
+                } else if (resultData.respcd.equals("09")) {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_DOING);
+                } else {
+                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL);
+                }
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                mOrderNum = null;
+            }
+        });
+
+    }
+
+    /**
+     * 跳转到交易成功的界面
+     */
+    public void enterPaySuccessActivity() {
+        Intent intent = new Intent(mContext, PayResultActivity.class);
+        Bundle bun = new Bundle();
+        bun.putString("txamt", mResultData.txamt);
+        bun.putString("orderNum", mResultData.orderNum);
+        bun.putString("chcd", mResultData.chcd);
+        bun.putString("mCurrentTime", "");
+        bun.putBoolean("result", true);
+
+        intent.putExtras(bun);
+
+        mContext.startActivity(intent);
+    }
+
+    /**
+     * 跳转到交易失败的界面
+     */
+    public void enterPayFailActivity() {
+        Intent intent = new Intent(mContext, PayResultActivity.class);
+        Bundle bun = new Bundle();
+
+        bun.putString("txamt", mResultData.txamt);
+        bun.putString("orderNum", mResultData.orderNum);
+        bun.putString("chcd", mResultData.chcd);
+        bun.putString("errorDetail", mResultData.errorDetail);
+        bun.putString("mCurrentTime", "");
+        bun.putBoolean("result", false);
+
+        intent.putExtras(bun);
+
+        mContext.startActivity(intent);
+    }
+
+
+    /**
+     * 更新二维码图片
+     * 在做微信支付 和 支付宝 切换会调用这个
+     */
+    private void updateQR() {
+        endLoading();//停止load动画
+        Bitmap icon = null;
+        if (mResultData.chcd.equals(CHCD_TYPE[0])) {//微信支付
+            icon = BitmapFactory.decodeResource(getResources(), R.drawable.scan_wechat);
+            mScanTitle.setText(getResources().getString(R.string.create_qrcode_activity_open_wx));
+        } else {
+            icon = BitmapFactory.decodeResource(getResources(), R.drawable.scan_alipay);
+            mScanTitle.setText(getResources().getString(R.string.create_qrcode_activity_open_ali));
+        }
+        Bitmap bitmap;
+        //算出中间二维码图片最大的宽高。
+        int dy = (int) (bottomArrow.getY() - mScanTitle.getY());
+        int dx = (int) (rightArrow.getX() - leftArrow.getX());
+        int min = Math.min(dx, dy);//求出最小的
+        min = Math.abs(min);
+        min = Math.abs(min - 2 * leftArrow.getWidth() - 10);
+        try {
+            //创建二维码图片
+            if (!TextUtils.isEmpty(mResultData.qrcode)) {
+                bitmap = cretaeBitmap(mResultData.qrcode, icon, min, min);
+                mQRImage.setImageBitmap(bitmap);
+                startLoading(mUpdate);
+            } else {
+                mQRImage.setImageResource(R.drawable.wrong);
+            }
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void initHandler() {
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case Msg.MSG_CREATE_QR_SUCCESS: {
+                        if (mResultData != null) {
+                            if (mResultData.respcd.equals("00") || mResultData.respcd.equals("09")) {
+                                updateQR();
+                            }
+                        }
+                        break;
+                    }
+                    case Msg.MSG_CREATE_QR_FAIL: {
+                        endLoading();//出错结束loading
+                        mQRImage.setImageResource(R.drawable.wrong);
+                        break;
+                    }
+                    case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
+                        endLoading(mUpdate);
+                        showKeyBoard();//显示键盘界面
+                        enterPaySuccessActivity();
+                        break;
+                    }
+                    case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
+                        endLoading(mUpdate);
+                        showKeyBoard();//显示键盘界面
+                        enterPayFailActivity();
+                        break;
+                    }
+                }
+                super.handleMessage(msg);
+            }
+        };
+    }
+
+
+    /**
+     * //生成bitmap 二维码图片,生成一个固定长宽都是width和height的二维码图片
+     *
+     * @param str
+     * @param icon
+     * @param widthx
+     * @param heighty
+     * @return
+     * @throws WriterException
+     */
+    private Bitmap cretaeBitmap(String str, Bitmap icon, int widthx, int heighty) throws WriterException {
+        icon = Untilly.zoomBitmap(icon, IMAGE_HALFWIDTH);
+        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        hints.put(EncodeHintType.MARGIN, 1);
+        //调用com.google.zxing里面的生成二维码的方法
+        BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, widthx, heighty, hints);
+
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
+
+        int halfW = width / 2;
+        int halfH = height / 2;
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (x > halfW - IMAGE_HALFWIDTH && x < halfW + IMAGE_HALFWIDTH
+                        && y > halfH - IMAGE_HALFWIDTH
+                        && y < halfH + IMAGE_HALFWIDTH) {
+                    pixels[y * width + x] = icon.getPixel(x - halfW + IMAGE_HALFWIDTH, y - halfH + IMAGE_HALFWIDTH);
+                } else {
+                    if (matrix.get(x, y)) {
+                        pixels[y * width + x] = FOREGROUND_COLOR;
+                    } else {
+                        pixels[y * width + x] = BACKGROUND_COLOR;
+                    }
+                }
+
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+
+        return bitmap;
+    }
+
+    //生成bitmap图片,生成一个固定长宽都是300的二维码图片
+    private Bitmap cretaeBitmap(String str, Bitmap icon) throws WriterException {
+        return cretaeBitmap(str, icon, 300, 300);
+    }
+
+    /**
+     * 生成账单号
+     * 时间加上一个随机数
+     *
+     * @return
+     */
+    private String geneOrderNumber() {
+        String mOrderNum;
+
+        Date now = new Date();
+        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
+        mOrderNum = spf.format(now);
+        Random random = new Random();//订单号末尾随机的生成一个数
+        for (int i = 0; i < 5; i++) {
+            mOrderNum = mOrderNum + random.nextInt(10);
+        }
+        return mOrderNum;
+    }
+
     public void getResult() {
         double result = 0;
         String x = output.getText().toString();
@@ -777,231 +1070,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             getResult(x);
         }
 
-    }
-
-    /**
-     * 生成账单号
-     * 时间加上一个随机数
-     *
-     * @return
-     */
-    private String geneOrderNumber() {
-        String mOrderNum;
-
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
-        Random random = new Random();//订单号末尾随机的生成一个数
-        for (int i = 0; i < 5; i++) {
-            mOrderNum = mOrderNum + random.nextInt(10);
-        }
-        return mOrderNum;
-    }
-
-    /**
-     * 生成二维码入口，从这里进的
-     * 生成二维码，也就是 调用了 预下单 的接口
-     *
-     * @param total
-     * @param chcd
-     */
-    private void createOrder(String total, String chcd) {
-        final OrderData orderData = new OrderData();
-        orderData.orderNum = geneOrderNumber();
-        orderData.txamt = total;
-        orderData.currency = "156";
-        orderData.chcd = chcd;
-
-        originOrder = new OrderData();
-        originOrder.origOrderNum = orderData.orderNum;//保存为原始订单
-        originOrder.txamt = total;
-        originOrder.currency = "156";
-        originOrder.chcd = chcd;
-
-        initHandler();//初始化handler
-
-        CashierSdk.startPrePay(orderData, new CashierListener() {
-            @Override
-            public void onResult(ResultData resultData) {
-                mResultData = resultData;
-                Message msg = new Message();
-                msg.what = 1;
-                mHandler.sendMessageDelayed(msg, 0);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                endLoading();//出错结束loading
-                mQRImage.setImageResource(R.drawable.wrong);
-                mScanTitle.setText("Error: " + errorCode);
-            }
-        });
-    }
-
-    /**
-     * 取消订单
-     */
-    public void cancelOrder() {
-        if (originOrder == null) {
-            return;
-        }
-        originOrder.orderNum = geneOrderNumber();//新生成一个订单号
-        CashierSdk.startCanc(originOrder, new CashierListener() {
-            @Override
-            public void onResult(ResultData resultData) {
-                if (resultData != null && originOrder != null && resultData.origOrderNum.equals(originOrder.origOrderNum)) {
-                    Log.e(TAG, " cancel success");
-                    originOrder = null;
-                }
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                originOrder = null;
-            }
-        });
-
-    }
-
-    /**
-     * 更新二维码图片
-     * 在做微信支付 和 支付宝 切换会调用这个
-     */
-    private void updateQR() {
-        endLoading();//停止load动画
-
-        Bitmap icon = null;
-        if (mResultData.chcd.equals(CHCD_TYPE[0])) {//微信支付
-            icon = BitmapFactory.decodeResource(getResources(), R.drawable.scan_wechat);
-            mScanTitle.setText(getResources().getString(R.string.create_qrcode_activity_open_wx));
-        } else {
-            icon = BitmapFactory.decodeResource(getResources(), R.drawable.scan_alipay);
-            mScanTitle.setText(getResources().getString(R.string.create_qrcode_activity_open_ali));
-        }
-        Bitmap bitmap;
-        //算出中间二维码图片最大的宽高。
-        int dy = (int) (bottomArrow.getY() - mScanTitle.getY());
-        int dx = (int) (rightArrow.getX() - leftArrow.getX());
-        int min = Math.min(dx, dy);//求出最小的
-        min = Math.abs(min);
-        min = Math.abs(min - 2 * leftArrow.getWidth() - 10);
-        try {
-            //创建二维码图片
-            if (!TextUtils.isEmpty(mResultData.qrcode)) {
-                bitmap = cretaeBitmap(mResultData.qrcode, icon, min, min);
-                mQRImage.setImageBitmap(bitmap);
-            } else {
-                mQRImage.setImageResource(R.drawable.wrong);
-            }
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void initHandler() {
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case 1: {
-                        if (mResultData != null) {
-                            if (mResultData.respcd.equals("00") || mResultData.respcd.equals("09")) {
-                                updateQR();
-                            }
-                        }
-                        break;
-                    }
-
-                    case 2: {
-                        if (mResultData != null) {
-                            if (mResultData.respcd.equals("00")) {
-
-                            } else {
-
-                            }
-                        }
-                        break;
-                    }
-                    case 3: {
-                        Toast toast = Toast.makeText(mContext, getResources().getString(R.string.server_timeout), Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                    case Msg.MSG_FROM_DIGLOG_CLOSE: {
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
-
-                        break;
-                    }
-                    case Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY: {
-
-                        break;
-                    }
-
-                }
-                super.handleMessage(msg);
-            }
-        };
-    }
-
-
-    /**
-     * //生成bitmap 二维码图片,生成一个固定长宽都是width和height的二维码图片
-     *
-     * @param str
-     * @param icon
-     * @param widthx
-     * @param heighty
-     * @return
-     * @throws WriterException
-     */
-    private Bitmap cretaeBitmap(String str, Bitmap icon, int widthx, int heighty) throws WriterException {
-        icon = Untilly.zoomBitmap(icon, IMAGE_HALFWIDTH);
-        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
-        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        hints.put(EncodeHintType.MARGIN, 1);
-        //调用com.google.zxing里面的生成二维码的方法
-        BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, widthx, heighty, hints);
-
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-
-        int halfW = width / 2;
-        int halfH = height / 2;
-        int[] pixels = new int[width * height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (x > halfW - IMAGE_HALFWIDTH && x < halfW + IMAGE_HALFWIDTH
-                        && y > halfH - IMAGE_HALFWIDTH
-                        && y < halfH + IMAGE_HALFWIDTH) {
-                    pixels[y * width + x] = icon.getPixel(x - halfW + IMAGE_HALFWIDTH, y - halfH + IMAGE_HALFWIDTH);
-                } else {
-                    if (matrix.get(x, y)) {
-                        pixels[y * width + x] = FOREGROUND_COLOR;
-                    } else {
-                        pixels[y * width + x] = BACKGROUND_COLOR;
-                    }
-                }
-
-            }
-        }
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-
-        return bitmap;
-    }
-
-    //生成bitmap图片,生成一个固定长宽都是300的二维码图片
-    private Bitmap cretaeBitmap(String str, Bitmap icon) throws WriterException {
-        return cretaeBitmap(str, icon, 300, 300);
     }
 
 
