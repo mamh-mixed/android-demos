@@ -56,9 +56,6 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 			return err
 		}
 	}
-	if matched, err := validateTerminalId(req); !matched {
-		return err
-	}
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
 		return err
 	}
@@ -115,9 +112,6 @@ func validatePurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRe
 		return err
 	}
 	if matched, err := validatePayType(req); !matched {
-		return err
-	}
-	if matched, err := validateTerminalId(req); !matched {
 		return err
 	}
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
@@ -183,9 +177,6 @@ func validateQueryPurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPay
 	// 		return err
 	// 	}
 	// }
-	if matched, err := validateTerminalId(req); !matched {
-		return err
-	}
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
 		return err
 	}
@@ -230,9 +221,6 @@ func validateUndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanP
 	}
 
 	if matched, err := validateChcd(req); !matched {
-		return err
-	}
-	if matched, err := validateTerminalId(req); !matched {
 		return err
 	}
 	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
@@ -282,20 +270,9 @@ func validateVeriTime(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) 
 func validateChcd(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 
 	if req.Chcd != "" {
-		if len(req.Chcd) > 5 {
-			return false, fieldFormatError(chcd)
-		}
 		if req.Chcd != "ULIVE" {
 			return false, fieldContentError(chcd)
 		}
-	}
-	return true, nil
-}
-
-// validateTerminalId 验证终端
-func validateTerminalId(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
-	if len(req.Terminalid) > 8 {
-		return false, fieldFormatError(terminalid)
 	}
 	return true, nil
 }
