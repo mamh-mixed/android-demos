@@ -38,7 +38,7 @@
                 android:checked="true"
                 android:padding="7dp"
                 android:text="@string/txn_all"
-                android:textColor="@color/rb_txt" />
+                android:textColor="@drawable/radio_button_txt_bg" />
 
             <RadioButton
                 android:id="@+id/radio_success"
@@ -48,7 +48,7 @@
                 android:button="@null"
                 android:padding="7dp"
                 android:text="@string/txn_success"
-                android:textColor="@color/rb_txt" />
+                android:textColor="@drawable/radio_button_txt_bg" />
 
             <RadioButton
                 android:id="@+id/radio_fail"
@@ -58,7 +58,7 @@
                 android:button="@null"
                 android:padding="7dp"
                 android:text="@string/txn_failed"
-                android:textColor="@color/rb_txt" />
+                android:textColor="@drawable/radio_button_txt_bg" />
 
 
         </RadioGroup>
