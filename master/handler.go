@@ -322,7 +322,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	// 报表需求来自汇总
 	if params.Get("from") == "summary" {
 		cond.TransStatus = []string{model.TransSuccess}
-		cond.RefundStatus = model.TransRefunded
+		cond.RefundStatus = []int{model.TransRefunded}
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不���功的话���不处理，默认为false
