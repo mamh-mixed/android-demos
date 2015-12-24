@@ -23,11 +23,7 @@ public class SocketClient {
     private String port = null;
     private int timeout = 15000;
 
-    public SocketClient(
-            String host,
-            String port,
-            int timeout
-    ) {
+    public SocketClient(String host, String port, int timeout) {
         this.host = host;
         this.port = port;
         this.timeout = timeout;
@@ -72,12 +68,9 @@ public class SocketClient {
                     this.sk.close();
                     out.close();
                     in.close();
-
-
                 } catch (Exception e) {
 
                 }
-
         }
         return "error";
 
