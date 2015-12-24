@@ -121,9 +121,9 @@
 
     </LinearLayout>
 
-    <include layout="@layout/select_dialog"></include>
+    <include layout="@layout/select_dialog"/>
 
 
-    <include layout="@layout/showmoney_dialog"></include>
+    <include layout="@layout/showmoney_dialog"/>
 
 </RelativeLayout>

@@ -14,7 +14,7 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_activity);
+        setContentView(R.layout.activity_splash);
         MobclickAgent.updateOnlineConfig(mContext);
 
         new Handler().postDelayed(new Runnable() {

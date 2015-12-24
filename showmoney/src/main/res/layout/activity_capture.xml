@@ -54,6 +54,6 @@
         android:src="@drawable/flashlight" />
 
 
-    <include layout="@layout/showmoney_dialog"></include>
+    <include layout="@layout/showmoney_dialog"/>
 
 </RelativeLayout>

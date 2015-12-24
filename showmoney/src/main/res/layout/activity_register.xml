@@ -113,6 +113,6 @@
     </LinearLayout>
 
 
-    <include layout="@layout/showmoney_dialog"></include>
+    <include layout="@layout/showmoney_dialog"/>
 
 </RelativeLayout>
