@@ -32,7 +32,7 @@ func main() {
 	startBindingpay() // 绑定支付
 	startSettle()     // 清分任务
 	startMaster()     // 管理平台
-	startApp()        // 云收银APP用户、交易查询等
+	startApp()        // App接口
 	startContab()     // 定时任务
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
@@ -63,8 +63,6 @@ func startBindingpay() {
 
 func startSettle() {
 	settle.DoSettWork()
-
-	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 }
 
 func startMaster() {

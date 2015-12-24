@@ -3,12 +3,18 @@ package push
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
 	"strings"
 	"time"
 )
 
 func Do(req *model.PushMessageReq) {
+
+	if err := SavePushMessage(req); err != nil {
+		log.Errorf("save push message error: %s", err)
+	}
+
 	switch strings.ToLower(req.To) {
 	case model.IOS:
 		ApnsPush.APush(req)
@@ -20,49 +26,12 @@ func Do(req *model.PushMessageReq) {
 }
 
 func SavePushMessage(req *model.PushMessageReq) error {
-	rsp := new(model.PushMessageRsp)
+	rsp := new(model.PushMessage)
 	rsp.UserName = req.UserName
 	rsp.Title = req.Title
 	rsp.DeviceToken = req.DeviceToken
 	rsp.Message = req.Message
 	rsp.PushTime = time.Now().Format("2006-01-02 15:04:05")
-
+	rsp.MsgId = util.SerialNumber()
 	return mongo.PushMessageColl.Insert(rsp)
-}
-
-func PushInfos(req *model.PushMessageRsp) (rsp *PushInfoRsp) {
-	rsp = new(PushInfoRsp)
-	if req.UserName == "" || req.Password == "" {
-		rsp.Error = model.PARAMS_EMPTY.Error
-		return rsp
-	}
-
-	// 根据用户名查找用户
-	user, err := mongo.AppUserCol.FindOne(req.UserName)
-	if err != nil {
-		if err.Error() == "not found" {
-			rsp.Error = model.USERNAME_PASSWORD_ERROR.Error
-			return rsp
-		}
-		log.Errorf("find database err,%s", err)
-		rsp.Error = model.SYSTEM_ERROR.Error
-		return rsp
-	}
-
-	// 密码不对
-	if req.Password != user.Password {
-		rsp.Error = model.USERNAME_PASSWORD_ERROR.Error
-		return rsp
-	}
-
-	infos, err := mongo.PushMessageColl.FindByUser(req)
-	if err != nil {
-		infos = make([]*model.PushInfo, 0)
-
-	}
-
-	rsp.Count = len(infos)
-	rsp.Message = infos
-
-	return rsp
 }

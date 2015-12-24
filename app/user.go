@@ -3,14 +3,9 @@ package app
 import (
 	cr "crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"io"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
-
+	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
@@ -18,6 +13,12 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
+	"io"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type user struct{}
@@ -632,12 +633,12 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		deDate = seDate
 	}
 
-	index, _ := strconv.Atoi(req.Index)
+	index, size := pagingParams(req)
 	q := &model.QueryCondition{
 		MerId:     user.MerId,
 		StartTime: dsDate,
 		EndTime:   deDate,
-		Size:      req.Size,
+		Size:      size,
 		Page:      1,
 		Skip:      index,
 	}
@@ -672,7 +673,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		MerId:        user.MerId,
 		StartTime:    ssDate,
 		EndTime:      seDate,
-		RefundStatus: model.TransRefunded,
+		RefundStatus: []int{model.TransRefunded},
 		TransStatus:  []string{model.TransSuccess},
 	})
 	if err != nil {
@@ -1034,7 +1035,76 @@ func (u *user) ticketHandle(req *reqParams) (result model.AppResult) {
 
 }
 
-//重置密码,未完善，todo 诗景
+// findOrderHandle 条件组合查找
+func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
+
+	user, errResult := checkPWD(req)
+	if errResult != nil {
+		return *errResult
+	}
+
+	index, size := pagingParams(req)
+	q := &model.QueryCondition{
+		OrderNum:  req.OrderNum,
+		TransType: model.PayTrans, // 只是支付交易
+		MerId:     user.MerId,
+		Skip:      index,
+		Size:      size,
+		Page:      1,
+	}
+
+	// 初始化查询参数
+	findOrderParams(req, q)
+	trans, total, err := mongo.SpTransColl.Find(q)
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	var txns []*model.AppTxn
+	for _, t := range trans {
+		txns = append(txns, transToTxn(t))
+	}
+
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
+	result = model.SUCCESS1
+	result.Txn = txns
+	result.Count = total
+	return
+}
+
+// updateMessageHandle 更新推送信息状态
+func (u *user) updateMessageHandle(req *reqParams) (result model.AppResult) {
+
+	_, errResult := checkPWD(req)
+	if errResult != nil {
+		return *errResult
+	}
+
+	type msg struct {
+		MsgId  string `json:"msgId"`
+		Status int    `json:"status"`
+	}
+
+	var ms []msg
+	err := json.Unmarshal([]byte(req.Message), &ms)
+	if err != nil {
+		log.Errorf("unmarshal message=%s error: %s", req.Message, err)
+		return model.PARAMS_FORMAT_ERROR
+	}
+
+	// update
+	for _, m := range ms {
+		if err = mongo.PushMessageColl.UpdateStatusByID(m.MsgId, m.Status); err != nil {
+			log.Errorf("update push message fail, MsgId=%s, error: %s", m.MsgId, err)
+		}
+	}
+
+	return model.SUCCESS1
+}
+
+// 重置密码,未完善 TODO 诗景
 func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 字段长度验证
 	if result, ok := requestDataValidate(req); !ok {
@@ -1050,11 +1120,7 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 根据用户名查找用户
 	_, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
-		log.Errorf("find database err,%s", err)
-		if err.Error() == "not found" {
-			return model.USERNAME_EXIST
-		}
-		return model.SYSTEM_ERROR
+		return model.USERNAME_PASSWORD_ERROR
 	}
 
 	// hostAddress := goconf.Config.App.NotifyURL
@@ -1101,24 +1167,8 @@ func (u *user) getQiniuToken(req *reqParams) (result model.AppResult) {
 		return result
 	}
 
-	// 用户名不为空
-	if req.UserName == "" || req.Password == "" {
-		return model.PARAMS_EMPTY
-	}
-
-	// 根据用户名查找用户
-	user, err := mongo.AppUserCol.FindOne(req.UserName)
-	if err != nil {
-		if err.Error() == "not found" {
-			return model.USERNAME_PASSWORD_ERROR
-		}
-		log.Errorf("find database err,%s", err)
-		return model.SYSTEM_ERROR
-	}
-
-	// 密码不对
-	if req.Password != user.Password {
-		return model.USERNAME_PASSWORD_ERROR
+	if _, err := checkPWD(req); err != nil {
+		return *err
 	}
 
 	return model.SUCCESS1
@@ -1137,24 +1187,11 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 
 	// 云收银app
 	if req.AppUser == nil {
-		// 用户名不为空
-		if req.UserName == "" || req.Password == "" {
-			return model.PARAMS_EMPTY
-		}
-		// 根据用户名查找用户
-		user, err = mongo.AppUserCol.FindOne(req.UserName)
+		appUser, err := checkPWD(req)
 		if err != nil {
-			if err.Error() == "not found" {
-				return model.USERNAME_PASSWORD_ERROR
-			}
-			log.Errorf("find database err,%s", err)
-			return model.SYSTEM_ERROR
+			return *err
 		}
-
-		// 密码不对
-		if req.Password != user.Password {
-			return model.USERNAME_PASSWORD_ERROR
-		}
+		user = appUser
 	} else {
 		// 从销售工具接口过来的
 		user = req.AppUser
@@ -1194,6 +1231,33 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 	req.m = m
 
 	return model.SUCCESS1
+}
+
+// findPushMessage 查询某个用户下的推送消息
+func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
+
+	if _, errResult := checkPWD(req); errResult != nil {
+		return *errResult
+	}
+
+	size, _ := strconv.Atoi(req.Size)
+	messages, err := mongo.PushMessageColl.Find(&model.PushMessage{
+		UserName: req.UserName,
+		LastTime: req.LastTime,
+		MaxTime:  req.MaxTime,
+		Size:     size,
+	})
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	if len(messages) == 0 {
+		messages = make([]model.PushMessage, 0)
+	}
+
+	result.Count = len(messages)
+	result.Message = messages
+	return result
 }
 
 func transToTxn(t *model.Trans) *model.AppTxn {
@@ -1313,4 +1377,76 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 		break
 	}
 	return nil
+}
+
+func checkPWD(req *reqParams) (user *model.AppUser, errResult *model.AppResult) {
+	// 参数不能为空
+	if req.UserName == "" || req.Password == "" {
+		return nil, &model.PARAMS_EMPTY
+	}
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		return nil, &model.USERNAME_PASSWORD_ERROR
+	}
+	// 密码不对
+	if req.Password != user.Password {
+		return nil, &model.USERNAME_PASSWORD_ERROR
+	}
+	return user, nil
+}
+
+// 解析分页参数
+func pagingParams(req *reqParams) (index, size int) {
+	var err error
+	index, _ = strconv.Atoi(req.Index) // 默认0
+	size, err = strconv.Atoi(req.Size) // 默认15
+	if err != nil {
+		size = 15
+	}
+	return
+}
+
+func findOrderParams(req *reqParams, q *model.QueryCondition) {
+	recType, _ := strconv.Atoi(req.RecType)
+	payType, _ := strconv.Atoi(req.PayType)
+	transStatus, _ := strconv.Atoi(req.Status)
+
+	switch recType {
+	case 1:
+		q.TradeFrom = []string{model.IOS, model.Android}
+	case 2, 8:
+		// 暂时没有
+	case 4:
+		q.TradeFrom = []string{model.Wap}
+	case 3:
+		q.TradeFrom = []string{model.IOS, model.Android}
+	case 5:
+		q.TradeFrom = []string{model.IOS, model.Android, model.Wap}
+	case 15:
+		// ignore
+	}
+
+	switch payType {
+	case 1:
+		q.ChanCode = channel.ChanCodeAlipay
+	case 2:
+		q.ChanCode = channel.ChanCodeWeixin
+	case 3:
+		// ignore
+	}
+
+	switch transStatus {
+	case 1:
+		q.TransStatus = []string{model.TransSuccess}
+	case 2:
+		q.RefundStatus = []int{model.TransPartRefunded}
+	case 4:
+		q.RefundStatus = []int{model.TransRefunded}
+	case 6:
+		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
+	case 7:
+		q.TransStatus = []string{model.TransSuccess}
+		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
+	}
 }

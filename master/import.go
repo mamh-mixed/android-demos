@@ -103,7 +103,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key, msg: im}
+	ip := importer{Sheets: file.Sheets, fileName: key, msg: im, IsDebug: true}
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -431,19 +431,17 @@ func insertValidate(r *rowData, im *ImportMessage) error {
 		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf(m.ALPSettFlagErr, r.AlpSettFlag)
 		}
-		if r.IsDomesticStr != "" {
-			if r.IsDomesticStr == no {
-				// 海外支付宝商户必填字段
-				if r.AlpMerName == "" || r.AlpMerNo == "" {
-					return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
-				}
-				if r.AlpSchemeType == "" {
-					return fmt.Errorf(m.NoSchemeType, r.MerId)
-				}
-			} else {
-				// 其他情况默认都是国内的
-				r.IsDomestic = true
+		if r.IsDomesticStr == no {
+			// 海外支付宝商户必填字段
+			if r.AlpMerName == "" || r.AlpMerNo == "" {
+				return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
 			}
+			if r.AlpSchemeType == "" {
+				return fmt.Errorf(m.NoSchemeType, r.MerId)
+			}
+		} else {
+			// 其他情况默认都是国内的
+			r.IsDomestic = true
 		}
 	}
 

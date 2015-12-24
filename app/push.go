@@ -17,9 +17,6 @@ const (
 	MsgType_C = "MSG_TYPE_C"
 )
 
-// 支持1W的并发量
-var MsgChan = make(chan *model.PushMessageReq, 1e4) //缓存大小，channel没有内容时，阻塞，直到有内容写入
-
 func StartPush() {
 	go pushMsg()
 }
@@ -56,7 +53,6 @@ func pushMsg() {
 					req.UserName = u.UserName
 					if req.DeviceToken != "" {
 						log.Debugf("push to user=%s,token=%s", u.UserName, u.DeviceToken)
-						push.SavePushMessage(req)
 						push.Do(req)
 					}
 				}
@@ -73,7 +69,6 @@ func pushMsg() {
 				req.To = appUser.DeviceType
 				if req.DeviceToken != "" {
 					log.Debugf("push to user=%s,token=%s", appUser.UserName, appUser.DeviceToken)
-					push.SavePushMessage(req)
 					push.Do(req)
 				}
 			case MsgType_C:
