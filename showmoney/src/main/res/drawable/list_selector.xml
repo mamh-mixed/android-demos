@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/rb2_bg_normal" android:state_activated="true"></item>
-    <item android:drawable="@drawable/rb2_bg_selected"></item>
+    <item android:drawable="@drawable/radio_button3_bg" android:state_activated="true"></item>
+    <item android:drawable="@drawable/radio_button4_bg"></item>
 
 
 </selector>

@@ -63,7 +63,7 @@
                 android:id="@+id/btnregister"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/white_selector"
+                android:background="@drawable/blue_selector"
                 android:text="@string/register_register"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />

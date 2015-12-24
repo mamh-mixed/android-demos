@@ -53,7 +53,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="50dp"
-            android:background="@drawable/white_selector"
+            android:background="@drawable/blue_selector"
             android:text="@string/register_use_now"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
@@ -65,7 +65,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/white_selector"
+            android:background="@drawable/blue_selector"
             android:text="@string/setting_increase_limit"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />

@@ -80,7 +80,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/white_selector"
+                android:background="@drawable/blue_selector"
                 android:text="@string/increase_personal"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
@@ -92,7 +92,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/white_selector"
+                android:background="@drawable/blue_selector"
                 android:text="@string/increase_company"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
