@@ -17,6 +17,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
@@ -76,6 +77,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     private boolean isPolling = false;
     private int pollingCount = 0;
+    private String flag;
 
 
     /**
@@ -86,23 +88,33 @@ public class CaptureActivity extends BaseActivity implements Callback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture);
         Intent intent = getIntent();
-        total = intent.getStringExtra("total");
-        //这里不需要传人支付类型了，服务器判断。
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
-        SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        mCurrentTime = mspf.format(now);
-        Random random = new Random();
-        for (int i = 0; i < 5; i++) {
-            mOrderNum = mOrderNum + random.nextInt(10);
-        }
+        Bundle bundle = intent.getExtras();
+
 
         CameraManager.init(getApplication());
 
         initHandler();
         initLayout();
         initListener();
+
+        flag = bundle.getString("original");
+        if ("scancodeview".equals(flag)) {
+            total = bundle.getString("total");
+            //这里不需要传人支付类型了，服务器判断。
+            Date now = new Date();
+            SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
+            mOrderNum = spf.format(now);
+            SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            mCurrentTime = mspf.format(now);
+            Random random = new Random();
+            mActionBar.setTitle(getResources().getString(R.string.create_qrcode_activity_scancode));
+            for (int i = 0; i < 5; i++) {
+                mOrderNum = mOrderNum + random.nextInt(10);
+            }
+        } else if ("ticketview".equals(flag)) {
+            //扫卡券
+            mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
+        }
 
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
@@ -125,6 +137,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         });
         mActionBar.setBackgroundColor(Color.BLACK);
         mActionBar.setLeftTextColor(Color.WHITE);
+        mActionBar.setTitleColor(Color.WHITE);
 
         findViewById(R.id.flashlight).setOnClickListener(new OnClickListener() {
 
@@ -149,35 +162,39 @@ public class CaptureActivity extends BaseActivity implements Callback {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case Msg.MSG_FROM_SCANCODE_SUCCESS: {
-                        mTradingLoadDialog.loading();
-                        final OrderData orderData = new OrderData();
-                        orderData.orderNum = mOrderNum;
-                        orderData.txamt = total;
-                        orderData.currency = "156";
-                        orderData.scanCodeId = (String) msg.obj;
-                        // /orderData.scanCodeId="13241252555";
-                        CashierSdk.startPay(orderData, new CashierListener() {
+                        if ("scancodeview".equals(flag)) {
+                            mTradingLoadDialog.loading();
+                            final OrderData orderData = new OrderData();
+                            orderData.orderNum = mOrderNum;
+                            orderData.txamt = total;
+                            orderData.currency = "156";
+                            orderData.scanCodeId = (String) msg.obj;
+                            // /orderData.scanCodeId="13241252555";
+                            CashierSdk.startPay(orderData, new CashierListener() {
 
-                            @Override
-                            public void onResult(ResultData resultData) {
+                                @Override
+                                public void onResult(ResultData resultData) {
 
-                                mResultData = resultData;
-                                if (mResultData.respcd.equals("00")) {
-                                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                                } else if (mResultData.respcd.equals("09")) {
-                                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
-                                } else {
-                                    //返回14 表示 条码错误或过期
-                                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                                    mResultData = resultData;
+                                    if (mResultData.respcd.equals("00")) {
+                                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                                    } else if (mResultData.respcd.equals("09")) {
+                                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
+                                    } else {
+                                        //返回14 表示 条码错误或过期
+                                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onError(int errorCode) {
-                                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
-                            }
+                                @Override
+                                public void onError(int errorCode) {
+                                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+                                }
 
-                        });
+                            });
+                        } else if ("ticketview".equals(flag)) {
+                            Toast.makeText(mContext, "ticketview", Toast.LENGTH_SHORT).show();
+                        }
 
                         break;
                     }
@@ -285,7 +302,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     try {
                         Thread.sleep(5000);
                         pollingCount++;
-                        if (pollingCount >=9) {
+                        if (pollingCount >= 9) {
                             isPolling = false;
                             cancelBill();
                         }

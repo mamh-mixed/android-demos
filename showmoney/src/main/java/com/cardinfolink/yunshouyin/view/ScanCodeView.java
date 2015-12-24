@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -443,7 +444,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         //进入照相机扫码界面
                         Intent intent = new Intent(mContext, CaptureActivity.class);
                         //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
-                        intent.putExtra("total", String.valueOf(sum));
+                        Bundle bundle=new Bundle();
+                        bundle.putString("chcd", mCHCD); //这里要传人 支付类型，是微信还是支付宝
+                        bundle.putString("total", "" + sum);
+                        bundle.putString("original","scancodeview");
+                        intent.putExtras(bundle);
                         mContext.startActivity(intent);
                     }
                 });
@@ -490,8 +495,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     public void start() {
                         //进入照相机扫码界面
                         Intent intent = new Intent(mContext, CaptureActivity.class);
-                        intent.putExtra("chcd", mCHCD);//这里要传人 支付类型，是微信还是支付宝
-                        intent.putExtra("total", "" + sum);
+                        Bundle bundle=new Bundle();
+                        bundle.putString("chcd", mCHCD); //这里要传人 支付类型，是微信还是支付宝
+                        bundle.putString("total", "" + sum);
+                        bundle.putString("original","scancodeview");
+                        intent.putExtras(bundle);
                         mContext.startActivity(intent);
                     }
                 });
