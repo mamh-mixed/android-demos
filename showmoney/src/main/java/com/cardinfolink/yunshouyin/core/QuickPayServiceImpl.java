@@ -38,13 +38,13 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void registerAsync(final String username, final String password, String password_repeat, final QuickPayCallbackListener<Void> listener) {
+    public void registerAsync(final String username, final String password, final String invite, final QuickPayCallbackListener<Void> listener) {
 
         new AsyncTask<Void, Integer, AsyncTaskResult<Void>>() {
             @Override
             protected AsyncTaskResult<Void> doInBackground(Void... params) {
                 try {
-                    quickPayApi.register(username, password);
+                    quickPayApi.register(username, password, invite);
                     return null;
                 } catch (QuickPayException ex) {
                     return new AsyncTaskResult<Void>(null, ex);
