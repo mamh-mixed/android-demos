@@ -55,5 +55,6 @@
 
 
     <include layout="@layout/showmoney_dialog"/>
+    <include layout="@layout/trading_load_dialog"/>
 
 </RelativeLayout>
