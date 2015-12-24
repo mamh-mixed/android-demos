@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +40,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
         initLayout();
-
     }
 
     public void initLayout() {
@@ -62,11 +62,16 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
             case R.id.iv_scan_code:
                 //扫码
                 Intent intent = new Intent(mContext, CaptureActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("original","ticketview");
+
+                intent.putExtras(bundle);
                 mContext.startActivity(intent);
+
                 break;
             case R.id.bt_confirm:
                 //核销
-                OrderData orderData = new OrderData();
+                OrderData orderData=new OrderData();
                 CashierSdk.startVeri(orderData, new CashierListener() {
                     @Override
                     public void onResult(ResultData resultData) {
