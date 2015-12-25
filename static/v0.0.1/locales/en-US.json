@@ -7,9 +7,41 @@
     "description": "...",
     "message": "User"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "Logout"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "Choose Language"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "Hide Sidebar"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "Show Sidebar"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "Page Not Found"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "The requested URL was not found on this server."
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "Please click the 'logout' button on the top right corner and login again"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "Save"
+  },
+  "BUTTON.UPDATE": {
+    "description": "更新按钮",
+    "message": "Update"
   },
   "BUTTON.QUERY": {
     "description": "查询按钮",
@@ -163,13 +195,25 @@
     "description": "代理",
     "message": "Agent"
   },
+  "SCANPAY_TRADE_LIST.SUBAGENT": {
+    "description": "公司",
+    "message": "Company"
+  },
   "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
     "description": "公司代码",
     "message": "Company NO"
   },
+  "SCANPAY_TRADE_LIST.GROUP": {
+    "description": "商户",
+    "message": "Merchant"
+  },
   "SCANPAY_TRADE_LIST.GROUP_NO": {
     "description": "商户代码",
     "message": "Merchant NO"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT": {
+    "description": "门店",
+    "message": "Store"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
@@ -202,6 +246,10 @@
   "SCANPAY_TRADE_LIST.TRANS_STATUS": {
     "description": "交易状态",
     "message": "Transaction Status"
+  },
+  "SCANPAY_TRADE_LIST.DOWNLOADREPORT": {
+    "description": "下载报表",
+    "message": "Download Report"
   },
   "SCANPAY_TRADE_LIST.INDEX": {
     "description": "序号",
@@ -650,10 +698,6 @@
   "USERMANAGEMENT.IF_DELETE_USER": {
     "description": "您确定要删除这个用户吗?",
     "message": "EN您确定要删除这个用户吗?"
-  },
-  "BUTTON.CONFIRM": {
-    "description": "确认按钮",
-    "message": "EN确认"
   },
   "SYSTEM_MANAGEMENT.MENUE_NAME": {
     "description": "系统管理",

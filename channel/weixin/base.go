@@ -33,7 +33,7 @@ type CommonParams struct {
 	SubMchId string `xml:"sub_mch_id,omitempty" url:"sub_mch_id,omitempty"` // 微信支付分配的子商户号，开发者模式下必填
 	NonceStr string `xml:"nonce_str" url:"nonce_str" validate:"nonzero"`    // 随机字符串
 	Sign     string `xml:"sign" url:"-"`                                    // 签名
-	SignType string `xml:"sign_type" url:"-"`                               // 签名方式
+	SignType string `xml:"sign_type" url:"sign_type,omitempty"`             // 签名方式
 
 	WeixinMD5Key string `xml:"-" url:"-" validate:"nonzero" bson:"-"`
 

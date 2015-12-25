@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../x-select/x-select.html">
 <link rel="import" href="../x-form/x-form.html">
 <link rel="import" href="../yun-complete/yun-complete.html">
@@ -23,9 +22,9 @@
         <input type="hidden" name="endTime" value="{{cond.endTime::input}}" />
         <yun-date-time-picker label="* 交易时间到" name="" locale="ja" date-time="{{endTime}}" moment="{{time.endTime}}" min-date="{{time.startTime}}" data-msg-id="SCANPAY_TRADE_LIST.DATE_TO" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
         <yun-complete id="agentCode" name="agentCode" label="代理" url="/master/list" col-name="agent" code-field="agentCode" name-field="agentName" limit="6" selected-item="{{agent}}" disabled="{{agentDisabled}}" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></yun-complete>
-        <yun-complete id="subAgentCode" name="subAgentCode" label="公司" url="/master/list" col-name="subAgent" code-field="subAgentCode" name-field="subAgentName" limit="6" selected-item="{{subAgent}}" filter-condition="[[subAgentFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></yun-complete>
-        <yun-complete id="groupCode" name="groupCode" label="商户" url="/master/list" col-name="group" code-field="groupCode" name-field="groupName" limit="6" selected-item="{{group}}" filter-condition="[[groupFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></yun-complete>
-        <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></yun-complete>
+        <yun-complete id="subAgentCode" name="subAgentCode" label="公司" url="/master/list" col-name="subAgent" code-field="subAgentCode" name-field="subAgentName" limit="6" selected-item="{{subAgent}}" filter-condition="[[subAgentFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT"></yun-complete>
+        <yun-complete id="groupCode" name="groupCode" label="商户" url="/master/list" col-name="group" code-field="groupCode" name-field="groupName" limit="6" selected-item="{{group}}" filter-condition="[[groupFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP"></yun-complete>
+        <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT"></yun-complete>
         <paper-input label="门店名称" name="merName" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NAME"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}" data-msg-id="SCANPAY_TRADE_LIST.ORDER_NO"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}" data-msg-id="SCANPAY_TRADE_LIST.ORIGIN_ORDER_NO"></paper-input>
@@ -38,7 +37,7 @@
         </paper-button>
         <div class="paper-button-1">
           <a style="display:block; width:100%; height:100%; text-decoration:none;color:#fff;" target="iframeForDownload" href$="{{reportUri}}">
-            <i18n-msg msgid="BUTTON.DOWNLOADREPORT">下载报表</i18n-msg>
+            <i18n-msg msgid="SCANPAY_TRADE_LIST.DOWNLOADREPORT">下载报表</i18n-msg>
           </a>
         </div>
       </div>
@@ -305,21 +304,21 @@
         transStatusMap: {
           type: Array,
           value: [{
-            key: '10',
-            value: 'TRANS_STATUS.IN_PROCESS',
-            valueCN: '处理中'
+            key: '30',
+            value: 'TRANS_STATUS.SUCCESS',
+            valueCN: '成功'
           }, {
             key: '20',
             value: 'TRANS_STATUS.FAIL',
             valueCN: '失败'
           }, {
-            key: '30',
-            value: 'TRANS_STATUS.SUCCESS',
-            valueCN: '成功'
-          }, {
             key: '40',
             value: 'TRANS_STATUS.CLOSED',
             valueCN: '已关闭'
+          }, {
+            key: '10',
+            value: 'TRANS_STATUS.IN_PROCESS',
+            valueCN: '处理中'
           }, ]
         },
         user: Object,

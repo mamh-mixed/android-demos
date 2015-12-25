@@ -17,7 +17,7 @@ func TestFindOneRoleSettCol(t *testing.T) {
 }
 
 func TestPaginationFindRoleSettCol(t *testing.T) {
-	role, date, reportType := "ALP", "", 1
+	role, date, _ := "ALP", "", 1
 
 	size, page := 10, 1
 

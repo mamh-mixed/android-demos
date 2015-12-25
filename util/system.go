@@ -11,8 +11,8 @@ import (
 
 const (
 	sysEnv = "QUICKPAY_ENV"
-	// pkg    = "github.com/CardInfoLink/quickpay"
-	pkg = "github.com\\CardInfoLink\\quickpay" // windows
+	pkg    = "github.com/CardInfoLink/quickpay"
+	// pkg = "github.com\\CardInfoLink\\quickpay" // windows
 )
 
 // Hostname 主机名

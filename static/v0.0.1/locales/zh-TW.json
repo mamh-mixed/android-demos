@@ -7,9 +7,41 @@
     "description": "...",
     "message": "當前用戶"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "登出"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "選擇語言"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "隱藏菜單"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "顯示菜單"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "404-NOT FOUND"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "你所尋找的頁面不存在"
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "請點擊右上角【登出】圖標，重新登入"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "保存"
+  },
+  "BUTTON.UPDATE": {
+    "description": "更新按钮",
+    "message": "更新"
   },
   "BUTTON.QUERY": {
     "description": "查询按钮",
@@ -163,13 +195,25 @@
     "description": "代理",
     "message": "代理"
   },
+  "SCANPAY_TRADE_LIST.SUBAGENT": {
+    "description": "公司",
+    "message": "公司"
+  },
   "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
     "description": "公司代码",
     "message": "公司程式碼"
   },
+  "SCANPAY_TRADE_LIST.GROUP": {
+    "description": "商户",
+    "message": "商戶"
+  },
   "SCANPAY_TRADE_LIST.GROUP_NO": {
     "description": "商户代码",
     "message": "商戶程式碼"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT": {
+    "description": "门店",
+    "message": "門店"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
@@ -206,6 +250,10 @@
   "SCANPAY_TRADE_LIST.INDEX": {
     "description": "序号",
     "message": "序號"
+  },
+  "SCANPAY_TRADE_LIST.DOWNLOADREPORT": {
+    "description": "下载报表",
+    "message": "下載交易報表"
   },
   "SCANPAY_TRADE_LIST.AMOUNT": {
     "description": "交易金额",
@@ -650,10 +698,6 @@
   "USERMANAGEMENT.IF_DELETE_USER": {
     "description": "您确定要删除这个用户吗?",
     "message": "您確定要删除這個用戶嗎?"
-  },
-  "BUTTON.CONFIRM": {
-    "description": "确认按钮",
-    "message": "確認"
   },
   "SYSTEM_MANAGEMENT.MENUE_NAME": {
     "description": "系统管理",

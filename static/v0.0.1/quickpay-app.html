@@ -99,15 +99,34 @@
             case 'ja-JP':
               I18nMsg.lang = 'ja';
               break;
-            case 'zh-TW':
-              I18nMsg.lang = 'zh-TW';
+            case 'zh-CN':
+              I18nMsg.lang = 'zh-CN';
               break;
             default:
-              I18nMsg.lang = 'zh-CN';
+              I18nMsg.lang = 'zh-TW';
           }
         },
         attached: function() {
           this.$.appRouter.init();
+
+          // 设置HTML title
+          this._renderHtmlTitle();
+
+          setTimeout(function() {
+            var srcs = [
+              'elements/trade-list/trade-list.html',
+              'elements/trade-detail/trade-detail.html',
+              'elements/trade-view/trade-view.html',
+              'elements/trade-message/trade-message.html'
+            ];
+
+            srcs.forEach(function(src) {
+              var iframe = document.createElement('iframe');
+              iframe.setAttribute('style', 'display: none;');
+              iframe.setAttribute('src', src);
+              document.body.appendChild(iframe);
+            });
+          }, 1);
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
@@ -250,11 +269,18 @@
         handleLocaleResponse: function(e) {
           console.log(e.detail.response);
         },
+        _renderHtmlTitle: function() {
+          var i18nMsg = document.createElement('i18n-msg');
+          i18nMsg.setAttribute('msgid', 'TITLE');
+          document.title = i18nMsg.getMsg();
+        },
         handleI18nLanguageChangeEvent: function(e) {
           // 如果e.type === 'i18n-language-change' 的话，发送一个切换语言的请求
           if (e && e.type === 'i18n-language-change') {
             this.localeChangeRequest(e.detail.key);
           }
+
+          this._renderHtmlTitle();
           var i18nMsg = document.createElement('i18n-msg');
 
           var paperInputs = document.querySelectorAll('paper-input');

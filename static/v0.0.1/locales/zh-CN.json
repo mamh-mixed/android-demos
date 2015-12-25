@@ -7,9 +7,41 @@
     "description": "...",
     "message": "当前用户"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "退出"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "选择语言"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "隐藏菜单"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "显示菜单"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "页面已升级！"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "您点击的页面不存在..."
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "请点击右上角【退出】图标，重新登录"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "保存"
+  },
+  "BUTTON.UPDATE": {
+    "description": "更新按钮",
+    "message": "更新"
   },
   "BUTTON.QUERY": {
     "description": "查询按钮",
@@ -163,13 +195,25 @@
     "description": "代理",
     "message": "代理"
   },
+  "SCANPAY_TRADE_LIST.SUBAGENT": {
+    "description": "公司",
+    "message": "公司"
+  },
   "SCANPAY_TRADE_LIST.SUBAGENT_NO": {
     "description": "公司代码",
     "message": "公司代码"
   },
+  "SCANPAY_TRADE_LIST.GROUP": {
+    "description": "商户",
+    "message": "商户"
+  },
   "SCANPAY_TRADE_LIST.GROUP_NO": {
     "description": "商户代码",
     "message": "商户代码"
+  },
+  "SCANPAY_TRADE_LIST.MERCHANT": {
+    "description": "门店",
+    "message": "门店"
   },
   "SCANPAY_TRADE_LIST.MERCHANT_NO": {
     "description": "门店代码",
@@ -202,6 +246,10 @@
   "SCANPAY_TRADE_LIST.TRANS_STATUS": {
     "description": "交易状态",
     "message": "交易状态"
+  },
+  "SCANPAY_TRADE_LIST.DOWNLOADREPORT": {
+    "description": "下载报表",
+    "message": "下载报表"
   },
   "SCANPAY_TRADE_LIST.INDEX": {
     "description": "序号",
@@ -650,10 +698,6 @@
   "USERMANAGEMENT.IF_DELETE_USER": {
     "description": "您确定要删除这个用户吗?",
     "message": "您确定要删除这个用户吗?"
-  },
-  "BUTTON.CONFIRM": {
-    "description": "确认按钮",
-    "message": "确认"
   },
   "SYSTEM_MANAGEMENT.MENUE_NAME": {
     "description": "系统管理",
