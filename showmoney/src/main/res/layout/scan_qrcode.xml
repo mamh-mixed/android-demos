@@ -7,19 +7,25 @@
     android:orientation="vertical"
     android:visibility="visible">
 
-    <TextView
-        android:id="@+id/scan_title"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text=""
-        android:textColor="#ffffff" />
+        android:layout_marginBottom="1dp">
+
+        <TextView
+            android:id="@+id/scan_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text=""
+            android:textColor="#ffffff" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="1dp"
         android:layout_weight="1">
 
         <LinearLayout
@@ -51,8 +57,7 @@
             android:id="@+id/iv_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/wpay" />
+            android:layout_centerInParent="true" />
 
         <LinearLayout
             android:id="@+id/right_around_arrow"
@@ -99,7 +104,7 @@
         android:id="@+id/bottom_around_arrow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="30dp">
 
         <ImageView
             android:id="@+id/iv_keyboard"
@@ -111,7 +116,8 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:background="@drawable/qrcode_textview_bg">
 
             <ImageView
                 android:id="@+id/iv_update"
