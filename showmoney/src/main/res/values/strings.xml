@@ -321,4 +321,20 @@
     <string name="coupon_title_first">券码核销</string>
     <string name="coupon_reminder">输入券码</string>
     <string name="coupon_confirm">核销</string>
+    <string name="coupon_return">返回销券</string>
+    <string name="coupon_cancel_return">返回核销</string>
+    <string name="coupon_order_number">核销订单号</string>
+    <string name="coupon_pay_number">支付订单号</string>
+    <string name="coupon_access">卡券渠道</string>
+    <string name="coupon_use_time">核销时间</string>
+    <string name="coupon_operate_terminal">操作终端</string>
+    <string name="coupon_seller_order_number">商户订单号</string>
+    <string name="coupon_scan_code_again">重新扫码支付</string>
+    <string name="coupon_original_sum">原金额:</string>
+    <string name="coupon_discount">卡券抵扣:</string>
+    <string name="coupon_account_receive_money">应到账金额(不含手续费):</string>
+    <string name="coupon_time_receive_money">收款时间</string>
+    <string name="coupon_pay_money_again">重新支付</string>
+
+
 </resources>
