@@ -33,6 +33,7 @@ const (
 	Wap     = "wap"
 	IOS     = "ios"
 	Android = "android"
+	Pc      = "pc"
 )
 
 // QueryCondition 扫码交易查询字段
@@ -40,6 +41,7 @@ type QueryCondition struct {
 	MerName            string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId              string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds             []string `json:"-"`
+	ChanMerId          []string
 	UserType           string
 	Col                string   `json:"-"`
 	BindingId          string   `json:"bindingId"`
@@ -207,6 +209,7 @@ type ScanPayRequest struct {
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
+	SubAppID   string `json:"-" url:"-" bson:"-"` // 公众号子ID
 	DeviceInfo string `json:"-" url:"-" bson:"-"` // 设备号
 	SubMchId   string `json:"-" url:"-" bson:"-"` // 子商户
 	TotalTxamt string `json:"-" url:"-" bson:"-"` // 订单总金额
@@ -571,15 +574,16 @@ type LocalBlendMap map[string]map[string][]TransSett
 
 // 勾兑结构体
 type BlendElement struct {
-	Chcd      string //渠道编号
-	ChcdName  string //渠道名称
-	MerID     string //商户号
-	ChanMerID string //渠道商户号
-	MerName   string //商户名称
-	LocalID   string //系统订单号
-	OrderID   string //渠道订单号
-	OrderTime string //交易时间
-	OrderType string //交易类型
-	OrderAct  string //交易金额
-	IsBlend   bool   //对账标识
+	Chcd          string //渠道编号
+	ChcdName      string //渠道名称
+	MerID         string //商户号
+	ChanMerID     string //渠道商户号
+	MerName       string //商户名称
+	LocalID       string //系统订单号
+	OrderID       string //渠道订单号
+	OrderTime     string //交易时间
+	OrderType     string //交易类型
+	OrderAct      string //交易金额
+	RefundOrderID string //退款订单号
+	IsBlend       bool   //对账标识
 }

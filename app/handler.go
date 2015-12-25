@@ -312,7 +312,7 @@ func findOrderHandle(w http.ResponseWriter, r *http.Request) {
 	result := User.findOrderHandle(&reqParams{
 		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
-		OrderNum: r.FormValue("ordernum"),
+		OrderNum: r.FormValue("orderNum"),
 		PayType:  r.FormValue("payType"),
 		RecType:  r.FormValue("recType"),
 		Status:   r.FormValue("txnStatus"),
