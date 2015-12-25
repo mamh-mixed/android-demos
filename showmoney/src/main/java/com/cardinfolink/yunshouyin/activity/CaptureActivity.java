@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -26,7 +28,6 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.carmera.CameraManager;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -55,6 +56,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             mediaPlayer.seekTo(0);
         }
     };
+
     private CaptureActivityHandler handler;
     private ViewfinderView viewfinderView;
     private boolean hasSurface;
@@ -64,25 +66,26 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private MediaPlayer mediaPlayer;
     private boolean playBeep;
     private boolean vibrate;
+
     private Handler mHandler;
 
     private TradingLoadDialog mTradingLoadDialog;//交易的load的对话框
     private HintDialog mHintDialog;//显示一些提示信息 下面两个按钮的 对话框
 
     private String total;
+
     private String mOrderNum;
     private ResultData mResultData;
+
     private SettingActionBarItem mActionBar;
     private String mCurrentTime;
 
     private boolean isPolling = false;
     private int pollingCount = 0;
-    private String flag;
 
+    //从哪里启动的这个activity
+    private String originalFromFlag;
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,28 +93,24 @@ public class CaptureActivity extends BaseActivity implements Callback {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
-
         CameraManager.init(getApplication());
 
         initHandler();
         initLayout();
         initListener();
 
-        flag = bundle.getString("original");
-        if ("scancodeview".equals(flag)) {
+        originalFromFlag = bundle.getString("original");
+        if ("scancodeview".equals(originalFromFlag)) {
             total = bundle.getString("total");
             //这里不需要传人支付类型了，服务器判断。
             Date now = new Date();
-            SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-            mOrderNum = spf.format(now);
+
             SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             mCurrentTime = mspf.format(now);
-            Random random = new Random();
-            mActionBar.setTitle(getResources().getString(R.string.create_qrcode_activity_scancode));
-            for (int i = 0; i < 5; i++) {
-                mOrderNum = mOrderNum + random.nextInt(10);
-            }
-        } else if ("ticketview".equals(flag)) {
+
+            mOrderNum = geneOrderNumber();
+
+        } else if ("ticketview".equals(originalFromFlag)) {
             //扫卡券
             mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
         }
@@ -122,6 +121,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     private void initLayout() {
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
+
+        //初始化对话框
         mTradingLoadDialog = new TradingLoadDialog(mContext, mHandler, findViewById(R.id.trading_load_dialog), mOrderNum);
         mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
     }
@@ -135,6 +136,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 finish();
             }
         });
+        //这里需要设置一下颜色
         mActionBar.setBackgroundColor(Color.BLACK);
         mActionBar.setLeftTextColor(Color.WHITE);
         mActionBar.setTitleColor(Color.WHITE);
@@ -162,7 +164,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case Msg.MSG_FROM_SCANCODE_SUCCESS: {
-                        if ("scancodeview".equals(flag)) {
+                        if ("scancodeview".equals(originalFromFlag)) {
+                            //这边是扫码支付
                             mTradingLoadDialog.loading();
                             final OrderData orderData = new OrderData();
                             orderData.orderNum = mOrderNum;
@@ -192,15 +195,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 }
 
                             });
-                        } else if ("ticketview".equals(flag)) {
+                        } else if ("ticketview".equals(originalFromFlag)) {
+                            //这里是卡券核销
                             Toast.makeText(mContext, "ticketview", Toast.LENGTH_SHORT).show();
                         }
-
-                        break;
-                    }
-
-                    case Msg.MSG_FROM_DIGLOG_CLOSE: {
-                        finish();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
@@ -215,14 +213,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         showNopayDialog();
                         break;
                     }
-                    case Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY: {
-                        SessonData.positionView = 1;
-                        setResult(101);
-                        finish();
-                        break;
-                    }
                     case Msg.MSG_FROM_SEARCHING_POLLING: {
-                        String title = String.format(getString(R.string.txt_wait_user_input_password), pollingCount);
+                        String title = String.format(getString(R.string.capture_activity_wait_user_input_password), pollingCount);
                         mHintDialog.setTitle(title);
                         searchBill();
                         break;
@@ -252,45 +244,54 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
 
-    /**
-     * 未付款的对话框
-     * <p/>
-     * 这两个完全一样的对话框可以复用一样的layout文件。
-     * 显示交易成功的对话框，上边一个图片，中间显示文本，下边两个按钮 对话框
-     * 显示本次交易出错的对话框 上边一个图片，中间显示文本，下边两个按钮对话框
-     * <p/>
-     * 未付款对话框，上面文本，下面一个按钮的对话框
-     */
+    // 未付款对话框，上面文本，下面一个按钮的对话框
     public void showNopayDialog() {
         //关闭计时器
         mTradingLoadDialog.hide();
 
         pollingCount = 0;
-        String title = String.format(getString(R.string.txt_wait_user_input_password), pollingCount);
+        String title = String.format(getString(R.string.capture_activity_wait_user_input_password), pollingCount);
         mHintDialog.setTitle(title);
+
         //左边的对话框
-        mHintDialog.setCancelText(mContext.getResources().getString(R.string.txt_query_manual));//手动查询
+        mHintDialog.setCancelText(mContext.getResources().getString(R.string.capture_activity_query_manual));//手动查询
         mHintDialog.setCancelOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                isPolling = false;//结束轮询
-                searchBill();
+                stopPolling();//结束轮询
+                searchBill();//手动查询,手动查询把 轮询关闭然后每次按一下按钮查询一下
             }
         });
         //右边的对话框
-        mHintDialog.setOkText(mContext.getString(R.string.txt_cancel_trade));//取消交易
+        mHintDialog.setOkText(mContext.getString(R.string.capture_activity_trade));//取消交易
         mHintDialog.setOkOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                isPolling = false;//结束轮询
-                cancelBill();
+                cancelBill();//取消交易
             }
         });
 
         mHintDialog.show();
 
+        startPolling();
+
+    }
+
+    //结束轮询
+    public void stopPolling() {
+        isPolling = false;
+        pollingCount = 0;
+    }
+
+    //开启轮询
+    public void startPolling() {
+        if (isPolling) {
+            return;
+        }
+
+        pollingCount = 0;
 
         //开启一个线程轮询服务器5次
         isPolling = true;
@@ -300,30 +301,36 @@ public class CaptureActivity extends BaseActivity implements Callback {
             public void run() {
                 while (isPolling) {
                     try {
-                        Thread.sleep(5000);
                         pollingCount++;
-                        if (pollingCount >= 9) {
-                            isPolling = false;
+                        if (pollingCount >= 10) {
+                            stopPolling();
                             cancelBill();
                         }
                         if (isPolling) {
+                            Log.e(TAG, "[Thread] is polling = mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING) = " + pollingCount);
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
                         }
+                        Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
+                Log.e(TAG, "[Thread] end while() = " + pollingCount);
             }
         }).start();
     }
 
 
-    /**
-     * 取消订单
-     */
+    // 取消订单
     private void cancelBill() {
+        stopPolling();
+
+        if (TextUtils.isEmpty(mOrderNum)) {
+            return;
+        }
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mOrderNum;
+        orderData.orderNum = geneOrderNumber();//新生成一个订单号
         CashierSdk.startCanc(orderData, new CashierListener() {
 
             @Override
@@ -339,15 +346,13 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
             @Override
             public void onError(int errorCode) {
-                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+
             }
 
         });
     }
 
-    /**
-     * 查询订单
-     */
+    // 查询订单
     public void searchBill() {
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mOrderNum;
@@ -373,11 +378,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
 
-    /**
-     * 跳转到交易成功的界面
-     */
+    //跳转到交易成功的界面
     public void enterPaySuccessActivity() {
-        isPolling = false;
+        stopPolling();
         mTradingLoadDialog.hide();
 
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
@@ -397,11 +400,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
         finish();
     }
 
-    /**
-     * 跳转到交易失败的界面
-     */
+    //跳转到交易失败的界面
     public void enterPayFailActivity() {
-        isPolling = false;
+        stopPolling();
         mTradingLoadDialog.hide();
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
         Bundle bun = new Bundle();
@@ -420,43 +421,73 @@ public class CaptureActivity extends BaseActivity implements Callback {
         finish();
     }
 
-    /**
-     * 服务器超时对话框，中间文本，下面两个按钮
-     */
+
+    //服务器超时对话框，中间文本，下面两个按钮
     public void showPayTimeoutDialog() {
         //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
         mTradingLoadDialog.hide();
 
-        mHintDialog.setTitle(mContext.getString(R.string.dialog_trade_fail_timerout));
+        mHintDialog.setTitle(mContext.getString(R.string.capture_activity_trade_fail_timerout));
         //返回
-        mHintDialog.setCancelText(mContext.getString(R.string.txt_return));
+        mHintDialog.setCancelText(mContext.getString(R.string.capture_activity_return));
         mHintDialog.setCancelOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mHandler.sendEmptyMessage(Msg.MSG_FROM_DIGLOG_CLOSE);
+                mHintDialog.hide();//关闭对话框
             }
         });
 
         //去账单
-        mHintDialog.setOkText(mContext.getString(R.string.txt_goto_bill));
+        mHintDialog.setOkText(mContext.getString(R.string.capture_activity_goto_bill));
         mHintDialog.setOkOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO 去账单
+                mHintDialog.hide();//关闭对话框
+                finish();
             }
         });
 
         mHintDialog.show();
     }
 
-    /**
-     * 取消订单成功
-     */
+
+    // 取消订单成功
     public void showCancelBillSuccess() {
         //这里要包 loading 对话框关闭了。而且要结束loading对话框里面的一个线程。
         mTradingLoadDialog.hide();
-        mHintDialog.setText("该订单已取消，若顾客已支付成功，会自动退款。", "确认", " 确认");
 
+        mHintDialog.setTitle(getString(R.string.capture_activity_this_order_had_cancel));
+        mHintDialog.setCancelText(getString(R.string.capture_activity_i_know));
+        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHintDialog.hide();
+            }
+        });
+        mHintDialog.setOkText(getString(R.string.capture_activity_confirm));
+        mHintDialog.setOkOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHintDialog.hide();
+                finish();
+            }
+        });
+        mHintDialog.show();
+    }
+
+    // 时间加上一个随机数 生成账单号
+    private String geneOrderNumber() {
+        String mOrderNum;
+
+        Date now = new Date();
+        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
+        mOrderNum = spf.format(now);
+        Random random = new Random();//订单号末尾随机的生成一个数
+        for (int i = 0; i < 5; i++) {
+            mOrderNum = mOrderNum + random.nextInt(10);
+        }
+        return mOrderNum;
     }
 
     @Override
@@ -507,8 +538,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             return;
         }
         if (handler == null) {
-            handler = new CaptureActivityHandler(this, decodeFormats,
-                    characterSet);
+            handler = new CaptureActivityHandler(this, decodeFormats, characterSet);
         }
     }
 
