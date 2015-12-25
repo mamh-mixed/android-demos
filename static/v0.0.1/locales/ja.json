@@ -269,19 +269,19 @@
   },
   "SCANPAY_TRADE_LIST.REFUND": {
     "description": "退款",
-    "message": "リファンド"
+    "message": "取消状態"
   },
   "SCANPAY_TRADE_LIST.NO_REFUND": {
     "description": "无退款",
-    "message": "リファンドなし"
+    "message": "取消なし"
   },
   "SCANPAY_TRADE_LIST.ALREADY_REFUND": {
     "description": "已退款",
-    "message": "リファンド済"
+    "message": "全額取消"
   },
   "SCANPAY_TRADE_LIST.PART_REFUND": {
     "description": "部分退款",
-    "message": "一部リファンド"
+    "message": "部分取消"
   },
   "SCANPAY_TRADE_LIST.CLOSE_BY_MERCHANT": {
     "description": "商户发起关闭",
@@ -505,7 +505,7 @@
   },
   "TRADE_DETAIL.SETT_ROLE": {
     "description": "清算角色",
-    "message": "精算の役割"
+    "message": "精算機構"
   },
   "TRADE_DETAIL.TICKET_NUM": {
     "description": "小票号",
