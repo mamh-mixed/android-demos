@@ -445,28 +445,14 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.SettRole != "" {
 		match["settRole"] = q.SettRole
 	}
-
-	// 存在两种交易状态
-	if len(q.TransStatus) > 0 && len(q.RefundStatus) > 0 {
-		match["$or"] = []bson.M{
-			bson.M{"transStatus": bson.M{"$in": q.TransStatus}},
-			bson.M{"refundStatus": bson.M{"$in": q.RefundStatus}},
-		}
-	} else {
-		if len(q.TransStatus) > 0 {
-			match["transStatus"] = bson.M{"$in": q.TransStatus}
-		}
-		if len(q.RefundStatus) > 0 {
-			match["refundStatus"] = bson.M{"$in": q.RefundStatus}
-		}
-	}
-
 	if q.StartTime != "" && q.EndTime != "" {
 		if q.TimeType == "" {
 			q.TimeType = "createTime"
 		}
 		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
+	// 处理交易状态查询条件
+	handleTransStatus(q, match)
 
 	p := []bson.M{
 		{"$match": match},
@@ -644,16 +630,8 @@ func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransType
 	}
 	find["merId"] = q.MerId
 
-	var or []bson.M
-	if len(q.TransStatus) != 0 {
-		or = append(or, bson.M{"transStatus": bson.M{"$in": q.TransStatus}})
-	}
-	if len(q.RefundStatus) != 0 {
-		or = append(or, bson.M{"refundStatus": bson.M{"$in": q.RefundStatus}})
-	}
-	if len(or) > 0 {
-		find["$or"] = or
-	}
+	// 处理交易状态查询条件
+	handleTransStatus(q, find)
 
 	// 过滤掉取消不成功的订单
 	find["transAmt"] = bson.M{"$ne": 0}
@@ -734,4 +712,33 @@ type agentProfit struct {
 	RefundAmt int64  `bson:"refundAmt"`
 	TransNum  int    `bson:"transNum"`
 	AgentCode string `bson:"agentCode"`
+}
+
+func handleTransStatus(q *model.QueryCondition, match bson.M) {
+	if len(q.TransStatus) > 0 && len(q.RefundStatus) > 0 {
+		var containsClosed bool
+		for _, rs := range q.RefundStatus {
+			// 简单点，只要有全额退的，那么认为是OR
+			if rs == model.TransRefunded {
+				containsClosed = true
+				match["$or"] = []bson.M{
+					bson.M{"transStatus": bson.M{"$in": q.TransStatus}},
+					bson.M{"refundStatus": bson.M{"$in": q.RefundStatus}},
+				}
+				break
+			}
+		}
+		if !containsClosed {
+			match["transStatus"] = bson.M{"$in": q.TransStatus}
+			match["refundStatus"] = bson.M{"$in": q.RefundStatus}
+		}
+
+	} else {
+		if len(q.TransStatus) > 0 {
+			match["transStatus"] = bson.M{"$in": q.TransStatus}
+		}
+		if len(q.RefundStatus) > 0 {
+			match["refundStatus"] = bson.M{"$in": q.RefundStatus}
+		}
+	}
 }

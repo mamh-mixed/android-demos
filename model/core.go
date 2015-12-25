@@ -9,6 +9,7 @@ import (
 // status
 const (
 	// refundStatus
+	TransNoRefunded     = 0 // 正常
 	TransRefunded       = 1 // 已退款
 	TransPartRefunded   = 2 // 部分退款
 	TransMerClosed      = 3 // 商户发起关闭

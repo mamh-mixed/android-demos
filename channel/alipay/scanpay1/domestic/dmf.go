@@ -303,6 +303,8 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 
 	for _, d := range data {
 		var elementModel model.BlendElement
+		elementModel.Chcd = "ALP"
+		elementModel.ChcdName = "支付宝"
 		elementModel.LocalID = d[0]
 		elementModel.OrderTime = d[2] // 时间
 		elementModel.OrderID = d[4]   // 支付宝交易号

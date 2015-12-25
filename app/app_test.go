@@ -392,12 +392,12 @@ func TestGetDownloadUrl(t *testing.T) {
 
 func TestFindOrderHandle(t *testing.T) {
 	values := url.Values{}
-	values.Add("username", "666666")
-	values.Add("password", "670b14728ad9902aecba32e22fa4f6bd")
+	values.Add("username", "842712881@Qq.com")
+	values.Add("password", "e10adc3949ba59abbe56e057f20f883e")
 	// values.Add("orderNum", "15101918251020326")
 	values.Add("payType", "3")
 	values.Add("recType", "1")
-	values.Add("txnStatus", "7")
+	values.Add("txnStatus", "5")
 	values.Add("index", "0")
 	values.Add("size", "50")
 

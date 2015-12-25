@@ -574,6 +574,8 @@ type LocalBlendMap map[string]map[string][]TransSett
 
 // 勾兑结构体
 type BlendElement struct {
+	Chcd          string
+	ChcdName      string
 	MerID         string //商户号
 	ChanMerID     string //渠道商户号
 	MerName       string //商户名称
