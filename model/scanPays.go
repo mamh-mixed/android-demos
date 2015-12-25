@@ -209,6 +209,7 @@ type ScanPayRequest struct {
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
+	SubAppID   string `json:"-" url:"-" bson:"-"` // 公众号子ID
 	DeviceInfo string `json:"-" url:"-" bson:"-"` // 设备号
 	SubMchId   string `json:"-" url:"-" bson:"-"` // 子商户
 	TotalTxamt string `json:"-" url:"-" bson:"-"` // 订单总金额

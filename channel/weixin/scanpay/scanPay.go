@@ -23,6 +23,7 @@ func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
 	return &weixin.CommonParams{
 		Appid:        m.AppID,        // 公众账号ID
 		MchID:        m.ChanMerId,    // 商户号
+		SubAppid:     m.SubAppID,     // 子公众账号ID
 		SubMchId:     m.SubMchId,     // 子商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
