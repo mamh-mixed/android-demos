@@ -385,8 +385,7 @@
           inscd: true,
           mchntid: true,
           orderNum: true,
-          scanCodeId: true,
-          terminalid: true
+          scanCodeId: true
         },
         // 验券查询
         'QUVE': {
@@ -395,7 +394,6 @@
           mchntid: true,
           orderNum: true,
           scanCodeId: true,
-          terminalid: true,
           origOrderNum: true
         },
         // 卡券撤销
@@ -405,7 +403,6 @@
           mchntid: true,
           orderNum: true,
           scanCodeId: true,
-          terminalid: true,
           origOrderNum: true
         },
         // 刷卡券撤销
@@ -417,7 +414,6 @@
           payType:true,
           orderNum: true,
           scanCodeId: true,
-          terminalid: true,
           origOrderNum: true
         }
       };
@@ -428,7 +424,7 @@
         inscd: '10134001',
         chcd: '',
         mchntid: '999118880000017',
-        terminalid: '10000001',
+        // terminalid: '10000001',
         txamt: '000000000001',
         orderNum: '' + now.valueOf(),
         origOrderNum: '',
