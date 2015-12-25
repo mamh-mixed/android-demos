@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity {
         two = one * 2;
         three = one * 3;
 
-         // 每个页面的view数据
+        // 每个页面的view数据
         mViews = new ArrayList<View>();
         mViews.add(mScanCodeView);
         mViews.add(mTicketView);
@@ -173,7 +173,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    private class MainPagerAdapter extends android.support.v4.view.PagerAdapter{
+    private class MainPagerAdapter extends android.support.v4.view.PagerAdapter {
         @Override
         public boolean isViewFromObject(View arg0, Object arg1) {
             return arg0 == arg1;
@@ -223,9 +223,6 @@ public class MainActivity extends BaseActivity {
         }
 
         public void onPageSelected(int arg0) {
-            //清空输入的金额
-            mScanCodeView.clearValue();
-            mScanCodeView.showKeyBoard();
             Animation animation = null;
             switch (arg0) {
                 case 0:
