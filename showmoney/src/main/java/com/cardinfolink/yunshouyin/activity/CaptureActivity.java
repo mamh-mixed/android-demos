@@ -256,9 +256,25 @@ public class CaptureActivity extends BaseActivity implements Callback {
         //左边的对话框
         mHintDialog.setCancelText(mContext.getResources().getString(R.string.capture_activity_query_manual));//手动查询
         mHintDialog.setCancelOnClickListener(new OnClickListener() {
+            private int pressCount = 0;
+            private long lastClickTime;
+
+            public synchronized boolean isFastClick() {
+                long time = System.currentTimeMillis();
+                if (time - lastClickTime < 5000) {
+                    return true;
+                }
+                lastClickTime = time;
+                return false;
+            }
 
             @Override
             public void onClick(View v) {
+                if (isFastClick()) {
+                    return;
+                }
+                mHintDialog.setTitle(String.format("手动查询：%s 次", pressCount));
+                pressCount++;
                 stopPolling();//结束轮询
                 searchBill();//手动查询,手动查询把 轮询关闭然后每次按一下按钮查询一下
             }
