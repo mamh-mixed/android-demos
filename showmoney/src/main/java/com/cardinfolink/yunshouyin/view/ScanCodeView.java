@@ -78,7 +78,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private ImageView btndelete;
 
     private TextView input;
-    private TextView output;
+    private TextView output;//上边的文本框
 
     private View scanCodeView;//二维码界面
     private View keyboardView;//键盘界面
@@ -198,7 +198,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         btndelete = (ImageView) findViewById(R.id.iv_del);
 
         input = (TextView) findViewById(R.id.input);
-        output = (TextView) findViewById(R.id.output);
+        output = (TextView) findViewById(R.id.output);//上边的文本框
 
         btn0.setOnClickListener(this);
         btn1.setOnClickListener(this);
@@ -946,19 +946,37 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS: {
-                        //关单成功
-                        mUpdateMessage.setText("关闭订单成功");
+                        //关单成功//"关闭订单成功"
+                        String title = mContext.getString(R.string.scancode_view_cancel_order_success);
+                        mHintDialog.setTitle(title);
+                        mHintDialog.setOkText(mContext.getString(R.string.scancode_view_had_cancel_order));//"已经关单了"
+                        mHintDialog.setOkOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mHintDialog.hide();
+                            }
+                        });
+                        mUpdateMessage.setText(title);
                         mQRImage.setImageDrawable(null);
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_DOING: {
-                        //关单返回09，
-                        mUpdateMessage.setText("关闭订单。。。。");
+                        //关单返回09，表明进行中吧
+                        mUpdateMessage.setText(mContext.getString(R.string.scancode_view_cancel_order_ing));
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL: {
                         //关单失败
-                        mUpdateMessage.setText("关闭失败");
+                        String title = mContext.getString(R.string.scancode_view_cancel_fail);
+                        mHintDialog.setTitle(title);
+                        mHintDialog.setOkText(title);//"关单失败"
+                        mHintDialog.setOkOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mHintDialog.hide();
+                            }
+                        });
+                        mUpdateMessage.setText(mContext.getString(R.string.scancode_view_cancel_fail));
                         mQRImage.setImageDrawable(null);
                         break;
                     }
@@ -1042,7 +1060,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     public void getResult() {
         double result = 0;
-        String x = output.getText().toString();
+        String x = output.getText().toString();//上边的文本框
         String t = "";
         int i = 0;
 
@@ -1061,13 +1079,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             for (int c = 0; c < i; c++) {
                 result += Double.parseDouble(s[c]);
             }
-            input.setText("=" + String.format("%.2f", result));
+            input.setText("=" + String.format("%.2f", result));//下面的文本框
         }
 
 
         if (result > MAX_MONEY) {
             // "金额过大!"
-            String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
+            String toastMsg = mContext.getString(R.string.toast_money_too_large);
             Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
             numFlag = false;
         } else {

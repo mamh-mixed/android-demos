@@ -174,6 +174,10 @@
     <string name="scancode_view_are_sure_cancel_order">订单还未支付，确定要取消订单吗？</string>
     <string name="scancode_view_not_cancel_order">不</string>
     <string name="scancode_view_cancel_order">现在就取消</string>
+    <string name="scancode_view_cancel_order_success">关闭订单成功</string>
+    <string name="scancode_view_had_cancel_order">已经关单了</string>
+    <string name="scancode_view_cancel_fail">关单失败</string>
+    <string name="scancode_view_cancel_order_ing">关闭订单进行中。。。</string>
 
     <string name="toast_money_cannot_zero">金额不能为零!</string>
     <string name="toast_money_too_large">金额过大!</string>
