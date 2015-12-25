@@ -74,16 +74,12 @@ public class PayResultActivity extends Activity {
 
         if (result) {
             mPayResult.setText(R.string.pay_result_success);
-            mPayResult.setTextColor(Color.BLUE);
-            mPayResultPhoto.setImageResource(R.drawable.right);
+            mPayResultPhoto.setImageResource(R.drawable.pay_result_succeed);
             mResultExplain.setText("");
-            mReceiveMoneyStatus.setTextColor(Color.BLUE);
-            mReceiveMoney.setTextColor(Color.BLUE);
-            mReceiveMoneyStatus.setText(R.string.pay_total_state_success);
         } else {
             mPayResult.setText(R.string.pay_result_fail);
             mPayResult.setTextColor(Color.RED);
-            mPayResultPhoto.setImageResource(R.drawable.wrong);
+            mPayResultPhoto.setImageResource(R.drawable.pay_result_fail);
             mResultExplain.setText(resultExplain);
             mReceiveMoneyStatus.setTextColor(Color.RED);
             mReceiveMoney.setTextColor(Color.RED);
@@ -99,7 +95,7 @@ public class PayResultActivity extends Activity {
         } else if ("WXP".equals(chcd)) {
             mPayAccess.setImageResource(R.drawable.scan_wechat);
         } else {
-            mPayAccess.setImageResource(R.drawable.wrong);
+            mPayAccess.setImageResource(R.drawable.pay_result_fail);
         }
 
         mConfirm.setOnClickListener(new View.OnClickListener() {
