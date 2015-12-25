@@ -92,14 +92,11 @@
         ready: function() {
           var lan = this.language || window.navigator.language;
           switch (lan) {
-            case 'ja':
-              I18nMsg.lang = 'ja';
-              break;
-            case 'ja-JP':
-              I18nMsg.lang = 'ja';
+            case 'zh-CN':
+              I18nMsg.lang = 'zh-CN';
               break;
             default:
-              I18nMsg.lang = 'zh-CN';
+              I18nMsg.lang = 'ja';
           }
         },
         attached: function() {
