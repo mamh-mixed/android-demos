@@ -37,12 +37,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:src="@drawable/setting_details"
             cardinfolink:title="@string/register_province_city" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
             android:id="@+id/bank"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/setting_details"
             cardinfolink:title="@string/register_bank_branch_bank" />
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
@@ -121,9 +123,9 @@
 
     </LinearLayout>
 
-    <include layout="@layout/select_dialog"/>
+    <include layout="@layout/select_dialog" />
 
 
-    <include layout="@layout/showmoney_dialog"/>
+    <include layout="@layout/showmoney_dialog" />
 
 </RelativeLayout>
