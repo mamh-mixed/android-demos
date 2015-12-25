@@ -25,18 +25,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cardinfolink:right_text="http://www.show.money"
+        android:src="@drawable/setting_details"
         cardinfolink:title="@string/setting_product_website" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:id="@+id/welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/setting_details"
         cardinfolink:title="@string/setting_welcome_page" />
 
     <com.cardinfolink.yunshouyin.ui.SettingClikcItem
         android:id="@+id/update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/setting_details"
         cardinfolink:title="@string/setting_check_update" />
 
     <LinearLayout
