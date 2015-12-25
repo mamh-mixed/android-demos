@@ -57,7 +57,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         }
     };
 
-    private CaptureActivityHandler handler;
+    private CaptureActivityHandler captureActivityHandler;
     private ViewfinderView viewfinderView;
     private boolean hasSurface;
     private Vector<BarcodeFormat> decodeFormats;
@@ -89,31 +89,14 @@ public class CaptureActivity extends BaseActivity implements Callback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_capture);
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
 
         CameraManager.init(getApplication());
 
         initHandler();
         initLayout();
         initListener();
-
-        originalFromFlag = bundle.getString("original");
-        if ("scancodeview".equals(originalFromFlag)) {
-            total = bundle.getString("total");
-            //这里不需要传人支付类型了，服务器判断。
-            Date now = new Date();
-
-            SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            mCurrentTime = mspf.format(now);
-
-            mOrderNum = geneOrderNumber();
-
-        } else if ("ticketview".equals(originalFromFlag)) {
-            //扫卡券
-            mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
-        }
 
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
@@ -273,7 +256,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 if (isFastClick()) {
                     return;
                 }
-                mHintDialog.setTitle(String.format("手动查询：%s 次", pressCount));
+                mHintDialog.setTitle(String.format("手动查询：%s 次\n订单号：%s", pressCount, mOrderNum));
                 pressCount++;
                 stopPolling();//结束轮询
                 searchBill();//手动查询,手动查询把 轮询关闭然后每次按一下按钮查询一下
@@ -366,6 +349,52 @@ public class CaptureActivity extends BaseActivity implements Callback {
             }
 
         });
+    }
+
+    //取消账单，不去判断取消是否成功,在 onPause()方法里面调用
+    private void cancelBillInPause() {
+        mTradingLoadDialog.hide();
+        mHintDialog.hide();
+
+        stopPolling();
+
+        if (TextUtils.isEmpty(mOrderNum)) {
+            return;
+        }
+
+        final OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        //这里先查询一下，如果还未支付再取消也不迟呀
+        Log.e(TAG,"[onPause] cancel before search");
+        CashierSdk.startQy(orderData, new CashierListener() {
+            @Override
+            public void onResult(ResultData resultData) {
+                if (resultData.respcd.equals("09")) {
+                    Log.e(TAG,"[onPause] not pay yet, will cancel");
+                    //如果是还未支付 这时候再取消
+                    orderData.origOrderNum = mOrderNum;
+                    orderData.orderNum = geneOrderNumber();//新生成一个订单号
+                    CashierSdk.startCanc(orderData, new CashierListener() {
+
+                        @Override
+                        public void onResult(ResultData resultData) {
+                        }
+
+                        @Override
+                        public void onError(int errorCode) {
+
+                        }
+
+                    });
+                }//end if()
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+
     }
 
     // 查询订单
@@ -509,6 +538,25 @@ public class CaptureActivity extends BaseActivity implements Callback {
     @Override
     protected void onResume() {
         super.onResume();
+        //把初始化的部分移到这里了
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        originalFromFlag = bundle.getString("original");
+        if ("scancodeview".equals(originalFromFlag)) {
+            total = bundle.getString("total");
+            //这里不需要传人支付类型了，服务器判断。
+            Date now = new Date();
+
+            SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            mCurrentTime = mspf.format(now);
+
+            mOrderNum = geneOrderNumber();
+
+        } else if ("ticketview".equals(originalFromFlag)) {
+            //扫卡券
+            mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
+        }
+
         SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
@@ -531,10 +579,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     @Override
     protected void onPause() {
+        cancelBillInPause();
+        Log.e(TAG, "onPause:");
         super.onPause();
-        if (handler != null) {
-            handler.quitSynchronously();
-            handler = null;
+        if (captureActivityHandler != null) {
+            captureActivityHandler.quitSynchronously();
+            captureActivityHandler = null;
         }
         CameraManager.get().closeDriver();
     }
@@ -553,8 +603,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
         } catch (RuntimeException e) {
             return;
         }
-        if (handler == null) {
-            handler = new CaptureActivityHandler(this, decodeFormats, characterSet);
+        if (captureActivityHandler == null) {
+            captureActivityHandler = new CaptureActivityHandler(this, decodeFormats, characterSet);
         }
     }
 
@@ -581,7 +631,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
     public Handler getHandler() {
-        return handler;
+        return captureActivityHandler;
     }
 
     public void drawViewfinder() {
@@ -597,6 +647,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         msg.obj = obj.getText().toString();
         mHandler.sendMessageDelayed(msg, 0);
         CameraManager.get().stopPreview();//停止camera的preview
+        CameraManager.get().closeDriver();
     }
 
     private void initBeepSound() {
