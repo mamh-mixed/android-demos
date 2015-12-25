@@ -82,7 +82,6 @@
     <string name="dialog_trade_success">交易成功\n感谢购买！</string>
     <string name="dialog_trade_nopay">交易未支付,请支付后查询！</string>
     <string name="dialog_trade_fail">本次交易出错\n支付失败！</string>
-    <string name="dialog_trade_fail_timerout">服务器超时，如果用户付款成功。您可以去账单查看详情</string>
 
     <string name="server_timeout">服务器超时，请检查网络！</string>
     <string name="username_password_error">用户名或密码错误！</string>
@@ -178,6 +177,7 @@
     <string name="scancode_view_had_cancel_order">已经关单了</string>
     <string name="scancode_view_cancel_fail">关单失败</string>
     <string name="scancode_view_cancel_order_ing">关闭订单进行中。。。</string>
+    <string name="scancode_view_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
 
     <string name="toast_money_cannot_zero">金额不能为零!</string>
     <string name="toast_money_too_large">金额过大!</string>
@@ -217,17 +217,24 @@
     <string name="txt_please_activate">请激活帐号</string>
     <string name="txt_cancel">取消</string>
     <string name="txt_close">关闭</string>
-    <string name="txt_return">返回</string>
-    <string name="txt_goto_bill">去账单</string>
-    <string name="txt_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
-    <string name="txt_history_txns">历史交易</string>
-    <string name="txt_query_result">查询结果</string>
     <string name="txt_reset_messsage">如果你忘记密码请点击重置密码</string>
     <string name="txt_reset">重置密码</string>
     <string name="txt_search">搜索</string>
     <string name="txt_hint_search">请输入搜索的内容</string>
-    <string name="txt_query_manual">手动查询</string>
-    <string name="txt_cancel_trade">取消交易</string>
+    <string name="txt_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
+
+
+    <string name="capture_activity_confirm">确认</string>
+    <string name="capture_activity_return">返回</string>
+    <string name="capture_activity_query_manual">手动查询</string>
+    <string name="capture_activity_trade">取消交易</string>
+    <string name="capture_activity_this_order_had_cancel">该订单已取消，若顾客已支付成功，会自动退款。</string>
+    <string name="capture_activity_i_know">我知道了</string>
+    <string name="capture_activity_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
+    <string name="capture_activity_history_txns">历史交易</string>
+    <string name="capture_activity_query_result">查询结果</string>
+    <string name="capture_activity_goto_bill">去账单</string>
+    <string name="capture_activity_trade_fail_timerout">服务器超时，如果用户付款成功。您可以去账单查看详情</string>
 
     <string name="setting_support_channel">支持的渠道</string>
     <string name="setting_my_web_yunshouyin">我的网页版</string>
