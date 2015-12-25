@@ -3,6 +3,8 @@
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../elements/choose-language/choose-language.html">
 <link rel="import" href="../elements/x-ajax/x-ajax.html">
 <link rel="import" href="../styles/app-theme.html">
 
@@ -85,13 +87,24 @@
     <div id="banner">
       <div class="app-title">
         <img src="../images/logo2.svg" alt="云收银" class="logo">
-        <div class="app-name">云收银管理平台</div>
+        <div class="app-name">
+          <i18n-msg msgid="TITLE">云收银管理平台</i18n-msg>
+        </div>
       </div>
       <div class="user-title">
-        <div> 当前用户 【 <span>{{nickName}}</span> 】</div>
-        <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
-        <paper-icon-button icon="refresh"></paper-icon-button>
-        <paper-icon-button icon="search"></paper-icon-button>
+        <div>
+          <i18n-msg msgid="CURRENTUSER">当前用户</i18n-msg>
+          【
+          <span>{{nickName}}</span> 】
+        </div>
+        <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped" alt="logout"></paper-icon-button>
+        <paper-tooltip for="logoutBtn">
+          <i18n-msg msgid="SYSTEM.LOGOUT">退出</i18n-msg>
+        </paper-tooltip>
+        <choose-language id="languageChoose"></choose-language>
+        <paper-tooltip for="languageChoose">
+          <i18n-msg msgid="SYSTEM.CHOOSE_LANGUAGE">选择语言</i18n-msg>
+        </paper-tooltip>
       </div>
     </div>
     <content select=".content"></content>

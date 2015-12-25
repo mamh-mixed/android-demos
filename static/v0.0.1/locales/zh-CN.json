@@ -7,6 +7,34 @@
     "description": "...",
     "message": "当前用户"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "退出"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "选择语言"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "隐藏菜单"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "显示菜单"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "页面已升级！"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "您点击的页面不存在..."
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "请点击右上角【退出】图标，重新登录"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "保存"

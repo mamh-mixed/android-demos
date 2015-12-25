@@ -7,6 +7,34 @@
     "description": "...",
     "message": "ようこそ"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "ログアウト"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "言語を選択"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "メニュー非表示"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "メニュー表示"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "ページがみつかりません"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "申し訳ございません"
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "右隅で『ログアウト』ボタンを押して、再ログインしてください"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "保存"
