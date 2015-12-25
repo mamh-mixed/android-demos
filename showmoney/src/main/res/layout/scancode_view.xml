@@ -88,12 +88,13 @@
 
         </LinearLayout>
 
-        <include layout="@layout/scan_keyboard"/>
+        <include layout="@layout/scan_keyboard" />
 
-        <include layout="@layout/scan_qrcode"/>
+        <include layout="@layout/scan_qrcode" />
     </LinearLayout>
 
-    <include layout="@layout/showmoney_dialog"/>
+    <include layout="@layout/showmoney_dialog" />
 
+    <include layout="@layout/hint_dialog" />
 
 </RelativeLayout>
