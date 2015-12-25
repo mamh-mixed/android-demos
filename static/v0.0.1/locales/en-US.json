@@ -7,6 +7,34 @@
     "description": "...",
     "message": "User"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "Logout"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "Choose Language"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "Hide Sidebar"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "Show Sidebar"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "Page Not Found"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "The requested URL was not found on this server."
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "Please click the 'logout' button on the top right corner and login again"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "Save"
