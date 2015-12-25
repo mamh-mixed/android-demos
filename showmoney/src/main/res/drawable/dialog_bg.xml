@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-
+<?xml version="1.0" encoding="utf-8"?><!-- 对话框的背景 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="#FFFFFF" />
-    <corners android:radius="50px" />
+    <corners android:radius="20px" />
     <padding
         android:bottom="0dp"
         android:left="0dp"
