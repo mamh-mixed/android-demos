@@ -1417,6 +1417,7 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 		q.TradeFrom = []string{model.IOS, model.Android}
 	case 2, 8:
 		// 暂时没有
+		q.TradeFrom = []string{model.Pc}
 	case 4:
 		q.TradeFrom = []string{model.Wap}
 	case 3:

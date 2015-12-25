@@ -3,14 +3,14 @@ package scanpay
 import (
 	"bufio"
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -345,7 +345,7 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 	}
 
 	dataStr = strings.Replace(dataStr, "`", "", -1)
-
+	log.Debugf("weixin settle csv: %s", dataStr)
 	//modelMMap := make(map[string]map[string][]model.BlendElement)
 	strStream := strings.NewReader(dataStr)
 	rd := bufio.NewReader(strStream)
@@ -367,7 +367,7 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 		var elementModel model.BlendElement
 		elementModel.Chcd = "WXP"
 		elementModel.ChcdName = "微信"
-		elementModel.ChanMerID = dataArray[3] // 商户号
+		elementModel.ChanMerID = dataArray[3] // 子商户号
 		elementModel.OrderTime = dataArray[0] // 时间
 		elementModel.OrderID = dataArray[5]   // 微信交易号
 		elementModel.LocalID = dataArray[6]   // 商户订单号
@@ -378,27 +378,21 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 			recsMap = make(map[string][]model.BlendElement)
 		}
 
-		if dataArray[9] == "SUCCESS" { //交易成功
+		switch dataArray[9] {
+		case "SUCCESS":
 			elementModel.OrderAct = dataArray[12] //金额
-			elementModel.OrderType = "交易成功"
-			elementArray, ok := recsMap[elementModel.OrderID]
-			if !ok {
-				elementArray = make([]model.BlendElement, 0)
-			}
-			elementArray = append(elementArray, elementModel)
-			recsMap[elementModel.OrderID] = elementArray
-		} else if dataArray[9] == "REFUND" { //退款
-			if dataArray[19] == "SUCCESS" {
-				elementModel.OrderAct = "-" + dataArray[16]
-				elementModel.OrderType = "退款"
-				elementArray, ok := recsMap[elementModel.OrderID]
-				if !ok {
-					elementArray = make([]model.BlendElement, 0)
-				}
-				elementArray = append(elementArray, elementModel)
-				recsMap[elementModel.OrderID] = elementArray
-			}
+		case "REFUND", "REVOKED":
+			elementModel.OrderAct = "-" + dataArray[16]
+			elementModel.RefundOrderID = dataArray[15]
 		}
+
+		elementModel.OrderType = dataArray[9]
+		elementArray, ok := recsMap[elementModel.OrderID]
+		if !ok {
+			elementArray = make([]model.BlendElement, 0)
+		}
+		elementArray = append(elementArray, elementModel)
+		recsMap[elementModel.OrderID] = elementArray
 
 		// back
 		cbd[elementModel.ChanMerID] = recsMap

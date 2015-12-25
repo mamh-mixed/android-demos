@@ -245,6 +245,12 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	if q.Date != "" {
 		find["settDate"] = q.Date
 	}
+	if q.ChanCode != "" {
+		find["trans.chanCode"] = q.ChanCode
+	}
+	if len(q.ChanMerId) != 0 {
+		find["trans.chanMerId"] = bson.M{"$in": q.ChanMerId}
+	}
 
 	var ts []model.TransSett
 	var err error
