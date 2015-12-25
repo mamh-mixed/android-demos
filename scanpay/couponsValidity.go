@@ -25,8 +25,6 @@ func validatePurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespo
 		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
-	case req.Terminalid == "":
-		return fieldEmptyError(terminalid)
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.ScanCodeId == "":
@@ -74,8 +72,6 @@ func validatePurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRe
 		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
-	case req.Terminalid == "":
-		return fieldEmptyError(terminalid)
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.ScanCodeId == "":
@@ -139,8 +135,6 @@ func validateQueryPurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPay
 		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
-	case req.Terminalid == "":
-		return fieldEmptyError(terminalid)
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.ScanCodeId == "":
@@ -198,8 +192,6 @@ func validateUndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanP
 		return fieldEmptyError(agentCode)
 	case req.Mchntid == "":
 		return fieldEmptyError(mchntid)
-	case req.Terminalid == "":
-		return fieldEmptyError(terminalid)
 	case req.OrderNum == "":
 		return fieldEmptyError(orderNum)
 	case req.ScanCodeId == "":
