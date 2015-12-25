@@ -37,9 +37,9 @@ var cancelPay = &model.ScanPayRequest{
 }
 
 var enquiry = &model.ScanPayRequest{
-	OrderNum:  "e148a25a84f14024511c5f3cde5d4594",
-	SignKey:   "eu1dr0c8znpa43blzy1wirzmk8jqdaon",
-	ChanMerId: "2088811767473826",
+	OrigOrderNum: "2019000038239245",
+	SignKey:      "ylb43xs4rh4d7vt563ly46n8mhwnkq0n",
+	ChanMerId:    "2088021322181578",
 }
 
 var refundPay = &model.ScanPayRequest{

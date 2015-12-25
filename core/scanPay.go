@@ -996,6 +996,7 @@ func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
 	for _, d := range interval {
 		// 等一等
 		time.Sleep(time.Second * d)
+		log.Infof("trace inporcess trans, merId=%s, orderNum=%s", req.Mchntid, req.OrderNum)
 		// 重新锁住并刷新交易
 		t, err := findAndLockTrans(req.Mchntid, req.OrderNum)
 		if err != nil {
