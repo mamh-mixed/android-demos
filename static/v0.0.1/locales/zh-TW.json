@@ -7,6 +7,34 @@
     "description": "...",
     "message": "當前用戶"
   },
+  "SYSTEM.LOGOUT": {
+    "description": "退出",
+    "message": "登出"
+  },
+  "SYSTEM.CHOOSE_LANGUAGE": {
+    "description": "选择语言提示",
+    "message": "選擇語言"
+  },
+  "SYSTEM.HIDE_SIDEBAR": {
+    "description": "隐藏菜单",
+    "message": "隱藏菜單"
+  },
+  "SYSTEM.SHOW_SIDEBAR": {
+    "description": "显示菜单",
+    "message": "顯示菜單"
+  },
+  "NOT_FOUND_PAGE.FIRST_TITLE": {
+    "description": "第一行",
+    "message": "404-NOT FOUND"
+  },
+  "NOT_FOUND_PAGE.SECOND_TITLE": {
+    "description": "第二行",
+    "message": "你所尋找的頁面不存在"
+  },
+  "NOT_FOUND_PAGE.THIRD_TITLE": {
+    "description": "第三行",
+    "message": "請點擊右上角【登出】圖標，重新登入"
+  },
   "BUTTON.SAVE": {
     "description": "保存按钮",
     "message": "保存"
