@@ -472,9 +472,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     private void showCancelOrderDialog() {
-        mHintDialog.setTitle("订单还未支付，确定要取消订单吗？");
-        mHintDialog.setCancelText("不取消订单");
-        mHintDialog.setOkText("现在就取消");
+        //订单还未支付，确定要取消订单吗？
+        mHintDialog.setTitle(mContext.getString(R.string.scancode_view_are_sure_cancel_order));
+
+        mHintDialog.setCancelText(mContext.getString(R.string.scancode_view_not_cancel_order));
+        //现在就取消
+        mHintDialog.setOkText(mContext.getString(R.string.scancode_view_cancel_order));
+
         mHintDialog.setOkOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -497,7 +501,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
                     if (isPolling) {
-                        showCancelOrderDialog();
+                        showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
                     } else {
                         mCHCD = CHCD_TYPE[0];
                         Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【微信】");
@@ -511,7 +515,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[1])) {
                     if (isPolling) {
-                        showCancelOrderDialog();
+                        showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
                     } else {
                         mCHCD = CHCD_TYPE[1];
                         Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【支付宝】");
@@ -523,7 +527,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 break;
             case R.id.scan_qr:
                 if (isPolling) {
-                    showCancelOrderDialog();
+                    showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
                 } else {
                     showKeyBoard();
                     startCapturePay(sum);
@@ -531,9 +535,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 break;
             case R.id.iv_keyboard:
                 if (isPolling) {
-                    showCancelOrderDialog();
+                    showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
                 } else {
-                    cancelOrder();//取消订单
                     showKeyBoard();//显示键盘界面
                 }
                 break;
@@ -778,7 +781,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
             @Override
             public void onError(int errorCode) {
-                mOrderNum = null;
+
             }
         });
 
@@ -911,6 +914,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         if (mResultData != null) {
                             if (mResultData.respcd.equals("00") || mResultData.respcd.equals("09")) {
                                 updateQR();//更新二维码
+                            } else {
+                                //这里返回其他，说明出错了
+                                endLoading();
+                                mUpdateMessage.setText(mResultData.errorDetail);
                             }
                         }
                         break;
@@ -941,6 +948,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS: {
                         //关单成功
                         mUpdateMessage.setText("关闭订单成功");
+                        mQRImage.setImageDrawable(null);
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_DOING: {
@@ -951,6 +959,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL: {
                         //关单失败
                         mUpdateMessage.setText("关闭失败");
+                        mQRImage.setImageDrawable(null);
                         break;
                     }
                 }
