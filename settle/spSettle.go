@@ -54,10 +54,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		return
 	}
 
-	log.Infof("local MMap length=%d", len(localMMap))
-	log.Infof("found alp mers: %d", len(alpMers))
-	log.Infof("found wxp mers: %d", len(wxpMers))
-
+	log.Infof("begin blend, localMMap length=%d, alpMers=%d, wxpMers=%d", len(localMMap), len(alpMers), len(wxpMers))
 	chanMMap := make(model.ChanBlendMap)
 	//微信请求
 	for _, k := range wxpMers {
@@ -80,7 +77,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		}
 		err = scanpay.DefaultWeixinScanPay.ProcessSettleEnquiry(req, chanMMap)
 		if err != nil {
-			log.Errorf("the request error , chanMerId=%s, chanCode:%s", req.ChanMerId, "WXP")
+			log.Errorf("the request error , chanMerId=%s, chanCode=%s", req.ChanMerId, "WXP")
 		}
 	}
 
@@ -88,7 +85,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 	for _, k := range alpMers {
 		c, err := mongo.ChanMerColl.Find("ALP", k)
 		if err != nil {
-			log.Errorf("find alp mer info error:%s", k)
+			log.Errorf("find alp mer info error: %s", k)
 			continue
 		}
 		err = alipay.Domestic.ProcessSettleEnquiry(&model.ScanPayRequest{
@@ -101,7 +98,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		}
 	}
 
-	log.Infof("chan MMap length=%d", len(chanMMap))
+	log.Infof("begin blend, chanMMap length=%d", len(chanMMap))
 
 	// 金额有误交易
 	amtErrorMap := make(map[string]string)

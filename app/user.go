@@ -643,7 +643,12 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		Skip:      index,
 	}
 
-	// 是否只包含支付交易
+	// 只包含支付交易
+	if req.TransType != 0 {
+		q.TransType = req.TransType
+	}
+
+	// TODO：日本项目字段 只包含支付交易
 	if req.OrderDetail == "pay" {
 		q.TransType = model.PayTrans
 	}

@@ -51,7 +51,7 @@ var refundPay = &model.ScanPayRequest{
 }
 
 var settle = &model.ScanPayRequest{
-	SettDate:  "2015-12-10",
+	SettDate:  "2015-12-22",
 	SignKey:   "wg5txarw1shatk0boc61di3971lgl8xe",
 	ChanMerId: "2088121476326615",
 }
@@ -134,6 +134,6 @@ func TestProcessSettleEnquiry(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Logf("%+v", cbd)
+	// t.Logf("%+v", cbd)
 
 }

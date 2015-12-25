@@ -27,6 +27,9 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/improveCertInfo", improveCertInfoHandle)
 	mux.HandleFunc("/app/pullinfo", pullInfoHandle)
 
+	// app3.0接口
+	mux.HandleFunc("/app/v3/bill", billV3Handle)
+
 	// 地推工具api
 	mux.HandleFunc("/app/tools/login", CompanyLogin)
 	mux.HandleFunc("/app/tools/users", UserList)
