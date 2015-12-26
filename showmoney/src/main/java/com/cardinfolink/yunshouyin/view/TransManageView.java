@@ -1,49 +1,35 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
-import android.text.TextUtils;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SimpleExpandableListAdapter;
 
-import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.adapter.BillAdapter;
-import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.core.QuickPayService;
-import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.data.TradeBill;
-import com.cardinfolink.yunshouyin.model.QRequest;
-import com.cardinfolink.yunshouyin.model.ServerPacket;
-import com.cardinfolink.yunshouyin.model.Txn;
-import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TransManageView extends LinearLayout {
     private static final String TAG = "TransManageView";
     private Context mContext;
+    private PullToRefreshExpandableListView mPullRefreshListView;
+    private SimpleExpandableListAdapter mAdapter;
 
-    private PullToRefreshListView mPullToRefreshListView;
-    private List<TradeBill> mTradeBillList;
-    private TextView mBillTipsText;
+    private String[] mChildStrings = {"Child One", "Child Two", "Child Three", "Child Four", "Child Five", "Child Six"};
 
-    private String mMonth;
-    private String tipsYearMonth;
-    private int billIndex;
-    private String mBillStatus;
-    private BillAdapter mBillAdapter;
+    private String[] mGroupStrings = {"Group One", "Group Two", "Group Three"};
+    private static final String KEY = "key";
+    private List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
+    private List<List<Map<String, String>>> childData = new ArrayList<List<Map<String, String>>>();
 
 
     public TransManageView(Context context) {
@@ -53,161 +39,87 @@ public class TransManageView extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
-        SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-        mMonth = spf.format(new Date());
-        tipsYearMonth = (new SimpleDateFormat("yyyy" + getResources().getString(R.string.year) + "MM" + getResources().getString(R.string.month))).format(new Date());
-        mTradeBillList = new ArrayList<TradeBill>();
+
         initLayout();
-        initListener();
-        billIndex = 0;
-        mBillStatus = "all";
     }
-
-    public void initData() {
-        billIndex = 0;
-        mTradeBillList.clear();
-        getTradeBill();
-    }
-
-    public void refresh() {
-        billIndex = 0;
-        mTradeBillList.clear();
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                getTradeBill();
-            }
-        }).start();
-
-
-    }
-
 
     private void initLayout() {
-        mBillTipsText = (TextView) findViewById(R.id.bill_tips);
-        mPullToRefreshListView = (PullToRefreshListView) findViewById(R.id.pull_refresh_list);
-        //mListView = mPullToRefreshListView.getRefreshableView();
-        mBillAdapter = new BillAdapter(this, mTradeBillList);
-        mPullToRefreshListView.setAdapter(mBillAdapter);
-        // 设置pull-to-refresh模式为Mode.Both
-        mPullToRefreshListView.setMode(Mode.BOTH);
-        mPullToRefreshListView.setOnTouchListener(new View.OnTouchListener() {
+        mPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
 
+        mPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
+
+
+        mPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
+            public void onRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                // Do work to refresh the list here.
+                Log.e(TAG, " pull to refersh");
+                new GetDataTask().execute();
             }
         });
+        for (String group : mGroupStrings) {
+            Map<String, String> groupMap1 = new HashMap<String, String>();
+            groupData.add(groupMap1);
+            groupMap1.put(KEY, group);
 
+            List<Map<String, String>> childList = new ArrayList<Map<String, String>>();
+            for (String string : mChildStrings) {
+                Map<String, String> childMap = new HashMap<String, String>();
+                childList.add(childMap);
+                childMap.put(KEY, string);
+            }
+            childData.add(childList);
+        }
+
+        mAdapter = new SimpleExpandableListAdapter(mContext,
+                groupData,
+                android.R.layout.simple_expandable_list_item_1,
+                new String[]{KEY}, new int[]{android.R.id.text1},
+                childData,
+                android.R.layout.simple_expandable_list_item_2, new String[]{KEY}, new int[]{android.R.id.text1});
+
+        ExpandableListView ActualView = mPullRefreshListView.getRefreshableView();
+        ActualView.setAdapter(mAdapter);
     }
 
-    private void initListener() {
-        // 设置上拉下拉事件
-        mPullToRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                if (refreshView.isHeaderShown()) {
-                    billIndex = 0;
-                    mTradeBillList.clear();
-                    getTradeBill();
-                } else {
-                    getTradeBill();
-                }
-            }
-        });
+    public void refresh() {
 
-        findViewById(R.id.radio_all).setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                billIndex = 0;
-                mBillStatus = "all";
-                mTradeBillList.clear();
-                mPullToRefreshListView.setRefreshing();
-            }
-        });
-
-        findViewById(R.id.radio_success).setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                billIndex = 0;
-                mBillStatus = "success";
-                mTradeBillList.clear();
-                mPullToRefreshListView.setRefreshing();
-            }
-        });
-
-        findViewById(R.id.radio_fail).setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                billIndex = 0;
-                mBillStatus = "fail";
-                mTradeBillList.clear();
-                mPullToRefreshListView.setRefreshing();
-            }
-        });
     }
+    private class GetDataTask extends AsyncTask<Void, Void, String[]> {
 
-    private void getTradeBill() {
-        QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
-        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mMonth, billIndex + "", mBillStatus, new QuickPayCallbackListener<ServerPacket>() {
-            @Override
-            public void onSuccess(ServerPacket data) {
-                final int count = data.getCount();
-                final String total = data.getTotal();
-                final int refdcount = data.getRefdcount();
-                final String refdtotal = data.getRefdtotal();
-                final int size = data.getSize();
-
-                for (Txn txn : data.getTxn()) {
-                    TradeBill tradeBill = new TradeBill();
-                    tradeBill.response = txn.getResponse();
-                    tradeBill.tandeDate = txn.getSystemDate();
-                    tradeBill.consumerAccount = txn.getConsumerAccount();
-
-                    QRequest req = txn.getmRequest();
-                    if (req != null) {
-                        tradeBill.orderNum = req.getOrderNum();
-                        tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());
-                        tradeBill.busicd = req.getBusicd();
-                        if (tradeBill.busicd.equals("REFD")) {
-                            tradeBill.amount = "-" + tradeBill.amount;
-                        }
-                        tradeBill.chcd = req.getChcd();
-                        tradeBill.tradeFrom = req.getTradeFrom();
-                        tradeBill.goodsInfo = req.getGoodsInfo();
-                    }
-                    if (!TextUtils.isEmpty(tradeBill.chcd)) {
-                        mTradeBillList.add(tradeBill);
-                    }
-                }
-                // 更新UI
-                mBillAdapter.setData(mTradeBillList);
-                mBillAdapter.notifyDataSetChanged();
-                mPullToRefreshListView.onRefreshComplete();
-
-                String tipsFormat = getResources().getString(R.string.txn_tips_format);
-                String tipsText = String.format(tipsFormat, tipsYearMonth, count, total, refdcount, refdtotal);
-                mBillTipsText.setText(tipsText);
-                billIndex += size;
+        @Override
+        protected String[] doInBackground(Void... params) {
+            // Simulates a background job.
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
             }
+            return mChildStrings;
+        }
 
-            @Override
-            public void onFailure(QuickPayException ex) {
-                mBillAdapter.notifyDataSetChanged();
-                mPullToRefreshListView.onRefreshComplete();
+        @Override
+        protected void onPostExecute(String[] result) {
+            Map<String, String> newMap = new HashMap<String, String>();
+            newMap.put(KEY, "Added after refresh...");
+            groupData.add(newMap);
+
+            List<Map<String, String>> childList = new ArrayList<Map<String, String>>();
+            for (String string : mChildStrings) {
+                Map<String, String> childMap = new HashMap<String, String>();
+                childMap.put(KEY, string);
+                childList.add(childMap);
             }
-        });
+            childData.add(childList);
+
+            mAdapter.notifyDataSetChanged();
+
+            // Call onRefreshComplete when the list has been refreshed.
+            mPullRefreshListView.onRefreshComplete();
+
+            super.onPostExecute(result);
+        }
     }
-
 
 }

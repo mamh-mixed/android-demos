@@ -2,90 +2,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1EBED6"
+    android:background="#ffffff"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:text="@string/my_bill"
-        android:textColor="#FFFFFF"
+        android:padding="10dp"
+        android:text="收款账单"
         android:textSize="22dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:padding="20dp">
+        android:layout_height="wrap_content">
 
-        <RadioGroup
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/radio_button_bg"
-
+            android:layout_weight="1"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="2dp">
+            android:padding="5dp"
+            android:text="收款账单"
+            android:textSize="15dp" />
 
-            <RadioButton
-                android:id="@+id/radio_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/radio_button1_selector"
-                android:button="@null"
-                android:checked="true"
-                android:padding="7dp"
-                android:text="@string/txn_all"
-                android:textColor="@drawable/radio_button_txt_bg" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="销券账单"
+            android:textSize="15dp" />
 
-            <RadioButton
-                android:id="@+id/radio_success"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/radio_button2_selector"
-                android:button="@null"
-                android:padding="7dp"
-                android:text="@string/txn_success"
-                android:textColor="@drawable/radio_button_txt_bg" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="收款码账单"
+            android:textSize="15dp" />
 
-            <RadioButton
-                android:id="@+id/radio_fail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/radio_button3_selector"
-                android:button="@null"
-                android:padding="7dp"
-                android:text="@string/txn_failed"
-                android:textColor="@drawable/radio_button_txt_bg" />
-
-
-        </RadioGroup>
-
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="搜索"
+            android:textSize="15dp" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#FFFFFF"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
 
-        <TextView
-            android:id="@+id/bill_tips"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:background="#DCDDDE"
-            android:gravity="center"
-            android:text=""
-            android:textSize="13sp" />
-
-
-        <com.handmark.pulltorefresh.library.PullToRefreshListView
-            android:id="@+id/pull_refresh_list"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+            android:id="@+id/bill_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
+
 
 </LinearLayout>
