@@ -20,5 +20,5 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:18.0.0'
-    compile files('libs/core.jar')
+    compile files('libs/core-3.2.1.jar')
 }
