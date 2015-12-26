@@ -17,5 +17,36 @@ public class ResultData {
     public String scanCodeId;
     public String cardId;
     public String cardInfo;
+    public String voucherType;
+    public String saleMinAmount;
+    public String saleDiscount;
+    public String actualPayAmount;
+    public String maxDiscountAmt;
 
+    @Override
+    public String toString() {
+        return "ResultData{" +
+                "respcd='" + respcd + '\'' +
+                ", busicd='" + busicd + '\'' +
+                ", chcd='" + chcd + '\'' +
+                ", txamt='" + txamt + '\'' +
+                ", channelOrderNum='" + channelOrderNum + '\'' +
+                ", consumerAccount='" + consumerAccount + '\'' +
+                ", consumerId='" + consumerId + '\'' +
+                ", errorDetail='" + errorDetail + '\'' +
+                ", orderNum='" + orderNum + '\'' +
+                ", chcdDiscount='" + chcdDiscount + '\'' +
+                ", merDiscount='" + merDiscount + '\'' +
+                ", qrcode='" + qrcode + '\'' +
+                ", origOrderNum='" + origOrderNum + '\'' +
+                ", scanCodeId='" + scanCodeId + '\'' +
+                ", cardId='" + cardId + '\'' +
+                ", cardInfo='" + cardInfo + '\'' +
+                ", voucherType='" + voucherType + '\'' +
+                ", saleMinAmount='" + saleMinAmount + '\'' +
+                ", saleDiscount='" + saleDiscount + '\'' +
+                ", actualPayAmount='" + actualPayAmount + '\'' +
+                ", maxDiscountAmt='" + maxDiscountAmt + '\'' +
+                '}';
+    }
 }
