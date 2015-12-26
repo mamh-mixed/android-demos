@@ -53,4 +53,9 @@ public class Msg {
     public static final int MSG_CREATE_QR_SUCCESS = 600;
     public static final int MSG_CREATE_QR_FAIL = 601;
 
+
+    //卡券用到的
+    public static final int MSG_FROM_SERVER_COUPON_SUCCESS=602;
+    public static final int MSG_FROM_SERVER_COUPON_FAIL=603;
+
 }
