@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -77,22 +78,33 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        GroupViewHolder groupViewHolder = null;
+
         if (convertView == null) {
+            groupViewHolder = new GroupViewHolder();
             convertView = View.inflate(mContext, R.layout.expandablelistview_group, null);
+
+            groupViewHolder.month = (TextView) convertView.findViewById(R.id.tv_month);
+            groupViewHolder.year = (TextView) convertView.findViewById(R.id.tv_year);
+            groupViewHolder.total = (TextView) convertView.findViewById(R.id.tv_total);
+            groupViewHolder.count = (TextView) convertView.findViewById(R.id.tv_count);
+            groupViewHolder.folder = (ImageView) convertView.findViewById(R.id.iv_fold);
+
+            convertView.setTag(groupViewHolder);
+        } else {
+            groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
-
         //设置一下月份
-        TextView month = (TextView) convertView.findViewById(R.id.tv_month);
-        month.setText(groupData.get(groupPosition).getCurrentMonth());
+        groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());
+        groupViewHolder.year.setText(groupData.get(groupPosition).getCurrentYear());
+        groupViewHolder.total.setText(groupData.get(groupPosition).getTotal());
+        groupViewHolder.count.setText(groupData.get(groupPosition).getCount() + "");
 
-        TextView year = (TextView) convertView.findViewById(R.id.tv_year);
-        year.setText(groupData.get(groupPosition).getCurrentYear());
-
-        TextView total = (TextView) convertView.findViewById(R.id.tv_total);
-        total.setText(groupData.get(groupPosition).getTotal());
-
-        TextView count = (TextView) convertView.findViewById(R.id.tv_count);
-        count.setText(groupData.get(groupPosition).getCount() + "");
+        if (isExpanded) {
+            groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
+        } else {
+            groupViewHolder.folder.setBackgroundResource(R.drawable.bill_unfold);
+        }
 
         return convertView;
     }
@@ -121,6 +133,11 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-
-
+    public final class GroupViewHolder {
+        public ImageView folder;
+        public TextView month;
+        public TextView year;
+        public TextView total;
+        public TextView count;
+    }
 }
