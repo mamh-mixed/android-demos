@@ -52,9 +52,6 @@ public class SettingActionBarItem extends RelativeLayout {
         relativeLayout = (RelativeLayout) this.findViewById(R.id.rl_action_bar);
     }
 
-    public void setTitleColor(int color) {
-        mTitle.setTextColor(color);
-    }
 
     public void setTitle(String title) {
         if (mTitle != null) {
@@ -62,11 +59,23 @@ public class SettingActionBarItem extends RelativeLayout {
         }
     }
 
+    public void setLeftText(String str) {
+        mLeftText.setText(str);
+    }
+
+    public void setRightText(String str) {
+        mRightText.setText(str);
+    }
+
     public void setBackgroundColor(int color) {
         relativeLayout.setBackgroundColor(color);
         mLeftText.setBackgroundColor(color);
         mRightText.setBackgroundColor(color);
         mTitle.setBackgroundColor(color);
+    }
+
+    public void setTitleColor(int color) {
+        mTitle.setTextColor(color);
     }
 
     public void setLeftTextColor(int color) {
