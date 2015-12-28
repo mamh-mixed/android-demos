@@ -291,6 +291,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	filename := "trade_detail.xlsx"
 	cond := &model.QueryCondition{
 		MerName:        params.Get("merName"),
 		Terminalid:     params.Get("terminalId"),
@@ -321,6 +322,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 
 	// 报表需求来自汇总
 	if params.Get("from") == "summary" {
+		filename = "trade_summary_detail.xlsx"
 		cond.TransStatus = []string{model.TransSuccess}
 		cond.RefundStatus = model.TransRefunded
 	}
@@ -344,7 +346,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tradeReport(w, cond, "trade_detail.xlsx")
+	tradeReport(w, cond, filename)
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
