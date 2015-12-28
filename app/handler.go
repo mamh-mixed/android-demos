@@ -149,10 +149,16 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO DELETE:修复客户端bug
+	month := r.FormValue("month")
+	if month == "201612" {
+		month = "201512"
+	}
+
 	result := User.getUserBill(&reqParams{
 		UserName:    r.FormValue("username"),
 		Password:    r.FormValue("password"),
-		Month:       r.FormValue("month"),
+		Month:       month,
 		Date:        r.FormValue("day"),
 		Status:      r.FormValue("status"),
 		Transtime:   r.FormValue("transtime"),
