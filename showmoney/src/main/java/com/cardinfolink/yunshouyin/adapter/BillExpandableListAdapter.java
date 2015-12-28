@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.MonthBill;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.ui.SubListView;
 
 import java.util.List;
 import java.util.Map;
@@ -111,19 +112,28 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        ChildViewHolder childViewHolder = null;
+
         if (convertView == null) {
+            childViewHolder = new ChildViewHolder();
             convertView = View.inflate(mContext, R.layout.expandablelistview_child, null);
+            childViewHolder.day = (TextView) convertView.findViewById(R.id.tv_day);
+            childViewHolder.weekday= (TextView) convertView.findViewById(R.id.tv_weekday);
+
+            childViewHolder.listView = (ListView) convertView.findViewById(R.id.child_list_view);
+
+            convertView.setTag(childViewHolder);
+        } else {
+            childViewHolder = (ChildViewHolder) convertView.getTag();
         }
 
         Map<String, List<TradeBill>> tradeBillMap = childrenData.get(groupPosition);
         Object[] keyArray = tradeBillMap.keySet().toArray();
         String dayStr = keyArray[childPosition].toString();
 
-        TextView day = (TextView) convertView.findViewById(R.id.tv_day);
-        day.setText(dayStr);
+        childViewHolder.day.setText(dayStr);
 
-        ListView listView = (ListView) convertView.findViewById(R.id.child_list_view);
-        listView.setAdapter(new BillAdapter(mContext, tradeBillMap.get(dayStr)));
+        childViewHolder.listView.setAdapter(new BillAdapter(mContext, tradeBillMap.get(dayStr)));
 
         return convertView;
     }
@@ -139,5 +149,11 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView year;
         public TextView total;
         public TextView count;
+    }
+
+    public final class ChildViewHolder {
+        public TextView day;
+        public TextView weekday;
+        public ListView listView;
     }
 }
