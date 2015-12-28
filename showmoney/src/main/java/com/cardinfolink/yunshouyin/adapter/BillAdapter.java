@@ -1,0 +1,148 @@
+package com.cardinfolink.yunshouyin.adapter;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.activity.DetailActivity;
+import com.cardinfolink.yunshouyin.data.TradeBill;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Created by mamh on 15-11-20.
+ */
+public class BillAdapter extends BaseAdapter {
+
+    private Context mContext;
+    private List<TradeBill> tradeBillList;
+
+    public BillAdapter(Context context, List<TradeBill> tradeBillList) {
+        this.tradeBillList = new ArrayList<TradeBill>();
+        this.tradeBillList.addAll(tradeBillList);
+        this.mContext = context;
+    }
+
+    public void setData(List<TradeBill> list) {
+        tradeBillList.clear();
+        tradeBillList.addAll(list);
+    }
+
+    @Override
+    public int getCount() {
+        // TODO Auto-generated method stub
+        return tradeBillList.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @SuppressLint("NewApi")
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder = null;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.bill_list_item, null);
+
+            holder.paylogo = (ImageView) convertView.findViewById(R.id.paylogo);
+            holder.billTradeDate = (TextView) convertView.findViewById(R.id.bill_tradedate);
+            holder.billTradeFrom = (TextView) convertView.findViewById(R.id.bill_tradefrom);
+            holder.billTradeStatus = (TextView) convertView.findViewById(R.id.bill_tradestatus);
+            holder.billTradeAmount = (TextView) convertView.findViewById(R.id.bill_tradeamount);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        if (position < 0 || position > tradeBillList.size()) {
+            return convertView;
+        }
+
+        final TradeBill bill = tradeBillList.get(position);
+        if (!TextUtils.isEmpty(bill.chcd)) {
+            //有chcd渠道的话,这里设置不同渠道的图片
+            if (bill.chcd.equals("WXP")) {
+                holder.paylogo.setImageResource(R.drawable.wpay);
+            } else {
+                holder.paylogo.setImageResource(R.drawable.apay);
+            }
+        } else {
+            //如果没有chcd渠道的话,这里设置为一个错误的图片
+            holder.paylogo.setImageResource(R.drawable.wrong);
+        }
+        SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat spf2 = new SimpleDateFormat("HH:mm:ss");
+        try {
+            Date tandeDate = spf1.parse(bill.tandeDate);
+            holder.billTradeDate.setText(spf2.format(tandeDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String tradeFrom = "PC";
+        if (!TextUtils.isEmpty(bill.tradeFrom)) {
+            tradeFrom = bill.tradeFrom;
+        }
+
+        String busicd = mContext.getResources().getString(R.string.detail_activity_busicd_pay);
+        if (bill.busicd.equals("REFD")) {
+            //退款的
+            busicd = mContext.getResources().getString(R.string.detail_activity_busicd_refd);
+        } else if ("CANC".equals(bill.busicd)) {
+            //取消订单
+            busicd = mContext.getResources().getString(R.string.detail_activity_busicd_canc);
+        }
+
+        holder.billTradeFrom.setText(tradeFrom + busicd);
+        String tradeStatus;
+        if (bill.response.equals("00")) {
+            tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_success);
+            holder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
+        } else if (bill.response.equals("09")) {
+            tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_nopay);
+            holder.billTradeStatus.setTextColor(Color.RED);
+        } else {
+            tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_fail);
+            holder.billTradeStatus.setTextColor(Color.RED);
+        }
+        holder.billTradeStatus.setText(tradeStatus);
+        holder.billTradeAmount.setText("￥" + bill.amount);
+
+
+        return convertView;
+    }
+
+    public final class ViewHolder {
+        public ImageView paylogo;
+        public TextView billTradeDate;
+        public TextView billTradeFrom;
+        public TextView billTradeStatus;
+        public TextView billTradeAmount;
+    }
+
+}
