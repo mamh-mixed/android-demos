@@ -171,8 +171,6 @@ type StatReport struct {
 	MerId      string
 	MerName    string
 	Summary    string
-	ALP        string
-	WXP        string
 	AgentName  string
 	TotalCount string
 	TotalAmt   string

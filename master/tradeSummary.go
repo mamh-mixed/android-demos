@@ -73,7 +73,7 @@ func tradeQueryStats(q *model.QueryCondition) (result *model.ResultBody) {
 // statTradeReport 交易统计报表
 func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
 	// 语言模板
-	reportLocale := GetLocale(q.Locale)
+	m := GetLocale(q.Locale)
 
 	// 调用core方法统计
 	s, _ := query.TransStatistics(q)
@@ -82,7 +82,7 @@ func statTradeReport(w http.ResponseWriter, q *model.QueryCondition) {
 	q.UtcOffset = 60 * 60 * 8
 
 	// TODO 币种处理，导出
-	genStatReport(s, q, reportLocale, reportLocale.Currency).Write(w)
+	genStatReport(s, q, m, m.Currency).Write(w)
 }
 
 // tradeSettReport 交易清算汇总报表
@@ -127,7 +127,7 @@ func tradeSettReport(w http.ResponseWriter, q *model.QueryCondition) {
 func genStatReport(result model.Summary, cond *model.QueryCondition, locale *LocaleTemplate, curr string) (file *xlsx.File) {
 
 	// 语言模板
-	reportLocale := GetLocale(cond.Locale).StatReport
+	m := GetLocale(cond.Locale).StatReport
 
 	// 币种转换
 	cur := currency.Get(curr)
@@ -137,7 +137,7 @@ func genStatReport(result model.Summary, cond *model.QueryCondition, locale *Loc
 	var row *xlsx.Row
 	var cell *xlsx.Cell
 
-	sheet, _ = file.AddSheet(reportLocale.Title)
+	sheet, _ = file.AddSheet(m.Title)
 
 	// 表头样式
 	genHead(sheet, row, cell, cond)
@@ -200,7 +200,7 @@ func genStatReport(result model.Summary, cond *model.QueryCondition, locale *Loc
 	// 最后填写汇总
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = reportLocale.Total
+	cell.Value = m.Total
 	cell.SetStyle(bodyStyle)
 	cell.Merge(3, 0)
 	for i := 0; i < 3; i++ {
@@ -240,14 +240,14 @@ func genStatReport(result model.Summary, cond *model.QueryCondition, locale *Loc
 func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.QueryCondition) {
 
 	// 语言模板
-	reportLocale := GetLocale(cond.Locale).StatReport
+	m := GetLocale(cond.Locale)
 
 	// 时区
 	z := &Zone{cond.UtcOffset, time.Local}
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = reportLocale.StartDate
+	cell.Value = m.StatReport.StartDate
 	cell = row.AddCell()
 	cell.Value = z.GetTime(cond.StartTime)
 	cell.SetStyle(bodyStyle)
@@ -255,7 +255,7 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	row.AddCell()
 
 	cell = row.AddCell()
-	cell.Value = reportLocale.EndDate
+	cell.Value = m.StatReport.EndDate
 	cell = row.AddCell()
 	cell.Value = z.GetTime(cond.EndTime)
 	cell.SetStyle(bodyStyle)
@@ -263,41 +263,41 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	row.AddCell()
 
 	cell = row.AddCell()
-	cell.Value = reportLocale.Remark
+	cell.Value = m.StatReport.Remark
 	cell.SetStyle(bodyStyle)
 	cell.Merge(8, 0)
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = reportLocale.MerId
+	cell.Value = m.StatReport.MerId
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = reportLocale.MerName
+	cell.Value = m.StatReport.MerName
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = reportLocale.Summary
+	cell.Value = m.StatReport.Summary
 	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = reportLocale.ALP
+	cell.Value = m.ChanCode.ALP
 	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = reportLocale.WXP
+	cell.Value = m.ChanCode.WXP
 	cell.SetStyle(headStyle)
 	cell.Merge(2, 0)
 	row.AddCell()
 	row.AddCell()
 	cell = row.AddCell()
-	cell.Value = reportLocale.AgentName
+	cell.Value = m.StatReport.AgentName
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()
@@ -307,30 +307,30 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 		row.AddCell()
 	}
 	cell = row.AddCell()
-	cell.Value = reportLocale.TotalCount
+	cell.Value = m.StatReport.TotalCount
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.TotalAmt
+	cell.Value = m.StatReport.TotalAmt
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Fee
+	cell.Value = m.StatReport.TotalFee
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Count
+	cell.Value = m.StatReport.Count
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Amt
+	cell.Value = m.StatReport.Amt
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Fee
+	cell.Value = m.StatReport.Fee
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Count
+	cell.Value = m.StatReport.Count
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Amt
+	cell.Value = m.StatReport.Amt
 	cell.SetStyle(headStyle)
 	cell = row.AddCell()
-	cell.Value = reportLocale.Fee
+	cell.Value = m.StatReport.Fee
 	cell.SetStyle(headStyle)
 }
