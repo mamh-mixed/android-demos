@@ -201,3 +201,71 @@ func QueryCouponsPackageDemo() (a interface{}, err error) {
 
 	return
 }
+
+func PurchaseCouponsSingleDemo() (a interface{}, err error) {
+	req := &coupon.PurchaseCouponsSingleReq{
+		Header: coupon.PurchaseCouponsSingleReqHeader{
+			Version:       Version,                                              // 报文版本号  15 M 当前版本 1.0
+			TransDirect:   TransDirectQ,                                         // 交易方向  1 M Q:请求
+			TransType:     "W462",                                               // 交易类型 8 M 本交易固定值 W412
+			MerchantId:    "182000001000000",                                    // 商户编号 15 M 由优麦圈后台分配给商户的编号
+			SubmitTime:    time.Now().Format("20060102150405"),                  // 交易提交时间 14 M 固定格式:yyyyMMddHHmmss
+			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()), // 客户端交易流水号 40 M 客户端的唯一交易流水号
+		},
+		Body: coupon.PurchaseCouponsSingleReqBody{
+			CouponsNo: "1816086060100100", // 优麦圈电子券号 50 M 优麦圈电子券号
+			TermId:    "00000667",         // 终端编号 8 M 由优麦圈后台分配给该终端的编号
+			// TermSn:    "9e908a255b3e5989", // 终端唯一序列号 100 M 商户终端对应的硬件唯一序列号
+			Amount:      1, // 要验证的次数  10 M 要验证该券码的次数,次数必须大于0
+			ExtMercId:   "100000000010001",
+			ExtTermId:   "1000134",
+			Cardbin:     "",
+			TransAmount: 21000,
+			PayType:     2,
+		},
+		SpReq: &model.ScanPayRequest{},
+	}
+	resp := &coupon.PurchaseCouponsSingleResp{}
+	if err = Execute(req, resp); err != nil {
+		return nil, err
+	}
+
+	log.Debugf("%#v", resp)
+	// process resp code, return
+	return
+}
+
+// RecoverCouponsDemo W493-电子券验证冲正
+func RecoverCouponsDemo() (a interface{}, err error) {
+	req := &coupon.RecoverCouponsReq{
+		Header: coupon.RecoverCouponsReqHeader{
+			Version:       Version,
+			TransDirect:   TransDirectQ,
+			TransType:     "W492",
+			MerchantId:    "182000001000000",
+			SubmitTime:    time.Now().Format("20060102150405"),
+			ClientTraceNo: fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		},
+		Body: coupon.RecoverCouponsReqBody{
+			CouponsNo: "1818303006004106",
+			TermId:    "00000667",
+			// TermSn:           "9e908a255b3e5989",
+			ExtMercId:        "100000000010001",
+			ExtTermId:        "1000134",
+			Amount:           1,
+			Cardbin:          "",
+			TransAmount:      21000,
+			PayType:          2,
+			OldSubmitTime:    "20151207160951",
+			OldClientTraceNo: "14494757911298498081",
+		},
+		SpReq: &model.ScanPayRequest{},
+	}
+	resp := &coupon.RecoverCouponsResp{}
+	if err = Execute(req, resp); err != nil {
+		log.Errorf("sendRequest fail, service=RecoverCoupons, channel=UNIONLIVE,%s", err)
+		return nil, err
+	}
+	log.Debugf("%#v", resp)
+	return
+}
