@@ -215,14 +215,15 @@ func TestScanPay(t *testing.T) {
 
 func TestSignMsg(t *testing.T) {
 
-	str := `{"sign":"ed1838760bbde16ca708a49a4b5f5d3279374519","txndir":"Q","scanCodeId":"281223029725731233","mchntid":"991663048160001","orderNum":"2015092217294332704","busicd":"PURC","inscd":"99911888","txamt":"000000000001","terminalid":"00000379"}`
+	//4d045cf4039a420a86824c7132a24d6ff4c559f3
+	str := `{ "busicd": "VOID", "chcd": "ALP", "inscd": "97271888", "mchntid": "727363058120002", "orderNum": "362140544547", "origOrderNum": "362135543107", "terminalid": "00001270", "txndir": "Q" }`
 
 	req := new(model.ScanPayRequest)
 	err := json.Unmarshal([]byte(str), req)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(req.SignMsg())
+	t.Log(security.SHA1WithKey(req.SignMsg(), "8627a2ba43da3ada31b820b788680b99"))
 }
 
 // 测试卡券核销

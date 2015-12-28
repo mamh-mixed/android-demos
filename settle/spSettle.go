@@ -94,7 +94,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 			SettDate:  date,
 		}, chanMMap)
 		if err != nil {
-			log.Errorf("the request error: %s , merid:%s, chanCode:%s", err, c.ChanMerId, "ALP")
+			log.Errorf("the request error: %s , merId: %s, chanCode: %s", err, c.ChanMerId, "ALP")
 		}
 	}
 
@@ -104,7 +104,8 @@ func (s scanpayDomestic) Reconciliation(date string) {
 	amtErrorMap := make(map[string]string)
 
 	// 勾兑过程
-	var blendSuccess int
+	var localSuccess int
+	var chanSuccess int
 	for chanMerId, localOrderMap := range localMMap {
 		chanOrderMap, ok := chanMMap[chanMerId]
 		if ok {
@@ -120,8 +121,17 @@ func (s scanpayDomestic) Reconciliation(date string) {
 							blendACT += tempAct
 						}
 					}
+
 					for _, orderRecord := range transSetts { //计算本地该订单总金额
-						act := float64(orderRecord.Trans.TransAmt) / 100
+						var fee int64
+						switch orderRecord.Trans.ChanCode {
+						case channel.ChanCodeAlipay:
+							// 支付宝是包含手续费计算的
+							fee = orderRecord.MerFee
+						case channel.ChanCodeWeixin:
+							// TODO:手续费校验
+						}
+						act := float64(orderRecord.Trans.TransAmt-fee) / 100
 						if orderRecord.Trans.TransType == model.PayTrans {
 							orderACT += act
 						} else {
@@ -132,12 +142,13 @@ func (s scanpayDomestic) Reconciliation(date string) {
 					// 相等保存
 					if math.Abs(blendACT-orderACT) < 0.001 {
 						for _, transSett := range transSetts {
-							blendSuccess++
+							localSuccess++
 							transSett.BlendType = MATCH
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							// log.Infof("blend success, merId=%s, orderNum=%s, chanOrderNum=%s", transSett.Trans.MerId, transSett.Trans.OrderNum, transSett.Trans.ChanOrderNum)
 							// mongo.SpTransSettColl.Update(&transSett)
 						}
+						chanSuccess += len(blendArray)
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
 						delete(chanOrderMap, chanOrderNum)  //删除渠道记录，剩下的进C002
 					} else {
@@ -146,7 +157,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 							log.Errorf("merId=%s, orderNum=%s, chanOrderNum=%s", local.Trans.MerId, local.Trans.OrderNum, local.Trans.ChanOrderNum)
 						}
 						for _, blend := range blendArray {
-							log.Errorf("chanMerId=%s, orderNum=%s, chanOrderNum=%s", blend.ChanMerID, blend.LocalID, blend.OrderID)
+							log.Errorf("chanMerId=%s, orderNum=%s, chanOrderNum=%s, amt=%s", blend.ChanMerID, blend.LocalID, blend.OrderID, blend.OrderAct)
 						}
 						// 对上，但金额不一致
 						for _, transSett := range transSetts {
@@ -168,7 +179,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 			}
 		}
 	}
-	log.Infof("blend success length=%d", blendSuccess)
+	log.Infof("blend success localSuccess=%d,chanSuccess=%d", localSuccess, chanSuccess)
 	var localTrans int
 	for _, v := range localMMap {
 		for _, v1 := range v {
@@ -180,17 +191,20 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		}
 	}
 	log.Infof("after blend localMMap, remain=%d", localTrans)
+	var chanTrans int
 	for _, v := range chanMMap {
 		for _, v1 := range v {
-			for _, b := range v1 {
-				log.Infof("after blend chanMMap: orderNum=%s,chanOrderNum=%s,chanMerId=%s", b.LocalID, b.OrderID, b.ChanMerID)
-			}
+			chanTrans += len(v1)
+			// for _, b := range v1 {
+			// 	log.Infof("after blend chanMMap: orderNum=%s,chanOrderNum=%s,chanMerId=%s", b.LocalID, b.OrderID, b.ChanMerID)
+			// }
 		}
 	}
 
-	log.Infof("after blend localMMap length=%d", len(localMMap))
-	log.Infof("after blend chanMMap length=%d", len(chanMMap))
-	log.Infof("after blend errAmtMap length=%d", len(amtErrorMap))
+	log.Infof("after blend chanMMap, remain=%d", chanTrans)
+	// log.Infof("after blend localMMap length=%d", len(localMMap))
+	// log.Infof("after blend chanMMap length=%d", len(chanMMap))
+	// log.Infof("after blend errAmtMap length=%d", len(amtErrorMap))
 
 	// 处理没有勾兑上的数据
 	// 渠道少清
