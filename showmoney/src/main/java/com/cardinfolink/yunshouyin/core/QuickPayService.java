@@ -27,6 +27,8 @@ public interface QuickPayService {
 
     void getHistoryBillsAsync(User user, String month, String index, String status, QuickPayCallbackListener<ServerPacket> listener);
 
+    void getHistoryBillsAsync(User user, String month, String index, String size, String status, QuickPayCallbackListener<ServerPacket> listener);
+
     void getTotalAsync(User user, String date, QuickPayCallbackListener<String> listener);
 
     void getOrderAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacketOrder> listener);

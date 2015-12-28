@@ -234,11 +234,16 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void getHistoryBillsAsync(final User user, final String month, final String index, final String status, final QuickPayCallbackListener<ServerPacket> listener) {
+        getHistoryBillsAsync(user, month, index, "50", status, listener);
+    }
+
+    @Override
+    public void getHistoryBillsAsync(final User user, final String month, final String index, final String size, final String status, final QuickPayCallbackListener<ServerPacket> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
                 try {
-                    ServerPacket serverPacket = quickPayApi.getHistoryBills(user, month, index, status);
+                    ServerPacket serverPacket = quickPayApi.getHistoryBills(user, month, index, size, status);
                     return new AsyncTaskResult<ServerPacket>(serverPacket, null);
                 } catch (QuickPayException ex) {
                     return new AsyncTaskResult<ServerPacket>(null, ex);
@@ -255,7 +260,6 @@ public class QuickPayServiceImpl implements QuickPayService {
             }
         }.execute();
     }
-
 
     @Override
     public void getTotalAsync(final User user, final String date, final QuickPayCallbackListener<String> listener) {
