@@ -206,6 +206,8 @@ type ScanPayRequest struct {
 	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
 	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
+	OrigCardbin      string `json:"-" url:"-" bson:"-"` //辅助字段
+	OrigScanCodeId   string `json:"-" url:"-" bson:"-"` //辅助字段
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID

@@ -326,9 +326,9 @@
 <script>
   var TRANS_TYPE_MAP = {
     'VERI': '卡券核销',
-    'CRVE': '刷卡券核销',
-    'CAVE': '卡券撤销',
-    'QUVE': '验券查询'
+    'CAVE': '卡券撤销'
+    // 'CRVE': '刷卡券核销',
+    // 'QUVE': '验券查询'
   };
   Polymer({
     is: 'test-coupon',
@@ -402,7 +402,7 @@
           inscd: true,
           mchntid: true,
           orderNum: true,
-          scanCodeId: true,
+        //   scanCodeId: true,
           origOrderNum: true
         },
         // 刷卡券撤销

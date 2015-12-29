@@ -229,6 +229,14 @@ func validatePayType(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 	if len(req.PayType) > 2 {
 		return false, fieldFormatError(payType)
 	}
+	isValid := false
+	if req.PayType == "2" || req.PayType == "4" || req.PayType == "5" {
+		isValid = true
+	}
+	if !isValid {
+		return false, fieldFormatError(payType)
+	}
+
 	intPayType, err := strconv.Atoi(req.PayType)
 	if err != nil {
 		return false, fieldFormatError(payType)
@@ -305,4 +313,96 @@ func validateTxndir(txndirValue string) (bool, *model.ScanPayResponse) {
 		return false, fieldFormatError(txndir)
 	}
 	return true, nil
+}
+
+// validatePurchaseCouponsSingle 验证卡券核销的参数
+func validatePurchaseCouponsSingle(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 验证非空
+	switch {
+	case req.Txndir == "":
+		return fieldEmptyError(txndir)
+	case req.Busicd == "":
+		return fieldEmptyError(buiscd)
+	case req.AgentCode == "":
+		return fieldEmptyError(agentCode)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.ScanCodeId == "":
+		return fieldEmptyError(scanCodeId)
+	case req.Sign == "":
+		return fieldEmptyError(sign)
+
+	}
+	if matched, err := validateTxndir(req.Txndir); !matched {
+		return err
+	}
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
+	}
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+	// 验证格式
+	if matched, err := validateChcd(req); !matched {
+		return err
+	}
+	if matched, err := validateVeriTime(req); !matched {
+		return err
+	}
+	if req.Txamt != "" {
+		if matched, err := validateTxamt(req); !matched {
+			return err
+		}
+	}
+	if matched, err := validateScanCodeId(req.ScanCodeId); !matched {
+		return err
+	}
+
+	if req.PayType != "" {
+		if matched, err := validatePayType(req); !matched {
+			return err
+		}
+	}
+	return
+}
+
+// validateRecoverCoupons 验证‘卡券撤销’的参数
+func validateRecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+	// 验证非空
+	switch {
+	case req.Txndir == "":
+		return fieldEmptyError(txndir)
+	case req.Busicd == "":
+		return fieldEmptyError(buiscd)
+	case req.AgentCode == "":
+		return fieldEmptyError(agentCode)
+	case req.Mchntid == "":
+		return fieldEmptyError(mchntid)
+	case req.OrderNum == "":
+		return fieldEmptyError(orderNum)
+	case req.Sign == "":
+		return fieldEmptyError(sign)
+	case req.OrigOrderNum == "":
+		return fieldEmptyError(origOrderNum)
+	}
+	if matched, err := validateTxndir(req.Txndir); !matched {
+		return err
+	}
+	if matched, err := validateMchntid(req.Mchntid); !matched {
+		return err
+	}
+
+	if matched, err := validateOrderNum(req.OrderNum); !matched {
+		return err
+	}
+
+	if matched, err := validateChcd(req); !matched {
+		return err
+	}
+	if matched, err := validateOrigOrderNum(req.OrigOrderNum); !matched {
+		return err
+	}
+	return
 }
