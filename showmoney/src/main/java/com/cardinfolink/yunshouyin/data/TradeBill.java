@@ -17,4 +17,5 @@ public class TradeBill implements Serializable {
     public String consumerAccount;
     public String goodsInfo;
 
+    public String refundAmt;
 }
