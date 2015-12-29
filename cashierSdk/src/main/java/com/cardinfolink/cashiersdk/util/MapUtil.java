@@ -100,6 +100,13 @@ public class MapUtil {
         resultData.cardId = (String) map.get("cardId");
         resultData.cardInfo = (String) map.get("cardInfo");
         resultData.scanCodeId = (String) map.get("scanCodeId");
+        resultData.saleDiscount= (String) map.get("saleDiscount");
+        resultData.voucherType= (String) map.get("voucherType");
+        resultData.expDate= (String) map.get("expDate");
+        resultData.availCount= (String) map.get("availCount");
+        resultData.mchntid= (String) map.get("mchntid");
+        resultData.veriTime= (String) map.get("veriTime");
+        resultData.saleMinAmount= (String) map.get("saleMinAmount");
 
         resultData.txamt = TxamtUtil.getNormal(resultData.txamt);
         return resultData;
