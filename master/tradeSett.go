@@ -79,12 +79,14 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 		PayTime      string
 		TransStatus  string
 		AgentCode    string
+		CompanyName  string
+		GroupName    string
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
 		Remark       string
 		IsSettled    string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark, m.IsSettled}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.AgentCode, locale.Role.Company, locale.Role.Group, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark, m.IsSettled}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -216,6 +218,12 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 			// 机构号
 			cell = row.AddCell()
 			cell.Value = v.AgentCode
+			// 公司
+			cell = row.AddCell()
+			cell.Value = v.SubAgentCode
+			// 商户
+			cell = row.AddCell()
+			cell.Value = v.GroupCode
 			// 终端号
 			cell = row.AddCell()
 			cell.Value = v.Terminalid

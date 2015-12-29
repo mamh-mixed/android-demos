@@ -93,6 +93,7 @@ type Summary struct {
 	MerName       string `json:"merName,omitempty"`
 	AgentName     string `json:"agentName,omitempty"`
 	GroupName     string `json:"groupName,omitempty"`
+	CompanyName   string `json:"-"`
 	TotalTransAmt int64  `json:"totalTransAmt"`
 	TotalTransNum int    `json:"totalTransNum"`
 	TotalFee      int64  `json:"-"`
@@ -111,16 +112,17 @@ type Summary struct {
 
 // TransGroup 按商户号和渠道号统计分组
 type TransGroup struct {
-	MerId     string    `bson:"_id"`
-	MerName   string    `bson:"merName,omitempty"`
-	GroupCode string    `bson:"groupCode"`
-	GroupName string    `bson:"groupName"`
-	AgentName string    `bson:"agentName"`
-	TransAmt  int64     `bson:"transAmt"`
-	RefundAmt int64     `bson:"refundAmt"`
-	TransNum  int       `bson:"transNum"`
-	Detail    []Channel `bson:"detail"`
-	Fee       int64     `bson:"fee" json:"-"`
+	MerId       string    `bson:"_id"`
+	MerName     string    `bson:"merName,omitempty"`
+	GroupCode   string    `bson:"groupCode"`
+	GroupName   string    `bson:"groupName"`
+	CompanyName string    `bson:"companyName"`
+	AgentName   string    `bson:"agentName"`
+	TransAmt    int64     `bson:"transAmt"`
+	RefundAmt   int64     `bson:"refundAmt"`
+	TransNum    int       `bson:"transNum"`
+	Detail      []Channel `bson:"detail"`
+	Fee         int64     `bson:"fee" json:"-"`
 }
 
 // Channel 按渠道类型分组

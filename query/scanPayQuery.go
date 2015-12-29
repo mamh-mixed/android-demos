@@ -265,10 +265,11 @@ func TransSettStatistics(q *model.QueryCondition) model.Summary {
 	// 将数据合并
 	for _, d := range group {
 		s := model.Summary{
-			MerId:     d.MerId,
-			AgentName: d.AgentName,
-			MerName:   d.MerName,
-			GroupName: d.GroupName,
+			MerId:       d.MerId,
+			AgentName:   d.AgentName,
+			MerName:     d.MerName,
+			GroupName:   d.GroupName,
+			CompanyName: d.CompanyName,
 		}
 
 		// 遍历渠道，合并数据
@@ -322,10 +323,11 @@ func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 	// 将数据合并
 	for _, d := range group {
 		s := model.Summary{
-			MerId:     d.MerId,
-			AgentName: d.AgentName,
-			MerName:   d.MerName,
-			GroupName: d.GroupName,
+			MerId:       d.MerId,
+			AgentName:   d.AgentName,
+			MerName:     d.MerName,
+			GroupName:   d.GroupName,
+			CompanyName: d.CompanyName,
 		}
 
 		// 遍历渠道，合并数据

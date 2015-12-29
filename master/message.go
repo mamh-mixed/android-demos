@@ -163,21 +163,23 @@ type TransReport struct {
 
 // StatReport 统计报表
 type StatReport struct {
-	Title      string
-	Total      string
-	StartDate  string
-	EndDate    string
-	Remark     string
-	MerId      string
-	MerName    string
-	Summary    string
-	AgentName  string
-	TotalCount string
-	TotalAmt   string
-	TotalFee   string
-	Count      string
-	Amt        string
-	Fee        string
+	Title       string
+	Total       string
+	StartDate   string
+	EndDate     string
+	Remark      string
+	MerId       string
+	MerName     string
+	Summary     string
+	AgentName   string
+	CompanyName string
+	GroupName   string
+	TotalCount  string
+	TotalAmt    string
+	TotalFee    string
+	Count       string
+	Amt         string
+	Fee         string
 }
 
 // ImportMessage 批导信息

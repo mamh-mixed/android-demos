@@ -195,6 +195,16 @@ func genStatReport(result model.Summary, cond *model.QueryCondition, locale *Loc
 		cell.Value = d.AgentName
 		cell.SetStyle(bodyStyle)
 		cell.Merge(1, 0)
+		row.AddCell()
+		cell = row.AddCell()
+		cell.Value = d.CompanyName
+		cell.SetStyle(bodyStyle)
+		cell.Merge(1, 0)
+		row.AddCell()
+		cell = row.AddCell()
+		cell.Value = d.GroupName
+		cell.SetStyle(bodyStyle)
+		cell.Merge(1, 0)
 	}
 
 	// 最后填写汇总
@@ -298,6 +308,16 @@ func genHead(sheet *xlsx.Sheet, row *xlsx.Row, cell *xlsx.Cell, cond *model.Quer
 	row.AddCell()
 	cell = row.AddCell()
 	cell.Value = m.StatReport.AgentName
+	cell.SetStyle(headStyle)
+	cell.Merge(1, 1)
+	row.AddCell()
+	cell = row.AddCell()
+	cell.Value = m.StatReport.CompanyName
+	cell.SetStyle(headStyle)
+	cell.Merge(1, 1)
+	row.AddCell()
+	cell = row.AddCell()
+	cell.Value = m.StatReport.GroupName
 	cell.SetStyle(headStyle)
 	cell.Merge(1, 1)
 	row.AddCell()

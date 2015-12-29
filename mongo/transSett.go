@@ -297,10 +297,11 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 				"$cond": []interface{}{
 					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, 1, 0},
 			}}, //只记录支付的笔数
-			"merName":   bson.M{"$last": "$trans.merName"},
-			"agentName": bson.M{"$last": "$trans.agentName"},
-			"groupCode": bson.M{"$last": "$trans.groupCode"},
-			"groupName": bson.M{"$last": "$trans.groupName"},
+			"merName":     bson.M{"$last": "$trans.merName"},
+			"agentName":   bson.M{"$last": "$trans.agentName"},
+			"groupCode":   bson.M{"$last": "$trans.groupCode"},
+			"groupName":   bson.M{"$last": "$trans.groupName"},
+			"companyName": bson.M{"$last": "$trans.subAgentName"},
 			"fee": bson.M{"$sum": bson.M{
 				"$cond": []interface{}{
 					bson.M{"$eq": []interface{}{"$trans.transType", 1}}, "$merFee",
@@ -311,13 +312,14 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 			}},
 		}},
 		{"$group": bson.M{
-			"_id":       "$_id.merId",
-			"transAmt":  bson.M{"$sum": "$transAmt"},
-			"transNum":  bson.M{"$sum": "$transNum"},
-			"merName":   bson.M{"$first": "$merName"},
-			"agentName": bson.M{"$first": "$agentName"},
-			"groupCode": bson.M{"$first": "$groupCode"},
-			"groupName": bson.M{"$first": "$groupName"},
+			"_id":         "$_id.merId",
+			"transAmt":    bson.M{"$sum": "$transAmt"},
+			"transNum":    bson.M{"$sum": "$transNum"},
+			"merName":     bson.M{"$first": "$merName"},
+			"agentName":   bson.M{"$first": "$agentName"},
+			"groupCode":   bson.M{"$first": "$groupCode"},
+			"companyName": bson.M{"$first": "$companyName"},
+			"groupName":   bson.M{"$first": "$groupName"},
 			"detail": bson.M{"$push": bson.M{"chanCode": "$_id.chanCode",
 				"transNum": "$transNum",
 				"transAmt": "$transAmt",
