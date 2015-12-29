@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+        android:id="@+id/action_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        cardinfolink:left_text="@string/setting_return" />
+
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/action_bar"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/refd_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5,000,00"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="当前可退款金额（元）" />
+
+
+        <com.cardinfolink.yunshouyin.ui.SettingInputItem
+            android:id="@+id/refd_money"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            cardinfolink:title="需退款金额（元）" />
+
+        <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
+            android:id="@+id/refd_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            cardinfolink:title="请输入登录密码" />
+
+        <Button
+            android:id="@+id/btnrefd"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/blue_selector"
+            android:text="退款" />
+    </LinearLayout>
+
+    <include layout="@layout/showmoney_dialog" />
+
+</RelativeLayout>
