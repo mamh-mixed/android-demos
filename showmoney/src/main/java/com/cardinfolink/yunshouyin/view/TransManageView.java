@@ -5,13 +5,20 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.adapter.BillExpandableListAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
@@ -50,6 +57,15 @@ public class TransManageView extends LinearLayout {
     private String mMonth;
     private int mMonthAgo;
 
+
+    private WebView mWebView;
+
+    private TextView mTitle;
+    private RadioButton mRaidoBill;
+    private RadioButton mRadioTicket;
+    private RadioButton mRadioWap;
+
+
     public TransManageView(Context context) {
         super(context);
         mContext = context;
@@ -65,6 +81,8 @@ public class TransManageView extends LinearLayout {
     }
 
     private void initLayout() {
+        mTitle = (TextView) findViewById(R.id.tv_title);
+
         mPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
 
         mPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -102,6 +120,84 @@ public class TransManageView extends LinearLayout {
         final ExpandableListView ActualView = mPullRefreshListView.getRefreshableView();
         ActualView.setAdapter(mAdapter);
         ActualView.setGroupIndicator(null);
+
+        mWebView = (WebView) findViewById(R.id.base_webview);
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+            }
+        });
+
+
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, android.webkit.JsResult result) {
+                return false;
+            }
+        });
+
+
+        WebSettings webSettings = mWebView.getSettings();
+
+        webSettings.setDefaultTextEncodingName("utf-8");
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setAllowFileAccess(true);// 设置允许访问文件数据
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setSupportZoom(true);
+        mWebView.requestFocus();
+
+        //账单
+        mRaidoBill = (RadioButton) findViewById(R.id.radio_bill);
+        mRaidoBill.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mPullRefreshListView.setVisibility(VISIBLE);
+                mWebView.setVisibility(GONE);
+
+                mTitle.setText(mRaidoBill.getText());
+            }
+        });
+
+        //卡券
+        mRadioTicket = (RadioButton) findViewById(R.id.radio_ticket);
+        mRadioTicket.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mWebView.setVisibility(GONE);
+                mTitle.setText(mRadioTicket.getText());
+            }
+        });
+
+        //收款码
+        mRadioWap = (RadioButton) findViewById(R.id.radio_wap);
+        mRadioWap.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mPullRefreshListView.setVisibility(GONE);
+                mWebView.setVisibility(VISIBLE);
+                mTitle.setText(mRadioWap.getText());
+                initWapBillData();
+            }
+        });
+    }
+
+    public void initWapBillData() {
+        if (SessonData.loginUser.getObjectId() != null && SessonData.loginUser.getObjectId().length() > 0) {
+            mWebView.loadUrl(SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObjectId());
+        }
     }
 
 

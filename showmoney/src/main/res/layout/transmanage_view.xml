@@ -28,11 +28,16 @@
             <RadioButton
                 android:id="@+id/radio_bill"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/radio_button1_selector"
                 android:button="@null"
                 android:checked="true"
+                android:gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="10dp"
                 android:text="收款账单"
                 android:textColor="@drawable/radio_button1_color_selector"
                 android:textSize="15sp" />
@@ -40,23 +45,33 @@
             <RadioButton
                 android:id="@+id/radio_ticket"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_weight="1"
                 android:background="@drawable/radio_button2_selector"
                 android:button="@null"
+                android:gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="10dp"
                 android:text="卡券账单"
                 android:textColor="@drawable/radio_button1_color_selector"
                 android:textSize="15sp" />
 
             <RadioButton
-                android:id="@+id/radio_collection"
+                android:id="@+id/radio_wap"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/radio_button3_selector"
                 android:button="@null"
+                android:gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingTop="10dp"
                 android:text="收款码账单"
                 android:textColor="@drawable/radio_button1_color_selector"
                 android:textSize="15sp" />
@@ -75,17 +90,24 @@
             android:textSize="15dp" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp">
+
+        <WebView
+            android:id="@+id/base_webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarSize="0dip"
+            android:visibility="gone" />
 
         <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
             android:id="@+id/bill_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>
