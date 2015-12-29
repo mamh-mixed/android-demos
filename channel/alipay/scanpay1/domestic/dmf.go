@@ -1,13 +1,13 @@
 package domestic
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	// "github.com/omigo/mahonia"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -274,45 +274,25 @@ func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, cbd model.ChanBlen
 func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlendMap) {
 
 	csv := csvData.CsvStr
-	count, err := strconv.Atoi(csvData.Count)
-	if err != nil {
-		log.Errorf("change data count errDetail:%s", err)
-		return
-	}
 	// 截取内容
 	if strings.Contains(csv, "<![CDATA[") {
 		csv = csv[9 : len(csv)-3]
-		log.Debugf("csv content: %s", csv)
+		// log.Debugf("csv content: %s", csv)
 	}
-
-	element := strings.Split(csv, ",")
 
 	// 检查要取关键位置是否变化 如：
 	// 外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,
-	if len(element) > 13 {
-		if element[0] != "外部订单号" {
-			log.Errorf("the first position is different")
-			return
-		}
-		if element[2] != "时间" {
-			log.Errorf("the third position is different")
-			return
-		}
-		if element[4] != "支付宝交易号" {
-			log.Errorf("the fifth position is different")
-			return
-		}
-		if element[8] != "收入（元）" {
-			log.Errorf("the eighth position is different")
-			return
-		}
-		if element[9] != "支出（元）" {
-			log.Errorf("the ninth position is different")
-			return
-		}
-		if element[12] != "类型" {
-			log.Errorf("the twelve position is different")
-			return
+	s := bufio.NewScanner(strings.NewReader(csv))
+	// skip 1
+	var data [][]string
+	for i := 0; s.Scan(); i++ {
+		if i > 0 {
+			ts := strings.Split(s.Text(), ",")
+			if len(ts) != 14 {
+				log.Errorf("length invalid , skip, data=%s", ts)
+				continue
+			}
+			data = append(data, ts)
 		}
 	}
 
@@ -321,21 +301,20 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 		recsMap = make(map[string][]model.BlendElement)
 	}
 
-	for i := 0; i < count; i++ {
+	for _, d := range data {
 		var elementModel model.BlendElement
-		elementModel.LocalID = element[14*(i+1)]
 		elementModel.Chcd = "ALP"
 		elementModel.ChcdName = "支付宝"
-		elementModel.ChanMerID = chanMerId
-		elementModel.OrderTime = element[14*(i+1)+2] //时间
-		elementModel.OrderID = element[14*(i+1)+4]   //支付宝交易号
-		elementModel.IsBlend = false
-		elementModel.OrderType = element[14*(i+1)+12]
-		if elementModel.OrderType == "在线支付" {
-			elementModel.OrderAct = element[14*(i+1)+8] //收入
-		} else if elementModel.OrderType == "交易退款" {
-			elementModel.OrderAct = element[14*(i+1)+9] //支出
-		}
+		elementModel.LocalID = d[0]
+		elementModel.OrderTime = d[2] // 时间
+		elementModel.OrderID = d[4]   // 支付宝交易号
+		elementModel.Account = d[5]
+		// elementModel.OrderType = element[14*(i+1)+12]
+		// if elementModel.OrderType == "在线支付" {
+		// 	elementModel.OrderAct = element[14*(i+1)+8] //收入
+		// } else if elementModel.OrderType == "交易退款" {
+		// 	elementModel.OrderAct = element[14*(i+1)+9] //支出
+		// }
 
 		// 归类
 		if elementArray, ok := recsMap[elementModel.OrderID]; ok {

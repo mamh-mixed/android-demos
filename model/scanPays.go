@@ -576,8 +576,8 @@ type LocalBlendMap map[string]map[string][]TransSett
 
 // 勾兑结构体
 type BlendElement struct {
-	Chcd          string //渠道编号
-	ChcdName      string //渠道名称
+	Chcd          string
+	ChcdName      string
 	MerID         string //商户号
 	ChanMerID     string //渠道商户号
 	MerName       string //商户名称
@@ -587,5 +587,6 @@ type BlendElement struct {
 	OrderType     string //交易类型
 	OrderAct      string //交易金额
 	RefundOrderID string //退款订单号
+	Account       string //消费帐号
 	IsBlend       bool   //对账标识
 }

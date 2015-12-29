@@ -643,7 +643,12 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		Skip:      index,
 	}
 
-	// 是否只包含支付交易
+	// 只包含支付交易
+	if req.TransType != 0 {
+		q.TransType = req.TransType
+	}
+
+	// TODO：日本项目字段 只包含支付交易
 	if req.OrderDetail == "pay" {
 		q.TransType = model.PayTrans
 	}
@@ -1071,6 +1076,7 @@ func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
 	result = model.SUCCESS1
 	result.Txn = txns
 	result.Count = total
+	result.Size = len(txns)
 	return
 }
 
@@ -1439,15 +1445,23 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 
 	switch transStatus {
 	case 1:
+		// 交易成功
 		q.TransStatus = []string{model.TransSuccess}
+		q.RefundStatus = []int{model.TransNoRefunded}
 	case 2:
+		// 部分退
 		q.RefundStatus = []int{model.TransPartRefunded}
 	case 4:
+		// 全额退
 		q.RefundStatus = []int{model.TransRefunded}
+	case 5:
+		// 交易成功、全额退款
+		q.RefundStatus = []int{model.TransNoRefunded, model.TransRefunded}
 	case 6:
+		// 部分、全额退款
 		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
 	case 7:
-		q.TransStatus = []string{model.TransSuccess}
-		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
+		// 交易成功、部分、全额退
+		q.RefundStatus = []int{model.TransNoRefunded, model.TransPartRefunded, model.TransRefunded}
 	}
 }
