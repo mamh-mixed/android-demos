@@ -25,3 +25,11 @@ func TestUndoPurchaseActCouponsDemo(t *testing.T) {
 func TestQueryCouponsPackageDemo(t *testing.T) {
 	QueryCouponsPackageDemo()
 }
+
+func TestPurchaseCouponsSingleDemo(t *testing.T) {
+	PurchaseCouponsSingleDemo()
+}
+
+func TestRecoverCouponsDemo(t *testing.T) {
+	RecoverCouponsDemo()
+}
