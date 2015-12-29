@@ -3,11 +3,11 @@ package com.cardinfolink.yunshouyin.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
@@ -18,7 +18,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by mamh on 15-12-26.
@@ -118,12 +117,16 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             childViewHolder = new ChildViewHolder();
             convertView = View.inflate(mContext, R.layout.expandablelistview_child, null);
+            childViewHolder.linearLayoutDay = convertView.findViewById(R.id.ll_day);
+            childViewHolder.linearLayoutBillItem = convertView.findViewById(R.id.ll_bill_item);
+
             childViewHolder.day = (TextView) convertView.findViewById(R.id.tv_day);
             childViewHolder.weekday = (TextView) convertView.findViewById(R.id.tv_weekday);
 
             childViewHolder.paylogo = (ImageView) convertView.findViewById(R.id.paylogo);
             childViewHolder.billTradeDate = (TextView) convertView.findViewById(R.id.bill_tradedate);
-            childViewHolder.billTradeFrom = (TextView) convertView.findViewById(R.id.bill_tradefrom);
+            childViewHolder.billBusicd = (TextView) convertView.findViewById(R.id.bill_tv_tradefrom);
+            childViewHolder.billTradeFromImage = (ImageView) convertView.findViewById(R.id.bill_iv_tradefrom);
             childViewHolder.billTradeStatus = (TextView) convertView.findViewById(R.id.bill_tradestatus);
             childViewHolder.billTradeAmount = (TextView) convertView.findViewById(R.id.bill_tradeamount);
 
@@ -132,6 +135,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder = (ChildViewHolder) convertView.getTag();
         }
 
+        //从list中根据位置获取到相应的bill项
         TradeBill bill = childrenData.get(groupPosition).get(childPosition);
 
         if (!TextUtils.isEmpty(bill.chcd)) {
@@ -145,19 +149,18 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.paylogo.setImageDrawable(null);
         }
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
-        SimpleDateFormat spf2 = new SimpleDateFormat("MM-dd HH:mm:ss");
+        SimpleDateFormat spf2 = new SimpleDateFormat("HH:mm:ss");
         SimpleDateFormat spf3 = new SimpleDateFormat("dd");
+        SimpleDateFormat spf4 = new SimpleDateFormat("EEEE");
         try {
             Date tandeDate = spf1.parse(bill.tandeDate);
             childViewHolder.billTradeDate.setText(spf2.format(tandeDate));
             childViewHolder.day.setText(spf3.format(tandeDate));
+            childViewHolder.weekday.setText(spf4.format(tandeDate));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        String tradeFrom = "PC";
-        if (!TextUtils.isEmpty(bill.tradeFrom)) {
-            tradeFrom = bill.tradeFrom;
-        }
+
 
         String busicd = mContext.getResources().getString(R.string.detail_activity_busicd_pay);
         if (bill.busicd.equals("REFD")) {
@@ -168,7 +171,22 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             busicd = mContext.getResources().getString(R.string.detail_activity_busicd_canc);
         }
 
-        childViewHolder.billTradeFrom.setText(tradeFrom + busicd);
+        if ("PC".equals(bill.tradeFrom)) {
+            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_pc);
+            busicd = "PC " + busicd;
+        } else if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
+            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
+            busicd = "APP " + busicd;
+        } else if ("web".equals(bill.tradeFrom)) {
+            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_web);
+            busicd = "网页 " + busicd;
+        } else {
+            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_else);
+            busicd = "其他 " + busicd;
+        }
+
+        childViewHolder.billBusicd.setText(busicd);
+
         String tradeStatus;
         if (bill.response.equals("00")) {
             tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_success);
@@ -180,8 +198,32 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_fail);
             childViewHolder.billTradeStatus.setTextColor(Color.RED);
         }
+
         childViewHolder.billTradeStatus.setText(tradeStatus);
         childViewHolder.billTradeAmount.setText("￥" + bill.amount);
+
+
+        childViewHolder.linearLayoutDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "xxxxxx day click");
+            }
+        });
+
+        childViewHolder.linearLayoutBillItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, " right item");
+            }
+        });
+
+
+
+
+
+
+
+
 
         return convertView;
     }
@@ -204,8 +246,11 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView weekday;
         public ImageView paylogo;
         public TextView billTradeDate;
-        public TextView billTradeFrom;
+        public TextView billBusicd;
+        public ImageView billTradeFromImage;
         public TextView billTradeStatus;
         public TextView billTradeAmount;
+        public View linearLayoutDay;//左边显示日期，周几的一个线性布局
+        public View linearLayoutBillItem;//右边显示详情账单信息的一个线性布局
     }
 }
