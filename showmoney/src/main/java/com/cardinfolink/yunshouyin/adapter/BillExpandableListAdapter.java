@@ -180,7 +180,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         } else if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
             busicd = "APP " + busicd;
-        } else if ("web".equals(bill.tradeFrom)) {
+        } else if ("wap".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_web);
             busicd = "网页 " + busicd;
         } else {
