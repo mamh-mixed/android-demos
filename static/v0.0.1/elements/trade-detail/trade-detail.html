@@ -200,6 +200,9 @@
           text = el.getMsg(i18nId);
 
         if (text && typeof text === 'string') {
+          if (I18nMsg && I18nMsg.lang === 'ja') {
+            return text;
+          }
           return busicd + '—' + text;
         }
 
@@ -223,6 +226,11 @@
         if (map[chanCode]) {
           var el = document.createElement('i18n-msg');
           var i18nId = map[chanCode].i18nID;
+
+          if (I18nMsg && I18nMsg.lang === 'ja') {
+            return el.getMsg(i18nId)
+          }
+
           return chanCode + '－' + el.getMsg(i18nId);
         }
         return chanCode;
@@ -250,6 +258,11 @@
         if (map[status]) {
           var el = document.createElement('i18n-msg');
           var i18nId = map[status].i18nID;
+
+          if (I18nMsg && I18nMsg.lang === 'ja') {
+            return el.getMsg(i18nId)
+          }
+
           return status + '－' + el.getMsg(i18nId);
         }
         return status;
