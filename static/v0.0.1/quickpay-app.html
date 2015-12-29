@@ -139,7 +139,7 @@
 
           if (e.detail.path !== '/' && e.detail.path[e.detail.path.length - 1] === '/') {
             this.$.appRouter.go(LOGIN_PATH);
-            e.preventDefault();
+            e.preventDefault(); // 阻止页面继续跳转
           }
 
           this.set('route.path', e.detail.path);
@@ -154,6 +154,7 @@
 
           if (this.userType !== 'agent' && this.userType !== 'group' && this.userType !== 'merchant' && this.userType !== 'subAgent') {
             this.$.appRouter.go('/');
+            e.preventDefault(); // 阻止页面继续跳转
             return;
           }
 
@@ -166,7 +167,7 @@
           }
           if (!isAccess) {
             this.$.appRouter.go('/404');
-            e.preventDefault();
+            e.preventDefault(); // 阻止页面继续跳转
           }
         },
         // 新路由进入前
