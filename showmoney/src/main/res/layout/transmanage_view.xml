@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -17,37 +18,57 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <RadioGroup
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:gravity="center"
-            android:padding="5dp"
-            android:text="收款账单"
-            android:textSize="15dp" />
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_bill"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button1_selector"
+                android:button="@null"
+                android:checked="true"
+                android:text="收款账单"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <RadioButton
+                android:id="@+id/radio_ticket"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button2_selector"
+                android:button="@null"
+                android:text="卡券账单"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <RadioButton
+                android:id="@+id/radio_collection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio_button3_selector"
+                android:button="@null"
+                android:text="收款码账单"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+
+        </RadioGroup>
 
         <TextView
+            android:id="@+id/tv_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="销券账单"
-            android:textSize="15dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="收款码账单"
-            android:textSize="15dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
             android:gravity="center"
             android:padding="5dp"
             android:text="搜索"
@@ -57,7 +78,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="5dp">
 
         <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
             android:id="@+id/bill_list_view"
