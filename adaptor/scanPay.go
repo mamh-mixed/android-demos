@@ -85,7 +85,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		if err != nil {
 			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
 		}
-		t.SettCurr = "USD"
+		t.SettCurr = "HKD"
 		t.SettCurrAmt = settAmt
 		t.SettExchangeRate = settRate
 		req.ActTxamt = fmt.Sprintf("%d", settAmt)
