@@ -22,6 +22,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.TicketResultActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.SessonData;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,19 +42,31 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
     private EditText mCouponCode;
     private ImageView mInfo;
     private TextView mAccount;
-    private Handler mHandler;
+
+    private Handler mMainActivityHandler;//这个是mainActivity类里面的handler
+
     private ResultData mResultData;
 
+    private Handler mHandler;//这个是本类里面自有的handler
+
+
     public TicketView(Context context) {
+        this(context, null);
+    }
+
+    //添加了一个新的构造方法
+    public TicketView(Context context, Handler handler) {
         super(context);
         mContext = context;
+        mMainActivityHandler = handler;
+
         contentView = LayoutInflater.from(context).inflate(R.layout.ticket_view, null);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
 
         initLayout();
-        initHandler();
+        initHandler();//初始化handler
     }
 
     public void initLayout() {
@@ -78,7 +91,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 switch (msg.what) {
                     case Msg.MSG_FROM_SERVER_COUPON_SUCCESS:
                         //核销成功
-                        Log.e("xxxxxxxxx", "核销成功");
                         intent = new Intent(mContext, TicketResultActivity.class);
                         bundle = new Bundle();
                         bundle.putBoolean("flag", true);
@@ -95,7 +107,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                         // cardId='微信支付固定金额券', cardInfo='微信支付固定金额券',
                         // voucherType='null', saleMinAmount='null', saleDiscount='null',
                         // actualPayAmount='null', maxDiscountAmt='null'}
-                        Log.e("xxxxxxxxx", "核销失败");
                         intent = new Intent(mContext, TicketResultActivity.class);
                         bundle = new Bundle();
                         bundle.putBoolean("flag", false);
@@ -120,7 +131,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 Intent intent = new Intent(mContext, CaptureActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("original", "ticketview");
-
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
 
@@ -128,15 +138,8 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
             case R.id.bt_confirm:
                 //核销
                 String scancode = mCouponCode.getText().toString();
-                Date now = new Date();
-                SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-                String mOrderNum = spf.format(now);
-                Random random = new Random();
-                for (int i = 0; i < 5; i++) {
-                    mOrderNum = mOrderNum + random.nextInt(10);
-                }
                 final OrderData orderData = new OrderData();
-                orderData.orderNum = mOrderNum;
+                orderData.orderNum = geneOrderNumber();
                 orderData.scanCodeId = scancode;
 
                 CashierSdk.startVeri(orderData, new CashierListener() {
@@ -145,11 +148,12 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                     public void onResult(ResultData resultData) {
                         Log.e("scanCode", resultData.toString());
                         mResultData = resultData;
-                        if (mResultData.respcd.equals("00")) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                        SessonData.loginUser.setResultData(resultData);
+                        if ("00".equals(mResultData.respcd)) {
+                            mMainActivityHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
                         } else {
                             //核销失败
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
+                            mMainActivityHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
                         }
                     }
 
@@ -162,6 +166,7 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         }
 
     }
+
 
     /**
      * 生成账单号  时间加上一个随机数
