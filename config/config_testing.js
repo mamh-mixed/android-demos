@@ -25,9 +25,9 @@
         "Domain": "dn-yun-test.qbox.me"
     },
     "Mongo": {
-        "Encrypt": true, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
+        "Encrypt": false, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
-        "URL": "mongodb://quickpay:******@test.ipay.so:27017,test.ipay.so:27018,test.ipay.so:27019/quickpay",
+        "URL": "mongodb://quickpay:quickpay@127.0.0.1:27017,127.0.0.1:27018,127.0.0.1:27019/quickpay",
         "EncryptURL": "GYeB1+/dUEg41y5AOjDWSCjJM7WyxQOazhHTikDZzQ61SzASrOZYyZ1FDLqc6rD4ByM1uY4bAFJGJglJqiGSPDEl73iBH3v9NbEHMDm61DBE+qp5AzD6tqIPDtCbMdjtGuEzMp5TUis1XHWKDuzhfrHGSKYWKBu13XftXFg7tutqTmdHLGbO1iM8C9Dk1b8zGnZCHLqBTJe9U/hoSQslCf8GZjUC5wJoTfD31KP0gL0kJQ8iLLzM4rLtonnDUwSIilHeHrh6Mx9q6Ia7IJveOIHYfQWu668vJyUNVvMoN9XOEVe3u0WUlxs/NvkkhLgNMKkuK00kZvyIkgoXsNbPZw==",
         "DB": "quickpay"
         // "Encrypt": false, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
@@ -58,7 +58,7 @@
         "AgentId": "12010128a1" // 标识讯联交易
     },
     "MobileApp":{
-        "WXPMerId":"1247075201",
+        "WXPMerId":"11015876",
         "ALPMerId":"2088811767473826",
         "WebAppUrl":"http://qrcode.cardinfolink.net/agent"
     },

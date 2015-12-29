@@ -25,9 +25,9 @@
         "Domain": "dn-yun-master.qbox.me"
     },
     "Mongo": {
-        "Encrypt": true, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
+        "Encrypt": false, // URL（密码）是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
         // URL format [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
-        "URL": "mongodb://quickpay:******@mgo2.set.shou.money:27017,mgo1.set.shou.money:27018,nsq1.set.shou.money:27017/quickpay",
+        "URL": "mongodb://quickpay:257f44508ecce4e233d79@10.9.200.12:27017,10.9.200.13:27017,10.9.200.14:27017/quickpay",
         "EncryptURL": "gVHAPh0W/zta5rtNsgiqFSUA4kexR0s2wfyu7bIocTGGZntW7oLlqILV2OFJAX3YQAWywM6JBZNEucWXERINsMQm1OoyXcukRwTxyl+i7B/aEWlA6mumm2iz1zdI+R/hYO5K/mJ8T4fp9qnorVkQixsUvXQuOs2+8S0He/2V8QmsnIjouZF8h7XvFM21yuelmPwKw1zoGRyvUNt2YjA9jAQ5J+YPzxJWkfyLBjoCaKWxVM4DgIOtBGMZQVYSedAWtCsAlrRw6GAEa4TD74vkpvKSX9LmGxtt9SeTj04cNpViqZDmPS4c9Jrl3J/G35cICfI3meSvq78XYjmYjnSohA==",
         "DB": "quickpay"
     },
