@@ -1,5 +1,7 @@
 package com.cardinfolink.yunshouyin.data;
 
+import com.cardinfolink.cashiersdk.model.ResultData;
+
 public class User {
     private String username;
     private String password;
@@ -24,6 +26,16 @@ public class User {
     private boolean isAutoLogin;
     private String limitName;
     private String limitPhone;
+
+    public ResultData getResultData() {
+        return resultData;
+    }
+
+    public void setResultData(ResultData resultData) {
+        this.resultData = resultData;
+    }
+
+    private ResultData resultData;
 
     public String getProvince() {
         return province;
