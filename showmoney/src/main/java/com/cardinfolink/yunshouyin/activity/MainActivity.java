@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TicketView;
@@ -59,13 +62,23 @@ public class MainActivity extends BaseActivity {
 
     // 每个页面的view数据,存放4个界面
     private ArrayList<View> mViews;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        initHandler();
         initLayout();
         initUmeng();
+    }
+
+    public Handler getHandler() {
+        return mHandler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.mHandler = handler;
     }
 
     private void initUmeng() {
@@ -95,14 +108,27 @@ public class MainActivity extends BaseActivity {
         Log.e(TAG, "pushAgeng info :" + info);
     }
 
+    public void initHandler() {
+        //mainactivity里面的handler主要是用来切换主界面上的四个界面的。从其他地方发个消息过来
+        //在这里进行切换界面的操作。例如在扫码界面 要切换到账单界面，就
+        mHandler = new Handler() {
+
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                //// TODO: mamh  这里要进行切换界面的操作
+            }
+        };
+    }
+
     private void initLayout() {
         //扫码的界面，第一个界面
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mScanCodeView = new ScanCodeView(mContext);
+        mScanCodeView = new ScanCodeView(mContext, mHandler);
         mScanCodeView.setLayoutParams(layoutParams);
 
         //销券的界面，第二个界面
-        mTicketView = new TicketView(mContext);
+        mTicketView = new TicketView(mContext, mHandler);
         mTicketView.setLayoutParams(layoutParams);
 
         //账单界面，第三个界面
