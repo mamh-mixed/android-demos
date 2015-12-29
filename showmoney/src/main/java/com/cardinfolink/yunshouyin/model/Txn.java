@@ -9,9 +9,10 @@ public class Txn {
     private String systemDate;
 
     private String consumerAccount;
-
     @SerializedName("m_request")
     private QRequest mRequest;
+
+    private String refundAmt;
 
     public String getResponse() {
         return response;
@@ -43,5 +44,13 @@ public class Txn {
 
     public void setmRequest(QRequest mRequest) {
         this.mRequest = mRequest;
+    }
+
+    public String getRefundAmt() {
+        return refundAmt;
+    }
+
+    public void setRefundAmt(String refundAmt) {
+        this.refundAmt = refundAmt;
     }
 }
