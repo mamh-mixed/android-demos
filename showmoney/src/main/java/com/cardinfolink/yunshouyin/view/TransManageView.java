@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -303,7 +304,21 @@ public class TransManageView extends LinearLayout {
         Set<String> keyset = map.keySet();
         ArrayList<String> list = new ArrayList<>();
         list.addAll(keyset);
-        Collections.reverse(list);
+        Comparator<String> com = new Comparator<String>() {
+
+            @Override
+            public int compare(String lhs, String rhs) {
+                if (Integer.valueOf(lhs) > Integer.valueOf(rhs)) {
+                    return -1;
+                } else if (Integer.valueOf(lhs) < Integer.valueOf(rhs)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        };
+
+        Collections.sort(list, com);
 
         mMonthBilList.clear();
         for (String key : list) {
@@ -315,7 +330,20 @@ public class TransManageView extends LinearLayout {
         Set<String> keyset = map.keySet();
         ArrayList<String> list = new ArrayList<>();
         list.addAll(keyset);
-        Collections.reverse(list);//把 key 排序一下
+        Comparator<String> com = new Comparator<String>() {
+
+            @Override
+            public int compare(String lhs, String rhs) {
+                if (Integer.valueOf(lhs) > Integer.valueOf(rhs)) {
+                    return -1;
+                } else if (Integer.valueOf(lhs) < Integer.valueOf(rhs)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        };
+        Collections.sort(list, com);//把 key 排序一下
 
         mTradeBillList.clear();
         for (String key : list) {
