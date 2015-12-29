@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -66,22 +67,31 @@ public class TransManageView extends LinearLayout {
     private RadioButton mRadioTicket;
     private RadioButton mRadioWap;
 
+    private Handler mMainactivityHandler;
 
     public TransManageView(Context context) {
+        this(context, null);
+    }
+
+    public TransManageView(Context context, Handler handler) {
         super(context);
         mContext = context;
+        mMainactivityHandler = handler;
+
         View contentView = LayoutInflater.from(context).inflate(R.layout.transmanage_view, null);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
+
+
         initLayout();
 
-
-        SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-        mMonth = spf.format(new Date());
     }
 
     private void initLayout() {
+        SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+        mMonth = spf.format(new Date());
+
         mTitle = (TextView) findViewById(R.id.tv_title);
 
         mPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
@@ -295,6 +305,7 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onFailure(QuickPayException ex) {
+                Log.e(TAG, " get history bill fail" + ex.getErrorMsg());
                 mPullRefreshListView.onRefreshComplete();
             }
         });
