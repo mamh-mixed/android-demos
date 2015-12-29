@@ -1,7 +1,9 @@
 package com.cardinfolink.yunshouyin.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.activity.DetailActivity;
 import com.cardinfolink.yunshouyin.data.MonthBill;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 
@@ -136,7 +139,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         //从list中根据位置获取到相应的bill项
-        TradeBill bill = childrenData.get(groupPosition).get(childPosition);
+        final TradeBill bill = childrenData.get(groupPosition).get(childPosition);
 
         if (!TextUtils.isEmpty(bill.chcd)) {
             //有chcd渠道的话,这里设置不同渠道的图片
@@ -214,15 +217,13 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 Log.e(TAG, " right item");
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("TradeBill", bill);
+                intent.putExtra("BillBundle", bundle);
+                mContext.startActivity(intent);
             }
         });
-
-
-
-
-
-
-
 
 
         return convertView;
