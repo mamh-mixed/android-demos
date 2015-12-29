@@ -120,6 +120,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private static final int FOREGROUND_COLOR = 0xff000000;
     private static final int BACKGROUND_COLOR = 0xffffffff;
     private ResultData mResultData;
+    private Handler mMainActivityHandler;//来自MainActivity的handler，注意区分mHandler
     private Handler mHandler;
     private String mOrderNum;//原始订单,取消订单时会用到
 
@@ -132,10 +133,15 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     private HintDialog mHintDialog;
 
+
     public ScanCodeView(Context context) {
+        this(context, null);
+    }
+
+    public ScanCodeView(Context context, Handler handler) {
         super(context);
         mContext = context;
-
+        mMainActivityHandler = handler;
         //初始化SharedPreferences sp
         sp = mContext.getSharedPreferences("savedata", Context.MODE_PRIVATE);
         mCHCD = sp.getString("CHCD", "WXP");//默认是微信支付。每次用户切换都记录一下。
@@ -147,13 +153,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         initAnimation();//初始化一个动画
 
-        initView();//初始各个改组件
+        initLayout();//初始各个改组件
     }
 
-    /**
-     * 初始化各个组件
-     */
-    private void initView() {
+    // 初始化各个组件
+    private void initLayout() {
         mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
 
         mAccount = (TextView) findViewById(R.id.tv_account);//显示账号的
@@ -239,6 +243,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         btndelete.setOnTouchListener(this);
     }
 
+    //初始化动画
     private void initAnimation() {
         mShowAnimation = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF,
