@@ -3,7 +3,7 @@ package scanpay2
 import (
 	"testing"
 
-	"github.com/dawei888/quickpay/util"
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func TestPay(t *testing.T) {
@@ -15,7 +15,7 @@ func TestPay(t *testing.T) {
 		},
 		OutTradeNo:  num,
 		Scene:       "bar_code",
-		AuthCode:    "282528673824835509",
+		AuthCode:    "283081350690278432",
 		Subject:     "2024-" + num,
 		TotalAmount: "0.01",
 	}
