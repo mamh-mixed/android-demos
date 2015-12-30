@@ -106,8 +106,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	// 查找条件
-	update := bson.M{"_id": t.Id}
-	err := database.C(col.name).UpdateId(update, t)
+	err := database.C(col.name).UpdateId(t.Id, t)
 	if err != nil {
 		log.Errorf("update trans(%+v) fail: %s", t, err)
 	}
