@@ -310,17 +310,17 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
     @Override
-    public void getOrderAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacketOrder> listener) {
-        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacketOrder>>() {
+    public void getOrderAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacket> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
 
             @Override
-            protected AsyncTaskResult<ServerPacketOrder> doInBackground(Void... params) {
-                ServerPacketOrder serverPacket = quickPayApi.getOrder(user, orderNum);
-                return new AsyncTaskResult<ServerPacketOrder>(serverPacket, null);
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                ServerPacket serverPacket = quickPayApi.findOrder(user, orderNum);
+                return new AsyncTaskResult<ServerPacket>(serverPacket, null);
             }
 
             @Override
-            protected void onPostExecute(AsyncTaskResult<ServerPacketOrder> result) {
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
                 if (result.getException() != null) {
                     listener.onFailure(result.getException());
                 } else {
