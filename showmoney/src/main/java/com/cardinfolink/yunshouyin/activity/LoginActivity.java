@@ -164,6 +164,7 @@ public class LoginActivity extends BaseActivity {
                 SessonData.loginUser.setClientid(data.getClientid());
                 SessonData.loginUser.setObjectId(data.getObjectId());
                 SessonData.loginUser.setLimit(data.getLimit());
+                SessonData.loginUser.setPayUrl(data.getPayUrl());
 
                 if (TextUtils.isEmpty(SessonData.loginUser.getClientid())) {
                     // clientid为空,跳转到完善信息页面
