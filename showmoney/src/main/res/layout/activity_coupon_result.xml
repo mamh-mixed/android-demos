@@ -33,9 +33,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:layout_marginTop="30dp"
             android:text="满300打5折"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
@@ -47,24 +49,24 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/bt_money"
+            android:id="@+id/bt_scancode"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/blue_selector"
-            android:text="现金收款"
+            android:text="扫码收款"
             android:textColor="#ffffff" />
 
         <Button
-            android:id="@+id/bt_scancode"
+            android:id="@+id/bt_money"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="30dp"
             android:background="@drawable/blue_selector"
-            android:text="扫码收款"
+            android:text="现金收款"
             android:textColor="#ffffff" />
     </LinearLayout>
 
