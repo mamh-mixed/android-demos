@@ -61,7 +61,7 @@
                 android:textSize="15sp" />
 
             <RadioButton
-                android:id="@+id/radio_wap"
+                android:id="@+id/radio_collection"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -95,17 +95,25 @@
         android:layout_height="match_parent"
         android:layout_marginTop="5dp">
 
-        <WebView
-            android:id="@+id/base_webview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarSize="0dip"
-            android:visibility="gone" />
-
+        <!-- 账单的listview -->
         <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
             android:id="@+id/bill_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <!-- 卡券账单的listview -->
+        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+            android:id="@+id/ticket_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <!-- 收款码账单的listview -->
+        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+            android:id="@+id/colloction_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
