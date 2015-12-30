@@ -6,10 +6,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -19,7 +15,6 @@ import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.adapter.BillExpandableListAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
@@ -46,8 +41,10 @@ import java.util.Set;
 public class TransManageView extends LinearLayout {
     private static final String TAG = "TransManageView";
     private Context mContext;
-    private PullToRefreshExpandableListView mPullRefreshListView;
-    private BillExpandableListAdapter mAdapter;
+
+    //****************************************************************************************
+    private PullToRefreshExpandableListView mBillPullRefreshListView;//第一个第一个账单的listview
+    private BillExpandableListAdapter mBillAdapter;
 
     private Map<String, MonthBill> mMonthBillMap;
     private List<MonthBill> mMonthBilList;//月账单
@@ -56,16 +53,23 @@ public class TransManageView extends LinearLayout {
     private Map<String, List<TradeBill>> mTradeBillMap;
 
     private int billIndex;
-    private String mMonth;
-    private int mMonthAgo;
+    private int mMonthBillAgo;
+    //****************************************************************************************
 
+    //****************************************************************************************
+    private PullToRefreshExpandableListView mTicketPullRefreshListView;//第2个第2个卡券账单的listview
 
-    private WebView mWebView;
+    //****************************************************************************************
+    private PullToRefreshExpandableListView mCollectionPullRefreshListView;//第3个第3个收款码账单的listview
+    //****************************************************************************************
+
+    private String mCurrentYearMonth;//当前年份+月份的一个字符串
+
 
     private TextView mTitle;
-    private RadioButton mRaidoBill;
-    private RadioButton mRadioTicket;
-    private RadioButton mRadioWap;
+    private RadioButton mRaidoBill;//收款账单
+    private RadioButton mRadioTicket;//卡券账单
+    private RadioButton mRadioCollection;//收款码账单
 
     private Handler mMainactivityHandler;
 
@@ -83,23 +87,19 @@ public class TransManageView extends LinearLayout {
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
 
-
         initLayout();
-
     }
 
     private void initLayout() {
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-        mMonth = spf.format(new Date());
+        mCurrentYearMonth = spf.format(new Date());
 
         mTitle = (TextView) findViewById(R.id.tv_title);
 
-        mPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
-
-        mPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
-
-
-        mPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
+        //******************************************************************************************
+        mBillPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
+        mBillPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
+        mBillPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
                 // Do work to refresh the list here.
@@ -110,11 +110,10 @@ public class TransManageView extends LinearLayout {
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
                     SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                    mMonth = spf.format(new Date());
-                    getTradeBill();
-                    Log.e(TAG, " billIndex == " + billIndex);
+                    mCurrentYearMonth = spf.format(new Date());
+                    getBill();
                 } else {
-                    getTradeBill();
+                    getBill();
                 }
 
             }
@@ -125,47 +124,23 @@ public class TransManageView extends LinearLayout {
         mMonthBillMap = new HashMap<>();
         mTradeBillMap = new HashMap<>();
 
+        mBillAdapter = new BillExpandableListAdapter(mContext, mMonthBilList, mTradeBillList);
 
-        mAdapter = new BillExpandableListAdapter(mContext, mMonthBilList, mTradeBillList);
-
-        final ExpandableListView ActualView = mPullRefreshListView.getRefreshableView();
-        ActualView.setAdapter(mAdapter);
+        ExpandableListView ActualView = mBillPullRefreshListView.getRefreshableView();
+        ActualView.setAdapter(mBillAdapter);
         ActualView.setGroupIndicator(null);
 
-        mWebView = (WebView) findViewById(R.id.base_webview);
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-
-            }
-        });
+        //******************************************************************************************
+        mTicketPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.ticket_list_view);
+        mTicketPullRefreshListView.setVisibility(GONE);
 
 
-        mWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onJsAlert(WebView view, String url, String message, android.webkit.JsResult result) {
-                return false;
-            }
-        });
+        //******************************************************************************************
+        mCollectionPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.colloction_list_view);
+        mCollectionPullRefreshListView.setVisibility(GONE);
 
 
-        WebSettings webSettings = mWebView.getSettings();
-
-        webSettings.setDefaultTextEncodingName("utf-8");
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAllowFileAccess(true);// 设置允许访问文件数据
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setDatabaseEnabled(true);
-        webSettings.setSupportZoom(true);
-        mWebView.requestFocus();
+        //******************************************************************************************
 
         //账单
         mRaidoBill = (RadioButton) findViewById(R.id.radio_bill);
@@ -173,10 +148,11 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onClick(View v) {
-                mPullRefreshListView.setVisibility(VISIBLE);
-                mWebView.setVisibility(GONE);
+                mBillPullRefreshListView.setVisibility(VISIBLE);
+                mTicketPullRefreshListView.setVisibility(GONE);
+                mCollectionPullRefreshListView.setVisibility(GONE);
 
-                mTitle.setText(mRaidoBill.getText());
+                mTitle.setText(mRaidoBill.getText());//设置标题
             }
         });
 
@@ -186,40 +162,37 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onClick(View v) {
-                mWebView.setVisibility(GONE);
+                mBillPullRefreshListView.setVisibility(GONE);
+                mTicketPullRefreshListView.setVisibility(VISIBLE);
+                mCollectionPullRefreshListView.setVisibility(GONE);
                 mTitle.setText(mRadioTicket.getText());
             }
         });
 
         //收款码
-        mRadioWap = (RadioButton) findViewById(R.id.radio_wap);
-        mRadioWap.setOnClickListener(new OnClickListener() {
+        mRadioCollection = (RadioButton) findViewById(R.id.radio_collection);
+        mRadioCollection.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mPullRefreshListView.setVisibility(GONE);
-                mWebView.setVisibility(VISIBLE);
-                mTitle.setText(mRadioWap.getText());
-                initWapBillData();
+                mBillPullRefreshListView.setVisibility(GONE);
+                mTicketPullRefreshListView.setVisibility(GONE);
+                mCollectionPullRefreshListView.setVisibility(VISIBLE);
+                mTitle.setText(mRadioCollection.getText());
             }
         });
     }
 
-    public void initWapBillData() {
-        if (SessonData.loginUser.getObjectId() != null && SessonData.loginUser.getObjectId().length() > 0) {
-            mWebView.loadUrl(SystemConfig.WEB_BILL_URL + "?merchantCode=" + SessonData.loginUser.getObjectId());
-        }
-    }
-
 
     public void refresh() {
-        getTradeBill();
+        getBill();
     }
 
 
-    private void getTradeBill() {
+    //获取收款的账单账单
+    private void getBill() {
         QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
-        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mMonth, String.valueOf(billIndex), "100", "all", new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "all", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里可以在ui线程里执行的
@@ -287,28 +260,38 @@ public class TransManageView extends LinearLayout {
                 mapToMonthBillList(mMonthBillMap);
                 mapToTradeBillList(mTradeBillMap);
 
-                mAdapter.notifyDataSetChanged();
-                mPullRefreshListView.onRefreshComplete();
+                mBillAdapter.notifyDataSetChanged();
+                mBillPullRefreshListView.onRefreshComplete();
 
                 billIndex += size;
                 if (size == 0) {
                     //size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
                     billIndex = 0;
-                    mMonthAgo += 1;
+                    mMonthBillAgo += 1;
                     Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MONTH, 0 - mMonthAgo);    //得到前一个月
+                    calendar.add(Calendar.MONTH, 0 - mMonthBillAgo);    //得到前一个月
                     String year = String.valueOf(calendar.get(Calendar.YEAR));
                     String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-                    mMonth = year + month;
+                    mCurrentYearMonth = year + month;
                 }
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
                 Log.e(TAG, " get history bill fail" + ex.getErrorMsg());
-                mPullRefreshListView.onRefreshComplete();
+                mBillPullRefreshListView.onRefreshComplete();
             }
         });
+    }
+
+    //获取卡券账单
+    public void getTicketBill() {
+
+    }
+
+    //获取 收款码 账单
+    public void getCollectionBill() {
+
     }
 
     private void mapToMonthBillList(Map<String, MonthBill> map) {
