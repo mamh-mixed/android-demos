@@ -20,7 +20,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
-import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
+import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
@@ -178,10 +178,12 @@ public class DetailActivity extends BaseActivity {
 
             @Override
             public void onResult(ResultData resultData) {
-                quickPayService.getOrderAsync(SessonData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacketOrder>() {
+                quickPayService.getOrderAsync(SessonData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacket>() {
                     @Override
-                    public void onSuccess(ServerPacketOrder data) {
-                        mTradeBill.response = data.getTxn().getResponse();
+                    public void onSuccess(ServerPacket data) {
+                        //注意这里使用了findOrder的新的的接口，这里txn返回的数组，不再是一个字段了，
+                        // 这时候就没必要使用新的com.cardinfolink.yunshouyin.model.ServerPacketOrder的这个类了
+                        mTradeBill.response = data.getTxn()[0].getResponse();
                         endLoading(mPayResultImage);
                         initData();
                     }
@@ -213,8 +215,6 @@ public class DetailActivity extends BaseActivity {
     public void endLoading(View view) {
         view.clearAnimation();
     }
-
-
 
 
 }
