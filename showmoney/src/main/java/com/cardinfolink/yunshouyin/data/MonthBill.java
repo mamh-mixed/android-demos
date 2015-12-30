@@ -10,13 +10,30 @@ public class MonthBill {
 
     private String currentMonth;//记录一下这是哪个月的账单
 
-    private int count;//返回的条数
+
+    /**
+     * {
+     * "state": "success",
+     * <p/>
+     * <p/>
+     * "total": "0.00",
+     * "count": 25,
+     * "totalRecord": 1471,
+     * "size": 100,
+     * "refdcount": 25,
+     * "refdtotal": "175.18",
+     * "txn": [这里是一个数组]
+     */
+    //下面这个几个都是 返回的json里面带的字段
     private String total;
+    private int count;//返回的条数
+
+    private int totalRecord;
+    private int size;
 
     private int refdcount;//这个是和退款相关的
     private String refdtotal;
 
-    private int size;
 
     public MonthBill(String currentYear, String currentMonth) {
         this.currentYear = currentYear;
@@ -81,5 +98,13 @@ public class MonthBill {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public int getTotalRecord() {
+        return totalRecord;
+    }
+
+    public void setTotalRecord(int totalRecord) {
+        this.totalRecord = totalRecord;
     }
 }
