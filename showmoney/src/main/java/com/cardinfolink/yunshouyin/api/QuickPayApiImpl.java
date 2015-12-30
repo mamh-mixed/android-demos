@@ -446,6 +446,36 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     @Override
+    public ServerPacket findOrder(User user, String index, String size, String orderNum, String recType, String payType, String txnStatus) {
+        String url = quickPayConfigStorage.getUrl() + "/findOrder";
+
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        params.put("password", password);
+        params.put("index", index);
+        params.put("size", size);
+        params.put("orderNum", orderNum);
+        params.put("recType", recType);
+        params.put("payType", payType);
+        params.put("txnStatus", txnStatus);
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params, "SHA-1"));
+
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
+    @Override
     public String getTotal(User user, String date) {
         //result =={"state":"success","total":"0.00","count":5,"size":0,"refdcount":0}
 
