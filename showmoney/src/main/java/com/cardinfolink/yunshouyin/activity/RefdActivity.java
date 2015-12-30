@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.app.Activity;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,8 +24,6 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.view.AlertDialog;
-import com.cardinfolink.yunshouyin.view.RefdDialog;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -140,21 +137,43 @@ public class RefdActivity extends BaseActivity {
                     @Override
                     public void run() {
                         endLoading();
-                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.right);
-                        View alertView = findViewById(R.id.alert_dialog);
                         String alertMsg = "";
                         if (resultData.respcd.equals("00")) {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_success);
-                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-                            alertDialog.show();
+                            mAlertDialog.setTitle(alertMsg);
+                            mAlertDialog.setImageViewResource(R.drawable.right);
+                            mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mAlertDialog.hide();
+                                    finish();
+                                }
+                            });
+                            mAlertDialog.show();
                         } else if (resultData.respcd.equals("R6")) {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd);
-                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-                            alertDialog.show();
+                            mAlertDialog.setTitle(alertMsg);
+                            mAlertDialog.setImageViewResource(R.drawable.wrong);
+                            mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mAlertDialog.hide();
+                                    finish();
+                                }
+                            });
+                            mAlertDialog.show();
                         } else {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
-                            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-                            alertDialog.show();
+                            mAlertDialog.setTitle(alertMsg);
+                            mAlertDialog.setImageViewResource(R.drawable.wrong);
+                            mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mAlertDialog.hide();
+                                    finish();
+                                }
+                            });
+                            mAlertDialog.show();
                         }
                     }
 
@@ -168,11 +187,17 @@ public class RefdActivity extends BaseActivity {
                     @Override
                     public void run() {
                         endLoading();
-                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
-                        View alertView = findViewById(R.id.alert_dialog);
                         String alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
-                        AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-                        alertDialog.show();
+                        mAlertDialog.setTitle(alertMsg);
+                        mAlertDialog.setImageViewResource(R.drawable.wrong);
+                        mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mAlertDialog.hide();
+                                finish();
+                            }
+                        });
+                        mAlertDialog.show();
                     }
                 });
             }
@@ -182,15 +207,13 @@ public class RefdActivity extends BaseActivity {
     }
 
     private boolean validate() {
-        View alertView = findViewById(R.id.alert_dialog);
         Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
         String alertMsg = "";
 
         String refdStr = mRefdMoney.getText();
         if (TextUtils.isEmpty(refdStr)) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-            alertDialog.show();
+            mAlertDialog.show(alertMsg, bitmap);
             return false;
         }
 
@@ -199,28 +222,24 @@ public class RefdActivity extends BaseActivity {
             refd = Double.parseDouble(refdStr);
         } catch (Exception e) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-            alertDialog.show();
+            mAlertDialog.show(alertMsg, bitmap);
             return false;
         }
 
         if (refd < 0.01) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-            alertDialog.show();
+            mAlertDialog.show(alertMsg, bitmap);
             return false;
         }
 
         if (refd > maxRefd) {
             alertMsg = String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-            alertDialog.show();
+            mAlertDialog.show(alertMsg, bitmap);
             return false;
         }
         if (!mPassword.getPassword().equals(SessonData.loginUser.getPassword())) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog__password_error);
-            AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, bitmap);
-            alertDialog.show();
+            mAlertDialog.show(alertMsg, bitmap);
             return false;
         }
 
