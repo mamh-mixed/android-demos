@@ -280,9 +280,9 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录该笔交易
 	t := &model.Trans{
 		MerId:          req.Mchntid,
-		CouponOrderNum: req.CouponOrderNum,
-		DiscountAmt:    req.IntDiscountAmt, //卡券优惠金额 TODO 幽灵事件，使用 DiscountAmt 存储到数据库失败
-		PayType:        req.PayType,        //卡券指定的支付方式
+		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
+		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
+		PayType:        req.PayType,        // 卡券指定的支付方式
 		SysOrderNum:    util.SerialNumber(),
 		OrderNum:       req.OrderNum,
 		TransType:      model.PayTrans,
@@ -374,21 +374,24 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PayTrans,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		ChanCode:    req.Chcd,
-		Terminalid:  req.Terminalid,
-		TransAmt:    req.IntTxamt,
-		GoodsInfo:   req.GoodsInfo,
-		NotifyUrl:   req.NotifyUrl,
-		TradeFrom:   req.TradeFrom,
-		Attach:      req.Attach,
-		Currency:    req.Currency,
-		LockFlag:    1,
+		MerId:          req.Mchntid,
+		SysOrderNum:    util.SerialNumber(),
+		OrderNum:       req.OrderNum,
+		TransType:      model.PayTrans,
+		Busicd:         req.Busicd,
+		AgentCode:      req.AgentCode,
+		ChanCode:       req.Chcd,
+		Terminalid:     req.Terminalid,
+		TransAmt:       req.IntTxamt,
+		GoodsInfo:      req.GoodsInfo,
+		NotifyUrl:      req.NotifyUrl,
+		TradeFrom:      req.TradeFrom,
+		Attach:         req.Attach,
+		Currency:       req.Currency,
+		LockFlag:       1,
+		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
+		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
+		PayType:        req.PayType,        // 卡券指定的支付方式
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
