@@ -20,6 +20,7 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
+import com.cardinfolink.yunshouyin.activity.CouponResultActivity;
 import com.cardinfolink.yunshouyin.activity.TicketResultActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
@@ -34,6 +35,7 @@ import java.util.Random;
  */
 public class TicketView extends LinearLayout implements View.OnClickListener {
     private static final String TAG = "TicketView";
+
 
     private Context mContext;
     private View contentView;
@@ -91,29 +93,17 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 switch (msg.what) {
                     case Msg.MSG_FROM_SERVER_COUPON_SUCCESS:
                         //核销成功
-                        intent = new Intent(mContext, TicketResultActivity.class);
+                        intent = new Intent(mContext, CouponResultActivity.class);
                         bundle = new Bundle();
-                        bundle.putBoolean("flag", true);
+                        bundle.putBoolean("check_coupon_result_flag", true);
                         intent.putExtras(bundle);
                         mContext.startActivity(intent);
                         break;
                     case Msg.MSG_FROM_SERVER_COUPON_FAIL:
                         //核销失败
-                        // ResultData{
-                        // respcd='09', busicd='VERI', chcd='ULIVE', txamt='null',
-                        // channelOrderNum='null', consumerAccount='null', consumerId='null',
-                        // errorDetail='null', orderNum='15122617231557530', chcdDiscount='null',
-                        // merDiscount='null', qrcode='null', origOrderNum='null', scanCodeId='1810800032000019',
-                        // cardId='微信支付固定金额券', cardInfo='微信支付固定金额券',
-                        // voucherType='null', saleMinAmount='null', saleDiscount='null',
-                        // actualPayAmount='null', maxDiscountAmt='null'}
-                        intent = new Intent(mContext, TicketResultActivity.class);
+                        intent = new Intent(mContext, CouponResultActivity.class);
                         bundle = new Bundle();
-                        bundle.putBoolean("flag", false);
-                        bundle.putString("cardInfo", mResultData.cardInfo);
-                        bundle.putString("originalmoney", 15 + "");
-                        bundle.putString("dicountmoney", 12 + "");
-
+                        bundle.putBoolean("check_coupon_result_flag", false);
                         intent.putExtras(bundle);
                         mContext.startActivity(intent);
                         break;
@@ -146,20 +136,19 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
 
                     @Override
                     public void onResult(ResultData resultData) {
-                        Log.e("scanCode", resultData.toString());
                         mResultData = resultData;
                         SessonData.loginUser.setResultData(resultData);
                         if ("00".equals(mResultData.respcd)) {
-                            mMainActivityHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
                         } else {
                             //核销失败
-                            mMainActivityHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
                         }
                     }
 
                     @Override
                     public void onError(int errorCode) {
-                        Log.e("scanCode", errorCode + "");
+                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
                     }
                 });
                 break;
