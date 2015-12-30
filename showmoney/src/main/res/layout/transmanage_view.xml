@@ -19,11 +19,13 @@
         android:layout_height="wrap_content">
 
         <RadioGroup
+            android:id="@+id/redio_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="visible">
 
             <RadioButton
                 android:id="@+id/radio_bill"
@@ -79,16 +81,165 @@
 
         </RadioGroup>
 
+
+        <LinearLayout
+            android:id="@+id/ll_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:visibility="gone">
+
+            <com.cardinfolink.yunshouyin.ui.EditTextClear
+                android:id="@+id/et_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bill_textview_bg" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tv_search"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@drawable/white1_selector"
+            android:drawableLeft="@drawable/bill_seek"
             android:gravity="center"
             android:padding="5dp"
             android:text="搜索"
             android:textSize="15dp" />
+
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_search_condition"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:clickable="true"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="成功"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="折扣券"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="PC收款"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="APP收款"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="网页收款"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="其他收款"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="支付宝"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="微信支付"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"

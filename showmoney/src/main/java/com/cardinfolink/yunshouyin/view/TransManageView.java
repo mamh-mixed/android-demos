@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
@@ -23,6 +24,7 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.Txn;
+import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
@@ -70,6 +72,13 @@ public class TransManageView extends LinearLayout {
     private RadioButton mRaidoBill;//收款账单
     private RadioButton mRadioTicket;//卡券账单
     private RadioButton mRadioCollection;//收款码账单
+
+    private RadioGroup mRadioGroup;
+
+    private TextView mSearch;//搜索的按钮
+    private EditTextClear mSearchEditText;
+    private LinearLayout mSearchLinearLayout;
+    private LinearLayout mSearchConditionLinearLayout;
 
     private Handler mMainactivityHandler;
 
@@ -141,6 +150,28 @@ public class TransManageView extends LinearLayout {
 
 
         //******************************************************************************************
+
+        mRadioGroup = (RadioGroup) findViewById(R.id.redio_group);
+
+        mSearchLinearLayout = (LinearLayout) findViewById(R.id.ll_search);
+        mSearchConditionLinearLayout = (LinearLayout) findViewById(R.id.ll_search_condition);
+        mSearch = (TextView) findViewById(R.id.tv_search);
+        mSearchEditText = (EditTextClear) findViewById(R.id.et_search);
+
+        mSearch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRadioGroup.getVisibility() == VISIBLE) {
+                    mRadioGroup.setVisibility(GONE);
+                    mSearchLinearLayout.setVisibility(VISIBLE);
+                    mSearchConditionLinearLayout.setVisibility(VISIBLE);
+                } else if (mRadioGroup.getVisibility() == GONE) {
+                    mRadioGroup.setVisibility(VISIBLE);
+                    mSearchLinearLayout.setVisibility(GONE);
+                    mSearchConditionLinearLayout.setVisibility(GONE);
+                }
+            }
+        });
 
         //账单
         mRaidoBill = (RadioButton) findViewById(R.id.radio_bill);
