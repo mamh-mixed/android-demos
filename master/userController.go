@@ -466,7 +466,7 @@ func (u *userController) RemoveUser(userName string) (ret *model.ResultBody) {
 	}
 	err := mongo.UserColl.Remove(userName)
 	if err != nil {
-		log.Debugf("删除用户失败，%s", err)
+		log.Debugf("remove user(%s) fail: %s", userName, err)
 		return model.NewResultBody(2, "删除用户失败")
 	}
 	ret = &model.ResultBody{

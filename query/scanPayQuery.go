@@ -94,11 +94,11 @@ func GetOrderInfo(uniqueId string) scanFixedResponse {
 
 	// find
 	trans, count, err := mongo.SpTransColl.Find(&model.QueryCondition{
-		TradeFrom:    "wap",
+		TradeFrom:    []string{model.Wap},
 		TransStatus:  []string{model.TransSuccess},
+		RefundStatus: []int{model.TransRefunded},
 		Busicd:       model.Jszf,
 		MerId:        m.MerId,
-		RefundStatus: model.TransRefunded,
 		Size:         150,
 		Page:         1,
 	})
@@ -288,9 +288,9 @@ func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 
 	// 设置条件过滤
 	q.TransStatus = []string{model.TransSuccess}
+	q.RefundStatus = []int{model.TransRefunded}
 	q.TransType = model.PayTrans
-	q.RefundStatus = model.TransRefunded
-	// q.MerIds = merIds
+
 	// 默认当天开始
 	today := time.Now().Format("2006-01-02")
 	if q.StartTime == "" {

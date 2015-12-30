@@ -5,7 +5,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../x-select/x-select.html">
-<dom-module id="test-scanpay">
+<dom-module id="test-coupon">
   <style>
     :host {
       display: block;
@@ -117,11 +117,7 @@
         <paper-input required$="{{requiredDetector.terminalid}}" class="col" id="terminalid" name="terminalid" label="终端号(terminalid)" value="{{scanCode.terminalid::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.txamt}}" class="col" id="txamt" name="txamt" label="订单金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.currency}}" class="col" id="currency" name="currency" label="币种(currency)" value="{{scanCode.currency::input}}"></paper-input>
-      </div>
-      <div class="row">
-        <paper-input required$="{{requiredDetector.goodsInfo}}" class="col" id="goodsInfo" name="goodsInfo" label="商品详情(goodsInfo)" value="{{scanCode.goodsInfo::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.txamt}}" class="col" id="txamt" name="txamt" label="订单原始金额(txamt)" value="{{scanCode.txamt::input}}"></paper-input>
         <paper-input required$="{{requiredDetector.scanCodeId}}" class="col" id="scanCodeId" name="scanCodeId" label="扫码号(scanCodeId)" value="{{scanCode.scanCodeId::input}}"></paper-input>
       </div>
       <div class="row">
@@ -136,22 +132,7 @@
         <paper-input required$="{{requiredDetector.origOrderNum}}" class="col" id="origOrderNum" name="origOrderNum" label="原订单号(origOrderNum)" value="{{scanCode.origOrderNum::input}}"></paper-input>
       </div>
       <div class="row">
-        <paper-input required$="{{requiredDetector.openid}}" class="col" id="openid" name="openid" label="OpenID(openid)" value="{{scanCode.openid::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.desc}}" class="col" id="desc" name="desc" label="描述(desc)" value="{{scanCode.desc::input}}"></paper-input>
-      </div>
-      <div class="row">
-        <x-select items="[[checkNames]]" class="col validate-container" required$="{{requiredDetector.checkName}}" selected-item="{{checkName}}" label="校验用户姓名选项(checkName)"></x-select>
-        <paper-input required$="{{requiredDetector.userName}}" class="col" id="userName" name="userName" label="用户名(userName)" value="{{scanCode.userName::input}}"></paper-input>
-      </div>
-      <div class="row">
-        <paper-input required$="{{requiredDetector.needUserInfo}}" class="col" id="needUserInfo" name="needUserInfo" label="是否需要用户信息(needUserInfo)" value="{{scanCode.needUserInfo::input}}"></paper-input>
-        <paper-input required$="{{requiredDetector.code}}" class="col" id="code" name="code" label="授权码(code)" value="{{scanCode.code::input}}"></paper-input>
-      </div>
-      <div class="row">
-        <paper-input required$="{{requiredDetector.backUrl}}" class="col" id="backUrl" name="backUrl" label="异步通知地址(backUrl)" value="{{scanCode.backUrl::input}}"></paper-input>
-      </div>
-      <div class="row">
-        <paper-input required$="{{requiredDetector.discountAmt}}" class="col" id="discountAmt" name="discountAmt" label="优惠金额(discountAmt)" value="{{scanCode.discountAmt::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.cardbin}}" class="col" id="cardbin" name="cardbin" label="银行卡bin(cardbin)" value="{{scanCode.cardbin::input}}"></paper-input>
         <paper-input required$="{{requiredDetector.payType}}" class="col" id="payType" name="scanCodeId" label="支付方式(payType)" value="{{scanCode.payType::input}}"></paper-input>
       </div>
       <div class="divider"></div>
@@ -160,8 +141,6 @@
         <paper-textarea class="col" label="HTTP 请求报文：" value="{{requestJsonData}}"></paper-textarea>
         <div class="action-row">
           <paper-fab id="sendBtn" icon="arrow-forward" title="arrow-forward" tabindex="0" class="cyan" on-tap="handleSendPayRequestTapped"></paper-fab>
-          <paper-button class="cycan" raised on-tap="handleShowQrcodeMaskTapped">二维码</paper-button>
-          <div id="qrcodeBtn"></div>
         </div>
         <paper-textarea class="col" label="HTTP 响应报文：" value="{{responseJsonData}}" row="16"></paper-textarea>
       </div>
@@ -346,18 +325,13 @@
 </script>
 <script>
   var TRANS_TYPE_MAP = {
-    'PURC': '下单支付',
-    'PAUT': '预下单',
-    'QYZF': '企业付款',
-    'JSZF': '公众号支付',
-    'INQY': '查询',
-    'VOID': '撤销',
-    'REFD': '退款',
-    'CANC': '取消',
-    'VERI': '卡券核销'
+    'VERI': '卡券核销',
+    'CAVE': '卡券撤销'
+    // 'CRVE': '刷卡券核销',
+    // 'QUVE': '验券查询'
   };
   Polymer({
-    is: 'test-scanpay',
+    is: 'test-coupon',
     properties: {
       scanCode: {
         type: Object
@@ -370,7 +344,7 @@
       },
       key: {
         type: String,
-        value: 'zsdfyreuoyamdphhaweyrjbvzkgfdycs',
+        value: '4d5449304d4445774d7a4d324d413d3d',
         observer: '_convertToJSON'
       },
       isReady: {
@@ -387,7 +361,7 @@
               obj[k.toUpperCase()] = TRANS_TYPE_MAP[k];
               busicds.push({
                 key: k.toUpperCase(),
-                value: (k.toUpperCase()+' '+TRANS_TYPE_MAP[k])
+                value: (k.toUpperCase() + ' ' + TRANS_TYPE_MAP[k])
               });
             }
           }
@@ -397,105 +371,51 @@
     },
     ready: function() {
       this.chcds = [{
-        "value": "支付宝",
-        "key": "ALP"
-      }, {
-        "value": "微信",
-        "key": "WXP"
-      }, {
+        "value": "优方",
+        "key": "ULIVE"
+      } , {
         "value": "(不填)",
         "key": ""
       }];
-      this.checkNames = [{
-        "key": "NO_CHECK",
-        "value": "NO_CHECK"
-      }, {
-        "key": "OPTION_CHECK",
-        "value": "OPTION_CHECK"
-      }, {
-        "key": "FORCE_CHECK",
-        "value": "FORCE_CHECK"
-      }];
       var now = new Date();
       this.requiredFlags = {
-        // 下单支付
-        'PURC': {
+        // 卡券核销
+        'VERI': {
           busicd: true,
           inscd: true,
           mchntid: true,
-          txamt: true,
-          goodsInfo: true,
           orderNum: true,
           scanCodeId: true
         },
-        // 公众号支付
-        'JSZF': {
+        // 验券查询
+        'QUVE': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          orderNum: true,
+          scanCodeId: true,
+          origOrderNum: true
+        },
+        // 卡券撤销
+        'CAVE': {
+          busicd: true,
+          inscd: true,
+          mchntid: true,
+          orderNum: true,
+        //   scanCodeId: true,
+          origOrderNum: true
+        },
+        // 刷卡券撤销
+        'CRVE': {
           busicd: true,
           inscd: true,
           mchntid: true,
           txamt: true,
-          goodsInfo: true,
+          payType:true,
           orderNum: true,
-          chcd: true,
-          code: true,
-          needUserInfo: true
-        },
-        // 企业付款
-        'QYZF': {
-          busicd: true,
-          chcd: true,
-          inscd: true,
-          mchntid: true,
-          txamt: true,
-          goodsInfo: true,
-          orderNum: true,
-          openid: true,
-          checkName: true,
-          desc: true
-        },
-        // 预下单
-        'PAUT': {
-          busicd: true,
-          inscd: true,
-          chcd: true,
-          mchntid: true,
-          txamt: true,
-          goodsInfo: true,
-          orderNum: true
-        },
-        // 查询订单
-        'INQY': {
-          busicd: true,
-          inscd: true,
-          mchntid: true,
+          scanCodeId: true,
           origOrderNum: true
-        },
-        // 撤销
-        'VOID': {
-          busicd: true,
-          inscd: true,
-          mchntid: true,
-          orderNum: true,
-          origOrderNum: true
-        },
-        // 退款
-        'REFD': {
-          busicd: true,
-          inscd: true,
-          mchntid: true,
-          txamt: true,
-          orderNum: true,
-          origOrderNum: true
-        },
-        // 取消
-        'CANC': {
-          busicd: true,
-          inscd: true,
-          mchntid: true,
-          orderNum: true,
-          origOrderNum: true
-        },
-        'VERI': {}
+        }
       };
       this.requiredDetector = {};
       this.scanCode = {
@@ -503,16 +423,13 @@
         busicd: '',
         inscd: '10134001',
         chcd: '',
-        mchntid: '100000000010001',
-        terminalid: '10000001',
+        mchntid: '999118880000017',
+        // terminalid: '10000001',
         txamt: '000000000001',
-        currency: 'CNY',
-        goodsInfo: 'food,10.00,2;water,1.00,3',
         orderNum: '' + now.valueOf(),
         origOrderNum: '',
         scanCodeId: '',
         sign: '',
-        backUrl: 'http://dev.quick.ipay.so/scanpay/test/recNotify'
       };
       this.responseJsonData = '';
     },
@@ -523,7 +440,6 @@
       '_convertToJSON(scanCode.*)',
       '_watchBusicdChange(busicd.key)',
       '_watchChcdChange(chcd.key)',
-      '_watchCheckNameChange(checkName.key)',
       '_requestJsonDataChange(requestJsonData)'
     ],
     _convertToJSON: function() {
@@ -553,14 +469,6 @@
     // 监听渠道机构变化
     _watchChcdChange: function(key) {
       this.set('scanCode.chcd', key);
-    },
-    _watchCheckNameChange: function(key) {
-      this.set('scanCode.checkName', key);
-      if (key === 'NO_CHECK') {
-        this.set('requiredDetector.userName', false);
-      } else {
-        this.set('requiredDetector.userName', true);
-      }
     },
     // 签名方法
     _sign: function() {

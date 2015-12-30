@@ -20,9 +20,15 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/updateinfo", updateSettInfoHandle)
 	mux.HandleFunc("/app/getinfo", getSettInfoHandle)
 	mux.HandleFunc("/app/ticket", ticketHandle)
+	mux.HandleFunc("/app/findOrder", findOrderHandle)
+	mux.HandleFunc("/app/updateMessage", updateMessageHandle)
 	mux.HandleFunc("/app/forgetpassword", forgetPasswordHandle)
 	mux.HandleFunc("/app/getQiniuToken", getQiniuTokenHandle)
 	mux.HandleFunc("/app/improveCertInfo", improveCertInfoHandle)
+	mux.HandleFunc("/app/pullinfo", pullInfoHandle)
+
+	// app3.0接口
+	mux.HandleFunc("/app/v3/bill", billV3Handle)
 
 	// 地推工具api
 	mux.HandleFunc("/app/tools/login", CompanyLogin)
@@ -32,9 +38,6 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/tools/update", UpdateUserInfo)
 	mux.HandleFunc("/app/tools/activate", UserActivate)
 	mux.HandleFunc("/app/tools/download", GetDownloadUrl)
-
-	//推送api
-	mux.HandleFunc("/app/pullinfo", pullInfoHandle)
 
 	return mux
 }

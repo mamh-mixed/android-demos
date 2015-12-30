@@ -70,8 +70,8 @@
       <paper-input-container disabled$="[[disabled]]">
         <label>[[label]]</label>
         <input is="iron-input" id="input" value="{{keyword::input}}" disabled="[[disabled]]" on-tap="handleInputTapEvent" on-focus="handleInputFocusEvent" on-blur="handleInputBlurEvent" on-keydown="handleInputKeyDownEvent" autocomplete="off">
-        <iron-icon icon="search" suffix hidden$="{{isClearActive}}"></iron-icon>
-        <iron-icon icon="clear" suffix on-tap="clear" hidden$="{{!isClearActive}}"></iron-icon>
+        <iron-icon icon="search" suffix hidden$="{{hasKeyword}}"></iron-icon>
+        <iron-icon icon="clear" suffix on-tap="clear" hidden$="{{!hasKeyword}}"></iron-icon>
         <input type="hidden" name="[[name]]" value="{{selectedItem.code}}">
       </paper-input-container>
     </div>
@@ -138,7 +138,11 @@
             value: '',
             observer: '_keywordChanged'
           },
-          isClearActive: {
+          hasKeyword: {
+            type: String,
+            value: false
+          },
+          isSelected: {
             type: Boolean,
             value: false
           },
@@ -200,9 +204,20 @@
           'iron-overlay-opened': 'handleOverlayOpenEvent'
         },
         _keywordChanged: function(newValue, oldValue) {
-          var keyword = newValue.trim()
+          var keyword = newValue.trim();
           oldValue = oldValue || '';
-          if (keyword === oldValue.trim() || !this.isFocus) {
+          if (newValue && newValue !== '') {
+            this.hasKeyword = true;
+          } else {
+            this.hasKeyword = false;
+          }
+
+          if (newValue.length < oldValue.length) {
+            this.isSelected = false;
+            this.set('selectedItem', {});
+          }
+
+          if (keyword === oldValue.trim() || this.isSelected || !this.isFocus) {
             return;
           }
 
@@ -210,7 +225,6 @@
         },
         // input点击事件，第一次
         handleInputTapEvent: function() {
-          this.set('isFocus', true);
           this.sendRequest(this.keyword);
         },
         // 发送查询的ajax请求
@@ -245,7 +259,7 @@
           if (!response.data || typeof response.data !== 'object' || !(response.data instanceof Array) || response.data.length === 0) {
             this.set('isNoData', true);
             if (!this.$.dropdown.opened) {
-              this.$.dropdown.open();
+              this._openDropdown();
             }
             return;
           }
@@ -257,8 +271,7 @@
             this.push('list', news[i]);
           }
           if (!this.isOpen) {
-            this.set('verticalOffset', this.getBoundingClientRect().height);
-            this.$.dropdown.open();
+            this._openDropdown();
           }
         },
         handleOverlayCloseEvent: function(e) {
@@ -279,6 +292,10 @@
         _computeActiveLi: function(curr, active) {
           return curr === active;
         },
+        _openDropdown: function() {
+          this.set('verticalOffset', this.getBoundingClientRect().height);
+          this.$.dropdown.open();
+        },
         // 后一项
         next: function(e) {
           if (this.activeIndex < this.list.length - 1) {
@@ -292,7 +309,8 @@
           }
         },
         // 选择一项
-        select: function(item) {
+        select: function(item, triggerBlur) {
+          this.set('isSelected', true);
           item = item || this.list[this.activeIndex];
           if (!item) {
             return;
@@ -303,32 +321,28 @@
             code: code,
             name: name
           });
-          this.set('isFocus', false);
           this.set('keyword', code + '-' + name);
-          this.set('isClearActive', true);
-          this.$.dropdown.close();
-          // input 触发失去焦点事件
-          var evt = document.createEvent('MouseEvent');
-          evt.initEvent('blur', true, true);
-          this.$.input.dispatchEvent(evt);
+
+          if (triggerBlur) {
+            var evt = document.createEvent('MouseEvent');
+            evt.initEvent('blur', true, true);
+            this.$.input.dispatchEvent(evt);
+          }
         },
         // 清空文本框内容
         clear: function() {
-          this.set('isClearActive', false);
           this.set('keyword', '');
           this.set('selectedItem', {});
         },
         // item选择事件
         handleSelectedEvent: function(e) {
-          this.select(e.model.item);
+          this.select(e.model.item, true);
         },
         // input 的按键事件
         handleInputKeyDownEvent: function(e) {
-          e.stopPropagation();
           switch (e.keyCode) {
             case 13: // enter event
               this.select();
-              // e.preventDefault();
               break;
             case 38: // arrow up event
               this.prev();
@@ -340,12 +354,16 @@
               console.log(e.keyCode);
           }
         },
-        // 只展示文本的text的点击事件
+        // 文本框获得焦点事件
         handleInputFocusEvent: function(e) {
           this.set('isFocus', true);
         },
         handleInputBlurEvent: function() {
+          this.$.dropdown.close();
           this.set('isFocus', false);
+          if (!this.isSelected) {
+            this.clear();
+          }
         }
       });
     })();

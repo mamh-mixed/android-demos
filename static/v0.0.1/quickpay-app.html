@@ -43,6 +43,7 @@
       <app-route path="/test/bindingpay" name="test-bindingpay" import="pages/test/bindingpay-page.html"></app-route>
       <app-route path="/test/qiniu" name="test-qiniu" import="pages/test/qiniu-page.html"></app-route>
       <app-route path="/test/filereader" name="test-filereader" import="pages/test/file-reader-page.html"></app-route>
+      <app-route path="/test/coupon" name="test-coupon" import="pages/test/coupon-test-page.html"></app-route>
       <app-route path="/404" name="not-found" import="pages/common/not-found-page.html"></app-route>
       <app-route path="*" name="not-found" redirect="/404"></app-route>
     </app-router>
@@ -104,6 +105,22 @@
         },
         attached: function() {
           this.$.appRouter.init();
+
+          setTimeout(function() {
+            var srcs = [
+              'elements/trade-list/trade-list.html',
+              'elements/trade-detail/trade-detail.html',
+              'elements/trade-view/trade-view.html',
+              'elements/trade-message/trade-message.html'
+            ];
+
+            srcs.forEach(function(src) {
+              var iframe = document.createElement('iframe');
+              iframe.setAttribute('style', 'display: none;');
+              iframe.setAttribute('src', src);
+              document.body.appendChild(iframe);
+            });
+          }, 1);
         },
         // 当没有登入的时候，跳转到登入页面
         handleNotLogin: function() {
@@ -116,7 +133,7 @@
 
           if (e.detail.path !== '/' && e.detail.path[e.detail.path.length - 1] === '/') {
             this.$.appRouter.go(LOGIN_PATH);
-            e.preventDefault();
+            e.preventDefault(); // 阻止页面继续跳转
           }
 
           this.set('route.path', e.detail.path);
@@ -131,6 +148,7 @@
 
           if (this.userType !== 'agent' && this.userType !== 'group' && this.userType !== 'merchant' && this.userType !== 'subAgent') {
             this.$.appRouter.go('/');
+            e.preventDefault(); // 阻止页面继续跳转
             return;
           }
 
@@ -143,7 +161,7 @@
           }
           if (!isAccess) {
             this.$.appRouter.go('/404');
-            e.preventDefault();
+            e.preventDefault(); // 阻止页面继续跳转
           }
         },
         // 新路由进入前

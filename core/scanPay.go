@@ -20,6 +20,8 @@ import (
 	"github.com/omigo/log"
 )
 
+var MsgQueue = make(chan *model.Trans, 1e6)
+
 var (
 	closeInterval   = time.Duration(goconf.Config.App.OrderCloseTime)
 	refreshInterval = time.Duration(goconf.Config.App.OrderRefreshTime)
@@ -274,7 +276,6 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
 		return err
 	}
-
 	// 记录该笔交易
 	t := &model.Trans{
 		MerId:       req.Mchntid,
@@ -289,6 +290,8 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		TradeFrom:   req.TradeFrom,
 		Currency:    req.Currency,
 		LockFlag:    1,
+		DiscountAmt: req.IntDiscountAmt, //卡券优惠金额
+		PayType:     req.PayType,        //卡券指定的支付方式
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
@@ -302,6 +305,15 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		shouldChcd = channel.ChanCodeAlipay
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
+	}
+
+	// 实际支付方式与卡券指定支付方式不符，则拒掉交易
+	if req.PayType != "" {
+		if shouldChcd == channel.ChanCodeWeixin && req.PayType != "4" {
+			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+		} else if shouldChcd == channel.ChanCodeAlipay && req.PayType != "5" {
+			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+		}
 	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
@@ -337,12 +349,17 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	ret = adaptor.ProcessBarcodePay(t, c, req)
+	if ret.Respcd == adaptor.InprocessCode {
+		go refresh(req, c)
+	}
 
 	// 渠道
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
+	log.Debugf("*******%d", t.DiscountAmt)
 	updateTrans(t, ret)
+	log.Debugf("*******%d", t.DiscountAmt)
 
 	return ret
 }
@@ -981,6 +998,46 @@ func CloseOrder() {
 
 		// 其他情况
 		updateTrans(t, ret)
+	}
+}
+
+// 针对09的交易，系统跟踪查询
+// 会阻塞，需要单独运行在goruntine里
+func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
+	var interval = []time.Duration{3, 10, 60, 180}
+	for _, d := range interval {
+		// 等一等
+		time.Sleep(time.Second * d)
+		log.Infof("trace inporcess trans, merId=%s, orderNum=%s", req.Mchntid, req.OrderNum)
+		// 重新锁住并刷新交易
+		t, err := findAndLockTrans(req.Mchntid, req.OrderNum)
+		if err != nil {
+			// 其他请求在获取该交易
+			log.Warnf("refresh warn: %s", err)
+			continue
+		}
+		// 查询
+		ret := adaptor.ProcessEnquiry(t, c, &model.ScanPayRequest{
+			ReqId:        req.ReqId, // 关联ReqId，在交易报文里可以看到
+			OrigOrderNum: req.OrderNum,
+		})
+		// 处理
+		switch ret.Respcd {
+		case adaptor.InprocessCode:
+			// 记得解锁
+			mongo.SpTransColl.Unlock(req.Mchntid, req.OrderNum)
+			continue
+		case adaptor.SuccessCode:
+			// 进入消息推送队列
+			if t.TradeFrom == model.IOS || t.TradeFrom == model.Android {
+				MsgQueue <- t
+			}
+			fallthrough
+		default:
+			// 更新交易状态
+			updateTrans(t, ret)
+		}
+		break
 	}
 }
 

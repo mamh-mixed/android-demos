@@ -29,6 +29,11 @@ const (
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
 	COUPON_WO_PROCESS = "PROCESS"
+	// 交易来源
+	Wap     = "wap"
+	IOS     = "ios"
+	Android = "android"
+	Pc      = "pc"
 )
 
 // QueryCondition 扫码交易查询字段
@@ -36,6 +41,7 @@ type QueryCondition struct {
 	MerName            string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId              string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds             []string `json:"-"`
+	ChanMerId          []string
 	UserType           string
 	Col                string   `json:"-"`
 	BindingId          string   `json:"bindingId"`
@@ -43,7 +49,7 @@ type QueryCondition struct {
 	SubAgentCode       string   `json:"subAgentCode,omitempty"`
 	GroupCode          string   `json:"groupCode,omitempty"`
 	TransStatus        []string `json:"transStatus,omitempty"`
-	RefundStatus       int      `json:"refundStatus,omitempty"`
+	RefundStatus       []int    `json:"refundStatus,omitempty"`
 	TransType          int      `json:"transType,omitempty"`
 	StartTime          string   `json:"startTime,omitempty"`
 	EndTime            string   `json:"endTime,omitempty"`
@@ -59,7 +65,7 @@ type QueryCondition struct {
 	IsForReport        bool     `json:"-"`
 	Respcd             string   `json:"respcd" url:"respcd"`
 	RespcdNotIn        string   `json:"respcdNotIn"`
-	TradeFrom          string   `json:"tradeFrom,omitempty"`
+	TradeFrom          []string `json:"tradeFrom,omitempty"`
 	Skip               int      `json:"skip,omitempty"`
 	ChanCode           string   `json:"chanCode,omitempty"`
 	Direction          string
@@ -189,20 +195,26 @@ type ScanPayRequest struct {
 	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
 	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
-	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
+	DiscountAmt    string `json:"discountAmt,omitempty" url:"discountAmt,omitempty" bson:"discountAmt,omitempty"` //优惠金额 C 卡券优惠金额，在支付账单中作显示
+	IntDiscountAmt int64  `json:"-" url:"-" bson:"-"`                                                             //以分为单位优惠金额 辅助字段
+
 	// 卡券相关字段
 	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
 	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
 	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`          // 银行卡cardbin或者用户标识等 C
-	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 M
+	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 c
 	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原渠道订单号
 	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段原交易提交时间
 	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
 	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
+	OrigCardbin      string `json:"-" url:"-" bson:"-"` //辅助字段
+	OrigScanCodeId   string `json:"-" url:"-" bson:"-"` //辅助字段
+	CreateTime       string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
+	SubAppID   string `json:"-" url:"-" bson:"-"` // 公众号子ID
 	DeviceInfo string `json:"-" url:"-" bson:"-"` // 设备号
 	SubMchId   string `json:"-" url:"-" bson:"-"` // 子商户
 	TotalTxamt string `json:"-" url:"-" bson:"-"` // 订单总金额
@@ -567,15 +579,17 @@ type LocalBlendMap map[string]map[string][]TransSett
 
 // 勾兑结构体
 type BlendElement struct {
-	Chcd      string //渠道编号
-	ChcdName  string //渠道名称
-	MerID     string //商户号
-	ChanMerID string //渠道商户号
-	MerName   string //商户名称
-	LocalID   string //系统订单号
-	OrderID   string //渠道订单号
-	OrderTime string //交易时间
-	OrderType string //交易类型
-	OrderAct  string //交易金额
-	IsBlend   bool   //对账标识
+	Chcd          string
+	ChcdName      string
+	MerID         string //商户号
+	ChanMerID     string //渠道商户号
+	MerName       string //商户名称
+	LocalID       string //系统订单号
+	OrderID       string //渠道订单号
+	OrderTime     string //交易时间
+	OrderType     string //交易类型
+	OrderAct      string //交易金额
+	RefundOrderID string //退款订单号
+	Account       string //消费帐号
+	IsBlend       bool   //对账标识
 }

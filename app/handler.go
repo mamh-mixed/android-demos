@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/CardInfoLink/quickpay/push"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 	"net/http"
@@ -47,8 +46,8 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	req.Password = r.FormValue("password")
 	req.Transtime = r.FormValue("transtime")
 	user := new(model.AppUser)
-	user.Device_type = r.FormValue("device_type")
-	user.Device_token = r.FormValue("device_token")
+	user.DeviceType = r.FormValue("device_type")
+	user.DeviceToken = r.FormValue("device_token")
 	req.AppUser = user
 
 	result := User.login(req)
@@ -150,15 +149,22 @@ func billHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO DELETE:修复客户端bug
+	month := r.FormValue("month")
+	if month == "201612" {
+		month = "201512"
+	}
+
 	result := User.getUserBill(&reqParams{
 		UserName:    r.FormValue("username"),
 		Password:    r.FormValue("password"),
-		Month:       r.FormValue("month"),
+		Month:       month,
 		Date:        r.FormValue("day"),
 		Status:      r.FormValue("status"),
 		Transtime:   r.FormValue("transtime"),
 		Index:       r.FormValue("index"),
 		OrderDetail: r.FormValue("order_detail"),
+		Size:        r.FormValue("size"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -302,28 +308,63 @@ func ticketHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
-// pullInfoHandle 推送消息接口
-func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
-
-	rsp := new(push.PushInfoRsp)
+// findOrderHandle 订单模糊搜索
+func findOrderHandle(w http.ResponseWriter, r *http.Request) {
 	if !checkSign(r) {
-		rsp.Error = model.SIGN_FAIL.Error
-		w.Write(jsonPushshal(rsp))
+		w.Write(jsonMarshal(model.SIGN_FAIL))
 		return
 	}
 
-	rsp = push.PushInfos(&model.PushMessageRsp{
+	result := User.findOrderHandle(&reqParams{
 		UserName: r.FormValue("username"),
 		Password: r.FormValue("password"),
-		//Index:    r.FormValue("index"),
-		//Size:     r.FormValue("size"),
-		LastTime: r.FormValue("lasttime"),
+		OrderNum: r.FormValue("orderNum"),
+		PayType:  r.FormValue("payType"),
+		RecType:  r.FormValue("recType"),
+		Status:   r.FormValue("txnStatus"),
+		Index:    r.FormValue("index"),
+		Size:     r.FormValue("size"),
 	})
 
-	w.Write(jsonPushshal(rsp))
+	w.Write(jsonMarshal(result))
 }
 
-//重置密码
+// updateMessageHandle 更新消息状态
+func updateMessageHandle(w http.ResponseWriter, r *http.Request) {
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.updateMessageHandle(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Message:  r.FormValue("message"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// pullInfoHandle 推送消息接口
+func pullInfoHandle(w http.ResponseWriter, r *http.Request) {
+
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.findPushMessage(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Size:     r.FormValue("size"),
+		LastTime: r.FormValue("lasttime"),
+		MaxTime:  r.FormValue("maxtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// 重置密码
 func forgetPasswordHandle(w http.ResponseWriter, r *http.Request) {
 	if !checkSign(r) {
 		w.Write(jsonMarshal(model.SIGN_FAIL))
@@ -424,16 +465,6 @@ func jsonMarshal(result model.AppResult) []byte {
 	return data
 }
 
-func jsonPushshal(result *push.PushInfoRsp) []byte {
-	data, err := json.Marshal(result)
-	if err != nil {
-		log.Error("json marshal error: %s", err)
-		return []byte(model.JSON_ERROR)
-	}
-	log.Debugf("response message: %s", string(data))
-	return data
-}
-
 type reqParams struct {
 	OrderDetail      string
 	UserName         string
@@ -454,6 +485,7 @@ type reqParams struct {
 	Status           string
 	Index            string
 	Date             string
+	Size             string
 	Month            string
 	Province         string
 	City             string
@@ -474,6 +506,12 @@ type reqParams struct {
 	BusinessLicense  string
 	TaxRegistCert    string
 	OrganizeCodeCert string
+	PayType          string
+	RecType          string
+	LastTime         string
+	MaxTime          string
+	Message          string
+	TransType        int
 	AppUser          *model.AppUser
 	m                *model.Merchant
 }

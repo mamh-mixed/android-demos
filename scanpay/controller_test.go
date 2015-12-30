@@ -164,6 +164,33 @@ var (
 		// VeriTime:   "-1",
 		OrigOrderNum: "14500571571427131847",
 	}
+
+	// 电子券核销
+	purchaseCouponsSingle = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "VERI",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:    "999118880000017",
+		Terminalid: "30150006",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1810037103015010",
+		// VeriTime:   "-1",
+		// Txamt:   "000000010100",
+		// Cardbin: "665523",
+		PayType: "4",
+	}
+	// 电子券验证冲正
+	recoverCoupons = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "CAVE",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:      "999118880000017",
+		Terminalid:   "30150006",
+		OrderNum:     fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		OrigOrderNum: "14513068011474941318",
+	}
 )
 
 func doOneScanPay(scanPay *model.ScanPayRequest) error {
@@ -246,6 +273,19 @@ func TestQueryPurchaseCouponsResult(t *testing.T) {
 }
 func TestUndoPurchaseActCoupons(t *testing.T) {
 	err := doOneScanPay(undoPurchaseActCoupons)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestPurchaseCouponsSingle(t *testing.T) {
+	err := doOneScanPay(purchaseCouponsSingle)
+	if err != nil {
+		t.Error(err)
+	}
+}
+func TestRecoverCoupons(t *testing.T) {
+	err := doOneScanPay(recoverCoupons)
 	if err != nil {
 		t.Error(err)
 	}

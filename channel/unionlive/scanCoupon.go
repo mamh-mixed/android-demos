@@ -297,3 +297,132 @@ func transChanToSysCode(chanReturnCode, chanErrMessage string) (returnCode, errD
 	}
 	return returnCode, errDetail
 }
+
+// ProcessPurchaseCouponsSingle 电子券验证
+func (u *unionliveScanPay) ProcessPurchaseCouponsSingle(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+	unionLiveReq := &coupon.PurchaseCouponsSingleReq{
+		Header: coupon.PurchaseCouponsSingleReqHeader{
+			Version:       Version,
+			TransDirect:   TransDirectQ,
+			TransType:     "W462",
+			MerchantId:    req.ChanMerId,
+			SubmitTime:    req.CreateTime,
+			ClientTraceNo: req.OrderNum,
+		},
+		Body: coupon.PurchaseCouponsSingleReqBody{
+			CouponsNo: req.ScanCodeId,
+			TermId:    req.Terminalid,
+			// TermSn:    req.Terminalsn,
+			ExtMercId:   req.Mchntid,
+			ExtTermId:   req.Terminalsn,
+			Amount:      req.IntVeriTime,
+			Cardbin:     req.Cardbin,
+			TransAmount: req.IntTxamt,
+			PayType:     req.IntPayType,
+		},
+		SpReq: req,
+	}
+	unionLiveResp := &coupon.PurchaseCouponsSingleResp{}
+	err := Execute(unionLiveReq, unionLiveResp)
+	if err != nil {
+		log.Errorf("sendRequest fail, orderNum=%s, service=PurchaseCouponsSingle, channel=ULIVE", req.OrderNum)
+		return nil, err
+	}
+
+	// 将渠道的错误应答码转为为系统应答码
+	returncode, errDetail := transChanToSysCode(unionLiveResp.Header.Returncode, unionLiveResp.Header.Returnmessage)
+
+	actualPayAmount := strconv.Itoa(unionLiveResp.Body.Price)
+	if req.Txamt == "" {
+		actualPayAmount = ""
+	}
+
+	// 处理结果返回
+	scanPayResponse := &model.ScanPayResponse{
+		Txndir:          unionLiveResp.Header.Transdirect,
+		Busicd:          req.Busicd,
+		Respcd:          returncode,
+		AgentCode:       req.AgentCode,
+		Chcd:            req.Chcd,
+		Mchntid:         req.Mchntid,
+		ErrorDetail:     errDetail,
+		OrderNum:        unionLiveResp.Header.Clienttraceno,
+		ScanCodeId:      unionLiveResp.Body.Couponsno,
+		VeriTime:        req.VeriTime,
+		CardId:          unionLiveResp.Body.Prodname,
+		CardInfo:        unionLiveResp.Body.Proddesc,
+		AvailCount:      strconv.Itoa(unionLiveResp.Body.AvailCount),
+		ExpDate:         unionLiveResp.Body.ExpDate,
+		ChanRespCode:    unionLiveResp.Header.Returncode,
+		ChannelOrderNum: unionLiveResp.Header.Hosttraceno,
+		// Terminalid:      req.Terminalsn,
+		Authcode:        unionLiveResp.Body.Authcode,
+		ChannelTime:     unionLiveResp.Header.Hosttime,
+		VoucherType:     strconv.Itoa(unionLiveResp.Body.VoucherType),
+		SaleMinAmount:   strconv.Itoa(unionLiveResp.Body.SaleMinAmount),
+		SaleDiscount:    strconv.Itoa(unionLiveResp.Body.SaleDiscount),
+		ActualPayAmount: actualPayAmount,
+		Txamt:           req.Txamt,
+		PayType:         req.PayType,
+		Cardbin:         req.Cardbin,
+	}
+
+	return scanPayResponse, nil
+}
+
+// ProcessRecoverCoupons 电子券验证冲正
+func (u *unionliveScanPay) ProcessRecoverCoupons(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+	unionLiveReq := &coupon.RecoverCouponsReq{
+		Header: coupon.RecoverCouponsReqHeader{
+			Version:       Version,
+			TransDirect:   TransDirectQ,
+			TransType:     "W493",
+			MerchantId:    req.ChanMerId,
+			SubmitTime:    req.CreateTime,
+			ClientTraceNo: req.OrderNum,
+		},
+		Body: coupon.RecoverCouponsReqBody{
+			CouponsNo: req.OrigScanCodeId,
+			TermId:    req.Terminalid,
+			// TermSn:    req.Terminalsn,
+			ExtMercId:        req.Mchntid,
+			ExtTermId:        req.Terminalsn,
+			Amount:           req.OrigVeriTime,
+			Cardbin:          req.OrigCardbin,
+			TransAmount:      req.IntTxamt,
+			PayType:          req.IntPayType,
+			OldSubmitTime:    req.OrigSubmitTime,
+			OldClientTraceNo: req.OrigOrderNum,
+		},
+		SpReq: req,
+	}
+	unionLiveResp := &coupon.RecoverCouponsResp{}
+	err := Execute(unionLiveReq, unionLiveResp)
+	if err != nil {
+		log.Errorf("sendRequest fail, orderNum=%s, service=RecoverCoupons, channel=ULIVE", req.OrderNum)
+		return nil, err
+	}
+
+	// 将渠道的错误应答码转为为系统应答码
+	returncode, errDetail := transChanToSysCode(unionLiveResp.Header.ReturnCode, unionLiveResp.Header.ReturnMessage)
+
+	// 处理结果返回
+	scanPayResponse := &model.ScanPayResponse{
+		Txndir:          unionLiveResp.Header.TransDirect,
+		Busicd:          req.Busicd,
+		Respcd:          returncode,
+		AgentCode:       req.AgentCode,
+		Chcd:            req.Chcd,
+		Mchntid:         req.Mchntid,
+		ErrorDetail:     errDetail,
+		OrderNum:        unionLiveResp.Header.ClientTraceNo,
+		ChanRespCode:    unionLiveResp.Header.ReturnCode,
+		ChannelOrderNum: unionLiveResp.Header.HostTraceNo,
+		// Terminalid:      req.Terminalsn,
+		Authcode:     unionLiveResp.Body.AuthCode,
+		ChannelTime:  unionLiveResp.Header.HostTime,
+		OrigOrderNum: req.OrigOrderNum,
+	}
+
+	return scanPayResponse, nil
+}

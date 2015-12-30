@@ -27,6 +27,7 @@ func initRespCode() {
 	SysRespCode["C6"] = "商户不能使用该卡券"
 	SysRespCode["C7"] = "金额达不到满足优惠条件的最小金额"
 	SysRespCode["C8"] = "不能用此支付类型"
+	SysRespCode["C9"] = "未找到原验证记录"
 	// SysRespCode["58"] = "未知应答"
 	SysRespCode["09"] = "刷卡券"
 
@@ -58,7 +59,7 @@ func initRespCode() {
 	ChanSysRespCode["3120"] = "C5" //此时间段不能验证
 	ChanSysRespCode["3121"] = "C0" //原验证交易客户端流水号不能为空
 	ChanSysRespCode["3122"] = "96" //原验证交易验证的次数不能为空
-	ChanSysRespCode["3123"] = "C0" //未找到原验证记录
+	ChanSysRespCode["3123"] = "C9" //未找到原验证记录
 	ChanSysRespCode["3124"] = "C8" //不能用此支付类型
 	ChanSysRespCode["1101"] = "C1"
 	ChanSysRespCode["1563"] = "96" //无效的终端

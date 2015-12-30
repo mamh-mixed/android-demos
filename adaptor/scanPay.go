@@ -51,7 +51,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -78,6 +78,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
 	default:
@@ -112,7 +113,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	}
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -126,6 +127,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = chanMer.WxpAppId
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
 	default:
@@ -156,7 +158,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -174,6 +176,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
 		req.WeixinClientKey = []byte(chanMer.HttpKey)
@@ -216,7 +219,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -232,6 +235,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 		// do nothing...
 	case channel.ChanCodeWeixin:
 		req.AppID = chanMer.WxpAppId
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
 		req.WeixinClientKey = []byte(chanMer.HttpKey)
@@ -266,7 +270,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -285,6 +289,7 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		req.AppID = chanMer.WxpAppId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
 		req.WeixinClientKey = []byte(chanMer.HttpKey)
@@ -452,7 +457,7 @@ func ProcessWxpClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequ
 func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -462,6 +467,7 @@ func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
 	req.AppID = chanMer.WxpAppId
+	req.SubAppID = subAppId
 	req.SubMchId = subMchId
 	req.WeixinClientCert = []byte(chanMer.HttpCert)
 	req.WeixinClientKey = []byte(chanMer.HttpKey)
@@ -470,7 +476,7 @@ func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 }
 
 // chooseChanMer 选择往渠道送的商户
-func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, err error) {
+func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId, subAppId string, err error) {
 	// 受理商模式
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
@@ -478,6 +484,7 @@ func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, e
 			return
 		}
 		subMchId = c.ChanMerId
+		subAppId = c.WxpAppId
 		chanMer = c.AgentMer
 		return
 	}
@@ -508,24 +515,3 @@ func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
 	bytes, _ := json.Marshal(shopInfo)
 	return string(bytes)
 }
-
-// ProcessPurchaseCoupons 卡券核销
-// func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-//
-// 	// 上送参数
-// 	req.SysOrderNum = t.SysOrderNum
-// 	// req.Subject = mer.Detail.CommodityName
-// 	req.ChanMerId = c.ChanMerId
-// 	req.Terminalsn = req.Terminalid
-// 	req.Terminalid = c.TerminalId
-//
-// 	// 获得渠道实例，请求
-// 	client := unionlive.DefaultClient
-// 	ret, err := client.ProcessPurchaseCoupons(req)
-// 	if err != nil {
-// 		log.Errorf("process PurchaseCoupons error:%s", err)
-// 		return ReturnWithErrorCode("SYSTEM_ERROR")
-// 	}
-//
-// 	return ret
-// }

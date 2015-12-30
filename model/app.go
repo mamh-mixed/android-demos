@@ -30,6 +30,7 @@ var (
 	USERNAME_NO_EXIST       = NewAppResult(FAIL, "username_no_exist")
 	OLD_PASSWORD_ERROR      = NewAppResult(FAIL, "old_password_error")
 	PARAMS_EMPTY            = NewAppResult(FAIL, "params_empty")
+	PARAMS_FORMAT_ERROR     = NewAppResult(FAIL, "params_format_error")
 	USER_ALREADY_IMPROVED   = NewAppResult(FAIL, "user_already_improved")
 	MERID_NO_EXIST          = NewAppResult(FAIL, "merId_no_exist")
 	USER_LOCK               = NewAppResult(FAIL, "user_lock")
@@ -68,11 +69,13 @@ type AppResult struct {
 	Users        []*AppUser  `json:"users,omitempty"`
 	TotalAmt     string      `json:"total,omitempty"`
 	Count        int         `json:"count"`
+	TotalRecord  int         `json:"totalRecord"`
 	Size         int         `json:"size"`
 	RefdCount    int         `json:"refdcount"`
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`
 	SettInfo     *SettInfo   `json:"info,omitempty"`
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
+	Message      interface{} `json:"message,omitempty"`
 	UploadToken  string      `json:"uploadToken,omitempty"`
 	AccessToken  string      `json:"accessToken,omitempty"`
 	DownloadUrl  string      `json:"downloadUrl,omitempty"`
@@ -134,10 +137,10 @@ type AppUser struct {
 	MerName        string `json:"merName,omitempty" bson:"merName,omitempty"`
 	BelongsTo      string `json:"-" bson:"belongsTo,omitempty"` // 属于哪个公司人员发展的
 	InvitationCode string `json:"-" bson:"invitationCode,omitempty"`
-	LoginTime      string `json:"loginTime,omitempty" bson:"loginTime,omitempty"`       //记录第一次登陆时间
-	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`         //记录锁定时间
-	Device_type    string `json:"device_type,omitempty" bson:"device_type,omitempty"`   //设备类型
-	Device_token   string `json:"device_token,omitempty" bson:"device_token,omitempty"` //app唯一标识
+	LoginTime      string `json:"loginTime,omitempty" bson:"loginTime,omitempty"`     //记录第一次登陆时间
+	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`       //记录锁定时间
+	DeviceType     string `json:"deviceType,omitempty" bson:"deviceType,omitempty"`   //设备类型
+	DeviceToken    string `json:"deviceToken,omitempty" bson:"deviceToken,omitempty"` //app唯一标识
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
@@ -160,30 +163,33 @@ type Email struct {
 	Timestamp string `json:"timestamp,omitempty" bson:"timestamp,omitempty"`
 }
 
-//推送请求
+// 推送请求
 type PushMessageReq struct {
-	MerID        string
-	UserName     string //app的终端号为用户名
-	Title        string
-	Message      string
-	Device_token string
+	MerID       string
+	UserName    string //app的终端号为用户名
+	Title       string
+	Message     string
+	DeviceToken string
+	MsgType     string
+	To          string
 }
 
-//推送应答
-type PushMessageRsp struct {
-	UserName string `json:"username,omitempty" bson:"username,omitempty"`
-	Password string `json:"password,omitempty" bson:"password,omitempty"`
-	Title    string `json:"title,omitempty" bson:"title,omitempty"`
-	Message  string `json:"message,omitempty" bson:"message,omitempty"`
-	PushTime string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
-	LastTime string `json:"lastTime,omitempty" bson:"lastTime,omitempty"`
-}
+// 推送消息体
+type PushMessage struct {
+	MsgId       string `json:"msgId" bson:"msgId"`
+	UserName    string `json:"username,omitempty" bson:"username,omitempty"`
+	Title       string `json:"title,omitempty" bson:"title,omitempty"`
+	Message     string `json:"message,omitempty" bson:"message,omitempty"`
+	PushTime    string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
+	UpdateTime  string `json:"updateTime,omitempty" bson:"updateTime,omitempty"`
+	DeviceToken string `json:"-" bson:"deviceToken,omitempty"`
+	// 0: unread, undeleted
+	// 1: read, undeleted
+	// 2: unread, deleted
+	// 3: read, deleted
+	Status int `json:"status" bson:"status"`
 
-//推送表结构
-type PushInfo struct {
-	ID       string `json:"id,omitempty" bson:"_id,omitempty"`
-	UserName string `json:"username,omitempty" bson:"username,omitempty"`
-	Title    string `json:"title,omitempty" bson:"title,omitempty"`
-	Message  string `json:"message,omitempty" bson:"message,omitempty"`
-	PushTime string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
+	LastTime string `json:"-" bson:"-"`
+	MaxTime  string `json:"-" bson:"-"`
+	Size     int    `json:"-" bson:"-"`
 }
