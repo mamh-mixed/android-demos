@@ -8,14 +8,22 @@ import com.google.gson.GsonBuilder;
 public class ServerPacket {
     private String state;
     private String error;
-    private User user;
-    private int count;
+
     private String total;
+
+    private int count;
     private int refdcount;
+
     private String refdtotal;
+
     private int size;
+
+    private int totalRecord;//当月的总笔数
+
     private BankInfo info;
     private Txn[] txn;
+
+    private User user;
 
     private String uploadToken;
 
@@ -116,5 +124,13 @@ public class ServerPacket {
 
     public void setUploadToken(String uploadToken) {
         this.uploadToken = uploadToken;
+    }
+
+    public int getTotalRecord() {
+        return totalRecord;
+    }
+
+    public void setTotalRecord(int totalRecord) {
+        this.totalRecord = totalRecord;
     }
 }
