@@ -60,7 +60,7 @@ public class RefdActivity extends BaseActivity {
 
         mRefdAmount = (TextView) findViewById(R.id.refd_amount);
         mRefdMoney = (SettingInputItem) findViewById(R.id.refd_money);
-        mRefdMoney.setInputType(InputType.TYPE_CLASS_NUMBER);//限制输入法只能是数字
+        mRefdMoney.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);//限制输入法只能是数字
         mPassword = (SettingPasswordItem) findViewById(R.id.refd_password);
 
         mRefdButton = (Button) findViewById(R.id.btnrefd);
