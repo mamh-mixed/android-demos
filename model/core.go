@@ -360,6 +360,7 @@ type Trans struct {
 	NickName        string `bson:"nickName,omitempty" json:"-"`
 	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 	Attach          string `bson:"attach,omitempty" json:"-"`
+	DiscountAmt     int64  `bson:"discountAmt,omitempty" json:"discountAmt,omitempty"` // 卡券优惠金额，显示在扫码交易账单中
 
 	// APP
 	TicketNum string `bson:"ticketNum,omitempty" json:"ticketNum,omitempty"` // 关联的小票号

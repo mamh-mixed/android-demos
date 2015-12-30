@@ -195,12 +195,14 @@ type ScanPayRequest struct {
 	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
 	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
-	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
+	DiscountAmt    string `json:"discountAmt,omitempty" url:"discountAmt,omitempty" bson:"discountAmt,omitempty"` //优惠金额 C 卡券优惠金额，在支付账单中作显示
+	IntDiscountAmt int64  `json:"-" url:"-" bson:"-"`                                                             //以分为单位优惠金额 辅助字段
+
 	// 卡券相关字段
 	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
 	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
 	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`          // 银行卡cardbin或者用户标识等 C
-	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 M
+	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 c
 	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原渠道订单号
 	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段原交易提交时间
 	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
@@ -208,6 +210,7 @@ type ScanPayRequest struct {
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
 	OrigCardbin      string `json:"-" url:"-" bson:"-"` //辅助字段
 	OrigScanCodeId   string `json:"-" url:"-" bson:"-"` //辅助字段
+	CreateTime       string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
