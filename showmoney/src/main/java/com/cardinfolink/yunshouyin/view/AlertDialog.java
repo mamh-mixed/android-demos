@@ -64,10 +64,6 @@ public class AlertDialog {
             @Override
             public void onClick(View v) {
                 hide();
-                if (mHandler != null) {
-                    mHandler.sendEmptyMessage(Msg.MSG_FROM_CLIENT_ALERT_OK);
-                }
-
             }
         };
         mOk.setOnClickListener(mOkOnClickListener);
