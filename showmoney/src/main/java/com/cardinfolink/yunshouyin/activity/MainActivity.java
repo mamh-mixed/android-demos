@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TicketView;
@@ -62,7 +61,8 @@ public class MainActivity extends BaseActivity {
 
     // 每个页面的view数据,存放4个界面
     private ArrayList<View> mViews;
-    private Handler mHandler;
+
+    private static Handler mMainActivityHandler;//main activity里面的handler，用来切换界面的
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +71,12 @@ public class MainActivity extends BaseActivity {
         initHandler();
         initLayout();
         initUmeng();
+
     }
 
-    public Handler getHandler() {
-        return mHandler;
-    }
 
-    public void setHandler(Handler handler) {
-        this.mHandler = handler;
+    public static Handler getHandler() {
+        return mMainActivityHandler;
     }
 
     private void initUmeng() {
@@ -111,12 +109,19 @@ public class MainActivity extends BaseActivity {
     public void initHandler() {
         //mainactivity里面的handler主要是用来切换主界面上的四个界面的。从其他地方发个消息过来
         //在这里进行切换界面的操作。例如在扫码界面 要切换到账单界面，就
-        mHandler = new Handler() {
+        mMainActivityHandler = new Handler() {
 
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 //// TODO: mamh  这里要进行切换界面的操作
+                switch (msg.what) {
+                    case Msg.MSG_FROM_SERVER_COUPON_SUCCESS:
+                        Log.e("scanCode", "=================");
+                        mTabPager.setCurrentItem(0);
+                        //mScanCodeView.showKeyBoard();
+                        break;
+                }
             }
         };
     }
@@ -124,11 +129,11 @@ public class MainActivity extends BaseActivity {
     private void initLayout() {
         //扫码的界面，第一个界面
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        mScanCodeView = new ScanCodeView(mContext, mHandler);
+        mScanCodeView = new ScanCodeView(mContext, mMainActivityHandler);
         mScanCodeView.setLayoutParams(layoutParams);
 
         //销券的界面，第二个界面
-        mTicketView = new TicketView(mContext, mHandler);
+        mTicketView = new TicketView(mContext, mMainActivityHandler);
         mTicketView.setLayoutParams(layoutParams);
 
         //账单界面，第三个界面
