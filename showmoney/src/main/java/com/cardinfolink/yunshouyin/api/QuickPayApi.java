@@ -40,6 +40,8 @@ public interface QuickPayApi {
 
     ServerPacket getHistoryBills(User user, String month, String index, String size, String status);
 
+    ServerPacket findOrder(User user, String index, String size, String orderNum, String recType, String payType, String txnStatus);
+
     String getTotal(User user, String date);
 
     ServerPacketOrder getOrder(User user, String orderNum);
