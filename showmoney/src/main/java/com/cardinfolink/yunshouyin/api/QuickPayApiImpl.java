@@ -418,7 +418,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     @Override
     public ServerPacket getHistoryBills(User user, String month, String index, String size, String status) {
-        String url = quickPayConfigStorage.getUrl() + "/bill";
+        String url = quickPayConfigStorage.getUrl() + "/v3/bill";
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
