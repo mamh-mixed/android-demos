@@ -45,6 +45,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
@@ -54,7 +55,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private static final String TAG = "ScanCodeView";
     private static final int MAX_MONEY = 99999999;//能够进行交易的最大金额数
     private static final int MAX_LIMIT_MONEY = 500;//单日限额的最大金额数
-
     private TranslateAnimation mShowAnimation;
     private TranslateAnimation mHideAnimation;
 
@@ -79,6 +79,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     private TextView input;
     private TextView output;//上边的文本框
+    private TextView mHasDiscount;//提示有没有折扣价
 
     private View scanCodeView;//二维码界面
     private View keyboardView;//键盘界面
@@ -134,6 +135,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private HintDialog mHintDialog;
 
 
+    private double mOriginalTotal;//原始金额
+    private double mTotal;//优惠后的金额,实际支付的金额，如果有优惠就是优惠后的金额。如果没有优惠就和原始金额是一样的
+
+
     public ScanCodeView(Context context) {
         this(context, null);
     }
@@ -184,6 +189,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mRightText = (TextView) findViewById(R.id.tv_right);
 
         mScanTitle = (TextView) findViewById(R.id.scan_title);
+        mHasDiscount = (TextView) findViewById(R.id.tv_hasdiscount);
 
         //初始化键盘 0到9， 加，删除， 清空等 TextView。
         btn0 = (TextView) findViewById(R.id.tv_zero);
@@ -409,8 +415,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         return true;
     }
 
-    private void startQRPay(final double sum) {
-        if (!validate(sum)) {
+    private void startQRPay(final double total) {
+        if (!validate(total)) {
             return;
         }
 
@@ -426,7 +432,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         checkLimit(new CheckLimitInterface() {
             @Override
             public void start() {
-                createOrder(String.valueOf(sum), mCHCD);
+                createOrder(String.valueOf(total), mCHCD);
             }
         });
 
@@ -435,7 +441,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        final double sum = Double.parseDouble(input.getText().toString().substring(1));
+        mTotal = Double.parseDouble(input.getText().toString().substring(1));
 
         int currentY = 0;
         switch (event.getAction()) {
@@ -447,7 +453,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 int dy = currentY - mLastDownY;
                 if (dy < 0) {
                     if (Math.abs(dy) > keyboardView.getHeight() / 2) {
-                        startQRPay(sum);
+                        startQRPay(mTotal);
                     }
                 }
                 break;
@@ -455,8 +461,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         return false;
     }
 
-    private void startCapturePay(final double sum) {
-        if (!validate(sum)) {
+    private void startCapturePay(final double total, final double originaltotal) {
+        if (!validate(total) && !validate(originaltotal)) {  //对于现金券的使用还有待讨论，因为可能会有sum为，而originalsum不为的情况发生
             return;
         }
 
@@ -468,7 +474,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 //这里要传人 支付类型，是微信还是支付宝,这里不需要传人支付类型了，服务器判断。
                 Bundle bundle = new Bundle();
                 bundle.putString("chcd", mCHCD); //这里要传人 支付类型，是微信还是支付宝
-                bundle.putString("total", "" + sum);
+                bundle.putString("total", "" + total);//实际支付
+                bundle.putString("originaltotal", "" + originaltotal);
                 bundle.putString("original", "scancodeview");
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
@@ -497,10 +504,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         String outputText = output.getText().toString();
-        final double sum = Double.parseDouble(input.getText().toString().substring(1));
+        mTotal = Double.parseDouble(input.getText().toString().substring(1));
         switch (v.getId()) {
             case R.id.scancodepay:
-                startCapturePay(sum);
+                startCapturePay(mTotal, mOriginalTotal);
                 break;
             case R.id.iv_left:
                 //切换了支付方式
@@ -510,7 +517,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     } else {
                         mCHCD = CHCD_TYPE[0];
                         Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【微信】");
-                        startQRPay(sum);
+                        startQRPay(mTotal);
                     }
                 } else {
                     Log.e(TAG, "[onClick] 切换了支付方式,已经是【微信】支付了，不要再按我了");
@@ -524,7 +531,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     } else {
                         mCHCD = CHCD_TYPE[1];
                         Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【支付宝】");
-                        startQRPay(sum);
+                        startQRPay(mTotal);
                     }
                 } else {
                     Log.e(TAG, "[onClick] 切换了支付方式,已经是【支付宝】支付了，不要再按我了");
@@ -535,7 +542,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
                 } else {
                     showKeyBoard();
-                    startCapturePay(sum);
+                    startCapturePay(mTotal, mOriginalTotal);
                 }
                 break;
             case R.id.iv_keyboard:
@@ -1064,14 +1071,15 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     public void getResult() {
-        double result = 0;
+        mOriginalTotal = 0;
         String x = output.getText().toString();//上边的文本框
         String t = "";
         int i = 0;
-
+        double tempInputResult;//优惠后的金额，
         if (x.indexOf("+") == -1) {
-            result = Double.parseDouble(x);
-            input.setText("=" + String.format("%.2f", result));
+            mOriginalTotal = Double.parseDouble(x);
+            tempInputResult = discountMoneyResult(mOriginalTotal);
+            input.setText("=" + String.format("%.2f", tempInputResult));
         } else {
             while (x.contains("+")) {
                 t = x.substring(0, x.indexOf("+"));
@@ -1082,13 +1090,15 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             s[i] = x;
             i++;
             for (int c = 0; c < i; c++) {
-                result += Double.parseDouble(s[c]);
+                mOriginalTotal += Double.parseDouble(s[c]);
             }
-            input.setText("=" + String.format("%.2f", result));//下面的文本框
+            //优惠后的金额，
+            tempInputResult = discountMoneyResult(mOriginalTotal);
+            input.setText("=" + String.format("%.2f", tempInputResult));//下面的文本框
         }
 
 
-        if (result > MAX_MONEY) {
+        if (mOriginalTotal > MAX_MONEY) {
             // "金额过大!"
             String toastMsg = mContext.getString(R.string.toast_money_too_large);
             Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
@@ -1100,7 +1110,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     public void getResult(String w) {
-        double result = 0;
+        mOriginalTotal = 0;
+
         String x = w;
         String t = "";
         int i = 0;
@@ -1114,11 +1125,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         s[i] = x;
         i++;
         for (int c = 0; c < i; c++) {
-            result += Double.parseDouble(s[c]);
+            mOriginalTotal += Double.parseDouble(s[c]);
         }
-        input.setText("=" + String.format("%.2f", result));
+        //优惠后的金额，
+        double tempInputResult = discountMoneyResult(mOriginalTotal);
+        input.setText("=" + String.format("%.2f", tempInputResult));
 
-        if (result > MAX_MONEY) {
+        if (mOriginalTotal > MAX_MONEY) {
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
             Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
             numFlag = false;
@@ -1126,6 +1139,50 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             numFlag = true;
         }
     }
+
+    //获取打折后的金额
+    public double discountMoneyResult(double result) {
+        double tempResult = result;
+        //这里要判断ResultData是否为null
+        if (SessonData.loginUser.getResultData() == null || SessonData.loginUser.getResultData().saleDiscount == null || "0".equals(SessonData.loginUser.getResultData().saleDiscount) ||
+                SessonData.loginUser.getResultData().voucherType == null || "0".equals(SessonData.loginUser.getResultData().voucherType)) {
+            mHasDiscount.setVisibility(View.INVISIBLE);
+            return tempResult;
+        }
+        //打折门限值
+        double limit = 0;
+        if (SessonData.loginUser.getResultData().saleMinAmount != null && !"0".equals(SessonData.loginUser.getResultData().saleMinAmount)) {
+            BigDecimal saleMinAmount = new BigDecimal(Double.valueOf(SessonData.loginUser.getResultData().saleMinAmount));
+            limit = saleMinAmount.divide(new BigDecimal(100)).doubleValue();
+        }
+        //折扣值
+        BigDecimal saleDiscount = new BigDecimal(Double.valueOf(SessonData.loginUser.getResultData().saleDiscount));
+        double discount = saleDiscount.divide(new BigDecimal(100)).doubleValue();
+
+        //满减券
+        if (SessonData.loginUser.getResultData().voucherType.endsWith("1")) {
+            if (limit > 0 && result > limit) {
+                mHasDiscount.setVisibility(View.VISIBLE);
+                tempResult -= discount;
+            }
+        } else if (SessonData.loginUser.getResultData().voucherType.endsWith("2")) {
+            //固定金额券
+            mHasDiscount.setVisibility(View.VISIBLE);
+            if (tempResult <= discount) {
+                tempResult = 0;
+            } else {
+                tempResult -= discount;
+            }
+        } else if (SessonData.loginUser.getResultData().voucherType.endsWith("3")) {
+            //满折券
+            if (limit > 0 && result > limit) {
+                mHasDiscount.setVisibility(View.VISIBLE);
+                tempResult = new BigDecimal(tempResult).multiply(new BigDecimal(discount)).doubleValue();
+            }
+        }
+        return tempResult;
+    }
+
 
     public void clearZero() {
         if (clearFlag) {
