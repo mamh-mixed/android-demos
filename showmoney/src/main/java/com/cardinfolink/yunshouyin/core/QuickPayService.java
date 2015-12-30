@@ -33,7 +33,7 @@ public interface QuickPayService {
 
     void getTotalAsync(User user, String date, QuickPayCallbackListener<String> listener);
 
-    void getOrderAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacketOrder> listener);
+    void getOrderAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacket> listener);
 
     void getRefdAsync(User user, String orderNum, QuickPayCallbackListener<ServerPacket> listener);
 

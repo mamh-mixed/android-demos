@@ -445,20 +445,38 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    //两个参数的用来精确查找某个订单的
     @Override
-    public ServerPacket findOrder(User user, String index, String size, String orderNum, String recType, String payType, String txnStatus) {
+    public ServerPacket findOrder(User user, String orderNum) {
+        return findOrder(user, orderNum, null, null, null, null, null);
+    }
+
+    //这是多个参数的用来根据条件查找的
+    @Override
+    public ServerPacket findOrder(User user, String index, String size, String recType, String payType, String txnStatus) {
+        return findOrder(user, null, index, size, recType, payType, txnStatus);
+    }
+
+
+    @Override
+    public ServerPacket findOrder(User user, String orderNum, String index, String size, String recType, String payType, String txnStatus) {
         String url = quickPayConfigStorage.getUrl() + "/findOrder";
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
         params.put("password", password);
-        params.put("index", index);
-        params.put("size", size);
-        params.put("orderNum", orderNum);
-        params.put("recType", recType);
-        params.put("payType", payType);
-        params.put("txnStatus", txnStatus);
+        if (TextUtils.isEmpty(orderNum)) {
+            params.put("index", index);
+            params.put("size", size);
+            params.put("recType", recType);
+            params.put("payType", payType);
+            params.put("txnStatus", txnStatus);
+        } else {
+            //如果提供了账单号，这里是精确查询，其他的参数不要传人
+            params.put("orderNum", orderNum);
+        }
+
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, "SHA-1"));
 
