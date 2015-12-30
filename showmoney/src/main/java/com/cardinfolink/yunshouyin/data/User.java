@@ -27,6 +27,8 @@ public class User {
     private String limitName;
     private String limitPhone;
 
+    private String payUrl;
+
     public ResultData getResultData() {
         return resultData;
     }
@@ -214,9 +216,17 @@ public class User {
         this.isAutoLogin = isAutoLogin;
     }
 
+    public String getPayUrl() {
+        return payUrl;
+    }
+
+    public void setPayUrl(String payUrl) {
+        this.payUrl = payUrl;
+    }
+
     @Override
     public String toString() {
-        return "\nUser{" +
+        return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", activate='" + activate + '\'' +
@@ -238,6 +248,8 @@ public class User {
                 ", isAutoLogin=" + isAutoLogin +
                 ", limitName='" + limitName + '\'' +
                 ", limitPhone='" + limitPhone + '\'' +
-                "}\n";
+                ", payUrl='" + payUrl + '\'' +
+                ", resultData=" + resultData +
+                '}';
     }
 }
