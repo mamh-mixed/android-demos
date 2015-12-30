@@ -196,12 +196,14 @@ public class TransManageView extends LinearLayout {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里可以在ui线程里执行的
-
+                final int totalRecord = data.getTotalRecord();//这个字段表示当月的总条数
                 final int count = data.getCount();//返回的条数
                 final String total = data.getTotal();
                 final int refdcount = data.getRefdcount();
                 final String refdtotal = data.getRefdtotal();
                 final int size = data.getSize();
+
+                //这里开始遍历这个账单的数组************************************************************
                 for (Txn txn : data.getTxn()) {
                     TradeBill tradeBill = new TradeBill();
                     tradeBill.response = txn.getResponse();
@@ -214,6 +216,8 @@ public class TransManageView extends LinearLayout {
                         tradeBill.orderNum = req.getOrderNum();
                         tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());
                         tradeBill.busicd = req.getBusicd();
+
+                        //使用/v3/bill接口 退款的好像也没有拉取到
                         if (tradeBill.busicd.equals("REFD")) {
                             tradeBill.amount = "-" + tradeBill.amount;
                         }
@@ -228,26 +232,30 @@ public class TransManageView extends LinearLayout {
                     String currentMonth = tradeBill.tandeDate.substring(4, 6);
                     String currentYearMonth = tradeBill.tandeDate.substring(0, 6);
 
+                    //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
                     if (TextUtils.isEmpty(tradeBill.chcd)) {
                         continue;
                     }
 
-                    //添加到相应的map中，最后在转换到list中，排序转换到list中
+                    //添加到相应的map中，最后再转换到list中，按照月份的先后排序转换到list中
                     if (mMonthBillMap.containsKey(currentYearMonth)) {
                         mMonthBillMap.get(currentYearMonth).setCount(count);
                         mMonthBillMap.get(currentYearMonth).setTotal(total);
                         mMonthBillMap.get(currentYearMonth).setRefdcount(refdcount);
                         mMonthBillMap.get(currentYearMonth).setRefdtotal(refdtotal);
-                        mMonthBillMap.get(currentYearMonth).setSize(billIndex);
+                        mMonthBillMap.get(currentYearMonth).setSize(size);
+                        mMonthBillMap.get(currentYearMonth).setTotalRecord(totalRecord);
                     } else {
                         MonthBill monthBill = new MonthBill(currentYear, currentMonth);
                         monthBill.setCount(count);
                         monthBill.setTotal(total);
                         monthBill.setRefdcount(refdcount);
                         monthBill.setRefdtotal(refdtotal);
-                        monthBill.setSize(billIndex);
+                        monthBill.setSize(size);
+                        monthBill.setTotalRecord(totalRecord);
                         mMonthBillMap.put(currentYearMonth, monthBill);
                     }
+
                     if (mTradeBillMap.containsKey(currentYearMonth)) {
                         mTradeBillMap.get(currentYearMonth).add(tradeBill);
                     } else {
@@ -256,6 +264,7 @@ public class TransManageView extends LinearLayout {
                         mTradeBillMap.put(currentYearMonth, list);
                     }
                 }
+                //**********************************************************************************
 
                 mapToMonthBillList(mMonthBillMap);
                 mapToTradeBillList(mTradeBillMap);
@@ -264,8 +273,9 @@ public class TransManageView extends LinearLayout {
                 mBillPullRefreshListView.onRefreshComplete();
 
                 billIndex += size;
-                if (size == 0) {
-                    //size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
+                if (billIndex == totalRecord) {
+                    //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
+                    //现在用totalRecord来判断，相等表明这个月的数据加载完了，这个时候就要加载前一个月的数据了
                     billIndex = 0;
                     mMonthBillAgo += 1;
                     Calendar calendar = Calendar.getInstance();
