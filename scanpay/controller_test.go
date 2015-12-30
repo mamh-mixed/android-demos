@@ -19,16 +19,18 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPayRequest{
-		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
-		OrderNum:  util.Millisecond(),
-		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "287528698389366895",
-		AgentCode:  "19992900",
-		Txamt:      "000000000001",
-		Chcd:       "AOS",
-		Busicd:     "PURC",
-		Currency:   "JPY",
-		Mchntid:    "200000000010002",
+		GoodsInfo:      "food,10.00,2;water,1.00,3",
+		OrderNum:       util.Millisecond(),
+		ScanCodeId:     "283850099094963575",
+		AgentCode:      "10134001",
+		Txamt:          "000000000001",
+		DiscountAmt:    "000000000001",
+		PayType:        "5",
+		Busicd:         "PURC",
+		Currency:       "CNY",
+		Mchntid:        "100000000010001",
+		CouponOrderNum: "kaquandingdanhao",
+		// Chcd:        "AOS",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -234,7 +236,8 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(settQuery)
+	t.Logf("Order Number is %s", scanPayBarcodePay.OrderNum)
+	err := doOneScanPay(scanPayBarcodePay)
 	if err != nil {
 		t.Error(err)
 	}

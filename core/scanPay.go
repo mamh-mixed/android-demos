@@ -276,22 +276,24 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err, exist := isOrderDuplicate(req.Mchntid, req.OrderNum); exist {
 		return err
 	}
+
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PayTrans,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		Terminalid:  req.Terminalid,
-		TransAmt:    req.IntTxamt,
-		GoodsInfo:   req.GoodsInfo,
-		TradeFrom:   req.TradeFrom,
-		Currency:    req.Currency,
-		LockFlag:    1,
-		DiscountAmt: req.IntDiscountAmt, //卡券优惠金额
-		PayType:     req.PayType,        //卡券指定的支付方式
+		MerId:          req.Mchntid,
+		CouponOrderNum: req.CouponOrderNum,
+		DiscountAmt:    req.IntDiscountAmt, //卡券优惠金额 TODO 幽灵事件，使用 DiscountAmt 存储到数据库失败
+		PayType:        req.PayType,        //卡券指定的支付方式
+		SysOrderNum:    util.SerialNumber(),
+		OrderNum:       req.OrderNum,
+		TransType:      model.PayTrans,
+		Busicd:         req.Busicd,
+		AgentCode:      req.AgentCode,
+		Terminalid:     req.Terminalid,
+		TransAmt:       req.IntTxamt,
+		GoodsInfo:      req.GoodsInfo,
+		TradeFrom:      req.TradeFrom,
+		Currency:       req.Currency,
+		LockFlag:       1,
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
@@ -357,9 +359,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
-	log.Debugf("*******%d", t.DiscountAmt)
 	updateTrans(t, ret)
-	log.Debugf("*******%d", t.DiscountAmt)
 
 	return ret
 }

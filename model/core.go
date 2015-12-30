@@ -360,7 +360,7 @@ type Trans struct {
 	NickName        string `bson:"nickName,omitempty" json:"-"`
 	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 	Attach          string `bson:"attach,omitempty" json:"-"`
-	DiscountAmt     int64  `bson:"discountAmt,omitempty" json:"discountAmt,omitempty"` // 卡券优惠金额，显示在扫码交易账单中
+	DiscountAmt     int64  `bson:"discountAmt" json:"discountAmt"` // 卡券优惠金额，显示在扫码交易账单中
 
 	// APP
 	TicketNum string `bson:"ticketNum,omitempty" json:"ticketNum,omitempty"` // 关联的小票号
@@ -379,6 +379,7 @@ type Trans struct {
 
 	//卡券字段
 	CouponsNo       string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`              // 卡券号
+	CouponOrderNum  string `json:"couponOrderNum,omitempty" bson:"couponOrderNum,omitempty"`    // 卡券的系统订单号，使用优惠券支付的时候需要存储该字段
 	Prodname        string `bson:"prodname,omitempty" json:"prodname,omitempty"`                // 卡券名称
 	WriteoffStatus  string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`    // 核销状态
 	VeriTime        string `json:"veriTime,omitempty" bson:"veriTime,omitempty"`                // 核销次数
