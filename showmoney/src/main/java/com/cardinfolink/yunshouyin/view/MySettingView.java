@@ -15,9 +15,9 @@ import com.cardinfolink.yunshouyin.activity.AboutActivity;
 import com.cardinfolink.yunshouyin.activity.AccountSecurityActivity;
 import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
+import com.cardinfolink.yunshouyin.activity.MyWebActivity;
 import com.cardinfolink.yunshouyin.activity.StartIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.UnReadMessageActivity;
-import com.cardinfolink.yunshouyin.activity.WapActivity;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
@@ -115,7 +115,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
                 break;
             case R.id.my_wap:
                 //我的网页版
-                intent = new Intent(mContext, WapActivity.class);
+                intent = new Intent(mContext, MyWebActivity.class);
                 mContext.startActivity(intent);
                 break;
             case R.id.about:

@@ -237,7 +237,7 @@
     <string name="capture_activity_trade_fail_timerout">服务器超时，如果用户付款成功。您可以去账单查看详情</string>
 
     <string name="setting_support_channel">支持的渠道</string>
-    <string name="setting_my_web_yunshouyin">我的网页版</string>
+    <string name="setting_my_web_yunshouyin">网页版二维码</string>
     <string name="setting_about_yunshouyin">关于云收银</string>
     <string name="setting_return">返回</string>
     <string name="setting_version_number">版本号</string>
