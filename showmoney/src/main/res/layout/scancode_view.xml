@@ -33,7 +33,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
-                    android:text="用户账号"
                     android:textColor="#0099cc"
                     android:textSize="10sp" />
             </LinearLayout>
@@ -67,11 +66,22 @@
                 android:layout_marginTop="10dp">
 
                 <ImageView
+                    android:id="@+id/iv_cash"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:src="@drawable/scan_money" />
+
+                <TextView
+                    android:id="@+id/tv_hasdiscount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@id/iv_cash"
+                    android:text="折扣价"
+                    android:visibility="invisible" />
 
 
                 <TextView
