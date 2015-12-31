@@ -199,14 +199,15 @@ type ScanPayRequest struct {
 	IntDiscountAmt int64  `json:"-" url:"-" bson:"-"`                                                             //以分为单位优惠金额 辅助字段
 
 	// 卡券相关字段
-	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
-	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
-	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`          // 银行卡cardbin或者用户标识等 C
-	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 c
-	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原渠道订单号
-	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段原交易提交时间
-	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
-	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
+	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`                   // 核销次数 C
+	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"`             // 终端号
+	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`                      // 银行卡cardbin或者用户标识等 C
+	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`                      // 支付方式 c
+	CouponOrderNum   string `json:"couponOrderNum,omitempty" url:"couponOrderNum,omitempty" bson:"couponOrderNum,omitempty"` // 辅助字段 卡券的系统订单号
+	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段 原渠道订单号
+	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段原交易提交时间
+	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段 原交易验证时间
+	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段 核销次数
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
 	OrigCardbin      string `json:"-" url:"-" bson:"-"` //辅助字段
 	OrigScanCodeId   string `json:"-" url:"-" bson:"-"` //辅助字段
