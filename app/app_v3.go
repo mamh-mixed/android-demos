@@ -1,9 +1,28 @@
 package app
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
+	"crypto/sha256"
+	"fmt"
 	"net/http"
+
+	"github.com/CardInfoLink/quickpay/model"
+
+	"github.com/omigo/log"
 )
+
+// checkSignSha256 APP V3 版本使用SHA256算法签名
+func checkSignSha256(r *http.Request) bool {
+	sign, content := r.FormValue("sign"), signContent(r.Form)
+	log.Debugf("sign content: %s", content)
+
+	valid := fmt.Sprintf("%x", sha256.Sum256([]byte(content+sha1Key)))
+	if sign != valid {
+		log.Warnf("check sign error, expect %s ,get %s", valid, sign)
+		return false
+	}
+
+	return true
+}
 
 // billV3Handle 获取账单信息
 func billV3Handle(w http.ResponseWriter, r *http.Request) {
