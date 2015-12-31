@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,15 +34,19 @@ public class DetailActivity extends BaseActivity {
     private SettingActionBarItem mActionBar;
     private TextView mPayResult;
     private ImageView mPayResultImage;
-    private ResultInfoItem mRealPayMoney;
-    private ResultInfoItem mPayMoney;
-    private ResultInfoItem mRefdMoney;
-    private ResultInfoItem mPayChcd;
-    private ResultInfoItem mPayAccount;
-    private ResultInfoItem mPayDatetime;
-    private ResultInfoItem mPayOrder;
-    private ResultInfoItem mTradeFrom;
-    private Button mClose;
+
+    private TextView mPayMoney;
+
+    private ResultInfoItem mCardDiscount;//卡券折扣
+    private ResultInfoItem mRefdMoney;//退款金额
+    private ResultInfoItem mArriavlMoney;//到账金额
+
+
+    private ResultInfoItem mPayChcd;//支付渠道
+    private ResultInfoItem mPayTerminator;//操作终端
+    private ResultInfoItem mPayDatetime;//支付时间
+    private ResultInfoItem mPayOrder;//支付订单号
+    private ResultInfoItem mPayType;//支付方式
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,34 +84,32 @@ public class DetailActivity extends BaseActivity {
 
         mPayResult = (TextView) findViewById(R.id.tv_pay_result);
         mPayResultImage = (ImageView) findViewById(R.id.iv_pay_result);
-        mRealPayMoney = (ResultInfoItem) findViewById(R.id.real_pay_money);
-        mPayMoney = (ResultInfoItem) findViewById(R.id.pay_money);
+
+        mPayMoney = (TextView) findViewById(R.id.pay_money);//到账金额
+
+        mCardDiscount = (ResultInfoItem) findViewById(R.id.card_discount);//卡券折扣
         mRefdMoney = (ResultInfoItem) findViewById(R.id.refd_money);
+        mArriavlMoney = (ResultInfoItem) findViewById(R.id.pay_arrival_money);
 
         mPayChcd = (ResultInfoItem) findViewById(R.id.pay_chcd);
-        mPayAccount = (ResultInfoItem) findViewById(R.id.pay_account);
+        mPayTerminator = (ResultInfoItem) findViewById(R.id.pay_terminator);
         mPayDatetime = (ResultInfoItem) findViewById(R.id.pay_datetime);
         mPayOrder = (ResultInfoItem) findViewById(R.id.pay_order);
-        mTradeFrom = (ResultInfoItem) findViewById(R.id.pay_tradefrom);
+        mPayType = (ResultInfoItem) findViewById(R.id.pay_type);
 
-        mClose = (Button) findViewById(R.id.btnclose);
-        mClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     private void initData() {
         //这里是设置支付渠道
         if (!TextUtils.isEmpty(mTradeBill.chcd)) {
             if ("WXP".equals(mTradeBill.chcd)) {
-                mPayChcd.setRightText("微信");
+                mPayChcd.setRightText(getString(R.string.detail_activity_pay_type1));
             } else {
-                mPayChcd.setRightText("支付宝");
+                //支付宝
+                mPayChcd.setRightText(getString(R.string.detail_activity_pay_type2));
             }
         } else {
+            //其他支付渠道
             mPayChcd.setRightText("");
         }
 
@@ -121,14 +122,14 @@ public class DetailActivity extends BaseActivity {
             mPayDatetime.setRightText("");
         }
 
-        mPayAccount.setRightText(SessonData.loginUser.getUsername());
+        mPayTerminator.setRightText(SessonData.loginUser.getUsername());
 
         String tradeFrom = "";
         if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
             tradeFrom = mTradeBill.tradeFrom;
         }
 
-        mTradeFrom.setRightText(tradeFrom + " 收款");
+        mPayType.setRightText(tradeFrom + " 收款");
 
         mPayOrder.setRightText(mTradeBill.orderNum);
 
@@ -158,13 +159,8 @@ public class DetailActivity extends BaseActivity {
         }
         mPayResult.setText(tradeStatus);
 
-        mPayMoney.setRightText(mTradeBill.amount);
+        mPayMoney.setText(mTradeBill.amount);
         mRefdMoney.setRightText(mTradeBill.refundAmt);
-        BigDecimal bgPay = new BigDecimal(mTradeBill.amount);
-        BigDecimal bgRefd = new BigDecimal(mTradeBill.refundAmt);
-        String realPay = bgPay.subtract(bgRefd).toString();
-        mRealPayMoney.setRightText(realPay);
-
 
     }
 
